@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.views.generic import TemplateView, RedirectView, FormView
 
-from .forms import SignUpForm, SignInForm
+from .forms import SignUpForm, SignInForm, InviteKeyForm
 
 import logging
 LOGGER = logging.getLogger('django.request')
@@ -18,8 +18,11 @@ class UserNotFoundException(Exception):
 
 
 class AuthenticateUserMixin(object):
+    def get_auth(self, form):
+        return authenticate(username=form.cleaned_data['email'], password=form.cleaned_data['password'])
+
     def authenticate(self, form):
-        user = authenticate(username=form.cleaned_data['email'], password=form.cleaned_data['password'])
+        user = self.get_auth(form=form)
         if user is not None:
             LOGGER.info('user is authenticated: %s' % user)
             if user.is_active:
@@ -83,6 +86,13 @@ class StartView(LogOutMixin, SaveNextUrlInSessionMixin, AuthenticateUserMixin, F
         return super(StartView, self).form_valid(form)
 
 
+class InviteKeySignInView(StartView):
+    form_class = InviteKeyForm
+
+    def get_auth(self, form):
+        return authenticate(username=form.cleaned_data.get('invite_key'), password=None)
+
+
 class SignUpView(LogOutMixin, FormView):
     """
     signup view
@@ -93,6 +103,7 @@ class SignUpView(LogOutMixin, FormView):
     def form_valid(self, form):
         # user a valid form log them in
         return super(StartView, self).form_valid(form)
+
 
 class LogoutView(LogOutMixin, RedirectView):
     """

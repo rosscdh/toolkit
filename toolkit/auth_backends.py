@@ -41,11 +41,10 @@ class SecretKeyBackend(EmailBackend):
         try:
             invite = InviteKey.objects.get(key=username)
             user = invite.user
-            pwd_valid = check_password(password, user.password)
         except ObjectDoesNotExist, InviteKey.DoesNotExist:
             LOGGER.error('InviteKey does not exist: %s' % username)
 
-        if user and pwd_valid:
+        if user:
             return user
         else:
             return None
