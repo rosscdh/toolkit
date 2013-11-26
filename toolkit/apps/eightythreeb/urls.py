@@ -1,7 +1,11 @@
-from django.conf import settings
+# -*- coding: utf-8 -*-
 from django.conf.urls import patterns, include, url
 from django.views.generic import TemplateView
 
-from django.contrib import admin
+from .views import CreateEightyThreeBView
 
-url(r'^', TemplateView.as_view(template_name='dash.html')),  # @TODO ross will probably reorg this
+
+urlpatterns = patterns('',
+    url(r'^create/$', CreateEightyThreeBView.as_view(), name='create'),
+)
+

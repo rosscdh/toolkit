@@ -1,0 +1,48 @@
+{% extends 'eightythreeb/base.html' %}{% load crispy_forms_tags %}
+
+{% block page_title %}Create a new 83b Entry{% endblock  %}
+
+{% block body %}
+
+    {% crispy form %}
+
+{% endblock  %}
+
+{% block js %}
+
+<script src="//d79i1fxsrar4t.cloudfront.net/jquery.liveaddress/2.4/jquery.liveaddress.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function () {
+    $('input[name=post_code]').LiveAddress({
+        key: "1898150956842137015",
+        debug: true,
+        autoVerify: false,
+        autocomplete: true,
+        candidates: 3,
+        addresses: [{
+            street: '#id_address',
+            state: '#id_state',
+            zipcode: '#id_postcode'
+        }]
+    }).on(eventType, callback(event, data, previousHandler));
+});
+</script>
+
+<!--<script src="http://ziplookup.googlecode.com/git/public/ziplookup/zipLookup.min.js" type="text/javascript"></script>
+<script>
+$(document).ready(function () {
+    $('input[name=post_code]').on('change', function ( e ) {
+        $.zipLookup(
+            $(this).val(),
+            function ( cityName, stateName, stateShortName ) {
+                $('input[name=address]').val(cityName);
+                $('input[name=state]').val(stateName);
+            },
+            function ( errMsg ) {
+                $('.message').html("Error: " + errMsg);
+            });
+    });
+});
+</script>-->
+
+{% endblock  %}

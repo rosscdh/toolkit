@@ -1,3 +1,9 @@
-from django.shortcuts import render
+# -*- coding: utf-8 -*-
+from django.views.generic import FormView
 
-# Create your views here.
+from forms import EightyThreeBForm
+
+
+class CreateEightyThreeBView(FormView):
+    form_class = EightyThreeBForm
+    template_name = 'eightythreeb/create.html'

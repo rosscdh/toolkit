@@ -1,16 +1,17 @@
+# -*- coding: utf-8 -*-
 """
 LawPal - toolkit app 
 """
-
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-import os
+import os, sys
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__+ '/../'))
 
+IS_TESTING = False
+for test_app in ['testserver','test']:
+    if test_app in sys.argv[1:2]:
+        IS_TESTING = True
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'lgi%*e=%s@y3-jos^uydhc5gz80m9ts&9io5xh6myf+$fuy7+n'
@@ -58,8 +59,9 @@ DJANGO_APPS = (
 )
 
 PROJECT_APPS = (
-     'toolkit.apps.eightythreeb',
-     'toolkit.apps.default',
+    'toolkit.apps.default',
+    'toolkit.apps.dash',
+    'toolkit.apps.eightythreeb',
 )
 
 HELPER_APPS = (
@@ -68,6 +70,10 @@ HELPER_APPS = (
     # api
     'rest_framework',
     'rest_framework_swagger',
+
+    # forms
+    'parsley',
+    'crispy_forms',
 )
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + HELPER_APPS
@@ -146,7 +152,7 @@ REST_FRAMEWORK = {
 SWAGGER_SETTINGS = {
     "exclude_namespaces": [], # List URL namespaces to ignore
     "api_version": '0.1',  # Specify your API's version
-    "api_path": "/",  # Specify the path to your API not a root level
+    "api_path": "/api/",  # Specify the path to your API not a root level
     "enabled_methods": [  # Specify which methods to enable in Swagger UI
         'get',
         'post',
@@ -159,16 +165,18 @@ SWAGGER_SETTINGS = {
     "is_superuser": False,  # Set to True to enforce admin only access
 }
 
-# try:
-#     LOCAL_SETTINGS
-# except NameError:
-#     try:
-#         from local_settings import *
-#     except ImportError:
-#         print("Could not load local_settings")
+CRISPY_TEMPLATE_PACK = 'crispy/bootstrap3'
 
-# if IS_TESTING:
-#     try:
-#         from test_settings import *
-#     except ImportError:
-#         print("Could not load test_settings")
+try:
+    LOCAL_SETTINGS
+except NameError:
+    try:
+        from local_settings import *
+    except ImportError:
+        print("Could not load local_settings")
+
+if IS_TESTING:
+    try:
+        from test_settings import *
+    except ImportError:
+        print("Could not load test_settings")
