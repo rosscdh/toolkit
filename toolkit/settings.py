@@ -129,6 +129,7 @@ LOGIN_ERROR_URL    = '/login-error/'
 AUTHENTICATION_BACKENDS = (
     'toolkit.auth_backends.EmailBackend',
     'django.contrib.auth.backends.ModelBackend',
+    'toolkit.auth_backends.SecretKeyBackend',
 )
 
 REST_FRAMEWORK = {

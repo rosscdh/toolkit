@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User, check_password
+
+from toolkit.apps.default.models import InviteKey
 
 import logging
 LOGGER = logging.getLogger('django.request')
@@ -26,4 +29,23 @@ class EmailBackend(object):
         try:
             return User.objects.get(pk=user_id)
         except User.DoesNotExist:
+            return None
+
+
+class SecretKeyBackend(EmailBackend):
+    def authenticate(self, username=None, password=None):
+        # Check the username/password and return a User.
+        user = None
+        pwd_valid = False
+
+        try:
+            invite = InviteKey.objects.get(key=username)
+            user = invite.user
+            pwd_valid = check_password(password, user.password)
+        except ObjectDoesNotExist, InviteKey.DoesNotExist:
+            LOGGER.error('InviteKey does not exist: %s' % username)
+
+        if user and pwd_valid:
+            return user
+        else:
             return None

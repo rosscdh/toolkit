@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
 from django.db import models
+from uuidfield import UUIDField
 
-# Create your models here.
+
+class InviteKey(models.Model):
+    key = UUIDField(auto=True)
+    user = models.ForeignKey('auth.User')

@@ -6,6 +6,8 @@ six==1.4.1
 sqlparse==0.1.10
 wsgiref==0.1.2
 
+django-uuidfield
+
 django-crispy-forms
 -e git+https://github.com/agiliq/Django-parsley.git#egg=django-parsley
 
