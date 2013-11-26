@@ -1,37 +1,44 @@
 {% extends 'base.html' %}
 
 {% block body %}
-	<div class="row">
-		<div class="col-sm-3">
-			<ul class="nav nav-list">
-            <li class="nav-header">LawPal INC</li>
+  <div class="row">
+    <div class="col-sm-3">
+
+      <a href="{% url 'workspace:create' %}" class="btn btn-success">New Company</a>
+
+      <ul class="nav nav-list">
+        {% for w in workspaces %}
+        {% empty %}
+          <li class="nav-header">Create a new company</li>
+        {% endfor %}
+            <!-- <li class="nav-header">LawPal INC</li>
             <li class="active">
-              <a href="#fakelink">
-                83b Election Tool
-              </a>
+            <a href="#fakelink">
+            83b Election Tool
+            </a>
             </li>
-			<li class="divider"></li>
+            <li class="divider"></li>
             <li class="nav-header">Citro INC</li>
             <li class="">
-              <a href="#fakelink">
-                83b Election Tool
-                <span class="badge pull-right">2</span>
-              </a>
-            </li>
+            <a href="#fakelink">
+            83b Election Tool
+            <span class="badge pull-right">2</span>
+            </a>
+            </li> -->
           </ul>
-		</div>
-		<div class="col-sm-9">
-			<h4>
-				83(b) Election Letter Tool 			
-				<a href="{% url 'eightythreeb:create' %}" class="btn btn-success pull-right">Create New</a>
-			</h4>
-			<br />
-			<div class="dialog dialog-warning">
-		        A simple way of helping your clients get their 83b elections filed on time and correctly while giving you complete visibility on the process. 
-				To create your first 83b Election Letter, click Create New. only show until while n < 1
+    </div>
+    <div class="col-sm-9">
+      <h4>
+        83(b) Election Letter Tool      
+        <a href="{% url 'eightythreeb:create' %}" class="btn btn-success pull-right">Create New</a>
+      </h4>
+      <br />
+      <div class="dialog dialog-warning">
+            A simple way of helping your clients get their 83b elections filed on time and correctly while giving you complete visibility on the process. 
+        To create your first 83b Election Letter, click Create New. only show until while n < 1
 
-		    </div>
-			<table class="table table-bordered">
+        </div>
+      <table class="table table-bordered">
             <thead>
               <tr>
                 <th>Name</th>
@@ -61,6 +68,6 @@
               </tr>
             </tbody>
           </table>
-		</div>
-	</div>
+    </div>
+  </div>
 {% endblock%}

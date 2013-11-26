@@ -13,7 +13,7 @@ from .models import EightyThreeB
 class EightyThreeBForm(forms.Form):
     client_full_name = forms.CharField()
     client_email_address = forms.EmailField()
-    client_company_name = forms.CharField()
+    workspace = forms.CharField(label='Company Name')
     post_code = forms.CharField()
     state = forms.CharField()
     address = forms.CharField()

@@ -11,10 +11,11 @@ urlpatterns = patterns('',
     #url(r'^docs/', include('rest_framework_swagger.urls')),
 
     url(r'^83b/', include('toolkit.apps.eightythreeb.urls', namespace='eightythreeb')),
+    url(r'^workspace/', include('toolkit.apps.workspace.urls', namespace='workspace')),
 
-    url(r'^', include('toolkit.apps.dash.urls', namespace='dash')),
+    url(r'^dash/', include('toolkit.apps.dash.urls', namespace='dash')),
 
     # home default terminator
-    url(r'^$', TemplateView.as_view(template_name='index.html')),
+    url(r'^', include('toolkit.apps.default.urls', namespace='public')),
 
 )

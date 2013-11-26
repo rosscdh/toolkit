@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.views.generic import FormView
 
-from forms import EightyThreeBForm
+from .forms import EightyThreeBForm
 
 
 class CreateEightyThreeBView(FormView):

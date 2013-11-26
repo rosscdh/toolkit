@@ -61,6 +61,7 @@ DJANGO_APPS = (
 PROJECT_APPS = (
     'toolkit.apps.default',
     'toolkit.apps.dash',
+    'toolkit.apps.workspace',
     'toolkit.apps.eightythreeb',
 )
 
@@ -121,6 +122,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+LOGIN_URL          = '/start/'
+LOGIN_REDIRECT_URL = '/dash/'
+LOGIN_ERROR_URL    = '/login-error/'
 
 REST_FRAMEWORK = {
     # Use hyperlinked styles by default.

@@ -1,0 +1,12 @@
+{% extends 'public/base.html' %}{% load url from future %}{% load crispy_forms_tags %}
+
+{% block page_title %}Welcome, please login or create an account{% endblock  %}
+
+{% block body %}
+
+{% crispy form %}
+
+<a href="{% url 'public:signin' %}">Sign In</a>
+
+
+{% endblock  %}
