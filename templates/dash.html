@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block body %}
+	<div class="row">
+		<div class="col-sm-3">
+			<ul class="nav nav-list">
+            <li class="nav-header">LawPal INC</li>
+            <li class="active">
+              <a href="#fakelink">
+                83b Election Tool
+              </a>
+            </li>
+			<li class="divider"></li>
+            <li class="nav-header">Citro INC</li>
+            <li class="">
+              <a href="#fakelink">
+                83b Election Tool
+                <span class="badge pull-right">2</span>
+              </a>
+            </li>
+          </ul>
+		</div>
+		<div class="col-sm-9">
+			<h4>
+				83(b) Election Letter Tool 			
+				<a href="/form" class="btn btn-success pull-right">Create New</a>
+			</h4>
+			<br />
+			<div class="dialog dialog-warning">
+		        A simple way of helping your clients get their 83b elections filed on time and correctly while giving you complete visibility on the process. 
+				To create your first 83b Election Letter, click Create New. only show until while n < 1
+
+		    </div>
+			<table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Transfer Date</th>
+                <th>Filing Deadline</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="success">
+                <td>Yael Citro</td>
+                <td>November 10th</td>
+                <td>December 10th (23 days)</td>
+                <td>Filed with IRS <a href="#" class="pull-right">View Confirmation</a></td>
+              </tr>
+              <tr class="danger">
+                <td>Alex Halliday</td>
+                <td>November 9th</td>
+                <td>December 9th (22 days)</td>
+                <td>Awaitng client response <a href="#" class="pull-right">Get Link</a></td>
+              </tr>
+              <tr class="">
+                <td>Ross Crawford</td>
+                <td>November 14th</td>
+                <td>November 14th (22 days)</td>
+                <td>Awaitng client response <a href="#" class="pull-right">Get Link</a></td>
+              </tr>
+            </tbody>
+          </table>
+		</div>
+	</div>
+{% endblock%}

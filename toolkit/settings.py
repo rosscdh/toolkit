@@ -6,6 +6,8 @@ LawPal - toolkit app
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+SITE_ROOT = os.path.dirname(os.path.realpath(__file__+ '/../'))
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
@@ -13,10 +15,33 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'lgi%*e=%s@y3-jos^uydhc5gz80m9ts&9io5xh6myf+$fuy7+n'
 
+# List of callables that know how to import templates from various sources.
+TEMPLATE_DIRS = (
+    os.path.join(SITE_ROOT, 'templates'),
+)
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 TEMPLATE_DEBUG = True
+
+
+
+STATIC_ROOT = os.path.join(SITE_ROOT, 'static')
+STATIC_URL = '/static/'
+
+# Additional locations of static files
+STATICFILES_DIRS = (
+)
+
+# List of finder classes that know how to find static files in
+# various locations.
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'compressor.finders.CompressorFinder',
+)
+
 
 ALLOWED_HOSTS = []
 
@@ -33,7 +58,8 @@ DJANGO_APPS = (
 )
 
 PROJECT_APPS = (
-    'apps.toolkit.eightythreeb',
+     'toolkit.apps.eightythreeb',
+     'toolkit.apps.default',
 )
 
 HELPER_APPS = (
@@ -110,8 +136,8 @@ REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
-        #'rest_framework.permissions.AllowAny',
-        'glynt.apps.api.v2_permissions.GlyntObjectPermission',
+        'rest_framework.permissions.AllowAny',
+        #'glynt.apps.api.v2_permissions.GlyntObjectPermission',
     ],
     'PAGINATE_BY': 10,
 }
@@ -133,16 +159,16 @@ SWAGGER_SETTINGS = {
     "is_superuser": False,  # Set to True to enforce admin only access
 }
 
-try:
-    LOCAL_SETTINGS
-except NameError:
-    try:
-        from local_settings import *
-    except ImportError:
-        print("Could not load local_settings")
+# try:
+#     LOCAL_SETTINGS
+# except NameError:
+#     try:
+#         from local_settings import *
+#     except ImportError:
+#         print("Could not load local_settings")
 
-if IS_TESTING:
-    try:
-        from test_settings import *
-    except ImportError:
-        print("Could not load test_settings")
+# if IS_TESTING:
+#     try:
+#         from test_settings import *
+#     except ImportError:
+#         print("Could not load test_settings")

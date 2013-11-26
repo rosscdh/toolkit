@@ -1,0 +1,71 @@
+{% load cache i18n %}{% load url from future %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Title Tag Goes Here</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Loading Bootstrap -->
+    <link href="{{ STATIC_URL }}bootstrap/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Loading Flat UI -->
+    <link href="{{ STATIC_URL }}css/flat-ui.css" rel="stylesheet">
+
+    <link rel="shortcut icon" href="{{ STATIC_URL }}images/favicon.ico">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements. All other JS at the end of file. -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+
+<div class="navbar navbar-default">
+        <div class="container">
+
+    <div class="navbar-header">
+        <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-collapse-01"></button>
+        <a href="/" class="navbar-brand "><span class="fui-gear"></span> LawPal Toolkit</a>
+    </div>          
+    <div class="navbar-collapse collapse navbar-collapse-01">
+        <ul class="nav navbar-nav navbar-right">
+            <li>
+            <a href="#fakelink">
+              <span class="fui-mail"></span><span class="hidden-lg">Messages</span>
+              <span class="navbar-new">1</span>
+            </a>
+          </li>
+          <li class="divider"></li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              Alex <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="/dash">Dashboard</a></li>
+              <li><a href="/form">Form</a></li>
+            </ul>
+          </li>
+        </ul>    </div><!--/.nav-collapse -->
+</div>
+  </div>
+
+    <div class="container">
+        {% block body %}{% endblock %}
+    </div>
+    <!-- /.container -->
+
+
+    <!-- Load JS here for greater good =============================-->
+    <script src="{{ STATIC_URL }}js/jquery-1.8.3.min.js"></script>
+    <script src="{{ STATIC_URL }}js/jquery-ui-1.10.3.custom.min.js"></script>
+    <script src="{{ STATIC_URL }}js/jquery.ui.touch-punch.min.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap-select.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap-switch.js"></script>
+    <script src="{{ STATIC_URL }}js/flatui-checkbox.js"></script>
+    <script src="{{ STATIC_URL }}js/flatui-radio.js"></script>
+    <script src="{{ STATIC_URL }}js/jquery.tagsinput.js"></script>
+    <script src="{{ STATIC_URL }}js/jquery.placeholder.js"></script>
+  </body>
+</html>
