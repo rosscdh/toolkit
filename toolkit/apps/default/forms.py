@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django import forms
+from django.contrib.auth.models import User
 
 from parsley.decorators import parsleyfy
 from crispy_forms.helper import FormHelper
@@ -27,6 +28,17 @@ class SignUpForm(forms.Form):
         )
         super(SignUpForm, self).__init__(*args, **kwargs)
 
+    def clean_email(self):
+        email = self.cleaned_data['email']
+
+        try:
+            user = User.objects.get(email=email)
+
+            if user:
+                raise forms.ValidationError("Email already Exists. Please use another")
+
+        except User.DoesNotExist:
+            return email
 
 @parsleyfy
 class SignInForm(forms.Form):
