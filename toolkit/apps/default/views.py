@@ -5,13 +5,32 @@ from django.views.generic import TemplateView, RedirectView, FormView
 
 from .forms import SignUpForm, SignInForm
 
+import logging
+LOGGER = logging.getLogger('django.request')
+
+
+class UserInactiveException(Exception):
+    message = 'User is not active'
+
+
+class UserNotFoundException(Exception):
+    message = 'User could not be authenticated'
+
 
 class AuthenticateUserMixin(object):
     def authenticate(self, form):
         user = authenticate(username=form.cleaned_data['email'], password=form.cleaned_data['password'])
         if user is not None:
-             if user.is_active:
+            LOGGER.info('user is authenticated: %s' % user)
+            if user.is_active:
+                LOGGER.info('user is active: %s' % user)
                 login(self.request, user)
+            else:
+                LOGGER.info('user is not active: %s' % user)
+                raise UserInactiveException
+        else:
+            LOGGER.info('User not authenticated')
+            raise UserNotFoundException
 
 class LogOutMixin(object):
     """
@@ -49,10 +68,20 @@ class StartView(LogOutMixin, SaveNextUrlInSessionMixin, AuthenticateUserMixin, F
     template_name = 'public/start.html'
     form_class = SignInForm
 
+    def get_success_url(self):
+        return reverse('dash:default')
+
     def form_valid(self, form):
         # user a valid form log them in
-        self.authenticate(form=form)
+        try:
+            LOGGER.info('authenticating user: %s' % form.cleaned_data.get('email'))
+            self.authenticate(form=form)
+
+        except UserNotFoundException, UserInactiveException:
+            return self.form_invalid(form=form)
+
         return super(StartView, self).form_valid(form)
+
 
 class SignUpView(LogOutMixin, FormView):
     """

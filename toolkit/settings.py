@@ -126,6 +126,11 @@ LOGIN_URL          = '/start/'
 LOGIN_REDIRECT_URL = '/dash/'
 LOGIN_ERROR_URL    = '/login-error/'
 
+AUTHENTICATION_BACKENDS = (
+    'toolkit.auth_backends.EmailBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
 REST_FRAMEWORK = {
     # Use hyperlinked styles by default.
     'DEFAULT_RENDERER_CLASSES': (
