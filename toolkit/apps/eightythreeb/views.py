@@ -6,4 +6,4 @@ from .forms import EightyThreeBForm
 
 class CreateEightyThreeBView(FormView):
     form_class = EightyThreeBForm
-    template_name = 'eightythreeb/create.html'
+    template_name = 'eightythreeb/eightythreeb_form.html'
