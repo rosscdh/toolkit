@@ -11,6 +11,10 @@ from crispy_forms.layout import Layout, ButtonHolder, Submit
 
 from .models import EightyThreeB
 
+import datetime
+
+def _current_year():
+    return datetime.datetime.utcnow().year
 
 @parsleyfy
 class EightyThreeBForm(forms.Form):
@@ -19,18 +23,20 @@ class EightyThreeBForm(forms.Form):
     workspace = forms.CharField(label='Company Name')
     post_code = USZipCodeField()
     state = USPSSelect()
-    address = forms.CharField()
-    date_of_property_transfer = forms.DateField()
-    description = forms.CharField()
-    tax_year = forms.CharField()
-    value_at_time_of_transfer = forms.CharField()
-    ssn = USSocialSecurityNumberField()
-    itin = forms.CharField()
-    accountant_email = forms.EmailField()
+    address = forms.CharField(widget=forms.Textarea)
+    date_of_property_transfer = forms.DateField(widget=forms.TextInput(attrs={'class': 'datepicker'}))
+    description = forms.CharField(widget=forms.Textarea)
+    tax_year = forms.IntegerField(initial=_current_year)
+    value_at_time_of_transfer = forms.DecimalField(initial=0.00)
+    ssn = USSocialSecurityNumberField(required=False)
+    itin = forms.CharField(required=False)
+    accountant_email = forms.EmailField(required=False)
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
+        self.helper.form_class = 'form-horizontal'
         self.helper.attrs = {'data-validate': 'parsley'}
+
         self.helper.layout = Layout(
             'client_full_name',
             'client_email_address',
@@ -50,3 +56,21 @@ class EightyThreeBForm(forms.Form):
             )
         )
         super(EightyThreeBForm, self).__init__(*args, **kwargs)
+
+    def clean_ssn(self):
+        """
+        if the itin is not specified and we have a blank value
+        """
+        ssn = self.cleaned_data.get('ssn') 
+        itin = self.data.get('itin')
+        if ssn in ['', None] and itin in ['', None]:
+            raise forms.ValidationError("Please specify either an SSN or an ITIN")
+
+    def clean_itin(self):
+        """
+        if the ssn is not specified and we have a blank value
+        """
+        itin = self.cleaned_data.get('itin') 
+        ssn = self.data.get('ssn')
+        if ssn in ['', None] and itin in ['', None]:
+            raise forms.ValidationError("Please specify either an SSN or an ITIN")
