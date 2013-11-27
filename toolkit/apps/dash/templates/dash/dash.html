@@ -32,7 +32,11 @@
           </ul>
     </div>
     <div class="col-sm-9">
-        {% block content %}{% endblock %}
+        {% block content %}
+          <div class="row">
+            Latest activity for all workspaces here
+          </div>
+        {% endblock %}
           <!-- <h4>
           83(b) Election Letter Tool      
           <a href="{% url 'eightythreeb:create' %}" class="btn btn-success pull-right">Create New</a>
