@@ -59,6 +59,7 @@ DJANGO_APPS = (
 )
 
 PROJECT_APPS = (
+    'toolkit.apps.api',
     'toolkit.apps.default',
     'toolkit.apps.dash',
     'toolkit.apps.workspace',
@@ -71,6 +72,7 @@ HELPER_APPS = (
 
     # api
     'rest_framework',
+    'rest_framework.authtoken',
     'rest_framework_swagger',
 
     # forms
@@ -155,7 +157,7 @@ REST_FRAMEWORK = {
         'rest_framework.serializers.HyperlinkedModelSerializer',
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ),
 
     'DEFAULT_FILTER_BACKENDS': (
@@ -174,7 +176,7 @@ REST_FRAMEWORK = {
 SWAGGER_SETTINGS = {
     "exclude_namespaces": [], # List URL namespaces to ignore
     "api_version": '0.1',  # Specify your API's version
-    "api_path": "/api/",  # Specify the path to your API not a root level
+    "api_path": "/",  # Specify the path to your API not a root level
     "enabled_methods": [  # Specify which methods to enable in Swagger UI
         'get',
         'post',

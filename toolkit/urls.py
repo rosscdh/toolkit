@@ -8,7 +8,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
 
-    #url(r'^docs/', include('rest_framework_swagger.urls')),
+    url(r'^api/', include('toolkit.apps.api.urls', namespace='api')),
 
     url(r'^83b/', include('toolkit.apps.eightythreeb.urls', namespace='eightythreeb')),
     url(r'^workspace/', include('toolkit.apps.workspace.urls', namespace='workspace')),

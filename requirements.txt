@@ -8,6 +8,7 @@ wsgiref==0.1.2
 Werkzeug
 django-rest-swagger
 djangorestframework==2.3.9
+-e git+https://github.com/alex/django-filter.git#egg=django-filter
 
 django-uuidfield
 
@@ -23,3 +24,4 @@ django-debug-toolbar==0.11.0
 
 # US and other fields etc
 django-localflavor
+
