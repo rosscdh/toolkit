@@ -35,6 +35,7 @@ class AuthenticateUserMixin(object):
             LOGGER.info('User not authenticated')
             raise UserNotFoundException
 
+
 class LogOutMixin(object):
     """
     Mixin that will log the current user out
@@ -93,16 +94,23 @@ class InviteKeySignInView(StartView):
         return authenticate(username=form.cleaned_data.get('invite_key'), password=None)
 
 
-class SignUpView(LogOutMixin, FormView):
+class SignUpView(LogOutMixin, AuthenticateUserMixin, FormView):
     """
     signup view
     """
     template_name = 'public/signup.html'
     form_class = SignUpForm
 
+    def get_success_url(self):
+        return reverse('dash:default')
+
     def form_valid(self, form):
         # user a valid form log them in
-        return super(StartView, self).form_valid(form)
+
+        form.save()  # save the user
+        self.authenticate(form=form)  # log them in
+
+        return super(SignUpView, self).form_valid(form)
 
 
 class LogoutView(LogOutMixin, RedirectView):

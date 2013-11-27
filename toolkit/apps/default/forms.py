@@ -1,17 +1,31 @@
 # -*- coding: utf-8 -*-
 from django import forms
 from django.contrib.auth.models import User
+from django.template.defaultfilters import slugify
 
 from parsley.decorators import parsleyfy
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, ButtonHolder, Submit
+from crispy_forms.layout import Layout, ButtonHolder, Submit, Field, HTML
+
+import uuid
+import logging
+LOGGER = logging.getLogger('django.request')
+
+
+def _user_exists(username):
+    try:
+        return User.objects.get(username=username)
+    except User.DoesNotExist:
+        return None
 
 
 @parsleyfy
 class SignUpForm(forms.Form):
+    username = forms.CharField(required=False, widget=forms.HiddenInput)
     email = forms.EmailField(label='', widget=forms.TextInput(attrs={'placeholder': 'Email address', 'class': 'input-lg'}))
     password = forms.CharField(label='', widget=forms.PasswordInput(attrs={'placeholder': 'Password', 'class': 'input-lg'}))
     password_confirm = forms.CharField(label='', widget=forms.PasswordInput(attrs={'placeholder': 'Password again', 'class': 'input-lg'}))
+    t_and_c = forms.BooleanField(label='I agree to the LawPal Terms and Conditions', required=True, initial=False)
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
@@ -24,12 +38,35 @@ class SignUpForm(forms.Form):
             'password_confirm',
             ButtonHolder(
                 Submit('submit', 'Signup', css_class='btn btn-primary btn-lg')
-            )
+            ),
+            Field('t_and_c', css_class="black-fields", **{'data-toggle': 'checkbox'})
         )
         super(SignUpForm, self).__init__(*args, **kwargs)
 
+    def clean_username(self):
+        final_username = self.data.get('email').split('@')[0]
+
+        while _user_exists(username=final_username):
+            LOGGER.info('Username %s exists, trying to create another' % final_username)
+            username = '%s-%s' % (final_username, uuid.uuid4().get_hex()[:4])
+            username = username[:30]
+
+            final_username = slugify(username)
+
+        LOGGER.info('Username %s available' % final_username)
+        return final_username
+
+    def clean_password_confirm(self):
+        password_confirm = self.cleaned_data.get('password_confirm')
+        password = self.cleaned_data.get('password')
+
+        if password != password_confirm:
+            raise forms.ValidationError('Passwords do not match')
+
+        return password_confirm
+
     def clean_email(self):
-        email = self.cleaned_data['email']
+        email = self.cleaned_data.get('email')
 
         try:
             user = User.objects.get(email=email)
@@ -39,6 +76,12 @@ class SignUpForm(forms.Form):
 
         except User.DoesNotExist:
             return email
+
+    def save(self):
+        return User.objects.create_user(self.cleaned_data.get('username'),
+                                        self.cleaned_data.get('email'),
+                                        self.cleaned_data.get('password'))
+
 
 @parsleyfy
 class SignInForm(forms.Form):
