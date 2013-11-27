@@ -1,22 +1,48 @@
+# -*- coding: utf-8 -*-
 """
 LawPal - toolkit app 
 """
-
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-import os
+import os, sys
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+SITE_ROOT = os.path.dirname(os.path.realpath(__file__+ '/../'))
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
+IS_TESTING = False
+for test_app in ['testserver','test']:
+    if test_app in sys.argv[1:2]:
+        IS_TESTING = True
+
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'lgi%*e=%s@y3-jos^uydhc5gz80m9ts&9io5xh6myf+$fuy7+n'
+
+# List of callables that know how to import templates from various sources.
+TEMPLATE_DIRS = (
+    os.path.join(SITE_ROOT, 'templates'),
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 TEMPLATE_DEBUG = True
+
+
+
+STATIC_ROOT = os.path.join(SITE_ROOT, 'static')
+STATIC_URL = '/static/'
+
+# Additional locations of static files
+STATICFILES_DIRS = (
+)
+
+# List of finder classes that know how to find static files in
+# various locations.
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'compressor.finders.CompressorFinder',
+)
+
 
 ALLOWED_HOSTS = []
 
@@ -33,7 +59,10 @@ DJANGO_APPS = (
 )
 
 PROJECT_APPS = (
-    'apps.toolkit.eightythreeb',
+    'toolkit.apps.default',
+    'toolkit.apps.dash',
+    'toolkit.apps.workspace',
+    'toolkit.apps.eightythreeb',
 )
 
 HELPER_APPS = (
@@ -42,6 +71,10 @@ HELPER_APPS = (
     # api
     'rest_framework',
     'rest_framework_swagger',
+
+    # forms
+    'parsley',
+    'crispy_forms',
 )
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + HELPER_APPS
@@ -89,6 +122,15 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+LOGIN_URL          = '/start/'
+LOGIN_REDIRECT_URL = '/dash/'
+LOGIN_ERROR_URL    = '/login-error/'
+
+AUTHENTICATION_BACKENDS = (
+    'toolkit.auth_backends.EmailBackend',
+    'django.contrib.auth.backends.ModelBackend',
+    'toolkit.auth_backends.SecretKeyBackend',
+)
 
 REST_FRAMEWORK = {
     # Use hyperlinked styles by default.
@@ -110,8 +152,8 @@ REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
-        #'rest_framework.permissions.AllowAny',
-        'glynt.apps.api.v2_permissions.GlyntObjectPermission',
+        'rest_framework.permissions.AllowAny',
+        #'glynt.apps.api.v2_permissions.GlyntObjectPermission',
     ],
     'PAGINATE_BY': 10,
 }
@@ -120,7 +162,7 @@ REST_FRAMEWORK = {
 SWAGGER_SETTINGS = {
     "exclude_namespaces": [], # List URL namespaces to ignore
     "api_version": '0.1',  # Specify your API's version
-    "api_path": "/",  # Specify the path to your API not a root level
+    "api_path": "/api/",  # Specify the path to your API not a root level
     "enabled_methods": [  # Specify which methods to enable in Swagger UI
         'get',
         'post',
@@ -132,6 +174,9 @@ SWAGGER_SETTINGS = {
     "is_authenticated": False,  # Set to True to enforce user authentication,
     "is_superuser": False,  # Set to True to enforce admin only access
 }
+
+CRISPY_TEMPLATE_PACK = 'crispy/bootstrap3'
+CRISPY_CLASS_CONVERTERS = {'textinput': "form-control", "emailinput": "form-control", "passwordinput":"form-control"}
 
 try:
     LOCAL_SETTINGS
