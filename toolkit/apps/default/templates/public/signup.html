@@ -2,14 +2,23 @@
 
 {% block page_title %}LawPal Toolkit Signup{% endblock  %}
 
-{% block body %}
 
+{% block prebody %}
+<div class="dialog dialog-success" style="margin-top:-20px">
+  <div class="container">
+    This page is for attorney registration only. If you are a client with an invite code, <a href="#">click here</a>. 
+  </div>
+</div>
+{% endblock %}
+
+{% block body %}
 <div class="row">
 	<div class="col-sm-6 col-sm-offset-3">
-		<h3>LawPal Toolkit Signup</h3>
+		<h3>Attorney Signup</h3>
 		Fill out the form below to create your account. 
 		<br />
 		<br />
+
 		{% crispy form %}
 	</div>
 </div>

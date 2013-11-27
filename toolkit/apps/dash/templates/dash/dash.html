@@ -5,31 +5,19 @@
 {% block body %}
   <div class="row">
     <div class="col-sm-3">
-
+      {% block sidebar %}
       <ul class="nav nav-list">
-        {% block sidebar %}
-            <li><a href="{% url 'workspace:create' %}" class="btn btn-success">New Company</a></li>
+            <li></li>
             {% for w in workspaces %}
-              <li class="nav-header"><a href="{{ w.get_absolute_url }}">{{ w.name }}</a></li>
+              <li class="nav-header"><!-- <a href="{{ w.get_absolute_url }}">{{ w.name }}</a> -->{{ w.name }}</li>
+              <li><a href="#"><img src="{{STATIC_URL}}images/icons/calendar.svg" alt="Calendar" style="height:24px;margin-right:4px;"> 83(b) Election Letters</a></li>
+              <li class="divider"></li>
             {% empty %}
-              <li class="nav-header">Create a new company</li>
             {% endfor %}
-        {% endblock %}
-            <!-- <li class="nav-header">LawPal INC</li>
-            <li class="active">
-            <a href="#fakelink">
-            83b Election Tool
-            </a>
-            </li>
-            <li class="divider"></li>
-            <li class="nav-header">Citro INC</li>
-            <li class="">
-            <a href="#fakelink">
-            83b Election Tool
-            <span class="badge pull-right">2</span>
-            </a>
-            </li> -->
+            <li><a href="{% url 'workspace:create' %}" class="pull-right"><span class="fui-plus"></span> New Company</a></li>
           </ul>
+        {% endblock %}
+
     </div>
     <div class="col-sm-9">
         {% block content %}
