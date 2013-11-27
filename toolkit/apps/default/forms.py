@@ -78,9 +78,15 @@ class SignUpForm(forms.Form):
             return email
 
     def save(self):
-        return User.objects.create_user(self.cleaned_data.get('username'),
+        user = User.objects.create_user(self.cleaned_data.get('username'),
                                         self.cleaned_data.get('email'),
                                         self.cleaned_data.get('password'))
+        # save the lawyer profile
+        profile = user.profile
+        profile.data['user_class'] = 'lawyer'
+        profile.save(update_fields=['data'])
+
+        return user
 
 
 @parsleyfy
