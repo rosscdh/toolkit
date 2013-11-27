@@ -175,7 +175,7 @@ SWAGGER_SETTINGS = {
     "is_superuser": False,  # Set to True to enforce admin only access
 }
 
-CRISPY_TEMPLATE_PACK = 'crispy/bootstrap3'
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
 CRISPY_CLASS_CONVERTERS = {'textinput': "form-control", "emailinput": "form-control", "passwordinput":"form-control"}
 
 try:
