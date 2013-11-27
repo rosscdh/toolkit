@@ -1,12 +1,29 @@
 {% extends 'public/base.html' %}{% load url from future %}{% load crispy_forms_tags %}
 
-{% block page_title %}Welcome, please login or create an account{% endblock  %}
+{% block page_title %}LawPal Toolkit Signup{% endblock  %}
 
 {% block body %}
 
-{% crispy form %}
-
-<a href="{% url 'public:signin' %}">Sign In</a>
+<div class="row">
+	<div class="col-sm-6 col-sm-offset-3">
+		<h3>LawPal Toolkit Signup</h3>
+		Fill out the form below to create your account. 
+		<br />
+		<br />
+		{% crispy form %}
+		<!-- Square switch -->
+		<label class="checkbox" for="checkbox1">
+		  <input type="checkbox" value="" id="checkbox1" data-toggle="checkbox">
+		  I agree to the LawPal Terms and Conditions
+		</label>
+	</div>
+</div>
+<hr />
+<div class="row">
+	<div class="col-sm-6 col-sm-offset-3">
+		Already have an account? <a href="{% url 'public:signin' %}">Sign In here</a>
+	</div>
+</div>
 
 
 {% endblock  %}

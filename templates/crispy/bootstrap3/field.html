@@ -20,8 +20,17 @@
                 {% include 'bootstrap/layout/radioselect.html' %}
             </div>
         {% endif %}
-
-        {% if field|css_class != "checkboxselectmultiple" and field|css_class != "radioselect" %}
+        {% if field|css_class == "dateinput" %}
+            <div class="form-group">
+                <div class="input-group">
+                  <span class="input-group-btn">
+                    <button class="btn" type="button"><span class="fui-calendar"></span></button>
+                  </span>
+                  <input type="text" class="form-control hasDatepicker" value="14 March, 2013" id="datepicker-01">
+                </div>
+              </div>
+        {% endif %}
+        {% if field|css_class != "checkboxselectmultiple" and field|css_class != "radioselect" and field|css_class != "dateinput" %}
             {% if field|is_checkbox %}
                 <div class="col col-lg-10 col-offset-2">
                     <label for="{{ field.id_for_label }}" class="checkbox {% if field.field.required %}requiredField{% endif %}">

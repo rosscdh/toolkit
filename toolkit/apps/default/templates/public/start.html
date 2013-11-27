@@ -3,10 +3,11 @@
 {% block page_title %}Welcome, please login or create an account{% endblock  %}
 
 {% block body %}
-
-{% crispy form %}
-
-<a href="{% url 'public:signup' %}">Sign Up</a>
-
+<div class="row">
+	<div class="col-sm-6 col-sm-offset-3">
+		<h3>Sign In</h2>
+		{% crispy form %}
+	</div>
+</div>
 
 {% endblock  %}

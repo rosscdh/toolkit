@@ -413,7 +413,7 @@ you can use the generic selector below, but it's slower:
   border-top-color: #444444 !important;
 }
 body {
-  font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Lato", Helvetica, Arial, sans-serif;
   font-size: 18px;
   line-height: 1.72222;
   color: #444444;
@@ -508,7 +508,7 @@ h6,
 .h4,
 .h5,
 .h6 {
-  font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Lato", Helvetica, Arial, sans-serif;
   font-weight: 700;
   line-height: 1.1;
   color: inherit;
@@ -654,7 +654,7 @@ pre {
 }
 .btn {
   border: none;
-  font-size: 16.5px;
+  font-size: 15px;
   font-weight: bold;
   line-height: 1.4;
   border-radius: 4px;
@@ -1444,7 +1444,7 @@ fieldset[disabled] .btn-link:focus {
 }
 .navbar-unread,
 .navbar-new {
-  font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Lato", Helvetica, Arial, sans-serif;
   background-color: #6bdb7e;
   border-radius: 50%;
   color: #ffffff;
@@ -1941,7 +1941,7 @@ label {
 .form-control {
   border: 2px solid #bdc3c7;
   color: #444444;
-  font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Lato", Helvetica, Arial, sans-serif;
   font-size: 15px;
   padding: 8px 12px;
   height: 42px;
@@ -1951,6 +1951,7 @@ label {
   box-shadow: none;
   -webkit-transition: border .25s linear, color .25s linear, background-color .25s linear;
   transition: border .25s linear, color .25s linear, background-color .25s linear;
+  margin-bottom: 15px;
 }
 .form-group.focus .form-control,
 .form-control:focus {
@@ -2668,7 +2669,7 @@ fieldset[disabled] .input-group .input-group-btn:first-child .btn-default.active
   background: transparent;
   border: none;
   color: #444444;
-  font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Lato", Helvetica, Arial, sans-serif;
   font-size: 14px;
   margin: 0px;
   padding: 0 0 0 5px;
@@ -4767,7 +4768,7 @@ a.list-group-item.active > .badge,
   background-color: #2a7aaf;
   border-radius: 50%;
   color: #ffffff;
-  font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Lato", Helvetica, Arial, sans-serif;
   font-size: 12px;
   font-weight: 700;
   line-height: 1.667;

@@ -11,7 +11,7 @@ from .models import EightyThreeB
 
 @parsleyfy
 class EightyThreeBForm(forms.Form):
-    client_full_name = forms.CharField()
+    client_full_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'John Smith'}))
     client_email_address = forms.EmailField()
     workspace = forms.CharField(label='Company Name')
     post_code = forms.CharField()
@@ -27,9 +27,7 @@ class EightyThreeBForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
-        self.helper.form_class = 'form-horizontal'
         self.helper.attrs = {'data-validate': 'parsley'}
-
         self.helper.layout = Layout(
             'client_full_name',
             'client_email_address',
@@ -45,7 +43,7 @@ class EightyThreeBForm(forms.Form):
             'itin',
             'accountant_email',
             ButtonHolder(
-                Submit('submit', 'Submit', css_class='button white')
+                Submit('submit', 'Submit', css_class='btn-primary')
             )
         )
         super(EightyThreeBForm, self).__init__(*args, **kwargs)

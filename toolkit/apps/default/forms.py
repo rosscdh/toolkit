@@ -9,9 +9,9 @@ from crispy_forms.layout import Layout, ButtonHolder, Submit
 
 @parsleyfy
 class SignUpForm(forms.Form):
-    email = forms.EmailField()
-    password = forms.CharField(widget=forms.PasswordInput)
-    password_confirm = forms.CharField(widget=forms.PasswordInput)
+    email = forms.EmailField(label='', widget=forms.TextInput(attrs={'placeholder': 'Email address', 'class': 'input-lg'}))
+    password = forms.CharField(label='', widget=forms.PasswordInput(attrs={'placeholder': 'Password', 'class': 'input-lg'}))
+    password_confirm = forms.CharField(label='', widget=forms.PasswordInput(attrs={'placeholder': 'Password again', 'class': 'input-lg'}))
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
@@ -23,7 +23,7 @@ class SignUpForm(forms.Form):
             'password',
             'password_confirm',
             ButtonHolder(
-                Submit('submit', 'Signup', css_class='button white')
+                Submit('submit', 'Signup', css_class='btn btn-primary btn-lg')
             )
         )
         super(SignUpForm, self).__init__(*args, **kwargs)
@@ -42,8 +42,8 @@ class SignUpForm(forms.Form):
 
 @parsleyfy
 class SignInForm(forms.Form):
-    email = forms.EmailField()
-    password = forms.CharField(widget=forms.PasswordInput)
+    email = forms.EmailField(label='', widget=forms.TextInput(attrs={'placeholder': 'Email address', 'class': 'input-lg'}))
+    password = forms.CharField(label='', widget=forms.PasswordInput(attrs={'placeholder': 'Password', 'class': 'input-lg'}))
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
@@ -54,7 +54,7 @@ class SignInForm(forms.Form):
             'email',
             'password',
             ButtonHolder(
-                Submit('submit', 'Login', css_class='button white')
+                Submit('submit', 'Login', css_class='btn btn-lg btn-default')
             )
         )
         super(SignInForm, self).__init__(*args, **kwargs)

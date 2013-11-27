@@ -1,8 +1,8 @@
 {% if form.form_html %}
     {% if form_show_errors %}
-        {% include "bootstrap/errors.html" %}
+        {% include "bootstrap3/errors.html" %}
     {% endif %}
     {{ form.form_html }}
 {% else %}
-    {% include "bootstrap/uni_form.html" %}
+    {% include "bootstrap3/uni_form.html" %}
 {% endif %}
