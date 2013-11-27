@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.views.generic import TemplateView, RedirectView, FormView
 
@@ -64,6 +65,15 @@ class SaveNextUrlInSessionMixin(object):
 
         return super(SaveNextUrlInSessionMixin, self).get(request, *args, **kwargs)
 
+
+class HomePageView(TemplateView):
+    template_name = 'public/home.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated():
+            return HttpResponseRedirect(reverse('dash:default'))
+        else:
+            return super(HomePageView, self).dispatch(request, *args, **kwargs)
 
 class StartView(LogOutMixin, SaveNextUrlInSessionMixin, AuthenticateUserMixin, FormView):
     """
