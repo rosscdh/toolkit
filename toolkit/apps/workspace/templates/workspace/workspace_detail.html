@@ -1,0 +1,36 @@
+{% extends 'dash/dash.html' %}{% load cache i18n %}{% load url from future %}
+
+{% block page_title %}Company Detail{% endblock  %}
+
+{% block sidebar %}
+<li class="nav-header"><a class="btn btn-info" href="{% url 'dash:default' %}">Back to Dash</a></li>
+<li class="divider"></li>
+<li class=""><a href="{{ workspace.get_absolute_url }}">{{ workspace.name }}</a></li>
+<li class="divider"></li>
+{% endblock  %}
+
+{% block content %}
+<!-- Nav tabs -->
+<ul class="nav nav-tabs">
+  <li class="active"><a href="#home" data-toggle="tab">Home</a></li>
+  <li><a href="#83b" data-toggle="tab">83(b) Election Letter Tool</a></li>
+</ul>
+
+<!-- Tab panes -->
+<div class="tab-content">
+    <div class="tab-pane active" id="home">
+        <div class="page-header">
+            <h1><small>workspace:</small><br/>{{ workspace.name }}</h1>
+        </div>
+        <p>Welcome this is where some intro text can go</p>
+    </div>
+    <div class="tab-pane" id="83b">
+        <div class="row">
+            <a href="{% url 'eightythreeb:create' %}" class="btn btn-success pull-right">Create New</a>
+        </div>
+    </div>
+</div>
+
+{% endblock  %}
+
+{% block js %}{% endblock  %}
