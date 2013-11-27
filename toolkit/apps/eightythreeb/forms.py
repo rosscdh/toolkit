@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django import forms
 
-from localflavor.us.forms import USPSSelect, USZipCodeField, USSocialSecurityNumberField
+from localflavor.us.forms import USZipCodeField, USSocialSecurityNumberField
 from localflavor.us.us_states import USPS_CHOICES
 
 from parsley.decorators import parsleyfy
@@ -9,12 +9,12 @@ from parsley.decorators import parsleyfy
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, ButtonHolder, Submit
 
-from .models import EightyThreeB
-
 import datetime
+
 
 def _current_year():
     return datetime.datetime.utcnow().year
+
 
 @parsleyfy
 class EightyThreeBForm(forms.Form):
@@ -22,7 +22,7 @@ class EightyThreeBForm(forms.Form):
     client_email_address = forms.EmailField()
     workspace = forms.CharField(label='Company Name')
     post_code = USZipCodeField()
-    state = USPSSelect()
+    state = forms.ChoiceField(choices=USPS_CHOICES)
     address = forms.CharField(widget=forms.Textarea)
     date_of_property_transfer = forms.DateField(widget=forms.TextInput(attrs={'class': 'datepicker'}))
     description = forms.CharField(widget=forms.Textarea)
