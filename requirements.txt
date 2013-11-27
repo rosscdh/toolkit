@@ -20,3 +20,6 @@ django-debug-toolbar==0.11.0
 
 -e git+https://github.com/jezdez/django_compressor.git#egg=django_compressor
 -e git+https://github.com/rosscdh/django-jsonfield.git@lawpal#egg=django-jsonfield
+
+# US and other fields etc
+django-localflavor

@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from django import forms
 
+from localflavor.us.forms import USPSSelect, USZipCodeField, USSocialSecurityNumberField
+from localflavor.us.us_states import USPS_CHOICES
+
 from parsley.decorators import parsleyfy
 
 from crispy_forms.helper import FormHelper
@@ -14,14 +17,14 @@ class EightyThreeBForm(forms.Form):
     client_full_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'John Smith'}))
     client_email_address = forms.EmailField()
     workspace = forms.CharField(label='Company Name')
-    post_code = forms.CharField()
-    state = forms.CharField()
+    post_code = USZipCodeField()
+    state = USPSSelect()
     address = forms.CharField()
     date_of_property_transfer = forms.DateField()
     description = forms.CharField()
     tax_year = forms.CharField()
     value_at_time_of_transfer = forms.CharField()
-    ssn = forms.CharField()
+    ssn = USSocialSecurityNumberField()
     itin = forms.CharField()
     accountant_email = forms.EmailField()
 

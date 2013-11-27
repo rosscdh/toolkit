@@ -67,6 +67,7 @@ PROJECT_APPS = (
 
 HELPER_APPS = (
     'django_extensions',
+    'localflavor',
 
     # api
     'rest_framework',
