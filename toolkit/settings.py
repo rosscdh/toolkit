@@ -100,6 +100,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.static',
     'django.core.context_processors.tz',
     'django.contrib.messages.context_processors.messages',
+    'django.core.context_processors.request',
     'toolkit.context_processors.EXPOSED_SETTINGS',
     'toolkit.context_processors.WORKSPACES',
 )

@@ -2,6 +2,11 @@
 
 {% block page_title %}{{ tool.name }} for {{ workspace.name }}{% endblock  %}
 
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% breadcrumb workspace.name "workspace:view" workspace.slug %}
+    {% breadcrumb tool.name "" %}
+{% endblock %}
 
 {% block content %}
 
