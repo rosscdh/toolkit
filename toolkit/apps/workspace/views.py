@@ -31,7 +31,8 @@ class CreateWorkspaceView(FormView):
 
     def form_valid(self, form):
         # save the form
-        form.save()
+        workspace = form.save()
+        workspace.participants.add(self.request.user)
 
         messages.success(self.request, 'You have sucessfully created a new workspace')
         return super(CreateWorkspaceView, self).form_valid(form)
