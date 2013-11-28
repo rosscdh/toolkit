@@ -46,11 +46,10 @@ def ensure_workspace_has_83b_by_default(sender, **kwargs):
     created = kwargs.get('created', False)
 
     # when we have a new one
-    if created is True:
-        eightythreeb = Tool.objects.get(slug='83b-election-letters')
+    eightythreeb = Tool.objects.get(slug='83b-election-letters')
 
-        if eightythreeb not in workspace.tools.all():
-            workspace.tools.add(Tool.objects.get(slug='83b-election-letters'))
+    if eightythreeb not in workspace.tools.all():
+        workspace.tools.add(eightythreeb)
 
 
 @receiver(post_save, sender=EightyThreeB, dispatch_uid='workspace.ensure_83b_user_in_workspace_participants')

@@ -34,6 +34,9 @@ class CreateWorkspaceView(FormView):
         workspace = form.save()
         workspace.participants.add(self.request.user)
 
+        tool_83b = Tool.objects.get(slug='83b-election-letters')
+        workspace.tools.add(tool_83b)
+
         messages.success(self.request, 'You have sucessfully created a new workspace')
         return super(CreateWorkspaceView, self).form_valid(form)
 
