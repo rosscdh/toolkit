@@ -33,6 +33,7 @@ class EightyThreeBForm(forms.Form):
     accountant_email = forms.EmailField(required=False)
 
     def __init__(self, *args, **kwargs):
+        instance = kwargs.pop('instance')  # pop this as we are not using a model form
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
         self.helper.attrs = {'data-validate': 'parsley'}

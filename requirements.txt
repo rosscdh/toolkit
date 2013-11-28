@@ -25,3 +25,4 @@ django-debug-toolbar==0.11.0
 # US and other fields etc
 django-localflavor
 
+django-bootstrap-breadcrumbs
