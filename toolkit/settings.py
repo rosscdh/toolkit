@@ -195,6 +195,13 @@ SWAGGER_SETTINGS = {
 CRISPY_TEMPLATE_PACK = 'crispy/bootstrap3'
 CRISPY_CLASS_CONVERTERS = {'textinput': "form-control", "emailinput": "form-control", "passwordinput":"form-control"}
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': '/tmp/toolkit.dev.cache',
+    }
+}
+
 try:
     LOCAL_SETTINGS
 except NameError:
