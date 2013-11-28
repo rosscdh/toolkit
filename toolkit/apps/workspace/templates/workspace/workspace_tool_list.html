@@ -22,6 +22,7 @@
 <div class="row">
     <ul id="object-list" class="{{ tool.slug }}">
     {% for t in object_list %}
+        <li><a href="{% url 'workspace:tool_object_edit' workspace=workspace.slug tool=tool.slug pk=t.pk %}">{{ t }}</a></li>
         {% empty %}
         <li>None found</li>
     {% endfor %}

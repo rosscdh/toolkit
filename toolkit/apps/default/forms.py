@@ -1,22 +1,16 @@
 # -*- coding: utf-8 -*-
 from django import forms
 from django.contrib.auth.models import User
-from django.template.defaultfilters import slugify
 
 from parsley.decorators import parsleyfy
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, ButtonHolder, Submit, Field, HTML
+from crispy_forms.layout import Layout, ButtonHolder, Submit, Field
 
-import uuid
+from . import _get_unique_username
+
 import logging
 LOGGER = logging.getLogger('django.request')
 
-
-def _user_exists(username):
-    try:
-        return User.objects.get(username=username)
-    except User.DoesNotExist:
-        return None
 
 
 @parsleyfy
@@ -46,12 +40,7 @@ class SignUpForm(forms.Form):
     def clean_username(self):
         final_username = self.data.get('email').split('@')[0]
 
-        while _user_exists(username=final_username):
-            LOGGER.info('Username %s exists, trying to create another' % final_username)
-            username = '%s-%s' % (final_username, uuid.uuid4().get_hex()[:4])
-            username = username[:30]
-
-            final_username = slugify(username)
+        final_username = _get_unique_username(username=final_username)
 
         LOGGER.info('Username %s available' % final_username)
         return final_username

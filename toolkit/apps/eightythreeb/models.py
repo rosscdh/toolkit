@@ -13,5 +13,8 @@ class EightyThreeB(models.Model):
     user = models.ForeignKey('auth.User')
     data = JSONField(default={})
 
+    def __unicode__(self):
+        return u'83b for %s' % self.user.get_full_name()
+
     def get_absolute_url(self):
         return reverse('eightythreeb:view')
