@@ -1,0 +1,22 @@
+{% extends 'dash/dash.html' %}{% load url from future %}{% load crispy_forms_tags %}
+
+{% block page_title %}{% endblock  %}
+
+
+{% block content %}
+
+    {% crispy form %}
+
+{% endblock  %}
+
+{% block js %}
+<script type="text/javascript">
+$(document).ready(function () {
+
+$( '.datepicker' ).datepicker({
+    dateFormat: '{{ SHORT_DATE_FORMAT }}'
+});
+
+});
+</script>
+{% endblock  %}

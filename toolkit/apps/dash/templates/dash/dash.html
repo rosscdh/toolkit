@@ -1,70 +1,36 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %}{% load url from future %}{% load django_bootstrap_breadcrumbs %}
 
 {% block page_title %}Your Dashboard{% endblock%}
 
+{% block breadcrumbs %}
+    {% clear_breadcrumbs %}
+    {% breadcrumb "Home" "/" %}
+{% endblock %}
+
 {% block body %}
-  <div class="row">
+<div class="row">
     <div class="col-sm-3">
-      {% block sidebar %}
-      <ul class="nav nav-list">
+        {% block sidebar %}
+        <ul class="nav nav-list">
             <li><a href="/dash"><img src="{{STATIC_URL}}images/icons/mountain.svg" alt="Overview" style="height:24px;margin-right:4px;"> Overview</a></li>
             <li class="divider"></li>
-
-            {% for w in workspaces %}
-              <li class="nav-header">{{ w.name }}</li>
-              <li><a href="{{ w.get_absolute_url }}"><img src="{{STATIC_URL}}images/icons/mail.svg" style="height:24px;margin-right:4px;"> 83(b) Election Letters</a></li>
-              <li class="divider"></li>
-            {% empty %}
+            {% for w in WORKSPACES %}
+                <li class="nav-header">{{ w.name }}</li>
+                {% for t in w.tools.all %}
+                <li><a href="{% url 'workspace:tool_object_list' workspace=w.slug tool=t.slug %}"><img src="{{STATIC_URL}}{{ t.icon }}" style="height:24px;margin-right:4px;"> {{ t.name }}</a></li>
+                {% endfor %}
+                <li class="divider"></li>
+                {% empty %}
             {% endfor %}
             <li><a href="{% url 'workspace:create' %}" class="pull-right"><span class="fui-plus"></span> New Company</a></li>
-          </ul>
+        </ul>
         {% endblock %}
 
     </div>
     <div class="col-sm-9">
         {% block content %}
-          <p class="lead text-center">Your dashboard will appear here shortly.</p>
+        <p class="lead text-center">Your dashboard will appear here shortly.</p>
         {% endblock %}
-          <!-- <h4>
-          83(b) Election Letter Tool      
-          <a href="{% url 'eightythreeb:create' %}" class="btn btn-success pull-right">Create New</a>
-          </h4>
-          <br />
-          <div class="dialog dialog-warning">
-          A simple way of helping your clients get their 83b elections filed on time and correctly while giving you complete visibility on the process. 
-          To create your first 83b Election Letter, click Create New. only show until while n < 1
-
-          </div>
-          <table class="table table-bordered">
-          <thead>
-          <tr>
-          <th>Name</th>
-          <th>Transfer Date</th>
-          <th>Filing Deadline</th>
-          <th>Status</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr class="success">
-          <td>Yael Citro</td>
-          <td>November 10th</td>
-          <td>December 10th (23 days)</td>
-          <td>Filed with IRS <a href="#" class="pull-right">View Confirmation</a></td>
-          </tr>
-          <tr class="danger">
-          <td>Alex Halliday</td>
-          <td>November 9th</td>
-          <td>December 9th (22 days)</td>
-          <td>Awaitng client response <a href="#" class="pull-right">Get Link</a></td>
-          </tr>
-          <tr class="">
-          <td>Ross Crawford</td>
-          <td>November 14th</td>
-          <td>November 14th (22 days)</td>
-          <td>Awaitng client response <a href="#" class="pull-right">Get Link</a></td>
-          </tr>
-          </tbody>
-          </table> -->
     </div>
-  </div>
+</div>
 {% endblock%}

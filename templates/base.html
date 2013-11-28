@@ -57,7 +57,10 @@
         </div><!--/.nav-collapse -->
       </div>
     </div>
-        {% block prebody %}{% endblock %}
+
+    {% block breadcrumbs %}{% endblock%}
+
+    {% block prebody %}{% endblock %}
 
     <div class="container-fluid main-container">
         {% if messages %}

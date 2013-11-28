@@ -1,0 +1,18 @@
+[
+  {
+    "pk": 1,
+    "model": "workspace.tool",
+    "fields": {
+      "data": {
+        "short_name": "Letter",
+        "summary": "summary goes here",
+        "description": "Long description",
+        "model_name": "EightyThreeB",
+        "form": "toolkit.apps.eightythreeb.forms.EightyThreeBForm",
+        "app_label": "eightythreeb"
+      },
+      "name": "83(b) Election Letters",
+      "slug": "83b-election-letters"
+    }
+  }
+]
