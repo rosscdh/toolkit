@@ -37,7 +37,7 @@ class UserProfile(models.Model):
 
     @property
     def user_class(self):
-        return self.data.get('user_class_name', None)
+        return self.data.get('user_class', None)
 
     @property
     def is_lawyer(self):

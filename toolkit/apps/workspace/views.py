@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.contrib import messages
-from django.views.generic import FormView, ListView, CreateView, UpdateView
+from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.views.generic import FormView, ListView, CreateView, UpdateView
 
 from toolkit.apps.eightythreeb.forms import EightyThreeBForm
 
@@ -12,6 +13,14 @@ from .models import Workspace, Tool
 class CreateWorkspaceView(FormView):
     form_class = WorkspaceForm
     template_name = 'workspace/workspace_form.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        # ensure that only lawyers can create
+        if request.user.profile.is_lawyer is False:
+            messages.error(request, 'Sorry, you must be an Attorney to access this')
+            return HttpResponseRedirect(reverse('dash:default'))
+
+        return super(CreateWorkspaceView, self).dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
         return reverse('dash:default')
