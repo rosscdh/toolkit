@@ -4,6 +4,7 @@
     "model": "workspace.tool",
     "fields": {
       "data": {
+        "icon": "images/icons/mail.svg",
         "short_name": "Letter",
         "summary": "summary goes here",
         "description": "Long description",
@@ -13,6 +14,23 @@
       },
       "name": "83(b) Election Letters",
       "slug": "83b-election-letters"
+    }
+  },
+  {
+    "pk": 2,
+    "model": "workspace.tool",
+    "fields": {
+      "data": {
+        "icon": "images/icons/clipboard.svg",
+        "short_name": "Checklist",
+        "summary": "summary goes here",
+        "description": "Long description",
+        "model_name": "Checklist",
+        "form": "toolkit.apps.checklist.forms.Checklist",
+        "app_label": "checklist"
+      },
+      "name": "Checklist",
+      "slug": "checklist"
     }
   }
 ]
