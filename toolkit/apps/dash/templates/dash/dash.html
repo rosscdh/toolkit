@@ -28,7 +28,9 @@
                     <li class="divider"></li>
                     {% empty %}
                 {% endfor %}
+                {% if user.profile.is_lawyer %}
                 <li><a href="{% url 'workspace:create' %}" class="pull-right"><span class="fui-plus"></span> New Company</a></li>
+                {% endif %}
             </ul>
             {#% endcache %#}
         {% endblock %}
