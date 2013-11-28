@@ -1,14 +1,17 @@
-{% extends 'dash/dash.html' %}{% load cache i18n %}{% load url from future %}
+{% extends 'dash/dash.html' %}{% load url from future %}{% load django_bootstrap_breadcrumbs %}
 
-{% block page_title %}Company Detail{% endblock  %}
+{% block page_title %}{{ workspace.name }} - Detail{% endblock  %}
 
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% breadcrumb workspace.name "" %}
+{% endblock %}
 
 {% block content %}
 
-<h4>83(b) Election Letter Tool <a href="{% url 'eightythreeb:create' %}" class="btn btn-success pull-right">Create New</a>
-</h4>
-<!-- Tab panes -->
-
+<div class="page-header">
+  <h3>{{ workspace.name }} <small></small></h3>
+</div>
 
 {% endblock  %}
 
