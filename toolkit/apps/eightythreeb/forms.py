@@ -9,6 +9,8 @@ from parsley.decorators import parsleyfy
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, ButtonHolder, Submit
 
+from toolkit.apps.workspace.services import EnsureCustomerService
+
 import datetime
 
 
@@ -20,7 +22,6 @@ def _current_year():
 class EightyThreeBForm(forms.Form):
     client_full_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'John Smith'}))
     client_email_address = forms.EmailField()
-    workspace = forms.CharField(label='Company Name')
     post_code = USZipCodeField()
     state = forms.ChoiceField(choices=USPS_CHOICES)
     address = forms.CharField(widget=forms.Textarea)
@@ -34,6 +35,9 @@ class EightyThreeBForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         instance = kwargs.pop('instance')  # pop this as we are not using a model form
+
+        self.workspace = kwargs.pop('workspace')
+
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
         self.helper.attrs = {'data-validate': 'parsley'}
@@ -66,6 +70,7 @@ class EightyThreeBForm(forms.Form):
         itin = self.data.get('itin')
         if ssn in ['', None] and itin in ['', None]:
             raise forms.ValidationError("Please specify either an SSN or an ITIN")
+        return ssn
 
     def clean_itin(self):
         """
@@ -75,3 +80,22 @@ class EightyThreeBForm(forms.Form):
         ssn = self.data.get('ssn')
         if ssn in ['', None] and itin in ['', None]:
             raise forms.ValidationError("Please specify either an SSN or an ITIN")
+        return itin
+
+    def save(self):
+        """
+        Ensure we have a customer with this info
+        """
+        customer_service = EnsureCustomerService(email=self.cleaned_data.get('client_email_address'),
+                                                 full_name=self.cleaned_data.get('client_full_name'))
+        customer_service.process()
+        user = customer_service.user
+        is_new = customer_service.is_new
+
+        eightythreeb, is_new = user.eightythreeb_set.get_or_create(workspace=self.workspace, user=user)
+        eightythreeb.data.update(**self.cleaned_data)  # update the data
+        eightythreeb.workspace = self.workspace
+        eightythreeb.save()
+
+        return eightythreeb
+
