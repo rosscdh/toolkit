@@ -42,6 +42,9 @@ class Workspace(models.Model):
     def get_absolute_url(self):
         return reverse('workspace:view', kwargs={'slug': self.slug})
 
+    def available_tools(self):
+        return Tool.objects.exclude(pk__in=[t.pk for t in self.tools.all()])
+
 
 class Tool(models.Model):
     """
