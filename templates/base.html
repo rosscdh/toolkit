@@ -9,6 +9,7 @@
     <!-- Loading Bootstrap -->
     <link href="{{ STATIC_URL }}bootstrap/css/bootstrap.css" rel="stylesheet">
 
+    <link href="{{ STATIC_URL }}bootstrap/css/bootstrap.css" rel="stylesheet">
     <!-- Loading Flat UI -->
     <link href="{{ STATIC_URL }}css/flat-ui.css" rel="stylesheet">
     <link href="{{ STATIC_URL }}css/prettify.css" rel="stylesheet">
@@ -25,10 +26,10 @@
   <body>
 
     <div class="navbar navbar-default">
-      <div class="container">
+      <div class="container-fluid">
         <div class="navbar-header">
+            <a href="/" class="navbar-brand "><img src="{{ STATIC_URL }}images/logo-white.png" height="23"></a>
             <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-collapse-01"></button>
-            <a href="/" class="navbar-brand "><span class="fui-gear"></span> LawPal Toolkit</a>
         </div>          
         <div class="navbar-collapse collapse navbar-collapse-01">
             <ul class="nav navbar-nav navbar-right">
@@ -56,8 +57,9 @@
         </div><!--/.nav-collapse -->
       </div>
     </div>
+        {% block prebody %}{% endblock %}
 
-    <div class="container">
+    <div class="container-fluid main-container">
         {% if messages %}
             <div class="messages-errors">
                 Error:
@@ -71,6 +73,7 @@
         {% block body %}{% endblock %}
     </div>
     <!-- /.container -->
+
 
     <!-- Load JS here for greater good =============================-->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>

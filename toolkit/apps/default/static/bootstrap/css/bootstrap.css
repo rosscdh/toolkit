@@ -751,7 +751,9 @@ pre code {
   max-height: 340px;
   overflow-y: scroll;
 }
-
+.container-fluid {
+  padding: 0 50px;
+}
 .container {
   padding-right: 15px;
   padding-left: 15px;

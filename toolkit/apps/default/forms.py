@@ -29,17 +29,17 @@ class SignUpForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
-        self.helper.form_class = 'form-horizontal'
         self.helper.attrs = {'data-validate': 'parsley'}
 
         self.helper.layout = Layout(
             'email',
             'password',
             'password_confirm',
+                        Field('t_and_c', css_class="", **{'data-toggle': 'checkbox'}),
+
             ButtonHolder(
                 Submit('submit', 'Signup', css_class='btn btn-primary btn-lg')
-            ),
-            Field('t_and_c', css_class="black-fields", **{'data-toggle': 'checkbox'})
+            )
         )
         super(SignUpForm, self).__init__(*args, **kwargs)
 
@@ -96,7 +96,6 @@ class SignInForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
-        self.helper.form_class = 'form-horizontal'
         self.helper.attrs = {'data-validate': 'parsley'}
 
         self.helper.layout = Layout(
