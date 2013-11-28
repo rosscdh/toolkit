@@ -7,10 +7,12 @@
     <div class="col-sm-3">
       {% block sidebar %}
       <ul class="nav nav-list">
-            <li></li>
+            <li><a href="/dash"><img src="{{STATIC_URL}}images/icons/mountain.svg" alt="Overview" style="height:24px;margin-right:4px;"> Overview</a></li>
+            <li class="divider"></li>
+
             {% for w in workspaces %}
-              <li class="nav-header"><!-- <a href="{{ w.get_absolute_url }}">{{ w.name }}</a> -->{{ w.name }}</li>
-              <li><a href="#"><img src="{{STATIC_URL}}images/icons/calendar.svg" alt="Calendar" style="height:24px;margin-right:4px;"> 83(b) Election Letters</a></li>
+              <li class="nav-header">{{ w.name }}</li>
+              <li><a href="{{ w.get_absolute_url }}"><img src="{{STATIC_URL}}images/icons/mail.svg" style="height:24px;margin-right:4px;"> 83(b) Election Letters</a></li>
               <li class="divider"></li>
             {% empty %}
             {% endfor %}
@@ -21,9 +23,7 @@
     </div>
     <div class="col-sm-9">
         {% block content %}
-          <div class="row">
-            Latest activity for all workspaces here
-          </div>
+          <p class="lead text-center">Your dashboard will appear here shortly.</p>
         {% endblock %}
           <!-- <h4>
           83(b) Election Letter Tool      
