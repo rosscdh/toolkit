@@ -16,6 +16,7 @@
             <ul class="nav nav-list">
                 <li><a href="/dash"><img src="{{STATIC_URL}}images/icons/mountain.svg" alt="Overview" style="height:24px;margin-right:4px;"> Overview</a></li>
                 <li class="divider"></li>
+
                 {% for w in WORKSPACES %}
                     <li class="nav-header">
                         {{ w.name }}
@@ -28,9 +29,11 @@
                     <li class="divider"></li>
                     {% empty %}
                 {% endfor %}
+
                 {% if user.profile.is_lawyer %}
                 <li><a href="{% url 'workspace:create' %}" class="pull-right"><span class="fui-plus"></span> New Company</a></li>
                 {% endif %}
+
             </ul>
             {#% endcache %#}
         {% endblock %}
