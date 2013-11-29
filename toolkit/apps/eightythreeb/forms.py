@@ -192,9 +192,10 @@ class EightyThreeBForm(forms.Form):
         super(EightyThreeBForm, self).__init__(*args, **kwargs)
 
         # sync the fields with the appropriate user layout
-        # for f in self.fields.keys():
-            # if f not in self.helper.layout.fields:
-                # del self.fields[f]
+        helper_fields = [field_name for pos, field_name in self.helper.layout.get_field_names()]
+        for field_name in self.fields.keys():
+            if field_name not in helper_fields:
+                del self.fields[field_name]
 
     def clean_ssn(self):
         """
