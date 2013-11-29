@@ -1,22 +1,29 @@
 {% extends 'dash/dash.html' %}{% load url from future %}{% load django_bootstrap_breadcrumbs %}
 
-{% block page_title %}{{ workspace.name }} - Detail{% endblock  %}
+{% block page_title %}Overview — {{ workspace.name }} — LawPal{% endblock  %}
 
 {% block breadcrumbs %}
     {{ block.super }}
-    {% breadcrumb workspace.name "" %}
+    {% breadcrumb workspace.name 'workspace:view' workspace.slug %}
+    {% breadcrumb 'Overview' 'workspace:view' workspace.slug %}
 {% endblock %}
 
 {% block content %}
+    <div class="page-header">
+        <h4 class="caption"><a href="{% url 'workspace:view' slug=workspace.slug %}">{{ workspace.name }}</a></h4>
+        <h4>Overview</h4>
+    </div>
 
-<div class="page-header">
-  <h3>{{ workspace.name }} <small></small></h3>
-</div>
+    <div class="container">
+        <!-- <div class="row"> -->
+            <!-- Hello -->
+        <!-- </div> -->
+    <!-- </div> -->
 
 <div class="row">
     <a href="" class="btn btn-success pull-right">Add Team Member</a>
     <div class="row">
-        <h4>Project Team</h4>
+        <h4>Team Members</h4>
         <ul id="object-list" class="{{ tool.slug }}">
         {% for u in workspace.participants.all %}
             <li>{{ u }}</li>
@@ -55,6 +62,7 @@
     <div class="row">
         <h4>Workspace Activity</h4>
     </div>
+</div>
 </div>
 {% endblock  %}
 
