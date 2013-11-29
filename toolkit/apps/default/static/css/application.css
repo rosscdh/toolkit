@@ -23,3 +23,20 @@
   margin-top: -6px;
   width: 22px;
 }
+.page-header {
+  margin-top: 0;
+}
+.page-header .caption {
+  color: #bdc3c7;
+  display: inline-block;
+}
+.page-header .caption:after {
+  color: #bdc3c7;
+  content: "/";
+  font-weight: normal;
+  margin: 0 4px 0 9px;
+}
+.page-header h4 {
+  display: inline-block;
+  margin: 0;
+}
