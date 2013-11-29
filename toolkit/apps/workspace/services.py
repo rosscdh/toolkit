@@ -2,10 +2,16 @@
 """
 Services to the workspace
 """
+from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 
 from toolkit.apps.default import _get_unique_username
 
+from django_xhtml2pdf.utils import generate_pdf
+
+from os.path import join
 import logging
 LOGGER = logging.getLogger('django.request')
 
@@ -62,3 +68,16 @@ class EnsureCustomerService(object):
                 user.save(update_fields=update_fields)
 
         return is_new, user, profile
+
+
+class HTMLtoPDForPNGService(object):
+    """
+    Convert provided HTML to a pdf or png
+    """
+    def __init__(self, html):
+        self.html = html
+        self.service = generate_pdf
+
+    def pdf(self, template_name, context, file_object=None):
+        # Write PDF to file
+        return self.service(template_name, file_object=file_object, context=context)

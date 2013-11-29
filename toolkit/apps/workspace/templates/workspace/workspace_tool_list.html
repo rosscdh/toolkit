@@ -22,7 +22,13 @@
 <div class="row">
     <ul id="object-list" class="{{ tool.slug }}">
     {% for t in object_list %}
-        <li><a href="{% url 'workspace:tool_object_edit' workspace=workspace.slug tool=tool.slug pk=t.pk %}">{{ t }}</a></li>
+        <li>
+            <a href="{% url 'workspace:tool_object_edit' workspace=workspace.slug tool=tool.slug pk=t.pk %}">{{ t }}</a>
+            <span class="pull-right">
+                <a href="{% url 'workspace:tool_object_preview' workspace=workspace.slug tool=tool.slug pk=t.pk %}"><img src="{{STATIC_URL}}images/icons/flask.svg" title="Preview" alt="Preview" style="height:24px;margin-right:4px;"></a>
+                <a href="{% url 'workspace:tool_object_download' workspace=workspace.slug tool=tool.slug pk=t.pk %}"><img src="{{STATIC_URL}}images/icons/save.svg" title="Download" alt="Download" style="height:24px;margin-right:4px;"></a>
+            </span>
+        </li>
         {% empty %}
         <li>None found</li>
     {% endfor %}

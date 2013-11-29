@@ -7,7 +7,8 @@ from .views import (CreateWorkspaceView,
                     WorkspaceToolObjectsListView,
                     CreateWorkspaceToolObjectView,
                     UpdateViewWorkspaceToolObjectView,
-                    WorkspaceToolObjectPreviewView)
+                    WorkspaceToolObjectPreviewView,
+                    WorkspaceToolObjectDownloadView)
 from .models import Workspace
 from .forms import WorkspaceForm
 
@@ -28,6 +29,9 @@ urlpatterns = patterns('',
     url(r'^(?P<workspace>[\w-]+)/tool/(?P<tool>[\w-]+)/edit/(?P<pk>\d+)/preview/$',
         login_required(WorkspaceToolObjectPreviewView.as_view()),
         name='tool_object_preview'),
+    url(r'^(?P<workspace>[\w-]+)/tool/(?P<tool>[\w-]+)/edit/(?P<pk>\d+)/download/$',
+        login_required(WorkspaceToolObjectDownloadView.as_view()),
+        name='tool_object_download'),
 
 
     url(r'^create/$', login_required(CreateWorkspaceView.as_view()), name='create'),
