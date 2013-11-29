@@ -4,43 +4,52 @@
 
 {% block breadcrumbs %}
     {% clear_breadcrumbs %}
-    {% breadcrumb "Overview" "/" %}
+    {% breadcrumb 'Dashboard' 'dash:default' %}
 {% endblock %}
 
 {% block body %}
-
 <div class="row">
     <div class="col-sm-3">
         {% block sidebar %}
             {#% cache 500 user_workspaces user.username %#}
-            <ul class="nav nav-list">
-                <li><a href="/dash"><img src="{{STATIC_URL}}images/icons/mountain.svg" alt="Overview" style="height:24px;margin-right:4px;"> Overview</a></li>
-                <li class="divider"></li>
-
-                {% for w in WORKSPACES %}
-                    <li class="nav-header">
-                        {{ w.name }}
-                        <span class="pull-right"><a href="{% url 'workspace:view' slug=w.slug %}"><img src="{{STATIC_URL}}images/icons/clipboard.svg" alt="View Workspace" style="height:24px;margin-right:4px;"></a></span>
+                <ul class="nav nav-list">
+                    <li{% if not workspace and not tool %} class="active"{% endif %}>
+                        <a href="{% url 'dash:default' %}">
+                            <span class="icon"><img src="{{ STATIC_URL }}images/icons/mountain.svg" alt="Dashboard"></span> Dashboard
+                        </a>
                     </li>
-                    {% for t in w.tools.all %}
-                    <li><a href="{% url 'workspace:tool_object_list' workspace=w.slug tool=t.slug %}"><img src="{{STATIC_URL}}{{ t.icon }}" style="height:24px;margin-right:4px;"> {{ t.name }}</a></li>
-                    {% endfor %}
+
                     <li class="divider"></li>
-                    {% empty %}
-                {% endfor %}
+                    {% for w in WORKSPACES %}
+                        <li class="nav-header">{{ w.name }}</li>
+                        {% for t in w.tools.all %}
+                            <li{% if workspace == w and not tool %} class="active"{% endif %}>
+                                <a href="{% url 'workspace:view' slug=w.slug %}">
+                                    <span class="icon"><img src="{{ STATIC_URL }}images/icons/clipboard.svg"></span> Overview
+                                </a>
+                            </li>
+                            <li{% if workspace == w and tool == t %} class="active"{% endif %}>
+                                <a href="{% url 'workspace:tool_object_list' workspace=w.slug tool=t.slug %}">
+                                    <span class="icon"><img src="{{ STATIC_URL }}{{ t.icon }}"></span> {{ t.name }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                        <li class="divider"></li>
+                    {% endfor %}
 
-                {% if user.profile.is_lawyer %}
-                <li><a href="{% url 'workspace:create' %}" class="pull-right"><span class="fui-plus"></span> New Company</a></li>
-                {% endif %}
-
-            </ul>
+                    {% if user.profile.is_lawyer %}
+                        <li class="pull-right">
+                            <a href="{% url 'workspace:create' %}"><i class="fui-plus"></i> New Company</a>
+                        </li>
+                    {% endif %}
+                </ul>
             {#% endcache %#}
         {% endblock %}
-
     </div>
+
     <div class="col-sm-9">
         {% block content %}
-        <p class="lead text-center">Your dashboard will appear here shortly.</p>
+            <p class="lead text-center">Your dashboard will appear here shortly.</p>
         {% endblock %}
     </div>
 </div>

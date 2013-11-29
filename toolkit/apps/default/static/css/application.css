@@ -14,3 +14,12 @@
 .navbar {
   margin-bottom: 0;
 }
+.nav-list .icon {
+  float: left;
+  margin-right: 5px;
+}
+.nav-list .icon img {
+  height: 22px;
+  margin-top: -6px;
+  width: 22px;
+}
