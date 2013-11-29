@@ -11,6 +11,27 @@
 .container-fluid {
   padding: 0 50px;
 }
+.form-inline .form-group .input-group .form-control {
+  display: inline-block;
+}
+.form-inline .form-group + .form-group,
+.form-inline .form-group + .help-block,
+.form-inline .help-block + .form-group {
+  margin-left: 10px;
+  margin-top: 0;
+}
+.form-inline .help-block {
+  display: inline-block;
+}
+.form-group .form-control {
+  width: inherit;
+}
+.form-group .input-group-addon {
+  width: inherit;
+}
+.form-group.datetime .input-group {
+  width: 240px;
+}
 .navbar {
   margin-bottom: 0;
 }

@@ -28,6 +28,41 @@
 }
 
 
+// Forms
+// -------------------------
+
+.form-inline {
+  .form-group .input-group .form-control {
+    display: inline-block;
+  }
+
+  .form-group + .form-group,
+  .form-group + .help-block,
+  .help-block + .form-group {
+    margin-left: 10px;
+    margin-top: 0;
+  }
+
+  .help-block {
+    display: inline-block;
+  }
+}
+
+.form-group {
+  .form-control {
+    width: inherit;
+  }
+
+  .input-group-addon {
+    width: inherit;
+  }
+
+  &.datetime .input-group {
+    width: 240px;
+  }
+}
+
+
 // Navbar
 // -------------------------
 
@@ -79,3 +114,6 @@
     margin: 0;
   }
 }
+
+
+
