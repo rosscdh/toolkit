@@ -1,0 +1,11 @@
+<div class="breadcrumbs container-fluid">
+    <ul class="breadcrumb">
+        {% for url, label in breadcrumbs %}
+            {% ifnotequal forloop.counter breadcrumbs_total %}
+                <li><a href="{{ url }}">{{ label|safe }}</a></li>
+            {% else %}
+                <li class="active">{{ label|safe }}</li>
+            {% endifnotequal %}
+        {% endfor %}
+    </ul>
+</div>

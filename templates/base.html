@@ -25,34 +25,31 @@
     <div class="navbar navbar-default">
         <div class="container-fluid">
             <div class="navbar-header">
-                <a href="/" class="navbar-brand "><img src="{{ STATIC_URL }}images/logo-white.png" height="23"></a>
                 <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-collapse-01"></button>
-            </div>          
+                <a href="/" class="navbar-brand"><img src="{{ STATIC_URL }}images/logo-white.png" height="23"></a>
+            </div>
+
             <div class="navbar-collapse collapse navbar-collapse-01">
                 <ul class="nav navbar-nav navbar-right">
                     <li class="divider"></li>
                     {% if user.is_authenticated %}
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.get_full_name|default:user.username }} <b class="caret"></b></a>
-                            <ul class="dropdown-menu">
+                            <ul>
                                 <li><a href="{% url 'public:logout' %}">Logout</a></li>
                             </ul>
                         </li>
                     {% else %}
-                        <li>
-                            <a href="{% url 'public:signup' %}">Sign Up</a>
-                        </li>
-                        <li>
-                            <a href="{% url 'public:signin' %}">Sign In</a>
-                        </li> 
+                        <li><a href="{% url 'public:signup' %}">Sign Up</a></li>
+                        <li><a href="{% url 'public:signin' %}">Sign In</a></li>
                     {% endif %}
                 </ul>
-            </div><!--/.nav-collapse -->
+            </div>
         </div>
     </div>
 
-    {% block breadcrumbs %}{% endblock%}
-    {% render_breadcrumbs %}
+    {% block breadcrumbs %}{% endblock %}
+    {% render_breadcrumbs 'breadcrumbs.html' %}
 
     {% block prebody %}{% endblock %}
 

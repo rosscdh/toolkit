@@ -1,0 +1,16 @@
+.dropdown-arrow-inverse {
+  border-bottom-color: #444444 !important;
+  border-top-color: #444444 !important;
+}
+.breadcrumbs {
+  background-color: #f4f4f4;
+}
+.breadcrumbs .breadcrumb {
+  background-color: transparent;
+}
+.container-fluid {
+  padding: 0 50px;
+}
+.navbar {
+  margin-bottom: 0;
+}
