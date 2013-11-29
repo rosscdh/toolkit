@@ -79,6 +79,9 @@ HELPER_APPS = (
     # forms
     'parsley',
     'crispy_forms',
+
+    # Handlebars pybars
+    'lenker',
 )
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + HELPER_APPS
@@ -148,6 +151,9 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'toolkit.auth_backends.SecretKeyBackend',
 )
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+TEMPLATED_EMAIL_BACKEND = 'templated_email.backends.vanilla_django'
 
 REST_FRAMEWORK = {
     # Use hyperlinked styles by default.
