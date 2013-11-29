@@ -81,6 +81,14 @@ class CreateWorkspaceToolObjectView(CreateView):
     def get_queryset(self):
         return self.tool.model.objects.filter(workspace=self.workspace, user=self.request.user).first()
 
+    def get_context_data(self, **kwargs):
+        context = super(CreateWorkspaceToolObjectView, self).get_context_data(**kwargs)
+        context.update({
+            'workspace': self.workspace,
+            'tool': self.tool,
+        })
+        return context
+
     def get_success_url(self):
         return reverse('workspace:tool_object_list', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug})
 
@@ -113,6 +121,14 @@ class UpdateViewWorkspaceToolObjectView(UpdateView):
 
     def get_queryset(self):
         return self.tool.model.objects.filter(workspace=self.workspace)
+
+    def get_context_data(self, **kwargs):
+        context = super(UpdateViewWorkspaceToolObjectView, self).get_context_data(**kwargs)
+        context.update({
+            'workspace': self.workspace,
+            'tool': self.tool,
+        })
+        return context
 
     def get_success_url(self):
         return reverse('workspace:tool_object_list', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug})
