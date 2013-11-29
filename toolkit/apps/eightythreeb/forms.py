@@ -17,6 +17,36 @@ import datetime
 def _current_year():
     return datetime.datetime.utcnow().year
 
+LAWYER_LAYOUT = Layout(
+                        'client_full_name',
+                        'client_email_address',
+                        'state',
+                        'date_of_property_transfer',
+                        'description',
+                        'tax_year',
+                        'value_at_time_of_transfer',
+                        ButtonHolder(
+                            Submit('submit', 'Submit', css_class='btn-primary')
+                        )
+                    )
+
+CUSTOMER_LAYOUT = Layout(
+                        'client_full_name',
+                        'client_email_address',
+                        'post_code',
+                        'state',
+                        'address',
+                        'date_of_property_transfer',
+                        'description',
+                        'tax_year',
+                        'value_at_time_of_transfer',
+                        'ssn',
+                        'itin',
+                        'accountant_email',
+                        ButtonHolder(
+                            Submit('submit', 'Submit', css_class='btn-primary')
+                        )
+                    )
 
 @parsleyfy
 class EightyThreeBForm(forms.Form):
@@ -34,6 +64,11 @@ class EightyThreeBForm(forms.Form):
     accountant_email = forms.EmailField(required=False)
 
     def __init__(self, *args, **kwargs):
+        request = kwargs.pop('request')
+        user = None
+        if request is not None:
+            user = request.user
+
         instance = kwargs.pop('instance')  # pop this as we are not using a model form
 
         self.workspace = kwargs.pop('workspace')
@@ -42,45 +77,36 @@ class EightyThreeBForm(forms.Form):
         self.helper.form_class = 'form-horizontal'
         self.helper.attrs = {'data-validate': 'parsley'}
 
-        self.helper.layout = Layout(
-            'client_full_name',
-            'client_email_address',
-            'client_company_name',
-            'post_code',
-            'state',
-            'address',
-            'date_of_property_transfer',
-            'description',
-            'tax_year',
-            'value_at_time_of_transfer',
-            'ssn',
-            'itin',
-            'accountant_email',
-            ButtonHolder(
-                Submit('submit', 'Submit', css_class='btn-primary')
-            )
-        )
+        self.helper.layout = LAWYER_LAYOUT if user.profile.is_lawyer else CUSTOMER_LAYOUT
+
         super(EightyThreeBForm, self).__init__(*args, **kwargs)
+
+        # sync the fields with the appropriate user layout
+        for f in self.fields.keys():
+            if f not in self.helper.layout.fields:
+                del self.fields[f]
 
     def clean_ssn(self):
         """
         if the itin is not specified and we have a blank value
         """
-        ssn = self.cleaned_data.get('ssn') 
-        itin = self.data.get('itin')
-        if ssn in ['', None] and itin in ['', None]:
-            raise forms.ValidationError("Please specify either an SSN or an ITIN")
-        return ssn
+        if 'ssn' in self.fields:
+            ssn = self.cleaned_data.get('ssn') 
+            itin = self.data.get('itin')
+            if ssn in ['', None] and itin in ['', None]:
+                raise forms.ValidationError("Please specify either an SSN or an ITIN")
+            return ssn
 
     def clean_itin(self):
         """
         if the ssn is not specified and we have a blank value
         """
-        itin = self.cleaned_data.get('itin') 
-        ssn = self.data.get('ssn')
-        if ssn in ['', None] and itin in ['', None]:
-            raise forms.ValidationError("Please specify either an SSN or an ITIN")
-        return itin
+        if 'itin' in self.fields:
+            itin = self.cleaned_data.get('itin') 
+            ssn = self.data.get('ssn')
+            if ssn in ['', None] and itin in ['', None]:
+                raise forms.ValidationError("Please specify either an SSN or an ITIN")
+            return itin
 
     def save(self):
         """
