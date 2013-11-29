@@ -9,7 +9,7 @@ from django.core.files.base import ContentFile
 
 from toolkit.apps.default import _get_unique_username
 
-from django_xhtml2pdf.utils import generate_pdf
+# from django_xhtml2pdf.utils import generate_pdf
 
 from os.path import join
 import logging
