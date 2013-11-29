@@ -1,6 +1,6 @@
 .dropdown-arrow-inverse {
-  border-bottom-color: #34495e !important;
-  border-top-color: #34495e !important;
+  border-bottom-color: #444444 !important;
+  border-top-color: #444444 !important;
 }
 .prettyprint {
   overflow: auto;
@@ -12,7 +12,7 @@
   word-wrap: break-word;
 }
 .demo-headline {
-  color: #1abc9c;
+  color: #6bdb7e;
   font: 700 118px/1.1 "Helvetica Neue", Helvetica, Arial, sans-serif !important;
   margin-bottom: 50px;
   padding: 40px 0;
@@ -46,7 +46,7 @@
   left: 0;
   font-size: 13px;
   line-height: 13px;
-  color: #c0c1c2;
+  color: #bfbfbf;
   font-weight: 400;
 }
 .demo-row .demo-text-note {
@@ -130,7 +130,7 @@
   font-size: 24.5px !important;
 }
 .demo-title small {
-  color: #c0c1c2;
+  color: #bfbfbf;
   font-size: 13px;
   font-weight: 400;
 }
@@ -190,7 +190,7 @@
 }
 .demo-icons-tooltip {
   bottom: 0;
-  color: #c2c8cf;
+  color: #c7c7c7;
   font-size: 12px;
   left: 100%;
   margin-left: 0 !important;
@@ -245,7 +245,7 @@
   }
 }
 .static-modal-backdrop {
-  background-color: #243342;
+  background-color: #303030;
   padding: 62px 14px;
   margin-bottom: 50px;
   width: 100%;
@@ -294,7 +294,7 @@
   padding: 0;
   width: 150px;
   z-index: 10000;
-  background-color: #f3f4f5;
+  background-color: #f4f4f4;
   -webkit-backface-visibility: hidden;
   -webkit-font-smoothing: subpixel-antialiased;
 }

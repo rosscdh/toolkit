@@ -1,61 +1,54 @@
 {% load cache i18n %}{% load url from future %}{% load django_bootstrap_breadcrumbs %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <title>{% block page_title %}{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Loading Bootstrap -->
     <link href="{{ STATIC_URL }}bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}bootstrap/css/prettify.css" rel="stylesheet">
 
-    <link href="{{ STATIC_URL }}bootstrap/css/bootstrap.css" rel="stylesheet">
     <!-- Loading Flat UI -->
     <link href="{{ STATIC_URL }}css/flat-ui.css" rel="stylesheet">
-    <link href="{{ STATIC_URL }}css/prettify.css" rel="stylesheet">
-
-
+    <link href="{{ STATIC_URL }}css/application.css" rel="stylesheet">
 
     <link rel="shortcut icon" href="{{ STATIC_URL }}images/favicon.ico">
 
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements. All other JS at the end of file. -->
     <!--[if lt IE 9]>
-      <script src="{{ STATIC_URL }}js/html5shiv.js"></script>
+        <script src="{{ STATIC_URL }}js/html5shiv.js"></script>
     <![endif]-->
-  </head>
-  <body>
-
+</head>
+<body>
     <div class="navbar navbar-default">
-      <div class="container-fluid">
-        <div class="navbar-header">
-            <a href="/" class="navbar-brand "><img src="{{ STATIC_URL }}images/logo-white.png" height="23"></a>
-            <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-collapse-01"></button>
-        </div>          
-        <div class="navbar-collapse collapse navbar-collapse-01">
-            <ul class="nav navbar-nav navbar-right">
-              <li class="divider"></li>
-              {% if user.is_authenticated %}
-                <li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.get_full_name|default:user.username }} <b class="caret"></b></a>
-                  <ul class="dropdown-menu">
-                    <li><a href="{% url 'public:logout' %}">Logout</a></li>
-                  </ul>
-                </li>
-              {% else %}
-	              <li>
-	                <a href="{% url 'public:signup' %}">
-	                	Sign Up
-	                </a>
-	              </li> 
-	              <li>
-	                <a href="{% url 'public:signin' %}">
-	                	Sign In
-	                </a>
-	              </li> 
-              {% endif %}
-            </ul>
-        </div><!--/.nav-collapse -->
-      </div>
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a href="/" class="navbar-brand "><img src="{{ STATIC_URL }}images/logo-white.png" height="23"></a>
+                <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-collapse-01"></button>
+            </div>          
+            <div class="navbar-collapse collapse navbar-collapse-01">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="divider"></li>
+                    {% if user.is_authenticated %}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.get_full_name|default:user.username }} <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{% url 'public:logout' %}">Logout</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li>
+                            <a href="{% url 'public:signup' %}">Sign Up</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'public:signin' %}">Sign In</a>
+                        </li> 
+                    {% endif %}
+                </ul>
+            </div><!--/.nav-collapse -->
+        </div>
     </div>
 
     {% block breadcrumbs %}{% endblock%}
@@ -78,7 +71,6 @@
     </div>
     <!-- /.container -->
 
-
     <!-- Load JS here for greater good =============================-->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="{{ STATIC_URL }}js/jquery-ui-1.10.3.custom.min.js"></script>
@@ -90,28 +82,9 @@
     <script src="{{ STATIC_URL }}js/flatui-radio.js"></script>
     <script src="{{ STATIC_URL }}js/jquery.tagsinput.js"></script>
     <script src="{{ STATIC_URL }}js/jquery.placeholder.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap-typeahead.js"></script>
+    <script src="{{ STATIC_URL }}js/application.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/parsley.js/1.1.16/parsley.min.js"></script>
-    <script>
-      $( document ).ready(function() {
-    // jQuery UI Datepicker
-    var datepickerSelector = '#datepicker-01';
-    $(datepickerSelector).datepicker({
-    showOtherMonths: true,
-    selectOtherMonths: true,
-    dateFormat: "d MM, yy",
-    yearRange: '-1:+1'
-    }).prev('.btn').on('click', function (e) {
-    e && e.preventDefault();
-    $(datepickerSelector).focus();
-    });
-    $.extend($.datepicker, {_checkOffset:function(inst,offset,isFixed){return offset}});
-
-    // Now let's align datepicker with the prepend button
-    $(datepickerSelector).datepicker('widget').css({'margin-left': -$(datepickerSelector).prev('.input-group-btn').find('.btn').outerWidth()});
-  });
-
-
-    </script>
     {% block js %}{% endblock  %}
   </body>
 </html>
