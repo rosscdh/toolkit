@@ -6,7 +6,8 @@ from django.contrib.auth.decorators import login_required
 from .views import (CreateWorkspaceView,
                     WorkspaceToolObjectsListView,
                     CreateWorkspaceToolObjectView,
-                    UpdateViewWorkspaceToolObjectView)
+                    UpdateViewWorkspaceToolObjectView,
+                    WorkspaceToolObjectPreviewView)
 from .models import Workspace
 from .forms import WorkspaceForm
 
