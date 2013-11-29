@@ -87,6 +87,7 @@ class CreateWorkspaceToolObjectView(CreateView):
     def get_form_kwargs(self):
         kwargs = super(CreateWorkspaceToolObjectView, self).get_form_kwargs()
         kwargs.update({
+            'request': self.request,
             'workspace': self.workspace
         })
         return kwargs
@@ -119,6 +120,7 @@ class UpdateViewWorkspaceToolObjectView(UpdateView):
     def get_form_kwargs(self):
         kwargs = super(UpdateViewWorkspaceToolObjectView, self).get_form_kwargs()
         kwargs.update({
+            'request': self.request,
             'workspace': self.workspace
         })
         return kwargs
