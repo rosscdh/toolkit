@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.contrib import messages
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.views.generic import FormView, ListView, CreateView, UpdateView, DetailView
 
@@ -8,6 +8,7 @@ from toolkit.apps.eightythreeb.forms import EightyThreeBForm
 
 from .forms import WorkspaceForm
 from .models import Workspace, Tool
+from .services import HTMLtoPDForPNGService
 
 
 class CreateWorkspaceView(FormView):
@@ -143,7 +144,22 @@ class WorkspaceToolObjectPreviewView(DetailView):
         self.workspace = Workspace.objects.get(slug=self.kwargs.get('workspace'))
         self.tool = self.workspace.tools.filter(slug=self.kwargs.get('tool')).first()
 
-        return super(UpdateViewWorkspaceToolObjectView, self).dispatch(request, *args, **kwargs)
+        return super(WorkspaceToolObjectPreviewView, self).dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
         return self.tool.model.objects.filter(workspace=self.workspace)
+
+    def render_to_response(self, context, **response_kwargs):
+        html = self.object.html()
+        pdfpng_service = HTMLtoPDForPNGService(html=html)
+        resp = HttpResponse(content_type='application/pdf')
+        return pdfpng_service.pdf(template_name=self.object.template_name, context=self.object.data, file_object=resp)
+
+
+class WorkspaceToolObjectDownloadView(WorkspaceToolObjectPreviewView):
+    def render_to_response(self, context, **response_kwargs):
+        html = self.object.html()
+        pdfpng_service = HTMLtoPDForPNGService(html=html)
+        resp = HttpResponse(content_type='application/pdf')
+        resp['Content-Disposition'] = 'attachment; filename="{filename}.pdf"'.format(filename=self.object.filename)
+        return pdfpng_service.pdf(template_name=self.object.template_name, context=self.object.data, file_object=resp)
