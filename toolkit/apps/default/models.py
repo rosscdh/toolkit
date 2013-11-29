@@ -35,6 +35,9 @@ class UserProfile(models.Model):
         except KeyError:
             raise AttributeError
 
+    def __unicode__(self):
+        return '%s <%s>' % (self.user.get_full_name(), self.user.email)
+
     @property
     def user_class(self):
         return self.data.get('user_class', None)
