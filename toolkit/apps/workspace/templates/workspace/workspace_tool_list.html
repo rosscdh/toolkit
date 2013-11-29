@@ -28,6 +28,8 @@
                     <th>Transfer Date</th>
                     <th>Filing Deadline</th>
                     <th>Status</th>
+                    <th>&nbsp;</th>
+                    <th>&nbsp;</th>
                 </tr>
                 {% for t in object_list %}
                     <tr>
@@ -36,10 +38,20 @@
                         <td>{{ t.transfer_date|date:"N jS Y" }}</td>
                         <td>{{ t.filing_date|date:"N jS Y" }}</td>
                         <td>Sent to Client (<a href="#">View link</a>)</td>
+                        <td>
+                            <a href="{% url 'workspace:tool_object_preview' workspace=workspace.slug tool=tool.slug pk=t.pk %}" title="Preview">
+                                <span class="fui-eye text-primary"></span>
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{% url 'workspace:tool_object_download' workspace=workspace.slug tool=tool.slug pk=t.pk %}" title="Download">
+                                <span class="fui-document text-primary"></span>
+                            </a>
+                        </td>
                     </tr>
                 {% empty %}
                     <tr>
-                        <td colspan="4" class="text-center"><span class="text-muted">None found</span></td>
+                        <td colspan="6" class="text-center"><span class="text-muted">None found</span></td>
                     </tr>
                 {% endfor %}
             </tbody>

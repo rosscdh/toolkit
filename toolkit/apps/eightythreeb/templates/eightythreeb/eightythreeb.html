@@ -1,0 +1,112 @@
+{% extends 'pdf/base.html' %}
+
+{% block page_header %}
+    <div>
+        <h1>Election Under Section 83(b) of the Internal Revenue Code</h1>
+    </div>
+    <hr />
+{% endblock %}
+
+{% block content %}
+<br/>
+<div>
+The undersigned hereby makes an election pursuant to Section 83(b) of the Internal Revenue Code with respect to the property described below:
+</div>
+
+<div>
+<h2>1. Name and Address of Taxpayer:</h2>
+{{ client_full_name }}
+{{ address }}
+{{ post_code }}, {{ state }}
+
+<strong>Taxpayer SSN # :</strong>
+{{ ssn|default:'None specified' }}
+
+<strong>Taxpayer ITIN :</strong>
+{{ itin|default:'None specified' }}
+</div>
+
+<div>
+<h2>2. Description of property with respect to which election is being made:</h2>
+XXXXX shares of the common stock of {{ company_name }}, (the “Company”) (${{ value_at_time_of_transfer }} par value).
+</div>
+
+<div>
+<h2>3. Date on which property was transferred</h2>
+{{ date_of_property_transfer|date:"SHORT_DATE_FORMAT" }}.
+</div>
+
+<div>
+<h2>4. Taxable Year</h2>
+The taxable year for which this election is being made is calendar year {{ tax_year }}.
+</div>
+
+<div>
+<h2>5. Nature of restrictions to which property is subject:</h2>
+{{ description }}
+</div>
+
+<div>
+<h2>6. Market Value</h2>
+The fair market value at time of transfer (determined without regard to any restrictions other than restrictions which by their terms will never lapse) of the property with respect to which this election is being made is $X.XX per share, for a total aggregate value of ${{ value_at_time_of_transfer }}.
+</div>
+
+<div>
+<h2>7. Amount Paid</h2>
+The amount paid by the taxpayer for the property is ${{ amount_paid }}.
+</div>
+
+<div>
+<h2>8. Statement Copy</h2>
+
+A copy of this statement has been furnished to {{ company_name }}.
+
+<b>Dated:</b> {% now "SHORT_DATETIME_FORMAT" %}
+</div> 
+
+<div>
+Signed,
+
+___________________________________
+{{ client_full_name }}
+</div>
+ 
+____________________________________
+SPOUSE SIGNATURE, IF COMMUNITY PROP STATE
+ 
+ 
+____________________________________
+SPOUSE NAME PRINTED
+</div> 
+ 
+ 
+ 
+SAMPLE TRANSMITTAL LETTER TO IRS:
+
+Name and Address of Taxpayer:
+XXXXXXXXXXX
+XXXXXXXXXXX
+XXXXXXXXXXX
+Taxpayer SSN # :
+{{ ssn }}
+
+Taxpayer ITIN :
+{{ itin }}
+ 
+Dated: {% now "SHORT_DATETIME_FORMAT" %}
+ 
+IRS Service Center Address From Below
+ 
+Dear Sir or Madam:
+ 
+Pursuant to Treasury Regulations Section 1.83-2(c) promulgated under Section 83 of the Internal Revenue Code of 1986, as amended (the “Code”), enclosed please find a copy of an election under Section 83(b) of the Code.
+ 
+Also, attached are a self-addressed stamped envelope and a signed copy of my 83(b) Election Form. Please date stamp the copy of the Election Form, enclose it in the attached envelope and mail it to me.
+ 
+Thank you,
+ 
+________________________________
+XXXXXXXX X XXXXXXXXX
+ 
+Enclosures
+{% endblock %}
