@@ -1,14 +1,21 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from django.template import loader
 from django.core.urlresolvers import reverse
 
+from lenker import Lenker
+
+
 from jsonfield import JSONField
+
 
 
 class EightyThreeB(models.Model):
     """
     83b Form to be associated with a Workspace and a particular user
     """
+    template_name = 'eightythreeb/eightythreeb.html'
+
     workspace = models.ForeignKey('workspace.Workspace')
     user = models.ForeignKey('auth.User')
     data = JSONField(default={})
@@ -18,3 +25,14 @@ class EightyThreeB(models.Model):
 
     def get_absolute_url(self):
         return reverse('eightythreeb:view')
+
+
+    @property
+    def template(self):
+        return loader.get_template(self.template_name)
+
+    def render(self):
+        context = loader.Context(self.data)
+        source = self.template.render(context)
+        doc = Lenker(source=source)
+        return doc.render(context=self.data)
