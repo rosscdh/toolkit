@@ -39,6 +39,9 @@ class Workspace(models.Model):
     class Meta:
         ordering = ['name', '-pk']
 
+    def __unicode__(self):
+        return '%s' % self.name
+
     def get_absolute_url(self):
         return reverse('workspace:view', kwargs={'slug': self.slug})
 
