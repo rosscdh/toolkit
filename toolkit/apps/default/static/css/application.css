@@ -26,6 +26,10 @@
 .page-header {
   margin-top: 0;
 }
+.page-header .actions {
+  float: right;
+  margin-top: -5px;
+}
 .page-header .caption {
   color: #bdc3c7;
   display: inline-block;
