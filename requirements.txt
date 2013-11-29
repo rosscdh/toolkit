@@ -26,3 +26,11 @@ django-debug-toolbar==0.11.0
 django-localflavor
 
 django-bootstrap-breadcrumbs
+
+django-templated-email
+
+# pyhandlebars
+-e git+https://github.com/rosscdh/pybars.git#egg=pybars
+-e git+https://github.com/rosscdh/lenker.git#egg=lenker
+
+django-xhtml2pdf

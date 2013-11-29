@@ -27,13 +27,17 @@ DEBUG = True
 TEMPLATE_DEBUG = True
 
 
-
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/1.6/howto/static-files/
 STATIC_ROOT = os.path.join(SITE_ROOT, 'static')
 STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
 )
+
+MEDIA_ROOT = os.path.join(SITE_ROOT, 'media')
+MEDIA_URL = '/m/'
 
 # List of finder classes that know how to find static files in
 # various locations.
@@ -79,6 +83,9 @@ HELPER_APPS = (
     # forms
     'parsley',
     'crispy_forms',
+
+    # Handlebars pybars
+    'lenker',
 )
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + HELPER_APPS
@@ -134,11 +141,6 @@ USE_L10N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.6/howto/static-files/
-
-STATIC_URL = '/static/'
-
 LOGIN_URL          = '/start/'
 LOGIN_REDIRECT_URL = '/dash/'
 LOGIN_ERROR_URL    = '/login-error/'
@@ -148,6 +150,9 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'toolkit.auth_backends.SecretKeyBackend',
 )
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+TEMPLATED_EMAIL_BACKEND = 'templated_email.backends.vanilla_django'
 
 REST_FRAMEWORK = {
     # Use hyperlinked styles by default.

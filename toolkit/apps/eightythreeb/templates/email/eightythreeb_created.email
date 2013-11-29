@@ -1,0 +1,23 @@
+{% extends 'email/base.email' %}
+
+{% block subject %}{{ subject }}{% endblock %}
+
+{% block html_content %}
+<p>Hi {{ to_name }},</p>
+
+<p>{{ from_name }} has prepared an 83b form for you to complete.</p>
+
+<p>You can find it at <a href="{{ url }}">{{ url }}</a></p>
+
+<p>Once you have completed the form, you will be able to download & view the complete 83b document.</p>
+{% endblock %}
+
+{% block plain_content %}
+Hi {{ to_name }},
+
+{{ from_name }} has prepared an 83b form for you to complete.
+
+You can find it at {{ url }}
+
+Once you have completed the form, you will be able to download & view the complete 83b document.
+{% endblock %}
