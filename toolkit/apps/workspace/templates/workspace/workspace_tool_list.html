@@ -10,11 +10,13 @@
 
 {% block content %}
     <div class="page-header">
+        <div class="actions">
+            <a href="{% url 'workspace:tool_object_new' workspace=workspace.slug tool=tool.slug %}" class="btn btn-primary">New {{ tool.short_name }}</a>
+        </div>
+
         <h4 class="caption"><a href="{% url 'workspace:view' slug=workspace.slug %}">{{ workspace.name }}</a></h4>
         <h4>{{ tool.name }}</h4>
     </div>
-
-    <p>{{ tool.data.description }}</p>
 
     <div class="table-responsive">
         <table class="table table-striped {{ tool.slug }}">
@@ -40,6 +42,5 @@
                 {% endfor %}
             </tbody>
         </table>
-        <a href="{% url 'workspace:tool_object_new' workspace=workspace.slug tool=tool.slug %}" class="btn btn-primary pull-right">New {{ tool.short_name }}</a>
     </div>
 {% endblock %}
