@@ -22,7 +22,6 @@
                         {{ w.name }}
                         <span class="pull-right"><a href="{% url 'workspace:view' slug=w.slug %}"><img src="{{STATIC_URL}}images/icons/clipboard.svg" alt="View Workspace" style="height:24px;margin-right:4px;"></a></span>
                     </li>
-                    <li>&nbsp;</li>
                     {% for t in w.tools.all %}
                     <li><a href="{% url 'workspace:tool_object_list' workspace=w.slug tool=t.slug %}"><img src="{{STATIC_URL}}{{ t.icon }}" style="height:24px;margin-right:4px;"> {{ t.name }}</a></li>
                     {% endfor %}
