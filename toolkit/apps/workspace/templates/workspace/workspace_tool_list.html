@@ -1,34 +1,45 @@
 {% extends 'dash/dash.html' %}{% load url from future %}{% load django_bootstrap_breadcrumbs %}
 
-{% block page_title %}{{ tool.name }} for {{ workspace.name }}{% endblock  %}
+{% block page_title %}{{ tool.name }} for {{ workspace.name }}{% endblock %}
 
 {% block breadcrumbs %}
     {{ block.super }}
-    {% breadcrumb workspace.name "workspace:view" workspace.slug %}
-    {% breadcrumb tool.name "" %}
+    {% breadcrumb workspace.name 'workspace:view' workspace.slug %}
+    {% breadcrumb tool.name 'workspace:tool_object_list' workspace.slug tool.slug %}
 {% endblock %}
 
 {% block content %}
+    <div class="page-header">
+        <h4 class="caption"><a href="{% url 'workspace:view' slug=workspace.slug %}">{{ workspace.name }}</a></h4>
+        <h4>{{ tool.name }}</h4>
+    </div>
 
-<div class="page-header">
-  <h3>{{ tool.name }} <small>{{ tool.data.summary }}</small></h3>
-  <p>{{ tool.data.description }}</p>
-</div>
+    <p>{{ tool.data.description }}</p>
 
-<div class="row">
-    <a href="{% url 'workspace:tool_object_new' workspace=workspace.slug tool=tool.slug %}" class="btn btn-success pull-right">New {{ tool.short_name }}</a>
-</div>
-
-<div class="row">
-    <ul id="object-list" class="{{ tool.slug }}">
-    {% for t in object_list %}
-        <li><a href="{% url 'workspace:tool_object_edit' workspace=workspace.slug tool=tool.slug pk=t.pk %}">{{ t }}</a></li>
-        {% empty %}
-        <li>None found</li>
-    {% endfor %}
-    </ul>
-</div>
-
-{% endblock  %}
-
-{% block js %}{% endblock  %}
+    <div class="table-responsive">
+        <table class="table table-striped {{ tool.slug }}">
+            <tbody>
+                <tr>
+                    <th>Client Name</th>
+                    <th>Transfer Date</th>
+                    <th>Filing Deadline</th>
+                    <th>Status</th>
+                </tr>
+                {% for t in object_list %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'workspace:tool_object_edit' workspace=workspace.slug tool=tool.slug pk=t.pk %}">{{ t.client_name }}</a></td>
+                        <td>{{ t.transfer_date|date:"N jS Y" }}</td>
+                        <td>{{ t.filing_date|date:"N jS Y" }}</td>
+                        <td>Sent to Client (<a href="#">View link</a>)</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center"><span class="text-muted">None found</span></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{% url 'workspace:tool_object_new' workspace=workspace.slug tool=tool.slug %}" class="btn btn-primary pull-right">New {{ tool.short_name }}</a>
+    </div>
+{% endblock %}

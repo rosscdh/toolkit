@@ -7,6 +7,10 @@
 // Utility mixins for greater good
 @import "mixins";
 
+
+// Breadcrumbs
+// -------------------------
+
 .breadcrumbs {
   background-color: mix(@brand-primary, white, 6%);
 
@@ -15,13 +19,25 @@
   }
 }
 
+
+// Container
+// -------------------------
+
 .container-fluid {
   padding: 0 50px;
 }
 
+
+// Navbar
+// -------------------------
+
 .navbar {
   margin-bottom: 0;
 }
+
+
+// Navs
+// -------------------------
 
 .nav-list {
   .icon {
@@ -33,5 +49,29 @@
       margin-top: -6px;
       width: 22px;
     }
+  }
+}
+
+
+// Page header
+// -------------------------
+
+.page-header {
+  margin-top: 0;
+
+  .caption {
+    color: @gray-light;
+    display: inline-block;
+
+    &:after {
+      color: @gray-light;
+      content: "/";
+      font-weight: normal;
+      margin: 0 4px 0 9px;
+    }
+  }
+  h4 {
+    display: inline-block;
+    margin: 0;
   }
 }
