@@ -1,6 +1,9 @@
 Django==1.6
 django-extensions==1.2.5
 
+# Procfile service management
+honcho
+
 six==1.4.1
 sqlparse==0.1.10
 wsgiref==0.1.2
