@@ -21,12 +21,12 @@
     <!-- </div> -->
 
 <div class="row">
-    <a href="" class="btn btn-success pull-right">Add Team Member</a>
+    <a href="{% url 'workspace:add_team_member' slug=workspace.slug %}" class="btn btn-success pull-right">Add Team Member</a>
     <div class="row">
         <h4>Team Members</h4>
         <ul id="object-list" class="{{ tool.slug }}">
         {% for u in workspace.participants.all %}
-            <li>{{ u }}</li>
+            <li>{{ u.get_full_name|default:u.email }}</li>
             {% empty %}
             <li>No Team members found</li>
         {% endfor %}

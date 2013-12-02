@@ -4,6 +4,7 @@ from django.views.generic import DetailView, UpdateView
 from django.contrib.auth.decorators import login_required
 
 from .views import (CreateWorkspaceView,
+                    AddUserToWorkspace,
                     WorkspaceToolObjectsListView,
                     CreateWorkspaceToolObjectView,
                     UpdateViewWorkspaceToolObjectView,
@@ -35,6 +36,10 @@ urlpatterns = patterns('',
 
 
     url(r'^create/$', login_required(CreateWorkspaceView.as_view()), name='create'),
+
+    url(r'^(?P<slug>[\w-]+)/team_member/add/$',
+        login_required(AddUserToWorkspace.as_view()),
+        name='add_team_member'),
 
     url(r'^(?P<slug>[\w-]+)/edit/$',
         login_required(UpdateView.as_view(model=Workspace, form_class=WorkspaceForm)),
