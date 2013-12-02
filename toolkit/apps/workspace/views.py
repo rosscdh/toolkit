@@ -8,7 +8,7 @@ from toolkit.apps.eightythreeb.forms import EightyThreeBForm
 
 from .forms import WorkspaceForm
 from .models import Workspace, Tool
-from .services import HTMLtoPDForPNGService
+from .services import PDFKitService, HTMLtoPDForPNGService
 
 
 class CreateWorkspaceView(FormView):
@@ -167,15 +167,15 @@ class WorkspaceToolObjectPreviewView(DetailView):
 
     def render_to_response(self, context, **response_kwargs):
         html = self.object.html()
-        pdfpng_service = HTMLtoPDForPNGService(html=html)
+        pdfpng_service = PDFKitService(html=html) # HTMLtoPDForPNGService(html=html)
         resp = HttpResponse(content_type='application/pdf')
-        return pdfpng_service.pdf(template_name=self.object.template_name, context=self.object.data, file_object=resp)
+        return pdfpng_service.pdf(template_name=self.object.template_name, file_object=resp)
 
 
 class WorkspaceToolObjectDownloadView(WorkspaceToolObjectPreviewView):
     def render_to_response(self, context, **response_kwargs):
         html = self.object.html()
-        pdfpng_service = HTMLtoPDForPNGService(html=html)
+        pdfpng_service = PDFKitService(html=html) # HTMLtoPDForPNGService(html=html)
         resp = HttpResponse(content_type='application/pdf')
         resp['Content-Disposition'] = 'attachment; filename="{filename}.pdf"'.format(filename=self.object.filename)
-        return pdfpng_service.pdf(template_name=self.object.template_name, context=self.object.data, file_object=resp)
+        return pdfpng_service.pdf(template_name=self.object.template_name, file_object=resp)
