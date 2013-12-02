@@ -4,17 +4,17 @@ Services to the workspace
 """
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
 
 from toolkit.apps.default import _get_unique_username
 
 from django_xhtml2pdf.utils import generate_pdf
 
-from os.path import join
+import requests
+import os
+import json
 import logging
 LOGGER = logging.getLogger('django.request')
-
+PDFKIT_SERVICE_URI = getattr(settings, 'PDFKIT_SERVICE_URI', 'http://localhost:9292/v1/html/to/pdf')
 
 class EnsureCustomerService(object):
     """
@@ -76,8 +76,30 @@ class HTMLtoPDForPNGService(object):
     """
     def __init__(self, html):
         self.html = html
-        self.service = generate_pdf
+        self.service = self.get_service()
+
+    def get_service(self):
+        return generate_pdf
 
     def pdf(self, template_name, context, file_object=None):
         # Write PDF to file
         return self.service(template_name, file_object=file_object, context=context)
+
+
+class PDFKitService(HTMLtoPDForPNGService):
+    """
+    Send requests to local PDFKit service that formats HTML nicely
+    """
+    def get_service(self):
+        return requests
+
+    def pdf(self, template_name, file_object):
+        filename = os.path.basename(template_name)
+
+        payload = {"html": self.html, "filename": template_name}
+        headers = {'content-type': 'application/json'}
+
+        r = self.service.post(PDFKIT_SERVICE_URI, data=json.dumps(payload), headers=headers)
+
+        file_object.write(r.content)
+        return file_object
