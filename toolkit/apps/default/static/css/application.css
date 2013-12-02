@@ -32,6 +32,12 @@
 .form-group.datetime .input-group {
   width: 240px;
 }
+.form-errors {
+  text-align: left;
+}
+.form-errors ul {
+  margin-bottom: 0;
+}
 .navbar {
   margin-bottom: 0;
 }
