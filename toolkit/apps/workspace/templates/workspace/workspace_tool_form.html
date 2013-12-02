@@ -1,6 +1,6 @@
 {% extends 'dash/dash.html' %}{% load url from future %}{% load crispy_forms_tags django_bootstrap_breadcrumbs %}
 
-{% block page_title %}{{ tool.name }} — New — {{ workspace.name }} — LawPal{% endblock  %}
+{% block page_title %}{{ tool.name }} — {{ object.client_name | default:'New' }} — {{ workspace.name }} — LawPal{% endblock  %}
 
 {% block breadcrumbs %}
     {{ block.super }}
@@ -12,9 +12,8 @@
     <div class="page-header">
         <h4 class="caption"><a href="{% url 'workspace:view' slug=workspace.slug %}">{{ workspace.name }}</a></h4>
         <h4 class="caption"><a href="{% url 'workspace:tool_object_list' workspace=workspace.slug tool=tool.slug %}">{{ tool.name }}</a></h4>
-        <h4>New {{ tool.short_name }}</h4>
+        <h4>{{ object.client_name | default:'New' }}</h4>
     </div>
 
-    {{ form.errors }}
     {% crispy form %}
 {% endblock %}
