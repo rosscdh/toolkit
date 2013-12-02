@@ -19,7 +19,7 @@ def _current_year():
     return datetime.datetime.utcnow().year
 
 
-LAWYER_LAYOUT=Layout(
+LAWYER_LAYOUT = Layout(
     Fieldset(
         '',
         HTML('<label class="control-label">Client Details</label>'),
@@ -57,7 +57,7 @@ LAWYER_LAYOUT=Layout(
 )
 
 
-CUSTOMER_LAYOUT=Layout(
+CUSTOMER_LAYOUT = Layout(
     Fieldset(
         '',
         HTML('<label class="control-label">Client Details</label>'),
@@ -111,66 +111,66 @@ CUSTOMER_LAYOUT=Layout(
 
 @parsleyfy
 class EightyThreeBForm(forms.Form):
-    client_full_name=forms.CharField(
+    client_full_name = forms.CharField(
         label='',
         widget=forms.TextInput(attrs={'placeholder': 'Client Full Name', 'size': '40'})
     )
-    client_email_address=forms.EmailField(
+    client_email_address = forms.EmailField(
         label='',
         widget=forms.TextInput(attrs={'placeholder': 'Email address', 'size': '40'})
     )
-    post_code=USZipCodeField(
+    post_code = USZipCodeField(
         label='Zip Code'
     )
-    state=forms.ChoiceField(
-        choices =USPS_CHOICES,
-        label   ='Where do you live?',
+    state = forms.ChoiceField(
+        choices=USPS_CHOICES,
+        label='Where do you live?',
         help_text='The state where you file your taxes'
     )
-    address=forms.CharField(
+    address = forms.CharField(
         widget=forms.Textarea
     )
-    date_of_property_transfer=forms.DateField(
+    date_of_property_transfer = forms.DateField(
         input_formats=['%Y-%m-%d', '%d %B, %Y'],
-        label       ='Date on which the property was transferred',
-        help_text   ='The filing deadline is 30 days from this date. Your filing deadline is June 24th 2013.',
-        widget      =forms.TextInput(attrs={'class': 'datepicker'})
+        label='Date on which the property was transferred',
+        help_text='The filing deadline is 30 days from this date. Your filing deadline is June 24th 2013.',
+        widget=forms.TextInput(attrs={'class': 'datepicker'})
     )
-    description=forms.CharField(
-        label   ='Description of property with respect to which election is being made',
+    description = forms.CharField(
+        label='Description of property with respect to which election is being made',
         help_text='e.g. 10 shares of the common stock of ABC, Inc ($0.0001 per value)',
-        widget  =forms.Textarea(attrs={'cols': '80'})
+        widget=forms.Textarea(attrs={'cols': '80'})
     )
-    tax_year=forms.IntegerField(
-        label ='Taxable year for which the election is being made',
+    tax_year = forms.IntegerField(
+        label='Taxable year for which the election is being made',
         initial=_current_year,
         widget=forms.NumberInput(attrs={'size': '4'})
     )
-    nature_of_restrictions=forms.CharField(
-        label   ='Nature of restrictions to which property is subject',
+    nature_of_restrictions = forms.CharField(
+        label='Nature of restrictions to which property is subject',
         help_text='If you have copied this from Microsoft Word then please check the numbering and formatting has been retained.',
-        widget  =forms.Textarea(attrs={'cols': '80'})
+        widget=forms.Textarea(attrs={'cols': '80'})
     )
-    transfer_value_share=forms.DecimalField(
-        label ='',
+    transfer_value_share = forms.DecimalField(
+        label='',
         initial=0.00,
         widget=forms.TextInput(attrs={'size': '10'})
     )
-    transfer_value_total=forms.DecimalField(
-        label ='',
+    transfer_value_total = forms.DecimalField(
+        label='',
         initial=0.00,
         widget=forms.TextInput(attrs={'size': '10'})
     )
-    ssn=USSocialSecurityNumberField(
-        label  ='Social Security Number',
+    ssn = USSocialSecurityNumberField(
+        label='Social Security Number',
         required=False
     )
-    itin=forms.CharField(
-        label  ='Tax Payer ITIN',
+    itin = forms.CharField(
+        label='Tax Payer ITIN',
         required=False
     )
-    accountant_email=forms.EmailField(
-        label   ='Your accountants email address',
+    accountant_email = forms.EmailField(
+        label='Your accountants email address',
         required=False
     )
 
@@ -180,7 +180,7 @@ class EightyThreeBForm(forms.Form):
         if request is not None:
             user = request.user
 
-        instance = kwargs.pop('instance')  # pop this as we are not using a model form
+        kwargs.pop('instance')  # pop this as we are not using a model form
 
         self.workspace = kwargs.pop('workspace')
 
