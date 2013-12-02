@@ -21,11 +21,8 @@
 
                         <li class="divider"></li>
                         {% for w in WORKSPACES %}
-                            <li class="nav-header">{{ w.name }}</li>
-                            <li{% if workspace == w and not tool %} class="active"{% endif %}>
-                                <a href="{% url 'workspace:view' slug=w.slug %}">
-                                    <span class="icon"><img src="{{ STATIC_URL }}images/icons/clipboard.svg"></span> Overview
-                                </a>
+                            <li class="nav-header{% if workspace == w and not tool %} active{% endif %}">
+                                <a href="{% url 'workspace:view' slug=w.slug %}">{{ w.name }}</a>
                             </li>
                             {% for t in w.tools.all %}
                                 <li{% if workspace == w and tool == t %} class="active"{% endif %}>
