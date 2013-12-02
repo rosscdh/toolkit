@@ -54,16 +54,18 @@
     {% block prebody %}{% endblock %}
 
     <div class="main-content container-fluid">
-        {% if messages %}
-            <div class="messages-errors">
-                Error:
-                <ul>
-                    {% for msg in messages %}
-                        <li>{{msg}}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-        {% endif %}
+        {% comment %}
+            {% if messages %}
+                <div class="messages-errors">
+                    Error:
+                    <ul>
+                        {% for msg in messages %}
+                            <li>{{msg}}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        {% endcomment %}
 
         {% block body %}{% endblock %}
     </div>
@@ -81,7 +83,7 @@
     <script src="{{ STATIC_URL }}js/jquery.placeholder.js"></script>
     <script src="{{ STATIC_URL }}js/bootstrap-typeahead.js"></script>
     <script src="{{ STATIC_URL }}js/application.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/parsley.js/1.1.16/parsley.min.js"></script>
+    <script src="{{ STATIC_URL }}js/parsley-1.2.1.min.js"></script>
 
     <!-- Load page specific JS here =============================-->
     {% block js %}{% endblock  %}
