@@ -116,4 +116,25 @@
 }
 
 
+// Parsley.js
+// -------------------------
 
+.parsley-validated {
+  &.parsley-error {
+    color: @brand-danger;
+    border-color: @brand-danger;
+    .box-shadow(none);
+    .placeholder(@brand-danger);
+
+    &:focus {
+      border-color: @brand-danger;
+      .box-shadow(none);
+    }
+
+    + .input-group-btn .btn {
+      color: @brand-danger;
+      border-color: @brand-danger;
+      background-color: @inverse;
+    }
+  }
+}
