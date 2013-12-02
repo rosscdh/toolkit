@@ -15,55 +15,50 @@
     </div>
 
     <div class="container">
-        <!-- <div class="row"> -->
-            <!-- Hello -->
-        <!-- </div> -->
-    <!-- </div> -->
-
-<div class="row">
-    <a href="{% url 'workspace:add_team_member' slug=workspace.slug %}" class="btn btn-success pull-right">Add Team Member</a>
-    <div class="row">
-        <h4>Team Members</h4>
-        <ul id="object-list" class="{{ tool.slug }}">
-        {% for u in workspace.participants.all %}
-            <li>{{ u.get_full_name|default:u.email }}</li>
-            {% empty %}
-            <li>No Team members found</li>
-        {% endfor %}
-        </ul>
-    </div>
-</div>
+        <div class="row">
+            <a href="{% url 'workspace:add_team_member' slug=workspace.slug %}" class="btn btn-success pull-right">Add Team Member</a>
+            <div class="row">
+                <h4>Team Members</h4>
+                <ul id="object-list" class="{{ tool.slug }}">
+                {% for u in workspace.participants.all %}
+                    <li>{{ u.get_full_name|default:u.email }}</li>
+                    {% empty %}
+                    <li>No Team members found</li>
+                {% endfor %}
+                </ul>
+            </div>
+        </div>
 
 
-<div class="row">
-    <div class="col-md-6">
-        <h4>Selected Tools</h4>
-        <ul id="selected_tools-list">
-        {% for t in workspace.tools.all %}
-            <li><a href="{% url 'workspace:tool_object_list' workspace=workspace.slug tool=t.slug %}">{{ t }}</a><span class="pull-right"><img src="{{STATIC_URL}}{{ t.icon }}" alt="{{ t.short_name }}" style="height:24px;margin-right:4px;"></span></li>
-            {% empty %}
-            <li>No Team members found</li>
-        {% endfor %}
-        </ul>
-    </div>
-    <div class="col-md-6">
-        <h4>Available Tools</h4>
-        <ul id="available_tools-list">
-        {% for t in workspace.available_tools.all %}
-            <li>{{ t }}<span class="pull-right"><img src="{{STATIC_URL}}{{ t.icon }}" alt="{{ t.short_name }}" style="height:24px;margin-right:4px;"></span></li>
-            {% empty %}
-            <li>No additional Tools are available</li>
-        {% endfor %}
-        </ul>
-    </div>
-</div>
+        <div class="row">
+            <div class="col-md-6">
+                <h4>Selected Tools</h4>
+                <ul id="selected_tools-list">
+                {% for t in workspace.tools.all %}
+                    <li><a href="{% url 'workspace:tool_object_list' workspace=workspace.slug tool=t.slug %}">{{ t }}</a><span class="pull-right"><img src="{{STATIC_URL}}{{ t.icon }}" alt="{{ t.short_name }}" style="height:24px;margin-right:4px;"></span></li>
+                    {% empty %}
+                    <li>No Team members found</li>
+                {% endfor %}
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h4>Available Tools</h4>
+                <ul id="available_tools-list">
+                {% for t in workspace.available_tools.all %}
+                    <li>{{ t }}<span class="pull-right"><img src="{{STATIC_URL}}{{ t.icon }}" alt="{{ t.short_name }}" style="height:24px;margin-right:4px;"></span></li>
+                    {% empty %}
+                    <li>No additional Tools are available</li>
+                {% endfor %}
+                </ul>
+            </div>
+        </div>
 
-<div class="row">
-    <div class="row">
-        <h4>Workspace Activity</h4>
+        <div class="row">
+            <div class="row">
+                <h4>Workspace Activity</h4>
+            </div>
+        </div>
     </div>
-</div>
-</div>
 {% endblock  %}
 
 {% block js %}{% endblock  %}
