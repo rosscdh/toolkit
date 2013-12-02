@@ -15,5 +15,24 @@
         <h4>{{ object.client_name | default:'New' }}</h4>
     </div>
 
+    {% if form.errors %}
+        <div class="dialog dialog-danger form-errors">
+            <div class="container">
+                {% if form.errors|length > 1 %}
+                    <p>There were {{ form.errors|length }} errors with this:</p>
+                {% elif form.errors|length == 1 %}
+                    <p>There was 1 error with this:</p>
+                {% endif %}
+                <ul>
+                    {% for field in form %}
+                        {% if field.errors %}
+                            <li>{{ field.errors|striptags }}</li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% endif %}
+
     {% crispy form %}
 {% endblock %}
