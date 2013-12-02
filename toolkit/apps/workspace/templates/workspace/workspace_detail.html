@@ -40,7 +40,7 @@
         <h4>Selected Tools</h4>
         <ul id="selected_tools-list">
         {% for t in workspace.tools.all %}
-            <li>{{ t }}<span class="pull-right"><img src="{{STATIC_URL}}{{ t.icon }}" alt="{{ t.short_name }}" style="height:24px;margin-right:4px;"></span></li>
+            <li><a href="{% url 'workspace:tool_object_list' workspace=workspace.slug tool=t.slug %}">{{ t }}</a><span class="pull-right"><img src="{{STATIC_URL}}{{ t.icon }}" alt="{{ t.short_name }}" style="height:24px;margin-right:4px;"></span></li>
             {% empty %}
             <li>No Team members found</li>
         {% endfor %}
