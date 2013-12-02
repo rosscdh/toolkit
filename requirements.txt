@@ -38,3 +38,5 @@ django-templated-email
 
 xhtml2pdf
 django-xhtml2pdf
+
+requests==2.0.1
