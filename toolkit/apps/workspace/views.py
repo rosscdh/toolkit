@@ -93,7 +93,6 @@ class WorkspaceToolObjectsListView(WorkspaceToolMixin, ListView):
     Show a list of objects associated with the particular tool type
     """
     model = Tool
-    template_name = 'workspace/workspace_tool_list.html'
 
 
 class CreateWorkspaceToolObjectView(WorkspaceToolMixin, CreateView):
