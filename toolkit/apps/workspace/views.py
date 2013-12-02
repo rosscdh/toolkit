@@ -1,15 +1,60 @@
 # -*- coding: utf-8 -*-
 from django.contrib import messages
-from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.views.generic import FormView, ListView, CreateView, UpdateView, DetailView
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponse, HttpResponseRedirect
+from django.views.generic import (FormView,
+                                  ListView,
+                                  CreateView,
+                                  UpdateView,
+                                  DetailView)
 
 from toolkit.apps.eightythreeb.forms import EightyThreeBForm
 
-from .forms import WorkspaceForm
+from .forms import WorkspaceForm, AddWorkspaceTeamMemberForm
 from .models import Workspace, Tool
 from .mixins import WorkspaceToolMixin
-from .services import PDFKitService, HTMLtoPDForPNGService
+from .services import PDFKitService  # , HTMLtoPDForPNGService
+
+
+class AddUserToWorkspace(CreateView):
+    template_name = 'workspace/user_form.html'
+    form_class = AddWorkspaceTeamMemberForm
+
+    def dispatch(self, request, *args, **kwargs):
+        self.workspace = get_object_or_404(Workspace, slug=self.kwargs.get('slug'))
+
+        return super(AddUserToWorkspace, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(AddUserToWorkspace, self).get_context_data(**kwargs)
+        context.update({
+            'workspace': self.workspace,
+        })
+        return context
+
+    def get_form_kwargs(self):
+        kwargs = super(AddUserToWorkspace, self).get_form_kwargs()
+        kwargs.update({
+            'workspace': self.workspace
+        })
+        return kwargs
+
+    def get_success_url(self):
+        return reverse('workspace:view', kwargs={'slug': self.workspace.slug})
+
+    def form_valid(self, form):
+        # save the form
+        user, is_new = form.save()
+        self.workspace.participants.add(user)
+
+        if is_new is True:
+            messages.success(self.request, 'You have sucessfully added a new user "%s" to the workspace' % user)
+        else:
+            messages.success(self.request, 'You have sucessfully added "%s" to the workspace' % user)
+
+        return super(AddUserToWorkspace, self).form_valid(form)
 
 
 class CreateWorkspaceView(FormView):
@@ -114,7 +159,7 @@ class WorkspaceToolObjectPreviewView(WorkspaceToolMixin, DetailView):
 
     def render_to_response(self, context, **response_kwargs):
         html = self.object.html()
-        pdfpng_service = PDFKitService(html=html) # HTMLtoPDForPNGService(html=html)
+        pdfpng_service = PDFKitService(html=html)  # HTMLtoPDForPNGService(html=html)
         resp = HttpResponse(content_type='application/pdf')
         return pdfpng_service.pdf(template_name=self.object.template_name, file_object=resp)
 
@@ -122,7 +167,7 @@ class WorkspaceToolObjectPreviewView(WorkspaceToolMixin, DetailView):
 class WorkspaceToolObjectDownloadView(WorkspaceToolObjectPreviewView):
     def render_to_response(self, context, **response_kwargs):
         html = self.object.html()
-        pdfpng_service = PDFKitService(html=html) # HTMLtoPDForPNGService(html=html)
+        pdfpng_service = PDFKitService(html=html)  # HTMLtoPDForPNGService(html=html)
         resp = HttpResponse(content_type='application/pdf')
         resp['Content-Disposition'] = 'attachment; filename="{filename}.pdf"'.format(filename=self.object.filename)
         return pdfpng_service.pdf(template_name=self.object.template_name, file_object=resp)

@@ -16,6 +16,7 @@ import logging
 LOGGER = logging.getLogger('django.request')
 PDFKIT_SERVICE_URI = getattr(settings, 'PDFKIT_SERVICE_URI', 'http://localhost:9292/v1/html/to/pdf')
 
+
 class EnsureCustomerService(object):
     """
     Service to get or create a Customer User
@@ -48,24 +49,26 @@ class EnsureCustomerService(object):
             profile.data['user_class'] = 'customer'
             profile.save(update_fields=['data'])
 
-            if self.full_name is not None:
-                LOGGER.info('Full Name was provided')
-                # extract the first and last name
-                names = self.full_name.split(' ')
-                update_fields = []
+        # setup the name of the user
+        # and set it if they exist but have no name
+        if self.full_name is not None:
+            LOGGER.info('Full Name was provided')
+            # extract the first and last name
+            names = self.full_name.split(' ')
+            update_fields = []
 
-                if user.first_name in [None, '']:
-                    user.first_name = names[0]
-                    update_fields.append('first_name')
-                    LOGGER.info('Updating first_name')
+            if user.first_name in [None, '']:
+                user.first_name = names[0]
+                update_fields.append('first_name')
+                LOGGER.info('Updating first_name')
 
-                if user.last_name in [None, '']:
-                    user.last_name = ' '.join(names[1:])
-                    update_fields.append('last_name')
-                    LOGGER.info('Updating last_name')
+            if user.last_name in [None, '']:
+                user.last_name = ' '.join(names[1:])
+                update_fields.append('last_name')
+                LOGGER.info('Updating last_name')
 
-                # save the user model
-                user.save(update_fields=update_fields)
+            # save the user model
+            user.save(update_fields=update_fields)
 
         return is_new, user, profile
 
