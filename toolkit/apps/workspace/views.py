@@ -8,6 +8,7 @@ from toolkit.apps.eightythreeb.forms import EightyThreeBForm
 
 from .forms import WorkspaceForm
 from .models import Workspace, Tool
+from .mixins import WorkspaceToolMixin
 from .services import PDFKitService, HTMLtoPDForPNGService
 
 
@@ -42,30 +43,15 @@ class CreateWorkspaceView(FormView):
         return super(CreateWorkspaceView, self).form_valid(form)
 
 
-class WorkspaceToolObjectsListView(ListView):
+class WorkspaceToolObjectsListView(WorkspaceToolMixin, ListView):
     """
     Show a list of objects associated with the particular tool type
     """
     model = Tool
     template_name = 'workspace/workspace_tool_list.html'
 
-    def get_queryset(self):
-        self.workspace = Workspace.objects.get(slug=self.kwargs.get('workspace'))
-        self.tool = self.workspace.tools.filter(slug=self.kwargs.get('tool')).first()
 
-        # get the tools for the list by worksapce
-        return self.tool.model.objects.filter(workspace=self.workspace)
-
-    def get_context_data(self, **kwargs):
-        context = super(WorkspaceToolObjectsListView, self).get_context_data(**kwargs)
-        context.update({
-            'workspace': self.workspace,
-            'tool': self.tool,
-        })
-        return context
-
-
-class CreateWorkspaceToolObjectView(CreateView):
+class CreateWorkspaceToolObjectView(WorkspaceToolMixin, CreateView):
     """
     View to create a specific Tool Object
     """
@@ -73,22 +59,9 @@ class CreateWorkspaceToolObjectView(CreateView):
     template_name = 'workspace/workspace_tool_form.html'
     form_class = EightyThreeBForm
 
-    def dispatch(self, request, *args, **kwargs):
-        self.workspace = Workspace.objects.get(slug=self.kwargs.get('workspace'))
-        self.tool = self.workspace.tools.filter(slug=self.kwargs.get('tool')).first()
-
-        return super(CreateWorkspaceToolObjectView, self).dispatch(request, *args, **kwargs)
-
     def get_queryset(self):
-        return self.tool.model.objects.filter(workspace=self.workspace, user=self.request.user).first()
-
-    def get_context_data(self, **kwargs):
-        context = super(CreateWorkspaceToolObjectView, self).get_context_data(**kwargs)
-        context.update({
-            'workspace': self.workspace,
-            'tool': self.tool,
-        })
-        return context
+        qs = super(CreateWorkspaceToolObjectView, self).get_queryset()
+        return qs.filter(user=self.request.user).first()
 
     def get_success_url(self):
         return reverse('workspace:tool_object_list', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug})
@@ -106,30 +79,13 @@ class CreateWorkspaceToolObjectView(CreateView):
         return super(CreateWorkspaceToolObjectView, self).form_valid(form)
 
 
-class UpdateViewWorkspaceToolObjectView(UpdateView):
+class UpdateViewWorkspaceToolObjectView(WorkspaceToolMixin, UpdateView):
     """
     View to edit a specific Tool Object
     """
     model = Tool
     template_name = 'workspace/workspace_tool_form.html'
     form_class = EightyThreeBForm
-
-    def dispatch(self, request, *args, **kwargs):
-        self.workspace = Workspace.objects.get(slug=self.kwargs.get('workspace'))
-        self.tool = self.workspace.tools.filter(slug=self.kwargs.get('tool')).first()
-
-        return super(UpdateViewWorkspaceToolObjectView, self).dispatch(request, *args, **kwargs)
-
-    def get_queryset(self):
-        return self.tool.model.objects.filter(workspace=self.workspace)
-
-    def get_context_data(self, **kwargs):
-        context = super(UpdateViewWorkspaceToolObjectView, self).get_context_data(**kwargs)
-        context.update({
-            'workspace': self.workspace,
-            'tool': self.tool,
-        })
-        return context
 
     def get_success_url(self):
         return reverse('workspace:tool_object_list', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug})
@@ -152,18 +108,9 @@ class UpdateViewWorkspaceToolObjectView(UpdateView):
         return super(UpdateViewWorkspaceToolObjectView, self).form_valid(form)
 
 
-class WorkspaceToolObjectPreviewView(DetailView):
+class WorkspaceToolObjectPreviewView(WorkspaceToolMixin, DetailView):
     model = Tool
     template_name = 'workspace/workspace_tool_preview.html'
-
-    def dispatch(self, request, *args, **kwargs):
-        self.workspace = Workspace.objects.get(slug=self.kwargs.get('workspace'))
-        self.tool = self.workspace.tools.filter(slug=self.kwargs.get('tool')).first()
-
-        return super(WorkspaceToolObjectPreviewView, self).dispatch(request, *args, **kwargs)
-
-    def get_queryset(self):
-        return self.tool.model.objects.filter(workspace=self.workspace)
 
     def render_to_response(self, context, **response_kwargs):
         html = self.object.html()
