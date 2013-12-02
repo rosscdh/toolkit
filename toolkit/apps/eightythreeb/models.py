@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from django.db import models
 from django.template import loader
 from django.core.urlresolvers import reverse
+from django.template.defaultfilters import slugify
 
 #from lenker import Lenker
 from jsonfield import JSONField
@@ -39,7 +40,7 @@ class EightyThreeB(models.Model):
 
     @property
     def filename(self):
-        return '{company}-{user}-83b.pdf'.format(company=self.workspace, user=self.user.get_full_name() or self.user.username)
+        return slugify('83b-{company}-{user}'.format(company=self.workspace, user=self.user.get_full_name() or self.user.username))
 
     @property
     def template(self):
