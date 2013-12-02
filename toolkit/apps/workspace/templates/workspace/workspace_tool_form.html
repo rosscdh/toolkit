@@ -15,6 +15,13 @@
         <h4>{{ object.client_name | default:'New' }}</h4>
     </div>
 
+    <div class="dialog dialog-danger form-errors hide">
+        <div class="container">
+            <p></p>
+            <div class="parsley-errors"></div>
+        </div>
+    </div>
+
     {% if form.errors %}
         <div class="dialog dialog-danger form-errors">
             <div class="container">
