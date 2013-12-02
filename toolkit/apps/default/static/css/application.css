@@ -35,6 +35,9 @@
 .form-errors {
   text-align: left;
 }
+.form-errors p {
+  margin-bottom: 0;
+}
 .form-errors ul {
   margin-bottom: 0;
 }
