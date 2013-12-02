@@ -35,9 +35,6 @@ class EightyThreeB(models.Model):
     def transfer_date(self):
         return datetime.strptime(self.data.get('date_of_property_transfer', None), '%Y-%m-%d').date()
 
-    def get_absolute_url(self):
-        return reverse('eightythreeb:view')
-
     @property
     def filename(self):
         return slugify('83b-{company}-{user}'.format(company=self.workspace, user=self.user.get_full_name() or self.user.username))
@@ -45,6 +42,9 @@ class EightyThreeB(models.Model):
     @property
     def template(self):
         return loader.get_template(self.template_name)
+
+    def get_absolute_url(self):
+        return reverse('eightythreeb:view')
 
     def html(self):
         context = loader.Context(self.data)
