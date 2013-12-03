@@ -140,16 +140,12 @@ class EightyThreeBForm(forms.Form):
         label='',
         widget=forms.TextInput(attrs={'placeholder': 'Client email address', 'size': '40'})
     )
-
-
-
-
     state = forms.ChoiceField(
         choices=USPS_CHOICES,
         label='Where do you live?',
         help_text='The state where you file your taxes',
         initial='CA',
-        widget=forms.Select(attrs={ 'data-live-search': 'true' })
+        required=False
     )
     ssn = USSocialSecurityNumberField(
         label='Social Security Number',
@@ -163,11 +159,6 @@ class EightyThreeBForm(forms.Form):
         label='Your accountants email address',
         required=False
     )
-
-
-
-
-
     date_of_property_transfer = forms.DateField(
         error_messages={
             'invalid': "Property transfer date is invalid.",
@@ -221,9 +212,9 @@ class EightyThreeBForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         request = kwargs.pop('request')
-        user = None
+        self.user = None
         if request is not None:
-            user = request.user
+            self.user = request.user
 
         kwargs.pop('instance')  # pop this as we are not using a model form
 
@@ -236,7 +227,7 @@ class EightyThreeBForm(forms.Form):
         }
         self.helper.form_show_errors = False
 
-        self.helper.layout = LAWYER_LAYOUT if user.profile.is_lawyer else CUSTOMER_LAYOUT
+        self.helper.layout = LAWYER_LAYOUT if self.user.profile.is_lawyer else CUSTOMER_LAYOUT
 
         super(EightyThreeBForm, self).__init__(*args, **kwargs)
 
@@ -250,23 +241,25 @@ class EightyThreeBForm(forms.Form):
         """
         if the itin is not specified and we have a blank value
         """
-        if 'ssn' in self.fields:
-            ssn = self.cleaned_data.get('ssn')
-            itin = self.data.get('itin')
-            if ssn in ['', None] and itin in ['', None]:
-                raise forms.ValidationError("Please specify either an SSN or an ITIN")
-            return ssn
+        if self.user.profile.is_customer:
+            if 'ssn' in self.fields:
+                ssn = self.cleaned_data.get('ssn')
+                itin = self.data.get('itin')
+                if ssn in ['', None] and itin in ['', None]:
+                    raise forms.ValidationError("Please specify either an SSN or an ITIN")
+                return ssn
 
     def clean_itin(self):
         """
         if the ssn is not specified and we have a blank value
         """
-        if 'itin' in self.fields:
-            itin = self.cleaned_data.get('itin')
-            ssn = self.data.get('ssn')
-            if ssn in ['', None] and itin in ['', None]:
-                raise forms.ValidationError("Please specify either an SSN or an ITIN")
-            return itin
+        if self.user.profile.is_customer:
+            if 'itin' in self.fields:
+                itin = self.cleaned_data.get('itin')
+                ssn = self.data.get('ssn')
+                if ssn in ['', None] and itin in ['', None]:
+                    raise forms.ValidationError("Please specify either an SSN or an ITIN")
+                return itin
 
     def save(self):
         """
