@@ -1,21 +1,12 @@
 {% extends 'base.html' %}{% load url from future %}
 
 {% block body %}
-	<div class="row">
-		<br />
-		<br />
-		<br />
-		<h2>LawPal Toolkit</h2>
-		<p class="lead">A set of tools change the practice of law forever.<br />
-			Together, let's make practice perfect. </p>
-		<a href="{% url 'public:signup' %}" class="btn btn-primary btn-lg">Attorney Signup</a>
-		<br />
-		<hr>
-		<small>LawPal is a set of tools that help you practice law more efficiently. You choose which tools you use with which clients. </small>	
-		<br />
-		<br />
-		<br />
-		<br />
-		<br />		
-	</div>
-{% endblock%}
+    <div class="public-headline">
+        <h1>LawPal Toolkit</h1>
+        <p class="lead">A set of tools change the practice of law forever.</p>
+        <p class="lead">Together, let's make practice perfect.</p>
+        <p><a href="{% url 'public:signup' %}" class="btn btn-hg btn-primary">Sign up as an attorney</a></p>
+        <hr>
+        <p>LawPal is a set of tools that help you practice law more efficiently. You choose which tools you use with which clients.</p>
+    </div>
+{% endblock %}
