@@ -1,33 +1,27 @@
 {% extends 'public/base.html' %}{% load url from future %}{% load crispy_forms_tags %}
 
-{% block page_title %}LawPal Toolkit Signup{% endblock  %}
-
+{% block page_title %}Sign up — LawPal{% endblock %}
 
 {% block prebody %}
-<div class="dialog dialog-success" style="margin-top:-20px">
-  <div class="container">
-    This page is for attorney registration only. If you are a client with an invite code, <a href="#">click here</a>. 
-  </div>
-</div>
+    <div class="dialog dialog-success">
+        <div class="container">This page is for attorney registration only. If you are a client with an invite code, <a href="#">click here</a>.</div>
+    </div>
 {% endblock %}
 
 {% block body %}
-<div class="row">
-	<div class="col-sm-6 col-sm-offset-3">
-		<h3>Attorney Signup</h3>
-		Fill out the form below to create your account. 
-		<br />
-		<br />
+    <div class="row">
+        <div class="col-sm-6 col-sm-offset-3">
+            <h3>Sign up as an attorney</h3>
+            <p>Fill out the form below to create your account.</p>
 
-		{% crispy form %}
-	</div>
-</div>
-<hr />
-<div class="row">
-	<div class="col-sm-6 col-sm-offset-3">
-		Already have an account? <a href="{% url 'public:signin' %}">Sign In here</a>
-	</div>
-</div>
-
-
-{% endblock  %}
+            <!-- form errors partial -->
+            {% crispy form %}
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-sm-6 col-sm-offset-3">
+            Already have an account? <a href="{% url 'public:signin' %}">Sign in</a>
+        </div>
+    </div>
+{% endblock %}
