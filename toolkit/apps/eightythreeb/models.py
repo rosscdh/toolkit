@@ -1,24 +1,28 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime, timedelta
-
 from django.db import models
 from django.template import loader
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 
-#from lenker import Lenker
 from jsonfield import JSONField
+from datetime import datetime, timedelta
+
+from . import EIGHTYTHREEB_STATUS
+from .mixins import StatusMixin
 
 
-class EightyThreeB(models.Model):
+class EightyThreeB(StatusMixin, models.Model):
     """
     83b Form to be associated with a Workspace and a particular user
     """
+    STATUS_83b = EIGHTYTHREEB_STATUS
     template_name = 'eightythreeb/eightythreeb.html'
 
     workspace = models.ForeignKey('workspace.Workspace')
     user = models.ForeignKey('auth.User')
     data = JSONField(default={})
+
+    status = models.IntegerField(choices=EIGHTYTHREEB_STATUS.get_choices(), default=EIGHTYTHREEB_STATUS.LAWYER_COMPLETE_FORM, db_index=True)
 
     def __unicode__(self):
         return u'83(b) for %s' % self.client_name
