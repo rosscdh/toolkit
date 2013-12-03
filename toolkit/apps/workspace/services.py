@@ -10,6 +10,7 @@ from toolkit.apps.default import _get_unique_username
 from django_xhtml2pdf.utils import generate_pdf
 
 import requests
+import pdfkit
 import os
 import json
 import logging
@@ -77,6 +78,8 @@ class HTMLtoPDForPNGService(object):
     """
     Convert provided HTML to a pdf or png
     """
+    options = None
+
     def __init__(self, html):
         self.html = html
         self.service = self.get_service()
@@ -89,7 +92,30 @@ class HTMLtoPDForPNGService(object):
         return self.service(template_name, file_object=file_object, context=context)
 
 
-class PDFKitService(HTMLtoPDForPNGService):
+class PDFKitLocalService(HTMLtoPDForPNGService):
+    options = {
+        'page-size': 'Letter',
+        'margin-top': '0.75in',
+        'margin-right': '0.75in',
+        'margin-bottom': '0.75in',
+        'margin-left': '0.75in',
+        'encoding': "UTF-8",
+        'no-outline': None
+    }
+
+    def get_service(self):
+        return pdfkit
+
+    def pdf(self, template_name, file_object):
+        filename = os.path.basename(template_name)
+
+        r = self.service.from_string(self.html, False, options=self.options)
+
+        file_object.write(r)
+        return file_object
+
+
+class PDFKitRubyService(HTMLtoPDForPNGService):
     """
     Send requests to local PDFKit service that formats HTML nicely
     """
@@ -106,3 +132,7 @@ class PDFKitService(HTMLtoPDForPNGService):
 
         file_object.write(r.content)
         return file_object
+
+
+class PDFKitService(PDFKitRubyService):
+    pass
