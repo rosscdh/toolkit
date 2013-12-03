@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
+
 from django.views.generic import (FormView,
                                   ListView,
                                   CreateView,
@@ -156,6 +157,11 @@ class WorkspaceToolObjectPreviewView(WorkspaceToolMixin, DetailView):
     model = Tool
     template_name = 'workspace/workspace_tool_preview.html'
 
+
+class WorkspaceToolObjectDisplayView(WorkspaceToolMixin, DetailView):
+    model = Tool
+    template_name = 'workspace/workspace_tool_preview.html'
+
     def render_to_response(self, context, **response_kwargs):
         html = self.object.html()
         pdfpng_service = PDFKitService(html=html)  # HTMLtoPDForPNGService(html=html)
@@ -163,10 +169,15 @@ class WorkspaceToolObjectPreviewView(WorkspaceToolMixin, DetailView):
         return pdfpng_service.pdf(template_name=self.object.template_name, file_object=resp)
 
 
-class WorkspaceToolObjectDownloadView(WorkspaceToolObjectPreviewView):
+class WorkspaceToolObjectDownloadView(WorkspaceToolObjectDisplayView):
     def render_to_response(self, context, **response_kwargs):
         html = self.object.html()
         pdfpng_service = PDFKitService(html=html)  # HTMLtoPDForPNGService(html=html)
         resp = HttpResponse(content_type='application/pdf')
         resp['Content-Disposition'] = 'attachment; filename="{filename}.pdf"'.format(filename=self.object.filename)
         return pdfpng_service.pdf(template_name=self.object.template_name, file_object=resp)
+
+
+class WorkspaceToolStatusView(WorkspaceToolMixin, DetailView):
+    model = Tool
+    template_name = 'workspace/workspace_tool_status_list.html'
