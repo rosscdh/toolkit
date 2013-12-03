@@ -9,10 +9,7 @@ String.prototype.repeat = function(num) {
   $(function() {
 
     // Custom Selects
-    $("select[name='huge']").selectpicker({style: 'btn-hg btn-primary', menuStyle: 'dropdown-inverse'});
-    $("select[name='large']").selectpicker({style: 'btn-lg btn-danger'});
-    $("select[name='info']").selectpicker({style: 'btn-info'});
-    $("select[name='small']").selectpicker({style: 'btn-sm btn-warning'});
+    $("select[name='state']").selectpicker({ size: 7, style: 'btn-lg btn-primary', menuStyle: 'dropdown-inverse' });
 
     // Tabs
     $(".nav-tabs a").on('click', function (e) {

@@ -51,6 +51,11 @@
 .form-group {
   .form-control {
     width: inherit;
+
+    &.select {
+      border: 0;
+      padding: 0;
+    }
   }
 
   .input-group-addon {
@@ -62,6 +67,7 @@
   }
 }
 
+.form-dialog,
 .form-errors {
   text-align: left;
 
@@ -72,6 +78,11 @@
   ul {
     margin-bottom: 0;
   }
+}
+
+.form-dialog {
+  padding-right: 15px;
+  padding-left: 15px;
 }
 
 
