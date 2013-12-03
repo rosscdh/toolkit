@@ -1,0 +1,43 @@
+{% extends 'dash/dash.html' %}{% load url from future %}{% load crispy_forms_tags django_bootstrap_breadcrumbs %}
+
+{% block page_title %}Preview {{ workspace }} {{ tool }}{% endblock  %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% breadcrumb workspace.name 'workspace:view' workspace.slug %}
+    {% breadcrumb tool.name 'workspace:tool_object_list' workspace.slug tool.slug %}
+{% endblock %}
+
+{% block body %}
+
+<div id="pdf_review_controls" class="row">
+    Blah blah blah<br/>
+    Blah blah blah<br/>
+    <div class="btn-group pull-right">
+        <button type="button" class="btn btn-default">Left</button>
+        <button type="button" class="btn btn-default">Middle</button>
+    </div>
+</div>
+<iframe name="id_preview" id="id_pdf_preview" class="fade" src="{% url 'workspace:tool_object_display' workspace=workspace.slug tool=tool.slug pk=object.pk %}"></iframe>
+
+{% endblock  %}
+
+{% block css %}
+<style>
+iframe#id_pdf_preview {
+    width:100%;
+}
+</style>
+{% endblock  %}
+
+{% block js %}
+<script>
+$(document).ready(function () {
+    'use strict';
+    var iframe = $('#id_pdf_preview');
+    var controls = $('#pdf_review_controls');
+    iframe.height( ($('body').height() / 1.1) - controls.height() );
+    iframe.removeClass('fade');
+});
+</script>
+{% endblock  %}
