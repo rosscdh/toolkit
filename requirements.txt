@@ -31,3 +31,5 @@ django-localflavor
 django-bootstrap-breadcrumbs
 
 django-templated-email
+
+requests==2.0.1
