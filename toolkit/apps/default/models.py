@@ -11,6 +11,7 @@ class InviteKey(models.Model):
     """
     key = UUIDField(auto=True, db_index=True)
     user = models.ForeignKey('auth.User')
+    tool = models.ForeignKey('workspace.Tool')
     next = models.CharField(max_length=255)  # user will be redirected here on login
     data = JSONField(default={})  # for any extra data that needs to be stored
 
