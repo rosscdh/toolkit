@@ -16,9 +16,7 @@
 
 {% block content %}
     <div class="page-header">
-        <h4 class="caption"><a href="{% url 'workspace:view' slug=workspace.slug %}">{{ workspace.name }}</a></h4>
-        <h4 class="caption"><a href="{% url 'workspace:tool_object_list' workspace=workspace.slug tool=tool.slug %}">{{ tool.name }}</a></h4>
-        <h4>{{ object.client_name | default:'New' }}</h4>
+        <h4>{{ object | default:'New' }}</h4>
     </div>
 
     {% include 'partials/form-errors.html' with form=form %}
