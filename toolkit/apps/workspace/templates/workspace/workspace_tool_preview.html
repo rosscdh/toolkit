@@ -16,9 +16,9 @@
     Blah blah blah<br/>
     Blah blah blah<br/>
     <div class="btn-group pull-right">
-        <button type="button" class="btn btn-default">Left</button>
-        <button type="button" class="btn btn-default">Middle</button>
+        <button type="button" class="btn btn-success">Invite {{ object.user.get_full_name|default:object.user.username }}</button>
     </div>
+    <br/><br/>
 </div>
 <iframe name="id_preview" id="id_pdf_preview" class="fade" src="{% url 'workspace:tool_object_display' workspace=workspace.slug tool=tool.slug slug=object.slug %}"></iframe>
 

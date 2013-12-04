@@ -6,6 +6,12 @@
     {{ block.super }}
     {% breadcrumb workspace.name 'workspace:view' workspace.slug %}
     {% breadcrumb tool.name 'workspace:tool_object_list' workspace.slug tool.slug %}
+    {% if object %}
+        {% breadcrumb object.client_name '' %}
+    {% else %}
+        {% breadcrumb 'New' '' %}
+    {% endif %}
+
 {% endblock %}
 
 {% block content %}

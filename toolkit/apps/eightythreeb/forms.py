@@ -12,6 +12,8 @@ from crispy_forms.bootstrap import PrependedText, FieldWithButtons, StrictButton
 
 from toolkit.apps.workspace.services import EnsureCustomerService
 
+from .signals import lawyer_complete_form, customer_complete_form
+
 import datetime
 
 
@@ -270,6 +272,13 @@ class EightyThreeBForm(forms.Form):
                     raise forms.ValidationError("Please specify either an SSN or an ITIN")
                 return itin
 
+    def issue_signals(self, instance):
+        if self.user.profile.is_lawyer:
+            lawyer_complete_form.send(sender=self.user, instance=instance, actor_name=self.user.email)
+
+        elif self.user.profile.is_customer:
+            customer_complete_form.send(sender=self.user, instance=instance, actor_name=self.user.email)
+
     def save(self):
         """
         Ensure we have a customer with this info
@@ -284,5 +293,7 @@ class EightyThreeBForm(forms.Form):
         eightythreeb.data.update(**self.cleaned_data)  # update the data
         eightythreeb.workspace = self.workspace
         eightythreeb.save()
+
+        self.issue_signals(instance=eightythreeb)
 
         return eightythreeb
