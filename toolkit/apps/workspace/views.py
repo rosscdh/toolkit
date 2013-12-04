@@ -141,6 +141,7 @@ class UpdateViewWorkspaceToolObjectView(WorkspaceToolMixin, UpdateView):
             'request': self.request,
             'workspace': self.workspace
         })
+
         return kwargs
 
     def get_initial(self):
