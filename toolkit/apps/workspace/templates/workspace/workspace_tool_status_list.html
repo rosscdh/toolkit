@@ -6,22 +6,28 @@
     {{ block.super }}
     {% breadcrumb workspace.name 'workspace:view' workspace.slug %}
     {% breadcrumb tool.name 'workspace:tool_object_list' workspace.slug tool.slug %}
-    {% breadcrumb object.user.get_full_name 'workspace:tool_object_edit' workspace.slug tool.slug tool.slug %}
+    {% breadcrumb object 'workspace:tool_object_edit' workspace.slug tool.slug object.slug %}
     {% breadcrumb 'Status' '' %}
 {% endblock %}
 
 {% block content %}
 <div class="row">
     <ul class="list-group col-lg-7">
-        {% for num, status in tool.model.status_choices %}
-        <li class="list-group-item">
-            {{ status }}
-            <div class="btn-group pull-right">
-                <button type="button" class="btn btn-default">How?</button>
-                <button type="button" class="btn btn-success">Mark complete</button>
-            </div>
-        </li>
-        {% endfor %}
+        {% with object.current_markers as current_markers %}
+            {% for num, slug, name in tool.model.choices %}
+            <li class="list-group-item">
+                {{ name }}
+                <div class="btn-group pull-right">
+                    {% if slug in object.data.markers %}
+                        <button type="button" class="btn btn-success">Complete</button>
+                    {% else %}
+                        <button type="button" class="btn btn-default">How?</button>
+                        <button type="button" class="btn btn-warning">Pending</button>
+                    {% endif %}
+                </div>
+            </li>
+            {% endfor %}
+        {% endwith %}
     </ul>
 </div>
 {% endblock %}
