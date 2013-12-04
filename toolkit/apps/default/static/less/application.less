@@ -51,6 +51,11 @@
 .form-group {
   .form-control {
     width: inherit;
+
+    &.select {
+      border: 0;
+      padding: 0;
+    }
   }
 
   .input-group-addon {
@@ -60,6 +65,24 @@
   &.datetime .input-group {
     width: 240px;
   }
+}
+
+.form-dialog,
+.form-errors {
+  text-align: left;
+
+  p {
+    margin-bottom: 0;
+  }
+
+  ul {
+    margin-bottom: 0;
+  }
+}
+
+.form-dialog {
+  padding-right: 15px;
+  padding-left: 15px;
 }
 
 
@@ -116,4 +139,25 @@
 }
 
 
+// Parsley.js
+// -------------------------
 
+.parsley-validated {
+  &.parsley-error {
+    color: @brand-danger;
+    border-color: @brand-danger;
+    .box-shadow(none);
+    .placeholder(@brand-danger);
+
+    &:focus {
+      border-color: @brand-danger;
+      .box-shadow(none);
+    }
+
+    + .input-group-btn .btn {
+      color: @brand-danger;
+      border-color: @brand-danger;
+      background-color: @inverse;
+    }
+  }
+}

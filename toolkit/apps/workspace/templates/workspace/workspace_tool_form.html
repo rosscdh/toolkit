@@ -1,23 +1,27 @@
 {% extends 'dash/dash.html' %}{% load url from future %}{% load crispy_forms_tags django_bootstrap_breadcrumbs %}
 
-{% block page_title %}{{ tool.name }} — New — {{ workspace.name }} — LawPal{% endblock  %}
+{% block page_title %}{{ tool.name }} — {{ object.client_name | default:'New' }} — {{ workspace.name }} — LawPal{% endblock  %}
 
 {% block breadcrumbs %}
     {{ block.super }}
     {% breadcrumb workspace.name 'workspace:view' workspace.slug %}
     {% breadcrumb tool.name 'workspace:tool_object_list' workspace.slug tool.slug %}
     {% if object %}
-        {% breadcrumb 'Edit' '' %}
+        {% breadcrumb object.client_name '' %}
     {% else %}
-        {% breadcrumb 'Create' '' %}
+        {% breadcrumb 'New' '' %}
     {% endif %}
 
 {% endblock %}
 
 {% block content %}
     <div class="page-header">
-        <h4>{% if object %}Edit {{ object }}{% else %}New {{ tool.short_name }}{% endif %}</h4>
+        <h4 class="caption"><a href="{% url 'workspace:view' slug=workspace.slug %}">{{ workspace.name }}</a></h4>
+        <h4 class="caption"><a href="{% url 'workspace:tool_object_list' workspace=workspace.slug tool=tool.slug %}">{{ tool.name }}</a></h4>
+        <h4>{{ object.client_name | default:'New' }}</h4>
     </div>
-    {{ form.errors }}
+
+    {% include 'partials/form-errors.html' with form=form %}
+
     {% crispy form %}
 {% endblock %}

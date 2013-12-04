@@ -26,11 +26,31 @@
 .form-group .form-control {
   width: inherit;
 }
+.form-group .form-control.select {
+  border: 0;
+  padding: 0;
+}
 .form-group .input-group-addon {
   width: inherit;
 }
 .form-group.datetime .input-group {
   width: 240px;
+}
+.form-dialog,
+.form-errors {
+  text-align: left;
+}
+.form-dialog p,
+.form-errors p {
+  margin-bottom: 0;
+}
+.form-dialog ul,
+.form-errors ul {
+  margin-bottom: 0;
+}
+.form-dialog {
+  padding-right: 15px;
+  padding-left: 15px;
 }
 .navbar {
   margin-bottom: 0;
@@ -64,4 +84,35 @@
 .page-header h4 {
   display: inline-block;
   margin: 0;
+}
+.parsley-validated.parsley-error {
+  color: #e74c3c;
+  border-color: #e74c3c;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.parsley-validated.parsley-error:-moz-placeholder {
+  color: #e74c3c;
+}
+.parsley-validated.parsley-error::-moz-placeholder {
+  color: #e74c3c;
+}
+.parsley-validated.parsley-error:-ms-input-placeholder {
+  color: #e74c3c;
+}
+.parsley-validated.parsley-error::-webkit-input-placeholder {
+  color: #e74c3c;
+}
+.parsley-validated.parsley-error.placeholder {
+  color: #e74c3c;
+}
+.parsley-validated.parsley-error:focus {
+  border-color: #e74c3c;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.parsley-validated.parsley-error + .input-group-btn .btn {
+  color: #e74c3c;
+  border-color: #e74c3c;
+  background-color: #ffffff;
 }

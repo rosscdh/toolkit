@@ -9,10 +9,7 @@ String.prototype.repeat = function(num) {
   $(function() {
 
     // Custom Selects
-    $("select[name='huge']").selectpicker({style: 'btn-hg btn-primary', menuStyle: 'dropdown-inverse'});
-    $("select[name='large']").selectpicker({style: 'btn-lg btn-danger'});
-    $("select[name='info']").selectpicker({style: 'btn-info'});
-    $("select[name='small']").selectpicker({style: 'btn-sm btn-warning'});
+    $("select[name='state']").selectpicker({ size: 7, style: 'btn-lg btn-primary', menuStyle: 'dropdown-inverse' });
 
     // Tabs
     $(".nav-tabs a").on('click', function (e) {
@@ -88,6 +85,49 @@ String.prototype.repeat = function(num) {
 
     // Switch
     $("[data-toggle='switch']").wrap('<div class="switch" />').parent().bootstrapSwitch();
+
+    // Tweak Parsley.js forms
+    var parsleySelector = '[parsley-validate]';
+    $(parsleySelector).parsley({
+      listeners: {
+        onFormValidate: function(isFormValid, ev) {
+          if (isFormValid) {
+            $('.form-errors').addClass('hide');
+          } else {
+            var count = $('ul.parsley-error-list li').length;
+            if (count > 1) {
+              $('.form-errors p').html('There were ' + count + ' errors with this:');
+            } else if (count == 1) {
+              $('.form-errors p').html('There was 1 error with this:');
+            };
+
+            $('.form-errors').removeClass('hide');
+          }
+        },
+        onFieldValidate: function(field) {
+          var count = $('ul.parsley-error-list li').length;
+          if (count > 1) {
+            $('.form-errors p').html('There were ' + count + ' errors with this:');
+            $('.form-errors').removeClass('hide');
+          } else if (count == 1) {
+            $('.form-errors p').html('There was 1 error with this:');
+            $('.form-errors').removeClass('hide');
+          } else {
+            $('.form-errors').addClass('hide');
+          };
+        },
+        onFieldError: function(field, constraint) {
+          var count = $('ul.parsley-error-list li').length;
+          if (count > 1) {
+            $('.form-errors p').html('There were ' + count + ' errors with this:');
+            $('.form-errors').removeClass('hide');
+          } else if (count == 1) {
+            $('.form-errors p').html('There was 1 error with this:');
+            $('.form-errors').removeClass('hide');
+          };
+        }
+      }
+    });
 
     // make code pretty
     window.prettyPrint && prettyPrint();

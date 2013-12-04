@@ -63,5 +63,5 @@ class EightyThreeB(StatusMixin, models.Model):
     def html(self):
         context = loader.Context(self.data)
         source = self.template.render(context)
-        #doc = Lenker(source=source)
-        return source #doc.render(context=self.data)
+        # doc = Lenker(source=source)
+        return source  # doc.render(context=self.data)
