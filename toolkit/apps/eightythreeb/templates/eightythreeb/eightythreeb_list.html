@@ -35,23 +35,20 @@
                     {% for t in object_list %}
                         <tr>
                             <td>
-                                <a href="{% url 'workspace:tool_object_edit' workspace=workspace.slug tool=tool.slug pk=t.pk %}">{{ t.client_name }}</a>
+                                <a href="{% url 'workspace:tool_object_edit' workspace=workspace.slug tool=tool.slug slug=t.slug %}">{{ t.client_name }}</a>
                             </td>
                             <td>{{ t.transfer_date|date:"N jS Y" }}</td>
                             <td>{{ t.filing_date|date:"N jS Y" }}</td>
                             <td>
-                                <ol>
-                                <li>Send to Client (<a href="#">View link</a>) - includes preview with option to send now</li>
-                                <li>:general_status - based on usps callback</li>
-                                </ol>
+                                <a href="{% url 'workspace:tool_object_status' workspace=workspace.slug tool=tool.slug slug=t.slug %}">{{ t.current_status }}</a>
                             </td>
                             <td>
-                                <a href="{% url 'workspace:tool_object_preview' workspace=workspace.slug tool=tool.slug pk=t.pk %}" title="Preview">
+                                <a href="{% url 'workspace:tool_object_preview' workspace=workspace.slug tool=tool.slug slug=t.slug %}" title="Preview">
                                     <span class="fui-eye text-primary"></span>
                                 </a>
                             </td>
                             <td>
-                                <a href="{% url 'workspace:tool_object_download' workspace=workspace.slug tool=tool.slug pk=t.pk %}" title="Download">
+                                <a href="{% url 'workspace:tool_object_download' workspace=workspace.slug tool=tool.slug slug=t.slug %}" title="Download">
                                     <span class="fui-document text-primary"></span>
                                 </a>
                             </td>

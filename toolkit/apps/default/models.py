@@ -6,7 +6,7 @@ from jsonfield import JSONField
 
 
 class InviteKey(models.Model):
-    key = UUIDField(auto=True)
+    key = UUIDField(auto=True, db_index=True)
     user = models.ForeignKey('auth.User')
 
 
