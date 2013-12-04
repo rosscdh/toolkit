@@ -6,6 +6,7 @@
     {{ block.super }}
     {% breadcrumb workspace.name 'workspace:view' workspace.slug %}
     {% breadcrumb tool.name 'workspace:tool_object_list' workspace.slug tool.slug %}
+    {% breadcrumb object.user.get_full_name 'workspace:tool_object_edit' workspace.slug tool.slug tool.slug %}
     {% breadcrumb 'Status' '' %}
 {% endblock %}
 
