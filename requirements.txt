@@ -31,10 +31,3 @@ django-localflavor
 django-bootstrap-breadcrumbs
 
 django-templated-email
-
-# pyhandlebars
--e git+https://github.com/rosscdh/pybars.git#egg=pybars
--e git+https://github.com/rosscdh/lenker.git#egg=lenker
-
-xhtml2pdf
-django-xhtml2pdf
