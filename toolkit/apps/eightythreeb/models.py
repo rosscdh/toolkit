@@ -4,6 +4,7 @@ from django.template import loader
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 
+from uuidfield import UUIDField
 from jsonfield import JSONField
 from datetime import datetime, timedelta
 
@@ -18,11 +19,12 @@ class EightyThreeB(StatusMixin, models.Model):
     STATUS_83b = EIGHTYTHREEB_STATUS
     template_name = 'eightythreeb/eightythreeb.html'
 
+    slug = UUIDField(auto=True, db_index=True)
     workspace = models.ForeignKey('workspace.Workspace')
     user = models.ForeignKey('auth.User')
     data = JSONField(default={})
 
-    status = models.IntegerField(choices=EIGHTYTHREEB_STATUS.get_choices(), default=EIGHTYTHREEB_STATUS.LAWYER_COMPLETE_FORM, db_index=True)
+    status = models.IntegerField(choices=EIGHTYTHREEB_STATUS.get_choices(), default=EIGHTYTHREEB_STATUS.lawyer_complete_form, db_index=True)
 
     def __unicode__(self):
         return u'83(b) for %s' % self.client_name
@@ -38,6 +40,14 @@ class EightyThreeB(StatusMixin, models.Model):
     @property
     def transfer_date(self):
         return datetime.strptime(self.data.get('date_of_property_transfer', None), '%Y-%m-%d').date()
+
+    @property
+    def tracking_code(self):
+        return self.data.get('tracking_code')
+
+    @tracking_code.setter
+    def tracking_code(self, value):
+        self.data['tracking_code'] = value
 
     @property
     def filename(self):
