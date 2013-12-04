@@ -12,6 +12,8 @@ from crispy_forms.bootstrap import PrependedText, FieldWithButtons, StrictButton
 
 from toolkit.apps.workspace.services import EnsureCustomerService
 
+from .signals import lawyer_complete_form, customer_complete_form
+
 import datetime
 
 
@@ -176,18 +178,18 @@ class EightyThreeBForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         request = kwargs.pop('request')
-        user = None
+        self.user = None
         if request is not None:
-            user = request.user
+            self.user = request.user
 
-        instance = kwargs.pop('instance')  # pop this as we are not using a model form
+        kwargs.pop('instance')  # pop this as we are not using a model form
 
         self.workspace = kwargs.pop('workspace')
 
         self.helper = FormHelper()
         self.helper.attrs = {'data-validate': 'parsley'}
 
-        self.helper.layout = LAWYER_LAYOUT if user.profile.is_lawyer else CUSTOMER_LAYOUT
+        self.helper.layout = LAWYER_LAYOUT if self.user.profile.is_lawyer else CUSTOMER_LAYOUT
 
         super(EightyThreeBForm, self).__init__(*args, **kwargs)
 
@@ -219,6 +221,13 @@ class EightyThreeBForm(forms.Form):
                 raise forms.ValidationError("Please specify either an SSN or an ITIN")
             return itin
 
+    def issue_signals(self, instance):
+        if self.user.profile.is_lawyer:
+            lawyer_complete_form.send(sender=self.user, instance=instance, actor_name=self.user.email)
+
+        elif self.user.profile.is_customer:
+            customer_complete_form.send(sender=self.user, instance=instance, actor_name=self.user.email)
+
     def save(self):
         """
         Ensure we have a customer with this info
@@ -233,5 +242,7 @@ class EightyThreeBForm(forms.Form):
         eightythreeb.data.update(**self.cleaned_data)  # update the data
         eightythreeb.workspace = self.workspace
         eightythreeb.save()
+
+        self.issue_signals(instance=eightythreeb)
 
         return eightythreeb

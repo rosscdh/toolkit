@@ -40,9 +40,13 @@ def get_namedtuple_choices(name, choices_tuple):
         def get_choices(self):
             return zip(tuple(self), self._choices)
 
+        def get_all(self):
+            for val, name, desc in choices_tuple:
+                yield val, name, desc
+
         def get_values(self):
             values = []
-            for val,name,desc in choices_tuple:
+            for val, name, desc in choices_tuple:
                 if isinstance(val, type([])):
                     values.extend(val)
                 else:
@@ -50,21 +54,21 @@ def get_namedtuple_choices(name, choices_tuple):
             return values
 
         def get_value_by_name(self, input_name):
-            for val,name,desc in choices_tuple:
+            for val, name, desc in choices_tuple:
                 if name == input_name:
                     return val
             return False
 
         def get_desc_by_value(self, input_value):
-            for val,name,desc in choices_tuple:
+            for val, name, desc in choices_tuple:
                 if val == input_value:
                     return desc
             return False
 
         def is_valid(self, selection):
-            for val,name,desc in choices_tuple:
+            for val, name, desc in choices_tuple:
                 if val == selection or name == selection or desc == selection:
                     return True
             return False
 
-    return Choices._make([val for val,name,desc in choices_tuple])
+    return Choices._make([val for val, name, desc in choices_tuple])
