@@ -140,11 +140,20 @@ class EightyThreeBForm(forms.Form):
         label='',
         widget=forms.TextInput(attrs={'placeholder': 'Client email address', 'size': '40'})
     )
+    post_code = USZipCodeField(
+        label='Zip Code',
+        required=False
+    )
     state = forms.ChoiceField(
         choices=USPS_CHOICES,
         label='Where do you live?',
         help_text='The state where you file your taxes',
         initial='CA',
+        required=False
+    )
+    address=forms.CharField(
+        label='Address',
+        widget=forms.Textarea,
         required=False
     )
     ssn = USSocialSecurityNumberField(
