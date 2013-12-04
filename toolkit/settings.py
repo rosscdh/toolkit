@@ -83,9 +83,6 @@ HELPER_APPS = (
     # forms
     'parsley',
     'crispy_forms',
-
-    # Handlebars pybars
-    'lenker',
 )
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + HELPER_APPS
