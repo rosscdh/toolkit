@@ -6,6 +6,8 @@
     {{ block.super }}
     {% breadcrumb workspace.name 'workspace:view' workspace.slug %}
     {% breadcrumb tool.name 'workspace:tool_object_list' workspace.slug tool.slug %}
+    {% breadcrumb object 'workspace:tool_object_edit' workspace.slug tool.slug object.slug %}
+    {% breadcrumb 'Review' '' %}
 {% endblock %}
 
 {% block body %}
@@ -18,7 +20,7 @@
         <button type="button" class="btn btn-default">Middle</button>
     </div>
 </div>
-<iframe name="id_preview" id="id_pdf_preview" class="fade" src="{% url 'workspace:tool_object_display' workspace=workspace.slug tool=tool.slug pk=object.pk %}"></iframe>
+<iframe name="id_preview" id="id_pdf_preview" class="fade" src="{% url 'workspace:tool_object_display' workspace=workspace.slug tool=tool.slug slug=object.slug %}"></iframe>
 
 {% endblock  %}
 
