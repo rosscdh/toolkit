@@ -4,13 +4,12 @@ from django.contrib.auth.models import User
 
 from parsley.decorators import parsleyfy
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, ButtonHolder, Submit, Field
+from crispy_forms.layout import Layout, ButtonHolder, Submit, Field, Fieldset
 
 from . import _get_unique_username
 
 import logging
 LOGGER = logging.getLogger('django.request')
-
 
 
 @parsleyfy
@@ -26,15 +25,18 @@ class SignUpForm(forms.Form):
         self.helper.attrs = {'data-validate': 'parsley'}
 
         self.helper.layout = Layout(
-            'email',
-            'password',
-            'password_confirm',
-                        Field('t_and_c', css_class="", **{'data-toggle': 'checkbox'}),
-
+            Fieldset(
+                '',
+                Field('email', css_class='input-hg'),
+                Field('password', css_class='input-hg'),
+                Field('password_confirm', css_class='input-hg'),
+                Field('t_and_c', template='public/bootstrap3/t_and_c.html'),
+            ),
             ButtonHolder(
-                Submit('submit', 'Signup', css_class='btn btn-primary btn-lg')
+                Submit('submit', 'Create my account', css_class='btn btn-primary btn-lg')
             )
         )
+
         super(SignUpForm, self).__init__(*args, **kwargs)
 
     def clean_username(self):
@@ -88,10 +90,13 @@ class SignInForm(forms.Form):
         self.helper.attrs = {'data-validate': 'parsley'}
 
         self.helper.layout = Layout(
-            'email',
-            'password',
+            Fieldset(
+                '',
+                Field('email', css_class='input-hg'),
+                Field('password', css_class='input-hg'),
+            ),
             ButtonHolder(
-                Submit('submit', 'Login', css_class='btn btn-lg btn-default')
+                Submit('submit', 'Sign in', css_class='btn btn-primary btn-lg')
             )
         )
         super(SignInForm, self).__init__(*args, **kwargs)
