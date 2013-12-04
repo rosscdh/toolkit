@@ -1,0 +1,27 @@
+{% extends 'dash/dash.html' %}{% load url from future %}{% load django_bootstrap_breadcrumbs %}
+
+{% block page_title %}{{ tool.name }} — {{ workspace.name }} — LawPal{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% breadcrumb workspace.name 'workspace:view' workspace.slug %}
+    {% breadcrumb tool.name 'workspace:tool_object_list' workspace.slug tool.slug %}
+    {% breadcrumb object.user.get_full_name 'workspace:tool_object_edit' workspace.slug tool.slug tool.slug %}
+    {% breadcrumb 'Status' '' %}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <ul class="list-group col-lg-7">
+        {% for num, status in tool.model.status_choices %}
+        <li class="list-group-item">
+            {{ status }}
+            <div class="btn-group pull-right">
+                <button type="button" class="btn btn-default">How?</button>
+                <button type="button" class="btn btn-success">Mark complete</button>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
