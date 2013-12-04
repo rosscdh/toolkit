@@ -12,17 +12,17 @@
 
 {% block content %}
 <div class="row">
-    <ul class="list-group col-lg-7">
+    <ul class="list-group col-lg-8 col-lg-offset-2">
         {% with object.current_markers as current_markers %}
             {% for num, slug, name in tool.model.choices %}
-            <li class="list-group-item">
+            <li class="list-group-item clearfix">
                 {{ name }}
-                <div class="btn-group pull-right">
+                <div class="pull-right">
                     {% if slug in object.data.markers %}
-                        <button type="button" class="btn btn-success">Complete</button>
+                        <button type="button" class="btn btn-success btn-sm" disabled><i class="glyphicon glyphicon-ok"></i> <span class="btn-tip">Complete</span></button>
                     {% else %}
-                        <button type="button" class="btn btn-default">How?</button>
-                        <button type="button" class="btn btn-warning">Pending</button>
+                        <button type="button" class="btn btn-info btn-sm btn-embossed">How?</button>
+                        <button type="button" class="btn btn-warning btn-sm" disabled> <i class="glyphicon glyphicon-time"></i>  Pending</button>
                     {% endif %}
                 </div>
             </li>
