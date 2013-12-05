@@ -175,9 +175,10 @@ class EightyThreeBForm(forms.Form):
             'invalid': "Property transfer date is invalid.",
             'required': "Property transfer date can't be blank."
         },
-        label='Date on which the property was transferred',
         help_text='The filing deadline is 30 days from this date. Your filing deadline is June 24th 2013.',
-        widget=forms.TextInput(attrs={'class': 'datepicker'})
+        input_formats=['%B %d, %Y'],
+        label='Date on which the property was transferred',
+        widget=forms.DateInput(attrs={'class': 'datepicker'}, format=['%B %d, %Y'])
     )
     description = forms.CharField(
         error_messages={
