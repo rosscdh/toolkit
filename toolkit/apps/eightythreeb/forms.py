@@ -38,18 +38,6 @@ LAWYER_LAYOUT = Layout(
             StrictButton('<span class="fui-calendar"></span>'),
             css_class='datetime'
         ),
-        Div(
-            HTML('<legend>Additional Details (Client to complete)</legend>'),
-            Field('state', disabled='disabled'),
-            Div(
-                Field('ssn', readonly='readonly'),
-                HTML('<span class="help-block">or</span>'),
-                Field('itin', readonly='readonly'),
-                css_class='form-inline'
-            ),
-            Field('accountant_email', readonly='readonly'),
-            css_class='dialog dialog-success form-dialog'
-        ),
         'description',
         'tax_year',
         'nature_of_restrictions',
@@ -62,6 +50,18 @@ LAWYER_LAYOUT = Layout(
                 css_class='form-inline'
             ),
             css_class='form-group'
+        ),
+        Div(
+            HTML('<legend>Additional Details (Client to complete)</legend>'),
+            Field('state', disabled='disabled'),
+            Div(
+                Field('ssn', readonly='readonly'),
+                HTML('<span class="help-block">or</span>'),
+                Field('itin', readonly='readonly'),
+                css_class='form-inline'
+            ),
+            Field('accountant_email', readonly='readonly'),
+            css_class='dialog dialog-success form-dialog'
         )
     ),
     ButtonHolder(
