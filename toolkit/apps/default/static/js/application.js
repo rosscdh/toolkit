@@ -72,7 +72,7 @@ String.prototype.repeat = function(num) {
     $(datepickerSelector).datepicker({
       showOtherMonths: true,
       selectOtherMonths: true,
-      dateFormat: "d MM, yy",
+      dateFormat: "MM d, yy",
       yearRange: '-1:+1'
     }).prev('.btn').on('click', function (e) {
       e && e.preventDefault();
