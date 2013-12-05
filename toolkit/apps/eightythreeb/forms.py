@@ -248,6 +248,14 @@ class EightyThreeBForm(forms.Form):
             if field_name not in helper_fields:
                 del self.fields[field_name]
 
+    def clean_date_of_property_transfer(self):
+        date = self.cleaned_data.get('date_of_property_transfer')
+
+        if date < (datetime.date.today() - datetime.timedelta(days=25)):
+            raise forms.ValidationError('This requires a minimum of 5 days to complete the election')
+
+        return date
+
     def clean_ssn(self):
         """
         if the itin is not specified and we have a blank value
