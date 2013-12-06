@@ -1,6 +1,6 @@
 {% extends 'eightythreeb/base.html' %}{% load crispy_forms_tags %}
 
-{% block page_title %}{% if object %}Edit an 83b Entry{% else %}Create a new 83b Entry{% endif %}{% endblock  %}
+{% block page_title %}{% if form.title %}{{ form.title }}{% else %}{% if object %}Edit an 83b Entry{% else %}Create a new 83b Entry{% endif %}{% endif %}{% endblock  %}
 
 {% block body %}
 
@@ -20,22 +20,5 @@ $( '.datepicker' ).datepicker({
 
 });
 </script>
-
-<!--<script src="http://ziplookup.googlecode.com/git/public/ziplookup/zipLookup.min.js" type="text/javascript"></script>
-<script>
-$(document).ready(function () {
-    $('input[name=post_code]').on('change', function ( e ) {
-        $.zipLookup(
-            $(this).val(),
-            function ( cityName, stateName, stateShortName ) {
-                $('input[name=address]').val(cityName);
-                $('input[name=state]').val(stateName);
-            },
-            function ( errMsg ) {
-                $('.message').html("Error: " + errMsg);
-            });
-    });
-});
-</script>-->
 
 {% endblock  %}

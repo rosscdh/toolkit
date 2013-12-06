@@ -13,6 +13,8 @@ django-rest-swagger
 djangorestframework==2.3.9
 -e git+https://github.com/alex/django-filter.git#egg=django-filter
 
+django-rulez
+
 django-uuidfield
 
 django-crispy-forms

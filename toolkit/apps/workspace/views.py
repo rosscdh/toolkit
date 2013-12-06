@@ -12,6 +12,7 @@ from django.views.generic import (FormView,
                                   DetailView)
 
 from toolkit.apps.eightythreeb.forms import EightyThreeBForm
+from toolkit.apps.eightythreeb.signals import customer_download_pdf
 
 from .forms import WorkspaceForm, AddWorkspaceTeamMemberForm
 from .models import Workspace, Tool
@@ -109,7 +110,7 @@ class CreateWorkspaceToolObjectView(WorkspaceToolMixin, CreateView):
         return qs.filter(user=self.request.user).first()
 
     def get_success_url(self):
-        return reverse('workspace:tool_object_list', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug})
+        return reverse('workspace:tool_object_preview', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug, 'slug': self.object.slug})
 
     def get_form_kwargs(self):
         kwargs = super(CreateWorkspaceToolObjectView, self).get_form_kwargs()
@@ -156,7 +157,7 @@ class UpdateViewWorkspaceToolObjectView(WorkspaceToolMixin, UpdateView):
 
 class WorkspaceToolObjectPreviewView(WorkspaceToolMixin, DetailView):
     model = Tool
-    template_name = 'workspace/workspace_tool_preview.html'
+    template_name_suffix = '_tool_preview'
 
 
 class WorkspaceToolObjectDisplayView(WorkspaceToolMixin, DetailView):
@@ -171,14 +172,23 @@ class WorkspaceToolObjectDisplayView(WorkspaceToolMixin, DetailView):
 
 
 class WorkspaceToolObjectDownloadView(WorkspaceToolObjectDisplayView):
+    model = Tool
+
+    def issue_signals(self):
+        customer_download_pdf.send(sender=self.request.user, instance=self.object, actor_name=self.request.user.email)
+
     def render_to_response(self, context, **response_kwargs):
         html = self.object.html()
         pdfpng_service = PDFKitService(html=html)  # HTMLtoPDForPNGService(html=html)
         resp = HttpResponse(content_type='application/pdf')
         resp['Content-Disposition'] = 'attachment; filename="{filename}.pdf"'.format(filename=self.object.filename)
+
+        self.issue_signals()
+
         return pdfpng_service.pdf(template_name=self.object.template_name, file_object=resp)
 
 
 class WorkspaceToolStatusView(WorkspaceToolMixin, DetailView):
     model = Tool
-    template_name = 'workspace/workspace_tool_status_list.html'
+    template_name_suffix = '_status_list' # place your template in your tool templates/:tool_name/:tool_name_status_list.html
+

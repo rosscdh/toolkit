@@ -30,6 +30,10 @@ class EightyThreeB(StatusMixin, models.Model):
         return u'83(b) for %s' % self.client_name
 
     @property
+    def tool_slug(self):
+        return '83b-election-letters'
+
+    @property
     def client_name(self):
         return self.data.get('client_full_name', None)
 
@@ -58,7 +62,7 @@ class EightyThreeB(StatusMixin, models.Model):
         return loader.get_template(self.template_name)
 
     def get_absolute_url(self):
-        return reverse('eightythreeb:view')
+        return reverse('workspace:tool_object_preview', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug=self.tool_slug).first().slug, 'slug': self.slug})
 
     def html(self):
         context = loader.Context(self.data)

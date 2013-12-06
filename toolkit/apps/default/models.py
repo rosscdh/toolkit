@@ -1,20 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 
-from uuidfield import UUIDField
 from jsonfield import JSONField
-
-
-class InviteKey(models.Model):
-    """
-    Invite Key that allows a user to be invited to one or more projects
-    """
-    key = UUIDField(auto=True, db_index=True)
-    user = models.ForeignKey('auth.User')
-    tool = models.ForeignKey('workspace.Tool')
-    next = models.CharField(max_length=255)  # user will be redirected here on login
-    data = JSONField(default={})  # for any extra data that needs to be stored
-    has_been_used = models.BooleanField(default=False)
 
 
 class UserProfile(models.Model):
