@@ -150,7 +150,10 @@ class EightyThreeBForm(forms.Form):
         help_text='The filing deadline is 30 days from this date. Your filing deadline is June 24th 2013.',
         input_formats=['%B %d, %Y'],
         label='Date on which the property was transferred',
-        widget=forms.DateInput(attrs={'class': 'datepicker'}, format=['%B %d, %Y'])
+        widget=forms.DateInput(attrs={
+            'autocomplete': 'off',
+            'class': 'datepicker'
+        }, format=['%B %d, %Y'])
     )
     description = forms.CharField(
         error_messages={
