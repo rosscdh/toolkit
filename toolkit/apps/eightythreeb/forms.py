@@ -142,6 +142,62 @@ class EightyThreeBForm(forms.Form):
         label='',
         widget=forms.TextInput(attrs={'placeholder': 'Client email address', 'size': '40'})
     )
+    date_of_property_transfer = forms.DateField(
+        error_messages={
+            'invalid': "Property transfer date is invalid.",
+            'required': "Property transfer date can't be blank."
+        },
+        help_text='The filing deadline is 30 days from this date. Your filing deadline is June 24th 2013.',
+        input_formats=['%B %d, %Y'],
+        label='Date on which the property was transferred',
+        widget=forms.DateInput(attrs={'class': 'datepicker'}, format=['%B %d, %Y'])
+    )
+    description = forms.CharField(
+        error_messages={
+            'required': "Property description can't be blank."
+        },
+        label='Description of property with respect to which election is being made',
+        help_text='e.g. 10 shares of the common stock of ABC, Inc ($0.0001 per value)',
+        widget=forms.Textarea(attrs={
+            'cols': '80',
+            'data-toggle': 'summernote'
+        })
+    )
+    tax_year = forms.IntegerField(
+        error_messages={
+            'required': "Tax year can't be blank."
+        },
+        label='Taxable year for which the election is being made',
+        initial=_current_year,
+        widget=forms.NumberInput(attrs={'size': '4'})
+    )
+    nature_of_restrictions = forms.CharField(
+        error_messages={
+            'required': "Nature of restrictions can't be blank."
+        },
+        label='Nature of restrictions to which property is subject',
+        help_text='If you have copied this from Microsoft Word then please check the numbering and formatting has been retained.',
+        widget=forms.Textarea(attrs={
+            'cols': '80',
+            'data-toggle': 'summernote'
+        })
+    )
+    transfer_value_share = forms.DecimalField(
+        error_messages={
+            'required': "Transfer value per share can't be blank."
+        },
+        label='',
+        initial=0.00,
+        widget=forms.TextInput(attrs={'size': '10'})
+    )
+    transfer_value_total = forms.DecimalField(
+        error_messages={
+            'required': "Transfer value total can't be blank."
+        },
+        label='',
+        initial=0.00,
+        widget=forms.TextInput(attrs={'size': '10'})
+    )
     post_code = USZipCodeField(
         label='Zip Code',
         required=False
@@ -169,56 +225,6 @@ class EightyThreeBForm(forms.Form):
     accountant_email = forms.EmailField(
         label='Your accountants email address',
         required=False
-    )
-    date_of_property_transfer = forms.DateField(
-        error_messages={
-            'invalid': "Property transfer date is invalid.",
-            'required': "Property transfer date can't be blank."
-        },
-        help_text='The filing deadline is 30 days from this date. Your filing deadline is June 24th 2013.',
-        input_formats=['%B %d, %Y'],
-        label='Date on which the property was transferred',
-        widget=forms.DateInput(attrs={'class': 'datepicker'}, format=['%B %d, %Y'])
-    )
-    description = forms.CharField(
-        error_messages={
-            'required': "Property description can't be blank."
-        },
-        label='Description of property with respect to which election is being made',
-        help_text='e.g. 10 shares of the common stock of ABC, Inc ($0.0001 per value)',
-        widget=forms.Textarea(attrs={'cols': '80'})
-    )
-    tax_year = forms.IntegerField(
-        error_messages={
-            'required': "Tax year can't be blank."
-        },
-        label='Taxable year for which the election is being made',
-        initial=_current_year,
-        widget=forms.NumberInput(attrs={'size': '4'})
-    )
-    nature_of_restrictions = forms.CharField(
-        error_messages={
-            'required': "Nature of restrictions can't be blank."
-        },
-        label='Nature of restrictions to which property is subject',
-        help_text='If you have copied this from Microsoft Word then please check the numbering and formatting has been retained.',
-        widget=forms.Textarea(attrs={'cols': '80'})
-    )
-    transfer_value_share = forms.DecimalField(
-        error_messages={
-            'required': "Transfer value per share can't be blank."
-        },
-        label='',
-        initial=0.00,
-        widget=forms.TextInput(attrs={'size': '10'})
-    )
-    transfer_value_total = forms.DecimalField(
-        error_messages={
-            'required': "Transfer value total can't be blank."
-        },
-        label='',
-        initial=0.00,
-        widget=forms.TextInput(attrs={'size': '10'})
     )
 
     def __init__(self, *args, **kwargs):
