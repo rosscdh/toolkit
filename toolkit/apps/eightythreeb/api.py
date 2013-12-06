@@ -11,6 +11,6 @@ class EightyThreeBViewSet(ModelViewSet):
     queryset = EightyThreeB.objects.all()
     serializer_class = EightyThreeBSerializer
 
-    def get_queryset(self):
-        qs = super(EightyThreeBViewSet, self).get_queryset()
-        return qs.filter(user=self.request.user)
+    # def get_queryset(self):
+    #     qs = super(EightyThreeBViewSet, self).get_queryset()
+    #     return qs.filter(user=self.request.user)
