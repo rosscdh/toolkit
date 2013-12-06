@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 
 from . import EIGHTYTHREEB_STATUS
 from .mixins import StatusMixin
+from .managers import EightyThreeBManager
 
 
 class EightyThreeB(StatusMixin, models.Model):
@@ -25,6 +26,8 @@ class EightyThreeB(StatusMixin, models.Model):
     data = JSONField(default={})
 
     status = models.IntegerField(choices=EIGHTYTHREEB_STATUS.get_choices(), default=EIGHTYTHREEB_STATUS.lawyer_complete_form, db_index=True)
+
+    objects = EightyThreeBManager()
 
     def __unicode__(self):
         return u'83(b) for %s' % self.client_name

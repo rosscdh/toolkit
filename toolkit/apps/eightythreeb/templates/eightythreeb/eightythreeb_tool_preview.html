@@ -56,6 +56,33 @@
                     data-url="{% url 'eightythreeb:tracking_code' slug=object.slug %}">I have mailed the documents and have the tracking code to enter</button>
             {% endif %}
 
+            {% if object.STATUS_83b.datestamped_copy_recieved == object.status %}
+                <button type="button" class="btn btn-success action"
+                    data-method="PATCH"
+                    data-url="/api/83b/{{ object.pk }}/"
+                    data-tool="{{ tool.pk }}"
+                    data-tool_object_id="{{ object.pk }}"
+                    data-status="{{ object.STATUS_83b.copy_sent_to_lawyer }}">I have recieved the date-stamped copy of my 83b back from the IRS</button>
+            {% endif %}
+
+            {% if object.STATUS_83b.copy_sent_to_lawyer == object.status %}
+                <button type="button" class="btn btn-success action"
+                    data-method="PATCH"
+                    data-url="/api/83b/{{ object.pk }}/"
+                    data-tool="{{ tool.pk }}"
+                    data-tool_object_id="{{ object.pk }}"
+                    data-status="{{ object.STATUS_83b.copy_sent_to_accountant }}">I have sent a copy of the 83b to my attorney</button>
+            {% endif %}
+
+            {% if object.STATUS_83b.copy_sent_to_accountant == object.status %}
+                <button type="button" class="btn btn-success action"
+                    data-method="PATCH"
+                    data-url="/api/83b/{{ object.pk }}/"
+                    data-tool="{{ tool.pk }}"
+                    data-tool_object_id="{{ object.pk }}"
+                    data-status="{{ object.STATUS_83b.complete }}">I have sent a copy of the 83b to my accountant</button>
+            {% endif %}
+
         {% endif %}
 
         {% if object.STATUS_83b.irs_recieved == object.status %}
@@ -113,6 +140,7 @@ $(document).ready(function () {
         var data = btn.data();
         var url = data['url']; delete data['url'];
         var method = data['method']; delete data['method'];
+        //var response_success_msg = data['response_success_msg']; delete data['response_success_msg'];
 
         $.ajax({
             "type": method,
@@ -126,7 +154,8 @@ $(document).ready(function () {
             },
             "complete": function ( data ) {
                 // reload the page to show updated lawyer info
-                btn.hide().parent().append('Invited {{ object.user.get_full_name|default:object.user.username }}');
+                //btn.hide().parent().append(response_success_msg);
+                document.location.reload();
             }
         });
     });

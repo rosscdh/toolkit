@@ -11,7 +11,7 @@ customer_download_pdf = Signal(providing_args=['actor_name'])
 customer_print_and_sign = Signal(providing_args=['actor_name'])
 mail_to_irs_tracking_code = Signal(providing_args=[])
 irs_recieved = Signal(providing_args=[])
-datestampped_copy_recieved = Signal(providing_args=['actor_name'])
+datestamped_copy_recieved = Signal(providing_args=['actor_name'])
 copy_sent_to_lawyer = Signal(providing_args=['actor_name'])
 copy_sent_to_accountant = Signal(providing_args=['actor_name'])
 
@@ -107,15 +107,15 @@ def on_mail_to_irs_tracking_code(sender, instance, **kwargs):
 def on_irs_recieved(sender, instance, **kwargs):
     actor_name = sender.email
     _update_marker(marker_name='irs_recieved',
-                   marker_status=instance.STATUS_83b.datestampped_copy_recieved,
+                   marker_status=instance.STATUS_83b.datestamped_copy_recieved,
                    actor_name=actor_name,
                    instance=instance)
 
 
-@receiver(datestampped_copy_recieved)
-def on_datestampped_copy_recieved(sender, instance, **kwargs):
+@receiver(datestamped_copy_recieved)
+def on_datestamped_copy_recieved(sender, instance, **kwargs):
     actor_name = sender.email
-    _update_marker(marker_name='datestampped_copy_recieved',
+    _update_marker(marker_name='datestamped_copy_recieved',
                    marker_status=instance.STATUS_83b.copy_sent_to_lawyer,
                    actor_name=actor_name,
                    instance=instance)
