@@ -74,6 +74,7 @@ HELPER_APPS = (
     'django_extensions',
     'localflavor',
     'django_bootstrap_breadcrumbs',
+    'rulez',
 
     # api
     'rest_framework',
@@ -133,7 +134,7 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_L10N = True
+USE_L10N = False  # should always be False to enable dates accepted https://docs.djangoproject.com/en/dev/ref/forms/fields/#DateField
 
 USE_TZ = True
 
@@ -162,6 +163,7 @@ REST_FRAMEWORK = {
         'rest_framework.serializers.HyperlinkedModelSerializer',
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ),
 
@@ -172,7 +174,7 @@ REST_FRAMEWORK = {
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
-        #'glynt.apps.api.v2_permissions.GlyntObjectPermission',
+        #'toolkit.apps.api.permissions.ApiObjectPermission',
     ],
     'PAGINATE_BY': 10,
 }

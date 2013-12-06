@@ -1,0 +1,136 @@
+{% extends 'dash/dash.html' %}{% load url from future %}{% load crispy_forms_tags django_bootstrap_breadcrumbs %}
+
+{% block page_title %}Preview {{ workspace }} {{ tool }}{% endblock  %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% breadcrumb workspace.name 'workspace:view' workspace.slug %}
+    {% breadcrumb tool.name 'workspace:tool_object_list' workspace.slug tool.slug %}
+    {% breadcrumb object 'workspace:tool_object_edit' workspace.slug tool.slug object.slug %}
+    {% breadcrumb 'Review' '' %}
+{% endblock %}
+
+{% block body %}
+{% csrf_token %}
+<div id="pdf_review_controls" class="row">
+    <h3>Current Status: {{ object.current_status }}</h3>
+
+    <div class="">
+        {% if user.profile.is_lawyer %}
+
+            {% if object.STATUS_83b.lawyer_invite_customer == object.status %}
+                <button type="button" class="btn btn-success action"
+                    data-method="POST"
+                    data-url="/api/invite/"
+                    data-user="{{ object.user.pk }}"
+                    data-tool="{{ tool.pk }}"
+                    data-tool_object_id="{{ object.pk }}"
+                    data-next="{% url 'workspace:tool_object_edit' workspace=workspace.slug tool=tool.slug slug=object.slug %}">Invite {{ object.user.get_full_name|default:object.user.username }} to complete the 83b</button>
+            {% endif %}
+
+        {% endif %}
+
+        {% if user.profile.is_customer %}
+
+            {% if object.STATUS_83b.customer_complete_form == object.status %}
+                <button type="button" id="id_customer_download_pdf" class="btn btn-success redirect"
+                data-url="{% url 'workspace:tool_object_edit' workspace=workspace.slug tool=tool.slug slug=object.slug %}">Complete 83b</button>
+            {% endif %}
+
+            {% if object.STATUS_83b.customer_download_pdf == object.status %}
+                <button type="button" id="id_customer_download_pdf" class="btn btn-success redirect"
+                data-url="{% url 'workspace:tool_object_download' workspace=workspace.slug tool=tool.slug slug=object.slug %}">Download</button>
+            {% endif %}
+
+            {% if object.STATUS_83b.customer_print_and_sign == object.status %}
+                <button type="button" class="btn btn-success action"
+                    data-method="PATCH"
+                    data-url="/api/83b/{{ object.pk }}/"
+                    data-tool="{{ tool.pk }}"
+                    data-tool_object_id="{{ object.pk }}"
+                    data-status="{{ object.STATUS_83b.mail_to_irs_tracking_code }}">I have printed and signed 2 copies of the 83b document</button>
+            {% endif %}
+
+            {% if object.STATUS_83b.mail_to_irs_tracking_code == object.status %}
+                <button type="button" class="btn btn-success redirect"
+                    data-url="{% url 'eightythreeb:tracking_code' slug=object.slug %}">I have mailed the documents and have the tracking code to enter</button>
+            {% endif %}
+
+        {% endif %}
+
+        {% if object.STATUS_83b.irs_recieved == object.status %}
+        <div class="row">
+            <p>This is an automated part of the process, and if you have sent your documents via registered post and registered the tracking code with us; then you should simply wait for this to update.</p>
+            <button type="button" class="btn btn-success redirect"
+                data-url="{% url 'eightythreeb:tracking_code' slug=object.slug %}">Update tracking code</button>
+        </div>
+        {% endif %}
+
+    </div>
+    <br/><br/>
+</div>
+<iframe name="id_preview" id="id_pdf_preview" class="fade" src="{% url 'workspace:tool_object_display' workspace=workspace.slug tool=tool.slug slug=object.slug %}"></iframe>
+
+{% endblock  %}
+
+{% block css %}
+<style>
+iframe#id_pdf_preview {
+    width:100%;
+}
+</style>
+{% endblock  %}
+
+{% block js %}
+<script>
+$(document).ready(function () {
+    'use strict';
+
+    var iframe = $('#id_pdf_preview');
+    var controls = $('#pdf_review_controls');
+    iframe.height( ($('body').height() / 1.1) - controls.height() );
+    iframe.removeClass('fade');
+
+    /**
+    * Redirect buttons
+    */
+    $('button.redirect').on( 'click', function ( e ) {
+        e.preventDefault();
+        var btn = $(this);
+
+        var data = btn.data();
+        var url = data['url']; delete data['url'];
+        document.location = url;
+    });
+    /**
+    * Action buttons
+    */
+
+    $('button.action').on( 'click', function ( e ) {
+        e.preventDefault();
+        var btn = $(this);
+
+        var data = btn.data();
+        var url = data['url']; delete data['url'];
+        var method = data['method']; delete data['method'];
+
+        $.ajax({
+            "type": method,
+            "url": url,
+            "data": JSON.stringify(data),
+            "dataType": 'json',
+            "contentType": 'application/json',
+            "beforeSend": function (jqXHR, settings) {
+                // Pull the token out of the DOM.
+                jqXHR.setRequestHeader('X-CSRFToken', $('input[name=csrfmiddlewaretoken]:first').val());
+            },
+            "complete": function ( data ) {
+                // reload the page to show updated lawyer info
+                btn.hide().parent().append('Invited {{ object.user.get_full_name|default:object.user.username }}');
+            }
+        });
+    });
+
+});
+</script>
+{% endblock  %}

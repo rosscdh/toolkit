@@ -12,7 +12,8 @@ from crispy_forms.bootstrap import PrependedText, FieldWithButtons, StrictButton
 
 from toolkit.apps.workspace.services import EnsureCustomerService
 
-from .signals import lawyer_complete_form, customer_complete_form
+from.models import EightyThreeB
+from .signals import lawyer_complete_form, customer_complete_form, mail_to_irs_tracking_code
 
 import datetime
 
@@ -296,3 +297,47 @@ class EightyThreeBForm(forms.Form):
         self.issue_signals(instance=eightythreeb)
 
         return eightythreeb
+
+
+@parsleyfy
+class TrackingCodeForm(forms.ModelForm):
+    title = 'Your 83b Postage Tracking Code'
+
+    tracking_code = forms.CharField(help_text='Please provide the Registered Post Tracking Code (USPS)')
+    user = forms.CharField(widget=forms.HiddenInput)
+
+    class Meta:
+        model = EightyThreeB
+        fields = ['user',]
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.attrs = {
+            'parsley-validate': '',
+        }
+
+        self.helper.layout = Layout(
+            'tracking_code',
+            ButtonHolder(
+                Submit('submit', 'Save', css_class='btn-hg btn-primary'),
+                css_class='form-group'
+            )
+        )
+
+        super(TrackingCodeForm, self).__init__(*args, **kwargs)
+        self.fields['tracking_code'].initial = self.instance.tracking_code
+
+    def clean_user(self):
+        # dont allow override from form
+        return self.instance.user
+
+    def issue_signals(self):
+        mail_to_irs_tracking_code.send(sender=self.instance.user, instance=self.instance, actor_name=self.instance.user.email)
+
+    def save(self, **kwargs):
+        # save to data
+        self.instance.tracking_code = self.cleaned_data.get('tracking_code')
+
+        self.issue_signals()
+
+        return super(TrackingCodeForm, self).save(**kwargs)

@@ -37,7 +37,7 @@ urlpatterns = patterns('',
         login_required(cache_page(60*3)(WorkspaceToolObjectDisplayView.as_view())),
         name='tool_object_display'),
     url(r'^(?P<workspace>[\w-]+)/tool/(?P<tool>[\w-]+)/(?P<slug>[\w-]+)/download/$',
-        login_required(cache_page(60*3)(WorkspaceToolObjectDownloadView.as_view())),
+        login_required(WorkspaceToolObjectDownloadView.as_view()),
         name='tool_object_download'),
 
 

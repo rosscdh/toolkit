@@ -3,12 +3,13 @@ from django.conf.urls import patterns, url, include
 from rest_framework import routers
 
 from toolkit.apps.eightythreeb.api import EightyThreeBViewSet
-
+from toolkit.apps.workspace.api import InviteKeyViewSet
 
 router = routers.DefaultRouter()
 
 
 router.register(r'83b', EightyThreeBViewSet)
+router.register(r'invite', InviteKeyViewSet)
 
 
 urlpatterns = patterns('',
