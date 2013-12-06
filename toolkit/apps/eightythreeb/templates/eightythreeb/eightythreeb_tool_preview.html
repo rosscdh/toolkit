@@ -90,6 +90,15 @@
             <p>This is an automated part of the process, and if you have sent your documents via registered post and registered the tracking code with us; then you should simply wait for this to update.</p>
             <button type="button" class="btn btn-success redirect"
                 data-url="{% url 'eightythreeb:tracking_code' slug=object.slug %}">Update tracking code</button>
+
+            {% if user.is_staff or user.is_superuser %}
+                <button type="button" class="btn btn-danger action"
+                    data-method="PATCH"
+                    data-url="/api/83b/{{ object.pk }}/"
+                    data-tool="{{ tool.pk }}"
+                    data-tool_object_id="{{ object.pk }}"
+                    data-status="{{ object.STATUS_83b.datestamped_copy_recieved }}">Staff: Skip this step</button>
+            {% endif %}
         </div>
         {% endif %}
 
