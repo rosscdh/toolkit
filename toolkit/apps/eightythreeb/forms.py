@@ -155,7 +155,7 @@ class EightyThreeBForm(forms.Form):
                 'autocomplete': 'off',
                 'class': 'datepicker'
             },
-            format=['%B %d, %Y']
+            format='%B %d, %Y'
         )
     )
     description = forms.CharField(

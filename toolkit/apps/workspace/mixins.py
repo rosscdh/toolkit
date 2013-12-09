@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
+
 from django.shortcuts import get_object_or_404
 from django.views.generic import FormView
 
 from .models import Workspace
+
+import re
 
 
 class WorkspaceToolMixin(object):
@@ -47,7 +51,8 @@ class WorkspaceToolFormMixin(WorkspaceToolMixin, FormView):
         Returns the initial data to use for forms on this view.
         """
         initial = super(WorkspaceToolFormMixin, self).get_initial()
-        initial.update(**self.object.get_form_data())
+        if self.object:
+            initial.update(**self.object.get_form_data())
         return initial
 
 
@@ -56,4 +61,19 @@ class WorkspaceToolModelMixin(object):
         """
         Returns the initial data to use for the associated form.
         """
-        return self.data
+        TIME_RE = re.compile(r'^\d{2}:\d{2}:\d{2}')
+        DATE_RE = re.compile(r'^\d{4}-\d{2}-\d{2}(?!T)')
+        DATETIME_RE = re.compile(r'^\d{4}-\d{2}-\d{2}T')
+
+        data = self.data.copy()
+        for key, value in data.iteritems():
+            if TIME_RE.match(str(value)):
+                data[key] = datetime.strptime(value, '%H-%M:%S')
+
+            if DATE_RE.match(str(value)):
+                data[key] = datetime.strptime(value, '%Y-%m-%d')
+
+            if DATETIME_RE.match(str(value)):
+                data[key] = datetime.strptime(value, '%Y-%m-%dT%H:%M:%S')
+
+        return data
