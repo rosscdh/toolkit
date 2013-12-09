@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import get_object_or_404
+from django.views.generic import FormView
 
 from .models import Workspace
 
@@ -21,3 +22,38 @@ class WorkspaceToolMixin(object):
             'tool': self.tool,
         })
         return context
+
+
+class WorkspaceToolFormMixin(WorkspaceToolMixin, FormView):
+    def get_form_class(self):
+        """
+        Returns the form associated with the tool.
+        """
+        return self.tool.form
+
+    def get_form_kwargs(self):
+        """
+        Returns the keyword arguments for instantiating the form.
+        """
+        kwargs = super(WorkspaceToolFormMixin, self).get_form_kwargs()
+        kwargs.update({
+            'request': self.request,
+            'workspace': self.workspace
+        })
+        return kwargs
+
+    def get_initial(self):
+        """
+        Returns the initial data to use for forms on this view.
+        """
+        initial = super(WorkspaceToolFormMixin, self).get_initial()
+        initial.update(**self.object.get_form_data())
+        return initial
+
+
+class WorkspaceToolModelMixin(object):
+    def get_form_data(self):
+        """
+        Returns the initial data to use for the associated form.
+        """
+        return self.data
