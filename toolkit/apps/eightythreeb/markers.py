@@ -41,7 +41,7 @@ class CustomerTrackingNumberMarker(Marker):
 
     def action_url(self):
         # Dont allow the tracking number to be updated if we have the tracking number in the data and the status is greater than
-        if self.tool.is_complete is True or self.tool.status > self.tool.STATUS_83b.irs_recieved and 'tracking_code' in self.tool.data:
+        if self.tool.is_complete is True or self.tool.status < self.val:
             return None
         else:
             return reverse('eightythreeb:tracking_code', kwargs={'slug': self.tool.slug})
