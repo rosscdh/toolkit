@@ -1,112 +1,176 @@
 {% extends 'pdf/base.html' %}
-
-{% block page_header %}
-    <div>
-        <h1>Election Under Section 83(b) of the Internal Revenue Code</h1>
-    </div>
-    <hr />
+{% block styleextra %}
+	span {
+		color: #666;
+		background-color:#FAF0E6;
+	}
+	.signature-block {
+		border:2px solid #f9f9f9;
+		background-color: #f9f9f9;
+		padding:10px 10px 1px 10px;
+		width: 260px;
+		margin-top:20px;
+	}
+	.signature-block-inner {
+		border-bottom:2px dashed #ccc;
+		height:50px;
+		border-left-color:white;
+		border-right-color:white;
+		line-height:45px;
+		font-size:20px;
+		color:red;
+		padding-left:5px;
+	}
+	.signature-block-name {
+		font-size:12px;
+		text-transform:uppercase;
+		padding-top:4px;
+		text-align:right;
+	}
+	.header {
+		text-align:right;
+		text-transform:uppercase;
+		color:#ccc;
+		font-size:12px;
+		font-weight:bold;
+	}
 {% endblock %}
 
 {% block content %}
+
+
+<!-- Page 1 : Instructions  -->
+
+Page 1. This is where the instructions go for the client. 
+
+
+
+
+
+
+<!-- Page 2 : Transmittal Letter  -->
+<div class="page-break"></div>
+<div class="header">IRS TRANSMITTAL LETTER</div>
+
+<div>
+<div>{{ client_full_name|default:'<span>[Client Name]</span>' }}</div>
+<div>{{ address|default:'<span>[Client Address]</span>' }}</div>
+<div>{{ post_code|default:'<span>[Client Zip Code]</span>' }}, {{ state|default:'<span>[Client State]</span>' }}</div>
+<br />
+<div>Taxpayer SSN / ITIN # : {% if ssn or itin %}{{ ssn|default:'' }}{{ itin|default:'' }}{% else %}<span>[ITIN or SSN]</span>{% endif %}</div>
+
+</div>
+
+<p>
+Dated: {% now "F jS Y" %}
+<p>
+[IRS Service Center Address]
+<p>
+<br />
+<br />
+Dear Sir or Madam:
+<p>
+Pursuant to Treasury Regulations Section 1.83-2(c) promulgated under Section 83 of the Internal Revenue Code of 1986, as amended (the “Code”), enclosed please find a copy of an election under Section 83(b) of the Code.
+<p>
+Also, attached are a self-addressed stamped envelope and a signed copy of my 83(b) Election Form. Please date stamp the copy of the Election Form, enclose it in the attached envelope and mail it to me.
+<p>
+Thank you,
+<p>
+<div class="signature-block">
+	<div class="signature-block-inner">x</div>
+	<div class="signature-block-name">{{ client_full_name }}</div>
+</div>
+
+
+
+
+
+<!-- Page 3 : 83b Election Copy 1  -->
+<div class="page-break"></div>
+<div class="header">Copy 1 - IRS (File Copy)</div>
+
+<h3>Election Under Section 83(b) of the Internal Revenue Code</h3>
 <br/>
+
 <div>
 The undersigned hereby makes an election pursuant to Section 83(b) of the Internal Revenue Code with respect to the property described below:
 </div>
+<br/>
 
 <div>
-<h2>1. Name and Address of Taxpayer:</h2>
-<div>{{ client_full_name }}</div>
-<div>{{ address }}</div>
-<div>{{ post_code }}, {{ state }}</div>
+<p>1. Name and Address of Taxpayer</p>
+<div>{{ client_full_name|default:'<span>[Client Name]</span>' }}</div>
+<div>{{ address|default:'<span>[Client Address]</span>' }}</div>
+<div>{{ post_code|default:'<span>[Client Zip Code]</span>' }}, {{ state|default:'<span>[Client State]</span>' }}</div>
+<br />
+<div>Taxpayer SSN / ITIN # : {% if ssn or itin %}{{ ssn|default:'' }}{{ itin|default:'' }}{% else %}<span>[ITIN or SSN]</span>{% endif %}</div>
+<br />
 
-<strong>Taxpayer SSN # :</strong>
-{{ ssn|default:'None specified' }}
 
-<strong>Taxpayer ITIN :</strong>
-{{ itin|default:'None specified' }}
+<div>
+2. Description of property with respect to which election is being made:
+<br /><br />
+
+{{ transfer_value_share|default:'<span>[x shares]</span>' }} shares of the common stock of {{ company_name |default:'<span>[Company Name]</span>' }}, (the “Company”) (${{ value_at_time_of_transfer |default:'<span>[Value at time of transfer]</span>'}} par value).
+</div>
+
+<br />
+<div>
+3. Date on which property was transferred is
+{{ date_of_property_transfer|date:"SHORT_DATE_FORMAT"|default:'<span>[Transfer Date]</span>' }}.
+</div>
+<br />
+<div>
+4. The taxable year for which this election is being made is calendar year {{ tax_year |default:'<span>[Transfer Year]</span>'}}.
+</div>
+<br />
+<div>
+5. Nature of restrictions to which property is subject:
+<br /><br />
+{{ description | default:'<span>[Description of Restrictions]</span>' }}
+</div>
+<br />
+<div>
+6. The fair market value at time of transfer (determined without regard to any restrictions other than restrictions which by their terms will never lapse) of the property with respect to which this election is being made is ${{ share_price_at_time_of_transfer |default:'<span>[Share price at time of transfer]</span>'}} per share, for a total aggregate value of ${{ value_at_time_of_transfer |default:'<span>[Value at time of transfer]</span>'}}.
+</div>
+<br />
+<div>
+7. The amount paid by the taxpayer for the property is ${{ amount_paid|default:'<span>[Amount paid]</span>'}}.
 </div>
 
 <div>
-<h2>2. Description of property with respect to which election is being made:</h2>
-XXXXX shares of the common stock of {{ company_name }}, (the “Company”) (${{ value_at_time_of_transfer }} par value).
-</div>
+<p>8. A copy of this statement has been furnished to {{ company_name |default:'<span>[Company Name]</span>' }}.
+<br />
+<br />
+<br />
+Dated: {% now "F jS Y" %}
+<br />
+<br />
 
-<div>
-<h2>3. Date on which property was transferred</h2>
-{{ date_of_property_transfer|date:"SHORT_DATE_FORMAT" }}.
-</div>
-
-<div>
-<h2>4. Taxable Year</h2>
-The taxable year for which this election is being made is calendar year {{ tax_year }}.
-</div>
-
-<div>
-<h2>5. Nature of restrictions to which property is subject:</h2>
-{{ description }}
-</div>
-
-<div>
-<h2>6. Market Value</h2>
-The fair market value at time of transfer (determined without regard to any restrictions other than restrictions which by their terms will never lapse) of the property with respect to which this election is being made is $X.XX per share, for a total aggregate value of ${{ value_at_time_of_transfer }}.
-</div>
-
-<div>
-<h2>7. Amount Paid</h2>
-The amount paid by the taxpayer for the property is ${{ amount_paid }}.
-</div>
-
-<div>
-<h2>8. Statement Copy</h2>
-
-A copy of this statement has been furnished to {{ company_name }}.
-
-<b>Dated:</b> {% now "SHORT_DATETIME_FORMAT" %}
 </div> 
 
 <div>
 Signed,
 
-___________________________________
-{{ client_full_name }}
+<p>
+<div class="signature-block">
+	<div class="signature-block-inner">x</div>
+	<div class="signature-block-name">{{ client_full_name }}</div>
 </div>
- 
-____________________________________
-SPOUSE SIGNATURE, IF COMMUNITY PROP STATE
- 
- 
-____________________________________
-SPOUSE NAME PRINTED
+<!-- if the state is XYZ then show this -->
+<div class="signature-block">
+	<div class="signature-block-inner">x</div>
+	<div class="signature-block-name">{{ spouse_full_name }}</div>
+</div>
+</div>
+
 </div> 
- 
- 
- 
-SAMPLE TRANSMITTAL LETTER TO IRS:
 
-Name and Address of Taxpayer:
-XXXXXXXXXXX
-XXXXXXXXXXX
-XXXXXXXXXXX
-Taxpayer SSN # :
-{{ ssn }}
 
-Taxpayer ITIN :
-{{ itin }}
+<!-- Page 4 : 83b Election Copy 1  -->
+<div class="page-break"></div>
+<div class="header">Copy 2 - IRS (Return Copy)</div>
+Same as previous page. Will duplicate once v1 is complete. 
+
  
-Dated: {% now "SHORT_DATETIME_FORMAT" %}
- 
-IRS Service Center Address From Below
- 
-Dear Sir or Madam:
- 
-Pursuant to Treasury Regulations Section 1.83-2(c) promulgated under Section 83 of the Internal Revenue Code of 1986, as amended (the “Code”), enclosed please find a copy of an election under Section 83(b) of the Code.
- 
-Also, attached are a self-addressed stamped envelope and a signed copy of my 83(b) Election Form. Please date stamp the copy of the Election Form, enclose it in the attached envelope and mail it to me.
- 
-Thank you,
- 
-________________________________
-XXXXXXXX X XXXXXXXXX
- 
-Enclosures
 {% endblock %}
