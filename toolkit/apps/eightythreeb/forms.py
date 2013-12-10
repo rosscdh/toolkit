@@ -264,8 +264,10 @@ class EightyThreeBForm(forms.Form):
     def clean_date_of_property_transfer(self):
         date = self.cleaned_data.get('date_of_property_transfer')
 
-        if date < (datetime.date.today() - datetime.timedelta(days=25)):
-            raise forms.ValidationError('This requires a minimum of 5 days to complete the election')
+        # Only check the property transfer date on new forms
+        if not self.initial:
+            if date < (datetime.date.today() - datetime.timedelta(days=25)):
+                raise forms.ValidationError('This requires a minimum of 5 days to complete the election')
 
         return date
 
