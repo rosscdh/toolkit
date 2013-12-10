@@ -72,6 +72,7 @@ def _update_marker(marker_name, next_status, actor_name, instance, **kwargs):
 @receiver(lawyer_complete_form)
 def on_lawyer_complete_form(sender, instance, actor, **kwargs):
     if actor.profile.is_lawyer:
+        actor_name = actor.get_full_name()
         _update_marker(marker_name='lawyer_complete_form',
                        next_status=instance.STATUS_83b.lawyer_invite_customer,
                        actor_name=actor_name,
@@ -81,7 +82,7 @@ def on_lawyer_complete_form(sender, instance, actor, **kwargs):
 @receiver(lawyer_invite_customer)
 def on_lawyer_invite_customer(sender, instance, actor, **kwargs):
     if actor.profile.is_lawyer:
-        actor_name = actor.email
+        actor_name = actor.get_full_name()
         _update_marker(marker_name='lawyer_invite_customer',
                        next_status=instance.STATUS_83b.customer_complete_form,
                        actor_name=actor_name,
@@ -91,7 +92,7 @@ def on_lawyer_invite_customer(sender, instance, actor, **kwargs):
 @receiver(customer_complete_form)
 def on_customer_complete_form(sender, instance, actor, **kwargs):
     if actor.profile.is_customer:
-        actor_name = actor.email
+        actor_name = actor.get_full_name()
         _update_marker(marker_name='customer_complete_form',
                        next_status=instance.STATUS_83b.customer_download_pdf,
                        actor_name=actor_name,
@@ -102,7 +103,7 @@ def on_customer_complete_form(sender, instance, actor, **kwargs):
 def on_customer_download_pdf(sender, instance, actor, **kwargs):
     if actor.profile.is_customer:
         #if self.object.status <= self.object.STATUS_83b.customer_download_pdf:
-        actor_name = actor.email
+        actor_name = actor.get_full_name()
         _update_marker(marker_name='customer_download_pdf',
                        next_status=instance.STATUS_83b.customer_print_and_sign,
                        actor_name=actor_name,
@@ -112,7 +113,7 @@ def on_customer_download_pdf(sender, instance, actor, **kwargs):
 @receiver(customer_print_and_sign)
 def on_customer_print_and_sign(sender, instance, actor, **kwargs):
     if actor.profile.is_customer:
-        actor_name = actor.email
+        actor_name = actor.get_full_name()
         _update_marker(marker_name='customer_print_and_sign',
                        next_status=instance.STATUS_83b.mail_to_irs_tracking_code,
                        actor_name=actor_name,
@@ -121,7 +122,7 @@ def on_customer_print_and_sign(sender, instance, actor, **kwargs):
 
 @receiver(mail_to_irs_tracking_code)
 def on_mail_to_irs_tracking_code(sender, instance, actor, **kwargs):
-    actor_name = actor.email
+    actor_name = actor.get_full_name()
     _update_marker(marker_name='mail_to_irs_tracking_code',
                    next_status=instance.STATUS_83b.irs_recieved,
                    actor_name=actor_name,
@@ -130,7 +131,7 @@ def on_mail_to_irs_tracking_code(sender, instance, actor, **kwargs):
 
 @receiver(irs_recieved)
 def on_irs_recieved(sender, instance, actor, **kwargs):
-    actor_name = actor.email
+    actor_name = actor.get_full_name()
     _update_marker(marker_name='irs_recieved',
                    next_status=instance.STATUS_83b.datestamped_copy_recieved,
                    actor_name=actor_name,
@@ -139,7 +140,7 @@ def on_irs_recieved(sender, instance, actor, **kwargs):
 
 @receiver(datestamped_copy_recieved)
 def on_datestamped_copy_recieved(sender, instance, actor, **kwargs):
-    actor_name = actor.email
+    actor_name = actor.get_full_name()
     _update_marker(marker_name='datestamped_copy_recieved',
                    next_status=instance.STATUS_83b.copy_sent_to_lawyer,
                    actor_name=actor_name,
@@ -148,7 +149,7 @@ def on_datestamped_copy_recieved(sender, instance, actor, **kwargs):
 
 @receiver(copy_sent_to_lawyer)
 def on_copy_sent_to_lawyer(sender, instance, actor, **kwargs):
-    actor_name = actor.email
+    actor_name = actor.get_full_name()
     _update_marker(marker_name='copy_sent_to_lawyer',
                    next_status=instance.STATUS_83b.copy_sent_to_accountant,
                    actor_name=actor_name,
@@ -157,8 +158,19 @@ def on_copy_sent_to_lawyer(sender, instance, actor, **kwargs):
 
 @receiver(copy_sent_to_accountant)
 def on_copy_sent_to_accountant(sender, instance, actor, **kwargs):
-    actor_name = actor.email
+    actor_name = actor.get_full_name()
     _update_marker(marker_name='copy_sent_to_accountant',
+                   next_status=instance.STATUS_83b.complete,
+                   actor_name=actor_name,
+                   instance=instance)
+    # Send the complete signal here
+    complete.send(sender=sender, instance=instance, actor=actor)
+
+@receiver(complete)
+def on_complete(sender, instance, actor, **kwargs):
+    actor_name = actor.get_full_name()
+    # Send the final event here
+    _update_marker(marker_name='complete',
                    next_status=instance.STATUS_83b.complete,
                    actor_name=actor_name,
                    instance=instance)

@@ -7,7 +7,7 @@ class EditFormMarker(Marker):
     action_user_class = ['lawyer', 'customer']
 
     def action_url(self):
-        if self.tool.is_complete is True:
+        if self.tool.is_complete is True or self.tool.status < self.val:
             return None
         else:
             return reverse('workspace:tool_object_edit', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.tool_slug, 'slug': self.tool.slug})
@@ -18,7 +18,7 @@ class LawyerInviteUserMarker(Marker):
     action_user_class = ['lawyer',]
 
     def action_url(self):
-        if self.tool.is_complete is True:
+        if self.tool.is_complete is True or self.is_complete is True:
             return None
         else:
             return reverse('workspace:tool_object_invite', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.tool_slug, 'slug': self.tool.slug})
@@ -35,7 +35,7 @@ class CustomerDownloadDocMarker(Marker):
         return reverse('workspace:tool_object_download', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.tool_slug, 'slug': self.tool.slug})
 
 
-class CustomerTrackingNumnerMarker(Marker):
+class CustomerTrackingNumberMarker(Marker):
     action_name = 'Enter Tracking Number'
     action_user_class = ['customer', 'lawyer']
 
@@ -54,7 +54,7 @@ class EightyThreeBSignalMarkers(BaseSignalMarkers):
         EditFormMarker(2, 'customer_complete_form', 'Customer to complete 83b Form', signals=['toolkit.apps.eightythreeb.signals.customer_complete_form'], next=None, previous=None),
         CustomerDownloadDocMarker(3, 'customer_download_pdf', 'Customer to Download 83b Form', long_description='Customer should download the 83b form.', signals=['toolkit.apps.eightythreeb.signals.customer_download_pdf'], next=None, previous=None),
         Marker(4, 'customer_print_and_sign', 'Customer to Print and sign 83b Election Form', long_description='Customer is to print and sign 2 copies, plus a 3rd for their own records', signals=['toolkit.apps.eightythreeb.signals.customer_print_and_sign'], next=None, previous=None),
-        CustomerTrackingNumnerMarker(5, 'mail_to_irs_tracking_code', 'Customer to Mail to IRS & register Tracking Code', long_description='Customer mail 83b form using USPS Registered Post *ONLY* and enter the Tracking Number here', signals=['toolkit.apps.eightythreeb.signals.mail_to_irs_tracking_code'], next=None, previous=None),
+        CustomerTrackingNumberMarker(5, 'mail_to_irs_tracking_code', 'Customer to Mail to IRS & register Tracking Code', long_description='Customer mail 83b form using USPS Registered Post *ONLY* and enter the Tracking Number here', signals=['toolkit.apps.eightythreeb.signals.mail_to_irs_tracking_code'], next=None, previous=None),
         Marker(6, 'irs_recieved', 'Waiting for reciept of 83b by IRS (via USPS)', signals=['toolkit.apps.eightythreeb.signals.irs_recieved'], next=None, previous=None),
         Marker(7, 'datestamped_copy_recieved', 'Date stamped copy received by Customer', signals=['toolkit.apps.eightythreeb.signals.datestamped_copy_recieved'], next=None, previous=None),
         Marker(8, 'copy_sent_to_lawyer', 'Customer to send copy of date-stamped doc to Attorney', signals=['toolkit.apps.eightythreeb.signals.copy_sent_to_lawyer'], next=None, previous=None),
