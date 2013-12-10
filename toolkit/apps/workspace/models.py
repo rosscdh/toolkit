@@ -59,7 +59,8 @@ class InviteKey(models.Model):
     Invite Key that allows a user to be invited to one or more projects
     """
     key = UUIDField(auto=True, db_index=True)
-    user = models.ForeignKey('auth.User')
+    invited_user = models.ForeignKey('auth.User', related_name='invitations')
+    inviting_user = models.ForeignKey('auth.User', related_name='invitiations_made')
     tool = models.ForeignKey('workspace.Tool', blank=True)
     tool_object_id = models.IntegerField(blank=True)
     next = models.CharField(max_length=255, blank=True)  # user will be redirected here on login

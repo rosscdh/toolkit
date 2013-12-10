@@ -1,0 +1,21 @@
+{% extends 'dash/dash.html' %}{% load url from future %}{% load crispy_forms_tags django_bootstrap_breadcrumbs %}
+
+{% block page_title %}Invite {{ tool_instance.user.get_full_name|default:tool_instance.user.email }}{% endblock  %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% breadcrumb workspace.name 'workspace:view' workspace.slug %}
+    {% breadcrumb tool.name 'workspace:tool_object_list' workspace.slug tool.slug %}
+    {% breadcrumb 'Invite Client' '' %}
+
+{% endblock %}
+
+{% block content %}
+    <div class="page-header">
+        <h4>Invite {{ tool_instance.user.get_full_name }}<br/><small>{{ tool_instance.user.email }}</small></h4>
+    </div>
+
+    {% include 'partials/form-errors.html' with form=form %}
+
+    {% crispy form %}
+{% endblock %}

@@ -14,6 +14,9 @@ next() and prev() and allow traversal through the document flows
 from toolkit.utils import get_namedtuple_choices
 from toolkit.utils import _class_importer
 
+from dateutil import parser
+import math
+
 
 class BaseSignalMarkers(object):
     tool_object = None
@@ -25,6 +28,17 @@ class BaseSignalMarkers(object):
     @property
     def tool(self):
         return self.tool_object
+
+    @property
+    def percent_complete(self):
+        markers = self.tool.data['markers']
+        whole = len(self.signal_map) - 1
+
+        part = 0
+        for i in self.signal_map:
+            part = (part + 1) if i.name in markers else part
+        percent = 100 * float(part)/float(whole)
+        return float("{0:.2f}".format(math.ceil(percent)))
 
     @tool.setter
     def tool(self, tool):
@@ -104,6 +118,12 @@ class Marker:
         if self.tool is not None:
             return self.name in self.tool.data['markers']
         return False
+
+    @property
+    def date_completed(self):
+        if self.is_complete:
+            return parser.parse(self.tool.data['markers'][self.name].get('date_of'))
+        return None
 
     def tool_info(self):
         if self.tool is not None:

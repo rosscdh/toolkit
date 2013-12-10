@@ -60,6 +60,7 @@ DJANGO_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
 )
 
 PROJECT_APPS = (
@@ -197,7 +198,6 @@ SWAGGER_SETTINGS = {
 }
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
-# CRISPY_CLASS_CONVERTERS = {'textinput': "form-control", "emailinput": "form-control", "passwordinput":"form-control"}
 
 CACHES = {
     'default': {
