@@ -3,25 +3,13 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.db.models.loading import get_model
 
+from toolkit.utils import _class_importer
+
 from rulez import registry as rulez_registry
 
 from uuidfield import UUIDField
 from jsonfield import JSONField
 
-
-def _class_importer(name):
-    """
-    func used to import the bunch classes from string
-    """
-    try:
-        components = name.split('.')
-        module_path = components[:-1]
-        klass = components[-1:]
-        mod = __import__('.'.join(module_path), fromlist=klass)  # import the class and module
-        klass = getattr(mod, klass[0])
-    except AttributeError:
-        klass = None
-    return klass
 
 
 class Workspace(models.Model):

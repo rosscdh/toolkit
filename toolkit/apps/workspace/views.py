@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.contrib import messages
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
@@ -12,12 +11,14 @@ from django.views.generic import (FormView,
                                   DetailView)
 
 from toolkit.apps.eightythreeb.forms import EightyThreeBForm
-from toolkit.apps.eightythreeb.signals import customer_download_pdf
 
 from .forms import WorkspaceForm, AddWorkspaceTeamMemberForm
 from .models import Workspace, Tool
-from .mixins import WorkspaceToolMixin
+from .mixins import WorkspaceToolMixin, IssueSignalsMixin
 from .services import PDFKitService  # , HTMLtoPDForPNGService
+
+import logging
+logger = logging.getLogger('django.request')
 
 
 class AddUserToWorkspace(CreateView):
@@ -26,7 +27,6 @@ class AddUserToWorkspace(CreateView):
 
     def dispatch(self, request, *args, **kwargs):
         self.workspace = get_object_or_404(Workspace, slug=self.kwargs.get('slug'))
-
         return super(AddUserToWorkspace, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -171,11 +171,8 @@ class WorkspaceToolObjectDisplayView(WorkspaceToolMixin, DetailView):
         return pdfpng_service.pdf(template_name=self.object.template_name, file_object=resp)
 
 
-class WorkspaceToolObjectDownloadView(WorkspaceToolObjectDisplayView):
+class WorkspaceToolObjectDownloadView(IssueSignalsMixin, WorkspaceToolObjectDisplayView):
     model = Tool
-
-    def issue_signals(self):
-        customer_download_pdf.send(sender=self.request.user, instance=self.object, actor_name=self.request.user.email)
 
     def render_to_response(self, context, **response_kwargs):
         html = self.object.html()
@@ -183,7 +180,7 @@ class WorkspaceToolObjectDownloadView(WorkspaceToolObjectDisplayView):
         resp = HttpResponse(content_type='application/pdf')
         resp['Content-Disposition'] = 'attachment; filename="{filename}.pdf"'.format(filename=self.object.filename)
 
-        self.issue_signals()
+        self.issue_signals(request=self.request, instance=self.object)
 
         return pdfpng_service.pdf(template_name=self.object.template_name, file_object=resp)
 

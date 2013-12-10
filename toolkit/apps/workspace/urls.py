@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import patterns, url
-from django.views.decorators.cache import cache_page
+#from django.views.decorators.cache import cache_page
 from django.views.generic import DetailView, UpdateView
 from django.contrib.auth.decorators import login_required
 
@@ -34,7 +34,7 @@ urlpatterns = patterns('',
         login_required(WorkspaceToolObjectPreviewView.as_view()),
         name='tool_object_preview'),
     url(r'^(?P<workspace>[\w-]+)/tool/(?P<tool>[\w-]+)/(?P<slug>[\w-]+)/display/$',
-        login_required(cache_page(60*3)(WorkspaceToolObjectDisplayView.as_view())),
+        login_required(WorkspaceToolObjectDisplayView.as_view()),
         name='tool_object_display'),
     url(r'^(?P<workspace>[\w-]+)/tool/(?P<tool>[\w-]+)/(?P<slug>[\w-]+)/download/$',
         login_required(WorkspaceToolObjectDownloadView.as_view()),
