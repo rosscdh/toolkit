@@ -64,7 +64,7 @@
                     data-url="/api/83b/{{ object.pk }}/"
                     data-tool="{{ tool.pk }}"
                     data-tool_object_id="{{ object.pk }}"
-                    data-status="{{ object.STATUS_83b.copy_sent_to_lawyer }}">I have recieved the date-stamped copy of my 83b back from the IRS</button>
+                    data-status="{{ object.STATUS_83b.datestamped_copy_recieved }}">I have recieved the date-stamped copy of my 83b back from the IRS</button>
             {% endif %}
 
             {% if object.STATUS_83b.copy_sent_to_lawyer == object.status %}
@@ -73,7 +73,7 @@
                     data-url="/api/83b/{{ object.pk }}/"
                     data-tool="{{ tool.pk }}"
                     data-tool_object_id="{{ object.pk }}"
-                    data-status="{{ object.STATUS_83b.copy_sent_to_accountant }}">I have sent a copy of the 83b to my attorney</button>
+                    data-status="{{ object.STATUS_83b.copy_sent_to_lawyer }}">I have sent a copy of the 83b to my Attorney</button>
             {% endif %}
 
             {% if object.STATUS_83b.copy_sent_to_accountant == object.status %}
@@ -82,7 +82,7 @@
                     data-url="/api/83b/{{ object.pk }}/"
                     data-tool="{{ tool.pk }}"
                     data-tool_object_id="{{ object.pk }}"
-                    data-status="{{ object.STATUS_83b.complete }}">I have sent a copy of the 83b to my accountant</button>
+                    data-status="{{ object.STATUS_83b.copy_sent_to_accountant }}">I have sent a copy of the 83b to my Accountant</button>
             {% endif %}
 
         {% endif %}
@@ -99,7 +99,7 @@
                     data-url="/api/83b/{{ object.pk }}/"
                     data-tool="{{ tool.pk }}"
                     data-tool_object_id="{{ object.pk }}"
-                    data-status="{{ object.STATUS_83b.datestamped_copy_recieved }}">Staff: Skip this step</button>
+                    data-status="{{ object.STATUS_83b.irs_recieved }}">Staff: Skip this step</button>
             {% endif %}
         </div>
         {% endif %}
@@ -115,15 +115,30 @@
 
 <div class="tab-content">
     <div class="tab-pane active" id="checklist">
+
         <ul class="list-group">
-        {% for val, name, desc in object.STATUS_83b.get_all %}
-            <li class="list-group-item">
-                {% if name in object.data.markers %}
-                    <span class="btn btn-success"><i class="fui-check"></i></span>
-                {% else %}
-                    <span class="btn btn-danger"><i class="fui-cross"></i></span>
+        {% for m in object.markers %}
+            <li class="list-group-item row">
+                <div class="col-md-1">
+                    {% if m.name in object.data.markers or object.is_complete %}
+                        <span class="btn btn-success"><i class="fui-check"></i></span>
+                    {% else %}
+                        <span class="btn btn-danger"><i class="fui-cross"></i></span>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <div class="row">{{ m.description }}</div>
+                    {% if m.long_description %}
+                    <div class="row">
+                        <small>{{ m.long_description }}</small>
+                    </div>
+                    {% endif %}
+                </div>
+
+                {% if m.action_url and user.profile.user_class in m.action_user_class %}
+                <span class="btn btn-link"><a href="{{ m.action_url }}">{{ m.action_name }}</a></span>
                 {% endif %}
-                &nbsp;{{ desc }}
+
             </li>
         {% endfor %}
         </ul>
