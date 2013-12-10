@@ -8,6 +8,8 @@ from uuidfield import UUIDField
 from jsonfield import JSONField
 from datetime import datetime, timedelta
 
+from toolkit.apps.workspace.mixins import WorkspaceToolModelMixin
+
 from .markers import EightyThreeBSignalMarkers
 EIGHTYTHREEB_STATUS = EightyThreeBSignalMarkers().named_tuple(name='EIGHTYTHREEB_STATUS')
 
@@ -15,7 +17,7 @@ from .mixins import StatusMixin
 from .managers import EightyThreeBManager
 
 
-class EightyThreeB(StatusMixin, models.Model):
+class EightyThreeB(StatusMixin, WorkspaceToolModelMixin, models.Model):
     """
     83b Form to be associated with a Workspace and a particular user
     """

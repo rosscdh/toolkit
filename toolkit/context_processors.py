@@ -4,9 +4,15 @@ from django.conf import settings
 from toolkit.apps.workspace.models import Workspace
 
 
-def EXPOSED_SETTINGS(request):
+def EXPOSED_GLOBALS(request):
     return {
-        'SHORT_DATE_FORMAT': settings.SHORT_DATE_FORMAT.lower()
+        'GLOBALS': {
+            'DATE_FORMAT': settings.DATE_FORMAT,
+            'JS_DATE_FORMAT': settings.JS_DATE_FORMAT,
+
+            'SHORT_DATE_FORMAT': settings.SHORT_DATE_FORMAT,
+            'JS_SHORT_DATE_FORMAT': settings.JS_SHORT_DATE_FORMAT,
+        }
     }
 
 def WORKSPACES(request):

@@ -1,4 +1,20 @@
 // Some general UI pack related JS
+
+// Extend JS Date with month name methods
+Date.prototype.monthNames = [
+  'January', 'February', 'March',
+  'April', 'May', 'June',
+  'July', 'August', 'September',
+  'October', 'November', 'December'
+];
+
+Date.prototype.getMonthName = function() {
+  return this.monthNames[this.getMonth()];
+};
+Date.prototype.getShortMonthName = function() {
+  return this.getMonthName().substr(0, 3);
+};
+
 // Extend JS String with repeat method
 String.prototype.repeat = function(num) {
   return new Array(num + 1).join(this);
@@ -72,7 +88,7 @@ String.prototype.repeat = function(num) {
     $(datepickerSelector).datepicker({
       showOtherMonths: true,
       selectOtherMonths: true,
-      dateFormat: "d MM, yy",
+      dateFormat: window.GLOBALS['JS_DATE_FORMAT'],
       yearRange: '-1:+1'
     }).prev('.btn').on('click', function (e) {
       e && e.preventDefault();
@@ -126,6 +142,23 @@ String.prototype.repeat = function(num) {
             $('.form-errors').removeClass('hide');
           };
         }
+      }
+    });
+
+    // Summernote
+    $("textarea[data-toggle=summernote]").summernote({
+      height: 200,
+      toolbar: [
+        ['style', ['bold', 'italic', 'underline', 'clear']],
+        ['list', ['ul', 'ol']],
+        ['para', ['paragraph']],
+        ['fullscreen', ['fullscreen']]
+      ],
+      onblur: function() {
+        var $this = $(this);
+        var $el = $this.parent().siblings('textarea[data-toggle=summernote]');
+
+        $el.html($this.code());
       }
     });
 
