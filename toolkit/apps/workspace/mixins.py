@@ -38,4 +38,4 @@ class IssueSignalsMixin(object):
             logger.info('Issued signals for %s (%s)' % (instance, request.user))
 
         else:
-            logger.error('The "%s" object must define a base_signal property which returns the app base signal' % instance.model.__class__.__name__)
+            logger.error('The "%s" object must define a base_signal property which returns the app base signal' % instance._meta.model.__name__)

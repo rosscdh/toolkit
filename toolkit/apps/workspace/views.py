@@ -9,10 +9,9 @@ from django.views.generic import (FormView,
                                   CreateView,
                                   UpdateView,
                                   DetailView)
-
 from toolkit.apps.eightythreeb.forms import EightyThreeBForm
 
-from .forms import WorkspaceForm, AddWorkspaceTeamMemberForm
+from .forms import WorkspaceForm, AddWorkspaceTeamMemberForm, InviteUserForm
 from .models import Workspace, Tool
 from .mixins import WorkspaceToolMixin, IssueSignalsMixin
 from .services import PDFKitService  # , HTMLtoPDForPNGService
@@ -153,6 +152,19 @@ class UpdateViewWorkspaceToolObjectView(WorkspaceToolMixin, UpdateView):
     def form_valid(self, form):
         self.object = form.save()
         return super(UpdateViewWorkspaceToolObjectView, self).form_valid(form)
+
+
+class InviteClientWorkspaceToolObjectView(WorkspaceToolMixin, UpdateView):
+    model = Tool
+    form_class = InviteUserForm
+
+    def get_form_kwargs(self):
+        kwargs = super(InviteClientWorkspaceToolObjectView, self).get_form_kwargs()
+        kwargs.update({
+            'request': self.request,
+        })
+
+        return kwargs
 
 
 class WorkspaceToolObjectPreviewView(WorkspaceToolMixin, DetailView):

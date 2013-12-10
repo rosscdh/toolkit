@@ -39,6 +39,21 @@ class EightyThreeB(StatusMixin, models.Model):
         return '83b-election-letters'
 
     @property
+    def markers(self):
+        markers = EightyThreeBSignalMarkers()
+        markers.tool = self  # set the tool to be the current
+        return markers
+
+    @property
+    def base_signal(self):
+        from .signals import base_83b_signal
+        return base_83b_signal
+
+    @property
+    def is_complete(self):
+        return self.status == self.STATUS_83b.complete
+
+    @property
     def client_name(self):
         return self.data.get('client_full_name', None)
 
@@ -66,13 +81,11 @@ class EightyThreeB(StatusMixin, models.Model):
     def template(self):
         return loader.get_template(self.template_name)
 
-    @property
-    def base_signal(self):
-        from .signals import base_83b_signal
-        return base_83b_signal
-
     def get_absolute_url(self):
         return reverse('workspace:tool_object_preview', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug=self.tool_slug).first().slug, 'slug': self.slug})
+
+    def get_edit_url(self):
+        return reverse('workspace:tool_object_edit', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug=self.tool_slug).first().slug, 'slug': self.slug})
 
     def html(self):
         context = loader.Context(self.data)

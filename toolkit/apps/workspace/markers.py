@@ -19,6 +19,9 @@ class BaseSignalMarkers(object):
     tool_object = None
     signal_map = []
 
+    def __iter__(self):
+        return iter(self.signal_map)
+
     @property
     def tool(self):
         return self.tool_object
@@ -48,6 +51,11 @@ class Marker:
     name = None
     description = None
     long_description = None
+
+    action_name = 'Modify'
+    action_url = None
+    action_user_class = []  # must be a list so we can handle multiple types
+
     val = None
     signals = None
     next = None
@@ -59,6 +67,14 @@ class Marker:
         self.description = description
 
         self.long_description = kwargs.pop('long_description', None)
+        # use the locally defined def action_url if exists otherwise if an
+        # action_url is passed in; use that
+        if hasattr(self, 'action_name') is False and 'action_name' in kwargs:
+            self.action_name = kwargs.pop('action_name')
+        if hasattr(self, 'action_url') is False and 'action_url' in kwargs:
+            self.action_url = kwargs.pop('action_url')
+        if hasattr(self, 'action_user_class') is False and 'action_user_class' in kwargs:
+            self.action_user = kwargs.pop('action_user_class')
 
         self.signals = kwargs.pop('signals', [])
         self.next = kwargs.pop('next', None)
@@ -70,6 +86,18 @@ class Marker:
 
     def __str__(self):
         return str(self.data)
+
+    @property
+    def desc(self):
+        self.description
+
+    # @property
+    # def can_action(self):
+    #     # if the process has been completed then no they cant do any more actions
+    #     if self.tool.is_complete:
+    #         return False
+    #     # if they have already completed this status then allow it
+    #     return self.tool.status > self.val or self.name in self.tool.data['markers']
 
     @property
     def is_complete(self):
@@ -85,5 +113,5 @@ class Marker:
 
     def issue_signals(self, request, instance, actor):
         for s in self.signals:
-            method = _class_importer(s)
+            method = _class_importer(s)  # @TODO can optimise this and precache them
             method.send(sender=request, instance=instance, actor=actor)

@@ -93,7 +93,7 @@ class Tool(models.Model):
         app_label, model_name = (self.data.get('app_label', None), self.data.get('model_name', None),)
 
         if model_name is None or model_name is None:
-            raise Exception('app_label and model_name need to be specified for the "%s" type' % self.__class__.__name__)
+            raise Exception('app_label and model_name need to be specified for the "%s" type' % self.__name__)
 
         return get_model(app_label=app_label, model_name=model_name)
 

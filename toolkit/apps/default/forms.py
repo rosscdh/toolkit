@@ -100,21 +100,3 @@ class SignInForm(forms.Form):
             )
         )
         super(SignInForm, self).__init__(*args, **kwargs)
-
-
-@parsleyfy
-class InviteKeyForm(forms.Form):
-    invite_key = forms.CharField()
-
-    def __init__(self, *args, **kwargs):
-        self.helper = FormHelper()
-        self.helper.form_class = 'form-horizontal'
-        self.helper.attrs = {'data-validate': 'parsley'}
-
-        self.helper.layout = Layout(
-            'invite_key',
-            ButtonHolder(
-                Submit('submit', 'Login', css_class='button white')
-            )
-        )
-        super(InviteKeyForm, self).__init__(*args, **kwargs)
