@@ -4,7 +4,7 @@
     function calculateFilingDeadline(date) {
         date.setDate(date.getDate() + 30);
 
-        return date.getMonthName() + ' ' + date.getDate() + ', ' + date.getFullYear(); 
+        return $.datepicker.formatDate(window.GLOBALS['JS_DATE_FORMAT'], date);
     };
 
     var $el = $('.datepicker[name=date_of_property_transfer]');

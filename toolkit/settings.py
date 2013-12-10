@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-LawPal - toolkit app 
+LawPal - toolkit app
 """
 import os, sys
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -106,7 +106,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.tz',
     'django.contrib.messages.context_processors.messages',
     'django.core.context_processors.request',
-    'toolkit.context_processors.EXPOSED_SETTINGS',
+    'toolkit.context_processors.EXPOSED_GLOBALS',
     'toolkit.context_processors.WORKSPACES',
 )
 
@@ -205,6 +205,14 @@ CACHES = {
         'LOCATION': '/tmp/toolkit.dev.cache',
     }
 }
+
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#date-format
+DATE_FORMAT = 'F j, Y'
+JS_DATE_FORMAT = 'MM d, yy'
+
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-SHORT_DATE_FORMAT
+SHORT_DATE_FORMAT = 'm/d/Y'
+JS_SHORT_DATE_FORMAT = 'mm/dd/yy'
 
 try:
     LOCAL_SETTINGS
