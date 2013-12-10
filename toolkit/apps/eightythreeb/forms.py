@@ -12,8 +12,8 @@ from crispy_forms.bootstrap import PrependedText, FieldWithButtons, StrictButton
 
 from toolkit.apps.workspace.services import EnsureCustomerService
 
-from.models import EightyThreeB
-from .signals import lawyer_complete_form, customer_complete_form, mail_to_irs_tracking_code
+from .models import EightyThreeB
+from .signals import lawyer_complete_form, customer_complete_form
 
 import datetime
 
@@ -222,10 +222,10 @@ class EightyThreeBForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
-        request = kwargs.pop('request')
+        self.request = kwargs.pop('request')
         self.user = None
-        if request is not None:
-            self.user = request.user
+        if self.request is not None:
+            self.user = self.request.user
 
         kwargs.pop('instance')  # pop this as we are not using a model form
 
@@ -274,10 +274,10 @@ class EightyThreeBForm(forms.Form):
 
     def issue_signals(self, instance):
         if self.user.profile.is_lawyer:
-            lawyer_complete_form.send(sender=self.user, instance=instance, actor_name=self.user.email)
+            lawyer_complete_form.send(sender=self.request, instance=instance, actor=self.user)
 
         elif self.user.profile.is_customer:
-            customer_complete_form.send(sender=self.user, instance=instance, actor_name=self.user.email)
+            customer_complete_form.send(sender=self.request, instance=instance, actor=self.user)
 
     def save(self):
         """
@@ -331,13 +331,7 @@ class TrackingCodeForm(forms.ModelForm):
         # dont allow override from form
         return self.instance.user
 
-    def issue_signals(self):
-        mail_to_irs_tracking_code.send(sender=self.instance.user, instance=self.instance, actor_name=self.instance.user.email)
-
     def save(self, **kwargs):
         # save to data
         self.instance.tracking_code = self.cleaned_data.get('tracking_code')
-
-        self.issue_signals()
-
         return super(TrackingCodeForm, self).save(**kwargs)

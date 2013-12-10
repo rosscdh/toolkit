@@ -8,7 +8,9 @@ from uuidfield import UUIDField
 from jsonfield import JSONField
 from datetime import datetime, timedelta
 
-from . import EIGHTYTHREEB_STATUS
+from .markers import EightyThreeBSignalMarkers
+EIGHTYTHREEB_STATUS = EightyThreeBSignalMarkers().named_tuple(name='EIGHTYTHREEB_STATUS')
+
 from .mixins import StatusMixin
 from .managers import EightyThreeBManager
 
@@ -63,6 +65,11 @@ class EightyThreeB(StatusMixin, models.Model):
     @property
     def template(self):
         return loader.get_template(self.template_name)
+
+    @property
+    def base_signal(self):
+        from .signals import base_83b_signal
+        return base_83b_signal
 
     def get_absolute_url(self):
         return reverse('workspace:tool_object_preview', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug=self.tool_slug).first().slug, 'slug': self.slug})

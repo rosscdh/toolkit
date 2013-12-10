@@ -3,6 +3,9 @@ from django.shortcuts import get_object_or_404
 
 from .models import Workspace
 
+import logging
+logger = logging.getLogger('django.request')
+
 
 class WorkspaceToolMixin(object):
     def dispatch(self, request, *args, **kwargs):
@@ -21,3 +24,18 @@ class WorkspaceToolMixin(object):
             'tool': self.tool,
         })
         return context
+
+
+class IssueSignalsMixin(object):
+    def issue_signals(self, request, instance):
+        """
+        issue the base_signal signal to handle any change events
+        """
+        logger.debug('Issuing signals for WorkspaceToolObjectDownloadView')
+
+        if hasattr(instance, 'base_signal'):
+            instance.base_signal.send(sender=request, instance=instance, actor=request.user)
+            logger.info('Issued signals for %s (%s)' % (instance, request.user))
+
+        else:
+            logger.error('The "%s" object must define a base_signal property which returns the app base signal' % instance.model.__class__.__name__)
