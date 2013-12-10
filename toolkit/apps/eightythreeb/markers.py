@@ -37,7 +37,7 @@ class CustomerDownloadDocMarker(Marker):
 
 class CustomerTrackingNumnerMarker(Marker):
     action_name = 'Enter Tracking Number'
-    action_user_class = ['customer']
+    action_user_class = ['customer', 'lawyer']
 
     def action_url(self):
         # Dont allow the tracking number to be updated if we have the tracking number in the data and the status is greater than
