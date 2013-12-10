@@ -2,6 +2,21 @@
 from collections import namedtuple
 
 
+def _class_importer(name):
+    """
+    func used to import the bunch classes from string
+    """
+    try:
+        components = name.split('.')
+        module_path = components[:-1]
+        klass = components[-1:]
+        mod = __import__('.'.join(module_path), fromlist=klass)  # import the class and module
+        klass = getattr(mod, klass[0])
+    except AttributeError:
+        klass = None
+    return klass
+
+
 def get_namedtuple_choices(name, choices_tuple):
     """Factory function for quickly making a namedtuple suitable for use in a
     Django model as a choices attribute on a field. It will preserve order.

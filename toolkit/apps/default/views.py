@@ -4,7 +4,8 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.views.generic import TemplateView, RedirectView, FormView
 
-from .forms import SignUpForm, SignInForm, InviteKeyForm
+from .forms import SignUpForm, SignInForm
+from toolkit.apps.workspace.forms import InviteKeyForm
 
 import logging
 LOGGER = logging.getLogger('django.request')

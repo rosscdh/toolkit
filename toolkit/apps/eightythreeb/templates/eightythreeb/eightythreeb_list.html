@@ -40,18 +40,19 @@
                             <td>{{ t.transfer_date|date:"N jS Y" }}</td>
                             <td>{{ t.filing_date|date:"N jS Y" }}</td>
                             <td>
-                                <a href="{% url 'workspace:tool_object_status' workspace=workspace.slug tool=tool.slug slug=t.slug %}">{{ t.current_status }}</a>
+                                {{ t.current_status }}
                             </td>
                             <td>
                                 <a href="{% url 'workspace:tool_object_preview' workspace=workspace.slug tool=tool.slug slug=t.slug %}" title="Preview">
+                                    Preview &amp; Actions
                                     <span class="fui-eye text-primary"></span>
                                 </a>
                             </td>
-                            <td>
+<!--                             <td>
                                 <a href="{% url 'workspace:tool_object_download' workspace=workspace.slug tool=tool.slug slug=t.slug %}" title="Download">
                                     <span class="fui-document text-primary"></span>
                                 </a>
-                            </td>
+                            </td> -->
                         </tr>
                     {% empty %}
                         <tr>

@@ -12,6 +12,7 @@ from crispy_forms.bootstrap import PrependedText, FieldWithButtons, StrictButton
 
 from toolkit.apps.workspace.services import EnsureCustomerService
 
+from .models import EightyThreeB
 from .signals import lawyer_complete_form, customer_complete_form
 
 import datetime
@@ -234,10 +235,10 @@ class EightyThreeBForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
-        request = kwargs.pop('request')
+        self.request = kwargs.pop('request')
         self.user = None
-        if request is not None:
-            self.user = request.user
+        if self.request is not None:
+            self.user = self.request.user
 
         kwargs.pop('instance')  # pop this as we are not using a model form
 
@@ -294,10 +295,10 @@ class EightyThreeBForm(forms.Form):
 
     def issue_signals(self, instance):
         if self.user.profile.is_lawyer:
-            lawyer_complete_form.send(sender=self.user, instance=instance, actor_name=self.user.email)
+            lawyer_complete_form.send(sender=self.request, instance=instance, actor=self.user)
 
         elif self.user.profile.is_customer:
-            customer_complete_form.send(sender=self.user, instance=instance, actor_name=self.user.email)
+            customer_complete_form.send(sender=self.request, instance=instance, actor=self.user)
 
     def save(self):
         """
@@ -317,3 +318,41 @@ class EightyThreeBForm(forms.Form):
         self.issue_signals(instance=eightythreeb)
 
         return eightythreeb
+
+
+@parsleyfy
+class TrackingCodeForm(forms.ModelForm):
+    title = 'Your 83b Postage Tracking Code'
+
+    tracking_code = forms.CharField(help_text='Please provide the Registered Post Tracking Code (USPS)')
+    user = forms.CharField(widget=forms.HiddenInput)
+
+    class Meta:
+        model = EightyThreeB
+        fields = ['user',]
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.attrs = {
+            'parsley-validate': '',
+        }
+
+        self.helper.layout = Layout(
+            'tracking_code',
+            ButtonHolder(
+                Submit('submit', 'Save', css_class='btn-hg btn-primary'),
+                css_class='form-group'
+            )
+        )
+
+        super(TrackingCodeForm, self).__init__(*args, **kwargs)
+        self.fields['tracking_code'].initial = self.instance.tracking_code
+
+    def clean_user(self):
+        # dont allow override from form
+        return self.instance.user
+
+    def save(self, **kwargs):
+        # save to data
+        self.instance.tracking_code = self.cleaned_data.get('tracking_code')
+        return super(TrackingCodeForm, self).save(**kwargs)

@@ -7,6 +7,8 @@ from django.views.generic import FormView
 from .models import Workspace
 
 import re
+import logging
+logger = logging.getLogger('django.request')
 
 
 class WorkspaceToolMixin(object):
@@ -77,3 +79,18 @@ class WorkspaceToolModelMixin(object):
                 data[key] = datetime.strptime(value, '%Y-%m-%dT%H:%M:%S')
 
         return data
+
+
+class IssueSignalsMixin(object):
+    def issue_signals(self, request, instance):
+        """
+        issue the base_signal signal to handle any change events
+        """
+        logger.debug('Issuing signals for WorkspaceToolObjectDownloadView')
+
+        if hasattr(instance, 'base_signal'):
+            instance.base_signal.send(sender=request, instance=instance, actor=request.user)
+            logger.info('Issued signals for %s (%s)' % (instance, request.user))
+
+        else:
+            logger.error('The "%s" object must define a base_signal property which returns the app base signal' % instance._meta.model.__name__)
