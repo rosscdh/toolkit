@@ -29,10 +29,10 @@ class CustomerDownloadDocMarker(Marker):
     action_user_class = ['customer', 'lawyer',]
 
     def action_url(self):
-        if self.tool.is_complete is True:
-            return None
-        else:
-            return reverse('workspace:tool_object_download', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.tool_slug, 'slug': self.tool.slug})
+        """
+        Always allow download no rules applied
+        """
+        return reverse('workspace:tool_object_download', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.tool_slug, 'slug': self.tool.slug})
 
 
 class CustomerTrackingNumnerMarker(Marker):
