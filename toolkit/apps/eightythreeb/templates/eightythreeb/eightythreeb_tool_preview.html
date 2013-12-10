@@ -108,8 +108,8 @@
     <br/><br/>
 </div>
 
-<ul class="nav nav-tabs">
-  <li><a href="#checklist" data-toggle="tab">Checklist</a></li>
+<ul id="page_tabs" class="nav nav-tabs">
+  <li><a href="#checklist" class="active" data-toggle="tab">Checklist</a></li>
   <li><a href="#document" data-toggle="tab">Document</a></li>
 </ul>
 
@@ -169,6 +169,8 @@ iframe#id_pdf_preview {
 <script>
 $(document).ready(function () {
     'use strict';
+
+    $('ul#page_tabs a:first').tab('show')
 
     var iframe = $('#id_pdf_preview');
     var controls = $('#pdf_review_controls');
