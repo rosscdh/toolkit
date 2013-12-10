@@ -12,7 +12,7 @@ from django.views.generic import (FormView,
 from toolkit.apps.eightythreeb.forms import EightyThreeBForm
 
 from .forms import WorkspaceForm, AddWorkspaceTeamMemberForm, InviteUserForm
-from .models import Workspace, Tool
+from .models import Workspace, Tool, InviteKey
 from .mixins import WorkspaceToolMixin, IssueSignalsMixin
 from .services import PDFKitService  # , HTMLtoPDForPNGService
 
@@ -133,7 +133,7 @@ class UpdateViewWorkspaceToolObjectView(WorkspaceToolMixin, UpdateView):
     form_class = EightyThreeBForm
 
     def get_success_url(self):
-        return reverse('workspace:tool_object_list', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug})
+        return reverse('workspace:tool_object_preview', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug, 'slug': self.object.slug})
 
     def get_form_kwargs(self):
         kwargs = super(UpdateViewWorkspaceToolObjectView, self).get_form_kwargs()
@@ -154,17 +154,43 @@ class UpdateViewWorkspaceToolObjectView(WorkspaceToolMixin, UpdateView):
         return super(UpdateViewWorkspaceToolObjectView, self).form_valid(form)
 
 
-class InviteClientWorkspaceToolObjectView(WorkspaceToolMixin, UpdateView):
-    model = Tool
+class InviteClientWorkspaceToolObjectView(IssueSignalsMixin, WorkspaceToolMixin, UpdateView):
+    model = InviteKey
     form_class = InviteUserForm
+
+    def get_success_url(self):
+        return reverse('workspace:tool_object_preview', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug, 'slug': self.tool_instance.slug})
+
+    def get_object(self, queryset=None):
+        self.tool_instance = get_object_or_404(self.get_queryset(), slug=self.kwargs.get('slug'))
+
+        obj, is_new = self.model.objects.get_or_create(invited_user=self.tool_instance.user,
+                                                               inviting_user=self.request.user,
+                                                               tool=self.tool,
+                                                               tool_object_id=self.tool_instance.pk)
+        return obj
 
     def get_form_kwargs(self):
         kwargs = super(InviteClientWorkspaceToolObjectView, self).get_form_kwargs()
         kwargs.update({
             'request': self.request,
+            'tool_instance': self.tool_instance,
         })
 
         return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super(InviteClientWorkspaceToolObjectView, self).get_context_data(**kwargs)
+        context.update({
+            'request': self.request,
+            'tool_instance': self.tool_instance,
+        })
+        return context
+
+    def form_valid(self, form):
+        email = form.save()  # not used
+        self.issue_signals(request=self.request, instance=self.tool_instance)  # NB teh tool_instance and NOT self.instance
+        return super(InviteClientWorkspaceToolObjectView, self).form_valid(form)
 
 
 class WorkspaceToolObjectPreviewView(WorkspaceToolMixin, DetailView):
