@@ -9,11 +9,11 @@ from django.views.generic import (FormView,
                                   CreateView,
                                   UpdateView,
                                   DetailView)
-from toolkit.apps.eightythreeb.forms import EightyThreeBForm
 
-from .forms import WorkspaceForm, AddWorkspaceTeamMemberForm, InviteUserForm
 from .models import Workspace, Tool, InviteKey
-from .mixins import WorkspaceToolMixin, IssueSignalsMixin
+from .forms import WorkspaceForm, AddWorkspaceTeamMemberForm, InviteUserForm
+from .mixins import WorkspaceToolMixin, WorkspaceToolFormMixin, IssueSignalsMixin
+
 from .services import PDFKitService  # , HTMLtoPDForPNGService
 
 import logging
@@ -96,13 +96,12 @@ class WorkspaceToolObjectsListView(WorkspaceToolMixin, ListView):
     model = Tool
 
 
-class CreateWorkspaceToolObjectView(WorkspaceToolMixin, CreateView):
+class CreateWorkspaceToolObjectView(WorkspaceToolFormMixin, CreateView):
     """
     View to create a specific Tool Object
     """
     model = Tool
     template_name = 'workspace/workspace_tool_form.html'
-    form_class = EightyThreeBForm
 
     def get_queryset(self):
         qs = super(CreateWorkspaceToolObjectView, self).get_queryset()
@@ -111,43 +110,20 @@ class CreateWorkspaceToolObjectView(WorkspaceToolMixin, CreateView):
     def get_success_url(self):
         return reverse('workspace:tool_object_preview', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug, 'slug': self.object.slug})
 
-    def get_form_kwargs(self):
-        kwargs = super(CreateWorkspaceToolObjectView, self).get_form_kwargs()
-        kwargs.update({
-            'request': self.request,
-            'workspace': self.workspace
-        })
-        return kwargs
-
     def form_valid(self, form):
         self.object = form.save()
         return super(CreateWorkspaceToolObjectView, self).form_valid(form)
 
 
-class UpdateViewWorkspaceToolObjectView(WorkspaceToolMixin, UpdateView):
+class UpdateViewWorkspaceToolObjectView(WorkspaceToolFormMixin, UpdateView):
     """
     View to edit a specific Tool Object
     """
     model = Tool
     template_name = 'workspace/workspace_tool_form.html'
-    form_class = EightyThreeBForm
 
     def get_success_url(self):
         return reverse('workspace:tool_object_preview', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug, 'slug': self.object.slug})
-
-    def get_form_kwargs(self):
-        kwargs = super(UpdateViewWorkspaceToolObjectView, self).get_form_kwargs()
-        kwargs.update({
-            'request': self.request,
-            'workspace': self.workspace
-        })
-
-        return kwargs
-
-    def get_initial(self):
-        initial = super(UpdateViewWorkspaceToolObjectView, self).get_initial()
-        initial.update(**self.object.data)
-        return initial
 
     def form_valid(self, form):
         self.object = form.save()
