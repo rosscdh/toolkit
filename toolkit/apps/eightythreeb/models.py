@@ -10,8 +10,11 @@ from datetime import datetime, timedelta
 
 from toolkit.apps.workspace.mixins import WorkspaceToolModelMixin
 
-from . import EIGHTYTHREEB_STATUS
+from .markers import EightyThreeBSignalMarkers
+EIGHTYTHREEB_STATUS = EightyThreeBSignalMarkers().named_tuple(name='EIGHTYTHREEB_STATUS')
+
 from .mixins import StatusMixin
+from .managers import EightyThreeBManager
 
 
 class EightyThreeB(StatusMixin, WorkspaceToolModelMixin, models.Model):
@@ -28,8 +31,29 @@ class EightyThreeB(StatusMixin, WorkspaceToolModelMixin, models.Model):
 
     status = models.IntegerField(choices=EIGHTYTHREEB_STATUS.get_choices(), default=EIGHTYTHREEB_STATUS.lawyer_complete_form, db_index=True)
 
+    objects = EightyThreeBManager()
+
     def __unicode__(self):
         return u'83(b) for %s' % self.client_name
+
+    @property
+    def tool_slug(self):
+        return '83b-election-letters'
+
+    @property
+    def markers(self):
+        markers = EightyThreeBSignalMarkers()
+        markers.tool = self  # set the tool to be the current
+        return markers
+
+    @property
+    def base_signal(self):
+        from .signals import base_83b_signal
+        return base_83b_signal
+
+    @property
+    def is_complete(self):
+        return self.status == self.STATUS_83b.complete
 
     @property
     def client_name(self):
@@ -60,7 +84,10 @@ class EightyThreeB(StatusMixin, WorkspaceToolModelMixin, models.Model):
         return loader.get_template(self.template_name)
 
     def get_absolute_url(self):
-        return reverse('eightythreeb:view')
+        return reverse('workspace:tool_object_preview', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug=self.tool_slug).first().slug, 'slug': self.slug})
+
+    def get_edit_url(self):
+        return reverse('workspace:tool_object_edit', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug=self.tool_slug).first().slug, 'slug': self.slug})
 
     def html(self):
         context = loader.Context(self.data)

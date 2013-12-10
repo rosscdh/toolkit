@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from django import forms
+from django.template import Context
+from django.template.loader import get_template
+from django.template.defaultfilters import slugify
 
 from parsley.decorators import parsleyfy
 
@@ -35,11 +38,11 @@ class WorkspaceForm(forms.ModelForm):
 class AddWorkspaceTeamMemberForm(forms.Form):
     client_full_name = forms.CharField(
         label='',
-        widget=forms.TextInput(attrs = {'placeholder': 'Client Full Name', 'size': '40'})
+        widget=forms.TextInput(attrs={'placeholder': 'Client Full Name', 'size': '40'})
     )
     client_email_address = forms.EmailField(
         label='',
-        widget=forms.TextInput(attrs = {'placeholder': 'Email address', 'size': '40'})
+        widget=forms.TextInput(attrs={'placeholder': 'Email address', 'size': '40'})
     )
 
     def __init__(self, *args, **kwargs):
@@ -77,3 +80,58 @@ class AddWorkspaceTeamMemberForm(forms.Form):
 
         return user, is_new
 
+
+@parsleyfy
+class InviteUserForm(forms.Form):
+    subject = forms.CharField()
+    message = forms.CharField(widget=forms.Textarea)
+
+    def __init__(self, *args, **kwargs):
+        self.instance = kwargs.pop('instance', None)
+        self.request = kwargs.pop('request', None)
+        self.user = getattr(self.request, 'user', None)
+
+        self.helper = FormHelper()
+        self.helper.form_class = 'form-horizontal'
+        self.helper.attrs = {'data-validate': 'parsley'}
+
+        self.helper.layout = Layout(
+            'subject',
+            'message',
+            ButtonHolder(
+                Submit('submit', 'Send Invite', css_class='button white')
+            )
+        )
+        super(InviteUserForm, self).__init__(*args, **kwargs)
+        self.fields['subject'].initial = self.get_initial_subject()
+        self.fields['message'].initial = self.get_initial_message()
+
+    def get_initial_subject(self):
+        template = get_template('%s/invite_subject.html' % slugify(self.instance._meta.model.__name__))
+        return template.render(Context({'request': self.request, 'instance': self.instance, 'user': self.user}))
+
+    def get_initial_message(self):
+        template = get_template('%s/invite_message.html' % slugify(self.instance._meta.model.__name__))
+        return template.render(Context({'request': self.request,
+                                        'instance': self.instance,
+                                        'user': self.user,
+                                        'action_url': '%s' % self.request.build_absolute_uri(self.instance.get_edit_url())
+                                        }))
+
+
+@parsleyfy
+class InviteKeyForm(forms.Form):
+    invite_key = forms.CharField()
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_class = 'form-horizontal'
+        self.helper.attrs = {'data-validate': 'parsley'}
+
+        self.helper.layout = Layout(
+            'invite_key',
+            ButtonHolder(
+                Submit('submit', 'Login', css_class='button white')
+            )
+        )
+        super(InviteKeyForm, self).__init__(*args, **kwargs)

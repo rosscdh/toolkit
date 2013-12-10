@@ -2,7 +2,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User, check_password
 
-from toolkit.apps.default.models import InviteKey
+from toolkit.apps.workspace.models import InviteKey
 
 import logging
 LOGGER = logging.getLogger('django.request')

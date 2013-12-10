@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.contrib import messages
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
@@ -11,10 +10,14 @@ from django.views.generic import (FormView,
                                   UpdateView,
                                   DetailView)
 
-from .forms import WorkspaceForm, AddWorkspaceTeamMemberForm
+from .forms import WorkspaceForm, AddWorkspaceTeamMemberForm, InviteUserForm
 from .models import Workspace, Tool
-from .mixins import WorkspaceToolMixin, WorkspaceToolFormMixin
+from .mixins import WorkspaceToolMixin, WorkspaceToolFormMixin, IssueSignalsMixin
+
 from .services import PDFKitService  # , HTMLtoPDForPNGService
+
+import logging
+logger = logging.getLogger('django.request')
 
 
 class AddUserToWorkspace(CreateView):
@@ -23,7 +26,6 @@ class AddUserToWorkspace(CreateView):
 
     def dispatch(self, request, *args, **kwargs):
         self.workspace = get_object_or_404(Workspace, slug=self.kwargs.get('slug'))
-
         return super(AddUserToWorkspace, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -106,7 +108,7 @@ class CreateWorkspaceToolObjectView(WorkspaceToolFormMixin, CreateView):
         return qs.filter(user=self.request.user).first()
 
     def get_success_url(self):
-        return reverse('workspace:tool_object_list', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug})
+        return reverse('workspace:tool_object_preview', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug, 'slug': self.object.slug})
 
     def form_valid(self, form):
         self.object = form.save()
@@ -128,9 +130,22 @@ class UpdateViewWorkspaceToolObjectView(WorkspaceToolFormMixin, UpdateView):
         return super(UpdateViewWorkspaceToolObjectView, self).form_valid(form)
 
 
+class InviteClientWorkspaceToolObjectView(WorkspaceToolMixin, UpdateView):
+    model = Tool
+    form_class = InviteUserForm
+
+    def get_form_kwargs(self):
+        kwargs = super(InviteClientWorkspaceToolObjectView, self).get_form_kwargs()
+        kwargs.update({
+            'request': self.request,
+        })
+
+        return kwargs
+
+
 class WorkspaceToolObjectPreviewView(WorkspaceToolMixin, DetailView):
     model = Tool
-    template_name = 'workspace/workspace_tool_preview.html'
+    template_name_suffix = '_tool_preview'
 
 
 class WorkspaceToolObjectDisplayView(WorkspaceToolMixin, DetailView):
@@ -144,15 +159,21 @@ class WorkspaceToolObjectDisplayView(WorkspaceToolMixin, DetailView):
         return pdfpng_service.pdf(template_name=self.object.template_name, file_object=resp)
 
 
-class WorkspaceToolObjectDownloadView(WorkspaceToolObjectDisplayView):
+class WorkspaceToolObjectDownloadView(IssueSignalsMixin, WorkspaceToolObjectDisplayView):
+    model = Tool
+
     def render_to_response(self, context, **response_kwargs):
         html = self.object.html()
         pdfpng_service = PDFKitService(html=html)  # HTMLtoPDForPNGService(html=html)
         resp = HttpResponse(content_type='application/pdf')
         resp['Content-Disposition'] = 'attachment; filename="{filename}.pdf"'.format(filename=self.object.filename)
+
+        self.issue_signals(request=self.request, instance=self.object)
+
         return pdfpng_service.pdf(template_name=self.object.template_name, file_object=resp)
 
 
 class WorkspaceToolStatusView(WorkspaceToolMixin, DetailView):
     model = Tool
-    template_name = 'workspace/workspace_tool_status_list.html'
+    template_name_suffix = '_status_list' # place your template in your tool templates/:tool_name/:tool_name_status_list.html
+
