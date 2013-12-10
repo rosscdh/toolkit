@@ -32,7 +32,7 @@ class BaseSignalMarkers(object):
     @property
     def percent_complete(self):
         markers = self.tool.data['markers']
-        whole = len(self.signal_map) - 1
+        whole = len(self.signal_map)
 
         part = 0
         for i in self.signal_map:
