@@ -1,4 +1,4 @@
-{% extends 'dash/dash.html' %}{% load url from future %}{% load crispy_forms_tags django_bootstrap_breadcrumbs %}
+{% extends 'dash/dash.html' %}{% load url from future %}{% load humanize crispy_forms_tags django_bootstrap_breadcrumbs %}
 
 {% block page_title %}Preview {{ workspace }} {{ tool }}{% endblock  %}
 
@@ -15,7 +15,7 @@
 {% csrf_token %}
 
 <div id="pdf_review_controls" class="row">
-    <h3>Current Status: {{ object.current_status }}</h3>
+    <h3>Current Status: {{ object.current_status }}<br/><small>{{ object.markers.percent_complete }}% Complete</small></h3>
 
     <div class="">
         {% if user.profile.is_lawyer %}
@@ -120,10 +120,10 @@
         {% for m in object.markers %}
             <li class="list-group-item row">
                 <div class="col-md-1">
-                    {% if m.name in object.data.markers or object.is_complete %}
-                        <span class="btn btn-success"><i class="fui-check"></i></span>
+                    {% if m.is_complete %}
+                    <span class="btn btn-success"><i class="fui-check"></i></span>
                     {% else %}
-                        <span class="btn btn-danger"><i class="fui-cross"></i></span>
+                    <span class="btn btn-danger"><i class="fui-cross"></i></span>
                     {% endif %}
                 </div>
                 <div class="col-md-6">
@@ -134,10 +134,16 @@
                     </div>
                     {% endif %}
                 </div>
-
-                {% if m.action_url and user.profile.user_class in m.action_user_class %}
-                <span class="btn btn-link"><a href="{{ m.action_url }}">{{ m.action_name }}</a></span>
-                {% endif %}
+                <div class="col-md-2">
+                    {% if m.action_url and user.profile.user_class in m.action_user_class %}
+                    <span class="btn btn-link"><a href="{{ m.action_url }}">{{ m.action_name }}</a></span>
+                    {% endif %}
+                </div>
+                <div class="col-md-2">
+                    {% if m.date_completed %}
+                    <p><b>Completed:</b><br/> {{ m.date_completed|date:'DATETIME_FORMAT' }}<br/><small>{{ m.date_completed|naturaltime }}</small></p>
+                    {% endif %}
+                </div>
 
             </li>
         {% endfor %}

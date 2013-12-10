@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from toolkit.mailer import BaseMailerService
+from toolkit.mailers import BaseMailerService
 
 
 class EightyThreeBCreatedEmail(BaseMailerService):

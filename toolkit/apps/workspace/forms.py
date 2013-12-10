@@ -12,6 +12,7 @@ from crispy_forms.layout import Layout, ButtonHolder, Submit, Div
 from toolkit.apps.workspace.services import EnsureCustomerService
 
 from .models import Workspace
+from .mailers import InviteUserToToolEmail
 
 
 @parsleyfy
@@ -87,6 +88,7 @@ class InviteUserForm(forms.Form):
     message = forms.CharField(widget=forms.Textarea)
 
     def __init__(self, *args, **kwargs):
+        self.tool_instance = kwargs.pop('tool_instance', None)
         self.instance = kwargs.pop('instance', None)
         self.request = kwargs.pop('request', None)
         self.user = getattr(self.request, 'user', None)
@@ -107,16 +109,27 @@ class InviteUserForm(forms.Form):
         self.fields['message'].initial = self.get_initial_message()
 
     def get_initial_subject(self):
-        template = get_template('%s/invite_subject.html' % slugify(self.instance._meta.model.__name__))
-        return template.render(Context({'request': self.request, 'instance': self.instance, 'user': self.user}))
+        template = get_template('%s/invite_subject.html' % slugify(self.tool_instance._meta.model.__name__))
+        return template.render(Context({'request': self.request, 'instance': self.tool_instance, 'user': self.user}))
 
     def get_initial_message(self):
-        template = get_template('%s/invite_message.html' % slugify(self.instance._meta.model.__name__))
+        template = get_template('%s/invite_message.html' % slugify(self.tool_instance._meta.model.__name__))
         return template.render(Context({'request': self.request,
-                                        'instance': self.instance,
+                                        'instance': self.tool_instance,
                                         'user': self.user,
-                                        'action_url': '%s' % self.request.build_absolute_uri(self.instance.get_edit_url())
+                                        'action_url': '%s' % self.request.build_absolute_uri(self.tool_instance.get_edit_url())
                                         }))
+    def save(self, **kwargs):
+        """
+        Mock save (as were not using an forms.ModelForm)
+        this allows us to send the email as part of the form
+        """
+        m = InviteUserToToolEmail(subject=self.cleaned_data.get('subject'),
+                                  message=self.cleaned_data.get('message'),
+                                  from_tuple=(self.user.get_full_name(), self.user.email),
+                                  recipients=((self.tool_instance.user.get_full_name(), self.tool_instance.user.email),))
+        m.process()
+
 
 
 @parsleyfy
