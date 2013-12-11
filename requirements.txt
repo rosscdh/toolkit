@@ -40,7 +40,12 @@ django-templated-email
 
 xhtml2pdf
 django-xhtml2pdf
+pdfkit
 
 requests==2.0.1
 
 python-dateutil
+
+python-memcached
+
+raven
