@@ -9,7 +9,8 @@ from .views import HomePageView, StartView, SignUpView, InviteKeySignInView, Log
 urlpatterns = patterns('',
     url(r'^start/$', StartView.as_view(), name='signin'),
     url(r'^start/signup/$', SignUpView.as_view(), name='signup'),
-    url(r'^start/invite/$', InviteKeySignInView.as_view(), name='invite'),
+    url(r'^start/invite/(?P<key>.+)/$', InviteKeySignInView.as_view(), name='invite'),
+    url(r'^start/invite/$', InviteKeySignInView.as_view(), name='invite_form'),
     url(r'^end/$', LogoutView.as_view(), name='logout'),
     url(r'^$', HomePageView.as_view()),
 )

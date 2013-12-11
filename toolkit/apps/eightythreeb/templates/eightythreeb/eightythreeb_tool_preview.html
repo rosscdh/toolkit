@@ -21,13 +21,8 @@
         {% if user.profile.is_lawyer %}
 
             {% if object.STATUS_83b.lawyer_invite_customer == object.status %}
-                <button type="button" class="btn btn-success action"
-                    data-method="POST"
-                    data-url="/api/invite/"
-                    data-user="{{ object.user.pk }}"
-                    data-tool="{{ tool.pk }}"
-                    data-tool_object_id="{{ object.pk }}"
-                    data-next="{% url 'workspace:tool_object_edit' workspace=workspace.slug tool=tool.slug slug=object.slug %}">Invite {{ object.user.get_full_name|default:object.user.username }} to complete the 83b</button>
+                <button type="button" id="id_customer_download_pdf" class="btn btn-success redirect"
+                    data-url="{% url 'workspace:tool_object_invite' workspace=workspace.slug tool=tool.slug slug=object.slug %}">Invite {{ object.user.get_full_name|default:object.user.username }} to complete the 83b</button>
             {% endif %}
 
         {% endif %}

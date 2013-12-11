@@ -5,7 +5,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.views.generic import TemplateView, RedirectView, FormView
 
 from .forms import SignUpForm, SignInForm
+
 from toolkit.apps.workspace.forms import InviteKeyForm
+from toolkit.apps.workspace.models import InviteKey
 
 import logging
 LOGGER = logging.getLogger('django.request')
@@ -25,6 +27,9 @@ class AuthenticateUserMixin(object):
 
     def authenticate(self, form):
         user = self.get_auth(form=form)
+        self.login(user=user)
+
+    def login(self, user=None):
         if user is not None:
             LOGGER.info('user is authenticated: %s' % user)
             if user.is_active:
@@ -60,11 +65,17 @@ class SaveNextUrlInSessionMixin(object):
     """
     def get(self, request, *args, **kwargs):
         next = request.GET.get('next', None)
+        self.save_next_in_session(next=next)
+        return super(SaveNextUrlInSessionMixin, self).get(request, *args, **kwargs)
 
+    def save_next_in_session(self, next=None):
         if next is not None:
             self.request.session['next'] = next
 
-        return super(SaveNextUrlInSessionMixin, self).get(request, *args, **kwargs)
+
+class RedirectToNextMixin(object):
+    def redirect(self, next=None):
+        return HttpResponseRedirect(next) if next is not None else next
 
 
 class HomePageView(TemplateView):
@@ -75,6 +86,7 @@ class HomePageView(TemplateView):
             return HttpResponseRedirect(reverse('dash:default'))
         else:
             return super(HomePageView, self).dispatch(request, *args, **kwargs)
+
 
 class StartView(LogOutMixin, SaveNextUrlInSessionMixin, AuthenticateUserMixin, FormView):
     """
@@ -101,8 +113,40 @@ class StartView(LogOutMixin, SaveNextUrlInSessionMixin, AuthenticateUserMixin, F
 class InviteKeySignInView(StartView):
     form_class = InviteKeyForm
 
-    def get_auth(self, form):
-        return authenticate(username=form.cleaned_data.get('invite_key'), password=None)
+    def dispatch(self, request, *args, **kwargs):
+        """
+        If we have a key in the url
+        """
+        response = None
+        if request.user.is_authenticated() is True:
+            logout(request)
+
+        if 'key' in kwargs and kwargs.get('key', None) is not None:
+            response = self.login_via_key(key=kwargs.get('key'))
+
+        if response is not None:
+            return response
+        else:
+            return super(InviteKeySignInView, self).dispatch(request, *args, **kwargs)
+
+    def login_via_key(self, key=None):
+        if key is not None:
+            invite = InviteKey.objects.get(key=key)
+            user = self.get_auth(invite_key=key)
+            self.login(user=user)
+
+            if self.request.user.is_authenticated() is True:
+                return HttpResponseRedirect(invite.next)
+        return None
+
+    def get_auth(self, form=None,  invite_key=None):
+        if invite_key is not None:
+            return authenticate(username=invite_key, password=None)
+
+        if form is not None:
+            return authenticate(username=form.cleaned_data.get('invite_key'), password=None)
+
+        return None
 
 
 class SignUpView(LogOutMixin, AuthenticateUserMixin, FormView):

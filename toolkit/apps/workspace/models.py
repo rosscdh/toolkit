@@ -11,7 +11,6 @@ from uuidfield import UUIDField
 from jsonfield import JSONField
 
 
-
 class Workspace(models.Model):
     """
     Workspaces are areas that allow multiple tools
@@ -66,6 +65,12 @@ class InviteKey(models.Model):
     next = models.CharField(max_length=255, blank=True)  # user will be redirected here on login
     data = JSONField(default={})  # for any extra data that needs to be stored
     has_been_used = models.BooleanField(default=False)
+
+    def get_absolute_url(self):
+        return reverse('public:invite', kwargs={'key': self.key})
+
+    def get_invite_login_url(self, request=None):
+        return request.build_absolute_uri(self.get_absolute_url()) if request is not None else self.get_absolute_url()
 
 
 class Tool(models.Model):
