@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django import forms
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 
 from parsley.decorators import parsleyfy
 from crispy_forms.helper import FormHelper
@@ -101,20 +102,12 @@ class SignInForm(forms.Form):
         )
         super(SignInForm, self).__init__(*args, **kwargs)
 
+    def clean(self):
+        user = None
+        if 'email' in self.cleaned_data and 'password' in self.cleaned_data:
+            user = authenticate(username=self.cleaned_data['email'], password=self.cleaned_data['password'])
 
-@parsleyfy
-class InviteKeyForm(forms.Form):
-    invite_key = forms.CharField()
+        if user is None:
+            raise forms.ValidationError("Sorry, no account with those credentials was found")
 
-    def __init__(self, *args, **kwargs):
-        self.helper = FormHelper()
-        self.helper.form_class = 'form-horizontal'
-        self.helper.attrs = {'data-validate': 'parsley'}
-
-        self.helper.layout = Layout(
-            'invite_key',
-            ButtonHolder(
-                Submit('submit', 'Login', css_class='button white')
-            )
-        )
-        super(InviteKeyForm, self).__init__(*args, **kwargs)
+        return super(SignInForm, self).clean()

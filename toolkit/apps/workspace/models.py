@@ -3,25 +3,12 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.db.models.loading import get_model
 
+from toolkit.utils import _class_importer
+
 from rulez import registry as rulez_registry
 
 from uuidfield import UUIDField
 from jsonfield import JSONField
-
-
-def _class_importer(name):
-    """
-    func used to import the bunch classes from string
-    """
-    try:
-        components = name.split('.')
-        module_path = components[:-1]
-        klass = components[-1:]
-        mod = __import__('.'.join(module_path), fromlist=klass)  # import the class and module
-        klass = getattr(mod, klass[0])
-    except AttributeError:
-        klass = None
-    return klass
 
 
 class Workspace(models.Model):
@@ -71,12 +58,19 @@ class InviteKey(models.Model):
     Invite Key that allows a user to be invited to one or more projects
     """
     key = UUIDField(auto=True, db_index=True)
-    user = models.ForeignKey('auth.User')
+    invited_user = models.ForeignKey('auth.User', related_name='invitations')
+    inviting_user = models.ForeignKey('auth.User', related_name='invitiations_made')
     tool = models.ForeignKey('workspace.Tool', blank=True)
     tool_object_id = models.IntegerField(blank=True)
     next = models.CharField(max_length=255, blank=True)  # user will be redirected here on login
     data = JSONField(default={})  # for any extra data that needs to be stored
     has_been_used = models.BooleanField(default=False)
+
+    def get_absolute_url(self):
+        return reverse('public:invite', kwargs={'key': self.key})
+
+    def get_invite_login_url(self, request=None):
+        return request.build_absolute_uri(self.get_absolute_url()) if request is not None else self.get_absolute_url()
 
 
 class Tool(models.Model):
@@ -105,7 +99,7 @@ class Tool(models.Model):
         app_label, model_name = (self.data.get('app_label', None), self.data.get('model_name', None),)
 
         if model_name is None or model_name is None:
-            raise Exception('app_label and model_name need to be specified for the "%s" type' % self.__class__.__name__)
+            raise Exception('app_label and model_name need to be specified for the "%s" type' % self.__name__)
 
         return get_model(app_label=app_label, model_name=model_name)
 
