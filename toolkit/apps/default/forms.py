@@ -103,7 +103,11 @@ class SignInForm(forms.Form):
         super(SignInForm, self).__init__(*args, **kwargs)
 
     def clean(self):
-        user = authenticate(username=self.cleaned_data['email'], password=self.cleaned_data['password'])
+        user = None
+        if 'email' in self.cleaned_data and 'password' in self.cleaned_data:
+            user = authenticate(username=self.cleaned_data['email'], password=self.cleaned_data['password'])
+
         if user is None:
             raise forms.ValidationError("Sorry, no account with those credentials was found")
+
         return super(SignInForm, self).clean()
