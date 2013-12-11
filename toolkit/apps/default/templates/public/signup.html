@@ -4,7 +4,7 @@
 
 {% block prebody %}
     <div class="dialog dialog-success">
-        <div class="container">This page is for attorney registration only. If you are a client with an invite code, <a href="#">click here</a>.</div>
+        <div class="container">This page is for attorney registration only. If you are a client with an invite code, <a href="{% url 'public:invite_form' %}">click here</a>.</div>
     </div>
 {% endblock %}
 
