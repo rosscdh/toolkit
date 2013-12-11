@@ -10,6 +10,8 @@
 		padding:10px 10px 1px 10px;
 		width: 260px;
 		margin-top:20px;
+		float:left;
+		margin-right:25px;
 	}
 	.signature-block-inner {
 		border-bottom:2px dashed #ccc;
@@ -22,10 +24,19 @@
 		padding-left:5px;
 	}
 	.signature-block-name {
-		font-size:12px;
+		font-size:14px;
 		text-transform:uppercase;
 		padding-top:4px;
 		text-align:right;
+	}
+	.signature-block.spouse .signature-block-inner {
+		color:blue;
+	}
+	.signature-block.spouse .signature-block-name {
+		text-align:left;
+		margin-bottom: 40px;
+		color:#aaa;
+		font-size:12px;
 	}
 	.header {
 		text-align:right;
@@ -34,19 +45,60 @@
 		font-size:12px;
 		font-weight:bold;
 	}
+	h3 {
+		text-decoration:underline;
+	}
+	.instructions {
+		font-size:14px;
+	}
+	ul {
+		list-style-type:none;
+	}
 {% endblock %}
 
 {% block content %}
 
 
 <!-- Page 1 : Instructions  -->
+<div class="instructions">
+	<h3>Instructions to Complete IRS 83(b) Election</h3>
 
-Page 1. This is where the instructions go for the client. 
-
-
-
-
-
+	<ul>
+		<li><strong>Step 1 : Print, Review and Sign</strong><ol>
+			<li>Print the document</li>
+			<li>Review the IRS Transmittal letter and the two copies of your 83(b) Election. </li>
+			<li>Sign in the 3 places indicated with a red cross.</li> 
+			<li>[if spouse sign]Have you spouse sign in 2 places indicated with a blue cross.</li></ol>
+		<br />
+		</li>
+		<li><strong>Step 2 : Upload a scan of Copy 1 to LawPal</strong><br/>
+			Upload a scanned copy of the document to LawPal. We will ensure your accountant and attorney get a copy.
+			<br /><br />
+		</li>
+		<li><strong>Step 3 : Prepare an envelope containing the following</strong><br />
+			<ol>
+				<li>The signed Transmittal Letter, Copies 1 and 2 of the 83(b) Election Letter</li>
+				<li>A single self addressed, postage paid envelope for the IRS to return a date-stamped copy. Although this is not required it is recommended to request it simply to enhance the company’s and taxpayer’s records. Attach the self addressed envelope to 83(b) Election Copy 1</li>
+			</ol>
+			<br />
+		</li>
+		<li>
+			<strong>Step 4 : Mail it to the IRS</strong><br /> 
+			Send it by <u>USPS Certified Mail with Return Receipt</u> requested to the IRS at the following address : 
+			<br />
+			<br />
+			[[IRS ADDRESS]]
+			<br /><br />
+		</li>
+		<li>
+			<strong>Step 5 : Add the tracking number to LawPal</strong><br />
+			Once you have sent it, input the tracking number into LawPal and we will notify all parties when the IRS have received it. 
+			<br />
+		</li>	
+	</ul>
+	<br />
+	<em>Your 83(b) Election must reach the IRS by [[FILING DEADLING]].</em>
+</div>
 
 <!-- Page 2 : Transmittal Letter  -->
 <div class="page-break"></div>
@@ -157,10 +209,10 @@ Signed,
 	<div class="signature-block-inner">x</div>
 	<div class="signature-block-name">{{ client_full_name }}</div>
 </div>
-<!-- if the state is XYZ then show this -->
-<div class="signature-block">
+<!-- if spouse is signing -->
+<div class="signature-block spouse">
 	<div class="signature-block-inner">x</div>
-	<div class="signature-block-name">{{ spouse_full_name }}</div>
+	<div class="signature-block-name">Name of Spouse :</div>
 </div>
 </div>
 
