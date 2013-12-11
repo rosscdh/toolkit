@@ -45,7 +45,7 @@ class EnsureCustomerService(object):
 
         profile = user.profile
 
-        if is_new is True:
+        if is_new is True or 'user_class' not in profile.data:
             LOGGER.info('Is a new User')
             profile.data['user_class'] = 'customer'
             profile.save(update_fields=['data'])
