@@ -40,11 +40,13 @@ class SecretKeyBackend(EmailBackend):
 
         try:
             invite = InviteKey.objects.get(key=username)
-            user = invite.user
+            if invite.has_been_used is True:
+                LOGGER.error('InviteKey has already been used: %s' % username)
+                raise ObjectDoesNotExist
+
+            user = invite.invited_user
+
         except ObjectDoesNotExist, InviteKey.DoesNotExist:
             LOGGER.error('InviteKey does not exist: %s' % username)
 
-        if user:
-            return user
-        else:
-            return None
+        return user

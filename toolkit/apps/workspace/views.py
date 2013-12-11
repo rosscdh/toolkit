@@ -141,9 +141,10 @@ class InviteClientWorkspaceToolObjectView(IssueSignalsMixin, WorkspaceToolMixin,
         self.tool_instance = get_object_or_404(self.get_queryset(), slug=self.kwargs.get('slug'))
 
         obj, is_new = self.model.objects.get_or_create(invited_user=self.tool_instance.user,
-                                                               inviting_user=self.request.user,
-                                                               tool=self.tool,
-                                                               tool_object_id=self.tool_instance.pk)
+                                                       inviting_user=self.request.user,
+                                                       tool=self.tool,
+                                                       tool_object_id=self.tool_instance.pk,
+                                                       next=self.request.build_absolute_uri(self.tool_instance.get_edit_url()))
         return obj
 
     def get_form_kwargs(self):
@@ -151,6 +152,7 @@ class InviteClientWorkspaceToolObjectView(IssueSignalsMixin, WorkspaceToolMixin,
         kwargs.update({
             'request': self.request,
             'tool_instance': self.tool_instance,
+            'key_instance': self.object
         })
 
         return kwargs
@@ -160,6 +162,7 @@ class InviteClientWorkspaceToolObjectView(IssueSignalsMixin, WorkspaceToolMixin,
         context.update({
             'request': self.request,
             'tool_instance': self.tool_instance,
+            'key_instance': self.object
         })
         return context
 

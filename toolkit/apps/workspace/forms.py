@@ -88,6 +88,7 @@ class InviteUserForm(forms.Form):
     message = forms.CharField(widget=forms.Textarea)
 
     def __init__(self, *args, **kwargs):
+        self.key_instance = kwargs.pop('key_instance', None)
         self.tool_instance = kwargs.pop('tool_instance', None)
         self.instance = kwargs.pop('instance', None)
         self.request = kwargs.pop('request', None)
@@ -117,12 +118,13 @@ class InviteUserForm(forms.Form):
         return template.render(Context({'request': self.request,
                                         'instance': self.tool_instance,
                                         'user': self.user,
-                                        'action_url': '%s' % self.request.build_absolute_uri(self.tool_instance.get_edit_url())
+                                        'action_url': '%s' % self.key_instance.get_invite_login_url(request=self.request)
                                         }))
     def save(self, **kwargs):
         """
         Mock save (as were not using an forms.ModelForm)
         this allows us to send the email as part of the form
+        NB! the InviteKey object is created by the view
         """
         m = InviteUserToToolEmail(subject=self.cleaned_data.get('subject'),
                                   message=self.cleaned_data.get('message'),
