@@ -437,7 +437,7 @@ def fixtures():
 def assets():
     # Activate virtualenv
     virtualenv('python %s%s/manage.py collectstatic --noinput' % (env.remote_project_path, env.project,))
-    virtualenv('python %s%s/manage.py compress --force' % (env.remote_project_path, env.project,))
+    #virtualenv('python %s%s/manage.py compress --force' % (env.remote_project_path, env.project,))
 
 @task
 def requirements():
