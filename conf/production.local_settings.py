@@ -11,6 +11,13 @@ SECRET_KEY = 'i6=)1=4in#zyp&amp;g)^9nqodjgjru134)@2)^$ox5w7ac*uhml!uy-5'
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
+TEMPLATE_LOADERS = (
+    ('django.template.loaders.cached.Loader', (
+        'django.template.loaders.filesystem.Loader',
+        'django.template.loaders.app_directories.Loader',
+    )),
+)
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
