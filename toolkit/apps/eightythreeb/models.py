@@ -8,12 +8,16 @@ from uuidfield import UUIDField
 from jsonfield import JSONField
 from datetime import datetime, timedelta
 
-from . import EIGHTYTHREEB_STATUS
+from toolkit.apps.workspace.mixins import WorkspaceToolModelMixin
+
+from .markers import EightyThreeBSignalMarkers
+EIGHTYTHREEB_STATUS = EightyThreeBSignalMarkers().named_tuple(name='EIGHTYTHREEB_STATUS')
+
 from .mixins import StatusMixin
 from .managers import EightyThreeBManager
 
 
-class EightyThreeB(StatusMixin, models.Model):
+class EightyThreeB(StatusMixin, WorkspaceToolModelMixin, models.Model):
     """
     83b Form to be associated with a Workspace and a particular user
     """
@@ -35,6 +39,21 @@ class EightyThreeB(StatusMixin, models.Model):
     @property
     def tool_slug(self):
         return '83b-election-letters'
+
+    @property
+    def markers(self):
+        markers = EightyThreeBSignalMarkers()
+        markers.tool = self  # set the tool to be the current
+        return markers
+
+    @property
+    def base_signal(self):
+        from .signals import base_83b_signal
+        return base_83b_signal
+
+    @property
+    def is_complete(self):
+        return self.status == self.STATUS_83b.complete
 
     @property
     def client_name(self):
@@ -66,6 +85,9 @@ class EightyThreeB(StatusMixin, models.Model):
 
     def get_absolute_url(self):
         return reverse('workspace:tool_object_preview', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug=self.tool_slug).first().slug, 'slug': self.slug})
+
+    def get_edit_url(self):
+        return reverse('workspace:tool_object_edit', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug=self.tool_slug).first().slug, 'slug': self.slug})
 
     def html(self):
         context = loader.Context(self.data)

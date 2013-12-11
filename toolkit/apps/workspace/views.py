@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.contrib import messages
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
@@ -11,13 +10,14 @@ from django.views.generic import (FormView,
                                   UpdateView,
                                   DetailView)
 
-from toolkit.apps.eightythreeb.forms import EightyThreeBForm
-from toolkit.apps.eightythreeb.signals import customer_download_pdf
+from .models import Workspace, Tool, InviteKey
+from .forms import WorkspaceForm, AddWorkspaceTeamMemberForm, InviteUserForm
+from .mixins import WorkspaceToolMixin, WorkspaceToolFormMixin, IssueSignalsMixin
 
-from .forms import WorkspaceForm, AddWorkspaceTeamMemberForm
-from .models import Workspace, Tool
-from .mixins import WorkspaceToolMixin
 from .services import PDFKitService  # , HTMLtoPDForPNGService
+
+import logging
+logger = logging.getLogger('django.request')
 
 
 class AddUserToWorkspace(CreateView):
@@ -26,7 +26,6 @@ class AddUserToWorkspace(CreateView):
 
     def dispatch(self, request, *args, **kwargs):
         self.workspace = get_object_or_404(Workspace, slug=self.kwargs.get('slug'))
-
         return super(AddUserToWorkspace, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -97,13 +96,12 @@ class WorkspaceToolObjectsListView(WorkspaceToolMixin, ListView):
     model = Tool
 
 
-class CreateWorkspaceToolObjectView(WorkspaceToolMixin, CreateView):
+class CreateWorkspaceToolObjectView(WorkspaceToolFormMixin, CreateView):
     """
     View to create a specific Tool Object
     """
     model = Tool
     template_name = 'workspace/workspace_tool_form.html'
-    form_class = EightyThreeBForm
 
     def get_queryset(self):
         qs = super(CreateWorkspaceToolObjectView, self).get_queryset()
@@ -112,47 +110,66 @@ class CreateWorkspaceToolObjectView(WorkspaceToolMixin, CreateView):
     def get_success_url(self):
         return reverse('workspace:tool_object_preview', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug, 'slug': self.object.slug})
 
-    def get_form_kwargs(self):
-        kwargs = super(CreateWorkspaceToolObjectView, self).get_form_kwargs()
-        kwargs.update({
-            'request': self.request,
-            'workspace': self.workspace
-        })
-        return kwargs
-
     def form_valid(self, form):
         self.object = form.save()
         return super(CreateWorkspaceToolObjectView, self).form_valid(form)
 
 
-class UpdateViewWorkspaceToolObjectView(WorkspaceToolMixin, UpdateView):
+class UpdateViewWorkspaceToolObjectView(WorkspaceToolFormMixin, UpdateView):
     """
     View to edit a specific Tool Object
     """
     model = Tool
     template_name = 'workspace/workspace_tool_form.html'
-    form_class = EightyThreeBForm
 
     def get_success_url(self):
-        return reverse('workspace:tool_object_list', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug})
-
-    def get_form_kwargs(self):
-        kwargs = super(UpdateViewWorkspaceToolObjectView, self).get_form_kwargs()
-        kwargs.update({
-            'request': self.request,
-            'workspace': self.workspace
-        })
-
-        return kwargs
-
-    def get_initial(self):
-        initial = super(UpdateViewWorkspaceToolObjectView, self).get_initial()
-        initial.update(**self.object.data)
-        return initial
+        return reverse('workspace:tool_object_preview', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug, 'slug': self.object.slug})
 
     def form_valid(self, form):
         self.object = form.save()
         return super(UpdateViewWorkspaceToolObjectView, self).form_valid(form)
+
+
+class InviteClientWorkspaceToolObjectView(IssueSignalsMixin, WorkspaceToolMixin, UpdateView):
+    model = InviteKey
+    form_class = InviteUserForm
+
+    def get_success_url(self):
+        return reverse('workspace:tool_object_preview', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug, 'slug': self.tool_instance.slug})
+
+    def get_object(self, queryset=None):
+        self.tool_instance = get_object_or_404(self.get_queryset(), slug=self.kwargs.get('slug'))
+
+        obj, is_new = self.model.objects.get_or_create(invited_user=self.tool_instance.user,
+                                                       inviting_user=self.request.user,
+                                                       tool=self.tool,
+                                                       tool_object_id=self.tool_instance.pk,
+                                                       next=self.request.build_absolute_uri(self.tool_instance.get_edit_url()))
+        return obj
+
+    def get_form_kwargs(self):
+        kwargs = super(InviteClientWorkspaceToolObjectView, self).get_form_kwargs()
+        kwargs.update({
+            'request': self.request,
+            'tool_instance': self.tool_instance,
+            'key_instance': self.object
+        })
+
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super(InviteClientWorkspaceToolObjectView, self).get_context_data(**kwargs)
+        context.update({
+            'request': self.request,
+            'tool_instance': self.tool_instance,
+            'key_instance': self.object
+        })
+        return context
+
+    def form_valid(self, form):
+        email = form.save()  # not used
+        self.issue_signals(request=self.request, instance=self.tool_instance)  # NB teh tool_instance and NOT self.instance
+        return super(InviteClientWorkspaceToolObjectView, self).form_valid(form)
 
 
 class WorkspaceToolObjectPreviewView(WorkspaceToolMixin, DetailView):
@@ -171,11 +188,8 @@ class WorkspaceToolObjectDisplayView(WorkspaceToolMixin, DetailView):
         return pdfpng_service.pdf(template_name=self.object.template_name, file_object=resp)
 
 
-class WorkspaceToolObjectDownloadView(WorkspaceToolObjectDisplayView):
+class WorkspaceToolObjectDownloadView(IssueSignalsMixin, WorkspaceToolObjectDisplayView):
     model = Tool
-
-    def issue_signals(self):
-        customer_download_pdf.send(sender=self.request.user, instance=self.object, actor_name=self.request.user.email)
 
     def render_to_response(self, context, **response_kwargs):
         html = self.object.html()
@@ -183,7 +197,7 @@ class WorkspaceToolObjectDownloadView(WorkspaceToolObjectDisplayView):
         resp = HttpResponse(content_type='application/pdf')
         resp['Content-Disposition'] = 'attachment; filename="{filename}.pdf"'.format(filename=self.object.filename)
 
-        self.issue_signals()
+        self.issue_signals(request=self.request, instance=self.object)
 
         return pdfpng_service.pdf(template_name=self.object.template_name, file_object=resp)
 

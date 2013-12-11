@@ -12,8 +12,8 @@ from crispy_forms.bootstrap import PrependedText, FieldWithButtons, StrictButton
 
 from toolkit.apps.workspace.services import EnsureCustomerService
 
-from.models import EightyThreeB
-from .signals import lawyer_complete_form, customer_complete_form, mail_to_irs_tracking_code
+from .models import EightyThreeB
+from .signals import lawyer_complete_form, customer_complete_form
 
 import datetime
 
@@ -39,18 +39,6 @@ LAWYER_LAYOUT = Layout(
             StrictButton('<span class="fui-calendar"></span>'),
             css_class='datetime'
         ),
-        Div(
-            HTML('<legend>Additional Details (Client to complete)</legend>'),
-            Field('state', disabled='disabled'),
-            Div(
-                Field('ssn', readonly='readonly'),
-                HTML('<span class="help-block">or</span>'),
-                Field('itin', readonly='readonly'),
-                css_class='form-inline'
-            ),
-            Field('accountant_email', readonly='readonly'),
-            css_class='dialog dialog-success form-dialog'
-        ),
         'description',
         'tax_year',
         'nature_of_restrictions',
@@ -63,6 +51,18 @@ LAWYER_LAYOUT = Layout(
                 css_class='form-inline'
             ),
             css_class='form-group'
+        ),
+        Div(
+            HTML('<legend>Additional Details (Client to complete)</legend>'),
+            Field('state', disabled='disabled'),
+            Div(
+                Field('ssn', readonly='readonly'),
+                HTML('<span class="help-block">or</span>'),
+                Field('itin', readonly='readonly'),
+                css_class='form-inline'
+            ),
+            Field('accountant_email', readonly='readonly'),
+            css_class='dialog dialog-success form-dialog'
         )
     ),
     ButtonHolder(
@@ -143,6 +143,68 @@ class EightyThreeBForm(forms.Form):
         label='',
         widget=forms.TextInput(attrs={'placeholder': 'Client email address', 'size': '40'})
     )
+    date_of_property_transfer = forms.DateField(
+        error_messages={
+            'invalid': "Property transfer date is invalid.",
+            'required': "Property transfer date can't be blank."
+        },
+        help_text='The filing deadline is 30 days from this date. Your filing deadline is <span id="filing-deadline"></span>.',
+        input_formats=['%B %d, %Y'],
+        label='Date on which the property was transferred',
+        widget=forms.DateInput(
+            attrs={
+                'autocomplete': 'off',
+                'class': 'datepicker'
+            },
+            format='%B %d, %Y'
+        )
+    )
+    description = forms.CharField(
+        error_messages={
+            'required': "Property description can't be blank."
+        },
+        label='Description of property with respect to which election is being made',
+        help_text='e.g. 10 shares of the common stock of ABC, Inc ($0.0001 per value)',
+        widget=forms.Textarea(attrs={
+            'cols': '80',
+            'data-toggle': 'summernote'
+        })
+    )
+    tax_year = forms.IntegerField(
+        error_messages={
+            'required': "Tax year can't be blank."
+        },
+        label='Taxable year for which the election is being made',
+        initial=_current_year,
+        widget=forms.NumberInput(attrs={'size': '4'})
+    )
+    nature_of_restrictions = forms.CharField(
+        error_messages={
+            'required': "Nature of restrictions can't be blank."
+        },
+        label='Nature of restrictions to which property is subject',
+        help_text='If you have copied this from Microsoft Word then please check the numbering and formatting has been retained.',
+        widget=forms.Textarea(attrs={
+            'cols': '80',
+            'data-toggle': 'summernote'
+        })
+    )
+    transfer_value_share = forms.DecimalField(
+        error_messages={
+            'required': "Transfer value per share can't be blank."
+        },
+        label='',
+        initial=0.00,
+        widget=forms.TextInput(attrs={'size': '10'})
+    )
+    transfer_value_total = forms.DecimalField(
+        error_messages={
+            'required': "Transfer value total can't be blank."
+        },
+        label='',
+        initial=0.00,
+        widget=forms.TextInput(attrs={'size': '10'})
+    )
     post_code = USZipCodeField(
         label='Zip Code',
         required=False
@@ -171,61 +233,12 @@ class EightyThreeBForm(forms.Form):
         label='Your accountants email address',
         required=False
     )
-    date_of_property_transfer = forms.DateField(
-        error_messages={
-            'invalid': "Property transfer date is invalid.",
-            'required': "Property transfer date can't be blank."
-        },
-        label='Date on which the property was transferred',
-        help_text='The filing deadline is 30 days from this date. Your filing deadline is June 24th 2013.',
-        widget=forms.TextInput(attrs={'class': 'datepicker'})
-    )
-    description = forms.CharField(
-        error_messages={
-            'required': "Property description can't be blank."
-        },
-        label='Description of property with respect to which election is being made',
-        help_text='e.g. 10 shares of the common stock of ABC, Inc ($0.0001 per value)',
-        widget=forms.Textarea(attrs={'cols': '80'})
-    )
-    tax_year = forms.IntegerField(
-        error_messages={
-            'required': "Tax year can't be blank."
-        },
-        label='Taxable year for which the election is being made',
-        initial=_current_year,
-        widget=forms.NumberInput(attrs={'size': '4'})
-    )
-    nature_of_restrictions = forms.CharField(
-        error_messages={
-            'required': "Nature of restrictions can't be blank."
-        },
-        label='Nature of restrictions to which property is subject',
-        help_text='If you have copied this from Microsoft Word then please check the numbering and formatting has been retained.',
-        widget=forms.Textarea(attrs={'cols': '80'})
-    )
-    transfer_value_share = forms.DecimalField(
-        error_messages={
-            'required': "Transfer value per share can't be blank."
-        },
-        label='',
-        initial=0.00,
-        widget=forms.TextInput(attrs={'size': '10'})
-    )
-    transfer_value_total = forms.DecimalField(
-        error_messages={
-            'required': "Transfer value total can't be blank."
-        },
-        label='',
-        initial=0.00,
-        widget=forms.TextInput(attrs={'size': '10'})
-    )
 
     def __init__(self, *args, **kwargs):
-        request = kwargs.pop('request')
+        self.request = kwargs.pop('request')
         self.user = None
-        if request is not None:
-            self.user = request.user
+        if self.request is not None:
+            self.user = self.request.user
 
         kwargs.pop('instance')  # pop this as we are not using a model form
 
@@ -247,6 +260,16 @@ class EightyThreeBForm(forms.Form):
         for field_name in self.fields.keys():
             if field_name not in helper_fields:
                 del self.fields[field_name]
+
+    def clean_date_of_property_transfer(self):
+        date = self.cleaned_data.get('date_of_property_transfer')
+
+        # Only check the property transfer date on new forms
+        if not self.initial:
+            if date < (datetime.date.today() - datetime.timedelta(days=25)):
+                raise forms.ValidationError('This requires a minimum of 5 days to complete the election')
+
+        return date
 
     def clean_ssn(self):
         """
@@ -274,10 +297,10 @@ class EightyThreeBForm(forms.Form):
 
     def issue_signals(self, instance):
         if self.user.profile.is_lawyer:
-            lawyer_complete_form.send(sender=self.user, instance=instance, actor_name=self.user.email)
+            lawyer_complete_form.send(sender=self.request, instance=instance, actor=self.user)
 
         elif self.user.profile.is_customer:
-            customer_complete_form.send(sender=self.user, instance=instance, actor_name=self.user.email)
+            customer_complete_form.send(sender=self.request, instance=instance, actor=self.user)
 
     def save(self):
         """
@@ -331,13 +354,7 @@ class TrackingCodeForm(forms.ModelForm):
         # dont allow override from form
         return self.instance.user
 
-    def issue_signals(self):
-        mail_to_irs_tracking_code.send(sender=self.instance.user, instance=self.instance, actor_name=self.instance.user.email)
-
     def save(self, **kwargs):
         # save to data
         self.instance.tracking_code = self.cleaned_data.get('tracking_code')
-
-        self.issue_signals()
-
         return super(TrackingCodeForm, self).save(**kwargs)
