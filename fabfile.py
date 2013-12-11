@@ -120,7 +120,7 @@ def clean_all():
         virtualenv(cmd='python %s%s/manage.py cleanup' % (env.remote_project_path, env.project))
         virtualenv(cmd='python %s%s/manage.py clean_nonces' % (env.remote_project_path, env.project))
         virtualenv(cmd='python %s%s/manage.py clean_associations' % (env.remote_project_path, env.project))
-        virtualenv(cmd='python %s%s/manage.py clear_cache' % (env.remote_project_path, env.project))
+        #virtualenv(cmd='python %s%s/manage.py clear_cache' % (env.remote_project_path, env.project))
         virtualenv(cmd='python %s%s/manage.py clean_pyc' % (env.remote_project_path, env.project))
         virtualenv(cmd='python %s%s/manage.py compile_pyc' % (env.remote_project_path, env.project))
 
@@ -370,7 +370,7 @@ def relink():
 def clean_start():
     stop_service()
     clean_pyc()
-    clear_cache()
+    #clear_cache()
     clean_pyc()
     #precompile_pyc()
     start_service()
