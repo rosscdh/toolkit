@@ -10,6 +10,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, ButtonHolder, Submit, Div
 
 from toolkit.apps.workspace.services import EnsureCustomerService
+from toolkit.apps.workspace.models import InviteKey
 
 from .models import Workspace
 from .mailers import InviteUserToToolEmail
@@ -150,3 +151,11 @@ class InviteKeyForm(forms.Form):
             )
         )
         super(InviteKeyForm, self).__init__(*args, **kwargs)
+
+    def clean_invite_key(self):
+        key = self.cleaned_data['invite_key']
+        try:
+            InviteKey.objects.get(key=key)
+
+        except InviteKey.DoesNotExist:
+            raise forms.ValidationError('Sorry, that key does not exist.')

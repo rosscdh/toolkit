@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django import forms
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 
 from parsley.decorators import parsleyfy
 from crispy_forms.helper import FormHelper
@@ -100,3 +101,9 @@ class SignInForm(forms.Form):
             )
         )
         super(SignInForm, self).__init__(*args, **kwargs)
+
+    def clean(self):
+        user = authenticate(username=self.cleaned_data['email'], password=self.cleaned_data['password'])
+        if user is None:
+            raise forms.ValidationError("Sorry, no account with those credentials was found")
+        return super(SignInForm, self).clean()
