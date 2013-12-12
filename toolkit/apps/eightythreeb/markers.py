@@ -14,14 +14,13 @@ class EditFormMarker(Marker):
 
 
 class LawyerInviteUserMarker(Marker):
-    action_name = 'Invite Client'
     action_user_class = ['lawyer',]
 
+    def action_name(self):
+        return 'Re-invite Client' if self.is_complete is True else 'Invite Client'
+
     def action_url(self):
-        if self.tool.is_complete is True or self.is_complete is True:
-            return None
-        else:
-            return reverse('workspace:tool_object_invite', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.tool_slug, 'slug': self.tool.slug})
+        return reverse('workspace:tool_object_invite', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.tool_slug, 'slug': self.tool.slug})
 
 
 class CustomerDownloadDocMarker(Marker):
