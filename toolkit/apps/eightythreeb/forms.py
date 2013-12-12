@@ -54,6 +54,7 @@ LAWYER_LAYOUT = Layout(
         ),
         Div(
             HTML('<legend>Additional Details (Client to complete)</legend>'),
+            Field('has_spouse', disabled='disabled'),
             Field('state', disabled='disabled'),
             Div(
                 Field('ssn', readonly='readonly'),
@@ -81,6 +82,7 @@ CUSTOMER_LAYOUT = Layout(
             'client_email',
             css_class='form-inline'
         ),
+        'has_spouse',
         'post_code',
         'state',
         'address',
@@ -126,6 +128,7 @@ CUSTOMER_LAYOUT = Layout(
 
 @parsleyfy
 class EightyThreeBForm(forms.Form):
+
     client_full_name = forms.CharField(
         error_messages={
             'required': "Client name can't be blank."
@@ -134,6 +137,7 @@ class EightyThreeBForm(forms.Form):
         label='',
         widget=forms.TextInput(attrs={'placeholder': 'Client full name', 'size': '40'})
     )
+
     client_email = forms.EmailField(
         error_messages={
             'invalid': "Client email is invalid.",
@@ -143,6 +147,7 @@ class EightyThreeBForm(forms.Form):
         label='',
         widget=forms.TextInput(attrs={'placeholder': 'Client email address', 'size': '40'})
     )
+
     date_of_property_transfer = forms.DateField(
         error_messages={
             'invalid': "Property transfer date is invalid.",
@@ -159,6 +164,7 @@ class EightyThreeBForm(forms.Form):
             format='%B %d, %Y'
         )
     )
+
     description = forms.CharField(
         error_messages={
             'required': "Property description can't be blank."
@@ -170,6 +176,7 @@ class EightyThreeBForm(forms.Form):
             'data-toggle': 'summernote'
         })
     )
+
     tax_year = forms.IntegerField(
         error_messages={
             'required': "Tax year can't be blank."
@@ -178,6 +185,7 @@ class EightyThreeBForm(forms.Form):
         initial=_current_year,
         widget=forms.NumberInput(attrs={'size': '4'})
     )
+
     nature_of_restrictions = forms.CharField(
         error_messages={
             'required': "Nature of restrictions can't be blank."
@@ -189,6 +197,7 @@ class EightyThreeBForm(forms.Form):
             'data-toggle': 'summernote'
         })
     )
+
     transfer_value_share = forms.DecimalField(
         error_messages={
             'required': "Transfer value per share can't be blank."
@@ -197,6 +206,7 @@ class EightyThreeBForm(forms.Form):
         initial=0.00,
         widget=forms.TextInput(attrs={'size': '10'})
     )
+
     transfer_value_total = forms.DecimalField(
         error_messages={
             'required': "Transfer value total can't be blank."
@@ -205,10 +215,12 @@ class EightyThreeBForm(forms.Form):
         initial=0.00,
         widget=forms.TextInput(attrs={'size': '10'})
     )
+
     post_code = USZipCodeField(
         label='Zip Code',
         required=False
     )
+
     state = forms.ChoiceField(
         choices=USPS_CHOICES,
         label='Where do you live?',
@@ -216,11 +228,18 @@ class EightyThreeBForm(forms.Form):
         initial='CA',
         required=False
     )
-    address=forms.CharField(
+
+    address = forms.CharField(
         label='Address',
         widget=forms.Textarea,
         required=False
     )
+
+    has_spouse = forms.BooleanField(
+        required=False,
+        label='Are your married?',
+        help_text='Do you have a spouse or legally recognised de-facto')
+
     ssn = USSocialSecurityNumberField(
         label='Social Security Number',
         required=False
@@ -235,26 +254,30 @@ class EightyThreeBForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
+        kwargs.pop('instance')  # pop this as we are not using a model form
         self.request = kwargs.pop('request')
+        self.workspace = kwargs.pop('workspace')
+
         self.user = None
         if self.request is not None:
             self.user = self.request.user
 
-        kwargs.pop('instance')  # pop this as we are not using a model form
-
-        self.workspace = kwargs.pop('workspace')
-
         self.helper = FormHelper()
+
         self.helper.attrs = {
             'parsley-validate': '',
             'parsley-error-container': '.parsley-errors'
         }
+
         self.helper.form_show_errors = False
 
         self.helper.layout = LAWYER_LAYOUT if self.user.profile.is_lawyer else CUSTOMER_LAYOUT
 
         super(EightyThreeBForm, self).__init__(*args, **kwargs)
 
+        self.sync_fields()
+
+    def sync_fields(self):
         # sync the fields with the appropriate user layout
         helper_fields = [field_name for pos, field_name in self.helper.layout.get_field_names()]
         for field_name in self.fields.keys():
@@ -276,11 +299,14 @@ class EightyThreeBForm(forms.Form):
         if the itin is not specified and we have a blank value
         """
         if self.user.profile.is_customer:
+
             if 'ssn' in self.fields:
                 ssn = self.cleaned_data.get('ssn')
                 itin = self.data.get('itin')
+
                 if ssn in ['', None] and itin in ['', None]:
                     raise forms.ValidationError("Please specify either an SSN or an ITIN")
+
                 return ssn
 
     def clean_itin(self):
@@ -288,11 +314,14 @@ class EightyThreeBForm(forms.Form):
         if the ssn is not specified and we have a blank value
         """
         if self.user.profile.is_customer:
+
             if 'itin' in self.fields:
                 itin = self.cleaned_data.get('itin')
                 ssn = self.data.get('ssn')
+
                 if ssn in ['', None] and itin in ['', None]:
                     raise forms.ValidationError("Please specify either an SSN or an ITIN")
+
                 return itin
 
     def issue_signals(self, instance):
@@ -331,7 +360,7 @@ class TrackingCodeForm(forms.ModelForm):
 
     class Meta:
         model = EightyThreeB
-        fields = ['user',]
+        fields = ['user']
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()

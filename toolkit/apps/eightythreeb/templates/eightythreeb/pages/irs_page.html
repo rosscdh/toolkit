@@ -1,0 +1,69 @@
+{% load eightythreeb_tags %}<div class="header">{{ title|default:"Copy 1 - IRS (File Copy)" }}</div>
+
+<h3>Election Under Section 83(b) of the Internal Revenue Code</h3>
+<br/>
+<div>
+    The undersigned hereby makes an election pursuant to Section 83(b) of the Internal Revenue Code with respect to the property described below:
+</div>
+<br/>
+
+<div>
+    <p>1. Name and Address of Taxpayer</p>
+    <div>{{ client_full_name|default:'<span>[Client Name]</span>' }}</div>
+    <div>{{ address|default:'<span>[Client Address]</span>' }}</div>
+    <div>{{ post_code|default:'<span>[Client Zip Code]</span>' }}, {{ state|default:'<span>[Client State]</span>' }}</div>
+    <br />
+    <div>Taxpayer SSN / ITIN # : {% if ssn or itin %}{{ ssn|default:'' }}{{ itin|default:'' }}{% else %}<span>[ITIN or SSN]</span>{% endif %}</div>
+    <br />
+    <div>
+        2. Description of property with respect to which election is being made:
+        <br /><br />
+        {{ transfer_value_share|default:'<span>[x shares]</span>' }} shares of the common stock of {{ company_name |default:'<span>[Company Name]</span>' }}, (the “Company”) (${{ transfer_value_total |default:'<span>[Value at time of transfer]</span>'}} par value).
+    </div>
+    <br />
+    <div>
+        3. Date on which property was transferred is {{ date_of_property_transfer|to_date|date:"SHORT_DATE_FORMAT"|default:'<span>[Transfer Date]</span>' }}.
+    </div>
+    <br />
+    <div>
+        4. The taxable year for which this election is being made is calendar year {{ tax_year |default:'<span>[Transfer Year]</span>'}}.
+        </div>
+    <br />
+    <div>
+        5. Nature of restrictions to which property is subject:
+        <br /><br />
+        {{ description | default:'<span>[Description of Restrictions]</span>' }}
+    </div>
+    <br />
+    <div>
+        6. The fair market value at time of transfer (determined without regard to any restrictions other than restrictions which by their terms will never lapse) of the property with respect to which this election is being made is ${{ transfer_value_share |default:'<span>[Share price at time of transfer]</span>'}} per share, for a total aggregate value of ${{ transfer_value_total |default:'<span>[Value at time of transfer]</span>'}}.
+    </div>
+    <br />
+    <div>
+        7. The amount paid by the taxpayer for the property is ${{ transfer_value_total|default:'<span>[Amount paid]</span>'}}.
+    </div>
+    <div>
+        <p>8. A copy of this statement has been furnished to {{ company_name |default:'<span>[Company Name]</span>' }}.</p>
+        <br />
+        <br />
+        <br />
+        Dated: {% now "F jS Y" %}
+        <br />
+        <br />
+    </div> 
+<div>
+Signed,
+
+<div>
+    <div class="signature-block">
+        <div class="signature-block-inner">x</div>
+        <div class="signature-block-name">{{ client_full_name }}</div>
+    </div>
+    <!-- if spouse is signing -->
+    {% if object.spouse_must_sign %}
+    <div class="signature-block spouse">
+        <div class="signature-block-inner">x</div>
+        <div class="signature-block-name">Name of Spouse :</div>
+    </div>
+    {% endif %}
+</div>
