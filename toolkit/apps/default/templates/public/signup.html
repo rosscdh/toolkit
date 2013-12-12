@@ -1,27 +1,32 @@
-{% extends 'public/base.html' %}{% load url from future %}{% load crispy_forms_tags %}
+{% extends 'public/base.html' %}
 
-{% block page_title %}Sign up — LawPal{% endblock %}
+{% load url from future %}{% load crispy_forms_tags %}
+
+{% block page_title %}Sign up — {{ block.super }}{% endblock %}
 
 {% block prebody %}
     <div class="dialog dialog-success">
-        <div class="container">This page is for attorney registration only. If you are a client with an invite code, <a href="{% url 'public:invite_form' %}">click here</a>.</div>
+        <div class="container">This page is for attorney registration only. If you are a client with an invite code, <a href="#">click here</a>.</div>
     </div>
 {% endblock %}
 
 {% block body %}
     <div class="row">
         <div class="col-sm-6 col-sm-offset-3">
-            <h3>Sign up as an attorney</h3>
+            <div class="page-header">
+                <h4>Sign up as an attorney</h4>
+            </div>
+
             <p>Fill out the form below to create your account.</p>
 
-            <!-- form errors partial -->
-            {% crispy form %}
-        </div>
-    </div>
-    <hr>
-    <div class="row">
-        <div class="col-sm-6 col-sm-offset-3">
-            Already have an account? <a href="{% url 'public:signin' %}">Sign in</a>
+            {% block form %}
+                {% include 'partials/form-errors.html' with form=form %}
+
+                {% crispy form %}
+            {% endblock %}
+
+            <hr>
+            <p>Already have an account? <a href="{% url 'public:signin' %}">Sign in</a></p>
         </div>
     </div>
 {% endblock %}
