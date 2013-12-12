@@ -86,7 +86,10 @@ class AddWorkspaceTeamMemberForm(forms.Form):
 @parsleyfy
 class InviteUserForm(forms.Form):
     subject = forms.CharField()
-    message = forms.CharField(widget=forms.Textarea)
+    message = forms.CharField(widget=forms.Textarea(attrs={
+            'cols': '80',
+            'data-toggle': 'summernote'
+        }))
 
     def __init__(self, *args, **kwargs):
         self.key_instance = kwargs.pop('key_instance', None)
@@ -105,6 +108,7 @@ class InviteUserForm(forms.Form):
             ButtonHolder(
                 Submit('submit', 'Send Invite', css_class='button white')
             )
+
         )
         super(InviteUserForm, self).__init__(*args, **kwargs)
         self.fields['subject'].initial = self.get_initial_subject()

@@ -64,7 +64,7 @@
                             <!-- Content Section -->
                             <tr>
                                 <td align="left" valign="top" width="100%">
-                                    <table class="rounded" bgcolor="#ffffff" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-top: 1px solid #eae9e9; border-bottom: 1px solid #b2b1b1; border-left: 1px solid #d4d2d3; border-right: 1px solid #d4d2d3; padding: 0;">
+                                    <table class="rounded" bgcolor="#ffffff" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-top: 1px solid #eae9e9; border-bottom: 1px solid #b2b1b1; border-left: 1px solid #d4d2d3; border-right: 1px solid #d4d2d3; padding: 20px;">
                                         {% block html_content %}{% endblock %}
                                     </table>
                                 </td>
