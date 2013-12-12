@@ -5358,10 +5358,6 @@ a.list-group-item.active > .badge,
     position: static;
   }
 }
-.home-wrap {
-  background-color: #42d0e5;
-  color: white;
-}
 .last-col {
   overflow: hidden;
 }
