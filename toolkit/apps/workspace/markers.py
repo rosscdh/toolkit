@@ -21,6 +21,36 @@ import math
 class BaseSignalMarkers(object):
     tool_object = None
     signal_map = []
+    markers_map = {
+        'previous': None,
+        'current': None,
+        'next': None,
+    }
+
+    def __init__(self):
+        self.previous = None
+        try:
+            self.current = self.signal_map[0]
+        except IndexError:
+            raise Exception('You must have at least 1 item in the signal_map list attribute')
+        try:
+            self.next = self.signal_map[1]
+        except IndexError:
+            self.next = None
+
+        self.set_markers_fsm()
+
+    def set_markers_fsm(self):
+        for i, marker in enumerate(self.signal_map):
+                try:
+                    marker.previous = self.signal_map[i-1]
+                except IndexError:
+                    marker.previous = None
+
+                try:
+                    marker.next = self.signal_map[i+1]
+                except IndexError:
+                    marker.next = None
 
     def __iter__(self):
         return iter(self.signal_map)
@@ -47,10 +77,46 @@ class BaseSignalMarkers(object):
             s.tool = self.tool_object
 
     def marker(self, val):
-        for s in self.signal_map:
-            if val == s.val:
-                return s
+        for i, marker in enumerate(self.signal_map):
+            if val == marker.val:
+                try:
+                    self.previous = self.signal_map[i-1]
+                except IndexError:
+                    self.previous = None
+
+                self.current = marker
+
+                try:
+                    self.next = self.signal_map[i+1]
+                except IndexError:
+                    self.next = self.signal_map[0]  # reset the counter to 0
+
+                return self.current
         return None
+
+    @property
+    def current(self):
+        return self.markers_map.get('current')
+
+    @current.setter
+    def current(self, value):
+        self.markers_map['current'] = value
+
+    @property
+    def next(self):
+        return self.markers_map.get('next')
+
+    @next.setter
+    def next(self, value):
+        self.markers_map['next'] = value
+
+    @property
+    def previous(self):
+        return self.markers_map.get('previous')
+
+    @previous.setter
+    def previous(self, value):
+        self.markers_map['previous'] = value
 
     def named_tuple(self, name):
         """
@@ -70,6 +136,11 @@ class Marker:
     action_url = None
     action_user_class = []  # must be a list so we can handle multiple types
 
+    markers_map = {
+        'previous': None,
+        'next': None,
+    }
+
     val = None
     signals = None
     next = None
@@ -85,8 +156,10 @@ class Marker:
         # action_url is passed in; use that
         if hasattr(self, 'action_name') is False and 'action_name' in kwargs:
             self.action_name = kwargs.pop('action_name')
+
         if hasattr(self, 'action_url') is False and 'action_url' in kwargs:
             self.action_url = kwargs.pop('action_url')
+
         if hasattr(self, 'action_user_class') is False and 'action_user_class' in kwargs:
             self.action_user = kwargs.pop('action_user_class')
 
@@ -99,11 +172,27 @@ class Marker:
         self.data = kwargs
 
     def __str__(self):
-        return str(self.data)
+        return u'{name}'.format(name=self.name).encode('utf-8')
 
     @property
     def desc(self):
         self.description
+
+    @property
+    def next(self):
+        return self.markers_map.get('next')
+
+    @next.setter
+    def next(self, value):
+        self.markers_map['next'] = value
+
+    @property
+    def previous(self):
+        return self.markers_map.get('previous')
+
+    @previous.setter
+    def previous(self, value):
+        self.markers_map['previous'] = value
 
     # @property
     # def can_action(self):
