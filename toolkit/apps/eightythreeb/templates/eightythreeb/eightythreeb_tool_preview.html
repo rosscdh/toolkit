@@ -11,101 +11,114 @@
 {% endblock %}
 
 
-{% block body %}
+{% block content %}
+<style>
+ .success { background-color: #dff0d8; }
+</style>
 {% csrf_token %}
 
 <div id="pdf_review_controls" class="row">
-    <h3>Current Status: {{ object.current_status }}<br/><small>{{ object.markers.percent_complete }}% Complete</small></h3>
-
-    <div class="">
-        {% if user.profile.is_lawyer %}
-
-            {% if object.STATUS_83b.lawyer_invite_customer == object.status %}
-                <button type="button" id="id_customer_download_pdf" class="btn btn-success redirect"
-                    data-url="{% url 'workspace:tool_object_invite' workspace=workspace.slug tool=tool.slug slug=object.slug %}">Invite {{ object.user.get_full_name|default:object.user.username }} to complete the 83b</button>
-            {% endif %}
-
-        {% endif %}
-
-        {% if user.profile.is_customer %}
-
-            {% if object.STATUS_83b.customer_complete_form == object.status %}
-                <button type="button" id="id_customer_download_pdf" class="btn btn-success redirect"
-                data-url="{% url 'workspace:tool_object_edit' workspace=workspace.slug tool=tool.slug slug=object.slug %}">Complete 83b</button>
-            {% endif %}
-
-            {% if object.STATUS_83b.customer_download_pdf == object.status %}
-                <button type="button" id="id_customer_download_pdf" class="btn btn-success redirect"
-                data-url="{% url 'workspace:tool_object_download' workspace=workspace.slug tool=tool.slug slug=object.slug %}">Download</button>
-            {% endif %}
-
-            {% if object.STATUS_83b.customer_print_and_sign == object.status %}
-                <button type="button" class="btn btn-success action"
-                    data-method="PATCH"
-                    data-url="/api/83b/{{ object.pk }}/"
-                    data-tool="{{ tool.pk }}"
-                    data-tool_object_id="{{ object.pk }}"
-                    data-status="{{ object.STATUS_83b.customer_print_and_sign }}">I have printed and signed 2 copies of the 83b document</button>
-            {% endif %}
-
-            {% if object.STATUS_83b.mail_to_irs_tracking_code == object.status %}
-                <button type="button" class="btn btn-success redirect"
-                    data-url="{% url 'eightythreeb:tracking_code' slug=object.slug %}">I have mailed the documents and have the tracking code to enter</button>
-            {% endif %}
-
-            {% if object.STATUS_83b.datestamped_copy_recieved == object.status %}
-                <button type="button" class="btn btn-success action"
-                    data-method="PATCH"
-                    data-url="/api/83b/{{ object.pk }}/"
-                    data-tool="{{ tool.pk }}"
-                    data-tool_object_id="{{ object.pk }}"
-                    data-status="{{ object.STATUS_83b.datestamped_copy_recieved }}">I have recieved the date-stamped copy of my 83b back from the IRS</button>
-            {% endif %}
-
-            {% if object.STATUS_83b.copy_sent_to_lawyer == object.status %}
-                <button type="button" class="btn btn-success action"
-                    data-method="PATCH"
-                    data-url="/api/83b/{{ object.pk }}/"
-                    data-tool="{{ tool.pk }}"
-                    data-tool_object_id="{{ object.pk }}"
-                    data-status="{{ object.STATUS_83b.copy_sent_to_lawyer }}">I have sent a copy of the 83b to my Attorney</button>
-            {% endif %}
-
-            {% if object.STATUS_83b.copy_sent_to_accountant == object.status %}
-                <button type="button" class="btn btn-success action"
-                    data-method="PATCH"
-                    data-url="/api/83b/{{ object.pk }}/"
-                    data-tool="{{ tool.pk }}"
-                    data-tool_object_id="{{ object.pk }}"
-                    data-status="{{ object.STATUS_83b.copy_sent_to_accountant }}">I have sent a copy of the 83b to my Accountant</button>
-            {% endif %}
-
-        {% endif %}
-
-        {% if object.STATUS_83b.irs_recieved == object.status %}
-        <div class="row">
-            <p>This is an automated part of the process, and if you have sent your documents via registered post and registered the tracking code with us; then you should simply wait for this to update.</p>
-            <button type="button" class="btn btn-success redirect"
-                data-url="{% url 'eightythreeb:tracking_code' slug=object.slug %}">Update tracking code</button>
-
-            {% if user.is_staff or user.is_superuser %}
-                <button type="button" class="btn btn-danger action"
-                    data-method="PATCH"
-                    data-url="/api/83b/{{ object.pk }}/"
-                    data-tool="{{ tool.pk }}"
-                    data-tool_object_id="{{ object.pk }}"
-                    data-status="{{ object.STATUS_83b.irs_recieved }}">Staff: Skip this step</button>
-            {% endif %}
+    <div class="col-sm-12">
+        <h3>83(b) Election Letter for [Client Name]</h3>
+        Next Stage: {{ object.current_status }}<br/>
+        <div class="text-right">
+            <small class="text-muted text-right">{{ object.markers.percent_complete }}% Complete</small></h3>
         </div>
-        {% endif %}
+        <div class="progress">
+          <div class="progress-bar" role="progressbar" aria-valuenow="{{ object.markers.percent_complete }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ object.markers.percent_complete }}%;">
+            <span class="sr-only">{{ object.markers.percent_complete }}% Complete</span>
+          </div>
+        </div>
+        <div class="">
+            {% if user.profile.is_lawyer %}
 
+                {% if object.STATUS_83b.lawyer_invite_customer == object.status %}
+                    <button type="button" id="id_customer_download_pdf" class="btn btn-success redirect"
+                        data-url="{% url 'workspace:tool_object_invite' workspace=workspace.slug tool=tool.slug slug=object.slug %}">Invite {{ object.user.get_full_name|default:object.user.username }} to complete the 83b</button>
+                {% endif %}
+
+            {% endif %}
+
+            {% if user.profile.is_customer %}
+
+                {% if object.STATUS_83b.customer_complete_form == object.status %}
+                    <button type="button" id="id_customer_download_pdf" class="btn btn-success redirect"
+                    data-url="{% url 'workspace:tool_object_edit' workspace=workspace.slug tool=tool.slug slug=object.slug %}">Complete 83b</button>
+                {% endif %}
+
+                {% if object.STATUS_83b.customer_download_pdf == object.status %}
+                    <button type="button" id="id_customer_download_pdf" class="btn btn-success redirect"
+                    data-url="{% url 'workspace:tool_object_download' workspace=workspace.slug tool=tool.slug slug=object.slug %}">Download</button>
+                {% endif %}
+
+                {% if object.STATUS_83b.customer_print_and_sign == object.status %}
+                    <button type="button" class="btn btn-success action"
+                        data-method="PATCH"
+                        data-url="/api/83b/{{ object.pk }}/"
+                        data-tool="{{ tool.pk }}"
+                        data-tool_object_id="{{ object.pk }}"
+                        data-status="{{ object.STATUS_83b.customer_print_and_sign }}">I have printed and signed 2 copies of the 83b document</button>
+                {% endif %}
+
+                {% if object.STATUS_83b.mail_to_irs_tracking_code == object.status %}
+                    <button type="button" class="btn btn-success redirect"
+                        data-url="{% url 'eightythreeb:tracking_code' slug=object.slug %}">I have mailed the documents and have the tracking code to enter</button>
+                {% endif %}
+
+                {% if object.STATUS_83b.datestamped_copy_recieved == object.status %}
+                    <button type="button" class="btn btn-success action"
+                        data-method="PATCH"
+                        data-url="/api/83b/{{ object.pk }}/"
+                        data-tool="{{ tool.pk }}"
+                        data-tool_object_id="{{ object.pk }}"
+                        data-status="{{ object.STATUS_83b.datestamped_copy_recieved }}">I have recieved the date-stamped copy of my 83b back from the IRS</button>
+                {% endif %}
+
+                {% if object.STATUS_83b.copy_sent_to_lawyer == object.status %}
+                    <button type="button" class="btn btn-success action"
+                        data-method="PATCH"
+                        data-url="/api/83b/{{ object.pk }}/"
+                        data-tool="{{ tool.pk }}"
+                        data-tool_object_id="{{ object.pk }}"
+                        data-status="{{ object.STATUS_83b.copy_sent_to_lawyer }}">I have sent a copy of the 83b to my Attorney</button>
+                {% endif %}
+
+                {% if object.STATUS_83b.copy_sent_to_accountant == object.status %}
+                    <button type="button" class="btn btn-success action"
+                        data-method="PATCH"
+                        data-url="/api/83b/{{ object.pk }}/"
+                        data-tool="{{ tool.pk }}"
+                        data-tool_object_id="{{ object.pk }}"
+                        data-status="{{ object.STATUS_83b.copy_sent_to_accountant }}">I have sent a copy of the 83b to my Accountant</button>
+                {% endif %}
+
+            {% endif %}
+
+            {% if object.STATUS_83b.irs_recieved == object.status %}
+            <div class="row">
+                <p>This is an automated part of the process, and if you have sent your documents via registered post and registered the tracking code with us; then you should simply wait for this to update.</p>
+                <button type="button" class="btn btn-success redirect"
+                    data-url="{% url 'eightythreeb:tracking_code' slug=object.slug %}">Update tracking code</button>
+
+                {% if user.is_staff or user.is_superuser %}
+                    <button type="button" class="btn btn-danger action"
+                        data-method="PATCH"
+                        data-url="/api/83b/{{ object.pk }}/"
+                        data-tool="{{ tool.pk }}"
+                        data-tool_object_id="{{ object.pk }}"
+                        data-status="{{ object.STATUS_83b.irs_recieved }}">Staff: Skip this step</button>
+                {% endif %}
+            </div>
+            {% endif %}
+
+        </div>
+        
     </div>
-    <br/><br/>
 </div>
 
 <ul id="page_tabs" class="nav nav-tabs">
-  <li><a href="#checklist" data-toggle="tab">Checklist</a></li>
-  <li><a href="#document">Document</a></li>
+  <li><a href="#checklist" data-toggle="tab">Progress</a></li>
+  <li><a href="#document">83b Election Preview</a></li>
 </ul>
 
 <div class="tab-content">
@@ -113,33 +126,31 @@
 
         <ul class="list-group">
         {% for m in object.markers %}
-            <li class="list-group-item row">
-                <div class="col-md-1">
-                    {% if m.is_complete %}
-                    <span class="btn btn-success"><i class="fui-check"></i></span>
-                    {% else %}
-                    <span class="btn btn-danger"><i class="fui-cross"></i></span>
-                    {% endif %}
-                </div>
-                <div class="col-md-6">
-                    <div class="row">{{ m.description }}</div>
-                    {% if m.long_description %}
-                    <div class="row">
-                        <small>{{ m.long_description }}</small>
-                    </div>
-                    {% endif %}
-                </div>
-                <div class="col-md-2">
-                    {% if m.action_url and user.profile.user_class in m.action_user_class %}
-                    <span class="btn btn-link"><a href="{{ m.action_url }}">{{ m.action_name }}</a></span>
-                    {% endif %}
-                </div>
-                <div class="col-md-2">
-                    {% if m.date_completed %}
-                    <p><b>Completed:</b><br/> {{ m.date_completed|date:'DATETIME_FORMAT' }}<br/><small>{{ m.date_completed|naturaltime }}</small></p>
-                    {% endif %}
-                </div>
+            <li class="list-group-item row{% if m.is_complete %} success{% else %} pending{% endif %}">
+                <div class="row">
+                    <div class="col-md-9">
+                        {% if m.is_complete %}
+                        <span class="text-success glyphicon glyphicon-check"></span> 
+                        <span class="text-success">{{ m.description }}</span>
 
+                        {% else %}
+                        {{ m.description }}
+                        {% endif %}
+
+                        {% if m.date_completed %}
+                        <small class="">Completed: {{ m.date_completed|naturaltime }}</small>
+                        {% endif %}
+                        {% if m.long_description %}
+                        <br />
+                        <small>{{ m.long_description }}</small>                    
+                        {% endif %}
+                    </div>
+                    <div class="col-md-3 text-right">
+                        {% if m.action_url and user.profile.user_class in m.action_user_class %}
+                        <a class="btn btn-info btn-block" href="{{ m.action_url }}">{{ m.action_name }}</a>
+                        {% endif %}
+                    </div>
+                </div>
             </li>
         {% endfor %}
         </ul>
