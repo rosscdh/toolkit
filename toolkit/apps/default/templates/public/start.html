@@ -1,14 +1,21 @@
-{% extends 'public/base.html' %}{% load url from future %}{% load crispy_forms_tags %}
+{% extends 'public/base.html' %}
 
-{% block page_title %}Sign in — LawPal{% endblock %}
+{% load url from future %}{% load crispy_forms_tags %}
+
+{% block page_title %}Sign in — {{ block.super }}{% endblock %}
 
 {% block body %}
     <div class="row">
         <div class="col-sm-6 col-sm-offset-3">
-            <h3>Sign in</h3>
+            <div class="page-header">
+                <h4>Sign in</h4>
+            </div>
 
-            <!-- form errors partial -->
-            {% crispy form %}
+            {% block form %}
+                {% include 'partials/form-errors.html' with form=form %}
+
+                {% crispy form %}
+            {% endblock %}
         </div>
     </div>
 {% endblock %}
