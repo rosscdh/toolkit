@@ -1,62 +1,92 @@
-{% extends 'dash/dash.html' %}{% load url from future %}{% load django_bootstrap_breadcrumbs %}
+{% extends 'workspace/workspace_base.html' %}
 
-{% block page_title %}Overview — {{ workspace.name }} — LawPal{% endblock  %}
+{% load url from future %}
 
-{% block breadcrumbs %}
-    {{ block.super }}
-    {% breadcrumb workspace.name 'workspace:view' workspace.slug %}
-    {% breadcrumb 'Overview' 'workspace:view' workspace.slug %}
+{% block header %}
+    <h4>{{ workspace }}</h4>
 {% endblock %}
 
-{% block content %}
-    <div class="page-header">
-        <h4 class="caption"><a href="{% url 'workspace:view' slug=workspace.slug %}">{{ workspace.name }}</a></h4>
-        <h4>Overview</h4>
+{% block main %}
+    <div class="row">
+        <div class="section col-lg-12">
+            <div class="section-header">
+                {% if user.profile.is_lawyer %}
+                    <div class="actions">
+                        <a href="{% url 'workspace:add_team_member' slug=workspace.slug %}" data-toggle="modal" data-target="#workspace-add-team-member" class="btn btn-sm btn-success pull-right">Add team member</a>
+                    </div>
+                {% endif %}
+                <h6>Team Members</h6>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <tbody>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Type</th>
+                        </tr>
+                        {% for u in workspace.participants.all %}
+                            <tr>
+                                <td>{{ u.get_full_name }}</td>
+                                <td>{{ u.email }}</td>
+                                <td>{{ u.profile.type }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center"><span class="text-muted">No team members found!</span></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <div class="row">
-        <div class="col-sm-12">
-            <h5 class="text-muted">Team Members         <a href="{% url 'workspace:add_team_member' slug=workspace.slug %}" class="btn btn-success btn-sm pull-right">Add Team Member</a>
-</h5>
-            <ul id="object-list" class="{{ tool.slug }} list-unstyled">
-            {% for u in workspace.participants.all %}
-                <li>{{ u.get_full_name|default:u.email }}</li>
+        <div class="section col-lg-6">
+            <div class="section-header">
+                <h6>Added Tools</h6>
+            </div>
+            <ul class="added-tools-list nav nav-list">
+                {% for t in workspace.tools.all %}
+                    <li>
+                        <a href="{% url 'workspace:tool_object_list' workspace=workspace.slug tool=t.slug %}">
+                            <span class="icon"><img src="{{ STATIC_URL }}{{ t.icon }}"></span> {{ t }}
+                        </a>
+                    </li>
                 {% empty %}
-                <li>No Team members found</li>
-            {% endfor %}
+                    <li><p class="small">No tools yet!</p></li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="section col-lg-6">
+            <div class="section-header">
+                <h6>Available Tools</h6>
+            </div>
+            <ul class="available-tools-list nav nav-list">
+                {% for t in workspace.available_tools.all %}
+                    <li>
+                        <span class="icon"><img src="{{ STATIC_URL }}{{ t.icon }}"></span> {{ t }}
+                    </li>
+                {% empty %}
+                    <li><p class="small">No additional tools are available!</p></li>
+                {% endfor %}
             </ul>
         </div>
     </div>
-    <hr />
 
     <div class="row">
-        <div class="col-md-6">
-            <h5 class="text-muted">Enabled Tools</h5>
-            <ul id="selected_tools-list" class="list-unstyled">
-            {% for t in workspace.tools.all %}
-                <li><a href="{% url 'workspace:tool_object_list' workspace=workspace.slug tool=t.slug %}">{{ t }}</a></li>
-                {% empty %}
-                <li>No Team members found</li>
-            {% endfor %}
-            </ul>
-        </div>
-        <!-- <div class="col-md-6">
-            <h4>Available Tools</h4>
-            <ul id="available_tools-list">
-            {% for t in workspace.available_tools.all %}
-                <li>{{ t }}<span class="pull-right"><img src="{{STATIC_URL}}{{ t.icon }}" alt="{{ t.short_name }}" style="height:24px;margin-right:4px;"></span></li>
-                {% empty %}
-                <li>No additional Tools are available</li>
-            {% endfor %}
-            </ul>
-        </div> -->
-    </div>
-    <hr />
-    <div class="row">
-        <div class="col-md-6">
-            <h5 class="text-muted">Workspace Activity</h5>
+        <div class="section col-lg-12">
+            <div class="section-header">
+                <h6>Workspace Activity</h6>
+            </div>
         </div>
     </div>
-{% endblock  %}
+{% endblock %}
 
-{% block js %}{% endblock  %}
+{% block modals %}
+    {{ block.super }}
+    <div class="modal" id="workspace-add-team-member"></div>
+    }
+{% endblock %}

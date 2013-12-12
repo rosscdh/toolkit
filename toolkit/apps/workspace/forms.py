@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django import forms
+from django.core.urlresolvers import reverse
 from django.template import Context
 from django.template.loader import get_template
 from django.template.defaultfilters import slugify
@@ -19,7 +20,7 @@ from toolkit.mixins import FormModal
 
 
 @parsleyfy
-class WorkspaceForm(FormModal):
+class WorkspaceForm(forms.ModelForm, FormModal):
     name = forms.CharField(
         error_messages={
             'required': "Company name can't be blank."
@@ -36,21 +37,26 @@ class WorkspaceForm(FormModal):
         self.helper.form_action = 'workspace:create'
 
         self.helper.layout = Layout(
-            Field('name', size=40),
+            'name',
         )
 
         super(WorkspaceForm, self).__init__(*args, **kwargs)
 
 
 @parsleyfy
-class AddWorkspaceTeamMemberForm(forms.Form):
+class AddWorkspaceTeamMemberForm(forms.Form, FormModal):
     client_full_name = forms.CharField(
-        label='',
-        widget=forms.TextInput(attrs={'placeholder': 'Client Full Name', 'size': '40'})
+        error_messages={
+            'required': "Client name can't be blank."
+        },
+        widget=forms.TextInput(attrs={'placeholder': 'Full name', 'size': '40'})
     )
     client_email_address = forms.EmailField(
-        label='',
-        widget=forms.TextInput(attrs={'placeholder': 'Email address', 'size': '40'})
+        error_messages={
+            'invalid': "Client email is invalid.",
+            'required': "Client name can't be blank."
+        },
+        widget=forms.TextInput(attrs={'placeholder': 'Email', 'size': '40'})
     )
 
     def __init__(self, *args, **kwargs):
@@ -58,17 +64,11 @@ class AddWorkspaceTeamMemberForm(forms.Form):
         self.workspace = kwargs.pop('workspace')
 
         self.helper = FormHelper()
-        self.helper.attrs = {'data-validate': 'parsley'}
+        self.helper.form_action = reverse('workspace:add_team_member', args=(self.workspace.slug,))
 
         self.helper.layout = Layout(
-            Div(
-                'client_full_name',
-                'client_email_address',
-                css_class='form-inline'
-            ),
-            ButtonHolder(
-                Submit('submit', 'Submit', css_class='button white')
-            )
+            'client_full_name',
+            'client_email_address'
         )
 
         super(AddWorkspaceTeamMemberForm, self).__init__(*args, **kwargs)
@@ -76,7 +76,7 @@ class AddWorkspaceTeamMemberForm(forms.Form):
     def clean_client_email_address(self):
         email = self.cleaned_data.get('client_email_address')
         if email in [u.email for u in self.workspace.participants.all()]:
-            raise forms.ValidationError('User "%s" is already part of the team' % email)
+            raise forms.ValidationError('"%s" is already part of the team' % email)
         return email
 
     def save(self):

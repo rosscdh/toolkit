@@ -45,6 +45,10 @@ class UserProfile(models.Model):
     def is_customer(self):
         return self.user_class == 'customer'
 
+    @property
+    def type(self):
+        return 'Attorney' if self.is_lawyer else 'Client'
+
 
 def _get_or_create_user_profile(user):
     # set the profile

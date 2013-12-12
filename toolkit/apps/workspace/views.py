@@ -21,7 +21,7 @@ logger = logging.getLogger('django.request')
 
 
 class AddUserToWorkspace(CreateView):
-    template_name = 'workspace/user_form.html'
+    template_name = 'workspace/workspace_user_form.html'
     form_class = AddWorkspaceTeamMemberForm
 
     def dispatch(self, request, *args, **kwargs):
