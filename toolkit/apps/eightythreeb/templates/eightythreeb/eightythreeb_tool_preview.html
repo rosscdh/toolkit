@@ -126,23 +126,23 @@
 
         <ul class="list-group">
         {% for m in object.markers %}
-            <li class="list-group-item row{% if m.is_complete %} success{% else %} pending{% endif %}">
+
+            <li class="list-group-item row {% if m.is_complete %}success{% else %}{% if m.previous.is_complete and not m.next.is_complete %}warning{% else %}pending{% endif %}{% endif %}">
                 <div class="row">
                     <div class="col-md-9">
                         {% if m.is_complete %}
-                        <span class="text-success glyphicon glyphicon-check"></span> 
-                        <span class="text-success">{{ m.description }}</span>
-
+                            <span class="text-success glyphicon glyphicon-check"></span> 
+                            <span class="text-success">{{ m.description }}</span>
                         {% else %}
-                        {{ m.description }}
+                            {{ m.description }}
                         {% endif %}
 
                         {% if m.date_completed %}
-                        <small class="">Completed: {{ m.date_completed|naturaltime }}</small>
+                            <small class="">Completed: {{ m.date_completed|naturaltime }}</small>
                         {% endif %}
                         {% if m.long_description %}
-                        <br />
-                        <small>{{ m.long_description }}</small>                    
+                            <br />
+                            <small>{{ m.long_description }}</small>                    
                         {% endif %}
                     </div>
                     <div class="col-md-3 text-right">
