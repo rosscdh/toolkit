@@ -5,30 +5,31 @@
 <style type="text/css">
 {% block style %}
         @page {
-                size: {{ pagesize|default:'A4' }};
-                margin: 1cm;
-                @frame footer {
-                    -pdf-frame-content: footerContent;
-                    bottom: 1cm;
-                    margin-left: 1cm;
-                    margin-right: 1cm;
-                    height: 1cm;
-                }
+            margin: 1cm;
+            @frame footer {
+                -pdf-frame-content: footerContent;
+                bottom: 1cm;
+                margin-left: 1cm;
+                margin-right: 1cm;
+                height: 1cm;
+            }
         }
+        .page-break { 
+              clear: both !important;
+              display: block !important;
+              page-break-before: always !important;
+        }
+        body {
+        }
+{% endblock %}
+{% block styleextra %}
+
 {% endblock %}
 </style>
 </head>
 <body>
+
 <div>
-
-{% block page_header %}
-   <div>
-       <h1>Header Goes here</h1>
-       <h2>Override the page_header block</h2>
-   </div>
-    <hr />
-{% endblock %}
-
 {% block content %}{% endblock %}
 </div>
 
