@@ -92,7 +92,7 @@
 
                                 {% if user.profile.is_lawyer %}
                                     <li class="pull-right">
-                                        <a href="{% url 'workspace:create' %}"><i class="fui-plus"></i> New Company</a>
+                                        <a href="{% url 'workspace:create' %}" data-toggle="modal" data-target="#workspace-create"><i class="fui-plus"></i> New Company</a>
                                     </li>
                                 {% endif %}
                             </ul>
@@ -116,10 +116,14 @@
         {% endblock %}
     </div>
 
+    {% block modals %}
+        <div class="modal" id="workspace-create"></div>
+    {% endblock %}
+
     <script type="text/javascript">
-        // <![CDATA[
-        var GLOBALS = { {% for key, value in GLOBALS.items %}"{{ key }}": "{{ value }}"{% if not forloop.last %},{% endif %}{% endfor %} };
-        // ]]>
+    // <![CDATA[
+    var GLOBALS = { {% for key, value in GLOBALS.items %}"{{ key }}": "{{ value }}"{% if not forloop.last %},{% endif %}{% endfor %} };
+    // ]]>
     </script>
 
     <!-- Load JS here for greater good =============================-->
@@ -135,6 +139,7 @@
     <script src="{{ STATIC_URL }}js/jquery.placeholder.js"></script>
     <script src="{{ STATIC_URL }}js/bootstrap-typeahead.js"></script>
     <script src="{{ STATIC_URL }}js/parsley-1.2.1.min.js"></script>
+    <script src="{{ STATIC_URL }}js/parsley-form.js"></script>
     <script src="{{ STATIC_URL }}js/application.js"></script>
 
     <!-- Load page specific JS here =============================-->
