@@ -13,11 +13,11 @@ from toolkit.apps.workspace.mixins import WorkspaceToolModelMixin
 from .markers import EightyThreeBSignalMarkers
 EIGHTYTHREEB_STATUS = EightyThreeBSignalMarkers().named_tuple(name='EIGHTYTHREEB_STATUS')
 
-from .mixins import StatusMixin
+from .mixins import StatusMixin, IRSMixin
 from .managers import EightyThreeBManager
 
 
-class EightyThreeB(StatusMixin, WorkspaceToolModelMixin, models.Model):
+class EightyThreeB(StatusMixin, IRSMixin, WorkspaceToolModelMixin, models.Model):
     """
     83b Form to be associated with a Workspace and a particular user
     """
@@ -90,7 +90,11 @@ class EightyThreeB(StatusMixin, WorkspaceToolModelMixin, models.Model):
         return reverse('workspace:tool_object_edit', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug=self.tool_slug).first().slug, 'slug': self.slug})
 
     def html(self):
-        context = loader.Context(self.data)
+        context_data = self.data
+
+        context_data.update({'object': self})
+
+        context = loader.Context(context_data)
         source = self.template.render(context)
         # doc = Lenker(source=source)
         return source  # doc.render(context=self.data)
