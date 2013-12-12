@@ -7,7 +7,7 @@ from django.template.defaultfilters import slugify
 from parsley.decorators import parsleyfy
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, ButtonHolder, Submit, Div
+from crispy_forms.layout import Layout, Field
 
 from toolkit.apps.workspace.services import EnsureCustomerService
 from toolkit.apps.workspace.models import InviteKey
@@ -15,24 +15,30 @@ from toolkit.apps.workspace.models import InviteKey
 from .models import Workspace
 from .mailers import InviteUserToToolEmail
 
+from toolkit.mixins import FormModal
+
 
 @parsleyfy
-class WorkspaceForm(forms.ModelForm):
+class WorkspaceForm(FormModal):
+    name = forms.CharField(
+        error_messages={
+            'required': "Company name can't be blank."
+        },
+        label='Company name',
+        widget=forms.TextInput(attrs={'size': '40'})
+    )
+
     class Meta:
         model = Workspace
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
-        self.helper.form_class = 'form-horizontal'
-        self.helper.attrs = {'data-validate': 'parsley'}
+        self.helper.form_action = 'workspace:create'
 
         self.helper.layout = Layout(
-            'name',
-            'users',
-            ButtonHolder(
-                Submit('submit', 'Submit', css_class='button white')
-            )
+            Field('name', size=40),
         )
+
         super(WorkspaceForm, self).__init__(*args, **kwargs)
 
 
