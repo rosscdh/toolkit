@@ -1,9 +1,9 @@
-from django import forms
+from django.forms.forms import BaseForm
 
 from crispy_forms.layout import ButtonHolder, Div, HTML, Layout, Submit
 
 
-class FormModal(forms.ModelForm):
+class FormModal(BaseForm):
     def __init__(self, *args, **kwargs):
         super(FormModal, self).__init__(*args, **kwargs)
 
