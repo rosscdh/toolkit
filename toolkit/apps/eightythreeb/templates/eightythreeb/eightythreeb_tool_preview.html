@@ -14,6 +14,12 @@
 {% block content %}
 <style>
  .success { background-color: #dff0d8; }
+ .pending {}
+ .next {
+    color: #ffffff;
+    background-color: #ed9c28;
+    border-color: #d58512;
+}
 </style>
 {% csrf_token %}
 
@@ -127,7 +133,7 @@
         <ul class="list-group">
         {% for m in object.markers %}
 
-            <li class="list-group-item row {% if m.is_complete %}success{% else %}{% if m.previous.is_complete and not m.next.is_complete %}warning{% else %}pending{% endif %}{% endif %}">
+            <li class="list-group-item row {% if m.is_complete %}success{% else %}{% if m.previous.is_complete and not m.next.is_complete %}next{% else %}pending{% endif %}{% endif %}">
                 <div class="row">
                     <div class="col-md-9">
                         {% if m.is_complete %}
