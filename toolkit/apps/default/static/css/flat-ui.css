@@ -660,8 +660,8 @@ pre {
   border-radius: 4px;
   padding: 10px 15px;
   -webkit-font-smoothing: subpixel-antialiased;
-  -webkit-transition: 0.25s linear;
-  transition: 0.25s linear;
+  -webkit-transition: background-color 0.25s linear;
+  transition: background-color 0.25s linear;
   font-family: Lato, "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 .btn:hover,
