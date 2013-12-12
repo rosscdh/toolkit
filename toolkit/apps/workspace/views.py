@@ -169,6 +169,7 @@ class InviteClientWorkspaceToolObjectView(IssueSignalsMixin, WorkspaceToolMixin,
     def form_valid(self, form):
         email = form.save()  # not used
         self.issue_signals(request=self.request, instance=self.tool_instance, name='lawyer_invite_customer')  # NB teh tool_instance and NOT self.instance
+
         return super(InviteClientWorkspaceToolObjectView, self).form_valid(form)
 
 
@@ -204,5 +205,4 @@ class WorkspaceToolObjectDownloadView(IssueSignalsMixin, WorkspaceToolObjectDisp
 
 class WorkspaceToolStatusView(WorkspaceToolMixin, DetailView):
     model = Tool
-    template_name_suffix = '_status_list' # place your template in your tool templates/:tool_name/:tool_name_status_list.html
-
+    template_name_suffix = '_status_list'  # place your template in your tool templates/:tool_name/:tool_name_status_list.html
