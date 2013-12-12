@@ -14,8 +14,18 @@
     <div class="page-header">
         <h4>Invite {{ tool_instance.user.get_full_name }}<br/><small>{{ tool_instance.user.email }}</small></h4>
     </div>
-
     {% include 'partials/form-errors.html' with form=form %}
+    <div class="col-sm-12">
+	    {% crispy form %}
+	</div>
+{% endblock %}
 
-    {% crispy form %}
+{% block css %}
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}css/summernote.css" rel="stylesheet">
+{% endblock %}
+
+{% block js %}
+    <script src="{{ STATIC_URL }}js/summernote.min.js"></script>
+    <script src="{{ STATIC_URL }}js/tool-form.js"></script>
 {% endblock %}

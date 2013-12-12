@@ -30,22 +30,20 @@
                         <th>Filing Deadline</th>
                         <th>Status</th>
                         <th>&nbsp;</th>
-                        <th>&nbsp;</th>
                     </tr>
                     {% for t in object_list %}
                         <tr>
                             <td>
                                 <a href="{% url 'workspace:tool_object_edit' workspace=workspace.slug tool=tool.slug slug=t.slug %}">{{ t.client_name }}</a>
                             </td>
-                            <td>{{ t.transfer_date|date:"N jS Y" }}</td>
-                            <td>{{ t.filing_date|date:"N jS Y" }}</td>
+                            <td><small>{{ t.transfer_date|date:"N jS Y" }}</small></td>
+                            <td><small>{{ t.filing_date|date:"N jS Y" }}</small></td>
                             <td>
-                                {{ t.current_status }}
+                                <small>{{ t.current_status }}</small>
                             </td>
-                            <td>
-                                <a href="{% url 'workspace:tool_object_preview' workspace=workspace.slug tool=tool.slug slug=t.slug %}" title="Preview">
+                            <td class="text-right">
+                                <a href="{% url 'workspace:tool_object_preview' workspace=workspace.slug tool=tool.slug slug=t.slug %}" title="Preview" class="btn btn-info btn-sm">
                                     Preview &amp; Actions
-                                    <span class="fui-eye text-primary"></span>
                                 </a>
                             </td>
 <!--                             <td>
