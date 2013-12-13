@@ -70,10 +70,6 @@
 .note-editor .btn:hover {
   background-color: #2c81ba;
 }
-.page-header .actions {
-  float: right;
-  margin-top: -5px;
-}
 .page-header .caption {
   color: #bdc3c7;
   display: inline-block;
@@ -87,6 +83,9 @@
 .page-header h4 {
   display: inline-block;
   margin: 0;
+}
+.page-header .btn {
+  margin-top: -5px;
 }
 .content .page-header {
   border-width: 2px;
@@ -133,7 +132,6 @@
 .section .section-header {
   margin-bottom: 14px;
 }
-.section .section-header .actions {
-  float: right;
+.section .section-header .btn {
   margin-top: -5px;
 }

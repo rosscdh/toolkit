@@ -7,7 +7,7 @@
     <h4>{{ tool.name }}</h4>
 {% endblock %}
 
-{% block header_actions %}
+{% block header_right %}
     <a href="{% url 'workspace:tool_object_new' workspace=workspace.slug tool=tool.slug %}" class="btn btn-primary">New {{ tool.short_name }}</a>
 {% endblock %}
 

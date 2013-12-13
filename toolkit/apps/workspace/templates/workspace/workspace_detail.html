@@ -11,7 +11,7 @@
         <div class="section col-lg-12">
             <div class="section-header">
                 {% if user.profile.is_lawyer %}
-                    <div class="actions">
+                    <div class="pull-right">
                         <a href="{% url 'workspace:add_team_member' slug=workspace.slug %}" data-toggle="modal" data-target="#workspace-add-team-member" class="btn btn-sm btn-success pull-right">Add team member</a>
                     </div>
                 {% endif %}
