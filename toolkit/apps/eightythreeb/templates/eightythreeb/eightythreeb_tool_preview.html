@@ -37,23 +37,22 @@
                 <h4>83(b) Election Letter Status</h4>
             </div>
             <div class="col-sm-5">
-    <!--         Next Stage: {{ object.current_status }}<br/>
-     -->        <div class="text-right">
-                <small class="text-muted text-right">{{ object.markers.percent_complete }}% Complete</small></h3>
-            </div>
-            <div class="progress">
-              <div class="progress-bar" role="progressbar" aria-valuenow="{{ object.markers.percent_complete }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ object.markers.percent_complete }}%;">
-                <span class="sr-only">{{ object.markers.percent_complete }}% Complete</span>
-              </div>
-            </div>
+                <div class="text-right">
+                    <small class="text-muted text-right">{{ object.markers.percent_complete }}% Complete</small>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" aria-valuenow="{{ object.markers.percent_complete }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ object.markers.percent_complete }}%;">
+                        <span class="sr-only">{{ object.markers.percent_complete }}% Complete</span>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="">
+        <div class="row">
             {% if user.profile.is_lawyer %}
                 {% if object.STATUS_83b.lawyer_invite_customer == object.status %}
                     <div class="dialog dialog-warning">
                         <button type="button" id="id_customer_download_pdf" class="btn btn-success redirect"
-                            data-url="{% url 'workspace:tool_object_invite' workspace=workspace.slug tool=tool.slug slug=object.slug %}">Invite {{ object.user.get_full_name|default:object.user.username }} to complete the 83b</button>
+                            data-url="{% url 'workspace:tool_object_invite' workspace=workspace.slug tool=tool.slug slug=object.slug %}">Invite {{ object.data.client_full_name|default:object.user.username }} to complete the 83b</button>
                     </div>
                 {% endif %}
             {% endif %}
@@ -129,9 +128,7 @@
                 {% endif %}
             </div>
             {% endif %}
-
         </div>
-        
     </div>
 </div>
 
@@ -142,7 +139,6 @@
 
 <div class="tab-content">
     <div class="tab-pane active" id="checklist">
-
         <ul class="list-group">
         {% for m in object.markers %}
 
@@ -174,7 +170,6 @@
         {% endfor %}
         </ul>
     </div>
-
     <div class="tab-pane" id="document">
         {% if object.STATUS_83b.customer_download_pdf < object.status %}
             <button type="button" id="download_pdf" class="btn btn-success redirect pull-right"
@@ -183,7 +178,6 @@
         <br/><br/>
         <iframe name="id_preview" id="id_pdf_preview" class="fade" src="{% url 'workspace:tool_object_display' workspace=workspace.slug tool=tool.slug slug=object.slug %}"></iframe>
     </div>
-
 </div>
 
 {% endblock  %}
