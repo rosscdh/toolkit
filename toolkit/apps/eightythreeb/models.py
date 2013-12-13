@@ -2,6 +2,7 @@
 from django.db import models
 from django.template import loader
 from django.core.urlresolvers import reverse
+from django.utils.safestring import mark_safe
 from django.template.defaultfilters import slugify
 
 from uuidfield import UUIDField
@@ -91,6 +92,11 @@ class EightyThreeB(StatusMixin, IRSMixin, WorkspaceToolModelMixin, models.Model)
 
     def html(self):
         context_data = self.data
+
+        # Mark strings as safe
+        for k,v in context_data.items():
+            if type(v) in [str, unicode]:
+                context_data[k] = mark_safe(v)
 
         context_data.update({'object': self})
 

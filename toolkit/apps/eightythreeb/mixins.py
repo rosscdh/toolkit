@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.utils.safestring import mark_safe
 
+
 class StatusMixin(object):
     @property
     def current_status(self):
