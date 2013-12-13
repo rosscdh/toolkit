@@ -116,21 +116,21 @@
     <div>Taxpayer SSN / ITIN # : {% if ssn or itin %}{{ ssn|default:'' }}{{ itin|default:'' }}{% else %}<span>[ITIN or SSN]</span>{% endif %}</div>
 </div>
 
-<p/>
+<p>
     Dated: {% now "F jS Y" %}
-<p/>
+<p>
 {{ object.irs_address|default:'<span>[IRS Service Center Address]</span>' }}
-<p/>
+<p>
 <br />
 <br />
 Dear Sir or Madam:
-<p/>
+<p>
 Pursuant to Treasury Regulations Section 1.83-2(c) promulgated under Section 83 of the Internal Revenue Code of 1986, as amended (the “Code”), enclosed please find a copy of an election under Section 83(b) of the Code.
-<p/>
+<p>
 Also, attached are a self-addressed stamped envelope and a signed copy of my 83(b) Election Form. Please date stamp the copy of the Election Form, enclose it in the attached envelope and mail it to me.
-<p/>
+<p>
 Thank you,
-<p/>
+<p>
 <div class="signature-block">
     <div class="signature-block-inner">x</div>
     <div class="signature-block-name">{{ client_full_name }}</div>
@@ -140,11 +140,11 @@ Thank you,
 
 <!-- Page 3 : 83b Election Copy 1  -->
 <div class="page-break"></div>
-{% include 'eightythreeb/pages/irs_page.html' with title='Copy 1 - IRS (File Copy)' %}
+{% include 'eightythreeb/document/irs_page.html' with title='Copy 1 - IRS (File Copy)' %}
 
 <!-- Page 4 : 83b Election Copy 2  -->
 <div class="page-break"></div>
-{% include 'eightythreeb/pages/irs_page.html' with title='Copy 2 - IRS (Return Copy)' %}
+{% include 'eightythreeb/document/irs_page.html' with title='Copy 2 - IRS (Return Copy)' %}
 
  
 {% endblock %}
