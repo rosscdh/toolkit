@@ -29,9 +29,12 @@ class CustomerDownloadDocMarker(Marker):
 
     def action_url(self):
         """
-        Always allow download no rules applied
+        Dont show until the customer has completed their form
         """
-        return reverse('workspace:tool_object_download', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.tool_slug, 'slug': self.tool.slug})
+        if self.tool.status <= self.tool.STATUS_83b.customer_complete_form:
+            return None
+        else:
+            return reverse('workspace:tool_object_download', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.tool_slug, 'slug': self.tool.slug})
 
 
 class CustomerTrackingNumberMarker(Marker):
