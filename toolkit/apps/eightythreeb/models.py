@@ -90,7 +90,7 @@ class EightyThreeB(StatusMixin, IRSMixin, WorkspaceToolModelMixin, models.Model)
     def get_edit_url(self):
         return reverse('workspace:tool_object_edit', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug=self.tool_slug).first().slug, 'slug': self.slug})
 
-    def html(self):
+    def html(self, **kwargs):
         context_data = self.data
 
         # Mark strings as safe
@@ -99,6 +99,9 @@ class EightyThreeB(StatusMixin, IRSMixin, WorkspaceToolModelMixin, models.Model)
                 context_data[k] = mark_safe(v)
 
         context_data.update({'object': self})
+
+        # update with kwargs passed in which take priority for overrides
+        context_data.update(kwargs)
 
         context = loader.Context(context_data)
         source = self.template.render(context)
