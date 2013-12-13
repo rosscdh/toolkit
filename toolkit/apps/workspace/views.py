@@ -182,7 +182,7 @@ class WorkspaceToolObjectDisplayView(WorkspaceToolMixin, DetailView):
     template_name = 'workspace/workspace_tool_preview.html'
 
     def render_to_response(self, context, **response_kwargs):
-        html = self.object.html()
+        html = self.object.html(user=self.request.user, request=self.request)
         pdfpng_service = PDFKitService(html=html)  # HTMLtoPDForPNGService(html=html)
         resp = HttpResponse(content_type='application/pdf')
         return pdfpng_service.pdf(template_name=self.object.template_name, file_object=resp)
