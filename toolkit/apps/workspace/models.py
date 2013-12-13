@@ -88,6 +88,10 @@ class Tool(models.Model):
         return '%s' % self.name
 
     @property
+    def description(self):
+        return self.data.get('description')
+
+    @property
     def short_name(self):
         return self.data.get('short_name')
 
