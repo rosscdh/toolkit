@@ -30,8 +30,8 @@ def on_base_signal(sender, instance, actor, **kwargs):
     """
     markers = EightyThreeBSignalMarkers()
     marker_node = markers.marker(name=kwargs.get('name', instance.status))
-
-    marker_node.issue_signals(request=sender, instance=instance, actor=actor)
+    if hasattr(marker_node, 'issue_signals'):
+      marker_node.issue_signals(request=sender, instance=instance, actor=actor)
 
 
 def _update_marker(marker_name, next_status, actor_name, instance, **kwargs):
