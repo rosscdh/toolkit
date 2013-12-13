@@ -101,7 +101,6 @@ class CreateWorkspaceToolObjectView(WorkspaceToolFormMixin, CreateView):
     View to create a specific Tool Object
     """
     model = Tool
-    template_name = 'workspace/workspace_tool_form.html'
 
     def get_queryset(self):
         qs = super(CreateWorkspaceToolObjectView, self).get_queryset()
@@ -120,7 +119,6 @@ class UpdateViewWorkspaceToolObjectView(WorkspaceToolFormMixin, UpdateView):
     View to edit a specific Tool Object
     """
     model = Tool
-    template_name = 'workspace/workspace_tool_form.html'
 
     def get_success_url(self):
         return reverse('workspace:tool_object_preview', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug, 'slug': self.object.slug})
