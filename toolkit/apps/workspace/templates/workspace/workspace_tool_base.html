@@ -1,0 +1,21 @@
+{% extends 'workspace/workspace_base.html' %}
+
+{% load django_bootstrap_breadcrumbs %}
+
+{% block page_title %}{% if object %}{{ object }} — {% else %}{{ tool.name }} — {% endif %}{{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% breadcrumb tool.name 'workspace:tool_object_list' workspace.slug tool.slug %}
+    {% if object %}{% breadcrumb object 'workspace:tool_object_preview' workspace.slug tool.slug object.slug %}{% endif %}
+{% endblock %}
+
+{% block header %}
+    {% if object %}
+        <h4 class="caption">
+            <a href="{% url 'workspace:tool_object_preview' workspace=workspace.slug tool=tool.slug slug=object.slug %}">{{ object }}</a>
+        </h4>
+    {% else %}
+        <h4 class="caption"><a href="{% url 'workspace:view' slug=workspace.slug %}">{{ workspace.name }}</a></h4>
+    {% endif %}
+{% endblock %}
