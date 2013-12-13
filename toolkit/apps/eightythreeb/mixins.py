@@ -88,8 +88,12 @@ class IRSMixin(object):
     @property
     def irs_address(self):
         state = self.customer_state
-        for states, address, cheque_address in self.irs_state_address_paymentaddress:
-            if state in states:
-                return mark_safe(address)
-        # return the last default address
-        return mark_safe(self.irs_state_address_paymentaddress[:-1][1])
+        if state in ['', None]:
+            return None
+
+        else:
+            for states, address, cheque_address in self.irs_state_address_paymentaddress:
+                if state in states:
+                    return mark_safe(address)
+            # return the last default address
+            return mark_safe(self.irs_state_address_paymentaddress[:-1][0][1])
