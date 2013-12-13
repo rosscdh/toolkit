@@ -301,7 +301,7 @@ class EightyThreeBForm(forms.Form):
         # Only check the property transfer date on new forms
         if not self.initial:
             if date < (datetime.date.today() - datetime.timedelta(days=25)):
-                raise forms.ValidationError('This requires a minimum of 5 days to complete the election')
+                raise forms.ValidationError('LawPal requires a minimum of 5 days to complete the election. The date of property transfer was greater than than 25 days ago.')
 
         return date
 
