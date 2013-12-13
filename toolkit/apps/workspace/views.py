@@ -192,7 +192,7 @@ class WorkspaceToolObjectDownloadView(IssueSignalsMixin, WorkspaceToolObjectDisp
     model = Tool
 
     def render_to_response(self, context, **response_kwargs):
-        html = self.object.html()
+        html = self.object.html(user=self.request.user, request=self.request)
         pdfpng_service = PDFKitService(html=html)  # HTMLtoPDForPNGService(html=html)
         resp = HttpResponse(content_type='application/pdf')
         resp['Content-Disposition'] = 'attachment; filename="{filename}.pdf"'.format(filename=self.object.filename)
