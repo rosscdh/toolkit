@@ -10,6 +10,8 @@ from rulez import registry as rulez_registry
 from uuidfield import UUIDField
 from jsonfield import JSONField
 
+from .managers import WorkspaceManager
+
 
 class Workspace(models.Model):
     """
@@ -25,6 +27,8 @@ class Workspace(models.Model):
     date_created = models.DateTimeField(auto_now=False, auto_now_add=True, db_index=True)
     date_modified = models.DateTimeField(auto_now=True, auto_now_add=True, db_index=True)
     is_deleted = models.BooleanField(default=False, db_index=True)
+
+    objects = WorkspaceManager()
 
     class Meta:
         ordering = ['name', '-pk']
