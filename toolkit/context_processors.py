@@ -15,6 +15,15 @@ def EXPOSED_GLOBALS(request):
         }
     }
 
+
+def LAYOUT(request):
+    user = getattr(request, 'user', None)
+
+    return {
+        'LAYOUT': u'%s.html' % user.profile.user_class if user else 'base.html'
+    }
+
+
 def WORKSPACES(request):
     return {
         'WORKSPACES': Workspace.objects.filter(participants__in=[request.user]) if request.user.is_authenticated() is True else []
