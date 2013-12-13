@@ -28,10 +28,8 @@ def on_base_signal(sender, instance, actor, **kwargs):
     Primary handler that is called and will calculate the current and 
     previous instance marker status, and issue the appropriate signals
     """
-    previous = EightyThreeB.objects.get(pk=instance.pk)
-
     markers = EightyThreeBSignalMarkers()
-    marker_node = markers.marker(val=instance.status)
+    marker_node = markers.marker(name=kwargs.get('name', instance.status))
 
     marker_node.issue_signals(request=sender, instance=instance, actor=actor)
 
