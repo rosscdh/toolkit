@@ -91,7 +91,7 @@ class EightyThreeB(StatusMixin, IRSMixin, WorkspaceToolModelMixin, models.Model)
         return reverse('workspace:tool_object_edit', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug=self.tool_slug).first().slug, 'slug': self.slug})
 
     def html(self, **kwargs):
-        context_data = self.data
+        context_data = self.data.copy() # must copy to avoid reference update
 
         # Mark strings as safe
         for k,v in context_data.items():
@@ -105,5 +105,4 @@ class EightyThreeB(StatusMixin, IRSMixin, WorkspaceToolModelMixin, models.Model)
 
         context = loader.Context(context_data)
         source = self.template.render(context)
-        # doc = Lenker(source=source)
-        return source  # doc.render(context=self.data)
+        return source
