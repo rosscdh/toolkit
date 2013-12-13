@@ -76,22 +76,23 @@ class BaseSignalMarkers(object):
         for s in self.signal_map:
             s.tool = self.tool_object
 
-    def marker(self, val):
+    def marker(self, val=None, name=None):
+        if val is not None:
+            return self.marker_by_val(val=val)
+        if name is not None:
+            return self.marker_by_name(name=name)
+        return None
+
+    def marker_by_val(self, val):
         for i, marker in enumerate(self.signal_map):
             if val == marker.val:
-                try:
-                    self.previous = self.signal_map[i-1]
-                except IndexError:
-                    self.previous = None
+                return marker
+        return None
 
-                self.current = marker
-
-                try:
-                    self.next = self.signal_map[i+1]
-                except IndexError:
-                    self.next = self.signal_map[0]  # reset the counter to 0
-
-                return self.current
+    def marker_by_name(self, name):
+        for i, marker in enumerate(self.signal_map):
+            if name == marker.name:
+                return marker
         return None
 
     @property

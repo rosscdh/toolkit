@@ -82,14 +82,14 @@ class WorkspaceToolModelMixin(object):
 
 
 class IssueSignalsMixin(object):
-    def issue_signals(self, request, instance):
+    def issue_signals(self, request, instance, **kwargs):
         """
         issue the base_signal signal to handle any change events
         """
         logger.debug('Issuing signals for WorkspaceToolObjectDownloadView')
 
         if hasattr(instance, 'base_signal'):
-            instance.base_signal.send(sender=request, instance=instance, actor=request.user)
+            instance.base_signal.send(sender=request, instance=instance, actor=request.user, **kwargs)
             logger.info('Issued signals for %s (%s)' % (instance, request.user))
 
         else:
