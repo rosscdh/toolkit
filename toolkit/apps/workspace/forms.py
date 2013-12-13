@@ -20,7 +20,7 @@ from toolkit.mixins import FormModal
 
 
 @parsleyfy
-class WorkspaceForm(forms.ModelForm, FormModal):
+class WorkspaceForm(FormModal, forms.ModelForm):
     name = forms.CharField(
         error_messages={
             'required': "Company name can't be blank."
@@ -34,7 +34,7 @@ class WorkspaceForm(forms.ModelForm, FormModal):
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
-        self.helper.form_action = 'workspace:create'
+        self.helper.form_action = reverse('workspace:create')
 
         self.helper.layout = Layout(
             'name',
@@ -44,7 +44,7 @@ class WorkspaceForm(forms.ModelForm, FormModal):
 
 
 @parsleyfy
-class AddWorkspaceTeamMemberForm(forms.Form, FormModal):
+class AddWorkspaceTeamMemberForm(FormModal, forms.Form):
     client_full_name = forms.CharField(
         error_messages={
             'required': "Client name can't be blank."
