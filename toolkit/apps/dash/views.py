@@ -12,8 +12,7 @@ class DashView(TemplateView):
         context = super(DashView, self).get_context_data(**kwargs)
 
         context.update({
-            'dash': True,
-            'workspaces': Workspace.objects.mine(user=self.request.user)
+            'dash': True
         })
 
         return context
