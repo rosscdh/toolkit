@@ -129,10 +129,6 @@
 // -------------------------
 
 .page-header {
-  .actions {
-    float: right;
-    margin-top: -5px;
-  }
   .caption {
     color: @gray-light;
     display: inline-block;
@@ -144,9 +140,14 @@
       margin: 0 4px 0 9px;
     }
   }
+
   h4 {
     display: inline-block;
     margin: 0;
+  }
+
+  .btn {
+    margin-top: -5px;
   }
 
   .content & {
@@ -197,8 +198,7 @@
   .section-header {
     margin-bottom: ((@line-height-computed / 2) - 1);
 
-    .actions {
-      float: right;
+    .btn {
       margin-top: -5px;
     }
   }
