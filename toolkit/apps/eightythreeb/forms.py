@@ -31,6 +31,9 @@ LAWYER_LAYOUT = Layout(
             'client_email',
             css_class='form-inline'
         ),
+        Div(
+            'company_name',
+        ),
     ),
     Fieldset(
         '83b Election Information',
@@ -83,6 +86,7 @@ CUSTOMER_LAYOUT = Layout(
             css_class='form-inline'
         ),
         'has_spouse',
+        'company_name',
         'post_code',
         'state',
         'address',
@@ -147,6 +151,8 @@ class EightyThreeBForm(forms.Form):
         label='',
         widget=forms.TextInput(attrs={'placeholder': 'Client email address', 'size': '40'})
     )
+
+    company_name = forms.CharField()
 
     date_of_property_transfer = forms.DateField(
         error_messages={
@@ -244,10 +250,12 @@ class EightyThreeBForm(forms.Form):
         label='Social Security Number',
         required=False
     )
+
     itin = forms.CharField(
         label='Tax Payer ITIN',
         required=False
     )
+
     accountant_email = forms.EmailField(
         label='Your accountants email address',
         required=False
@@ -276,6 +284,9 @@ class EightyThreeBForm(forms.Form):
         super(EightyThreeBForm, self).__init__(*args, **kwargs)
 
         self.sync_fields()
+        if self.fields['company_name'].initial in ['', None]:
+            self.fields['company_name'].initial = self.workspace.name
+
 
     def sync_fields(self):
         # sync the fields with the appropriate user layout
