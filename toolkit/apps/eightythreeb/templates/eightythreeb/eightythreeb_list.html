@@ -43,14 +43,9 @@
                             </td>
                             <td class="text-right">
                                 <a href="{% url 'workspace:tool_object_preview' workspace=workspace.slug tool=tool.slug slug=t.slug %}" title="Preview" class="btn btn-info btn-sm">
-                                    Preview &amp; Actions
+                                    Preview &amp; Actions<br/>({{ t.markers.percent_complete }}%)
                                 </a>
                             </td>
-<!--                             <td>
-                                <a href="{% url 'workspace:tool_object_download' workspace=workspace.slug tool=tool.slug slug=t.slug %}" title="Download">
-                                    <span class="fui-document text-primary"></span>
-                                </a>
-                            </td> -->
                         </tr>
                     {% empty %}
                         <tr>
