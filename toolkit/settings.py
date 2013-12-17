@@ -85,6 +85,9 @@ HELPER_APPS = (
     # forms
     'parsley',
     'crispy_forms',
+
+    # db migration
+    'south',
 )
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + HELPER_APPS
@@ -139,10 +142,10 @@ USE_L10N = False  # should always be False to enable dates accepted https://docs
 
 USE_TZ = True
 
-
 LOGIN_URL          = '/start/'
 LOGIN_REDIRECT_URL = '/dash/'
 LOGIN_ERROR_URL    = '/login-error/'
+LOGOUT_URL = '/end/'
 
 AUTHENTICATION_BACKENDS = (
     'toolkit.auth_backends.EmailBackend',
