@@ -111,3 +111,13 @@ class SignInForm(forms.Form):
             raise forms.ValidationError("Sorry, no account with those credentials was found")
 
         return super(SignInForm, self).clean()
+
+
+@parsleyfy
+class UserAccountForm(forms.ModelForm):
+    pass
+
+
+@parsleyfy
+class UserChangePasswordForm(forms.ModelForm):
+    pass
