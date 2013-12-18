@@ -76,11 +76,11 @@ class BaseSignalMarkers(object):
         for s in self.signal_map:
             s.tool = self.tool_object
 
-    def marker(self, val=None, name=None):
-        if val is not None:
+    def marker(self, val):
+        if type(val) in [str, unicode]:
+            return self.marker_by_name(name=val)
+        if type(val) in [int]:
             return self.marker_by_val(val=val)
-        if name is not None:
-            return self.marker_by_name(name=name)
         return None
 
     def marker_by_val(self, val):

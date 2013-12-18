@@ -90,8 +90,8 @@ class EightyThreeB(StatusMixin, IRSMixin, WorkspaceToolModelMixin, models.Model)
     def get_edit_url(self):
         return reverse('workspace:tool_object_edit', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug=self.tool_slug).first().slug, 'slug': self.slug})
 
-    def html(self):
-        context_data = self.data
+    def html(self, **kwargs):
+        context_data = self.data.copy() # must copy to avoid reference update
 
         # Mark strings as safe
         for k,v in context_data.items():
@@ -100,7 +100,9 @@ class EightyThreeB(StatusMixin, IRSMixin, WorkspaceToolModelMixin, models.Model)
 
         context_data.update({'object': self})
 
+        # update with kwargs passed in which take priority for overrides
+        context_data.update(kwargs)
+
         context = loader.Context(context_data)
         source = self.template.render(context)
-        # doc = Lenker(source=source)
-        return source  # doc.render(context=self.data)
+        return source

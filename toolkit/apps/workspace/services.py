@@ -15,7 +15,6 @@ import os
 import json
 import logging
 LOGGER = logging.getLogger('django.request')
-PDFKIT_SERVICE_URI = getattr(settings, 'PDFKIT_SERVICE_URI', 'http://localhost:9292/v1/html/to/pdf')
 
 
 class EnsureCustomerService(object):
@@ -74,7 +73,7 @@ class EnsureCustomerService(object):
         return is_new, user, profile
 
 
-class HTMLtoPDForPNGService(object):
+class BasePdfService(object):
     """
     Convert provided HTML to a pdf or png
     """
@@ -85,40 +84,18 @@ class HTMLtoPDForPNGService(object):
         self.service = self.get_service()
 
     def get_service(self):
-        return generate_pdf
+        raise NotImplementedError
 
-    def pdf(self, template_name, context, file_object=None):
-        # Write PDF to file
-        return self.service(template_name, file_object=file_object, context=context)
-
-
-class PDFKitLocalService(HTMLtoPDForPNGService):
-    options = {
-        'page-size': 'Letter',
-        'margin-top': '0.75in',
-        'margin-right': '0.75in',
-        'margin-bottom': '0.75in',
-        'margin-left': '0.75in',
-        'encoding': "UTF-8",
-        'no-outline': None
-    }
-
-    def get_service(self):
-        return pdfkit
-
-    def pdf(self, template_name, file_object):
-        filename = os.path.basename(template_name)
-
-        r = self.service.from_string(self.html, False, options=self.options)
-
-        file_object.write(r)
-        return file_object
+    def pdf(self, template_name, context, file_object):
+        raise NotImplementedError
 
 
-class PDFKitRubyService(HTMLtoPDForPNGService):
+class PDFKitRubyService(BasePdfService):
     """
     Send requests to local PDFKit service that formats HTML nicely
     """
+    PDFKIT_SERVICE_URI = getattr(settings, 'PDFKIT_SERVICE_URI', 'http://localhost:9292/v1/html/to/pdf')
+
     def get_service(self):
         return requests
 
@@ -128,11 +105,15 @@ class PDFKitRubyService(HTMLtoPDForPNGService):
         payload = {"html": self.html, "filename": template_name}
         headers = {'content-type': 'application/json'}
 
-        r = self.service.post(PDFKIT_SERVICE_URI, data=json.dumps(payload), headers=headers)
+        r = self.service.post(self.PDFKIT_SERVICE_URI, data=json.dumps(payload), headers=headers)
 
         file_object.write(r.content)
         return file_object
 
 
 class PDFKitService(PDFKitRubyService):
+    """
+    Accessor class imported by the system
+    needs to extend the class we eventually decide to
+    """
     pass
