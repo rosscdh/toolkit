@@ -7,9 +7,13 @@
 }
 .breadcrumbs .breadcrumb {
   background-color: transparent;
+  margin-bottom: 0;
 }
 .container-fluid {
   padding: 0 50px;
+}
+.main-content {
+  margin-top: 20px;
 }
 .form-inline .form-group .input-group .form-control {
   display: inline-block;

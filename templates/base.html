@@ -53,12 +53,12 @@
         </div>
     {% endblock %}
 
-    {% block breadcrumbs %}
-        {% breadcrumb_safe '<span class="fui-home"></span>' 'public:home' %}
+    {% block prebody %}
+        {% block breadcrumbs %}
+            {% breadcrumb_safe '<span class="fui-home"></span>' 'public:home' %}
+        {% endblock %}
+        {% render_breadcrumbs 'partials/breadcrumbs.html' %}
     {% endblock %}
-    {% render_breadcrumbs 'partials/breadcrumbs.html' %}
-
-    {% block prebody %}{% endblock %}
 
     <div class="main-content container-fluid">
         {% block body %}
