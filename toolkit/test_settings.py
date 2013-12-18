@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 LOCAL_SETTINGS = True
 
-import sys
 from settings import *
 
 import hashlib
@@ -27,10 +26,12 @@ PASSWORD_HASHERS = (
     'django.contrib.auth.hashers.MD5PasswordHasher',
 )
 
+
 def AutoSlugFieldGenerator():
     hash_val = '{r}'.format(r=random.random())
     h = hashlib.sha1(hash_val)
     return h.hexdigest()
+
 
 def FPFileFieldGenerator():
     return '/tmp/test-file.pdf'
