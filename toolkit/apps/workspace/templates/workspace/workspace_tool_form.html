@@ -27,7 +27,15 @@
     {% block form %}
         {% include 'partials/form-errors.html' with form=form %}
 
-        {% crispy form %}
+        {% if user.profile.is_customer %}
+            {% block customer_form %}
+                {% crispy form %}
+            {% endblock %}
+        {% elif user.profile.is_lawyer %}
+            {% block lawyer_form %}
+                {% crispy form %}
+            {% endblock %}
+        {% endif %}
     {% endblock %}
 {% endblock %}
 

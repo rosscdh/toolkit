@@ -12,7 +12,7 @@ from django.views.generic import (FormView,
 
 from .models import Workspace, Tool, InviteKey
 from .forms import WorkspaceForm, AddWorkspaceTeamMemberForm, InviteUserForm
-from .mixins import WorkspaceToolMixin, WorkspaceToolFormMixin, IssueSignalsMixin
+from .mixins import WorkspaceToolViewMixin, WorkspaceToolFormViewMixin, IssueSignalsMixin
 
 from .services import PDFKitService  # , HTMLtoPDForPNGService
 
@@ -89,14 +89,14 @@ class CreateWorkspaceView(FormView):
         return super(CreateWorkspaceView, self).form_valid(form)
 
 
-class WorkspaceToolObjectsListView(WorkspaceToolMixin, ListView):
+class WorkspaceToolObjectsListView(WorkspaceToolViewMixin, ListView):
     """
     Show a list of objects associated with the particular tool type
     """
     model = Tool
 
 
-class CreateWorkspaceToolObjectView(WorkspaceToolFormMixin, CreateView):
+class CreateWorkspaceToolObjectView(WorkspaceToolFormViewMixin, CreateView):
     """
     View to create a specific Tool Object
     """
@@ -114,7 +114,7 @@ class CreateWorkspaceToolObjectView(WorkspaceToolFormMixin, CreateView):
         return super(CreateWorkspaceToolObjectView, self).form_valid(form)
 
 
-class UpdateViewWorkspaceToolObjectView(WorkspaceToolFormMixin, UpdateView):
+class UpdateViewWorkspaceToolObjectView(WorkspaceToolFormViewMixin, UpdateView):
     """
     View to edit a specific Tool Object
     """
@@ -128,7 +128,7 @@ class UpdateViewWorkspaceToolObjectView(WorkspaceToolFormMixin, UpdateView):
         return super(UpdateViewWorkspaceToolObjectView, self).form_valid(form)
 
 
-class InviteClientWorkspaceToolObjectView(IssueSignalsMixin, WorkspaceToolMixin, UpdateView):
+class InviteClientWorkspaceToolObjectView(IssueSignalsMixin, WorkspaceToolViewMixin, UpdateView):
     model = InviteKey
     form_class = InviteUserForm
 
@@ -171,12 +171,12 @@ class InviteClientWorkspaceToolObjectView(IssueSignalsMixin, WorkspaceToolMixin,
         return super(InviteClientWorkspaceToolObjectView, self).form_valid(form)
 
 
-class WorkspaceToolObjectPreviewView(WorkspaceToolMixin, DetailView):
+class WorkspaceToolObjectPreviewView(WorkspaceToolViewMixin, DetailView):
     model = Tool
     template_name_suffix = '_tool_preview'
 
 
-class WorkspaceToolObjectDisplayView(WorkspaceToolMixin, DetailView):
+class WorkspaceToolObjectDisplayView(WorkspaceToolViewMixin, DetailView):
     model = Tool
     template_name = 'workspace/workspace_tool_preview.html'
 
@@ -201,6 +201,6 @@ class WorkspaceToolObjectDownloadView(IssueSignalsMixin, WorkspaceToolObjectDisp
         return pdfpng_service.pdf(template_name=self.object.template_name, file_object=resp)
 
 
-class WorkspaceToolStatusView(WorkspaceToolMixin, DetailView):
+class WorkspaceToolStatusView(WorkspaceToolViewMixin, DetailView):
     model = Tool
     template_name_suffix = '_status_list'  # place your template in your tool templates/:tool_name/:tool_name_status_list.html
