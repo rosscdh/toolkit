@@ -10,8 +10,10 @@
 <div>
     <p>1. Name and Address of Taxpayer</p>
     <div>{{ client_full_name|default:'<span>[Client Name]</span>' }}</div>
-    <div>{{ address|default:'<span>[Client Address]</span>' }}</div>
-    <div>{{ post_code|default:'<span>[Client Zip Code]</span>' }}, {{ state|default:'<span>[Client State]</span>' }}</div>
+    <div>{{ address1|default:'<span>[Client Address]</span>' }}</div>
+    {% if address2 %}<div>{{ address2 }}</div>{% endif %}
+    <div>{{ city|default:'<span>[Client City]</span>' }}</div>
+    <div>{{ state|default:'<span>[Client State]</span>' }} {{ post_code|default:'<span>[Client Zip Code]</span>' }}</div>
     <br />
     <div>Taxpayer SSN / ITIN # : {% if ssn or itin %}{{ ssn|default:'' }}{{ itin|default:'' }}{% else %}<span>[ITIN or SSN]</span>{% endif %}</div>
     <br />
@@ -50,7 +52,7 @@
         Dated: {% now "F jS Y" %}
         <br />
         <br />
-    </div> 
+    </div>
 <div>
 Signed,
 
