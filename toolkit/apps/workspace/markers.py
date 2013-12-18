@@ -27,14 +27,20 @@ class BaseSignalMarkers(object):
         'next': None,
     }
 
-    def __init__(self):
+    def __init__(self, tool=None):
+        if tool is not None:
+            self.tool = tool
         self.previous = None
+
         try:
             self.current = self.signal_map[0]
+
         except IndexError:
             raise Exception('You must have at least 1 item in the signal_map list attribute')
+
         try:
             self.next = self.signal_map[1]
+
         except IndexError:
             self.next = None
 
@@ -42,15 +48,26 @@ class BaseSignalMarkers(object):
 
     def set_markers_fsm(self):
         for i, marker in enumerate(self.signal_map):
-                try:
-                    marker.previous = self.signal_map[i-1]
-                except IndexError:
-                    marker.previous = None
+            # set the marker prev and next
+            signal = self.signal_map[i]
 
-                try:
-                    marker.next = self.signal_map[i+1]
-                except IndexError:
-                    marker.next = None
+            try:
+                marker.previous = self.signal_map[i-1]
+            except IndexError:
+                marker.previous = None
+
+            try:
+                marker.next = self.signal_map[i+1]
+            except IndexError:
+                marker.next = None
+
+            # if the next marker is incomplete and the previous is complete then we have our current
+            if marker.next is not None and marker.next.is_complete is False:
+                if marker.previous is not None and marker.previous.is_complete is True:
+                    self.current = signal
+                    self.previous = marker.previous
+                    self.next = marker.next
+
 
     def __iter__(self):
         return iter(self.signal_map)
@@ -59,22 +76,26 @@ class BaseSignalMarkers(object):
     def tool(self):
         return self.tool_object
 
+    @tool.setter
+    def tool(self, tool):
+        self.tool_object = tool
+        for s in self.signal_map:
+            s.tool = self.tool_object
+
+    @property
+    def num_markers(self):
+        return len(self.signal_map)
+
     @property
     def percent_complete(self):
         markers = self.tool.data['markers']
-        whole = len(self.signal_map)
+        whole = self.num_markers
 
         part = 0
         for i in self.signal_map:
             part = (part + 1) if i.name in markers else part
         percent = 100 * float(part)/float(whole)
         return float("{0:.2f}".format(math.ceil(percent)))
-
-    @tool.setter
-    def tool(self, tool):
-        self.tool_object = tool
-        for s in self.signal_map:
-            s.tool = self.tool_object
 
     def marker(self, val):
         if type(val) in [str, unicode]:
@@ -152,7 +173,7 @@ class Marker:
         self.name = name
         self.description = description
 
-        self.long_description = kwargs.pop('long_description', None)
+        self.long_description = kwargs.pop('long_description', self.description)
         # use the locally defined def action_url if exists otherwise if an
         # action_url is passed in; use that
         if hasattr(self, 'action_name') is False and 'action_name' in kwargs:
