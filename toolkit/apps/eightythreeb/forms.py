@@ -327,17 +327,19 @@ class CustomerEightyThreeBForm(BaseEightyThreeBForm):
             )
         )
 
-    # def clean_ssn_or_itin(self):
-        # """
-        # if the ssn or itin is not specified and we have a blank value
-        # """
-        # ssn = self.cleaned_data.get('ssn')
-        # itin = self.cleaned_data.get('itin')
+    def clean(self):
+        """
+        If the ssn or itin is not specified and we have a blank value
+        """
+        # we use data instead of cleaned_data to prevent multiple error messages
+        # we're only testing for the presence of 2 values, not their validity
+        ssn = self.data.get('ssn', None)
+        itin = self.data.get('itin', None)
 
-        # if ssn in ['', None] and itin in ['', None]:
-            # raise forms.ValidationError("Please specify either an SSN or an ITIN")
+        if ssn in ['', None] and itin in ['', None]:
+            raise forms.ValidationError("Please specify either an SSN or an ITIN.")
 
-        # return ssn
+        return self.cleaned_data
 
     def issue_signals(self, instance):
         customer_complete_form.send(sender=self.request, instance=instance, actor=self.user)
