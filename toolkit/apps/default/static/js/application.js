@@ -84,7 +84,7 @@ String.prototype.repeat = function(num) {
     });
 
     // jQuery UI Datepicker
-    var datepickerSelector = '.datepicker';
+    var datepickerSelector = '[data-toggle=datepicker]';
     $(datepickerSelector).datepicker({
       showOtherMonths: true,
       selectOtherMonths: true,
