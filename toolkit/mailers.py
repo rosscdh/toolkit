@@ -14,7 +14,7 @@ class BaseMailerService(object):
         "email": None
     }
 
-    def __init__(self, subject, from_tuple, recipients, message=None, **kwargs):
+    def __init__(self, from_tuple, recipients, subject=None, message=None, **kwargs):
         """
         subject : string
         message : string
@@ -40,7 +40,6 @@ class BaseMailerService(object):
             self.recipients.append(u)
 
         assert self.email_template  # defined in inherited classes
-        assert self.subject
         assert self.from_tuple
         assert type(self.from_tuple) is dict
         assert self.recipients
