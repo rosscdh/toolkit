@@ -6,6 +6,10 @@ from .markers import EightyThreeBSignalMarkers
 
 import datetime
 
+import logging
+logger = logging.getLogger('django.request')
+
+
 """ Primary signal used as wrapper for others """
 base_83b_signal = Signal(providing_args=['actor'])
 """ Sundry signals """
@@ -29,9 +33,14 @@ def on_base_signal(sender, instance, actor, **kwargs):
     previous instance marker status, and issue the appropriate signals
     """
     markers = EightyThreeBSignalMarkers()
-    marker_node = markers.marker(name=kwargs.get('name', instance.status))
 
-    marker_node.issue_signals(request=sender, instance=instance, actor=actor)
+    marker_node = markers.marker(val=kwargs.get('name', instance.status))
+
+    if hasattr(marker_node, 'issue_signals'):
+      marker_node.issue_signals(request=sender, instance=instance, actor=actor)
+    else:
+      logger.error('Requested signal marker "%s" has no issue_signals method' % marker_node)
+
 
 
 def _update_marker(marker_name, next_status, actor_name, instance, **kwargs):
