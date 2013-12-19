@@ -81,8 +81,10 @@
 </html>
 {% endblock %}
 
-{% block plain %}
-{% include 'email/partials/header.email' %}
-{% block plain_content %}{% endblock %}
-{% include 'email/partials/footer.email' %}
-{% endblock %}
+{% comment %}
+    {% block plain %}
+    {% include 'email/partials/header.email' %}
+    {% block plain_content %}{% endblock %}
+    {% include 'email/partials/footer.email' %}
+    {% endblock %}
+{% endcomment %}
