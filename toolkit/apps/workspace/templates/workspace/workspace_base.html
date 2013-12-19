@@ -8,3 +8,6 @@
     {{ block.super }}
     {% if workspace %}{% breadcrumb workspace.name 'workspace:view' workspace.slug %}{% endif %}
 {% endblock %}
+
+
+{% block content %}{% block main %}{% endblock %}{% endblock %}

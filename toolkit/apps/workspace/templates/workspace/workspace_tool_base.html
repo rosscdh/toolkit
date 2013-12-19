@@ -19,3 +19,6 @@
         <h4 class="caption"><a href="{% url 'workspace:view' slug=workspace.slug %}">{{ workspace.name }}</a></h4>
     {% endif %}
 {% endblock %}
+
+
+{% block content %}{% block main %}{% endblock %}{% endblock %}
