@@ -12,7 +12,7 @@ from django.views.generic import (FormView,
 
 from .models import Workspace, Tool, InviteKey
 from .forms import WorkspaceForm, AddWorkspaceTeamMemberForm, InviteUserForm
-from .mixins import WorkspaceToolMixin, WorkspaceToolFormMixin, IssueSignalsMixin
+from .mixins import WorkspaceToolViewMixin, WorkspaceToolFormViewMixin, IssueSignalsMixin
 
 from .services import PDFKitService  # , HTMLtoPDForPNGService
 
@@ -21,7 +21,7 @@ logger = logging.getLogger('django.request')
 
 
 class AddUserToWorkspace(CreateView):
-    template_name = 'workspace/user_form.html'
+    template_name = 'workspace/workspace_user_form.html'
     form_class = AddWorkspaceTeamMemberForm
 
     def dispatch(self, request, *args, **kwargs):
@@ -89,19 +89,18 @@ class CreateWorkspaceView(FormView):
         return super(CreateWorkspaceView, self).form_valid(form)
 
 
-class WorkspaceToolObjectsListView(WorkspaceToolMixin, ListView):
+class WorkspaceToolObjectsListView(WorkspaceToolViewMixin, ListView):
     """
     Show a list of objects associated with the particular tool type
     """
     model = Tool
 
 
-class CreateWorkspaceToolObjectView(WorkspaceToolFormMixin, CreateView):
+class CreateWorkspaceToolObjectView(WorkspaceToolFormViewMixin, CreateView):
     """
     View to create a specific Tool Object
     """
     model = Tool
-    template_name = 'workspace/workspace_tool_form.html'
 
     def get_queryset(self):
         qs = super(CreateWorkspaceToolObjectView, self).get_queryset()
@@ -115,12 +114,11 @@ class CreateWorkspaceToolObjectView(WorkspaceToolFormMixin, CreateView):
         return super(CreateWorkspaceToolObjectView, self).form_valid(form)
 
 
-class UpdateViewWorkspaceToolObjectView(WorkspaceToolFormMixin, UpdateView):
+class UpdateViewWorkspaceToolObjectView(WorkspaceToolFormViewMixin, UpdateView):
     """
     View to edit a specific Tool Object
     """
     model = Tool
-    template_name = 'workspace/workspace_tool_form.html'
 
     def get_success_url(self):
         return reverse('workspace:tool_object_preview', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug, 'slug': self.object.slug})
@@ -130,7 +128,7 @@ class UpdateViewWorkspaceToolObjectView(WorkspaceToolFormMixin, UpdateView):
         return super(UpdateViewWorkspaceToolObjectView, self).form_valid(form)
 
 
-class InviteClientWorkspaceToolObjectView(IssueSignalsMixin, WorkspaceToolMixin, UpdateView):
+class InviteClientWorkspaceToolObjectView(IssueSignalsMixin, WorkspaceToolViewMixin, UpdateView):
     model = InviteKey
     form_class = InviteUserForm
 
@@ -169,20 +167,21 @@ class InviteClientWorkspaceToolObjectView(IssueSignalsMixin, WorkspaceToolMixin,
     def form_valid(self, form):
         email = form.save()  # not used
         self.issue_signals(request=self.request, instance=self.tool_instance, name='lawyer_invite_customer')  # NB teh tool_instance and NOT self.instance
+
         return super(InviteClientWorkspaceToolObjectView, self).form_valid(form)
 
 
-class WorkspaceToolObjectPreviewView(WorkspaceToolMixin, DetailView):
+class WorkspaceToolObjectPreviewView(WorkspaceToolViewMixin, DetailView):
     model = Tool
     template_name_suffix = '_tool_preview'
 
 
-class WorkspaceToolObjectDisplayView(WorkspaceToolMixin, DetailView):
+class WorkspaceToolObjectDisplayView(WorkspaceToolViewMixin, DetailView):
     model = Tool
     template_name = 'workspace/workspace_tool_preview.html'
 
     def render_to_response(self, context, **response_kwargs):
-        html = self.object.html()
+        html = self.object.html(user=self.request.user, request=self.request)
         pdfpng_service = PDFKitService(html=html)  # HTMLtoPDForPNGService(html=html)
         resp = HttpResponse(content_type='application/pdf')
         return pdfpng_service.pdf(template_name=self.object.template_name, file_object=resp)
@@ -192,7 +191,7 @@ class WorkspaceToolObjectDownloadView(IssueSignalsMixin, WorkspaceToolObjectDisp
     model = Tool
 
     def render_to_response(self, context, **response_kwargs):
-        html = self.object.html()
+        html = self.object.html(user=self.request.user, request=self.request)
         pdfpng_service = PDFKitService(html=html)  # HTMLtoPDForPNGService(html=html)
         resp = HttpResponse(content_type='application/pdf')
         resp['Content-Disposition'] = 'attachment; filename="{filename}.pdf"'.format(filename=self.object.filename)
@@ -202,7 +201,6 @@ class WorkspaceToolObjectDownloadView(IssueSignalsMixin, WorkspaceToolObjectDisp
         return pdfpng_service.pdf(template_name=self.object.template_name, file_object=resp)
 
 
-class WorkspaceToolStatusView(WorkspaceToolMixin, DetailView):
+class WorkspaceToolStatusView(WorkspaceToolViewMixin, DetailView):
     model = Tool
-    template_name_suffix = '_status_list' # place your template in your tool templates/:tool_name/:tool_name_status_list.html
-
+    template_name_suffix = '_status_list'  # place your template in your tool templates/:tool_name/:tool_name_status_list.html

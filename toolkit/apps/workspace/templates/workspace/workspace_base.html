@@ -1,0 +1,13 @@
+{% extends 'workspace/base.html' %}
+
+{% load django_bootstrap_breadcrumbs %}
+
+{% block page_title %}{% if workspace %}{{ workspace.name }} — {% endif %}{{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% if workspace %}{% breadcrumb workspace.name 'workspace:view' workspace.slug %}{% endif %}
+{% endblock %}
+
+
+{% block content %}{% block main %}{% endblock %}{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'workspace/workspace_tool_base.html' %}
+
+{% load url from future %}
+
+{% block header %}
+    {{ block.super }}
+    <h4>{{ tool.name }}</h4>
+{% endblock %}
+
+{% block header_right %}
+    <a href="{% url 'workspace:tool_object_new' workspace=workspace.slug tool=tool.slug %}" class="btn btn-primary">New {{ tool.short_name }}</a>
+{% endblock %}
+
+{% block main %}
+    {% if object_list %}
+        {% block list %}{% endblock %}
+    {% else %}
+        <div class="alert alert-info">
+            <p>{{ tool.description }}</p>
+
+            {% if user.profile.is_lawyer %}
+                <p>To create your first {{ tool.short_name }}, just click the New {{ tool.short_name }} button below.</p>
+
+                <a href="{% url 'workspace:tool_object_new' workspace=workspace.slug tool=tool.slug %}" class="btn btn-primary btn-wide">New {{ tool.short_name }}</a>
+            {% endif %}
+          </div>
+    {% endif %}
+{% endblock %}

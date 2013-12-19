@@ -10,6 +10,9 @@
         <div class="parsley-errors">
             {% if form.errors %}
                 <ul>
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
                     {% for field in form %}
                         {% if field.errors %}
                             <li>{{ field.errors|striptags }}</li>

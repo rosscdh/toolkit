@@ -15,15 +15,48 @@ LOGGER = logging.getLogger('django.request')
 
 @parsleyfy
 class SignUpForm(forms.Form):
-    username = forms.CharField(required=False, widget=forms.HiddenInput)
-    email = forms.EmailField(label='', widget=forms.TextInput(attrs={'placeholder': 'Email address', 'class': 'input-lg'}))
-    password = forms.CharField(label='', widget=forms.PasswordInput(attrs={'placeholder': 'Password', 'class': 'input-lg'}))
-    password_confirm = forms.CharField(label='', widget=forms.PasswordInput(attrs={'placeholder': 'Password again', 'class': 'input-lg'}))
-    t_and_c = forms.BooleanField(label='I agree to the LawPal Terms and Conditions', required=True, initial=False)
+    username = forms.CharField(
+        required=False,
+        widget=forms.HiddenInput
+    )
+    email = forms.EmailField(
+        error_messages={
+            'invalid': "Email is invalid.",
+            'required': "Email can't be blank."
+        },
+        label='',
+        widget=forms.TextInput(attrs={'placeholder': 'Email address'})
+    )
+    password = forms.CharField(
+        error_messages={
+            'required': "Password can't be blank."
+        },
+        label='',
+        widget=forms.PasswordInput(attrs={'placeholder': 'Password'})
+    )
+    password_confirm = forms.CharField(
+        error_messages={
+            'required': "Confirm password can't be blank."
+        },
+        label='',
+        widget=forms.PasswordInput(attrs={'placeholder': 'Password confirmation'})
+    )
+    t_and_c = forms.BooleanField(
+        error_messages={
+            'required': "You must agree to the LawPal Terms and Conditions."
+        },
+        initial=False,
+        label='I agree to the LawPal Terms and Conditions',
+        required=True
+    )
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
-        self.helper.attrs = {'data-validate': 'parsley'}
+        self.helper.attrs = {
+            'parsley-validate': '',
+            'parsley-error-container': '.parsley-errors'
+        }
+        self.helper.form_show_errors = False
 
         self.helper.layout = Layout(
             Fieldset(
@@ -53,7 +86,7 @@ class SignUpForm(forms.Form):
         password = self.cleaned_data.get('password')
 
         if password != password_confirm:
-            raise forms.ValidationError('Passwords do not match')
+            raise forms.ValidationError("The two password fields didn't match.")
 
         return password_confirm
 
@@ -64,7 +97,7 @@ class SignUpForm(forms.Form):
             user = User.objects.get(email=email)
 
             if user:
-                raise forms.ValidationError("Email already Exists. Please use another")
+                raise forms.ValidationError("An account with that email already exists.")
 
         except User.DoesNotExist:
             return email
@@ -83,12 +116,28 @@ class SignUpForm(forms.Form):
 
 @parsleyfy
 class SignInForm(forms.Form):
-    email = forms.EmailField(label='', widget=forms.TextInput(attrs={'placeholder': 'Email address', 'class': 'input-lg'}))
-    password = forms.CharField(label='', widget=forms.PasswordInput(attrs={'placeholder': 'Password', 'class': 'input-lg'}))
+    email = forms.EmailField(
+        error_messages={
+            'required': "Email can't be blank."
+        },
+        label='',
+        widget=forms.TextInput(attrs={'placeholder': 'Email address'})
+    )
+    password = forms.CharField(
+        error_messages={
+            'required': "Password can't be blank."
+        },
+        label='',
+        widget=forms.PasswordInput(attrs={'placeholder': 'Password'})
+    )
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
-        self.helper.attrs = {'data-validate': 'parsley'}
+        self.helper.attrs = {
+            'parsley-validate': '',
+            'parsley-error-container': '.parsley-errors'
+        }
+        self.helper.form_show_errors = False
 
         self.helper.layout = Layout(
             Fieldset(
@@ -108,7 +157,7 @@ class SignInForm(forms.Form):
             user = authenticate(username=self.cleaned_data['email'], password=self.cleaned_data['password'])
 
         if user is None:
-            raise forms.ValidationError("Sorry, no account with those credentials was found")
+            raise forms.ValidationError("Sorry, no account with those credentials was found.")
 
         return super(SignInForm, self).clean()
 
