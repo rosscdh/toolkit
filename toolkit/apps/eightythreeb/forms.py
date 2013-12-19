@@ -15,6 +15,8 @@ from toolkit.apps.workspace.services import EnsureCustomerService
 from .models import EightyThreeB
 from .signals import lawyer_complete_form, customer_complete_form
 
+from toolkit.apps.workspace.services import USPSTrackingService
+
 import datetime
 
 
@@ -389,6 +391,18 @@ class TrackingCodeForm(forms.ModelForm):
 
         super(TrackingCodeForm, self).__init__(*args, **kwargs)
         self.fields['tracking_code'].initial = self.instance.tracking_code
+
+    def clean_tracking_code(self):
+        tracking_code = self.cleaned_data.get('tracking_code')
+        service = USPSTrackingService()
+
+        try:
+            service.track(tracking_code=tracking_code)
+        except Exception as e:
+            raise forms.ValidationError('The Tracking code is not valid: %s' % e)
+            logger.error('Invalid Tracking Code %s entered by %s' % (tracking_code, self.user.email))
+
+        return tracking_code
 
     def clean_user(self):
         # dont allow override from form

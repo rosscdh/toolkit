@@ -46,6 +46,8 @@ python-memcached
 
 raven
 
+# package tracking
+-e git+https://github.com/rosscdh/python-usps.git#egg=python-usps
 
 # Testing
 HTTPretty
