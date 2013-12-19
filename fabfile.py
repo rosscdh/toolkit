@@ -22,7 +22,7 @@ env.local_project_path = os.path.dirname(os.path.realpath(__file__))
 env.repo = Repo(env.local_project_path)
 
 env.project = 'toolkit'
-env.fixtures = 'tools'
+env.fixtures = 'sites tools'
 env.SHA1_FILENAME = None
 env.timestamp = time.time()
 env.is_predeploy = False
@@ -502,8 +502,8 @@ def conclude():
 
 @task
 def rebuild_local():
-    if not os.path.exists('glynt/local_settings.py'):
-        local('cp conf/dev.local_settings.py glynt/local_settings.py')
+    if not os.path.exists('toolkit/local_settings.py'):
+        local('cp conf/dev.local_settings.py toolkit/local_settings.py')
 
     if os.path.exists('./dev.db'):
         new_db_name = '/tmp/dev.%s.db.bak' % env.timestamp

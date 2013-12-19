@@ -1,19 +1,22 @@
 # -*- coding: utf-8 -*-
 from django import forms
 
-from localflavor.us.forms import USZipCodeField, USSocialSecurityNumberField
+from crispy_forms.bootstrap import FieldWithButtons, PrependedText, StrictButton
+from crispy_forms.helper import FormHelper, Layout
+from crispy_forms.layout import ButtonHolder, Div, Field, Fieldset, HTML, Submit
+
+from localflavor.us.forms import USSocialSecurityNumberField, USZipCodeField
 from localflavor.us.us_states import USPS_CHOICES
 
 from parsley.decorators import parsleyfy
 
-from crispy_forms.helper import FormHelper, Layout
-from crispy_forms.layout import HTML, Div, Field, Fieldset, ButtonHolder, Submit
-from crispy_forms.bootstrap import PrependedText, FieldWithButtons, StrictButton
-
+from toolkit.apps.workspace.mixins import WorkspaceToolFormMixin
 from toolkit.apps.workspace.services import EnsureCustomerService
 
 from .models import EightyThreeB
-from .signals import lawyer_complete_form, customer_complete_form
+from .signals import customer_complete_form, lawyer_complete_form
+
+from toolkit.apps.workspace.services import USPSTrackingService
 
 import datetime
 
@@ -22,123 +25,14 @@ def _current_year():
     return datetime.datetime.utcnow().year
 
 
-LAWYER_LAYOUT = Layout(
-    Fieldset(
-        '',
-        HTML('<label class="control-label">Client Details</label>'),
-        Div(
-            'client_full_name',
-            'client_email',
-            css_class='form-inline'
-        ),
-        Div(
-            'company_name',
-        ),
-    ),
-    Fieldset(
-        '83b Election Information',
-        FieldWithButtons(
-            'date_of_property_transfer',
-            StrictButton('<span class="fui-calendar"></span>'),
-            css_class='datetime'
-        ),
-        'description',
-        'tax_year',
-        'nature_of_restrictions',
-        Div(
-            HTML('<label class="control-label">Value at time of transfer</label>'),
-            Div(
-                PrependedText('transfer_value_share', '$'),
-                HTML('<span class="help-block">per share for a total aggregate value of</span>'),
-                PrependedText('transfer_value_total', '$'),
-                css_class='form-inline'
-            ),
-            css_class='form-group'
-        ),
-        Div(
-            HTML('<legend>Additional Details (Client to complete)</legend>'),
-            Field('has_spouse', disabled='disabled'),
-            Field('state', disabled='disabled'),
-            Div(
-                Field('ssn', readonly='readonly'),
-                HTML('<span class="help-block">or</span>'),
-                Field('itin', readonly='readonly'),
-                css_class='form-inline'
-            ),
-            Field('accountant_email', readonly='readonly'),
-            css_class='dialog dialog-success form-dialog'
-        )
-    ),
-    ButtonHolder(
-        Submit('submit', 'Continue', css_class='btn-hg btn-primary'),
-        css_class='form-group'
-    )
-)
-
-
-CUSTOMER_LAYOUT = Layout(
-    Fieldset(
-        '',
-        HTML('<label class="control-label">Client Details</label>'),
-        Div(
-            'client_full_name',
-            'client_email',
-            css_class='form-inline'
-        ),
-        'has_spouse',
-        'company_name',
-        'post_code',
-        'state',
-        'address',
-        Div(
-            Div(
-                'ssn',
-                HTML('<span class="help-block">or</span>'),
-                'itin',
-                css_class='form-inline'
-            ),
-            HTML('<span class="help-block">This tool is currently only available to people with an SSN or ITIN number.</span>'),
-            css_class='form-inline'
-        ),
-        'accountant_email',
-    ),
-    Fieldset(
-        'Please confirm the following is correct',
-        FieldWithButtons(
-            'date_of_property_transfer',
-            StrictButton('<span class="fui-calendar"></span>'),
-            css_class='datetime'
-        ),
-        'description',
-        'tax_year',
-        'nature_of_restrictions',
-        Div(
-            HTML('<label class="control-label">Value at time of transfer</label>'),
-            Div(
-                PrependedText('transfer_value_share', '$'),
-                HTML('<span class="help-block">per share for a total aggregate value of</span>'),
-                PrependedText('transfer_value_total', '$'),
-                css_class='form-inline'
-            ),
-            css_class='form-group'
-        )
-    ),
-    ButtonHolder(
-        Submit('submit', 'Continue', css_class='btn-hg btn-primary'),
-        css_class='form-group'
-    )
-)
-
-
-@parsleyfy
-class EightyThreeBForm(forms.Form):
-
+class BaseEightyThreeBForm(WorkspaceToolFormMixin):
     client_full_name = forms.CharField(
         error_messages={
             'required': "Client name can't be blank."
         },
         help_text='',
         label='',
+        required=True,
         widget=forms.TextInput(attrs={'placeholder': 'Client full name', 'size': '40'})
     )
 
@@ -149,10 +43,85 @@ class EightyThreeBForm(forms.Form):
         },
         help_text='',
         label='',
+        required=True,
         widget=forms.TextInput(attrs={'placeholder': 'Client email address', 'size': '40'})
     )
 
-    company_name = forms.CharField()
+    company_name = forms.CharField(
+        error_messages={
+            'required': "Client name can't be blank."
+        },
+        help_text='',
+        label='Company name',
+        widget=forms.HiddenInput(attrs={'placeholder': 'Company name', 'size': '40'})
+    )
+
+    address1 = forms.CharField(
+        error_messages={
+            'required': "Address can't be blank."
+        },
+        label='',
+        required=True,
+        widget=forms.TextInput(attrs={'placeholder': 'Address Line 1', 'size': '40'})
+    )
+
+    address2 = forms.CharField(
+        label='',
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'Address Line 2', 'size': '40'})
+    )
+
+    city = forms.CharField(
+        error_messages={
+            'required': "City can't be blank."
+        },
+        label='',
+        required=True,
+        widget=forms.TextInput(attrs={'placeholder': 'City', 'size': '40'})
+    )
+
+    state = forms.ChoiceField(
+        choices=USPS_CHOICES,
+        error_messages={
+            'required': "State can't be blank."
+        },
+        label='',
+        help_text='',
+        initial='CA',
+        required=True
+    )
+
+    post_code = USZipCodeField(
+        error_messages={
+            'required': "Zip code can't be blank."
+        },
+        label='',
+        required=True,
+        widget=forms.TextInput(attrs={'placeholder': 'Zip Code', 'size': '11'})
+    )
+
+    ssn = USSocialSecurityNumberField(
+        label='Social Security Number',
+        required=False
+    )
+
+    itin = forms.CharField(
+        label='Tax Payer ITIN',
+        required=False
+    )
+
+    accountant_email = forms.EmailField(
+        help_text='Optional.',
+        label='Your accountants email address',
+        required=False,
+        widget=forms.TextInput(attrs={'size': '40'})
+    )
+
+    has_spouse = forms.BooleanField(
+        help_text='',
+        label='Yes, I have a spouse or legally recognised de-facto',
+        required=False,
+    )
 
     date_of_property_transfer = forms.DateField(
         error_messages={
@@ -160,12 +129,12 @@ class EightyThreeBForm(forms.Form):
             'required': "Property transfer date can't be blank."
         },
         help_text='The filing deadline is 30 days from this date. Your filing deadline is <span id="filing-deadline"></span>.',
-        input_formats=['%B %d, %Y'],
+        input_formats=['%B %d, %Y', '%Y-%m-%d %H:%M:%S'],
         label='Date on which the property was transferred',
         widget=forms.DateInput(
             attrs={
                 'autocomplete': 'off',
-                'class': 'datepicker'
+                'data-toggle': 'datepicker'
             },
             format='%B %d, %Y'
         )
@@ -222,130 +191,14 @@ class EightyThreeBForm(forms.Form):
         widget=forms.TextInput(attrs={'size': '10'})
     )
 
-    post_code = USZipCodeField(
-        label='Zip Code',
-        required=False
-    )
-
-    state = forms.ChoiceField(
-        choices=USPS_CHOICES,
-        label='Where do you live?',
-        help_text='The state where you file your taxes',
-        initial='CA',
-        required=False
-    )
-
-    address = forms.CharField(
-        label='Address',
-        widget=forms.Textarea,
-        required=False
-    )
-
-    has_spouse = forms.BooleanField(
-        required=False,
-        label='Are your married?',
-        help_text='Do you have a spouse or legally recognised de-facto')
-
-    ssn = USSocialSecurityNumberField(
-        label='Social Security Number',
-        required=False
-    )
-
-    itin = forms.CharField(
-        label='Tax Payer ITIN',
-        required=False
-    )
-
-    accountant_email = forms.EmailField(
-        label='Your accountants email address',
-        required=False
-    )
-
     def __init__(self, *args, **kwargs):
-        kwargs.pop('instance')  # pop this as we are not using a model form
-        self.request = kwargs.pop('request')
-        self.workspace = kwargs.pop('workspace')
+        super(BaseEightyThreeBForm, self).__init__(*args, **kwargs)
 
-        self.user = None
-        if self.request is not None:
-            self.user = self.request.user
-
-        self.helper = FormHelper()
-
-        self.helper.attrs = {
-            'parsley-validate': '',
-            'parsley-error-container': '.parsley-errors'
-        }
-
-        self.helper.form_show_errors = False
-
-        self.helper.layout = LAWYER_LAYOUT if self.user.profile.is_lawyer else CUSTOMER_LAYOUT
-
-        super(EightyThreeBForm, self).__init__(*args, **kwargs)
-
-        self.sync_fields()
         if self.fields['company_name'].initial in ['', None]:
             self.fields['company_name'].initial = self.workspace.name
 
-
-    def sync_fields(self):
-        # sync the fields with the appropriate user layout
-        helper_fields = [field_name for pos, field_name in self.helper.layout.get_field_names()]
-        for field_name in self.fields.keys():
-            if field_name not in helper_fields:
-                del self.fields[field_name]
-
-    def clean_date_of_property_transfer(self):
-        date = self.cleaned_data.get('date_of_property_transfer')
-
-        # Only check the property transfer date on new forms
-        if not self.initial:
-            if date < (datetime.date.today() - datetime.timedelta(days=25)):
-                raise forms.ValidationError('LawPal requires a minimum of 5 days to complete the election. The date of property transfer was greater than than 25 days ago.')
-
-        return date
-
-    def clean_ssn(self):
-        """
-        if the itin is not specified and we have a blank value
-        """
-        if self.user.profile.is_customer:
-
-            if 'ssn' in self.fields:
-                ssn = self.cleaned_data.get('ssn')
-                itin = self.data.get('itin')
-
-                if ssn in ['', None] and itin in ['', None]:
-                    raise forms.ValidationError("Please specify either an SSN or an ITIN")
-
-                return ssn
-
-    def clean_itin(self):
-        """
-        if the ssn is not specified and we have a blank value
-        """
-        if self.user.profile.is_customer:
-
-            if 'itin' in self.fields:
-                itin = self.cleaned_data.get('itin')
-                ssn = self.data.get('ssn')
-
-                if ssn in ['', None] and itin in ['', None]:
-                    raise forms.ValidationError("Please specify either an SSN or an ITIN")
-
-                return itin
-
-    def issue_signals(self, instance):
-        if self.user.profile.is_lawyer:
-            lawyer_complete_form.send(sender=self.request, instance=instance, actor=self.user)
-
-        elif self.user.profile.is_customer:
-            customer_complete_form.send(sender=self.request, instance=instance, actor=self.user)
-
     def save(self):
-        """
-        Ensure we have a customer with this info
-        """
+        # Ensure we have a customer with this info
         customer_service = EnsureCustomerService(email=self.cleaned_data.get('client_email'),
                                                  full_name=self.cleaned_data.get('client_full_name'))
         customer_service.process()
@@ -360,6 +213,236 @@ class EightyThreeBForm(forms.Form):
         self.issue_signals(instance=eightythreeb)
 
         return eightythreeb
+
+
+@parsleyfy
+class CustomerEightyThreeBForm(BaseEightyThreeBForm):
+    disclaimer_agreed = forms.BooleanField(
+        error_messages={
+            'required': "You must agree with the disclaimer."
+        },
+        help_text='',
+        label='I agree with the disclaimer',
+        required=True
+    )
+
+    details_confirmed = forms.BooleanField(
+        error_messages={
+            'required': "You must confirm that the details are correct."
+        },
+        help_text='',
+        label='I confirm that the details above are correct',
+        required=True,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(CustomerEightyThreeBForm, self).__init__(*args, **kwargs)
+
+        # set up the hidden fields that still need to be submitted
+        self.fields['client_full_name'].widget = forms.HiddenInput()
+        self.fields['client_email'].widget = forms.HiddenInput()
+        self.fields['company_name'].widget = forms.HiddenInput()
+        self.fields['date_of_property_transfer'].widget = forms.HiddenInput()
+        self.fields['description'].widget = forms.HiddenInput()
+        self.fields['tax_year'].widget = forms.HiddenInput()
+        self.fields['nature_of_restrictions'].widget = forms.HiddenInput()
+        self.fields['transfer_value_share'].widget = forms.HiddenInput()
+        self.fields['transfer_value_total'].widget = forms.HiddenInput()
+
+        self.helper.layout = Layout(
+            Div(
+                HTML('<h4>Disclaimer</h4>'),
+                HTML('<p>LawPal Inc. is not an attorney or law firm and this is not intended as legal advice. \
+                      Neither is LawPal, Inc. a tax advisor and this is not intended as tax advice. \
+                      You should consult your own attorney and your own tax advisor on whether it is best to make the 83(b) election or not. \
+                      LawPal, Inc. can only provide self help services at your specific direction.</p>'),
+                HTML('<p><strong>THE FILING OF THIS 83(B) ELECTION IS YOUR RESPONSIBILITY. \
+                      YOU MUST FILE THIS FORM WITHIN 30 DAYS OF PURCHASING THE SHARES.</strong></p>'),
+                Field('disclaimer_agreed', template='public/bootstrap3/t_and_c.html'),
+                css_class='alert'
+            ),
+            Div(
+                # Your details
+                'client_full_name',
+                'client_email',
+                'company_name',
+            ),
+            Div(
+                HTML('<legend>Where do you live?</legend>'),
+                'address1',
+                'address2',
+                'city',
+                Div(
+                    'state',
+                    'post_code',
+                    css_class='form-inline'
+                ),
+                css_class='form-section'
+            ),
+            Div(
+                HTML('<legend>Additional details</legend>'),
+                Div(
+                    Div(
+                        'ssn',
+                        HTML('<span class="help-block">or</span>'),
+                        'itin',
+                        css_class='form-inline'
+                    ),
+                    HTML('<span class="help-block">This tool is currently only available to people with an SSN or ITIN number.</span>'),
+                    css_class='form-inline'
+                ),
+                'accountant_email',
+                HTML('<label>Do you have a spouse or legally recognised de-facto?</label>'),
+                Field('has_spouse', template='public/bootstrap3/t_and_c.html'),
+                css_class='form-section'
+            ),
+            Div(
+                HTML('<legend>Please confirm the following is correct</legend>'),
+
+                HTML('<p>{{ form.date_of_property_transfer.label }}</p>'),
+                HTML('<blockquote><p>{{ form.date_of_property_transfer.value|date:"F jS, Y" }}</p></blockquote>'),
+                'date_of_property_transfer',
+
+                HTML('<p>{{ form.description.label }}</p>'),
+                HTML('<blockquote><p>{{ form.description.value|safe }}</p></blockquote>'),
+                'description',
+
+                HTML('<p>{{ form.tax_year.label }}</p>'),
+                HTML('<blockquote><p>{{ form.tax_year.value }}</p></blockquote>'),
+                'tax_year',
+
+                HTML('<p>{{ form.nature_of_restrictions.label }}</p>'),
+                HTML('<blockquote><p>{{ form.nature_of_restrictions.value|safe }}</p></blockquote>'),
+                'nature_of_restrictions',
+
+                HTML('<p>Value at time of transfer</p>'),
+                HTML('<blockquote><p>${{ form.transfer_value_share.value }} per share for a total aggregate value of ${{ form.transfer_value_total.value }}</p></blockquote>'),
+                'transfer_value_share',
+                'transfer_value_total',
+
+                Field('details_confirmed', template='public/bootstrap3/t_and_c.html'),
+                css_class='dialog dialog-info form-section form-dialog'
+            ),
+            ButtonHolder(
+                Submit('submit', 'Continue', css_class='btn-hg btn-primary'),
+                css_class='form-group'
+            )
+        )
+
+    def clean(self):
+        """
+        If the ssn or itin is not specified and we have a blank value
+        """
+        # we use data instead of cleaned_data to prevent multiple error messages
+        # we're only testing for the presence of 2 values, not their validity
+        ssn = self.data.get('ssn', None)
+        itin = self.data.get('itin', None)
+
+        if ssn in ['', None] and itin in ['', None]:
+            raise forms.ValidationError("Please specify either an SSN or an ITIN.")
+
+        return self.cleaned_data
+
+    def issue_signals(self, instance):
+        customer_complete_form.send(sender=self.request, instance=instance, actor=self.user)
+
+
+@parsleyfy
+class LawyerEightyThreeBForm(BaseEightyThreeBForm):
+    def __init__(self, *args, **kwargs):
+        super(LawyerEightyThreeBForm, self).__init__(*args, **kwargs)
+
+        # change the required state on some fields
+        self.fields['address1'].required = False
+        self.fields['city'].required = False
+        self.fields['state'].required = False
+        self.fields['post_code'].required = False
+
+        # set the readonly fields
+        self.fields['address1'].widget.attrs['readonly'] = 'readonly'
+        self.fields['address2'].widget.attrs['readonly'] = 'readonly'
+        self.fields['city'].widget.attrs['readonly'] = 'readonly'
+        self.fields['state'].widget.attrs['disabled'] = 'disabled'
+        self.fields['post_code'].widget.attrs['readonly'] = 'readonly'
+        self.fields['ssn'].widget.attrs['readonly'] = 'readonly'
+        self.fields['itin'].widget.attrs['readonly'] = 'readonly'
+        self.fields['accountant_email'].widget.attrs['readonly'] = 'readonly'
+        self.fields['has_spouse'].widget.attrs['disabled'] = 'disabled'
+
+        self.helper.layout = Layout(
+            Div(
+                HTML('<legend>Client details</legend>'),
+                Div(
+                    'client_full_name',
+                    'client_email',
+                    css_class='form-inline'
+                ),
+                Div(
+                    'company_name',
+                ),
+            ),
+            Div(
+                HTML('<legend>83(b) Election Information</legend>'),
+                FieldWithButtons(
+                    'date_of_property_transfer',
+                    StrictButton('<span class="fui-calendar"></span>'),
+                    css_class='datetime'
+                ),
+                'description',
+                'tax_year',
+                'nature_of_restrictions',
+                Div(
+                    HTML('<label class="control-label">Value at time of transfer</label>'),
+                    Div(
+                        PrependedText('transfer_value_share', '$'),
+                        HTML('<span class="help-block">per share for a total aggregate value of</span>'),
+                        PrependedText('transfer_value_total', '$'),
+                        css_class='form-inline'
+                    ),
+                    css_class='form-group'
+                ),
+            ),
+            Div(
+                HTML('<legend>Additional details (Client to complete)</legend>'),
+                'address1',
+                'address2',
+                'city',
+                Div(
+                    'state',
+                    'post_code',
+                    css_class='form-inline'
+                ),
+                Div(
+                    Div(
+                        'ssn',
+                        HTML('<span class="help-block">or</span>'),
+                        'itin',
+                        css_class='form-inline'
+                    ),
+                    HTML('<span class="help-block">This tool is currently only available to people with an SSN or ITIN number.</span>'),
+                    css_class='form-inline'
+                ),
+                'accountant_email',
+                HTML('<label>Do you have a spouse or legally recognised de-facto?</label>'),
+                Field('has_spouse', template='public/bootstrap3/t_and_c.html'),
+                css_class='dialog dialog-info form-dialog'
+            ),
+            ButtonHolder(
+                Submit('submit', 'Continue', css_class='btn-hg btn-primary'),
+                css_class='form-group'
+            )
+        )
+
+    def clean_date_of_property_transfer(self):
+        date = self.cleaned_data.get('date_of_property_transfer')
+
+        if date < (datetime.date.today() - datetime.timedelta(days=25)):
+            raise forms.ValidationError('LawPal requires a minimum of 5 days to complete the election. The date of property transfer was greater than than 25 days ago.')
+
+        return date
+
+    def issue_signals(self, instance):
+        lawyer_complete_form.send(sender=self.request, instance=instance, actor=self.user)
 
 
 @parsleyfy
@@ -389,6 +472,18 @@ class TrackingCodeForm(forms.ModelForm):
 
         super(TrackingCodeForm, self).__init__(*args, **kwargs)
         self.fields['tracking_code'].initial = self.instance.tracking_code
+
+    def clean_tracking_code(self):
+        tracking_code = self.cleaned_data.get('tracking_code')
+        service = USPSTrackingService()
+
+        try:
+            service.track(tracking_code=tracking_code)
+        except Exception as e:
+            raise forms.ValidationError('The Tracking code is not valid: %s' % e)
+            logger.error('Invalid Tracking Code %s entered by %s' % (tracking_code, self.user.email))
+
+        return tracking_code
 
     def clean_user(self):
         # dont allow override from form

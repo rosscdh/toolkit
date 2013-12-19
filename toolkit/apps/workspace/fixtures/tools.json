@@ -7,9 +7,12 @@
         "icon": "images/icons/mail.svg",
         "short_name": "Letter",
         "summary": "summary goes here",
-        "description": "Long description",
+        "description": "A simple way of helping your clients get their 83(b) elections filed on time and correctly whilst giving you complete visibility on the process.",
         "model_name": "EightyThreeB",
-        "form": "toolkit.apps.eightythreeb.forms.EightyThreeBForm",
+        "forms": {
+          "customer": "toolkit.apps.eightythreeb.forms.CustomerEightyThreeBForm",
+          "lawyer": "toolkit.apps.eightythreeb.forms.LawyerEightyThreeBForm"
+        },
         "app_label": "eightythreeb"
       },
       "name": "83(b) Election Letters",
@@ -26,6 +29,10 @@
         "summary": "summary goes here",
         "description": "Long description",
         "model_name": "Checklist",
+        "forms": {
+          "customer": "toolkit.apps.checklist.forms.Checklist",
+          "lawyer": "toolkit.apps.checklist.forms.Checklist"
+        },
         "form": "toolkit.apps.checklist.forms.Checklist",
         "app_label": "checklist"
       },
