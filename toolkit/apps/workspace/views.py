@@ -21,7 +21,7 @@ logger = logging.getLogger('django.request')
 
 
 class AddUserToWorkspace(CreateView):
-    template_name = 'workspace/user_form.html'
+    template_name = 'workspace/workspace_user_form.html'
     form_class = AddWorkspaceTeamMemberForm
 
     def dispatch(self, request, *args, **kwargs):
@@ -101,7 +101,6 @@ class CreateWorkspaceToolObjectView(WorkspaceToolFormMixin, CreateView):
     View to create a specific Tool Object
     """
     model = Tool
-    template_name = 'workspace/workspace_tool_form.html'
 
     def get_queryset(self):
         qs = super(CreateWorkspaceToolObjectView, self).get_queryset()
@@ -120,7 +119,6 @@ class UpdateViewWorkspaceToolObjectView(WorkspaceToolFormMixin, UpdateView):
     View to edit a specific Tool Object
     """
     model = Tool
-    template_name = 'workspace/workspace_tool_form.html'
 
     def get_success_url(self):
         return reverse('workspace:tool_object_preview', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug, 'slug': self.object.slug})
@@ -169,6 +167,7 @@ class InviteClientWorkspaceToolObjectView(IssueSignalsMixin, WorkspaceToolMixin,
     def form_valid(self, form):
         email = form.save()  # not used
         self.issue_signals(request=self.request, instance=self.tool_instance, name='lawyer_invite_customer')  # NB teh tool_instance and NOT self.instance
+
         return super(InviteClientWorkspaceToolObjectView, self).form_valid(form)
 
 
@@ -204,5 +203,4 @@ class WorkspaceToolObjectDownloadView(IssueSignalsMixin, WorkspaceToolObjectDisp
 
 class WorkspaceToolStatusView(WorkspaceToolMixin, DetailView):
     model = Tool
-    template_name_suffix = '_status_list' # place your template in your tool templates/:tool_name/:tool_name_status_list.html
-
+    template_name_suffix = '_status_list'  # place your template in your tool templates/:tool_name/:tool_name_status_list.html

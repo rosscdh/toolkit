@@ -129,12 +129,6 @@
 // -------------------------
 
 .page-header {
-  margin-top: 0;
-
-  .actions {
-    float: right;
-    margin-top: -5px;
-  }
   .caption {
     color: @gray-light;
     display: inline-block;
@@ -146,9 +140,20 @@
       margin: 0 4px 0 9px;
     }
   }
+
   h4 {
     display: inline-block;
     margin: 0;
+  }
+
+  .btn {
+    margin-top: -5px;
+  }
+
+  .content & {
+    border-width: 2px;
+    margin-top: 0px;
+    padding-bottom: 11px;
   }
 }
 
@@ -180,5 +185,21 @@
 // -------------------------
 
 .public-headline {
-  margin: 100px 0; 
+  margin: 100px 0;
+}
+
+
+// Sections
+// -------------------------
+
+.section {
+  margin-bottom: 20px;
+
+  .section-header {
+    margin-bottom: ((@line-height-computed / 2) - 1);
+
+    .btn {
+      margin-top: -5px;
+    }
+  }
 }

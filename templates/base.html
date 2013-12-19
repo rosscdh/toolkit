@@ -1,17 +1,18 @@
 {% load cache i18n %}{% load url from future %}{% load django_bootstrap_breadcrumbs %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>{% block page_title %}{% endblock %}</title>
+    <title>{% block page_title %}LawPal{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Loading Bootstrap -->
+    <!-- Loading Bootstrap and Flat UI -->
     <link href="{{ STATIC_URL }}bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="{{ STATIC_URL }}bootstrap/css/prettify.css" rel="stylesheet">
-
-    <!-- Loading Flat UI -->
     <link href="{{ STATIC_URL }}css/flat-ui.css" rel="stylesheet">
+
+    <!-- Loading application specific styles -->
     <link href="{{ STATIC_URL }}css/application.css" rel="stylesheet">
 
     <link rel="shortcut icon" href="{{ STATIC_URL }}images/favicon.ico">
@@ -20,61 +21,110 @@
     <!--[if lt IE 9]>
         <script src="{{ STATIC_URL }}js/html5shiv.js"></script>
     <![endif]-->
+
+    <!-- Loading page specific styles -->
     {% block css %}{% endblock  %}
 </head>
 <body>
-    <div class="navbar navbar-default">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-collapse-01"></button>
-                <a href="/" class="navbar-brand"><img src="{{ STATIC_URL }}images/logo-white.png" height="23" alt="LawPal logo" /></a>
-            </div>
-
-            <div class="navbar-collapse collapse navbar-collapse-01">
-                <ul class="nav navbar-nav navbar-right">
-                    <li class="divider"></li>
-                    {% if user.is_authenticated %}
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.get_full_name|default:user.username }} ({{user.profile.user_class}}) <b class="caret"></b></a>
-                            <ul>
-                                <li><a href="{% url 'public:logout' %}">Logout</a></li>
-                            </ul>
-                        </li>
-                    {% else %}
-                        <li><a href="{% url 'public:signin' %}">Sign in</a></li>
-                        <li><a href="{% url 'public:signup' %}">Sign up</a></li>
-                    {% endif %}
-                </ul>
+    {% block navbar %}
+        <div class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-collapse-01"></button>
+                    <a href="/" class="navbar-brand"><img src="{{ STATIC_URL }}images/logo-white.png" height="23"  alt="LawPal"></a>
+                </div>
+                <div class="navbar-collapse collapse navbar-collapse-01">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="divider"></li>
+                        {% if user.is_authenticated %}
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.get_full_name|default:user.username }} ({{user.profile.user_class}}) <b class="caret"></b></a>
+                                <ul>
+                                    <li><a href="{% url 'public:logout' %}">Logout</a></li>
+                                </ul>
+                            </li>
+                        {% else %}
+                            <li><a href="{% url 'public:signin' %}">Sign in</a></li>
+                            <li><a href="{% url 'public:signup' %}">Sign up</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
+    {% endblock %}
 
-    {% block breadcrumbs %}{% endblock %}
-    {% render_breadcrumbs 'breadcrumbs.html' %}
+    {% block breadcrumbs %}
+        {% breadcrumb_safe '<span class="fui-home"></span>' 'public:home' %}
+    {% endblock %}
+    {% render_breadcrumbs 'partials/breadcrumbs.html' %}
 
     {% block prebody %}{% endblock %}
 
     <div class="main-content container-fluid">
-        {% comment %}
-            {% if messages %}
-                <div class="messages-errors">
-                    Error:
-                    <ul>
-                        {% for msg in messages %}
-                            <li>{{msg}}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            {% endif %}
-        {% endcomment %}
+        {% block body %}
+            <div class="row">
+                <div class="sidebar col-sm-3">
+                    {% block sidebar %}
+                        {#% cache 500 user_workspaces user.username %#}
+                            <ul class="nav nav-list">
+                                <li{% if dash %} class="active"{% endif %}>
+                                    <a href="{% url 'dash:default' %}">
+                                        <span class="icon"><img src="{{ STATIC_URL }}images/icons/mountain.svg" alt="Dashboard"></span> Dashboard
+                                    </a>
+                                </li>
 
-        {% block body %}{% endblock %}
+                                <li class="divider"></li>
+                                {% for w in WORKSPACES %}
+                                    <li class="nav-header{% if workspace == w and not tool %} active{% endif %}">
+                                        <a href="{% url 'workspace:view' slug=w.slug %}">{{ w.name }}</a>
+                                    </li>
+                                    {% for t in w.tools.all %}
+                                        <li{% if workspace == w and tool == t %} class="active"{% endif %}>
+                                            <a href="{% url 'workspace:tool_object_list' workspace=w.slug tool=t.slug %}">
+                                                <span class="icon"><img src="{{ STATIC_URL }}{{ t.icon }}"></span> {{ t.name }}
+                                            </a>
+                                        </li>
+                                    {% empty %}
+                                        <li><p class="small">No tools yet!</p></li>
+                                    {% endfor %}
+                                    <li class="divider"></li>
+                                {% endfor %}
+
+                                {% if user.profile.is_lawyer %}
+                                    <li class="pull-right">
+                                        <a href="{% url 'workspace:create' %}" data-toggle="modal" data-target="#workspace-create"><i class="fui-plus"></i> New Company</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        {#% endcache %#}
+                    {% endblock %}
+                </div>
+                <div class="content col-sm-9">
+                    {% block content %}
+                        <div class="page-header">
+                            <div class="pull-right">{% block header_right %}{% endblock %}</div>
+                            {% block header %}{% endblock %}
+                        </div>
+
+                        {% block main %}{% endblock %}
+
+                        <div class="page-footer">
+                            {% block footer %}{% endblock %}
+                        </div>
+                    {% endblock %}
+                </div>
+            </div>
+        {% endblock %}
     </div>
 
+    {% block modals %}
+        <div class="modal" id="workspace-create"></div>
+    {% endblock %}
+
     <script type="text/javascript">
-        // <![CDATA[
-        var GLOBALS = { {% for key, value in GLOBALS.items %}"{{ key }}": "{{ value }}"{% if not forloop.last %},{% endif %}{% endfor %} };
-        // ]]>
+    // <![CDATA[
+    var GLOBALS = { {% for key, value in GLOBALS.items %}"{{ key }}": "{{ value }}"{% if not forloop.last %},{% endif %}{% endfor %} };
+    // ]]>
     </script>
 
     <!-- Load JS here for greater good =============================-->
@@ -89,8 +139,9 @@
     <script src="{{ STATIC_URL }}js/jquery.tagsinput.js"></script>
     <script src="{{ STATIC_URL }}js/jquery.placeholder.js"></script>
     <script src="{{ STATIC_URL }}js/bootstrap-typeahead.js"></script>
-    <script src="{{ STATIC_URL }}js/application.js"></script>
     <script src="{{ STATIC_URL }}js/parsley-1.2.1.min.js"></script>
+    <script src="{{ STATIC_URL }}js/parsley-form.js"></script>
+    <script src="{{ STATIC_URL }}js/application.js"></script>
 
     <!-- Load page specific JS here =============================-->
     {% block js %}{% endblock  %}

@@ -57,6 +57,18 @@ class WorkspaceToolFormMixin(WorkspaceToolMixin, FormView):
             initial.update(**self.object.get_form_data())
         return initial
 
+    def get_template_names(self):
+        """
+        Returns the form template names associated with the tool.
+        """
+        names = []
+
+        if hasattr(self.tool, 'model'):
+            opts = self.tool.model._meta
+            names.append("%s/%s%s.html" % (opts.app_label, opts.model_name, self.template_name_suffix))
+
+        return names
+
 
 class WorkspaceToolModelMixin(object):
     def get_form_data(self):

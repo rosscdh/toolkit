@@ -1,33 +1,6 @@
-{% extends 'dash/dash.html' %}{% load url from future %}{% load crispy_forms_tags django_bootstrap_breadcrumbs %}
-
-{% block page_title %}{% if form.title %}{{ form.title }}{% else %}{% if object %}Edit an 83b Entry{% else %}Create a new 83b Entry{% endif %}{% endif %}{% endblock  %}
-
-
-{% block breadcrumbs %}
-    {{ block.super }}
-    {% breadcrumb object.workspace.name 'workspace:view' object.workspace.slug %}
-    {% breadcrumb tool.name 'workspace:tool_object_list' object.workspace.slug tool.slug %}
-    {% breadcrumb object 'workspace:tool_object_edit' workspace.slug tool.slug object.slug %}
-    {% breadcrumb 'Tracking Code' '' %}
-{% endblock %}
-
-{% block body %}
-
-    {% crispy form %}
-
-{% endblock  %}
+{% extends 'workspace/workspace_tool_form.html' %}
 
 {% block js %}
-
-<script src="//d79i1fxsrar4t.cloudfront.net/jquery.liveaddress/2.4/jquery.liveaddress.min.js"></script>
-<script type="text/javascript">
-$(document).ready(function () {
-
-$( '.datepicker' ).datepicker({
-    dateFormat: '{{ SHORT_DATE_FORMAT }}'
-});
-
-});
-</script>
-
-{% endblock  %}
+    {{ block.super }}
+    <script src="//d79i1fxsrar4t.cloudfront.net/jquery.liveaddress/2.4/jquery.liveaddress.min.js"></script>
+{% endblock %}

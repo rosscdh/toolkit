@@ -1,69 +1,32 @@
-{% extends 'dash/dash.html' %}{% load url from future %}{% load django_bootstrap_breadcrumbs %}
+{% extends 'workspace/workspace_tool_list.html' %}
 
-{% block page_title %}{{ tool.name }} — {{ workspace.name }} — LawPal{% endblock %}
+{% load url from future %}
 
-{% block breadcrumbs %}
-    {{ block.super }}
-    {% breadcrumb workspace.name 'workspace:view' workspace.slug %}
-    {% breadcrumb tool.name 'workspace:tool_object_list' workspace.slug tool.slug %}
-{% endblock %}
-
-{% block content %}
-    <div class="page-header">
-        {% if user.profile.is_lawyer %}
-            <div class="actions">
-                <a href="{% url 'workspace:tool_object_new' workspace=workspace.slug tool=tool.slug %}" class="btn btn-primary">New {{ tool.short_name }}</a>
-            </div>
-        {% endif %}
-
-        <h4 class="caption"><a href="{% url 'workspace:view' slug=workspace.slug %}">{{ workspace.name }}</a></h4>
-        <h4>{{ tool.name }}</h4>
-    </div>
-
-    {% if object_list %}
-        <div class="table-responsive">
-            <table class="table table-striped {{ tool.slug }}">
-                <tbody>
+{% block list %}
+    <div class="table-responsive">
+        <table class="table table-striped {{ tool.slug }}">
+            <tbody>
+                <tr>
+                    <th>Client Name</th>
+                    <th>Transfer Date</th>
+                    <th>Filing Deadline</th>
+                    <th>Status</th>
+                </tr>
+                {% for t in object_list %}
                     <tr>
-                        <th>Client Name</th>
-                        <th>Transfer Date</th>
-                        <th>Filing Deadline</th>
-                        <th>Status</th>
-                        <th>&nbsp;</th>
+                        <td>
+                            <a href="{% url 'workspace:tool_object_preview' workspace=workspace.slug tool=tool.slug slug=t.slug %}">{{ t.client_name }}</a>
+                        </td>
+                        <td>{{ t.transfer_date }}</td>
+                        <td>{{ t.filing_date }}</td>
+                        <td>{{ t.current_status }} ({{ t.markers.percent_complete }}%)</td>
                     </tr>
-                    {% for t in object_list %}
-                        <tr>
-                            <td>
-                                <a href="{% url 'workspace:tool_object_edit' workspace=workspace.slug tool=tool.slug slug=t.slug %}">{{ t.client_name }}</a>
-                            </td>
-                            <td><small>{{ t.transfer_date|date:"N jS Y" }}</small></td>
-                            <td><small>{{ t.filing_date|date:"N jS Y" }}</small></td>
-                            <td>
-                                <small>{{ t.current_status }}</small>
-                            </td>
-                            <td class="text-right">
-                                <a href="{% url 'workspace:tool_object_preview' workspace=workspace.slug tool=tool.slug slug=t.slug %}" title="Preview" class="btn btn-info btn-sm">
-                                    Preview &amp; Actions<br/>({{ t.markers.percent_complete }}%)
-                                </a>
-                            </td>
-                        </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="6" class="text-center"><span class="text-muted">None found</span></td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    {% else %}
-        <div class="alert alert-info">
-            <p>A simple way of helping your clients get their 83(b) elections filed on time and correctly whilst giving you complete visibility on the process.</p>
-
-            {% if user.profile.is_lawyer %}
-                <p>To create your first 83(b) Election Letter, click New Letter.</p>
-
-                <a href="{% url 'workspace:tool_object_new' workspace=workspace.slug tool=tool.slug %}" class="btn btn-primary btn-wide">New {{ tool.short_name }}</a>
-            {% endif %}
-          </div>
-    {% endif %}
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center"><span class="text-muted">None found</span></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}
