@@ -14,11 +14,11 @@ from toolkit.apps.workspace.mixins import WorkspaceToolModelMixin
 from .markers import EightyThreeBSignalMarkers
 EIGHTYTHREEB_STATUS = EightyThreeBSignalMarkers().named_tuple(name='EIGHTYTHREEB_STATUS')
 
-from .mixins import StatusMixin, IRSMixin
+from .mixins import StatusMixin, IRSMixin, USPSReponseMixin
 from .managers import EightyThreeBManager
 
 
-class EightyThreeB(StatusMixin, IRSMixin, WorkspaceToolModelMixin, models.Model):
+class EightyThreeB(StatusMixin, IRSMixin, USPSReponseMixin, WorkspaceToolModelMixin, models.Model):
     """
     83b Form to be associated with a Workspace and a particular user
     """
