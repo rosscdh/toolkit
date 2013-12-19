@@ -29,3 +29,20 @@ class EightyThreeBReminderEmail(BaseMailerService):
               instance=instance_of_83b)
     """
     email_template = 'eightythreeb_reminder'
+
+
+class EightyThreeMailDeliveredEmail(BaseMailerService):
+    """
+    m = EightyThreeMailDeliveredEmail(from_tuple=('Ross', 'ross@lawpal.com'),
+                                      recipients=(('Alex', 'alex@lawpal.com')))
+    m.process(company=instance.workspace,
+              url='',
+              current_status='',
+              next_step='',
+              current_step='',
+              total_steps='',
+              num_days_left='',
+              percent_complete='',
+              instance='')
+    """
+    email_template = 'eightythreeb_delivered'
