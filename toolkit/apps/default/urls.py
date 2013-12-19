@@ -10,14 +10,13 @@ from .views import (
                     SignUpView,
                     StartView,
                     UserAccountView,
-                    UserChangePasswordView
+                    # UserChangePasswordView
                    )
 
 
 urlpatterns = patterns('',
-    url(r'^settings/$', UserAccountView.as_view(), name='settings'),
-    url(r'^settings/account/$', UserAccountView.as_view(), name='settings:account'),
-    url(r'^settings/password/$', UserChangePasswordView.as_view(), name='settings:password'),
+    url(r'^me/settings/$', UserAccountView.as_view(), name='settings'),
+    # url(r'^settings/password/$', UserChangePasswordView.as_view(), name='settings:password'),
 
     url(r'^start/$', StartView.as_view(), name='signin'),
     url(r'^start/signup/$', SignUpView.as_view(), name='signup'),

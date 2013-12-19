@@ -4,8 +4,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 
 from parsley.decorators import parsleyfy
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, ButtonHolder, Submit, Field, Fieldset
+from crispy_forms.helper import FormHelper, Layout
+from crispy_forms.layout import ButtonHolder, Div, Field, Fieldset, HTML, Submit
 
 from . import _get_unique_username
 
@@ -163,10 +163,68 @@ class SignInForm(forms.Form):
 
 
 @parsleyfy
-class UserAccountForm(forms.Form):
-    pass
+class UserAccountForm(forms.ModelForm):
+    first_name = forms.CharField(
+        error_messages={
+            'required': "First name can't be blank."
+        },
+        label='',
+        required=True,
+        widget=forms.TextInput(attrs={'placeholder': 'First name', 'size': 19})
+    )
+
+    last_name = forms.CharField(
+        error_messages={
+            'required': "Last name can't be blank."
+        },
+        label='',
+        required=True,
+        widget=forms.TextInput(attrs={'placeholder': 'Last name', 'size': 25})
+    )
+
+    email = forms.EmailField(
+        error_messages={
+            'required': "Email can't be blank."
+        },
+        label='Email',
+        required=True,
+        widget=forms.TextInput(attrs={'placeholder': 'example@lawpal.com', 'size': 50})
+    )
+
+    class Meta:
+        fields = ('first_name', 'last_name', 'email')
+        model = User
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.attrs = {
+            'parsley-validate': '',
+            'parsley-error-container': '.parsley-errors'
+        }
+        self.helper.form_show_errors = False
+
+        self.helper.layout = Layout(
+            Fieldset(
+                '',
+                Div(
+                    HTML('<label>Full name*</label>'),
+                    Div(
+                        Field('first_name', css_class='input-hg'),
+                        Field('last_name', css_class='input-hg'),
+                        css_class='form-inline'
+                    ),
+                    css_class='form-group'
+                ),
+                Field('email', css_class='input-hg'),
+            ),
+            ButtonHolder(
+                Submit('submit', 'Save changes', css_class='btn btn-primary btn-lg')
+            )
+        )
+
+        super(UserAccountForm, self).__init__(*args, **kwargs)
 
 
-@parsleyfy
-class UserChangePasswordForm(forms.Form):
-    pass
+# @parsleyfy
+# class UserChangePasswordForm(forms.Form):
+    # pass

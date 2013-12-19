@@ -1,0 +1,20 @@
+{% extends LAYOUT %}
+
+{% load url from future %}{% load crispy_forms_tags django_bootstrap_breadcrumbs %}
+
+{% block page_title %}Settings — {{ block.super }}{% endblock%}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% breadcrumb 'Settings' 'public:settings' %}
+{% endblock %}
+
+{% block header %}
+    <h4>Settings</h4>
+{% endblock %}
+
+{% block main %}
+    {% include 'partials/form-errors.html' with form=form %}
+
+    {% crispy form %}
+{% endblock %}
