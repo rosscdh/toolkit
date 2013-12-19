@@ -13,6 +13,11 @@ import json
 from usps.api import USPS_CONNECTION_TEST
 from usps.api.tracking import TrackConfirm
 
+try:
+    from xml.etree import ElementTree as ET
+except ImportError:
+    from elementtree import ElementTree as ET
+
 from . import logger
 
 
@@ -45,9 +50,11 @@ class USPSResponse(object):
     @property
     def waypoints(self):
         waypoints = self.response.get('TrackDetail', [])
+
         # assume: that there will always be at least 1 waypoint form when the package was registered
         if not waypoints:
             raise USPSTrackingNumberNotExistsException
+
         return waypoints
 
 
@@ -65,6 +72,7 @@ class AdeWinterUspsTrackConfirm(object):
     @property
     def service(self):
         logger.info('Init USPS service with: %s %s' % (self.USPS_CONNECTION, self.USERID))
+
         return TrackConfirm(self.USPS_CONNECTION, self.USERID, self.PASSWORD)
 
     def request(self, tracking_code):
@@ -72,6 +80,7 @@ class AdeWinterUspsTrackConfirm(object):
         response = []
         
         for r in self.service.execute([{'ID': tracking_code}]):
+            logger.info('USPS response for tracking_code: %s %s' % (r, tracking_code))
             response.append(USPSResponse(usps_response=r, tracking_code=tracking_code))
 
         return response[0] if len(response) == 1 else response
@@ -82,6 +91,12 @@ class AdeWinterUspsTrackConfirm(object):
         logger.info('Sent USPS tracking id request')
 
         return self.response
+
+    def record(self, instance, usps_response):
+        usps = instance.data.get('usps', {})
+
+        instance.data['usps'] = usps
+        instance.save(update_fields=['data'])
 
 
 class USPSTrackingService(AdeWinterUspsTrackConfirm):
