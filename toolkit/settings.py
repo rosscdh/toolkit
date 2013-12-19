@@ -58,6 +58,7 @@ ALLOWED_HOSTS = []
 DJANGO_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
+    'django.contrib.sites',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -87,6 +88,9 @@ HELPER_APPS = (
     # forms
     'parsley',
     'crispy_forms',
+
+    # db migrations
+    'south',
 )
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + HELPER_APPS

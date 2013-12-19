@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.dispatch import Signal, receiver
+from django.db.models.signals import pre_save, post_save
 
 from .models import EightyThreeB
 from .markers import EightyThreeBSignalMarkers
@@ -181,3 +182,32 @@ def on_complete(sender, instance, actor, **kwargs):
                    next_status=instance.STATUS_83b.complete,
                    actor_name=actor_name,
                    instance=instance)
+
+
+@receiver(pre_save, sender=EightyThreeB, dispatch_uid='83b.ensure_dates')
+def ensure_dates(sender, **kwargs):
+    """
+    signal to handle creating the workspace slug
+    """
+    instance = kwargs.get('instance')
+
+    if instance.data.get('date_of_property_transfer', None) is not None:
+      if instance.transfer_date in [None, '']:
+        instance.transfer_date = instance.get_transfer_date()
+
+      if instance.filing_date in [None, '']:
+        instance.filing_date = instance.get_filing_date()
+
+
+@receiver(post_save, sender=EightyThreeB, dispatch_uid='83b.ensure_83b_user_in_workspace_participants')
+def ensure_83b_user_in_workspace_participants(sender, **kwargs):
+    eightythreeb = kwargs.get('instance')
+    created = kwargs.get('created', False)
+
+    user = eightythreeb.user
+    workspace = eightythreeb.workspace
+
+    # when we have a new one
+    if user not in workspace.participants.all():
+        workspace.participants.add(user)
+        
