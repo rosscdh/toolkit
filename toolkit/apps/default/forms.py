@@ -114,10 +114,10 @@ class SignInForm(forms.Form):
 
 
 @parsleyfy
-class UserAccountForm(forms.ModelForm):
+class UserAccountForm(forms.Form):
     pass
 
 
 @parsleyfy
-class UserChangePasswordForm(forms.ModelForm):
+class UserChangePasswordForm(forms.Form):
     pass
