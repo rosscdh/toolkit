@@ -111,12 +111,13 @@ class Tool(models.Model):
 
         return get_model(app_label=app_label, model_name=model_name)
 
-    @property
-    def form(self):
+    def get_form(self, user):
         """
         return the form class as specified in the tool object
         """
-        form_class = self.data.get('form')
+        forms = self.data.get('forms')
+        form_class = forms.get(user.profile.user_class)
+
         return _class_importer(form_class)
 
     @property
