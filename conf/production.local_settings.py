@@ -4,7 +4,7 @@ from settings import *
 
 PROJECT_ENVIRONMENT = 'prod'
 
-SITE_ID = 1
+SITE_ID = 2
 
 SECRET_KEY = 'i6=)1=4in#zyp&amp;g)^9nqodjgjru134)@2)^$ox5w7ac*uhml!uy-5'
 
