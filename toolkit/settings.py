@@ -13,6 +13,8 @@ for test_app in ['testserver','test']:
         IS_TESTING = True
 
 
+SITE_ID = 1
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'lgi%*e=%s@y3-jos^uydhc5gz80m9ts&9io5xh6myf+$fuy7+n'
 
@@ -56,6 +58,7 @@ ALLOWED_HOSTS = []
 DJANGO_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
+    'django.contrib.sites',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -85,6 +88,9 @@ HELPER_APPS = (
     # forms
     'parsley',
     'crispy_forms',
+
+    # db migrations
+    'south',
 )
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + HELPER_APPS
@@ -108,6 +114,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.messages.context_processors.messages',
     'django.core.context_processors.request',
     'toolkit.context_processors.EXPOSED_GLOBALS',
+    'toolkit.context_processors.LAYOUT',
     'toolkit.context_processors.WORKSPACES',
 )
 
@@ -213,6 +220,47 @@ JS_DATE_FORMAT = 'MM d, yy'
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-SHORT_DATE_FORMAT
 SHORT_DATE_FORMAT = 'm/d/Y'
 JS_SHORT_DATE_FORMAT = 'mm/dd/yy'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'null': {
+            'level': 'DEBUG',
+            'class': 'django.utils.log.NullHandler',
+        },
+        'console':{
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'propagate': True,
+            'level': 'INFO',
+        },
+        'django.request': {
+            'handlers': ['mail_admins', 'console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'django.test': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        }
+    }
+}
 
 try:
     LOCAL_SETTINGS

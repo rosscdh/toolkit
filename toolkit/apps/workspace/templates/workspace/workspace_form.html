@@ -1,11 +1,9 @@
-{% extends 'workspace/base.html' %}{% load crispy_forms_tags %}
+{% extends 'modal.html' %}
 
-{% block page_title %}Create a new Company{% endblock  %}
+{% load crispy_forms_tags %}
 
-{% block body %}
+{% block modal_title %}Create a new Company{% endblock %}
 
+{% block content %}
     {% crispy form %}
-
-{% endblock  %}
-
-{% block js %}{% endblock  %}
+{% endblock %}

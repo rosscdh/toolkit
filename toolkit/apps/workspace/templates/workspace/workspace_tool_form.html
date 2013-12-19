@@ -1,27 +1,42 @@
-{% extends 'dash/dash.html' %}{% load url from future %}{% load crispy_forms_tags django_bootstrap_breadcrumbs %}
+{% extends 'workspace/workspace_tool_base.html' %}
 
-{% block page_title %}{{ tool.name }} — {{ object.client_name | default:'New' }} — {{ workspace.name }} — LawPal{% endblock  %}
+{% load url from future %}{% load crispy_forms_tags django_bootstrap_breadcrumbs %}
+
+{% block page_title %}{% if object %}Edit{% else %}New{%endif %} — {{ block.super }}{% endblock %}
 
 {% block breadcrumbs %}
     {{ block.super }}
-    {% breadcrumb workspace.name 'workspace:view' workspace.slug %}
-    {% breadcrumb tool.name 'workspace:tool_object_list' workspace.slug tool.slug %}
     {% if object %}
-        {% breadcrumb object.client_name '' %}
+        {% breadcrumb 'Edit' 'workspace:tool_object_edit' workspace.slug tool.slug object.slug %}
     {% else %}
-        {% breadcrumb 'New' '' %}
+        {% breadcrumb 'New' 'workspace:tool_object_new' workspace.slug tool.slug %}
     {% endif %}
-
 {% endblock %}
 
-{% block content %}
-    <div class="page-header">
-        <h4>{{ object | default:'New' }}</h4>
-    </div>
+{% block header %}
+    {{ block.super }}
+    {% if object %}
+        <h4>Edit</h4>
+    {% else %}
+        <h4 class="caption"><a href="{% url 'workspace:tool_object_list' workspace=workspace.slug tool=tool.slug %}">{{ tool.name }}</a></h4>
+        <h4>New</h4>
+    {% endif %}
+{% endblock %}
 
-    {% include 'partials/form-errors.html' with form=form %}
+{% block main %}
+    {% block form %}
+        {% include 'partials/form-errors.html' with form=form %}
 
-    {% crispy form %}
+        {% if user.profile.is_customer %}
+            {% block customer_form %}
+                {% crispy form %}
+            {% endblock %}
+        {% elif user.profile.is_lawyer %}
+            {% block lawyer_form %}
+                {% crispy form %}
+            {% endblock %}
+        {% endif %}
+    {% endblock %}
 {% endblock %}
 
 {% block css %}

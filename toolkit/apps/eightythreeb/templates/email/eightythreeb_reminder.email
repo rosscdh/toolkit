@@ -1,0 +1,16 @@
+{% extends 'email/base.email' %}
+
+{% block subject_line %}{% if instance.status != instance.STATUS_83b.irs_recieved %}ACTION REQUIRED : {% endif %}83(b) Filing Reminder Update{% endblock %}
+
+{% block html_content %}
+<p>Your 83(b) election is currently in progress ({{ current_status }}).</p>
+<p>The deadline for filing this is {{ num_days_left }} days away.</p>
+<p>{{ current_step }}/{{ total_steps }} steps have been completed. ({{ percent_complete }}%)</p>
+<p>Failing to make a timely 83(b) election with the IRS is something that could lead to disastrous tax consequences for holders of restricted stock.</p>
+{% if instance.status == instance.STATUS_83b.irs_recieved %}
+<p>We are currently waiting for confirmation form the USPS that your election has been received. We will alert you once it has been completed.</p>
+{% else %}
+<p>Please login to complete the process :<br/>
+<a href="{{ url }}">{{ url }}</a></p>
+{% endif %}
+{% endblock %}

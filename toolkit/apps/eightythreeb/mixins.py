@@ -1,5 +1,51 @@
 # -*- coding: utf-8 -*-
+from django.template import loader
 from django.utils.safestring import mark_safe
+
+from datetime import date, datetime, timedelta
+
+
+class HTMLMixin(object):
+    @property
+    def template(self):
+        return loader.get_template(self.template_name)
+
+    def html(self, **kwargs):
+        context_data = self.data.copy() # must copy to avoid reference update
+
+        # Mark strings as safe
+        for k, v in context_data.items():
+            if type(v) in [str, unicode]:
+                context_data[k] = mark_safe(v)
+
+        context_data.update({'object': self})
+
+        # update with kwargs passed in which take priority for overrides
+        context_data.update(kwargs)
+
+        context = loader.Context(context_data)
+        source = self.template.render(context)
+        return source
+
+
+class TransferAndFilingDatesMixin(object):
+    @property
+    def days_left(self):
+        return (self.filing_date - date.today()).days
+
+    def get_filing_date(self):
+        return self.transfer_date + timedelta(days=30)
+
+    def get_transfer_date(self):
+        transfer_date = self.data.get('date_of_property_transfer', None)
+        transfer_date_type = type(transfer_date)
+
+        if transfer_date_type in [str]:
+            return datetime.strptime(transfer_date, '%Y-%m-%d').date()
+
+        if transfer_date_type in [date]:
+            return transfer_date
+        return None
 
 
 class StatusMixin(object):
@@ -15,6 +61,20 @@ class StatusMixin(object):
 
     def prev_status_step(self):
         return None
+
+
+class USPSReponseMixin(object):
+    @property
+    def usps(self):
+        return self.data.get('usps', {})
+
+    @property
+    def usps_current_status(self):
+        return self.usps.get('current_status', None)
+
+    @property
+    def usps_waypoints(self):
+        return self.usps.get('waypoints', [])
 
 
 class IRSMixin(object):

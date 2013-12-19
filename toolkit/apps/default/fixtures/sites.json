@@ -1,0 +1,1 @@
+[{"pk": 1, "model": "sites.site", "fields": {"domain": "http://localhost:8000/", "name": "development"}}, {"pk": 2, "model": "sites.site", "fields": {"domain": "https://toolkit.lawpal.com/", "name": "Production"}}]

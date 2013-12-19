@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 
+from django import forms
 from django.shortcuts import get_object_or_404
-from django.views.generic import FormView
+from django.views.generic import FormView, TemplateView
+
+from crispy_forms.helper import FormHelper
 
 from .models import Workspace
 
@@ -11,18 +14,18 @@ import logging
 logger = logging.getLogger('django.request')
 
 
-class WorkspaceToolMixin(object):
+class WorkspaceToolViewMixin(object):
     def dispatch(self, request, *args, **kwargs):
         self.workspace = get_object_or_404(Workspace, slug=self.kwargs.get('workspace'))
         self.tool = get_object_or_404(self.workspace.tools, slug=self.kwargs.get('tool'))
 
-        return super(WorkspaceToolMixin, self).dispatch(request, *args, **kwargs)
+        return super(WorkspaceToolViewMixin, self).dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
         return self.tool.model.objects.filter(workspace=self.workspace)
 
     def get_context_data(self, **kwargs):
-        context = super(WorkspaceToolMixin, self).get_context_data(**kwargs)
+        context = super(WorkspaceToolViewMixin, self).get_context_data(**kwargs)
         context.update({
             'workspace': self.workspace,
             'tool': self.tool,
@@ -30,18 +33,18 @@ class WorkspaceToolMixin(object):
         return context
 
 
-class WorkspaceToolFormMixin(WorkspaceToolMixin, FormView):
+class WorkspaceToolFormViewMixin(WorkspaceToolViewMixin, FormView):
     def get_form_class(self):
         """
         Returns the form associated with the tool.
         """
-        return self.tool.form
+        return self.tool.get_form(user=self.request.user)
 
     def get_form_kwargs(self):
         """
         Returns the keyword arguments for instantiating the form.
         """
-        kwargs = super(WorkspaceToolFormMixin, self).get_form_kwargs()
+        kwargs = super(WorkspaceToolFormViewMixin, self).get_form_kwargs()
         kwargs.update({
             'request': self.request,
             'workspace': self.workspace
@@ -52,10 +55,43 @@ class WorkspaceToolFormMixin(WorkspaceToolMixin, FormView):
         """
         Returns the initial data to use for forms on this view.
         """
-        initial = super(WorkspaceToolFormMixin, self).get_initial()
+        initial = super(WorkspaceToolFormViewMixin, self).get_initial()
         if self.object:
             initial.update(**self.object.get_form_data())
         return initial
+
+    def get_template_names(self):
+        """
+        Returns the form template names associated with the tool.
+        """
+        names = []
+
+        if hasattr(self.tool, 'model'):
+            opts = self.tool.model._meta
+            names.append("%s/%s%s.html" % (opts.app_label, opts.model_name, self.template_name_suffix))
+
+        return names
+
+
+class WorkspaceToolFormMixin(forms.Form):
+    def __init__(self, *args, **kwargs):
+        kwargs.pop('instance')  # pop this as we are not using a model form
+        self.request = kwargs.pop('request')
+        self.workspace = kwargs.pop('workspace')
+
+        self.user = None
+        if self.request is not None:
+            self.user = self.request.user
+
+        self.helper = FormHelper()
+
+        self.helper.attrs = {
+            'parsley-validate': '',
+            'parsley-error-container': '.parsley-errors'
+        }
+        self.helper.form_show_errors = False
+
+        super(WorkspaceToolFormMixin, self).__init__(*args, **kwargs)
 
 
 class WorkspaceToolModelMixin(object):

@@ -3,8 +3,6 @@ from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 from django.db.models.signals import pre_save, post_save
 
-from toolkit.apps.eightythreeb.models import EightyThreeB
-
 from .models import Workspace, Tool
 
 import uuid
@@ -50,18 +48,6 @@ def ensure_workspace_has_83b_by_default(sender, **kwargs):
 
     if eightythreeb not in workspace.tools.all():
         workspace.tools.add(eightythreeb)
-
-
-@receiver(post_save, sender=EightyThreeB, dispatch_uid='workspace.ensure_83b_user_in_workspace_participants')
-def ensure_83b_user_in_workspace_participants(sender, **kwargs):
-    eightythreeb = kwargs.get('instance')
-    user = eightythreeb.user
-    created = kwargs.get('created', False)
-    workspace = eightythreeb.workspace
-
-    # when we have a new one
-    if user not in workspace.participants.all():
-        workspace.participants.add(user)
 
 
 
