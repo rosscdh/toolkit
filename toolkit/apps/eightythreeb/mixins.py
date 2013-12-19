@@ -63,6 +63,20 @@ class StatusMixin(object):
         return None
 
 
+class USPSReponseMixin(object):
+    @property
+    def usps(self):
+        return self.data.get('usps', {})
+
+    @property
+    def usps_current_status(self):
+        return self.usps.get('current_status', None)
+
+    @property
+    def usps_waypoints(self):
+        return self.usps.get('waypoints', [])
+
+
 class IRSMixin(object):
     """
     Provide helper methods to allow access to relevant irs addresses and details

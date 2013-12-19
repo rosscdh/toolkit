@@ -8,8 +8,7 @@ class EightyThreeBManager(models.Manager):
     """
     Default objects manager with helper methods
     """
-    def awaiting_tracking_code(self):
-        # exclude users who have not set their password
+    def mail_delivery_pending(self):
         return super(EightyThreeBManager, self).get_query_set().filter(status=self.model.STATUS_83b.irs_recieved)
 
     def incomplete(self):
