@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
-from .base import *
-from .accounts import *
+from .base import *  #noqa
+from .accounts import *  #noqa

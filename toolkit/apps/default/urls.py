@@ -3,10 +3,22 @@ from django.conf.urls import patterns, include, url
 from django.views.generic import TemplateView
 from django.contrib.auth.decorators import login_required
 
-from .views import HomePageView, StartView, SignUpView, InviteKeySignInView, LogoutView
+from .views import (
+                    HomePageView,
+                    InviteKeySignInView,
+                    LogoutView,
+                    SignUpView,
+                    StartView,
+                    UserAccountView,
+                    UserChangePasswordView
+                   )
 
 
 urlpatterns = patterns('',
+    url(r'^settings/$', UserAccountView.as_view(), name='settings'),
+    url(r'^settings/account/$', UserAccountView.as_view(), name='settings:account'),
+    url(r'^settings/password/$', UserChangePasswordView.as_view(), name='settings:password'),
+
     url(r'^start/$', StartView.as_view(), name='signin'),
     url(r'^start/signup/$', SignUpView.as_view(), name='signup'),
     url(r'^start/invite/(?P<key>.+)/$', InviteKeySignInView.as_view(), name='invite'),
