@@ -22,8 +22,6 @@ customer_print_and_sign = Signal(providing_args=['actor'])
 mail_to_irs_tracking_code = Signal(providing_args=['actor'])
 irs_recieved = Signal(providing_args=[]) # no actor as its an aotumated callback
 datestamped_copy_recieved = Signal(providing_args=['actor'])
-copy_sent_to_lawyer = Signal(providing_args=['actor'])
-copy_sent_to_accountant = Signal(providing_args=['actor'])
 complete = Signal(providing_args=['actor'])
 
 
@@ -150,24 +148,6 @@ def on_irs_recieved(sender, instance, actor, **kwargs):
 def on_datestamped_copy_recieved(sender, instance, actor, **kwargs):
     actor_name = actor.get_full_name()
     _update_marker(marker_name='datestamped_copy_recieved',
-                   next_status=instance.STATUS_83b.copy_sent_to_lawyer,
-                   actor_name=actor_name,
-                   instance=instance)
-
-
-@receiver(copy_sent_to_lawyer)
-def on_copy_sent_to_lawyer(sender, instance, actor, **kwargs):
-    actor_name = actor.get_full_name()
-    _update_marker(marker_name='copy_sent_to_lawyer',
-                   next_status=instance.STATUS_83b.copy_sent_to_accountant,
-                   actor_name=actor_name,
-                   instance=instance)
-
-
-@receiver(copy_sent_to_accountant)
-def on_copy_sent_to_accountant(sender, instance, actor, **kwargs):
-    actor_name = actor.get_full_name()
-    _update_marker(marker_name='copy_sent_to_accountant',
                    next_status=instance.STATUS_83b.complete,
                    actor_name=actor_name,
                    instance=instance)
