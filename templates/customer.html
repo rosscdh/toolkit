@@ -10,7 +10,7 @@
                 {% block header %}{% endblock %}
             </div>
 
-            {% block main %}{% endblock %}
+            {% block content %}{% block main %}{% endblock %}{% endblock %}
 
             <div class="page-footer">
                 {% block footer %}{% endblock %}
