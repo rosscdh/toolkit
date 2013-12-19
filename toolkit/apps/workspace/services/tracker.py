@@ -31,13 +31,15 @@ class USPSResponse(object):
     def __init__(self, usps_response, **kwargs):
         self.response = usps_response
         self.__dict__.update(**kwargs)  # passin variables
-        self.waypoints
 
     def __str__(self):
         return self.status
 
     def __unicode__(self):
         return u'%s' % self.status
+
+    def is_valid(self):
+        return len(self.waypoints) > 0
 
     @property
     def as_json(self):
@@ -52,8 +54,8 @@ class USPSResponse(object):
         waypoints = self.response.get('TrackDetail', [])
 
         # assume: that there will always be at least 1 waypoint form when the package was registered
-        if not waypoints:
-            raise USPSTrackingNumberNotExistsException
+        # if not waypoints:
+        #     raise USPSTrackingNumberNotExistsException(self.status)
 
         return waypoints
 
@@ -80,8 +82,9 @@ class AdeWinterUspsTrackConfirm(object):
         response = []
         
         for r in self.service.execute([{'ID': tracking_code}]):
-            logger.info('USPS response for tracking_code: %s %s' % (r, tracking_code))
-            response.append(USPSResponse(usps_response=r, tracking_code=tracking_code))
+            usps_response = USPSResponse(usps_response=r, tracking_code=tracking_code)
+            logger.info('USPS response for tracking_code: %s %s' % (usps_response.status, tracking_code))
+            response.append(usps_response)
 
         return response[0] if len(response) == 1 else response
 
@@ -94,6 +97,9 @@ class AdeWinterUspsTrackConfirm(object):
 
     def record(self, instance, usps_response):
         usps = instance.data.get('usps', {})
+
+        usps['current_status'] = usps_response.status
+        usps['waypoints'] = usps_response.waypoints
 
         instance.data['usps'] = usps
         instance.save(update_fields=['data'])
