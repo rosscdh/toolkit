@@ -147,12 +147,17 @@ class Marker:
     next = None
     previous = None
 
-    def __init__(self, val, name, description, **kwargs):
+    def __init__(self, val, name, **kwargs):
         self.val = val
         self.name = name
-        self.description = description
 
-        self.long_description = kwargs.pop('long_description', None)
+        description = kwargs.pop('description', None)
+        if description is not None:
+            self.description = description
+
+        long_description = kwargs.pop('long_description', None)
+        if long_description is not None:
+            self.long_description = long_description
         # use the locally defined def action_url if exists otherwise if an
         # action_url is passed in; use that
         if hasattr(self, 'action_name') is False and 'action_name' in kwargs:
