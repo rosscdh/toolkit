@@ -7,7 +7,7 @@ from django.views.generic import TemplateView, RedirectView, FormView
 from ..forms import SignUpForm, SignInForm
 
 from toolkit.apps.workspace.forms import InviteKeyForm
-from toolkit.apps.workspace.models import InviteKey
+from toolkit.apps.workspace.models import Workspace, InviteKey
 
 import logging
 LOGGER = logging.getLogger('django.request')
@@ -83,7 +83,11 @@ class HomePageView(TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated():
-            return HttpResponseRedirect(reverse('dash:default'))
+            try:
+                workspace = Workspace.objects.mine(user=request.user).first()
+                return HttpResponseRedirect(workspace.get_absolute_url())
+            except:
+                return HttpResponseRedirect(reverse('dash:default'))
         else:
             return super(HomePageView, self).dispatch(request, *args, **kwargs)
 

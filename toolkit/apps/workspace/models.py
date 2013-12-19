@@ -10,6 +10,8 @@ from rulez import registry as rulez_registry
 from uuidfield import UUIDField
 from jsonfield import JSONField
 
+from .managers import WorkspaceManager
+
 
 class Workspace(models.Model):
     """
@@ -25,6 +27,8 @@ class Workspace(models.Model):
     date_created = models.DateTimeField(auto_now=False, auto_now_add=True, db_index=True)
     date_modified = models.DateTimeField(auto_now=True, auto_now_add=True, db_index=True)
     is_deleted = models.BooleanField(default=False, db_index=True)
+
+    objects = WorkspaceManager()
 
     class Meta:
         ordering = ['name', '-pk']
@@ -88,6 +92,10 @@ class Tool(models.Model):
         return '%s' % self.name
 
     @property
+    def description(self):
+        return self.data.get('description')
+
+    @property
     def short_name(self):
         return self.data.get('short_name')
 
@@ -103,12 +111,13 @@ class Tool(models.Model):
 
         return get_model(app_label=app_label, model_name=model_name)
 
-    @property
-    def form(self):
+    def get_form(self, user):
         """
         return the form class as specified in the tool object
         """
-        form_class = self.data.get('form')
+        forms = self.data.get('forms')
+        form_class = forms.get(user.profile.user_class)
+
         return _class_importer(form_class)
 
     @property
