@@ -24,7 +24,7 @@
         return $.datepicker.formatDate(window.GLOBALS['JS_DATE_FORMAT'], date);
     };
 
-    var $el = $('.datepicker[name=date_of_property_transfer]');
+    var $el = $('[data-toggle=datepicker][name=date_of_property_transfer]');
     $el.on('change', function() {
       $('#filing-deadline').html(calculateFilingDeadline($(this).datepicker('getDate')));
     });

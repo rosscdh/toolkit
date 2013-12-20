@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block prebody %}{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="content col-sm-12">
+            <div class="page-header">
+                <div class="pull-right">{% block header_right %}{% endblock %}</div>
+                {% block header %}{% endblock %}
+            </div>
+
+            {% block content %}{% block main %}{% endblock %}{% endblock %}
+
+            <div class="page-footer">
+                {% block footer %}{% endblock %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

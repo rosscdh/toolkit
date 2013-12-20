@@ -5,12 +5,7 @@ from django.views.generic import FormView, UpdateView
 from toolkit.apps.workspace.mixins import IssueSignalsMixin
 
 from .models import EightyThreeB
-from .forms import EightyThreeBForm, TrackingCodeForm
-
-
-class CreateEightyThreeBView(FormView):
-    form_class = EightyThreeBForm
-    template_name = 'eightythreeb/eightythreeb_form.html'
+from .forms import TrackingCodeForm
 
 
 class TrackingCodeView(IssueSignalsMixin, UpdateView):
