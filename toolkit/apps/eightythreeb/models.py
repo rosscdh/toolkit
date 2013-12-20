@@ -3,6 +3,9 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 
+from storages.backends.s3boto import S3BotoStorage
+
+import os
 from uuidfield import UUIDField
 from jsonfield import JSONField
 
@@ -13,6 +16,11 @@ EIGHTYTHREEB_STATUS = EightyThreeBSignalMarkers().named_tuple(name='EIGHTYTHREEB
 
 from .mixins import StatusMixin, IRSMixin, HTMLMixin, TransferAndFilingDatesMixin, USPSReponseMixin
 from .managers import EightyThreeBManager
+
+
+def _83b_upload_photo(instance, filename):
+    filename_no_ext, ext = os.path.splitext(filename)
+    return '83b/%d-%s%s' % (instance.user.pk, slugify(filename_no_ext), ext)
 
 
 class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferAndFilingDatesMixin, WorkspaceToolModelMixin, models.Model):
@@ -30,6 +38,8 @@ class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferA
 
     filing_date = models.DateField(auto_now=False, auto_now_add=False, blank=True, null=True)  # remove the null=True after migrations 0002,0003 applied
     transfer_date = models.DateField(auto_now=False, auto_now_add=False, blank=True, null=True)  # remove the null=True after migrations 0002,0003 applied
+
+    attachment = models.FileField(upload_to=_83b_upload_photo, blank=True, storage=S3BotoStorage())
 
     status = models.IntegerField(choices=EIGHTYTHREEB_STATUS.get_choices(), default=EIGHTYTHREEB_STATUS.lawyer_complete_form, db_index=True)
 
