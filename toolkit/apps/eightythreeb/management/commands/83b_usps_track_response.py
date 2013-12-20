@@ -46,9 +46,12 @@ class Command(BaseCommand):
         service = USPSTrackingService()
 
         for instance in self.eightythreeb_list:
+
             tracking_code = instance.tracking_code
+
             if tracking_code is None:
                 logger.critical('Found 83b instance with no tracking_code: %s %s' % (instance, instance.tracking_code))
+
             else:
                 logger.info('Found 83b instance with tracking_code: %s %s' % (instance, instance.tracking_code))
 

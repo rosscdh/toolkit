@@ -5,13 +5,16 @@ forked to
 https://github.com/rosscdh/python-usps
 
 and the really ugly USPS xml api
+
+xmlstr = ElementTree.tostring(et, encoding='utf8', method='xml')
+
 """
 from django.conf import settings
 
 import json
 
 from usps.api import USPS_CONNECTION_TEST
-from usps.api.tracking import TrackConfirm
+from usps.api.tracking import TrackConfirmWithFields  # TrackConfirm
 
 try:
     from xml.etree import ElementTree as ET
@@ -38,6 +41,9 @@ class USPSResponse(object):
     def __unicode__(self):
         return u'%s' % self.status
 
+    def response_as_xml(self):
+        return ET.tostring(self.response, encoding='utf8', method='xml')
+
     def is_valid(self):
         return len(self.waypoints) > 0
 
@@ -46,8 +52,12 @@ class USPSResponse(object):
         return json.dumps(self.response)
 
     @property
-    def status(self):
+    def summary(self):
         return self.response.get('TrackSummary', 'No summary was supplied by USPS').strip()
+
+    @property
+    def status(self):
+        return self.response.get('Status', 'No status was supplied by USPS').strip()
 
     @property
     def waypoints(self):
@@ -75,7 +85,7 @@ class AdeWinterUspsTrackConfirm(object):
     def service(self):
         logger.info('Init USPS service with: %s %s' % (self.USPS_CONNECTION, self.USERID))
 
-        return TrackConfirm(self.USPS_CONNECTION, self.USERID, self.PASSWORD)
+        return TrackConfirmWithFields(self.USPS_CONNECTION, self.USERID, self.PASSWORD)
 
     def request(self, tracking_code):
         logger.info('Request USPS service: %s %s for tracking_code: %s' % (self.USPS_CONNECTION, self.USERID, tracking_code))
@@ -83,6 +93,7 @@ class AdeWinterUspsTrackConfirm(object):
         
         for r in self.service.execute([{'ID': tracking_code}]):
             usps_response = USPSResponse(usps_response=r, tracking_code=tracking_code)
+
             logger.info('USPS response for tracking_code: %s %s' % (usps_response.status, tracking_code))
             response.append(usps_response)
 
@@ -98,7 +109,8 @@ class AdeWinterUspsTrackConfirm(object):
     def record(self, instance, usps_response):
         usps = instance.data.get('usps', {})
 
-        usps['current_status'] = usps_response.status
+        usps['current_status'] = usps_response.summary
+        usps['status_code'] = usps_response.status
         usps['waypoints'] = usps_response.waypoints
 
         instance.data['usps'] = usps
