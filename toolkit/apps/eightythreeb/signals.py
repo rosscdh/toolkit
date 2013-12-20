@@ -19,6 +19,7 @@ lawyer_invite_customer = Signal(providing_args=['actor'])
 customer_complete_form = Signal(providing_args=['actor'])
 customer_download_pdf = Signal(providing_args=['actor'])
 customer_print_and_sign = Signal(providing_args=['actor'])
+copy_uploaded = Signal(providing_args=['actor'])
 mail_to_irs_tracking_code = Signal(providing_args=['actor'])
 irs_recieved = Signal(providing_args=[]) # no actor as its an aotumated callback
 datestamped_copy_recieved = Signal(providing_args=['actor'])
@@ -121,6 +122,15 @@ def on_customer_print_and_sign(sender, instance, actor, **kwargs):
     if actor.profile.is_customer:
         actor_name = actor.get_full_name()
         _update_marker(marker_name='customer_print_and_sign',
+                       next_status=instance.STATUS_83b.copy_uploaded,
+                       actor_name=actor_name,
+                       instance=instance)
+
+@receiver(copy_uploaded)
+def on_copy_uploaded(sender, instance, actor, **kwargs):
+    if actor.profile.is_customer:
+        actor_name = actor.get_full_name()
+        _update_marker(marker_name='copy_uploaded',
                        next_status=instance.STATUS_83b.mail_to_irs_tracking_code,
                        actor_name=actor_name,
                        instance=instance)
