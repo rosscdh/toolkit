@@ -493,3 +493,27 @@ class TrackingCodeForm(forms.ModelForm):
         # save to data
         self.instance.tracking_code = self.cleaned_data.get('tracking_code')
         return super(TrackingCodeForm, self).save(**kwargs)
+
+
+@parsleyfy
+class AttachmentForm(forms.ModelForm):
+    class Meta:
+        model = EightyThreeB
+        fields = ['attachment']
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.attrs = {
+            'parsley-validate': '',
+        }
+
+        self.helper.layout = Layout(
+            'attachment',
+            ButtonHolder(
+                Submit('submit', 'Upload', css_class='btn-hg btn-primary'),
+                css_class='form-group'
+            )
+        )
+
+        super(AttachmentForm, self).__init__(*args, **kwargs)
+        self.fields['attachment'].initial = self.instance.attachment
