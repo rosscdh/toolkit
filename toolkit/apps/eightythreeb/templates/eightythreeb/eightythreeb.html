@@ -69,7 +69,7 @@
         <li><strong>Step 1 : Print, Review and Sign</strong><ol>
             <li>Print the document</li>
             <li>Review the IRS Transmittal letter and the two copies of your 83(b) Election. </li>
-            <li>Sign in the 3 places indicated with a red cross.</li> 
+            <li>Sign in the 3 places indicated with a red cross.</li>
             {% if object.spouse_must_sign %}
                 <li>Have your spouse sign in 2 places indicated with a blue cross.</li></ol>
             {% endif %}
@@ -87,8 +87,8 @@
             <br />
         </li>
         <li>
-            <strong>Step 4 : Mail it to the IRS</strong><br /> 
-            Send it by <u>USPS Certified Mail with Return Receipt</u> requested to the IRS at the following address : 
+            <strong>Step 4 : Mail it to the IRS</strong><br />
+            Send it by <u>USPS Certified Mail with Return Receipt</u> requested to the IRS at the following address :
             <br />
             <br />
             {{ object.irs_address|default:'<span>[IRS Address]</span>' }}
@@ -96,9 +96,9 @@
         </li>
         <li>
             <strong>Step 5 : Add the tracking number to LawPal</strong><br />
-            Once you have sent it, input the tracking number into LawPal and we will notify all parties when the IRS have received it. 
+            Once you have sent it, input the tracking number into LawPal and we will notify all parties when the IRS have received it.
             <br />
-        </li>   
+        </li>
     </ul>
     <br />
     <em>Your 83(b) Election must reach the IRS by {{ object.filing_date }}.</em>
@@ -110,8 +110,10 @@
 
 <div>
     <div>{{ client_full_name|default:'<span>[Client Name]</span>' }}</div>
-    <div>{{ address|default:'<span>[Client Address]</span>' }}</div>
-    <div>{{ post_code|default:'<span>[Client Zip Code]</span>' }}, {{ state|default:'<span>[Client State]</span>' }}</div>
+    <div>{{ address1|default:'<span>[Client Address]</span>' }}</div>
+    {% if address2 %}<div>{{ address2 }}</div>{% endif %}
+    <div>{{ city|default:'<span>[Client City]</span>' }}</div>
+    <div>{{ state|default:'<span>[Client State]</span>' }} {{ post_code|default:'<span>[Client Zip Code]</span>' }}</div>
     <br />
     <div>Taxpayer SSN / ITIN # : {% if ssn or itin %}{{ ssn|default:'' }}{{ itin|default:'' }}{% else %}<span>[ITIN or SSN]</span>{% endif %}</div>
 </div>
@@ -146,5 +148,5 @@ Thank you,
 <div class="page-break"></div>
 {% include 'eightythreeb/document/irs_page.html' with title='Copy 2 - IRS (Return Copy)' %}
 
- 
+
 {% endblock %}

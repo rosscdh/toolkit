@@ -91,28 +91,10 @@
                             data-tool_object_id="{{ object.pk }}"
                             data-status="{{ object.STATUS_83b.datestamped_copy_recieved }}">I have recieved the date-stamped copy of my 83b back from the IRS</button>
                     {% endif %}
-
-                    {% if object.STATUS_83b.copy_sent_to_lawyer == object.status %}
-                        <button type="button" class="btn btn-success action"
-                            data-method="PATCH"
-                            data-url="/api/83b/{{ object.pk }}/"
-                            data-tool="{{ tool.pk }}"
-                            data-tool_object_id="{{ object.pk }}"
-                            data-status="{{ object.STATUS_83b.copy_sent_to_lawyer }}">I have sent a copy of the 83b to my Attorney</button>
-                    {% endif %}
-
-                    {% if object.STATUS_83b.copy_sent_to_accountant == object.status %}
-                        <button type="button" class="btn btn-success action"
-                            data-method="PATCH"
-                            data-url="/api/83b/{{ object.pk }}/"
-                            data-tool="{{ tool.pk }}"
-                            data-tool_object_id="{{ object.pk }}"
-                            data-status="{{ object.STATUS_83b.copy_sent_to_accountant }}">I have sent a copy of the 83b to my Accountant</button>
-                    {% endif %}
                 </div>
             {% endif %}
-
-            {% if object.STATUS_83b.irs_recieved == object.status %}
+            
+            {% if object.STATUS_83b.mail_to_irs_tracking_code == object.status %}
             <div class="row">
                 <p>This is an automated part of the process, and if you have sent your documents via registered post and registered the tracking code with us; then you should simply wait for this to update.</p>
                 <button type="button" class="btn btn-success redirect"
