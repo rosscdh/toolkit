@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.core.urlresolvers import reverse
+from django.utils.safestring import mark_safe
 
 from toolkit.apps.workspace.markers import BaseSignalMarkers, Marker
 
@@ -36,6 +37,24 @@ class CustomerDownloadDocMarker(Marker):
         else:
             return reverse('workspace:tool_object_download', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.tool_slug, 'slug': self.tool.slug})
 
+
+class CustomerUploadScanMarker(Marker):
+    action_user_class = ['customer',]
+
+    def action_name(self):
+        return 'Re-upload Attachment' if self.is_complete is True and self.tool.attachment not in [False, 'False', None, ''] else 'Upload Attachment'
+
+    def action_url(self):
+        return reverse('eightythreeb:attachment', kwargs={'slug': self.tool.slug})
+
+    @property
+    def long_description(self):
+        msg = None
+
+        if self.tool.attachment.url is not None:
+            msg = mark_safe('You have successfully uploaded a scan of your 83b, <a target="_BLANK" href="%s">click here</a> to view it' % self.tool.attachment.url)
+
+        return msg
 
 class CustomerTrackingNumberMarker(Marker):
     action_name = 'Enter Tracking Number'
@@ -77,7 +96,7 @@ class EightyThreeBSignalMarkers(BaseSignalMarkers):
         Marker(2, 'customer_complete_form', description='[Client] Complete 83b Election Letter', signals=['toolkit.apps.eightythreeb.signals.customer_complete_form']),
         CustomerDownloadDocMarker(3, 'customer_download_pdf', description='[Client] Download 83b Election Letter and Instructions', long_description='Customer should download the 83b form.', signals=['toolkit.apps.eightythreeb.signals.customer_download_pdf']),
         Marker(4, 'customer_print_and_sign', description='[Client] Print, check and sign 83b Election Letter', long_description='Customer is to print and sign 2 copies, plus a 3rd for their own records', signals=['toolkit.apps.eightythreeb.signals.customer_print_and_sign']),
-        Marker(5, 'copy_uploaded', description='[Client] Scan and upload signed copy.', signals=['toolkit.apps.eightythreeb.signals.copy_sent_to_lawyer']),
+        CustomerUploadScanMarker(5, 'copy_uploaded', description='[Client] Scan and upload signed copy.', signals=['toolkit.apps.eightythreeb.signals.copy_uploaded']),
         CustomerTrackingNumberMarker(6, 'mail_to_irs_tracking_code', description='[Client] Mail to IRS & register Tracking Code', long_description='Customer mail 83b form using USPS Registered Post *ONLY* and enter the Tracking Number here', signals=['toolkit.apps.eightythreeb.signals.mail_to_irs_tracking_code']),
         USPSDeliveryStatus(7, 'irs_recieved', signals=['toolkit.apps.eightythreeb.signals.irs_recieved']),
         Marker(8, 'datestamped_copy_recieved', description='[Client] Date stamped copy received', signals=['toolkit.apps.eightythreeb.signals.datestamped_copy_recieved']),
