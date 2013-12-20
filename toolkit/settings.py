@@ -79,6 +79,7 @@ HELPER_APPS = (
     'localflavor',
     'django_bootstrap_breadcrumbs',
     'rulez',
+    'storages',
 
     # api
     'rest_framework',
@@ -159,6 +160,18 @@ AUTHENTICATION_BACKENDS = (
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 TEMPLATED_EMAIL_BACKEND = 'templated_email.backends.vanilla_django'
+
+AWS_STORAGE_BUCKET_NAME = AWS_FILESTORE_BUCKET = 'dev-toolkit-lawpal-com'
+
+AWS_ACCESS_KEY_ID = 'AKIAIRFGFTRB4LRLWC3A'
+AWS_SECRET_ACCESS_KEY = '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'
+AWS_QUERYSTRING_AUTH = False # to stop 304 not happening and boto appending our info to the querystring
+AWS_PRELOAD_METADATA = True
+# see http://developer.yahoo.com/performance/rules.html#expires
+AWS_HEADERS = {
+    'Cache-Control': 'max-age=300',
+    'x-amz-acl': 'public-read',
+}
 
 REST_FRAMEWORK = {
     # Use hyperlinked styles by default.
