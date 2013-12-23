@@ -7,15 +7,14 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
-
     url(r'^api/', include('toolkit.apps.api.urls', namespace='api')),
-
-    url(r'^83b/', include('toolkit.apps.eightythreeb.urls', namespace='eightythreeb')),
+    url(r'^dash/', include('toolkit.apps.dash.urls', namespace='dash')),
+    url(r'^me/', include('toolkit.apps.user.urls', namespace='me')),
     url(r'^workspace/', include('toolkit.apps.workspace.urls', namespace='workspace')),
 
-    url(r'^dash/', include('toolkit.apps.dash.urls', namespace='dash')),
+    # do we even use this anymore?
+    url(r'^83b/', include('toolkit.apps.eightythreeb.urls', namespace='eightythreeb')),
 
     # home default terminator
     url(r'^', include('toolkit.apps.default.urls', namespace='public')),
-
 )
