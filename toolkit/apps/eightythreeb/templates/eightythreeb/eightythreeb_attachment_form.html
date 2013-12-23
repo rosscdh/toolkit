@@ -38,6 +38,9 @@ $(function(){
         action: "{% url 'eightythreeb:upload_file' slug=object.slug %}",
         element: $('#file-uploader:first')[0],
         multiple: true,
+        onProgress: function(id, fileName, loaded, total){ 
+            console.log(loaded)
+        },
         onComplete: function(id, fileName, responseJSON) {
             if(responseJSON.success) {
                 console.log('Success')
