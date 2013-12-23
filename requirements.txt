@@ -47,6 +47,8 @@ python-dateutil
 
 python-memcached
 
+-e git+https://github.com/GoodCloud/django-ajax-uploader.git#egg=django-ajax-uploader
+
 raven
 
 # package tracking
