@@ -499,7 +499,6 @@ class TrackingCodeForm(forms.ModelForm):
 class AttachmentForm(forms.ModelForm):
     class Meta:
         model = EightyThreeB
-        fields = ['attachment']
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
@@ -508,7 +507,6 @@ class AttachmentForm(forms.ModelForm):
         }
 
         self.helper.layout = Layout(
-            'attachment',
             ButtonHolder(
                 Submit('submit', 'Upload', css_class='btn-hg btn-primary'),
                 css_class='form-group'
@@ -516,4 +514,3 @@ class AttachmentForm(forms.ModelForm):
         )
 
         super(AttachmentForm, self).__init__(*args, **kwargs)
-        self.fields['attachment'].initial = self.instance.attachment
