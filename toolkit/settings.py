@@ -70,6 +70,7 @@ PROJECT_APPS = (
     'toolkit.apps.api',
     'toolkit.apps.default',
     'toolkit.apps.dash',
+    'toolkit.apps.user',
     'toolkit.apps.workspace',
     'toolkit.apps.eightythreeb',
 )
@@ -261,6 +262,9 @@ LOGGING = {
         }
     }
 }
+
+USPS_USERID = None
+USPS_PASSWORD = None
 
 try:
     LOCAL_SETTINGS
