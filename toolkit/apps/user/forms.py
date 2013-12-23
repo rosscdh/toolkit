@@ -48,11 +48,11 @@ class AccountSettingsForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.attrs = {
             'parsley-validate': '',
-            'parsley-error-container': '.parsley-errors'
         }
         self.helper.form_show_errors = False
 
         self.helper.layout = Layout(
+            HTML('{% include "partials/form-errors.html" with form=form %}'),
             Fieldset(
                 '',
                 Div(
@@ -87,7 +87,7 @@ class ChangePasswordForm(FormModal, SetPasswordForm):
             'required': "New password can't be blank."
         },
         label='New password',
-        widget=forms.TextInput(attrs={'size': 30})
+        widget=forms.PasswordInput(attrs={'size': 30})
     )
 
     new_password2 = forms.CharField(
@@ -95,7 +95,11 @@ class ChangePasswordForm(FormModal, SetPasswordForm):
             'required': "Verify password can't be blank."
         },
         label='Verify password',
-        widget=forms.TextInput(attrs={'size': 30})
+        widget=forms.PasswordInput(attrs={
+            'parsley-equalto': '[name="new_password1"]',
+            'parsley-equalto-message': "The two password fields don't match.",
+            'size': 30
+        })
     )
 
     def __init__(self, *args, **kwargs):

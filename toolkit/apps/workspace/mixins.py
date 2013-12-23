@@ -87,7 +87,6 @@ class WorkspaceToolFormMixin(forms.Form):
 
         self.helper.attrs = {
             'parsley-validate': '',
-            'parsley-error-container': '.parsley-errors'
         }
         self.helper.form_show_errors = False
 
