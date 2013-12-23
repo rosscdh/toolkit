@@ -16,6 +16,18 @@
         <p>Please enable JavaScript to use file uploader.</p>
     </noscript>         
 </div>
+
+<div class="row">
+<ul id="attachment_list">
+    {% for a in object.attachment_set.all %}
+    <li>
+        <a target="_BLANK" href="{{ a.attachment.url }}">View</a>
+        <a href="">Delete</a>
+    </li>
+    {% endfor %}
+</ul>
+</div>
+
 {% endblock %}
 
 {% block js %}
