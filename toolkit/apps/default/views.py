@@ -4,7 +4,7 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.views.generic import TemplateView, RedirectView, FormView
 
-from ..forms import SignUpForm, SignInForm
+from .forms import SignUpForm, SignInForm
 
 from toolkit.apps.workspace.forms import InviteKeyForm
 from toolkit.apps.workspace.models import Workspace, InviteKey
