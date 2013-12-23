@@ -70,7 +70,7 @@ PROJECT_APPS = (
     'toolkit.apps.api',
     'toolkit.apps.default',
     'toolkit.apps.dash',
-    'toolkit.apps.user',
+    'toolkit.apps.me',
     'toolkit.apps.workspace',
     'toolkit.apps.eightythreeb',
 )
