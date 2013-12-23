@@ -44,7 +44,7 @@ class AttachmentView(IssueSignalsMixin, UpdateView):
         return super(AttachmentView, self).form_valid(form)
 
 
-class UploadFileView(UpdateView):
+class UploadFileView(IssueSignalsMixin, UpdateView):
     """
     Override the uploader and cater to the multiple file associations
     @TODO turn this into a service
@@ -75,5 +75,8 @@ class UploadFileView(UpdateView):
 
             data['path'] = attachment.attachment.url
             response.content = json.dumps(data)
+
+            # send signal
+            self.issue_signals(request=request, instance=self.object, name='copy_uploaded')
 
         return response
