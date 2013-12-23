@@ -250,6 +250,7 @@ class CustomerEightyThreeBForm(BaseEightyThreeBForm):
         self.fields['transfer_value_total'].widget = forms.HiddenInput()
 
         self.helper.layout = Layout(
+            HTML('{% include "partials/form-errors.html" with form=form %}'),
             Div(
                 HTML('<h4>Disclaimer</h4>'),
                 HTML('<p>LawPal Inc. is not an attorney or law firm and this is not intended as legal advice. \
@@ -370,6 +371,7 @@ class LawyerEightyThreeBForm(BaseEightyThreeBForm):
         self.fields['has_spouse'].widget.attrs['disabled'] = 'disabled'
 
         self.helper.layout = Layout(
+            HTML('{% include "partials/form-errors.html" with form=form %}'),
             Div(
                 HTML('<legend>Client details</legend>'),
                 Div(
