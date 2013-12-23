@@ -11,8 +11,6 @@ urlpatterns = patterns('',
     url(r'^dash/', include('toolkit.apps.dash.urls', namespace='dash')),
     url(r'^me/', include('toolkit.apps.user.urls', namespace='me')),
     url(r'^workspace/', include('toolkit.apps.workspace.urls', namespace='workspace')),
-
-    # do we even use this anymore?
     url(r'^83b/', include('toolkit.apps.eightythreeb.urls', namespace='eightythreeb')),
 
     # home default terminator
