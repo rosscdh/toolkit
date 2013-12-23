@@ -18,9 +18,10 @@ from .mixins import StatusMixin, IRSMixin, HTMLMixin, TransferAndFilingDatesMixi
 from .managers import EightyThreeBManager
 
 
-def _83b_upload_photo(instance, filename):
+def _83b_upload_file(instance, filename):
+    filename = os.path.split(filename)[-1]
     filename_no_ext, ext = os.path.splitext(filename)
-    return '83b/%d-%s%s' % (instance.user.pk, slugify(filename_no_ext), ext)
+    return '83b/%d-%s%s' % (instance.eightythreeb.user.pk, slugify(filename_no_ext), ext)
 
 
 class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferAndFilingDatesMixin, WorkspaceToolModelMixin, models.Model):
@@ -38,8 +39,6 @@ class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferA
 
     filing_date = models.DateField(auto_now=False, auto_now_add=False, blank=True, null=True)  # remove the null=True after migrations 0002,0003 applied
     transfer_date = models.DateField(auto_now=False, auto_now_add=False, blank=True, null=True)  # remove the null=True after migrations 0002,0003 applied
-
-    attachment = models.FileField(upload_to=_83b_upload_photo, blank=True, storage=S3BotoStorage())
 
     status = models.IntegerField(choices=EIGHTYTHREEB_STATUS.get_choices(), default=EIGHTYTHREEB_STATUS.lawyer_complete_form, db_index=True)
 
@@ -87,3 +86,7 @@ class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferA
     def get_edit_url(self):
         return reverse('workspace:tool_object_edit', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug=self.tool_slug).first().slug, 'slug': self.slug})
 
+
+class Attachment(models.Model):
+    eightythreeb = models.ForeignKey('eightythreeb.EightyThreeB')
+    attachment = models.FileField(upload_to=_83b_upload_file, blank=True, storage=S3BotoStorage())
