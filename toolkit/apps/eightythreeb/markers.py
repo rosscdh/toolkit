@@ -48,6 +48,12 @@ class CustomerUploadScanMarker(Marker):
         return reverse('eightythreeb:attachment', kwargs={'slug': self.tool.slug})
 
     @property
+    def is_complete(self):
+        if self.tool is not None:
+            return self.tool.attachment_set.all().count() > 0 and self.name in self.tool.data['markers']
+        return False
+
+    @property
     def long_description(self):
         msg = None
 
