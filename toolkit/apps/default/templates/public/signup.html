@@ -5,9 +5,7 @@
 {% block page_title %}Sign up — {{ block.super }}{% endblock %}
 
 {% block prebody %}
-    <div class="dialog dialog-success">
-        <div class="container">This page is for attorney registration only. If you are a client with an invite code, <a href="#">click here</a>.</div>
-    </div>
+
 {% endblock %}
 
 {% block body %}
@@ -17,7 +15,7 @@
                 <h4>Sign up as an attorney</h4>
             </div>
 
-            <p>Fill out the form below to create your account.</p>
+            <p>Fill out the form below to create your account. </p>
 
             {% block form %}
                 {% include 'partials/form-errors.html' with form=form %}

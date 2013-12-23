@@ -130,16 +130,39 @@
   border-color: #e74c3c;
   background-color: #ffffff;
 }
-.home-top .public-headline {
+.home .public-headline {
   margin: 100px 0 30px 0px;
 }
-.home-top .lead.sub {
+.home h2 {
   font-size: 40px;
+  color: #666;
+  margin-top: 10px;
 }
-.home-top .description {
+.home .lead.sub {
+  font-size: 22px;
+  padding: 0px 70px;
+}
+.home .description {
   background-color: #f6f6f6;
-  padding: 60px 0px;
+  padding: 20px 0px;
   color: #999;
+}
+.home .description .benefit {
+  text-align: center;
+  padding: 20px;
+}
+.home .description .benefit img {
+  height: 80px;
+}
+.home .description .benefit h3 {
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+.home .description .benefit p {
+  font-size: 14px;
+}
+.home .btn {
+  margin: 0 10px;
 }
 .section {
   margin-bottom: 20px;

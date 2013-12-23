@@ -193,19 +193,43 @@
 // Public
 // -------------------------
 
-.home-top{
+.home{
   .public-headline {
     margin: 100px 0 30px 0px;
   }
-  .lead.sub {
+  h2 {
     font-size:40px;
+    color:#666;
+    margin-top:10px;
+  }
+  .lead.sub {
+    font-size:22px;
+    padding:0px 70px;
   }
   .description {
     background-color:#f6f6f6;
-    padding:60px 0px;
+    padding:20px 0px;
     color: #999;
+    .benefit {
+      text-align:center;
+      padding:20px;
+      img {
+        height:80px;
+      }
+      h3 {
+        font-size:18px;
+        margin-bottom:5px;
+      }
+      p {
+        font-size:14px;
+      }
+    }
+  }
+  .btn {
+    margin: 0 10px;
   }
 }
+
 
 // Sections
 // -------------------------
@@ -215,7 +239,6 @@
 
   .section-header {
     margin-bottom: ((@line-height-computed / 2) - 1);
-
     .btn {
       margin-top: -5px;
     }
