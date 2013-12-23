@@ -42,7 +42,7 @@ class CustomerUploadScanMarker(Marker):
     action_user_class = ['customer',]
 
     def action_name(self):
-        return 'Re-upload Attachment' if self.is_complete is True and self.tool.attachment not in [False, 'False', None, ''] else 'Upload Attachment'
+        return 'Re-upload Attachment' if self.is_complete is True else 'Upload Attachment'
 
     def action_url(self):
         return reverse('eightythreeb:attachment', kwargs={'slug': self.tool.slug})
@@ -51,10 +51,11 @@ class CustomerUploadScanMarker(Marker):
     def long_description(self):
         msg = None
 
-        if self.tool.attachment.url is not None:
+        if self.tool.attachment and self.tool.attachment.url is not None:
             msg = mark_safe('You have successfully uploaded a scan of your 83b, <a target="_BLANK" href="%s">click here</a> to view it' % self.tool.attachment.url)
 
         return msg
+
 
 class CustomerTrackingNumberMarker(Marker):
     action_name = 'Enter Tracking Number'
