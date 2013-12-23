@@ -20,8 +20,6 @@
             <p>Fill out the form below to create your account.</p>
 
             {% block form %}
-                {% include 'partials/form-errors.html' with form=form %}
-
                 {% crispy form %}
             {% endblock %}
 
