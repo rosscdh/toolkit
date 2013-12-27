@@ -60,14 +60,6 @@ class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferA
         return self.data.get('client_full_name', None)
 
     @property
-    def tracking_code(self):
-        return self.data.get('tracking_code')
-
-    @tracking_code.setter
-    def tracking_code(self, value):
-        self.data['tracking_code'] = value
-
-    @property
     def filename(self):
         return slugify('83b-{company}-{user}'.format(company=self.workspace, user=self.user.get_full_name() or self.user.username))
 
