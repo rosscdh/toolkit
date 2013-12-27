@@ -4,6 +4,8 @@ from django.utils.safestring import mark_safe
 
 from datetime import date, datetime, timedelta
 
+from toolkit.apps.workspace.services import USPSResponse
+
 
 class HTMLMixin(object):
     @property
@@ -65,6 +67,14 @@ class StatusMixin(object):
 
 class USPSReponseMixin(object):
     @property
+    def tracking_code(self):
+        return self.data.get('tracking_code')
+
+    @tracking_code.setter
+    def tracking_code(self, value):
+        self.data['tracking_code'] = value
+
+    @property
     def usps(self):
         return self.data.get('usps', {})
 
@@ -73,8 +83,19 @@ class USPSReponseMixin(object):
         return self.usps.get('current_status', None)
 
     @property
+    def usps_current_summary(self):
+        return self.usps.get('current_summary', None)
+
+    @property
     def usps_waypoints(self):
         return self.usps.get('waypoints', [])
+
+    @property
+    def usps_log(self):
+        """
+        Return a list of stored usps_logs as responses
+        """
+        return [USPSResponse(usps_response=r, tracking_code=self.tracking_code) for r in self.data.get('usps_log', [])]
 
 
 class IRSMixin(object):
