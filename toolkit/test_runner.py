@@ -3,12 +3,10 @@ from django.conf import settings
 from django.core.management import call_command
 from django.test.simple import DjangoTestSuiteRunner
 
-from colortools.test import ColorDjangoTestSuiteRunner
-
 import shutil
 
 
-class AppTestRunner(ColorDjangoTestSuiteRunner, DjangoTestSuiteRunner):
+class AppTestRunner(DjangoTestSuiteRunner):
     def build_suite(self, test_labels, *args, **kwargs):
         # not args passed in
         if not test_labels:
