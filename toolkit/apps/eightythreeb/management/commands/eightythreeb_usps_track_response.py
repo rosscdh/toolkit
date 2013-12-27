@@ -18,6 +18,12 @@ class Command(BaseCommand):
     from_tuple = ('Ross', 'ross@lawpal.com')
 
     @property
+    def service(self):
+      if hasattr(self, '_service') is False or self._service is None:
+        self._service = USPSTrackingService()
+      return self._service
+
+    @property
     def eightythreeb_list(self):
         return EightyThreeB.objects.mail_delivery_pending()
 
@@ -43,7 +49,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         site = Site.objects.get(pk=settings.SITE_ID)
 
-        service = USPSTrackingService()
+        service = self.service
 
         for instance in self.eightythreeb_list:
 
@@ -60,6 +66,6 @@ class Command(BaseCommand):
                     service.record(instance=instance, usps_response=usps_response)
 
                 except Exception as e:
-                    logger.error('83b instance raised Exception: %s %s %s' % (instance, instance.tracking_code, e))
+                   logger.error('83b instance raised Exception: %s %s %s' % (instance, instance.tracking_code, e))
 
             #self.send_mail(instance=instance)
