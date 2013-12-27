@@ -13,13 +13,8 @@ from django.conf import settings
 
 import json
 
-from usps.api import USPS_CONNECTION_TEST
+from usps.api import USPS_CONNECTION
 from usps.api.tracking import TrackConfirmWithFields  # TrackConfirm
-
-try:
-    from xml.etree import ElementTree as ET
-except ImportError:
-    from elementtree import ElementTree as ET
 
 from . import logger
 
@@ -41,31 +36,34 @@ class USPSResponse(object):
     def __unicode__(self):
         return u'%s' % self.status
 
-    def response_as_xml(self):
-        return ET.tostring(self.response, encoding='utf8', method='xml')
-
-    def is_valid(self):
-        return len(self.waypoints) > 0
-
     @property
     def as_json(self):
         return json.dumps(self.response)
 
     @property
     def summary(self):
-        return self.response.get('TrackSummary', 'No summary was supplied by USPS').strip()
+        return self.response.get('TrackSummary', {})
 
     @property
     def status(self):
-        return self.response.get('Status', 'No status was supplied by USPS').strip()
+        return self.summary.get('Event', 'Unknown')
+
+    @property
+    def description(self):
+        s = self.summary.copy()
+        country = s.get('EventCountry') if s.get('EventCountry') is not None else 'USA'
+        return 'The package is currently %s in %s. The event took place on %s:%s' % (
+                s.get('Event'),
+                '%s %s %s, %s' % (s.get('EventCity'), s.get('EventState'), s.get('EventZIPCode'), country),
+                s.get('EventDate'),
+                s.get('EventTime'),)
 
     @property
     def waypoints(self):
         waypoints = self.response.get('TrackDetail', [])
 
-        # assume: that there will always be at least 1 waypoint form when the package was registered
-        # if not waypoints:
-        #     raise USPSTrackingNumberNotExistsException(self.status)
+        if self.summary:
+            waypoints.insert(0, self.summary)  # insert the TrackSummary which is the "latest" waypoint Bad USPS Bad Bad Bad design
 
         return waypoints
 
@@ -76,7 +74,7 @@ class AdeWinterUspsTrackConfirm(object):
     """
     USERID = getattr(settings, 'USPS_USERID')
     PASSWORD = getattr(settings, 'USPS_PASSWORD')
-    USPS_CONNECTION = getattr(settings, 'USPS_CONNECTION', USPS_CONNECTION_TEST)
+    USPS_CONNECTION = getattr(settings, 'USPS_CONNECTION', USPS_CONNECTION)
 
     tracking_code = None
     response = None
@@ -109,11 +107,16 @@ class AdeWinterUspsTrackConfirm(object):
     def record(self, instance, usps_response):
         usps = instance.data.get('usps', {})
 
-        usps['current_status'] = usps_response.summary
+        usps_log = instance.data.get('usps_log', [])
+        usps_log.append(usps_response.response)
+
+        usps['current_status'] = usps_response.description
         usps['status_code'] = usps_response.status
         usps['waypoints'] = usps_response.waypoints
 
         instance.data['usps'] = usps
+        instance.data['usps_log'] = usps_log
+
         instance.save(update_fields=['data'])
 
 
