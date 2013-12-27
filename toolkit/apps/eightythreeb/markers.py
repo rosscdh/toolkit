@@ -4,6 +4,7 @@ from django.utils.safestring import mark_safe
 
 from toolkit.apps.workspace.markers import BaseSignalMarkers, Marker
 
+
 class EditFormMarker(Marker):
     action_user_class = ['lawyer', 'customer']
 
