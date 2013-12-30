@@ -196,7 +196,7 @@ class WorkspaceToolObjectDownloadView(IssueSignalsMixin, WorkspaceToolObjectDisp
         resp = HttpResponse(content_type='application/pdf')
         resp['Content-Disposition'] = 'attachment; filename="{filename}.pdf"'.format(filename=self.object.filename)
 
-        self.issue_signals(request=self.request, instance=self.object)
+        self.issue_signals(request=self.request, instance=self.object, name='customer_download_pdf')
 
         return pdfpng_service.pdf(template_name=self.object.template_name, file_object=resp)
 
