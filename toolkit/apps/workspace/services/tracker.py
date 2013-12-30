@@ -45,13 +45,29 @@ class USPSResponse(object):
         return self.response.get('TrackSummary', {})
 
     @property
+    def identity(self):
+        """
+        The identity used to determine if this response is in the instance
+        waypoints list
+        """
+        return '%s-%s-%s' % (self.summary.get('EventTime'),
+                             self.summary.get('EventDate'),
+                             self.summary.get('EventZIPCode'),)
+
+    @property
     def status(self):
         return self.summary.get('Event', 'Unknown')
 
     @property
+    def is_delivered(self):
+        return self.status == 'DELIVERED'
+
+    @property
     def description(self):
-        s = self.summary.copy()
+        s = self.summary
+
         country = s.get('EventCountry') if s.get('EventCountry') is not None else 'USA'
+
         return 'The package is currently %s in %s. The event took place on %s:%s' % (
                 s.get('Event'),
                 '%s %s %s, %s' % (s.get('EventCity'), s.get('EventState'), s.get('EventZIPCode'), country),
@@ -61,9 +77,14 @@ class USPSResponse(object):
     @property
     def waypoints(self):
         waypoints = self.response.get('TrackDetail', [])
+        if type(waypoints) is dict:
+            # because were using XML, a single TrackDetail object will return as a dict
+            # not as a list *sigh*
+            waypoints = [waypoints]
 
-        if self.summary:
-            waypoints.insert(0, self.summary)  # insert the TrackSummary which is the "latest" waypoint Bad USPS Bad Bad Bad design
+        if self.summary and self.summary not in waypoints:
+            # insert the TrackSummary which is the "latest" waypoint Bad USPS Bad Bad Bad design
+            waypoints.insert(0, self.summary)
 
         return waypoints
 
@@ -79,11 +100,17 @@ class AdeWinterUspsTrackConfirm(object):
     tracking_code = None
     response = None
 
+    _response_already_present = None
+
     @property
     def service(self):
         logger.info('Init USPS service with: %s %s' % (self.USPS_CONNECTION, self.USERID))
 
         return TrackConfirmWithFields(self.USPS_CONNECTION, self.USERID, self.PASSWORD)
+
+    @property
+    def response_already_present(self):
+        return self._response_already_present
 
     def request(self, tracking_code):
         logger.info('Request USPS service: %s %s for tracking_code: %s' % (self.USPS_CONNECTION, self.USERID, tracking_code))
@@ -97,6 +124,24 @@ class AdeWinterUspsTrackConfirm(object):
 
         return response[0] if len(response) == 1 else response
 
+    def response_is_present(self, instance_data, usps_response):
+        waypoints = instance_data.get('waypoints', [])
+        if waypoints:
+            # Create the waypoint id and then compare it to the current 
+            # responses identiy
+            for point in waypoints:
+                waypoint_id = '%s-%s-%s' % (point.get('EventTime'),
+                                            point.get('EventDate'),
+                                            point.get('EventZIPCode'),)
+
+                if usps_response.identity == waypoint_id:
+                    logger.info('The current response has already been recorded: %s %s' % (usps_response.identity, usps_response.status,) )
+                    return True
+
+        logger.info('The current response has not been recorded: %s %s' % (usps_response.identity, usps_response.status,) )
+
+        return False
+
     def track(self, tracking_code):
         self.response = self.request(tracking_code=tracking_code)
 
@@ -107,17 +152,24 @@ class AdeWinterUspsTrackConfirm(object):
     def record(self, instance, usps_response):
         usps = instance.data.get('usps', {})
 
-        usps_log = instance.data.get('usps_log', [])
-        usps_log.append(usps_response.response)
+        if self.response_is_present(instance_data=usps, usps_response=usps_response) is True:
+            self._response_already_present = True
+            logger.info('Response was already present, not recording it')
+        else:
+            self._response_already_present = False
+            logger.info('Response was not present, recording on instance: %s' % instance)
 
-        usps['current_status'] = usps_response.description
-        usps['status_code'] = usps_response.status
-        usps['waypoints'] = usps_response.waypoints
+            usps_log = instance.data.get('usps_log', [])
+            usps_log.append(usps_response.response)
 
-        instance.data['usps'] = usps
-        instance.data['usps_log'] = usps_log
+            usps['current_status'] = usps_response.description
+            usps['status_code'] = usps_response.status
+            usps['waypoints'] = usps_response.waypoints
 
-        instance.save(update_fields=['data'])
+            instance.data['usps'] = usps
+            instance.data['usps_log'] = usps_log
+
+            instance.save(update_fields=['data'])
 
 
 class USPSTrackingService(AdeWinterUspsTrackConfirm):

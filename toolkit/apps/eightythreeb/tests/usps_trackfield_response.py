@@ -10,3 +10,6 @@ FILE_PATH = os.path.dirname(os.path.realpath(__file__))
 
 TRACK_RESPONSE_XML = ET.parse('%s/usps_trackfield_response.xml' % FILE_PATH)
 TRACK_RESPONSE_XML_BODY = ET.tostring(TRACK_RESPONSE_XML.getroot(), encoding='utf8', method='xml')
+
+TRACK_UNDELIVERED_RESPONSE_XML = ET.parse('%s/usps_trackfield_undelivered_response.xml' % FILE_PATH)
+TRACK_UNDELIVERED_RESPONSE_XML_BODY = ET.tostring(TRACK_UNDELIVERED_RESPONSE_XML.getroot(), encoding='utf8', method='xml')

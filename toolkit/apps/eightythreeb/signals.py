@@ -32,8 +32,9 @@ def on_base_signal(sender, instance, actor, **kwargs):
     Primary handler that is called and will calculate the current and 
     previous instance marker status, and issue the appropriate signals
     """
-    markers = EightyThreeBSignalMarkers()
+    markers = EightyThreeBSignalMarkers()  # @TODO can refer to instance.markers ?
 
+    # if we are provided a kwargs "name" then use that.. otherwise use the current instance marker
     marker_node = markers.marker(val=kwargs.get('name', instance.status))
 
     if hasattr(marker_node, 'issue_signals'):
