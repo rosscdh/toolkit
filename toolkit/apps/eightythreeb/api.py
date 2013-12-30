@@ -18,6 +18,11 @@ class EightyThreeBViewSet(IssueSignalsMixin, ModelViewSet):
         emit the issue_signals
         """
         if response.status_code in [200, 201]:
-            self.issue_signals(request=request, instance=self.object)
+            # get the tools markers
+            markers = self.object.markers
+            # retrieve the marker by value so we can get its name
+            marker = markers.marker_by_val(val=self.request.DATA.get('status'))
+            # issue the signal
+            self.issue_signals(request=request, instance=self.object, name=marker.name)
 
         return super(EightyThreeBViewSet, self).finalize_response(request, response, *args, **kwargs)

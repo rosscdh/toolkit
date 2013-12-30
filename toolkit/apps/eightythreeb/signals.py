@@ -19,6 +19,7 @@ lawyer_invite_customer = Signal(providing_args=['actor'])
 customer_complete_form = Signal(providing_args=['actor'])
 customer_download_pdf = Signal(providing_args=['actor'])
 customer_print_and_sign = Signal(providing_args=['actor'])
+copy_uploaded = Signal(providing_args=['actor'])
 mail_to_irs_tracking_code = Signal(providing_args=['actor'])
 irs_recieved = Signal(providing_args=[]) # no actor as its an aotumated callback
 datestamped_copy_recieved = Signal(providing_args=['actor'])
@@ -31,8 +32,9 @@ def on_base_signal(sender, instance, actor, **kwargs):
     Primary handler that is called and will calculate the current and 
     previous instance marker status, and issue the appropriate signals
     """
-    markers = EightyThreeBSignalMarkers()
+    markers = EightyThreeBSignalMarkers()  # @TODO can refer to instance.markers ?
 
+    # if we are provided a kwargs "name" then use that.. otherwise use the current instance marker
     marker_node = markers.marker(val=kwargs.get('name', instance.status))
 
     if hasattr(marker_node, 'issue_signals'):
@@ -121,6 +123,15 @@ def on_customer_print_and_sign(sender, instance, actor, **kwargs):
     if actor.profile.is_customer:
         actor_name = actor.get_full_name()
         _update_marker(marker_name='customer_print_and_sign',
+                       next_status=instance.STATUS_83b.copy_uploaded,
+                       actor_name=actor_name,
+                       instance=instance)
+
+@receiver(copy_uploaded)
+def on_copy_uploaded(sender, instance, actor, **kwargs):
+    if actor.profile.is_customer:
+        actor_name = actor.get_full_name()
+        _update_marker(marker_name='copy_uploaded',
                        next_status=instance.STATUS_83b.mail_to_irs_tracking_code,
                        actor_name=actor_name,
                        instance=instance)
