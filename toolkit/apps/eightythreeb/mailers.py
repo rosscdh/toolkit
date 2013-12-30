@@ -8,17 +8,16 @@ class EightyThreeBCreatedEmail(BaseMailerService):
     m = EightyThreeBCreatedEmail(
             subject='A new 83b has been created for you',
             message='{from_name} has created an 83b form for you, you can find it at {location}',
-            from_tuple=('Ross', 'ross@lawpal.com'),
             recipients=(('Alex', 'alex@lawpal.com')))
     m.process()
     """
     email_template = 'eightythreeb_created'
 
 
+
 class EightyThreeBReminderEmail(BaseMailerService):
     """
-    m = EightyThreeBReminderEmail(from_tuple=('Ross', 'ross@lawpal.com'),
-                                  recipients=(('Alex', 'alex@lawpal.com')))
+    m = EightyThreeBReminderEmail(recipients=(('Alex', 'alex@lawpal.com')))
     m.process(company='',
               url='https://lawpal.com/workspace/lawpal-internal-d570/tool/83b-election-letters/c1b7d38cf90a4c158ae8e7b810d4c7f6/preview/',
               current_status='Description of the current step',
@@ -31,10 +30,19 @@ class EightyThreeBReminderEmail(BaseMailerService):
     email_template = 'eightythreeb_reminder'
 
 
+
+class EightyThreeTrackingCodeEnteredEmail(BaseMailerService):
+    """
+    m = EightyThreeMailDeliveredEmail(recipients=(('Alex', 'alex@lawpal.com')))
+    m.process(instance='')
+    """
+    email_template = 'eightythreeb_trackingcode_attached'
+
+
+
 class EightyThreeMailDeliveredEmail(BaseMailerService):
     """
-    m = EightyThreeMailDeliveredEmail(from_tuple=('Ross', 'ross@lawpal.com'),
-                                      recipients=(('Alex', 'alex@lawpal.com')))
+    m = EightyThreeMailDeliveredEmail(recipients=(('Alex', 'alex@lawpal.com')))
     m.process(instance='')
     """
     email_template = 'eightythreeb_delivered'
