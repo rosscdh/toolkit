@@ -2,30 +2,23 @@
 from django.core import mail
 from django.test import TestCase
 from django.core.files import File
-from django.db.models.query import QuerySet
 from django.core.files.storage import FileSystemStorage
 
 import os
 import mock
 import datetime
-import httpretty
 
 from model_mommy import mommy
-from usps.api import USPS_CONNECTION
-from usps.api.tracking import TrackConfirmWithFields
-from toolkit.casper import httprettify_methods, mock_http_requests
-from toolkit.apps.workspace.services import USPSTrackingService, USPSResponse
 
 from toolkit.apps.workspace.models import Tool
 from toolkit.apps.eightythreeb.models import EightyThreeB
 from toolkit.apps.eightythreeb.management.commands.eightythreeb_usps_track_response import Command as USPSEightyThreeBTracking
 
 from .data import EIGHTYTHREEB_TRACKINGCODE_DATA
-from .usps_trackfield_response import TRACK_UNDELIVERED_RESPONSE_XML_BODY
 
 FILE_BASE_PATH = os.path.dirname(__file__)
 
-TRACKING_CODE = 'EJ958083578US'
+from .test_usps import TRACKING_CODE
 
 
 class BaseUSPSTrackingCode(TestCase):
