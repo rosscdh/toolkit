@@ -104,13 +104,13 @@ class WorkspaceToolModelMixin(object):
 
         data = self.data.copy()
         for key, value in data.iteritems():
-            if TIME_RE.match(str(value)):
+            if TIME_RE.match(unicode(value)):
                 data[key] = datetime.strptime(value, '%H-%M:%S')
 
-            if DATE_RE.match(str(value)):
+            if DATE_RE.match(unicode(value)):
                 data[key] = datetime.strptime(value, '%Y-%m-%d')
 
-            if DATETIME_RE.match(str(value)):
+            if DATETIME_RE.match(unicode(value)):
                 data[key] = datetime.strptime(value, '%Y-%m-%dT%H:%M:%S')
 
         return data
