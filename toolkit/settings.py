@@ -15,6 +15,18 @@ for test_app in ['testserver','test']:
 
 SITE_ID = 1
 
+ADMINS = (
+    ("Ross Crawford-dHeureuse", 'ross@lawpal.com'),
+)
+
+MANAGERS = ADMINS + (
+    ("Alex Halliday", 'alex@lawpal.com'),
+)
+
+DEFAULT_FROM = (
+ ("LawPal Tech", 'tech@lawpal.com'),
+)
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'lgi%*e=%s@y3-jos^uydhc5gz80m9ts&9io5xh6myf+$fuy7+n'
 
