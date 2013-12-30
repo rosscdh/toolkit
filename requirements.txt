@@ -32,7 +32,7 @@ django-localflavor
 
 django-bootstrap-breadcrumbs
 
-django-templated-email
+-e git+https://github.com/rosscdh/django-templated-email.git@attachments#egg=django-templated-email
 
 boto
 django-storages
