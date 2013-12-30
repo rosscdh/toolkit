@@ -9,6 +9,8 @@ import logging
 
 logging.disable(logging.CRITICAL)
 
+AWS_STORAGE_BUCKET_NAME = AWS_FILESTORE_BUCKET = 'dev-toolkit-lawpal-com'
+
 # Custom test runner for this project
 TEST_RUNNER = 'toolkit.test_runner.AppTestRunner'
 
