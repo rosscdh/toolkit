@@ -3,7 +3,7 @@ from django.conf.urls import patterns, include, url
 from django.views.generic import TemplateView
 from django.contrib.auth.decorators import login_required
 
-from .views import HomePageView, StartView, SignUpView, InviteKeySignInView, LogoutView
+from .views import HomePageView, InviteKeySignInView, LogoutView, SignUpView, StartView
 
 
 urlpatterns = patterns('',
@@ -14,4 +14,3 @@ urlpatterns = patterns('',
     url(r'^end/$', LogoutView.as_view(), name='logout'),
     url(r'^$', HomePageView.as_view(), name='home'),
 )
-

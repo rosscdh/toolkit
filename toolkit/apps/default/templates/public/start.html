@@ -12,8 +12,6 @@
             </div>
 
             {% block form %}
-                {% include 'partials/form-errors.html' with form=form %}
-
                 {% crispy form %}
             {% endblock %}
         </div>

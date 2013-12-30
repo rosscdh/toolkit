@@ -1,0 +1,23 @@
+{% extends LAYOUT %}
+
+{% load url from future %}{% load crispy_forms_tags django_bootstrap_breadcrumbs %}
+
+{% block page_title %}Settings — {{ block.super }}{% endblock%}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% breadcrumb 'Settings' 'me:settings' %}
+{% endblock %}
+
+{% block header %}
+    <h4>Settings</h4>
+{% endblock %}
+
+{% block main %}
+    {% crispy form %}
+{% endblock %}
+
+{% block modals %}
+    {{ block.super }}
+    <div class="modal" id="change-password"></div>
+{% endblock %}

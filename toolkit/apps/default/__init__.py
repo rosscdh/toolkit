@@ -15,6 +15,7 @@ def _user_exists(username):
     except User.DoesNotExist:
         return None
 
+
 def _get_unique_username(username):
     while _user_exists(username=username):
         LOGGER.info('Username %s exists, trying to create another' % username)

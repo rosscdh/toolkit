@@ -70,6 +70,7 @@ PROJECT_APPS = (
     'toolkit.apps.api',
     'toolkit.apps.default',
     'toolkit.apps.dash',
+    'toolkit.apps.me',
     'toolkit.apps.workspace',
     'toolkit.apps.eightythreeb',
 )
@@ -148,10 +149,10 @@ USE_L10N = False  # should always be False to enable dates accepted https://docs
 
 USE_TZ = True
 
-
 LOGIN_URL          = '/start/'
 LOGIN_REDIRECT_URL = '/dash/'
 LOGIN_ERROR_URL    = '/login-error/'
+LOGOUT_URL = '/end/'
 
 AUTHENTICATION_BACKENDS = (
     'toolkit.auth_backends.EmailBackend',
@@ -300,6 +301,9 @@ LOGGING = {
         }
     }
 }
+
+USPS_USERID = None
+USPS_PASSWORD = None
 
 try:
     LOCAL_SETTINGS
