@@ -63,7 +63,6 @@ def httprettify_methods():
     wraps all test methods with the "mock_http_requests" method which in turn
     sets up the httpretty mocks
     """
-    @httpretty.activate
     def decorate(cls):
         for mthd in [name for name, mthd in inspect.getmembers(cls, predicate=inspect.ismethod) if name.endswith('_test') or name.startswith('test_') or name == 'setUp']:  # there's propably a better way to do this
             if callable(getattr(cls, mthd)):
