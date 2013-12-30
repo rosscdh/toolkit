@@ -1,0 +1,11 @@
+{% extends 'email/base.email' %}
+
+{% block subject_line %}83b Tracking Code entered for {{ instance.user.get_full_name }}{% endblock %}
+
+{% block html_content %}
+
+<p>{{ instance.user.get_full_name }} entered their 83b USPS Tracking Code ("{{ instance.tracking_code }}")<p>
+
+<p>Please find the scanned document attached</p>
+
+{% endblock %}
