@@ -1,6 +1,6 @@
 Django==1.6
 django-extensions==1.2.5
-
+south
 # Procfile service management
 honcho
 
@@ -41,7 +41,7 @@ django-storages
 # -e git+https://github.com/rosscdh/pybars.git#egg=pybars
 # -e git+https://github.com/rosscdh/lenker.git#egg=lenker
 
-requests==2.0.1
+requests>=2.0.1
 
 python-dateutil
 
@@ -49,7 +49,7 @@ python-memcached
 
 -e git+https://github.com/GoodCloud/django-ajax-uploader.git#egg=django-ajax-uploader
 
-raven
+raven # getsentry
 
 # package tracking
 -e git+https://github.com/rosscdh/python-usps.git#egg=python-usps
