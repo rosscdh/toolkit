@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-
+from django.conf import settings
 from toolkit.mailers import BaseMailerService
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 
 
 class EightyThreeBCreatedEmail(BaseMailerService):
@@ -34,9 +36,24 @@ class EightyThreeBReminderEmail(BaseMailerService):
 class EightyThreeTrackingCodeEnteredEmail(BaseMailerService):
     """
     m = EightyThreeMailDeliveredEmail(recipients=(('Alex', 'alex@lawpal.com')))
-    m.process(instance='')
+    m.process(instance=:instance)
     """
     email_template = 'eightythreeb_trackingcode_attached'
+
+    def process(self, **kwargs):
+        """
+        This override will download the attachments and send them to the email as
+        attachments; @TODO make this an async task
+        """
+        instance = kwargs.get('instance')
+
+        attachments = []
+        for a in instance.attachment_set.all():
+            path = default_storage.save(a.attachment.name, ContentFile(a.attachment.read()))
+            attachments.append('%s/%s' % (settings.MEDIA_ROOT, path,))  # append the name path to list
+
+        super(EightyThreeTrackingCodeEnteredEmail, self).process(attachments=attachments,
+                                                                 **kwargs)
 
 
 

@@ -50,7 +50,7 @@ class BaseMailerService(object):
         assert type(self.recipients) is list
         assert len(self.recipients) >= 1
 
-    def process(self, **kwargs):
+    def process(self, attachments=None, **kwargs):
 
         for r in self.recipients:
             context = {
@@ -64,13 +64,14 @@ class BaseMailerService(object):
 
             context.update(**kwargs)
 
-            self.send_mail(context=context)
+            self.send_mail(context=context, attachments=attachments)
 
-    def send_mail(self, context):
+    def send_mail(self, context, attachments=None):
             send_templated_mail(
                 template_name=self.email_template,
                 template_prefix=self.base_email_template_location,
                 from_email=context.get('from_email'),
                 recipient_list=[context.get('to_email')],
                 bcc=['founders@lawpal.com'] if settings.DEBUG is False else [],  # only bcc us in on live mails
-                context=context)
+                context=context,
+                attachments=attachments)
