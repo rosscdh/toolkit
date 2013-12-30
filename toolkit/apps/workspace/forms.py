@@ -139,7 +139,6 @@ class InviteUserForm(forms.Form):
         """
         m = InviteUserToToolEmail(subject=self.cleaned_data.get('subject'),
                                   message=self.cleaned_data.get('message'),
-                                  from_tuple=(self.user.get_full_name(), self.user.email),
                                   recipients=((self.tool_instance.user.get_full_name(), self.tool_instance.user.email),))
         m.process()
 
