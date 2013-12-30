@@ -9,7 +9,6 @@ from toolkit.apps.eightythreeb.mailers import EightyThreeBReminderEmail
 
 class Command(BaseCommand):
     help = "The reminder cron for 83b applications"
-    from_tuple = ('Ross', 'ross@lawpal.com')
 
     @property
     def eightythreeb_list(self):
@@ -21,8 +20,7 @@ class Command(BaseCommand):
         for instance in self.eightythreeb_list:
             recipient = (instance.user.get_full_name(), instance.user.email)
 
-            mailer = EightyThreeBReminderEmail(from_tuple=self.from_tuple,  \
-                                               recipients=(recipient,))
+            mailer = EightyThreeBReminderEmail(recipients=(recipient,))
 
             markers = instance.markers
             current_step = markers.current

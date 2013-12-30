@@ -15,7 +15,6 @@ logger = logging.getLogger('django.request')
 
 class Command(BaseCommand):
     help = "The cron for tracking USPS registered post"
-    from_tuple = ('Ross', 'ross@lawpal.com')
 
     @property
     def service(self):
@@ -29,8 +28,7 @@ class Command(BaseCommand):
 
     def send_mail(self, instance):
         recipient = (instance.user.get_full_name(), instance.user.email)
-        mailer = EightyThreeMailDeliveredEmail(from_tuple=self.from_tuple,  \
-                                               recipients=(recipient,))
+        mailer = EightyThreeMailDeliveredEmail(recipients=(recipient,))
 
         markers = instance.markers
         current_step = markers.current
