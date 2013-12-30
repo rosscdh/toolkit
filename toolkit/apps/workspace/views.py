@@ -199,8 +199,3 @@ class WorkspaceToolObjectDownloadView(IssueSignalsMixin, WorkspaceToolObjectDisp
         self.issue_signals(request=self.request, instance=self.object)
 
         return pdfpng_service.pdf(template_name=self.object.template_name, file_object=resp)
-
-
-class WorkspaceToolStatusView(WorkspaceToolViewMixin, DetailView):
-    model = Tool
-    template_name_suffix = '_status_list'  # place your template in your tool templates/:tool_name/:tool_name_status_list.html
