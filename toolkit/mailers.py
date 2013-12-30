@@ -14,7 +14,7 @@ class BaseMailerService(object):
         "email": None
     }
 
-    def __init__(self, from_tuple, recipients, subject=None, message=None, **kwargs):
+    def __init__(self, recipients, from_tuple=None, subject=None, message=None, **kwargs):
         """
         subject : string
         message : string
@@ -23,6 +23,10 @@ class BaseMailerService(object):
         """
         self.subject = subject
         self.message = message
+
+        # if no from_tuple is provided simply use the defaults
+        if from_tuple is None:
+            from_tuple = settings.DEFAULT_FROM[0]
 
         self.from_tuple = self.user.copy()
         self.from_tuple.update({
