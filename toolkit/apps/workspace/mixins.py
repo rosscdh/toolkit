@@ -117,7 +117,7 @@ class WorkspaceToolModelMixin(object):
 
 
 class IssueSignalsMixin(object):
-    def issue_signals(self, request, instance, **kwargs):
+    def issue_signals(self, request, instance, name, **kwargs):
         """
         issue the base_signal signal to handle any change events
         """
