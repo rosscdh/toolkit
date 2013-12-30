@@ -56,3 +56,7 @@ EIGHTYTHREEB_DATA = {
   "accountant_email": "test+accountant@lawpal.com",
   "client_email": "test+customer@lawpal.com"
 }
+
+EIGHTYTHREEB_TRACKINGCODE_DATA = EIGHTYTHREEB_DATA.copy()
+# Has no mail_to_irs_tracking_code entry
+del EIGHTYTHREEB_TRACKINGCODE_DATA['markers']['mail_to_irs_tracking_code']
