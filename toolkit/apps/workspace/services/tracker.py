@@ -113,6 +113,7 @@ class AdeWinterUspsTrackConfirm(object):
         return self._response_already_present
 
     def request(self, tracking_code):
+        tracking_code = tracking_code.replace(' ', '')  # strip whitespace as the usps api does not support it
         logger.info('Request USPS service: %s %s for tracking_code: %s' % (self.USPS_CONNECTION, self.USERID, tracking_code))
         response = []
         
