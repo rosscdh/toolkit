@@ -93,7 +93,7 @@ class CustomerPrintAndSignMarker(Marker):
         return {
             'method': 'PATCH',
             'status': self.val,
-            'tool': self.tool.tool_slug,  # should this be tool_pk not tool_slug
+            'tool': self.tool.tool_slug,
             'tool_object_id': self.tool.pk
         }
 
@@ -195,7 +195,7 @@ class DateStampedCopyRecievedMarker(Marker):
         return {
             'method': 'PATCH',
             'status': self.val,
-            'tool': self.tool.tool_slug,  # should this be tool_pk not tool_slug
+            'tool': self.tool.tool_slug,
             'tool_object_id': self.tool.pk
         }
 
