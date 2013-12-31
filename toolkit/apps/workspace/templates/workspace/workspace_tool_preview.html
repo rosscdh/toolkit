@@ -1,0 +1,98 @@
+{% extends 'workspace/workspace_tool_base.html' %}
+
+{% load url from future %}{% load humanize workspace_markers %}
+
+{% block header %}
+    <h4 class="caption"><a href="{% url 'workspace:view' slug=workspace.slug %}">{{ workspace.name }}</a></h4>
+    <h4>{{ object }}</h4>
+{% endblock %}
+
+{% block header_right %}
+    <div class="progress" data-toggle="tooltip" title="{{ object.markers.percent_complete }}% completed">
+        <div class="progress-bar" role="progressbar" aria-valuenow="{{ object.markers.percent_complete }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ object.markers.percent_complete }}%;">
+            <span class="sr-only">{{ object.markers.percent_complete }}% completed</span>
+        </div>
+    </div>
+{% endblock %}
+
+{% block main %}
+    {% block tabs %}
+        <ul class="nav nav-tabs nav-append-content">
+            <li class="active"><a href="#overview" data-toggle="tab">Overview</a></li>
+            <li><a href="#preview" data-toggle="tab">Preview</a></li>
+        </ul>
+    {% endblock %}
+
+    <div class="tab-content">
+        {% block overview %}
+            <div class="tab-pane active" id="overview">
+                <ul class="list-group status-list {{ tool.slug }}-status-list">
+                    {% for marker in object.markers %}
+                        {% block marker %}
+                            <li class="list-group-item status-list-item status-{{ marker.status }}">
+                                <div class="row">
+                                    {% if marker.status == 'done' %}
+                                        <div class="col-md-1 text-center">
+                                            <span class="status-list-item-icon fui-check-inverted"></span>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <h6 class="list-group-item-heading status-list-item-heading">{{ marker.description }}</h6>
+                                        </div>
+                                        <div class="col-md-4 text-right">
+                                            {% if marker.action_url and user.profile.user_class in marker.action_user_class %}
+                                                {% action_button marker css_class='btn btn-hg btn-info' %}
+                                            {% else %}
+                                                <ul class="list-inline status-list-item-meta">
+                                                    <li>Completed <strong>{{ marker.date_completed|naturaltime }}</strong></li>
+                                                </ul>
+                                            {% endif %}
+                                        </div>
+                                    {% elif marker.status == 'next' %}
+                                        <div class="col-md-1 text-center">
+                                            <span class="status-list-item-icon fui-alert"></span>
+                                        </div>
+                                        <div class="col-md-11">
+                                            <h6 class="list-group-item-heading status-list-item-heading">{{ marker.description }}</h6>
+                                            {% if marker.long_description %}<p class="list-group-item-text status-list-item-text">{{ marker.long_description }}</p>{% endif %}
+                                            <div class="status-list-item-actions">
+                                                {% if marker.action_url and user.profile.user_class in marker.action_user_class %}
+                                                    {% action_button marker css_class='btn btn-hg btn-info' %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% elif marker.status == 'pending' %}
+                                        <div class="col-md-1 text-center">
+                                            <span class="status-list-item-icon fui-radio-unchecked"></span>
+                                        </div>
+                                        <div class="col-md-11">
+                                            <h6 class="list-group-item-heading status-list-item-heading">{{ marker.description }}</h6>
+                                            {% if marker.long_description %}<p class="list-group-item-text status-list-item-text">{{ marker.long_description }}</p>{% endif %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </li>
+                        {% endblock %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endblock %}
+
+        {% block preview %}
+            <div class="tab-pane" id="preview">
+                <iframe name="id_preview" id="tool-preview" class="fade" style="width: 100%;" src="{% url 'workspace:tool_object_display' workspace=workspace.slug tool=tool.slug slug=object.slug %}"></iframe>
+            </div>
+        {% endblock %}
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            'use strict';
+
+            var $iframe = $('iframe#tool-preview');
+            var $overview = $('#overview');
+            $iframe.height($overview.height()).removeClass('fade');
+        });
+    </script>
+{% endblock %}
