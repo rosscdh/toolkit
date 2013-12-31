@@ -40,7 +40,7 @@
                                         </div>
                                         <div class="col-md-4 text-right">
                                             {% if marker.action_url and user.profile.user_class in marker.action_user_class %}
-                                                {% action_button marker css_class='btn btn-hg btn-info' %}
+                                                {% action_button marker css_class='btn btn-success' %}
                                             {% else %}
                                                 <ul class="list-inline status-list-item-meta">
                                                     <li>Completed <strong>{{ marker.date_completed|naturaltime }}</strong></li>
