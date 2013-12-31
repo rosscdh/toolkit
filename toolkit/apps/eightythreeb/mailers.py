@@ -35,14 +35,6 @@ class EightyThreeMailDeliveredEmail(BaseMailerService):
     """
     m = EightyThreeMailDeliveredEmail(from_tuple=('Ross', 'ross@lawpal.com'),
                                       recipients=(('Alex', 'alex@lawpal.com')))
-    m.process(company=instance.workspace,
-              url='',
-              current_status='',
-              next_step='',
-              current_step='',
-              total_steps='',
-              num_days_left='',
-              percent_complete='',
-              instance='')
+    m.process(instance='')
     """
     email_template = 'eightythreeb_delivered'

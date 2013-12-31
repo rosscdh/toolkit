@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.core.urlresolvers import reverse
+from django.utils.safestring import mark_safe
 
 from toolkit.apps.workspace.markers import BaseSignalMarkers, Marker
 
@@ -104,12 +105,38 @@ class CustomerPrintAndSignMarker(Marker):
             return u'/api/83b/%s' % self.tool.pk  # Modify this to come from reverse
 
 
-class CustomerCopyUploadedMarker(Marker):
+class CustomerUploadScanMarker(Marker):
     name = 'copy_uploaded'
     description = 'Client: Scan and upload signed copy'
-    signals = ['toolkit.apps.eightythreeb.signals.copy_sent_to_lawyer']
+    signals = ['toolkit.apps.eightythreeb.signals.copy_uploaded']
 
-    action_user_class = ['customer']
+    action_user_class = ['customer',]
+
+    @property
+    def action_name(self):
+        return 'Re-upload Attachment' if self.is_complete is True else 'Upload Attachment'
+
+    @property
+    def action_url(self):
+        if self.tool.status >= self.tool.STATUS_83b.copy_uploaded and self.tool.status <= self.tool.STATUS_83b.mail_to_irs_tracking_code:
+            return reverse('eightythreeb:attachment', kwargs={'slug': self.tool.slug})
+        else:
+            return None
+
+    @property
+    def is_complete(self):
+        if self.tool is not None:
+            return self.tool.attachment_set.all().count() > 0 and self.name in self.tool.data['markers']
+        return False
+
+    @property
+    def long_description(self):
+        msg = None
+
+        if self.tool.attachment and self.tool.attachment.url is not None:
+            msg = mark_safe('You have successfully uploaded a scan of your 83b, <a target="_BLANK" href="%s">click here</a> to view it' % self.tool.attachment.url)
+
+        return msg
 
 
 class CustomerTrackingNumberMarker(Marker):
@@ -194,7 +221,7 @@ class EightyThreeBSignalMarkers(BaseSignalMarkers):
         CustomerCompleteFormMarker(2),
         CustomerDownloadDocMarker(3),
         CustomerPrintAndSignMarker(4),
-        CustomerCopyUploadedMarker(5),
+        CustomerUploadScanMarker(5),
         CustomerTrackingNumberMarker(6),
         USPSDeliveryStatusMarker(7),
         DateStampedCopyRecievedMarker(8),

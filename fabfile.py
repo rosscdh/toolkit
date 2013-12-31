@@ -514,7 +514,7 @@ def rebuild_local():
     local('python manage.py syncdb')
     local('python manage.py migrate')
     local('python manage.py loaddata {fixtures}'.format(fixtures=env.fixtures))
-    local('python manage.py check_permissions')
+    #local('python manage.py check_permissions')
 
 
 @task

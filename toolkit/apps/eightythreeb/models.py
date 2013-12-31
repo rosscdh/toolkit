@@ -3,6 +3,9 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 
+from storages.backends.s3boto import S3BotoStorage
+
+import os
 from uuidfield import UUIDField
 from jsonfield import JSONField
 
@@ -13,6 +16,12 @@ EIGHTYTHREEB_STATUS = EightyThreeBSignalMarkers().named_tuple(name='EIGHTYTHREEB
 
 from .mixins import StatusMixin, IRSMixin, HTMLMixin, TransferAndFilingDatesMixin, USPSReponseMixin
 from .managers import EightyThreeBManager
+
+
+def _83b_upload_file(instance, filename):
+    filename = os.path.split(filename)[-1]
+    filename_no_ext, ext = os.path.splitext(filename)
+    return '83b/%d-%s%s' % (instance.eightythreeb.user.pk, slugify(filename_no_ext), ext)
 
 
 class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferAndFilingDatesMixin, WorkspaceToolModelMixin, models.Model):
@@ -60,14 +69,6 @@ class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferA
         return self.data.get('client_full_name', None)
 
     @property
-    def tracking_code(self):
-        return self.data.get('tracking_code')
-
-    @tracking_code.setter
-    def tracking_code(self, value):
-        self.data['tracking_code'] = value
-
-    @property
     def filename(self):
         return slugify('83b-{company}-{user}'.format(company=self.workspace, user=self.user.get_full_name() or self.user.username))
 
@@ -77,3 +78,7 @@ class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferA
     def get_edit_url(self):
         return reverse('workspace:tool_object_edit', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug=self.tool_slug).first().slug, 'slug': self.slug})
 
+
+class Attachment(models.Model):
+    eightythreeb = models.ForeignKey('eightythreeb.EightyThreeB')
+    attachment = models.FileField(upload_to=_83b_upload_file, blank=True, storage=S3BotoStorage())

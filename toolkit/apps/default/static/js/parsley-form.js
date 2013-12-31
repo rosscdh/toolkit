@@ -4,41 +4,57 @@
         parsley: function(options, fn) {
             // Setup the default form listeners
             this.defaultOptions = {
+                errors: {
+                    container: function(el) {
+                        return $(el).closest('[parsley-validate]').find('.form-errors');
+                    }
+                },
                 listeners: {
                     onFormValidate: function(isFormValid, ev) {
+                        var $form = $(ev.target);
+                        var $errors = $form.find('.form-errors');
+
                         if (isFormValid) {
-                            $('.form-errors').addClass('hide');
+                            $errors.addClass('hide');
                         } else {
-                            var count = $('ul.parsley-error-list li').length;
+                            var count = $errors.find('ul.parsley-error-list li').length;
                             if (count > 1) {
-                                $('.form-errors p').html('There were ' + count + ' errors with this:');
+                                $errors.find('p').html('There were ' + count + ' errors with this:');
                             } else if (count == 1) {
-                                $('.form-errors p').html('There was 1 error with this:');
+                                $errors.find('p').html('There was 1 error with this:');
                             };
 
-                            $('.form-errors').removeClass('hide');
+                            $errors.removeClass('hide');
                         };
                     },
                     onFieldValidate: function(field) {
-                        var count = $('ul.parsley-error-list li').length;
+                        var $field = $(field);
+                        var $form = $field.closest('[parsley-validate]');
+                        var $errors = $form.find('.form-errors');
+
+                        var count = $errors.find('ul.parsley-error-list li').length;
                         if (count > 1) {
-                            $('.form-errors p').html('There were ' + count + ' errors with this:');
-                            $('.form-errors').removeClass('hide');
+                            $errors.find('p').html('There were ' + count + ' errors with this:');
+                            $errors.removeClass('hide');
                         } else if (count == 1) {
-                            $('.form-errors p').html('There was 1 error with this:');
-                            $('.form-errors').removeClass('hide');
+                            $errors.find('p').html('There was 1 error with this:');
+                            $errors.removeClass('hide');
                         } else {
-                            $('.form-errors').addClass('hide');
+                            $errors.addClass('hide');
                         };
                     },
                     onFieldError: function(field, constraint) {
-                        var count = $('ul.parsley-error-list li').length;
+                        var $field = $(field);
+                        var $form = $field.closest('[parsley-validate]');
+                        var $errors = $form.find('.form-errors');
+
+                        var count = $errors.find('ul.parsley-error-list li').length;
                         if (count > 1) {
-                            $('.form-errors p').html('There were ' + count + ' errors with this:');
-                            $('.form-errors').removeClass('hide');
+                            $errors.find('p').html('There were ' + count + ' errors with this:');
+                            $errors.removeClass('hide');
                         } else if (count == 1) {
-                            $('.form-errors p').html('There was 1 error with this:');
-                            $('.form-errors').removeClass('hide');
+                            $errors.find('p').html('There was 1 error with this:');
+                            $errors.removeClass('hide');
                         };
                     }
                 }
