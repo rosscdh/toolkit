@@ -19,10 +19,10 @@ class AppTestRunner(DjangoTestSuiteRunner):
 
         return super(AppTestRunner, self).build_suite(test_labels, *args, **kwargs)
 
-    def setup_test_environment(self, **kwargs):
-        call_command('collectstatic', interactive=False)  # collect static so our casper tests break less
-        super(AppTestRunner, self).setup_test_environment(**kwargs)
+    # def setup_test_environment(self, **kwargs):
+    #     call_command('collectstatic', interactive=False)  # collect static so our casper tests break less
+    #     super(AppTestRunner, self).setup_test_environment(**kwargs)
 
-    def teardown_test_environment(self, **kwargs):
-        shutil.rmtree(settings.STATIC_ROOT)  # delete the static folder
-        super(AppTestRunner, self).teardown_test_environment(**kwargs)
+    # def teardown_test_environment(self, **kwargs):
+    #     shutil.rmtree(settings.STATIC_ROOT)  # delete the static folder
+    #     super(AppTestRunner, self).teardown_test_environment(**kwargs)

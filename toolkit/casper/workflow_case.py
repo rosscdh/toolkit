@@ -8,10 +8,13 @@ from pyquery import PyQuery as pq
 
 from .base import BaseCasperJs
 
-from toolkit.apps.eightythreeb.tests.data import EIGHTYTHREEB_DATA
+from toolkit.apps.workspace.models import Tool
+from toolkit.apps.eightythreeb.models import EightyThreeB
+from toolkit.apps.eightythreeb.tests.data import EIGHTYTHREEB_DATA as BASE_EIGHTYTHREEB_DATA
 
 import mock
 import logging
+import datetime
 logger = logging.getLogger('django.test')
 
 
@@ -25,17 +28,8 @@ class PyQueryMixin(LiveServerTestCase):
         self.pq = pq
 
 
-class BaseProjectCaseMixin(BaseCasperJs):
-    """
-    Base mixin for a Setup to be used in lawyer/customer/project analysis
-    https://github.com/dobarkod/django-casper/
-    """
+class BaseScenarios(object):
     fixtures = ['sites', 'tools']
-
-    @mock.patch('django_filepicker.models.FPFileField', FileSystemStorage)
-    def setUp(self):
-        super(BaseProjectCaseMixin, self).setUp()
-        self.client = Client()
 
     def basic_workspace(self):
         self.user = mommy.make('auth.User', first_name='Customer', last_name='Test', email='test+customer@lawpal.com')
@@ -46,7 +40,7 @@ class BaseProjectCaseMixin(BaseCasperJs):
         self.workspace.participants.add(self.user)
         self.workspace.participants.add(self.lawyer)
 
-        EIGHTYTHREEB_DATA = EIGHTYTHREEB_DATA.copy()
+        EIGHTYTHREEB_DATA = BASE_EIGHTYTHREEB_DATA.copy()
         EIGHTYTHREEB_DATA['markers'] = {}  # set teh markers to nothing
 
         self.eightythreeb = mommy.make('eightythreeb.EightyThreeB',
@@ -56,4 +50,16 @@ class BaseProjectCaseMixin(BaseCasperJs):
                             data=EIGHTYTHREEB_DATA,
                             filing_date=datetime.date.today() + datetime.timedelta(days=30),
                             transfer_date=datetime.date.today(),
-                            status=EightyThreeB.lawyer_complete_form)
+                            status=EightyThreeB.STATUS_83b.lawyer_complete_form)
+
+
+class BaseProjectCaseMixin(BaseScenarios, BaseCasperJs):
+    """
+    Base mixin for a Setup to be used in lawyer/customer/project analysis
+    https://github.com/dobarkod/django-casper/
+    """
+    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
+    def setUp(self):
+        super(BaseProjectCaseMixin, self).setUp()
+        self.client = Client()
+
