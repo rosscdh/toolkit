@@ -149,13 +149,18 @@ class BaseSignalMarkers(object):
 
 
 class Marker:
+    ACTION_TYPE_REMOTE = 'remote'
+    ACTION_TYPE_REDIRECT = 'redirect'
+
     tool = None
     name = None
     description = None
     long_description = None
 
-    action_name = 'Modify'
+    action_name = None
+    action_type = None
     action_url = None
+    action_attribs = {}
     action_user_class = []  # must be a list so we can handle multiple types
 
     markers_map = {
@@ -168,9 +173,12 @@ class Marker:
     next = None
     previous = None
 
-    def __init__(self, val, name, **kwargs):
+    def __init__(self, val, **kwargs):
         self.val = val
-        self.name = name
+
+        name = kwargs.pop('name', None)
+        if name is not None:
+            self.name = name
 
         description = kwargs.pop('description', None)
         if description is not None:
@@ -229,6 +237,16 @@ class Marker:
     #         return False
     #     # if they have already completed this status then allow it
     #     return self.tool.status > self.val or self.name in self.tool.data['markers']
+
+    @property
+    def status(self):
+        if self.is_complete:
+            return 'done'
+
+        if  self.previous.is_complete and not self.next.is_complete:
+            return 'next'
+
+        return 'pending'
 
     @property
     def is_complete(self):
