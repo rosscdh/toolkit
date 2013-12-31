@@ -87,6 +87,11 @@
   font-weight: normal;
   margin: 0 4px 0 9px;
 }
+.page-header .progress {
+  margin-bottom: 15px;
+  margin-top: 15px;
+  width: 200px;
+}
 .page-header h4 {
   display: inline-block;
   margin: 0;
@@ -141,4 +146,40 @@
 }
 .section .section-header .btn {
   margin-top: -5px;
+}
+.status-list-item-icon {
+  font-size: 24px;
+}
+.status-next .status-list-item-icon {
+  font-size: 29px;
+}
+.status-list-item-heading {
+  font-size: 18px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+.status-next .status-list-item-heading {
+  font-size: 24px;
+}
+.status-list-item-meta {
+  font-size: 75%;
+  margin-bottom: 7.5px;
+  margin-top: 7.5px;
+}
+.status-list-item-text {
+  font-size: 75%;
+}
+.status-next .status-list-item-text {
+  font-size: 100%;
+}
+.status-pending {
+  color: #bdc3c7;
+}
+.status-next {
+  background-color: #edf6fc;
+  color: #3498db;
+}
+.status-done {
+  background-color: #ecfaf2;
+  color: #2ecc71;
 }
