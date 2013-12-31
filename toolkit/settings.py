@@ -50,7 +50,7 @@ STATICFILES_FINDERS = (
 )
 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
