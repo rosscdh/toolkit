@@ -46,7 +46,10 @@ class CustomerUploadScanMarker(Marker):
         return 'Re-upload Attachment' if self.is_complete is True else 'Upload Attachment'
 
     def action_url(self):
-        return reverse('eightythreeb:attachment', kwargs={'slug': self.tool.slug})
+        if self.tool.status >= self.tool.STATUS_83b.copy_uploaded and self.tool.status <= self.tool.STATUS_83b.mail_to_irs_tracking_code:
+            return reverse('eightythreeb:attachment', kwargs={'slug': self.tool.slug})
+        else:
+            return None
 
     @property
     def is_complete(self):
