@@ -10,7 +10,7 @@ import logging
 logging.disable(logging.CRITICAL)
 
 # Custom test runner for this project
-#TEST_RUNNER = 'toolkit.test_runner.AppTestRunner'
+TEST_RUNNER = 'toolkit.test_runner.AppTestRunner'
 
 PROJECT_ENVIRONMENT = 'test'
 
