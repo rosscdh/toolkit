@@ -31,6 +31,10 @@ class LawyerInviteUserMarker(Marker):
     action_user_class = ['lawyer']
 
     @property
+    def action_name(self):
+        return 'Reinvite Client' if self.is_complete is True else 'Invite Client'
+
+    @property
     def action_url(self):
         if self.tool.is_complete is True or self.tool.status > self.tool.STATUS_83b.customer_complete_form:
             return None
