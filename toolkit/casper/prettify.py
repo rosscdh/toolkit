@@ -5,6 +5,8 @@ import re
 import inspect
 import httpretty
 
+from toolkit.apps.eightythreeb.tests.usps_trackfield_response import TRACK_RESPONSE_XML_BODY
+
 import logging
 logger = logging.getLogger('django.test')
 
@@ -14,7 +16,18 @@ def mock_http_requests(view_func):
     A generic decorator to be called on all methods that do somethign with
     external apis
     """
+    @httpretty.activate
     def _decorator(request, *args, **kwargs):
+        #
+        # USPS
+        # POST and GET are the same as USPS is not REST or even RESTFUL
+        #
+        httpretty.register_uri(httpretty.POST, "http://production.shippingapis.com/ShippingAPI.dll",
+                               body=TRACK_RESPONSE_XML_BODY,
+                               status=200)
+        httpretty.register_uri(httpretty.GET, "http://production.shippingapis.com/ShippingAPI.dll",
+                               body=TRACK_RESPONSE_XML_BODY,
+                               status=200)
         #
         # Abridge
         #
@@ -42,6 +55,7 @@ def mock_http_requests(view_func):
     return wraps(view_func)(_decorator)
 
 
+
 def httprettify_methods():
     """
     Method to wrap all methods within a decorated class
@@ -49,7 +63,6 @@ def httprettify_methods():
     wraps all test methods with the "mock_http_requests" method which in turn
     sets up the httpretty mocks
     """
-    @httpretty.activate
     def decorate(cls):
         for mthd in [name for name, mthd in inspect.getmembers(cls, predicate=inspect.ismethod) if name.endswith('_test') or name.startswith('test_') or name == 'setUp']:  # there's propably a better way to do this
             if callable(getattr(cls, mthd)):

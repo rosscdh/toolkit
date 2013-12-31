@@ -20,6 +20,9 @@ from toolkit.apps.workspace.services import USPSTrackingService
 
 import datetime
 
+import logging
+logger = logging.getLogger('django.request')
+
 
 def _current_year():
     return datetime.datetime.utcnow().year
@@ -250,6 +253,7 @@ class CustomerEightyThreeBForm(BaseEightyThreeBForm):
         self.fields['transfer_value_total'].widget = forms.HiddenInput()
 
         self.helper.layout = Layout(
+            HTML('{% include "partials/form-errors.html" with form=form %}'),
             Div(
                 HTML('<h4>Disclaimer</h4>'),
                 HTML('<p>LawPal Inc. is not an attorney or law firm and this is not intended as legal advice. \
@@ -329,6 +333,18 @@ class CustomerEightyThreeBForm(BaseEightyThreeBForm):
             )
         )
 
+    # def clean_accountant_email(self):
+    #     accountant_email = self.cleaned_data['accountant_email']
+
+    #     if accountant_email is not None:
+    #         logger.info('Accountant email is present %s' % accountant_email)
+    #         accountant_email_service = EnsureCustomerService(email=accountant_email)
+    #         accountant_email_service.process()
+    #         is_new = accountant_email_service.is_new
+    #         logger.info('Accountant email %s a new user %s' % ('is' if is_new is True else 'is not', accountant_email))
+
+    #     return accountant_email
+
     def clean(self):
         """
         If the ssn or itin is not specified and we have a blank value
@@ -370,6 +386,7 @@ class LawyerEightyThreeBForm(BaseEightyThreeBForm):
         self.fields['has_spouse'].widget.attrs['disabled'] = 'disabled'
 
         self.helper.layout = Layout(
+            HTML('{% include "partials/form-errors.html" with form=form %}'),
             Div(
                 HTML('<legend>Client details</legend>'),
                 Div(
@@ -478,7 +495,8 @@ class TrackingCodeForm(forms.ModelForm):
         service = USPSTrackingService()
 
         try:
-            service.track(tracking_code=tracking_code)
+            usps_response = service.track(tracking_code=tracking_code)
+            service.record(instance=self.instance, usps_response=usps_response)
         except Exception as e:
             raise forms.ValidationError('The Tracking code is not valid: %s' % e)
             logger.error('Invalid Tracking Code %s entered by %s' % (tracking_code, self.user.email))
@@ -493,3 +511,24 @@ class TrackingCodeForm(forms.ModelForm):
         # save to data
         self.instance.tracking_code = self.cleaned_data.get('tracking_code')
         return super(TrackingCodeForm, self).save(**kwargs)
+
+
+@parsleyfy
+class AttachmentForm(forms.ModelForm):
+    class Meta:
+        model = EightyThreeB
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.attrs = {
+            'parsley-validate': '',
+        }
+
+        self.helper.layout = Layout(
+            ButtonHolder(
+                Submit('submit', 'Upload', css_class='btn-hg btn-primary'),
+                css_class='form-group'
+            )
+        )
+
+        super(AttachmentForm, self).__init__(*args, **kwargs)

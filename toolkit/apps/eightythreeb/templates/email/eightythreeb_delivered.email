@@ -1,6 +1,12 @@
 {% extends 'email/base.email' %}
 
-{% block subject %}{% endblock %}
+{% block subject %}83(b) Filing Completed for {{ instance.user.get_full_name }}{% endblock %}
 
 {% block html_content %}
+
+83(b) Election for {{ instance.user.get_full_name }} has been received by the IRS.
+
+This is an automated notification that the 83(b) Election for {{ instance.user.get_full_name }} has been received by the IRS on <date>. The filing deadline for this application was <filing deadline>.
+
+Proof of delivery is being stored in LawPal.
 {% endblock %}

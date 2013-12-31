@@ -4,8 +4,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 
 from parsley.decorators import parsleyfy
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, ButtonHolder, Submit, Field, Fieldset
+from crispy_forms.helper import FormHelper, Layout
+from crispy_forms.layout import ButtonHolder, Field, Fieldset, HTML, Submit
 
 from . import _get_unique_username
 
@@ -53,12 +53,12 @@ class SignUpForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         self.helper.attrs = {
-            'parsley-validate': '',
-            'parsley-error-container': '.parsley-errors'
+            'parsley-validate': ''
         }
         self.helper.form_show_errors = False
 
         self.helper.layout = Layout(
+            HTML('{% include "partials/form-errors.html" with form=form %}'),
             Fieldset(
                 '',
                 Field('email', css_class='input-hg'),
@@ -135,11 +135,11 @@ class SignInForm(forms.Form):
         self.helper = FormHelper()
         self.helper.attrs = {
             'parsley-validate': '',
-            'parsley-error-container': '.parsley-errors'
         }
         self.helper.form_show_errors = False
 
         self.helper.layout = Layout(
+            HTML('{% include "partials/form-errors.html" with form=form %}'),
             Fieldset(
                 '',
                 Field('email', css_class='input-hg'),

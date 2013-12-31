@@ -87,7 +87,6 @@ class WorkspaceToolFormMixin(forms.Form):
 
         self.helper.attrs = {
             'parsley-validate': '',
-            'parsley-error-container': '.parsley-errors'
         }
         self.helper.form_show_errors = False
 
@@ -105,27 +104,27 @@ class WorkspaceToolModelMixin(object):
 
         data = self.data.copy()
         for key, value in data.iteritems():
-            if TIME_RE.match(str(value)):
+            if TIME_RE.match(unicode(value)):
                 data[key] = datetime.strptime(value, '%H-%M:%S')
 
-            if DATE_RE.match(str(value)):
+            if DATE_RE.match(unicode(value)):
                 data[key] = datetime.strptime(value, '%Y-%m-%d')
 
-            if DATETIME_RE.match(str(value)):
+            if DATETIME_RE.match(unicode(value)):
                 data[key] = datetime.strptime(value, '%Y-%m-%dT%H:%M:%S')
 
         return data
 
 
 class IssueSignalsMixin(object):
-    def issue_signals(self, request, instance, **kwargs):
+    def issue_signals(self, request, instance, name, **kwargs):
         """
         issue the base_signal signal to handle any change events
         """
         logger.debug('Issuing signals for WorkspaceToolObjectDownloadView')
 
         if hasattr(instance, 'base_signal'):
-            instance.base_signal.send(sender=request, instance=instance, actor=request.user, **kwargs)
+            instance.base_signal.send(sender=request, instance=instance, actor=request.user, name=name, **kwargs)
             logger.info('Issued signals for %s (%s)' % (instance, request.user))
 
         else:
