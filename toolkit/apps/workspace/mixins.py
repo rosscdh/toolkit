@@ -124,7 +124,7 @@ class IssueSignalsMixin(object):
         logger.debug('Issuing signals for WorkspaceToolObjectDownloadView')
 
         if hasattr(instance, 'base_signal'):
-            instance.base_signal.send(sender=request, instance=instance, actor=request.user, **kwargs)
+            instance.base_signal.send(sender=request, instance=instance, actor=request.user, name=name, **kwargs)
             logger.info('Issued signals for %s (%s)' % (instance, request.user))
 
         else:
