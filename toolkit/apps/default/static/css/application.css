@@ -172,6 +172,10 @@
 .status-next .status-list-item-text {
   font-size: 100%;
 }
+.status-list-item-actions {
+  margin-bottom: 7.5px;
+  margin-top: 7.5px;
+}
 .status-pending {
   color: #bdc3c7;
 }
