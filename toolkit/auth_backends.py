@@ -46,7 +46,7 @@ class SecretKeyBackend(EmailBackend):
 
             user = invite.invited_user
 
-        except ObjectDoesNotExist, InviteKey.DoesNotExist:
+        except ObjectDoesNotExist, InviteKey.DoesNotExist, DataError:
             LOGGER.error('InviteKey does not exist: %s' % username)
 
         return user
