@@ -159,7 +159,7 @@ class CustomerTrackingNumberMarker(Marker):
 
 class USPSDeliveryStatusMarker(Marker):
     name = 'irs_recieved'
-    signals=['toolkit.apps.eightythreeb.signals.irs_recieved']
+    signals = ['toolkit.apps.eightythreeb.signals.irs_recieved']
 
     @property
     def description(self):
