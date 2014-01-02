@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django import forms
+from django.core.urlresolvers import reverse
 
 from crispy_forms.bootstrap import FieldWithButtons, PrependedText, StrictButton
 from crispy_forms.helper import FormHelper, Layout
@@ -199,6 +200,9 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
 
         if self.fields['company_name'].initial in ['', None]:
             self.fields['company_name'].initial = self.workspace.name
+
+    def get_success_url(self, instance):
+        return reverse('eightythreeb:preview', kwargs={'slug': instance.slug})
 
     def save(self):
         # Ensure we have a customer with this info
