@@ -15,7 +15,7 @@ from .markers import EightyThreeBSignalMarkers
 EIGHTYTHREEB_STATUS = EightyThreeBSignalMarkers().named_tuple(name='EIGHTYTHREEB_STATUS')
 
 from .mixins import StatusMixin, IRSMixin, HTMLMixin, TransferAndFilingDatesMixin, USPSReponseMixin
-from .managers import EightyThreeBManager
+from .managers import EightyThreeBManager, AttachmentManger
 
 
 def _83b_upload_file(instance, filename):
@@ -82,3 +82,7 @@ class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferA
 class Attachment(models.Model):
     eightythreeb = models.ForeignKey('eightythreeb.EightyThreeB')
     attachment = models.FileField(upload_to=_83b_upload_file, blank=True, storage=S3BotoStorage())
+    is_deleted = models.BooleanField(default=False)
+
+    objects = AttachmentManger()
+
