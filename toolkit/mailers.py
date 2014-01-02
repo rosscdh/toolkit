@@ -68,5 +68,5 @@ class BaseMailerService(object):
                 template_prefix=self.base_email_template_location,
                 from_email=context.get('from_email'),
                 recipient_list=[context.get('to_email')],
-                bcc=['founders@lawpal.com'] if settings.DEBUG is False else [],  # only bcc us in on live mails
+                bcc=['founders@lawpal.com'] if settings.PROJECT_ENVIRONMENT == 'prod' else [],  # only bcc us in on live mails
                 context=context)
