@@ -8,7 +8,7 @@ from toolkit.casper.workflow_case import BaseScenarios
 
 class AttachmentQuerysetAndObjectDeleteTest(BaseScenarios, TestCase):
     def setUp(self):
-        super(AttachmentDeleteTest, self).setUp()
+        super(AttachmentQuerysetAndObjectDeleteTest, self).setUp()
         self.basic_workspace()
 
         self.eightythreeb.attachment_set.add(mommy.make('eightythreeb.Attachment', eightythreeb=self.eightythreeb))
