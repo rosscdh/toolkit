@@ -11,13 +11,11 @@
 {% endblock %}
 
 {% block content %}
-    <div class="page-header">
-        <h4>Invite {{ tool_instance.user.get_full_name }}<br/><small>{{ tool_instance.user.email }}</small></h4>
-    </div>
+    <h4>Invite {{ tool_instance.user.get_full_name }} <small>({{ tool_instance.user.email }})</small></h4>
+    <p class="">The 83(b) Election Letter has been set up. You can now invite {{ tool_instance.user.get_full_name }} to complete the process on LawPal. Please review the message below, ammend it where necessary and click "Send Invite".</p>
+    <hr />
     {% include 'partials/form-errors.html' with form=form %}
-    <div class="col-sm-12">
 	    {% crispy form %}
-	</div>
 {% endblock %}
 
 {% block css %}
