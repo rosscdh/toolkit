@@ -9,6 +9,8 @@ import os
 from uuidfield import UUIDField
 from jsonfield import JSONField
 
+from rulez import registry as rulez_registry
+
 from toolkit.apps.workspace.mixins import WorkspaceToolModelMixin
 
 from .markers import EightyThreeBSignalMarkers
@@ -91,3 +93,7 @@ class Attachment(IsDeletedMixin, models.Model):
 
     objects = AttachmentManger()
 
+    def can_delete(self, user):
+        return user == self.eightythreeb.user
+
+rulez_registry.register("can_delete", Attachment)
