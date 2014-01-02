@@ -14,12 +14,15 @@ class LawyerCompleteFormMarker(Marker):
     action_type = Marker.ACTION_TYPE_REDIRECT
     action_user_class = ['lawyer']
 
+    def get_action_url(self):
+        return reverse('workspace:tool_object_edit', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.tool_slug, 'slug': self.tool.slug})
+
     @property
     def action_url(self):
         if self.tool.is_complete is True or self.tool.status > self.val:
             return None
         else:
-            return reverse('workspace:tool_object_edit', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.tool_slug, 'slug': self.tool.slug})
+            return self.get_action_url()
 
 
 class LawyerInviteUserMarker(Marker):
@@ -35,12 +38,15 @@ class LawyerInviteUserMarker(Marker):
     def action_name(self):
         return 'Reinvite Client' if self.is_complete is True else 'Invite Client'
 
+    def get_action_url(self):
+        return reverse('workspace:tool_object_invite', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.tool_slug, 'slug': self.tool.slug})
+
     @property
     def action_url(self):
         if self.tool.is_complete is True or self.tool.status > self.tool.STATUS_83b.customer_complete_form:
             return None
         else:
-            return reverse('workspace:tool_object_invite', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.tool_slug, 'slug': self.tool.slug})
+            return self.get_action_url()
 
 
 class CustomerCompleteFormMarker(Marker):
@@ -52,12 +58,15 @@ class CustomerCompleteFormMarker(Marker):
     action_type = Marker.ACTION_TYPE_REDIRECT
     action_user_class = ['customer']
 
+    def get_action_url(self):
+        return reverse('workspace:tool_object_edit', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.tool_slug, 'slug': self.tool.slug})
+
     @property
     def action_url(self):
         if self.tool.is_complete is True or self.tool.status > self.val:
             return None
         else:
-            return reverse('workspace:tool_object_edit', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.tool_slug, 'slug': self.tool.slug})
+            return self.get_action_url()
 
 
 class CustomerDownloadDocMarker(Marker):
@@ -70,12 +79,15 @@ class CustomerDownloadDocMarker(Marker):
     action_type = Marker.ACTION_TYPE_REDIRECT
     action_user_class = ['customer']
 
+    def get_action_url(self):
+        return reverse('workspace:tool_object_download', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.tool_slug, 'slug': self.tool.slug})
+
     @property
     def action_url(self):
         if self.tool.is_complete is True or self.tool.status > self.val:
             return None
         else:
-            return reverse('workspace:tool_object_download', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.tool_slug, 'slug': self.tool.slug})
+            return self.get_action_url()
 
 
 class CustomerPrintAndSignMarker(Marker):
@@ -97,12 +109,15 @@ class CustomerPrintAndSignMarker(Marker):
             'tool_object_id': self.tool.pk
         }
 
+    def get_action_url(self):
+        return u'/api/83b/%s' % self.tool.pk  # Modify this to come from reverse
+
     @property
     def action_url(self):
         if self.tool.is_complete is True or self.tool.status > self.val:
             return None
         else:
-            return u'/api/83b/%s' % self.tool.pk  # Modify this to come from reverse
+            return self.get_action_url()
 
 
 class CustomerUploadScanMarker(Marker):
@@ -116,10 +131,13 @@ class CustomerUploadScanMarker(Marker):
     def action_name(self):
         return 'Re-upload Attachment' if self.is_complete is True else 'Upload Attachment'
 
+    def get_action_url(self):
+        return reverse('eightythreeb:attachment', kwargs={'slug': self.tool.slug})
+
     @property
     def action_url(self):
         if self.tool.status >= self.tool.STATUS_83b.copy_uploaded and self.tool.status <= self.tool.STATUS_83b.mail_to_irs_tracking_code:
-            return reverse('eightythreeb:attachment', kwargs={'slug': self.tool.slug})
+            return self.get_action_url()
         else:
             return None
 
@@ -149,12 +167,15 @@ class CustomerTrackingNumberMarker(Marker):
     action_type = Marker.ACTION_TYPE_REDIRECT
     action_user_class = ['customer', 'lawyer']
 
+    def get_action_url(self):
+        reverse('eightythreeb:tracking_code', kwargs={'slug': self.tool.slug})
+
     @property
     def action_url(self):
         if self.tool.is_complete is True or self.tool.status > self.val:
             return None
         else:
-            return reverse('eightythreeb:tracking_code', kwargs={'slug': self.tool.slug})
+            return self.get_action_url()
 
 
 class USPSDeliveryStatusMarker(Marker):
@@ -199,12 +220,15 @@ class DateStampedCopyRecievedMarker(Marker):
             'tool_object_id': self.tool.pk
         }
 
+    def get_action_url(self):
+        return u'/api/83b/%s' % self.tool.pk  # Modify this to come from reverse
+
     @property
     def action_url(self):
         if self.tool.is_complete is True or self.tool.status > self.val:
             return None
         else:
-            return u'/api/83b/%s' % self.tool.pk  # Modify this to come from reverse
+            return self.get_action_url()
 
 
 class ProcessCompleteMarker(Marker):
