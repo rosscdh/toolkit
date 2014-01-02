@@ -107,6 +107,12 @@ class CreateWorkspaceToolObjectView(WorkspaceToolFormViewMixin, CreateView):
         return qs.filter(user=self.request.user).first()
 
     def get_success_url(self):
+        """
+        Generic view now tests for the form having a get_success_url and because
+        the forms all extend “WorkspaceToolFormMixin” which is a forms.Form and
+        not forms.Model form we need to pass instance into the method
+        (as the form does not have self.instance as its not a model form)
+        """
         form = self.get_form(form_class=self.get_form_class())
         if hasattr(form, 'get_success_url'):
             return form.get_success_url(instance=self.object)
@@ -125,8 +131,13 @@ class UpdateViewWorkspaceToolObjectView(WorkspaceToolFormViewMixin, UpdateView):
     model = Tool
 
     def get_success_url(self):
+        """
+        Generic view now tests for the form having a get_success_url and because
+        the forms all extend “WorkspaceToolFormMixin” which is a forms.Form and
+        not forms.Model form we need to pass instance into the method
+        (as the form does not have self.instance as its not a model form)
+        """
         form = self.get_form(form_class=self.get_form_class())
-
         if hasattr(form, 'get_success_url'):
             return form.get_success_url(instance=self.object)
 
