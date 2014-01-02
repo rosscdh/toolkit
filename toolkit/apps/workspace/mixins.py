@@ -75,7 +75,7 @@ class WorkspaceToolFormViewMixin(WorkspaceToolViewMixin, FormView):
 
 class WorkspaceToolFormMixin(forms.Form):
     def __init__(self, *args, **kwargs):
-        kwargs.pop('instance')  # pop this as we are not using a model form
+        self.instance = kwargs.pop('instance', None)  # pop this as we are not using a model form
         self.request = kwargs.pop('request')
         self.workspace = kwargs.pop('workspace')
 
