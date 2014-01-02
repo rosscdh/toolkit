@@ -8,10 +8,6 @@ from pyquery import PyQuery as pq
 
 from .base import BaseCasperJs
 
-from toolkit.apps.workspace.models import Tool
-from toolkit.apps.eightythreeb.models import EightyThreeB
-from toolkit.apps.eightythreeb.tests.data import EIGHTYTHREEB_DATA as BASE_EIGHTYTHREEB_DATA
-
 import mock
 import logging
 import datetime
@@ -32,6 +28,10 @@ class BaseScenarios(object):
     fixtures = ['sites', 'tools']
 
     def basic_workspace(self):
+        from toolkit.apps.workspace.models import Tool
+        from toolkit.apps.eightythreeb.models import EightyThreeB
+        from toolkit.apps.eightythreeb.tests.data import EIGHTYTHREEB_DATA as BASE_EIGHTYTHREEB_DATA
+
         self.user = mommy.make('auth.User', first_name='Customer', last_name='Test', email='test+customer@lawpal.com')
         self.lawyer = mommy.make('auth.User', first_name='Lawyer', last_name='Test', email='test+lawyer@lawpal.com')
 
@@ -40,14 +40,14 @@ class BaseScenarios(object):
         self.workspace.participants.add(self.user)
         self.workspace.participants.add(self.lawyer)
 
-        EIGHTYTHREEB_DATA = BASE_EIGHTYTHREEB_DATA.copy()
-        EIGHTYTHREEB_DATA['markers'] = {}  # set teh markers to nothing
+        eightythreeb_data = BASE_EIGHTYTHREEB_DATA.copy()
+        eightythreeb_data['markers'] = {}  # set teh markers to nothing
 
         self.eightythreeb = mommy.make('eightythreeb.EightyThreeB',
                             slug='e0c545082d1241849be039e338e47a0f',
                             workspace=self.workspace,
                             user=self.user,
-                            data=EIGHTYTHREEB_DATA,
+                            data=eightythreeb_data,
                             filing_date=datetime.date.today() + datetime.timedelta(days=30),
                             transfer_date=datetime.date.today(),
                             status=EightyThreeB.STATUS_83b.lawyer_complete_form)

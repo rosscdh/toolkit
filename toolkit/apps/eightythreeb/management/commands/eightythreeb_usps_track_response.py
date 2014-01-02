@@ -19,9 +19,9 @@ class Command(BaseCommand):
 
     @property
     def service(self):
-      if hasattr(self, '_service') is False or self._service is None:
-        self._service = USPSTrackingService()
-      return self._service
+        if hasattr(self, '_service') is False or self._service is None:
+            self._service = USPSTrackingService()
+        return self._service
 
     @property
     def eightythreeb_list(self):
@@ -49,7 +49,6 @@ class Command(BaseCommand):
 
             if tracking_code is None:
                 logger.critical('Found 83b instance in track_response cycle with no tracking_code: %s %s' % (instance, tracking_code))
-
             else:
                 logger.info('Found 83b instance with tracking_code: %s %s' % (instance, tracking_code))
 
@@ -63,4 +62,4 @@ class Command(BaseCommand):
                         instance.base_signal.send(sender=self, instance=instance, actor=instance.user, name='irs_recieved')
 
                 except Exception as e:
-                  logger.error('83b instance raised Exception: %s %s %s' % (instance, tracking_code, e))
+                    logger.error('83b instance raised Exception: %s %s %s' % (instance, tracking_code, e))
