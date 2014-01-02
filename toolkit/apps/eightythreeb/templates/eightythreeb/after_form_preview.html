@@ -1,0 +1,40 @@
+{% extends 'workspace/workspace_tool_form.html' %}
+
+{% block page_title %}Preview the 83(b){% endblock %}
+
+{% block header %}
+<h4>Preview the 83(b)</h4>
+{% endblock %}
+
+{% block css %}
+<style>
+#overview {
+    height:590px;
+}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+
+    <div class="btn-group btn-group-lg">
+      <a href="{{ previous_url }}" type="button" class="btn btn-default">Previous</a>
+      <a href="{{ next_url }}" type="button" class="btn btn-default">Next</a>
+    </div>
+</div>
+<div id="overview" class="row">
+    <iframe name="id_preview" id="tool-preview" class="fade" style="width: 100%;" src="{% url 'workspace:tool_object_display' workspace=object.workspace.slug tool=object.tool_slug slug=object.slug %}"></iframe>
+</div>
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            'use strict';
+
+            var $iframe = $('iframe#tool-preview');
+            var $overview = $('#overview');
+            $iframe.height($overview.height()).removeClass('fade');
+        });
+    </script>
+{% endblock %}
