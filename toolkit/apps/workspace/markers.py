@@ -153,9 +153,12 @@ class Marker:
     ACTION_TYPE_REDIRECT = 'redirect'
 
     tool = None
+    val = None
+
     name = None
     description = None
     long_description = None
+    signals = []
 
     action_name = None
     action_type = None
@@ -168,8 +171,6 @@ class Marker:
         'next': None,
     }
 
-    val = None
-    signals = None
     next = None
     previous = None
 
@@ -188,6 +189,10 @@ class Marker:
         if long_description is not None:
             self.long_description = long_description
 
+        signals = kwargs.pop('signals', None)
+        if signals is not None:
+            self.signals = signals
+
         # use the locally defined def action_url if exists otherwise if an
         # action_url is passed in; use that
         if hasattr(self, 'action_name') is False and 'action_name' in kwargs:
@@ -199,11 +204,17 @@ class Marker:
         if hasattr(self, 'action_user_class') is False and 'action_user_class' in kwargs:
             self.action_user = kwargs.pop('action_user_class')
 
-        self.signals = kwargs.pop('signals', [])
-        self.next = kwargs.pop('next', None)
-        self.previous = kwargs.pop('previous', None)
+        next = kwargs.pop('next', None)
+        if next is not None:
+            self.next = next
 
-        self.tool = kwargs.pop('tool', None)
+        previous = kwargs.pop('previous', None)
+        if previous is not None:
+            self.previous = previous
+
+        tool = kwargs.pop('tool', None)
+        if tool is not None:
+            self.tool = tool
 
         self.data = kwargs
 
