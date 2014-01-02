@@ -196,8 +196,8 @@ REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
-        #'toolkit.apps.api.permissions.ApiObjectPermission',
+        #'rest_framework.permissions.AllowAny',  # only use this in dev
+        'toolkit.apps.api.permissions.ApiObjectPermission',
     ],
     'PAGINATE_BY': 10,
 }
