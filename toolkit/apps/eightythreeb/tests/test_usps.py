@@ -9,7 +9,7 @@ import httpretty
 from model_mommy import mommy
 from usps.api import USPS_CONNECTION
 from usps.api.tracking import TrackConfirmWithFields
-from toolkit.casper import httprettify_methods, mock_http_requests
+from toolkit.casper.prettify import httprettify_methods, mock_http_requests  # must import directly
 from toolkit.apps.workspace.services import USPSTrackingService, USPSResponse
 
 from .data import EIGHTYTHREEB_DATA
@@ -224,7 +224,7 @@ class USPSTrackingCodeResponseTest(BaseUSPSTrackingCode):
         self.assertEqual(self.response.description, 'The package is currently DELIVERED in NEWTON IA 50208, USA. The event took place on May 21, 2001:12:12 pm')
 
     def test_usps_response_waypoints(self):
-        self.assertEqual(self.response.waypoints, [ {'EventTime': '12:12 pm',
+        self.assertEqual(self.response.waypoints, [{'EventTime': '12:12 pm',
                                                      'AuthorizedAgent': None,
                                                      'FirmName': None,
                                                      'EventCountry': None,

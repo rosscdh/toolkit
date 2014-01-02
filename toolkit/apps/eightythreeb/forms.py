@@ -20,6 +20,9 @@ from toolkit.apps.workspace.services import USPSTrackingService
 
 import datetime
 
+import logging
+logger = logging.getLogger('django.request')
+
 
 def _current_year():
     return datetime.datetime.utcnow().year
@@ -330,6 +333,18 @@ class CustomerEightyThreeBForm(BaseEightyThreeBForm):
             )
         )
 
+    # def clean_accountant_email(self):
+    #     accountant_email = self.cleaned_data['accountant_email']
+
+    #     if accountant_email is not None:
+    #         logger.info('Accountant email is present %s' % accountant_email)
+    #         accountant_email_service = EnsureCustomerService(email=accountant_email)
+    #         accountant_email_service.process()
+    #         is_new = accountant_email_service.is_new
+    #         logger.info('Accountant email %s a new user %s' % ('is' if is_new is True else 'is not', accountant_email))
+
+    #     return accountant_email
+
     def clean(self):
         """
         If the ssn or itin is not specified and we have a blank value
@@ -480,7 +495,8 @@ class TrackingCodeForm(forms.ModelForm):
         service = USPSTrackingService()
 
         try:
-            service.track(tracking_code=tracking_code)
+            usps_response = service.track(tracking_code=tracking_code)
+            service.record(instance=self.instance, usps_response=usps_response)
         except Exception as e:
             raise forms.ValidationError('The Tracking code is not valid: %s' % e)
             logger.error('Invalid Tracking Code %s entered by %s' % (tracking_code, self.user.email))

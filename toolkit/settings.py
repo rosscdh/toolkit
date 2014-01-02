@@ -117,6 +117,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'toolkit.apps.me.middleware.EnsureUserHasPasswordMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -314,8 +315,8 @@ LOGGING = {
     }
 }
 
-USPS_USERID = None
-USPS_PASSWORD = None
+USPS_USERID = '756LAWPA4755'
+USPS_PASSWORD = '345LV41YU671'
 
 try:
     LOCAL_SETTINGS
