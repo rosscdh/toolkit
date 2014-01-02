@@ -271,6 +271,12 @@ class Marker:
             return parser.parse(self.tool.data['markers'][self.name].get('date_of'))
         return None
 
+    def get_action_url(self):
+        """
+        method used to return the marker action_url wihtout display business logic
+        """
+        raise NotImplementedError
+
     def tool_info(self):
         if self.tool is not None:
             if hasattr(self.tool, 'data') and 'markers' in self.tool.data and self.name in self.tool.data['markers']:
