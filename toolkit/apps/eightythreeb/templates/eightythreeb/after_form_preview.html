@@ -3,7 +3,7 @@
 {% block page_title %}Preview the 83(b){% endblock %}
 
 {% block header %}
-<h4>Preview the 83(b)</h4>
+<h4>83(b) Election Preview</h4>
 {% endblock %}
 
 {% block css %}
@@ -15,15 +15,24 @@
 {% endblock %}
 
 {% block body %}
-<div class="row">
 
-    <div class="btn-group btn-group-lg">
-      <a href="{{ previous_url }}" type="button" class="btn btn-default">Previous</a>
-      <a href="{{ next_url }}" type="button" class="btn btn-default">Next</a>
+
+
+<div class="row">
+    <div class="col-lg-8 col-lg-offset-2">
+        <div class="page-header">
+            <h4>Review 83(b) Election Letter</h4>
+            <br /><br />
+            <p>Below is a preview of the 83(b) Election complete with IRS Transmittal Letter, 2 x 83(b) Election Letter and a set of mailing instructions. Information highlighted in yellow will be entered by the client when they sign into LawPal to complete the process.</p>
+        </div>
+        <a href="{{ previous_url }}" type="button" class="btn btn-hg btn-default"><i class="glyphicon glyphicon-chevron-left"></i> Back and Edit</a>
+        <a href="{{ next_url }}" type="button" class="btn btn-success btn-hg pull-right">Continue <i class="glyphicon glyphicon-chevron-right"></i></a>
+        <br />
+        <br />
+        <div id="overview">
+            <iframe name="id_preview" id="tool-preview" class="fade" style="width: 100%;" src="{% url 'workspace:tool_object_display' workspace=object.workspace.slug tool=object.tool_slug slug=object.slug %}"></iframe>
+        </div>
     </div>
-</div>
-<div id="overview" class="row">
-    <iframe name="id_preview" id="tool-preview" class="fade" style="width: 100%;" src="{% url 'workspace:tool_object_display' workspace=object.workspace.slug tool=object.tool_slug slug=object.slug %}"></iframe>
 </div>
 {% endblock %}
 
