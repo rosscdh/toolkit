@@ -50,7 +50,7 @@ STATICFILES_FINDERS = (
 )
 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -87,7 +87,6 @@ HELPER_APPS = (
     # api
     'rest_framework',
     'rest_framework.authtoken',
-    'rest_framework_swagger',
 
     # forms
     'parsley',
@@ -185,11 +184,11 @@ REST_FRAMEWORK = {
     ),
     # Only used if the `serializer_class` attribute is not set on a view.
     'DEFAULT_MODEL_SERIALIZER_CLASS':
-        'rest_framework.serializers.HyperlinkedModelSerializer',
+        'rest_framework.serializers.HyperlinkedModelSerializer',  # @TODO change to primarykeymodelserializer
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ),
 
     'DEFAULT_FILTER_BACKENDS': (
@@ -198,27 +197,10 @@ REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
-        #'toolkit.apps.api.permissions.ApiObjectPermission',
+        #'rest_framework.permissions.AllowAny',  # only use this in dev
+        'toolkit.apps.api.permissions.ApiObjectPermission',
     ],
     'PAGINATE_BY': 10,
-}
-
-
-SWAGGER_SETTINGS = {
-    "exclude_namespaces": [], # List URL namespaces to ignore
-    "api_version": '0.1',  # Specify your API's version
-    "api_path": "/",  # Specify the path to your API not a root level
-    "enabled_methods": [  # Specify which methods to enable in Swagger UI
-        'get',
-        'post',
-        'put',
-        'patch',
-        'delete'
-    ],
-    "api_key": '', # An API key
-    "is_authenticated": False,  # Set to True to enforce user authentication,
-    "is_superuser": False,  # Set to True to enforce admin only access
 }
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'

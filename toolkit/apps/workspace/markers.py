@@ -149,13 +149,21 @@ class BaseSignalMarkers(object):
 
 
 class Marker:
+    ACTION_TYPE_REMOTE = 'remote'
+    ACTION_TYPE_REDIRECT = 'redirect'
+
     tool = None
+    val = None
+
     name = None
     description = None
     long_description = None
+    signals = []
 
-    action_name = 'Modify'
+    action_name = None
+    action_type = None
     action_url = None
+    action_attribs = {}
     action_user_class = []  # must be a list so we can handle multiple types
 
     markers_map = {
@@ -163,14 +171,15 @@ class Marker:
         'next': None,
     }
 
-    val = None
-    signals = None
     next = None
     previous = None
 
-    def __init__(self, val, name, **kwargs):
+    def __init__(self, val, **kwargs):
         self.val = val
-        self.name = name
+
+        name = kwargs.pop('name', None)
+        if name is not None:
+            self.name = name
 
         description = kwargs.pop('description', None)
         if description is not None:
@@ -179,6 +188,10 @@ class Marker:
         long_description = kwargs.pop('long_description', None)
         if long_description is not None:
             self.long_description = long_description
+
+        signals = kwargs.pop('signals', None)
+        if signals is not None:
+            self.signals = signals
 
         # use the locally defined def action_url if exists otherwise if an
         # action_url is passed in; use that
@@ -191,11 +204,17 @@ class Marker:
         if hasattr(self, 'action_user_class') is False and 'action_user_class' in kwargs:
             self.action_user = kwargs.pop('action_user_class')
 
-        self.signals = kwargs.pop('signals', [])
-        self.next = kwargs.pop('next', None)
-        self.previous = kwargs.pop('previous', None)
+        next = kwargs.pop('next', None)
+        if next is not None:
+            self.next = next
 
-        self.tool = kwargs.pop('tool', None)
+        previous = kwargs.pop('previous', None)
+        if previous is not None:
+            self.previous = previous
+
+        tool = kwargs.pop('tool', None)
+        if tool is not None:
+            self.tool = tool
 
         self.data = kwargs
 
@@ -229,6 +248,16 @@ class Marker:
     #         return False
     #     # if they have already completed this status then allow it
     #     return self.tool.status > self.val or self.name in self.tool.data['markers']
+
+    @property
+    def status(self):
+        if self.is_complete:
+            return 'done'
+
+        if  self.previous.is_complete and not self.next.is_complete:
+            return 'next'
+
+        return 'pending'
 
     @property
     def is_complete(self):

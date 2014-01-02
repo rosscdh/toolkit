@@ -17,9 +17,11 @@ composer.lock
 :2e_*
 ._*
 .DS_Store
+.python-version
 .idea*
 .env
 .venv
+/venv/
 /reports/*
 /bdd/vendor/*
 /bdd/results/*
