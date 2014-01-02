@@ -107,6 +107,10 @@ class CreateWorkspaceToolObjectView(WorkspaceToolFormViewMixin, CreateView):
         return qs.filter(user=self.request.user).first()
 
     def get_success_url(self):
+        form = self.get_form(form_class=self.get_form_class())
+        if hasattr(form, 'get_success_url'):
+            return form.get_success_url(instance=self.object)
+
         return reverse('workspace:tool_object_preview', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug, 'slug': self.object.slug})
 
     def form_valid(self, form):
@@ -121,6 +125,11 @@ class UpdateViewWorkspaceToolObjectView(WorkspaceToolFormViewMixin, UpdateView):
     model = Tool
 
     def get_success_url(self):
+        form = self.get_form(form_class=self.get_form_class())
+
+        if hasattr(form, 'get_success_url'):
+            return form.get_success_url(instance=self.object)
+
         return reverse('workspace:tool_object_preview', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug, 'slug': self.object.slug})
 
     def form_valid(self, form):
