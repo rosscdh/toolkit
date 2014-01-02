@@ -14,7 +14,12 @@ from toolkit.apps.workspace.mixins import WorkspaceToolModelMixin
 from .markers import EightyThreeBSignalMarkers
 EIGHTYTHREEB_STATUS = EightyThreeBSignalMarkers().named_tuple(name='EIGHTYTHREEB_STATUS')
 
-from .mixins import StatusMixin, IRSMixin, HTMLMixin, TransferAndFilingDatesMixin, USPSReponseMixin
+from .mixins import (IsDeletedMixin,
+                     StatusMixin,
+                     IRSMixin,
+                     HTMLMixin,
+                     TransferAndFilingDatesMixin,
+                     USPSReponseMixin)
 from .managers import EightyThreeBManager, AttachmentManger
 
 
@@ -79,7 +84,7 @@ class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferA
         return reverse('workspace:tool_object_edit', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug=self.tool_slug).first().slug, 'slug': self.slug})
 
 
-class Attachment(models.Model):
+class Attachment(IsDeletedMixin, models.Model):
     eightythreeb = models.ForeignKey('eightythreeb.EightyThreeB')
     attachment = models.FileField(upload_to=_83b_upload_file, blank=True, storage=S3BotoStorage())
     is_deleted = models.BooleanField(default=False)
