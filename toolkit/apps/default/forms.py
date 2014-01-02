@@ -3,8 +3,6 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.core.urlresolvers import reverse_lazy
-from django.utils.functional import lazy
-from django.utils import six
 
 from parsley.decorators import parsleyfy
 from crispy_forms.helper import FormHelper, Layout
@@ -14,11 +12,6 @@ from . import _get_unique_username
 
 import logging
 LOGGER = logging.getLogger('django.request')
-
-
-def _get_terms_label():
-    return 'I agree to the LawPal <a href="%s" target="_blank">Terms and Conditions</a>.' % reverse_lazy('public:terms')
-get_terms_label = lazy(_get_terms_label, six.text_type)
 
 
 @parsleyfy
@@ -75,7 +68,7 @@ class SignUpForm(forms.Form):
             'required': "You must agree to the LawPal Terms and Conditions."
         },
         initial=False,
-        label=get_terms_label(),
+        label='I agree to the LawPal Terms and Conditions.',
         required=True
     )
 
@@ -110,6 +103,9 @@ class SignUpForm(forms.Form):
         )
 
         super(SignUpForm, self).__init__(*args, **kwargs)
+
+        # Override the label with a link to the terms (can't go higher as the urls aren't loaded yet)
+        self.fields['t_and_c'].label = 'I agree to the LawPal <a href="%s" target="_blank">Terms and Conditions</a>.' % reverse_lazy('public:terms')
 
     def clean_username(self):
         final_username = self.data.get('email').split('@')[0]
