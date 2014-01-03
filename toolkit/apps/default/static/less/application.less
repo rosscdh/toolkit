@@ -150,6 +150,12 @@
     }
   }
 
+  .progress {
+    margin-bottom: (@line-height-computed / 2);
+    margin-top: (@line-height-computed / 2);
+    width: 200px;
+  }
+
   h4 {
     display: inline-block;
     margin: 0;
@@ -243,4 +249,67 @@
       margin-top: -5px;
     }
   }
+}
+
+
+// Tool Status List
+// -------------------------
+
+// Base classes
+.status-list-item {
+
+}
+
+.status-list-item-icon {
+  font-size: @font-size-h6;
+
+  .status-next & {
+    font-size: @font-size-h5;
+  }
+}
+
+.status-list-item-heading {
+  font-size: @font-size-base;
+  margin-bottom: (@line-height-computed / 3);
+  margin-top: (@line-height-computed / 3);
+
+  .status-next & {
+    font-size: @font-size-h6;
+  }
+}
+
+.status-list-item-meta {
+  font-size: 75%;
+  margin-bottom: (@line-height-computed / 4);
+  margin-top: (@line-height-computed / 4);
+}
+
+.status-list-item-text {
+  font-size: 75%;
+
+  .status-next & {
+    font-size: 100%;
+  }
+}
+
+.status-list-item-actions {
+  margin-bottom: (@line-height-computed / 4);
+  margin-top: (@line-height-computed / 4);
+}
+
+// Statuses
+// Contextual variations
+
+.status-pending {
+  color: @gray-light;
+}
+
+.status-next {
+  background-color: @table-info;
+  color: @brand-info;
+}
+
+.status-done {
+  background-color: @table-success;
+  color: @brand-success;
 }

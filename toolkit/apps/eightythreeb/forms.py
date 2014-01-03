@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django import forms
+from django.core.urlresolvers import reverse
 
 from crispy_forms.bootstrap import FieldWithButtons, PrependedText, StrictButton
 from crispy_forms.helper import FormHelper, Layout
@@ -20,12 +21,17 @@ from toolkit.apps.workspace.services import USPSTrackingService
 
 import datetime
 
+import logging
+logger = logging.getLogger('django.request')
+
 
 def _current_year():
     return datetime.datetime.utcnow().year
 
 
 class BaseEightyThreeBForm(WorkspaceToolFormMixin):
+    title = 'Create an 83(b) Application'
+
     client_full_name = forms.CharField(
         error_messages={
             'required': "Client name can't be blank."
@@ -197,13 +203,23 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
         if self.fields['company_name'].initial in ['', None]:
             self.fields['company_name'].initial = self.workspace.name
 
+    def get_success_url(self, instance):
+        return reverse('eightythreeb:preview', kwargs={'slug': instance.slug})
+
     def save(self):
-        # Ensure we have a customer with this info
-        customer_service = EnsureCustomerService(email=self.cleaned_data.get('client_email'),
-                                                 full_name=self.cleaned_data.get('client_full_name'))
-        customer_service.process()
-        user = customer_service.user
-        is_new = customer_service.is_new
+
+        if self.instance is not None:
+            # use the currently associated user
+            user = self.instance.user
+            is_new = False
+
+        else:
+            # Ensure we have a customer with this info
+            customer_service = EnsureCustomerService(email=self.cleaned_data.get('client_email'),
+                                                     full_name=self.cleaned_data.get('client_full_name'))
+            customer_service.process()
+            user = customer_service.user
+            is_new = customer_service.is_new
 
         eightythreeb, is_new = user.eightythreeb_set.get_or_create(workspace=self.workspace, user=user)
         eightythreeb.data.update(**self.cleaned_data)  # update the data
@@ -238,6 +254,9 @@ class CustomerEightyThreeBForm(BaseEightyThreeBForm):
     def __init__(self, *args, **kwargs):
         super(CustomerEightyThreeBForm, self).__init__(*args, **kwargs)
 
+        if self.instance is not None:
+            self.title = 'Edit your 83(b) Application'
+
         # set up the hidden fields that still need to be submitted
         self.fields['client_full_name'].widget = forms.HiddenInput()
         self.fields['client_email'].widget = forms.HiddenInput()
@@ -250,6 +269,7 @@ class CustomerEightyThreeBForm(BaseEightyThreeBForm):
         self.fields['transfer_value_total'].widget = forms.HiddenInput()
 
         self.helper.layout = Layout(
+            HTML('{% include "partials/form-errors.html" with form=form %}'),
             Div(
                 HTML('<h4>Disclaimer</h4>'),
                 HTML('<p>LawPal Inc. is not an attorney or law firm and this is not intended as legal advice. \
@@ -352,6 +372,9 @@ class LawyerEightyThreeBForm(BaseEightyThreeBForm):
     def __init__(self, *args, **kwargs):
         super(LawyerEightyThreeBForm, self).__init__(*args, **kwargs)
 
+        if self.instance is not None:
+            self.title = 'Edit an 83(b) Application'
+
         # change the required state on some fields
         self.fields['address1'].required = False
         self.fields['city'].required = False
@@ -370,6 +393,7 @@ class LawyerEightyThreeBForm(BaseEightyThreeBForm):
         self.fields['has_spouse'].widget.attrs['disabled'] = 'disabled'
 
         self.helper.layout = Layout(
+            HTML('{% include "partials/form-errors.html" with form=form %}'),
             Div(
                 HTML('<legend>Client details</legend>'),
                 Div(
@@ -478,7 +502,8 @@ class TrackingCodeForm(forms.ModelForm):
         service = USPSTrackingService()
 
         try:
-            service.track(tracking_code=tracking_code)
+            usps_response = service.track(tracking_code=tracking_code)
+            service.record(instance=self.instance, usps_response=usps_response)
         except Exception as e:
             raise forms.ValidationError('The Tracking code is not valid: %s' % e)
             logger.error('Invalid Tracking Code %s entered by %s' % (tracking_code, self.user.email))
@@ -493,3 +518,24 @@ class TrackingCodeForm(forms.ModelForm):
         # save to data
         self.instance.tracking_code = self.cleaned_data.get('tracking_code')
         return super(TrackingCodeForm, self).save(**kwargs)
+
+
+@parsleyfy
+class AttachmentForm(forms.ModelForm):
+    class Meta:
+        model = EightyThreeB
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.attrs = {
+            'parsley-validate': '',
+        }
+
+        self.helper.layout = Layout(
+            ButtonHolder(
+                Submit('submit', 'Upload', css_class='btn-hg btn-primary'),
+                css_class='form-group'
+            )
+        )
+
+        super(AttachmentForm, self).__init__(*args, **kwargs)

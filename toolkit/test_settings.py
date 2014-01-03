@@ -9,6 +9,8 @@ import logging
 
 logging.disable(logging.CRITICAL)
 
+AWS_STORAGE_BUCKET_NAME = AWS_FILESTORE_BUCKET = 'dev-toolkit-lawpal-com'
+
 # Custom test runner for this project
 TEST_RUNNER = 'toolkit.test_runner.AppTestRunner'
 
@@ -27,16 +29,16 @@ PASSWORD_HASHERS = (
 )
 
 
-def AutoSlugFieldGenerator():
-    hash_val = '{r}'.format(r=random.random())
-    h = hashlib.sha1(hash_val)
-    return h.hexdigest()
+# def AutoSlugFieldGenerator():
+#     hash_val = '{r}'.format(r=random.random())
+#     h = hashlib.sha1(hash_val)
+#     return h.hexdigest()
 
 
-def FPFileFieldGenerator():
-    return '/tmp/test-file.pdf'
+# def FPFileFieldGenerator():
+#     return '/tmp/test-file.pdf'
 
-MOMMY_CUSTOM_FIELDS_GEN = {
-    'autoslug.fields.AutoSlugField': AutoSlugFieldGenerator,
-    'django_filepicker.models.FPFileField': FPFileFieldGenerator,
-}
+# MOMMY_CUSTOM_FIELDS_GEN = {
+#     'autoslug.fields.AutoSlugField': AutoSlugFieldGenerator,
+#     'django_filepicker.models.FPFileField': FPFileFieldGenerator,
+# }

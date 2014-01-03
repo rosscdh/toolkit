@@ -17,7 +17,9 @@
 
 <script type="text/javascript">
 // <![CDATA[
-// Re-bind our overloaded version of parsley to any forms
-$('[parsley-validate]').parsley();
+(function($) {
+    // Re-bind our overloaded version of parsley to any forms
+    $('.modal [parsley-validate]').parsley();
+})(jQuery);
 // ]]>
 </script>

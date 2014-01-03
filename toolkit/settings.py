@@ -15,6 +15,18 @@ for test_app in ['testserver','test']:
 
 SITE_ID = 1
 
+ADMINS = (
+    ("Ross Crawford-dHeureuse", 'ross@lawpal.com'),
+)
+
+MANAGERS = ADMINS + (
+    ("Alex Halliday", 'alex@lawpal.com'),
+)
+
+DEFAULT_FROM = (
+ ("LawPal Tech", 'tech@lawpal.com'),
+)
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'lgi%*e=%s@y3-jos^uydhc5gz80m9ts&9io5xh6myf+$fuy7+n'
 
@@ -50,7 +62,7 @@ STATICFILES_FINDERS = (
 )
 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -70,20 +82,22 @@ PROJECT_APPS = (
     'toolkit.apps.api',
     'toolkit.apps.default',
     'toolkit.apps.dash',
+    'toolkit.apps.me',
     'toolkit.apps.workspace',
     'toolkit.apps.eightythreeb',
 )
 
 HELPER_APPS = (
-    'django_extensions',
-    'localflavor',
-    'django_bootstrap_breadcrumbs',
     'rulez',
+    'storages',
+    'localflavor',
+    'ajaxuploader',
+    'django_extensions',
+    'django_bootstrap_breadcrumbs',
 
     # api
     'rest_framework',
     'rest_framework.authtoken',
-    'rest_framework_swagger',
 
     # forms
     'parsley',
@@ -102,6 +116,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'toolkit.apps.me.middleware.EnsureUserHasPasswordMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -146,10 +161,10 @@ USE_L10N = False  # should always be False to enable dates accepted https://docs
 
 USE_TZ = True
 
-
 LOGIN_URL          = '/start/'
 LOGIN_REDIRECT_URL = '/dash/'
 LOGIN_ERROR_URL    = '/login-error/'
+LOGOUT_URL = '/end/'
 
 AUTHENTICATION_BACKENDS = (
     'toolkit.auth_backends.EmailBackend',
@@ -160,6 +175,18 @@ AUTHENTICATION_BACKENDS = (
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 TEMPLATED_EMAIL_BACKEND = 'templated_email.backends.vanilla_django'
 
+AWS_STORAGE_BUCKET_NAME = AWS_FILESTORE_BUCKET = 'dev-toolkit-lawpal-com'
+
+AWS_ACCESS_KEY_ID = AWS_UPLOAD_CLIENT_KEY = 'AKIAIRFGFTRB4LRLWC3A'
+AWS_SECRET_ACCESS_KEY = AWS_UPLOAD_CLIENT_SECRET_KEY = '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'
+AWS_QUERYSTRING_AUTH = False # to stop 304 not happening and boto appending our info to the querystring
+AWS_PRELOAD_METADATA = True
+# see http://developer.yahoo.com/performance/rules.html#expires
+AWS_HEADERS = {
+    'Cache-Control': 'max-age=300',
+    'x-amz-acl': 'public-read',
+}
+
 REST_FRAMEWORK = {
     # Use hyperlinked styles by default.
     'DEFAULT_RENDERER_CLASSES': (
@@ -168,11 +195,11 @@ REST_FRAMEWORK = {
     ),
     # Only used if the `serializer_class` attribute is not set on a view.
     'DEFAULT_MODEL_SERIALIZER_CLASS':
-        'rest_framework.serializers.HyperlinkedModelSerializer',
+        'rest_framework.serializers.HyperlinkedModelSerializer',  # @TODO change to primarykeymodelserializer
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ),
 
     'DEFAULT_FILTER_BACKENDS': (
@@ -181,27 +208,10 @@ REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
-        #'toolkit.apps.api.permissions.ApiObjectPermission',
+        #'rest_framework.permissions.AllowAny',  # only use this in dev
+        'toolkit.apps.api.permissions.ApiObjectPermission',
     ],
     'PAGINATE_BY': 10,
-}
-
-
-SWAGGER_SETTINGS = {
-    "exclude_namespaces": [], # List URL namespaces to ignore
-    "api_version": '0.1',  # Specify your API's version
-    "api_path": "/",  # Specify the path to your API not a root level
-    "enabled_methods": [  # Specify which methods to enable in Swagger UI
-        'get',
-        'post',
-        'put',
-        'patch',
-        'delete'
-    ],
-    "api_key": '', # An API key
-    "is_authenticated": False,  # Set to True to enforce user authentication,
-    "is_superuser": False,  # Set to True to enforce admin only access
 }
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
@@ -221,9 +231,23 @@ JS_DATE_FORMAT = 'MM d, yy'
 SHORT_DATE_FORMAT = 'm/d/Y'
 JS_SHORT_DATE_FORMAT = 'mm/dd/yy'
 
+SPLUNKSTORM_ENDPOINT = 'logs2.splunkstorm.com'
+SPLUNKSTORM_PORT = 20824
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'medium': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
     'handlers': {
         'null': {
             'level': 'DEBUG',
@@ -232,11 +256,22 @@ LOGGING = {
         'console':{
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
+            'formatter': 'medium'
         },
         'mail_admins': {
             'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler',
-        }
+            'formatter': 'medium'
+        },
+        'logfile': {
+            'class': 'logging.handlers.WatchedFileHandler',
+            'filename': '/tmp/toolkit-{env}.log'.format(env='dev')
+        },
+        'splunkstorm':{
+            'level': 'INFO',
+            'class': 'toolkit.loggers.SplunkStormLogger',
+            'formatter': 'verbose'
+        },
     },
     'loggers': {
         'django': {
@@ -245,7 +280,7 @@ LOGGING = {
             'level': 'INFO',
         },
         'django.request': {
-            'handlers': ['mail_admins', 'console'],
+            'handlers': ['mail_admins', 'console', 'logfile'],
             'level': 'ERROR',
             'propagate': False,
         },
@@ -261,6 +296,9 @@ LOGGING = {
         }
     }
 }
+
+USPS_USERID = '756LAWPA4755'
+USPS_PASSWORD = '345LV41YU671'
 
 try:
     LOCAL_SETTINGS

@@ -17,6 +17,9 @@ from toolkit.utils import _class_importer
 from dateutil import parser
 import math
 
+class MissingMarkersException(Exception):
+    msg = 'You must have at least 1 marker item in the object.signal_map list attribute'
+
 
 class BaseSignalMarkers(object):
     tool_object = None
@@ -36,7 +39,7 @@ class BaseSignalMarkers(object):
             self.current = self.signal_map[0]
 
         except IndexError:
-            raise Exception('You must have at least 1 item in the signal_map list attribute')
+            raise MissingMarkersException
 
         try:
             self.next = self.signal_map[1]
@@ -44,9 +47,9 @@ class BaseSignalMarkers(object):
         except IndexError:
             self.next = None
 
-        self.set_markers_fsm()
+        self._set_markers_fsm()  # finite state machine
 
-    def set_markers_fsm(self):
+    def _set_markers_fsm(self):
         for i, marker in enumerate(self.signal_map):
             # set the marker prev and next
             signal = self.signal_map[i]
@@ -100,7 +103,7 @@ class BaseSignalMarkers(object):
     def marker(self, val):
         if type(val) in [str, unicode]:
             return self.marker_by_name(name=val)
-        if type(val) in [int]:
+        if type(val) in [int, float]:
             return self.marker_by_val(val=val)
         return None
 
@@ -148,14 +151,22 @@ class BaseSignalMarkers(object):
         return get_namedtuple_choices(name, tuple(named_tuple))
 
 
-class Marker:
+class Marker(object):
+    ACTION_TYPE_REMOTE = 'remote'
+    ACTION_TYPE_REDIRECT = 'redirect'
+
     tool = None
+    val = None
+
     name = None
     description = None
     long_description = None
+    signals = []
 
-    action_name = 'Modify'
-    action_url = None
+    action_name = None
+    action_type = None
+    action = None
+    action_attribs = {}
     action_user_class = []  # must be a list so we can handle multiple types
 
     markers_map = {
@@ -163,39 +174,50 @@ class Marker:
         'next': None,
     }
 
-    val = None
-    signals = None
     next = None
     previous = None
 
-    def __init__(self, val, name, **kwargs):
+    def __init__(self, val, **kwargs):
         self.val = val
-        self.name = name
+
+        name = kwargs.pop('name', None)
+        if name is not None:
+            self.name = name
 
         description = kwargs.pop('description', None)
         if description is not None:
             self.description = description
 
-        long_description = kwargs.pop('long_description', None)
+        long_description = kwargs.pop('long_description', None)  # set the long description to the description as it will get overriden if the user actually sets long_description
         if long_description is not None:
             self.long_description = long_description
 
-        # use the locally defined def action_url if exists otherwise if an
-        # action_url is passed in; use that
+        signals = kwargs.pop('signals', None)
+        if signals is not None:
+            self.signals = signals
+
+        # use the locally defined def action if exists otherwise if an
+        # action is passed in; use that
         if hasattr(self, 'action_name') is False and 'action_name' in kwargs:
             self.action_name = kwargs.pop('action_name')
 
-        if hasattr(self, 'action_url') is False and 'action_url' in kwargs:
-            self.action_url = kwargs.pop('action_url')
+        if hasattr(self, 'action') is False and 'action' in kwargs:
+            self.action = kwargs.pop('action')
 
         if hasattr(self, 'action_user_class') is False and 'action_user_class' in kwargs:
             self.action_user = kwargs.pop('action_user_class')
 
-        self.signals = kwargs.pop('signals', [])
-        self.next = kwargs.pop('next', None)
-        self.previous = kwargs.pop('previous', None)
+        next = kwargs.pop('next', None)
+        if next is not None:
+            self.next = next
 
-        self.tool = kwargs.pop('tool', None)
+        previous = kwargs.pop('previous', None)
+        if previous is not None:
+            self.previous = previous
+
+        tool = kwargs.pop('tool', None)
+        if tool is not None:
+            self.tool = tool
 
         self.data = kwargs
 
@@ -222,13 +244,15 @@ class Marker:
     def previous(self, value):
         self.markers_map['previous'] = value
 
-    # @property
-    # def can_action(self):
-    #     # if the process has been completed then no they cant do any more actions
-    #     if self.tool.is_complete:
-    #         return False
-    #     # if they have already completed this status then allow it
-    #     return self.tool.status > self.val or self.name in self.tool.data['markers']
+    @property
+    def status(self):
+        if self.is_complete:
+            return 'done'
+
+        if  self.previous.is_complete and not self.next.is_complete:
+            return 'next'
+
+        return 'pending'
 
     @property
     def is_complete(self):
@@ -241,6 +265,12 @@ class Marker:
         if self.is_complete:
             return parser.parse(self.tool.data['markers'][self.name].get('date_of'))
         return None
+
+    def get_action_url(self):
+        """
+        method used to return the marker action_url without display business logic
+        """
+        raise NotImplementedError
 
     def tool_info(self):
         if self.tool is not None:

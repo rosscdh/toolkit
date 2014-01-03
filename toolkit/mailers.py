@@ -14,7 +14,7 @@ class BaseMailerService(object):
         "email": None
     }
 
-    def __init__(self, from_tuple, recipients, subject=None, message=None, **kwargs):
+    def __init__(self, recipients, from_tuple=None, subject=None, message=None, **kwargs):
         """
         subject : string
         message : string
@@ -23,6 +23,10 @@ class BaseMailerService(object):
         """
         self.subject = subject
         self.message = message
+
+        # if no from_tuple is provided simply use the defaults
+        if from_tuple is None:
+            from_tuple = settings.DEFAULT_FROM[0]
 
         self.from_tuple = self.user.copy()
         self.from_tuple.update({
@@ -46,7 +50,7 @@ class BaseMailerService(object):
         assert type(self.recipients) is list
         assert len(self.recipients) >= 1
 
-    def process(self, **kwargs):
+    def process(self, attachments=None, **kwargs):
 
         for r in self.recipients:
             context = {
@@ -60,13 +64,14 @@ class BaseMailerService(object):
 
             context.update(**kwargs)
 
-            self.send_mail(context=context)
+            self.send_mail(context=context, attachments=attachments)
 
-    def send_mail(self, context):
+    def send_mail(self, context, attachments=None):
             send_templated_mail(
                 template_name=self.email_template,
                 template_prefix=self.base_email_template_location,
                 from_email=context.get('from_email'),
                 recipient_list=[context.get('to_email')],
-                bcc=['founders@lawpal.com'] if settings.DEBUG is False else [],  # only bcc us in on live mails
-                context=context)
+                bcc=['founders@lawpal.com'] if settings.PROJECT_ENVIRONMENT == 'prod' else [],  # only bcc us in on live mails
+                context=context,
+                attachments=attachments)

@@ -100,6 +100,13 @@ class StartView(LogOutMixin, SaveNextUrlInSessionMixin, AuthenticateUserMixin, F
     form_class = SignInForm
 
     def get_success_url(self):
+        if self.request.user.profile.is_customer is True:
+            #
+            # Redirect the user to the current invite workspace
+            #
+            invite_key = InviteKey.objects.filter(invited_user=self.request.user).first()
+            return invite_key.get_tool_instance_absolute_url()
+
         return reverse('dash:default')
 
     def form_valid(self, form):
@@ -136,6 +143,12 @@ class InviteKeySignInView(StartView):
     def login_via_key(self, key=None):
         if key is not None:
             invite = InviteKey.objects.get(key=key)
+
+            # set the next in the session
+            # this is due to the EnsureUserHasPasswordMiddleware
+            # which redirects to password if they have not set it
+            #self.request.session['next'] = next
+
             user = self.get_auth(invite_key=key)
             self.login(user=user)
 

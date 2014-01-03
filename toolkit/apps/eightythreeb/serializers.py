@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 from rest_framework import serializers
 
-from .models import EightyThreeB
+from .models import EightyThreeB, Attachment
 
 
 class EightyThreeBSerializer(serializers.ModelSerializer):
@@ -10,3 +10,10 @@ class EightyThreeBSerializer(serializers.ModelSerializer):
     class Meta:
         model = EightyThreeB
         exclude = ('data',)
+
+
+class AttachmentSerializer(serializers.ModelSerializer):
+    eightythreeb = serializers.PrimaryKeyRelatedField(many=False)
+
+    class Meta:
+        model = Attachment
