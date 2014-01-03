@@ -72,7 +72,7 @@ class CustomerCompleteFormMarker(Marker):
 class CustomerDownloadDocMarker(Marker):
     name = 'customer_download_pdf'
     description = 'Client: Download 83(b) Election Letter and Instructions'
-    long_description = 'Customer should download the 83(b) form.'
+    long_description = ''
     signals = ['toolkit.apps.eightythreeb.signals.customer_download_pdf']
 
     action_name = 'Download 83(b)'
@@ -93,10 +93,10 @@ class CustomerDownloadDocMarker(Marker):
 class CustomerPrintAndSignMarker(Marker):
     name = 'customer_print_and_sign'
     description = 'Client: Print, check and sign 83(b) Election Letter'
-    long_description = 'Customer is to print and sign 2 copies, plus a 3rd for their own records.'
+    long_description = 'Print and sign the 83(b) Election where indicated.'
     signals = ['toolkit.apps.eightythreeb.signals.customer_print_and_sign']
 
-    action_name = 'I have printed and signed 2 copies'
+    action_name = 'I have printed and signed the Election'
     action_type = Marker.ACTION_TYPE_REMOTE
     action_user_class = ['customer']
 
@@ -160,7 +160,7 @@ class CustomerUploadScanMarker(Marker):
 class CustomerTrackingNumberMarker(Marker):
     name = 'mail_to_irs_tracking_code'
     description = 'Client: Mail to IRS & register Tracking Code'
-    long_description = 'Customer mail 83(b) form using USPS Registered Post *ONLY* and enter the Tracking Number here,'
+    long_description = 'Mail 83(b) form using USPS Registered Post *ONLY* and enter the Tracking Number here,'
     signals = ['toolkit.apps.eightythreeb.signals.mail_to_irs_tracking_code']
 
     action_name = 'Enter Tracking Number'
