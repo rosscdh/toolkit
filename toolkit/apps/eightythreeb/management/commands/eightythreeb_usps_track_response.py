@@ -3,6 +3,8 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.contrib.sites.models import Site
 
+from usps.errors import USPSXMLError
+
 from toolkit.apps.workspace.services import USPSTrackingService
 
 from toolkit.apps.eightythreeb.models import EightyThreeB
@@ -50,14 +52,14 @@ class Command(BaseCommand):
             else:
                 logger.info('Found 83b instance with tracking_code: %s %s' % (instance, tracking_code))
 
-                #try:
-                usps_response = service.track(tracking_code=tracking_code)
-                service.record(instance=instance, usps_response=usps_response)
+                try:
+                    usps_response = service.track(tracking_code=tracking_code)
+                    service.record(instance=instance, usps_response=usps_response)
 
-                if usps_response.is_delivered is True and service.response_already_present is False:
-                    self.send_mail(instance=instance)
-                    # Send the signal indicating we have completed this step
-                    instance.base_signal.send(sender=self, instance=instance, actor=instance.user, name='irs_recieved')
+                    if usps_response.is_delivered is True and service.response_already_present is False:
+                        self.send_mail(instance=instance)
+                        # Send the signal indicating we have completed this step
+                        instance.base_signal.send(sender=self, instance=instance, actor=instance.user, name='irs_recieved')
 
-                #except Exception as e:
-                #  logger.error('83b instance raised Exception: %s %s %s' % (instance, tracking_code, e))
+                except USPSXMLError as e:
+                 logger.error('83b instance raised Exception: %s %s %s' % (instance, tracking_code, e))
