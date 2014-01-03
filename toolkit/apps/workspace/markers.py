@@ -149,6 +149,7 @@ class BaseSignalMarkers(object):
 
 
 class Marker:
+    ACTION_TYPE_MODAL = 'modal'
     ACTION_TYPE_REMOTE = 'remote'
     ACTION_TYPE_REDIRECT = 'redirect'
 
