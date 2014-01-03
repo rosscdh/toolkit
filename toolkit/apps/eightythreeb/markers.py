@@ -169,7 +169,7 @@ class CustomerTrackingNumberMarker(Marker):
     action_user_class = ['customer', 'lawyer']
 
     def get_action_url(self):
-        reverse('eightythreeb:tracking_code', kwargs={'slug': self.tool.slug})
+        return reverse('eightythreeb:tracking_code', kwargs={'slug': self.tool.slug})
 
     @property
     def action(self):
