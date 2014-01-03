@@ -185,7 +185,7 @@ class Marker:
         if description is not None:
             self.description = description
 
-        long_description = kwargs.pop('long_description', self.description)  # set the long description to the description as it will get overriden if the user actually sets long_description
+        long_description = kwargs.pop('long_description', None)  # set the long description to the description as it will get overriden if the user actually sets long_description
         if long_description is not None:
             self.long_description = long_description
 

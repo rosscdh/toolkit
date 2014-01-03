@@ -194,10 +194,8 @@ class USPSDeliveryStatusMarker(Marker):
     def long_description(self):
         msg = self.tool.usps_current_status
 
-        if msg is not None:
-            msg = 'Current Status: %s' % msg
-        else:
-            msg = 'Pending USPS response'
+        if msg is None:
+            msg = 'Waiting for USPS response'
 
         return msg
 
