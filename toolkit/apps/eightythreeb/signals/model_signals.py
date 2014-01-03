@@ -13,6 +13,7 @@ def ensure_dates(sender, instance, **kwargs):
     """
     signal to handle creating the workspace slug
     """
+    logger.debug('run: 83b.ensure_dates')
     if instance.data.get('date_of_property_transfer', None) is not None:
         if instance.transfer_date in [None, '']:
             instance.transfer_date = instance.get_transfer_date()
@@ -23,6 +24,7 @@ def ensure_dates(sender, instance, **kwargs):
 
 @receiver(post_save, sender=EightyThreeB, dispatch_uid='83b.ensure_83b_user_in_workspace_participants')
 def ensure_83b_user_in_workspace_participants(sender, instance, **kwargs):
+    logger.debug('run: 83b.ensure_83b_user_in_workspace_participants')
     user = instance.user
     workspace = instance.workspace
 
@@ -31,11 +33,12 @@ def ensure_83b_user_in_workspace_participants(sender, instance, **kwargs):
         workspace.participants.add(user)
 
 
-@receiver(post_save, sender=Attachment, dispatch_uid='83b.attachment.ensure_attachment_add_complete')
-def ensure_attachment_add_complete(sender, instance, **kwargs):
+@receiver(post_save, sender=Attachment, dispatch_uid='83b.attachment.ensure_attachment_markers')
+def ensure_attachment_markers(sender, instance, **kwargs):
     """
     Delete the copy uploaded Marker when we have no more attachments
     """
+    logger.debug('run: 83b.attachment.ensure_attachment_markers')
     eightythreeb = instance.eightythreeb
     # if we have markers
     if 'markers' in eightythreeb.data:
@@ -46,11 +49,13 @@ def ensure_attachment_add_complete(sender, instance, **kwargs):
             # an save out 
             #
             if eightythreeb.attachment_set.all().count() == 0:
+                logger.debug('Removing copy_uploaded marker for 83b %s as we have no attachments' % eightythreeb)
                 # delete the copy_uploaded marker
                 del eightythreeb.data['markers']['copy_uploaded']
                 # save
                 eightythreeb.save(update_fields=['data'])
         else:
+            logger.debug('Added copy_uploaded marker for 83b %s as we have attachments but no marker recorded' % eightythreeb)
             # we need to issue this signal because copy_uploaded is not present
             #
             # If we dont have copy_uploaded in markers then issue this
