@@ -69,7 +69,7 @@ class USPSResponse(object):
         country = s.get('EventCountry') if s.get('EventCountry') is not None else 'USA'
         location = None
         if s.get('EventCity') is not None and s.get('EventState') is not None and s.get('EventZIPCode'):
-            location = 'in %s %s %s, %s' % (s.get('EventCity'), s.get('EventState'), s.get('EventZIPCode'), country),
+            location = 'in %s %s %s, %s' % (s.get('EventCity'), s.get('EventState'), s.get('EventZIPCode'), country,)
 
         return 'The package is currently %s %s. The event took place on %s:%s' % (
                 s.get('Event'),
@@ -99,6 +99,10 @@ class AdeWinterUspsTrackConfirm(object):
     USERID = getattr(settings, 'USPS_USERID')
     PASSWORD = getattr(settings, 'USPS_PASSWORD')
     USPS_CONNECTION = getattr(settings, 'USPS_CONNECTION', USPS_CONNECTION)
+
+    blacklisted_events = (
+        'Delivery status not updated',
+    )
 
     tracking_code = None
     response = None
@@ -134,6 +138,12 @@ class AdeWinterUspsTrackConfirm(object):
             # Create the waypoint id and then compare it to the current 
             # responses identiy
             for point in waypoints:
+                # check to see if the event is not in the set of blacklisted events
+                if point.get('Event') in self.blacklisted_events:
+                    logger.info('The current response Event is blacklisted: %s %s' % (usps_response.identity, usps_response.status,) )
+                    return True
+
+                # Compare the id points and see if we have it already
                 waypoint_id = '%s-%s-%s' % (point.get('EventTime'),
                                             point.get('EventDate'),
                                             point.get('EventZIPCode'),)
