@@ -36,6 +36,9 @@
                         {% block marker %}
                             <li class="list-group-item status-list-item status-{{ marker.status }}">
                                 <div class="row">
+                                    {% marker_status_block marker %}
+                                </div>
+<!--                                 <div class="row">
                                     {% if marker.status == 'done' %}
                                         <div class="col-md-1 text-center">
                                             <span class="status-list-item-icon fui-check-inverted"></span>
@@ -74,7 +77,7 @@
                                             {% if marker.long_description %}<p class="list-group-item-text status-list-item-text">{{ marker.long_description }}</p>{% endif %}
                                         </div>
                                     {% endif %}
-                                </div>
+                                </div> -->
                             </li>
                         {% endblock %}
                     {% endfor %}

@@ -1,0 +1,20 @@
+{% load humanize workspace_markers %}
+<div class="col-md-1 text-center">
+    <span class="status-list-item-icon {{ icon_type }}"></span>
+</div>
+<div class="{{ description_col_css }}">
+    <h6 class="list-group-item-heading status-list-item-heading">{{ marker.description }}</h6>
+    {% if marker.long_description %}<p class="list-group-item-text status-list-item-text">{{ marker.long_description }}</p>{% endif %}
+    {% if show_action_button %}
+    <div class="status-list-item-actions">
+        {% action_button marker css_class=action_button_css_class %}
+    </div>
+    {% endif %}
+</div>
+{% if show_complete %}
+<div class="col-md-4 text-right">
+    <ul class="list-inline status-list-item-meta">
+        <li>Completed <strong>{{ marker.date_completed|naturaltime }}</strong></li>
+    </ul>
+</div>
+{% endif %}
