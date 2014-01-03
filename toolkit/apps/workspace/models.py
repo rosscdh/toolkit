@@ -108,6 +108,10 @@ class Tool(models.Model):
         return self.data.get('short_name')
 
     @property
+    def userclass_that_can_create(self):
+        return self.data.get('can_create', [])
+
+    @property
     def model(self):
         """
         return the model

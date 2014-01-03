@@ -13,7 +13,8 @@
           "customer": "toolkit.apps.eightythreeb.forms.CustomerEightyThreeBForm",
           "lawyer": "toolkit.apps.eightythreeb.forms.LawyerEightyThreeBForm"
         },
-        "app_label": "eightythreeb"
+        "app_label": "eightythreeb",
+        "can_create": ["lawyer"]
       },
       "name": "83(b) Election Letters",
       "slug": "83b-election-letters"
@@ -34,7 +35,8 @@
           "lawyer": "toolkit.apps.checklist.forms.Checklist"
         },
         "form": "toolkit.apps.checklist.forms.Checklist",
-        "app_label": "checklist"
+        "app_label": "checklist",
+        "can_create": ["lawyer"]
       },
       "name": "Checklist",
       "slug": "checklist"
