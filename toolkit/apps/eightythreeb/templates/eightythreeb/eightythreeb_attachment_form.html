@@ -27,7 +27,7 @@
     {% csrf_token %}
     <ul id="attachment_list" class="list-group">
         {% for a in object.attachment_set.all %}
-        <li class="list-group-item">
+        <li class="row list-group-item">
             <div class="btn-group pull-right">
                 <a target="_BLANK" href="{{ a.attachment.url }}" class="btn btn-info">View</a>
                 <a href="javascript:void();" class="action btn btn-danger" data-method="DELETE" data-url="{% url 'api:attachment-delete' pk=a.pk %}">Delete</a>
