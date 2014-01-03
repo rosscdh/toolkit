@@ -62,9 +62,8 @@ class USPSResponse(object):
     def is_delivered(self):
         return self.status == 'DELIVERED'
 
-    @property
-    def description(self):
-        s = self.summary
+    def description(self, summary=None):
+        s = self.summary if summary is None else summary
 
         country = s.get('EventCountry') if s.get('EventCountry') is not None else 'USA'
         location = None
@@ -138,11 +137,6 @@ class AdeWinterUspsTrackConfirm(object):
             # Create the waypoint id and then compare it to the current 
             # responses identiy
             for point in waypoints:
-                # check to see if the event is not in the set of blacklisted events
-                if point.get('Event') in self.blacklisted_events:
-                    logger.info('The current response Event is blacklisted: %s %s' % (usps_response.identity, usps_response.status,) )
-                    return True
-
                 # Compare the id points and see if we have it already
                 waypoint_id = '%s-%s-%s' % (point.get('EventTime'),
                                             point.get('EventDate'),
@@ -176,9 +170,16 @@ class AdeWinterUspsTrackConfirm(object):
             usps_log = instance.data.get('usps_log', [])
             usps_log.append(usps_response.response)
 
-            usps['current_status'] = usps_response.description
-            usps['status_code'] = usps_response.status
-            usps['waypoints'] = usps_response.waypoints
+            if usps_response.status in self.blacklisted_events:
+                logger.info('Response was in the blacklist, setting current_status to be the previous waypoint but recording complete event: %s' % instance)
+                # set the description to be 1 waypoint back as were in a blacklist event
+                usps['current_status'] = usps_response.description(summary=usps_response.waypoints[1])
+                usps['status_code'] = usps_response.status
+                usps['waypoints'] = usps_response.waypoints
+            else:
+                usps['current_status'] = usps_response.description()
+                usps['status_code'] = usps_response.status
+                usps['waypoints'] = usps_response.waypoints
 
             instance.data['usps'] = usps
             instance.data['usps_log'] = usps_log
