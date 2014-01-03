@@ -29,6 +29,8 @@ class BaseUSPSTrackingCode(TestCase):
     fixtures = ['sites', 'tools']
 
     def setUp(self):
+        super(BaseUSPSTrackingCode, self).setUp()
+
         self.subject = USPSEightyThreeBTracking()
 
         self.user = mommy.make('auth.User', first_name='Customer', last_name='Test', email='test+customer@lawpal.com')
@@ -117,7 +119,7 @@ class USPSTrackingCodeCliCommandTest(BaseUSPSTrackingCode):
 
         self.assertEqual(len(email.to), 1)
         self.assertEqual(email.to, ['test+customer@lawpal.com'])
-        self.assertEqual(email.from_email, 'ross@lawpal.com')
+        self.assertEqual(email.from_email, 'tech@lawpal.com')
 
 
 class USPSUndeliveredTrackingCodeCliCommandTest(BaseUSPSTrackingCode):
@@ -168,6 +170,7 @@ class USPSTrackingCodeResponseTest(BaseUSPSTrackingCode):
     """
     def setUp(self):
         super(USPSTrackingCodeResponseTest, self).setUp()
+
         self.subject = USPSTrackingService()
         self.response = self.subject.track(tracking_code=TRACKING_CODE)
 
