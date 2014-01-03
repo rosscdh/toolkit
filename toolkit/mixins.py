@@ -9,7 +9,6 @@ class FormModal(BaseForm):
 
         self.helper.attrs = {
             'parsley-validate': '',
-            'parsley-error-container': '.parsley-errors'
         }
         self.helper.form_show_errors = False
 
@@ -17,7 +16,7 @@ class FormModal(BaseForm):
 
         self.helper.layout = Layout(
             Div(
-                HTML('<div class="dialog dialog-danger form-errors hide"><div class="container"><p></p><div class="parsley-errors"></div></div></div>'),
+                HTML('{% include "partials/form-errors.html" with form=form %}'),
                 form_layout,
                 css_class='modal-body'
             ),

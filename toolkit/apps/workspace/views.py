@@ -107,6 +107,16 @@ class CreateWorkspaceToolObjectView(WorkspaceToolFormViewMixin, CreateView):
         return qs.filter(user=self.request.user).first()
 
     def get_success_url(self):
+        """
+        Generic view now tests for the form having a get_success_url and because
+        the forms all extend “WorkspaceToolFormMixin” which is a forms.Form and
+        not forms.Model form we need to pass instance into the method
+        (as the form does not have self.instance as its not a model form)
+        """
+        form = self.get_form(form_class=self.get_form_class())
+        if hasattr(form, 'get_success_url'):
+            return form.get_success_url(instance=self.object)
+
         return reverse('workspace:tool_object_preview', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug, 'slug': self.object.slug})
 
     def form_valid(self, form):
@@ -121,6 +131,16 @@ class UpdateViewWorkspaceToolObjectView(WorkspaceToolFormViewMixin, UpdateView):
     model = Tool
 
     def get_success_url(self):
+        """
+        Generic view now tests for the form having a get_success_url and because
+        the forms all extend “WorkspaceToolFormMixin” which is a forms.Form and
+        not forms.Model form we need to pass instance into the method
+        (as the form does not have self.instance as its not a model form)
+        """
+        form = self.get_form(form_class=self.get_form_class())
+        if hasattr(form, 'get_success_url'):
+            return form.get_success_url(instance=self.object)
+
         return reverse('workspace:tool_object_preview', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug, 'slug': self.object.slug})
 
     def form_valid(self, form):
@@ -196,11 +216,6 @@ class WorkspaceToolObjectDownloadView(IssueSignalsMixin, WorkspaceToolObjectDisp
         resp = HttpResponse(content_type='application/pdf')
         resp['Content-Disposition'] = 'attachment; filename="{filename}.pdf"'.format(filename=self.object.filename)
 
-        self.issue_signals(request=self.request, instance=self.object)
+        self.issue_signals(request=self.request, instance=self.object, name='customer_download_pdf')
 
         return pdfpng_service.pdf(template_name=self.object.template_name, file_object=resp)
-
-
-class WorkspaceToolStatusView(WorkspaceToolViewMixin, DetailView):
-    model = Tool
-    template_name_suffix = '_status_list'  # place your template in your tool templates/:tool_name/:tool_name_status_list.html

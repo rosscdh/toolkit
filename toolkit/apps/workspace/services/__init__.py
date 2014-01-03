@@ -8,4 +8,4 @@ logger = logging.getLogger('django.request')
 
 from .customer import EnsureCustomerService
 from .pdf import PDFKitService
-from .tracker import USPSTrackingService
+from .tracker import USPSTrackingService, USPSResponse

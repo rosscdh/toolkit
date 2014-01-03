@@ -1,0 +1,12 @@
+{% if marker.action %}
+    <button type="button"
+            id="marker-{{ marker }}"
+            class="{{ css_class }}"
+            data-toggle="action"
+            data-type="{{ marker.action_type }}"
+            data-url="{{ marker.action }}"
+            {% for key, value in marker.action_attribs.iteritems %}
+                data-{{ key }}="{{ value }}"
+            {% endfor %}
+    >{{ marker.action_name }}</button>
+{% endif %}
