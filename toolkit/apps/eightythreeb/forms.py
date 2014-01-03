@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django import forms
+from django.core.urlresolvers import reverse
 
 from crispy_forms.bootstrap import FieldWithButtons, PrependedText, StrictButton
 from crispy_forms.helper import FormHelper, Layout
@@ -200,13 +201,23 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
         if self.fields['company_name'].initial in ['', None]:
             self.fields['company_name'].initial = self.workspace.name
 
+    def get_success_url(self, instance):
+        return reverse('eightythreeb:preview', kwargs={'slug': instance.slug})
+
     def save(self):
-        # Ensure we have a customer with this info
-        customer_service = EnsureCustomerService(email=self.cleaned_data.get('client_email'),
-                                                 full_name=self.cleaned_data.get('client_full_name'))
-        customer_service.process()
-        user = customer_service.user
-        is_new = customer_service.is_new
+
+        if self.instance is not None:
+            # use the currently associated user
+            user = self.instance.user
+            is_new = False
+
+        else:
+            # Ensure we have a customer with this info
+            customer_service = EnsureCustomerService(email=self.cleaned_data.get('client_email'),
+                                                     full_name=self.cleaned_data.get('client_full_name'))
+            customer_service.process()
+            user = customer_service.user
+            is_new = customer_service.is_new
 
         eightythreeb, is_new = user.eightythreeb_set.get_or_create(workspace=self.workspace, user=user)
         eightythreeb.data.update(**self.cleaned_data)  # update the data

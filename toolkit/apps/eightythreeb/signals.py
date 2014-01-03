@@ -30,7 +30,7 @@ complete = Signal(providing_args=['actor'])
 @receiver(base_83b_signal)
 def on_base_signal(sender, instance, actor, **kwargs):
     """
-    Primary handler that is called and will calculate the current and 
+    Primary handler that is called and will calculate the current and
     previous instance marker status, and issue the appropriate signals
     """
     markers = EightyThreeBSignalMarkers()  # @TODO can refer to instance.markers ?
@@ -39,9 +39,9 @@ def on_base_signal(sender, instance, actor, **kwargs):
     marker_node = markers.marker(val=kwargs.get('name', instance.status))
 
     if hasattr(marker_node, 'issue_signals'):
-      marker_node.issue_signals(request=sender, instance=instance, actor=actor)
+        marker_node.issue_signals(request=sender, instance=instance, actor=actor)
     else:
-      logger.error('Requested signal marker "%s" has no issue_signals method' % marker_node)
+        logger.error('Requested signal marker "%s" has no issue_signals method' % marker_node)
 
 
 
@@ -209,4 +209,4 @@ def ensure_83b_user_in_workspace_participants(sender, **kwargs):
     # when we have a new one
     if user not in workspace.participants.all():
         workspace.participants.add(user)
-        
+

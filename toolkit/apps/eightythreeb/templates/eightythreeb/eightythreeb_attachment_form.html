@@ -11,21 +11,31 @@
 {% endblock %}
 
 {% block main %}
-<div id="file-uploader">       
-    <noscript>          
-        <p>Please enable JavaScript to use file uploader.</p>
-    </noscript>         
+<div class="row">
+    <a href="{{ object.get_absolute_url }}" class="btn btn-success pull-right">Overview</a>
 </div>
 
 <div class="row">
-<ul id="attachment_list">
-    {% for a in object.attachment_set.all %}
-    <li>
-        <a target="_BLANK" href="{{ a.attachment.url }}">View</a>
-        <a href="">Delete</a>
-    </li>
-    {% endfor %}
-</ul>
+    <div id="file-uploader">       
+        <noscript>          
+            <p>Please enable JavaScript to use file uploader.</p>
+        </noscript>         
+    </div>
+</div>
+
+<div class="row">
+    {% csrf_token %}
+    <ul id="attachment_list" class="list-group">
+        {% for a in object.attachment_set.all %}
+        <li class="list-group-item">
+            <div class="btn-group pull-right">
+                <a target="_BLANK" href="{{ a.attachment.url }}" class="btn btn-info">View</a>
+                <a href="javascript:void();" class="action btn btn-danger" data-method="DELETE" data-url="{% url 'api:attachment-delete' pk=a.pk %}">Delete</a>
+            </div>
+            <strong class="col-md-3">{{ forloop.counter }}</strong>
+        </li>
+        {% endfor %}
+    </ul>
 </div>
 
 {% endblock %}
@@ -34,6 +44,7 @@
 <script src="{{ STATIC_URL }}ajaxuploader/js/fileuploader.js" ></script>
 <script>
 $(function(){
+
     var uploader = new qq.FileUploader({
         action: "{% url 'eightythreeb:upload_file' slug=object.slug %}",
         element: $('#file-uploader:first')[0],
@@ -61,6 +72,35 @@ $(function(){
             'csrf_name': 'csrfmiddlewaretoken',
             'csrf_xname': 'X-CSRFToken',
         },
+    });
+    /**
+    * Action buttons
+    */
+    $('.action').on( 'click', function ( e ) {
+        e.preventDefault();
+        var btn = $(this);
+
+        var data = btn.data();
+        var url = data['url']; delete data['url'];
+        var method = data['method']; delete data['method'];
+        //var response_success_msg = data['response_success_msg']; delete data['response_success_msg'];
+
+        $.ajax({
+            "type": method,
+            "url": url,
+            "data": JSON.stringify(data),
+            "dataType": 'json',
+            "contentType": 'application/json',
+            "beforeSend": function (jqXHR, settings) {
+                // Pull the token out of the DOM.
+                jqXHR.setRequestHeader('X-CSRFToken', $('input[name=csrfmiddlewaretoken]:first').val());
+            },
+            "complete": function ( data ) {
+                // reload the page to show updated lawyer info
+                //btn.hide().parent().append(response_success_msg);
+                document.location.reload();
+            }
+        });
     });
 });
 </script>

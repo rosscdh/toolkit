@@ -9,13 +9,20 @@ import os
 from uuidfield import UUIDField
 from jsonfield import JSONField
 
+from rulez import registry as rulez_registry
+
 from toolkit.apps.workspace.mixins import WorkspaceToolModelMixin
 
 from .markers import EightyThreeBSignalMarkers
 EIGHTYTHREEB_STATUS = EightyThreeBSignalMarkers().named_tuple(name='EIGHTYTHREEB_STATUS')
 
-from .mixins import StatusMixin, IRSMixin, HTMLMixin, TransferAndFilingDatesMixin, USPSReponseMixin
-from .managers import EightyThreeBManager
+from .mixins import (IsDeletedMixin,
+                     StatusMixin,
+                     IRSMixin,
+                     HTMLMixin,
+                     TransferAndFilingDatesMixin,
+                     USPSReponseMixin)
+from .managers import EightyThreeBManager, AttachmentManger
 
 
 def _83b_upload_file(instance, filename):
@@ -78,7 +85,28 @@ class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferA
     def get_edit_url(self):
         return reverse('workspace:tool_object_edit', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug=self.tool_slug).first().slug, 'slug': self.slug})
 
+    def can_read(self, user):
+        return user in self.workspace.participants.all()
 
-class Attachment(models.Model):
+    def can_edit(self, user):
+        return user in self.workspace.participants.all()
+
+    def can_delete(self, user):
+        return user.profile.is_lawyer and user in self.workspace.participants.all()
+
+rulez_registry.register("can_read", EightyThreeB)
+rulez_registry.register("can_edit", EightyThreeB)
+rulez_registry.register("can_delete", EightyThreeB)
+
+
+class Attachment(IsDeletedMixin, models.Model):
     eightythreeb = models.ForeignKey('eightythreeb.EightyThreeB')
     attachment = models.FileField(upload_to=_83b_upload_file, blank=True, storage=S3BotoStorage())
+    is_deleted = models.BooleanField(default=False)
+
+    objects = AttachmentManger()
+
+    def can_delete(self, user):
+        return user == self.eightythreeb.user
+
+rulez_registry.register("can_delete", Attachment)
