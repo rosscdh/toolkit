@@ -152,7 +152,7 @@ class CustomerUploadScanMarker(Marker):
     def long_description(self):
         msg = None
 
-        if self.tool.attachment and self.tool.attachment.url is not None:
+        if self.tool.attachment_set.all().first().url is not None:
             msg = mark_safe('You have successfully uploaded a scan of your 83b, <a target="_BLANK" href="%s">click here</a> to view it' % self.tool.attachment.url)
 
         return msg
