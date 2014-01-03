@@ -11,10 +11,16 @@
 {% endblock %}
 
 {% block main %}
-<div id="file-uploader">       
-    <noscript>          
-        <p>Please enable JavaScript to use file uploader.</p>
-    </noscript>         
+<div class="row">
+    <a href="{{ object.get_absolute_url }}" class="btn btn-success pull-right">Overview</a>
+</div>
+
+<div class="row">
+    <div id="file-uploader">       
+        <noscript>          
+            <p>Please enable JavaScript to use file uploader.</p>
+        </noscript>         
+    </div>
 </div>
 
 <div class="row">
