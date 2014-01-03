@@ -17,6 +17,9 @@ from toolkit.utils import _class_importer
 from dateutil import parser
 import math
 
+class MissingMarkersException(Exception):
+    msg = 'You must have at least 1 marker item in the object.signal_map list attribute'
+
 
 class BaseSignalMarkers(object):
     tool_object = None
@@ -36,7 +39,7 @@ class BaseSignalMarkers(object):
             self.current = self.signal_map[0]
 
         except IndexError:
-            raise Exception('You must have at least 1 item in the signal_map list attribute')
+            raise MissingMarkersException
 
         try:
             self.next = self.signal_map[1]
@@ -44,9 +47,9 @@ class BaseSignalMarkers(object):
         except IndexError:
             self.next = None
 
-        self.set_markers_fsm()
+        self._set_markers_fsm()  # finite state machine
 
-    def set_markers_fsm(self):
+    def _set_markers_fsm(self):
         for i, marker in enumerate(self.signal_map):
             # set the marker prev and next
             signal = self.signal_map[i]
@@ -100,7 +103,7 @@ class BaseSignalMarkers(object):
     def marker(self, val):
         if type(val) in [str, unicode]:
             return self.marker_by_name(name=val)
-        if type(val) in [int]:
+        if type(val) in [int, float]:
             return self.marker_by_val(val=val)
         return None
 
@@ -148,7 +151,7 @@ class BaseSignalMarkers(object):
         return get_namedtuple_choices(name, tuple(named_tuple))
 
 
-class Marker:
+class Marker(object):
     ACTION_TYPE_REMOTE = 'remote'
     ACTION_TYPE_REDIRECT = 'redirect'
 
