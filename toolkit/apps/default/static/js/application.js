@@ -83,38 +83,6 @@ String.prototype.repeat = function(num) {
       if (toggle) $this.closest('.table').find('.toggle-all :checkbox').checkbox(checkAll ? 'check' : 'uncheck');
     });
 
-    // Action Buttons
-    $("[data-toggle=action]").on('click', function(e) {
-      var $btn = $(this);
-      var type = $btn.data('type');
-
-      e.preventDefault();
-      if ('redirect' == type) {
-        document.location = $btn.data('url');
-      } else if ('remote' == type) {
-        var data   = $btn.data();
-        var url    = data['url']; delete data['url'];
-        var method = data['method']; delete data['method'];
-
-        $.ajax({
-            "type": method,
-            "url": url,
-            "data": JSON.stringify(data),
-            "dataType": 'json',
-            "contentType": 'application/json',
-            "beforeSend": function (jqXHR, settings) {
-                // Pull the token out of the DOM.
-                jqXHR.setRequestHeader('X-CSRFToken', $('input[name=csrfmiddlewaretoken]:first').val());
-            },
-            "complete": function ( data ) {
-                // reload the page to show updated lawyer info
-                //btn.hide().parent().append(response_success_msg);
-                document.location.reload();
-            }
-        });
-      };
-    });
-
     // jQuery UI Datepicker
     var datepickerSelector = '[data-toggle=datepicker]';
     $(datepickerSelector).datepicker({
