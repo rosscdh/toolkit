@@ -137,10 +137,10 @@ class CustomerUploadScanMarker(Marker):
 
     @property
     def action(self):
-        if self.tool.status >= self.tool.STATUS_83b.copy_uploaded and self.tool.status <= self.tool.STATUS_83b.mail_to_irs_tracking_code:
-            return self.get_action_url()
-        else:
-            return None
+        if self.tool is not None:
+            if self.is_complete is False or (self.tool.status >= self.tool.STATUS_83b.copy_uploaded and self.tool.status <= self.tool.STATUS_83b.mail_to_irs_tracking_code):
+                return self.get_action_url()        
+        return None
 
     @property
     def is_complete(self):
