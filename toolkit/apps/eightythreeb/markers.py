@@ -165,7 +165,7 @@ class CustomerTrackingNumberMarker(Marker):
     signals = ['toolkit.apps.eightythreeb.signals.mail_to_irs_tracking_code']
 
     action_name = 'Enter Tracking Number'
-    action_type = Marker.ACTION_TYPE_REDIRECT
+    action_type = Marker.ACTION_TYPE_MODAL
     action_user_class = ['customer', 'lawyer']
 
     def get_action_url(self):
