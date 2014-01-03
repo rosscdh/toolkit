@@ -162,7 +162,7 @@ class Marker:
 
     action_name = None
     action_type = None
-    action_url = None
+    action = None
     action_attribs = {}
     action_user_class = []  # must be a list so we can handle multiple types
 
@@ -193,13 +193,13 @@ class Marker:
         if signals is not None:
             self.signals = signals
 
-        # use the locally defined def action_url if exists otherwise if an
-        # action_url is passed in; use that
+        # use the locally defined def action if exists otherwise if an
+        # action is passed in; use that
         if hasattr(self, 'action_name') is False and 'action_name' in kwargs:
             self.action_name = kwargs.pop('action_name')
 
-        if hasattr(self, 'action_url') is False and 'action_url' in kwargs:
-            self.action_url = kwargs.pop('action_url')
+        if hasattr(self, 'action') is False and 'action' in kwargs:
+            self.action = kwargs.pop('action')
 
         if hasattr(self, 'action_user_class') is False and 'action_user_class' in kwargs:
             self.action_user = kwargs.pop('action_user_class')
@@ -241,14 +241,6 @@ class Marker:
     def previous(self, value):
         self.markers_map['previous'] = value
 
-    # @property
-    # def can_action(self):
-    #     # if the process has been completed then no they cant do any more actions
-    #     if self.tool.is_complete:
-    #         return False
-    #     # if they have already completed this status then allow it
-    #     return self.tool.status > self.val or self.name in self.tool.data['markers']
-
     @property
     def status(self):
         if self.is_complete:
@@ -270,6 +262,12 @@ class Marker:
         if self.is_complete:
             return parser.parse(self.tool.data['markers'][self.name].get('date_of'))
         return None
+
+    def get_action_url(self):
+        """
+        method used to return the marker action_url without display business logic
+        """
+        raise NotImplementedError
 
     def tool_info(self):
         if self.tool is not None:

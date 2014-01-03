@@ -91,7 +91,9 @@ class AddWorkspaceTeamMemberForm(FormModal, forms.Form):
 
 @parsleyfy
 class InviteUserForm(forms.Form):
-    subject = forms.CharField()
+    subject = forms.CharField(
+         widget=forms.TextInput(attrs={'size':'45'})
+    )
     message = forms.CharField(widget=forms.Textarea(attrs={
             'cols': '80',
             'data-toggle': 'summernote'
@@ -105,14 +107,13 @@ class InviteUserForm(forms.Form):
         self.user = getattr(self.request, 'user', None)
 
         self.helper = FormHelper()
-        self.helper.form_class = 'form-horizontal'
         self.helper.attrs = {'data-validate': 'parsley'}
 
         self.helper.layout = Layout(
             'subject',
             'message',
             ButtonHolder(
-                Submit('submit', 'Send Invite', css_class='button white')
+                Submit('submit', 'Send Invite', css_class='btn-lg white')
             )
 
         )
@@ -129,7 +130,7 @@ class InviteUserForm(forms.Form):
         return template.render(Context({'request': self.request,
                                         'instance': self.tool_instance,
                                         'user': self.user,
-                                        'action_url': '%s' % self.key_instance.get_invite_login_url(request=self.request)
+                                        '83b_action_url': '%s' % self.key_instance.get_invite_login_url(request=self.request)
                                         }))
     def save(self, **kwargs):
         """
