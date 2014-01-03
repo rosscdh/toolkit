@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
 from django.core.files import File
+from django.core.urlresolvers import reverse
 from django.views.generic import UpdateView, DetailView
 
 from ajaxuploader.views import AjaxFileUploader
@@ -15,6 +16,37 @@ import os
 import json
 import logging
 logger = logging.getLogger('django.request')
+
+
+class Preview83bView(DetailView):
+    """
+    View used to display the PDF to Lawyer/Customer
+    after they have completed the 83b form
+    and redirect on to the next marker step
+    """
+    model = EightyThreeB
+    template_name = 'eightythreeb/after_form_preview.html'
+
+    def get_next_previous_urls(self):
+        markers = self.object.markers
+        if self.request.user.profile.is_lawyer is True:
+            # for Lawyer
+            return {
+                'previous_url': markers.marker(val='lawyer_complete_form').get_action_url(),
+                'next_url': markers.marker(val='lawyer_invite_customer').get_action_url(),
+            }
+
+        elif self.request.user.profile.is_customer is True:
+            # for Customer
+            return {
+                'previous_url': markers.marker(val='customer_complete_form').get_action_url(),
+                'next_url': reverse('workspace:tool_object_preview', kwargs={'workspace': self.object.workspace.slug, 'tool': self.object.tool_slug, 'slug': self.object.slug}),
+            }
+
+    def get_context_data(self, **kwargs):
+        context = super(Preview83bView, self).get_context_data(**kwargs)
+        context.update(self.get_next_previous_urls())  # append the next previous urls
+        return context
 
 
 class TrackingCodeView(IssueSignalsMixin, UpdateView):

@@ -12,8 +12,7 @@ from .views import (CreateWorkspaceView,
                     InviteClientWorkspaceToolObjectView,
                     WorkspaceToolObjectPreviewView,
                     WorkspaceToolObjectDisplayView,
-                    WorkspaceToolObjectDownloadView,
-                    WorkspaceToolStatusView)
+                    WorkspaceToolObjectDownloadView)
 from .models import Workspace
 from .forms import WorkspaceForm
 
@@ -31,9 +30,6 @@ urlpatterns = patterns('',
     url(r'^(?P<workspace>[\w-]+)/tool/(?P<tool>[\w-]+)/(?P<slug>[\w-]+)/invite/client/$',
         login_required(InviteClientWorkspaceToolObjectView.as_view()),
         name='tool_object_invite'),
-    url(r'^(?P<workspace>[\w-]+)/tool/(?P<tool>[\w-]+)/(?P<slug>[\w-]+)/status/$',
-        login_required(WorkspaceToolStatusView.as_view()),
-        name='tool_object_status'),
     url(r'^(?P<workspace>[\w-]+)/tool/(?P<tool>[\w-]+)/(?P<slug>[\w-]+)/preview/$',
         login_required(WorkspaceToolObjectPreviewView.as_view()),
         name='tool_object_preview'),

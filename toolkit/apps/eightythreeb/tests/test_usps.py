@@ -76,7 +76,6 @@ class USPSTrackingCodeCliCommandTest(BaseUSPSTrackingCode):
         self.eightythreeb = self.eightythreeb._meta.model.objects.get(pk=self.eightythreeb.pk)  # reload the model
 
         self.assertEqual(self.eightythreeb.status, EightyThreeB.STATUS_83b.datestamped_copy_recieved)
-        self.assertEqual(self.eightythreeb.current_status, '[Client] Date stamped copy received')
 
         self.assertTrue('usps' in self.eightythreeb.data)
         self.assertTrue('usps_log' in self.eightythreeb.data)
@@ -135,7 +134,6 @@ class USPSUndeliveredTrackingCodeCliCommandTest(BaseUSPSTrackingCode):
 
         # ensure that the status has not been updated
         self.assertEqual(self.eightythreeb.status, EightyThreeB.STATUS_83b.irs_recieved)
-        self.assertEqual(self.eightythreeb.current_status, 'Waiting for reciept of 83b by IRS (via USPS)')
 
         self.assertTrue('usps' in self.eightythreeb.data)
         self.assertTrue('usps_log' in self.eightythreeb.data)
@@ -267,7 +265,7 @@ class USPSUndeliveredTrackingCodeResponseTest(BaseUSPSTrackingCode):
 
         super(USPSUndeliveredTrackingCodeResponseTest, self).setUp()
         self.subject = USPSTrackingService()
-        self.response = self.subject.track(tracking_code=TRACKING_CODE)  
+        self.response = self.subject.track(tracking_code=TRACKING_CODE)
 
     def test_usps_response_identity(self):
         self.assertEqual(self.response.identity, '9:24 pm-March 28, 2001-50395')
