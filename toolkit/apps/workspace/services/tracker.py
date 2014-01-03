@@ -174,12 +174,11 @@ class AdeWinterUspsTrackConfirm(object):
                 logger.info('Response was in the blacklist, setting current_status to be the previous waypoint but recording complete event: %s' % instance)
                 # set the description to be 1 waypoint back as were in a blacklist event
                 usps['current_status'] = usps_response.description(summary=usps_response.waypoints[1])
-                usps['status_code'] = usps_response.status
-                usps['waypoints'] = usps_response.waypoints
             else:
                 usps['current_status'] = usps_response.description()
-                usps['status_code'] = usps_response.status
-                usps['waypoints'] = usps_response.waypoints
+
+            usps['status_code'] = usps_response.status
+            usps['waypoints'] = usps_response.waypoints
 
             instance.data['usps'] = usps
             instance.data['usps_log'] = usps_log
