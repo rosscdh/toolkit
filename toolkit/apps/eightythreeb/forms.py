@@ -30,8 +30,6 @@ def _current_year():
 
 
 class BaseEightyThreeBForm(WorkspaceToolFormMixin):
-    title = 'Create an 83(b) Application'
-
     client_full_name = forms.CharField(
         error_messages={
             'required': "Client name can't be blank."
@@ -254,9 +252,6 @@ class CustomerEightyThreeBForm(BaseEightyThreeBForm):
     def __init__(self, *args, **kwargs):
         super(CustomerEightyThreeBForm, self).__init__(*args, **kwargs)
 
-        if self.instance is not None:
-            self.title = 'Edit your 83(b) Application'
-
         # set up the hidden fields that still need to be submitted
         self.fields['client_full_name'].widget = forms.HiddenInput()
         self.fields['client_email'].widget = forms.HiddenInput()
@@ -371,9 +366,6 @@ class CustomerEightyThreeBForm(BaseEightyThreeBForm):
 class LawyerEightyThreeBForm(BaseEightyThreeBForm):
     def __init__(self, *args, **kwargs):
         super(LawyerEightyThreeBForm, self).__init__(*args, **kwargs)
-
-        if self.instance is not None:
-            self.title = 'Edit an 83(b) Application'
 
         # change the required state on some fields
         self.fields['address1'].required = False
