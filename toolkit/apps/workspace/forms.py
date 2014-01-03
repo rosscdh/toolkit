@@ -129,7 +129,7 @@ class InviteUserForm(forms.Form):
         return template.render(Context({'request': self.request,
                                         'instance': self.tool_instance,
                                         'user': self.user,
-                                        'action_url': '%s' % self.key_instance.get_invite_login_url(request=self.request)
+                                        '83b_action_url': '%s' % self.key_instance.get_invite_login_url(request=self.request)
                                         }))
     def save(self, **kwargs):
         """
