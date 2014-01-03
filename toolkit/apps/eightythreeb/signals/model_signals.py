@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.dispatch import receiver
-from django.db.models.signals import pre_save, post_save, post_delete
+from django.db.models.signals import pre_save, post_save
 
 from ..models import EightyThreeB, Attachment
 
@@ -46,7 +46,7 @@ def ensure_attachment_markers(sender, instance, **kwargs):
         if 'copy_uploaded' in eightythreeb.data.get('markers'):
             #
             # We have copy_uploaded present then delete it
-            # an save out 
+            # an save out
             #
             if eightythreeb.attachment_set.all().count() == 0:
                 logger.debug('Removing copy_uploaded marker for 83b %s as we have no attachments' % eightythreeb)
