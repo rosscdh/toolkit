@@ -110,3 +110,5 @@ class Attachment(IsDeletedMixin, models.Model):
         return user == self.eightythreeb.user
 
 rulez_registry.register("can_delete", Attachment)
+
+from .signals import *
