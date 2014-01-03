@@ -59,7 +59,53 @@
 {% block content %}
 
 
-<!-- Page 1 : Instructions  -->
+
+
+<!-- Page 1 : Transmittal Letter  -->
+<div class="header">IRS TRANSMITTAL LETTER</div>
+
+<div>
+    <div>{{ client_full_name|default:'<span>[Client Name]</span>' }}</div>
+    <div>{{ address1|default:'<span>[Client Address]</span>' }}</div>
+    {% if address2 %}<div>{{ address2 }}</div>{% endif %}
+    <div>{{ city|default:'<span>[Client City]</span>' }}</div>
+    <div>{{ state|default:'<span>[Client State]</span>' }} {{ post_code|default:'<span>[Client Zip Code]</span>' }}</div>
+    <br />
+    <div>Taxpayer SSN / ITIN # : {% if ssn or itin %}{{ ssn|default:'' }}{{ itin|default:'' }}{% else %}<span>[ITIN or SSN]</span>{% endif %}</div>
+</div>
+
+<p>
+    Dated: {% now "F jS Y" %}
+<p>
+{{ object.irs_address|default:'<span>[IRS Service Center Address]</span>' }}
+<p>
+<br />
+<br />
+Dear Sir or Madam:
+<p>
+Pursuant to Treasury Regulations Section 1.83-2(c) promulgated under Section 83 of the Internal Revenue Code of 1986, as amended (the “Code”), enclosed please find a copy of an election under Section 83(b) of the Code.
+<p>
+Also, attached are a self-addressed stamped envelope and a signed copy of my 83(b) Election Form. Please date stamp the copy of the Election Form, enclose it in the attached envelope and mail it to me.
+<p>
+Thank you,
+<p>
+<div class="signature-block">
+    <div class="signature-block-inner">x</div>
+    <div class="signature-block-name">{{ client_full_name }}</div>
+</div>
+
+
+
+<!-- Page 2 : 83b Election Copy 1  -->
+<div class="page-break"></div>
+{% include 'eightythreeb/document/irs_page.html' with title='Copy 1 - IRS (File Copy)' %}
+
+<!-- Page 3 : 83b Election Copy 2  -->
+<div class="page-break"></div>
+{% include 'eightythreeb/document/irs_page.html' with title='Copy 2 - IRS (Return Copy)' %}
+
+<!-- Page 4 : Instructions  -->
+<div class="page-break"></div>
 <div class="header">INSTRUCTIONS (DO NOT SEND)</div>
 
 <div class="instructions">
@@ -104,49 +150,6 @@
     <em>Your 83(b) Election must reach the IRS by {{ object.filing_date }}.</em>
 </div>
 
-<!-- Page 2 : Transmittal Letter  -->
-<div class="page-break"></div>
-<div class="header">IRS TRANSMITTAL LETTER</div>
-
-<div>
-    <div>{{ client_full_name|default:'<span>[Client Name]</span>' }}</div>
-    <div>{{ address1|default:'<span>[Client Address]</span>' }}</div>
-    {% if address2 %}<div>{{ address2 }}</div>{% endif %}
-    <div>{{ city|default:'<span>[Client City]</span>' }}</div>
-    <div>{{ state|default:'<span>[Client State]</span>' }} {{ post_code|default:'<span>[Client Zip Code]</span>' }}</div>
-    <br />
-    <div>Taxpayer SSN / ITIN # : {% if ssn or itin %}{{ ssn|default:'' }}{{ itin|default:'' }}{% else %}<span>[ITIN or SSN]</span>{% endif %}</div>
-</div>
-
-<p>
-    Dated: {% now "F jS Y" %}
-<p>
-{{ object.irs_address|default:'<span>[IRS Service Center Address]</span>' }}
-<p>
-<br />
-<br />
-Dear Sir or Madam:
-<p>
-Pursuant to Treasury Regulations Section 1.83-2(c) promulgated under Section 83 of the Internal Revenue Code of 1986, as amended (the “Code”), enclosed please find a copy of an election under Section 83(b) of the Code.
-<p>
-Also, attached are a self-addressed stamped envelope and a signed copy of my 83(b) Election Form. Please date stamp the copy of the Election Form, enclose it in the attached envelope and mail it to me.
-<p>
-Thank you,
-<p>
-<div class="signature-block">
-    <div class="signature-block-inner">x</div>
-    <div class="signature-block-name">{{ client_full_name }}</div>
-</div>
-
-
-
-<!-- Page 3 : 83b Election Copy 1  -->
-<div class="page-break"></div>
-{% include 'eightythreeb/document/irs_page.html' with title='Copy 1 - IRS (File Copy)' %}
-
-<!-- Page 4 : 83b Election Copy 2  -->
-<div class="page-break"></div>
-{% include 'eightythreeb/document/irs_page.html' with title='Copy 2 - IRS (Return Copy)' %}
 
 
 {% endblock %}
