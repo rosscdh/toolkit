@@ -18,7 +18,7 @@ class LawyerCompleteFormMarker(Marker):
         return reverse('workspace:tool_object_edit', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.tool_slug, 'slug': self.tool.slug})
 
     @property
-    def action_url(self):
+    def action(self):
         if self.tool.is_complete is True or self.tool.status > self.val:
             return None
         else:
@@ -42,7 +42,7 @@ class LawyerInviteUserMarker(Marker):
         return reverse('workspace:tool_object_invite', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.tool_slug, 'slug': self.tool.slug})
 
     @property
-    def action_url(self):
+    def action(self):
         if self.tool.is_complete is True or self.tool.status > self.tool.STATUS_83b.customer_complete_form:
             return None
         else:
@@ -62,7 +62,7 @@ class CustomerCompleteFormMarker(Marker):
         return reverse('workspace:tool_object_edit', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.tool_slug, 'slug': self.tool.slug})
 
     @property
-    def action_url(self):
+    def action(self):
         if self.tool.is_complete is True or self.tool.status > self.val:
             return None
         else:
@@ -83,7 +83,7 @@ class CustomerDownloadDocMarker(Marker):
         return reverse('workspace:tool_object_download', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.tool_slug, 'slug': self.tool.slug})
 
     @property
-    def action_url(self):
+    def action(self):
         if self.tool.is_complete is True or self.tool.status > self.val:
             return None
         else:
@@ -113,7 +113,7 @@ class CustomerPrintAndSignMarker(Marker):
         return u'/api/83b/%s' % self.tool.pk  # Modify this to come from reverse
 
     @property
-    def action_url(self):
+    def action(self):
         if self.tool.is_complete is True or self.tool.status > self.val:
             return None
         else:
@@ -135,7 +135,7 @@ class CustomerUploadScanMarker(Marker):
         return reverse('eightythreeb:attachment', kwargs={'slug': self.tool.slug})
 
     @property
-    def action_url(self):
+    def action(self):
         if self.tool.status >= self.tool.STATUS_83b.copy_uploaded and self.tool.status <= self.tool.STATUS_83b.mail_to_irs_tracking_code:
             return self.get_action_url()
         else:
@@ -171,7 +171,7 @@ class CustomerTrackingNumberMarker(Marker):
         reverse('eightythreeb:tracking_code', kwargs={'slug': self.tool.slug})
 
     @property
-    def action_url(self):
+    def action(self):
         if self.tool.is_complete is True or self.tool.status > self.val:
             return None
         else:
@@ -224,7 +224,7 @@ class DateStampedCopyRecievedMarker(Marker):
         return u'/api/83b/%s' % self.tool.pk  # Modify this to come from reverse
 
     @property
-    def action_url(self):
+    def action(self):
         if self.tool.is_complete is True or self.tool.status > self.val:
             return None
         else:
