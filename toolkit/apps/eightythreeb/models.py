@@ -85,6 +85,19 @@ class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferA
     def get_edit_url(self):
         return reverse('workspace:tool_object_edit', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug=self.tool_slug).first().slug, 'slug': self.slug})
 
+    def can_read(self, user):
+        return user in self.workspace.participants.all()
+
+    def can_edit(self, user):
+        return user in self.workspace.participants.all()
+
+    def can_delete(self, user):
+        return user.profile.is_lawyer and user in self.workspace.participants.all()
+
+rulez_registry.register("can_read", EightyThreeB)
+rulez_registry.register("can_edit", EightyThreeB)
+rulez_registry.register("can_delete", EightyThreeB)
+
 
 class Attachment(IsDeletedMixin, models.Model):
     eightythreeb = models.ForeignKey('eightythreeb.EightyThreeB')
