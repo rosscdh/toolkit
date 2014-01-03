@@ -50,6 +50,9 @@ class Preview83bView(DetailView):
 
 
 class TrackingCodeView(IssueSignalsMixin, UpdateView):
+    #
+    # Makes use of the base eightythreeb_form.html
+    #
     model = EightyThreeB
     form_class = TrackingCodeForm
 
