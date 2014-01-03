@@ -67,10 +67,13 @@ class USPSResponse(object):
         s = self.summary
 
         country = s.get('EventCountry') if s.get('EventCountry') is not None else 'USA'
+        location = None
+        if s.get('EventCity') is not None and s.get('EventState') is not None and s.get('EventZIPCode'):
+            location = 'in %s %s %s, %s' % (s.get('EventCity'), s.get('EventState'), s.get('EventZIPCode'), country),
 
-        return 'The package is currently %s in %s. The event took place on %s:%s' % (
+        return 'The package is currently %s %s. The event took place on %s:%s' % (
                 s.get('Event'),
-                '%s %s %s, %s' % (s.get('EventCity'), s.get('EventState'), s.get('EventZIPCode'), country),
+                location if location is not None else '',
                 s.get('EventDate'),
                 s.get('EventTime'),)
 
