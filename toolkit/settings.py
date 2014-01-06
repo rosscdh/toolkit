@@ -95,6 +95,9 @@ HELPER_APPS = (
     'django_extensions',
     'django_bootstrap_breadcrumbs',
 
+    # getsentry.com
+    'raven.contrib.django.raven_compat',
+
     # api
     'rest_framework',
     'rest_framework.authtoken',
