@@ -94,6 +94,7 @@ HELPER_APPS = (
     'ajaxuploader',
     'django_extensions',
     'django_bootstrap_breadcrumbs',
+    'email_obfuscator',
 
     # getsentry.com
     'raven.contrib.django.raven_compat',
