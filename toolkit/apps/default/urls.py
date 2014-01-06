@@ -12,5 +12,6 @@ urlpatterns = patterns('',
     url(r'^start/invite/(?P<key>.+)/$', InviteKeySignInView.as_view(), name='invite'),
     url(r'^start/invite/$', InviteKeySignInView.as_view(), name='invite_form'),
     url(r'^end/$', LogoutView.as_view(), name='logout'),
+    url(r'^legal/terms/$', TemplateView.as_view(template_name='terms.html'), name='terms'),
     url(r'^$', HomePageView.as_view(), name='home'),
 )
