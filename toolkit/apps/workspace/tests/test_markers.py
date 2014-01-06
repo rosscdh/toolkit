@@ -83,5 +83,48 @@ class BaseSignalMarkersTest(unittest.TestCase):
         EXPECTED_MONKEYS = get_namedtuple_choices('MONKEYS', tuple([(signal_marker.val, signal_marker.name, signal_marker.description) for signal_marker in MULTIPLE_MARKERS]))
         self.assertEqual(subject.named_tuple(name='MONKEYS'), EXPECTED_MONKEYS)
 
-# class MarkerTest(unittest.TestCase):
-#     pass
+
+class InvalidMarkerTest(unittest.TestCase):
+    """
+    Invalid markers
+    """
+    def setUp(self):
+        super(InvalidMarkerTest, self).setUp()
+        self.subject = Marker
+
+    def test_invalid_init(self):
+        with self.assertRaises(TypeError) as context:
+            subject = self.subject()
+
+        self.assertEqual(context.exception.message, '__init__() takes exactly 2 arguments (1 given)')
+
+
+class ValidMarkerTest(unittest.TestCase):
+    """
+    Invalid markers
+    """
+    def setUp(self):
+        super(ValidMarkerTest, self).setUp()
+        self.subject = Marker
+
+    def test_valid_init(self):
+        subject = self.subject(1, name='test_marker')
+        self.assertEqual(subject.val, 1)
+        self.assertEqual(hasattr(subject, 'name'), True)
+        self.assertEqual(subject.name, 'test_marker')
+        self.assertEqual(hasattr(subject, 'description'), True)
+        self.assertEqual(hasattr(subject, 'long_description'), True)
+        self.assertEqual(type(subject), Marker)
+
+    def test_invalid_action(self):
+        """
+        Each marker must define a get_action_url and or a .action property
+        the .action property defines display business logix
+        while the get_action_url allows us to access the action url regardless
+        of business logic
+        """
+        subject = self.subject(1, name='test_marker')
+        with self.assertRaises(NotImplementedError) as context:
+            subject.action
+        with self.assertRaises(NotImplementedError) as context:
+            subject.get_action_url()
