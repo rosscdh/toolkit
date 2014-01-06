@@ -276,6 +276,10 @@ class Marker(object):
     def long_description(self):
         return self._long_description if self.is_complete is False else None
 
+    @long_description.setter
+    def long_description(self, value):
+        self._long_description = value
+
     @property
     def action(self):
         return self.get_action_url()
