@@ -219,7 +219,7 @@ class USPSTrackingCodeResponseTest(BaseUSPSTrackingCode):
         self.assertEqual(self.response.is_delivered, True)
 
     def test_usps_response_description(self):
-        self.assertEqual(self.response.description(), 'The package is currently DELIVERED in NEWTON IA 50208, USA. The event took place on May 21, 2001:12:12 pm')
+        self.assertEqual(self.response.description(), 'Current package status : DELIVERED in NEWTON IA 50208, USA. Last Updated :  May 21, 2001:12:12 pm')
 
     def test_usps_response_waypoints(self):
         self.assertEqual(self.response.waypoints, [{'EventTime': '12:12 pm',
