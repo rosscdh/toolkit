@@ -160,7 +160,7 @@ class Marker(object):
 
     name = None
     description = None
-    long_description = None
+    _long_description = None
     signals = []
 
     action_name = None
@@ -190,7 +190,7 @@ class Marker(object):
 
         long_description = kwargs.pop('long_description', None)  # set the long description to the description as it will get overriden if the user actually sets long_description
         if long_description is not None:
-            self.long_description = long_description
+            self._long_description = long_description
 
         signals = kwargs.pop('signals', None)
         if signals is not None:
@@ -271,6 +271,10 @@ class Marker(object):
         method used to return the marker action_url without display business logic
         """
         raise NotImplementedError
+
+    @property
+    def long_description(self):
+        return self._long_description if self.is_complete is False else None
 
     @property
     def action(self):
