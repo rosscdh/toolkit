@@ -84,7 +84,7 @@ class CustomerDownloadDocMarker(Marker):
 
     @property
     def action(self):
-        if self.tool.is_complete is True or self.tool.status < self.val:
+        if self.tool.status < self.val:
             return None
         else:
             return self.get_action_url()
