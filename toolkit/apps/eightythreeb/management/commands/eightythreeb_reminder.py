@@ -29,7 +29,7 @@ class Command(BaseCommand):
             mailer.process(company=instance.workspace, \
                            url='%s%s' % (site.domain[0:-1], instance.get_absolute_url()), \
                            current_status=current_step.long_description, \
-                           next_step=next_step.long_description, \
+                           next_step=next_step.long_description if next_step is not None else None, \
                            current_step=current_step.val, \
                            total_steps=markers.num_markers, \
                            num_days_left=instance.days_left,

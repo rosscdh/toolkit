@@ -20,7 +20,10 @@ def marker_status_block(context, marker):
     user = context.get('user')
 
     # if the user is of the class required
-    show_action_button = True if marker.action is not None and user.profile.user_class in marker.action_user_class else False
+    try:
+        show_action_button = True if marker.action is not None and user.profile.user_class in marker.action_user_class else False
+    except NotImplementedError as e:
+        show_action_button = False
 
     # is our current status done then show_complete
     show_complete = marker.status == 'done'
