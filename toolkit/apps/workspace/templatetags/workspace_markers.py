@@ -15,10 +15,8 @@ ACTION_BUTTON_CSS_TYPES = {
     "next": 'btn btn-hg btn-info',
 }
 
-@register.inclusion_tag('partials/marker_status_block.html', takes_context=True)
-def marker_status_block(context, marker):
-    user = context.get('user')
-
+@register.inclusion_tag('partials/marker_status_block.html', takes_context=False)
+def marker_status_block(marker, user):
     # if the user is of the class required
     try:
         show_action_button = True if marker.action is not None and user.profile.user_class in marker.action_user_class else False
