@@ -110,7 +110,7 @@ class CustomerPrintAndSignMarker(Marker):
         }
 
     def get_action_url(self):
-        return u'/api/83b/%s' % self.tool.pk  # Modify this to come from reverse
+        return reverse('api:eightythreeb-detail', kwargs={'pk': self.tool.pk})
 
     @property
     def action(self):
@@ -137,10 +137,10 @@ class CustomerUploadScanMarker(Marker):
 
     @property
     def action(self):
-        if self.is_complete is False or self.tool.status >= self.tool.STATUS_83b.copy_uploaded and self.tool.status <= self.tool.STATUS_83b.mail_to_irs_tracking_code:
-            return self.get_action_url()
-        else:
-            return None
+        if self.tool is not None:
+            if self.is_complete is False or (self.tool.status >= self.tool.STATUS_83b.copy_uploaded and self.tool.status <= self.tool.STATUS_83b.mail_to_irs_tracking_code):
+                return self.get_action_url()        
+        return None
 
     @property
     def is_complete(self):
@@ -173,10 +173,10 @@ class CustomerTrackingNumberMarker(Marker):
 
     @property
     def action(self):
-        if self.tool.is_complete is True or self.tool.status > self.val:
-            return None
-        else:
+        if self.tool.status in [self.val, self.tool.STATUS_83b.irs_recieved]:
             return self.get_action_url()
+        # dont show if the status is less than self.val
+        return None
 
 
 class USPSDeliveryStatusMarker(Marker):
@@ -220,7 +220,7 @@ class DateStampedCopyRecievedMarker(Marker):
         }
 
     def get_action_url(self):
-        return u'/api/83b/%s' % self.tool.pk  # Modify this to come from reverse
+        return reverse('api:eightythreeb-detail', kwargs={'pk': self.tool.pk})
 
     @property
     def action(self):

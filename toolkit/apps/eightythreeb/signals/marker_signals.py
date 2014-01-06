@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.dispatch import Signal, receiver
-from django.db.models.signals import pre_save, post_save
 
-from .models import EightyThreeB
-from .markers import EightyThreeBSignalMarkers
-from .mailers import EightyThreeTrackingCodeEnteredEmail
+from ..markers import EightyThreeBSignalMarkers
+from ..mailers import EightyThreeTrackingCodeEnteredEmail
 
 import datetime
 
@@ -22,7 +20,7 @@ customer_download_pdf = Signal(providing_args=['actor'])
 customer_print_and_sign = Signal(providing_args=['actor'])
 copy_uploaded = Signal(providing_args=['actor'])
 mail_to_irs_tracking_code = Signal(providing_args=['actor'])
-irs_recieved = Signal(providing_args=[]) # no actor as its an aotumated callback
+irs_recieved = Signal(providing_args=[])
 datestamped_copy_recieved = Signal(providing_args=['actor'])
 complete = Signal(providing_args=['actor'])
 
@@ -42,7 +40,6 @@ def on_base_signal(sender, instance, actor, **kwargs):
         marker_node.issue_signals(request=sender, instance=instance, actor=actor)
     else:
         logger.error('Requested signal marker "%s" has no issue_signals method' % marker_node)
-
 
 
 def _update_marker(marker_name, next_status, actor_name, instance, **kwargs):
@@ -128,6 +125,7 @@ def on_customer_print_and_sign(sender, instance, actor, **kwargs):
                        actor_name=actor_name,
                        instance=instance)
 
+
 @receiver(copy_uploaded)
 def on_copy_uploaded(sender, instance, actor, **kwargs):
     if actor.profile.is_customer:
@@ -173,6 +171,7 @@ def on_datestamped_copy_recieved(sender, instance, actor, **kwargs):
     # Send the complete signal here
     complete.send(sender=sender, instance=instance, actor=actor)
 
+
 @receiver(complete)
 def on_complete(sender, instance, actor, **kwargs):
     actor_name = actor.get_full_name()
@@ -181,32 +180,3 @@ def on_complete(sender, instance, actor, **kwargs):
                    next_status=instance.STATUS_83b.complete,
                    actor_name=actor_name,
                    instance=instance)
-
-
-@receiver(pre_save, sender=EightyThreeB, dispatch_uid='83b.ensure_dates')
-def ensure_dates(sender, **kwargs):
-    """
-    signal to handle creating the workspace slug
-    """
-    instance = kwargs.get('instance')
-
-    if instance.data.get('date_of_property_transfer', None) is not None:
-      if instance.transfer_date in [None, '']:
-        instance.transfer_date = instance.get_transfer_date()
-
-      if instance.filing_date in [None, '']:
-        instance.filing_date = instance.get_filing_date()
-
-
-@receiver(post_save, sender=EightyThreeB, dispatch_uid='83b.ensure_83b_user_in_workspace_participants')
-def ensure_83b_user_in_workspace_participants(sender, **kwargs):
-    eightythreeb = kwargs.get('instance')
-    created = kwargs.get('created', False)
-
-    user = eightythreeb.user
-    workspace = eightythreeb.workspace
-
-    # when we have a new one
-    if user not in workspace.participants.all():
-        workspace.participants.add(user)
-
