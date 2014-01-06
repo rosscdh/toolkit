@@ -110,7 +110,7 @@ class CustomerPrintAndSignMarker(Marker):
         }
 
     def get_action_url(self):
-        return u'/api/83b/%s' % self.tool.pk  # Modify this to come from reverse
+        return reverse('api:eightythreeb-detail', kwargs={'pk': self.tool.pk})
 
     @property
     def action(self):
@@ -220,7 +220,7 @@ class DateStampedCopyRecievedMarker(Marker):
         }
 
     def get_action_url(self):
-        return u'/api/83b/%s' % self.tool.pk  # Modify this to come from reverse
+        return reverse('api:eightythreeb-detail', kwargs={'pk': self.tool.pk})
 
     @property
     def action(self):
