@@ -72,7 +72,7 @@ class CustomerCompleteFormMarker(Marker):
 class CustomerDownloadDocMarker(Marker):
     name = 'customer_download_pdf'
     description = 'Client: Download 83(b) Election Letter and Instructions'
-    long_description = ''
+    _long_description = ''
     signals = ['toolkit.apps.eightythreeb.signals.customer_download_pdf']
 
     action_name = 'Download 83(b)'
@@ -93,7 +93,7 @@ class CustomerDownloadDocMarker(Marker):
 class CustomerPrintAndSignMarker(Marker):
     name = 'customer_print_and_sign'
     description = 'Client: Print, check and sign 83(b) Election Letter'
-    long_description = 'Print and sign the 83(b) Election where indicated.'
+    _long_description = 'Print and sign the 83(b) Election where indicated.'
     signals = ['toolkit.apps.eightythreeb.signals.customer_print_and_sign']
 
     action_name = 'I have printed and signed the Election'
@@ -159,7 +159,7 @@ class CustomerUploadScanMarker(Marker):
 class CustomerTrackingNumberMarker(Marker):
     name = 'mail_to_irs_tracking_code'
     description = 'Client: Mail to IRS & register Tracking Code'
-    long_description = 'Mail 83(b) form using USPS Registered Post *ONLY* and enter the Tracking Number here,'
+    _long_description = 'Mail 83(b) form using USPS Registered Post *ONLY* and enter the Tracking Number here,'
     signals = ['toolkit.apps.eightythreeb.signals.mail_to_irs_tracking_code']
 
     action_name = 'Enter Tracking Number'
@@ -192,7 +192,7 @@ class USPSDeliveryStatusMarker(Marker):
     def long_description(self):
         msg = self.tool.usps_current_status
 
-        if msg is None:
+        if msg in ['', None]:
             msg = 'Waiting for USPS response'
 
         return msg
@@ -201,7 +201,7 @@ class USPSDeliveryStatusMarker(Marker):
 class DateStampedCopyRecievedMarker(Marker):
     name = 'datestamped_copy_recieved'
     description = 'Client: Date-stamped copy received'
-    long_description = 'Customer is to print and sign 2 copies, plus a 3rd for their own records.'
+    _long_description = 'Customer is to print and sign 2 copies, plus a 3rd for their own records.'
     signals = ['toolkit.apps.eightythreeb.signals.datestamped_copy_recieved']
 
     action_name = 'I have recieved the date-stamped copy back from the IRS'
