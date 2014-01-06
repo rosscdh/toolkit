@@ -36,6 +36,9 @@ String.prototype.repeat = function(num) {
     // Tooltips
     $("[data-toggle=tooltip]").tooltip();
 
+    // Popover
+    $("[data-toggle=popover]").popover();
+
     // Tags Input
     $(".tagsinput").tagsInput();
 
