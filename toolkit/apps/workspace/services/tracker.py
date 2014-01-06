@@ -25,7 +25,7 @@ class USPSTrackingNumberNotExistsException(Exception):
 
 class USPSResponse(object):
     response = {}
-    DELIVERED_STATUS = ['DELIVERED', 'Available for Pickup']
+    DELIVERED_STATUS = ['DELIVERED']
 
     def __init__(self, usps_response, **kwargs):
         self.response = usps_response
