@@ -205,19 +205,16 @@ class CustomerDownloadDocMarkerTest(BaseTestMarker):
 
     def test_action(self):
         prop_mock = mock.PropertyMock()
+        action_url = url = reverse('workspace:tool_object_download', kwargs={'workspace': self.subject.tool.workspace.slug, 'tool': self.subject.tool.tool_slug, 'slug': self.subject.tool.slug})
 
-        # mock the subjects status so that its greater than the current markers val
-        self.subject.tool.status = self.subject.tool.STATUS_83b.irs_recieved
-        # on complete we dont have an action
+        # the download button will NOT show when the status < the download value
+        self.subject.tool.status = self.subject.tool.STATUS_83b.lawyer_invite_customer
         self.assertEqual(self.subject.action, None)
 
-        # mock out the is_complete property so we can test its post complete action name
-        with mock.patch.object(self.clazz, 'is_complete', prop_mock):
-            self.subject = self.clazz(self.val)
-            prop_mock.return_value = True
-            self.subject.tool = self.eightythreeb
-            # test we have this when is_complete = True
-            self.assertEqual(self.subject.action, None)
+        # the download button will show when the status > the download value
+        self.subject.tool.status = self.subject.tool.STATUS_83b.irs_recieved
+        # on complete we do have an action
+        self.assertEqual(self.subject.action, action_url)
 
 
 class CustomerPrintAndSignMarkerTest(BaseTestMarker):
