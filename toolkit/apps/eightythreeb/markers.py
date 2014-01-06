@@ -84,7 +84,7 @@ class CustomerDownloadDocMarker(Marker):
 
     @property
     def action(self):
-        if self.tool.is_complete is True or self.tool.status > self.val:
+        if self.tool.is_complete is True or self.tool.status < self.val:
             return None
         else:
             return self.get_action_url()
@@ -114,10 +114,9 @@ class CustomerPrintAndSignMarker(Marker):
 
     @property
     def action(self):
-        if self.tool.is_complete is True or self.tool.status > self.val:
-            return None
-        else:
+        if self.tool.status in [self.val]:
             return self.get_action_url()
+        return None
 
 
 class CustomerUploadScanMarker(Marker):
@@ -137,9 +136,8 @@ class CustomerUploadScanMarker(Marker):
 
     @property
     def action(self):
-        if self.tool is not None:
-            if self.is_complete is False or (self.tool.status >= self.tool.STATUS_83b.copy_uploaded and self.tool.status <= self.tool.STATUS_83b.mail_to_irs_tracking_code):
-                return self.get_action_url()        
+        if self.tool.status in [self.val] or self.is_complete is False and self.tool.status > self.val:
+            return self.get_action_url()
         return None
 
     @property
