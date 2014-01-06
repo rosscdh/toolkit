@@ -25,6 +25,7 @@ class USPSTrackingNumberNotExistsException(Exception):
 
 class USPSResponse(object):
     response = {}
+    DELIVERED_STATUS = ['DELIVERED', 'Available for Pickup']
 
     def __init__(self, usps_response, **kwargs):
         self.response = usps_response
@@ -55,12 +56,15 @@ class USPSResponse(object):
                              self.summary.get('EventZIPCode'),)
 
     @property
+    def waypoint_date(self):
+        return '%s %s' % (self.summary.get('EventDate'), self.summary.get('EventTime'))
+    @property
     def status(self):
         return self.summary.get('Event', 'Unknown')
 
     @property
     def is_delivered(self):
-        return self.status == 'DELIVERED'
+        return self.status in self.DELIVERED_STATUS
 
     def description(self, summary=None):
         s = self.summary if summary is None else summary
@@ -120,7 +124,9 @@ class AdeWinterUspsTrackConfirm(object):
 
     def request(self, tracking_code):
         tracking_code = tracking_code.replace(' ', '')  # strip whitespace as the usps api does not support it
+
         logger.info('Request USPS service: %s %s for tracking_code: %s' % (self.USPS_CONNECTION, self.USERID, tracking_code))
+
         response = []
         
         for r in self.service.execute([{'ID': tracking_code}]):
