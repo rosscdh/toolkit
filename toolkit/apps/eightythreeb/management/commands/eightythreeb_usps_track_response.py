@@ -28,7 +28,7 @@ class Command(BaseCommand):
     def eightythreeb_list(self):
         return EightyThreeB.objects.mail_delivery_pending()
 
-    def send_mail(self, instance):
+    def send_mail(self, instance, usps_response):
         recipient = (instance.user.get_full_name(), instance.user.email)
         mailer = EightyThreeMailDeliveredEmail(recipients=(recipient,))
 
@@ -36,7 +36,7 @@ class Command(BaseCommand):
         current_step = markers.current
         next_step = current_step.next
 
-        mailer.process(instance=instance)
+        mailer.process(instance=instance, usps_response=usps_response)
 
     def handle(self, *args, **options):
         site = Site.objects.get(pk=settings.SITE_ID)
@@ -57,7 +57,7 @@ class Command(BaseCommand):
                     service.record(instance=instance, usps_response=usps_response)
 
                     if usps_response.is_delivered is True and service.response_already_present is False:
-                        self.send_mail(instance=instance)
+                        self.send_mail(instance=instance, usps_response=usps_response)
                         # Send the signal indicating we have completed this step
                         instance.base_signal.send(sender=self, instance=instance, actor=instance.user, name='irs_recieved')
 
