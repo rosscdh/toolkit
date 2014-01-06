@@ -36,7 +36,7 @@
                         {% block marker %}
                             <li class="list-group-item status-list-item status-{{ marker.status }}">
                                 <div class="row">
-                                    {% marker_status_block marker %}
+                                    {% marker_status_block marker user %}
                                 </div>
                             </li>
                         {% endblock %}
