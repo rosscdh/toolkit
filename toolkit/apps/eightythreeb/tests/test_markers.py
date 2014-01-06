@@ -300,19 +300,21 @@ class CustomerTrackingNumberMarkerTest(BaseTestMarker):
 
     def test_action(self):
         prop_mock = mock.PropertyMock()
+        action_url = reverse('eightythreeb:tracking_code', kwargs={'slug': self.subject.tool.slug})
 
+        # This marker shows only when it is the active value or the next "irs_recieved"
+        self.subject.tool.status = self.subject.tool.STATUS_83b.mail_to_irs_tracking_code
+        self.assertEqual(self.subject.action, action_url)
         # mock the subjects status so that its greater than the current markers val
         self.subject.tool.status = self.subject.tool.STATUS_83b.irs_recieved
         # on complete we dont have an action
-        self.assertEqual(self.subject.action, None)
+        self.assertEqual(self.subject.action, action_url)
 
-        # mock out the is_complete property so we can test its post complete action name
-        with mock.patch.object(self.clazz, 'is_complete', prop_mock):
-            self.subject = self.clazz(self.val)
-            prop_mock.return_value = True
-            self.subject.tool = self.eightythreeb
-            # test we have this when is_complete = True
-            self.assertEqual(self.subject.action, None)
+        # is NOT visible when any other marker is the status
+        self.subject.tool.status = self.subject.tool.STATUS_83b.customer_print_and_sign
+        self.assertEqual(self.subject.action, None)
+        self.subject.tool.status = self.subject.tool.STATUS_83b.customer_complete_form
+        self.assertEqual(self.subject.action, None)
 
 
 class USPSDeliveryStatusMarkerTest(BaseTestMarker):
