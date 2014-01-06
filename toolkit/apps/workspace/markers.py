@@ -205,7 +205,7 @@ class Marker(object):
             self.action = kwargs.pop('action')
 
         if hasattr(self, 'action_user_class') is False and 'action_user_class' in kwargs:
-            self.action_user = kwargs.pop('action_user_class')
+            self.action_user_class = kwargs.pop('action_user_class')
 
         next = kwargs.pop('next', None)
         if next is not None:
@@ -271,6 +271,10 @@ class Marker(object):
         method used to return the marker action_url without display business logic
         """
         raise NotImplementedError
+
+    @property
+    def action(self):
+        return self.get_action_url()
 
     def tool_info(self):
         if self.tool is not None:
