@@ -10,16 +10,18 @@
                     <th>Client Name</th>
                     <th>Transfer Date</th>
                     <th>Filing Deadline</th>
-                    <th>Status</th>
+                    <th>Current Step</th>
                 </tr>
                 {% for t in object_list %}
                     <tr>
                         <td>
-                            <a href="{% url 'workspace:tool_object_preview' workspace=workspace.slug tool=tool.slug slug=t.slug %}">{{ t.client_name }}</a>
+                            <small><a href="{% url 'workspace:tool_object_preview' workspace=workspace.slug tool=tool.slug slug=t.slug %}">{{ t.client_name }}</a></small>
                         </td>
-                        <td>{{ t.transfer_date }}</td>
-                        <td>{{ t.filing_date }}</td>
-                        <td>{{ t.current_status }} ({{ t.markers.percent_complete }}%)</td>
+                        <td><small>{{ t.transfer_date }}</small></td>
+                        <td><small>{{ t.filing_date }}</small></td>
+                        <td><small>{{ t.current_status }} </small>
+                            <span class="label label-success">{{ t.markers.percent_complete }}%</span>
+                        </td>
                     </tr>
                 {% empty %}
                     <tr>

@@ -87,11 +87,6 @@
   font-weight: normal;
   margin: 0 4px 0 9px;
 }
-.page-header .progress {
-  margin-bottom: 15px;
-  margin-top: 15px;
-  width: 200px;
-}
 .page-header h4 {
   display: inline-block;
   margin: 0;
@@ -135,39 +130,8 @@
   border-color: #e74c3c;
   background-color: #ffffff;
 }
-.home .public-headline {
+.public-headline {
   margin: 100px 0 30px 0px;
-}
-.home h2 {
-  font-size: 40px;
-  color: #666;
-  margin-top: 10px;
-}
-.home .lead.sub {
-  font-size: 22px;
-  padding: 0px 70px;
-}
-.home .description {
-  background-color: #f6f6f6;
-  padding: 20px 0px;
-  color: #999;
-}
-.home .description .benefit {
-  text-align: center;
-  padding: 20px;
-}
-.home .description .benefit img {
-  height: 80px;
-}
-.home .description .benefit h3 {
-  font-size: 18px;
-  margin-bottom: 5px;
-}
-.home .description .benefit p {
-  font-size: 14px;
-}
-.home .btn {
-  margin: 0 10px;
 }
 .section {
   margin-bottom: 20px;
@@ -177,44 +141,4 @@
 }
 .section .section-header .btn {
   margin-top: -5px;
-}
-.status-list-item-icon {
-  font-size: 24px;
-}
-.status-next .status-list-item-icon {
-  font-size: 29px;
-}
-.status-list-item-heading {
-  font-size: 18px;
-  margin-bottom: 10px;
-  margin-top: 10px;
-}
-.status-next .status-list-item-heading {
-  font-size: 24px;
-}
-.status-list-item-meta {
-  font-size: 75%;
-  margin-bottom: 7.5px;
-  margin-top: 7.5px;
-}
-.status-list-item-text {
-  font-size: 75%;
-}
-.status-next .status-list-item-text {
-  font-size: 100%;
-}
-.status-list-item-actions {
-  margin-bottom: 7.5px;
-  margin-top: 7.5px;
-}
-.status-pending {
-  color: #bdc3c7;
-}
-.status-next {
-  background-color: #edf6fc;
-  color: #3498db;
-}
-.status-done {
-  background-color: #ecfaf2;
-  color: #2ecc71;
 }
