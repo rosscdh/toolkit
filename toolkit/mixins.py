@@ -1,11 +1,12 @@
 from django.forms.forms import BaseForm
+from django.views.generic.base import View
 
 from crispy_forms.layout import ButtonHolder, Div, HTML, Layout, Submit
 
 
-class FormModal(BaseForm):
+class ModalForm(BaseForm):
     def __init__(self, *args, **kwargs):
-        super(FormModal, self).__init__(*args, **kwargs)
+        super(ModalForm, self).__init__(*args, **kwargs)
 
         self.helper.attrs = {
             'parsley-validate': '',
@@ -26,3 +27,7 @@ class FormModal(BaseForm):
                 css_class='modal-footer'
             )
         )
+
+
+class ModalView(View):
+    template_name = 'modal.html'

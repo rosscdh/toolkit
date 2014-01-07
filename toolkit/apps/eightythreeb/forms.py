@@ -11,6 +11,8 @@ from localflavor.us.us_states import USPS_CHOICES
 
 from parsley.decorators import parsleyfy
 
+from toolkit.mixins import ModalForm
+
 from toolkit.apps.workspace.mixins import WorkspaceToolFormMixin
 from toolkit.apps.workspace.services import EnsureCustomerService
 
@@ -30,8 +32,6 @@ def _current_year():
 
 
 class BaseEightyThreeBForm(WorkspaceToolFormMixin):
-    title = 'Create an 83(b) Application'
-
     client_full_name = forms.CharField(
         error_messages={
             'required': "Client name can't be blank."
@@ -254,9 +254,6 @@ class CustomerEightyThreeBForm(BaseEightyThreeBForm):
     def __init__(self, *args, **kwargs):
         super(CustomerEightyThreeBForm, self).__init__(*args, **kwargs)
 
-        if self.instance is not None:
-            self.title = 'Edit your 83(b) Application'
-
         # set up the hidden fields that still need to be submitted
         self.fields['client_full_name'].widget = forms.HiddenInput()
         self.fields['client_email'].widget = forms.HiddenInput()
@@ -372,9 +369,6 @@ class LawyerEightyThreeBForm(BaseEightyThreeBForm):
     def __init__(self, *args, **kwargs):
         super(LawyerEightyThreeBForm, self).__init__(*args, **kwargs)
 
-        if self.instance is not None:
-            self.title = 'Edit an 83(b) Application'
-
         # change the required state on some fields
         self.fields['address1'].required = False
         self.fields['city'].required = False
@@ -470,31 +464,32 @@ class LawyerEightyThreeBForm(BaseEightyThreeBForm):
 
 
 @parsleyfy
-class TrackingCodeForm(forms.ModelForm):
+class TrackingCodeForm(ModalForm, forms.ModelForm):
     title = 'Your 83b Postage Tracking Code'
 
-    tracking_code = forms.CharField(help_text='Please provide the Registered Post Tracking Code (USPS)')
+    tracking_code = forms.CharField(
+        error_messages={
+            'required': "Tracking code can't be blank."
+        },
+        help_text='Please provide the Registered Post Tracking Code (USPS)',
+        widget=forms.TextInput(attrs={'placeholder': 'Tracking code', 'size': '40'})
+    )
     user = forms.CharField(widget=forms.HiddenInput)
 
     class Meta:
-        model = EightyThreeB
         fields = ['user']
+        model = EightyThreeB
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
-        self.helper.attrs = {
-            'parsley-validate': '',
-        }
+        self.helper.form_action = reverse('eightythreeb:tracking_code', kwargs={'slug': kwargs['instance'].slug})
 
         self.helper.layout = Layout(
             'tracking_code',
-            ButtonHolder(
-                Submit('submit', 'Save', css_class='btn-hg btn-primary'),
-                css_class='form-group'
-            )
         )
 
         super(TrackingCodeForm, self).__init__(*args, **kwargs)
+
         self.fields['tracking_code'].initial = self.instance.tracking_code
 
     def clean_tracking_code(self):

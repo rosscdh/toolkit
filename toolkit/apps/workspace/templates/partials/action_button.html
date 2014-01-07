@@ -1,12 +1,11 @@
 {% if marker.action %}
-    <button type="button"
-            id="marker-{{ marker }}"
-            class="{{ css_class }}"
-            data-toggle="action"
-            data-type="{{ marker.action_type }}"
-            data-url="{{ marker.action }}"
-            {% for key, value in marker.action_attribs.iteritems %}
-                data-{{ key }}="{{ value }}"
-            {% endfor %}
-    >{{ marker.action_name }}</button>
+    <a href="{{ marker.action }}"
+       id="marker-{{ marker }}"
+       class="{{ css_class }}"
+       data-toggle="{{ marker.action_toggle }}"
+       {% if marker.action_type %}data-type="{{ marker.action_type }}"{% endif %}
+       data-type="{{ marker.action_type }}"
+       {% for key, value in marker.action_attribs.iteritems %}
+          data-{{ key }}="{{ value }}"
+       {% endfor %}>{{ marker.action_name }}</a>
 {% endif %}
