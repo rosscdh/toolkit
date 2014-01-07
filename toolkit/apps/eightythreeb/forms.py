@@ -117,7 +117,7 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
     )
 
     accountant_email = forms.EmailField(
-        help_text='Optional.',
+        help_text='We will email a copy of your signed election to your accountant for inclusion in your tax return.',
         label='Your accountants email address',
         required=False,
         widget=forms.TextInput(attrs={'size': '40'})

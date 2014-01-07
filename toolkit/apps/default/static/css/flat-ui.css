@@ -422,8 +422,6 @@ body {
 a {
   color: #5ccb6a;
   text-decoration: none;
-  -webkit-transition: 0.25s;
-  transition: 0.25s;
 }
 a:hover,
 a:focus {
@@ -660,13 +658,13 @@ pre {
   border-radius: 4px;
   padding: 10px 15px;
   -webkit-font-smoothing: subpixel-antialiased;
-  -webkit-transition: background-color 0.25s linear;
-  transition: background-color 0.25s linear;
   font-family: Lato, "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 .btn:hover,
 .btn:focus {
   color: #ffffff;
+  -webkit-transition: background-color 0.25s linear;
+  transition: background-color 0.25s linear;
 }
 .btn:active,
 .btn.active {
@@ -1939,7 +1937,7 @@ label {
   color: #b7b7b7;
 }
 .form-control {
-  border: 2px solid #bdc3c7;
+  border: 1px solid #bdc3c7;
   color: #444444;
   font-family: "Lato", Helvetica, Arial, sans-serif;
   font-size: 15px;
@@ -2363,10 +2361,10 @@ fieldset[disabled] .navbar-form.focus .input-group-btn .btn-default.active {
 .input-group .input-group-btn .btn {
   background-color: #ffffff;
   border: 2px solid #bdc3c7;
-  border-width: 2px 2px 2px 0;
+  border-width: 1px 1px 1px 0;
   color: #bdc3c7;
   margin-left: -2px;
-  line-height: 18px;
+  line-height: 20px;
 }
 .input-group .input-group-btn .btn-default {
   color: #ffffff;
