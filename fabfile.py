@@ -514,19 +514,25 @@ def conclude():
 
 @task
 def rebuild_local():
+    if not os.path.exists('../Stamp'):
+        #
+        # Clone the Stamp PDF application
+        #
+        local('git clone git@github.com:rosscdh/Stamp.git ../Stamp')
+
     if not os.path.exists('toolkit/local_settings.py'):
         local('cp conf/dev.local_settings.py toolkit/local_settings.py')
 
     if os.path.exists('./dev.db'):
         new_db_name = '/tmp/dev.%s.db.bak' % env.timestamp
         local('cp ./dev.db %s' % new_db_name)
+
         print colored('Local Database Backedup %s...' % new_db_name, 'green')
         local('rm ./dev.db')
 
     local('python manage.py syncdb')
     local('python manage.py migrate')
     local('python manage.py loaddata {fixtures}'.format(fixtures=env.fixtures))
-    #local('python manage.py check_permissions')
 
 
 @task
