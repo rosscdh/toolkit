@@ -23,11 +23,13 @@ from toolkit.mixins import FormModal
 class WorkspaceForm(FormModal, forms.ModelForm):
     name = forms.CharField(
         error_messages={
-            'required': "Company name can't be blank."
+            'required': "Client Name can't be blank."
         },
-        label='Company name',
-        widget=forms.TextInput(attrs={'size': '40'})
+        label='Client name',
+        widget=forms.TextInput(attrs={'size': '40', 'placeholder':'Acme Inc'}),
+        help_text='This is usually company name'
     )
+
 
     class Meta:
         model = Workspace

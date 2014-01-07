@@ -70,7 +70,7 @@
                             <ul class="nav nav-list">
                                 <li{% if dash %} class="active"{% endif %}>
                                     <a href="{% url 'dash:default' %}">
-                                        <span class="icon"><img src="{{ STATIC_URL }}images/icons/mountain.svg" alt="Dashboard"></span> Dashboard
+                                        Dashboard
                                     </a>
                                 </li>
 
@@ -93,7 +93,7 @@
 
                                 {% if user.profile.is_lawyer %}
                                     <li class="pull-right">
-                                        <a href="{% url 'workspace:create' %}" data-toggle="modal" data-target="#workspace-create"><i class="fui-plus"></i> New Company</a>
+                                        <a href="{% url 'workspace:create' %}" data-toggle="modal" data-target="#workspace-create"><i class="fui-plus"></i> New Client</a>
                                     </li>
                                 {% endif %}
                             </ul>
@@ -117,7 +117,7 @@
             </div>
         {% endblock %}
     </div>
-
+    
     {% block modals %}
         {% if user.profile.is_lawyer %}
             <div class="modal" id="workspace-create"></div>
