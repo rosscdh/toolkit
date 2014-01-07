@@ -75,9 +75,12 @@ class CustomerDownloadDocMarker(Marker):
     _long_description = ''
     signals = ['toolkit.apps.eightythreeb.signals.customer_download_pdf']
 
-    action_name = 'Download 83(b)'
     action_type = Marker.ACTION_TYPE_REDIRECT
     action_user_class = ['customer']
+
+    @property
+    def action_name(self):
+        return 'Re-download 83(b)' if self.is_complete is True else 'Download 83(b)'
 
     def get_action_url(self):
         return reverse('workspace:tool_object_download', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.tool_slug, 'slug': self.tool.slug})
