@@ -152,7 +152,9 @@ class BaseSignalMarkers(object):
 
 
 class Marker(object):
-    ACTION_TYPE_MODAL = 'modal'
+    TOGGLE_ACTION = 'action'
+    TOGGLE_MODAL = 'modal'
+
     ACTION_TYPE_REMOTE = 'remote'
     ACTION_TYPE_REDIRECT = 'redirect'
 
@@ -165,6 +167,7 @@ class Marker(object):
     signals = []
 
     action_name = None
+    action_toggle = None
     action_type = None
     action = None
     action_attribs = {}

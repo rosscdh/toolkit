@@ -11,6 +11,7 @@ class LawyerCompleteFormMarker(Marker):
     signals = ['toolkit.apps.eightythreeb.signals.lawyer_complete_form']
 
     action_name = 'Setup 83(b)'
+    action_toggle = Marker.TOGGLE_ACTION
     action_type = Marker.ACTION_TYPE_REDIRECT
     action_user_class = ['lawyer']
 
@@ -31,6 +32,7 @@ class LawyerInviteUserMarker(Marker):
     signals = ['toolkit.apps.eightythreeb.signals.lawyer_invite_customer']
 
     action_name = 'Invite Client'
+    action_toggle = Marker.TOGGLE_ACTION
     action_type = Marker.ACTION_TYPE_REDIRECT
     action_user_class = ['lawyer']
 
@@ -55,6 +57,7 @@ class CustomerCompleteFormMarker(Marker):
     signals = ['toolkit.apps.eightythreeb.signals.customer_complete_form']
 
     action_name = 'Complete 83(b)'
+    action_toggle = Marker.TOGGLE_ACTION
     action_type = Marker.ACTION_TYPE_REDIRECT
     action_user_class = ['customer']
 
@@ -75,6 +78,7 @@ class CustomerDownloadDocMarker(Marker):
     _long_description = ''
     signals = ['toolkit.apps.eightythreeb.signals.customer_download_pdf']
 
+    action_toggle = Marker.TOGGLE_ACTION
     action_type = Marker.ACTION_TYPE_REDIRECT
     action_user_class = ['customer']
 
@@ -100,6 +104,7 @@ class CustomerPrintAndSignMarker(Marker):
     signals = ['toolkit.apps.eightythreeb.signals.customer_print_and_sign']
 
     action_name = 'I have printed and signed the Election'
+    action_toggle = Marker.TOGGLE_ACTION
     action_type = Marker.ACTION_TYPE_REMOTE
     action_user_class = ['customer']
 
@@ -127,6 +132,7 @@ class CustomerUploadScanMarker(Marker):
     description = 'Client: Scan and upload signed copy'
     signals = ['toolkit.apps.eightythreeb.signals.copy_uploaded']
 
+    action_toggle = Marker.TOGGLE_ACTION
     action_type = Marker.ACTION_TYPE_REDIRECT
     action_user_class = ['customer',]
 
@@ -162,12 +168,18 @@ class CustomerUploadScanMarker(Marker):
 class CustomerTrackingNumberMarker(Marker):
     name = 'mail_to_irs_tracking_code'
     description = 'Client: Mail to IRS & register Tracking Code'
-    _long_description = 'Mail 83(b) form using USPS Registered Post *ONLY* and enter the Tracking Number here,'
+    _long_description = 'Mail 83(b) form using USPS Registered Post *ONLY* and enter the Tracking Number here'
     signals = ['toolkit.apps.eightythreeb.signals.mail_to_irs_tracking_code']
 
     action_name = 'Enter Tracking Number'
-    action_type = Marker.ACTION_TYPE_MODAL
+    action_toggle = Marker.TOGGLE_MODAL
     action_user_class = ['customer', 'lawyer']
+
+    @property
+    def action_attribs(self):
+        return {
+            'target': '#enter-tracking-code'
+        }
 
     def get_action_url(self):
         return reverse('eightythreeb:tracking_code', kwargs={'slug': self.tool.slug})

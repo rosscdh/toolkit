@@ -11,6 +11,8 @@ from localflavor.us.us_states import USPS_CHOICES
 
 from parsley.decorators import parsleyfy
 
+from toolkit.mixins import ModalForm
+
 from toolkit.apps.workspace.mixins import WorkspaceToolFormMixin
 from toolkit.apps.workspace.services import EnsureCustomerService
 
@@ -462,31 +464,32 @@ class LawyerEightyThreeBForm(BaseEightyThreeBForm):
 
 
 @parsleyfy
-class TrackingCodeForm(forms.ModelForm):
+class TrackingCodeForm(ModalForm, forms.ModelForm):
     title = 'Your 83b Postage Tracking Code'
 
-    tracking_code = forms.CharField(help_text='Please provide the Registered Post Tracking Code (USPS)')
+    tracking_code = forms.CharField(
+        error_messages={
+            'required': "Tracking code can't be blank."
+        },
+        help_text='Please provide the Registered Post Tracking Code (USPS)',
+        widget=forms.TextInput(attrs={'placeholder': 'Tracking code', 'size': '40'})
+    )
     user = forms.CharField(widget=forms.HiddenInput)
 
     class Meta:
-        model = EightyThreeB
         fields = ['user']
+        model = EightyThreeB
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
-        self.helper.attrs = {
-            'parsley-validate': '',
-        }
+        self.helper.form_action = reverse('eightythreeb:tracking_code', kwargs={'slug': kwargs['instance'].slug})
 
         self.helper.layout = Layout(
             'tracking_code',
-            ButtonHolder(
-                Submit('submit', 'Save', css_class='btn-hg btn-primary'),
-                css_class='form-group'
-            )
         )
 
         super(TrackingCodeForm, self).__init__(*args, **kwargs)
+
         self.fields['tracking_code'].initial = self.instance.tracking_code
 
     def clean_tracking_code(self):
