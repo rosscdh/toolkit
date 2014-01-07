@@ -79,6 +79,10 @@ class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferA
     def filename(self):
         return slugify('83b-{company}-{user}'.format(company=self.workspace, user=self.user.get_full_name() or self.user.username))
 
+    @property
+    def company_name(self):
+        return self.data.get('company_name', self.workspace.name)
+
     def get_absolute_url(self):
         return reverse('workspace:tool_object_preview', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug=self.tool_slug).first().slug, 'slug': self.slug})
 
