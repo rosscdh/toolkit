@@ -10,6 +10,9 @@ class UserProfile(models.Model):
     Base User Profile, where we store all the interesting information about
     users
     """
+    CUSTOMER = 'customer'
+    LAWYER = 'lawyer'
+
     user = models.OneToOneField('auth.User',
                                 unique=True,
                                 related_name='profile')
@@ -39,11 +42,11 @@ class UserProfile(models.Model):
 
     @property
     def is_lawyer(self):
-        return self.user_class == 'lawyer'
+        return self.user_class == self.LAWYER
 
     @property
     def is_customer(self):
-        return self.user_class == 'customer'
+        return self.user_class == self.CUSTOMER
 
     @property
     def type(self):
