@@ -16,7 +16,6 @@ from ..markers import (LawyerCompleteFormMarker,
                        CustomerUploadScanMarker,
                        CustomerTrackingNumberMarker,
                        USPSDeliveryStatusMarker,
-                       DateStampedCopyRecievedMarker,
                        ProcessCompleteMarker)
 
 
@@ -30,13 +29,13 @@ class EightyThreeBSignalMarkersTest(TestCase):
 
     def test_correct_init(self):
         subject = self.subject()
-        self.assertEqual(len(subject.signal_map), 10)
+        self.assertEqual(len(subject.signal_map), 9)
 
     def test_signal_map_name_vals(self):
         subject = self.subject()
         name_vals = [(m.name, m.val) for m in subject.signal_map]
     
-        self.assertEqual(len(name_vals), 10)
+        self.assertEqual(len(name_vals), 9)
     
         self.assertEqual(name_vals, [('lawyer_complete_form', 0),
                                      ('lawyer_invite_customer', 1),
@@ -46,8 +45,7 @@ class EightyThreeBSignalMarkersTest(TestCase):
                                      ('copy_uploaded', 5),
                                      ('mail_to_irs_tracking_code', 6),
                                      ('irs_recieved', 7),
-                                     ('datestamped_copy_recieved', 8),
-                                     ('complete', 9)])
+                                     ('complete', 8)])
 
 
 class BaseTestMarker(BaseScenarios, TestCase):
@@ -337,33 +335,8 @@ class USPSDeliveryStatusMarkerTest(BaseTestMarker):
             self.subject.action
 
 
-class DateStampedCopyRecievedMarkerTest(BaseTestMarker):
-    val = 8
-    clazz = DateStampedCopyRecievedMarker
-
-    def test_properties(self):
-        self.assertTrue(type(self.subject), self.clazz)
-        self.assertEqual(self.subject.name, 'datestamped_copy_recieved')
-        self.assertEqual(self.subject.description, 'Client: Date-stamped copy received')
-        self.assertEqual(self.subject.long_description, 'Customer is to print and sign 2 copies, plus a 3rd for their own records.')
-        self.assertEqual(self.subject.signals, ['toolkit.apps.eightythreeb.signals.datestamped_copy_recieved'])
-        self.assertEqual(self.subject.action_name, 'I have recieved the date-stamped copy back from the IRS')
-        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE_REMOTE)
-        self.assertEqual(self.subject.action_user_class, ['customer'])
-
-    def test_action_attribs(self):
-        self.assertEqual(self.subject.action_attribs, {'method': 'PATCH',
-                                                       'status': 8,
-                                                       'tool': '83b-election-letters',
-                                                       'tool_object_id': 1})
-
-    def test_get_action_url(self):
-        url = reverse('api:eightythreeb-detail', kwargs={'pk': self.subject.tool.pk})
-        self.assertEqual(self.subject.get_action_url(), url)
-
-
 class ProcessCompleteMarkerTest(BaseTestMarker):
-    val = 9
+    val = 8
     clazz = ProcessCompleteMarker
 
     def test_properties(self):

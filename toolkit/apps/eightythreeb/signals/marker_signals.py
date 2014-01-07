@@ -21,7 +21,6 @@ customer_print_and_sign = Signal(providing_args=['actor'])
 copy_uploaded = Signal(providing_args=['actor'])
 mail_to_irs_tracking_code = Signal(providing_args=['actor'])
 irs_recieved = Signal(providing_args=[])
-datestamped_copy_recieved = Signal(providing_args=['actor'])
 complete = Signal(providing_args=['actor'])
 
 
@@ -156,15 +155,6 @@ def on_mail_to_irs_tracking_code(sender, instance, actor, **kwargs):
 def on_irs_recieved(sender, instance, actor, **kwargs):
     actor_name = actor.get_full_name()
     _update_marker(marker_name='irs_recieved',
-                   next_status=instance.STATUS_83b.datestamped_copy_recieved,
-                   actor_name=actor_name,
-                   instance=instance)
-
-
-@receiver(datestamped_copy_recieved)
-def on_datestamped_copy_recieved(sender, instance, actor, **kwargs):
-    actor_name = actor.get_full_name()
-    _update_marker(marker_name='datestamped_copy_recieved',
                    next_status=instance.STATUS_83b.complete,
                    actor_name=actor_name,
                    instance=instance)
