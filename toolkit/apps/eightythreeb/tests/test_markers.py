@@ -34,9 +34,9 @@ class EightyThreeBSignalMarkersTest(TestCase):
     def test_signal_map_name_vals(self):
         subject = self.subject()
         name_vals = [(m.name, m.val) for m in subject.signal_map]
-    
+
         self.assertEqual(len(name_vals), 9)
-    
+
         self.assertEqual(name_vals, [('lawyer_complete_form', 0),
                                      ('lawyer_invite_customer', 1),
                                      ('customer_complete_form', 2),
@@ -126,7 +126,7 @@ class LawyerInviteUserMarkerTest(BaseTestMarker):
         with mock.patch.object(self.clazz, 'is_complete', prop_mock):
             self.subject = self.clazz(self.val)
             prop_mock.return_value = True
-            
+
             self.assertEqual(self.subject.action_name, 'Reinvite Client')
 
     def test_get_action_url(self):
@@ -202,8 +202,7 @@ class CustomerDownloadDocMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.get_action_url(), url)
 
     def test_action(self):
-        prop_mock = mock.PropertyMock()
-        action_url = url = reverse('workspace:tool_object_download', kwargs={'workspace': self.subject.tool.workspace.slug, 'tool': self.subject.tool.tool_slug, 'slug': self.subject.tool.slug})
+        action_url = reverse('workspace:tool_object_download', kwargs={'workspace': self.subject.tool.workspace.slug, 'tool': self.subject.tool.tool_slug, 'slug': self.subject.tool.slug})
 
         # the download button will NOT show when the status < the download value
         self.subject.tool.status = self.subject.tool.STATUS_83b.lawyer_invite_customer
@@ -294,7 +293,6 @@ class CustomerTrackingNumberMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.get_action_url(), url)
 
     def test_action(self):
-        prop_mock = mock.PropertyMock()
         action_url = reverse('eightythreeb:tracking_code', kwargs={'slug': self.subject.tool.slug})
 
         # This marker shows only when it is the active value or the next "irs_recieved"
