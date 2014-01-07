@@ -137,12 +137,12 @@ class ValidMarkerTest(unittest.TestCase):
     def test_action_attribs_modal(self):
         subject = self.subject(1, name='test_marker')
         subject.action_type = Marker.ACTION_TYPE.modal
-        self.assertEqual(subject.action_attribs, {'target': '#modal-test_marker'})  # is the subjet.name with modal- as prefix (this is for jquery)
+        self.assertEqual(subject.action_attribs, {'target': '#modal-test_marker', 'toggle': 'modal'})  # is the subjet.name with modal- as prefix (this is for jquery)
 
     def test_action_attribs_custom_modal_target(self):
         subject = self.subject(1, name='test_marker')
         subject.action_type = Marker.ACTION_TYPE.modal
 
         subject.modal_target = 'my-customized-reused-modal-css-target'
-        self.assertEqual(subject.action_attribs, {'target': '#%s' % subject.modal_target})  # is the subjet.name with modal- as prefix (this is for jquery)
+        self.assertEqual(subject.action_attribs, {'target': '#%s' % subject.modal_target, 'toggle': 'modal'})  # is the subjet.name with modal- as prefix (this is for jquery)
 

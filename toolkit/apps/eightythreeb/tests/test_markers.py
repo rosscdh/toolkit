@@ -90,7 +90,7 @@ class LawyerCompleteFormMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.action_user_class, ['lawyer'])
 
     def test_action_attribs(self):
-        self.assertEqual(self.subject.action_attribs, {'target': '#modal-lawyer_complete_form'})
+        self.assertEqual(self.subject.action_attribs, {'target': '#modal-lawyer_complete_form', 'toggle': 'modal'})
 
     def test_get_action_url(self):
         self.assertEqual(self.subject.get_action_url(), self.subject.tool.get_edit_url())
@@ -274,7 +274,7 @@ class CustomerUploadScanMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.action_user_class, ['customer'])
 
     def test_action_attribs(self):
-        self.assertEqual(self.subject.action_attribs, {'target': '#modal-copy_uploaded'})
+        self.assertEqual(self.subject.action_attribs, {'target': '#modal-copy_uploaded', 'toggle': 'modal'})
 
     def test_get_action_url(self):
         url = reverse('eightythreeb:attachment', kwargs={'slug': self.subject.tool.slug})
@@ -296,7 +296,7 @@ class CustomerTrackingNumberMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.action_user_class, ['customer', 'lawyer'])
 
     def test_action_attribs(self):
-        self.assertEqual(self.subject.action_attribs, {'target': '#modal-mail_to_irs_tracking_code'})
+        self.assertEqual(self.subject.action_attribs, {'target': '#modal-mail_to_irs_tracking_code', 'toggle': 'modal'})
 
     def test_get_action_url(self):
         url = reverse('eightythreeb:tracking_code', kwargs={'slug': self.subject.tool.slug})
@@ -336,11 +336,11 @@ class USPSDeliveryStatusMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.action_user_class, [])
 
     def test_get_action_url(self):
-        with self.assertRaises(NotImplementedError) as context:
+        with self.assertRaises(NotImplementedError):
             self.subject.get_action_url()
 
     def test_action(self):
-        with self.assertRaises(NotImplementedError) as context:
+        with self.assertRaises(NotImplementedError):
             self.subject.action
 
 
@@ -359,9 +359,9 @@ class ProcessCompleteMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.action_user_class, [])
 
     def test_get_action_url(self):
-        with self.assertRaises(NotImplementedError) as context:
+        with self.assertRaises(NotImplementedError):
             self.subject.get_action_url()
 
     def test_action(self):
-        with self.assertRaises(NotImplementedError) as context:
+        with self.assertRaises(NotImplementedError):
             self.subject.action
