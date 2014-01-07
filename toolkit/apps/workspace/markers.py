@@ -152,11 +152,11 @@ class BaseSignalMarkers(object):
 
 
 class Marker(object):
-    TOGGLE_ACTION = 'action'
-    TOGGLE_MODAL = 'modal'
-
-    ACTION_TYPE_REMOTE = 'remote'
-    ACTION_TYPE_REDIRECT = 'redirect'
+    ACTION_TYPE = get_namedtuple_choices('ACTION_TYPE', (
+                    (0, 'remote', 'Remote'),
+                    (1, 'redirect', 'Redirect'),
+                    (2, 'modal', 'Modal'),
+                ))
 
     tool = None
     val = None
@@ -167,10 +167,10 @@ class Marker(object):
     signals = []
 
     action_name = None
-    action_toggle = None
+
     action_type = None
     action = None
-    action_attribs = {}
+
     action_user_class = []  # must be a list so we can handle multiple types
 
     markers_map = {
@@ -269,6 +269,17 @@ class Marker(object):
         if self.is_complete:
             return parser.parse(self.tool.data['markers'][self.name].get('date_of'))
         return None
+
+    @property
+    def action_attribs(self):
+        attribs = {}
+        # Handle the modal action_type
+        if self.action_type == self.ACTION_TYPE.modal:
+            attribs.update({
+                'target': '#modal-%s' % self.name ## use the class name as the modal target
+            })
+
+        return attribs
 
     def get_action_url(self):
         """
