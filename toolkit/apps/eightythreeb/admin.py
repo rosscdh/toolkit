@@ -9,6 +9,10 @@ class AttachmentInline(admin.StackedInline):
 
 
 class EightyThreeBAdmin(admin.ModelAdmin):
+    list_display = ('__unicode__', 'slug', 'status',)
+    list_filter = ['status']
+    search_fields = ('slug', 'id')
+
     inlines = [
         AttachmentInline
     ]

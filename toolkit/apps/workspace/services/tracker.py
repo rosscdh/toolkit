@@ -25,6 +25,7 @@ class USPSTrackingNumberNotExistsException(Exception):
 
 class USPSResponse(object):
     response = {}
+    DELIVERED_STATUS = ['DELIVERED']
 
     def __init__(self, usps_response, **kwargs):
         self.response = usps_response
@@ -55,12 +56,15 @@ class USPSResponse(object):
                              self.summary.get('EventZIPCode'),)
 
     @property
+    def waypoint_date(self):
+        return '%s %s' % (self.summary.get('EventDate'), self.summary.get('EventTime'))
+    @property
     def status(self):
         return self.summary.get('Event', 'Unknown')
 
     @property
     def is_delivered(self):
-        return self.status == 'DELIVERED'
+        return self.status in self.DELIVERED_STATUS
 
     def description(self, summary=None):
         s = self.summary if summary is None else summary
@@ -70,7 +74,7 @@ class USPSResponse(object):
         if s.get('EventCity') is not None and s.get('EventState') is not None and s.get('EventZIPCode'):
             location = 'in %s %s %s, %s' % (s.get('EventCity'), s.get('EventState'), s.get('EventZIPCode'), country,)
 
-        return 'The package is currently %s %s. The event took place on %s:%s' % (
+        return 'Current package status : %s %s. Last Updated :  %s:%s' % (
                 s.get('Event'),
                 location if location is not None else '',
                 s.get('EventDate'),
@@ -120,7 +124,9 @@ class AdeWinterUspsTrackConfirm(object):
 
     def request(self, tracking_code):
         tracking_code = tracking_code.replace(' ', '')  # strip whitespace as the usps api does not support it
+
         logger.info('Request USPS service: %s %s for tracking_code: %s' % (self.USPS_CONNECTION, self.USERID, tracking_code))
+
         response = []
         
         for r in self.service.execute([{'ID': tracking_code}]):

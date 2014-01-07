@@ -75,7 +75,7 @@ class USPSTrackingCodeCliCommandTest(BaseUSPSTrackingCode):
         self.subject.handle()  # execute the command
         self.eightythreeb = self.eightythreeb._meta.model.objects.get(pk=self.eightythreeb.pk)  # reload the model
 
-        self.assertEqual(self.eightythreeb.status, EightyThreeB.STATUS_83b.datestamped_copy_recieved)
+        self.assertEqual(self.eightythreeb.status, EightyThreeB.STATUS_83b.complete)
 
         self.assertTrue('usps' in self.eightythreeb.data)
         self.assertTrue('usps_log' in self.eightythreeb.data)
@@ -219,7 +219,7 @@ class USPSTrackingCodeResponseTest(BaseUSPSTrackingCode):
         self.assertEqual(self.response.is_delivered, True)
 
     def test_usps_response_description(self):
-        self.assertEqual(self.response.description(), 'The package is currently DELIVERED in NEWTON IA 50208, USA. The event took place on May 21, 2001:12:12 pm')
+        self.assertEqual(self.response.description(), 'Current package status : DELIVERED in NEWTON IA 50208, USA. Last Updated :  May 21, 2001:12:12 pm')
 
     def test_usps_response_waypoints(self):
         self.assertEqual(self.response.waypoints, [{'EventTime': '12:12 pm',

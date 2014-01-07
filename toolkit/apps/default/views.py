@@ -190,3 +190,15 @@ class LogoutView(LogOutMixin, RedirectView):
     The logout view
     """
     url = '/'
+
+
+class DisclaimerView(TemplateView):
+    template_name = 'legal/disclaimer.html'
+
+
+class PrivacyView(TemplateView):
+    template_name = 'legal/privacy.html'
+
+
+class TermsView(TemplateView):
+    template_name = 'legal/terms.html'
