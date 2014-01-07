@@ -1,6 +1,5 @@
 {% extends 'workspace/workspace_tool_preview.html' %}
 
-
 {% block js %}
 {{ block.super }}
 <script src="{{ STATIC_URL }}js/jquery.FileDownloadPlugin.js"></script>
@@ -17,4 +16,9 @@ $(document).ready(function () {
 
 });
 </script>
+{% endblock %}
+
+{% block modals %}
+    {{ block.super }}
+    <div class="modal" id="enter-tracking-code"></div>
 {% endblock %}

@@ -3,10 +3,12 @@ from django.core import mail
 from django.test import TestCase
 from django.core.files import File
 from django.core.files.storage import FileSystemStorage
+from django.core.urlresolvers import reverse
 
 import os
 import mock
 import datetime
+import httpretty
 
 from model_mommy import mommy
 
@@ -14,11 +16,14 @@ from toolkit.apps.workspace.models import Tool
 from toolkit.apps.eightythreeb.models import EightyThreeB
 from toolkit.apps.eightythreeb.management.commands.eightythreeb_usps_track_response import Command as USPSEightyThreeBTracking
 
+from toolkit.casper.prettify import httprettify_methods, mock_http_requests
+
 from .data import EIGHTYTHREEB_TRACKINGCODE_DATA
 
-FILE_BASE_PATH = os.path.dirname(__file__)
-
+from .usps_trackfield_response import TRACK_UNDELIVERED_RESPONSE_XML_BODY
 from .test_usps import TRACKING_CODE
+
+FILE_BASE_PATH = os.path.dirname(__file__)
 
 
 class BaseUSPSTrackingCode(TestCase):
@@ -33,8 +38,15 @@ class BaseUSPSTrackingCode(TestCase):
 
         self.subject = USPSEightyThreeBTracking()
 
+        self.password = 'password'
+
         self.user = mommy.make('auth.User', first_name='Customer', last_name='Test', email='test+customer@lawpal.com')
+        self.user.set_password(self.password)
+        self.user.save()
+
         self.lawyer = mommy.make('auth.User', first_name='Lawyer', last_name='Test', email='test+lawyer@lawpal.com')
+        self.lawyer.set_password(self.password)
+        self.lawyer.save()
 
         self.workspace = mommy.make('workspace.Workspace', name='Lawpal (test)')
         self.workspace.tools.add(Tool.objects.get(slug='83b-election-letters'))
@@ -55,10 +67,46 @@ class BaseUSPSTrackingCode(TestCase):
         self.eightythreeb.attachment_set.create(attachment=File(open('%s/attachment-3.pdf' % FILE_BASE_PATH, 'r')))
 
 
-class TestTrackingCodeEntered(BaseUSPSTrackingCode):
+class TestTrackingCodeModal(BaseUSPSTrackingCode):
+
+    @httpretty.activate
+    def test_something(self):
+        httpretty.register_uri(httpretty.POST, "http://production.shippingapis.com/ShippingAPI.dll",
+                               body=TRACK_UNDELIVERED_RESPONSE_XML_BODY,
+                               status=200)
+
+        url = reverse('eightythreeb:tracking_code', kwargs={'slug': self.eightythreeb.slug})
+
+        # User not logged in
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp['Location'], 'http://testserver/start/?next=/83b/%s/tracking_code/' % self.eightythreeb.slug)
+
+        self.client.login(username=self.user.username, password=self.password)
+
+        # Valid user
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)
+
+        # Valid submission
+        response = self.client.post(url, {
+            'tracking_code': TRACKING_CODE,
+            'user': self.user
+        }, follow=True)
+
+        redirect = reverse('workspace:tool_object_preview', kwargs={
+            'workspace': self.eightythreeb.workspace.slug,
+            'tool': self.eightythreeb.tool_slug,
+            'slug': self.eightythreeb.slug
+        })
+
+        self.assertRedirects(response, redirect)
+
+
+class TestTrackingCodeEmail(BaseUSPSTrackingCode):
 
     def setUp(self):
-        super(TestTrackingCodeEntered, self).setUp()
+        super(TestTrackingCodeEmail, self).setUp()
         self.eightythreeb.tracking_code = TRACKING_CODE
         self.eightythreeb.save(update_fields=['data'])
 
