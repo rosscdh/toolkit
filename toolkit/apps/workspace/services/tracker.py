@@ -25,7 +25,7 @@ class USPSTrackingNumberNotExistsException(Exception):
 
 class USPSResponse(object):
     response = {}
-    DELIVERED_STATUS = ['DELIVERED', 'Available for Pickup']
+    DELIVERED_STATUS = ['DELIVERED']
 
     def __init__(self, usps_response, **kwargs):
         self.response = usps_response
@@ -74,7 +74,7 @@ class USPSResponse(object):
         if s.get('EventCity') is not None and s.get('EventState') is not None and s.get('EventZIPCode'):
             location = 'in %s %s %s, %s' % (s.get('EventCity'), s.get('EventState'), s.get('EventZIPCode'), country,)
 
-        return 'The package is currently %s %s. The event took place on %s:%s' % (
+        return 'Current package status : %s %s. Last Updated :  %s:%s' % (
                 s.get('Event'),
                 location if location is not None else '',
                 s.get('EventDate'),
