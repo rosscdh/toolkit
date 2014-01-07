@@ -70,6 +70,10 @@ class CustomerCompleteFormMarker(Marker):
 
 
 class CustomerDownloadDocMarker(Marker):
+    """
+    Relies on jquery plugin to detect successful download of document and reload page
+    thus it must be Marker.ACTION_TYPE.redirect
+    """
     name = 'customer_download_pdf'
     description = 'Client: Download 83(b) Election Letter and Instructions'
     _long_description = ''
