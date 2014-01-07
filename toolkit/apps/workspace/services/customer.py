@@ -5,6 +5,7 @@ Generic Customer services
 from django.contrib.auth.models import User
 
 from toolkit.apps.default import _get_unique_username
+from toolkit.apps.me.signals import send_welcome_email
 
 from . import logger
 
@@ -64,5 +65,11 @@ class EnsureCustomerService(object):
 
             # save the user model
             user.save(update_fields=update_fields)
+
+        if is_new is True:
+            #
+            # Send welcome email
+            #
+            send_welcome_email.send(sender=user._meta.model, instance=user, created=is_new)
 
         return is_new, user, profile

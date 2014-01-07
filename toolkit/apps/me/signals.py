@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.dispatch import receiver
-from django.db.models.signals import pre_save, post_save
+from django.dispatch import Signal, receiver
 
 from django.contrib.auth.models import User
 from .mailers import WelcomeEmail
@@ -9,15 +8,11 @@ import logging
 LOGGER = logging.getLogger('django.request')
 
 
-def _model_slug_exists(model, slug):
-    try:
-        return model.objects.get(slug=slug)
-    except model.DoesNotExist:
-        return None
+send_welcome_email = Signal(providing_args=['sender', 'instance', 'created'])
 
 
-@receiver(post_save, sender=User, dispatch_uid='me.send_welcome_email')
-def send_welcome_email(sender, **kwargs):
+@receiver(send_welcome_email, sender=User, dispatch_uid='me.send_welcome_email')
+def on_send_welcome_email(sender, **kwargs):
     """
     signal to handle creating the workspace slug
     """
