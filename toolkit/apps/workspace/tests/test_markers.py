@@ -128,3 +128,21 @@ class ValidMarkerTest(unittest.TestCase):
             subject.action
         with self.assertRaises(NotImplementedError) as context:
             subject.get_action_url()
+
+    def test_action_attribs(self):
+        subject = self.subject(1, name='test_marker')
+        subject.action_type = Marker.ACTION_TYPE.redirect
+        self.assertEqual(subject.action_attribs, {})  # is blank
+
+    def test_action_attribs_modal(self):
+        subject = self.subject(1, name='test_marker')
+        subject.action_type = Marker.ACTION_TYPE.modal
+        self.assertEqual(subject.action_attribs, {'target': '#modal-test_marker', 'toggle': 'modal'})  # is the subjet.name with modal- as prefix (this is for jquery)
+
+    def test_action_attribs_custom_modal_target(self):
+        subject = self.subject(1, name='test_marker')
+        subject.action_type = Marker.ACTION_TYPE.modal
+
+        subject.modal_target = 'my-customized-reused-modal-css-target'
+        self.assertEqual(subject.action_attribs, {'target': '#%s' % subject.modal_target, 'toggle': 'modal'})  # is the subjet.name with modal- as prefix (this is for jquery)
+
