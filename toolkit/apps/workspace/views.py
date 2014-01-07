@@ -95,6 +95,14 @@ class WorkspaceToolObjectsListView(WorkspaceToolViewMixin, ListView):
     Show a list of objects associated with the particular tool type
     """
     model = Tool
+    def get_context_data(self, **kwargs):
+        context = super(WorkspaceToolObjectsListView, self).get_context_data(**kwargs)
+        context.update({
+            # if there are no tool.userclass_that_can_create defined then anyone can create
+            # however we need to ensure that only the specified classes can create
+            'can_create': True if not self.tool.userclass_that_can_create or self.request.user.profile.user_class in self.tool.userclass_that_can_create else False
+        })
+        return context
 
 
 class CreateWorkspaceToolObjectView(WorkspaceToolFormViewMixin, CreateView):
