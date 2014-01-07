@@ -65,14 +65,15 @@
         // Action Buttons
         $("[data-toggle=action]").on('click', function(e) {
           var $btn = $(this);
+          var href = $btn.attr('href');
           var type = $btn.data('type');
 
           e.preventDefault();
           if ('redirect' == type) {
-            document.location = $btn.data('url');
+            document.location = href;
           } else if ('remote' == type) {
             var data   = $btn.data();
-            var url    = data['url']; delete data['url'];
+            var url    = href;
             var method = data['method']; delete data['method'];
 
             $.ajax({
