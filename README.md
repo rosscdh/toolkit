@@ -18,6 +18,8 @@ Testing
 
 ### CasperJS && PhantomJS ###
 
+__currently we dont use phantom but once angularjs arrives this will change__
+
 __OSX__
 
 Should be >= casperjs: 1.1.0-DEV
