@@ -276,7 +276,7 @@ class Marker(object):
         # Handle the modal action_type
         if self.action_type == self.ACTION_TYPE.modal:
             attribs.update({
-                'target': '#modal-%s' % self.name ## use the class name as the modal target
+                'target': '#%s' % getattr(self, 'modal_target', 'modal-%s' % self.name)  ## if we have the attribute modal_target use it else use self.name
             })
 
         return attribs
