@@ -2,10 +2,11 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
+from django.core.urlresolvers import reverse_lazy
 
 from parsley.decorators import parsleyfy
 from crispy_forms.helper import FormHelper, Layout
-from crispy_forms.layout import ButtonHolder, Field, Fieldset, HTML, Submit
+from crispy_forms.layout import ButtonHolder, Div, Field, Fieldset, HTML, Submit
 
 from . import _get_unique_username
 
@@ -19,13 +20,34 @@ class SignUpForm(forms.Form):
         required=False,
         widget=forms.HiddenInput
     )
+    firm_name = forms.CharField(
+        error_messages={
+            'required': "Firm name can't be blank."
+        },
+        label='',
+        widget=forms.TextInput(attrs={'placeholder': 'Firm name', 'size': 46})
+    )
+    first_name = forms.CharField(
+        error_messages={
+            'required': "First name can't be blank."
+        },
+        label='',
+        widget=forms.TextInput(attrs={'placeholder': 'First name'})
+    )
+    last_name = forms.CharField(
+        error_messages={
+            'required': "Last name can't be blank."
+        },
+        label='',
+        widget=forms.TextInput(attrs={'placeholder': 'Last name'})
+    )
     email = forms.EmailField(
         error_messages={
             'invalid': "Email is invalid.",
             'required': "Email can't be blank."
         },
         label='',
-        widget=forms.TextInput(attrs={'placeholder': 'Email address'})
+        widget=forms.TextInput(attrs={'placeholder': 'Email address', 'size': 46})
     )
     password = forms.CharField(
         error_messages={
@@ -46,7 +68,7 @@ class SignUpForm(forms.Form):
             'required': "You must agree to the LawPal Terms and Conditions."
         },
         initial=False,
-        label='I agree to the LawPal Terms and Conditions',
+        label='I agree to the LawPal Terms and Conditions.',
         required=True
     )
 
@@ -61,9 +83,18 @@ class SignUpForm(forms.Form):
             HTML('{% include "partials/form-errors.html" with form=form %}'),
             Fieldset(
                 '',
+                Field('firm_name', css_class='input-hg'),
+                Div(
+                    Field('first_name', css_class='input-hg'),
+                    Field('last_name', css_class='input-hg'),
+                    css_class='form-inline'
+                ),
                 Field('email', css_class='input-hg'),
-                Field('password', css_class='input-hg'),
-                Field('password_confirm', css_class='input-hg'),
+                Div(
+                    Field('password', css_class='input-hg'),
+                    Field('password_confirm', css_class='input-hg'),
+                    css_class='form-inline'
+                ),
                 Field('t_and_c', template='public/bootstrap3/t_and_c.html'),
             ),
             ButtonHolder(
@@ -72,6 +103,9 @@ class SignUpForm(forms.Form):
         )
 
         super(SignUpForm, self).__init__(*args, **kwargs)
+
+        # Override the label with a link to the terms (can't go higher as the urls aren't loaded yet)
+        self.fields['t_and_c'].label = 'I agree to the LawPal <a href="%s" target="_blank">Terms and Conditions</a>.' % reverse_lazy('public:terms')
 
     def clean_username(self):
         final_username = self.data.get('email').split('@')[0]
@@ -105,10 +139,14 @@ class SignUpForm(forms.Form):
     def save(self):
         user = User.objects.create_user(self.cleaned_data.get('username'),
                                         self.cleaned_data.get('email'),
-                                        self.cleaned_data.get('password'))
+                                        self.cleaned_data.get('password'),
+                                        first_name=self.cleaned_data.get('first_name'),
+                                        last_name=self.cleaned_data.get('last_name'))
+
         # save the lawyer profile
         profile = user.profile
-        profile.data['user_class'] = 'lawyer'
+        profile.data['firm_name'] = self.cleaned_data.get('firm_name')
+        profile.data['user_class'] = profile.LAWYER
         profile.save(update_fields=['data'])
 
         return user
