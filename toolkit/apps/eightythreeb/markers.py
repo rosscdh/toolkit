@@ -11,8 +11,7 @@ class LawyerCompleteFormMarker(Marker):
     signals = ['toolkit.apps.eightythreeb.signals.lawyer_complete_form']
 
     action_name = 'Setup 83(b)'
-    action_toggle = Marker.TOGGLE_ACTION
-    action_type = Marker.ACTION_TYPE_REDIRECT
+    action_type = Marker.ACTION_TYPE.modal
     action_user_class = ['lawyer']
 
     def get_action_url(self):
@@ -32,8 +31,7 @@ class LawyerInviteUserMarker(Marker):
     signals = ['toolkit.apps.eightythreeb.signals.lawyer_invite_customer']
 
     action_name = 'Invite Client'
-    action_toggle = Marker.TOGGLE_ACTION
-    action_type = Marker.ACTION_TYPE_REDIRECT
+    action_type = Marker.ACTION_TYPE.redirect
     action_user_class = ['lawyer']
 
     @property
@@ -57,8 +55,7 @@ class CustomerCompleteFormMarker(Marker):
     signals = ['toolkit.apps.eightythreeb.signals.customer_complete_form']
 
     action_name = 'Complete 83(b)'
-    action_toggle = Marker.TOGGLE_ACTION
-    action_type = Marker.ACTION_TYPE_REDIRECT
+    action_type = Marker.ACTION_TYPE.redirect
     action_user_class = ['customer']
 
     def get_action_url(self):
@@ -73,13 +70,16 @@ class CustomerCompleteFormMarker(Marker):
 
 
 class CustomerDownloadDocMarker(Marker):
+    """
+    Relies on jquery plugin to detect successful download of document and reload page
+    thus it must be Marker.ACTION_TYPE.redirect
+    """
     name = 'customer_download_pdf'
     description = 'Client: Download 83(b) Election Letter and Instructions'
     _long_description = ''
     signals = ['toolkit.apps.eightythreeb.signals.customer_download_pdf']
 
-    action_toggle = Marker.TOGGLE_ACTION
-    action_type = Marker.ACTION_TYPE_REDIRECT
+    action_type = Marker.ACTION_TYPE.redirect
     action_user_class = ['customer']
 
     @property
@@ -104,8 +104,7 @@ class CustomerPrintAndSignMarker(Marker):
     signals = ['toolkit.apps.eightythreeb.signals.customer_print_and_sign']
 
     action_name = 'I have printed and signed the Election'
-    action_toggle = Marker.TOGGLE_ACTION
-    action_type = Marker.ACTION_TYPE_REMOTE
+    action_type = Marker.ACTION_TYPE.remote
     action_user_class = ['customer']
 
     @property
@@ -132,8 +131,7 @@ class CustomerUploadScanMarker(Marker):
     description = 'Client: Scan and upload signed copy'
     signals = ['toolkit.apps.eightythreeb.signals.copy_uploaded']
 
-    action_toggle = Marker.TOGGLE_ACTION
-    action_type = Marker.ACTION_TYPE_REDIRECT
+    action_type = Marker.ACTION_TYPE.modal
     action_user_class = ['customer',]
 
     @property
@@ -172,14 +170,8 @@ class CustomerTrackingNumberMarker(Marker):
     signals = ['toolkit.apps.eightythreeb.signals.mail_to_irs_tracking_code']
 
     action_name = 'Enter Tracking Number'
-    action_toggle = Marker.TOGGLE_MODAL
+    action_type = Marker.ACTION_TYPE.modal
     action_user_class = ['customer', 'lawyer']
-
-    @property
-    def action_attribs(self):
-        return {
-            'target': '#enter-tracking-code'
-        }
 
     def get_action_url(self):
         return reverse('eightythreeb:tracking_code', kwargs={'slug': self.tool.slug})
