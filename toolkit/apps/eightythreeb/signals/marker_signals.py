@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.dispatch import Signal, receiver
 
+from toolkit.apps.me.signals import send_welcome_email
+
 from ..markers import EightyThreeBSignalMarkers
 from ..mailers import EightyThreeTrackingCodeEnteredEmail
 
@@ -92,6 +94,16 @@ def on_lawyer_invite_customer(sender, instance, actor, **kwargs):
                        next_status=instance.STATUS_83b.customer_complete_form,
                        actor_name=actor_name,
                        instance=instance)
+
+        # get target user
+        user = instance.user
+        # if user is new, has not set password
+        is_new = user.password in ['', '!', None]
+        if is_new is True:
+            #
+            # Send welcome email
+            #
+            send_welcome_email.send(sender=user._meta.model, instance=user, created=is_new)
 
 
 @receiver(customer_complete_form)
