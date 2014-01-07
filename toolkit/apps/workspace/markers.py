@@ -17,6 +17,9 @@ from toolkit.utils import _class_importer
 from dateutil import parser
 import math
 
+class MissingMarkersException(Exception):
+    msg = 'You must have at least 1 marker item in the object.signal_map list attribute'
+
 
 class BaseSignalMarkers(object):
     tool_object = None
@@ -36,7 +39,7 @@ class BaseSignalMarkers(object):
             self.current = self.signal_map[0]
 
         except IndexError:
-            raise Exception('You must have at least 1 item in the signal_map list attribute')
+            raise MissingMarkersException
 
         try:
             self.next = self.signal_map[1]
@@ -44,9 +47,9 @@ class BaseSignalMarkers(object):
         except IndexError:
             self.next = None
 
-        self.set_markers_fsm()
+        self._set_markers_fsm()  # finite state machine
 
-    def set_markers_fsm(self):
+    def _set_markers_fsm(self):
         for i, marker in enumerate(self.signal_map):
             # set the marker prev and next
             signal = self.signal_map[i]
@@ -100,7 +103,7 @@ class BaseSignalMarkers(object):
     def marker(self, val):
         if type(val) in [str, unicode]:
             return self.marker_by_name(name=val)
-        if type(val) in [int]:
+        if type(val) in [int, float]:
             return self.marker_by_val(val=val)
         return None
 
@@ -148,7 +151,7 @@ class BaseSignalMarkers(object):
         return get_namedtuple_choices(name, tuple(named_tuple))
 
 
-class Marker:
+class Marker(object):
     ACTION_TYPE_MODAL = 'modal'
     ACTION_TYPE_REMOTE = 'remote'
     ACTION_TYPE_REDIRECT = 'redirect'
@@ -158,7 +161,7 @@ class Marker:
 
     name = None
     description = None
-    long_description = None
+    _long_description = None
     signals = []
 
     action_name = None
@@ -188,7 +191,7 @@ class Marker:
 
         long_description = kwargs.pop('long_description', None)  # set the long description to the description as it will get overriden if the user actually sets long_description
         if long_description is not None:
-            self.long_description = long_description
+            self._long_description = long_description
 
         signals = kwargs.pop('signals', None)
         if signals is not None:
@@ -203,7 +206,7 @@ class Marker:
             self.action = kwargs.pop('action')
 
         if hasattr(self, 'action_user_class') is False and 'action_user_class' in kwargs:
-            self.action_user = kwargs.pop('action_user_class')
+            self.action_user_class = kwargs.pop('action_user_class')
 
         next = kwargs.pop('next', None)
         if next is not None:
@@ -269,6 +272,18 @@ class Marker:
         method used to return the marker action_url without display business logic
         """
         raise NotImplementedError
+
+    @property
+    def long_description(self):
+        return self._long_description if self.is_complete is False else None
+
+    @long_description.setter
+    def long_description(self, value):
+        self._long_description = value
+
+    @property
+    def action(self):
+        return self.get_action_url()
 
     def tool_info(self):
         if self.tool is not None:

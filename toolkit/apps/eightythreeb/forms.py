@@ -307,7 +307,7 @@ class CustomerEightyThreeBForm(BaseEightyThreeBForm):
                     css_class='form-inline'
                 ),
                 'accountant_email',
-                HTML('<label>Do you have a spouse or legally recognised de-facto?</label>'),
+                HTML('<label>Do you have a spouse?</label>'),
                 Field('has_spouse', template='public/bootstrap3/t_and_c.html'),
                 css_class='form-section'
             ),
@@ -439,7 +439,7 @@ class LawyerEightyThreeBForm(BaseEightyThreeBForm):
                     css_class='form-inline'
                 ),
                 'accountant_email',
-                HTML('<label>Do you have a spouse or legally recognised de-facto?</label>'),
+                HTML('<label>Do you have a spouse?</label>'),
                 Field('has_spouse', template='public/bootstrap3/t_and_c.html'),
                 css_class='dialog dialog-info form-dialog'
             ),

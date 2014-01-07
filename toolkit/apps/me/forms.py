@@ -123,7 +123,7 @@ class ConfirmAccountForm(AccountSettingsForm):
         error_messages={
             'required': "New password can't be blank."
         },
-        label='New password',
+        label='Password',
         widget=forms.PasswordInput(attrs={'size': 30})
     )
 
@@ -134,7 +134,7 @@ class ConfirmAccountForm(AccountSettingsForm):
         label='Verify password',
         widget=forms.PasswordInput(attrs={
             'parsley-equalto': '[name="new_password1"]',
-            'parsley-equalto-message': "The two password fields don't match.",
+            'parsley-equalto-message': "The two password fields do not match.",
             'size': 30
         })
     )
@@ -147,22 +147,25 @@ class ConfirmAccountForm(AccountSettingsForm):
             Fieldset(
                 '',
                 Div(
+                    HTML('<p>Welcome to LawPal. Enter the information below to create your account.</p>')
+                ),
+                Div(
                     HTML('<label>Full name*</label>'),
                     Div(
-                        Field('first_name', css_class='input-hg'),
-                        Field('last_name', css_class='input-hg'),
+                        Field('first_name', css_class='input-lg'),
+                        Field('last_name', css_class='input-lg'),
                         css_class='form-inline'
                     )
                 ),
-                Field('email', css_class='input-hg'),
+                Field('email', css_class='input-lg'),
             ),
             Fieldset(
                 '',
-                Field('new_password1', css_class='input-hg'),
-                Field('new_password2', css_class='input-hg'),
+                Field('new_password1', css_class='input-lg'),
+                Field('new_password2', css_class='input-lg'),
             ),
             ButtonHolder(
-                Submit('submit', 'Save changes', css_class='btn btn-primary btn-lg')
+                Submit('submit', 'Create Account', css_class='btn btn-primary btn-hg')
             )
 
         )

@@ -19,7 +19,7 @@
 <div class="row">
     <div class="col-lg-8 col-lg-offset-2">
         <h4>Review 83(b) Election Letter</h4>
-        <p>Below is a preview of the 83(b) Election complete with IRS Transmittal Letter, 2 x 83(b) Election Letter and a set of mailing instructions. Information highlighted in yellow will be entered by the client when they sign into LawPal to complete the process.</p>
+        <p>Below is a preview of the 83(b) Election complete with IRS Transmittal Letter, 2 x 83(b) Election Letter and a set of mailing instructions.  {% if user.profile.is_lawyer %} Information highlighted in yellow will be entered by the client when they sign into LawPal to complete the process. {% endif %}</p>
          <hr />
         <a href="{{ previous_url }}" type="button" class="btn btn-hg btn-default"><i class="glyphicon glyphicon-chevron-left"></i> Back and Edit</a>
         <a href="{{ next_url }}" type="button" class="btn btn-success btn-hg pull-right">Continue <i class="glyphicon glyphicon-chevron-right"></i></a>

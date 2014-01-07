@@ -36,44 +36,7 @@
                         {% block marker %}
                             <li class="list-group-item status-list-item status-{{ marker.status }}">
                                 <div class="row">
-                                    {% if marker.status == 'done' %}
-                                        <div class="col-md-1 text-center">
-                                            <span class="status-list-item-icon fui-check-inverted"></span>
-                                        </div>
-                                        <div class="col-md-7">
-                                            <h6 class="list-group-item-heading status-list-item-heading">{{ marker.description }}</h6>
-                                        </div>
-                                        <div class="col-md-4 text-right">
-                                            {% if marker.action and user.profile.user_class in marker.action_user_class %}
-                                                {% action_button marker css_class='btn btn-success' %}
-                                            {% else %}
-                                                <ul class="list-inline status-list-item-meta">
-                                                    <li>Completed <strong>{{ marker.date_completed|naturaltime }}</strong></li>
-                                                </ul>
-                                            {% endif %}
-                                        </div>
-                                    {% elif marker.status == 'next' %}
-                                        <div class="col-md-1 text-center">
-                                            <span class="status-list-item-icon fui-alert"></span>
-                                        </div>
-                                        <div class="col-md-11">
-                                            <h6 class="list-group-item-heading status-list-item-heading">{{ marker.description }}</h6>
-                                            {% if marker.long_description %}<p class="list-group-item-text status-list-item-text">{{ marker.long_description }}</p>{% endif %}
-                                            <div class="status-list-item-actions">
-                                                {% if marker.action and user.profile.user_class in marker.action_user_class %}
-                                                    {% action_button marker css_class='btn btn-hg btn-info' %}
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    {% elif marker.status == 'pending' %}
-                                        <div class="col-md-1 text-center">
-                                            <span class="status-list-item-icon fui-radio-unchecked"></span>
-                                        </div>
-                                        <div class="col-md-11">
-                                            <h6 class="list-group-item-heading status-list-item-heading">{{ marker.description }}</h6>
-                                            {% if marker.long_description %}<p class="list-group-item-text status-list-item-text">{{ marker.long_description }}</p>{% endif %}
-                                        </div>
-                                    {% endif %}
+                                    {% marker_status_block marker user %}
                                 </div>
                             </li>
                         {% endblock %}
@@ -91,45 +54,45 @@
 {% endblock %}
 
 {% block js %}
-    <script type="text/javascript">
-        $(document).ready(function () {
-            'use strict';
+<script type="text/javascript">
+    $(document).ready(function () {
+        'use strict';
 
-            var $iframe = $('iframe#tool-preview');
-            var $overview = $('#overview');
-            $iframe.height($overview.height()).removeClass('fade');
+        var $iframe = $('iframe#tool-preview');
+        var $overview = $('#overview');
+        $iframe.height($overview.height()).removeClass('fade');
 
-            // Action Buttons
-            $("[data-toggle=action]").on('click', function(e) {
-              var $btn = $(this);
-              var type = $btn.data('type');
+        // Action Buttons
+        $("[data-toggle=action]").on('click', function(e) {
+          var $btn = $(this);
+          var type = $btn.data('type');
 
-              e.preventDefault();
-              if ('redirect' == type) {
-                document.location = $btn.data('url');
-              } else if ('remote' == type) {
-                var data   = $btn.data();
-                var url    = data['url']; delete data['url'];
-                var method = data['method']; delete data['method'];
+          e.preventDefault();
+          if ('redirect' == type) {
+            document.location = $btn.data('url');
+          } else if ('remote' == type) {
+            var data   = $btn.data();
+            var url    = data['url']; delete data['url'];
+            var method = data['method']; delete data['method'];
 
-                $.ajax({
-                    "type": method,
-                    "url": url,
-                    "data": JSON.stringify(data),
-                    "dataType": 'json',
-                    "contentType": 'application/json',
-                    "beforeSend": function (jqXHR, settings) {
-                        // Pull the token out of the DOM.
-                        jqXHR.setRequestHeader('X-CSRFToken', $('input[name=csrfmiddlewaretoken]:first').val());
-                    },
-                    "complete": function ( data ) {
-                        // reload the page to show updated lawyer info
-                        //btn.hide().parent().append(response_success_msg);
-                        document.location.reload();
-                    }
-                });
-              };
+            $.ajax({
+                "type": method,
+                "url": url,
+                "data": JSON.stringify(data),
+                "dataType": 'json',
+                "contentType": 'application/json',
+                "beforeSend": function (jqXHR, settings) {
+                    // Pull the token out of the DOM.
+                    jqXHR.setRequestHeader('X-CSRFToken', $('input[name=csrfmiddlewaretoken]:first').val());
+                },
+                "complete": function ( data ) {
+                    // reload the page to show updated lawyer info
+                    //btn.hide().parent().append(response_success_msg);
+                    document.location.reload();
+                }
             });
+          };
         });
-    </script>
+    });
+</script>
 {% endblock %}

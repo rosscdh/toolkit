@@ -1,1 +1,20 @@
 {% extends 'workspace/workspace_tool_preview.html' %}
+
+
+{% block js %}
+{{ block.super }}
+<script src="{{ STATIC_URL }}js/jquery.FileDownloadPlugin.js"></script>
+<script>
+$(document).ready(function () {
+    'use strict';
+
+    $('#marker-customer_download_pdf').on("click", function() {
+        console.log($(this).data('url'))
+        $.fileDownload($(this).data('url'))
+            .done(function () { document.location.reload(); });
+        return false; //this is critical to stop the click event which will trigger a normal file download!
+    });
+
+});
+</script>
+{% endblock %}
