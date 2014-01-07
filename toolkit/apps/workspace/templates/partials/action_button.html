@@ -2,7 +2,6 @@
     <a href="{{ marker.action }}"
        id="marker-{{ marker }}"
        class="{{ css_class }}"
-       data-toggle="{{ marker.action_toggle }}"
        {% if marker.action_type %}data-type="{{ marker.action_type }}"{% endif %}
        data-type="{{ marker.action_type }}"
        {% for key, value in marker.action_attribs.iteritems %}
