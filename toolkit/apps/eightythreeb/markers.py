@@ -201,36 +201,6 @@ class USPSDeliveryStatusMarker(Marker):
         return msg
 
 
-class DateStampedCopyRecievedMarker(Marker):
-    name = 'datestamped_copy_recieved'
-    description = 'Client: Date-stamped copy received'
-    _long_description = 'Customer is to print and sign 2 copies, plus a 3rd for their own records.'
-    signals = ['toolkit.apps.eightythreeb.signals.datestamped_copy_recieved']
-
-    action_name = 'I have recieved the date-stamped copy back from the IRS'
-    action_type = Marker.ACTION_TYPE_REMOTE
-    action_user_class = ['customer']
-
-    @property
-    def action_attribs(self):
-        return {
-            'method': 'PATCH',
-            'status': self.val,
-            'tool': self.tool.tool_slug,
-            'tool_object_id': self.tool.pk
-        }
-
-    def get_action_url(self):
-        return reverse('api:eightythreeb-detail', kwargs={'pk': self.tool.pk})
-
-    @property
-    def action(self):
-        if self.is_complete is True or self.tool.status < self.val:
-            return None
-        else:
-            return self.get_action_url()
-
-
 class ProcessCompleteMarker(Marker):
     name = 'complete'
     description = 'Process Complete'
@@ -248,6 +218,5 @@ class EightyThreeBSignalMarkers(BaseSignalMarkers):
         CustomerUploadScanMarker(5),
         CustomerTrackingNumberMarker(6),
         USPSDeliveryStatusMarker(7),
-        DateStampedCopyRecievedMarker(8),
-        ProcessCompleteMarker(9)
+        ProcessCompleteMarker(8)
     ]
