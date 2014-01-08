@@ -77,23 +77,18 @@ class CustomerInviteLoginTest(BaseCustomer):
         self.assertEqual(email.recipients(), [self.user.email])
 
 
-    def test_welcome_email_already_sent_set_password(self):
+    def test_welcome_email_sent_with_no_invitation_record(self):
         """
-        Customer has set password 
-        and invite is deleted
-        and sent_welcome_email is in the users profile.data
+        Customer is unconfirmed account
+        with no invite record
+        will be sent_welcome_email is in the users profile.data
         is redirected to homepage on submit
         """
-        profile = self.user.profile
-        profile.data['sent_welcome_email'] = True
-        profile.save(update_fields=['data'])
-
-        self.user.set_password('test')
-        self.user.save(update_fields=['password'])
         # delete invite
         self.user.invitations.all().delete()
 
         formsubmit_resp = self.submit_confirm_account_form(resp=self.resp)
+
         # is on the right view
         self.assertEqual(type(formsubmit_resp.context_data.get('view')), DetailView)
         self.assertEqual(formsubmit_resp.context_data['view'].object, self.workspace)
@@ -101,4 +96,25 @@ class CustomerInviteLoginTest(BaseCustomer):
         # has the sent welcome message key set
         self.assertTrue('sent_welcome_email' in self.user.profile.data)
         # Test email
-        self.assertEqual(len(mail.outbox), 0)  # no email was sent
+        self.assertEqual(len(mail.outbox), 1)  # an email was sent
+
+    def test_cant_access_confirm_account_form_with_confirmed_account(self):
+        """
+        Customer has set password and is confirmed
+        is redirected to homepage on submit on attempted access
+        """
+        profile = self.user.profile
+        profile.data['sent_welcome_email'] = True
+        profile.save(update_fields=['data'])
+
+        self.user.set_password('test')
+        self.user.save(update_fields=['password'])
+
+        # POST access is redirected
+        formsubmit_resp = self.submit_confirm_account_form(resp=self.resp)
+        self.assertEqual(len(formsubmit_resp.redirect_chain), 2)
+
+        # normal GET access is redirected
+        resp = self.client.get(self.invite.get_absolute_url(), follow=True)
+        self.assertEqual(len(resp.redirect_chain), 1)
+        self.assertTrue(resp.context_data.get('form') is None)
