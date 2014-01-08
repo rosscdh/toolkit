@@ -3,14 +3,11 @@
 {% block subject_line %}{% if instance.status != instance.STATUS_83b.irs_recieved %}ACTION REQUIRED : {% endif %}83(b) Filing Reminder Update{% endblock %}
 
 {% block html_content %}
-<p>Your 83(b) election is currently in progress ({{ current_status }}).</p>
-<p>The deadline for filing this is {{ num_days_left }} days away.</p>
-<p>{{ current_step }}/{{ total_steps }} steps have been completed. ({{ percent_complete }}%)</p>
-<p>Failing to make a timely 83(b) election with the IRS is something that could lead to disastrous tax consequences for holders of restricted stock.</p>
-{% if instance.status == instance.STATUS_83b.irs_recieved %}
-<p>We are currently waiting for confirmation form the USPS that your election has been received. We will alert you once it has been completed.</p>
-{% else %}
-<p>Please login to complete the process :<br/>
-<a href="{{ url }}">{{ url }}</a></p>
-{% endif %}
+<p>This is just a friendly reminder that your 83(b) filing is still "in progress" ({{ current_status }}).  Please note that in order for your 83(b) election to be effective, you must file the election with the IRS within 30 days after the purchase date.</p>
+<p>Your 83(b) election must be postmarked no later than {{ filing_date }} ({{ num_days_left }} days left).  There are no exceptions to this timely filing rule.</p>
+
+<p>Please login to complete the process : <a href="{{ url }}">{{ url }}</a></p>
+<br />
+<br />
+<p>THE FILING OF THE 83(B) ELECTION WITH THE IRS IS SOLEY YOUR RESPONSIBILITY AND NOT THE RESPONSIBILITY OF YOUR LAWYER OR LAWPAL.</p>
 {% endblock %}
