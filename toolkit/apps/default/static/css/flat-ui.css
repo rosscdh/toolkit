@@ -1357,7 +1357,7 @@ fieldset[disabled] .btn-link:focus {
 .navbar .btn-navbar {
   background: none;
   border: none;
-  color: #444444;
+  color: white;
   margin: 18px 15px;
   padding: 3px 15px;
   text-shadow: none;
@@ -1366,7 +1366,7 @@ fieldset[disabled] .btn-link:focus {
 .navbar .btn-navbar:hover,
 .navbar .btn-navbar:focus {
   background: none;
-  color: #6bdb7e;
+  color: white;
 }
 .navbar .btn-navbar:before {
   content: "\e00c";
@@ -1632,7 +1632,7 @@ fieldset[disabled] .btn-link:focus {
   bottom: 80%;
   top: auto;
 }
-@media (max-width: 979px) {
+@media (max-width: 768px) {
   .navbar.navbar-inverse .navbar-brand {
     border: none;
     padding-top: 11px;

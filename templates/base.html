@@ -62,6 +62,8 @@
     {% endblock %}
 
     <div class="main-content container-fluid">
+            {{ form.non_field_errors }}
+
         {% block body %}
             <div class="row">
                 <div class="sidebar col-sm-3">
@@ -77,7 +79,8 @@
                                 <li class="divider"></li>
                                 {% for w in WORKSPACES %}
                                     <li class="nav-header{% if workspace == w and not tool %} active{% endif %}">
-                                        <a href="{% url 'workspace:view' slug=w.slug %}">{{ w.name }}</a>
+                                        {{ w.name }}
+                                        <small><a href="{% url 'workspace:view' slug=w.slug %}" class="pull-right">Edit</a></small>
                                     </li>
                                     {% for t in w.tools.all %}
                                         <li{% if workspace == w and tool == t %} class="active"{% endif %}>
