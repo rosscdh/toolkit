@@ -213,7 +213,7 @@ class WorkspaceToolObjectDisplayView(WorkspaceToolViewMixin, DetailView):
         html = self.object.html(user=self.request.user, request=self.request)
         pdfpng_service = PDFKitService(html=html)  # HTMLtoPDForPNGService(html=html)
         resp = HttpResponse(content_type='application/pdf')
-        return pdfpng_service.pdf(template_name=self.object.template_name, file_object=resp)
+        return pdfpng_service.pdf(template_name=self.object.pdf_template_name, file_object=resp)
 
 
 class WorkspaceToolObjectDownloadView(IssueSignalsMixin, WorkspaceToolObjectDisplayView):
@@ -240,4 +240,4 @@ class WorkspaceToolObjectDownloadView(IssueSignalsMixin, WorkspaceToolObjectDisp
 
         self.issue_signals(request=self.request, instance=self.object, name='customer_download_pdf')
 
-        return pdfpng_service.pdf(template_name=self.object.template_name, file_object=resp)
+        return pdfpng_service.pdf(template_name=self.object.pdf_template_name, file_object=resp)

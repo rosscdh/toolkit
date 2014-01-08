@@ -36,7 +36,9 @@ class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferA
     83b Form to be associated with a Workspace and a particular user
     """
     STATUS_83b = EIGHTYTHREEB_STATUS
-    template_name = 'eightythreeb/eightythreeb.html'
+    INCOMPLETE_EXCLUDED_STATUS = [STATUS_83b.complete, STATUS_83b.irs_recieved]  # used in the manager to filter incomplete items
+
+    pdf_template_name = 'eightythreeb/eightythreeb.html'  # @TODO what is this doing here?
 
     slug = UUIDField(auto=True, db_index=True)
     workspace = models.ForeignKey('workspace.Workspace')
