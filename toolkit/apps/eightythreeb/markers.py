@@ -11,7 +11,7 @@ class LawyerCompleteFormMarker(Marker):
     signals = ['toolkit.apps.eightythreeb.signals.lawyer_complete_form']
 
     action_name = 'Setup 83(b)'
-    action_type = Marker.ACTION_TYPE_REDIRECT
+    action_type = Marker.ACTION_TYPE.modal
     action_user_class = ['lawyer']
 
     def get_action_url(self):
@@ -31,7 +31,7 @@ class LawyerInviteUserMarker(Marker):
     signals = ['toolkit.apps.eightythreeb.signals.lawyer_invite_customer']
 
     action_name = 'Invite Client'
-    action_type = Marker.ACTION_TYPE_REDIRECT
+    action_type = Marker.ACTION_TYPE.redirect
     action_user_class = ['lawyer']
 
     @property
@@ -55,7 +55,7 @@ class CustomerCompleteFormMarker(Marker):
     signals = ['toolkit.apps.eightythreeb.signals.customer_complete_form']
 
     action_name = 'Complete 83(b)'
-    action_type = Marker.ACTION_TYPE_REDIRECT
+    action_type = Marker.ACTION_TYPE.redirect
     action_user_class = ['customer']
 
     def get_action_url(self):
@@ -70,21 +70,28 @@ class CustomerCompleteFormMarker(Marker):
 
 
 class CustomerDownloadDocMarker(Marker):
+    """
+    Relies on jquery plugin to detect successful download of document and reload page
+    thus it must be Marker.ACTION_TYPE.redirect
+    """
     name = 'customer_download_pdf'
     description = 'Client: Download 83(b) Election Letter and Instructions'
-    long_description = ''
+    _long_description = ''
     signals = ['toolkit.apps.eightythreeb.signals.customer_download_pdf']
 
-    action_name = 'Download 83(b)'
-    action_type = Marker.ACTION_TYPE_REDIRECT
+    action_type = Marker.ACTION_TYPE.redirect
     action_user_class = ['customer']
+
+    @property
+    def action_name(self):
+        return 'Re-download 83(b)' if self.is_complete is True else 'Download 83(b)'
 
     def get_action_url(self):
         return reverse('workspace:tool_object_download', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.tool_slug, 'slug': self.tool.slug})
 
     @property
     def action(self):
-        if self.tool.is_complete is True or self.tool.status > self.val:
+        if self.tool.status < self.val:
             return None
         else:
             return self.get_action_url()
@@ -93,11 +100,11 @@ class CustomerDownloadDocMarker(Marker):
 class CustomerPrintAndSignMarker(Marker):
     name = 'customer_print_and_sign'
     description = 'Client: Print, check and sign 83(b) Election Letter'
-    long_description = 'Print and sign the 83(b) Election where indicated.'
+    _long_description = 'Print and sign the 83(b) Election where indicated.'
     signals = ['toolkit.apps.eightythreeb.signals.customer_print_and_sign']
 
     action_name = 'I have printed and signed the Election'
-    action_type = Marker.ACTION_TYPE_REMOTE
+    action_type = Marker.ACTION_TYPE.remote
     action_user_class = ['customer']
 
     @property
@@ -114,10 +121,9 @@ class CustomerPrintAndSignMarker(Marker):
 
     @property
     def action(self):
-        if self.tool.is_complete is True or self.tool.status > self.val:
-            return None
-        else:
+        if self.tool.status in [self.val]:
             return self.get_action_url()
+        return None
 
 
 class CustomerUploadScanMarker(Marker):
@@ -125,7 +131,7 @@ class CustomerUploadScanMarker(Marker):
     description = 'Client: Scan and upload signed copy'
     signals = ['toolkit.apps.eightythreeb.signals.copy_uploaded']
 
-    action_type = Marker.ACTION_TYPE_REDIRECT
+    action_type = Marker.ACTION_TYPE.modal
     action_user_class = ['customer',]
 
     @property
@@ -137,9 +143,8 @@ class CustomerUploadScanMarker(Marker):
 
     @property
     def action(self):
-        if self.tool is not None:
-            if self.is_complete is False or (self.tool.status >= self.tool.STATUS_83b.copy_uploaded and self.tool.status <= self.tool.STATUS_83b.mail_to_irs_tracking_code):
-                return self.get_action_url()        
+        if self.tool.status in [self.val] or self.is_complete is False and self.tool.status > self.val:
+            return self.get_action_url()
         return None
 
     @property
@@ -161,11 +166,11 @@ class CustomerUploadScanMarker(Marker):
 class CustomerTrackingNumberMarker(Marker):
     name = 'mail_to_irs_tracking_code'
     description = 'Client: Mail to IRS & register Tracking Code'
-    long_description = 'Mail 83(b) form using USPS Registered Post *ONLY* and enter the Tracking Number here,'
+    _long_description = 'Mail 83(b) form using USPS Registered Post *ONLY* and enter the Tracking Number here'
     signals = ['toolkit.apps.eightythreeb.signals.mail_to_irs_tracking_code']
 
     action_name = 'Enter Tracking Number'
-    action_type = Marker.ACTION_TYPE_REDIRECT
+    action_type = Marker.ACTION_TYPE.modal
     action_user_class = ['customer', 'lawyer']
 
     def get_action_url(self):
@@ -173,10 +178,10 @@ class CustomerTrackingNumberMarker(Marker):
 
     @property
     def action(self):
-        if self.tool.is_complete is True or self.tool.status > self.val:
-            return None
-        else:
+        if self.tool.status in [self.val, self.tool.STATUS_83b.irs_recieved]:  # allow them to change the number?
             return self.get_action_url()
+        # dont show if the status is less than self.val
+        return None
 
 
 class USPSDeliveryStatusMarker(Marker):
@@ -194,40 +199,10 @@ class USPSDeliveryStatusMarker(Marker):
     def long_description(self):
         msg = self.tool.usps_current_status
 
-        if msg is None:
+        if msg in ['', None]:
             msg = 'Waiting for USPS response'
 
         return msg
-
-
-class DateStampedCopyRecievedMarker(Marker):
-    name = 'datestamped_copy_recieved'
-    description = 'Client: Date-stamped copy received'
-    long_description = 'Customer is to print and sign 2 copies, plus a 3rd for their own records.'
-    signals = ['toolkit.apps.eightythreeb.signals.datestamped_copy_recieved']
-
-    action_name = 'I have recieved the date-stamped copy back from the IRS'
-    action_type = Marker.ACTION_TYPE_REMOTE
-    action_user_class = ['customer']
-
-    @property
-    def action_attribs(self):
-        return {
-            'method': 'PATCH',
-            'status': self.val,
-            'tool': self.tool.tool_slug,
-            'tool_object_id': self.tool.pk
-        }
-
-    def get_action_url(self):
-        return reverse('api:eightythreeb-detail', kwargs={'pk': self.tool.pk})
-
-    @property
-    def action(self):
-        if self.tool.is_complete is True or self.tool.status > self.val:
-            return None
-        else:
-            return self.get_action_url()
 
 
 class ProcessCompleteMarker(Marker):
@@ -247,6 +222,5 @@ class EightyThreeBSignalMarkers(BaseSignalMarkers):
         CustomerUploadScanMarker(5),
         CustomerTrackingNumberMarker(6),
         USPSDeliveryStatusMarker(7),
-        DateStampedCopyRecievedMarker(8),
-        ProcessCompleteMarker(9)
+        ProcessCompleteMarker(8)
     ]

@@ -1,6 +1,6 @@
 {% extends 'email/base.email' %}
 
-{% block subject %}83(b) Filing Completed for {{ instance.user.get_full_name }}{% endblock %}
+{% block subject_line %}83(b) Filing Completed for {{ instance.user.get_full_name }}{% endblock %}
 
 {% block html_content %}
 

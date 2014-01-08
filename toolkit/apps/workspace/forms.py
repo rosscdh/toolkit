@@ -16,11 +16,11 @@ from toolkit.apps.workspace.models import InviteKey
 from .models import Workspace
 from .mailers import InviteUserToToolEmail
 
-from toolkit.mixins import FormModal
+from toolkit.mixins import ModalForm
 
 
 @parsleyfy
-class WorkspaceForm(FormModal, forms.ModelForm):
+class WorkspaceForm(ModalForm, forms.ModelForm):
     name = forms.CharField(
         error_messages={
             'required': "Client Name can't be blank."
@@ -46,7 +46,7 @@ class WorkspaceForm(FormModal, forms.ModelForm):
 
 
 @parsleyfy
-class AddWorkspaceTeamMemberForm(FormModal, forms.Form):
+class AddWorkspaceTeamMemberForm(ModalForm, forms.Form):
     client_full_name = forms.CharField(
         error_messages={
             'required': "Client name can't be blank."

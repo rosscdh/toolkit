@@ -152,21 +152,25 @@ class BaseSignalMarkers(object):
 
 
 class Marker(object):
-    ACTION_TYPE_REMOTE = 'remote'
-    ACTION_TYPE_REDIRECT = 'redirect'
+    ACTION_TYPE = get_namedtuple_choices('ACTION_TYPE', (
+                    (0, 'remote', 'Remote'),
+                    (1, 'redirect', 'Redirect'),
+                    (2, 'modal', 'Modal'),
+                ))
 
     tool = None
     val = None
 
     name = None
     description = None
-    long_description = None
+    _long_description = None
     signals = []
 
     action_name = None
+
     action_type = None
     action = None
-    action_attribs = {}
+
     action_user_class = []  # must be a list so we can handle multiple types
 
     markers_map = {
@@ -190,7 +194,7 @@ class Marker(object):
 
         long_description = kwargs.pop('long_description', None)  # set the long description to the description as it will get overriden if the user actually sets long_description
         if long_description is not None:
-            self.long_description = long_description
+            self._long_description = long_description
 
         signals = kwargs.pop('signals', None)
         if signals is not None:
@@ -249,10 +253,14 @@ class Marker(object):
         if self.is_complete:
             return 'done'
 
-        if  self.previous.is_complete and not self.next.is_complete:
+        if self.is_current:
             return 'next'
 
         return 'pending'
+
+    @property
+    def is_current(self):
+        return self.tool.markers.current == self
 
     @property
     def is_complete(self):
@@ -266,11 +274,31 @@ class Marker(object):
             return parser.parse(self.tool.data['markers'][self.name].get('date_of'))
         return None
 
+    @property
+    def action_attribs(self):
+        attribs = {}
+        # Handle the modal action_type
+        if self.action_type == self.ACTION_TYPE.modal:
+            attribs.update({
+                'target': '#%s' % getattr(self, 'modal_target', 'modal-%s' % self.name),  ## if we have the attribute modal_target use it else use self.name
+                'toggle': "modal",
+            })
+
+        return attribs
+
     def get_action_url(self):
         """
         method used to return the marker action_url without display business logic
         """
         raise NotImplementedError
+
+    @property
+    def long_description(self):
+        return self._long_description if self.is_complete is False else None
+
+    @long_description.setter
+    def long_description(self, value):
+        self._long_description = value
 
     @property
     def action(self):

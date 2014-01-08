@@ -75,7 +75,7 @@ class USPSTrackingCodeCliCommandTest(BaseUSPSTrackingCode):
         self.subject.handle()  # execute the command
         self.eightythreeb = self.eightythreeb._meta.model.objects.get(pk=self.eightythreeb.pk)  # reload the model
 
-        self.assertEqual(self.eightythreeb.status, EightyThreeB.STATUS_83b.datestamped_copy_recieved)
+        self.assertEqual(self.eightythreeb.status, EightyThreeB.STATUS_83b.complete)
 
         self.assertTrue('usps' in self.eightythreeb.data)
         self.assertTrue('usps_log' in self.eightythreeb.data)
@@ -115,7 +115,7 @@ class USPSTrackingCodeCliCommandTest(BaseUSPSTrackingCode):
         self.assertEqual(len(outbox), 1)
         email = outbox[0]
 
-        self.assertEqual(email.subject, u'')
+        self.assertEqual(email.subject, '83(b) Filing Completed for %s' % self.user.get_full_name())
 
         self.assertEqual(len(email.to), 1)
         self.assertEqual(email.to, ['test+customer@lawpal.com'])

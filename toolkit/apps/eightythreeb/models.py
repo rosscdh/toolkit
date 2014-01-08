@@ -36,7 +36,9 @@ class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferA
     83b Form to be associated with a Workspace and a particular user
     """
     STATUS_83b = EIGHTYTHREEB_STATUS
-    template_name = 'eightythreeb/eightythreeb.html'
+    INCOMPLETE_EXCLUDED_STATUS = [STATUS_83b.complete, STATUS_83b.irs_recieved]  # used in the manager to filter incomplete items
+
+    pdf_template_name = 'eightythreeb/eightythreeb.html'  # @TODO what is this doing here?
 
     slug = UUIDField(auto=True, db_index=True)
     workspace = models.ForeignKey('workspace.Workspace')
@@ -49,6 +51,8 @@ class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferA
 
     status = models.IntegerField(choices=EIGHTYTHREEB_STATUS.get_choices(), default=EIGHTYTHREEB_STATUS.lawyer_complete_form, db_index=True)
 
+    _markers = None
+
     objects = EightyThreeBManager()
 
     def __unicode__(self):
@@ -60,7 +64,9 @@ class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferA
 
     @property
     def markers(self):
-        return EightyThreeBSignalMarkers(tool=self)
+        if self._markers is None:
+            self._markers = EightyThreeBSignalMarkers(tool=self)
+        return self._markers
 
     @property
     def base_signal(self):
@@ -78,6 +84,10 @@ class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferA
     @property
     def filename(self):
         return slugify('83b-{company}-{user}'.format(company=self.workspace, user=self.user.get_full_name() or self.user.username))
+
+    @property
+    def company_name(self):
+        return self.data.get('company_name', self.workspace.name)
 
     def get_absolute_url(self):
         return reverse('workspace:tool_object_preview', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug=self.tool_slug).first().slug, 'slug': self.slug})

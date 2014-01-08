@@ -22,7 +22,7 @@ class IsDeletedMixin(object):
 class HTMLMixin(object):
     @property
     def template(self):
-        return loader.get_template(self.template_name)
+        return loader.get_template(self.pdf_template_name)
 
     def html(self, **kwargs):
         context_data = self.data.copy() # must copy to avoid reference update

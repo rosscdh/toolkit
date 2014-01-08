@@ -26,12 +26,13 @@ class Command(BaseCommand):
             current_step = markers.current
             next_step = current_step.next
 
-            mailer.process(company=instance.workspace, \
-                           url='%s%s' % (site.domain[0:-1], instance.get_absolute_url()), \
-                           current_status=current_step.long_description, \
-                           next_step=next_step.long_description if next_step is not None else None, \
-                           current_step=current_step.val, \
-                           total_steps=markers.num_markers, \
+            mailer.process(company=instance.workspace,
+                           url='%s%s' % (site.domain[0:-1], instance.get_absolute_url()),
+                           current_status=current_step.description,
+                           next_step=next_step.long_description if next_step is not None else None,
+                           current_step=current_step.val,
+                           total_steps=markers.num_markers,
                            num_days_left=instance.days_left,
+                           filing_date=instance.get_filing_date,
                            percent_complete=markers.percent_complete,
                            instance=instance)
