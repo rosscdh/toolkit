@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.core import mail
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 
@@ -6,6 +7,9 @@ from model_mommy import mommy
 
 from toolkit.casper.workflow_case import BaseProjectCaseMixin
 from toolkit.apps.workspace.models import Tool
+from toolkit.apps.me.forms import ConfirmAccountForm
+from toolkit.apps.workspace.views import WorkspaceToolObjectPreviewView
+from django.views.generic import DetailView
 
 
 class BaseCustomer(BaseProjectCaseMixin):
@@ -30,24 +34,71 @@ class CustomerInviteLoginTest(BaseCustomer):
     when i get an invite url
     I should be able to login and directly use the system
     """
+    def setUp(self):
+        super(CustomerInviteLoginTest, self).setUp()
+
+        self.confirm_account_url = reverse('me:confirm-account')  # account confirm page not normal password reset page
+
+        self.resp = self.client.get(self.invite.get_absolute_url(), follow=True)
+
+        self.assertEqual(len(self.resp.redirect_chain), 2)
+        self.assertEqual(self.resp.redirect_chain[1], ('http://testserver%s' % self.confirm_account_url, 302))
+
+        self.assertEqual(type(self.resp.context_data.get('form')), ConfirmAccountForm)
+        self.assertEqual(self.resp.context_data.get('user'), self.user)
+        self.assertEqual(self.resp.context_data.get('object'), self.user)
+
+    def submit_confirm_account_form(self, resp):
+        # test submit of form
+        form_data = resp.context_data['form'].initial
+        form_data.update({
+            'new_password1': 'password',
+            'new_password2': 'password',
+            'csrfmiddlewaretoken': unicode(resp.context['csrf_token']),
+        })
+        return self.client.post(self.confirm_account_url, form_data, follow=True)
+
     def test_invited_login(self):
         """
         Customer invited and has no pasword set
         is redirected to confirm account page
         """
-        resp = self.client.get(self.invite.get_absolute_url(), follow=True)
-        self.assertEqual(len(resp.redirect_chain), 2)
-        self.assertEqual(resp.redirect_chain[1], ('http://testserver%s' % reverse('me:confirm-account'), 302))
+        self.assertTrue('sent_welcome_email' not in self.user.profile.data)
 
-    def test_password_set_login(self):
+        formsubmit_resp = self.submit_confirm_account_form(resp=self.resp)
+        # is on the right view
+        self.assertEqual(type(formsubmit_resp.context_data.get('view')), WorkspaceToolObjectPreviewView)
+        # has the sent welcome message key set
+        self.assertTrue('sent_welcome_email' in self.user.profile.data)
+        # Test email
+        self.assertEqual(len(mail.outbox), 1)
+        email = mail.outbox[0]
+        self.assertEqual(email.subject, 'Welcome to LawPal')
+        self.assertEqual(email.recipients(), [self.user.email])
+
+
+    def test_welcome_email_already_sent_set_password(self):
         """
-        Customer logs in after having set password
-        is redirected to last invited object
+        Customer has set password 
+        and invite is deleted
+        and sent_welcome_email is in the users profile.data
+        is redirected to homepage on submit
         """
+        profile = self.user.profile
+        profile.data['sent_welcome_email'] = True
+        profile.save(update_fields=['data'])
+
         self.user.set_password('test')
         self.user.save(update_fields=['password'])
+        # delete invite
+        self.user.invitations.all().delete()
 
-        resp = self.client.get(self.invite.get_absolute_url(), follow=True)
-        self.assertEqual(len(resp.redirect_chain), 1)
-        # redirects to the eighty threeb (the last invite sent to this user object)
-        self.assertEqual(resp.redirect_chain[0], ('http://testserver%s' % self.eightythreeb.get_absolute_url(), 302))
+        formsubmit_resp = self.submit_confirm_account_form(resp=self.resp)
+        # is on the right view
+        self.assertEqual(type(formsubmit_resp.context_data.get('view')), DetailView)
+        self.assertEqual(formsubmit_resp.context_data['view'].object, self.workspace)
+        
+        # has the sent welcome message key set
+        self.assertTrue('sent_welcome_email' in self.user.profile.data)
+        # Test email
+        self.assertEqual(len(mail.outbox), 0)  # no email was sent
