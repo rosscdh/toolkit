@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import FormView, UpdateView
 
-from toolkit.apps.workspace.models import InviteKey
+from toolkit.apps.me.signals import send_welcome_email
 
 from .forms import ConfirmAccountForm, ChangePasswordForm, AccountSettingsForm
 
@@ -18,9 +18,32 @@ class ConfirmAccountView(UpdateView):
     def get_object(self, queryset=None):
         return self.request.user
 
+    def form_valid(self, form):
+        # get target user, profile
+        profile = self.request.user.profile
+
+        # if user is new, has not set password
+        sent_welcome_email = profile.data.get('sent_welcome_email', False)
+        if sent_welcome_email is False:
+            #
+            # Send welcome email
+            #
+            send_welcome_email.send(sender=self.request.user._meta.model, instance=self.request.user, created=True)
+
+            # store the json reciept
+            profile.data['sent_welcome_email'] = True
+            profile.save(update_fields=['data'])
+
+        return super(ConfirmAccountView, self).form_valid(form)
+
     def get_success_url(self):
-        first_invite_key = InviteKey.objects.filter(invited_user=self.request.user).first()
-        return first_invite_key.next
+        try:
+            first_invite_key = self.request.user.invitations.all().first()
+            return first_invite_key.next
+
+        except AttributeError:
+            # was no invite key
+            return reverse_lazy('public:home')
 
 
 class AccountSettingsView(UpdateView):
