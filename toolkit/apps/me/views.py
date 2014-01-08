@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+from django.contrib import messages
+from django.shortcuts import redirect
+from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import FormView, UpdateView
@@ -14,6 +18,15 @@ class ConfirmAccountView(UpdateView):
     form_class = ConfirmAccountForm
     model = User
     template_name = 'user/settings/account.html'
+
+    def dispatch(self, request, *args, **kwargs):
+
+        # check to see if they have already set their password
+        if request.user.password not in [None, '', '!']:
+            messages.warning(request, 'It looks like you have already confirmed your account. No need to access that form.')
+            return redirect(reverse('public:home'))
+
+        return super(ConfirmAccountView, self).dispatch(request, *args, **kwargs)
 
     def get_object(self, queryset=None):
         return self.request.user
@@ -37,6 +50,7 @@ class ConfirmAccountView(UpdateView):
         return super(ConfirmAccountView, self).form_valid(form)
 
     def get_success_url(self):
+        messages.success(self.request, 'Thank you. You have confirmed your account')
         try:
             first_invite_key = self.request.user.invitations.all().first()
             return first_invite_key.next
@@ -55,6 +69,10 @@ class AccountSettingsView(UpdateView):
     def get_object(self, queryset=None):
         return self.request.user
 
+    def get_success_url(self):
+        messages.success(self.request, 'Success. You have updated your account')
+        return super(AccountSettingsView, self).get_success_url()
+
 
 class ChangePasswordView(FormView):
     form_class = ChangePasswordForm
@@ -71,4 +89,5 @@ class ChangePasswordView(FormView):
 
     def form_valid(self, form):
         form.save()
+        messages.success(self.request, 'Success. You have changed your password')
         return super(ChangePasswordView, self).form_valid(form)
