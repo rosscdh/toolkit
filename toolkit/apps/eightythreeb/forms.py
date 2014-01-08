@@ -37,7 +37,7 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
             'required': "Client name can't be blank."
         },
         help_text='',
-        label='',
+        label='Full name',
         required=True,
         widget=forms.TextInput(attrs={'placeholder': 'Client full name', 'size': '40'})
     )
@@ -48,7 +48,7 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
             'required': "Client email can't be blank."
         },
         help_text='',
-        label='',
+        label='Email address',
         required=True,
         widget=forms.TextInput(attrs={'placeholder': 'Client email address', 'size': '40'})
     )
