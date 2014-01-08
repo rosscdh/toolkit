@@ -1,6 +1,6 @@
 {% extends 'email/base.email' %}
 
-{% block subject %}Welcome to LawPal{% endblock %}
+{% block subject_line %}Welcome to LawPal{% endblock %}
 
 {% block html_content %}
 <p>Welcome, your account has been successfully created on LawPal.</p>
