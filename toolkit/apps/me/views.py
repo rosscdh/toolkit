@@ -3,7 +3,6 @@ from django.core.urlresolvers import reverse_lazy
 from django.views.generic import FormView, UpdateView
 
 from toolkit.apps.me.signals import send_welcome_email
-from toolkit.apps.workspace.models import InviteKey
 
 from .forms import ConfirmAccountForm, ChangePasswordForm, AccountSettingsForm
 
@@ -39,7 +38,7 @@ class ConfirmAccountView(UpdateView):
 
     def get_success_url(self):
         try:
-            first_invite_key = InviteKey.objects.filter(invited_user=self.request.user).first()
+            first_invite_key = self.request.user.invitations.all().first()
             return first_invite_key.next
 
         except AttributeError:
