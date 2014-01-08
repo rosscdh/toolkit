@@ -49,6 +49,8 @@ class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferA
 
     status = models.IntegerField(choices=EIGHTYTHREEB_STATUS.get_choices(), default=EIGHTYTHREEB_STATUS.lawyer_complete_form, db_index=True)
 
+    _markers = None
+
     objects = EightyThreeBManager()
 
     def __unicode__(self):
@@ -60,7 +62,9 @@ class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferA
 
     @property
     def markers(self):
-        return EightyThreeBSignalMarkers(tool=self)
+        if self._markers is None:
+            self._markers = EightyThreeBSignalMarkers(tool=self)
+        return self._markers
 
     @property
     def base_signal(self):
