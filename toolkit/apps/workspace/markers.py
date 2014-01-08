@@ -253,10 +253,14 @@ class Marker(object):
         if self.is_complete:
             return 'done'
 
-        if  self.previous.is_complete and not self.next.is_complete:
+        if self.is_current:
             return 'next'
 
         return 'pending'
+
+    @property
+    def is_current(self):
+        return self.tool.markers.current == self
 
     @property
     def is_complete(self):
