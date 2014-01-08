@@ -205,8 +205,7 @@ class CustomerDownloadDocMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.get_action_url(), url)
 
     def test_action(self):
-        prop_mock = mock.PropertyMock()
-        action_url = url = reverse('workspace:tool_object_download', kwargs={'workspace': self.subject.tool.workspace.slug, 'tool': self.subject.tool.tool_slug, 'slug': self.subject.tool.slug})
+        action_url = reverse('workspace:tool_object_download', kwargs={'workspace': self.subject.tool.workspace.slug, 'tool': self.subject.tool.tool_slug, 'slug': self.subject.tool.slug})
 
         # the download button will NOT show when the status < the download value
         self.subject.tool.status = self.subject.tool.STATUS_83b.lawyer_invite_customer
@@ -303,7 +302,6 @@ class CustomerTrackingNumberMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.get_action_url(), url)
 
     def test_action(self):
-        prop_mock = mock.PropertyMock()
         action_url = reverse('eightythreeb:tracking_code', kwargs={'slug': self.subject.tool.slug})
 
         # This marker shows only when it is the active value or the next "irs_recieved"
