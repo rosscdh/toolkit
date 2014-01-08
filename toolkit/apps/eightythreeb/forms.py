@@ -118,7 +118,7 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
 
     accountant_email = forms.EmailField(
         help_text='We will email a copy of your signed election to your accountant for inclusion in your tax return.',
-        label='Your accountants email address',
+        label='Your accountant\'s email address',
         required=False,
         widget=forms.TextInput(attrs={'size': '40'})
     )
@@ -172,7 +172,7 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
             'required': "Nature of restrictions can't be blank."
         },
         label='Nature of restrictions to which property is subject',
-        help_text='If you have copied this from Microsoft Word then please check the numbering and formatting has been retained.',
+        help_text='If you have copied this from Microsoft Word please check that the numbering and formatting has been retained.',
         widget=forms.Textarea(attrs={
             'cols': '80',
             'data-toggle': 'summernote'
