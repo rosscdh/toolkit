@@ -15,7 +15,7 @@
                         <a href="{% url 'workspace:add_team_member' slug=workspace.slug %}" data-toggle="modal" data-target="#workspace-add-team-member" class="btn btn-sm btn-success pull-right">Add team member</a>
                     </div>
                 {% endif %}
-                <h6>Team Members</h6>
+                <h6>Workspace Members</h6>
             </div>
             <div class="table-responsive">
                 <table class="table table-striped">
@@ -45,7 +45,7 @@
     <div class="row">
         <div class="section col-lg-6">
             <div class="section-header">
-                <h6>Added Tools</h6>
+                <h6>Active Tools</h6>
             </div>
             <ul class="added-tools-list nav nav-list">
                 {% for t in workspace.tools.all %}
@@ -60,7 +60,7 @@
             </ul>
         </div>
 
-        <div class="section col-lg-6">
+       <!--  <div class="section col-lg-6">
             <div class="section-header">
                 <h6>Available Tools</h6>
             </div>
@@ -73,16 +73,16 @@
                     <li><p class="small">No additional tools are available!</p></li>
                 {% endfor %}
             </ul>
-        </div>
+        </div> -->
     </div>
-
+<!-- 
     <div class="row">
         <div class="section col-lg-12">
             <div class="section-header">
                 <h6>Workspace Activity</h6>
             </div>
         </div>
-    </div>
+    </div> -->
 {% endblock %}
 
 {% block modals %}
