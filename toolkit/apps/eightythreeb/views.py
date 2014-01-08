@@ -7,6 +7,7 @@ from django.views.generic import UpdateView, DetailView
 from ajaxuploader.views import AjaxFileUploader
 from ajaxuploader.backends.default_storage import DefaultStorageUploadBackend
 
+from toolkit.mixins import ModalView
 from toolkit.apps.workspace.mixins import IssueSignalsMixin
 
 from .models import EightyThreeB
@@ -49,12 +50,9 @@ class Preview83bView(DetailView):
         return context
 
 
-class TrackingCodeView(IssueSignalsMixin, UpdateView):
-    #
-    # Makes use of the base eightythreeb_form.html
-    #
-    model = EightyThreeB
+class TrackingCodeView(IssueSignalsMixin, ModalView, UpdateView):
     form_class = TrackingCodeForm
+    model = EightyThreeB
 
     def form_valid(self, form):
         """
@@ -63,6 +61,9 @@ class TrackingCodeView(IssueSignalsMixin, UpdateView):
         self.object = form.save()
         self.issue_signals(request=self.request, instance=self.object, name='mail_to_irs_tracking_code')
         return super(TrackingCodeView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse('workspace:tool_object_preview', kwargs={'workspace': self.object.workspace.slug, 'tool': self.object.tool_slug, 'slug': self.object.slug})
 
 
 class AttachmentView(IssueSignalsMixin, UpdateView):

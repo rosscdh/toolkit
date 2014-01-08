@@ -8,7 +8,7 @@ from crispy_forms.layout import ButtonHolder, Div, Field, Fieldset, HTML, Submit
 
 from parsley.decorators import parsleyfy
 
-from toolkit.mixins import FormModal
+from toolkit.mixins import ModalForm
 
 
 User = get_user_model()
@@ -81,7 +81,7 @@ class AccountSettingsForm(forms.ModelForm):
 
 
 @parsleyfy
-class ChangePasswordForm(FormModal, SetPasswordForm):
+class ChangePasswordForm(ModalForm, SetPasswordForm):
     new_password1 = forms.CharField(
         error_messages={
             'required': "New password can't be blank."

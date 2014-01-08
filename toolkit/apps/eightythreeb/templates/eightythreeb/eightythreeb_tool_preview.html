@@ -1,1 +1,26 @@
 {% extends 'workspace/workspace_tool_preview.html' %}
+
+{% block js %}
+{{ block.super }}
+<script src="{{ STATIC_URL }}js/jquery.FileDownloadPlugin.js"></script>
+<script>
+$(document).ready(function () {
+    'use strict';
+
+    $('#marker-customer_download_pdf').on("click", function() {
+        //console.log($(this).attrib('href'))
+        $.fileDownload($(this).attrib('href'))
+            .done(function () { document.location.reload(); });
+        return false; //this is critical to stop the click event which will trigger a normal file download!
+    });
+
+});
+</script>
+{% endblock %}
+
+{% block modals %}
+    {{ block.super }}
+    <div class="modal" id="modal-lawyer_complete_form"></div>
+    <div class="modal" id="modal-mail_to_irs_tracking_code"></div>
+    <div class="modal" id="modal-copy_uploaded"></div>
+{% endblock %}

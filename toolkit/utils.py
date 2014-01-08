@@ -25,27 +25,27 @@ def get_namedtuple_choices(name, choices_tuple):
 
         class MyModel(models.Model):
             COLORS = get_namedtuple_choices('COLORS', (
-                (0, 'BLACK', 'Black'),
-                (1, 'WHITE', 'White'),
+                (0, 'black', 'Black'),
+                (1, 'white', 'White'),
             ))
             colors = models.PositiveIntegerField(choices=COLORS)
 
-        >>> MyModel.COLORS.BLACK
+        >>> MyModel.COLORS.black
         0
         >>> MyModel.COLORS.get_choices()
         [(0, 'Black'), (1, 'White')]
 
         class OtherModel(models.Model):
             GRADES = get_namedtuple_choices('GRADES', (
-                ('FR', 'FR', 'Freshman'),
-                ('SR', 'SR', 'Senior'),
+                ('FR', 'fr', 'Freshman'),
+                ('SR', 'sr', 'Senior'),
             ))
             grade = models.CharField(max_length=2, choices=GRADES)
 
-        >>> OtherModel.GRADES.FR
+        >>> OtherModel.GRADES.fr
         'FR'
         >>> OtherModel.GRADES.get_choices()
-        [('FR', 'Freshman'), ('SR', 'Senior')]
+        [('fr', 'Freshman'), ('sr', 'Senior')]
 
     """
     class Choices(namedtuple(name, [name for val,name,desc in choices_tuple])):

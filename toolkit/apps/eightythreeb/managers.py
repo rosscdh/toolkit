@@ -24,9 +24,13 @@ class EightyThreeBManager(models.Manager):
         return super(EightyThreeBManager, self).get_query_set().filter(status=self.model.STATUS_83b.irs_recieved)
 
     def incomplete(self):
+        """
+        @Business rule
+        exclude completed as well as those in the waiting for usps delivery as it is out of the users hands at this point
+        """
         return super(EightyThreeBManager, self).get_query_set() \
-                                                .exclude(status=self.model.STATUS_83b.complete) \
-                                                .filter(filing_date__gte=datetime.date.today())
+                                                .exclude(status__in=self.model.INCOMPLETE_EXCLUDED_STATUS)
+                                                #.filter(filing_date__gte=datetime.date.today())
 
 
 class AttachmentManger(models.Manager):

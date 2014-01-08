@@ -16,7 +16,6 @@ from ..markers import (LawyerCompleteFormMarker,
                        CustomerUploadScanMarker,
                        CustomerTrackingNumberMarker,
                        USPSDeliveryStatusMarker,
-                       DateStampedCopyRecievedMarker,
                        ProcessCompleteMarker)
 
 
@@ -30,14 +29,14 @@ class EightyThreeBSignalMarkersTest(TestCase):
 
     def test_correct_init(self):
         subject = self.subject()
-        self.assertEqual(len(subject.signal_map), 10)
+        self.assertEqual(len(subject.signal_map), 9)
 
     def test_signal_map_name_vals(self):
         subject = self.subject()
         name_vals = [(m.name, m.val) for m in subject.signal_map]
-    
-        self.assertEqual(len(name_vals), 10)
-    
+
+        self.assertEqual(len(name_vals), 9)
+
         self.assertEqual(name_vals, [('lawyer_complete_form', 0),
                                      ('lawyer_invite_customer', 1),
                                      ('customer_complete_form', 2),
@@ -46,8 +45,7 @@ class EightyThreeBSignalMarkersTest(TestCase):
                                      ('copy_uploaded', 5),
                                      ('mail_to_irs_tracking_code', 6),
                                      ('irs_recieved', 7),
-                                     ('datestamped_copy_recieved', 8),
-                                     ('complete', 9)])
+                                     ('complete', 8)])
 
 
 class BaseTestMarker(BaseScenarios, TestCase):
@@ -88,8 +86,11 @@ class LawyerCompleteFormMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.description, 'Attorney: Setup 83(b) Election Letter')
         self.assertEqual(self.subject.signals, ['toolkit.apps.eightythreeb.signals.lawyer_complete_form'])
         self.assertEqual(self.subject.action_name, 'Setup 83(b)')
-        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE_REDIRECT)
+        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.modal)
         self.assertEqual(self.subject.action_user_class, ['lawyer'])
+
+    def test_action_attribs(self):
+        self.assertEqual(self.subject.action_attribs, {'target': '#modal-lawyer_complete_form', 'toggle': 'modal'})
 
     def test_get_action_url(self):
         self.assertEqual(self.subject.get_action_url(), self.subject.tool.get_edit_url())
@@ -116,7 +117,7 @@ class LawyerInviteUserMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.description, 'Attorney: Invite client to complete the 83(b) Election Letter')
         self.assertEqual(self.subject.signals, ['toolkit.apps.eightythreeb.signals.lawyer_invite_customer'])
         self.assertEqual(self.subject.action_name, 'Invite Client')
-        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE_REDIRECT)
+        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
         self.assertEqual(self.subject.action_user_class, ['lawyer'])
 
     def test_action_name(self):
@@ -128,7 +129,7 @@ class LawyerInviteUserMarkerTest(BaseTestMarker):
         with mock.patch.object(self.clazz, 'is_complete', prop_mock):
             self.subject = self.clazz(self.val)
             prop_mock.return_value = True
-            
+
             self.assertEqual(self.subject.action_name, 'Reinvite Client')
 
     def test_get_action_url(self):
@@ -162,7 +163,7 @@ class CustomerCompleteFormMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.description, 'Client: Complete 83(b) Election Letter')
         self.assertEqual(self.subject.signals, ['toolkit.apps.eightythreeb.signals.customer_complete_form'])
         self.assertEqual(self.subject.action_name, 'Complete 83(b)')
-        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE_REDIRECT)
+        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
         self.assertEqual(self.subject.action_user_class, ['customer'])
 
     def test_get_action_url(self):
@@ -196,7 +197,7 @@ class CustomerDownloadDocMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.long_description, '')
         self.assertEqual(self.subject.signals, ['toolkit.apps.eightythreeb.signals.customer_download_pdf'])
         self.assertEqual(self.subject.action_name, 'Download 83(b)')
-        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE_REDIRECT)
+        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
         self.assertEqual(self.subject.action_user_class, ['customer'])
 
     def test_get_action_url(self):
@@ -204,20 +205,16 @@ class CustomerDownloadDocMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.get_action_url(), url)
 
     def test_action(self):
-        prop_mock = mock.PropertyMock()
+        action_url = reverse('workspace:tool_object_download', kwargs={'workspace': self.subject.tool.workspace.slug, 'tool': self.subject.tool.tool_slug, 'slug': self.subject.tool.slug})
 
-        # mock the subjects status so that its greater than the current markers val
-        self.subject.tool.status = self.subject.tool.STATUS_83b.irs_recieved
-        # on complete we dont have an action
+        # the download button will NOT show when the status < the download value
+        self.subject.tool.status = self.subject.tool.STATUS_83b.lawyer_invite_customer
         self.assertEqual(self.subject.action, None)
 
-        # mock out the is_complete property so we can test its post complete action name
-        with mock.patch.object(self.clazz, 'is_complete', prop_mock):
-            self.subject = self.clazz(self.val)
-            prop_mock.return_value = True
-            self.subject.tool = self.eightythreeb
-            # test we have this when is_complete = True
-            self.assertEqual(self.subject.action, None)
+        # the download button will show when the status > the download value
+        self.subject.tool.status = self.subject.tool.STATUS_83b.irs_recieved
+        # on complete we do have an action
+        self.assertEqual(self.subject.action, action_url)
 
 
 class CustomerPrintAndSignMarkerTest(BaseTestMarker):
@@ -231,7 +228,7 @@ class CustomerPrintAndSignMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.long_description, 'Print and sign the 83(b) Election where indicated.')
         self.assertEqual(self.subject.signals, ['toolkit.apps.eightythreeb.signals.customer_print_and_sign'])
         self.assertEqual(self.subject.action_name, 'I have printed and signed the Election')
-        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE_REMOTE)
+        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.remote)
         self.assertEqual(self.subject.action_user_class, ['customer'])
 
     def test_action_attribs(self):
@@ -272,8 +269,11 @@ class CustomerUploadScanMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.long_description, None)
         self.assertEqual(self.subject.signals, ['toolkit.apps.eightythreeb.signals.copy_uploaded'])
         self.assertEqual(self.subject.action_name, 'Upload Attachment')
-        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE_REDIRECT)
+        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.modal)
         self.assertEqual(self.subject.action_user_class, ['customer'])
+
+    def test_action_attribs(self):
+        self.assertEqual(self.subject.action_attribs, {'target': '#modal-copy_uploaded', 'toggle': 'modal'})
 
     def test_get_action_url(self):
         url = reverse('eightythreeb:attachment', kwargs={'slug': self.subject.tool.slug})
@@ -288,31 +288,35 @@ class CustomerTrackingNumberMarkerTest(BaseTestMarker):
         self.assertTrue(type(self.subject), self.clazz)
         self.assertEqual(self.subject.name, 'mail_to_irs_tracking_code')
         self.assertEqual(self.subject.description, 'Client: Mail to IRS & register Tracking Code')
-        self.assertEqual(self.subject.long_description, 'Mail 83(b) form using USPS Registered Post *ONLY* and enter the Tracking Number here,')
+        self.assertEqual(self.subject.long_description, 'Mail 83(b) form using USPS Registered Post *ONLY* and enter the Tracking Number here')
         self.assertEqual(self.subject.signals, ['toolkit.apps.eightythreeb.signals.mail_to_irs_tracking_code'])
         self.assertEqual(self.subject.action_name, 'Enter Tracking Number')
-        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE_REDIRECT)
+        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.modal)
         self.assertEqual(self.subject.action_user_class, ['customer', 'lawyer'])
+
+    def test_action_attribs(self):
+        self.assertEqual(self.subject.action_attribs, {'target': '#modal-mail_to_irs_tracking_code', 'toggle': 'modal'})
 
     def test_get_action_url(self):
         url = reverse('eightythreeb:tracking_code', kwargs={'slug': self.subject.tool.slug})
         self.assertEqual(self.subject.get_action_url(), url)
 
     def test_action(self):
-        prop_mock = mock.PropertyMock()
+        action_url = reverse('eightythreeb:tracking_code', kwargs={'slug': self.subject.tool.slug})
 
+        # This marker shows only when it is the active value or the next "irs_recieved"
+        self.subject.tool.status = self.subject.tool.STATUS_83b.mail_to_irs_tracking_code
+        self.assertEqual(self.subject.action, action_url)
         # mock the subjects status so that its greater than the current markers val
         self.subject.tool.status = self.subject.tool.STATUS_83b.irs_recieved
         # on complete we dont have an action
-        self.assertEqual(self.subject.action, None)
+        self.assertEqual(self.subject.action, action_url)
 
-        # mock out the is_complete property so we can test its post complete action name
-        with mock.patch.object(self.clazz, 'is_complete', prop_mock):
-            self.subject = self.clazz(self.val)
-            prop_mock.return_value = True
-            self.subject.tool = self.eightythreeb
-            # test we have this when is_complete = True
-            self.assertEqual(self.subject.action, None)
+        # is NOT visible when any other marker is the status
+        self.subject.tool.status = self.subject.tool.STATUS_83b.customer_print_and_sign
+        self.assertEqual(self.subject.action, None)
+        self.subject.tool.status = self.subject.tool.STATUS_83b.customer_complete_form
+        self.assertEqual(self.subject.action, None)
 
 
 class USPSDeliveryStatusMarkerTest(BaseTestMarker):
@@ -330,41 +334,16 @@ class USPSDeliveryStatusMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.action_user_class, [])
 
     def test_get_action_url(self):
-        with self.assertRaises(NotImplementedError) as context:
+        with self.assertRaises(NotImplementedError):
             self.subject.get_action_url()
 
     def test_action(self):
-        with self.assertRaises(NotImplementedError) as context:
+        with self.assertRaises(NotImplementedError):
             self.subject.action
 
 
-class DateStampedCopyRecievedMarkerTest(BaseTestMarker):
-    val = 8
-    clazz = DateStampedCopyRecievedMarker
-
-    def test_properties(self):
-        self.assertTrue(type(self.subject), self.clazz)
-        self.assertEqual(self.subject.name, 'datestamped_copy_recieved')
-        self.assertEqual(self.subject.description, 'Client: Date-stamped copy received')
-        self.assertEqual(self.subject.long_description, 'Customer is to print and sign 2 copies, plus a 3rd for their own records.')
-        self.assertEqual(self.subject.signals, ['toolkit.apps.eightythreeb.signals.datestamped_copy_recieved'])
-        self.assertEqual(self.subject.action_name, 'I have recieved the date-stamped copy back from the IRS')
-        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE_REMOTE)
-        self.assertEqual(self.subject.action_user_class, ['customer'])
-
-    def test_action_attribs(self):
-        self.assertEqual(self.subject.action_attribs, {'method': 'PATCH',
-                                                       'status': 8,
-                                                       'tool': '83b-election-letters',
-                                                       'tool_object_id': 1})
-
-    def test_get_action_url(self):
-        url = reverse('api:eightythreeb-detail', kwargs={'pk': self.subject.tool.pk})
-        self.assertEqual(self.subject.get_action_url(), url)
-
-
 class ProcessCompleteMarkerTest(BaseTestMarker):
-    val = 9
+    val = 8
     clazz = ProcessCompleteMarker
 
     def test_properties(self):
@@ -378,9 +357,9 @@ class ProcessCompleteMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.action_user_class, [])
 
     def test_get_action_url(self):
-        with self.assertRaises(NotImplementedError) as context:
+        with self.assertRaises(NotImplementedError):
             self.subject.get_action_url()
 
     def test_action(self):
-        with self.assertRaises(NotImplementedError) as context:
+        with self.assertRaises(NotImplementedError):
             self.subject.action

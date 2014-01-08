@@ -16,6 +16,7 @@ from .mixins import WorkspaceToolViewMixin, WorkspaceToolFormViewMixin, IssueSig
 
 from .services import PDFKitService  # , HTMLtoPDForPNGService
 
+import datetime
 import logging
 logger = logging.getLogger('django.request')
 
@@ -94,6 +95,14 @@ class WorkspaceToolObjectsListView(WorkspaceToolViewMixin, ListView):
     Show a list of objects associated with the particular tool type
     """
     model = Tool
+    def get_context_data(self, **kwargs):
+        context = super(WorkspaceToolObjectsListView, self).get_context_data(**kwargs)
+        context.update({
+            # if there are no tool.userclass_that_can_create defined then anyone can create
+            # however we need to ensure that only the specified classes can create
+            'can_create': True if not self.tool.userclass_that_can_create or self.request.user.profile.user_class in self.tool.userclass_that_can_create else False
+        })
+        return context
 
 
 class CreateWorkspaceToolObjectView(WorkspaceToolFormViewMixin, CreateView):
@@ -204,11 +213,20 @@ class WorkspaceToolObjectDisplayView(WorkspaceToolViewMixin, DetailView):
         html = self.object.html(user=self.request.user, request=self.request)
         pdfpng_service = PDFKitService(html=html)  # HTMLtoPDForPNGService(html=html)
         resp = HttpResponse(content_type='application/pdf')
-        return pdfpng_service.pdf(template_name=self.object.template_name, file_object=resp)
+        return pdfpng_service.pdf(template_name=self.object.pdf_template_name, file_object=resp)
 
 
 class WorkspaceToolObjectDownloadView(IssueSignalsMixin, WorkspaceToolObjectDisplayView):
     model = Tool
+
+    def setResponseFileDownloaderCookie(self, response):
+        """
+        Cookie for the jquery Plugin used for downloader
+        """
+        max_age = 30
+        expires = datetime.datetime.strftime(datetime.datetime.utcnow() + datetime.timedelta(seconds=max_age), "%a, %d-%b-%Y %H:%M:%S GMT")
+        response.set_cookie( 'fileDownload', 'true', max_age=max_age, expires=expires )
+        return response
 
     def render_to_response(self, context, **response_kwargs):
         html = self.object.html(user=self.request.user, request=self.request)
@@ -216,6 +234,10 @@ class WorkspaceToolObjectDownloadView(IssueSignalsMixin, WorkspaceToolObjectDisp
         resp = HttpResponse(content_type='application/pdf')
         resp['Content-Disposition'] = 'attachment; filename="{filename}.pdf"'.format(filename=self.object.filename)
 
+        messages.success(self.request, 'You have sucessfully downloaded a copy of your 83(b).')
+
+        resp = self.setResponseFileDownloaderCookie(response=resp)
+
         self.issue_signals(request=self.request, instance=self.object, name='customer_download_pdf')
 
-        return pdfpng_service.pdf(template_name=self.object.template_name, file_object=resp)
+        return pdfpng_service.pdf(template_name=self.object.pdf_template_name, file_object=resp)
