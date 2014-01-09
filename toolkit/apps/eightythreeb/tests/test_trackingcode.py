@@ -70,7 +70,7 @@ class BaseUSPSTrackingCode(TestCase):
 class TestTrackingCodeModal(BaseUSPSTrackingCode):
 
     @httpretty.activate
-    def test_something(self):
+    def test_form_validates_and_redirects(self):
         httpretty.register_uri(httpretty.POST, "http://production.shippingapis.com/ShippingAPI.dll",
                                body=TRACK_UNDELIVERED_RESPONSE_XML_BODY,
                                status=200)
