@@ -19,7 +19,10 @@ customer_complete_form = Signal(providing_args=['actor'])
 customer_download_pdf = Signal(providing_args=['actor'])
 customer_print_and_sign = Signal(providing_args=['actor'])
 copy_uploaded = Signal(providing_args=['actor'])
+
+valid_usps_tracking_marker = Signal(providing_args=['actor']) #sent jsut before (in the same process) as the mail_to_irs_tracking_code
 mail_to_irs_tracking_code = Signal(providing_args=['actor'])
+
 irs_recieved = Signal(providing_args=[])
 complete = Signal(providing_args=['actor'])
 
@@ -133,6 +136,26 @@ def on_copy_uploaded(sender, instance, actor, **kwargs):
                        next_status=instance.STATUS_83b.mail_to_irs_tracking_code,
                        actor_name=actor_name,
                        instance=instance)
+
+
+@receiver(valid_usps_tracking_marker)
+def on_valid_usps_tracking_marker(sender, instance, actor, **kwargs):
+    """
+    This is a simple record signal and thus should bump to the next in line
+    """
+    actor_name = actor.get_full_name()
+
+    marker_node = instance.markers.marker(val='mail_to_irs_tracking_code')
+    if marker_node.is_complete is False:
+        # send email
+        mailer = EightyThreeTrackingCodeEnteredEmail(recipients=[(u.get_full_name(), u.email) for u in instance.workspace.participants.all()])
+        mailer.process(instance=instance)
+
+    _update_marker(marker_name='valid_usps_tracking_marker',
+                   next_status=instance.STATUS_83b.mail_to_irs_tracking_code,
+                   actor_name=actor_name,
+                   instance=instance,
+                   tracking_code=kwargs.get('tracking_code'))
 
 
 @receiver(mail_to_irs_tracking_code)
