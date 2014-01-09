@@ -1,0 +1,32 @@
+{% extends 'workspace/workspace_tool_base.html' %}
+
+{% load url from future %}{% load crispy_forms_tags django_bootstrap_breadcrumbs %}
+
+{% block page_title %}Invite {{ item.user.get_full_name }} — {{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% breadcrumb 'Invite' 'workspace:tool_object_invite' workspace.slug tool.slug item.slug %}
+{% endblock %}
+
+{% block header %}
+    <h4 class="caption"><a href="{% url 'workspace:view' workspace.slug %}">{{ workspace.name }}</a></h4>
+    <h4 class="caption"><a href="{% url 'workspace:tool_object_preview' workspace.slug tool.slug item.slug %}">{{ item }}</a></h4>
+    <h4>Invite {{ item.user.get_full_name }}</h4>
+{% endblock %}
+
+{% block main %}
+    {% block form %}
+        {% crispy form %}
+    {% endblock %}
+{% endblock %}
+
+{% block css %}
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}css/summernote.css" rel="stylesheet">
+{% endblock %}
+
+{% block js %}
+    <script src="{{ STATIC_URL }}js/summernote.min.js"></script>
+    <script src="{{ STATIC_URL }}js/tool-form.js"></script>
+{% endblock %}
