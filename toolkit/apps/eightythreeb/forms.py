@@ -297,7 +297,9 @@ class CustomerEightyThreeBForm(BaseEightyThreeBForm):
                 css_class='form-section'
             ),
             Div(
-                HTML('<legend>Additional details</legend>'),
+                HTML('<legend>Additional details (Your attorney has entered this on your behalf)</legend>'),
+                HTML('<p>For your convenience, your attorney has entered the following information on your behalf.</p>'),
+
                 Div(
                     Div(
                         'ssn',
@@ -315,6 +317,8 @@ class CustomerEightyThreeBForm(BaseEightyThreeBForm):
             ),
             Div(
                 HTML('<legend>Please confirm the following is correct</legend>'),
+                HTML('<p>For your convenience your attorney has entered the following information. Please confirm that it is correct.</p> <br />'),
+
 
                 HTML('<p>{{ form.date_of_property_transfer.label }}</p>'),
                 HTML('<blockquote><p>{{ form.date_of_property_transfer.value|date:"F jS, Y" }}</p></blockquote>'),
