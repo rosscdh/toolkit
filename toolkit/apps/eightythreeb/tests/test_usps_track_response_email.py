@@ -4,9 +4,11 @@ from django.core.management import call_command
 
 import httpretty
 
-from toolkit.casper.workflow_case import BaseProjectCaseMixin
 from toolkit.apps.eightythreeb.models import EightyThreeB
+from toolkit.casper.workflow_case import BaseProjectCaseMixin
+from toolkit.apps.eightythreeb.tests.test_usps import TRACKING_CODE
 from toolkit.apps.eightythreeb.management.commands.eightythreeb_usps_track_response import Command as EightyThreeBIsCompleteEmailCommand
+
 
 from toolkit.apps.eightythreeb.tests.usps_trackfield_response import TRACK_RESPONSE_XML_BODY
 
@@ -26,7 +28,7 @@ class EightyThreeBIsCompleteEmailTest(BaseCustomer):
         super(EightyThreeBIsCompleteEmailTest, self).setUp()
 
         self.eightythreeb.status = EightyThreeB.STATUS_83b.irs_recieved
-        self.eightythreeb.tracking_code = 'EJ958083578US'
+        self.eightythreeb.tracking_code = TRACKING_CODE
         self.eightythreeb.save()
 
     @httpretty.activate
