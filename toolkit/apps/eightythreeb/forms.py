@@ -506,7 +506,7 @@ class TrackingCodeForm(ModalForm, forms.ModelForm):
             usps_response = service.track(tracking_code=tracking_code)
             service.record(instance=self.instance, usps_response=usps_response)
         except Exception as e:
-            logger.error('Invalid Tracking Code %s entered by %s' % (tracking_code, self.user.email))
+            logger.error('Invalid Tracking Code %s' % (tracking_code,))
             raise forms.ValidationError('The Tracking code is not valid: %s' % e)
 
         return tracking_code
