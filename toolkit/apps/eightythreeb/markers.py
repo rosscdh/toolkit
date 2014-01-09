@@ -182,7 +182,8 @@ class CustomerTrackingNumberMarker(Marker):
     @property
     def action(self):
         if self.tool.status in [self.val, self.tool.STATUS_83b.irs_recieved]:  # allow them to change the number?
-            return self.get_action_url()
+            if 'usps_log' not in self.tool.data:  # @BUSINESS_RULE only show the button as long as we have no usps_log
+                return self.get_action_url()
         # dont show if the status is less than self.val
         return None
 
