@@ -1,35 +1,50 @@
-{% extends 'workspace/workspace_tool_form.html' %}
+{% extends 'workspace/workspace_tool_base.html' %}
 
-{% block page_title %}Preview the 83(b){% endblock %}
+{% load url from future %}{% load django_bootstrap_breadcrumbs %}
 
-{% block header %}
-<h4>83(b) Election Preview</h4>
+{% block page_title %}Review — {{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% breadcrumb 'Review' 'eightythreeb:preview' workspace.slug tool.slug item.slug %}
 {% endblock %}
 
-{% block css %}
-<style>
-#overview {
-    height:590px;
-}
-</style>
+{% block header %}
+    <h4 class="caption"><a href="{% url 'workspace:view' workspace.slug %}">{{ workspace.name }}</a></h4>
+    <h4 class="caption"><a href="{% url 'workspace:tool_object_preview' workspace.slug tool.slug item.slug %}">{{ item }}</a></h4>
+    <h4>Review</h4>
 {% endblock %}
 
 {% block body %}
+    <div class="row">
+        <div class="content col-lg-8 col-lg-offset-2">
+            <div class="page-header">
+                <h4>Review {{ item }}</h4>
+            </div>
 
-<div class="row">
-    <div class="col-lg-8 col-lg-offset-2">
-        <h4>Review 83(b) Election Letter</h4>
-        <p>Below is a preview of the 83(b) Election complete with IRS Transmittal Letter, 2 x 83(b) Election Letter and a set of mailing instructions.  {% if user.profile.is_lawyer %} Information highlighted in yellow will be entered by the client when they sign into LawPal to complete the process. {% endif %}</p>
-         <hr />
-        <a href="{{ previous_url }}" type="button" class="btn btn-hg btn-default"><i class="glyphicon glyphicon-chevron-left"></i> Back and Edit</a>
-        <a href="{{ next_url }}" type="button" class="btn btn-success btn-hg pull-right">Continue <i class="glyphicon glyphicon-chevron-right"></i></a>
-        <br />
-        <br />
-        <div id="overview">
-            <iframe name="id_preview" id="tool-preview" class="fade" style="width: 100%;" src="{% url 'workspace:tool_object_display' workspace=object.workspace.slug tool=object.tool_slug slug=object.slug %}"></iframe>
+            <p>Below is a preview of the 83(b) Election complete with IRS Transmittal Letter, 2 x 83(b) Election Letter and a set of mailing instructions. {% if user.profile.is_lawyer %}Information highlighted in yellow will be entered by the client when they sign into LawPal to complete the process.{% endif %}</p>
+            <a href="{{ previous_url }}" type="button" class="btn btn-hg btn-default">
+                <i class="glyphicon glyphicon-chevron-left"></i> Back and Edit
+            </a>
+            <a href="{{ next_url }}" type="button" class="btn btn-success btn-hg pull-right">
+                Continue <i class="glyphicon glyphicon-chevron-right"></i>
+            </a>
+        </div>
+        <div class="col-lg-8 col-lg-offset-2">
+            <div id="overview">
+                <iframe name="id_preview" id="tool-preview" class="fade" style="width: 100%;" src="{% url 'workspace:tool_object_display' workspace=object.workspace.slug tool=object.tool_slug slug=object.slug %}"></iframe>
+            </div>
         </div>
     </div>
-</div>
+{% endblock %}
+
+{% block css %}
+<style type="text/css">
+#overview {
+    height: 590px;
+    margin-top: 20px;
+}
+</style>
 {% endblock %}
 
 {% block js %}
