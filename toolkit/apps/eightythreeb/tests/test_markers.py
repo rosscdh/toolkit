@@ -4,8 +4,9 @@ from django.core.urlresolvers import reverse
 
 import mock
 
-from toolkit.casper.workflow_case import BaseScenarios
 from toolkit.apps.workspace.markers import Marker
+from toolkit.casper.workflow_case import BaseScenarios
+from toolkit.apps.eightythreeb.tests.test_usps import TRACKING_CODE
 
 from ..markers import EightyThreeBSignalMarkers
 from ..markers import (LawyerCompleteFormMarker,
@@ -346,7 +347,7 @@ class USPSDeliveryStatusMarkerTest(BaseTestMarker):
     def test_properties(self):
         self.assertTrue(type(self.subject), self.clazz)
         self.assertEqual(self.subject.name, 'irs_recieved')
-        self.assertEqual(self.subject.description, 'Waiting for reciept of 83(b) by IRS (via USPS) for EJ958083578US')
+        self.assertEqual(self.subject.description, 'Waiting for reciept of 83(b) by IRS (via USPS) for %s' % TRACKING_CODE)
         self.assertEqual(self.subject.long_description, 'Waiting for USPS response')
         self.assertEqual(self.subject.signals, ['toolkit.apps.eightythreeb.signals.irs_recieved'])
         self.assertEqual(self.subject.action_name, None)

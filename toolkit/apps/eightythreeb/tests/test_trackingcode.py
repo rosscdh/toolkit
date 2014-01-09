@@ -89,7 +89,7 @@ class TestTrackingCodeModal(BaseUSPSTrackingCode):
         self.assertEqual(resp.status_code, 200)
 
         # Valid submission
-        response = self.client.post(url, {
+        resp = self.client.post(url, {
             'tracking_code': TRACKING_CODE,
             'user': self.user
         }, follow=True)
@@ -100,7 +100,7 @@ class TestTrackingCodeModal(BaseUSPSTrackingCode):
             'slug': self.eightythreeb.slug
         })
 
-        self.assertRedirects(response, redirect)
+        self.assertRedirects(resp, redirect)
 
 
 class TestTrackingCodeEmail(BaseUSPSTrackingCode):
