@@ -7,7 +7,7 @@ from django.views.generic import UpdateView, DetailView
 from ajaxuploader.views import AjaxFileUploader
 from ajaxuploader.backends.default_storage import DefaultStorageUploadBackend
 
-from toolkit.mixins import ModalView
+from toolkit.mixins import ModalView, AjaxableFormViewResponseMixin
 from toolkit.apps.workspace.mixins import IssueSignalsMixin
 
 from .models import EightyThreeB
@@ -50,7 +50,7 @@ class Preview83bView(DetailView):
         return context
 
 
-class TrackingCodeView(IssueSignalsMixin, ModalView, UpdateView):
+class TrackingCodeView(AjaxableFormViewResponseMixin, IssueSignalsMixin, ModalView, UpdateView):
     form_class = TrackingCodeForm
     model = EightyThreeB
 
