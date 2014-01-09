@@ -14,6 +14,7 @@ from ..markers import (LawyerCompleteFormMarker,
                        CustomerDownloadDocMarker,
                        CustomerPrintAndSignMarker,
                        CustomerUploadScanMarker,
+                       CustomerValidTrackingNumberMarker,
                        CustomerTrackingNumberMarker,
                        USPSDeliveryStatusMarker,
                        ProcessCompleteMarker)
@@ -29,13 +30,13 @@ class EightyThreeBSignalMarkersTest(TestCase):
 
     def test_correct_init(self):
         subject = self.subject()
-        self.assertEqual(len(subject.signal_map), 9)
+        self.assertEqual(len(subject.signal_map), 10)
 
     def test_signal_map_name_vals(self):
         subject = self.subject()
         name_vals = [(m.name, m.val) for m in subject.signal_map]
 
-        self.assertEqual(len(name_vals), 9)
+        self.assertEqual(len(name_vals), 10)
 
         self.assertEqual(name_vals, [('lawyer_complete_form', 0),
                                      ('lawyer_invite_customer', 1),
@@ -44,6 +45,7 @@ class EightyThreeBSignalMarkersTest(TestCase):
                                      ('customer_print_and_sign', 4),
                                      ('copy_uploaded', 5),
                                      ('mail_to_irs_tracking_code', 6),
+                                     ('valid_usps_tracking_marker', 50),
                                      ('irs_recieved', 7),
                                      ('complete', 8)])
 
@@ -278,6 +280,24 @@ class CustomerUploadScanMarkerTest(BaseTestMarker):
     def test_get_action_url(self):
         url = reverse('eightythreeb:attachment', kwargs={'slug': self.subject.tool.slug})
         self.assertEqual(self.subject.get_action_url(), url)
+
+
+class CustomerValidTrackingNumberMarkerTest(BaseTestMarker):
+    val = 50
+    clazz = CustomerValidTrackingNumberMarker
+
+    def test_properties(self):
+        self.assertTrue(type(self.subject), self.clazz)
+        self.assertEqual(self.subject.name, 'valid_usps_tracking_marker')
+        self.assertEqual(self.subject.description, 'Client: Has provided a valid USPS Tracking Code')
+        self.assertEqual(self.subject.long_description, 'This marker will indicate the date a valid USPS Tracking Number was entered')
+        self.assertEqual(self.subject.signals, ['toolkit.apps.eightythreeb.signals.valid_usps_tracking_marker'])
+        self.assertEqual(self.subject.action_name, None)  # the User has no action to provide here
+        self.assertEqual(self.subject.action_type, None)
+        self.assertEqual(self.subject.action_user_class, [])
+
+    def test_get_action_url(self):
+        self.assertEqual(self.subject.get_action_url(), None)
 
 
 class CustomerTrackingNumberMarkerTest(BaseTestMarker):

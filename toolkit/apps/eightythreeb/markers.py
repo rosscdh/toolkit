@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
+from django.utils import formats
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
+
+from dateutil import parser
 
 from toolkit.apps.workspace.markers import BaseSignalMarkers, Marker
 
@@ -184,6 +187,43 @@ class CustomerTrackingNumberMarker(Marker):
         return None
 
 
+class CustomerValidTrackingNumberMarker(Marker):
+    """
+    When the customer enters a tracking number and it is validated as a real USPS tracking number
+    we need to record this event and the datetime it happened so that it can act as a legal marker
+    This marker gets fired in the TRackingNumberForm when the field is guaranteed to be clean
+    because its been validated by the usps.validators.USPSTrackingCodeField
+    """
+    name = 'valid_usps_tracking_marker'
+    description = 'Client: Has provided a valid USPS Tracking Code'
+    _long_description = 'This marker will indicate the date a valid USPS Tracking Number was entered'
+    signals = ['toolkit.apps.eightythreeb.signals.valid_usps_tracking_marker']
+
+    action = None
+    action_name = None
+    action_type = None
+    action_user_class = []
+
+    def get_action_url(self):
+        return None
+
+    @property
+    def long_description(self):
+        marker_data = self.tool.data['markers'].get('valid_usps_tracking_marker')
+
+        if marker_data is not None:
+            entered_tracking_code = marker_data.get('tracking_code', None)
+
+            if entered_tracking_code is not None:
+                entered_date = parser.parse(marker_data.get('date_of'))
+                entered_date = formats.date_format(entered_date, "SHORT_DATETIME_FORMAT")
+
+                if self.tool and entered_tracking_code is not None:
+                    return 'Tracking Code: %s Date Entered: %s' % (entered_tracking_code, entered_date)
+
+        return self._long_description
+
+
 class USPSDeliveryStatusMarker(Marker):
     name = 'irs_recieved'
     signals = ['toolkit.apps.eightythreeb.signals.irs_recieved']
@@ -221,6 +261,7 @@ class EightyThreeBSignalMarkers(BaseSignalMarkers):
         CustomerPrintAndSignMarker(4),
         CustomerUploadScanMarker(5),
         CustomerTrackingNumberMarker(6),
+        CustomerValidTrackingNumberMarker(50),
         USPSDeliveryStatusMarker(7),
         ProcessCompleteMarker(8)
     ]
