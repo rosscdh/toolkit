@@ -39,6 +39,8 @@ String.prototype.repeat = function(num) {
     // Popover
     $("[data-toggle=popover]").popover();
 
+    $(".auto-show").popover('show');
+
     // Tags Input
     $(".tagsinput").tagsInput();
 

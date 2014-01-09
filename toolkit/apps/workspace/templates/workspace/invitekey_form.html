@@ -12,7 +12,7 @@
 
 {% block content %}
     <h4>Invite {{ tool_instance.user.get_full_name }} <small>({{ tool_instance.user.email }})</small></h4>
-    <p class="">The 83(b) Election Letter has been set up. You can now invite {{ tool_instance.user.get_full_name }} to complete the process on LawPal. Please review the message below, amend it where necessary and click "Send Invite".</p>
+    <p class="">You can now invite {{ tool_instance.user.get_full_name }} to complete their 83(b) Election filing. Please review the message below, amend it where necessary and click "Send Invite".</p>
     <hr />
     {% include 'partials/form-errors.html' with form=form %}
 	    {% crispy form %}
