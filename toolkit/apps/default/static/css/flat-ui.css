@@ -4955,9 +4955,6 @@ a.list-group-item.active > .badge,
   font-weight: 700;
   padding: 10px 20px 11px;
 }
-.popover-content {
-  padding: 9px 20px 1px;
-}
 .popover-content p {
   font-size: 14px;
   line-height: 1.286;
