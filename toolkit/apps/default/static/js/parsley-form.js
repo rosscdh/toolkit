@@ -16,6 +16,19 @@
 
                         if (isFormValid) {
                             $errors.addClass('hide');
+
+                            // Handle remote AJAX requests
+                            if ($form.data('remote')) {
+                                $.ajax({
+                                    type: $form.attr('method'),
+                                    url: $form.attr('action'),
+                                    success: function(data) {
+                                        alert('ok');
+                                    }
+                                });
+
+                                return false;
+                            };
                         } else {
                             var count = $errors.find('ul.parsley-error-list li').length;
                             if (count > 1) {

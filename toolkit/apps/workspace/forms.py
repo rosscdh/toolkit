@@ -54,7 +54,7 @@ class AddWorkspaceTeamMemberForm(ModalForm, forms.Form):
     client_email_address = forms.EmailField(
         error_messages={
             'invalid': "Client email is invalid.",
-            'required': "Client name can't be blank."
+            'required': "Client email can't be blank."
         },
         widget=forms.TextInput(attrs={'placeholder': 'Email', 'size': '40'})
     )
