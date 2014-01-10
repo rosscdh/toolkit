@@ -56,7 +56,7 @@ class Command(BaseCommand):
                     usps_response = service.track(tracking_code=tracking_code)
                     service.record(instance=instance, usps_response=usps_response)
 
-                    if usps_response.is_delivered is True and service.response_already_present is False:
+                    if usps_response.is_delivered is True:
                         self.send_mail(instance=instance, usps_response=usps_response)
                         # Send the signal indicating we have completed this step
                         instance.base_signal.send(sender=self, instance=instance, actor=instance.user, name='irs_recieved')
