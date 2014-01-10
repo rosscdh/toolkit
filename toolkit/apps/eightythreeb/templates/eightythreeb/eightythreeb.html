@@ -58,9 +58,6 @@
 
 {% block content %}
 
-
-
-
 <!-- Page 1 : Transmittal Letter  -->
 <div class="header">IRS TRANSMITTAL LETTER</div>
 
@@ -83,9 +80,9 @@
 <br />
 Dear Sir or Madam:
 <p>
-Pursuant to Treasury Regulations Section 1.83-2(c) promulgated under Section 83 of the Internal Revenue Code of 1986, as amended (the “Code”), enclosed please find a copy of an election under Section 83(b) of the Code.
+Pursuant to Treasury Regulations Section 1.83-2(c) promulgated under Section 83 of the Internal Revenue Code of 1986, as amended (the “Code”), enclosed please find an original signed copy of an election under Section 83(b) of the Code.
 <p>
-Also, attached are a self-addressed stamped envelope and a signed copy of my 83(b) Election Form. Please date stamp the copy of the Election Form, enclose it in the attached envelope and mail it to me.
+Also, attached are a self-addressed stamped envelope and a copy of my signed 83(b) Election Form. Please date stamp the copy of the Election Form, enclose it in the attached envelope and mail it to me.
 <p>
 Thank you,
 <p>
@@ -110,44 +107,51 @@ Thank you,
 
 <div class="instructions">
     <h3>Instructions to Complete IRS 83(b) Election</h3>
-
     <ul>
         <li><strong>Step 1 : Print, Review and Sign</strong><ol>
-            <li>Print the document</li>
-            <li>Review the IRS Transmittal letter and the two copies of your 83(b) Election. </li>
-            <li>Sign in the 3 places indicated with a red cross.</li>
-            {% if object.spouse_must_sign %}
-                <li>Have your spouse sign in 2 places indicated with a blue cross.</li></ol>
-            {% endif %}
+            <li>Print the documents. You should have :
+                <ol>
+                    <li> A transmittal letter addressed to the IRS</li>
+                    <li> An election letter marked "Copy 1 - IRS (File copy)"</li>
+                    <li> An election letter marked "Copy 2 - IRS (Return copy)"</li>
+                </ol>
+            </li>
+            <li>Review the documents to make sure that all the information is correct. </li>
+            <li>Sign in the three places indicated.</li>{% if object.spouse_must_sign %}
+                <li>Have your spouse sign in 2 places indicated.</li>{% endif %}</ol>
         <br />
         </li>
         <li><strong>Step 2 : Upload a scan of Copy 1 to LawPal</strong><br/>
             Upload a scanned copy of the document to LawPal. We will ensure your accountant and attorney get a copy.
             <br /><br />
         </li>
-        <li><strong>Step 3 : Prepare an envelope containing the following</strong><br />
+        <li><strong>Step 3 : Take a trip to the post office and bring the following</strong><br />
             <ol>
-                <li>The signed Transmittal Letter, Copies 1 and 2 of the 83(b) Election Letter</li>
-                <li>A single self addressed, postage paid envelope for the IRS to return a date-stamped copy. Although this is not required it is recommended to request it simply to enhance the company’s and taxpayer’s records. Attach the self addressed envelope to 83(b) Election Copy 1</li>
+                <li>The signed Transmittal Letter, Both copies of the 83(b) Election Letter</li>
+                <li>A self addressed, envelope for the IRS to return a date-stamped copy of your 83(b) Election. Attach the self addressed envelope to 83(b) Election Copy 2 with a paper clip.</li>
             </ol>
             <br />
         </li>
         <li>
             <strong>Step 4 : Mail it to the IRS</strong><br />
-            Send it by <u>USPS Certified Mail with Return Receipt</u> requested to the IRS at the following address :
-            <br />
+            Send it by <u>USPS Certified Mail with Electronic Return Receipt Requested</u> to the IRS at the following address :
             <br />
             {{ object.irs_address|default:'<span>[IRS Address]</span>' }}
             <br /><br />
+            Look for one of these mailing forms and make sure you pay extra for Electronic Return Receipt so LawPal can track delivery.
+            <br />
+            <img src="https://s3.amazonaws.com/lp-static/certified-mail.jpg" width="400px">
+            <br />
+            <br />
         </li>
         <li>
             <strong>Step 5 : Add the tracking number to LawPal</strong><br />
-            Once you have sent it, input the tracking number into LawPal and we will notify all parties when the IRS have received it.
+            Once you have sent it, input the tracking number into LawPal and we will notify all parties when your Election letter is received by the IRS.
             <br />
         </li>
     </ul>
     <br />
-    <em>Your 83(b) Election must reach the IRS by {{ object.filing_date }}.</em>
+    <h3>Your 83(b) Election must be postmarked by the USPS no later than {{ object.filing_date }}.</h3>
 </div>
 
 

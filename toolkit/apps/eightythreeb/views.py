@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
 from django.core.files import File
+from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.views.generic import UpdateView, DetailView
@@ -74,6 +75,7 @@ class TrackingCodeView(IssueSignalsMixin, ModalView, UpdateView):
         return super(TrackingCodeView, self).form_valid(form)
 
     def get_success_url(self):
+        messages.success(self.request, 'Successfully added a Tracking Code')
         return reverse('workspace:tool_object_preview', kwargs={'workspace': self.object.workspace.slug, 'tool': self.object.tool_slug, 'slug': self.object.slug})
 
 

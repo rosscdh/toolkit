@@ -310,7 +310,7 @@ class Marker(object):
                 return self.tool.data['markers'][self.name]
         return False
 
-    def issue_signals(self, request, instance, actor):
+    def issue_signals(self, request, instance, actor, **kwargs):
         for s in self.signals:
             method = _class_importer(s)  # @TODO can optimise this and precache them
-            method.send(sender=request, instance=instance, actor=actor)
+            method.send(sender=request, instance=instance, actor=actor, **kwargs)

@@ -19,7 +19,9 @@ from toolkit.apps.workspace.models import Tool
 from toolkit.apps.eightythreeb.models import EightyThreeB
 from toolkit.apps.eightythreeb.management.commands.eightythreeb_usps_track_response import Command as USPSEightyThreeBTracking
 
-TRACKING_CODE = 'EJ958083578US'
+TRACKING_CODE_USS39 = 'EJ958083578US'
+TRACKING_CODE_USS128 = '70132630000013657033'
+TRACKING_CODE = TRACKING_CODE_USS128
 
 
 class BaseUSPSTrackingCode(TestCase):

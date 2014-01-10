@@ -67,9 +67,10 @@
   margin-right: 5px;
 }
 .nav-list .icon img {
-  height: 22px;
-  margin-top: -6px;
+  height: 17px;
+  margin-top: -4px;
   width: 22px;
+  opacity: 0.8;
 }
 .note-editor .btn {
   background-color: #3498db;
