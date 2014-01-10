@@ -160,7 +160,7 @@
     <!-- Load page specific JS here =============================-->
     {% block js %}{% endblock  %}
 
-    {% if PROJECT_ENVIRONMENT != 'prod' %}
+    {% if PROJECT_ENVIRONMENT == 'prod' %}
         {% if user.is_authenticated %}
             <script id="IntercomSettingsScriptTag">
               window.intercomSettings = {
