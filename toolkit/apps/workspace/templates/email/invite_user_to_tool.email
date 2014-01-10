@@ -1,6 +1,6 @@
 {% extends 'email/base.email' %}
 
-{% block subject %}{{ subject }}{% endblock %}
+{% block subject_line %}{{ subject }}{% endblock %}
 
 {% block html_content %}
 {{ message }}
