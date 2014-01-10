@@ -95,6 +95,7 @@ class WorkspaceToolObjectsListView(WorkspaceToolViewMixin, ListView):
     Show a list of objects associated with the particular tool type
     """
     model = Tool
+
     def get_context_data(self, **kwargs):
         context = super(WorkspaceToolObjectsListView, self).get_context_data(**kwargs)
         context.update({
@@ -109,6 +110,7 @@ class CreateWorkspaceToolObjectView(WorkspaceToolFormViewMixin, CreateView):
     """
     View to create a specific Tool Object
     """
+    context_object_name = 'item'
     model = Tool
 
     def get_queryset(self):
@@ -137,6 +139,7 @@ class UpdateViewWorkspaceToolObjectView(WorkspaceToolFormViewMixin, UpdateView):
     """
     View to edit a specific Tool Object
     """
+    context_object_name = 'item'
     model = Tool
 
     def get_success_url(self):
@@ -160,6 +163,7 @@ class UpdateViewWorkspaceToolObjectView(WorkspaceToolFormViewMixin, UpdateView):
 class InviteClientWorkspaceToolObjectView(IssueSignalsMixin, WorkspaceToolViewMixin, UpdateView):
     model = InviteKey
     form_class = InviteUserForm
+    template_name = 'workspace/workspace_tool_invite.html'
 
     def get_success_url(self):
         return reverse('workspace:tool_object_preview', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug, 'slug': self.tool_instance.slug})
@@ -187,6 +191,7 @@ class InviteClientWorkspaceToolObjectView(IssueSignalsMixin, WorkspaceToolViewMi
     def get_context_data(self, **kwargs):
         context = super(InviteClientWorkspaceToolObjectView, self).get_context_data(**kwargs)
         context.update({
+            'item': self.tool_instance,
             'request': self.request,
             'tool_instance': self.tool_instance,
             'key_instance': self.object
@@ -201,11 +206,13 @@ class InviteClientWorkspaceToolObjectView(IssueSignalsMixin, WorkspaceToolViewMi
 
 
 class WorkspaceToolObjectPreviewView(WorkspaceToolViewMixin, DetailView):
+    context_object_name = 'item'
     model = Tool
     template_name_suffix = '_tool_preview'
 
 
 class WorkspaceToolObjectDisplayView(WorkspaceToolViewMixin, DetailView):
+    context_object_name = 'item'
     model = Tool
     template_name = 'workspace/workspace_tool_preview.html'
 

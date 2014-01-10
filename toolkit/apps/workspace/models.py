@@ -36,6 +36,11 @@ class Workspace(models.Model):
     def __unicode__(self):
         return '%s' % self.name
 
+    @property
+    def lawyer(self):
+        lawyer = [u for u in self.participants.select_related('profile').all() if u.profile.is_lawyer is True]
+        return lawyer[0]
+
     def can_read(self, user):
         return user in self.participants.all()
 
