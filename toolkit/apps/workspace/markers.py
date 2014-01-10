@@ -275,6 +275,10 @@ class Marker(object):
         return None
 
     @property
+    def action_type_name(self):
+        return self.ACTION_TYPE.get_name_by_value(self.action_type) if self.action_type is not None else None
+
+    @property
     def action_attribs(self):
         attribs = {}
         # Handle the modal action_type
