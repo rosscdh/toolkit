@@ -128,12 +128,12 @@ class Tool(models.Model):
 
         return get_model(app_label=app_label, model_name=model_name)
 
-    def get_form(self, user):
+    def get_form(self, user, form_key=None):
         """
         return the form class as specified in the tool object
         """
         forms = self.data.get('forms')
-        form_class = forms.get(user.profile.user_class)
+        form_class = forms.get(user.profile.user_class if form_key is None else form_key)  # allow us to override the form selected
 
         return _class_importer(form_class)
 

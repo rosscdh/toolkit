@@ -33,18 +33,20 @@ class Preview83bView(DetailView):
 
     def get_next_previous_urls(self):
         markers = self.object.markers
+        preview_workspace_url = reverse('workspace:tool_object_preview', kwargs={'workspace': self.object.workspace.slug, 'tool': self.object.tool_slug, 'slug': self.object.slug})
+
         if self.request.user.profile.is_lawyer is True:
             # for Lawyer
             return {
                 'previous_url': markers.marker(val='lawyer_complete_form').get_action_url(),
-                'next_url': markers.marker(val='lawyer_invite_customer').get_action_url(),
+                'next_url': markers.next.get_action_url() if markers.next.action_type == markers.next.ACTION_TYPE.redirect else preview_workspace_url,
             }
 
         elif self.request.user.profile.is_customer is True:
             # for Customer
             return {
                 'previous_url': markers.marker(val='customer_complete_form').get_action_url(),
-                'next_url': reverse('workspace:tool_object_preview', kwargs={'workspace': self.object.workspace.slug, 'tool': self.object.tool_slug, 'slug': self.object.slug}),
+                'next_url': preview_workspace_url,
             }
 
     def get_context_data(self, **kwargs):
