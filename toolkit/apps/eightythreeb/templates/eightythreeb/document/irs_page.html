@@ -20,7 +20,7 @@
     <div>
         2. Description of property with respect to which election is being made:
         <br /><br />
-        {{ transfer_value_share|default:'<span>[x shares]</span>' }} shares of the common stock of {{ company_name |default:'<span>[Company Name]</span>' }}, (the “Company”) (${{ transfer_value_total |default:'<span>[Value at time of transfer]</span>'}} par value).
+        {{ description | default:'<span>[Description of Restrictions]</span>' }}
     </div>
     <br />
     <div>
@@ -34,7 +34,7 @@
     <div>
         5. Nature of restrictions to which property is subject:
         <br /><br />
-        {{ description | default:'<span>[Description of Restrictions]</span>' }}
+        {{ nature_of_restrictions | default:'<span>[Nature of Restrictions]</span>' }}
     </div>
     <br />
     <div>

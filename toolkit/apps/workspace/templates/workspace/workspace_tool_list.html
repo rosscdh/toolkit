@@ -21,7 +21,7 @@
             <p>{{ tool.description }}</p>
 
             {% if user.profile.is_lawyer %}
-                <p>To create your first {{ tool.short_name }}, just click the New {{ tool.short_name }} button below.</p>
+                <p>Click below to create your first {{ tool.short_name }}.</p>
 
                 <a href="{% url 'workspace:tool_object_new' workspace=workspace.slug tool=tool.slug %}" class="btn btn-primary btn-wide">New {{ tool.short_name }}</a>
             {% endif %}
