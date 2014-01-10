@@ -20,6 +20,10 @@
                             // Handle remote AJAX requests
                             if ($form.data('remote')) {
                                 $.ajax({
+                                    data: $form.serialize(),
+                                    headers: {
+                                        'X-CSRFToken': $form.find('input[name=csrfmiddlewaretoken]').val()
+                                    },
                                     type: $form.attr('method'),
                                     url: $form.attr('action'),
                                     success: function(data) {
