@@ -25,7 +25,7 @@ class USPSTrackingNumberNotExistsException(Exception):
 
 class USPSResponse(object):
     response = {}
-    DELIVERED_STATUS = ['DELIVERED']
+    DELIVERED_STATUS = ['DELIVERED'] # must be uppercase to cater to the crappy usps api
 
     def __init__(self, usps_response, **kwargs):
         self.response = usps_response
@@ -64,7 +64,7 @@ class USPSResponse(object):
 
     @property
     def is_delivered(self):
-        return self.status in self.DELIVERED_STATUS
+        return self.status.upper() in self.DELIVERED_STATUS
 
     def description(self, summary=None):
         s = self.summary if summary is None else summary
