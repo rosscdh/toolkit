@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
-
 #
 # JSON data to be used with model mommey
 #
 EIGHTYTHREEB_DATA = {
   "transfer_value_share": "20.0",
-  "tracking_code": "EJ958083578US",
+  "tracking_code": "70132630000013657033",
   "nature_of_restrictions": "test",
   "date_of_property_transfer": "2013-12-20",
   "city": "Mönchengladbach",
