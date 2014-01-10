@@ -19,8 +19,9 @@ class Command(BaseCommand):
 
         for instance in self.eightythreeb_list:
             recipient = (instance.user.get_full_name(), instance.user.email)
-
-            mailer = EightyThreeBReminderEmail(recipients=(recipient,))
+            lawyer = instance.workspace.lawyer
+            from_tuple = (lawyer.get_full_name(), lawyer.email)
+            mailer = EightyThreeBReminderEmail(from_tuple=from_tuple, recipients=(recipient,))
 
             markers = instance.markers
             current_step = markers.current

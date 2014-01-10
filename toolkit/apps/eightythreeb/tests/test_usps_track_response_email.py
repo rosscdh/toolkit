@@ -40,10 +40,11 @@ class EightyThreeBIsCompleteEmailTest(BaseCustomer):
 
         # call it conventionally
         call_command('eightythreeb_usps_track_response')
-        self.assertEqual(len(mail.outbox), 1)
+
         # lets inspect the email
+        self.assertEqual(len(mail.outbox), 1)
         email = mail.outbox[0]
 
-        self.assertEqual(email.from_email, 'tech@lawpal.com')
+        self.assertEqual(email.from_email, u'Lawyer Test (via LawPal) test+lawyer@lawpal.com')
         self.assertEqual(email.subject, '83(b) Filing Completed for %s' % self.user.get_full_name())
         self.assertEqual(email.recipients(), [self.user.email])
