@@ -7,7 +7,7 @@
         "icon": "images/icons/mail.svg",
         "short_name": "Letter",
         "summary": "summary goes here",
-        "description": "A simple way of helping your clients get their 83(b) elections filed on time and correctly whilst giving you complete visibility on the process.",
+        "description": "A simple way of helping your clients get their 83(b) elections filed on time and correctly while giving you complete visibility on the process.",
         "model_name": "EightyThreeB",
         "forms": {
           "customer": "toolkit.apps.eightythreeb.forms.CustomerEightyThreeBForm",

@@ -422,8 +422,6 @@ body {
 a {
   color: #5ccb6a;
   text-decoration: none;
-  -webkit-transition: 0.25s;
-  transition: 0.25s;
 }
 a:hover,
 a:focus {
@@ -660,13 +658,13 @@ pre {
   border-radius: 4px;
   padding: 10px 15px;
   -webkit-font-smoothing: subpixel-antialiased;
-  -webkit-transition: background-color 0.25s linear;
-  transition: background-color 0.25s linear;
   font-family: Lato, "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 .btn:hover,
 .btn:focus {
   color: #ffffff;
+  -webkit-transition: background-color 0.25s linear;
+  transition: background-color 0.25s linear;
 }
 .btn:active,
 .btn.active {
@@ -1359,7 +1357,7 @@ fieldset[disabled] .btn-link:focus {
 .navbar .btn-navbar {
   background: none;
   border: none;
-  color: #444444;
+  color: white;
   margin: 18px 15px;
   padding: 3px 15px;
   text-shadow: none;
@@ -1368,7 +1366,7 @@ fieldset[disabled] .btn-link:focus {
 .navbar .btn-navbar:hover,
 .navbar .btn-navbar:focus {
   background: none;
-  color: #6bdb7e;
+  color: white;
 }
 .navbar .btn-navbar:before {
   content: "\e00c";
@@ -1634,7 +1632,7 @@ fieldset[disabled] .btn-link:focus {
   bottom: 80%;
   top: auto;
 }
-@media (max-width: 979px) {
+@media (max-width: 768px) {
   .navbar.navbar-inverse .navbar-brand {
     border: none;
     padding-top: 11px;
@@ -1939,7 +1937,7 @@ label {
   color: #b7b7b7;
 }
 .form-control {
-  border: 2px solid #bdc3c7;
+  border: 1px solid #bdc3c7;
   color: #444444;
   font-family: "Lato", Helvetica, Arial, sans-serif;
   font-size: 15px;
@@ -2363,10 +2361,10 @@ fieldset[disabled] .navbar-form.focus .input-group-btn .btn-default.active {
 .input-group .input-group-btn .btn {
   background-color: #ffffff;
   border: 2px solid #bdc3c7;
-  border-width: 2px 2px 2px 0;
+  border-width: 1px 1px 1px 0;
   color: #bdc3c7;
   margin-left: -2px;
-  line-height: 18px;
+  line-height: 20px;
 }
 .input-group .input-group-btn .btn-default {
   color: #ffffff;
@@ -4956,9 +4954,6 @@ a.list-group-item.active > .badge,
   line-height: 1.2;
   font-weight: 700;
   padding: 10px 20px 11px;
-}
-.popover-content {
-  padding: 9px 20px 1px;
 }
 .popover-content p {
   font-size: 14px;
