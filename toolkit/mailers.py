@@ -53,14 +53,18 @@ class BaseMailerService(object):
         return_tuple_dict.update({
             'name': from_tuple[0] if from_tuple is not None else base_from_tuple[0],  # default site from name
             'email': from_email,
-            'reply_to': from_tuple[1] if from_tuple is not None else base_from_tuple[1]  # default is site email
+            'reply_to': from_tuple[1] if from_tuple is not None else base_from_tuple[1]  # default is site email if no from_tuple has been specified
         })
 
         return return_tuple_dict
 
     def from_email(self, name=None, email=None):
+        """
+        from email must always come from the default site email to avoid being rejected
+        but to handle this we set teh reply_to header to be the lawyers email
+        """
         site_email = settings.DEFAULT_FROM[0][1]
-        return '%s (via LawPal) %s' % (name, email) if email != site_email else email
+        return '%s (via LawPal) %s' % (name, site_email) if email != site_email else email
 
     def process(self, attachments=None, **kwargs):
 
