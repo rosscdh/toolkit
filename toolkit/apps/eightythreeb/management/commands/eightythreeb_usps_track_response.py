@@ -30,7 +30,9 @@ class Command(BaseCommand):
 
     def send_mail(self, instance, usps_response):
         recipient = (instance.user.get_full_name(), instance.user.email)
-        mailer = EightyThreeMailDeliveredEmail(recipients=(recipient,))
+        lawyer = instance.workspace.lawyer
+        from_tuple = (lawyer.get_full_name(), lawyer.email)
+        mailer = EightyThreeMailDeliveredEmail(from_tuple=from_tuple, recipients=(recipient,))
 
         markers = instance.markers
         current_step = markers.current
@@ -49,6 +51,7 @@ class Command(BaseCommand):
 
             if tracking_code is None:
                 logger.critical('Found 83b instance in track_response cycle with no tracking_code: %s %s' % (instance, tracking_code))
+
             else:
                 logger.info('Found 83b instance with tracking_code: %s %s' % (instance, tracking_code))
 

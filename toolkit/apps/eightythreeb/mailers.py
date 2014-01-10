@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
-from toolkit.mailers import BaseMailerService
+from toolkit.mailers import BaseMailerService, BaseSpecifiedFromMailerService
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 
 
-class EightyThreeBCreatedEmail(BaseMailerService):
+class EightyThreeBCreatedEmail(BaseSpecifiedFromMailerService):
     """
     m = EightyThreeBCreatedEmail(
+            from_tuple=('Ross', 'ross@lawpal.com'), 
             subject='A new 83b has been created for you',
             message='{from_name} has created an 83b form for you, you can find it at {location}',
             recipients=(('Alex', 'alex@lawpal.com')))
@@ -17,9 +18,9 @@ class EightyThreeBCreatedEmail(BaseMailerService):
 
 
 
-class EightyThreeBReminderEmail(BaseMailerService):
+class EightyThreeBReminderEmail(BaseSpecifiedFromMailerService):
     """
-    m = EightyThreeBReminderEmail(recipients=(('Alex', 'alex@lawpal.com')))
+    m = EightyThreeBReminderEmail(from_tuple=('Ross', 'ross@lawpal.com'), recipients=(('Alex', 'alex@lawpal.com')))
     m.process(company='',
               url='https://lawpal.com/workspace/lawpal-internal-d570/tool/83b-election-letters/c1b7d38cf90a4c158ae8e7b810d4c7f6/preview/',
               current_status='Description of the current step',
@@ -35,6 +36,8 @@ class EightyThreeBReminderEmail(BaseMailerService):
 
 class EightyThreeTrackingCodeEnteredEmail(BaseMailerService):
     """
+    Send an email to all participants with the attachments
+
     m = EightyThreeMailDeliveredEmail(recipients=(('Alex', 'alex@lawpal.com')))
     m.process(instance=:instance)
     """
@@ -57,9 +60,9 @@ class EightyThreeTrackingCodeEnteredEmail(BaseMailerService):
 
 
 
-class EightyThreeMailDeliveredEmail(BaseMailerService):
+class EightyThreeMailDeliveredEmail(BaseSpecifiedFromMailerService):
     """
-    m = EightyThreeMailDeliveredEmail(recipients=(('Alex', 'alex@lawpal.com')))
+    m = EightyThreeMailDeliveredEmail(from_tuple=('Ross', 'ross@lawpal.com'), recipients=(('Alex', 'alex@lawpal.com')))
     m.process(instance='')
     """
     email_template = 'eightythreeb_delivered'

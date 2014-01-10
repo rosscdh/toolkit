@@ -24,15 +24,7 @@ class BaseMailerService(object):
         self.subject = subject
         self.message = message
 
-        # if no from_tuple is provided simply use the defaults
-        if from_tuple is None:
-            from_tuple = settings.DEFAULT_FROM[0]
-
-        self.from_tuple = self.user.copy()
-        self.from_tuple.update({
-            'name': from_tuple[0],
-            'email': from_tuple[1],
-        })
+        self.from_tuple = self.make_from_tuple(from_tuple=from_tuple)
 
         self.recipients = []
         for r in recipients:
@@ -49,6 +41,26 @@ class BaseMailerService(object):
         assert self.recipients
         assert type(self.recipients) is list
         assert len(self.recipients) >= 1
+
+    def make_from_tuple(self, from_tuple=None):
+        return_tuple_dict = {}
+        self.from_tuple = self.user.copy()  # setup the dictionary
+        # if no from_tuple is provided simply use the defaults
+        base_from_tuple = settings.DEFAULT_FROM[0]
+
+        from_email = self.from_email(name=from_tuple[0] if from_tuple is not None else base_from_tuple[0], email=from_tuple[1] if from_tuple is not None else base_from_tuple[1])  # defaults to site name
+
+        return_tuple_dict.update({
+            'name': from_tuple[0] if from_tuple is not None else base_from_tuple[0],  # default site from name
+            'email': from_email,
+            'reply_to': from_tuple[1] if from_tuple is not None else base_from_tuple[1]  # default is site email
+        })
+
+        return return_tuple_dict
+
+    def from_email(self, name=None, email=None):
+        site_email = settings.DEFAULT_FROM[0][1]
+        return '%s (via LawPal) %s' % (name, email) if email != site_email else email
 
     def process(self, attachments=None, **kwargs):
 
@@ -74,4 +86,17 @@ class BaseMailerService(object):
                 recipient_list=[context.get('to_email')],
                 bcc=['founders@lawpal.com'] if settings.PROJECT_ENVIRONMENT == 'prod' else [],  # only bcc us in on live mails
                 context=context,
-                attachments=attachments)
+                attachments=attachments,
+                headers={'Reply-To': self.from_tuple.get('reply_to')})
+
+
+class BaseSpecifiedFromMailerService(BaseMailerService):
+    """
+    Require the code to pass in a from_tuple
+    used for emails that are sent on behalf of the lawyer
+    or some other user
+    """
+    def __init__(self, from_tuple, recipients, subject=None, message=None, **kwargs):
+        # see how we require from_tuple and pass it in
+        super(BaseSpecifiedFromMailerService, self).__init__(recipients=recipients, from_tuple=from_tuple, subject=subject, message=message, **kwargs)
+
