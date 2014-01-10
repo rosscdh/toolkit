@@ -29,7 +29,7 @@ class EightyThreeBViewSet(IssueSignalsMixin, ModelViewSet):
                 status = self.request.DATA.get('status', None)
 
                 if status is None:
-                    logger.error('No status passed in for 83(b) "%s" by "%s"' % (self.object, response.user))
+                    logger.error('No status passed in for 83(b) "%s" by "%s"' % (self.object, request.user))
 
                 else:
                     markers = self.object.markers
@@ -37,7 +37,7 @@ class EightyThreeBViewSet(IssueSignalsMixin, ModelViewSet):
                     marker = markers.marker_by_val(val=status)
 
                     if marker is None:
-                        logger.error('Could not get a marker for 83(b) "%s" based on the status "%s" by "%s"' % (self.object, status, response.user))
+                        logger.error('Could not get a marker for 83(b) "%s" based on the status "%s" by "%s"' % (self.object, status, request.user))
 
                     else:
                         # issue the signal
