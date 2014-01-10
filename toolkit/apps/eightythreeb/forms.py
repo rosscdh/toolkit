@@ -125,7 +125,7 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
 
     has_spouse = forms.BooleanField(
         help_text='',
-        label='Yes, I have a spouse or legally recognised de-facto',
+        label='Yes, I have a spouse',
         required=False,
     )
 
