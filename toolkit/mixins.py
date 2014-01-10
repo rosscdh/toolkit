@@ -9,7 +9,8 @@ class ModalForm(BaseForm):
         super(ModalForm, self).__init__(*args, **kwargs)
 
         self.helper.attrs = {
-            'parsley-validate': '',
+            'data-remote': 'true',
+            'parsley-validate': ''
         }
         self.helper.form_show_errors = False
 
