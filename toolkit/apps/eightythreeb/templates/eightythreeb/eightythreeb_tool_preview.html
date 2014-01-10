@@ -8,8 +8,8 @@ $(document).ready(function () {
     'use strict';
 
     $('#marker-customer_download_pdf').on("click", function() {
-        //console.log($(this).attrib('href'))
-        $.fileDownload($(this).attrib('href'))
+        //console.log($(this).prop('href'))
+        $.fileDownload($(this).prop('href'))
             .done(function () { document.location.reload(); });
         return false; //this is critical to stop the click event which will trigger a normal file download!
     });
