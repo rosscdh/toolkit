@@ -105,7 +105,8 @@ class StartView(LogOutMixin, SaveNextUrlInSessionMixin, AuthenticateUserMixin, F
             # Redirect the user to the current invite workspace
             #
             invite_key = InviteKey.objects.filter(invited_user=self.request.user).first()
-            return invite_key.get_tool_instance_absolute_url()
+            if invite_key is not None:
+                return invite_key.get_tool_instance_absolute_url()
 
         return reverse('dash:default')
 
