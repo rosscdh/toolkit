@@ -30,20 +30,24 @@
             <ul class="list-unstyled attachment-list">
                 {% for file in object.attachment_set.all %}
                     <li class="list-group-item attachment-list-item">
-                        <a href="{{ file.attachment.url }}" class="attachment-list-item-preview" target="_blank" title="{{ file.attachment.name }}">
-                            <img src="{{ file.attachment.url }}" title="{{ file.attachment.name }}">
-                        </a>
-                        <div class="attachment-list-item-meta">
-                            <a href="{{ file.attachment.url }}" title="{{ file.attachment.name }}" target="_blank" class="attachment-list-item-heading">{{ file.attachment.name }}</a>
-                            <ul class="list-inline text-muted">
-                                <li><small>{{ file.attachment.size|filesizeformat }}</small></li>
-                                <li>&middot;</li>
-                                <li>
-                                    <a href="{% url 'api:attachment-delete' pk=file.pk %}" data-toggle="action" data-type="remote" data-method="DELETE">
-                                        <small>Delete</small>
-                                    </a>
-                                </li>
-                            </ul>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <a href="{{ file.attachment.url }}" class="attachment-list-item-preview" target="_blank" title="{{ file.attachment.name }}">
+                                    <img src="{{ file.attachment.url }}" title="{{ file.attachment.name }}" class="img-responsive">
+                                </a>
+                            </div>
+                            <div class="col-md-9 attachment-list-item-meta">
+                                <a href="{{ file.attachment.url }}" title="{{ file.attachment.name }}" target="_blank" class="attachment-list-item-heading">{{ file.attachment.name }}</a>
+                                <ul class="list-inline text-muted">
+                                    <li><small>{{ file.attachment.size|filesizeformat }}</small></li>
+                                    <li>&middot;</li>
+                                    <li>
+                                        <a href="{% url 'api:attachment-delete' pk=file.pk %}" data-toggle="action" data-type="remote" data-method="DELETE">
+                                            <small>Delete</small>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </li>
                 {% endfor %}
