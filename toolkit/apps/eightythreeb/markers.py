@@ -134,7 +134,7 @@ class CustomerUploadScanMarker(Marker):
     description = 'Client: Scan and upload signed copy'
     signals = ['toolkit.apps.eightythreeb.signals.copy_uploaded']
 
-    action_type = Marker.ACTION_TYPE.modal
+    action_type = Marker.ACTION_TYPE.redirect
     action_user_class = ['customer',]
 
     @property

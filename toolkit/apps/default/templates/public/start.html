@@ -1,6 +1,4 @@
-{% extends 'public/base.html' %}
-
-{% load url from future %}{% load crispy_forms_tags %}
+{% extends 'public/base.html' %}{% load url from future %}{% load crispy_forms_tags %}
 
 {% block page_title %}Sign in — {{ block.super }}{% endblock %}
 
@@ -14,6 +12,9 @@
             {% block form %}
                 {% crispy form %}
             {% endblock %}
+
+            <a href="{% url "password_reset_recover" %}">Forgot your password?</a>
+            
         </div>
     </div>
 {% endblock %}

@@ -272,11 +272,8 @@ class CustomerUploadScanMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.long_description, None)
         self.assertEqual(self.subject.signals, ['toolkit.apps.eightythreeb.signals.copy_uploaded'])
         self.assertEqual(self.subject.action_name, 'Upload Attachment')
-        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.modal)
+        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
         self.assertEqual(self.subject.action_user_class, ['customer'])
-
-    def test_action_attribs(self):
-        self.assertEqual(self.subject.action_attribs, {'target': '#modal-copy_uploaded', 'toggle': 'modal'})
 
     def test_get_action_url(self):
         url = reverse('eightythreeb:attachment', kwargs={'slug': self.subject.tool.slug})
