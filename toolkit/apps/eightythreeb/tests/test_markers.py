@@ -53,7 +53,7 @@ class EightyThreeBSignalMarkersTest(TestCase):
 
 class BaseTestMarker(BaseScenarios, TestCase):
     val = None
-    clazz = LawyerInviteUserMarker
+    clazz = ProcessCompleteMarker
 
     def setUp(self):
         super(BaseTestMarker, self).setUp()
@@ -75,8 +75,8 @@ class BaseTestMarker(BaseScenarios, TestCase):
         self.assertEqual(self.subject.action_attribs, {})
 
     def test_get_action_url(self):
-        url = reverse('workspace:tool_object_invite', kwargs={'workspace': self.subject.tool.workspace.slug, 'tool': self.subject.tool.tool_slug, 'slug': self.subject.tool.slug})
-        self.assertEqual(self.subject.get_action_url(), url)
+        with self.assertRaises(NotImplementedError):
+            self.subject.get_action_url()
 
 
 class LawyerCompleteFormMarkerTest(BaseTestMarker):
@@ -122,6 +122,9 @@ class LawyerInviteUserMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.action_name, 'Invite Client')
         self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
         self.assertEqual(self.subject.action_user_class, ['lawyer'])
+
+    def test_action_attribs(self):
+        self.assertEqual(self.subject.action_attribs, {'toggle': 'action'})
 
     def test_action_name(self):
         self.assertEqual(self.subject.action_name, 'Invite Client')
@@ -169,6 +172,9 @@ class CustomerCompleteFormMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
         self.assertEqual(self.subject.action_user_class, ['customer'])
 
+    def test_action_attribs(self):
+        self.assertEqual(self.subject.action_attribs, {'toggle': 'action'})
+
     def test_get_action_url(self):
         self.assertEqual(self.subject.get_action_url(), self.subject.tool.get_edit_url())
 
@@ -203,6 +209,9 @@ class CustomerDownloadDocMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
         self.assertEqual(self.subject.action_user_class, ['customer'])
 
+    def test_action_attribs(self):
+        self.assertEqual(self.subject.action_attribs, {'toggle': 'action'})
+
     def test_get_action_url(self):
         url = reverse('workspace:tool_object_download', kwargs={'workspace': self.subject.tool.workspace.slug, 'tool': self.subject.tool.tool_slug, 'slug': self.subject.tool.slug})
         self.assertEqual(self.subject.get_action_url(), url)
@@ -235,7 +244,8 @@ class CustomerPrintAndSignMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.action_user_class, ['customer'])
 
     def test_action_attribs(self):
-        self.assertEqual(self.subject.action_attribs, {'method': 'PATCH',
+        self.assertEqual(self.subject.action_attribs, {'toggle': 'action',
+                                                       'method': 'PATCH',
                                                        'status': 4,
                                                        'tool': '83b-election-letters',
                                                        'tool_object_id': self.eightythreeb.pk})
@@ -274,6 +284,9 @@ class CustomerUploadScanMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.action_name, 'Upload Attachment')
         self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
         self.assertEqual(self.subject.action_user_class, ['customer'])
+
+    def test_action_attribs(self):
+        self.assertEqual(self.subject.action_attribs, {'toggle': 'action'})
 
     def test_get_action_url(self):
         url = reverse('eightythreeb:attachment', kwargs={'slug': self.subject.tool.slug})
@@ -351,10 +364,6 @@ class USPSDeliveryStatusMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.action_type, None)
         self.assertEqual(self.subject.action_user_class, [])
 
-    def test_get_action_url(self):
-        with self.assertRaises(NotImplementedError):
-            self.subject.get_action_url()
-
     def test_action(self):
         with self.assertRaises(NotImplementedError):
             self.subject.action
@@ -373,10 +382,6 @@ class ProcessCompleteMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.action_name, None)
         self.assertEqual(self.subject.action_type, None)
         self.assertEqual(self.subject.action_user_class, [])
-
-    def test_get_action_url(self):
-        with self.assertRaises(NotImplementedError):
-            self.subject.get_action_url()
 
     def test_action(self):
         with self.assertRaises(NotImplementedError):
