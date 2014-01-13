@@ -1,112 +1,96 @@
-{% extends 'workspace/workspace_tool_form.html' %}
+{% extends 'workspace/workspace_tool_base.html' %}
 
-{% block page_title %}Upload your Scan{% endblock %}
+{% load url from future %}{% load django_bootstrap_breadcrumbs %}
 
-{% block css %}
-<link href="{{ STATIC_URL }}ajaxuploader/css/fileuploader.css" media="screen" rel="stylesheet" type="text/css" />
+{% block page_title %}Upload your scan — {{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% breadcrumb 'Upload' 'eightythreeb:attachment' workspace.slug tool.slug item.slug %}
 {% endblock %}
 
 {% block header %}
-<h4>Upload your Scan</h4>
+    <h4 class="caption"><a href="{% url 'workspace:view' workspace.slug %}">{{ workspace.name }}</a></h4>
+    <h4 class="caption"><a href="{% url 'workspace:tool_object_preview' workspace.slug tool.slug item.slug %}">{{ item }}</a></h4>
+    <h4>Upload your scan</h4>
 {% endblock %}
 
-{% block main %}
-<div class="row">
-    <a href="{{ object.get_absolute_url }}" class="btn btn-link pull-right">Back to Overview</a>
-</div>
+{% block body %}
+    <div class="row">
+        <div class="content col-lg-8 col-lg-offset-2">
+            <div class="page-header">
+                <h4>Uploads {{ item }}</h4>
+            </div>
 
-<div class="row">
-    <div class="col-lg-12">
-        <p>Please scan and upload a copy of your signed 83(b) Election. This will be stored on LawPal and a copy will be sent to your attorney and accountant (if requested).</p>
-        <div id="file-uploader">       
-            <noscript>          
-                <p>Please enable JavaScript to use file uploader.</p>
-            </noscript>         
+            <p>Please scan and upload a copy of your signed 83(b) Election. This will be stored on LawPal and a copy will be sent to your attorney and accountant (if requested).</p>
+            <div id="file-uploader">
+                <noscript><p>Please enable JavaScript to use file uploader.</p></noscript>
+            </div>
+
+            <ul class="list-unstyled attachment-list">
+                {% for file in object.attachment_set.all %}
+                    <li class="list-group-item attachment-list-item">
+                        <a href="{{ file.attachment.url }}" class="attachment-list-item-preview" target="_blank" title="{{ file.attachment.name }}">
+                            <img src="{{ file.attachment.url }}" title="{{ file.attachment.name }}">
+                        </a>
+                        <div class="attachment-list-item-meta">
+                            <a href="{{ file.attachment.url }}" title="{{ file.attachment.name }}" target="_blank" class="attachment-list-item-heading">{{ file.attachment.name }}</a>
+                            <ul class="list-inline text-muted">
+                                <li><small>{{ file.attachment.size|filesizeformat }}</small></li>
+                                <li>&middot;</li>
+                                <li>
+                                    <a href="{% url 'api:attachment-delete' pk=file.pk %}" data-toggle="action" data-type="remote" data-method="DELETE">
+                                        <small>Delete</small>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
         </div>
     </div>
-</div>
+{% endblock %}
 
-<div class="row">
-    <div class="col-lg-12">
-        {% csrf_token %}
-        <ul id="attachment_list" class="list-group">
-            {% for a in object.attachment_set.all %}
-            <li class="row list-group-item">
-                <div class="btn-group pull-right">
-                    <a target="_BLANK" href="{{ a.attachment.url }}" class="btn btn-info">View</a>
-                    <a href="javascript:void();" class="action btn btn-danger" data-method="DELETE" data-url="{% url 'api:attachment-delete' pk=a.pk %}">Delete</a>
-                </div>
-                <strong class="col-md-3">{{ forloop.counter }}</strong>
-            </li>
-            {% endfor %}
-        </ul>
-    </div>
-</div>
-
+{% block css %}
+    <link href="{{ STATIC_URL }}ajaxuploader/css/fileuploader.css" media="screen" rel="stylesheet" type="text/css">
 {% endblock %}
 
 {% block js %}
-<script src="{{ STATIC_URL }}ajaxuploader/js/fileuploader.js" ></script>
-<script>
-$(function(){
-
-    var uploader = new qq.FileUploader({
-        action: "{% url 'eightythreeb:upload_file' slug=object.slug %}",
-        element: $('#file-uploader:first')[0],
-        multiple: true,
-        onProgress: function(id, fileName, loaded, total){ 
-            console.log(loaded)
-        },
-        onComplete: function(id, fileName, responseJSON) {
-            if(responseJSON.success) {
-                console.log('Success')
-            } else {
-                console.log('Failure')
-            }
-            console.log(fileName)
-            console.log(responseJSON)
-        },
-        onAllComplete: function(uploads) {
-            // uploads is an array of maps
-            // the maps look like this: {file: FileObject, response: JSONServerResponse}
-            console.log('Upload Complete')
-            console.log(uploads)
-        },
-        params: {
-            'csrf_token': '{{ csrf_token }}',
-            'csrf_name': 'csrfmiddlewaretoken',
-            'csrf_xname': 'X-CSRFToken',
-        },
-    });
-    /**
-    * Action buttons
-    */
-    $('.action').on( 'click', function ( e ) {
-        e.preventDefault();
-        var btn = $(this);
-
-        var data = btn.data();
-        var url = data['url']; delete data['url'];
-        var method = data['method']; delete data['method'];
-        //var response_success_msg = data['response_success_msg']; delete data['response_success_msg'];
-
-        $.ajax({
-            "type": method,
-            "url": url,
-            "data": JSON.stringify(data),
-            "dataType": 'json',
-            "contentType": 'application/json',
-            "beforeSend": function (jqXHR, settings) {
-                // Pull the token out of the DOM.
-                jqXHR.setRequestHeader('X-CSRFToken', $('input[name=csrfmiddlewaretoken]:first').val());
+    {{ block.super }}
+    <script src="{{ STATIC_URL }}ajaxuploader/js/fileuploader.js"></script>
+    <script>
+    $(function() {
+        var uploader = new qq.FileUploader({
+            action: "{% url 'eightythreeb:upload_file' slug=object.slug %}",
+            element: $('#file-uploader:first')[0],
+            template: '{% filter escapejs %}{% include "partials/uploader.html" with object=object %}{% endfilter %}',
+            multiple: true,
+            onProgress: function(id, fileName, loaded, total) {
+                console.log(loaded);
             },
-            "complete": function ( data ) {
-                // reload the page to show updated lawyer info
-                //btn.hide().parent().append(response_success_msg);
+            onComplete: function(id, fileName, responseJSON) {
+                if(responseJSON.success) {
+                    console.log('Success');
+                } else {
+                    console.log('Failure');
+                }
+                console.log(fileName);
+                console.log(responseJSON);
+            },
+            onAllComplete: function(uploads) {
+                // uploads is an array of maps
+                // the maps look like this: {file: FileObject, response: JSONServerResponse}
+                console.log('Upload Complete');
+                console.log(uploads);
                 document.location.reload();
-            }
+            },
+            params: {
+                'csrf_token': '{{ csrf_token }}',
+                'csrf_name': 'csrfmiddlewaretoken',
+                'csrf_xname': 'X-CSRFToken',
+            },
         });
     });
-});
-</script>
+    </script>
 {% endblock %}
