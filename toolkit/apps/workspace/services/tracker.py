@@ -16,6 +16,8 @@ import json
 from usps.api import USPS_CONNECTION
 from usps.api.tracking import TrackConfirmWithFields  # TrackConfirm
 
+from toolkit.apps.eightythreeb.mailers import EightyThreeMailDeliveredEmail
+
 from . import logger
 
 
@@ -25,7 +27,7 @@ class USPSTrackingNumberNotExistsException(Exception):
 
 class USPSResponse(object):
     response = {}
-    DELIVERED_STATUS = ['DELIVERED']
+    DELIVERED_STATUS = ['DELIVERED'] # must be uppercase to cater to the crappy usps api
 
     def __init__(self, usps_response, **kwargs):
         self.response = usps_response
@@ -64,7 +66,7 @@ class USPSResponse(object):
 
     @property
     def is_delivered(self):
-        return self.status in self.DELIVERED_STATUS
+        return self.status.upper() in self.DELIVERED_STATUS
 
     def description(self, summary=None):
         s = self.summary if summary is None else summary
@@ -156,6 +158,16 @@ class AdeWinterUspsTrackConfirm(object):
 
         return False
 
+    def send_mail(self, instance, usps_response):
+        recipient = (instance.user.get_full_name(), instance.user.email)
+        mailer = EightyThreeMailDeliveredEmail(recipients=(recipient,))
+
+        markers = instance.markers
+        current_step = markers.current
+        next_step = current_step.next
+
+        mailer.process(instance=instance, usps_response=usps_response)
+
     def track(self, tracking_code):
         self.response = self.request(tracking_code=tracking_code)
 
@@ -190,6 +202,15 @@ class AdeWinterUspsTrackConfirm(object):
             instance.data['usps_log'] = usps_log
 
             instance.save(update_fields=['data'])
+
+        # check for delivered event
+        self.delivered(instance=instance, usps_response=usps_response)
+
+    def delivered(self, instance, usps_response):
+        if usps_response.is_delivered is True:
+            self.send_mail(instance=instance, usps_response=usps_response)
+            # Send the signal indicating we have completed this step
+            instance.base_signal.send(sender=self, instance=instance, actor=instance.user, name='irs_recieved')
 
 
 class USPSTrackingService(AdeWinterUspsTrackConfirm):

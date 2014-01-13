@@ -23,14 +23,17 @@ from toolkit.mixins import ModalForm
 class WorkspaceForm(ModalForm, forms.ModelForm):
     name = forms.CharField(
         error_messages={
-            'required': "Company name can't be blank."
+            'required': "Client Name can't be blank."
         },
-        label='Company name',
-        widget=forms.TextInput(attrs={'size': '40'})
+        label='Client name',
+        widget=forms.TextInput(attrs={'size': '40', 'placeholder':'Acme Inc'}),
+        help_text='This is usually company name'
     )
+
 
     class Meta:
         model = Workspace
+        exclude = ['lawyer',]
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
@@ -138,10 +141,13 @@ class InviteUserForm(forms.Form):
         this allows us to send the email as part of the form
         NB! the InviteKey object is created by the view
         """
-        m = InviteUserToToolEmail(subject=self.cleaned_data.get('subject'),
-                                  message=self.cleaned_data.get('message'),
-                                  recipients=((self.tool_instance.user.get_full_name(), self.tool_instance.user.email),))
-        m.process()
+        lawyer_user = self.tool_instance.workspace.lawyer
+        lawyer_name = lawyer_user.get_full_name() if lawyer_user.get_full_name() is not None else lawyer_user.email
+
+        mailer = InviteUserToToolEmail(from_tuple=(lawyer_name, lawyer_user.email),
+                                       recipients=((self.tool_instance.user.get_full_name(), self.tool_instance.user.email),))
+        mailer.process(subject=self.cleaned_data.get('subject'),
+                       message=self.cleaned_data.get('message'))
 
 
 

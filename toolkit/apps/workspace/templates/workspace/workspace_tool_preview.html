@@ -24,7 +24,7 @@
     {% block tabs %}
         <ul class="nav nav-tabs nav-append-content">
             <li class="active"><a href="#overview" data-toggle="tab">Overview</a></li>
-            <li><a href="#preview" data-toggle="tab">Preview</a></li>
+            <li><a href="#preview" data-toggle="tab">83(b) Election Preview</a></li>
         </ul>
     {% endblock %}
 
@@ -63,7 +63,7 @@
         $iframe.height($overview.height()).removeClass('fade');
 
         // Action Buttons
-        $("[data-toggle=action]").on('click', function(e) {
+        $("[data-type]").on('click', function(e) {
           var $btn = $(this);
           var href = $btn.attr('href');
           var type = $btn.data('type');

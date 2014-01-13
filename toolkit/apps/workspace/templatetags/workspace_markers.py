@@ -19,7 +19,7 @@ ACTION_BUTTON_CSS_TYPES = {
 def marker_status_block(marker, user):
     # if the user is of the class required
     try:
-        show_action_button = True if marker.action is not None and user.profile.user_class in marker.action_user_class else False
+        show_action_button = marker.can_perform_action(user=user)
     except NotImplementedError as e:
         show_action_button = False
 

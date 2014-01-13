@@ -20,6 +20,7 @@ class Workspace(models.Model):
     """
     name = models.CharField(max_length=255)
     slug = models.SlugField(blank=True)
+    lawyer = models.ForeignKey('auth.User', null=True, related_name='lawyer_workspace')  # Lawyer that created this workspace
     participants = models.ManyToManyField('auth.User', blank=True)
     tools = models.ManyToManyField('workspace.Tool', blank=True)
     data = JSONField(default={}, blank=True)
@@ -37,9 +38,15 @@ class Workspace(models.Model):
         return '%s' % self.name
 
     @property
-    def lawyer(self):
+    def get_lawyer(self):
+        """
+        if lawyer is not set then look in participants for it
+        """
         lawyer = [u for u in self.participants.select_related('profile').all() if u.profile.is_lawyer is True]
-        return lawyer[0]
+        try:
+            return lawyer[0]
+        except IndexError:
+            return None
 
     def can_read(self, user):
         return user in self.participants.all()
@@ -128,12 +135,12 @@ class Tool(models.Model):
 
         return get_model(app_label=app_label, model_name=model_name)
 
-    def get_form(self, user):
+    def get_form(self, user, form_key=None):
         """
         return the form class as specified in the tool object
         """
         forms = self.data.get('forms')
-        form_class = forms.get(user.profile.user_class)
+        form_class = forms.get(user.profile.user_class if form_key is None else form_key)  # allow us to override the form selected
 
         return _class_importer(form_class)
 

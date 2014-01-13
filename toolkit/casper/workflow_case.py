@@ -14,7 +14,7 @@ import datetime
 logger = logging.getLogger('django.test')
 
 
-class PyQueryMixin(LiveServerTestCase):
+class PyQueryMixin(object):
     """
     Base mixin for using PyQuery for response.content selector lookups
     https://pypi.python.org/pypi/pyquery
@@ -26,6 +26,7 @@ class PyQueryMixin(LiveServerTestCase):
 
 class BaseScenarios(object):
     fixtures = ['sites', 'tools']
+    password = 'password'
 
     def basic_workspace(self):
         from toolkit.apps.workspace.models import Tool
@@ -33,12 +34,18 @@ class BaseScenarios(object):
         from toolkit.apps.eightythreeb.tests.data import EIGHTYTHREEB_DATA as BASE_EIGHTYTHREEB_DATA
 
         self.user = mommy.make('auth.User', first_name='Customer', last_name='Test', email='test+customer@lawpal.com')
+        self.user.set_password(self.password)
+        self.user.save()
+
         self.lawyer = mommy.make('auth.User', first_name='Lawyer', last_name='Test', email='test+lawyer@lawpal.com')
+        self.lawyer.set_password(self.password)
+        self.lawyer.save()
+
         lawyer_profile = self.lawyer.profile
         lawyer_profile.data['user_class'] = 'lawyer'
         lawyer_profile.save()
 
-        self.workspace = mommy.make('workspace.Workspace', name='Lawpal (test)')
+        self.workspace = mommy.make('workspace.Workspace', name='Lawpal (test)', lawyer=self.lawyer)
         self.workspace.tools.add(Tool.objects.get(slug='83b-election-letters'))
         self.workspace.participants.add(self.user)
         self.workspace.participants.add(self.lawyer)

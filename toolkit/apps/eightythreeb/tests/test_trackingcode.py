@@ -48,7 +48,7 @@ class BaseUSPSTrackingCode(TestCase):
         self.lawyer.set_password(self.password)
         self.lawyer.save()
 
-        self.workspace = mommy.make('workspace.Workspace', name='Lawpal (test)')
+        self.workspace = mommy.make('workspace.Workspace', name='Lawpal (test)', lawyer=self.lawyer)
         self.workspace.tools.add(Tool.objects.get(slug='83b-election-letters'))
         self.workspace.participants.add(self.user)
         self.workspace.participants.add(self.lawyer)
@@ -70,7 +70,7 @@ class BaseUSPSTrackingCode(TestCase):
 class TestTrackingCodeModal(BaseUSPSTrackingCode):
 
     @httpretty.activate
-    def test_something(self):
+    def test_form_validates_and_redirects(self):
         httpretty.register_uri(httpretty.POST, "http://production.shippingapis.com/ShippingAPI.dll",
                                body=TRACK_UNDELIVERED_RESPONSE_XML_BODY,
                                status=200)
@@ -89,7 +89,7 @@ class TestTrackingCodeModal(BaseUSPSTrackingCode):
         self.assertEqual(resp.status_code, 200)
 
         # Valid submission
-        response = self.client.post(url, {
+        resp = self.client.post(url, {
             'tracking_code': TRACKING_CODE,
             'user': self.user
         }, follow=True)
@@ -100,7 +100,7 @@ class TestTrackingCodeModal(BaseUSPSTrackingCode):
             'slug': self.eightythreeb.slug
         })
 
-        self.assertRedirects(response, redirect)
+        self.assertRedirects(resp, redirect)
 
 
 class TestTrackingCodeEmail(BaseUSPSTrackingCode):

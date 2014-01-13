@@ -19,7 +19,9 @@ from toolkit.apps.workspace.models import Tool
 from toolkit.apps.eightythreeb.models import EightyThreeB
 from toolkit.apps.eightythreeb.management.commands.eightythreeb_usps_track_response import Command as USPSEightyThreeBTracking
 
-TRACKING_CODE = 'EJ958083578US'
+TRACKING_CODE_USS39 = 'EJ958083578US'
+TRACKING_CODE_USS128 = '70132630000013657033'
+TRACKING_CODE = TRACKING_CODE_USS128
 
 
 class BaseUSPSTrackingCode(TestCase):
@@ -36,7 +38,7 @@ class BaseUSPSTrackingCode(TestCase):
         self.user = mommy.make('auth.User', first_name='Customer', last_name='Test', email='test+customer@lawpal.com')
         self.lawyer = mommy.make('auth.User', first_name='Lawyer', last_name='Test', email='test+lawyer@lawpal.com')
 
-        self.workspace = mommy.make('workspace.Workspace', name='Lawpal (test)')
+        self.workspace = mommy.make('workspace.Workspace', name='Lawpal (test)', lawyer=self.lawyer)
         self.workspace.tools.add(Tool.objects.get(slug='83b-election-letters'))
         self.workspace.participants.add(self.user)
         self.workspace.participants.add(self.lawyer)

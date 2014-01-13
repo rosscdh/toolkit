@@ -3,6 +3,6 @@
 {% block subject_line %}Welcome to LawPal{% endblock %}
 
 {% block html_content %}
-<p>Welcome, your account has been successfully created on LawPal.</p>
-<p>In future you can login using your email address (email) and the password you entered on signup.</p>
+<p>Your account has been successfully created on LawPal.</p>
+<p>In future you can login using this email address and the password you entered on signup.</p>
 {% endblock %}
