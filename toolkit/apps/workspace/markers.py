@@ -265,7 +265,8 @@ class Marker(object):
     @property
     def is_complete(self):
         if self.tool is not None:
-            return self.name in self.tool.data['markers']
+            markers = self.tool.data.get('markers', {})
+            return self.name in markers
         return False
 
     @property
@@ -273,6 +274,10 @@ class Marker(object):
         if self.is_complete:
             return parser.parse(self.tool.data['markers'][self.name].get('date_of'))
         return None
+
+    @property
+    def action_type_name(self):
+        return self.ACTION_TYPE.get_name_by_value(self.action_type) if self.action_type is not None else None
 
     @property
     def action_attribs(self):
@@ -285,6 +290,18 @@ class Marker(object):
             })
 
         return attribs
+
+    def can_perform_action(self, user):
+        """
+         @BUSINESS_RULE
+         show the action to user that have the right class OR where the user does not have the right class but IS the 83b.user
+        """
+        if self.action is not None and \
+            (user.profile.user_class in self.action_user_class or \
+            user.profile.user_class not in self.action_user_class and user == self.tool.user):
+            return True
+
+        return False
 
     def get_action_url(self):
         """
@@ -310,7 +327,7 @@ class Marker(object):
                 return self.tool.data['markers'][self.name]
         return False
 
-    def issue_signals(self, request, instance, actor):
+    def issue_signals(self, request, instance, actor, **kwargs):
         for s in self.signals:
             method = _class_importer(s)  # @TODO can optimise this and precache them
-            method.send(sender=request, instance=instance, actor=actor)
+            method.send(sender=request, instance=instance, actor=actor, **kwargs)

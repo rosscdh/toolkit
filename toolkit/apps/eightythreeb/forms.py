@@ -11,15 +11,15 @@ from localflavor.us.us_states import USPS_CHOICES
 
 from parsley.decorators import parsleyfy
 
-from toolkit.mixins import ModalForm
+from usps.validators import USPSTrackingCodeField
 
+from toolkit.mixins import ModalForm
 from toolkit.apps.workspace.mixins import WorkspaceToolFormMixin
 from toolkit.apps.workspace.services import EnsureCustomerService
+from toolkit.apps.workspace.services import USPSTrackingService
 
 from .models import EightyThreeB
 from .signals import customer_complete_form, lawyer_complete_form
-
-from toolkit.apps.workspace.services import USPSTrackingService
 
 import datetime
 
@@ -117,15 +117,15 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
     )
 
     accountant_email = forms.EmailField(
-        help_text='Optional.',
-        label='Your accountants email address',
+        help_text='We will email a copy of your signed election to your accountant for inclusion in your tax return.',
+        label='Your accountant\'s email address',
         required=False,
         widget=forms.TextInput(attrs={'size': '40'})
     )
 
     has_spouse = forms.BooleanField(
         help_text='',
-        label='Yes, I have a spouse or legally recognised de-facto',
+        label='Yes, I have a spouse',
         required=False,
     )
 
@@ -172,7 +172,7 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
             'required': "Nature of restrictions can't be blank."
         },
         label='Nature of restrictions to which property is subject',
-        help_text='If you have copied this from Microsoft Word then please check the numbering and formatting has been retained.',
+        help_text='If you have copied this from Microsoft Word please check that the numbering and formatting has been retained.',
         widget=forms.Textarea(attrs={
             'cols': '80',
             'data-toggle': 'summernote'
@@ -297,7 +297,9 @@ class CustomerEightyThreeBForm(BaseEightyThreeBForm):
                 css_class='form-section'
             ),
             Div(
-                HTML('<legend>Additional details</legend>'),
+                HTML('<legend>Additional details (Your attorney has entered this on your behalf)</legend>'),
+                HTML('<p>For your convenience, your attorney has entered the following information on your behalf.</p>'),
+
                 Div(
                     Div(
                         'ssn',
@@ -315,6 +317,8 @@ class CustomerEightyThreeBForm(BaseEightyThreeBForm):
             ),
             Div(
                 HTML('<legend>Please confirm the following is correct</legend>'),
+                HTML('<p>For your convenience your attorney has entered the following information. Please confirm that it is correct.</p> <br />'),
+
 
                 HTML('<p>{{ form.date_of_property_transfer.label }}</p>'),
                 HTML('<blockquote><p>{{ form.date_of_property_transfer.value|date:"F jS, Y" }}</p></blockquote>'),
@@ -467,7 +471,7 @@ class LawyerEightyThreeBForm(BaseEightyThreeBForm):
 class TrackingCodeForm(ModalForm, forms.ModelForm):
     title = 'Your 83b Postage Tracking Code'
 
-    tracking_code = forms.CharField(
+    tracking_code = USPSTrackingCodeField(
         error_messages={
             'required': "Tracking code can't be blank."
         },
@@ -494,14 +498,20 @@ class TrackingCodeForm(ModalForm, forms.ModelForm):
 
     def clean_tracking_code(self):
         tracking_code = self.cleaned_data.get('tracking_code')
+
+        self.instance.markers.marker('valid_usps_tracking_marker').issue_signals(request=self,
+                                                                                 instance=self.instance,
+                                                                                 actor=self.instance.user,
+                                                                                 tracking_code=tracking_code)
+
         service = USPSTrackingService()
 
         try:
             usps_response = service.track(tracking_code=tracking_code)
             service.record(instance=self.instance, usps_response=usps_response)
         except Exception as e:
-            raise forms.ValidationError('The Tracking code is not valid: %s' % e)
-            logger.error('Invalid Tracking Code %s entered by %s' % (tracking_code, self.user.email))
+            logger.error('Invalid Tracking Code %s' % (tracking_code,))
+            #raise forms.ValidationError('The Tracking code is not valid: %s' % e)
 
         return tracking_code
 

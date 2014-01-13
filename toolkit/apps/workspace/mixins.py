@@ -34,11 +34,24 @@ class WorkspaceToolViewMixin(object):
 
 
 class WorkspaceToolFormViewMixin(WorkspaceToolViewMixin, FormView):
+    def get_form_key(self):
+        """
+        Allow us to override the selected form; ie if a lawyer **somehow** https://trello.com/c/NckWffLg
+        gets made into a client; allow them to complete the customer form too.
+        """
+        form_key = None
+        instance = getattr(self, 'object', None)
+        if instance is not None:
+            if instance.user == self.request.user:
+                form_key = 'customer'
+        return form_key
+
     def get_form_class(self):
         """
         Returns the form associated with the tool.
         """
-        return self.tool.get_form(user=self.request.user)
+
+        return self.tool.get_form(user=self.request.user, form_key=self.get_form_key())
 
     def get_form_kwargs(self):
         """

@@ -22,7 +22,7 @@ class ConfirmAccountView(UpdateView):
     def dispatch(self, request, *args, **kwargs):
 
         # check to see if they have already set their password
-        if request.user.password not in [None, '', '!']:
+        if request.user.is_authenticated() and request.user.password not in [None, '', '!']:
             messages.warning(request, 'It looks like you have already confirmed your account. No need to access that form.')
             return redirect(reverse('public:home'))
 
