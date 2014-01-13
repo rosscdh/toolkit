@@ -1,0 +1,40 @@
+// File Uploader
+
+
+// Loading config with variables (changing them leads to changing a color scheme)
+@import "../../less/variables";
+
+// Utility mixins for greater good
+@import "../../less/mixins";
+
+.qq-uploader {
+    position: relative;
+    width: 100%;
+}
+
+.qq-buttons {
+    margin-top: 8px;
+}
+
+.qq-upload-drop-area {
+    background: #f0f0f0;
+    border: 3px dashed rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    height: 100%;
+    left: 0;
+    min-height: 70px;
+    position: absolute;
+    text-align:center;
+    top: 0;
+    width: 100%;
+    z-index: 2;
+
+    p {
+        display: block;
+        font-size: 16px;
+        margin-top: -8px;
+        position: absolute;
+        top: 45%;
+        width: 100%;
+    }
+}
