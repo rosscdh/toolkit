@@ -110,6 +110,37 @@ String.prototype.repeat = function(num) {
     // Bind our overloaded version of parsley to any forms
     $('[parsley-validate]').parsley();
 
+    // Action Buttons
+    $(document).on('click.bs.action.data-api', '[data-toggle="action"]', function(e) {
+      var $btn = $(this);
+      var href = $btn.attr('href');
+      var type = $btn.data('type');
+
+      e.preventDefault();
+      if ('redirect' == type) {
+        document.location = href;
+      } else if ('remote' == type) {
+        var data   = $btn.data();
+        var url    = href;
+        var method = data['method']; delete data['method'];
+
+        $.ajax({
+          "type": method,
+          "url": url,
+          "data": JSON.stringify(data),
+          "dataType": 'json',
+          "contentType": 'application/json',
+          "beforeSend": function (jqXHR, settings) {
+              // Pull the token out of the DOM.
+              jqXHR.setRequestHeader('X-CSRFToken', $('input[name=csrfmiddlewaretoken]:first').val());
+          },
+          "complete": function ( data ) {
+              document.location.reload();
+          }
+        });
+      };
+    });
+
     // make code pretty
     window.prettyPrint && prettyPrint();
   });
