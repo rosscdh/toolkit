@@ -14,7 +14,7 @@ import datetime
 logger = logging.getLogger('django.test')
 
 
-class PyQueryMixin(LiveServerTestCase):
+class PyQueryMixin(object):
     """
     Base mixin for using PyQuery for response.content selector lookups
     https://pypi.python.org/pypi/pyquery
