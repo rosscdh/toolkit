@@ -81,8 +81,14 @@ class CreateWorkspaceView(FormView):
     def form_valid(self, form):
         # save the form
         workspace = form.save()
+        # add lawyer
+        workspace.lawyer = self.request.user
+        workspace.save(update_fields=['lawyer'])
+        # add user as participant
         workspace.participants.add(self.request.user)
 
+        # @BUSINESS_RULE - 83(b) is added by default
+        # add the 83b tool by default
         tool_83b = Tool.objects.get(slug='83b-election-letters')
         workspace.tools.add(tool_83b)
 

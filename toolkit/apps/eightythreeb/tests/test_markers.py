@@ -238,7 +238,7 @@ class CustomerPrintAndSignMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.action_attribs, {'method': 'PATCH',
                                                        'status': 4,
                                                        'tool': '83b-election-letters',
-                                                       'tool_object_id': 1})
+                                                       'tool_object_id': self.eightythreeb.pk})
 
     def test_get_action_url(self):
         url = reverse('api:eightythreeb-detail', kwargs={'pk': self.subject.tool.pk})

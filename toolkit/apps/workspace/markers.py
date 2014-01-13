@@ -290,6 +290,18 @@ class Marker(object):
 
         return attribs
 
+    def can_perform_action(self, user):
+        """
+         @BUSINESS_RULE
+         show the action to user that have the right class OR where the user does not have the right class but IS the 83b.user
+        """
+        if self.action is not None and \
+            (user.profile.user_class in self.action_user_class or \
+            user.profile.user_class not in self.action_user_class and user == self.tool.user):
+            return True
+
+        return False
+
     def get_action_url(self):
         """
         method used to return the marker action_url without display business logic
