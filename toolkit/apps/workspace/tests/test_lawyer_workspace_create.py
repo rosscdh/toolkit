@@ -6,9 +6,6 @@ from toolkit.casper import BaseScenarios, PyQueryMixin
 from toolkit.apps.workspace.forms import WorkspaceForm
 from toolkit.apps.workspace.models import Workspace
 from toolkit.apps.dash.views import DashView
-# from toolkit.apps.eightythreeb.forms import LawyerEightyThreeBForm, CustomerEightyThreeBForm
-# from toolkit.apps.workspace.views import CreateWorkspaceToolObjectView, UpdateViewWorkspaceToolObjectView
-# from toolkit.apps.eightythreeb.markers import LawyerCompleteFormMarker, LawyerInviteUserMarker, CustomerCompleteFormMarker
 
 
 class LawyerCreateWorkspaceTest(BaseScenarios, PyQueryMixin, TestCase):
