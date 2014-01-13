@@ -38,6 +38,9 @@ class Workspace(models.Model):
 
     @property
     def lawyer(self):
+        """
+        @TODO make this a std field and ensure it is assigned on post_save created=True signal
+        """
         lawyer = [u for u in self.participants.select_related('profile').all() if u.profile.is_lawyer is True]
         return lawyer[0]
 
