@@ -20,6 +20,7 @@ class Workspace(models.Model):
     """
     name = models.CharField(max_length=255)
     slug = models.SlugField(blank=True)
+    lawyer = models.ForeignKey('auth.User', null=True, related_name='lawyer_workspace')  # Lawyer that created this workspace
     participants = models.ManyToManyField('auth.User', blank=True)
     tools = models.ManyToManyField('workspace.Tool', blank=True)
     data = JSONField(default={}, blank=True)
@@ -37,12 +38,15 @@ class Workspace(models.Model):
         return '%s' % self.name
 
     @property
-    def lawyer(self):
+    def get_lawyer(self):
         """
-        @TODO make this a std field and ensure it is assigned on post_save created=True signal
+        if lawyer is not set then look in participants for it
         """
         lawyer = [u for u in self.participants.select_related('profile').all() if u.profile.is_lawyer is True]
-        return lawyer[0]
+        try:
+            return lawyer[0]
+        except IndexError:
+            return None
 
     def can_read(self, user):
         return user in self.participants.all()
