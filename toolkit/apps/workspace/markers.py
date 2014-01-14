@@ -288,6 +288,8 @@ class Marker(object):
                 'target': '#%s' % getattr(self, 'modal_target', 'modal-%s' % self.name),  ## if we have the attribute modal_target use it else use self.name
                 'toggle': "modal",
             })
+        elif self.action_type == self.ACTION_TYPE.remote or self.action_type == self.ACTION_TYPE.redirect:
+            attribs.update({'toggle': 'action'})
 
         return attribs
 

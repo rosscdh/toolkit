@@ -113,6 +113,7 @@ class CustomerPrintAndSignMarker(Marker):
     @property
     def action_attribs(self):
         return {
+            'toggle': 'action',
             'method': 'PATCH',
             'status': self.val,
             'tool': self.tool.tool_slug,
