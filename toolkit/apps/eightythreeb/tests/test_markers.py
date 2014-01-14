@@ -64,6 +64,7 @@ class BaseTestMarker(BaseScenarios, TestCase):
 
     def test_has_properties(self):
         self.assertTrue(hasattr(self.subject, 'tool'))
+        self.assertTrue(hasattr(self.subject, 'val'))
         self.assertTrue(hasattr(self.subject, 'name'))
         self.assertTrue(hasattr(self.subject, 'description'))
         self.assertTrue(hasattr(self.subject, 'signals'))
@@ -86,6 +87,7 @@ class LawyerCompleteFormMarkerTest(BaseTestMarker):
     def test_properties(self):
         self.assertTrue(type(self.subject), self.clazz)
         self.assertEqual(self.subject.name, 'lawyer_complete_form')
+        self.assertEqual(self.subject.val, self.val)
         self.assertEqual(self.subject.description, 'Attorney: Setup 83(b) Election Letter')
         self.assertEqual(self.subject.signals, ['toolkit.apps.eightythreeb.signals.lawyer_complete_form'])
         self.assertEqual(self.subject.action_name, 'Setup 83(b)')
@@ -117,6 +119,7 @@ class LawyerInviteUserMarkerTest(BaseTestMarker):
     def test_properties(self):
         self.assertTrue(type(self.subject), self.clazz)
         self.assertEqual(self.subject.name, 'lawyer_invite_customer')
+        self.assertEqual(self.subject.val, self.val)
         self.assertEqual(self.subject.description, 'Attorney: Invite client to complete the 83(b) Election Letter')
         self.assertEqual(self.subject.signals, ['toolkit.apps.eightythreeb.signals.lawyer_invite_customer'])
         self.assertEqual(self.subject.action_name, 'Invite Client')
@@ -163,6 +166,7 @@ class CustomerCompleteFormMarkerTest(BaseTestMarker):
     def test_properties(self):
         self.assertTrue(type(self.subject), self.clazz)
         self.assertEqual(self.subject.name, 'customer_complete_form')
+        self.assertEqual(self.subject.val, self.val)
         self.assertEqual(self.subject.description, 'Client: Complete 83(b) Election Letter')
         self.assertEqual(self.subject.signals, ['toolkit.apps.eightythreeb.signals.customer_complete_form'])
         self.assertEqual(self.subject.action_name, 'Complete 83(b)')
@@ -196,6 +200,7 @@ class CustomerDownloadDocMarkerTest(BaseTestMarker):
     def test_properties(self):
         self.assertTrue(type(self.subject), self.clazz)
         self.assertEqual(self.subject.name, 'customer_download_pdf')
+        self.assertEqual(self.subject.val, self.val)
         self.assertEqual(self.subject.description, 'Client: Download 83(b) Election Letter and Instructions')
         self.assertEqual(self.subject.long_description, '')
         self.assertEqual(self.subject.signals, ['toolkit.apps.eightythreeb.signals.customer_download_pdf'])
@@ -227,6 +232,7 @@ class CustomerPrintAndSignMarkerTest(BaseTestMarker):
     def test_properties(self):
         self.assertTrue(type(self.subject), self.clazz)
         self.assertEqual(self.subject.name, 'customer_print_and_sign')
+        self.assertEqual(self.subject.val, self.val)
         self.assertEqual(self.subject.description, 'Client: Print, check and sign 83(b) Election Letter')
         self.assertEqual(self.subject.long_description, 'Print and sign the 83(b) Election where indicated.')
         self.assertEqual(self.subject.signals, ['toolkit.apps.eightythreeb.signals.customer_print_and_sign'])
@@ -268,6 +274,7 @@ class CustomerUploadScanMarkerTest(BaseTestMarker):
     def test_properties(self):
         self.assertTrue(type(self.subject), self.clazz)
         self.assertEqual(self.subject.name, 'copy_uploaded')
+        self.assertEqual(self.subject.val, self.val)
         self.assertEqual(self.subject.description, 'Client: Scan and upload signed copy')
         self.assertEqual(self.subject.long_description, None)
         self.assertEqual(self.subject.signals, ['toolkit.apps.eightythreeb.signals.copy_uploaded'])
@@ -287,6 +294,7 @@ class CustomerValidTrackingNumberMarkerTest(BaseTestMarker):
     def test_properties(self):
         self.assertTrue(type(self.subject), self.clazz)
         self.assertEqual(self.subject.name, 'valid_usps_tracking_marker')
+        self.assertEqual(self.subject.val, self.val)
         self.assertEqual(self.subject.description, 'Client: Has provided a valid USPS Tracking Code')
         self.assertEqual(self.subject.long_description, 'This marker will indicate the date a valid USPS Tracking Number was entered')
         self.assertEqual(self.subject.signals, ['toolkit.apps.eightythreeb.signals.valid_usps_tracking_marker'])
@@ -305,6 +313,7 @@ class CustomerTrackingNumberMarkerTest(BaseTestMarker):
     def test_properties(self):
         self.assertTrue(type(self.subject), self.clazz)
         self.assertEqual(self.subject.name, 'mail_to_irs_tracking_code')
+        self.assertEqual(self.subject.val, self.val)
         self.assertEqual(self.subject.description, 'Client: Mail to IRS & register Tracking Code')
         self.assertEqual(self.subject.long_description, 'Mail 83(b) form using USPS Registered Post *ONLY* and enter the Tracking Number here')
         self.assertEqual(self.subject.signals, ['toolkit.apps.eightythreeb.signals.mail_to_irs_tracking_code'])
@@ -344,6 +353,7 @@ class USPSDeliveryStatusMarkerTest(BaseTestMarker):
     def test_properties(self):
         self.assertTrue(type(self.subject), self.clazz)
         self.assertEqual(self.subject.name, 'irs_recieved')
+        self.assertEqual(self.subject.val, self.val)
         self.assertEqual(self.subject.description, 'Waiting for reciept of 83(b) by IRS (via USPS) for %s' % TRACKING_CODE)
         self.assertEqual(self.subject.long_description, 'Waiting for USPS response')
         self.assertEqual(self.subject.signals, ['toolkit.apps.eightythreeb.signals.irs_recieved'])
@@ -367,6 +377,7 @@ class ProcessCompleteMarkerTest(BaseTestMarker):
     def test_properties(self):
         self.assertTrue(type(self.subject), self.clazz)
         self.assertEqual(self.subject.name, 'complete')
+        self.assertEqual(self.subject.val, self.val)
         self.assertEqual(self.subject.description, 'Process Complete')
         self.assertEqual(self.subject.long_description, None)
         self.assertEqual(self.subject.signals, ['toolkit.apps.eightythreeb.signals.complete'])
