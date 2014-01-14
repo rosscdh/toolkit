@@ -21,7 +21,7 @@ class EightyThreeBManager(models.Manager):
     Default objects manager with helper methods
     """
     def mail_delivery_pending(self):
-        return super(EightyThreeBManager, self).get_query_set().filter(status=self.model.STATUS_83b.irs_recieved)
+        return super(EightyThreeBManager, self).get_query_set().filter(status=self.model.STATUS.irs_recieved)
 
     def incomplete(self):
         """

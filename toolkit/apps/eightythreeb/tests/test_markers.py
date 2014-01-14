@@ -104,11 +104,11 @@ class LawyerCompleteFormMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.action, self.subject.tool.get_edit_url())
 
         # set as complete then the action should return None
-        self.subject.tool.status = self.subject.tool.STATUS_83b.complete
+        self.subject.tool.status = self.subject.tool.STATUS.complete
         self.assertEqual(self.subject.action, None)
 
         # set as greater than the LawyerCompleteFormMarker.val then the action should also return None
-        self.subject.tool.status = self.subject.tool.STATUS_83b.customer_download_pdf
+        self.subject.tool.status = self.subject.tool.STATUS.customer_download_pdf
         self.assertEqual(self.subject.action, None)
 
 
@@ -146,7 +146,7 @@ class LawyerInviteUserMarkerTest(BaseTestMarker):
         prop_mock = mock.PropertyMock()
 
         # mock the subjects status so that its greater than the current markers val
-        self.subject.tool.status = self.subject.tool.STATUS_83b.irs_recieved
+        self.subject.tool.status = self.subject.tool.STATUS.irs_recieved
         # on complete we dont have an action
         self.assertEqual(self.subject.action, None)
 
@@ -180,7 +180,7 @@ class CustomerCompleteFormMarkerTest(BaseTestMarker):
         prop_mock = mock.PropertyMock()
 
         # mock the subjects status so that its greater than the current markers val
-        self.subject.tool.status = self.subject.tool.STATUS_83b.irs_recieved
+        self.subject.tool.status = self.subject.tool.STATUS.irs_recieved
         # on complete we dont have an action
         self.assertEqual(self.subject.action, None)
 
@@ -216,11 +216,11 @@ class CustomerDownloadDocMarkerTest(BaseTestMarker):
         action_url = reverse('workspace:tool_object_download', kwargs={'workspace': self.subject.tool.workspace.slug, 'tool': self.subject.tool.tool_slug, 'slug': self.subject.tool.slug})
 
         # the download button will NOT show when the status < the download value
-        self.subject.tool.status = self.subject.tool.STATUS_83b.lawyer_invite_customer
+        self.subject.tool.status = self.subject.tool.STATUS.lawyer_invite_customer
         self.assertEqual(self.subject.action, None)
 
         # the download button will show when the status > the download value
-        self.subject.tool.status = self.subject.tool.STATUS_83b.irs_recieved
+        self.subject.tool.status = self.subject.tool.STATUS.irs_recieved
         # on complete we do have an action
         self.assertEqual(self.subject.action, action_url)
 
@@ -254,7 +254,7 @@ class CustomerPrintAndSignMarkerTest(BaseTestMarker):
         prop_mock = mock.PropertyMock()
 
         # mock the subjects status so that its greater than the current markers val
-        self.subject.tool.status = self.subject.tool.STATUS_83b.irs_recieved
+        self.subject.tool.status = self.subject.tool.STATUS.irs_recieved
         # on complete we dont have an action
         self.assertEqual(self.subject.action, None)
 
@@ -332,17 +332,17 @@ class CustomerTrackingNumberMarkerTest(BaseTestMarker):
         action_url = reverse('eightythreeb:tracking_code', kwargs={'slug': self.subject.tool.slug})
 
         # This marker shows only when it is the active value or the next "irs_recieved"
-        self.subject.tool.status = self.subject.tool.STATUS_83b.mail_to_irs_tracking_code
+        self.subject.tool.status = self.subject.tool.STATUS.mail_to_irs_tracking_code
         self.assertEqual(self.subject.action, action_url)
         # mock the subjects status so that its greater than the current markers val
-        self.subject.tool.status = self.subject.tool.STATUS_83b.irs_recieved
+        self.subject.tool.status = self.subject.tool.STATUS.irs_recieved
         # on complete we dont have an action
         self.assertEqual(self.subject.action, action_url)
 
         # is NOT visible when any other marker is the status
-        self.subject.tool.status = self.subject.tool.STATUS_83b.customer_print_and_sign
+        self.subject.tool.status = self.subject.tool.STATUS.customer_print_and_sign
         self.assertEqual(self.subject.action, None)
-        self.subject.tool.status = self.subject.tool.STATUS_83b.customer_complete_form
+        self.subject.tool.status = self.subject.tool.STATUS.customer_complete_form
         self.assertEqual(self.subject.action, None)
 
 

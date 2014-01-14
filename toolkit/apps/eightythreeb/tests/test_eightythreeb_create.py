@@ -13,7 +13,7 @@ class LawyerCreateEightythreebTest(BaseScenarios, TestCase):
         super(LawyerCreateEightythreebTest, self).setUp()
         self.basic_workspace()
 
-        self.eightythreeb.status = self.eightythreeb.STATUS_83b.lawyer_invite_customer
+        self.eightythreeb.status = self.eightythreeb.STATUS.lawyer_invite_customer
         self.eightythreeb.data['markers']=   {"lawyer_complete_form": {
                                                   "actor_name": "", 
                                                   "date_of": "2013-12-30T10:52:35"
@@ -32,7 +32,7 @@ class LawyerCreateEightythreebTest(BaseScenarios, TestCase):
         resp = self.client.get(reverse('eightythreeb:preview', kwargs={'slug': self.eightythreeb.slug}), follow=True)
         # test general stuff
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.context_data.get('object').status, self.eightythreeb.STATUS_83b.lawyer_invite_customer)
+        self.assertEqual(resp.context_data.get('object').status, self.eightythreeb.STATUS.lawyer_invite_customer)
 
         # ensure we have the right prev current and next markers
         self.assertEqual(type(resp.context_data.get('object').markers.previous), LawyerCompleteFormMarker)

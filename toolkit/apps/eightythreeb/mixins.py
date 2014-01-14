@@ -65,7 +65,7 @@ class TransferAndFilingDatesMixin(object):
 class StatusMixin(object):
     @property
     def current_status(self):
-        return self.STATUS_83b.get_desc_by_value(self.status)
+        return self.STATUS.get_desc_by_value(self.status)
 
     def current_markers(self):
         return self.data.get('markers')
