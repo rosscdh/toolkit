@@ -160,7 +160,12 @@ class AdeWinterUspsTrackConfirm(object):
 
     def send_mail(self, instance, usps_response):
         recipient = (instance.user.get_full_name(), instance.user.email)
-        mailer = EightyThreeMailDeliveredEmail(recipients=(recipient,))
+
+        lawyer = instance.workspace.lawyer
+        from_tuple = (lawyer.get_full_name(), lawyer.email)
+
+        mailer = EightyThreeMailDeliveredEmail(from_tuple=from_tuple,
+                                               recipients=(recipient,))
 
         markers = instance.markers
         current_step = markers.current

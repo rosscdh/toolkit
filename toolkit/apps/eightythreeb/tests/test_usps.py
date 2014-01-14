@@ -37,6 +37,9 @@ class BaseUSPSTrackingCode(TestCase):
 
         self.user = mommy.make('auth.User', first_name='Customer', last_name='Test', email='test+customer@lawpal.com')
         self.lawyer = mommy.make('auth.User', first_name='Lawyer', last_name='Test', email='test+lawyer@lawpal.com')
+        lawyer_profile = self.lawyer.profile
+        lawyer_profile.data['user_class'] = 'lawyer'
+        lawyer_profile.save(update_fields=['data'])
 
         self.workspace = mommy.make('workspace.Workspace', name='Lawpal (test)', lawyer=self.lawyer)
         self.workspace.tools.add(Tool.objects.get(slug='83b-election-letters'))
@@ -121,7 +124,8 @@ class USPSTrackingCodeCliCommandTest(BaseUSPSTrackingCode):
 
         self.assertEqual(len(email.to), 1)
         self.assertEqual(email.to, ['test+customer@lawpal.com'])
-        self.assertEqual(email.from_email, 'tech@lawpal.com')
+        self.assertEqual(email.from_email, u'Lawyer Test (via LawPal) support@lawpal.com')
+        self.assertEqual(email.extra_headers, {'Reply-To': self.lawyer.email})
 
 
 class USPSUndeliveredTrackingCodeCliCommandTest(BaseUSPSTrackingCode):
