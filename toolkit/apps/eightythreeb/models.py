@@ -35,8 +35,8 @@ class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferA
     """
     83b Form to be associated with a Workspace and a particular user
     """
-    STATUS_83b = EIGHTYTHREEB_STATUS
-    INCOMPLETE_EXCLUDED_STATUS = [STATUS_83b.complete, STATUS_83b.irs_recieved]  # used in the manager to filter incomplete items
+    STATUS = EIGHTYTHREEB_STATUS
+    INCOMPLETE_EXCLUDED_STATUS = [EIGHTYTHREEB_STATUS.complete, EIGHTYTHREEB_STATUS.irs_recieved]  # used in the manager to filter incomplete items
 
     pdf_template_name = 'eightythreeb/eightythreeb.html'  # @TODO what is this doing here?
 
@@ -75,7 +75,7 @@ class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferA
 
     @property
     def is_complete(self):
-        return self.status == self.STATUS_83b.complete
+        return self.status == self.STATUS.complete
 
     @property
     def client_name(self):

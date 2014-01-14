@@ -60,7 +60,7 @@ class BaseScenarios(object):
                             data=eightythreeb_data,
                             filing_date=datetime.date.today() + datetime.timedelta(days=30),
                             transfer_date=datetime.date.today(),
-                            status=EightyThreeB.STATUS_83b.lawyer_complete_form)
+                            status=EightyThreeB.STATUS.lawyer_complete_form)
 
 
 class BaseProjectCaseMixin(BaseScenarios, BaseCasperJs):

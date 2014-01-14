@@ -23,7 +23,7 @@ class EightyThreeBReminderEmailTest(BaseCustomer):
     INVALID_REMINDER_EMAIL_STATUS = EightyThreeB.INCOMPLETE_EXCLUDED_STATUS
 
     def test_valid_83b_email(self):
-        VALID_STATUS_LIST = [(val, name, desc) for val, name, desc in EightyThreeB.STATUS_83b.get_all() if val not in self.INVALID_REMINDER_EMAIL_STATUS]
+        VALID_STATUS_LIST = [(val, name, desc) for val, name, desc in EightyThreeB.STATUS.get_all() if val not in self.INVALID_REMINDER_EMAIL_STATUS]
 
         for valid_status, name, desc in VALID_STATUS_LIST:
             self.eightythreeb.status = valid_status
@@ -45,7 +45,7 @@ class EightyThreeBReminderEmailTest(BaseCustomer):
         """
         83bs in the excluded status should not get emails
         """
-        INVALID_STATUS_LIST = [(val, name, desc) for val, name, desc in EightyThreeB.STATUS_83b.get_all() if val in self.INVALID_REMINDER_EMAIL_STATUS]
+        INVALID_STATUS_LIST = [(val, name, desc) for val, name, desc in EightyThreeB.STATUS.get_all() if val in self.INVALID_REMINDER_EMAIL_STATUS]
 
         for valid_status, name, desc in INVALID_STATUS_LIST:
             self.eightythreeb.status = valid_status
