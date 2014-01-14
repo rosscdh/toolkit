@@ -133,11 +133,11 @@ class TestTrackingCodeEmail(BaseUSPSTrackingCode):
         self.assertEqual(len(email.attachments), num_attachments)  # test we have the attachments
         self.assertEqual(len(email.to), 1)
         self.assertEqual(email.to, ['test+customer@lawpal.com'])
-        self.assertEqual(email.from_email, 'tech@lawpal.com')
+        self.assertEqual(email.from_email, 'support@lawpal.com')
 
         email = mail.outbox[1]
         self.assertEqual(email.subject, u'83b Tracking Code entered for Customer Test')
         self.assertEqual(len(email.attachments), num_attachments)  # test we have the attachments
         self.assertEqual(len(email.to), 1)
         self.assertEqual(email.to, ['test+lawyer@lawpal.com'])
-        self.assertEqual(email.from_email, 'tech@lawpal.com')
+        self.assertEqual(email.from_email, 'support@lawpal.com')

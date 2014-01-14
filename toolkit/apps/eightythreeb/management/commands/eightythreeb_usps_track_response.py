@@ -39,6 +39,7 @@ class Command(BaseCommand):
 
             if tracking_code is None:
                 logger.critical('Found 83b instance in track_response cycle with no tracking_code: %s %s' % (instance, tracking_code))
+
             else:
                 logger.info('Found 83b instance with tracking_code: %s %s' % (instance, tracking_code))
 
