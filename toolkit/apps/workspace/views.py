@@ -10,6 +10,8 @@ from django.views.generic import (FormView,
                                   UpdateView,
                                   DetailView)
 
+from toolkit.mixins import AjaxableFormViewResponseMixin, ModalView
+
 from .models import Workspace, Tool, InviteKey
 from .forms import WorkspaceForm, AddWorkspaceTeamMemberForm, InviteUserForm
 from .mixins import WorkspaceToolViewMixin, WorkspaceToolFormViewMixin, IssueSignalsMixin
@@ -59,9 +61,8 @@ class AddUserToWorkspace(CreateView):
         return super(AddUserToWorkspace, self).form_valid(form)
 
 
-class CreateWorkspaceView(FormView):
+class CreateWorkspaceView(AjaxableFormViewResponseMixin, ModalView, FormView):
     form_class = WorkspaceForm
-    template_name = 'workspace/workspace_form.html'
 
     def dispatch(self, request, *args, **kwargs):
         # ensure that only lawyers can create

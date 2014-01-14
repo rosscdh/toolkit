@@ -12,24 +12,24 @@ from crispy_forms.layout import Layout, ButtonHolder, Submit, Div
 
 from toolkit.apps.workspace.services import EnsureCustomerService
 from toolkit.apps.workspace.models import InviteKey
+from toolkit.mixins import ModalForm
 
 from .models import Workspace
 from .mailers import InviteUserToToolEmail
 
-from toolkit.mixins import ModalForm
-
 
 @parsleyfy
 class WorkspaceForm(ModalForm, forms.ModelForm):
+    title = 'Create a new Client'
+
     name = forms.CharField(
         error_messages={
             'required': "Client Name can't be blank."
         },
         label='Client name',
-        widget=forms.TextInput(attrs={'size': '40', 'placeholder':'Acme Inc'}),
+        widget=forms.TextInput(attrs={'size': '40', 'placeholder': 'Acme Inc'}),
         help_text='This is usually company name'
     )
-
 
     class Meta:
         model = Workspace
