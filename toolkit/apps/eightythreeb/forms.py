@@ -134,7 +134,7 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
             'invalid': "Property transfer date is invalid.",
             'required': "Property transfer date can't be blank."
         },
-        help_text='The filing deadline is 30 days from this date. Your filing deadline is <span id="filing-deadline"></span>.',
+        help_text='The filing deadline is 30 days from this date. Your election must be post-marked no later than <span id="filing-deadline"></span>.',
         input_formats=['%B %d, %Y', '%Y-%m-%d %H:%M:%S'],
         label='Date on which the property was transferred',
         widget=forms.DateInput(
