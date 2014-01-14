@@ -26,20 +26,19 @@
     "fields": {
       "data": {
         "icon": "images/icons/clipboard.svg",
-        "short_name": "Checklist",
-        "summary": "summary goes here",
-        "description": "Long description",
-        "model_name": "Checklist",
+        "short_name": "Engagement Letter",
+        "summary": "",
+        "description": "",
+        "model_name": "EngagementLetter",
         "forms": {
-          "customer": "toolkit.apps.checklist.forms.Checklist",
-          "lawyer": "toolkit.apps.checklist.forms.Checklist"
+          "customer": "toolkit.apps.engageletter.forms.CustomerForm",
+          "lawyer": "toolkit.apps.engageletter.forms.LawyerForm"
         },
-        "form": "toolkit.apps.checklist.forms.Checklist",
-        "app_label": "checklist",
+        "app_label": "engageletter",
         "can_create": ["lawyer"]
       },
-      "name": "Checklist",
-      "slug": "checklist"
+      "name": "Enagement Letter",
+      "slug": "engagement-letters"
     }
   }
 ]
