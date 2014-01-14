@@ -68,7 +68,7 @@ class BaseTestMarker(BaseScenarios, TestCase):
         self.assertTrue(hasattr(self.subject, 'action_user_class'))
 
     def test_action_attribs(self):
-        self.assertEqual(self.subject.action_attribs, {})
+        self.assertEqual(self.subject.action_attribs, {'toggle': 'action'})
 
     def test_get_action_url(self):
         with self.assertRaises(NotImplementedError):
@@ -197,3 +197,6 @@ class ProcessCompleteMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.action_name, None)
         self.assertEqual(self.subject.action_type, None)
         self.assertEqual(self.subject.action_user_class, [])
+
+    def test_action_attribs(self):
+        self.assertEqual(self.subject.action_attribs, {})
