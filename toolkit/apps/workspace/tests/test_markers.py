@@ -132,7 +132,7 @@ class ValidMarkerTest(unittest.TestCase):
     def test_action_attribs(self):
         subject = self.subject(1, name='test_marker')
         subject.action_type = Marker.ACTION_TYPE.redirect
-        self.assertEqual(subject.action_attribs, {})  # is blank
+        self.assertEqual(subject.action_attribs, {'toggle': 'action'})
 
     def test_action_attribs_modal(self):
         subject = self.subject(1, name='test_marker')
