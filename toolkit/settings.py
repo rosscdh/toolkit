@@ -92,6 +92,7 @@ HELPER_APPS = (
     'storages',
     'localflavor',
     'ajaxuploader',
+    'password_reset',
     'django_extensions',
     'django_bootstrap_breadcrumbs',
     'email_obfuscator',

@@ -127,14 +127,12 @@ class SignUpForm(forms.Form):
     def clean_email(self):
         email = self.cleaned_data.get('email')
 
-        try:
-            user = User.objects.get(email=email)
+        user = User.objects.filter(email=email).first()
 
-            if user:
-                raise forms.ValidationError("An account with that email already exists.")
-
-        except User.DoesNotExist:
+        if user is None:
             return email
+        else:
+            raise forms.ValidationError("An account with that email already exists.")
 
     def save(self):
         user = User.objects.create_user(self.cleaned_data.get('username'),

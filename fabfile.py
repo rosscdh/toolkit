@@ -110,6 +110,10 @@ def pip_install():
     virtualenv('pip install django-email-obfuscator')
 
 @task
+def cron():
+    virtualenv(cmd='python %s%s/manage.py eightythreeb_usps_track_response' % (env.remote_project_path, env.project))
+
+@task
 def check_permissions():
     with cd(env.remote_project_path):
         virtualenv(cmd='python %s%s/manage.py check_permissions' % (env.remote_project_path, env.project))

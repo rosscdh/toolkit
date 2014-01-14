@@ -33,6 +33,7 @@ class WorkspaceForm(ModalForm, forms.ModelForm):
 
     class Meta:
         model = Workspace
+        exclude = ['lawyer',]
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()

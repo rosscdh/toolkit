@@ -9,7 +9,10 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/', include('toolkit.apps.api.urls', namespace='api')),
     url(r'^dash/', include('toolkit.apps.dash.urls', namespace='dash')),
+
+    url(r'^me/pasword/', include('password_reset.urls')),
     url(r'^me/', include('toolkit.apps.me.urls', namespace='me')),
+
     url(r'^workspace/', include('toolkit.apps.workspace.urls', namespace='workspace')),
     url(r'^83b/', include('toolkit.apps.eightythreeb.urls', namespace='eightythreeb')),
 
