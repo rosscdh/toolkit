@@ -205,10 +205,9 @@ class InviteClientWorkspaceToolObjectView(IssueSignalsMixin, WorkspaceToolViewMi
         return context
 
     def form_valid(self, form):
-        email = form.save()  # not used
+        result = super(InviteClientWorkspaceToolObjectView, self).form_valid(form)
         self.issue_signals(request=self.request, instance=self.tool_instance, name='lawyer_invite_customer')  # NB teh tool_instance and NOT self.instance
-
-        return super(InviteClientWorkspaceToolObjectView, self).form_valid(form)
+        return result
 
 
 class WorkspaceToolObjectPreviewView(WorkspaceToolViewMixin, DetailView):
