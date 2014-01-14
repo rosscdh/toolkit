@@ -75,6 +75,8 @@ class CustomerInviteLoginTest(BaseCustomer):
         email = mail.outbox[0]
         self.assertEqual(email.subject, 'Welcome to LawPal')
         self.assertEqual(email.recipients(), [self.user.email])
+        self.assertEqual(email.from_email, 'support@lawpal.com')
+        self.assertEqual(email.extra_headers, {'Reply-To': 'support@lawpal.com'})
 
 
     def test_welcome_email_sent_with_no_invitation_record(self):

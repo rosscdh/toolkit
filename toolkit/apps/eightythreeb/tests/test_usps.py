@@ -125,6 +125,7 @@ class USPSTrackingCodeCliCommandTest(BaseUSPSTrackingCode):
         self.assertEqual(len(email.to), 1)
         self.assertEqual(email.to, ['test+customer@lawpal.com'])
         self.assertEqual(email.from_email, u'Lawyer Test (via LawPal) support@lawpal.com')
+        self.assertEqual(email.extra_headers, {'Reply-To': self.lawyer.email})
 
 
 class USPSUndeliveredTrackingCodeCliCommandTest(BaseUSPSTrackingCode):

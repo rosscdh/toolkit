@@ -36,8 +36,9 @@ class EightyThreeBReminderEmailTest(BaseCustomer):
             call_command('eightythreeb_reminder')
             self.assertEqual(len(mail.outbox), 1)
             email = mail.outbox[0]
-            #import pdb;pdb.set_trace()
+
             self.assertEqual(email.subject, 'ACTION REQUIRED : 83(b) Filing Reminder Update')
+            self.assertEqual(email.extra_headers, {'Reply-To': self.lawyer.email})
             mail.outbox.pop()  # remove the current one to allow for further tests
 
     def test_invalid_83b_email(self):
