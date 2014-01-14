@@ -61,39 +61,6 @@
         var $iframe = $('iframe#tool-preview');
         var $overview = $('#overview');
         $iframe.height($overview.height()).removeClass('fade');
-
-        // Action Buttons
-        $("[data-type]").on('click', function(e) {
-          var $btn = $(this);
-          var href = $btn.attr('href');
-          var type = $btn.data('type');
-
-          e.preventDefault();
-          if ('redirect' == type) {
-            document.location = href;
-          } else if ('remote' == type) {
-            var data   = $btn.data();
-            var url    = href;
-            var method = data['method']; delete data['method'];
-
-            $.ajax({
-                "type": method,
-                "url": url,
-                "data": JSON.stringify(data),
-                "dataType": 'json',
-                "contentType": 'application/json',
-                "beforeSend": function (jqXHR, settings) {
-                    // Pull the token out of the DOM.
-                    jqXHR.setRequestHeader('X-CSRFToken', $('input[name=csrfmiddlewaretoken]:first').val());
-                },
-                "complete": function ( data ) {
-                    // reload the page to show updated lawyer info
-                    //btn.hide().parent().append(response_success_msg);
-                    document.location.reload();
-                }
-            });
-          };
-        });
     });
 </script>
 {% endblock %}

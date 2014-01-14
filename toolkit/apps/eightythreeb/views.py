@@ -83,9 +83,23 @@ class TrackingCodeView(IssueSignalsMixin, ModalView, UpdateView):
 
 
 class AttachmentView(IssueSignalsMixin, UpdateView):
+    context_object_name = 'item'
     model = EightyThreeB
     form_class = AttachmentForm
     template_name_suffix = '_attachment_form'
+
+    def get_context_data(self, **kwargs):
+        context = super(AttachmentView, self).get_context_data(**kwargs)
+
+        workspace = self.object.workspace
+        tool = get_object_or_404(workspace.tools, slug=self.object.tool_slug)
+
+        context.update({
+            'tool': tool,
+            'workspace': workspace
+        })
+
+        return context
 
     def form_valid(self, form):
         """

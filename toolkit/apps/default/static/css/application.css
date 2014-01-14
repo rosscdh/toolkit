@@ -223,3 +223,17 @@
   background-color: #ecfaf2;
   color: #2ecc71;
 }
+.attachment-list-item {
+  padding: 15px;
+}
+.attachment-list-item-preview img {
+  background-color: #dcdcdc;
+  border-radius: 3px;
+  padding: 4px;
+}
+.attachment-list-item-preview img:hover {
+  background-color: #b9b9b9;
+}
+.attachment-list-item-meta {
+  margin-top: 20px;
+}
