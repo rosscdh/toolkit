@@ -24,7 +24,7 @@ MANAGERS = ADMINS + (
 )
 
 DEFAULT_FROM = (
- ("LawPal Tech", 'tech@lawpal.com'),
+ ("LawPal Support", 'support@lawpal.com'),
 )
 
 # SECURITY WARNING: keep the secret key used in production secret!
