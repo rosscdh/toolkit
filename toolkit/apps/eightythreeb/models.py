@@ -70,8 +70,8 @@ class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferA
 
     @property
     def base_signal(self):
-        from .signals import base_83b_signal
-        return base_83b_signal
+        from .signals import base_signal
+        return base_signal
 
     @property
     def is_complete(self):
