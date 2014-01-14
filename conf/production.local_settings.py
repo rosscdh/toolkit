@@ -46,7 +46,7 @@ EMAIL_HOST_PASSWORD = '0113633alex'
 # EMAIL_PORT = 587
 # EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'noreply@lawpal.com'
-SERVER_EMAIL = 'glynt@lawpal.com'
+SERVER_EMAIL = 'toolkit@lawpal.com'
 
 AWS_STORAGE_BUCKET_NAME = AWS_FILESTORE_BUCKET = 'prod-toolkit-lawpal-com'
 
