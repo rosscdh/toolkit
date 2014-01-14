@@ -13,8 +13,11 @@ urlpatterns = patterns('',
     url(r'^me/pasword/', include('password_reset.urls')),
     url(r'^me/', include('toolkit.apps.me.urls', namespace='me')),
 
+    # primary workspace
     url(r'^workspace/', include('toolkit.apps.workspace.urls', namespace='workspace')),
+    # apps
     url(r'^83b/', include('toolkit.apps.eightythreeb.urls', namespace='eightythreeb')),
+    url(r'^engagement-letters/', include('toolkit.apps.engageletter.urls', namespace='engageletter')),
 
     # home default terminator
     url(r'^', include('toolkit.apps.default.urls', namespace='public')),
