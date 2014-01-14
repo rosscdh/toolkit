@@ -11,7 +11,7 @@ logger = logging.getLogger('django.request')
 
 
 """ Primary signal used as wrapper for others """
-base_83b_signal = Signal(providing_args=['actor'])
+base_signal = Signal(providing_args=['actor'])
 """ Sundry signals """
 lawyer_complete_form = Signal(providing_args=['actor'])
 lawyer_invite_customer = Signal(providing_args=['actor'])
@@ -27,7 +27,7 @@ irs_recieved = Signal(providing_args=[])
 complete = Signal(providing_args=['actor'])
 
 
-@receiver(base_83b_signal)
+@receiver(base_signal)
 def on_base_signal(sender, instance, actor, **kwargs):
     """
     Primary handler that is called and will calculate the current and
