@@ -48,7 +48,7 @@ class BaseUSPSTrackingCode(TestCase):
         self.lawyer.set_password(self.password)
         self.lawyer.save()
 
-        self.workspace = mommy.make('workspace.Workspace', name='Lawpal (test)')
+        self.workspace = mommy.make('workspace.Workspace', name='Lawpal (test)', lawyer=self.lawyer)
         self.workspace.tools.add(Tool.objects.get(slug='83b-election-letters'))
         self.workspace.participants.add(self.user)
         self.workspace.participants.add(self.lawyer)

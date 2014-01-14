@@ -79,7 +79,7 @@ def _update_marker(marker_name, next_status, actor_name, instance, **kwargs):
 
 @receiver(lawyer_complete_form)
 def on_lawyer_complete_form(sender, instance, actor, **kwargs):
-    if actor.profile.is_lawyer:
+    if instance.markers.current.can_perform_action(user=actor):
         actor_name = actor.get_full_name()
         _update_marker(marker_name='lawyer_complete_form',
                        next_status=instance.STATUS_83b.lawyer_invite_customer,
@@ -89,7 +89,7 @@ def on_lawyer_complete_form(sender, instance, actor, **kwargs):
 
 @receiver(lawyer_invite_customer)
 def on_lawyer_invite_customer(sender, instance, actor, **kwargs):
-    if actor.profile.is_lawyer:
+    if instance.markers.current.can_perform_action(user=actor):
         actor_name = actor.get_full_name()
         _update_marker(marker_name='lawyer_invite_customer',
                        next_status=instance.STATUS_83b.customer_complete_form,
@@ -99,7 +99,7 @@ def on_lawyer_invite_customer(sender, instance, actor, **kwargs):
 
 @receiver(customer_complete_form)
 def on_customer_complete_form(sender, instance, actor, **kwargs):
-    if actor.profile.is_customer:
+    if instance.markers.current.can_perform_action(user=actor):
         actor_name = actor.get_full_name()
         _update_marker(marker_name='customer_complete_form',
                        next_status=instance.STATUS_83b.customer_download_pdf,
@@ -109,7 +109,7 @@ def on_customer_complete_form(sender, instance, actor, **kwargs):
 
 @receiver(customer_download_pdf)
 def on_customer_download_pdf(sender, instance, actor, **kwargs):
-    if actor.profile.is_customer:
+    if instance.markers.current.can_perform_action(user=actor):
         #if self.object.status <= self.object.STATUS_83b.customer_download_pdf:
         actor_name = actor.get_full_name()
         _update_marker(marker_name='customer_download_pdf',
@@ -120,7 +120,7 @@ def on_customer_download_pdf(sender, instance, actor, **kwargs):
 
 @receiver(customer_print_and_sign)
 def on_customer_print_and_sign(sender, instance, actor, **kwargs):
-    if actor.profile.is_customer:
+    if instance.markers.current.can_perform_action(user=actor):
         actor_name = actor.get_full_name()
         _update_marker(marker_name='customer_print_and_sign',
                        next_status=instance.STATUS_83b.copy_uploaded,
@@ -130,7 +130,7 @@ def on_customer_print_and_sign(sender, instance, actor, **kwargs):
 
 @receiver(copy_uploaded)
 def on_copy_uploaded(sender, instance, actor, **kwargs):
-    if actor.profile.is_customer:
+    if instance.markers.current.can_perform_action(user=actor):
         actor_name = actor.get_full_name()
         _update_marker(marker_name='copy_uploaded',
                        next_status=instance.STATUS_83b.mail_to_irs_tracking_code,
