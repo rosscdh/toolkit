@@ -5,16 +5,19 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 
 
-class EightyThreeBCreatedEmail(BaseSpecifiedFromMailerService):
-    """
-    m = EightyThreeBCreatedEmail(
-            from_tuple=('Ross', 'ross@lawpal.com'), 
-            subject='A new 83b has been created for you',
-            message='{from_name} has created an 83b form for you, you can find it at {location}',
-            recipients=(('Alex', 'alex@lawpal.com')))
-    m.process()
-    """
-    email_template = 'eightythreeb_created'
+#
+# @TODO remove this class 2014-01-14
+#
+# class EightyThreeBCreatedEmail(BaseSpecifiedFromMailerService):
+#     """
+#     m = EightyThreeBCreatedEmail(
+#             from_tuple=('Ross', 'ross@lawpal.com'), 
+#             subject='A new 83b has been created for you',
+#             message='{from_name} has created an 83b form for you, you can find it at {location}',
+#             recipients=(('Alex', 'alex@lawpal.com')))
+#     m.process()
+#     """
+#     email_template = 'eightythreeb_created'
 
 
 
@@ -38,7 +41,7 @@ class EightyThreeTrackingCodeEnteredEmail(BaseMailerService):
     """
     Send an email to all participants with the attachments
 
-    m = EightyThreeMailDeliveredEmail(recipients=(('Alex', 'alex@lawpal.com')))
+    m = EightyThreeTrackingCodeEnteredEmail(recipients=(('Alex', 'alex@lawpal.com')))
     m.process(instance=:instance)
     """
     email_template = 'eightythreeb_trackingcode_attached'
