@@ -4,30 +4,61 @@
         parsley: function(options, fn) {
             // Setup the default form listeners
             this.defaultOptions = {
+                animate: false,
                 errors: {
                     container: function(el) {
-                        return $(el).closest('[parsley-validate]').find('.form-errors');
+                        return $(el).closest('[parsley-validate]').find('.parsley-errors');
                     }
                 },
                 listeners: {
-                    onFormValidate: function(isFormValid, ev) {
-                        var $form = $(ev.target);
-                        var $errors = $form.find('.form-errors');
+                    onFormValidate: function(isFormValid, ev, ParsleyForm) {
+                        var $form           = $(ev.target);
+                        var $errors         = ParsleyForm.options.errorContainer || ParsleyForm.options.errors.container(ParsleyForm.$element);
+                        var $errorContainer = $errors.closest('.form-errors');
+
+                        var hash       = 'parsley-ajax-error-list';
+                        var ulError    = '#' + hash;
+                        var ulTemplate = $(ParsleyForm.options.errors.errorsWrapper).attr('id', hash).addClass('parsley-error-list');
+
+                        // remove any ajax errors
+                        $(ulError).remove();
 
                         if (isFormValid) {
-                            $errors.addClass('hide');
+                            $errorContainer.addClass('hide');
 
                             // Handle remote AJAX requests
                             if ($form.data('remote')) {
                                 $.ajax({
                                     data: $form.serialize(),
+                                    dataType: 'json',
                                     headers: {
                                         'X-CSRFToken': $form.find('input[name=csrfmiddlewaretoken]').val()
                                     },
                                     type: $form.attr('method'),
                                     url: $form.attr('action'),
+                                    error: function(data) {
+                                        var payload = data.responseJSON;
+
+                                        var count = $(payload['errors']).length;
+                                        if (count > 1) {
+                                            alert('> 1');
+                                            $errorContainer.find('p').html('There were ' + count + ' errors with this:');
+                                        } else if (count == 1) {
+                                            $errorContainer.find('p').html('There was 1 error with this:');
+                                        };
+
+                                        $errors.append(ParsleyForm.options.animate ? ulTemplate.css('display', '') : ulTemplate);
+                                        $.each(payload['errors'], function(key, value) {
+                                            var liTemplate = $(ParsleyForm.options.errors.errorElem).addClass(key);
+                                            $(ulError).append($(liTemplate).html(value));
+                                        });
+
+                                        $errorContainer.removeClass('hide');
+                                    },
                                     success: function(data) {
-                                        alert('ok');
+                                        if (data['url']) {
+                                            window.location.href = data['url'];
+                                        };
                                     }
                                 });
 
@@ -36,12 +67,12 @@
                         } else {
                             var count = $errors.find('ul.parsley-error-list li').length;
                             if (count > 1) {
-                                $errors.find('p').html('There were ' + count + ' errors with this:');
+                                $errorContainer.find('p').html('There were ' + count + ' errors with this:');
                             } else if (count == 1) {
-                                $errors.find('p').html('There was 1 error with this:');
+                                $errorContainer.find('p').html('There was 1 error with this:');
                             };
 
-                            $errors.removeClass('hide');
+                            $errorContainer.removeClass('hide');
                         };
                     },
                     onFieldValidate: function(field) {
