@@ -1,5 +1,6 @@
 import json
 
+from django.contrib import messages
 from django.forms.forms import BaseForm
 from django.http import HttpResponse
 from django.views.generic.base import View
@@ -54,7 +55,9 @@ class AjaxableFormViewResponseMixin(object):
             data = {
                 'errors': errors
             }
-            return self.render_to_json_response(data, status=400)
+            response = self.render_to_json_response(data, status=400)
+            self.clean_messages()
+            return response
         else:
             return super(AjaxableResponseMixin, self).form_invalid(form)
 
@@ -70,3 +73,8 @@ class AjaxableFormViewResponseMixin(object):
                 return self.render_to_json_response(data)
 
         return super(AjaxableResponseMixin, self).form_valid(form)
+
+    def clean_messages(self):
+        storage = messages.get_messages(self.request)
+        for _ in storage:
+            pass
