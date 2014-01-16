@@ -24,10 +24,12 @@ class LawyerCreateLetterMarker(Marker):
 
     @property
     def action(self):
-        if self.tool and (self.tool.is_complete is True or self.tool.status >= self.tool.STATUS.customer_complete_form):
-            return None
-        else:
-            return self.get_action_url()
+        if self.tool:
+            if self.tool.is_complete is True or self.tool.status >= self.tool.STATUS.customer_complete_form:
+                return None
+            else:
+                return self.get_action_url()
+        return None
 
 
 class LawyerInviteUserMarker(Marker):
