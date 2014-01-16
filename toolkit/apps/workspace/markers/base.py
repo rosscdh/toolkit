@@ -272,7 +272,7 @@ class Marker(object):
     def is_complete(self):
         if self.tool is not None:
             markers = self.tool.data.get('markers', {})
-            return self.name in markers
+            return self.name in markers.keys()
         return False
 
     @property

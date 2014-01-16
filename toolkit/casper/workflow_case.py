@@ -50,8 +50,8 @@ class BaseScenarios(object):
         self.workspace.participants.add(self.user)
         self.workspace.participants.add(self.lawyer)
 
-        eightythreeb_data = BASE_EIGHTYTHREEB_DATA.copy()
-        eightythreeb_data['markers'] = {}  # set teh markers to nothing
+        eightythreeb_data = BASE_EIGHTYTHREEB_DATA
+        eightythreeb_data['markers'] = {}  # set the markers to nothing
 
         self.eightythreeb = mommy.make('eightythreeb.EightyThreeB',
                             slug='e0c545082d1241849be039e338e47a0f',

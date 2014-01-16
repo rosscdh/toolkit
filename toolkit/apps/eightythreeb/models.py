@@ -70,7 +70,7 @@ class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferA
 
     @property
     def base_signal(self):
-        from .signals import base_signal
+        from toolkit.apps.workspace.signals import base_signal
         return base_signal
 
     @property
