@@ -302,11 +302,13 @@ class Marker(object):
     def can_perform_action(self, user):
         """
          @BUSINESS_RULE
-         show the action to user that have the right class OR where the user does not have the right class but IS the 83b.user
+         show the action to user that have the right class OR where the user
+         does not have the right class but IS the 83b.user but the action class
+         is not lawyers only
         """
         if self.action is not None and \
             (user.profile.user_class in self.action_user_class or \
-            user.profile.user_class not in self.action_user_class and user == self.tool.user):
+            user.profile.user_class not in self.action_user_class and user == self.tool.user and self.action_user_class != ['lawyer']):
             return True
 
         return False
