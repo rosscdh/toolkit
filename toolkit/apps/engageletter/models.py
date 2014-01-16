@@ -32,9 +32,6 @@ class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, WorkspaceToolMode
 
     data = JSONField(default={})
 
-    filing_date = models.DateField(auto_now=False, auto_now_add=False, blank=True, null=True)  # remove the null=True after migrations 0002,0003 applied
-    transfer_date = models.DateField(auto_now=False, auto_now_add=False, blank=True, null=True)  # remove the null=True after migrations 0002,0003 applied
-
     status = models.IntegerField(choices=ENGAGEMENTLETTER_STATUS.get_choices(), default=ENGAGEMENTLETTER_STATUS.lawyer_setup_template, db_index=True)
 
     _markers = None
