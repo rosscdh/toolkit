@@ -69,9 +69,6 @@ class BaseForm(WorkspaceToolFormMixin):
         self.helper = FormHelper()
         super(BaseForm, self).__init__(*args, **kwargs)
 
-    def issue_signals(self, instance):
-        instance.markers.current.issue_signals(request=self.request, instance=instance, actor=self.user)
-
     def save(self):
 
         if self.instance is not None:
@@ -181,6 +178,11 @@ class LawyerForm(BaseForm):
             )
         )
 
+    def issue_signals(self, instance):
+        instance.markers.marker('lawyer_complete_form').issue_signals(request=self.request, instance=instance, actor=self.user)
+
 
 @parsleyfy
-class CustomerForm(BaseForm): pass
+class CustomerForm(BaseForm):
+    def issue_signals(self, instance):
+        instance.markers.marker('customer_complete_form').issue_signals(request=self.request, instance=instance, actor=self.user)

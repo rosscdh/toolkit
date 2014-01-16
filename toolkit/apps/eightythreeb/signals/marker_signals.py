@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.dispatch import Signal, receiver
 
+from toolkit.apps.workspace.signals import _update_marker
+
 from ..markers import EightyThreeBSignalMarkers
 from ..mailers import EightyThreeTrackingCodeEnteredEmail
 
@@ -9,9 +11,6 @@ import datetime
 import logging
 logger = logging.getLogger('django.request')
 
-
-""" Primary signal used as wrapper for others """
-base_signal = Signal(providing_args=['actor'])
 """ Sundry signals """
 lawyer_complete_form = Signal(providing_args=['actor'])
 lawyer_invite_customer = Signal(providing_args=['actor'])
@@ -25,56 +24,6 @@ mail_to_irs_tracking_code = Signal(providing_args=['actor'])
 
 irs_recieved = Signal(providing_args=[])
 complete = Signal(providing_args=['actor'])
-
-
-@receiver(base_signal)
-def on_base_signal(sender, instance, actor, **kwargs):
-    """
-    Primary handler that is called and will calculate the current and
-    previous instance marker status, and issue the appropriate signals
-    """
-    markers = EightyThreeBSignalMarkers()  # @TODO can refer to instance.markers ?
-
-    # if we are provided a kwargs "name" then use that.. otherwise use the current instance marker
-    marker_node = markers.marker(val=kwargs.get('name', instance.status))
-
-    if hasattr(marker_node, 'issue_signals'):
-        marker_node.issue_signals(request=sender, instance=instance, actor=actor)
-    else:
-        logger.error('Requested signal marker "%s" has no issue_signals method' % marker_node)
-
-
-def _update_marker(marker_name, next_status, actor_name, instance, **kwargs):
-    """
-    Shared process used by signals to perform status updates
-    """
-    # get the data markers
-    markers = instance.data.get('markers', {})
-    # capture fields to update
-    update_fields = []
-
-    # set our key
-    #if instance.status < next_status:
-
-    kwargs.update({
-        'date_of': datetime.datetime.utcnow(),
-        'actor_name': actor_name
-    })
-    markers[marker_name] = kwargs
-
-    # update markers object @TODO race condition?
-    instance.data['markers'] = markers
-
-    update_fields.append('data')
-
-    # set the next status
-    # @BUSINESSRULE only update if the current status is less than our reqeusted status
-    if instance.status < next_status:
-        instance.status = next_status
-        update_fields.append('status')
-
-    # save
-    instance.save(update_fields=update_fields)
 
 
 @receiver(lawyer_complete_form)

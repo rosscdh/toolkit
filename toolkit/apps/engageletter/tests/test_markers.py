@@ -2,11 +2,14 @@
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 
+from model_mommy import mommy
 import mock
 
 from toolkit.apps.workspace.markers import Marker
 from toolkit.casper.workflow_case import BaseScenarios
 
+from .data import ENGAGELETTER_DATA as BASE_ENGAGELETTER_DATA
+from ..models import EngagementLetter
 from ..markers import EngagementLetterMarkers
 from ..markers import (LawyerSetupTemplateMarker,
                       LawyerCreateLetterMarker,
@@ -34,8 +37,8 @@ class EngagementLetterMarkersTest(TestCase):
 
         self.assertEqual(len(name_vals), 6)
 
-        self.assertEqual(name_vals, [('lawyer_setup_template', 0),
-                                     ('lawyer_complete_form', 1),
+        self.assertEqual(name_vals, [('lawyer_complete_form', 0),
+                                     ('lawyer_setup_template', 1),
                                      ('lawyer_invite_customer', 2),
                                      ('customer_complete_form', 3),
                                      ('customer_sign_and_send', 4),
@@ -44,35 +47,73 @@ class EngagementLetterMarkersTest(TestCase):
 
 class BaseTestMarker(BaseScenarios, TestCase):
     val = None
+    subject = None
     clazz = LawyerSetupTemplateMarker
 
     def setUp(self):
         super(BaseTestMarker, self).setUp()
         self.basic_workspace()
+        if self.val is not None:
+            self.subject = self.clazz(self.val)
 
-        self.subject = self.clazz(self.val)
-        self.subject.tool = self.eightythreeb
+            data = BASE_ENGAGELETTER_DATA.copy()
+            if 'lawyer_complete_form' in data['markers']:
+                del data['markers']['lawyer_complete_form']
+
+            self.subject.tool = mommy.make('engageletter.EngagementLetter',
+                                slug='d1c545082d1241849be039e338e47aa0',
+                                workspace=self.workspace,
+                                user=self.user,
+                                data=data,
+                                status=EngagementLetter.STATUS.lawyer_complete_form)
 
     def test_has_properties(self):
-        self.assertTrue(hasattr(self.subject, 'tool'))
-        self.assertTrue(hasattr(self.subject, 'val'))
-        self.assertTrue(hasattr(self.subject, 'name'))
-        self.assertTrue(hasattr(self.subject, 'description'))
-        self.assertTrue(hasattr(self.subject, 'signals'))
-        self.assertTrue(hasattr(self.subject, 'action_name'))
-        self.assertTrue(hasattr(self.subject, 'action_type'))
-        self.assertTrue(hasattr(self.subject, 'action_user_class'))
+        if self.val is not None:
+            self.assertTrue(hasattr(self.subject, 'tool'))
+            self.assertTrue(hasattr(self.subject, 'val'))
+            self.assertTrue(hasattr(self.subject, 'name'))
+            self.assertTrue(hasattr(self.subject, 'description'))
+            self.assertTrue(hasattr(self.subject, 'signals'))
+            self.assertTrue(hasattr(self.subject, 'action_name'))
+            self.assertTrue(hasattr(self.subject, 'action_type'))
+            self.assertTrue(hasattr(self.subject, 'action_user_class'))
 
     def test_action_attribs(self):
-        self.assertEqual(self.subject.action_attribs, {'toggle': 'action'})
+        if self.val is not None:
+            self.assertEqual(self.subject.action_attribs, {'toggle': 'action'})
 
     def test_get_action_url(self):
-        with self.assertRaises(NotImplementedError):
-            self.subject.get_action_url()
+        if self.val is not None:
+            with self.assertRaises(NotImplementedError):
+                self.subject.get_action_url()
 
     def test_action(self):
-        with self.assertRaises(NotImplementedError):
-            self.subject.action
+        if self.val is not None:
+            with self.assertRaises(NotImplementedError):
+                self.subject.action
+
+
+class LawyerCreateLetterMarkerTest(BaseTestMarker):
+    val = 0
+    clazz = LawyerCreateLetterMarker
+
+    def test_properties(self):
+        self.assertTrue(type(self.subject), self.clazz)
+        self.assertEqual(self.subject.val, self.val)
+        self.assertEqual(self.subject.name, 'lawyer_complete_form')
+        self.assertEqual(self.subject.description, 'Attorney: Create Engagement Letter')
+        self.assertEqual(self.subject.signals, ['toolkit.apps.engageletter.signals.lawyer_complete_form'])
+        self.assertEqual(self.subject.action_name, 'Create Engagement Letter')
+        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
+        self.assertEqual(self.subject.action_user_class, ['lawyer'])
+
+    def test_get_action_url(self):
+        url = reverse('workspace:tool_object_edit', kwargs={'workspace': self.subject.tool.workspace.slug, 'tool': self.subject.tool.tool_slug, 'slug': self.subject.tool.slug})
+        self.assertEqual(self.subject.get_action_url(), url)
+
+    def test_action(self):
+        url = reverse('workspace:tool_object_edit', kwargs={'workspace': self.subject.tool.workspace.slug, 'tool': self.subject.tool.tool_slug, 'slug': self.subject.tool.slug})
+        self.assertEqual(self.subject.action, url)
 
 
 class LawyerSetupTemplateMarkerTest(BaseTestMarker):
@@ -89,20 +130,13 @@ class LawyerSetupTemplateMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
         self.assertEqual(self.subject.action_user_class, ['lawyer'])
 
+    def test_get_action_url(self):
+        url = reverse('me:letterhead')
+        self.assertEqual(self.subject.get_action_url(), url)
 
-class LawyerCreateLetterMarkerTest(BaseTestMarker):
-    val = 0
-    clazz = LawyerCreateLetterMarker
-
-    def test_properties(self):
-        self.assertTrue(type(self.subject), self.clazz)
-        self.assertEqual(self.subject.val, self.val)
-        self.assertEqual(self.subject.name, 'lawyer_complete_form')
-        self.assertEqual(self.subject.description, 'Attorney: Create Engagement Letter')
-        self.assertEqual(self.subject.signals, ['toolkit.apps.engageletter.signals.lawyer_complete_form'])
-        self.assertEqual(self.subject.action_name, 'Create Engagement Letter')
-        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
-        self.assertEqual(self.subject.action_user_class, ['lawyer'])
+    def test_action(self):
+        url = reverse('me:letterhead')
+        self.assertEqual(self.subject.action, url)
 
 
 class LawyerInviteUserMarkerTest(BaseTestMarker):

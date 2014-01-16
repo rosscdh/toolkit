@@ -44,7 +44,7 @@ class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, WorkspaceToolMode
 
     @property
     def tool_slug(self):
-        return 'enagement-letters'
+        return 'engagement-letters'
 
     @property
     def markers(self):
@@ -54,7 +54,7 @@ class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, WorkspaceToolMode
 
     @property
     def base_signal(self):
-        from .signals import base_signal
+        from toolkit.apps.workspace.signals import base_signal
         return base_signal
 
     @property
