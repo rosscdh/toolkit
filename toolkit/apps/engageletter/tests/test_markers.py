@@ -13,8 +13,6 @@ from ..markers import (LawyerSetupTemplateMarker,
                       LawyerInviteUserMarker,
                       CustomerCompleteLetterFormMarker,
                       CustomerSignAndSendMarker,
-                      CustomerDownloadMarker,
-                      LawyerDownloadMarker,
                       ProcessCompleteMarker)
 
 
@@ -28,22 +26,20 @@ class EngagementLetterSignalMarkersTest(TestCase):
 
     def test_correct_init(self):
         subject = self.subject()
-        self.assertEqual(len(subject.signal_map), 8)
+        self.assertEqual(len(subject.signal_map), 6)
 
     def test_signal_map_name_vals(self):
         subject = self.subject()
         name_vals = [(m.name, m.val) for m in subject.signal_map]
 
-        self.assertEqual(len(name_vals), 8)
+        self.assertEqual(len(name_vals), 6)
 
         self.assertEqual(name_vals, [('lawyer_setup_template', 0),
                                      ('lawyer_complete_form', 1),
                                      ('lawyer_invite_customer', 2),
                                      ('customer_complete_form', 3),
                                      ('customer_sign_and_send', 4),
-                                     ('customer_download_letter', 5),
-                                     ('lawyer_download_letter', 6),
-                                     ('complete', 7)])
+                                     ('complete', 5)])
 
 
 class BaseTestMarker(BaseScenarios, TestCase):
@@ -87,9 +83,9 @@ class LawyerSetupTemplateMarkerTest(BaseTestMarker):
         self.assertTrue(type(self.subject), self.clazz)
         self.assertEqual(self.subject.val, self.val)
         self.assertEqual(self.subject.name, 'lawyer_setup_template')
-        self.assertEqual(self.subject.description, 'Attorney: Setup Engagement Letter Template')
+        self.assertEqual(self.subject.description, 'Attorney: Setup Letter Template')
         self.assertEqual(self.subject.signals, ['toolkit.apps.engageletter.signals.lawyer_setup_template'])
-        self.assertEqual(self.subject.action_name, 'Setup Engagement Letter Template')
+        self.assertEqual(self.subject.action_name, 'Setup Letter Template')
         self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
         self.assertEqual(self.subject.action_user_class, ['lawyer'])
 
@@ -152,36 +148,6 @@ class CustomerSignAndSendMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.action_name, 'Complete Engagement Letter')
         self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
         self.assertEqual(self.subject.action_user_class, ['customer'])
-
-
-class CustomerDownloadMarkerTest(BaseTestMarker):
-    val = 0
-    clazz = CustomerDownloadMarker
-
-    def test_properties(self):
-        self.assertTrue(type(self.subject), self.clazz)
-        self.assertEqual(self.subject.val, self.val)
-        self.assertEqual(self.subject.name, 'customer_download_letter')
-        self.assertEqual(self.subject.description, 'Client: Download Signed Engagement Letter')
-        self.assertEqual(self.subject.signals, ['toolkit.apps.engageletter.signals.customer_download_letter'])
-        self.assertEqual(self.subject.action_name, 'Download Engagement Letter')
-        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
-        self.assertEqual(self.subject.action_user_class, ['customer'])
-
-
-class LawyerDownloadMarkerTest(BaseTestMarker):
-    val = 0
-    clazz = LawyerDownloadMarker
-
-    def test_properties(self):
-        self.assertTrue(type(self.subject), self.clazz)
-        self.assertEqual(self.subject.val, self.val)
-        self.assertEqual(self.subject.name, 'lawyer_download_letter')
-        self.assertEqual(self.subject.description, 'Attorney: Download Signed Engagement Letter')
-        self.assertEqual(self.subject.signals, ['toolkit.apps.engageletter.signals.lawyer_download_letter'])
-        self.assertEqual(self.subject.action_name, 'Download Engagement Letter')
-        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
-        self.assertEqual(self.subject.action_user_class, ['lawyer'])
 
 
 class ProcessCompleteMarkerTest(BaseTestMarker):

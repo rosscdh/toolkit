@@ -1,15 +1,6 @@
 # -*- coding: utf-8 -*-
 from toolkit.apps.workspace.markers import BaseSignalMarkers, Marker
-
-
-class LawyerSetupTemplateMarker(Marker):
-    name = 'lawyer_setup_template'
-    description = 'Attorney: Setup Engagement Letter Template'
-    signals = ['toolkit.apps.engageletter.signals.lawyer_setup_template']
-
-    action_name = 'Setup Engagement Letter Template'
-    action_type = Marker.ACTION_TYPE.redirect
-    action_user_class = ['lawyer']
+from toolkit.apps.workspace.markers.lawyers import LawyerSetupTemplateMarker
 
 
 class LawyerCreateLetterMarker(Marker):
@@ -52,26 +43,6 @@ class CustomerSignAndSendMarker(Marker):
     action_user_class = ['customer']
 
 
-class CustomerDownloadMarker(Marker):
-    name = 'customer_download_letter'
-    description = 'Client: Download Signed Engagement Letter'
-    signals = ['toolkit.apps.engageletter.signals.customer_download_letter']
-
-    action_name = 'Download Engagement Letter'
-    action_type = Marker.ACTION_TYPE.redirect
-    action_user_class = ['customer']
-
-
-class LawyerDownloadMarker(Marker):
-    name = 'lawyer_download_letter'
-    description = 'Attorney: Download Signed Engagement Letter'
-    signals = ['toolkit.apps.engageletter.signals.lawyer_download_letter']
-
-    action_name = 'Download Engagement Letter'
-    action_type = Marker.ACTION_TYPE.redirect
-    action_user_class = ['lawyer']
-
-
 class ProcessCompleteMarker(Marker):
     name = 'complete'
     description = 'Process Complete'
@@ -85,7 +56,5 @@ class EngagementLetterSignalMarkers(BaseSignalMarkers):
         LawyerInviteUserMarker(2),
         CustomerCompleteLetterFormMarker(3),
         CustomerSignAndSendMarker(4),
-        CustomerDownloadMarker(5),
-        LawyerDownloadMarker(6),
-        ProcessCompleteMarker(7)
+        ProcessCompleteMarker(5)
     ]
