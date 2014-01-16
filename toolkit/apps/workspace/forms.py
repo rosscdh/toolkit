@@ -48,6 +48,8 @@ class WorkspaceForm(ModalForm, forms.ModelForm):
 
 @parsleyfy
 class AddWorkspaceTeamMemberForm(ModalForm, forms.Form):
+    title = 'Add a new Team Member'
+
     client_full_name = forms.CharField(
         error_messages={
             'required': "Client name can't be blank."
@@ -63,7 +65,6 @@ class AddWorkspaceTeamMemberForm(ModalForm, forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
-        kwargs.pop('instance')  # remove the instance
         self.workspace = kwargs.pop('workspace')
 
         self.helper = FormHelper()

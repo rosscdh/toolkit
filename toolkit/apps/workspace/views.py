@@ -10,7 +10,7 @@ from django.views.generic import (FormView,
                                   UpdateView,
                                   DetailView)
 
-from toolkit.mixins import AjaxableFormViewResponseMixin, ModalView
+from toolkit.mixins import AjaxFormView, AjaxModelFormView, ModalView
 
 from .models import Workspace, Tool, InviteKey
 from .forms import WorkspaceForm, AddWorkspaceTeamMemberForm, InviteUserForm
@@ -23,8 +23,7 @@ import logging
 logger = logging.getLogger('django.request')
 
 
-class AddUserToWorkspace(CreateView):
-    template_name = 'workspace/workspace_user_form.html'
+class AddUserToWorkspace(ModalView, AjaxFormView, FormView):
     form_class = AddWorkspaceTeamMemberForm
 
     def dispatch(self, request, *args, **kwargs):
@@ -61,7 +60,7 @@ class AddUserToWorkspace(CreateView):
         return super(AddUserToWorkspace, self).form_valid(form)
 
 
-class CreateWorkspaceView(AjaxableFormViewResponseMixin, ModalView, FormView):
+class CreateWorkspaceView(ModalView, AjaxModelFormView, CreateView):
     form_class = WorkspaceForm
 
     def dispatch(self, request, *args, **kwargs):
@@ -73,28 +72,26 @@ class CreateWorkspaceView(AjaxableFormViewResponseMixin, ModalView, FormView):
         return super(CreateWorkspaceView, self).dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
-        return reverse('dash:default')
-
-    def form_invalid(self, form):
-        messages.error(self.request, 'Sorry, there was an error %s' % form.errors)
-        return super(CreateWorkspaceView, self).form_invalid(form)
+        return self.object.get_absolute_url()
 
     def form_valid(self, form):
-        # save the form
-        workspace = form.save()
+        response = super(CreateWorkspaceView, self).form_valid(form)
+
         # add lawyer
-        workspace.lawyer = self.request.user
-        workspace.save(update_fields=['lawyer'])
+        self.object.lawyer = self.request.user
+        self.object.save(update_fields=['lawyer'])
+
         # add user as participant
-        workspace.participants.add(self.request.user)
+        self.object.participants.add(self.request.user)
 
         # @BUSINESS_RULE - 83(b) is added by default
         # add the 83b tool by default
         tool_83b = Tool.objects.get(slug='83b-election-letters')
-        workspace.tools.add(tool_83b)
+        self.object.tools.add(tool_83b)
 
         messages.success(self.request, 'You have sucessfully created a new workspace')
-        return super(CreateWorkspaceView, self).form_valid(form)
+
+        return response
 
 
 class WorkspaceToolObjectsListView(WorkspaceToolViewMixin, ListView):
