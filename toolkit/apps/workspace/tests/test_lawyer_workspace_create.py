@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase
 from django.core.urlresolvers import reverse
+from django.utils import simplejson as json
 
 from toolkit.casper import BaseScenarios, PyQueryMixin
 from toolkit.apps.workspace.forms import WorkspaceForm
@@ -13,7 +14,7 @@ class LawyerCreateWorkspaceTest(BaseScenarios, PyQueryMixin, TestCase):
         super(LawyerCreateWorkspaceTest, self).setUp()
         self.basic_workspace()
 
-        self.client.login(username=self.lawyer.username, password=self.password)
+        # self.client.login(username=self.lawyer.username, password=self.password)
 
 
     def test_lawyer_create_workspace(self):
@@ -21,33 +22,35 @@ class LawyerCreateWorkspaceTest(BaseScenarios, PyQueryMixin, TestCase):
         The lawyer should be able to create a workspace
         and immediately be assigned as the workspace.lawyer
         """
-        create_url = reverse('workspace:create')
-        resp = self.client.get(create_url, follow=True)
-        # test general stuff
+        url = reverse('workspace:create')
+
+        # User not logged in
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp['Location'], 'http://testserver/start/?next=/workspace/create/')
+
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        # Valid user
+        resp = self.client.get(url)
         self.assertEqual(resp.status_code, 200)
 
-        # Setup the form variables for later
-        form = resp.context_data.get('form')
-        form_data = form.initial
-        self.assertEqual(type(form), WorkspaceForm)
+        # Valid submission
+        resp = self.client.post(url, {
+            'name': 'Test Workspace'
+        }, follow=True)
 
-        # get HTML response
-        html = resp.rendered_content
-        context = self.pq(html)
-        # test we have the form inputs
-        self.assertEqual(len(context('form input')), 3)  # we have the id_name present
-        # test the id_name is present
-        self.assertEqual(len(context('form input#id_name')), 1)  # we have the id_name present
+        redirect = reverse('workspace:view', kwargs={'slug': 'test-workspace'})
 
-        # submit the form and make it good
-        form_data.update({
-            'name': 'Test Workspace',
-        })
-        form_resp = self.client.post(create_url, form_data, follow=True)
-        self.assertEqual(form_resp.status_code, 200)
-        self.assertEqual(type(form_resp.context_data.get('view')), DashView)
+        actual_response = {
+            'redirect': True,
+            'url': redirect
+        }
+
+        self.assertEqual(resp.content, json.dumps(actual_response))
 
         # was it created? with the appropriate slug?
         workspace = Workspace.objects.get(slug='test-workspace')
+
         # the lawyer that created the worksapce is set as the lawyer
         self.assertEqual(workspace.lawyer, self.lawyer)

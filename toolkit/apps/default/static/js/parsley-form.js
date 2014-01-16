@@ -56,7 +56,7 @@
                                         $errorContainer.removeClass('hide');
                                     },
                                     success: function(data) {
-                                        if (data['url']) {
+                                        if (data['redirect']) {
                                             window.location.href = data['url'];
                                         };
                                     }

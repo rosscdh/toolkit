@@ -1,11 +1,85 @@
-import json
-
-from django.contrib import messages
+# from django.contrib import messages
 from django.forms.forms import BaseForm
 from django.http import HttpResponse
+from django.utils import simplejson as json
 from django.views.generic.base import View
+from django.views.generic.edit import FormView
 
 from crispy_forms.layout import ButtonHolder, Div, HTML, Layout, Submit
+
+from .decorators import json_response
+
+
+class JSONResponseMixin(object):
+    def render_to_json_response(self, context, **kwargs):
+        return self.get_json_response(self.convert_context_to_json(context), **kwargs)
+
+    def get_json_response(self, content, **kwargs):
+        return HttpResponse(content, content_type='application/json', **kwargs)
+
+    def convert_context_to_json(self, context):
+        return json.dumps(context)
+
+
+class AjaxFormViewMixin(FormView):
+    """
+    A mixin that processes a form as AJAX.
+    """
+    @json_response
+    def post(self, request, *args, **kwargs):
+        return super(AjaxFormViewMixin, self).post(request)
+
+    @json_response
+    def put(self, request, *args, **kwargs):
+        return super(AjaxFormViewMixin, self).put(request)
+
+
+class AjaxValidFormViewMixin(JSONResponseMixin, AjaxFormViewMixin):
+    """
+    A mixin that provides a way to handle successful AJAX form submissions.
+    """
+    def form_valid(self, form):
+        data = {
+            'redirect': True,
+            'url': self.get_success_url()
+        }
+
+        return self.render_to_json_response(data)
+
+
+class AjaxValidModelFormViewMixin(JSONResponseMixin, AjaxFormViewMixin):
+    """
+    A mixin that provides a way to handle successful AJAX modal form submissions.
+    """
+    def form_valid(self, form):
+        self.object = form.save()
+
+        data = {
+            'redirect': True,
+            'url': self.get_success_url()
+        }
+
+        return self.render_to_json_response(data)
+
+
+class AjaxInvalidFormViewMixin(JSONResponseMixin, AjaxFormViewMixin):
+    """
+    A mixin that provides a way to handle unsuccessful AJAX form submissions.
+    """
+    def form_invalid(self, form):
+        errors = form.errors['__all__'] if '__all__' in form.errors else form.errors
+        data = {
+            'errors': errors
+        }
+        return self.render_to_json_response(data, status=400)
+
+
+class AjaxFormView(AjaxValidFormViewMixin, AjaxInvalidFormViewMixin, FormView):
+    pass
+
+
+class AjaxModelFormView(AjaxValidModelFormViewMixin, AjaxInvalidFormViewMixin, FormView):
+    pass
 
 
 class ModalForm(BaseForm):
@@ -36,45 +110,3 @@ class ModalForm(BaseForm):
 
 class ModalView(View):
     template_name = 'modal.html'
-
-
-class AjaxableFormViewResponseMixin(object):
-    """
-    Mixin to add AJAX support to a form.
-    Must be used with an object-based FormView (e.g. CreateView)
-    and Modal Views
-    """
-    def render_to_json_response(self, context, **response_kwargs):
-        data = json.dumps(context)
-        response_kwargs['content_type'] = 'application/json'
-        return HttpResponse(data, **response_kwargs)
-
-    def form_invalid(self, form):
-        if self.request.is_ajax():
-            errors = form.errors['__all__'] if '__all__' in form.errors else form.errors
-            data = {
-                'errors': errors
-            }
-            response = self.render_to_json_response(data, status=400)
-            self.clean_messages()
-            return response
-        else:
-            return super(AjaxableResponseMixin, self).form_invalid(form)
-
-    def form_valid(self, form):
-        """ save the form but also render via ajax if ajax request """
-        if self.request.is_ajax():
-            if hasattr(form, 'instance'):
-                form.instance.save()
-                data = {
-                    'pk': form.instance.pk,
-                    'url': form.instance.get_absolute_url() if hasattr(form.instance, 'get_absolute_url') else None,
-                }
-                return self.render_to_json_response(data)
-
-        return super(AjaxableResponseMixin, self).form_valid(form)
-
-    def clean_messages(self):
-        storage = messages.get_messages(self.request)
-        for _ in storage:
-            pass
