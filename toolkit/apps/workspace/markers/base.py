@@ -91,7 +91,7 @@ class BaseSignalMarkers(object):
 
     @property
     def percent_complete(self):
-        markers = self.tool.data['markers']
+        markers = self.tool.data.get('markers', {})
         whole = self.num_markers
 
         part = 0

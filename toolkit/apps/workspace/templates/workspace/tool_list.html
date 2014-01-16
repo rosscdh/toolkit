@@ -1,0 +1,64 @@
+{% extends 'workspace/base.html' %}{% load url from future %}
+
+{% block page_title %}Available Tools for {{ workspace.name }}{% endblock %}
+
+{% block header %}
+    {{ block.super }}
+    <h4>Available Tools for {{ workspace.name }}</h4>
+{% endblock %}
+
+{% block main %}
+    {% csrf_token %}
+    <ul class="row list-unstyled">
+    {% with workspace_tools=workspace.tools.all %}
+    {% for tool in object_list %}
+        <li class="col-md-3">
+            <strong>{{ tool.name }}</strong><br/>
+            <div class="pull-right col-md-6 text-center">
+                <img src="{{ STATIC_URL }}{{ tool.data.icon }}" class="img-circle" width="75" height"75"/><br/><br/>
+                {% if tool not in workspace_tools %}
+                    <a href="{% url 'api:workspacetools' slug=workspace.slug %}" data-action="post" data-tool="{{ tool.slug }}" class="btn btn-success">Install</a>
+                {% else %}
+                    <a href="" class="btn btn-default">Installed</a>
+                {% endif %}
+            </div>
+            <small>{{ tool.description }}</small>
+        </li>
+    {% empty %}
+        <li>No Tools</li>
+    {% endfor %}
+    {% endwith %}
+    </ul>
+{% endblock %}
+
+
+{% block js %}
+<script>
+$(document).ready(function () {
+    'use strict';
+
+    $('[data-action]').on("click", function() {
+        var data = $(this).data();
+        var url = $(this).prop('href');
+
+        $.ajax({
+          "type": data.action,
+          "url": url,
+          "data": JSON.stringify({"tool": data.tool}),
+          "dataType": 'json',
+          "contentType": 'application/json',
+          "beforeSend": function (jqXHR, settings) {
+              // Pull the token out of the DOM.
+              jqXHR.setRequestHeader('X-CSRFToken', $('input[name=csrfmiddlewaretoken]:first').val());
+          },
+          "complete": function ( data ) {
+              document.location.reload();
+          }
+        });
+
+        return false; //this is critical to stop the click event which will trigger a normal file download!
+    });
+
+});
+</script>
+{% endblock %}

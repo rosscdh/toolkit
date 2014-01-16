@@ -116,12 +116,21 @@ class Tool(models.Model):
         return self.data.get('description')
 
     @property
+    def summary(self):
+        return self.data.get('summary')
+
+    @property
     def short_name(self):
         return self.data.get('short_name')
 
     @property
     def userclass_that_can_create(self):
         return self.data.get('can_create', [])
+
+    @property
+    def markers(self):
+        markers = self.data.get('markers', None)
+        return None if markers is None else _class_importer(markers)()
 
     @property
     def model(self):

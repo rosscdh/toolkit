@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from django.core.urlresolvers import reverse_lazy
+
 from toolkit.apps.workspace.markers import BaseSignalMarkers, Marker
 from toolkit.apps.workspace.markers.lawyers import LawyerSetupTemplateMarker
 
@@ -12,6 +14,9 @@ class LawyerCreateLetterMarker(Marker):
     action_type = Marker.ACTION_TYPE.redirect
     action_user_class = ['lawyer']
 
+    def get_action_url(self):
+        # we dont have access to the workspace or tool from here
+        return None  # must return None here to ensure the default create tool is called
 
 class LawyerInviteUserMarker(Marker):
     name = 'lawyer_invite_customer'
@@ -49,10 +54,10 @@ class ProcessCompleteMarker(Marker):
     signals = ['toolkit.apps.engageletter.signals.complete']
 
 
-class EngagementLetterSignalMarkers(BaseSignalMarkers):
+class EngagementLetterMarkers(BaseSignalMarkers):
     signal_map = [
-        LawyerSetupTemplateMarker(0),
-        LawyerCreateLetterMarker(1),
+        LawyerCreateLetterMarker(0),
+        LawyerSetupTemplateMarker(1),
         LawyerInviteUserMarker(2),
         CustomerCompleteLetterFormMarker(3),
         CustomerSignAndSendMarker(4),

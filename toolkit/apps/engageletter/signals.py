@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.dispatch import Signal, receiver
 
-from .markers import EngagementLetterSignalMarkers
+from .markers import EngagementLetterMarkers
 
 import datetime
 

@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from django.core.urlresolvers import reverse
+
 from .base import Marker
 
 
@@ -29,3 +31,6 @@ class LawyerSetupTemplateMarker(Marker):
             return all([True if key in data and data[key] not in ['', None] else False for key in self.required_markers])
 
         return False
+
+    def get_action_url(self):
+        return reverse('me:letterhead')
