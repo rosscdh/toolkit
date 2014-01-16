@@ -158,19 +158,17 @@ class Marker(object):
                     (2, 'modal', 'Modal'),
                 ))
 
-    tool = None
-    val = None
+    _tool = None  # overridden with customer .getter and .setter
+    _long_description = None  # overridden with customer .getter and .setter
 
+    val = None
     name = None
     description = None
-    _long_description = None
     signals = []
 
     action_name = None
-
     action_type = None
     action = None
-
     action_user_class = []  # must be a list so we can handle multiple types
 
     markers_map = {
@@ -231,6 +229,14 @@ class Marker(object):
     @property
     def desc(self):
         self.description
+
+    @property
+    def tool(self):
+        return self._tool
+
+    @tool.setter
+    def tool(self, value):
+        self._tool = value
 
     @property
     def next(self):
