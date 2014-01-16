@@ -104,10 +104,18 @@ class WorkspaceToolObjectsListView(WorkspaceToolViewMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super(WorkspaceToolObjectsListView, self).get_context_data(**kwargs)
+
+        create_url = reverse('workspace:tool_object_new', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug})
+
+        if self.tool.markers.current.get_action_url() is not None:
+            create_url = self.tool.markers.current.get_action_url()
+
+
         context.update({
             # if there are no tool.userclass_that_can_create defined then anyone can create
             # however we need to ensure that only the specified classes can create
-            'can_create': True if not self.tool.userclass_that_can_create or self.request.user.profile.user_class in self.tool.userclass_that_can_create else False
+            'can_create': True if not self.tool.userclass_that_can_create or self.request.user.profile.user_class in self.tool.userclass_that_can_create else False,
+            'create_url': create_url,
         })
         return context
 
@@ -208,6 +216,20 @@ class InviteClientWorkspaceToolObjectView(IssueSignalsMixin, WorkspaceToolViewMi
         result = super(InviteClientWorkspaceToolObjectView, self).form_valid(form)
         self.issue_signals(request=self.request, instance=self.tool_instance, name='lawyer_invite_customer')  # NB teh tool_instance and NOT self.instance
         return result
+
+
+class WorkspaceToolsView(ListView):
+    """
+    List Available tools
+    """
+    model = Tool
+
+    def get_context_data(self, **kwargs):
+        context = super(WorkspaceToolsView, self).get_context_data(**kwargs)
+        context.update({
+            'workspace': get_object_or_404(Workspace, slug=self.kwargs.get('workspace'))
+        })
+        return context
 
 
 class WorkspaceToolObjectPreviewView(WorkspaceToolViewMixin, DetailView):

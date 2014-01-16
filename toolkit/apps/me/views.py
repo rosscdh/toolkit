@@ -7,9 +7,12 @@ from django.core.urlresolvers import reverse_lazy
 from django.views.generic import FormView, UpdateView
 
 from toolkit.apps.me.signals import send_welcome_email
+from toolkit.apps.default.models import UserProfile
 
-from .forms import ConfirmAccountForm, ChangePasswordForm, AccountSettingsForm
-
+from .forms import (ConfirmAccountForm,
+                    ChangePasswordForm,
+                    AccountSettingsForm,
+                    LawyerLetterheadForm)
 
 User = get_user_model()
 
@@ -91,3 +94,12 @@ class ChangePasswordView(FormView):
         form.save()
         messages.success(self.request, 'Success. You have changed your password')
         return super(ChangePasswordView, self).form_valid(form)
+
+
+class LawyerLetterheadView(UpdateView):
+    form_class = LawyerLetterheadForm
+    model = UserProfile
+    template_name = 'lawyer/lawyerletterhead_form.html'
+
+    def get_object(self, queryset=None):
+        return self.request.user.profile

@@ -9,6 +9,7 @@
         "summary": "summary goes here",
         "description": "A simple way of helping your clients get their 83(b) elections filed on time and correctly while giving you complete visibility on the process.",
         "model_name": "EightyThreeB",
+        "markers": "toolkit.apps.eightythreeb.markers.EightyThreeBSignalMarkers",
         "forms": {
           "customer": "toolkit.apps.eightythreeb.forms.CustomerEightyThreeBForm",
           "lawyer": "toolkit.apps.eightythreeb.forms.LawyerEightyThreeBForm"
@@ -28,8 +29,9 @@
         "icon": "images/icons/clipboard.svg",
         "short_name": "Engagement Letter",
         "summary": "",
-        "description": "",
+        "description": "An app that provides a means of providing a client with your Engagement Letter and having it signed off on",
         "model_name": "EngagementLetter",
+        "markers": "toolkit.apps.engageletter.markers.EngagementLetterMarkers",
         "forms": {
           "customer": "toolkit.apps.engageletter.forms.CustomerForm",
           "lawyer": "toolkit.apps.engageletter.forms.LawyerForm"
@@ -37,7 +39,7 @@
         "app_label": "engageletter",
         "can_create": ["lawyer"]
       },
-      "name": "Enagement Letter",
+      "name": "Engagement Letter",
       "slug": "engagement-letters"
     }
   }

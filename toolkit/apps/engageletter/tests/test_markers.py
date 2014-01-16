@@ -7,7 +7,7 @@ import mock
 from toolkit.apps.workspace.markers import Marker
 from toolkit.casper.workflow_case import BaseScenarios
 
-from ..markers import EngagementLetterSignalMarkers
+from ..markers import EngagementLetterMarkers
 from ..markers import (LawyerSetupTemplateMarker,
                       LawyerCreateLetterMarker,
                       LawyerInviteUserMarker,
@@ -16,13 +16,13 @@ from ..markers import (LawyerSetupTemplateMarker,
                       ProcessCompleteMarker)
 
 
-class EngagementLetterSignalMarkersTest(TestCase):
+class EngagementLetterMarkersTest(TestCase):
     """
     Test the base engagement letter signal markers handler
     """
     def setUp(self):
-        super(EngagementLetterSignalMarkersTest, self).setUp()
-        self.subject = EngagementLetterSignalMarkers
+        super(EngagementLetterMarkersTest, self).setUp()
+        self.subject = EngagementLetterMarkers
 
     def test_correct_init(self):
         subject = self.subject()

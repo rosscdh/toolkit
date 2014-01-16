@@ -10,8 +10,8 @@ from rulez import registry as rulez_registry
 
 from toolkit.apps.workspace.mixins import WorkspaceToolModelMixin
 
-from .markers import EngagementLetterSignalMarkers
-ENGAGEMENTLETTER_STATUS = EngagementLetterSignalMarkers().named_tuple(name='ENGAGEMENTLETTER_STATUS')
+from .markers import EngagementLetterMarkers
+ENGAGEMENTLETTER_STATUS = EngagementLetterMarkers().named_tuple(name='ENGAGEMENTLETTER_STATUS')
 
 from .mixins import (IsDeletedMixin,
                      StatusMixin,
@@ -49,7 +49,7 @@ class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, WorkspaceToolMode
     @property
     def markers(self):
         if self._markers is None:
-            self._markers = EngagementLetterSignalMarkers(tool=self)
+            self._markers = EngagementLetterMarkers(tool=self)
         return self._markers
 
     @property

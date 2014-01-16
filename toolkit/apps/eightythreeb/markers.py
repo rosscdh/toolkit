@@ -18,7 +18,9 @@ class LawyerCompleteFormMarker(Marker):
     action_user_class = ['lawyer']
 
     def get_action_url(self):
-        return reverse('workspace:tool_object_edit', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.tool_slug, 'slug': self.tool.slug})
+        if self.tool is not None:
+            return reverse('workspace:tool_object_edit', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.tool_slug, 'slug': self.tool.slug})
+        return None
 
     @property
     def action(self):
