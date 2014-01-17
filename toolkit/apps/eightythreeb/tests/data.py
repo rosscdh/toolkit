@@ -35,4 +35,4 @@ EIGHTYTHREEB_DATA = {
 EIGHTYTHREEB_TRACKINGCODE_DATA = EIGHTYTHREEB_DATA.copy()
 # Has no mail_to_irs_tracking_code entry
 if 'mail_to_irs_tracking_code' in EIGHTYTHREEB_TRACKINGCODE_DATA['markers']:
-  del EIGHTYTHREEB_TRACKINGCODE_DATA['markers']['mail_to_irs_tracking_code']
+    del EIGHTYTHREEB_TRACKINGCODE_DATA['markers']['mail_to_irs_tracking_code']
