@@ -10,6 +10,8 @@ class AttachmentQuerysetAndObjectDeleteTest(BaseScenarios, TestCase):
     def setUp(self):
         super(AttachmentQuerysetAndObjectDeleteTest, self).setUp()
         self.basic_workspace()
+        self.eightythreeb.status = self.eightythreeb.STATUS_83b.copy_uploaded
+        self.eightythreeb.save(update_fields=['status'])
 
     def add_attachments(self):
         self.eightythreeb.attachment_set.add(mommy.make('eightythreeb.Attachment', eightythreeb=self.eightythreeb))
