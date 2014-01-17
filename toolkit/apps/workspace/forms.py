@@ -126,13 +126,11 @@ class InviteUserForm(forms.Form):
 
     def get_template(self, template_name):
         try:
-            template = get_template('%s/%s' % (slugify(self.tool_instance._meta.model.__name__), template_name))
+            return get_template('%s/%s' % (slugify(self.tool_instance._meta.model.__name__), template_name))
         except TemplateDoesNotExist:
-            template = get_template('%s/%s' % (slugify(self.tool_instance._meta.app_label), template_name))
+            return get_template('%s/%s' % (slugify(self.tool_instance._meta.app_label), template_name))
         else:
-            template = get_template('workspace/%s' % template_name)
-
-        return template
+            return get_template('workspace/%s' % template_name)
 
     def get_initial_subject(self):
         template = self.get_template('invite_subject.html')
