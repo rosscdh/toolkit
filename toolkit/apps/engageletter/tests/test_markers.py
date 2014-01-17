@@ -179,6 +179,12 @@ class CustomerCompleteLetterFormMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
         self.assertEqual(self.subject.action_user_class, ['customer'])
 
+    def test_get_action_url(self):
+        self.assertEqual(self.subject.get_action_url(), '/workspace/lawpal-test/tool/engagement-letters/d1c545082d1241849be039e338e47aa0/edit/')
+
+    def test_action(self):
+        self.assertEqual(self.subject.action, '/workspace/lawpal-test/tool/engagement-letters/d1c545082d1241849be039e338e47aa0/edit/')
+
 
 class CustomerSignAndSendMarkerTest(BaseTestMarker):
     val = 0

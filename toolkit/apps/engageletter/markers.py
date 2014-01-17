@@ -25,7 +25,7 @@ class LawyerCreateLetterMarker(Marker):
     @property
     def action(self):
         if self.tool:
-            if self.tool.is_complete is True or self.tool.status >= self.tool.STATUS.customer_complete_form:
+            if self.tool.is_complete is True or self.tool.status > self.tool.STATUS.customer_complete_form:
                 return None
             else:
                 return self.get_action_url()
@@ -63,6 +63,20 @@ class CustomerCompleteLetterFormMarker(Marker):
     action_name = 'Complete Engagement Letter'
     action_type = Marker.ACTION_TYPE.redirect
     action_user_class = ['customer']
+
+    def get_action_url(self):
+        if self.tool is not None:
+            return reverse('workspace:tool_object_edit', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.tool_slug, 'slug': self.tool.slug})
+        return None
+
+    @property
+    def action(self):
+        if self.tool:
+            if self.tool.is_complete is True or self.tool.status > self.tool.STATUS.customer_complete_form:
+                return None
+            else:
+                return self.get_action_url()
+        return None
 
 
 class CustomerSignAndSendMarker(Marker):
