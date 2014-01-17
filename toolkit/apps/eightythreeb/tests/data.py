@@ -10,33 +10,9 @@ EIGHTYTHREEB_DATA = {
   "city": "Mönchengladbach",
   "details_confirmed": True,
   "markers": {
-    "copy_uploaded": {
-      "actor_name": "Test User",
-      "date_of": "2013-12-23T13:26:58"
-    },
-    "customer_download_pdf": {
-      "actor_name": "Test User",
-      "date_of": "2013-12-23T11:49:12"
-    },
-    "customer_complete_form": {
-      "actor_name": "Test User",
-      "date_of": "2013-12-23T11:47:27"
-    },
-    "mail_to_irs_tracking_code": {
-      "actor_name": "Test User",
-      "date_of": "2013-12-23T13:26:37"
-    },
     "lawyer_complete_form": {
       "actor_name": "",
       "date_of": "2013-12-23T11:46:48"
-    },
-    "customer_print_and_sign": {
-      "actor_name": "Test User",
-      "date_of": "2013-12-23T11:49:24"
-    },
-    "lawyer_invite_customer": {
-      "actor_name": "",
-      "date_of": "2013-12-23T11:46:53"
     }
   },
   "tax_year": 2013,
@@ -58,4 +34,5 @@ EIGHTYTHREEB_DATA = {
 
 EIGHTYTHREEB_TRACKINGCODE_DATA = EIGHTYTHREEB_DATA.copy()
 # Has no mail_to_irs_tracking_code entry
-del EIGHTYTHREEB_TRACKINGCODE_DATA['markers']['mail_to_irs_tracking_code']
+if 'mail_to_irs_tracking_code' in EIGHTYTHREEB_TRACKINGCODE_DATA['markers']:
+    del EIGHTYTHREEB_TRACKINGCODE_DATA['markers']['mail_to_irs_tracking_code']
