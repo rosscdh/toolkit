@@ -37,9 +37,22 @@ class LawyerInviteUserMarker(Marker):
     description = 'Attorney: Invite client to complete & sign the Engagement Letter'
     signals = ['toolkit.apps.engageletter.signals.lawyer_invite_customer']
 
-    action_name = 'Invite Client to Complete & Sign'
     action_type = Marker.ACTION_TYPE.redirect
     action_user_class = ['lawyer']
+
+    @property
+    def action_name(self):
+        return 'Reinvite Client' if self.is_complete is True else 'Invite Client'
+
+    def get_action_url(self):
+        return reverse('workspace:tool_object_invite', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.tool_slug, 'slug': self.tool.slug})
+
+    @property
+    def action(self):
+        if self.tool.is_complete is True or self.tool.status > self.tool.STATUS.customer_complete_form:
+            return None
+        else:
+            return self.get_action_url()
 
 
 class CustomerCompleteLetterFormMarker(Marker):

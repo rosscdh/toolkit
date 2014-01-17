@@ -8,6 +8,7 @@ from jsonfield import JSONField
 
 from rulez import registry as rulez_registry
 
+from toolkit.apps.workspace.signals import base_signal
 from toolkit.apps.workspace.mixins import WorkspaceToolModelMixin
 
 from .markers import EngagementLetterMarkers
@@ -34,8 +35,6 @@ class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, WorkspaceToolMode
 
     status = models.IntegerField(choices=ENGAGEMENTLETTER_STATUS.get_choices(), default=ENGAGEMENTLETTER_STATUS.lawyer_setup_template, db_index=True)
 
-    _markers = None
-
     def __unicode__(self):
         return u'Engagement Letter for %s' % self.client_name
 
@@ -45,13 +44,10 @@ class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, WorkspaceToolMode
 
     @property
     def markers(self):
-        if self._markers is None:
-            self._markers = EngagementLetterMarkers(tool=self)
-        return self._markers
+        return EngagementLetterMarkers(tool=self)
 
     @property
     def base_signal(self):
-        from toolkit.apps.workspace.signals import base_signal
         return base_signal
 
     @property

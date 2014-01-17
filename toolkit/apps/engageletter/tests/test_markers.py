@@ -44,6 +44,11 @@ class EngagementLetterMarkersTest(TestCase):
                                      ('customer_sign_and_send', 4),
                                      ('complete', 5)])
 
+    def test_signal_map_items_next_previous_values(self):
+        subject = self.subject()
+        test = [(m.next_marker, m.previous_marker, m.markers_map) for m in subject.signal_map]
+
+
 
 class BaseTestMarker(BaseScenarios, TestCase):
     val = None
@@ -149,9 +154,15 @@ class LawyerInviteUserMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.name, 'lawyer_invite_customer')
         self.assertEqual(self.subject.description, 'Attorney: Invite client to complete & sign the Engagement Letter')
         self.assertEqual(self.subject.signals, ['toolkit.apps.engageletter.signals.lawyer_invite_customer'])
-        self.assertEqual(self.subject.action_name, 'Invite Client to Complete & Sign')
+        self.assertEqual(self.subject.action_name, 'Invite Client')
         self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
         self.assertEqual(self.subject.action_user_class, ['lawyer'])
+
+    def test_get_action_url(self):
+        self.assertEqual(self.subject.get_action_url(), '/workspace/lawpal-test/tool/engagement-letters/d1c545082d1241849be039e338e47aa0/invite/client/')
+
+    def test_action(self):
+        self.assertEqual(self.subject.action, '/workspace/lawpal-test/tool/engagement-letters/d1c545082d1241849be039e338e47aa0/invite/client/')
 
 
 class CustomerCompleteLetterFormMarkerTest(BaseTestMarker):
