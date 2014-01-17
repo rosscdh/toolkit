@@ -138,7 +138,7 @@ class IRSMixin(object):
                 'address1': 'Department of the Treasury',
                 'address2': 'Internal Revenue Service',
                 'city': 'Austin',
-                'province': 'TX',
+                'state': 'TX',
                 'zip': '73301-0002'
             },
             {
@@ -146,7 +146,7 @@ class IRSMixin(object):
                 'address1': 'Internal Revenue Service',
                 'address2': 'P.O. Box 1214',
                 'city': 'Charlotte',
-                'province': 'NC',
+                'state': 'NC',
                 'zip': '28201-1214'
             }
         ),
@@ -164,7 +164,7 @@ class IRSMixin(object):
                 'address1': 'Department of the Treasury',
                 'address2': 'Internal Revenue Service',
                 'city': 'Fresno',
-                'province': 'CA',
+                'state': 'CA',
                 'zip': '93888-0002'
             },
             {
@@ -172,7 +172,7 @@ class IRSMixin(object):
                 'address1': 'Internal Revenue Service',
                 'address2': 'P.O. Box 7704',
                 'city': 'San Francisco',
-                'province': 'CA',
+                'state': 'CA',
                 'zip': '94120-7704'
             }
         ),
@@ -190,7 +190,7 @@ class IRSMixin(object):
                 'address1': 'Department of the Treasury',
                 'address2': 'Internal Revenue Service',
                 'city': 'Fresno',
-                'province': 'CA',
+                'state': 'CA',
                 'zip': '93888-0002'
             },
             {
@@ -198,7 +198,7 @@ class IRSMixin(object):
                 'address1': 'Internal Revenue Service',
                 'address2': 'P.O. Box 802501',
                 'city': 'Cincinnati',
-                'province': 'OH',
+                'state': 'OH',
                 'zip': '45280-2501'
             }
         ),
@@ -216,7 +216,7 @@ class IRSMixin(object):
                 'address1': 'Department of the Treasury',
                 'address2': 'Internal Revenue Service',
                 'city': 'Kansas City',
-                'province': 'MO',
+                'state': 'MO',
                 'zip': '64999-0002'
             },
             {
@@ -224,7 +224,7 @@ class IRSMixin(object):
                 'address1': 'Internal Revenue Service',
                 'address2': 'P.O. Box 931000',
                 'city': 'Louisville',
-                'province': 'KY',
+                'state': 'KY',
                 'zip': '40293-1000'
             }
         ),
@@ -242,7 +242,7 @@ class IRSMixin(object):
                 'address1': 'Department of the Treasury',
                 'address2': 'Internal Revenue Service',
                 'city': 'Kansas City',
-                'province': 'MO',
+                'state': 'MO',
                 'zip': '64999-0002'
             },
             {
@@ -250,7 +250,7 @@ class IRSMixin(object):
                 'address1': 'Internal Revenue Service',
                 'address2': 'P.O. Box 37008',
                 'city': 'Hartford',
-                'province': 'CT',
+                'state': 'CT',
                 'zip': '06176-0008'
             }
         ),
@@ -265,7 +265,7 @@ class IRSMixin(object):
                 'address1': 'Department of the Treasury',
                 'address2': 'Internal Revenue Service',
                 'city': 'Austin',
-                'province': 'TX',
+                'state': 'TX',
                 'zip': '73301-0215',
                 'country': 'USA'
             },
@@ -274,7 +274,7 @@ class IRSMixin(object):
                 'address1': 'Internal Revenue Service',
                 'address2': 'P.O. Box 1303',
                 'city': 'Charlotte',
-                'province': 'NC',
+                'state': 'NC',
                 'zip': '28201-1303',
                 'country': 'USA'
             }
