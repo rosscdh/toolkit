@@ -10,24 +10,101 @@
 {% endblock %}
 
 {% block header %}
-    <h4 class="text-center">Dashboard</h4>
+	<h4>Dashboard</h4>
 {% endblock %}
 
 {% block main %}
 
 {% if not WORKSPACES %}
 <div class="alert">
-	<h4>Create your first Client Workspace</h4>
-	<p>For each client you work with through LawPal, you must create a Client Workspace. <br />To get started, create your first one now.
+	<h4>Create your first client workspace</h4>
+	<p>For each client you work with through LawPal, you must create a client workspace. <br />To get started, create your first one now.
 	</p>
 </div>
 {% else %}
-<div class="text-center row">
-	<div class="col-lg-8 col-lg-offset-2">
-		<h6 class="text-center text-muted">Dashboard coming soon.</h6>
-		<p class="text-muted">We are building the LawPal dashboard. <br />For the moment just click on the tool you wish to use on the left.</p>
+<style>
+</style>
+
+
+<div class="row dashboard">
+	<div class="col col-lg-12">
+		<!-- Start Client-->
+		<div class="pending">
+			<h5 class="client">Acme Inc</h5>
+			<div class="inner">
+				<div class="widget-wrap">
+					<div class="row">
+						<!-- Start Client-->
+						<div class="col col-lg-3"> 
+							<div class="text-center widget">
+								<div class="img-wrap">
+									<img src="/static/images/icons/mail.svg"><br />
+								</div>
+								<h6>83(b) Election Letters</h6>
+								<ul class="list-inline">
+									<li><span class="text-warning"><span class="lg">4</span> Pending</span></li>
+									<li><span class="text-success"><span class="lg">2</span> Complete</span></li>
+								</ul>
+								<div class="progress">
+						            <div class="progress-bar" style="width: 40%;"></div>
+						            <div class="progress-bar progress-bar-warning" style="width: 60%;opacity:0.3"></div>
+						          </div>
+							</div>
+						</div>
+						<div class="col col-lg-3"> 
+							<div class="text-center widget">
+								<div class="img-wrap">
+									<img src="/static/images/icons/loop.svg"><br />
+								</div>
+								<h6>Engagement Letter</h6>
+								<ul class="list-inline">
+									<li><span class="text-warning"><span class="lg">1</span> Pending</span></li>
+								</ul>
+								<div class="progress">
+						            <div class="progress-bar" style="width: 0%;"></div>
+						            <div class="progress-bar progress-bar-warning" style="width: 100%;opacity:0.3"></div>
+						          </div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Start Client-->
+		<div class="">
+			<h5 class="client">Citro Inc</h5>
+			<div class="inner">
+				<div class="widget-wrap">
+					<div class="row">
+						<!-- Start Client-->
+						<div class="col col-lg-3"> 
+							<div class="text-center widget">
+								<div class="img-wrap">
+									<img src="/static/images/icons/clipboard.svg"><br />
+								</div>
+								<h6>Checklist</h6>
+								<ul class="list-inline">
+									<li><span class="text-success"><span class="lg">48</span> Complete</span></li>
+								</ul>
+							</div>
+						</div>
+						<div class="col col-lg-3"> 
+							<div class="text-center widget">
+								<div class="img-wrap">
+									<img src="/static/images/icons/mail.svg"><br />
+								</div>
+								<h6>83(b) Election Letters</h6>
+								<ul class="list-inline">
+									<li><span class="text-success"><span class="lg">1</span> Complete</span></li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>
-
 {% endif %}
 {% endblock %}

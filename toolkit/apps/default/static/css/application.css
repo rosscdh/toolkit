@@ -10,7 +10,7 @@
   margin-bottom: 0;
 }
 .container-fluid {
-  padding: 0 50px;
+  padding: 0 20px;
 }
 .main-content {
   margin-top: 20px;
@@ -236,4 +236,84 @@
 }
 .attachment-list-item-meta {
   margin-top: 20px;
+}
+.dashboard {
+  margin-top: -30px;
+}
+.dashboard .inner {
+  border: 2px solid #a2e1aa;
+  padding: 14px 18px 20px 18px;
+  border-radius: 0px 0px 10px 10px;
+}
+.dashboard .pending .inner {
+  border-color: #fde579;
+}
+.dashboard .pending .client {
+  background-color: #fde579;
+}
+.dashboard .pending .widget {
+  opacity: 1;
+}
+.dashboard .pending .widget h6 {
+  color: #222;
+}
+.dashboard .widget {
+  background-color: #f5f5f5;
+  border: 1px solid #ededed;
+  padding: 20px 0px 15px 0px;
+  border-radius: 5px;
+  font-size: 13px;
+  margin-top: 30px;
+  cursor: pointer;
+  opacity: 0.7;
+}
+.dashboard .widget:active {
+  margin: 31px -1px -1px 1px;
+  opacity: 1;
+}
+.dashboard .widget h6 {
+  font-size: 16px;
+  color: #44;
+  margin-bottom: 5px;
+}
+.dashboard .widget div.progress {
+  margin: 0 auto;
+  width: 75%;
+}
+.dashboard .widget div.img-wrap {
+  background-color: white;
+  width: 72px;
+  margin: 0 auto;
+  margin-top: -50px;
+  padding: 19px;
+  border-radius: 80px;
+  border: 2px solid #ededed;
+}
+.dashboard .widget div.img-wrap img {
+  width: 30px;
+}
+.dashboard .widget:hover {
+  background-color: #f1f1f1;
+}
+.dashboard .widget span.lg {
+  font-size: 17px;
+}
+.dashboard .widget ul {
+  margin-bottom: 5px;
+}
+.dashboard .widget ul li {
+  padding-left: 7px;
+  padding-right: 7px;
+}
+.dashboard .widget ul li * {
+  vertical-align: middle;
+}
+.dashboard .client {
+  font-size: 16px;
+  background-color: #9ee0a6;
+  color: white;
+  font-weight: normal;
+  margin-bottom: 0px;
+  padding: 10px;
+  border-radius: 5px 5px 0px 0px;
 }

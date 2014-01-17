@@ -1,4 +1,4 @@
-// Some general UI pack related JS
+  // Some general UI pack related JS
 
 // Extend JS Date with month name methods
 Date.prototype.monthNames = [
@@ -39,7 +39,7 @@ String.prototype.repeat = function(num) {
     // Popover
     $("[data-toggle=popover]").popover();
 
-    $(".auto-show").popover('show');
+    $(".auto-show").tooltip('show');
 
     // Tags Input
     $(".tagsinput").tagsInput();
