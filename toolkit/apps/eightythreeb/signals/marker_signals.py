@@ -28,9 +28,11 @@ complete = Signal(providing_args=['actor'])
 
 @receiver(lawyer_complete_form)
 def on_lawyer_complete_form(sender, instance, actor, **kwargs):
-    if instance.markers.current.can_perform_action(user=actor):
+    marker_name = 'lawyer_complete_form'
+
+    if instance.markers.marker(marker_name).can_perform_action(user=actor):
         actor_name = actor.get_full_name()
-        _update_marker(marker_name='lawyer_complete_form',
+        _update_marker(marker_name=marker_name,
                        next_status=instance.STATUS.lawyer_invite_customer,
                        actor_name=actor_name,
                        instance=instance)
@@ -38,9 +40,11 @@ def on_lawyer_complete_form(sender, instance, actor, **kwargs):
 
 @receiver(lawyer_invite_customer)
 def on_lawyer_invite_customer(sender, instance, actor, **kwargs):
-    if instance.markers.current.can_perform_action(user=actor):
+    marker_name = 'lawyer_invite_customer'
+
+    if instance.markers.marker(marker_name).can_perform_action(user=actor):
         actor_name = actor.get_full_name()
-        _update_marker(marker_name='lawyer_invite_customer',
+        _update_marker(marker_name=marker_name,
                        next_status=instance.STATUS.customer_complete_form,
                        actor_name=actor_name,
                        instance=instance)
@@ -48,9 +52,11 @@ def on_lawyer_invite_customer(sender, instance, actor, **kwargs):
 
 @receiver(customer_complete_form)
 def on_customer_complete_form(sender, instance, actor, **kwargs):
-    if instance.markers.current.can_perform_action(user=actor):
+    marker_name = 'customer_complete_form'
+
+    if instance.markers.marker(marker_name).can_perform_action(user=actor):
         actor_name = actor.get_full_name()
-        _update_marker(marker_name='customer_complete_form',
+        _update_marker(marker_name=marker_name,
                        next_status=instance.STATUS.customer_download_pdf,
                        actor_name=actor_name,
                        instance=instance)
@@ -58,10 +64,11 @@ def on_customer_complete_form(sender, instance, actor, **kwargs):
 
 @receiver(customer_download_pdf)
 def on_customer_download_pdf(sender, instance, actor, **kwargs):
-    if instance.markers.current.can_perform_action(user=actor):
-        #if self.object.status <= self.object.STATUS.customer_download_pdf:
+    marker_name = 'customer_download_pdf'
+
+    if instance.markers.marker(marker_name).can_perform_action(user=actor):
         actor_name = actor.get_full_name()
-        _update_marker(marker_name='customer_download_pdf',
+        _update_marker(marker_name=marker_name,
                        next_status=instance.STATUS.customer_print_and_sign,
                        actor_name=actor_name,
                        instance=instance)
@@ -69,9 +76,11 @@ def on_customer_download_pdf(sender, instance, actor, **kwargs):
 
 @receiver(customer_print_and_sign)
 def on_customer_print_and_sign(sender, instance, actor, **kwargs):
-    if instance.markers.current.can_perform_action(user=actor):
+    marker_name = 'customer_print_and_sign'
+
+    if instance.markers.marker(marker_name).can_perform_action(user=actor):
         actor_name = actor.get_full_name()
-        _update_marker(marker_name='customer_print_and_sign',
+        _update_marker(marker_name=marker_name,
                        next_status=instance.STATUS.copy_uploaded,
                        actor_name=actor_name,
                        instance=instance)
@@ -79,9 +88,11 @@ def on_customer_print_and_sign(sender, instance, actor, **kwargs):
 
 @receiver(copy_uploaded)
 def on_copy_uploaded(sender, instance, actor, **kwargs):
-    if instance.markers.current.can_perform_action(user=actor):
+    marker_name = 'copy_uploaded'
+
+    if instance.markers.marker(marker_name).can_perform_action(user=actor):
         actor_name = actor.get_full_name()
-        _update_marker(marker_name='copy_uploaded',
+        _update_marker(marker_name=marker_name,
                        next_status=instance.STATUS.mail_to_irs_tracking_code,
                        actor_name=actor_name,
                        instance=instance)
@@ -91,33 +102,38 @@ def on_copy_uploaded(sender, instance, actor, **kwargs):
 def on_valid_usps_tracking_marker(sender, instance, actor, **kwargs):
     """
     This is a simple record signal and thus should bump to the next in line
+    # NB! No check for can_perform_action because there is no actor here!
     """
+    marker_name = 'valid_usps_tracking_marker'
     actor_name = actor.get_full_name()
 
     marker_node = instance.markers.marker(val='mail_to_irs_tracking_code')
+
     if marker_node.is_complete is False:
         # send email
         mailer = EightyThreeTrackingCodeEnteredEmail(recipients=[(u.get_full_name(), u.email) for u in instance.workspace.participants.all()])
         mailer.process(instance=instance)
 
-    _update_marker(marker_name='valid_usps_tracking_marker',
-                   next_status=instance.STATUS.mail_to_irs_tracking_code,
-                   actor_name=actor_name,
-                   instance=instance,
-                   tracking_code=kwargs.get('tracking_code'))
+        _update_marker(marker_name=marker_name,
+                       next_status=instance.STATUS.mail_to_irs_tracking_code,
+                       actor_name=actor_name,
+                       instance=instance,
+                       tracking_code=kwargs.get('tracking_code'))
 
 
 @receiver(mail_to_irs_tracking_code)
 def on_mail_to_irs_tracking_code(sender, instance, actor, **kwargs):
+    marker_name = 'mail_to_irs_tracking_code'
     actor_name = actor.get_full_name()
 
     marker_node = instance.markers.marker(val='mail_to_irs_tracking_code')
+
     if marker_node.is_complete is False:
         # send email
         mailer = EightyThreeTrackingCodeEnteredEmail(recipients=[(u.get_full_name(), u.email) for u in instance.workspace.participants.all()])
         mailer.process(instance=instance)
 
-    _update_marker(marker_name='mail_to_irs_tracking_code',
+    _update_marker(marker_name=marker_name,
                    next_status=instance.STATUS.irs_recieved,
                    actor_name=actor_name,
                    instance=instance)
@@ -125,8 +141,9 @@ def on_mail_to_irs_tracking_code(sender, instance, actor, **kwargs):
 
 @receiver(irs_recieved)
 def on_irs_recieved(sender, instance, actor, **kwargs):
+    marker_name = 'irs_recieved'
     actor_name = actor.get_full_name()
-    _update_marker(marker_name='irs_recieved',
+    _update_marker(marker_name=marker_name,
                    next_status=instance.STATUS.complete,
                    actor_name=actor_name,
                    instance=instance)
@@ -136,9 +153,10 @@ def on_irs_recieved(sender, instance, actor, **kwargs):
 
 @receiver(complete)
 def on_complete(sender, instance, actor, **kwargs):
+    marker_name = 'complete'
     actor_name = actor.get_full_name()
     # Send the final event here
-    _update_marker(marker_name='complete',
+    _update_marker(marker_name=marker_name,
                    next_status=instance.STATUS.complete,
                    actor_name=actor_name,
                    instance=instance)
