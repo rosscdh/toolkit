@@ -148,6 +148,7 @@ class LawyerForm(BaseForm):
         required=True,
         widget=forms.Textarea
     )
+
     def __init__(self, *args, **kwargs):
         super(LawyerForm, self).__init__(*args, **kwargs)
         self.helper.layout = Layout(
@@ -184,5 +185,23 @@ class LawyerForm(BaseForm):
 
 @parsleyfy
 class CustomerForm(BaseForm):
+
+    def __init__(self, *args, **kwargs):
+        super(CustomerForm, self).__init__(*args, **kwargs)
+        self.helper.layout = Layout(
+            'address1',
+            'address2',
+            'city',
+            Div(
+                'state',
+                'post_code',
+                css_class='form-inline'
+            ),
+            ButtonHolder(
+                Submit('submit', 'Continue', css_class='btn-hg btn-primary'),
+                css_class='form-group'
+            )
+        )
+
     def issue_signals(self, instance):
         instance.markers.marker('customer_complete_form').issue_signals(request=self.request, instance=instance, actor=self.user)
