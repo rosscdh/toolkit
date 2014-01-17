@@ -37,7 +37,7 @@ class Preview83bView(DetailView):
 
         if self.request.user.profile.is_lawyer is True:
             # for Lawyer
-            marker = markers.current
+            marker = markers.current_marker
             return {
                 'previous_url': markers.marker(val='lawyer_complete_form').get_action_url(),
                 'next_url': marker.get_action_url() if 'lawyer' in marker.action_user_class and marker.action_type == marker.ACTION_TYPE.redirect else preview_workspace_url,

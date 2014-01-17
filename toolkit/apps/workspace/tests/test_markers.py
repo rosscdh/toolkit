@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
-#from django.test import TestCase  # With DB Acess
-import unittest  # No DB Acess
+import unittest
+
+from django.test import TestCase
+
+from toolkit.casper.workflow_case import BaseScenarios
 
 from ..markers import BaseSignalMarkers, Marker
 from ..markers import MissingMarkersException
@@ -16,9 +19,10 @@ MULTIPLE_MARKERS = [
 ]
 
 
-class BaseSignalMarkersTest(unittest.TestCase):
+class BaseSignalMarkersTest(BaseScenarios, TestCase):
     def setUp(self):
         self.subject = BaseSignalMarkers
+        self.basic_workspace()
 
     def _get_test_subject(self, markers=None):
         """
@@ -28,7 +32,7 @@ class BaseSignalMarkersTest(unittest.TestCase):
         class CustomTestMarkers(self.subject):
             signal_map = markers  # Heres whats important for this test
 
-        return CustomTestMarkers()
+        return CustomTestMarkers(tool=None)
 
     def test_incorrect_init(self):
         """
@@ -48,9 +52,9 @@ class BaseSignalMarkersTest(unittest.TestCase):
         self.assertEqual(type(subject.marker('monkey_nuts')), Marker)
         self.assertEqual(subject.marker('monkey_nuts'), SINGLE_MARKER)
 
-        self.assertEqual(subject.previous, None)
-        self.assertEqual(subject.current, SINGLE_MARKER)
-        self.assertEqual(subject.next, None)
+        self.assertEqual(subject.previous_marker, None)
+        self.assertEqual(subject.current_marker, SINGLE_MARKER)
+        self.assertEqual(subject.next_marker, None)
 
     def test_correct_init_multiple_markers(self):
         """
@@ -62,9 +66,9 @@ class BaseSignalMarkersTest(unittest.TestCase):
         self.assertEqual(type(subject.marker('monkey_bum')), Marker)
         self.assertEqual(subject.marker('monkey_bum'), MULTIPLE_MARKERS[0])
 
-        self.assertEqual(subject.previous, None)
-        self.assertEqual(subject.current, MULTIPLE_MARKERS[0])
-        self.assertEqual(subject.next, MULTIPLE_MARKERS[1])
+        self.assertEqual(subject.previous_marker, None)
+        self.assertEqual(subject.current_marker, MULTIPLE_MARKERS[0])
+        self.assertEqual(subject.next_marker, MULTIPLE_MARKERS[1])
 
     def test_get_marker_by_name(self):
         subject = self._get_test_subject(markers=MULTIPLE_MARKERS)

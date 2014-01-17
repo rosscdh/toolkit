@@ -35,11 +35,13 @@ class LawyerCreateEightythreebTest(BaseScenarios, TestCase):
         self.assertEqual(resp.context_data.get('object').status, self.eightythreeb.STATUS.lawyer_invite_customer)
 
         # ensure we have the right prev current and next markers
-        self.assertEqual(type(resp.context_data.get('object').markers.previous), LawyerCompleteFormMarker)
-        self.assertEqual(type(resp.context_data.get('object').markers.current), LawyerInviteUserMarker)
-        self.assertEqual(type(resp.context_data.get('object').markers.next), CustomerCompleteFormMarker)
+        subject = resp.context_data.get('object').markers
+
+        self.assertEqual(type(subject.previous_marker), LawyerCompleteFormMarker)
+        self.assertEqual(type(subject.current_marker), LawyerInviteUserMarker)
+        self.assertEqual(type(subject.next_marker), CustomerCompleteFormMarker)
 
         # test the urls are set correctly
-        self.assertEqual(resp.context_data.get('next_url'), resp.context_data.get('object').markers.current.get_action_url())
-        self.assertEqual(resp.context_data.get('previous_url'), resp.context_data.get('object').markers.previous.get_action_url())
+        self.assertEqual(resp.context_data.get('next_url'), subject.current_marker.get_action_url())
+        self.assertEqual(resp.context_data.get('previous_url'), subject.previous_marker.get_action_url())
         

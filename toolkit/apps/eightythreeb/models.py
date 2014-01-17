@@ -11,6 +11,7 @@ from jsonfield import JSONField
 
 from rulez import registry as rulez_registry
 
+from toolkit.apps.workspace.signals import base_signal
 from toolkit.apps.workspace.mixins import WorkspaceToolModelMixin
 
 from .markers import EightyThreeBSignalMarkers
@@ -51,8 +52,6 @@ class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferA
 
     status = models.IntegerField(choices=EIGHTYTHREEB_STATUS.get_choices(), default=EIGHTYTHREEB_STATUS.lawyer_complete_form, db_index=True)
 
-    _markers = None
-
     objects = EightyThreeBManager()
 
     def __unicode__(self):
@@ -64,13 +63,10 @@ class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferA
 
     @property
     def markers(self):
-        if self._markers is None:
-            self._markers = EightyThreeBSignalMarkers(tool=self)
-        return self._markers
+        return EightyThreeBSignalMarkers(tool=self)
 
     @property
     def base_signal(self):
-        from toolkit.apps.workspace.signals import base_signal
         return base_signal
 
     @property

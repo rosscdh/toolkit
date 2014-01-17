@@ -22,54 +22,50 @@ class MissingMarkersException(Exception):
 
 
 class BaseSignalMarkers(object):
-    tool_object = None
     signal_map = []
+    _tool = None
     markers_map = {
         'previous': None,
         'current': None,
         'next': None,
     }
 
-    def __init__(self, tool=None):
-        if tool is not None:
-            self.tool = tool
-        self.previous = None
+    def __init__(self, tool=None, *args, **kwargs):
+        super(BaseSignalMarkers, self).__init__(*args, **kwargs)
 
+        self._set_markers_navigation()  # finite state machine
+
+        self.previous_marker = None
         try:
-            self.current = self.signal_map[0]
-
+            self.current_marker = self.signal_map[0]
         except IndexError:
             raise MissingMarkersException
-
         try:
-            self.next = self.signal_map[1]
-
+            self.next_marker = self.signal_map[1]
         except IndexError:
-            self.next = None
+            self.next_marker = None
 
-        self._set_markers_fsm()  # finite state machine
 
-    def _set_markers_fsm(self):
-        for i, marker in enumerate(self.signal_map):
-            # set the marker prev and next
-            signal = self.signal_map[i]
+        self.tool = tool  # init tool
+
+    def _set_markers_navigation(self):
+        """
+        Set the next previous and current values for the base class 
+        as well as the specific markers
+        """
+        for i, signal in enumerate(self.signal_map):
+            #print "SIGNAL MARKER (%d) %s" % (i, self.signal_map[i])
+            try:
+                signal.previous_marker = self.signal_map[i-1]
+                #print '%s -> prev -> %s' % (signal, signal.previous_marker)
+            except IndexError:
+                signal.previous_marker = None
 
             try:
-                marker.previous = self.signal_map[i-1]
+                signal.next_marker = self.signal_map[i+1]
+                #print '%s -> next -> %s' % (signal, signal.next_marker)
             except IndexError:
-                marker.previous = None
-
-            try:
-                marker.next = self.signal_map[i+1]
-            except IndexError:
-                marker.next = None
-
-            # if the next marker is incomplete and the previous is complete then we have our current
-            if marker.next is not None and marker.next.is_complete is False:
-                if marker.previous is not None and marker.previous.is_complete is True:
-                    self.current = signal
-                    self.previous = marker.previous
-                    self.next = marker.next
+                signal.next_marker = None
 
 
     def __iter__(self):
@@ -77,13 +73,23 @@ class BaseSignalMarkers(object):
 
     @property
     def tool(self):
-        return self.tool_object
+        return self._tool
 
     @tool.setter
     def tool(self, tool):
-        self.tool_object = tool
+        self._tool = tool
         for s in self.signal_map:
-            s.tool = self.tool_object
+            s.tool = tool
+        # set the current next etc
+        self.set_navigation_based_on_tool(tool=tool)
+
+    def set_navigation_based_on_tool(self, tool):
+        if tool is not None:
+            #print 'Set Navigation based on tool'
+            marker = self.marker(tool.status)
+            self.current_marker = marker
+            self.next_marker = marker.next_marker
+            self.previous_marker = marker.previous_marker
 
     @property
     def num_markers(self):
@@ -97,50 +103,52 @@ class BaseSignalMarkers(object):
         part = 0
         for i in self.signal_map:
             part = (part + 1) if i.name in markers else part
+
         percent = 100 * float(part)/float(whole)
+
         return float("{0:.2f}".format(math.ceil(percent)))
 
     def marker(self, val):
         if type(val) in [str, unicode]:
             return self.marker_by_name(name=val)
-        if type(val) in [int, float]:
+        elif type(val) in [int, float]:
             return self.marker_by_val(val=val)
         return None
 
     def marker_by_val(self, val):
-        for i, marker in enumerate(self.signal_map):
+        for marker in self.signal_map:
             if val == marker.val:
                 return marker
-        return None
+        raise Exception('No Marker of val = %d' % val)
 
     def marker_by_name(self, name):
-        for i, marker in enumerate(self.signal_map):
+        for marker in self.signal_map:
             if name == marker.name:
                 return marker
-        return None
+        raise Exception('No Marker of name = %s' % name)
 
     @property
-    def current(self):
+    def current_marker(self):
         return self.markers_map.get('current')
 
-    @current.setter
-    def current(self, value):
+    @current_marker.setter
+    def current_marker(self, value):
         self.markers_map['current'] = value
 
     @property
-    def next(self):
+    def next_marker(self):
         return self.markers_map.get('next')
 
-    @next.setter
-    def next(self, value):
+    @next_marker.setter
+    def next_marker(self, value):
         self.markers_map['next'] = value
 
     @property
-    def previous(self):
+    def previous_marker(self):
         return self.markers_map.get('previous')
 
-    @previous.setter
-    def previous(self, value):
+    @previous_marker.setter
+    def previous_marker(self, value):
         self.markers_map['previous'] = value
 
     def named_tuple(self, name):
@@ -151,12 +159,14 @@ class BaseSignalMarkers(object):
         return get_namedtuple_choices(name, tuple(named_tuple))
 
 
+BASE_MARKER_ACTION_TYPES = get_namedtuple_choices('ACTION_TYPE', (
+                                (0, 'remote', 'Remote'),
+                                (1, 'redirect', 'Redirect'),
+                                (2, 'modal', 'Modal'),
+                            ))
+
 class Marker(object):
-    ACTION_TYPE = get_namedtuple_choices('ACTION_TYPE', (
-                    (0, 'remote', 'Remote'),
-                    (1, 'redirect', 'Redirect'),
-                    (2, 'modal', 'Modal'),
-                ))
+    ACTION_TYPE = BASE_MARKER_ACTION_TYPES
 
     _tool = None  # overridden with customer .getter and .setter
     _long_description = None  # overridden with customer .getter and .setter
@@ -175,9 +185,6 @@ class Marker(object):
         'previous': None,
         'next': None,
     }
-
-    next = None
-    previous = None
 
     def __init__(self, val, **kwargs):
         self.val = val
@@ -209,19 +216,9 @@ class Marker(object):
         if hasattr(self, 'action_user_class') is False and 'action_user_class' in kwargs:
             self.action_user_class = kwargs.pop('action_user_class')
 
-        next = kwargs.pop('next', None)
-        if next is not None:
-            self.next = next
-
-        previous = kwargs.pop('previous', None)
-        if previous is not None:
-            self.previous = previous
-
         tool = kwargs.pop('tool', None)
         if tool is not None:
             self.tool = tool
-
-        self.data = kwargs
 
     def __str__(self):
         return u'{name}'.format(name=self.name).encode('utf-8')
@@ -244,6 +241,7 @@ class Marker(object):
 
     @next.setter
     def next(self, value):
+        #print "SETTING NEXT: %s for %s" % (value, self.name)
         self.markers_map['next'] = value
 
     @property
@@ -259,14 +257,14 @@ class Marker(object):
         if self.is_complete:
             return 'done'
 
-        if self.is_current:
+        elif self.is_current:
             return 'next'
 
         return 'pending'
 
     @property
     def is_current(self):
-        return self.tool.markers.current == self
+        return self.tool.markers.current_marker == self
 
     @property
     def is_complete(self):
