@@ -21,7 +21,7 @@
     <!--[if lt IE 9]>
         <script src="{{ STATIC_URL }}js/html5shiv.js"></script>
     <![endif]-->
-
+    
     <!-- Loading page specific styles -->
     {% block css %}{% endblock  %}
 </head>
@@ -37,6 +37,8 @@
                     <ul class="nav navbar-nav navbar-right">
                         <li class="divider"></li>
                         {% if user.is_authenticated %}
+                                <li><a href="#" class="intercom">Help</a></li>
+
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.get_full_name|default:user.username }}<b class="caret"></b></a>
                                 <ul>
@@ -97,11 +99,9 @@
                                 {% if user.profile.is_lawyer %}
                                     <li class="pull-right">
                                         {% if WORKSPACES %}
-                                                                                        <a href="{% url 'workspace:create' %}" data-toggle="modal" data-target="#workspace-create" class="a" data-container="body"><i class="fui-plus"></i> New Client</a>
-
+                                            <a href="{% url 'workspace:create' %}" data-toggle="modal" data-target="#workspace-create" class="a" data-container="body"><i class="fui-plus"></i> New Client</a>
                                         {% else %}
-                                                                                    <a href="{% url 'workspace:create' %}" data-toggle="modal" data-target="#workspace-create" class="auto-show" data-container="body" data-placement="bottom" data-content="Click here to add your first Client." data-original-title="" title=""><i class="fui-plus"></i> New Client</a>
-
+                                            <a href="{% url 'workspace:create' %}" data-toggle="modal" data-target="#workspace-create" class="auto-show" data-container="body" data-placement="bottom" data-original-title="Create your first client workspace here" title="Create your first client workspace here"><i class="fui-plus"></i> New Client</a>
                                         {% endif %}
                                     </li>
                                 {% endif %}
@@ -160,7 +160,7 @@
     <!-- Load page specific JS here =============================-->
     {% block js %}{% endblock  %}
 
-    {% if PROJECT_ENVIRONMENT == 'prod' %}
+    {% if PROJECT_ENVIRONMENT != 'prod' %}
         {% if user.is_authenticated %}
             <script id="IntercomSettingsScriptTag">
               window.intercomSettings = {
@@ -173,6 +173,10 @@
                 {% endif %}
                 created_at: "{{ user.date_joined|date:"U" }}",
                 app_id: "ooqtbx99"
+                      ,widget: {
+                        activator: '.intercom',
+                        use_counter: true
+                      }
               };
             </script>
             <script>(function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://static.intercomcdn.com/intercom.v1.js';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})()
