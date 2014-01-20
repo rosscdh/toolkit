@@ -208,4 +208,16 @@ class CustomerForm(BaseForm):
 
 
 @parsleyfy
-class SignEngagementLetterForm(forms.Form): pass
+class SignEngagementLetterForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        super(SignEngagementLetterForm, self).__init__(*args, **kwargs)
+        self.helper.layout = Layout(
+            Div(
+                css_class='form-inline'
+            ),
+            ButtonHolder(
+                Submit('submit', 'Continue', css_class='btn-hg btn-primary'),
+                css_class='form-group'
+            )
+        )
