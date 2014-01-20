@@ -83,8 +83,11 @@ PROJECT_APPS = (
     'toolkit.apps.default',
     'toolkit.apps.dash',
     'toolkit.apps.me',
+    # Main Workspace
     'toolkit.apps.workspace',
+    # Apps
     'toolkit.apps.eightythreeb',
+    'toolkit.apps.engageletter',
 )
 
 HELPER_APPS = (

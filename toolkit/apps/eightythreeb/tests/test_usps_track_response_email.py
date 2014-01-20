@@ -27,7 +27,7 @@ class EightyThreeBIsCompleteEmailTest(BaseCustomer):
     def setUp(self):
         super(EightyThreeBIsCompleteEmailTest, self).setUp()
 
-        self.eightythreeb.status = EightyThreeB.STATUS_83b.irs_recieved
+        self.eightythreeb.status = EightyThreeB.STATUS.irs_recieved
         self.eightythreeb.tracking_code = TRACKING_CODE
         self.eightythreeb.save()
 

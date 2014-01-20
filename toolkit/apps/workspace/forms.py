@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django import forms
 from django.core.urlresolvers import reverse
-from django.template import Context
+from django.template import Context, TemplateDoesNotExist
 from django.template.loader import get_template
 from django.template.defaultfilters import slugify
 
@@ -124,12 +124,20 @@ class InviteUserForm(forms.Form):
         self.fields['subject'].initial = self.get_initial_subject()
         self.fields['message'].initial = self.get_initial_message()
 
+    def get_template(self, template_name):
+        try:
+            return get_template('%s/%s' % (slugify(self.tool_instance._meta.model.__name__), template_name))
+        except TemplateDoesNotExist:
+            return get_template('%s/%s' % (slugify(self.tool_instance._meta.app_label), template_name))
+        else:
+            return get_template('workspace/%s' % template_name)
+
     def get_initial_subject(self):
-        template = get_template('%s/invite_subject.html' % slugify(self.tool_instance._meta.model.__name__))
+        template = self.get_template('invite_subject.html')
         return template.render(Context({'request': self.request, 'instance': self.tool_instance, 'user': self.user}))
 
     def get_initial_message(self):
-        template = get_template('%s/invite_message.html' % slugify(self.tool_instance._meta.model.__name__))
+        template = self.get_template('invite_message.html')
         return template.render(Context({'request': self.request,
                                         'instance': self.tool_instance,
                                         'user': self.user,

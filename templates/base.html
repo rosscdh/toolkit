@@ -95,11 +95,9 @@
                                 {% if user.profile.is_lawyer %}
                                     <li class="pull-right">
                                         {% if WORKSPACES %}
-                                                                                        <a href="{% url 'workspace:create' %}" data-toggle="modal" data-target="#workspace-create" class="a" data-container="body"><i class="fui-plus"></i> New Client</a>
-
+                                            <a href="{% url 'workspace:create' %}" data-toggle="modal" data-target="#workspace-create" class="a" data-container="body"><i class="fui-plus"></i> New Client</a>
                                         {% else %}
-                                                                                    <a href="{% url 'workspace:create' %}" data-toggle="modal" data-target="#workspace-create" class="auto-show" data-container="body" data-placement="bottom" data-content="Click here to add your first Client." data-original-title="" title=""><i class="fui-plus"></i> New Client</a>
-
+                                            <a href="{% url 'workspace:create' %}" data-toggle="modal" data-target="#workspace-create" class="auto-show" data-container="body" data-placement="bottom" data-content="Click here to add your first Client." data-original-title="" title=""><i class="fui-plus"></i> New Client</a>
                                         {% endif %}
                                     </li>
                                 {% endif %}

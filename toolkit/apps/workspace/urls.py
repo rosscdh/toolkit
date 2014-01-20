@@ -10,14 +10,19 @@ from .views import (CreateWorkspaceView,
                     CreateWorkspaceToolObjectView,
                     UpdateViewWorkspaceToolObjectView,
                     InviteClientWorkspaceToolObjectView,
+                    WorkspaceToolsView,
                     WorkspaceToolObjectPreviewView,
                     WorkspaceToolObjectDisplayView,
                     WorkspaceToolObjectDownloadView)
+
 from .models import Workspace
 from .forms import WorkspaceForm
 
 
 urlpatterns = patterns('',
+    url(r'^(?P<workspace>[\w-]+)/tools/$',
+        login_required(WorkspaceToolsView.as_view()),
+        name='tools_list'),
     url(r'^(?P<workspace>[\w-]+)/tool/(?P<tool>[\w-]+)/$',
         login_required(WorkspaceToolObjectsListView.as_view()),
         name='tool_object_list'),

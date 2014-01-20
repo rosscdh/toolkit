@@ -18,7 +18,9 @@ class LawyerCompleteFormMarker(Marker):
     action_user_class = ['lawyer']
 
     def get_action_url(self):
-        return reverse('workspace:tool_object_edit', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.tool_slug, 'slug': self.tool.slug})
+        if self.tool is not None:
+            return reverse('workspace:tool_object_edit', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.tool_slug, 'slug': self.tool.slug})
+        return None
 
     @property
     def action(self):
@@ -46,7 +48,7 @@ class LawyerInviteUserMarker(Marker):
 
     @property
     def action(self):
-        if self.tool.is_complete is True or self.tool.status > self.tool.STATUS_83b.customer_complete_form:
+        if self.tool.is_complete is True or self.tool.status > self.tool.STATUS.customer_complete_form:
             return None
         else:
             return self.get_action_url()
@@ -182,7 +184,7 @@ class CustomerTrackingNumberMarker(Marker):
 
     @property
     def action(self):
-        if self.tool.status in [self.val, self.tool.STATUS_83b.irs_recieved]:  # allow them to change the number?
+        if self.tool.status in [self.val, self.tool.STATUS.irs_recieved]:  # allow them to change the number?
             if 'usps_log' not in self.tool.data:  # @BUSINESS_RULE only show the button as long as we have no usps_log
                 return self.get_action_url()
         # dont show if the status is less than self.val

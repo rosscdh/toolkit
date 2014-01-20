@@ -11,6 +11,7 @@ from jsonfield import JSONField
 
 from rulez import registry as rulez_registry
 
+from toolkit.apps.workspace.signals import base_signal
 from toolkit.apps.workspace.mixins import WorkspaceToolModelMixin
 
 from .markers import EightyThreeBSignalMarkers
@@ -35,8 +36,8 @@ class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferA
     """
     83b Form to be associated with a Workspace and a particular user
     """
-    STATUS_83b = EIGHTYTHREEB_STATUS
-    INCOMPLETE_EXCLUDED_STATUS = [STATUS_83b.complete, STATUS_83b.irs_recieved]  # used in the manager to filter incomplete items
+    STATUS = EIGHTYTHREEB_STATUS
+    INCOMPLETE_EXCLUDED_STATUS = [EIGHTYTHREEB_STATUS.complete, EIGHTYTHREEB_STATUS.irs_recieved]  # used in the manager to filter incomplete items
 
     pdf_template_name = 'eightythreeb/eightythreeb.html'  # @TODO what is this doing here?
 
@@ -51,8 +52,6 @@ class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferA
 
     status = models.IntegerField(choices=EIGHTYTHREEB_STATUS.get_choices(), default=EIGHTYTHREEB_STATUS.lawyer_complete_form, db_index=True)
 
-    _markers = None
-
     objects = EightyThreeBManager()
 
     def __unicode__(self):
@@ -64,18 +63,15 @@ class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferA
 
     @property
     def markers(self):
-        if self._markers is None:
-            self._markers = EightyThreeBSignalMarkers(tool=self)
-        return self._markers
+        return EightyThreeBSignalMarkers(tool=self)
 
     @property
     def base_signal(self):
-        from .signals import base_83b_signal
-        return base_83b_signal
+        return base_signal
 
     @property
     def is_complete(self):
-        return self.status == self.STATUS_83b.complete
+        return self.status == self.STATUS.complete
 
     @property
     def client_name(self):
