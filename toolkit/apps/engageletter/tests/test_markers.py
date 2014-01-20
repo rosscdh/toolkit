@@ -196,9 +196,18 @@ class CustomerSignAndSendMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.name, 'customer_sign_and_send')
         self.assertEqual(self.subject.description, 'Client: Sign & Send the Engagement Letter')
         self.assertEqual(self.subject.signals, ['toolkit.apps.engageletter.signals.customer_sign_and_send'])
-        self.assertEqual(self.subject.action_name, 'Complete Engagement Letter')
-        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
+        self.assertEqual(self.subject.action_name, 'Sign Engagment Letter')
+        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.modal)
         self.assertEqual(self.subject.action_user_class, ['customer'])
+
+    def test_action_attribs(self):
+        self.assertEqual(self.subject.action_attribs, {'target': '#modal-customer_sign_and_send', 'toggle': 'modal'})
+
+    def test_get_action_url(self):
+        self.assertEqual(self.subject.get_action_url(), '/engagement-letters/d1c545082d1241849be039e338e47aa0/sign/')
+
+    def test_action(self):
+        self.assertEqual(self.subject.action, '/engagement-letters/d1c545082d1241849be039e338e47aa0/sign/')
 
 
 class ProcessCompleteMarkerTest(BaseTestMarker):
