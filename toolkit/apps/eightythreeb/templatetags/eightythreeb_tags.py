@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import datetime
+
 from django import template
 from django.utils.safestring import mark_safe, SafeText
 
@@ -26,6 +28,21 @@ def full_address(address):
         addr = addr + '<br>%s' % address['country']
 
     return mark_safe('<address>%s</address>' % addr)
+
+
+@register.filter
+def status_row_class(eightythreeb):
+    if eightythreeb.is_complete:
+        return 'success'
+
+    elif eightythreeb.filing_date <= (datetime.date.today() + datetime.timedelta(days=5)):
+        return 'danger'
+
+    elif eightythreeb.filing_date <= (datetime.date.today() + datetime.timedelta(days=10)):
+        return 'warning'
+
+    elif eightythreeb.is_expired:
+        return 'expired'
 
 
 @register.filter(name='to_date')
