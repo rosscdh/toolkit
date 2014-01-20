@@ -1,4 +1,3 @@
-# from django.contrib import messages
 from django.forms.forms import BaseForm
 from django.http import HttpResponse
 from django.utils import simplejson as json
@@ -21,9 +20,9 @@ class JSONResponseMixin(object):
         return json.dumps(context)
 
 
-class AjaxFormViewMixin(FormView):
+class AjaxFormViewMixin(object):
     """
-    A mixin that processes a form as AJAX.
+    A mixin that handles form submission over AJAX.
     """
     @json_response
     def post(self, request, *args, **kwargs):
@@ -36,7 +35,8 @@ class AjaxFormViewMixin(FormView):
 
 class AjaxValidFormViewMixin(JSONResponseMixin, AjaxFormViewMixin):
     """
-    A mixin that provides a way to handle successful AJAX form submissions.
+    A mixin that handles successful AJAX form submissions for simple
+    FormView based views.
     """
     def form_valid(self, form):
         data = {
@@ -49,7 +49,8 @@ class AjaxValidFormViewMixin(JSONResponseMixin, AjaxFormViewMixin):
 
 class AjaxValidModelFormViewMixin(JSONResponseMixin, AjaxFormViewMixin):
     """
-    A mixin that provides a way to handle successful AJAX modal form submissions.
+    A mixin that handles successful AJAX form submissions for views
+    that use a Django ModelForm.
     """
     def form_valid(self, form):
         self.object = form.save()
@@ -64,7 +65,7 @@ class AjaxValidModelFormViewMixin(JSONResponseMixin, AjaxFormViewMixin):
 
 class AjaxInvalidFormViewMixin(JSONResponseMixin, AjaxFormViewMixin):
     """
-    A mixin that provides a way to handle unsuccessful AJAX form submissions.
+    A mixin that handles invalid AJAX form submissions for FormView based views.
     """
     def form_invalid(self, form):
         errors = form.errors['__all__'] if '__all__' in form.errors else form.errors
@@ -75,14 +76,27 @@ class AjaxInvalidFormViewMixin(JSONResponseMixin, AjaxFormViewMixin):
 
 
 class AjaxFormView(AjaxValidFormViewMixin, AjaxInvalidFormViewMixin, FormView):
+    """
+    A mixin that handles AJAX form submissions for FormView based views.
+
+    See: https://docs.djangoproject.com/en/1.6/topics/class-based-views/generic-editing/#basic-forms
+    """
     pass
 
 
 class AjaxModelFormView(AjaxValidModelFormViewMixin, AjaxInvalidFormViewMixin, FormView):
+    """
+    A mixin that handles AJAX form submissions for views that use a ModelForm.
+
+    See: https://docs.djangoproject.com/en/1.6/topics/class-based-views/generic-editing/#model-forms
+    """
     pass
 
 
 class ModalForm(BaseForm):
+    """
+    A mixin that sets up a Form to be displayed in a modal dialog.
+    """
     def __init__(self, *args, **kwargs):
         super(ModalForm, self).__init__(*args, **kwargs)
 
@@ -109,4 +123,7 @@ class ModalForm(BaseForm):
 
 
 class ModalView(View):
+    """
+    A mixin that sets the correct template for modal based views.
+    """
     template_name = 'modal.html'
