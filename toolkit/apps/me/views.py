@@ -97,9 +97,37 @@ class ChangePasswordView(FormView):
 
 
 class LawyerLetterheadView(UpdateView):
+    """
+    View that handles the Letterhead Setup Form for Lawyers
+    get the initial form data form the users profile.data
+    form will save that data
+    """
     form_class = LawyerLetterheadForm
     model = UserProfile
     template_name = 'lawyer/lawyerletterhead_form.html'
 
     def get_object(self, queryset=None):
         return self.request.user.profile
+
+    def get_initial(self):
+        kwargs = super(LawyerLetterheadView, self).get_initial()
+        profile = self.request.user.profile
+        kwargs.update({
+            'firm_address': profile.data.get('firm_address'),
+            'firm_logo': profile.data.get('firm_logo'),
+        })
+        return kwargs
+
+    def get_success_url(self):
+        if 'next' in self.request.GET:
+            url = self.request.GET.get('next')
+        else:
+            url = self.object.get_absolute_url()
+        return url
+
+    def get_form_kwargs(self):
+        kwargs = super(LawyerLetterheadView, self).get_form_kwargs()
+        kwargs.update({
+            'user': self.request.user
+        })
+        return kwargs

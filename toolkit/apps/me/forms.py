@@ -192,6 +192,7 @@ class LawyerLetterheadForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance')
+        self.user = kwargs.pop('user')
 
         self.helper = FormHelper()
         self.helper.layout = Layout(
@@ -202,3 +203,15 @@ class LawyerLetterheadForm(forms.Form):
             )
         )
         super(LawyerLetterheadForm, self).__init__(*args, **kwargs)
+
+    def save(self):
+        """
+        Update the user profile data
+        """
+        profile = self.user.profile
+        data = profile.data
+
+        data.update(**self.cleaned_data)
+        profile.data = data
+
+        profile.save(update_fields=['data'])
