@@ -84,9 +84,12 @@ class CustomerSignAndSendMarker(Marker):
     description = 'Client: Sign & Send the Engagement Letter'
     signals = ['toolkit.apps.engageletter.signals.customer_sign_and_send']
 
-    action_name = 'Complete Engagement Letter'
-    action_type = Marker.ACTION_TYPE.redirect
+    action_name = 'Sign Engagment Letter'
+    action_type = Marker.ACTION_TYPE.modal
     action_user_class = ['customer']
+
+    def get_action_url(self):
+        return reverse('engageletter:sign', kwargs={'slug': self.tool.slug})
 
 
 class ProcessCompleteMarker(Marker):
