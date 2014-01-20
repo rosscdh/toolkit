@@ -33,4 +33,4 @@ class LawyerSetupTemplateMarker(Marker):
         return False
 
     def get_action_url(self):
-        return reverse('me:letterhead')
+        return '%s?next=%s' % (reverse('me:letterhead'), self.tool.get_absolute_url(),)
