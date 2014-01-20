@@ -74,7 +74,7 @@
 <p>
     Dated: {% now "F jS Y" %}
 <p>
-{{ object.irs_address|default:'<span>[IRS Service Center Address]</span>' }}
+{{ object.irs_address|full_address|default:'<span>[IRS Service Center Address]</span>' }}
 <p>
 <br />
 <br />
@@ -136,7 +136,7 @@ Thank you,
             <strong>Step 4 : Mail it to the IRS</strong><br />
             Send it by <u>USPS Certified Mail with Electronic Return Receipt Requested</u> to the IRS at the following address :
             <br />
-            {{ object.irs_address|default:'<span>[IRS Address]</span>' }}
+            {{ object.irs_address|full_address|default:'<span>[IRS Address]</span>' }}
             <br /><br />
             Look for one of these mailing forms and make sure you pay extra for Electronic Return Receipt so LawPal can track delivery.
             <br />
