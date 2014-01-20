@@ -12,7 +12,7 @@ class LawyerSetupTemplateMarker(Marker):
     description = 'Attorney: Setup Letter Template'
     signals = ['toolkit.apps.engageletter.signals.lawyer_setup_template']
 
-    action_name = 'Setup Letter Template'
+    action_name = 'Edit Engagement Letter Template'
     action_type = Marker.ACTION_TYPE.redirect
     action_user_class = ['lawyer']
 
@@ -33,4 +33,9 @@ class LawyerSetupTemplateMarker(Marker):
         return False
 
     def get_action_url(self):
-        return '%s?next=%s' % (reverse('me:letterhead'), self.tool.get_absolute_url(),)
+        url = reverse('me:letterhead')
+
+        if self.tool is not None:
+            return '%s?next=%s' % (url, self.tool.get_absolute_url(),)
+        else:
+            return url 

@@ -46,7 +46,11 @@ class BaseScenarios(object):
         lawyer_profile.save(update_fields=['data'])
 
         self.workspace = mommy.make('workspace.Workspace', name='Lawpal (test)', lawyer=self.lawyer)
-        self.workspace.tools.add(Tool.objects.get(slug='83b-election-letters'))
+
+        # Add all the toolks to the workspace
+        for tool in Tool.objects.all():
+            self.workspace.tools.add(tool)
+
         self.workspace.participants.add(self.user)
         self.workspace.participants.add(self.lawyer)
 

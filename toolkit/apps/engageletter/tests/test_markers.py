@@ -131,17 +131,18 @@ class LawyerSetupTemplateMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.name, 'lawyer_setup_template')
         self.assertEqual(self.subject.description, 'Attorney: Setup Letter Template')
         self.assertEqual(self.subject.signals, ['toolkit.apps.engageletter.signals.lawyer_setup_template'])
-        self.assertEqual(self.subject.action_name, 'Setup Letter Template')
+        self.assertEqual(self.subject.action_name, 'Edit Engagement Letter Template')
         self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
         self.assertEqual(self.subject.action_user_class, ['lawyer'])
 
+    def get_expected_url(self):
+        return '%s?next=%s' % (reverse('me:letterhead'), self.subject.tool.get_absolute_url(),)
+
     def test_get_action_url(self):
-        url = reverse('me:letterhead')
-        self.assertEqual(self.subject.get_action_url(), url)
+        self.assertEqual(self.subject.get_action_url(), self.get_expected_url())
 
     def test_action(self):
-        url = reverse('me:letterhead')
-        self.assertEqual(self.subject.action, url)
+        self.assertEqual(self.subject.action, self.get_expected_url())
 
 
 class LawyerInviteUserMarkerTest(BaseTestMarker):
