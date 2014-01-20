@@ -9,7 +9,6 @@ sqlparse==0.1.10
 wsgiref==0.1.2
 
 Werkzeug
-## django-rest-swagger ## removed as its not useful
 djangorestframework==2.3.9
 -e git+https://github.com/alex/django-filter.git#egg=django-filter
 
@@ -64,3 +63,4 @@ pyquery
 django-inmemorystorage
 
 django-email-obfuscator
+decorator

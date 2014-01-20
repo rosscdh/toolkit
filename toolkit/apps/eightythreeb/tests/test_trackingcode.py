@@ -4,6 +4,7 @@ from django.test import TestCase
 from django.core.files import File
 from django.core.files.storage import FileSystemStorage
 from django.core.urlresolvers import reverse
+from django.utils import simplejson as json
 
 import os
 import mock
@@ -100,7 +101,15 @@ class TestTrackingCodeModal(BaseUSPSTrackingCode):
             'slug': self.eightythreeb.slug
         })
 
-        self.assertRedirects(resp, redirect)
+        actual_response = {
+            'redirect': True,
+            'url': redirect
+        }
+
+        self.assertEqual(resp.content, json.dumps(actual_response))
+
+        # was it saved?
+        self.assertEqual(self.eightythreeb.tracking_code, TRACKING_CODE)
 
 
 class TestTrackingCodeEmail(BaseUSPSTrackingCode):
