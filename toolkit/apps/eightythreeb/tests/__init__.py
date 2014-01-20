@@ -5,6 +5,7 @@ from .test_attachments import *
 from .test_usps import *
 from .test_trackingcode import *
 from .test_markers import *
+from .test_irs_mixins import *
 
 from .test_reminder_email import *
 from .test_usps_track_response_email import *
