@@ -19,11 +19,13 @@ class IRSAddressTest(BaseScenarios, TestCase):
             self.eightythreeb.data['state'] = s[0]
 
             address = self.eightythreeb.irs_address
-            self.assertEquals(address.get('address1', None), 'Department of the Treasury')
-            self.assertEquals(address.get('address2', None), 'Internal Revenue Service')
-            self.assertEquals(address.get('city', None), 'Austin')
-            self.assertEquals(address.get('state', None), 'TX')
-            self.assertEquals(address.get('zip', None), '73301-0002')
+            self.assertEquals(address, {
+                'address1': 'Department of the Treasury',
+                'address2': 'Internal Revenue Service',
+                'city': 'Austin',
+                'state': 'TX',
+                'zip': '73301-0002'
+            })
 
     def test_fresno_california_irs_address(self):
         states = (
@@ -58,11 +60,13 @@ class IRSAddressTest(BaseScenarios, TestCase):
             self.eightythreeb.data['state'] = s[0]
 
             address = self.eightythreeb.irs_address
-            self.assertEquals(address.get('address1', None), 'Department of the Treasury')
-            self.assertEquals(address.get('address2', None), 'Internal Revenue Service')
-            self.assertEquals(address.get('city', None), 'Fresno')
-            self.assertEquals(address.get('state', None), 'CA')
-            self.assertEquals(address.get('zip', None), '93888-0002')
+            self.assertEquals(address, {
+                'address1': 'Department of the Treasury',
+                'address2': 'Internal Revenue Service',
+                'city': 'Fresno',
+                'state': 'CA',
+                'zip': '93888-0002'
+            })
 
     def test_kansas_missouri_irs_address(self):
         states = (
@@ -92,11 +96,13 @@ class IRSAddressTest(BaseScenarios, TestCase):
             self.eightythreeb.data['state'] = s[0]
 
             address = self.eightythreeb.irs_address
-            self.assertEquals(address.get('address1', None), 'Department of the Treasury')
-            self.assertEquals(address.get('address2', None), 'Internal Revenue Service')
-            self.assertEquals(address.get('city', None), 'Kansas City')
-            self.assertEquals(address.get('state', None), 'MO')
-            self.assertEquals(address.get('zip', None), '64999-0002')
+            self.assertEquals(address, {
+                'address1': 'Department of the Treasury',
+                'address2': 'Internal Revenue Service',
+                'city': 'Kansas City',
+                'state': 'MO',
+                'zip': '64999-0002'
+            })
 
     def test_us_territory_irs_address(self):
         states = (
@@ -110,23 +116,27 @@ class IRSAddressTest(BaseScenarios, TestCase):
             self.eightythreeb.data['state'] = s[0]
 
             address = self.eightythreeb.irs_address
-            self.assertEquals(address.get('address1', None), 'Department of the Treasury')
-            self.assertEquals(address.get('address2', None), 'Internal Revenue Service')
-            self.assertEquals(address.get('city', None), 'Austin')
-            self.assertEquals(address.get('state', None), 'TX')
-            self.assertEquals(address.get('zip', None), '73301-0215')
-            self.assertEquals(address.get('country', None), 'USA')
+            self.assertEquals(address, {
+                'address1': 'Department of the Treasury',
+                'address2': 'Internal Revenue Service',
+                'city': 'Austin',
+                'state': 'TX',
+                'zip': '73301-0215',
+                'country': 'USA'
+            })
 
     def test_international_irs_address(self):
         del(self.eightythreeb.data['state'])
 
         address = self.eightythreeb.irs_address
-        self.assertEquals(address.get('address1', None), 'Department of the Treasury')
-        self.assertEquals(address.get('address2', None), 'Internal Revenue Service')
-        self.assertEquals(address.get('city', None), 'Austin')
-        self.assertEquals(address.get('state', None), 'TX')
-        self.assertEquals(address.get('zip', None), '73301-0215')
-        self.assertEquals(address.get('country', None), 'USA')
+        self.assertEquals(address, {
+            'address1': 'Department of the Treasury',
+            'address2': 'Internal Revenue Service',
+            'city': 'Austin',
+            'state': 'TX',
+            'zip': '73301-0215',
+            'country': 'USA'
+        })
 
 
 class IRSPaymentAddressTest(BaseScenarios, TestCase):
@@ -145,11 +155,13 @@ class IRSPaymentAddressTest(BaseScenarios, TestCase):
             self.eightythreeb.data['state'] = s[0]
 
             address = self.eightythreeb.irs_payment_address
-            self.assertEquals(address.get('address1', None), 'Internal Revenue Service')
-            self.assertEquals(address.get('address2', None), 'P.O. Box 1214')
-            self.assertEquals(address.get('city', None), 'Charlotte')
-            self.assertEquals(address.get('state', None), 'NC')
-            self.assertEquals(address.get('zip', None), '28201-1214')
+            self.assertEquals(address, {
+                'address1': 'Internal Revenue Service',
+                'address2': 'P.O. Box 1214',
+                'city': 'Charlotte',
+                'state': 'NC',
+                'zip': '28201-1214'
+            })
 
     def test_cincinnati_ohio_irs_payment_address(self):
         states = (
@@ -172,11 +184,13 @@ class IRSPaymentAddressTest(BaseScenarios, TestCase):
             self.eightythreeb.data['state'] = s[0]
 
             address = self.eightythreeb.irs_payment_address
-            self.assertEquals(address.get('address1', None), 'Internal Revenue Service')
-            self.assertEquals(address.get('address2', None), 'P.O. Box 802501')
-            self.assertEquals(address.get('city', None), 'Cincinnati')
-            self.assertEquals(address.get('state', None), 'OH')
-            self.assertEquals(address.get('zip', None), '45280-2501')
+            self.assertEquals(address, {
+                'address1': 'Internal Revenue Service',
+                'address2': 'P.O. Box 802501',
+                'city': 'Cincinnati',
+                'state': 'OH',
+                'zip': '45280-2501'
+            })
 
     def test_hartford_connecticut_irs_payment_address(self):
         states = (
@@ -197,11 +211,13 @@ class IRSPaymentAddressTest(BaseScenarios, TestCase):
             self.eightythreeb.data['state'] = s[0]
 
             address = self.eightythreeb.irs_payment_address
-            self.assertEquals(address.get('address1', None), 'Internal Revenue Service')
-            self.assertEquals(address.get('address2', None), 'P.O. Box 37008')
-            self.assertEquals(address.get('city', None), 'Hartford')
-            self.assertEquals(address.get('state', None), 'CT')
-            self.assertEquals(address.get('zip', None), '06176-0008')
+            self.assertEquals(address, {
+                'address1': 'Internal Revenue Service',
+                'address2': 'P.O. Box 37008',
+                'city': 'Hartford',
+                'state': 'CT',
+                'zip': '06176-0008'
+            })
 
     def test_louisville_kentucky_irs_payment_address(self):
         states = (
@@ -219,11 +235,13 @@ class IRSPaymentAddressTest(BaseScenarios, TestCase):
             self.eightythreeb.data['state'] = s[0]
 
             address = self.eightythreeb.irs_payment_address
-            self.assertEquals(address.get('address1', None), 'Internal Revenue Service')
-            self.assertEquals(address.get('address2', None), 'P.O. Box 931000')
-            self.assertEquals(address.get('city', None), 'Louisville')
-            self.assertEquals(address.get('state', None), 'KY')
-            self.assertEquals(address.get('zip', None), '40293-1000')
+            self.assertEquals(address, {
+                'address1': 'Internal Revenue Service',
+                'address2': 'P.O. Box 931000',
+                'city': 'Louisville',
+                'state': 'KY',
+                'zip': '40293-1000'
+            })
 
     def test_san_francisco_california_irs_payment_address(self):
         states = (
@@ -244,11 +262,13 @@ class IRSPaymentAddressTest(BaseScenarios, TestCase):
             self.eightythreeb.data['state'] = s[0]
 
             address = self.eightythreeb.irs_payment_address
-            self.assertEquals(address.get('address1', None), 'Internal Revenue Service')
-            self.assertEquals(address.get('address2', None), 'P.O. Box 7704')
-            self.assertEquals(address.get('city', None), 'San Francisco')
-            self.assertEquals(address.get('state', None), 'CA')
-            self.assertEquals(address.get('zip', None), '94120-7704')
+            self.assertEquals(address, {
+                'address1': 'Internal Revenue Service',
+                'address2': 'P.O. Box 7704',
+                'city': 'San Francisco',
+                'state': 'CA',
+                'zip': '94120-7704'
+            })
 
     def test_us_territory_irs_payment_address(self):
         states = (
@@ -262,23 +282,27 @@ class IRSPaymentAddressTest(BaseScenarios, TestCase):
             self.eightythreeb.data['state'] = s[0]
 
             address = self.eightythreeb.irs_payment_address
-            self.assertEquals(address.get('address1', None), 'Internal Revenue Service')
-            self.assertEquals(address.get('address2', None), 'P.O. Box 1303')
-            self.assertEquals(address.get('city', None), 'Charlotte')
-            self.assertEquals(address.get('state', None), 'NC')
-            self.assertEquals(address.get('zip', None), '28201-1303')
-            self.assertEquals(address.get('country', None), 'USA')
+            self.assertEquals(address, {
+                'address1': 'Internal Revenue Service',
+                'address2': 'P.O. Box 1303',
+                'city': 'Charlotte',
+                'state': 'NC',
+                'zip': '28201-1303',
+                'country': 'USA'
+            })
 
     def test_international_irs_payment_address(self):
         del(self.eightythreeb.data['state'])
 
         address = self.eightythreeb.irs_payment_address
-        self.assertEquals(address.get('address1', None), 'Internal Revenue Service')
-        self.assertEquals(address.get('address2', None), 'P.O. Box 1303')
-        self.assertEquals(address.get('city', None), 'Charlotte')
-        self.assertEquals(address.get('state', None), 'NC')
-        self.assertEquals(address.get('zip', None), '28201-1303')
-        self.assertEquals(address.get('country', None), 'USA')
+        self.assertEquals(address, {
+            'address1': 'Internal Revenue Service',
+            'address2': 'P.O. Box 1303',
+            'city': 'Charlotte',
+            'state': 'NC',
+            'zip': '28201-1303',
+            'country': 'USA'
+        })
 
 
 class IRSSpouseTest(BaseScenarios, TestCase):
