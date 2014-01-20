@@ -63,3 +63,4 @@ pyquery
 django-inmemorystorage
 
 django-email-obfuscator
+decorator
