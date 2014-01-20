@@ -31,6 +31,9 @@ class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, WorkspaceToolMode
     workspace = models.ForeignKey('workspace.Workspace')
     user = models.ForeignKey('auth.User')
 
+    # header = models.TextField(default='', blank=True)  # store an instance of the workspace.lawyer header template
+    # letter = models.TextField(default='', blank=True)  # store the rendered html
+
     data = JSONField(default={})
 
     status = models.IntegerField(choices=ENGAGEMENTLETTER_STATUS.get_choices(), default=ENGAGEMENTLETTER_STATUS.lawyer_setup_template, db_index=True)

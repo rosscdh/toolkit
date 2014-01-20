@@ -1,0 +1,43 @@
+{% extends 'pdf/base.html' %}{% load engageletter_tags %}
+{% block styleextra %}
+    span {
+        color: #666;
+        background-color:#FAF0E6;
+    }
+    .address-header {
+        text-align:right;
+        width: 50%;
+        float:right;
+        text-transform:uppercase;
+        color:#ccc;
+        font-size:12px;
+        font-weight:bold;
+    }
+    .logo {
+        width:40%;
+        height:170px;
+
+    }
+    .footer {
+    position: absolute;
+    bottom:0;
+}
+{% endblock %}
+
+{% block content %}
+
+<!-- Page 1 : Cover Letter  -->
+{% lawyer_header lawyer=instance.workspace.lawyer %}
+
+<div>
+    <div>{{ client_full_name|default:'<span>[Client Name]</span>' }}</div>
+    <div>{{ address1|default:'<span>[Client Address]</span>' }}</div>
+    {% if address2 %}<div>{{ address2 }}</div>{% endif %}
+    <div>{{ city|default:'<span>[Client City]</span>' }}</div>
+    <div>{{ state|default:'<span>[Client State]</span>' }} {{ post_code|default:'<span>[Client Zip Code]</span>' }}</div>
+    <br />
+</div>
+
+{% lawyer_footer lawyer=instance.workspace.lawyer %}
+
+{% endblock %}

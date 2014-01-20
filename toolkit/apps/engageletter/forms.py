@@ -205,3 +205,7 @@ class CustomerForm(BaseForm):
 
     def issue_signals(self, instance):
         instance.markers.marker('customer_complete_form').issue_signals(request=self.request, instance=instance, actor=self.user)
+
+
+@parsleyfy
+class SignEngagementLetterForm(forms.Form): pass

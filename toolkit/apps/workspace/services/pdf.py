@@ -40,7 +40,11 @@ class PDFKitRubyService(BasePdfService):
     def pdf(self, template_name, file_object):
         filename = os.path.basename(template_name)
 
-        payload = {"html": self.html, "filename": filename}
+        payload = {
+            "html": self.html,
+            "footer": 'fdafds',
+            "filename": filename
+        }
         headers = {'content-type': 'application/json'}
 
         r = self.service.post(self.PDFKIT_SERVICE_URI, data=json.dumps(payload), headers=headers)
