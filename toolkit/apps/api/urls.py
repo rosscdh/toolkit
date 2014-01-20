@@ -14,5 +14,4 @@ urlpatterns = patterns('',
     url(r'^', include(router.urls)),
     url(r'^workspace/(?P<slug>[\w-]+)/tools/$', WorkspaceToolsView.as_view(), name='workspacetools'),
     url(r'^83b/attachments/(?P<pk>\d+)/$', AttachmentDeleteView.as_view(), name='attachment-delete'),
-    url(r'^docs/', include('rest_framework_swagger.urls')),
 )
