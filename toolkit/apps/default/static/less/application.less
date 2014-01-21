@@ -31,8 +31,13 @@
 .main-content {
   margin-top: 20px;
 }
+.content .page-header h4 {
+  font-size:20px;
+}
 
-
+.content .lead {
+    font-size:22px;
+}
 // Forms
 // -------------------------
 
@@ -106,7 +111,14 @@
 // Navs
 // -------------------------
 
-.nav-list {
+.nav-list-vivid {
+  .nav-header {
+    padding-left:8px;
+    padding-right:8px;
+    padding-top:5px;
+    border-top: 2px solid mix(@brand-primary, white, 14%);
+    margin-top:15px;
+  }
   .icon {
     float: left;
     margin-right: 5px;
@@ -148,6 +160,9 @@
 // -------------------------
 
 .page-header {
+  h4 {
+    font-size:28px;
+  }
   .caption {
     color: @gray-light;
     display: inline-block;
@@ -182,6 +197,11 @@
   }
 }
 
+// Sidebar
+// -------------------------
+.sidebar {
+  padding-right: 30px;
+}
 
 // Parsley.js
 // -------------------------
@@ -214,12 +234,12 @@
     margin: 100px 0 30px 0px;
   }
   h2 {
-    font-size:40px;
+    font-size:45px;
     color:#666;
     margin-top:10px;
   }
   .lead.sub {
-    font-size:22px;
+    font-size:19px;
     padding:0px 70px;
   }
   .description {
@@ -228,7 +248,7 @@
     color: #999;
     .benefit {
       text-align:center;
-      padding:20px;
+      padding:15px;
       img {
         height:80px;
       }
@@ -241,8 +261,62 @@
       }
     }
   }
-  .btn {
+  .top .btn {
     margin: 0 10px;
+  }
+  .feature-wrap {
+    background-color: lighten(@green-sea,5%);
+    border-bottom: 3px solid #74bf80;
+    padding: 15px 0px 20px 0px;
+    * { 
+      color:white;
+    }
+    span.ico {
+      font-size:60px;
+      line-height:90px;
+    }
+    h4 {
+      font-size:22px;
+      margin-top:0px;
+    }
+    p {
+      font-size:14px;
+      line-height:19px;
+      padding:0px 20px;
+      opacity:0.8;
+    }
+  }
+  .toolkit-wrap {
+    background-color:#efefef;
+    min-height:600px;
+    padding: 60px 0px;
+    h2 {
+      color: #aaa;
+      font-size:25px;
+      margin-bottom:10px;
+    }
+    h3 {
+      font-size: 25px;
+      margin-top:10px;
+    }
+    hr {
+      border-color:#ddd;
+      width:60%;
+    }
+  }
+  .icon-wrap {
+    background-color:#f9f9f9;
+    padding:12px 0px 20px 0px;
+    -webkit-box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.15);
+    box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.15);
+    width:70px;
+    height:70px;
+    text-align:center;
+    margin: 0px 0 18px 0;
+    border-radius:10px;
+    img {
+      width:45px;
+    }
   }
 }
 
@@ -351,6 +425,7 @@
 
 // Widget
 // -------------------------
+
 .dashboard {
   margin-top:-30px;
   .inner {

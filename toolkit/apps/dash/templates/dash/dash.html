@@ -10,16 +10,22 @@
 {% endblock %}
 
 {% block header %}
-	<h4>Dashboard</h4>
+	{% if not WORKSPACES %}
+		<h4>Welcome</h4>
+	{% else %}
+		<h4>Dashboard</h4>
+	{% endif %}
 {% endblock %}
 
 {% block main %}
 
 {% if not WORKSPACES %}
-<div class="alert">
-	<h4>Create your first client workspace</h4>
-	<p>For each client you work with through LawPal, you must create a client workspace. <br />To get started, create your first one now.
-	</p>
+<div class="row">
+	<div class="col-lg-10 col-lg-offset-1 text-center">
+		<h4>Create your first client workspace</h4>
+		<p>For each client you work with through LawPal, you must create a client workspace. <br />To get started, create your first one now.
+		</p>
+	</div>
 </div>
 {% else %}
 <style>
@@ -35,7 +41,7 @@
 				<div class="widget-wrap">
 					<div class="row">
 						<!-- Start Client-->
-						<div class="col col-lg-3"> 
+						<div class="col col-sm-3"> 
 							<div class="text-center widget">
 								<div class="img-wrap">
 									<img src="/static/images/icons/mail.svg"><br />
@@ -51,7 +57,7 @@
 						          </div>
 							</div>
 						</div>
-						<div class="col col-lg-3"> 
+						<div class="col col-sm-3"> 
 							<div class="text-center widget">
 								<div class="img-wrap">
 									<img src="/static/images/icons/loop.svg"><br />
@@ -78,7 +84,7 @@
 				<div class="widget-wrap">
 					<div class="row">
 						<!-- Start Client-->
-						<div class="col col-lg-3"> 
+						<div class="col col-sm-3"> 
 							<div class="text-center widget">
 								<div class="img-wrap">
 									<img src="/static/images/icons/clipboard.svg"><br />
@@ -89,7 +95,7 @@
 								</ul>
 							</div>
 						</div>
-						<div class="col col-lg-3"> 
+						<div class="col col-sm-3"> 
 							<div class="text-center widget">
 								<div class="img-wrap">
 									<img src="/static/images/icons/mail.svg"><br />
