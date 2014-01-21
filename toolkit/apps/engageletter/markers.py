@@ -4,10 +4,13 @@ from django.core.urlresolvers import reverse
 from toolkit.apps.workspace.markers import BaseSignalMarkers, Marker
 from toolkit.apps.workspace.markers.lawyers import LawyerSetupTemplateMarker as BaseLawyerSetupTemplateMarker
 
+
 class LawyerSetupTemplateMarker(BaseLawyerSetupTemplateMarker):
     """
     Override
     """
+    action_type = Marker.ACTION_TYPE.modal
+
     def get_action_url(self):
         if self.tool is not None:
             url = reverse('engageletter:lawyer_template', kwargs={'slug': self.tool.slug})
