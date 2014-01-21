@@ -9,6 +9,7 @@ from parsley.decorators import parsleyfy
 from localflavor.us.us_states import USPS_CHOICES
 from localflavor.us.forms import USZipCodeField
 
+from toolkit.apps.me.forms import LawyerLetterheadForm
 from toolkit.apps.workspace.mixins import WorkspaceToolFormMixin
 from toolkit.apps.workspace.services import EnsureCustomerService
 
@@ -205,6 +206,37 @@ class CustomerForm(BaseForm):
 
     def issue_signals(self, instance):
         instance.markers.marker('customer_complete_form').issue_signals(request=self.request, instance=instance, actor=self.user)
+
+
+@parsleyfy
+class LawyerEngagementLetterTemplateForm(LawyerLetterheadForm):
+    """
+    Override the base letterhead and add out template letter HTML
+    """
+    body = forms.CharField(required=True, widget=forms.Textarea)
+
+    def __init__(self, *args, **kwargs):
+        super(LawyerEngagementLetterTemplateForm, self).__init__(*args, **kwargs)
+        # override the layout
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    'firm_logo',
+                    'firm_address',
+                    css_class='col-md-6'
+                ),
+                Div(
+                    'body',
+                    css_class='col-md-6'
+                ),
+                css_class='row'
+            ),
+
+            ButtonHolder(
+                Submit('submit', 'Save', css_class='btn btn-primary btn-lg')
+            )
+        )
+        
 
 
 @parsleyfy
