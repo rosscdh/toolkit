@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import datetime
+
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
@@ -74,6 +76,10 @@ class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferA
         return self.status == self.STATUS.complete
 
     @property
+    def has_expired(self):
+        return not self.is_complete and self.filing_date < datetime.date.today()
+
+    @property
     def client_name(self):
         return self.data.get('client_full_name', None)
 
@@ -117,4 +123,4 @@ class Attachment(IsDeletedMixin, models.Model):
 
 rulez_registry.register("can_delete", Attachment)
 
-from .signals import *
+from .signals import *  # noqa
