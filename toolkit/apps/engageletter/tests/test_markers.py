@@ -136,7 +136,7 @@ class LawyerSetupTemplateMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.action_user_class, ['lawyer'])
 
     def get_expected_url(self):
-        return '%s?next=%s' % (reverse('me:letterhead'), self.subject.tool.get_absolute_url(),)
+        return '%s?next=%s' % (reverse('engageletter:lawyer_template', kwargs={'slug': self.subject.tool.slug}), self.subject.tool.get_absolute_url(),)
 
     def test_get_action_url(self):
         self.assertEqual(self.subject.get_action_url(), self.get_expected_url())
@@ -160,10 +160,12 @@ class LawyerInviteUserMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.action_user_class, ['lawyer'])
 
     def test_get_action_url(self):
-        self.assertEqual(self.subject.get_action_url(), '/workspace/lawpal-test/tool/engagement-letters/d1c545082d1241849be039e338e47aa0/invite/client/')
+        url = reverse('workspace:tool_object_invite', kwargs={'workspace': self.subject.tool.workspace.slug, 'tool': self.subject.tool.tool_slug, 'slug': self.subject.tool.slug})
+        self.assertEqual(self.subject.get_action_url(), url)
 
     def test_action(self):
-        self.assertEqual(self.subject.action, '/workspace/lawpal-test/tool/engagement-letters/d1c545082d1241849be039e338e47aa0/invite/client/')
+        url = reverse('workspace:tool_object_invite', kwargs={'workspace': self.subject.tool.workspace.slug, 'tool': self.subject.tool.tool_slug, 'slug': self.subject.tool.slug})
+        self.assertEqual(self.subject.action, url)
 
 
 class CustomerCompleteLetterFormMarkerTest(BaseTestMarker):
@@ -181,10 +183,12 @@ class CustomerCompleteLetterFormMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.action_user_class, ['customer'])
 
     def test_get_action_url(self):
-        self.assertEqual(self.subject.get_action_url(), '/workspace/lawpal-test/tool/engagement-letters/d1c545082d1241849be039e338e47aa0/edit/')
+        url = reverse('workspace:tool_object_edit', kwargs={'workspace': self.subject.tool.workspace.slug, 'tool': self.subject.tool.tool_slug, 'slug': self.subject.tool.slug})
+        self.assertEqual(self.subject.get_action_url(), url)
 
     def test_action(self):
-        self.assertEqual(self.subject.action, '/workspace/lawpal-test/tool/engagement-letters/d1c545082d1241849be039e338e47aa0/edit/')
+        url = reverse('workspace:tool_object_edit', kwargs={'workspace': self.subject.tool.workspace.slug, 'tool': self.subject.tool.tool_slug, 'slug': self.subject.tool.slug})
+        self.assertEqual(self.subject.action, url)
 
 
 class CustomerSignAndSendMarkerTest(BaseTestMarker):
@@ -205,10 +209,12 @@ class CustomerSignAndSendMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.action_attribs, {'target': '#modal-customer_sign_and_send', 'toggle': 'modal'})
 
     def test_get_action_url(self):
-        self.assertEqual(self.subject.get_action_url(), '/engagement-letters/d1c545082d1241849be039e338e47aa0/sign/')
+        url = reverse('engageletter:sign', kwargs={'slug': self.subject.tool.slug})
+        self.assertEqual(self.subject.get_action_url(), url)
 
     def test_action(self):
-        self.assertEqual(self.subject.action, '/engagement-letters/d1c545082d1241849be039e338e47aa0/sign/')
+        url = reverse('engageletter:sign', kwargs={'slug': self.subject.tool.slug})
+        self.assertEqual(self.subject.action, url)
 
 
 class ProcessCompleteMarkerTest(BaseTestMarker):
