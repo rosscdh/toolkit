@@ -20,13 +20,7 @@
                         <td><small>{{ t.transfer_date }}</small></td>
                         <td><small>{{ t.filing_date }}</small></td>
                         <td>
-                            {% if t.is_complete %}
-                                <span class="label label-success">COMPLETE</span>
-                            {% elif t.has_expired %}
-                                <span class="label label-default">EXPIRED</span>
-                            {% else %}
-                                <span class="label label-success">{{ t.markers.percent_complete|floatformat:'0' }}%</span>
-                            {% endif %}
+                            {{ t|quick_status }}
                             <small>{{ t.current_status }}</small>
                         </td>
                     </tr>
