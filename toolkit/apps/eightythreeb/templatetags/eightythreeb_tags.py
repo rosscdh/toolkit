@@ -41,7 +41,7 @@ def status_row_class(eightythreeb):
     elif eightythreeb.filing_date <= (datetime.date.today() + datetime.timedelta(days=10)):
         return 'warning'
 
-    elif eightythreeb.is_expired:
+    elif eightythreeb.has_expired:
         return 'expired'
 
 
