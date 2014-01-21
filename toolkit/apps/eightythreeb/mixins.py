@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.template import loader
 from django.utils.safestring import mark_safe
+from django.template.loaders.app_directories import Loader
 
 from datetime import date, datetime, timedelta
 
@@ -23,6 +24,12 @@ class HTMLMixin(object):
     @property
     def template(self):
         return loader.get_template(self.pdf_template_name)
+
+    @property
+    def template_source(self):
+        source_loader = Loader()
+        source, file_path = source_loader.load_template_source('engageletter/partials/engageletter_template.html')
+        return source
 
     def html(self, **kwargs):
         context_data = self.data.copy()  # must copy to avoid reference update
