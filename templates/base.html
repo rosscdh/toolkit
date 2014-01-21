@@ -9,7 +9,6 @@
 
     <!-- Loading Bootstrap and Flat UI -->
     <link href="{{ STATIC_URL }}bootstrap/css/bootstrap.css" rel="stylesheet">
-    <link href="{{ STATIC_URL }}bootstrap/css/prettify.css" rel="stylesheet">
     <link href="{{ STATIC_URL }}css/flat-ui.css" rel="stylesheet">
 
     <!-- Loading application specific styles -->
@@ -87,7 +86,7 @@
                                         <li{% if workspace == w and tool == t %} class="active"{% endif %}>
                                             <a href="{% url 'workspace:tool_object_list' workspace=w.slug tool=t.slug %}">
                                                 <span class="icon"><img src="{{ STATIC_URL }}{{ t.icon }}"></span> {{ t.name }}
-                                                <span class="badge pull-right">4</span>
+                                                <!-- <span class="badge pull-right">4</span> -->
                                             </a>
                                         </li>
                                     {% empty %}
