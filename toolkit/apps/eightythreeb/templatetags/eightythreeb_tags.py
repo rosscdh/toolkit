@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
+import datetime
+
 from django import template
+from django.template.defaultfilters import floatformat
 from django.utils.safestring import mark_safe, SafeText
 
 from dateutil import parser
@@ -26,6 +29,33 @@ def full_address(address):
         addr = addr + '<br>%s' % address['country']
 
     return mark_safe('<address>%s</address>' % addr)
+
+
+@register.filter
+def quick_status(eightythreeb):
+    if eightythreeb.is_complete:
+        return mark_safe('<span class="label label-success">COMPLETE</span>')
+
+    elif eightythreeb.has_expired:
+        return mark_safe('<span class="label label-default">EXPIRED</span>')
+
+    else:
+        return mark_safe('<span class="label label-success">%s%%</span>' % floatformat(eightythreeb.markers.percent_complete, '0'))
+
+
+@register.filter
+def status_row_class(eightythreeb):
+    if eightythreeb.is_complete:
+        return 'success'
+
+    elif eightythreeb.filing_date <= (datetime.date.today() + datetime.timedelta(days=5)):
+        return 'danger'
+
+    elif eightythreeb.filing_date <= (datetime.date.today() + datetime.timedelta(days=10)):
+        return 'warning'
+
+    elif eightythreeb.has_expired:
+        return 'expired'
 
 
 @register.filter(name='to_date')
