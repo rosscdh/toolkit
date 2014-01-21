@@ -444,13 +444,13 @@ p {
 }
 .lead {
   margin-bottom: 30px;
-  font-size: 28px;
+  font-size: 22px;
   line-height: 1.46428571;
   font-weight: 300;
 }
 @media (min-width: 768px) {
   .lead {
-    font-size: 30.006px;
+    font-size: 24.606px;
   }
 }
 small,
@@ -4640,7 +4640,7 @@ a.list-group-item.active > .badge,
   margin: 1px -4px -1px 0;
 }
 .nav-header {
-  color: #b4b4b4;
+  color: #ababab;
   font-size: 13px;
   text-transform: uppercase;
 }
