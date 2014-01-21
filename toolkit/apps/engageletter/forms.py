@@ -124,7 +124,7 @@ class LawyerForm(BaseForm):
         help_text='',
         label='Email address',
         required=True,
-        widget=forms.TextInput(attrs={'placeholder': 'john@acmeinc.com', 'size': '40'})
+        widget=forms.EmailInput(attrs={'placeholder': 'john@acmeinc.com', 'size': '40'})
     )
 
     signatory_full_name = forms.CharField(

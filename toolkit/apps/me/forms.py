@@ -37,7 +37,7 @@ class AccountSettingsForm(forms.ModelForm):
             'invalid': "Email is invalid.",
             'required': "Email can't be blank."
         },
-        widget=forms.TextInput(attrs={'placeholder': 'example@lawpal.com', 'size': 50})
+        widget=forms.EmailInput(attrs={'placeholder': 'example@lawpal.com', 'size': 50})
     )
 
     class Meta:
