@@ -125,6 +125,9 @@ class SignUpForm(forms.Form):
         return password_confirm
 
     def clean_email(self):
+        """
+        Ensure the email is normalised
+        """
         email = User.objects.normalize_email(self.cleaned_data.get('email'))
         user = User.objects.filter(email=email).first()
 
