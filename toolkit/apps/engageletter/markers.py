@@ -2,7 +2,18 @@
 from django.core.urlresolvers import reverse
 
 from toolkit.apps.workspace.markers import BaseSignalMarkers, Marker
-from toolkit.apps.workspace.markers.lawyers import LawyerSetupTemplateMarker
+from toolkit.apps.workspace.markers.lawyers import LawyerSetupTemplateMarker as BaseLawyerSetupTemplateMarker
+
+class LawyerSetupTemplateMarker(BaseLawyerSetupTemplateMarker):
+    """
+    Override
+    """
+    def get_action_url(self):
+        if self.tool is not None:
+            url = reverse('engageletter:lawyer_template', kwargs={'slug': self.tool.slug})
+            return '%s?next=%s' % (url, self.tool.get_absolute_url(),)
+        else:
+            return None
 
 
 class LawyerCreateLetterMarker(Marker):
