@@ -22,7 +22,7 @@
                         <td>
                             {% if t.is_complete %}
                                 <span class="label label-success">COMPLETE</span>
-                            {% elif t.is_expired %}
+                            {% elif t.has_expired %}
                                 <span class="label label-default">EXPIRED</span>
                             {% else %}
                                 <span class="label label-success">{{ t.markers.percent_complete|floatformat:'0' }}%</span>

@@ -76,7 +76,7 @@ class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferA
         return self.status == self.STATUS.complete
 
     @property
-    def is_expired(self):
+    def has_expired(self):
         return not self.is_complete and self.filing_date < datetime.date.today()
 
     @property
