@@ -5,7 +5,7 @@ from toolkit.apps.workspace.markers import BaseSignalMarkers, Marker
 from toolkit.apps.workspace.markers.lawyers import LawyerSetupTemplateMarker as BaseLawyerSetupTemplateMarker
 
 
-class LawyerSetupTemplateMarker(BaseLawyerSetupTemplateMarker):
+class LawyerSetupTemplatePrerequisite(BaseLawyerSetupTemplateMarker):
     """
     Override
     """
@@ -114,8 +114,8 @@ class ProcessCompleteMarker(Marker):
 
 class EngagementLetterMarkers(BaseSignalMarkers):
     signal_map = [
-        LawyerCreateLetterMarker(0),
-        LawyerSetupTemplateMarker(1),
+        LawyerSetupTemplatePrerequisite(0),
+        LawyerCreateLetterMarker(1),
         LawyerInviteUserMarker(2),
         CustomerCompleteLetterFormMarker(3),
         CustomerSignAndSendMarker(4),

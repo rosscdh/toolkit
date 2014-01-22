@@ -28,6 +28,7 @@ def marker_status_block(marker, user):
 
     return {
         'marker': marker,
+        'show_marker': marker.show_marker if hasattr(marker, 'show_marker') is True else True,  # if we have show_marker then evaluate it else show is always true
         'icon_type': ICON_TYPES[marker.status],
         'show_action_button': show_action_button,
         'action_button_css_class': ACTION_BUTTON_CSS_TYPES[marker.status],
