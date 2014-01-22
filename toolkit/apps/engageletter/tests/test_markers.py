@@ -132,11 +132,8 @@ class LawyerSetupTemplatePrerequisiteTest(BaseTestMarker):
         self.assertEqual(self.subject.description, 'Attorney: Setup Letter Template')
         self.assertEqual(self.subject.signals, ['toolkit.apps.engageletter.signals.lawyer_setup_template'])
         self.assertEqual(self.subject.action_name, 'Edit Engagement Letter Template')
-        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.modal)
+        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
         self.assertEqual(self.subject.action_user_class, ['lawyer'])
-
-    def test_action_attribs(self):
-        self.assertEqual(self.subject.action_attribs, {'target': '#modal-lawyer_setup_template', 'toggle': 'modal'})
 
     def get_expected_url(self):
         return '%s?next=%s' % (reverse('engageletter:lawyer_template', kwargs={'slug': self.subject.tool.slug}), self.subject.tool.get_absolute_url(),)
@@ -205,11 +202,8 @@ class CustomerSignAndSendMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.description, 'Client: Sign & Send the Engagement Letter')
         self.assertEqual(self.subject.signals, ['toolkit.apps.engageletter.signals.customer_sign_and_send'])
         self.assertEqual(self.subject.action_name, 'Sign Engagment Letter')
-        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.modal)
+        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
         self.assertEqual(self.subject.action_user_class, ['customer'])
-
-    def test_action_attribs(self):
-        self.assertEqual(self.subject.action_attribs, {'target': '#modal-customer_sign_and_send', 'toggle': 'modal'})
 
     def test_get_action_url(self):
         url = reverse('engageletter:sign', kwargs={'slug': self.subject.tool.slug})

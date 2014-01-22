@@ -9,7 +9,7 @@ class LawyerSetupTemplatePrerequisite(BaseLawyerSetupTemplateMarker):
     """
     Override
     """
-    action_type = Marker.ACTION_TYPE.modal
+    action_type = Marker.ACTION_TYPE.redirect
 
     def get_action_url(self):
         if self.tool is not None:
@@ -99,7 +99,7 @@ class CustomerSignAndSendMarker(Marker):
     signals = ['toolkit.apps.engageletter.signals.customer_sign_and_send']
 
     action_name = 'Sign Engagment Letter'
-    action_type = Marker.ACTION_TYPE.modal
+    action_type = Marker.ACTION_TYPE.redirect
     action_user_class = ['customer']
 
     def get_action_url(self):
