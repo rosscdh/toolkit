@@ -111,8 +111,11 @@ class LawyerLetterheadView(UpdateView):
 
     def get_initial(self):
         kwargs = super(LawyerLetterheadView, self).get_initial()
+
         profile = self.request.user.profile
+
         kwargs.update({
+            'firm_name': profile.data.get('firm_name'),
             'firm_address': profile.data.get('firm_address'),
             'firm_logo': profile.data.get('firm_logo'),
         })
