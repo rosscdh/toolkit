@@ -123,10 +123,9 @@ class LawyerLetterheadView(UpdateView):
 
     def get_success_url(self):
         if 'next' in self.request.GET:
-            url = self.request.GET.get('next')
+            return self.request.GET.get('next')
         else:
-            url = self.object.get_absolute_url()
-        return url
+            return self.object.get_absolute_url() if hasattr(self.object, 'get_absolute_url') else reverse('dash:default')
 
     def get_form_kwargs(self):
         kwargs = super(LawyerLetterheadView, self).get_form_kwargs()
