@@ -4,10 +4,11 @@ south
 # Procfile service management
 honcho
 
-six==1.4.1
-sqlparse==0.1.10
-wsgiref==0.1.2
+six
+sqlparse
+wsgiref
 
+gunicorn # required for the concurrent loading of images (for pdfs)
 Werkzeug
 djangorestframework==2.3.9
 -e git+https://github.com/alex/django-filter.git#egg=django-filter
@@ -15,6 +16,9 @@ djangorestframework==2.3.9
 django-rulez
 django-password-reset
 django-uuidfield
+
+# Image Thumbnails
+sorl-thumbnail
 
 django-crispy-forms
 -e git+https://github.com/agiliq/Django-parsley.git#egg=django-parsley
