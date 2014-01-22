@@ -24,6 +24,10 @@ class MissingMarkersException(Exception):
 
 
 class BaseSignalMarkers(MarkerMapMixin, object):
+    """
+    Workflow Class that holds a set of Markers that are used to establish the
+    flow
+    """
     signal_map = []
 
     _tool = None
@@ -72,8 +76,6 @@ class BaseSignalMarkers(MarkerMapMixin, object):
             except IndexError:
                 self.next_marker = None
 
-            # print "SIGNAL MARKER (%d) %s" % (i, self.signal_map[i])
-            # print "MARKERS %s" % (self.markers_map)
             #
             # Copy the current version of the base marker map
             #
