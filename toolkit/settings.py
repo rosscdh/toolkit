@@ -107,6 +107,8 @@ HELPER_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
 
+    'sorl.thumbnail',
+
     # forms
     'parsley',
     'crispy_forms',
