@@ -168,8 +168,8 @@ class AdeWinterUspsTrackConfirm(object):
                                                recipients=(recipient,))
 
         markers = instance.markers
-        current_step = markers.current
-        next_step = current_step.next
+        current_step = markers.current_marker
+        next_step = current_step.next_marker
 
         mailer.process(instance=instance, usps_response=usps_response)
 

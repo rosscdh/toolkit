@@ -2,41 +2,29 @@
 
 {% load url from future %}
 
-
-
 {% block header %}
     {{ block.super }}
-
     <h4>{{ tool.name }}</h4>
 {% endblock %}
 
 {% block header_right %}
     {% if can_create %}
-        {% if object_list %}
-            <a href="{% url 'workspace:tool_object_new' workspace=workspace.slug tool=tool.slug %}" class="btn btn-primary">New {{ tool.short_name }}</a>
-        {% endif %}
+    <a href="{{ create_url }}" class="btn btn-primary">New {{ tool.short_name }}</a>
     {% endif %}
 {% endblock %}
 
 {% block main %}
+
     {% if object_list %}
         {% block list %}{% endblock %}
     {% else %}
-        <div class="row">
-            <div class="col-lg-10 col-lg-offset-1 text-center">
-                        <br />
+        <div class="alert alert-info">
+            <p>{{ tool.description }}</p>
 
-            <img src="{{STATIC_URL}}{{ tool.icon }}">
-            <br />
-            <br />
-            <p class="lead">{{ tool.description }}</p>
-
-            {% if user.profile.is_lawyer %}
-<!--                 <p>Click below to create your first {{ tool.short_name }}.</p>
- -->
-                <a href="{% url 'workspace:tool_object_new' workspace=workspace.slug tool=tool.slug %}" class="btn btn-primary btn-wide btn-hg">New {{ tool.short_name }}</a>
+            {% if can_create %}
+                <p>Click below to create your first {{ tool.short_name }}.</p>
+                <a href="{{ create_url }}" class="btn btn-primary btn-wide">New {{ tool.short_name }}</a>
             {% endif %}
           </div>
-        </div>
     {% endif %}
 {% endblock %}

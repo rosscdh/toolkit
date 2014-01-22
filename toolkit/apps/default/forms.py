@@ -47,7 +47,7 @@ class SignUpForm(forms.Form):
             'required': "Email can't be blank."
         },
         label='',
-        widget=forms.TextInput(attrs={'placeholder': 'Email address', 'size': 46})
+        widget=forms.EmailInput(attrs={'placeholder': 'Email address', 'size': 46})
     )
     password = forms.CharField(
         error_messages={
@@ -125,8 +125,10 @@ class SignUpForm(forms.Form):
         return password_confirm
 
     def clean_email(self):
-        email = self.cleaned_data.get('email')
-
+        """
+        Ensure the email is normalised
+        """
+        email = User.objects.normalize_email(self.cleaned_data.get('email'))
         user = User.objects.filter(email=email).first()
 
         if user is None:
@@ -157,7 +159,7 @@ class SignInForm(forms.Form):
             'required': "Email can't be blank."
         },
         label='',
-        widget=forms.TextInput(attrs={'placeholder': 'Email address'})
+        widget=forms.EmailInput(attrs={'placeholder': 'Email address'})
     )
     password = forms.CharField(
         error_messages={

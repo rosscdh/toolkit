@@ -50,7 +50,7 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
         help_text='',
         label='Email address',
         required=True,
-        widget=forms.TextInput(attrs={'placeholder': 'Client email address', 'size': '40'})
+        widget=forms.EmailInput(attrs={'placeholder': 'Client email address', 'size': '40'})
     )
 
     company_name = forms.CharField(
@@ -120,7 +120,7 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
         help_text='We will email a copy of your signed election to your accountant for inclusion in your tax return.',
         label='Your accountant\'s email address',
         required=False,
-        widget=forms.TextInput(attrs={'size': '40'})
+        widget=forms.EmailInput(attrs={'size': '40'})
     )
 
     has_spouse = forms.BooleanField(

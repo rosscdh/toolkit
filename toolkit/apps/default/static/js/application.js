@@ -1,6 +1,7 @@
   // Some general UI pack related JS
 
 // Extend JS Date with month name methods
+// @TODO @Jamie shoudl really be using moment.js http://momentjs.com/docs/#/get-set/month/
 Date.prototype.monthNames = [
   'January', 'February', 'March',
   'April', 'May', 'June',

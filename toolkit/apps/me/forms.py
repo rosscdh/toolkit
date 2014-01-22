@@ -9,7 +9,7 @@ from crispy_forms.layout import ButtonHolder, Div, Field, Fieldset, HTML, Submit
 from parsley.decorators import parsleyfy
 
 from toolkit.mixins import ModalForm
-
+from toolkit.apps.default.models import UserProfile
 
 User = get_user_model()
 
@@ -37,7 +37,7 @@ class AccountSettingsForm(forms.ModelForm):
             'invalid': "Email is invalid.",
             'required': "Email can't be blank."
         },
-        widget=forms.TextInput(attrs={'placeholder': 'example@lawpal.com', 'size': 50})
+        widget=forms.EmailInput(attrs={'placeholder': 'example@lawpal.com', 'size': 50})
     )
 
     class Meta:
@@ -184,3 +184,34 @@ class ConfirmAccountForm(AccountSettingsForm):
     def save(self, commit=True):
         self.instance.set_password(self.cleaned_data['new_password1'])
         return super(ConfirmAccountForm, self).save(commit=commit)
+
+@parsleyfy
+class LawyerLetterheadForm(forms.Form):
+    firm_address = forms.CharField(required=True, widget=forms.Textarea)
+    firm_logo = forms.CharField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        self.instance = kwargs.pop('instance')
+        self.user = kwargs.pop('user')
+
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            'firm_address',
+            'firm_logo',
+            ButtonHolder(
+                Submit('submit', 'Save letterhead', css_class='btn btn-primary btn-lg')
+            )
+        )
+        super(LawyerLetterheadForm, self).__init__(*args, **kwargs)
+
+    def save(self):
+        """
+        Update the user profile data
+        """
+        profile = self.user.profile
+        data = profile.data
+
+        data.update(**self.cleaned_data)
+        profile.data = data
+
+        profile.save(update_fields=['data'])

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-from django.core.urlresolvers import reverse
+from django.shortcuts import render
 from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.views.generic import TemplateView, RedirectView, FormView
 
@@ -11,6 +12,14 @@ from toolkit.apps.workspace.models import Workspace, InviteKey
 
 import logging
 LOGGER = logging.getLogger('django.request')
+
+
+def handler500(request, *args, **kwargs):
+    """
+    Override for the 500 response so that we have access to the STATIC_URL and MEDIA_URL
+    handler500 = 'glynt.apps.default.views.handler500'
+    """
+    return render(request, template_name='500.html', status=500)
 
 
 class UserInactiveException(Exception):

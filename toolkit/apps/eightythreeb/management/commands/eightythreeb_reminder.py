@@ -24,8 +24,8 @@ class Command(BaseCommand):
             mailer = EightyThreeBReminderEmail(from_tuple=from_tuple, recipients=(recipient,))
 
             markers = instance.markers
-            current_step = markers.current
-            next_step = current_step.next
+            current_step = markers.current_marker
+            next_step = current_step.next_marker
 
             mailer.process(company=instance.workspace,
                            url='%s%s' % (site.domain[0:-1], instance.get_absolute_url()),

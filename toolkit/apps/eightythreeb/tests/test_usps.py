@@ -53,7 +53,7 @@ class BaseUSPSTrackingCode(TestCase):
                                        data=EIGHTYTHREEB_DATA,
                                        filing_date=datetime.date.today() + datetime.timedelta(days=30),
                                        transfer_date=datetime.date.today(),
-                                       status=EightyThreeB.STATUS_83b.irs_recieved)
+                                       status=EightyThreeB.STATUS.irs_recieved)
 
 
 class USPSTrackingCodeCliCommandTest(BaseUSPSTrackingCode):
@@ -80,7 +80,7 @@ class USPSTrackingCodeCliCommandTest(BaseUSPSTrackingCode):
         self.subject.handle()  # execute the command
         self.eightythreeb = self.eightythreeb._meta.model.objects.get(pk=self.eightythreeb.pk)  # reload the model
 
-        self.assertEqual(self.eightythreeb.status, EightyThreeB.STATUS_83b.complete)
+        self.assertEqual(self.eightythreeb.status, EightyThreeB.STATUS.complete)
 
         self.assertTrue('usps' in self.eightythreeb.data)
         self.assertTrue('usps_log' in self.eightythreeb.data)
@@ -139,7 +139,7 @@ class USPSUndeliveredTrackingCodeCliCommandTest(BaseUSPSTrackingCode):
         self.eightythreeb = self.eightythreeb._meta.model.objects.get(pk=self.eightythreeb.pk)  # reload the model
 
         # ensure that the status has not been updated
-        self.assertEqual(self.eightythreeb.status, EightyThreeB.STATUS_83b.irs_recieved)
+        self.assertEqual(self.eightythreeb.status, EightyThreeB.STATUS.irs_recieved)
 
         self.assertTrue('usps' in self.eightythreeb.data)
         self.assertTrue('usps_log' in self.eightythreeb.data)

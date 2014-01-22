@@ -10,6 +10,8 @@ from django.views.generic import (FormView,
                                   UpdateView,
                                   DetailView)
 
+from toolkit.mixins import AjaxFormView, AjaxModelFormView, ModalView
+
 from .models import Workspace, Tool, InviteKey
 from .forms import WorkspaceForm, AddWorkspaceTeamMemberForm, InviteUserForm
 from .mixins import WorkspaceToolViewMixin, WorkspaceToolFormViewMixin, IssueSignalsMixin
@@ -21,8 +23,7 @@ import logging
 logger = logging.getLogger('django.request')
 
 
-class AddUserToWorkspace(CreateView):
-    template_name = 'workspace/workspace_user_form.html'
+class AddUserToWorkspace(ModalView, AjaxFormView, FormView):
     form_class = AddWorkspaceTeamMemberForm
 
     def dispatch(self, request, *args, **kwargs):
@@ -59,9 +60,8 @@ class AddUserToWorkspace(CreateView):
         return super(AddUserToWorkspace, self).form_valid(form)
 
 
-class CreateWorkspaceView(FormView):
+class CreateWorkspaceView(ModalView, AjaxModelFormView, CreateView):
     form_class = WorkspaceForm
-    template_name = 'workspace/workspace_form.html'
 
     def dispatch(self, request, *args, **kwargs):
         # ensure that only lawyers can create
@@ -72,28 +72,26 @@ class CreateWorkspaceView(FormView):
         return super(CreateWorkspaceView, self).dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
-        return reverse('dash:default')
-
-    def form_invalid(self, form):
-        messages.error(self.request, 'Sorry, there was an error %s' % form.errors)
-        return super(CreateWorkspaceView, self).form_invalid(form)
+        return self.object.get_absolute_url()
 
     def form_valid(self, form):
-        # save the form
-        workspace = form.save()
+        response = super(CreateWorkspaceView, self).form_valid(form)
+
         # add lawyer
-        workspace.lawyer = self.request.user
-        workspace.save(update_fields=['lawyer'])
+        self.object.lawyer = self.request.user
+        self.object.save(update_fields=['lawyer'])
+
         # add user as participant
-        workspace.participants.add(self.request.user)
+        self.object.participants.add(self.request.user)
 
         # @BUSINESS_RULE - 83(b) is added by default
         # add the 83b tool by default
         tool_83b = Tool.objects.get(slug='83b-election-letters')
-        workspace.tools.add(tool_83b)
+        self.object.tools.add(tool_83b)
 
         messages.success(self.request, 'You have sucessfully created a new workspace')
-        return super(CreateWorkspaceView, self).form_valid(form)
+
+        return response
 
 
 class WorkspaceToolObjectsListView(WorkspaceToolViewMixin, ListView):
@@ -104,10 +102,18 @@ class WorkspaceToolObjectsListView(WorkspaceToolViewMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super(WorkspaceToolObjectsListView, self).get_context_data(**kwargs)
+
+        create_url = reverse('workspace:tool_object_new', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug})
+
+        if self.tool.markers.current_marker.get_action_url() is not None:
+            create_url = self.tool.markers.current_marker.get_action_url()
+
+
         context.update({
             # if there are no tool.userclass_that_can_create defined then anyone can create
             # however we need to ensure that only the specified classes can create
-            'can_create': True if not self.tool.userclass_that_can_create or self.request.user.profile.user_class in self.tool.userclass_that_can_create else False
+            'can_create': True if not self.tool.userclass_that_can_create or self.request.user.profile.user_class in self.tool.userclass_that_can_create else False,
+            'create_url': create_url,
         })
         return context
 
@@ -208,6 +214,20 @@ class InviteClientWorkspaceToolObjectView(IssueSignalsMixin, WorkspaceToolViewMi
         result = super(InviteClientWorkspaceToolObjectView, self).form_valid(form)
         self.issue_signals(request=self.request, instance=self.tool_instance, name='lawyer_invite_customer')  # NB teh tool_instance and NOT self.instance
         return result
+
+
+class WorkspaceToolsView(ListView):
+    """
+    List Available tools
+    """
+    model = Tool
+
+    def get_context_data(self, **kwargs):
+        context = super(WorkspaceToolsView, self).get_context_data(**kwargs)
+        context.update({
+            'workspace': get_object_or_404(Workspace, slug=self.kwargs.get('workspace'))
+        })
+        return context
 
 
 class WorkspaceToolObjectPreviewView(WorkspaceToolViewMixin, DetailView):
