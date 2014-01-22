@@ -74,14 +74,13 @@ class StatusMixin(object):
     def current_status(self):
         return self.STATUS.get_desc_by_value(self.status)
 
-    def current_markers(self):
+    @property
+    def display_status(self):
+        """ alias for current_status """
+        return self.current_status
+
+    def markers_complete(self):
         return self.data.get('markers')
-
-    def next_status_step(self):
-        return None
-
-    def prev_status_step(self):
-        return None
 
 
 class USPSReponseMixin(object):

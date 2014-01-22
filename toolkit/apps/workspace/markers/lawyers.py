@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from django.core.urlresolvers import reverse
 
-from .base import Marker
+from . import Marker, Prerequisite
 
 
-class LawyerSetupTemplateMarker(Marker):
+class LawyerSetupTemplateMarker(Prerequisite):
     """
     @SHARED marker for lawyers to enter their header, logo, footer info
     """
@@ -26,7 +26,6 @@ class LawyerSetupTemplateMarker(Marker):
         not the normal test against the tool.data
         """
         if self.tool is not None:
-            
             data = self.tool.workspace.lawyer.profile.data
             return all([True if key in data and data[key] not in ['', None] else False for key in self.required_markers])
 

@@ -11,7 +11,7 @@ from toolkit.casper.workflow_case import BaseScenarios
 from .data import ENGAGELETTER_DATA as BASE_ENGAGELETTER_DATA
 from ..models import EngagementLetter
 from ..markers import EngagementLetterMarkers
-from ..markers import (LawyerSetupTemplateMarker,
+from ..markers import (LawyerSetupTemplatePrerequisite,
                       LawyerCreateLetterMarker,
                       LawyerInviteUserMarker,
                       CustomerCompleteLetterFormMarker,
@@ -37,8 +37,8 @@ class EngagementLetterMarkersTest(TestCase):
 
         self.assertEqual(len(name_vals), 6)
 
-        self.assertEqual(name_vals, [('lawyer_complete_form', 0),
-                                     ('lawyer_setup_template', 1),
+        self.assertEqual(name_vals, [('lawyer_setup_template', 0),
+                                     ('lawyer_complete_form', 1),
                                      ('lawyer_invite_customer', 2),
                                      ('customer_complete_form', 3),
                                      ('customer_sign_and_send', 4),
@@ -53,7 +53,7 @@ class EngagementLetterMarkersTest(TestCase):
 class BaseTestMarker(BaseScenarios, TestCase):
     val = None
     subject = None
-    clazz = LawyerSetupTemplateMarker
+    clazz = LawyerSetupTemplatePrerequisite
 
     def setUp(self):
         super(BaseTestMarker, self).setUp()
@@ -121,9 +121,9 @@ class LawyerCreateLetterMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.action, url)
 
 
-class LawyerSetupTemplateMarkerTest(BaseTestMarker):
+class LawyerSetupTemplatePrerequisiteTest(BaseTestMarker):
     val = 0
-    clazz = LawyerSetupTemplateMarker
+    clazz = LawyerSetupTemplatePrerequisite
 
     def test_properties(self):
         self.assertTrue(type(self.subject), self.clazz)

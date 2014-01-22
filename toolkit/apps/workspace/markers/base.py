@@ -11,89 +11,78 @@ next() and prev() and allow traversal through the document flows
 >>>     nodes.append(Marker(val, name, desc, signals=[], next=None, previous=None))
 
 """
-from toolkit.utils import get_namedtuple_choices
-from toolkit.utils import _class_importer
-
-from dateutil import parser
 import math
+import copy
+
+from toolkit.utils import get_namedtuple_choices
+
+from .mixins import MARKERS_MAP_DICT, MarkerMapMixin
+
 
 class MissingMarkersException(Exception):
     msg = 'You must have at least 1 marker item in the object.signal_map list attribute'
 
 
-class BaseSignalMarkers(object):
+class BaseSignalMarkers(MarkerMapMixin, object):
     signal_map = []
+
     _tool = None
-    markers_map = {
-        'previous': None,
-        'current': None,
-        'next': None,
-    }
 
     def __init__(self, tool=None, *args, **kwargs):
         super(BaseSignalMarkers, self).__init__(*args, **kwargs)
-
-        self._set_markers_navigation()  # finite state machine
-
-        self.previous_marker = None
+        #
+        # Re initialise the local markers_map
+        #
+        self.markers_map = copy.copy(MARKERS_MAP_DICT)
+        #
+        # Ensure we have at least 1 item in the signal_map
+        #
         try:
-            self.current_marker = self.signal_map[0]
+            self.signal_map[0]
         except IndexError:
             raise MissingMarkersException
-        try:
-            self.next_marker = self.signal_map[1]
-        except IndexError:
-            self.next_marker = None
 
+        self._set_markers_navigation()  # finite state machine
+        self.set_navigation_based_on_tool()  # reset the markers_map based
 
-        self.tool = tool  # init tool
+        if tool is not None:  # only if its passed in
+            self.tool = tool
 
     def _set_markers_navigation(self):
         """
         Set the next previous and current values for the base class 
         as well as the specific markers
         """
-        for i, signal in enumerate(self.signal_map):
-            #print "SIGNAL MARKER (%d) %s" % (i, self.signal_map[i])
-            try:
-                signal.previous_marker = self.signal_map[i-1]
-                #print '%s -> prev -> %s' % (signal, signal.previous_marker)
-            except IndexError:
-                signal.previous_marker = None
+
+        for i, marker in enumerate(self.signal_map):
+
+            self.current_marker = marker
+            """
+            **python suprise**
+            python lists list[-1] will return the last item on the list
+            and not the expected i-1 == 0 if i == 0, i-1 will return -1
+            which..returns the last on the list and not the first
+            """
+            self.previous_marker = None
+            if i > 0:
+                self.previous_marker = self.signal_map[i-1]
 
             try:
-                signal.next_marker = self.signal_map[i+1]
-                #print '%s -> next -> %s' % (signal, signal.next_marker)
+                self.next_marker = self.signal_map[i+1]
             except IndexError:
-                signal.next_marker = None
+                self.next_marker = None
 
+            # print "SIGNAL MARKER (%d) %s" % (i, self.signal_map[i])
+            # print "MARKERS %s" % (self.markers_map)
+            #
+            # Copy the current version of the base marker map
+            #
+            copy_marker_map = copy.copy(self.markers_map)
+            del copy_marker_map['current'] # the markers dotn have a current as the "are" the current
+            self.signal_map[i].markers_map = copy_marker_map
 
     def __iter__(self):
         return iter(self.signal_map)
-
-    @property
-    def tool(self):
-        return self._tool
-
-    @tool.setter
-    def tool(self, tool):
-        self._tool = tool
-        for s in self.signal_map:
-            s.tool = tool
-        # set the current next etc
-        self.set_navigation_based_on_tool(tool=tool)
-
-    def set_navigation_based_on_tool(self, tool):
-        if tool is not None:
-            #print 'Set Navigation based on tool'
-            marker = self.marker(tool.status)
-            self.current_marker = marker
-            self.next_marker = marker.next_marker
-            self.previous_marker = marker.previous_marker
-
-    @property
-    def num_markers(self):
-        return len(self.signal_map)
 
     @property
     def percent_complete(self):
@@ -108,48 +97,31 @@ class BaseSignalMarkers(object):
 
         return float("{0:.2f}".format(math.ceil(percent)))
 
-    def marker(self, val):
-        if type(val) in [str, unicode]:
-            return self.marker_by_name(name=val)
-        elif type(val) in [int, float]:
-            return self.marker_by_val(val=val)
-        return None
-
-    def marker_by_val(self, val):
-        for marker in self.signal_map:
-            if val == marker.val:
-                return marker
-        raise Exception('No Marker of val = %d' % val)
-
-    def marker_by_name(self, name):
-        for marker in self.signal_map:
-            if name == marker.name:
-                return marker
-        raise Exception('No Marker of name = %s' % name)
-
     @property
-    def current_marker(self):
-        return self.markers_map.get('current')
+    def tool(self):
+        return self._tool
 
-    @current_marker.setter
-    def current_marker(self, value):
-        self.markers_map['current'] = value
+    @tool.setter
+    def tool(self, tool):
+        self._tool = tool
 
-    @property
-    def next_marker(self):
-        return self.markers_map.get('next')
+        # set the tool for each Marker
+        for i, marker in enumerate(self.signal_map):
+            marker.tool = self._tool
 
-    @next_marker.setter
-    def next_marker(self, value):
-        self.markers_map['next'] = value
+        # set the current next etc
+        self.set_navigation_based_on_tool()
 
-    @property
-    def previous_marker(self):
-        return self.markers_map.get('previous')
+    def set_navigation_based_on_tool(self):
+        # Set Navigation based on tool status
+        # get teh marker based on the tools status
+        # if no tool then set marker to be the first in line
+        marker = self.marker(self._tool.status) if self._tool is not None else self.signal_map[0]
 
-    @previous_marker.setter
-    def previous_marker(self, value):
-        self.markers_map['previous'] = value
+        self.current_marker = marker
+        self.next_marker = marker.next_marker
+        self.previous_marker = marker.previous_marker
+        #print "Update Marker Nav: current:%s next:%s previous:%s" % (marker, self.next_marker, self.previous_marker)
 
     def named_tuple(self, name):
         """
@@ -157,185 +129,3 @@ class BaseSignalMarkers(object):
         """
         named_tuple = [(signal_marker.val, signal_marker.name, signal_marker.description) for signal_marker in self.signal_map]
         return get_namedtuple_choices(name, tuple(named_tuple))
-
-
-BASE_MARKER_ACTION_TYPES = get_namedtuple_choices('ACTION_TYPE', (
-                                (0, 'remote', 'Remote'),
-                                (1, 'redirect', 'Redirect'),
-                                (2, 'modal', 'Modal'),
-                            ))
-
-class Marker(object):
-    ACTION_TYPE = BASE_MARKER_ACTION_TYPES
-
-    _tool = None  # overridden with customer .getter and .setter
-    _long_description = None  # overridden with customer .getter and .setter
-
-    val = None
-    name = None
-    description = None
-    signals = []
-
-    action_name = None
-    action_type = None
-    action = None
-    action_user_class = []  # must be a list so we can handle multiple types
-
-    markers_map = {
-        'previous': None,
-        'next': None,
-    }
-
-    def __init__(self, val, **kwargs):
-        self.val = val
-
-        name = kwargs.pop('name', None)
-        if name is not None:
-            self.name = name
-
-        description = kwargs.pop('description', None)
-        if description is not None:
-            self.description = description
-
-        long_description = kwargs.pop('long_description', None)  # set the long description to the description as it will get overriden if the user actually sets long_description
-        if long_description is not None:
-            self._long_description = long_description
-
-        signals = kwargs.pop('signals', None)
-        if signals is not None:
-            self.signals = signals
-
-        # use the locally defined def action if exists otherwise if an
-        # action is passed in; use that
-        if hasattr(self, 'action_name') is False and 'action_name' in kwargs:
-            self.action_name = kwargs.pop('action_name')
-
-        if hasattr(self, 'action') is False and 'action' in kwargs:
-            self.action = kwargs.pop('action')
-
-        if hasattr(self, 'action_user_class') is False and 'action_user_class' in kwargs:
-            self.action_user_class = kwargs.pop('action_user_class')
-
-        tool = kwargs.pop('tool', None)
-        if tool is not None:
-            self.tool = tool
-
-    def __str__(self):
-        return u'{name}'.format(name=self.name).encode('utf-8')
-
-    @property
-    def desc(self):
-        self.description
-
-    @property
-    def tool(self):
-        return self._tool
-
-    @tool.setter
-    def tool(self, value):
-        self._tool = value
-
-    @property
-    def next(self):
-        return self.markers_map.get('next')
-
-    @next.setter
-    def next(self, value):
-        #print "SETTING NEXT: %s for %s" % (value, self.name)
-        self.markers_map['next'] = value
-
-    @property
-    def previous(self):
-        return self.markers_map.get('previous')
-
-    @previous.setter
-    def previous(self, value):
-        self.markers_map['previous'] = value
-
-    @property
-    def status(self):
-        if self.is_complete:
-            return 'done'
-
-        elif self.is_current:
-            return 'next'
-
-        return 'pending'
-
-    @property
-    def is_current(self):
-        return self.tool.markers.current_marker == self
-
-    @property
-    def is_complete(self):
-        if self.tool is not None:
-            markers = self.tool.data.get('markers', {})
-            return self.name in markers.keys()
-        return False
-
-    @property
-    def date_completed(self):
-        if self.is_complete:
-            return parser.parse(self.tool.data['markers'][self.name].get('date_of'))
-        return None
-
-    @property
-    def action_type_name(self):
-        return self.ACTION_TYPE.get_name_by_value(self.action_type) if self.action_type is not None else None
-
-    @property
-    def action_attribs(self):
-        attribs = {}
-        # Handle the modal action_type
-        if self.action_type == self.ACTION_TYPE.modal:
-            attribs.update({
-                'target': '#%s' % getattr(self, 'modal_target', 'modal-%s' % self.name),  ## if we have the attribute modal_target use it else use self.name
-                'toggle': "modal",
-            })
-        elif self.action_type == self.ACTION_TYPE.remote or self.action_type == self.ACTION_TYPE.redirect:
-            attribs.update({'toggle': 'action'})
-
-        return attribs
-
-    def can_perform_action(self, user):
-        """
-         @BUSINESS_RULE
-         show the action to user that have the right class OR where the user
-         does not have the right class but IS the 83b.user but the action class
-         is not lawyers only
-        """
-        if self.action is not None and \
-            (user.profile.user_class in self.action_user_class or \
-            user.profile.user_class not in self.action_user_class and user == self.tool.user and self.action_user_class != ['lawyer']):
-            return True
-
-        return False
-
-    def get_action_url(self):
-        """
-        method used to return the marker action_url without display business logic
-        """
-        raise NotImplementedError
-
-    @property
-    def long_description(self):
-        return self._long_description if self.is_complete is False else None
-
-    @long_description.setter
-    def long_description(self, value):
-        self._long_description = value
-
-    @property
-    def action(self):
-        return self.get_action_url()
-
-    def tool_info(self):
-        if self.tool is not None:
-            if hasattr(self.tool, 'data') and 'markers' in self.tool.data and self.name in self.tool.data['markers']:
-                return self.tool.data['markers'][self.name]
-        return False
-
-    def issue_signals(self, request, instance, actor, **kwargs):
-        for s in self.signals:
-            method = _class_importer(s)  # @TODO can optimise this and precache them
-            method.send(sender=request, instance=instance, actor=actor, **kwargs)
