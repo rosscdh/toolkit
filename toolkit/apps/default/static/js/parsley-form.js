@@ -5,6 +5,7 @@
             // Setup the default form listeners
             this.defaultOptions = {
                 animate: false,
+                scrollDuration: 0,
                 errors: {
                     container: function(el) {
                         return $(el).closest('[parsley-validate]').find('.parsley-errors');
@@ -73,6 +74,11 @@
                             };
 
                             $errorContainer.removeClass('hide');
+
+                            top = $form.offset().top;
+                            $('html, body').animate({
+                                scrollTop: top
+                            }, ParsleyForm.options.scrollDuration);
                         };
                     },
                     onFieldValidate: function(field) {
