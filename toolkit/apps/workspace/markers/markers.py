@@ -70,7 +70,14 @@ class Marker(object):
 
     @property
     def next_marker(self):
-        return self.markers_map.get('next')
+        next_marker = self.markers_map.get('next')
+        #
+        # keep looping until we find a marker that can be shown
+        # @BUSINESSRULE Prerequisite markers
+        #
+        while next_marker is not None and next_marker.show_marker is False:
+            next_marker = next_marker.next_marker
+        return next_marker
 
     @next_marker.setter
     def next_marker(self, value):
@@ -79,7 +86,14 @@ class Marker(object):
 
     @property
     def previous_marker(self):
-        return self.markers_map.get('previous')
+        previous_marker = self.markers_map.get('previous')
+        #
+        # keep looping until we find a marker that can be shown
+        # @BUSINESSRULE Prerequisite markers
+        #
+        while previous_marker is not None and previous_marker.show_marker is False:
+            previous_marker = previous_marker.previous_marker
+        return previous_marker
 
     @previous_marker.setter
     def previous_marker(self, value):
