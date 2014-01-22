@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
 from collections import namedtuple
+from django.contrib.sites.models import Site
 
 
 def _class_importer(name):
@@ -93,3 +95,7 @@ def get_namedtuple_choices(name, choices_tuple):
             return False
 
     return Choices._make([val for val, name, desc in choices_tuple])
+
+
+def CURRENT_SITE():
+    return Site.objects.get(pk=settings.SITE_ID)
