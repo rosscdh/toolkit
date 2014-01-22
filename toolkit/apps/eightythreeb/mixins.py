@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.template import loader
 from django.utils.safestring import mark_safe
+from django.template.loaders.app_directories import Loader
 
 from datetime import date, datetime, timedelta
 
@@ -24,8 +25,14 @@ class HTMLMixin(object):
     def template(self):
         return loader.get_template(self.pdf_template_name)
 
+    @property
+    def template_source(self):
+        source_loader = Loader()
+        source, file_path = source_loader.load_template_source('engageletter/partials/engageletter_template.html')
+        return source
+
     def html(self, **kwargs):
-        context_data = self.data.copy() # must copy to avoid reference update
+        context_data = self.data.copy()  # must copy to avoid reference update
 
         # Mark strings as safe
         for k, v in context_data.items():
@@ -65,16 +72,15 @@ class TransferAndFilingDatesMixin(object):
 class StatusMixin(object):
     @property
     def current_status(self):
-        return self.STATUS_83b.get_desc_by_value(self.status)
+        return self.STATUS.get_desc_by_value(self.status)
 
-    def current_markers(self):
+    @property
+    def display_status(self):
+        """ alias for current_status """
+        return self.current_status
+
+    def markers_complete(self):
         return self.data.get('markers')
-
-    def next_status_step(self):
-        return None
-
-    def prev_status_step(self):
-        return None
 
 
 class USPSReponseMixin(object):
@@ -115,79 +121,206 @@ class IRSMixin(object):
     Provide helper methods to allow access to relevant irs addresses and details
     based on a ruleset
     """
-    spousal_signature_states = (
-        'AZ', # Arizona
-        'CA', # California
-        'ID', # Idaho
-        'LA', # Louisiana
-        'NV', # Nevada
-        'NM', # New Mexico
-        'TX', # Texas
-        'WA', # Washington
-        'WI', # Wisconsin
+    SPOUSAL_SIGNATURE_STATES = (
+        'AZ',  # Arizona
+        'CA',  # California
+        'ID',  # Idaho
+        'LA',  # Louisiana
+        'NV',  # Nevada
+        'NM',  # New Mexico
+        'TX',  # Texas
+        'WA',  # Washington
+        'WI',  # Wisconsin
     )
-    irs_state_address_paymentaddress = (
-        (('FL', 'LA', 'MS', 'TX'),
-        'Department of the Treasury<br/>Internal Revenue Service<br/>Austin, TX 73301-0002',  # Default
-        'Internal Revenue Service<br/>P.O. Box 1214<br/>Charlotte, NC 28201-1214'),  # with Payment Cheque
 
-        (('AK', 'AZ', 'CA', 'CO',
-          'HI', 'ID', 'NV', 'NM',
-          'OR', 'UT', 'WA', 'WY'),
-        'Department of the Treasury<br/>Internal Revenue Service<br/>Fresno, CA 93888-0002',  # Default
-        'Internal Revenue Service<br/>P.O. Box 7704<br/>San Francisco, CA 94120-7704'),  # with Payment Cheque
-
-        (('AR', 'IL', 'IN', 'IA',
-          'KS', 'MI', 'MN', 'MT',
-          'NE', 'ND', 'OH', 'OK',
-          'SD', 'ND', 'WI'),
-        'Department of the Treasury<br/>Internal Revenue Service<br/>Fresno, CA 93888-0002',  # Default
-        'Internal Revenue Service<br/>P.O. Box 802501<br/>Cincinnati, OH 45280-2501'),  # with Payment Cheque
-
-        (('AL', 'GA', 'KY', 'MO',
-          'NJ', 'NC', 'SC', 'TN',
-          'VA'),
-        'Department of the Treasury<br/>Internal Revenue Service<br/>Kansas City, MO 64999-0002',  # Default
-        'Internal Revenue Service<br/>P.O. Box 931000<br/>Louisville, KY 40293-1000'),  # with Payment Cheque
-
-        (('CT', 'DE', 'DC', 'ME',
-          'MD', 'MA', 'NH', 'NY',
-          'PA', 'RI', 'VT', 'WV'),
-        'Department of the Treasury<br/>Internal Revenue Service<br/>Kansas City, MO 64999-0002',  # Default
-        'Internal Revenue Service<br/>P.O. Box 37008<br/>Hartford, CT 06176-0008'),  # with Payment Cheque
-
-        # as per http://uk.practicallaw.com/3-518-4832 && http://www.irs.gov/pub/irs-pdf/p570.pdf
-        (('AS', 'PR', 'VI', 'ME',
-          'MP'),
-        'Department of the Treasury<br/>Internal Revenue Service<br/>Austin, TX 73301-0215<br/>USA',  # Default
-        'Internal Revenue Service<br/>P.O. Box 1303<br/>Charlotte, NC 28201-1303<br/>USA'),  # with Payment Cheque
+    STATE_ADDRESSES = (
+        (
+            (
+                # Florida, Louisiana, Mississippi, Texas
+                'FL', 'LA', 'MS', 'TX'
+            ),
+            {
+                # Default
+                'address1': 'Department of the Treasury',
+                'address2': 'Internal Revenue Service',
+                'city': 'Austin',
+                'state': 'TX',
+                'zip': '73301-0002'
+            },
+            {
+                # Payment
+                'address1': 'Internal Revenue Service',
+                'address2': 'P.O. Box 1214',
+                'city': 'Charlotte',
+                'state': 'NC',
+                'zip': '28201-1214'
+            }
+        ),
+        (
+            (
+                # Alaska, Arizona, California, Colorado,
+                # Hawaii, Idaho, Nevada, New Mexico,
+                # Oregon, Utah, Washington, Wyoming
+                'AK', 'AZ', 'CA', 'CO',
+                'HI', 'ID', 'NV', 'NM',
+                'OR', 'UT', 'WA', 'WY'
+            ),
+            {
+                # Default
+                'address1': 'Department of the Treasury',
+                'address2': 'Internal Revenue Service',
+                'city': 'Fresno',
+                'state': 'CA',
+                'zip': '93888-0002'
+            },
+            {
+                # Payment
+                'address1': 'Internal Revenue Service',
+                'address2': 'P.O. Box 7704',
+                'city': 'San Francisco',
+                'state': 'CA',
+                'zip': '94120-7704'
+            }
+        ),
+        (
+            (
+                # Arkansas, Illinois, Indiana, Iowa, Kansas,
+                # Michigan, Minnesota, Montana, Nebraska, North Dakota,
+                # Ohio, Oklahoma, South Dakota, Wisconsin
+                'AR', 'IL', 'IN', 'IA', 'KS',
+                'MI', 'MN', 'MT', 'NE', 'ND',
+                'OH', 'OK', 'SD', 'WI'
+            ),
+            {
+                # Default
+                'address1': 'Department of the Treasury',
+                'address2': 'Internal Revenue Service',
+                'city': 'Fresno',
+                'state': 'CA',
+                'zip': '93888-0002'
+            },
+            {
+                # Payment
+                'address1': 'Internal Revenue Service',
+                'address2': 'P.O. Box 802501',
+                'city': 'Cincinnati',
+                'state': 'OH',
+                'zip': '45280-2501'
+            }
+        ),
+        (
+            (
+                # Alabama, Georgia, Kentucky,
+                # Missouri, New Jersey, North Carolina
+                # South Carolina, Tennessee, Virginia
+                'AL', 'GA', 'KY',
+                'MO', 'NJ', 'NC',
+                'SC', 'TN', 'VA'
+            ),
+            {
+                # Default
+                'address1': 'Department of the Treasury',
+                'address2': 'Internal Revenue Service',
+                'city': 'Kansas City',
+                'state': 'MO',
+                'zip': '64999-0002'
+            },
+            {
+                # Payment
+                'address1': 'Internal Revenue Service',
+                'address2': 'P.O. Box 931000',
+                'city': 'Louisville',
+                'state': 'KY',
+                'zip': '40293-1000'
+            }
+        ),
+        (
+            (
+                # Connecticut, Delaware, District of Columbia, Maine
+                # Maryland, Massachusetts, New Hampshire, New York
+                # Pennsylvania, Rhode Island, Vermont, West Virginia
+                'CT', 'DE', 'DC', 'ME',
+                'MD', 'MA', 'NH', 'NY',
+                'PA', 'RI', 'VT', 'WV'
+            ),
+            {
+                # Default
+                'address1': 'Department of the Treasury',
+                'address2': 'Internal Revenue Service',
+                'city': 'Kansas City',
+                'state': 'MO',
+                'zip': '64999-0002'
+            },
+            {
+                # Payment
+                'address1': 'Internal Revenue Service',
+                'address2': 'P.O. Box 37008',
+                'city': 'Hartford',
+                'state': 'CT',
+                'zip': '06176-0008'
+            }
+        ),
+        (
+            (
+                # American Samoa, Guam, Northern Mariana Islands,
+                # Puerto Rico, Virgin Islands
+                'AS', 'GU', 'MP', 'PR', 'VI'
+            ),
+            {
+                # Default
+                'address1': 'Department of the Treasury',
+                'address2': 'Internal Revenue Service',
+                'city': 'Austin',
+                'state': 'TX',
+                'zip': '73301-0215',
+                'country': 'USA'
+            },
+            {
+                # Payment
+                'address1': 'Internal Revenue Service',
+                'address2': 'P.O. Box 1303',
+                'city': 'Charlotte',
+                'state': 'NC',
+                'zip': '28201-1303',
+                'country': 'USA'
+            }
+        )
     )
+
+    def get_irs_address(self, state):
+        for states, address, payment_address in self.STATE_ADDRESSES:
+            if state in states:
+                return address
+
+        return self.STATE_ADDRESSES[-1][1]
+
+    def get_irs_payment_address(self, state):
+        for states, address, payment_address in self.STATE_ADDRESSES:
+            if state in states:
+                return payment_address
+
+        return self.STATE_ADDRESSES[-1][2]
 
     @property
-    def customer_has_spouse(self):
-        return 'has_spouse' in self.data and self.data['has_spouse'] is True
+    def irs_address(self):
+        return self.get_irs_address(self.customer_state)
+
+    @property
+    def irs_payment_address(self):
+        return self.get_irs_payment_address(self.customer_state)
 
     @property
     def customer_state(self):
         return self.data.get('state', None)
 
     @property
-    def customer_in_sposal_state(self):
-        return self.customer_state in self.spousal_signature_states
+    def customer_has_spouse(self):
+        return 'has_spouse' in self.data and self.data['has_spouse'] is True
+
+    @property
+    def customer_in_spousal_state(self):
+        return self.customer_state in self.SPOUSAL_SIGNATURE_STATES
 
     @property
     def spouse_must_sign(self):
-        return self.customer_has_spouse is True and self.customer_in_sposal_state is True
-
-    @property
-    def irs_address(self):
-        state = self.customer_state
-        if state in ['', None]:
-            return None
-
-        else:
-            for states, address, cheque_address in self.irs_state_address_paymentaddress:
-                if state in states:
-                    return mark_safe(address)
-            # return the last default address
-            return mark_safe(self.irs_state_address_paymentaddress[:-1][0][1])
+        return self.customer_has_spouse is True and self.customer_in_spousal_state is True

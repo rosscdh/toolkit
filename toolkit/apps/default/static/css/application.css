@@ -290,6 +290,11 @@
 .section .section-header .btn {
   margin-top: -5px;
 }
+.table tbody tr.expired > td,
+.table tbody tr > td.expired {
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+}
 .status-list-item-icon {
   font-size: 24px;
 }

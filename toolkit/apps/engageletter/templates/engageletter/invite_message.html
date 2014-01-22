@@ -1,0 +1,10 @@
+Dear {{ instance.user.get_full_name|default:instance.user.email }},
+<br />
+<br />
+Message to customer here
+<br />
+<br />
+Regards
+<br />
+<br />
+{{ user.get_full_name|default:user.email }}

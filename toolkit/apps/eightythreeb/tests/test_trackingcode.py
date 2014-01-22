@@ -4,6 +4,7 @@ from django.test import TestCase
 from django.core.files import File
 from django.core.files.storage import FileSystemStorage
 from django.core.urlresolvers import reverse
+from django.utils import simplejson as json
 
 import os
 import mock
@@ -60,7 +61,7 @@ class BaseUSPSTrackingCode(TestCase):
                                        data=EIGHTYTHREEB_TRACKINGCODE_DATA,
                                        filing_date=datetime.date.today() + datetime.timedelta(days=30),
                                        transfer_date=datetime.date.today(),
-                                       status=EightyThreeB.STATUS_83b.mail_to_irs_tracking_code)
+                                       status=EightyThreeB.STATUS.mail_to_irs_tracking_code)
 
         self.eightythreeb.attachment_set.create(attachment=File(open('%s/attachment-1.gif' % FILE_BASE_PATH, 'r')))
         self.eightythreeb.attachment_set.create(attachment=File(open('%s/attachment-2.jpg' % FILE_BASE_PATH, 'r')))
@@ -100,7 +101,15 @@ class TestTrackingCodeModal(BaseUSPSTrackingCode):
             'slug': self.eightythreeb.slug
         })
 
-        self.assertRedirects(resp, redirect)
+        actual_response = {
+            'redirect': True,
+            'url': redirect
+        }
+
+        self.assertEqual(resp.content, json.dumps(actual_response))
+
+        # was it saved?
+        self.assertEqual(self.eightythreeb.tracking_code, TRACKING_CODE)
 
 
 class TestTrackingCodeEmail(BaseUSPSTrackingCode):

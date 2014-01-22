@@ -24,7 +24,7 @@
     {% block tabs %}
         <ul class="nav nav-tabs nav-append-content">
             <li class="active"><a href="#overview" data-toggle="tab">Overview</a></li>
-            <li><a href="#preview" data-toggle="tab">83(b) Election Preview</a></li>
+            <li><a href="#preview" data-toggle="tab">{{ tool.short_name }} Preview</a></li>
         </ul>
     {% endblock %}
 
@@ -34,11 +34,13 @@
                 <ul class="list-group status-list {{ tool.slug }}-status-list">
                     {% for marker in object.markers %}
                         {% block marker %}
+                            {% if marker.show_marker %}
                             <li class="list-group-item status-list-item status-{{ marker.status }}">
                                 <div class="row">
                                     {% marker_status_block marker user %}
                                 </div>
                             </li>
+                            {% endif %}
                         {% endblock %}
                     {% endfor %}
                 </ul>

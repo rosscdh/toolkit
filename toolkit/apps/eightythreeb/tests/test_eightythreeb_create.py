@@ -13,7 +13,7 @@ class LawyerCreateEightythreebTest(BaseScenarios, TestCase):
         super(LawyerCreateEightythreebTest, self).setUp()
         self.basic_workspace()
 
-        self.eightythreeb.status = self.eightythreeb.STATUS_83b.lawyer_invite_customer
+        self.eightythreeb.status = self.eightythreeb.STATUS.lawyer_invite_customer
         self.eightythreeb.data['markers']=   {"lawyer_complete_form": {
                                                   "actor_name": "", 
                                                   "date_of": "2013-12-30T10:52:35"
@@ -29,17 +29,21 @@ class LawyerCreateEightythreebTest(BaseScenarios, TestCase):
         a. redirect to the Invite Customer View
         b. have the Edit form in the previous
         """
-        resp = self.client.get(reverse('eightythreeb:preview', kwargs={'slug': self.eightythreeb.slug}), follow=True)
+        url = reverse('eightythreeb:preview', kwargs={'slug': self.eightythreeb.slug})
+        resp = self.client.get(url, follow=True)
         # test general stuff
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.context_data.get('object').status, self.eightythreeb.STATUS_83b.lawyer_invite_customer)
+        self.assertEqual(resp.context_data.get('object').status, self.eightythreeb.STATUS.lawyer_invite_customer)
 
         # ensure we have the right prev current and next markers
-        self.assertEqual(type(resp.context_data.get('object').markers.previous), LawyerCompleteFormMarker)
-        self.assertEqual(type(resp.context_data.get('object').markers.current), LawyerInviteUserMarker)
-        self.assertEqual(type(resp.context_data.get('object').markers.next), CustomerCompleteFormMarker)
+        markers = resp.context_data.get('object').markers
+
+        self.assertEqual(type(markers.previous_marker), LawyerCompleteFormMarker)
+        self.assertEqual(type(markers.current_marker), LawyerInviteUserMarker)
+        self.assertEqual(type(markers.next_marker), CustomerCompleteFormMarker)
 
         # test the urls are set correctly
-        self.assertEqual(resp.context_data.get('next_url'), resp.context_data.get('object').markers.current.get_action_url())
-        self.assertEqual(resp.context_data.get('previous_url'), resp.context_data.get('object').markers.previous.get_action_url())
+        preview_url = reverse('workspace:tool_object_preview', kwargs={'workspace': self.eightythreeb.workspace.slug, 'tool': self.eightythreeb.tool_slug, 'slug': self.eightythreeb.slug})
+        self.assertEqual(resp.context_data.get('next_url'), preview_url)
+        self.assertEqual(resp.context_data.get('previous_url'), markers.previous_marker.get_action_url())
         

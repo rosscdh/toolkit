@@ -63,7 +63,6 @@
     {% endblock %}
 
     <div class="main-content container-fluid">
-
         {% block body %}
             <div class="row">
                 <div class="col-sm-3 sidebar">
@@ -100,7 +99,7 @@
                                         {% if WORKSPACES %}
                                             <a href="{% url 'workspace:create' %}" data-toggle="modal" data-target="#workspace-create" class="a" data-container="body"><i class="fui-plus"></i> New Client</a>
                                         {% else %}
-                                            <a href="{% url 'workspace:create' %}" data-toggle="modal" data-target="#workspace-create" class="auto-show" data-container="body" data-placement="bottom" data-original-title="Create your first client workspace here" title="Create your first client workspace here"><i class="fui-plus"></i> New Client</a>
+                                            <a href="{% url 'workspace:create' %}" data-toggle="modal" data-target="#workspace-create" class="auto-show" data-container="body" data-placement="bottom" data-content="Click here to add your first Client." data-original-title="" title=""><i class="fui-plus"></i> New Client</a>
                                         {% endif %}
                                     </li>
                                 {% endif %}

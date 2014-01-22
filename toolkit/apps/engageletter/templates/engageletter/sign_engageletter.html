@@ -1,0 +1,21 @@
+{% extends 'workspace/workspace_base.html' %}
+{% load url from future %}{% load crispy_forms_tags django_bootstrap_breadcrumbs %}
+
+{% block page_title %}Sign the Engagement Letter{% endblock  %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+{% endblock %}
+
+{% block main %}
+
+    <h4>Sign the Engagement Letter</h4>
+    <p class="">Once you are ready to digitally sign your engagement letter with {{ object.workspace.lawyer }}, click the continue button below.</p>
+    <p class="">You will then be taken to HelloSign.com where this step can be completed.</p>
+    <hr />
+    {% block form %}
+        {% include 'partials/form-errors.html' with form=form %}
+        {% crispy form %}
+    {% endblock %}
+
+{% endblock %}

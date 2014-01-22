@@ -46,12 +46,16 @@ class BaseScenarios(object):
         lawyer_profile.save(update_fields=['data'])
 
         self.workspace = mommy.make('workspace.Workspace', name='Lawpal (test)', lawyer=self.lawyer)
-        self.workspace.tools.add(Tool.objects.get(slug='83b-election-letters'))
+
+        # Add all the toolks to the workspace
+        for tool in Tool.objects.all():
+            self.workspace.tools.add(tool)
+
         self.workspace.participants.add(self.user)
         self.workspace.participants.add(self.lawyer)
 
-        eightythreeb_data = BASE_EIGHTYTHREEB_DATA.copy()
-        eightythreeb_data['markers'] = {}  # set teh markers to nothing
+        eightythreeb_data = BASE_EIGHTYTHREEB_DATA
+        eightythreeb_data['markers'] = {}  # set the markers to nothing
 
         self.eightythreeb = mommy.make('eightythreeb.EightyThreeB',
                             slug='e0c545082d1241849be039e338e47a0f',
@@ -60,7 +64,7 @@ class BaseScenarios(object):
                             data=eightythreeb_data,
                             filing_date=datetime.date.today() + datetime.timedelta(days=30),
                             transfer_date=datetime.date.today(),
-                            status=EightyThreeB.STATUS_83b.lawyer_complete_form)
+                            status=EightyThreeB.STATUS.lawyer_complete_form)
 
 
 class BaseProjectCaseMixin(BaseScenarios, BaseCasperJs):

@@ -14,16 +14,19 @@ class EmailBackend(object):
         user = None
         pwd_valid = False
 
-        try:
-            user = User.objects.get(email=username)
-            pwd_valid = check_password(password, user.password)
-        except User.DoesNotExist:
-            logger.error('User does not exist: %s' % username)
+        if '@' in username:
+            email = User.objects.normalize_email(username)
 
-        if user and pwd_valid:
-            return user
-        else:
-            return None
+            try:
+                user = User.objects.get(email=email)
+                pwd_valid = check_password(password, user.password)
+            except User.DoesNotExist:
+                logger.error('User does not exist: %s' % username)
+
+            if user and pwd_valid:
+                return user
+
+        return None
 
     def get_user(self, user_id):
         try:
