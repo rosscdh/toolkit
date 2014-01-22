@@ -27,7 +27,7 @@
 {% block content %}
 
 <!-- Page 1 : Cover Letter  -->
-{% lawyer_header lawyer=instance.workspace.lawyer %}
+{% lawyer_header lawyer=object.workspace.lawyer %}
 
 <div>
     <div>{{ client_full_name|default:'<span>[Client Name]</span>' }}</div>
@@ -38,6 +38,6 @@
     <br />
 </div>
 
-{% lawyer_footer lawyer=instance.workspace.lawyer %}
+{% lawyer_footer lawyer=object.workspace.lawyer %}
 
 {% endblock %}
