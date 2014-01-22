@@ -213,7 +213,9 @@ class LawyerEngagementLetterTemplateForm(LawyerLetterheadForm):
     """
     Override the base letterhead and add out template letter HTML
     """
-    body = forms.CharField(required=True, widget=forms.Textarea)
+    body = forms.CharField(required=True, widget=forms.Textarea(attrs={
+            'cols': '100',
+        }))
 
     def __init__(self, *args, **kwargs):
         super(LawyerEngagementLetterTemplateForm, self).__init__(*args, **kwargs)
@@ -221,17 +223,21 @@ class LawyerEngagementLetterTemplateForm(LawyerLetterheadForm):
         self.helper.layout = Layout(
             Div(
                 Div(
-                    'firm_logo',
+                    'firm_name',
                     'firm_address',
                     css_class='col-md-6'
                 ),
                 Div(
-                    'body',
+                    'firm_logo',
+                    HTML('{% load thumbnail %}{% thumbnail object.firm_logo "210x100" crop="center" as im %}<img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">{% endthumbnail %}'),
                     css_class='col-md-6'
                 ),
                 css_class='row'
             ),
-
+            Div(
+                'body',
+                css_class='row'
+            ),
             ButtonHolder(
                 Submit('submit', 'Save', css_class='btn btn-primary btn-lg')
             )
