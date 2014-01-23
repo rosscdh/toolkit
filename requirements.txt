@@ -18,6 +18,7 @@ django-password-reset
 django-uuidfield
 
 # Image Thumbnails
+pillow
 sorl-thumbnail
 
 django-crispy-forms
