@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from jsonfield import JSONField
+from sorl.thumbnail.images import ImageFile
 
 
 class UserProfile(models.Model):
@@ -51,6 +52,13 @@ class UserProfile(models.Model):
     @property
     def type(self):
         return 'Attorney' if self.is_lawyer else 'Client'
+
+    @property
+    def firm_logo(self):
+        firm_logo = self.data.get('firm_logo', None)
+        if firm_logo is not None:
+            return ImageFile(firm_logo)
+        return firm_logo
 
 
 def _get_or_create_user_profile(user):
