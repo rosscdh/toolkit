@@ -38,7 +38,7 @@ class SetupEngagementLetterViewTest(BaseProjectCaseMixin):
         resp = self.client.get(self.url)
 
         self.assertEqual(type(resp.context_data.get('view')), SetupEngagementLetterView)
-        self.assertEqual(resp.context_data.get('form').fields.keys(), ['firm_address', 'firm_logo', 'body'])
+        self.assertEqual(resp.context_data.get('form').fields.keys(), ['firm_name', 'firm_address', 'firm_logo', 'body'])
         self.assertEqual(resp.template_name, ['engageletter/setup_engageletter_form.html'])
         # test template data
         self.assertEqual(resp.context_data['form'].initial.get('body'), self.tool.template_source)

@@ -2,6 +2,9 @@
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
+from django.template.loader import get_template
+from django.template.defaultfilters import slugify
+from django.template import Context, TemplateDoesNotExist
 from django.http import HttpResponse, HttpResponseRedirect
 
 from django.views.generic import (FormView,
@@ -140,7 +143,7 @@ class CreateWorkspaceToolObjectView(WorkspaceToolFormViewMixin, CreateView):
         if hasattr(form, 'get_success_url'):
             return form.get_success_url(instance=self.object)
 
-        return reverse('workspace:tool_object_preview', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug, 'slug': self.object.slug})
+        return reverse('workspace:tool_object_overview', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug, 'slug': self.object.slug})
 
     def form_valid(self, form):
         self.object = form.save()
@@ -165,7 +168,7 @@ class UpdateViewWorkspaceToolObjectView(WorkspaceToolFormViewMixin, UpdateView):
         if hasattr(form, 'get_success_url'):
             return form.get_success_url(instance=self.object)
 
-        return reverse('workspace:tool_object_preview', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug, 'slug': self.object.slug})
+        return reverse('workspace:tool_object_overview', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug, 'slug': self.object.slug})
 
     def form_valid(self, form):
         self.object = form.save()
@@ -178,7 +181,7 @@ class InviteClientWorkspaceToolObjectView(IssueSignalsMixin, WorkspaceToolViewMi
     template_name = 'workspace/workspace_tool_invite.html'
 
     def get_success_url(self):
-        return reverse('workspace:tool_object_preview', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug, 'slug': self.tool_instance.slug})
+        return reverse('workspace:tool_object_overview', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug, 'slug': self.tool_instance.slug})
 
     def get_object(self, queryset=None):
         self.tool_instance = get_object_or_404(self.get_queryset(), slug=self.kwargs.get('slug'))
@@ -273,3 +276,70 @@ class WorkspaceToolObjectDownloadView(IssueSignalsMixin, WorkspaceToolObjectDisp
         self.issue_signals(request=self.request, instance=self.object, name='customer_download_pdf')
 
         return pdfpng_service.pdf(template_name=self.object.pdf_template_name, file_object=resp)
+
+
+class WorkspaceToolObjectPostFormPreviewView(DetailView):
+    """
+    View used to display the PDF Preview to Lawyer/Customer
+    after they have completed the tool form
+    and redirect on to the next marker step
+    """
+    model = Tool
+    slug_url_kwarg = 'tool'
+
+    def get_object(self, queryset=None):
+        """
+        Get the base tool object as normal and then use its "model" property
+        to return the target apps model and then reset the object to that new
+        object
+        """
+        # get tool
+        obj = super(WorkspaceToolObjectPostFormPreviewView, self).get_object(queryset=queryset)
+        # do a search on the tool target model
+        tool_object = get_object_or_404(obj.model.objects, slug=self.kwargs.get('slug'))
+        
+        return tool_object
+
+    def get_template_names(self):
+        template_name = 'after_form_preview.html'
+        try:
+            return get_template('%s/%s' % (slugify(self.object._meta.model.__name__), template_name))
+        except TemplateDoesNotExist:
+            return get_template('%s/%s' % (slugify(self.object._meta.app_label), template_name))
+        else:
+            return get_template('workspace/%s' % template_name)
+
+    def get_next_previous_urls(self):
+        markers = self.object.markers
+        preview_workspace_url = reverse('workspace:tool_object_overview', kwargs={'workspace': self.object.workspace.slug, 'tool': self.object.tool_slug, 'slug': self.object.slug})
+
+        if self.request.user.profile.is_lawyer is True:
+            # for Lawyer
+            # get the current markers next_marker which will then
+            # calculate based on Prerequisite Markers
+            marker = markers.current_marker.next_marker
+            return {
+                'previous_url': markers.marker(val='lawyer_complete_form').get_action_url(),
+                'next_url': marker.get_action_url() if 'lawyer' in marker.action_user_class and marker.action_type == marker.ACTION_TYPE.redirect else preview_workspace_url,
+            }
+
+        elif self.request.user.profile.is_customer is True:
+            # for Customer
+            return {
+                'previous_url': markers.marker(val='customer_complete_form').get_action_url(),
+                'next_url': preview_workspace_url,
+            }
+
+    def get_context_data(self, **kwargs):
+        context = super(WorkspaceToolObjectPostFormPreviewView, self).get_context_data(**kwargs)
+        context.update(self.get_next_previous_urls())  # append the next previous urls
+
+        workspace = self.object.workspace
+        tool = get_object_or_404(workspace.tools, slug=self.object.tool_slug)
+
+        context.update({
+            'tool': tool,
+            'workspace': workspace
+        })
+
+        return context
