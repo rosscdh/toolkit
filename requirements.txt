@@ -58,6 +58,7 @@ raven # getsentry
 -e git+https://github.com/rosscdh/python-usps.git#egg=python-usps
 
 # Testing
+django-jenkins
 HTTPretty
 django-casper
 mock
