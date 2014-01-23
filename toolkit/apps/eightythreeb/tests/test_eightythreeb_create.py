@@ -29,7 +29,7 @@ class LawyerCreateEightythreebTest(BaseScenarios, TestCase):
         a. redirect to the Invite Customer View
         b. have the Edit form in the previous
         """
-        url = reverse('eightythreeb:preview', kwargs={'slug': self.eightythreeb.slug})
+        url = reverse('workspace:tool_object_after_save_preview', kwargs={'workspace': self.eightythreeb.workspace.slug, 'tool': self.eightythreeb.workspace.tools.filter(slug=self.eightythreeb.tool_slug).first().slug, 'slug': self.eightythreeb.slug})
         resp = self.client.get(url, follow=True)
         # test general stuff
         self.assertEqual(resp.status_code, 200)
@@ -43,7 +43,7 @@ class LawyerCreateEightythreebTest(BaseScenarios, TestCase):
         self.assertEqual(type(markers.next_marker), CustomerCompleteFormMarker)
 
         # test the urls are set correctly
-        preview_url = reverse('workspace:tool_object_preview', kwargs={'workspace': self.eightythreeb.workspace.slug, 'tool': self.eightythreeb.tool_slug, 'slug': self.eightythreeb.slug})
+        preview_url = reverse('workspace:tool_object_overview', kwargs={'workspace': self.eightythreeb.workspace.slug, 'tool': self.eightythreeb.tool_slug, 'slug': self.eightythreeb.slug})
         self.assertEqual(resp.context_data.get('next_url'), preview_url)
         self.assertEqual(resp.context_data.get('previous_url'), markers.previous_marker.get_action_url())
         

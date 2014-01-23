@@ -15,7 +15,7 @@
                 {% for t in object_list %}
                     <tr class="{% if 't.markers.percent_complete' == '100.0' %} success{% endif %}">
                         <td>
-                            <a href="{% url 'workspace:tool_object_preview' workspace=workspace.slug tool=tool.slug slug=t.slug %}">{{ t.client_name }}</a>
+                            <a href="{% url 'workspace:tool_object_overview' workspace=workspace.slug tool=tool.slug slug=t.slug %}">{{ t.client_name }}</a>
                         </td>
                         <td><small>{{ t.transfer_date }}</small></td>
                         <td><small>{{ t.filing_date }}</small></td>
