@@ -8,7 +8,6 @@ six
 sqlparse
 wsgiref
 
-gunicorn # required for the concurrent loading of images (for pdfs)
 Werkzeug
 djangorestframework==2.3.9
 -e git+https://github.com/alex/django-filter.git#egg=django-filter
