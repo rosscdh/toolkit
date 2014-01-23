@@ -1,7 +1,13 @@
+# -*- coding: utf-8 -*-
 from django import forms
-from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import SetPasswordForm
 from django.core.urlresolvers import reverse
+from django.contrib.auth import get_user_model
+from django.template.defaultfilters import slugify
+from django.contrib.auth.forms import SetPasswordForm
+
+import os
+
+from storages.backends.s3boto import S3BotoStorage
 
 from crispy_forms.helper import FormHelper, Layout
 from crispy_forms.layout import ButtonHolder, Div, Field, Fieldset, HTML, Submit
@@ -9,7 +15,6 @@ from crispy_forms.layout import ButtonHolder, Div, Field, Fieldset, HTML, Submit
 from parsley.decorators import parsleyfy
 
 from toolkit.mixins import ModalForm
-from toolkit.apps.default.models import UserProfile
 
 User = get_user_model()
 
@@ -185,10 +190,12 @@ class ConfirmAccountForm(AccountSettingsForm):
         self.instance.set_password(self.cleaned_data['new_password1'])
         return super(ConfirmAccountForm, self).save(commit=commit)
 
+
 @parsleyfy
 class LawyerLetterheadForm(forms.Form):
+    firm_name = forms.CharField(required=True)
     firm_address = forms.CharField(required=True, widget=forms.Textarea)
-    firm_logo = forms.CharField(required=False)
+    firm_logo = forms.ImageField(required=False)
 
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance')
@@ -196,10 +203,21 @@ class LawyerLetterheadForm(forms.Form):
 
         self.helper = FormHelper()
         self.helper.layout = Layout(
-            'firm_address',
-            'firm_logo',
+            Div(
+                Div(
+                    'firm_name',
+                    'firm_address',
+                    css_class='col-md-6'
+                ),
+                Div(
+                    'firm_logo',
+                    HTML('{% load thumbnail %}{% thumbnail object.firm_logo "210x100" crop="center" as im %}<img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">{% endthumbnail %}'),
+                    css_class='col-md-6'
+                ),
+                css_class='row'
+            ),
             ButtonHolder(
-                Submit('submit', 'Save letterhead', css_class='btn btn-primary btn-lg')
+                Submit('submit', 'Save', css_class='btn btn-primary btn-lg')
             )
         )
         super(LawyerLetterheadForm, self).__init__(*args, **kwargs)
@@ -210,6 +228,19 @@ class LawyerLetterheadForm(forms.Form):
         """
         profile = self.user.profile
         data = profile.data
+
+        firm_logo = self.cleaned_data.pop('firm_logo', None)
+        if firm_logo is not None:
+            if hasattr(firm_logo, 'name'):
+                image_storage = S3BotoStorage()
+                # slugify a unique name
+                name, ext = os.path.splitext(firm_logo.name)
+                filename = slugify('%s-%s-%s' % (data.get('firm_name', self.user.username), self.user.pk, name))
+                image_name = '%s%s' % (filename, ext)
+                # save to s3
+                result = image_storage.save('firms/%s' % image_name, firm_logo)
+                # save to cleaned_data
+                self.cleaned_data['firm_logo'] = image_storage.url(name=result)
 
         data.update(**self.cleaned_data)
         profile.data = data

@@ -204,7 +204,7 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
             self.fields['company_name'].initial = self.workspace.name
 
     def get_success_url(self, instance):
-        return reverse('eightythreeb:preview', kwargs={'slug': instance.slug})
+        return reverse('workspace:tool_object_after_save_preview', kwargs={'workspace': instance.workspace.slug, 'tool': instance.workspace.tools.filter(slug=instance.tool_slug).first().slug, 'slug': instance.slug})
 
     def save(self):
 

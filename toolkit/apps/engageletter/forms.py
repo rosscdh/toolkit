@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django import forms
+from django.core.urlresolvers import reverse
 
 from crispy_forms.helper import FormHelper, Layout
 from crispy_forms.layout import ButtonHolder, Submit, Div, HTML
@@ -180,6 +181,9 @@ class LawyerForm(BaseForm):
             )
         )
 
+    def get_success_url(self, instance):
+        return reverse('workspace:tool_object_after_save_preview', kwargs={'workspace': instance.workspace.slug, 'tool': instance.workspace.tools.filter(slug=instance.tool_slug).first().slug, 'slug': instance.slug})
+
     def issue_signals(self, instance):
         instance.markers.marker('lawyer_complete_form').issue_signals(request=self.request, instance=instance, actor=self.user)
 
@@ -213,7 +217,9 @@ class LawyerEngagementLetterTemplateForm(LawyerLetterheadForm):
     """
     Override the base letterhead and add out template letter HTML
     """
-    body = forms.CharField(required=True, widget=forms.Textarea)
+    body = forms.CharField(required=True, widget=forms.Textarea(attrs={
+            'cols': '100',
+        }))
 
     def __init__(self, *args, **kwargs):
         super(LawyerEngagementLetterTemplateForm, self).__init__(*args, **kwargs)
@@ -221,17 +227,21 @@ class LawyerEngagementLetterTemplateForm(LawyerLetterheadForm):
         self.helper.layout = Layout(
             Div(
                 Div(
-                    'firm_logo',
+                    'firm_name',
                     'firm_address',
                     css_class='col-md-6'
                 ),
                 Div(
-                    'body',
+                    'firm_logo',
+                    HTML('{% load thumbnail %}{% thumbnail object.firm_logo "210x100" crop="center" as im %}<img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">{% endthumbnail %}'),
                     css_class='col-md-6'
                 ),
                 css_class='row'
             ),
-
+            Div(
+                'body',
+                css_class='row'
+            ),
             ButtonHolder(
                 Submit('submit', 'Save', css_class='btn btn-primary btn-lg')
             )
