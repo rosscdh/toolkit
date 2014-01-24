@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.core.urlresolvers import reverse
 
 from toolkit.casper import BaseScenarios
-from toolkit.apps.workspace.views import InviteClientWorkspaceToolObjectView, WorkspaceToolObjectPreviewView
+from toolkit.apps.workspace.views import InviteClientToolObjectView, ToolObjectPreviewView
 from toolkit.apps.workspace.forms import InviteUserForm
 
 
@@ -29,7 +29,7 @@ class InviteCustomerTest(BaseScenarios, TestCase):
         resp = self.client.get(invite_url, follow=True)
 
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(type(resp.context_data.get('view')), InviteClientWorkspaceToolObjectView)
+        self.assertEqual(type(resp.context_data.get('view')), InviteClientToolObjectView)
         self.assertEqual(type(resp.context_data.get('form')), InviteUserForm)
 
         form = resp.context_data.get('form')
@@ -51,7 +51,7 @@ class InviteCustomerTest(BaseScenarios, TestCase):
         form_resp = self.client.post(invite_url, form_data, follow=True)
         self.assertEqual(form_resp.status_code, 200)
         # redirects to the workspace preview
-        self.assertEqual(type(form_resp.context_data.get('view')), WorkspaceToolObjectPreviewView)
+        self.assertEqual(type(form_resp.context_data.get('view')), ToolObjectPreviewView)
 
         # test email is sent
         self.assertEqual(len(mail.outbox), 1)

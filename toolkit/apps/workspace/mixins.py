@@ -137,7 +137,7 @@ class IssueSignalsMixin(object):
         """
         issue the base_signal signal to handle any change events
         """
-        logger.debug('Issuing signals for WorkspaceToolObjectDownloadView')
+        logger.debug('Issuing signals for ToolObjectDownloadView')
 
         if hasattr(instance, 'base_signal'):
             instance.base_signal.send(sender=request, instance=instance, actor=request.user, name=name, **kwargs)

@@ -8,7 +8,7 @@ from model_mommy import mommy
 from toolkit.casper.workflow_case import BaseProjectCaseMixin
 from toolkit.apps.workspace.models import Tool
 from toolkit.apps.me.forms import ConfirmAccountForm
-from toolkit.apps.workspace.views import WorkspaceToolObjectPreviewView
+from toolkit.apps.workspace.views import ToolObjectPreviewView
 from django.views.generic import DetailView
 
 
@@ -67,7 +67,7 @@ class CustomerInviteLoginTest(BaseCustomer):
 
         formsubmit_resp = self.submit_confirm_account_form(resp=self.resp)
         # is on the right view
-        self.assertEqual(type(formsubmit_resp.context_data.get('view')), WorkspaceToolObjectPreviewView)
+        self.assertEqual(type(formsubmit_resp.context_data.get('view')), ToolObjectPreviewView)
         # has the sent welcome message key set
         self.assertTrue('sent_welcome_email' in self.user.profile.data)
         # Test email
