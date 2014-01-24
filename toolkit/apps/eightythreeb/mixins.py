@@ -28,7 +28,7 @@ class HTMLMixin(object):
     @property
     def template_source(self):
         source_loader = Loader()
-        source, file_path = source_loader.load_template_source('engageletter/partials/engageletter_template.html')
+        source, file_path = source_loader.load_template_source('engageletter/doc/body.html')
         return source
 
     def html(self, **kwargs):
