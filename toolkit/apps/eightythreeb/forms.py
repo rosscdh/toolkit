@@ -34,23 +34,23 @@ def _current_year():
 class BaseEightyThreeBForm(WorkspaceToolFormMixin):
     client_full_name = forms.CharField(
         error_messages={
-            'required': "Client name can't be blank."
+            'required': "Taxpayer's name can not be blank."
         },
         help_text='',
         label='Full name',
         required=True,
-        widget=forms.TextInput(attrs={'placeholder': 'Client full name', 'size': '40'})
+        widget=forms.TextInput(attrs={'placeholder': 'Taxpayer\'s full name', 'size': '40'})
     )
 
     client_email = forms.EmailField(
         error_messages={
-            'invalid': "Client email is invalid.",
-            'required': "Client email can't be blank."
+            'invalid': "Taxpayer's email is invalid.",
+            'required': "Taxpayer's email can't be blank."
         },
         help_text='',
         label='Email address',
         required=True,
-        widget=forms.EmailInput(attrs={'placeholder': 'Client email address', 'size': '40'})
+        widget=forms.EmailInput(attrs={'placeholder': 'Taxpayer\'s email address', 'size': '40'})
     )
 
     company_name = forms.CharField(
@@ -59,7 +59,7 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
         },
         help_text='',
         label='Company name',
-        widget=forms.HiddenInput(attrs={'placeholder': 'Company name', 'size': '40'})
+        widget=forms.TextInput(attrs={'placeholder': 'Company name', 'size': '40'})
     )
 
     address1 = forms.CharField(
@@ -151,6 +151,7 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
             'required': "Property description can't be blank."
         },
         label='Description of property with respect to which election is being made',
+        initial='[____] shares (the “Shares”) of the Common Stock of [____], Inc. (the “Company”) ($0.0001 per share)',
         help_text='e.g. 10 shares of the common stock of ABC, Inc ($0.0001 per value)',
         widget=forms.Textarea(attrs={
             'cols': '80',
@@ -173,9 +174,10 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
         },
         label='Nature of restrictions to which property is subject',
         help_text='If you have copied this from Microsoft Word please check that the numbering and formatting has been retained.',
+        initial="The Shares may be repurchased by the Company, or its assignee, upon the occurrence of certain events. This right lapses with regard to a portion of the Shares over time.",
         widget=forms.Textarea(attrs={
             'cols': '80',
-            'data-toggle': 'summernote'
+            'data-toggle': 'summernote',
         })
     )
 
@@ -188,12 +190,31 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
         widget=forms.TextInput(attrs={'size': '10'})
     )
 
+    # DEPRECATED
     transfer_value_total = forms.DecimalField(
         error_messages={
             'required': "Transfer value total can't be blank."
         },
         label='',
         initial=0.00,
+        widget=forms.TextInput(attrs={'size': '10'})
+    )
+
+    total_shares_purchased = forms.DecimalField(
+        error_messages={
+            'required': "Total shares purchased can't be blank."
+        },
+        label='',
+        initial='100',
+        widget=forms.TextInput(attrs={'size': '10'})
+    )
+
+    price_paid_per_share = forms.DecimalField(
+        error_messages={
+            'required': "Price paid per share can't be blank."
+        },
+        label='',
+        initial='0.0001',
         widget=forms.TextInput(attrs={'size': '10'})
     )
 
@@ -262,7 +283,11 @@ class CustomerEightyThreeBForm(BaseEightyThreeBForm):
         self.fields['description'].widget = forms.HiddenInput()
         self.fields['tax_year'].widget = forms.HiddenInput()
         self.fields['nature_of_restrictions'].widget = forms.HiddenInput()
+        self.fields['total_shares_purchased'].widget = forms.HiddenInput()
+        self.fields['price_paid_per_share'].widget = forms.HiddenInput()
         self.fields['transfer_value_share'].widget = forms.HiddenInput()
+        
+        #DEPRECATED
         self.fields['transfer_value_total'].widget = forms.HiddenInput()
 
         self.helper.layout = Layout(
@@ -410,19 +435,29 @@ class LawyerEightyThreeBForm(BaseEightyThreeBForm):
                     StrictButton('<span class="fui-calendar"></span>'),
                     css_class='datetime'
                 ),
-                'description',
-                'tax_year',
-                'nature_of_restrictions',
                 Div(
+                    HTML('<label class="control-label">Total number of shares purchased</label>'),
+                    'total_shares_purchased',    
+
                     HTML('<label class="control-label">Value at time of transfer</label>'),
                     Div(
                         PrependedText('transfer_value_share', '$'),
-                        HTML('<span class="help-block">per share for a total aggregate value of</span>'),
-                        PrependedText('transfer_value_total', '$'),
+                        HTML('<span class="help-block">per share</span>'),
                         css_class='form-inline'
                     ),
-                    css_class='form-group'
+                    HTML('<br />'),
+                    HTML('<label class="control-label">Actual price paid per share</label>'),
+                    Div(
+                        PrependedText('price_paid_per_share', '$'),
+                        HTML('<span class="help-block">paid per share</span>'),
+                    css_class='form-inline',
+
+                    ),
                 ),
+                HTML('<br />'),
+                'description',
+                'tax_year',
+                'nature_of_restrictions',
             ),
             Div(
                 HTML('<legend>Additional details (Client to complete)</legend>'),
