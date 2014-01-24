@@ -1,0 +1,234 @@
+{% extends 'public/base.html' %}
+
+{% load url from future %}
+
+{% block prebody %}
+<style>
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td { padding: 5px 10px; font-size:14px;border-left-width:0px!important;border-right-width:0px!important;}
+th {background-color: #f1f1f1;}
+.icon {font-size:17px;}
+h5 {font-size:20px;}
+h6 {font-size:18px;}
+td ul li {font-size:13px;}
+.fui-document {font-size:10px;}
+.document-drawer{display:none;}
+.acme-inc {
+	border:2px solid #9b59b6;
+	padding:0px 10px 10px 10px;
+	color:#9b59b6;
+	margin-bottom:20px;
+	margin-top:20px;
+}
+.founders-fund {
+	border:1px solid #e67e22;
+	color:#e67e22;
+	padding:0px 10px 10px 10px;
+}
+.veddis-ventures {
+	border:1px solid #2ecc71;
+	color:#2ecc71;
+	padding:0px 10px 10px 10px;
+	margin-top:20px;
+}
+.veddis-ventures h5, .founders-fund h5 {
+	font-size: 16px;
+	margin-top:8px;
+}
+.connectedSortable {
+	min-height:20px;
+}
+.table .tools, .table .tools [class*="fui-"] {
+	font-size:14px;
+}
+.drop-zone {display:none;color:#ccc;text-align: center;border:1px dashed #ccc;font-size:14px;}
+.hover-wrap {position:relative;}
+.hover-tools { z-index:500;position:absolute;text-align:center;right:-130px;width:130px; font-size:13px;padding:5px;top:0px;background-color:#777; display:none;color:white;}
+.hover-tools a {color:white;}
+.hover-wrap:hover .hover-tools {display:block;}
+.ui-sortable li {color:#222;font-size:16px;}
+</style>
+			
+
+<div class="tool-landing">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-sm-5 checklist">
+				<h5>Transaction Checklist</h5>
+				<table class="table table-bordered">
+		            <thead>
+		              <tr>
+		                <th colspan="2">Incorporation</th>
+		              </tr>
+		            </thead>
+		            <tbody>
+		              <tr>
+		                <td><span class="fui-time text-warning"></span></td>
+		                <td class="hover-wrap">Articles of incorporation 
+		                	<span class="pull-right tools">
+		                		<span class="fui-document text-info" id="toggle-docs"></span> 4  &nbsp;
+		                		<span class="fui-bubble"></span> 2 
+		                	</span>
+		                	<div class="hover-tools">
+		                		<a href="#">Assign</a> &middot; <a href="#">Due Date</a>
+		                	</div>
+		                </td>
+		              </tr>
+		              <tr class="document-drawer">
+		              	<td></td>
+		              	<td>
+		              		<ul class="list-unstyled connectedSortable" id="doc-list">
+								<li><small><span class="fui-document text-info"></span></small> Articles of incorporation.doc 
+									<div class="btn-group pull-right">              
+						              <a class="btn btn-clear btn-xs dropdown-toggle" data-toggle="dropdown">
+						                <span class="caret"></span>
+						              </a>
+						              <span class="dropdown-arrow dropdown-arrow-inverse"></span>
+						              <ul class="dropdown-menu dropdown-inverse">
+						                <li><a href="#fakelink">Download</a></li>
+						                <li><a href="#fakelink">Mark as final</a></li>
+						                <li><a href="#fakelink">Delete</a></li>
+						              </ul>
+						            </div>
+        						</li>
+								<li><small><span class="fui-document text-info"></span></small> Blue Sky fillings</li>
+								<li><small><span class="fui-document text-info"></span></small> Shareholders agreement.doc</li>
+								<li><small><span class="fui-document text-info"></span></small> Convertible promissory note.doc</li>
+		           			</ul>
+		           	  </td>
+		              </tr>
+		              <tr>
+		                <td style="width:30px"><span class="fui-check-inverted text-primary"></span></td>
+		                <td>Action by Unanimous Written Consent of the Board of Directors</td>
+		              </tr>
+		              <tr>
+		                <td><span class="fui-check-inverted text-primary"></span></td>
+		                <td>Bylaws</td>
+		              </tr>
+		              <tr>
+		                <td><span class="fui-check-inverted text-primary"></span></td>
+		                <td>CA Statement of Information</td>
+		              </tr>
+		              <tr class="info">
+		                <td><span class="fui-check-inverted text-primary"></span></td>
+		                <td>Share Exchange Agreement</td>
+		              </tr>
+		              <tr>
+		                <td><span class="fui-check-inverted text-primary"></span></td>
+		                <td>EIN Assignment Letter from the IRS</td>
+		              </tr>
+		              <tr>
+		                <th colspan="2">Founder Documents</th>
+		              </tr>
+		              <tr>
+		                <td><span class="fui-check-inverted text-primary"></span></td>
+		                <td>83(b) Election for Founder A</td>
+		              </tr>
+		              <tr>
+		                <td><span class="fui-check-inverted text-primary"></span></td>
+		                <td>83(b) Election for Founder B</td>
+		              </tr>
+		              <tr>
+		                <th colspan="2">Investment Documents</th>
+		              </tr>
+		              <tr>
+		                <td><span class="fui-check-inverted text-primary"></span></td>
+		                <td>Blue Sky Filings</td>
+		              </tr>
+		              <tr>
+		                <td><span class="fui-check-inverted text-primary"></span></td>
+		                <td>Power of Attorney (Orrick)</td>
+		              </tr>
+					  <tr>
+		                <th colspan="2">Investment Documents</th>
+		              </tr>
+		              <tr>
+		                <td><span class="fui-check-inverted text-primary"></span></td>
+		                <td>Blue Sky Filings</td>
+		              </tr>
+		              <tr>
+		                <td><span class="fui-check-inverted text-primary"></span></td>
+		                <td>Power of Attorney (Orrick)</td>
+		              </tr>
+					  <tr>
+		                <th colspan="2">Investment Documents</th>
+		              </tr>
+		              <tr>
+		                <td><span class="fui-check-inverted text-primary"></span></td>
+		                <td>Blue Sky Filings</td>
+		              </tr>
+		              <tr>
+		                <td><span class="fui-check-inverted text-primary"></span></td>
+		                <td>Power of Attorney (Orrick)</td>
+		              </tr>
+		            </tbody>
+	          </table>
+			</div>
+			<div class="col-sm-4">
+				<br />
+				<div class="text-center">
+		        </div>
+				<div class="acme-inc">
+					<h5>Acme Inc <span class="label label-primary pull-right">Client</span></h5>
+			            <ul class="list-unstyled connectedSortable" id="client-doc-list">
+				          	<li class="drop-zone">Request feedback from Acme Inc</li>
+			            </ul>
+
+			    </div>
+			    <hr />
+				<div class="founders-fund">
+					<h5>Founders Fund</h5>
+						<ul class="list-unstyled connectedSortable" id="client-doc-list-2">
+			            	<li class="drop-zone">Request feedback from Founders Fund</li>
+			            </ul>
+
+				</div>
+				<div class="veddis-ventures">
+					<h5>Veddis Ventures</h5>
+					<ul class="list-unstyled connectedSortable" id="client-doc-list-3">
+						<li class="drop-zone">Request feedback from Veddis Ventures</li>
+			        </ul>
+				</div>
+				<br />
+			</div>
+			<div class="col-sm-3">
+				<h5>Activity</h5>
+				<span class="text-muted"><small>Activity stream goes here</small></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div style="position:absolute;bottom:0;height:60px;background-color:#f1f1f1;width:100%;padding:10px;position:fixed;" class="text-right">
+					<a href="#" class="btn btn-success">Ready for closing</a>
+</div>
+{% endblock %}
+{% block js %}
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+<script>
+$( document ).ready(function() {
+	$('#toggle-docs').click(function(){
+    	$('.document-drawer').toggle();
+	});
+
+	$( "#doc-list, #client-doc-list, #client-doc-list-2, #client-doc-list-3" ).sortable({
+      connectWith: ".connectedSortable",
+      placeholder: "ui-state-highlight",
+       start: function(event, ui) {
+        is_dragging = true;
+        $('.drop-zone').toggle();
+	  },
+      stop: function(event, ui) {
+        is_dragging = false;
+      	$('.drop-zone').toggle();
+      }
+
+    }).disableSelection();
+
+
+
+
+});
+
+</script>
+{% endblock %}
+{% block body %}
+{% endblock %}
