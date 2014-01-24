@@ -190,16 +190,6 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
         widget=forms.TextInput(attrs={'size': '10'})
     )
 
-    # DEPRECATED
-    transfer_value_total = forms.DecimalField(
-        error_messages={
-            'required': "Transfer value total can't be blank."
-        },
-        label='',
-        initial=0.00,
-        widget=forms.TextInput(attrs={'size': '10'})
-    )
-
     total_shares_purchased = forms.DecimalField(
         error_messages={
             'required': "Total shares purchased can't be blank."
@@ -286,9 +276,6 @@ class CustomerEightyThreeBForm(BaseEightyThreeBForm):
         self.fields['total_shares_purchased'].widget = forms.HiddenInput()
         self.fields['price_paid_per_share'].widget = forms.HiddenInput()
         self.fields['transfer_value_share'].widget = forms.HiddenInput()
-        
-        #DEPRECATED
-        self.fields['transfer_value_total'].widget = forms.HiddenInput()
 
         self.helper.layout = Layout(
             HTML('{% include "partials/form-errors.html" with form=form %}'),
@@ -360,11 +347,6 @@ class CustomerEightyThreeBForm(BaseEightyThreeBForm):
                 HTML('<p>{{ form.nature_of_restrictions.label }}</p>'),
                 HTML('<blockquote><p>{{ form.nature_of_restrictions.value|safe }}</p></blockquote>'),
                 'nature_of_restrictions',
-
-                HTML('<p>Value at time of transfer</p>'),
-                HTML('<blockquote><p>${{ form.transfer_value_share.value }} per share for a total aggregate value of ${{ form.transfer_value_total.value }}</p></blockquote>'),
-                'transfer_value_share',
-                'transfer_value_total',
 
                 Field('details_confirmed', template='public/bootstrap3/t_and_c.html'),
                 css_class='dialog dialog-info form-section form-dialog'
@@ -439,7 +421,7 @@ class LawyerEightyThreeBForm(BaseEightyThreeBForm):
                     HTML('<label class="control-label">Total number of shares purchased</label>'),
                     'total_shares_purchased',    
 
-                    HTML('<label class="control-label">Value at time of transfer</label>'),
+                    HTML('<label class="control-label">Value per share at time of transfer</label>'),
                     Div(
                         PrependedText('transfer_value_share', '$'),
                         HTML('<span class="help-block">per share</span>'),
