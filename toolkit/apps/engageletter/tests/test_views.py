@@ -31,14 +31,14 @@ class SetupEngagementLetterViewTest(BaseProjectCaseMixin):
         must be logged in
         """
         resp = self.client.get(self.url, follow=True)
-        self.assertEqual(resp.redirect_chain, [('http://testserver/start/?next=/engagement-letters/d1c545082d1241849be039e338e47aa0/lawyer/template/', 302)])
+        self.assertEqual(resp.redirect_chain, [('http://testserver/start/?next=/engagement-letters/d1c545082d1241849be039e338e47aa0/template/lawyer/', 302)])
 
     def test_lawyer_template_view(self):
         self.client.login(username=self.lawyer.username, password=self.password)
         resp = self.client.get(self.url)
 
         self.assertEqual(type(resp.context_data.get('view')), SetupEngagementLetterView)
-        self.assertEqual(resp.context_data.get('form').fields.keys(), ['firm_name', 'firm_address', 'firm_logo', 'body'])
+        self.assertEqual(resp.context_data.get('form').fields.keys(), ['body'])
         self.assertEqual(resp.template_name, ['engageletter/setup_engageletter_form.html'])
         # test template data
-        self.assertEqual(resp.context_data['form'].initial.get('body'), self.tool.template_source)
+        self.assertEqual(resp.context_data['form'].initial.get('body'), self.tool.template_source('engageletter/doc/body.html'))

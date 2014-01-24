@@ -23,7 +23,7 @@ class SetupEngagementLetterView(LawyerLetterheadView):
         engageletter = get_object_or_404(EngagementLetter, slug=self.kwargs.get('slug'))
 
         kwargs.update({
-            'body': engageletter.template_source,
+            'body': engageletter.template_source(template_name='engageletter/doc/body.html'),
         })
         return kwargs
 
