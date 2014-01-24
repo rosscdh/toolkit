@@ -22,6 +22,8 @@ urlpatterns = patterns('',
 
     url(r'^tools/83b-election-letters/$', TemplateView.as_view(template_name='public/tools/83b-election-letters.html'), name='83b'),
 
+    url(r'^checklist/$', TemplateView.as_view(template_name='public/checklist.html'), name='checklist'),
+
 
     url(r'^start/$', StartView.as_view(), name='signin'),
     url(r'^start/signup/$', SignUpView.as_view(), name='signup'),
