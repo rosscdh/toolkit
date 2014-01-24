@@ -1,4 +1,4 @@
-{% extends 'pdf/base.html' %}{% load engageletter_tags %}
+{% extends 'pdf/base.html' %}{% load me_tags %}
 {% block styleextra %}
     span {
         color: #666;
@@ -37,6 +37,8 @@
     <div>{{ state|default:'<span>[Client State]</span>' }} {{ post_code|default:'<span>[Client Zip Code]</span>' }}</div>
     <br />
 </div>
+
+{{ body }}
 
 {% lawyer_footer lawyer=object.workspace.lawyer %}
 
