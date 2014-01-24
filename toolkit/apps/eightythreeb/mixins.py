@@ -21,17 +21,20 @@ class IsDeletedMixin(object):
 
 
 class HTMLMixin(object):
+    """
+    Mixin to deal with loading the model templates 
+    and template
+    """
     @property
     def template(self):
         return loader.get_template(self.pdf_template_name)
 
-    @property
-    def template_source(self):
+    def template_source(self, template_name):
         source_loader = Loader()
-        source, file_path = source_loader.load_template_source('engageletter/doc/body.html')
+        source, file_path = source_loader.load_template_source(template_name)
         return source
 
-    def html(self, **kwargs):
+    def get_context_data(self, **kwargs):
         context_data = self.data.copy()  # must copy to avoid reference update
 
         # Mark strings as safe
@@ -43,6 +46,11 @@ class HTMLMixin(object):
 
         # update with kwargs passed in which take priority for overrides
         context_data.update(kwargs)
+
+        return context_data
+
+    def html(self, **kwargs):
+        context_data = self.get_context_data(**kwargs)
 
         context = loader.Context(context_data)
         source = self.template.render(context)

@@ -18,6 +18,30 @@ class LawyerSetupTemplatePrerequisite(BaseLawyerSetupTemplateMarker):
         else:
             return None
 
+    @property
+    def action(self):
+        if self.tool:
+            if self.tool.is_complete is True:
+                return reverse('workspace:tool_object_new', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.slug})
+            else:
+                return self.get_action_url()
+        return None
+
+
+class LawyerReviewEngagementLetterMarker(Marker):
+    name = 'lawyer_review_letter_text'
+    description = 'Attorney: Review Engagement Letter Text'
+    signals = ['toolkit.apps.engageletter.signals.lawyer_review_letter_text']
+
+    action_name = 'Engagement Letter Text'
+    action_type = Marker.ACTION_TYPE.redirect
+    action_user_class = ['lawyer']
+
+    def get_action_url(self):
+        if self.tool is not None:
+            return reverse('engageletter:lawyer_template', kwargs={'slug': self.tool.slug})
+        return None
+
 
 class LawyerCreateLetterMarker(Marker):
     name = 'lawyer_complete_form'
@@ -116,8 +140,9 @@ class EngagementLetterMarkers(BaseSignalMarkers):
     signal_map = [
         LawyerSetupTemplatePrerequisite(0),
         LawyerCreateLetterMarker(1),
-        LawyerInviteUserMarker(2),
-        CustomerCompleteLetterFormMarker(3),
-        CustomerSignAndSendMarker(4),
-        ProcessCompleteMarker(5)
+        LawyerReviewEngagementLetterMarker(2),
+        LawyerInviteUserMarker(3),
+        CustomerCompleteLetterFormMarker(4),
+        CustomerSignAndSendMarker(5),
+        ProcessCompleteMarker(6)
     ]
