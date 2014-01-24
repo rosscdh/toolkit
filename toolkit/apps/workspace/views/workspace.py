@@ -4,7 +4,8 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 
-from django.views.generic import (FormView,
+from django.views.generic import (ListView,
+                                  FormView,
                                   CreateView)
 
 from toolkit.mixins import AjaxFormView, AjaxModelFormView, ModalView
@@ -48,6 +49,20 @@ class CreateWorkspaceView(ModalView, AjaxModelFormView, CreateView):
         messages.success(self.request, 'You have sucessfully created a new workspace')
 
         return response
+
+
+class WorkspaceToolsView(ListView):
+    """
+    List Available tools
+    """
+    model = Tool
+
+    def get_context_data(self, **kwargs):
+        context = super(WorkspaceToolsView, self).get_context_data(**kwargs)
+        context.update({
+            'workspace': get_object_or_404(Workspace, slug=self.kwargs.get('workspace'))
+        })
+        return context
 
 
 class AddUserToWorkspace(ModalView, AjaxFormView, FormView):

@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 
 from toolkit.casper import BaseScenarios
 from toolkit.apps.eightythreeb.forms import LawyerEightyThreeBForm, CustomerEightyThreeBForm
-from toolkit.apps.workspace.views import CreateWorkspaceToolObjectView, UpdateViewWorkspaceToolObjectView
+from toolkit.apps.workspace.views import CreateToolObjectView, UpdateViewToolObjectView
 from toolkit.apps.eightythreeb.markers import LawyerCompleteFormMarker, LawyerInviteUserMarker, CustomerCompleteFormMarker
 
 

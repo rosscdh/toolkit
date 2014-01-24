@@ -12,7 +12,7 @@ from django.views.generic import (ListView,
                                   UpdateView,
                                   DetailView)
 
-from ..models import Workspace, Tool, InviteKey
+from ..models import Tool, InviteKey
 from ..forms import InviteUserForm
 from ..mixins import WorkspaceToolViewMixin, WorkspaceToolFormViewMixin, IssueSignalsMixin
 from ..services import PDFKitService  # , HTMLtoPDForPNGService
@@ -22,14 +22,14 @@ import logging
 logger = logging.getLogger('django.request')
 
 
-class WorkspaceToolObjectsListView(WorkspaceToolViewMixin, ListView):
+class ToolObjectListView(WorkspaceToolViewMixin, ListView):
     """
     Show a list of objects associated with the particular tool type
     """
     model = Tool
 
     def get_context_data(self, **kwargs):
-        context = super(WorkspaceToolObjectsListView, self).get_context_data(**kwargs)
+        context = super(ToolObjectListView, self).get_context_data(**kwargs)
 
         create_url = reverse('workspace:tool_object_new', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug})
 
@@ -45,7 +45,7 @@ class WorkspaceToolObjectsListView(WorkspaceToolViewMixin, ListView):
         return context
 
 
-class CreateWorkspaceToolObjectView(WorkspaceToolFormViewMixin, CreateView):
+class CreateToolObjectView(WorkspaceToolFormViewMixin, CreateView):
     """
     View to create a specific Tool Object
     """
@@ -53,7 +53,7 @@ class CreateWorkspaceToolObjectView(WorkspaceToolFormViewMixin, CreateView):
     model = Tool
 
     def get_queryset(self):
-        qs = super(CreateWorkspaceToolObjectView, self).get_queryset()
+        qs = super(CreateToolObjectView, self).get_queryset()
         return qs.filter(user=self.request.user).first()
 
     def get_success_url(self):
@@ -71,10 +71,10 @@ class CreateWorkspaceToolObjectView(WorkspaceToolFormViewMixin, CreateView):
 
     def form_valid(self, form):
         self.object = form.save()
-        return super(CreateWorkspaceToolObjectView, self).form_valid(form)
+        return super(CreateToolObjectView, self).form_valid(form)
 
 
-class UpdateViewWorkspaceToolObjectView(WorkspaceToolFormViewMixin, UpdateView):
+class UpdateViewToolObjectView(WorkspaceToolFormViewMixin, UpdateView):
     """
     View to edit a specific Tool Object
     """
@@ -96,10 +96,10 @@ class UpdateViewWorkspaceToolObjectView(WorkspaceToolFormViewMixin, UpdateView):
 
     def form_valid(self, form):
         self.object = form.save()
-        return super(UpdateViewWorkspaceToolObjectView, self).form_valid(form)
+        return super(UpdateViewToolObjectView, self).form_valid(form)
 
 
-class InviteClientWorkspaceToolObjectView(IssueSignalsMixin, WorkspaceToolViewMixin, UpdateView):
+class InviteClientToolObjectView(IssueSignalsMixin, WorkspaceToolViewMixin, UpdateView):
     model = InviteKey
     form_class = InviteUserForm
     template_name = 'workspace/workspace_tool_invite.html'
@@ -118,7 +118,7 @@ class InviteClientWorkspaceToolObjectView(IssueSignalsMixin, WorkspaceToolViewMi
         return obj
 
     def get_form_kwargs(self):
-        kwargs = super(InviteClientWorkspaceToolObjectView, self).get_form_kwargs()
+        kwargs = super(InviteClientToolObjectView, self).get_form_kwargs()
         kwargs.update({
             'request': self.request,
             'tool_instance': self.tool_instance,
@@ -128,7 +128,7 @@ class InviteClientWorkspaceToolObjectView(IssueSignalsMixin, WorkspaceToolViewMi
         return kwargs
 
     def get_context_data(self, **kwargs):
-        context = super(InviteClientWorkspaceToolObjectView, self).get_context_data(**kwargs)
+        context = super(InviteClientToolObjectView, self).get_context_data(**kwargs)
         context.update({
             'item': self.tool_instance,
             'request': self.request,
@@ -138,32 +138,18 @@ class InviteClientWorkspaceToolObjectView(IssueSignalsMixin, WorkspaceToolViewMi
         return context
 
     def form_valid(self, form):
-        result = super(InviteClientWorkspaceToolObjectView, self).form_valid(form)
+        result = super(InviteClientToolObjectView, self).form_valid(form)
         self.issue_signals(request=self.request, instance=self.tool_instance, name='lawyer_invite_customer')  # NB teh tool_instance and NOT self.instance
         return result
 
 
-class WorkspaceToolsView(ListView):
-    """
-    List Available tools
-    """
-    model = Tool
-
-    def get_context_data(self, **kwargs):
-        context = super(WorkspaceToolsView, self).get_context_data(**kwargs)
-        context.update({
-            'workspace': get_object_or_404(Workspace, slug=self.kwargs.get('workspace'))
-        })
-        return context
-
-
-class WorkspaceToolObjectPreviewView(WorkspaceToolViewMixin, DetailView):
+class ToolObjectPreviewView(WorkspaceToolViewMixin, DetailView):
     context_object_name = 'item'
     model = Tool
     template_name_suffix = '_tool_preview'
 
 
-class WorkspaceToolObjectDisplayView(WorkspaceToolViewMixin, DetailView):
+class ToolObjectDisplayView(WorkspaceToolViewMixin, DetailView):
     context_object_name = 'item'
     model = Tool
     template_name = 'workspace/workspace_tool_preview.html'
@@ -175,7 +161,7 @@ class WorkspaceToolObjectDisplayView(WorkspaceToolViewMixin, DetailView):
         return pdfpng_service.pdf(template_name=self.object.pdf_template_name, file_object=resp)
 
 
-class WorkspaceToolObjectDownloadView(IssueSignalsMixin, WorkspaceToolObjectDisplayView):
+class ToolObjectDownloadView(IssueSignalsMixin, ToolObjectDisplayView):
     model = Tool
 
     def setResponseFileDownloaderCookie(self, response):
@@ -202,7 +188,7 @@ class WorkspaceToolObjectDownloadView(IssueSignalsMixin, WorkspaceToolObjectDisp
         return pdfpng_service.pdf(template_name=self.object.pdf_template_name, file_object=resp)
 
 
-class WorkspaceToolObjectPostFormPreviewView(DetailView):
+class ToolObjectPostFormPreviewView(DetailView):
     """
     View used to display the PDF Preview to Lawyer/Customer
     after they have completed the tool form
@@ -218,7 +204,7 @@ class WorkspaceToolObjectPostFormPreviewView(DetailView):
         object
         """
         # get tool
-        obj = super(WorkspaceToolObjectPostFormPreviewView, self).get_object(queryset=queryset)
+        obj = super(ToolObjectPostFormPreviewView, self).get_object(queryset=queryset)
         # do a search on the tool target model
         tool_object = get_object_or_404(obj.model.objects, slug=self.kwargs.get('slug'))
         
@@ -255,7 +241,7 @@ class WorkspaceToolObjectPostFormPreviewView(DetailView):
             }
 
     def get_context_data(self, **kwargs):
-        context = super(WorkspaceToolObjectPostFormPreviewView, self).get_context_data(**kwargs)
+        context = super(ToolObjectPostFormPreviewView, self).get_context_data(**kwargs)
         context.update(self.get_next_previous_urls())  # append the next previous urls
 
         workspace = self.object.workspace
