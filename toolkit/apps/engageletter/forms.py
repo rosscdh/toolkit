@@ -10,13 +10,8 @@ from parsley.decorators import parsleyfy
 from localflavor.us.us_states import USPS_CHOICES
 from localflavor.us.forms import USZipCodeField
 
-from toolkit.apps.me.forms import LawyerLetterheadForm
 from toolkit.apps.workspace.mixins import WorkspaceToolFormMixin
 from toolkit.apps.workspace.services import EnsureCustomerService
-
-from .signals import lawyer_setup_template, lawyer_complete_form, customer_complete_form 
-
-import datetime
 
 import logging
 logger = logging.getLogger('django.request')
@@ -94,6 +89,7 @@ class BaseForm(WorkspaceToolFormMixin):
         self.issue_signals(instance=engageletter)
 
         return engageletter
+
 
 @parsleyfy
 class LawyerForm(BaseForm):
@@ -213,31 +209,21 @@ class CustomerForm(BaseForm):
 
 
 @parsleyfy
-class LawyerEngagementLetterTemplateForm(LawyerLetterheadForm):
+class LawyerEngagementLetterTemplateForm(forms.Form):
     """
     Override the base letterhead and add out template letter HTML
     """
-    body = forms.CharField(required=True, widget=forms.Textarea(attrs={
-            'cols': '100',
-        }))
+    body = forms.CharField(required=True, widget=forms.Textarea(attrs={'cols': '100'}))
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, instance, user, *args, **kwargs):
+        self.instance = instance
+        self.user = user
+
         super(LawyerEngagementLetterTemplateForm, self).__init__(*args, **kwargs)
-        # override the layout
+
+        self.helper = FormHelper()
+
         self.helper.layout = Layout(
-            Div(
-                Div(
-                    'firm_name',
-                    'firm_address',
-                    css_class='col-md-6'
-                ),
-                Div(
-                    'firm_logo',
-                    HTML('{% load thumbnail %}{% thumbnail object.firm_logo "210x100" crop="center" as im %}<img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">{% endthumbnail %}'),
-                    css_class='col-md-6'
-                ),
-                css_class='row'
-            ),
             Div(
                 'body',
                 css_class='row'
@@ -246,7 +232,6 @@ class LawyerEngagementLetterTemplateForm(LawyerLetterheadForm):
                 Submit('submit', 'Save', css_class='btn btn-primary btn-lg')
             )
         )
-        
 
 
 @parsleyfy
