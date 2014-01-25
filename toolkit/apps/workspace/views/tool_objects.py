@@ -33,7 +33,7 @@ class ToolObjectListView(WorkspaceToolViewMixin, ListView):
 
         create_url = reverse('workspace:tool_object_new', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug})
 
-        if self.tool.markers.current_marker.get_action_url() is not None:
+        if self.tool.markers.current_marker.is_prerequisite is True and self.tool.markers.current_marker.get_action_url() is not None:
             create_url = self.tool.markers.current_marker.get_action_url()
 
         context.update({
