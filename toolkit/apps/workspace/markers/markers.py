@@ -11,6 +11,7 @@ BASE_MARKER_ACTION_TYPES = get_namedtuple_choices('ACTION_TYPE', (
                                 (2, 'modal', 'Modal'),
                             ))
 
+
 class Marker(object):
     ACTION_TYPE = BASE_MARKER_ACTION_TYPES
 
@@ -28,6 +29,7 @@ class Marker(object):
     action = None
     action_user_class = []  # must be a list so we can handle multiple types
 
+    is_prerequisite = False  # Prerequisite class used to override this
     hide_when_complete = False  # Prerequisite is set to True
 
     markers_map = {
@@ -35,7 +37,7 @@ class Marker(object):
         'next': None,
     }
 
-    def __init__(self, val, **kwargs):
+    def __init__(self, val, *args, **kwargs):
         self.val = val
 
         self.name = kwargs.pop('name', self.name)
@@ -55,7 +57,7 @@ class Marker(object):
             self.action_user_class = kwargs.pop('action_user_class')
 
     def __repr__(self):
-        return u'<Marker:{val}:{name}>'.format(name=self.name, val=self.val).encode('utf-8')
+        return u'<Marker: {val}:{name}>'.format(name=self.name, val=self.val).encode('utf-8')
 
     def __str__(self):
         return u'{name}'.format(name=self.name).encode('utf-8')
