@@ -136,7 +136,18 @@ class LawyerForm(BaseForm):
         widget=forms.TextInput(attrs={'placeholder': 'CEO', 'size': '40'})
     )
 
-    description = forms.CharField(
+    file_number = forms.CharField()
+    rate_hourly_from = forms.DecimalField(max_digits=10, decimal_places=2)
+    rate_hourly_to = forms.DecimalField(max_digits=10, decimal_places=2)
+    rate_hourly_increments = forms.PositiveIntegerField(max_digits=10, decimal_places=2)
+    rate_flat_fee = forms.DecimalField(max_digits=10, decimal_places=2)
+
+    legal_services = forms.CharField(
+        label='Description of engagement',
+        required=True,
+        widget=forms.Textarea
+    )
+    service_description = forms.CharField(
         label='Description of engagement',
         required=True,
         widget=forms.Textarea
@@ -155,6 +166,12 @@ class LawyerForm(BaseForm):
             'client_email',
             'signatory_full_name',
             'signatory_title',
+
+            'file_number',
+            'rate_hourly_from',
+            'rate_hourly_to',
+            'rate_hourly_increments',
+            'rate_flat_fee',
 
             Div(
                 HTML('<legend>Additional details (Client to complete)</legend>'),
