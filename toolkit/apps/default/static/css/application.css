@@ -2,6 +2,9 @@
   border-bottom-color: #444444 !important;
   border-top-color: #444444 !important;
 }
+body {
+  word-spacing: 2px;
+}
 .breadcrumbs {
   background-color: #f4f4f4;
 }
@@ -20,6 +23,9 @@
 }
 .content .lead {
   font-size: 22px;
+}
+.help-block {
+  font-size: 14px;
 }
 .form-inline .form-group .input-group .form-control {
   display: inline-block;

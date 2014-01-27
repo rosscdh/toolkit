@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from django.views.generic import FormView
 from django.shortcuts import get_object_or_404
+from django.views.generic import FormView
 from django.views.generic.detail import SingleObjectMixin
 
 from toolkit.apps.me.views import LawyerLetterheadView
@@ -23,7 +23,7 @@ class SetupEngagementLetterView(LawyerLetterheadView):
         engageletter = get_object_or_404(EngagementLetter, slug=self.kwargs.get('slug'))
 
         kwargs.update({
-            'body': engageletter.template_source,
+            'body': engageletter.template_source(template_name='engageletter/doc/body.html'),
         })
         return kwargs
 

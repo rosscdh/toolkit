@@ -111,8 +111,11 @@ class LawyerLetterheadView(UpdateView):
 
     def get_initial(self):
         kwargs = super(LawyerLetterheadView, self).get_initial()
+
         profile = self.request.user.profile
+
         kwargs.update({
+            'firm_name': profile.data.get('firm_name'),
             'firm_address': profile.data.get('firm_address'),
             'firm_logo': profile.data.get('firm_logo'),
         })
@@ -120,10 +123,9 @@ class LawyerLetterheadView(UpdateView):
 
     def get_success_url(self):
         if 'next' in self.request.GET:
-            url = self.request.GET.get('next')
+            return self.request.GET.get('next')
         else:
-            url = self.object.get_absolute_url()
-        return url
+            return self.object.get_absolute_url() if self.object is not None and hasattr(self.object, 'get_absolute_url') else reverse('dash:default')
 
     def get_form_kwargs(self):
         kwargs = super(LawyerLetterheadView, self).get_form_kwargs()

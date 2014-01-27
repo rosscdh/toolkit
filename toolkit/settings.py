@@ -8,7 +8,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__+ '/../'))
 
 IS_TESTING = False
-for test_app in ['testserver','test']:
+for test_app in ['testserver','test', 'jenkins']:
     if test_app in sys.argv[1:2]:
         IS_TESTING = True
 
@@ -107,12 +107,16 @@ HELPER_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
 
+    'sorl.thumbnail',
+
     # forms
     'parsley',
     'crispy_forms',
 
     # db migrations
     'south',
+    # jenkins
+    'django_jenkins',
 )
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + HELPER_APPS

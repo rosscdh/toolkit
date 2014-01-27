@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django import forms
+from django.core.urlresolvers import reverse
 
 from crispy_forms.helper import FormHelper, Layout
 from crispy_forms.layout import ButtonHolder, Submit, Div, HTML
@@ -9,13 +10,8 @@ from parsley.decorators import parsleyfy
 from localflavor.us.us_states import USPS_CHOICES
 from localflavor.us.forms import USZipCodeField
 
-from toolkit.apps.me.forms import LawyerLetterheadForm
 from toolkit.apps.workspace.mixins import WorkspaceToolFormMixin
 from toolkit.apps.workspace.services import EnsureCustomerService
-
-from .signals import lawyer_setup_template, lawyer_complete_form, customer_complete_form 
-
-import datetime
 
 import logging
 logger = logging.getLogger('django.request')
@@ -94,6 +90,7 @@ class BaseForm(WorkspaceToolFormMixin):
 
         return engageletter
 
+
 @parsleyfy
 class LawyerForm(BaseForm):
     date_of_property_transfer = forms.DateField(
@@ -139,7 +136,18 @@ class LawyerForm(BaseForm):
         widget=forms.TextInput(attrs={'placeholder': 'CEO', 'size': '40'})
     )
 
-    description = forms.CharField(
+    file_number = forms.CharField()
+    rate_hourly_from = forms.DecimalField(max_digits=10, decimal_places=2)
+    rate_hourly_to = forms.DecimalField(max_digits=10, decimal_places=2)
+    rate_hourly_increments = forms.IntegerField()
+    rate_flat_fee = forms.DecimalField(max_digits=10, decimal_places=2)
+
+    legal_services = forms.CharField(
+        label='Description of engagement',
+        required=True,
+        widget=forms.Textarea
+    )
+    service_description = forms.CharField(
         label='Description of engagement',
         required=True,
         widget=forms.Textarea
@@ -159,6 +167,12 @@ class LawyerForm(BaseForm):
             'signatory_full_name',
             'signatory_title',
 
+            'file_number',
+            'rate_hourly_from',
+            'rate_hourly_to',
+            'rate_hourly_increments',
+            'rate_flat_fee',
+
             Div(
                 HTML('<legend>Additional details (Client to complete)</legend>'),
                 'address1',
@@ -172,13 +186,17 @@ class LawyerForm(BaseForm):
                 css_class='dialog dialog-info form-dialog'
             ),
 
-            'description',
+            'legal_services',
+            'service_description',
             'fees',
             ButtonHolder(
                 Submit('submit', 'Continue', css_class='btn-hg btn-primary'),
                 css_class='form-group'
             )
         )
+
+    def get_success_url(self, instance):
+        return reverse('workspace:tool_object_after_save_preview', kwargs={'workspace': instance.workspace.slug, 'tool': instance.workspace.tools.filter(slug=instance.tool_slug).first().slug, 'slug': instance.slug})
 
     def issue_signals(self, instance):
         instance.markers.marker('lawyer_complete_form').issue_signals(request=self.request, instance=instance, actor=self.user)
@@ -209,34 +227,32 @@ class CustomerForm(BaseForm):
 
 
 @parsleyfy
-class LawyerEngagementLetterTemplateForm(LawyerLetterheadForm):
+class LawyerEngagementLetterTemplateForm(forms.Form):
     """
     Override the base letterhead and add out template letter HTML
     """
-    body = forms.CharField(required=True, widget=forms.Textarea)
+    body = forms.CharField(required=True, widget=forms.Textarea(attrs={'cols': '100'}))
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, instance, user, *args, **kwargs):
+        self.instance = instance
+        self.user = user
+
         super(LawyerEngagementLetterTemplateForm, self).__init__(*args, **kwargs)
-        # override the layout
+
+        self.helper = FormHelper()
+
         self.helper.layout = Layout(
             Div(
-                Div(
-                    'firm_logo',
-                    'firm_address',
-                    css_class='col-md-6'
-                ),
-                Div(
-                    'body',
-                    css_class='col-md-6'
-                ),
+                'body',
                 css_class='row'
             ),
-
             ButtonHolder(
                 Submit('submit', 'Save', css_class='btn btn-primary btn-lg')
             )
         )
-        
+    def save(self):
+        # @TODO make this save the template
+        pass
 
 
 @parsleyfy
