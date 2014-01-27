@@ -70,7 +70,7 @@ class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, WorkspaceToolMode
 
     @property
     def date_of_letter(self):
-        date = self.data.get('date_of_property_transfer', None)
+        date = self.data.get('date_of_letter', None)
         return datetime.strptime(date, '%Y-%m-%d')
 
     @property

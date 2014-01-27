@@ -19,5 +19,5 @@ ENGAGELETTER_DATA = {
   "state": "CA",
   "signatory_email": "ross+customer@lawpal.com",
   "signatory_full_name": "Ross Crawford",
-  "date_of_property_transfer": "2014-01-28"
+  "date_of_letter": "2014-01-28"
 }
