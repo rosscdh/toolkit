@@ -10,6 +10,7 @@ th {background-color: #f1f1f1;}
 h5 {font-size:20px;}
 h6 {font-size:18px;}
 td ul li {font-size:13px;}
+td ul li:hover {text-decoration:underline;}
 .fui-document {font-size:10px;}
 .document-drawer{display:none;}
 .acme-inc {
@@ -42,7 +43,8 @@ td ul li {font-size:13px;}
 }
 .drop-zone {display:none;color:#ccc;text-align: center;border:1px dashed #ccc;font-size:14px;}
 .hover-wrap {position:relative;}
-.hover-tools { z-index:500;position:absolute;text-align:center;right:-130px;width:130px; font-size:13px;padding:5px;top:0px;background-color:#777; display:none;color:white;}
+.hover-tools { z-index:500;position:absolute;text-align:center;right:-130px;width:130px; font-size:12px;padding:5px;top:0px;background-color:#999; display:none;color:white;border-radius:0px 5px 5px 0px;}
+
 .hover-tools a {color:white;}
 .hover-wrap:hover .hover-tools {display:block;}
 .ui-sortable li {color:#222;font-size:16px;}
@@ -69,7 +71,7 @@ td ul li {font-size:13px;}
 		                		<span class="fui-bubble"></span> 2 
 		                	</span>
 		                	<div class="hover-tools">
-		                		<a href="#">Assign</a> &middot; <a href="#">Due Date</a>
+		                		<a href="#">Unassigned</a>
 		                	</div>
 		                </td>
 		              </tr>
@@ -164,7 +166,7 @@ td ul li {font-size:13px;}
 	          </table>
 			</div>
 			<div class="col-sm-4">
-				<br />
+				<h5>Request Feedback</h5>
 				<div class="text-center">
 		        </div>
 				<div class="acme-inc">
