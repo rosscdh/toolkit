@@ -4,8 +4,9 @@ from django.template import loader
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 
-from uuidfield import UUIDField
+from datetime import datetime
 from jsonfield import JSONField
+from uuidfield import UUIDField
 
 from rulez import registry as rulez_registry
 
@@ -62,6 +63,19 @@ class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, WorkspaceToolMode
     @property
     def client_name(self):
         return self.data.get('client_full_name', None)
+
+    @property
+    def signatory_name(self):
+        return self.data.get('signatory_full_name', None)
+
+    @property
+    def signatory_title(self):
+        return self.data.get('signatory_title', None)
+
+    @property
+    def date_of_letter(self):
+        date = self.data.get('date_of_property_transfer', None)
+        return datetime.strptime(date, '%Y-%m-%d')
 
     @property
     def filename(self):
