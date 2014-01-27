@@ -14,3 +14,10 @@ class Prerequisite(Marker):
     is_prerequisite = True
     hide_when_complete = True
     workspace = None  # required so we can evaluate without tool which we dont have on tool.create
+
+    def __init__(self, val, workspace, *args, **kwargs):
+        """
+        workspace is a required variable for Prerequisite classes
+        """
+        self.workspace = workspace
+        super(Prerequisite, self).__init__(val, *args, **kwargs)
