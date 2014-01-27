@@ -5,22 +5,6 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 
 
-#
-# @TODO remove this class 2014-01-14
-#
-# class EightyThreeBCreatedEmail(BaseSpecifiedFromMailerService):
-#     """
-#     m = EightyThreeBCreatedEmail(
-#             from_tuple=('Ross', 'ross@lawpal.com'), 
-#             subject='A new 83b has been created for you',
-#             message='{from_name} has created an 83b form for you, you can find it at {location}',
-#             recipients=(('Alex', 'alex@lawpal.com')))
-#     m.process()
-#     """
-#     email_template = 'eightythreeb_created'
-
-
-
 class EightyThreeBReminderEmail(BaseSpecifiedFromMailerService):
     """
     m = EightyThreeBReminderEmail(from_tuple=('Ross', 'ross@lawpal.com'), recipients=(('Alex', 'alex@lawpal.com')))
@@ -34,7 +18,6 @@ class EightyThreeBReminderEmail(BaseSpecifiedFromMailerService):
               instance=instance_of_83b)
     """
     email_template = 'eightythreeb_reminder'
-
 
 
 class EightyThreeTrackingCodeEnteredEmail(BaseMailerService):
@@ -60,7 +43,6 @@ class EightyThreeTrackingCodeEnteredEmail(BaseMailerService):
 
         super(EightyThreeTrackingCodeEnteredEmail, self).process(attachments=attachments,
                                                                  **kwargs)
-
 
 
 class EightyThreeMailDeliveredEmail(BaseSpecifiedFromMailerService):

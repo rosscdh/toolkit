@@ -117,7 +117,7 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
     )
 
     accountant_email = forms.EmailField(
-        help_text='We will email a copy of your signed election to your accountant for inclusion in your tax return.',
+        help_text='A copy of your 83(b) election needs to be included with your tax return for the year in which the property is received (note that this often precludes electronic filing). If you provide us with an email address for your accountant, we will email a copy of your 83(b) election to them for inclusion in your tax returns. You should always follow up with your accountant.',
         label='Your accountant\'s email address',
         required=False,
         widget=forms.EmailInput(attrs={'size': '40'})
@@ -152,7 +152,6 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
         },
         label='Description of property with respect to which election is being made',
         initial='[____] shares (the “Shares”) of the Common Stock of [____], Inc. (the “Company”) ($0.0001 per share)',
-        help_text='e.g. 10 shares of the common stock of ABC, Inc ($0.0001 per value)',
         widget=forms.Textarea(attrs={
             'cols': '80',
             'data-toggle': 'summernote'
@@ -173,7 +172,6 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
             'required': "Nature of restrictions can't be blank."
         },
         label='Nature of restrictions to which property is subject',
-        help_text='If you have copied this from Microsoft Word please check that the numbering and formatting has been retained.',
         initial="The Shares may be repurchased by the Company, or its assignee, upon the occurrence of certain events. This right lapses with regard to a portion of the Shares over time.",
         widget=forms.Textarea(attrs={
             'cols': '80',
@@ -186,17 +184,7 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
             'required': "Transfer value per share can't be blank."
         },
         label='',
-        initial=0.00,
-        widget=forms.TextInput(attrs={'size': '10'})
-    )
-
-    # DEPRECATED
-    transfer_value_total = forms.DecimalField(
-        error_messages={
-            'required': "Transfer value total can't be blank."
-        },
-        label='',
-        initial=0.00,
+        initial='0.0001',
         widget=forms.TextInput(attrs={'size': '10'})
     )
 
@@ -225,7 +213,7 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
             self.fields['company_name'].initial = self.workspace.name
 
     def get_success_url(self, instance):
-        return reverse('eightythreeb:preview', kwargs={'slug': instance.slug})
+        return reverse('workspace:tool_object_after_save_preview', kwargs={'workspace': instance.workspace.slug, 'tool': instance.workspace.tools.filter(slug=instance.tool_slug).first().slug, 'slug': instance.slug})
 
     def save(self):
 
@@ -259,8 +247,8 @@ class CustomerEightyThreeBForm(BaseEightyThreeBForm):
             'required': "You must agree with the disclaimer."
         },
         help_text='',
-        label='I agree with the disclaimer',
-        required=True
+        label='I agree',
+        required=True,
     )
 
     details_confirmed = forms.BooleanField(
@@ -286,9 +274,6 @@ class CustomerEightyThreeBForm(BaseEightyThreeBForm):
         self.fields['total_shares_purchased'].widget = forms.HiddenInput()
         self.fields['price_paid_per_share'].widget = forms.HiddenInput()
         self.fields['transfer_value_share'].widget = forms.HiddenInput()
-        
-        #DEPRECATED
-        self.fields['transfer_value_total'].widget = forms.HiddenInput()
 
         self.helper.layout = Layout(
             HTML('{% include "partials/form-errors.html" with form=form %}'),
@@ -310,7 +295,7 @@ class CustomerEightyThreeBForm(BaseEightyThreeBForm):
                 'company_name',
             ),
             Div(
-                HTML('<legend>Where do you live?</legend>'),
+                HTML('<legend>Address</legend>'),
                 'address1',
                 'address2',
                 'city',
@@ -322,8 +307,7 @@ class CustomerEightyThreeBForm(BaseEightyThreeBForm):
                 css_class='form-section'
             ),
             Div(
-                HTML('<legend>Additional details (Your attorney has entered this on your behalf)</legend>'),
-                HTML('<p>For your convenience, your attorney has entered the following information on your behalf.</p>'),
+                HTML('<legend>Additional details</legend>'),
 
                 Div(
                     Div(
@@ -342,7 +326,7 @@ class CustomerEightyThreeBForm(BaseEightyThreeBForm):
             ),
             Div(
                 HTML('<legend>Please confirm the following is correct</legend>'),
-                HTML('<p>For your convenience your attorney has entered the following information. Please confirm that it is correct.</p> <br />'),
+                HTML('<p><small>For your convenience the Company\'s attorney has entered the following information. If you have any questions, please check with them directly.</small></p> <br />'),
 
 
                 HTML('<p>{{ form.date_of_property_transfer.label }}</p>'),
@@ -360,11 +344,6 @@ class CustomerEightyThreeBForm(BaseEightyThreeBForm):
                 HTML('<p>{{ form.nature_of_restrictions.label }}</p>'),
                 HTML('<blockquote><p>{{ form.nature_of_restrictions.value|safe }}</p></blockquote>'),
                 'nature_of_restrictions',
-
-                HTML('<p>Value at time of transfer</p>'),
-                HTML('<blockquote><p>${{ form.transfer_value_share.value }} per share for a total aggregate value of ${{ form.transfer_value_total.value }}</p></blockquote>'),
-                'transfer_value_share',
-                'transfer_value_total',
 
                 Field('details_confirmed', template='public/bootstrap3/t_and_c.html'),
                 css_class='dialog dialog-info form-section form-dialog'
@@ -418,7 +397,7 @@ class LawyerEightyThreeBForm(BaseEightyThreeBForm):
         self.helper.layout = Layout(
             HTML('{% include "partials/form-errors.html" with form=form %}'),
             Div(
-                HTML('<legend>Client details</legend>'),
+                HTML('<legend>Taxpayer Details</legend>'),
                 Div(
                     'client_full_name',
                     'client_email',
@@ -439,7 +418,7 @@ class LawyerEightyThreeBForm(BaseEightyThreeBForm):
                     HTML('<label class="control-label">Total number of shares purchased</label>'),
                     'total_shares_purchased',    
 
-                    HTML('<label class="control-label">Value at time of transfer</label>'),
+                    HTML('<label class="control-label">Value per share at time of transfer</label>'),
                     Div(
                         PrependedText('transfer_value_share', '$'),
                         HTML('<span class="help-block">per share</span>'),
@@ -459,31 +438,31 @@ class LawyerEightyThreeBForm(BaseEightyThreeBForm):
                 'tax_year',
                 'nature_of_restrictions',
             ),
-            Div(
-                HTML('<legend>Additional details (Client to complete)</legend>'),
-                'address1',
-                'address2',
-                'city',
-                Div(
-                    'state',
-                    'post_code',
-                    css_class='form-inline'
-                ),
-                Div(
-                    Div(
-                        'ssn',
-                        HTML('<span class="help-block">or</span>'),
-                        'itin',
-                        css_class='form-inline'
-                    ),
-                    HTML('<span class="help-block">This tool is currently only available to people with an SSN or ITIN number.</span>'),
-                    css_class='form-inline'
-                ),
-                'accountant_email',
-                HTML('<label>Do you have a spouse?</label>'),
-                Field('has_spouse', template='public/bootstrap3/t_and_c.html'),
-                css_class='dialog dialog-info form-dialog'
-            ),
+            # Div(
+            #     HTML('<legend>Additional details (Client to complete)</legend>'),
+            #     'address1',
+            #     'address2',
+            #     'city',
+            #     Div(
+            #         'state',
+            #         'post_code',
+            #         css_class='form-inline'
+            #     ),
+            #     Div(
+            #         Div(
+            #             'ssn',
+            #             HTML('<span class="help-block">or</span>'),
+            #             'itin',
+            #             css_class='form-inline'
+            #         ),
+            #         HTML('<span class="help-block">This tool is currently only available to people with an SSN or ITIN number.</span>'),
+            #         css_class='form-inline'
+            #     ),
+            #     'accountant_email',
+            #     HTML('<label>Do you have a spouse?</label>'),
+            #     Field('has_spouse', template='public/bootstrap3/t_and_c.html'),
+            #     css_class='dialog dialog-info form-dialog'
+            # ),
             ButtonHolder(
                 Submit('submit', 'Continue', css_class='btn-hg btn-primary'),
                 css_class='form-group'

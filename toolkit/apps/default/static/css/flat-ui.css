@@ -47,7 +47,16 @@
   font-weight: normal;
   font-style: normal;
 }
-
+/* Use the following CSS code if you want to use data attributes for inserting your icons */
+[data-icon]:before {
+  font-family: 'Flat-UI-Icons';
+  content: attr(data-icon);
+  speak: none;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+}
 /* Use the following CSS code if you want to have a class per icon */
 /*
 Instead of a list of all class selectors,
@@ -1910,7 +1919,8 @@ textarea {
 }
 label {
   font-weight: normal;
-  line-height: 1.9986363100000002em;
+  line-height: 1.8953031100000002em;
+  margin-bottom: 0px;
 }
 .form-control:-moz-placeholder {
   color: #b7b7b7;
@@ -2477,7 +2487,7 @@ fieldset[disabled] .input-group .input-group-btn:first-child .btn-default.active
   position: relative;
   -webkit-transition: color 0.25s linear;
   transition: color 0.25s linear;
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.5;
 }
 .checkbox input,
