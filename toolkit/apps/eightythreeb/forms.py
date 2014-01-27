@@ -39,7 +39,7 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
         help_text='',
         label='Full name',
         required=True,
-        widget=forms.TextInput(attrs={'placeholder': 'Client full name', 'size': '40'})
+        widget=forms.TextInput(attrs={'placeholder': 'John Smith', 'size': '40'})
     )
 
     client_email = forms.EmailField(
@@ -50,7 +50,7 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
         help_text='',
         label='Email address',
         required=True,
-        widget=forms.EmailInput(attrs={'placeholder': 'Client email address', 'size': '40'})
+        widget=forms.EmailInput(attrs={'placeholder': 'john@acmeinc.com', 'size': '40'})
     )
 
     company_name = forms.CharField(
@@ -59,7 +59,7 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
         },
         help_text='',
         label='Company name',
-        widget=forms.HiddenInput(attrs={'placeholder': 'Company name', 'size': '40'})
+        widget=forms.HiddenInput(attrs={'placeholder': 'Acme Inc', 'size': '40'})
     )
 
     address1 = forms.CharField(
