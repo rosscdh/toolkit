@@ -10,7 +10,7 @@ from toolkit.apps.workspace.markers import BaseSignalMarkers, Marker
 
 class LawyerCompleteFormMarker(Marker):
     name = 'lawyer_complete_form'
-    description = 'Attorney: Setup 83(b) Election Letter'
+    description = 'Set up 83(b) Election Letter'
     signals = ['toolkit.apps.eightythreeb.signals.lawyer_complete_form']
 
     action_name = 'Setup 83(b)'
@@ -32,7 +32,7 @@ class LawyerCompleteFormMarker(Marker):
 
 class LawyerInviteUserMarker(Marker):
     name = 'lawyer_invite_customer'
-    description = 'Attorney: Invite client to complete the 83(b) Election Letter'
+    description = 'Invite taxpayer to complete the 83(b) Election Letter'
     signals = ['toolkit.apps.eightythreeb.signals.lawyer_invite_customer']
 
     action_name = 'Invite Client'
@@ -56,7 +56,7 @@ class LawyerInviteUserMarker(Marker):
 
 class CustomerCompleteFormMarker(Marker):
     name = 'customer_complete_form'
-    description = 'Client: Complete 83(b) Election Letter'
+    description = 'Taxpayer: Complete 83(b) Election Letter'
     signals = ['toolkit.apps.eightythreeb.signals.customer_complete_form']
 
     action_name = 'Complete 83(b)'
@@ -80,7 +80,7 @@ class CustomerDownloadDocMarker(Marker):
     thus it must be Marker.ACTION_TYPE.redirect
     """
     name = 'customer_download_pdf'
-    description = 'Client: Download 83(b) Election Letter and Instructions'
+    description = 'Taxpayer: Download 83(b) Election Letter and Instructions'
     _long_description = ''
     signals = ['toolkit.apps.eightythreeb.signals.customer_download_pdf']
 
@@ -104,7 +104,7 @@ class CustomerDownloadDocMarker(Marker):
 
 class CustomerPrintAndSignMarker(Marker):
     name = 'customer_print_and_sign'
-    description = 'Client: Print, check and sign 83(b) Election Letter'
+    description = 'Taxpayer: Print and sign 83(b) Election Letter'
     _long_description = 'Print and sign the 83(b) Election where indicated.'
     signals = ['toolkit.apps.eightythreeb.signals.customer_print_and_sign']
 
@@ -134,7 +134,7 @@ class CustomerPrintAndSignMarker(Marker):
 
 class CustomerUploadScanMarker(Marker):
     name = 'copy_uploaded'
-    description = 'Client: Scan and upload signed copy'
+    description = 'Taxpayer: Scan and upload signed copy'
     signals = ['toolkit.apps.eightythreeb.signals.copy_uploaded']
 
     action_type = Marker.ACTION_TYPE.redirect
@@ -171,8 +171,8 @@ class CustomerUploadScanMarker(Marker):
 
 class CustomerTrackingNumberMarker(Marker):
     name = 'mail_to_irs_tracking_code'
-    description = 'Client: Mail to IRS & register Tracking Code'
-    _long_description = 'Mail 83(b) form using USPS Registered Post *ONLY* and enter the Tracking Number here'
+    description = 'Taxpayer: Mail to IRS & register Tracking Code'
+    _long_description = 'Mail 83(b) election using USPS Registered mail *ONLY* and enter the tracking number here'
     signals = ['toolkit.apps.eightythreeb.signals.mail_to_irs_tracking_code']
 
     action_name = 'Enter Tracking Number'
@@ -199,7 +199,7 @@ class CustomerValidTrackingNumberMarker(Marker):
     because its been validated by the usps.validators.USPSTrackingCodeField
     """
     name = 'valid_usps_tracking_marker'
-    description = 'Client: Has provided a valid USPS Tracking Code'
+    description = 'Taxpayer: Has provided a valid USPS Tracking Code'
     _long_description = 'This marker will indicate the date a valid USPS Tracking Number was entered'
     signals = ['toolkit.apps.eightythreeb.signals.valid_usps_tracking_marker']
 
@@ -252,6 +252,7 @@ class USPSDeliveryStatusMarker(Marker):
 class ProcessCompleteMarker(Marker):
     name = 'complete'
     description = 'Process Complete'
+    _long_description ='It may take up to 24 hours from the time someone at the IRS signs for the delivery to the time the USPS notifies LawPal'
     signals = ['toolkit.apps.eightythreeb.signals.complete']
 
 
