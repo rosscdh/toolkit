@@ -9,10 +9,10 @@ class LawyerSetupTemplateMarker(Prerequisite):
     @SHARED marker for lawyers to enter their header, logo, footer info
     """
     name = 'lawyer_setup_template'
-    description = 'Attorney: Setup Letter Template'
+    description = 'Attorney: Setup Letterhead Template'
     signals = ['toolkit.apps.engageletter.signals.lawyer_setup_template']
 
-    action_name = 'Edit Engagement Letter Template'
+    action_name = 'Edit Letterhead Template'
     action_type = Marker.ACTION_TYPE.redirect
     action_user_class = ['lawyer']
 
@@ -35,4 +35,4 @@ class LawyerSetupTemplateMarker(Prerequisite):
         if self.is_complete is True:
             return None
         else:
-            return url 
+            return url
