@@ -139,7 +139,7 @@ class LawyerForm(BaseForm):
     file_number = forms.CharField()
     rate_hourly_from = forms.DecimalField(max_digits=10, decimal_places=2)
     rate_hourly_to = forms.DecimalField(max_digits=10, decimal_places=2)
-    rate_hourly_increments = forms.PositiveIntegerField(max_digits=10, decimal_places=2)
+    rate_hourly_increments = forms.IntegerField()
     rate_flat_fee = forms.DecimalField(max_digits=10, decimal_places=2)
 
     legal_services = forms.CharField(
