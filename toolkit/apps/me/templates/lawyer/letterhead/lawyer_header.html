@@ -1,0 +1,13 @@
+{% load thumbnail toolkit_tags %}
+<div class="address-header">
+    {{ firm_address|linebreaksbr|default:"Orrick Herrington & Sutcliffe (Europe) LLP <br/>107 Cheapside <br/>London EC2V 6DN<br />DX 557 London/CITY<br /><br />tel +44 (0) 20 7862 4600<br />fax +44 (0) 20 7862 4900<br /><br />www.orrick.com" }}
+</div>
+<div class="logo">
+    {% if firm_logo %}
+        {% thumbnail firm_logo "210x100" crop="center" as im %}
+        <img src="{% ABSOLUTE_MEDIA_URL im.url %}" width="{{ im.width }}" height="{{ im.height }}">
+        {% endthumbnail %}
+    {% else %}
+        <img src="http://orrick.com/SiteCollectionImages/MasterPage/OrrickLogo.png">
+    {% endif %}
+</div>

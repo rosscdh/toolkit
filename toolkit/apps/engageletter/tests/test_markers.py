@@ -29,20 +29,21 @@ class EngagementLetterMarkersTest(TestCase):
 
     def test_correct_init(self):
         subject = self.subject()
-        self.assertEqual(len(subject.signal_map), 6)
+        self.assertEqual(len(subject.signal_map), 7)
 
     def test_signal_map_name_vals(self):
         subject = self.subject()
         name_vals = [(m.name, m.val) for m in subject.signal_map]
 
-        self.assertEqual(len(name_vals), 6)
+        self.assertEqual(len(name_vals), 7)
 
         self.assertEqual(name_vals, [('lawyer_setup_template', 0),
                                      ('lawyer_complete_form', 1),
-                                     ('lawyer_invite_customer', 2),
-                                     ('customer_complete_form', 3),
-                                     ('customer_sign_and_send', 4),
-                                     ('complete', 5)])
+                                     ('lawyer_review_letter_text', 2),
+                                     ('lawyer_invite_customer', 3),
+                                     ('customer_complete_form', 4),
+                                     ('customer_sign_and_send', 5),
+                                     ('complete', 6)])
 
     def test_signal_map_items_next_previous_values(self):
         subject = self.subject()

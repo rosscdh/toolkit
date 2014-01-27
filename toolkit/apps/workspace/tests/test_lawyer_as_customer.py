@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 
 from toolkit.casper import BaseScenarios
 from toolkit.apps.eightythreeb.forms import LawyerEightyThreeBForm, CustomerEightyThreeBForm
-from toolkit.apps.workspace.views import CreateWorkspaceToolObjectView, UpdateViewWorkspaceToolObjectView
+from toolkit.apps.workspace.views import CreateToolObjectView, UpdateViewToolObjectView
 
 
 class LawyerAsLawyerTest(BaseScenarios, TestCase):
@@ -26,7 +26,7 @@ class LawyerAsLawyerTest(BaseScenarios, TestCase):
         resp = self.client.get(reverse('workspace:tool_object_new', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug='83b-election-letters').first().slug}), follow=True)
 
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(type(resp.context_data.get('view')), CreateWorkspaceToolObjectView)
+        self.assertEqual(type(resp.context_data.get('view')), CreateToolObjectView)
         self.assertEqual(type(resp.context_data.get('form')), LawyerEightyThreeBForm)
 
 
@@ -37,7 +37,7 @@ class LawyerAsLawyerTest(BaseScenarios, TestCase):
         resp = self.client.get(reverse('workspace:tool_object_edit', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug='83b-election-letters').first().slug, 'slug': self.eightythreeb.slug}), follow=True)
 
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(type(resp.context_data.get('view')), UpdateViewWorkspaceToolObjectView)
+        self.assertEqual(type(resp.context_data.get('view')), UpdateViewToolObjectView)
         self.assertEqual(type(resp.context_data.get('form')), LawyerEightyThreeBForm)
 
     def test_view_tool_get_form_key(self):
@@ -73,7 +73,7 @@ class LawyerAsCustomerTest(BaseScenarios, TestCase):
         resp = self.client.get(reverse('workspace:tool_object_new', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug='83b-election-letters').first().slug}), follow=True)
 
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(type(resp.context_data.get('view')), CreateWorkspaceToolObjectView)
+        self.assertEqual(type(resp.context_data.get('view')), CreateToolObjectView)
         self.assertEqual(type(resp.context_data.get('form')), LawyerEightyThreeBForm)
 
 
@@ -85,7 +85,7 @@ class LawyerAsCustomerTest(BaseScenarios, TestCase):
         resp = self.client.get(reverse('workspace:tool_object_edit', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug='83b-election-letters').first().slug, 'slug': self.eightythreeb.slug}), follow=True)
 
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(type(resp.context_data.get('view')), UpdateViewWorkspaceToolObjectView)
+        self.assertEqual(type(resp.context_data.get('view')), UpdateViewToolObjectView)
         self.assertEqual(type(resp.context_data.get('form')), CustomerEightyThreeBForm)
 
     def test_view_tool_get_form_key(self):
