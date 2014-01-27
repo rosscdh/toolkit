@@ -11,12 +11,13 @@ next() and prev() and allow traversal through the document flows
 >>>     nodes.append(Marker(val, name, desc, signals=[], next=None, previous=None))
 
 """
-import math
-import copy
-
 from toolkit.utils import get_namedtuple_choices
 
-from .mixins import MARKERS_MAP_DICT, MarkerMapMixin
+from .mixins import (MARKERS_MAP_DICT,
+                     MarkerMapMixin)
+
+import math
+import copy
 
 
 class MissingMarkersException(Exception):
@@ -28,7 +29,9 @@ class BaseSignalMarkers(MarkerMapMixin, object):
     Workflow Class that holds a set of Markers that are used to establish the
     flow
     """
+    markers_map = {}
     signal_map = []
+    prerequisite_signal_map = []
 
     _tool = None
 
@@ -59,7 +62,6 @@ class BaseSignalMarkers(MarkerMapMixin, object):
         """
 
         for i, marker in enumerate(self.signal_map):
-
             self.current_marker = marker
             """
             **python suprise**
@@ -113,6 +115,20 @@ class BaseSignalMarkers(MarkerMapMixin, object):
 
         # set the current next etc
         self.set_navigation_based_on_tool()
+
+    def prerequisite_next_url(self, workspace):
+        for klass in self.prerequisite_signal_map:
+
+            prereq = klass(val=0, workspace=workspace)
+            prereq.workspace = workspace
+            #
+            # if we have an incomplete marker
+            # then return its url instead
+            #
+            if prereq.is_complete is False:
+                return prereq.get_action_url()
+
+        return None
 
     def set_navigation_based_on_tool(self):
         # Set Navigation based on tool status
