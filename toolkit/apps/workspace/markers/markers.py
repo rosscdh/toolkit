@@ -28,6 +28,7 @@ class Marker(object):
     action = None
     action_user_class = []  # must be a list so we can handle multiple types
 
+    is_prerequisite = False
     hide_when_complete = False  # Prerequisite is set to True
 
     markers_map = {
