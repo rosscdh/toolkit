@@ -1,26 +1,27 @@
 {% extends 'workspace/workspace_tool_list.html' %}
 
-{% load url from future %}
+{% load url from future %}{% load engageletter_tags %}
 
 {% block list %}
     <div class="table-responsive">
         <table class="table table-striped {{ tool.slug }}">
             <tbody>
                 <tr>
-                    <th>Client Name</th>
-                    <th>Transfer Date</th>
-                    <th>Filing Deadline</th>
+                    <th>Date of Letter</th>
+                    <th>Signatory</th>
+                    <th>Position</th>
                     <th>Current Step</th>
                 </tr>
                 {% for t in object_list %}
-                    <tr class="{% if 't.markers.percent_complete' == '100.0' %} success{% endif %}">
+                    <tr class="{{ t|status_row_class }}">
                         <td>
-                            <a href="{% url 'workspace:tool_object_overview' workspace=workspace.slug tool=tool.slug slug=t.slug %}">{{ t.client_name }}</a>
+                            <a href="{% url 'workspace:tool_object_overview' workspace=workspace.slug tool=tool.slug slug=t.slug %}">{{ t.date_of_letter|date:"F j, Y" }}</a>
                         </td>
-                        <td><small>{{ t.transfer_date }}</small></td>
-                        <td><small>{{ t.filing_date }}</small></td>
-                        <td><small>{{ t.current_status }} </small>
-                            <span class="label label-success">{{ t.markers.percent_complete }}%</span>
+                        <td><small>{{ t.signatory_name }}</small></td>
+                        <td><small>{{ t.signatory_title }}</small></td>
+                        <td>
+                            {{ t|quick_status }}
+                            <small>{{ t.current_status }}</small>
                         </td>
                     </tr>
                 {% empty %}
