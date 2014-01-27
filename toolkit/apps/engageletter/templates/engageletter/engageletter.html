@@ -30,11 +30,11 @@
 {% lawyer_header lawyer=object.workspace.lawyer %}
 
 <div>
-    <div>{{ client_full_name|default:'<span>[Client Name]</span>' }}</div>
-    <div>{{ address1|default:'<span>[Client Address]</span>' }}</div>
+    <div>{{ signatory_full_name|default:'<span>[Signatory Name]</span>' }}</div>
+    <div>{{ address1|default:'<span>[Signatory Address]</span>' }}</div>
     {% if address2 %}<div>{{ address2 }}</div>{% endif %}
-    <div>{{ city|default:'<span>[Client City]</span>' }}</div>
-    <div>{{ state|default:'<span>[Client State]</span>' }} {{ post_code|default:'<span>[Client Zip Code]</span>' }}</div>
+    <div>{{ city|default:'<span>[Signatory City]</span>' }}</div>
+    <div>{{ state|default:'<span>[Signatory State]</span>' }} {{ post_code|default:'<span>[Signatory Zip Code]</span>' }}</div>
     <br />
 </div>
 

@@ -42,7 +42,7 @@ class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, WorkspaceToolMode
     status = models.IntegerField(choices=ENGAGEMENTLETTER_STATUS.get_choices(), default=ENGAGEMENTLETTER_STATUS.lawyer_setup_template, db_index=True)
 
     def __unicode__(self):
-        return u'Engagement Letter for %s' % self.client_name
+        return u'Engagement Letter for %s' % self.signatory_name
 
     @property
     def tool_slug(self):
@@ -59,10 +59,6 @@ class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, WorkspaceToolMode
     @property
     def is_complete(self):
         return self.status == self.STATUS.complete
-
-    @property
-    def client_name(self):
-        return self.data.get('client_full_name', None)
 
     @property
     def signatory_name(self):
