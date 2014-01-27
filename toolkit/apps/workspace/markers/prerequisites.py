@@ -10,5 +10,6 @@ class Prerequisite(Marker):
     p.action = None  # this means the prerequisite has been met and we can hide the marker
     p.action = /url/to/place/  # this means the prerequisite has not been met
     """
+    is_prerequisite = True
     hide_when_complete = True
 

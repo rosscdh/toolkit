@@ -95,7 +95,7 @@ class TestTrackingCodeModal(BaseUSPSTrackingCode):
             'user': self.user
         }, follow=True)
 
-        redirect = reverse('workspace:tool_object_preview', kwargs={
+        redirect = reverse('workspace:tool_object_overview', kwargs={
             'workspace': self.eightythreeb.workspace.slug,
             'tool': self.eightythreeb.tool_slug,
             'slug': self.eightythreeb.slug

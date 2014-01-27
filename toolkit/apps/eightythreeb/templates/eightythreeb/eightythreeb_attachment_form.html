@@ -11,7 +11,7 @@
 
 {% block header %}
     <h4 class="caption"><a href="{% url 'workspace:view' workspace.slug %}">{{ workspace.name }}</a></h4>
-    <h4 class="caption"><a href="{% url 'workspace:tool_object_preview' workspace.slug tool.slug item.slug %}">{{ item }}</a></h4>
+    <h4 class="caption"><a href="{% url 'workspace:tool_object_overview' workspace.slug tool.slug item.slug %}">{{ item }}</a></h4>
     <h4>Upload your scan</h4>
 {% endblock %}
 

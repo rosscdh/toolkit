@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from django.template import loader
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 
@@ -26,6 +27,7 @@ class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, WorkspaceToolMode
     STATUS = ENGAGEMENTLETTER_STATUS
 
     pdf_template_name = 'engageletter/engageletter.html'  # @TODO what is this doing here?
+    template_source_body = 'engageletter/doc/body.html' # used in override self.html
 
     slug = UUIDField(auto=True, db_index=True)
     workspace = models.ForeignKey('workspace.Workspace')
@@ -69,8 +71,24 @@ class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, WorkspaceToolMode
     def company_name(self):
         return self.data.get('company_name', self.workspace.name)
 
+    def html(self, **kwargs):
+        """
+        Override the HTMLMixin html method
+        """
+        # get bas context_data
+        context_data = self.get_context_data(**kwargs)
+        # setup the context object for it
+        context = loader.Context(context_data)
+        # render the template_source_body with current set of context
+        body = loader.render_to_string(self.template_source_body, context)
+        # add the rendered body to the underlying wrapper template
+        context_data = self.get_context_data(body=body)
+        # rerender it
+        context = loader.Context(context_data)
+        return self.template.render(context)
+
     def get_absolute_url(self):
-        return reverse('workspace:tool_object_preview', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug=self.tool_slug).first().slug, 'slug': self.slug})
+        return reverse('workspace:tool_object_overview', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug=self.tool_slug).first().slug, 'slug': self.slug})
 
     def get_edit_url(self):
         return reverse('workspace:tool_object_edit', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug=self.tool_slug).first().slug, 'slug': self.slug})
