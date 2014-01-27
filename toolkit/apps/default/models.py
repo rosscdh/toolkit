@@ -54,6 +54,10 @@ class UserProfile(models.Model):
         return 'Attorney' if self.is_lawyer else 'Client'
 
     @property
+    def firm_name(self):
+        return self.data.get('firm_name', None)
+
+    @property
     def firm_logo(self):
         firm_logo = self.data.get('firm_logo', None)
         if firm_logo is not None:
