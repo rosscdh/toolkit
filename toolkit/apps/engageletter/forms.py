@@ -2,7 +2,7 @@
 from django import forms
 from django.core.urlresolvers import reverse
 
-from crispy_forms.bootstrap import FieldWithButtons, StrictButton
+from crispy_forms.bootstrap import AppendedText, FieldWithButtons, StrictButton
 from crispy_forms.helper import FormHelper, Layout
 from crispy_forms.layout import ButtonHolder, Div, HTML, Submit
 
@@ -93,7 +93,7 @@ class BaseForm(WorkspaceToolFormMixin):
 
 @parsleyfy
 class LawyerForm(BaseForm):
-    date_of_property_transfer = forms.DateField(
+    date_of_letter = forms.DateField(
         help_text='',
         input_formats=['%B %d, %Y', '%Y-%m-%d %H:%M:%S'],
         label='Date of letter',
@@ -131,20 +131,10 @@ class LawyerForm(BaseForm):
         error_messages={
             'required': "Signatory title can not be blank."
         },
-        label='Signatory title',
+        label='Title',
         help_text='',
         required=True,
-        widget=forms.TextInput(attrs={'placeholder': 'CEO', 'size': '40'})
-    )
-
-    company_name = forms.CharField(
-        error_messages={
-            'required': "Company name can not be blank."
-        },
-        label='Company name',
-        help_text='',
-        required=True,
-        widget=forms.TextInput(attrs={'placeholder': 'Acme Inc', 'size': '40'})
+        widget=forms.TextInput(attrs={'placeholder': 'CEO', 'size': '20'})
     )
 
     # file_number = forms.CharField()
@@ -218,16 +208,12 @@ class LawyerForm(BaseForm):
                     'signatory_email',
                     css_class='form-inline'
                 ),
-                Div(
-                    'signatory_title',
-                    'company_name',
-                    css_class='form-inline'
-                ),
+                AppendedText('signatory_title', 'at %s' % self.workspace.name),
             ),
             Div(
                 HTML('<legend>Engagement Letter Information</legend>'),
                 FieldWithButtons(
-                    'date_of_property_transfer',
+                    'date_of_letter',
                     StrictButton('<span class="fui-calendar"></span>'),
                     css_class='datetime'
                 ),
@@ -313,6 +299,7 @@ class LawyerEngagementLetterTemplateForm(forms.Form):
                 Submit('submit', 'Save', css_class='btn btn-primary btn-lg')
             )
         )
+
     def save(self):
         # @TODO make this save the template
         pass
