@@ -42,7 +42,7 @@ class PDFKitRubyService(BasePdfService):
 
         payload = {
             "html": self.html,
-            "footer": 'fdafds',
+            #"footer": '',
             "filename": filename
         }
         headers = {'content-type': 'application/json'}
