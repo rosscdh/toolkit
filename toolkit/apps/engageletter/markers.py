@@ -8,11 +8,11 @@ from toolkit.apps.workspace.markers.lawyers import LawyerSetupTemplateMarker
 
 class LawyerSetupTemplatePrerequisite(LawyerSetupTemplateMarker):
     def get_action_url(self):
-        url = reverse('me:letterhead')
-
         if self.is_complete is True:
             return None
+
         else:
+            url = reverse('me:letterhead')
             tool_slug = self.workspace.tools.filter(slug='engagement-letters').first().slug
             next = reverse('workspace:tool_object_new', kwargs={'workspace': self.workspace.slug, 'tool': tool_slug})
             return '%s?next=%s' % (url, next)
