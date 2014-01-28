@@ -89,6 +89,9 @@
   font-size: 14px;
   line-height: 1.226;
 }
+.firm-logo-preview {
+  margin-right: 15px;
+}
 .page-header .caption {
   color: #bdc3c7;
   display: inline-block;
