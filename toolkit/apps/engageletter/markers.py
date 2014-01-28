@@ -119,6 +119,13 @@ class CustomerSignAndSendMarker(Marker):
     def get_action_url(self):
         return reverse('engageletter:sign', kwargs={'slug': self.tool.slug})
 
+    @property
+    def action(self):
+        if self.tool:
+            if self.tool.status == self.tool.STATUS.customer_sign_and_send:
+                return self.get_action_url()
+        return None
+
 
 class ProcessCompleteMarker(Marker):
     name = 'complete'
