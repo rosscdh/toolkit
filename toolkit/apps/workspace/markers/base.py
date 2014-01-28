@@ -11,23 +11,26 @@ next() and prev() and allow traversal through the document flows
 >>>     nodes.append(Marker(val, name, desc, signals=[], next=None, previous=None))
 
 """
-import math
-import copy
-
 from toolkit.utils import get_namedtuple_choices
 
-from .mixins import MARKERS_MAP_DICT, MarkerMapMixin
+from .mixins import (MARKERS_MAP_DICT,
+                     MarkerMapMixin,
+                     PrerequisitesMixin)
+
+import math
+import copy
 
 
 class MissingMarkersException(Exception):
     msg = 'You must have at least 1 marker item in the object.signal_map list attribute'
 
 
-class BaseSignalMarkers(MarkerMapMixin, object):
+class BaseSignalMarkers(MarkerMapMixin, PrerequisitesMixin, object):
     """
     Workflow Class that holds a set of Markers that are used to establish the
     flow
     """
+    markers_map = {}
     signal_map = []
 
     _tool = None
@@ -54,12 +57,11 @@ class BaseSignalMarkers(MarkerMapMixin, object):
 
     def _set_markers_navigation(self):
         """
-        Set the next previous and current values for the base class 
+        Set the next previous and current values for the base class
         as well as the specific markers
         """
 
         for i, marker in enumerate(self.signal_map):
-
             self.current_marker = marker
             """
             **python suprise**
@@ -69,10 +71,10 @@ class BaseSignalMarkers(MarkerMapMixin, object):
             """
             self.previous_marker = None
             if i > 0:
-                self.previous_marker = self.signal_map[i-1]
+                self.previous_marker = self.signal_map[i - 1]
 
             try:
-                self.next_marker = self.signal_map[i+1]
+                self.next_marker = self.signal_map[i + 1]
             except IndexError:
                 self.next_marker = None
 
@@ -80,7 +82,7 @@ class BaseSignalMarkers(MarkerMapMixin, object):
             # Copy the current version of the base marker map
             #
             copy_marker_map = copy.copy(self.markers_map)
-            del copy_marker_map['current'] # the markers dotn have a current as the "are" the current
+            del copy_marker_map['current']  # the markers dotn have a current as the "are" the current
             self.signal_map[i].markers_map = copy_marker_map
 
     def __iter__(self):
@@ -95,7 +97,7 @@ class BaseSignalMarkers(MarkerMapMixin, object):
         for i in self.signal_map:
             part = (part + 1) if i.name in markers else part
 
-        percent = 100 * float(part)/float(whole)
+        percent = 100 * float(part) / float(whole)
 
         return float("{0:.2f}".format(math.ceil(percent)))
 

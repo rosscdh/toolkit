@@ -29,21 +29,27 @@ class EngagementLetterMarkersTest(TestCase):
 
     def test_correct_init(self):
         subject = self.subject()
-        self.assertEqual(len(subject.signal_map), 7)
+        self.assertEqual(len(subject.signal_map), 6)
 
     def test_signal_map_name_vals(self):
         subject = self.subject()
         name_vals = [(m.name, m.val) for m in subject.signal_map]
 
-        self.assertEqual(len(name_vals), 7)
+        self.assertEqual(len(name_vals), 6)
 
-        self.assertEqual(name_vals, [('lawyer_setup_template', 0),
-                                     ('lawyer_complete_form', 1),
+        self.assertEqual(name_vals, [('lawyer_complete_form', 1),
                                      ('lawyer_review_letter_text', 2),
                                      ('lawyer_invite_customer', 3),
                                      ('customer_complete_form', 4),
                                      ('customer_sign_and_send', 5),
                                      ('complete', 6)])
+
+    def test_prerequisite_vals(self):
+        subject = self.subject()
+        name_vals = [(m.name, m.val) for m in subject.prerequisite_signal_map]
+
+        self.assertEqual(len(name_vals), 1)
+        self.assertEqual(name_vals, [('lawyer_setup_template', 0)])
 
     def test_signal_map_items_next_previous_values(self):
         subject = self.subject()
@@ -60,7 +66,10 @@ class BaseTestMarker(BaseScenarios, TestCase):
         super(BaseTestMarker, self).setUp()
         self.basic_workspace()
         if self.val is not None:
-            self.subject = self.clazz(self.val)
+            if self.clazz.is_prerequisite is True:
+                self.subject = self.clazz(self.val, workspace=self.workspace)
+            else:
+                self.subject = self.clazz(self.val)
 
             data = BASE_ENGAGELETTER_DATA.copy()
             if 'lawyer_complete_form' in data['markers']:
@@ -99,6 +108,27 @@ class BaseTestMarker(BaseScenarios, TestCase):
                 self.subject.action
 
 
+class LawyerSetupTemplatePrerequisiteTest(BaseTestMarker):
+    val = 0
+    clazz = LawyerSetupTemplatePrerequisite
+
+    def test_properties(self):
+        self.assertTrue(type(self.subject), self.clazz)
+        self.assertEqual(self.subject.val, self.val)
+        self.assertEqual(self.subject.name, 'lawyer_setup_template')
+        self.assertEqual(self.subject.description, 'Attorney: Setup Letterhead Template')
+        self.assertEqual(self.subject.signals, ['toolkit.apps.engageletter.signals.lawyer_setup_template'])
+        self.assertEqual(self.subject.action_name, 'Edit Letterhead Template')
+        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
+        self.assertEqual(self.subject.action_user_class, ['lawyer'])
+
+    def test_get_action_url(self):
+        self.assertEqual(self.subject.get_action_url(), '/me/settings/letterhead/?next=/workspace/lawpal-test/tool/engagement-letters/create/')
+
+    def test_action(self):
+        self.assertEqual(self.subject.action, '/me/settings/letterhead/?next=/workspace/lawpal-test/tool/engagement-letters/create/')
+
+
 class LawyerCreateLetterMarkerTest(BaseTestMarker):
     val = 0
     clazz = LawyerCreateLetterMarker
@@ -120,30 +150,6 @@ class LawyerCreateLetterMarkerTest(BaseTestMarker):
     def test_action(self):
         url = reverse('workspace:tool_object_edit', kwargs={'workspace': self.subject.tool.workspace.slug, 'tool': self.subject.tool.tool_slug, 'slug': self.subject.tool.slug})
         self.assertEqual(self.subject.action, url)
-
-
-class LawyerSetupTemplatePrerequisiteTest(BaseTestMarker):
-    val = 0
-    clazz = LawyerSetupTemplatePrerequisite
-
-    def test_properties(self):
-        self.assertTrue(type(self.subject), self.clazz)
-        self.assertEqual(self.subject.val, self.val)
-        self.assertEqual(self.subject.name, 'lawyer_setup_template')
-        self.assertEqual(self.subject.description, 'Attorney: Setup Letter Template')
-        self.assertEqual(self.subject.signals, ['toolkit.apps.engageletter.signals.lawyer_setup_template'])
-        self.assertEqual(self.subject.action_name, 'Edit Engagement Letter Template')
-        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
-        self.assertEqual(self.subject.action_user_class, ['lawyer'])
-
-    def get_expected_url(self):
-        return '%s?next=%s' % (reverse('engageletter:lawyer_template', kwargs={'slug': self.subject.tool.slug}), self.subject.tool.get_absolute_url(),)
-
-    def test_get_action_url(self):
-        self.assertEqual(self.subject.get_action_url(), self.get_expected_url())
-
-    def test_action(self):
-        self.assertEqual(self.subject.action, self.get_expected_url())
 
 
 class LawyerInviteUserMarkerTest(BaseTestMarker):
