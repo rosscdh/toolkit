@@ -39,11 +39,11 @@
     <br />
     <div>
         
-        6. The fair market value at time of transfer (determined without regard to any restrictions other than restrictions which by their terms will never lapse) of the property with respect to which this election is being made is ${{ transfer_value_share |default:'<span>[Share price at time of transfer]</span>'}} per share, for a total aggregate value of  [[multiply transfer_value_share * total_shares_purchased ]${{ transfer_value |default:'<span>[Total value at time of transfer]</span>'}}.
+        6. The fair market value at time of transfer (determined without regard to any restrictions other than restrictions which by their terms will never lapse) of the property with respect to which this election is being made is ${{ transfer_value_share |default:'<span>[Share price at time of transfer]</span>'}} per share, for a total aggregate value of ${{ aggregate_share_value |default:'<span>[Total value at time of transfer]</span>'}}.
     </div>
     <br />
     <div>
-        7. The amount paid by the taxpayer for the property is [[multiply price_paid_per_share * total_shares_purchased ] ${{ transfer_value_total|default:'<span>[Amount paid]</span>'}}.
+        7. The amount paid by the taxpayer for the property is ${{ total_amount_paid|default:'<span>[Amount paid]</span>'}}.
     </div>
     <div>
         <p>8. A copy of this statement has been furnished to {{ company_name |default:'<span>[Company Name]</span>' }}.</p>
