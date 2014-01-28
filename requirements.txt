@@ -34,7 +34,10 @@ django-debug-toolbar==0.11.0
 django-localflavor
 
 django-bootstrap-breadcrumbs
+django-email-obfuscator
+decorator
 
+pypandoc
 -e git+https://github.com/rosscdh/django-templated-email.git@attachments#egg=django-templated-email
 
 boto
@@ -66,6 +69,3 @@ mock
 -e git+git://github.com/neubloc/django-colortools#egg=django-colortools
 pyquery
 django-inmemorystorage
-
-django-email-obfuscator
-decorator
