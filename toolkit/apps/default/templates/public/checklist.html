@@ -9,12 +9,29 @@ th {background-color: #f1f1f1;}
 .icon {font-size:17px;}
 h5 {font-size:20px;}
 h6 {font-size:18px;}
+td {-webkit-touch-callout: none; -webkit-user-select: none;-khtml-user-select: none;-moz-user-select: none;-ms-user-select: none; user-select: none;}
 td ul li {font-size:13px;}
-td ul li:hover {text-decoration:underline;}
-.fui-document {font-size:10px;}
+td ul li a {color:#666;}
+
+.fui-document {font-size:14px;padding-left:4px;}
+.checklist {overflow:scroll!important}
 .document-drawer{display:none;}
+.doc-list {margin-bottom:3px;}
+.doc-list li {font-size:13px;padding:5px 0px 5px 0px;border-top:1px solid #ddd!important;}
+.doc-list li.action {border-top:1px solid #ddd;padding-top:6px;margin-top:3px;} 
+.doc-list li a {color:#777;}
+.dropdown-menu li {border-top:none!important;}
+.dropdown-menu li a {color:white;}
+.table [class*="fui-"] {font-size:22px;}
+td .tools {font-size:10px;}
+.dropdown-inverse li > a {
+	padding:3px 3px 3px 3px;
+}
+.dropdown-inverse li > a:hover {
+	color:white;
+}
 .acme-inc {
-	border:2px solid #9b59b6;
+	border:1px solid #9b59b6;
 	padding:0px 10px 10px 10px;
 	color:#9b59b6;
 	margin-bottom:20px;
@@ -31,7 +48,7 @@ td ul li:hover {text-decoration:underline;}
 	padding:0px 10px 10px 10px;
 	margin-top:20px;
 }
-.veddis-ventures h5, .founders-fund h5 {
+.veddis-ventures h5, .founders-fund h5, .acme-inc h5 {
 	font-size: 16px;
 	margin-top:8px;
 }
@@ -39,18 +56,25 @@ td ul li:hover {text-decoration:underline;}
 	min-height:20px;
 }
 .table .tools, .table .tools [class*="fui-"] {
-	font-size:14px;
+	font-size:12px;
+	margin-right:2px;
+	cursor: pointer;
 }
-.drop-zone {display:none;color:#ccc;text-align: center;border:1px dashed #ccc;font-size:14px;}
+.drop-zone {display:none;color:#aaa!important;text-align: center;border:1px dashed #ccc;font-size:14px!important;}
 .hover-wrap {position:relative;}
-.hover-tools { z-index:500;position:absolute;text-align:center;right:-130px;width:130px; font-size:12px;padding:5px;top:0px;background-color:#999; display:none;color:white;border-radius:0px 5px 5px 0px;}
+.hover-tools { z-index:500;float:right;text-align:center;width:90px; font-size:12px;padding:5px;top:0px;background-color:#999;color:white;border-radius:5px;}
 
 .hover-tools a {color:white;}
-.hover-wrap:hover .hover-tools {display:block;}
-.ui-sortable li {color:#222;font-size:16px;}
-</style>
-			
+.hover-tools-assign { display:none;z-index:500;position:absolute;text-align:left;right:-160px;width:200px; font-size:12px;padding:10px;top:30px;background-color:#efefef; color:#222;border-radius:5px; box-shadow: 0px 0px 10px #666}
 
+.hover-tools-assign label {font-weight: bold; }
+
+.hover-wrap:hover .hover-tools {display:block;}
+.ui-sortable li {color:#222;}
+
+.item-view {background-color:#eee;min-height:700px;}
+</style>
+		
 <div class="tool-landing">
 	<div class="container-fluid">
 		<div class="row">
@@ -63,40 +87,20 @@ td ul li:hover {text-decoration:underline;}
 		              </tr>
 		            </thead>
 		            <tbody>
-		              <tr>
+		              <tr class="info">
 		                <td><span class="fui-time text-warning"></span></td>
 		                <td class="hover-wrap">Articles of incorporation 
 		                	<span class="pull-right tools">
-		                		<span class="fui-document text-info" id="toggle-docs"></span> 4  &nbsp;
-		                		<span class="fui-bubble"></span> 2 
+		                		<span class="fui-document text-info" id="toggle-docs"></span>4  &nbsp;
+		                		<span class="fui-bubble"></span>2 
 		                	</span>
-		                	<div class="hover-tools">
-		                		<a href="#">Unassigned</a>
-		                	</div>
 		                </td>
 		              </tr>
 		              <tr class="document-drawer">
 		              	<td></td>
 		              	<td>
-		              		<ul class="list-unstyled connectedSortable" id="doc-list">
-								<li><small><span class="fui-document text-info"></span></small> Articles of incorporation.doc 
-									<div class="btn-group pull-right">              
-						              <a class="btn btn-clear btn-xs dropdown-toggle" data-toggle="dropdown">
-						                <span class="caret"></span>
-						              </a>
-						              <span class="dropdown-arrow dropdown-arrow-inverse"></span>
-						              <ul class="dropdown-menu dropdown-inverse">
-						                <li><a href="#fakelink">Download</a></li>
-						                <li><a href="#fakelink">Mark as final</a></li>
-						                <li><a href="#fakelink">Delete</a></li>
-						              </ul>
-						            </div>
-        						</li>
-								<li><small><span class="fui-document text-info"></span></small> Blue Sky fillings</li>
-								<li><small><span class="fui-document text-info"></span></small> Shareholders agreement.doc</li>
-								<li><small><span class="fui-document text-info"></span></small> Convertible promissory note.doc</li>
-		           			</ul>
-		           	  </td>
+		              		
+		           	  	</td>
 		              </tr>
 		              <tr>
 		                <td style="width:30px"><span class="fui-check-inverted text-primary"></span></td>
@@ -104,19 +108,19 @@ td ul li:hover {text-decoration:underline;}
 		              </tr>
 		              <tr>
 		                <td><span class="fui-check-inverted text-primary"></span></td>
-		                <td>Bylaws</td>
+		                <td>Bylaws <span class="label label-default pull-right">John &middot; 25th June</span></td>
 		              </tr>
 		              <tr>
 		                <td><span class="fui-check-inverted text-primary"></span></td>
 		                <td>CA Statement of Information</td>
 		              </tr>
-		              <tr class="info">
+		              <tr class="">
 		                <td><span class="fui-check-inverted text-primary"></span></td>
 		                <td>Share Exchange Agreement</td>
 		              </tr>
 		              <tr>
 		                <td><span class="fui-check-inverted text-primary"></span></td>
-		                <td>EIN Assignment Letter from the IRS</td>
+		                <td>EIN Assignment Letter from the IRS <span class="label label-default pull-right">Brian &middot; 25th June</span></td>
 		              </tr>
 		              <tr>
 		                <th colspan="2">Founder Documents</th>
@@ -165,42 +169,95 @@ td ul li:hover {text-decoration:underline;}
 		            </tbody>
 	          </table>
 			</div>
-			<div class="col-sm-4">
+			<div class="col-sm-4 item-view">
+				<br />
+				<h5>Articles of incorporation 
+                	<div class="hover-tools">
+                		<a href="#">Unassigned</a>
+                	</div>
+                	<div class="hover-tools-assign">
+                		<span class="pull-right done">close</span>
+                		<label>Set the due date :</label>
+                		<div class="controls ">
+                			<div class="input-group">
+                				<input autocomplete="off" class="dateinput form-control input-sm" data-toggle="datepicker" id="id_date_of_property_transfer" name="date_of_property_transfer" parsley-required="true" parsley-required-message="Property transfer date can&#39;t be blank." type="text" /> 
+                			</div>
+                		</div>
+                		<br />
+                		<label>Set the responsible party :</label>
+                		<select name="small" class="select-block mbl">
+				            <option value="-1">No responsible party</option>
+				            <optgroup label="Attorneys">
+				              <option value="0">Alex Halliday (me)</option>
+				            </optgroup>
+				            <optgroup label="Workspace Members">
+				              	<option value="2">John Smith</option>
+				              	<option value="3">Adam Johnson</option>
+				            </optgroup>
+				        </select>
+                	</div>
+				</h5>
+				<h6>Documents</h6>	
+				<ul class="list-unstyled connectedSortable doc-list" id="doc-list">
+					<li><small><span class="fui-document text-warning"></span></small>  <a href="#">Articles of incorporation.doc</a>  <span class="text-muted">5 Jul</span>
+						<div class="btn-group pull-right">              
+			              <a class="btn btn-clear btn-xs dropdown-toggle" data-toggle="dropdown">
+			                <span class="caret"></span>
+			              </a>
+			              <span class="dropdown-arrow dropdown-arrow-inverse"></span>
+			              <ul class="dropdown-menu dropdown-inverse">
+			                <li><a href="#fakelink"><small>View</small></a></li>
+			                <li><a href="#fakelink"><small>Download</small></a></li>
+			                <li><a href="#fakelink"><small>Email as attachment</small></a></li>
+			                <li><a href="#fakelink"><small>Delete</small></a></li>
+			                <li><a href="#fakelink"><small>Archive</small></a></li>
+			              </ul>
+			            </div>
+					</li>
+					<li><span class="fui-document text-info"></span> <a href="#">Blue Sky fillings</a> <span class="text-muted">5 Jul</span></li>
+					<li><span class="fui-document text-info"></span> <a href="#">Shareholders agreement.doc</a> <span class="text-muted">3 May</span></li>
+					<li><span class="fui-document text-info"></span> <a href="#">Convertible promissory note.doc</a> <span class="text-muted">9th Feb</span></li>
+					<li class="action text-right"> <a href="#" class="text-success">Add Document</a> &middot; <a href="#"><span class="text-muted">Show 5 Archived</span></a></li>
+       			</ul>
+				<h6>Discussion</h6>	
+				<textarea style="width:100%;border:0px;font-size:13px;margin-bottom:10px;"></textarea>
+				<br />
+				<a href="#" class="btn btn-info btn-sm pull-right">Comment</a>
+
+			</div>
+			<div class="col-sm-3">
 				<h5>Request Feedback</h5>
 				<div class="text-center">
 		        </div>
 				<div class="acme-inc">
 					<h5>Acme Inc <span class="label label-primary pull-right">Client</span></h5>
-			            <ul class="list-unstyled connectedSortable" id="client-doc-list">
+			            <ul class="list-unstyled connectedSortable doc-list" id="client-doc-list">
+			            	<li><span class="fui-document text-warning"></span> <a href="#" class="text-warning">Articles of incorporation.doc</a> <span class="text-muted">5 Jul</span></li>
+
 				          	<li class="drop-zone">Request feedback from Acme Inc</li>
 			            </ul>
 
 			    </div>
-			    <hr />
 				<div class="founders-fund">
 					<h5>Founders Fund</h5>
-						<ul class="list-unstyled connectedSortable" id="client-doc-list-2">
+						<ul class="list-unstyled connectedSortable doc-list" id="client-doc-list-2">
 			            	<li class="drop-zone">Request feedback from Founders Fund</li>
 			            </ul>
 
 				</div>
-				<div class="veddis-ventures">
+				<div class="veddis-ventures" style="margin-bottom:5px;">
 					<h5>Veddis Ventures</h5>
-					<ul class="list-unstyled connectedSortable" id="client-doc-list-3">
+					<ul class="list-unstyled connectedSortable doc-list" id="client-doc-list-3">
 						<li class="drop-zone">Request feedback from Veddis Ventures</li>
 			        </ul>
 				</div>
-				<br />
-			</div>
-			<div class="col-sm-3">
-				<h5>Activity</h5>
-				<span class="text-muted"><small>Activity stream goes here</small></span>
+				<a href="#" class="btn btn-default btn-xs pull-right">Add Party</a>
 			</div>
 		</div>
 	</div>
 </div>
-<div style="position:absolute;bottom:0;height:60px;background-color:#f1f1f1;width:100%;padding:10px;position:fixed;" class="text-right">
-					<a href="#" class="btn btn-success">Ready for closing</a>
+<div style="position:absolute;bottom:0;height:50px;background-color:#f1f1f1;width:100%;padding:8px;position:fixed;border-top:1px solid #eee" class="text-right">
+					<a href="#" class="btn btn-success btn-sm">Ready for closing</a>
 </div>
 {% endblock %}
 {% block js %}
@@ -225,7 +282,12 @@ $( document ).ready(function() {
 
     }).disableSelection();
 
-
+	$('.hover-tools a').click(function() {
+	  $( ".hover-tools-assign" ).toggle();
+	});
+	$('.hover-tools-assign .done').click(function() {
+	  $( ".hover-tools-assign" ).toggle();
+	});
 
 
 });
