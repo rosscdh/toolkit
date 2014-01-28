@@ -197,6 +197,7 @@ class ToolObjectPostFormPreviewView(DetailView):
     after they have completed the tool form
     and redirect on to the next marker step
     """
+    context_object_name = 'item'
     model = Tool
     slug_url_kwarg = 'tool'
 
@@ -210,7 +211,7 @@ class ToolObjectPostFormPreviewView(DetailView):
         obj = super(ToolObjectPostFormPreviewView, self).get_object(queryset=queryset)
         # do a search on the tool target model
         tool_object = get_object_or_404(obj.model.objects, slug=self.kwargs.get('slug'))
-        
+
         return tool_object
 
     def get_template_names(self):
