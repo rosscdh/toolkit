@@ -3,8 +3,12 @@
 {% load url from future %}
 
 {% block header %}
-    <h4>{{ workspace }}</h4>
-    <div class="pull-right">Attorney: {{ object.lawyer.get_full_name|default:object.lawyer.email }}</div>
+<div class="row">
+    <div class="col col-sm-12">
+        <h4>{{ workspace }}</h4>
+        <div class="pull-right text-muted">Attorney: {{ object.lawyer.get_full_name|default:object.lawyer.email }}</div>
+    </div>
+</div>
 {% endblock %}
 
 {% block main %}

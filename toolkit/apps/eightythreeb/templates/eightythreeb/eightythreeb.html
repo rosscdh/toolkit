@@ -2,7 +2,7 @@
 {% block styleextra %}
     span {
         color: #666;
-        background-color:#FAF0E6;
+        background-color:#fcfba6;
     }
     .signature-block {
         border:2px solid #f9f9f9;
@@ -54,6 +54,7 @@
     ul {
         list-style-type:none;
     }
+    .wrap {clear:both; }
 {% endblock %}
 
 {% block content %}
@@ -80,16 +81,33 @@
 <br />
 Dear Sir or Madam:
 <p>
-Pursuant to Treasury Regulations Section 1.83-2(c) promulgated under Section 83 of the Internal Revenue Code of 1986, as amended (the “Code”), enclosed please find an original signed copy of an election under Section 83(b) of the Code.
+Pursuant to Treasury Regulations Section 1.83-2(c) promulgated under Section 83 of the Internal Revenue Code of 1986, as amended (the “Code”), enclosed please find an <u><strong>original</strong></u> signed copy of an election under Section 83(b) of the Code.
 <p>
-Also, attached are a self-addressed stamped envelope and a copy of my signed 83(b) Election Form. Please date stamp the copy of the Election Form, enclose it in the attached envelope and mail it to me.
+Also, attached are a self-addressed stamped envelope <u><strong>and a copy</u></strong> of my signed 83(b) Election Form. <u>Please date stamp the copy of the Election Form, enclose it in the attached envelope and mail it to me.</u>
 <p>
 Thank you,
 <p>
+<div class="wrap">
 <div class="signature-block">
-    <div class="signature-block-inner">x</div>
-    <div class="signature-block-name">{{ client_full_name }}</div>
+<div class="signature-block-inner">x</div>
+<div class="signature-block-name">{{ client_full_name }}</div>
 </div>
+</div>
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<strong>Enclosures:</strong>
+<ol>
+<li>Original executed 83(b) election</li>
+<li>Copy of executed 83(b) election (with self addressed, stamped envelope)</li>
+</ol>
 
 
 
