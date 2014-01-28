@@ -7,18 +7,18 @@
         <table class="table table-striped {{ tool.slug }}">
             <tbody>
                 <tr>
+                    <th>File Number</th>
                     <th>Date of Letter</th>
                     <th>Signatory</th>
-                    <th>Position</th>
                     <th>Current Step</th>
                 </tr>
                 {% for t in object_list %}
                     <tr class="{{ t|status_row_class }}">
                         <td>
-                            <a href="{% url 'workspace:tool_object_overview' workspace=workspace.slug tool=tool.slug slug=t.slug %}">{{ t.date_of_letter|date:"F j, Y" }}</a>
+                            <a href="{% url 'workspace:tool_object_overview' workspace=workspace.slug tool=tool.slug slug=t.slug %}">{{ t.file_number }}</a>
                         </td>
+                        <td><small>{{ t.date_of_letter|date:"F j, Y" }}</small></td>
                         <td><small>{{ t.signatory_name }}</small></td>
-                        <td><small>{{ t.signatory_title }}</small></td>
                         <td>
                             {{ t|quick_status }}
                             <small>{{ t.current_status }}</small>

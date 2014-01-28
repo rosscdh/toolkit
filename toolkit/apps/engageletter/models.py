@@ -61,6 +61,10 @@ class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, WorkspaceToolMode
         return self.status == self.STATUS.complete
 
     @property
+    def file_number(self):
+        return self.data.get('file_number', None)
+
+    @property
     def signatory_name(self):
         return self.data.get('signatory_full_name', None)
 
