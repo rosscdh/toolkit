@@ -100,7 +100,7 @@ class InvalidMarkerTest(unittest.TestCase):
         with self.assertRaises(TypeError) as context:
             subject = self.subject()
 
-        self.assertEqual(context.exception.message, '__init__() takes exactly 2 arguments (1 given)')
+        self.assertEqual(context.exception.message, '__init__() takes at least 2 arguments (1 given)')
 
 
 class ValidMarkerTest(unittest.TestCase):
