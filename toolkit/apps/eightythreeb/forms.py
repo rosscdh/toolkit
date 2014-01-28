@@ -151,7 +151,7 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
             'required': "Property description can't be blank."
         },
         label='Description of property with respect to which election is being made',
-        initial='[____] shares (the “Shares”) of the Common Stock of [____], Inc. (the “Company”) ($0.0001 per share)',
+        initial='{{ total_shares_purchased }} shares (the “Shares”) of the Common Stock of {{ company_name }}, Inc. (the “Company”) (${{ price_paid_per_share }} per share)',
         widget=forms.Textarea(attrs={
             'cols': '80',
             'data-toggle': 'summernote'
@@ -438,31 +438,6 @@ class LawyerEightyThreeBForm(BaseEightyThreeBForm):
                 'tax_year',
                 'nature_of_restrictions',
             ),
-            # Div(
-            #     HTML('<legend>Additional details (Client to complete)</legend>'),
-            #     'address1',
-            #     'address2',
-            #     'city',
-            #     Div(
-            #         'state',
-            #         'post_code',
-            #         css_class='form-inline'
-            #     ),
-            #     Div(
-            #         Div(
-            #             'ssn',
-            #             HTML('<span class="help-block">or</span>'),
-            #             'itin',
-            #             css_class='form-inline'
-            #         ),
-            #         HTML('<span class="help-block">This tool is currently only available to people with an SSN or ITIN number.</span>'),
-            #         css_class='form-inline'
-            #     ),
-            #     'accountant_email',
-            #     HTML('<label>Do you have a spouse?</label>'),
-            #     Field('has_spouse', template='public/bootstrap3/t_and_c.html'),
-            #     css_class='dialog dialog-info form-dialog'
-            # ),
             ButtonHolder(
                 Submit('submit', 'Continue', css_class='btn-hg btn-primary'),
                 css_class='form-group'
