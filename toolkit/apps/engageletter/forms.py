@@ -93,6 +93,16 @@ class BaseForm(WorkspaceToolFormMixin):
 
 @parsleyfy
 class LawyerForm(BaseForm):
+    file_number = forms.CharField(
+        error_messages={
+            'required': "File number can not be blank."
+        },
+        help_text='',
+        label='File number',
+        required=True,
+        widget=forms.TextInput(attrs={'placeholder': '000940001', 'size': '31'})
+    )
+
     date_of_letter = forms.DateField(
         help_text='',
         input_formats=['%B %d, %Y', '%Y-%m-%d %H:%M:%S'],
@@ -137,7 +147,6 @@ class LawyerForm(BaseForm):
         widget=forms.TextInput(attrs={'placeholder': 'CEO', 'size': '20'})
     )
 
-    # file_number = forms.CharField()
     # rate_hourly_from = forms.DecimalField(max_digits=10, decimal_places=2)
     # rate_hourly_to = forms.DecimalField(max_digits=10, decimal_places=2)
     # rate_hourly_increments = forms.IntegerField()
@@ -212,16 +221,19 @@ class LawyerForm(BaseForm):
             ),
             Div(
                 HTML('<legend>Engagement Letter Information</legend>'),
-                FieldWithButtons(
-                    'date_of_letter',
-                    StrictButton('<span class="fui-calendar"></span>'),
-                    css_class='datetime'
+                Div(
+                    'file_number',
+                    FieldWithButtons(
+                        'date_of_letter',
+                        StrictButton('<span class="fui-calendar"></span>'),
+                        css_class='datetime'
+                    ),
+                    css_class='form-inline'
                 ),
                 'legal_services',
                 'service_description',
                 'fees',
 
-                # 'file_number',
                 # 'rate_hourly_from',
                 # 'rate_hourly_to',
                 # 'rate_hourly_increments',
