@@ -235,9 +235,10 @@ class LawyerEngagementLetterTemplateForm(forms.Form):
     """
     body = SummerNoteField(required=True)
 
-    def __init__(self, instance, user, *args, **kwargs):
-        self.instance = instance
-        self.user = user
+    def __init__(self, *args, **kwargs):
+        self.instance = kwargs.pop('instance', None)
+        self.request = kwargs.pop('request', None)
+        self.user = kwargs.pop('user', None)
 
         super(LawyerEngagementLetterTemplateForm, self).__init__(*args, **kwargs)
 
@@ -252,9 +253,16 @@ class LawyerEngagementLetterTemplateForm(forms.Form):
                 Submit('submit', 'Save', css_class='btn btn-primary btn-lg')
             )
         )
+
+    def get_success_url(self):
+        return reverse('workspace:tool_object_overview', kwargs={'workspace': self.instance.workspace.slug, 'tool': self.instance.workspace.tools.filter(slug=self.instance.tool_slug).first().slug, 'slug': self.instance.slug})
+
+    def issue_signals(self, instance):
+        instance.markers.marker('lawyer_review_letter_text').issue_signals(request=self.request, instance=instance, actor=self.user)
+
     def save(self):
         # @TODO make this save the template
-        pass
+        self.issue_signals(instance=self.instance)
 
 
 @parsleyfy
