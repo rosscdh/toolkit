@@ -24,6 +24,9 @@ urlpatterns = patterns('',
 
     url(r'^checklist/$', TemplateView.as_view(template_name='public/checklist.html'), name='checklist'),
 
+    url(r'^checklist-2/$', TemplateView.as_view(template_name='public/checklist-2.html'), name='checklist'),
+
+
 
     url(r'^start/$', StartView.as_view(), name='signin'),
     url(r'^start/signup/$', SignUpView.as_view(), name='signup'),
