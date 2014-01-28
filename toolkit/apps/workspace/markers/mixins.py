@@ -16,6 +16,10 @@ class PrerequisitesMixin(object):
     prerequisite_signal_map = []  # list of prereqs to instantiate
     _prerequisites = {}  # cache the prereq by class.name
 
+    def __init__(self, tool=None, *args, **kwargs):
+        self._prerequisites = kwargs.get('_prerequisites', {})
+        super(PrerequisitesMixin, self).__init__(*args, **kwargs)
+
     def prerequisites(self, workspace, **kwargs):
         # simple caching of prereq classes
         for klass in self.prerequisite_signal_map:
