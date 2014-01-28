@@ -64,4 +64,9 @@ class SignAndSendEngagementLetterView(SingleObjectMixin, FormView):
 
     def get_context_data(self, *args, **kwargs):
         self.object = self.get_object()
-        return super(SignAndSendEngagementLetterView, self).get_context_data(*args, **kwargs)
+        kwargs = super(SignAndSendEngagementLetterView, self).get_context_data(*args, **kwargs)
+        kwargs.update({
+            'workspace': self.object.workspace,
+            'tool': self.object.workspace.tools.filter(slug=self.object.tool_slug).first(),
+        })
+        return kwargs
