@@ -14,7 +14,8 @@ next() and prev() and allow traversal through the document flows
 from toolkit.utils import get_namedtuple_choices
 
 from .mixins import (MARKERS_MAP_DICT,
-                     MarkerMapMixin)
+                     MarkerMapMixin,
+                     PrerequisitesMixin)
 
 import math
 import copy
@@ -24,16 +25,13 @@ class MissingMarkersException(Exception):
     msg = 'You must have at least 1 marker item in the object.signal_map list attribute'
 
 
-class BaseSignalMarkers(MarkerMapMixin, object):
+class BaseSignalMarkers(MarkerMapMixin, PrerequisitesMixin, object):
     """
     Workflow Class that holds a set of Markers that are used to establish the
     flow
     """
     markers_map = {}
     signal_map = []
-
-    _prerequisites = {}
-    prerequisite_signal_map = []
 
     _tool = None
 
@@ -117,20 +115,6 @@ class BaseSignalMarkers(MarkerMapMixin, object):
 
         # set the current next etc
         self.set_navigation_based_on_tool()
-
-    def prerequisite_next_url(self, workspace):
-        for klass in self.prerequisite_signal_map:
-            prereq = self._prerequisites[klass.name] = self._prerequisites.get(klass.name, klass(val=0, workspace=workspace))
-            
-            prereq.workspace = workspace
-            #
-            # if we have an incomplete marker
-            # then return its url instead
-            #
-            if prereq.is_complete is False:
-                return prereq.get_action_url()
-
-        return None
 
     def set_navigation_based_on_tool(self):
         # Set Navigation based on tool status
