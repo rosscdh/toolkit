@@ -170,7 +170,7 @@ class ConfirmAccountForm(AccountSettingsForm):
                 Field('new_password2', css_class='input-lg'),
             ),
             ButtonHolder(
-                Submit('submit', 'Create Account', css_class='btn btn-primary btn-hg')
+                Submit('submit', 'Continue', css_class='btn btn-primary btn-lg')
             )
 
         )

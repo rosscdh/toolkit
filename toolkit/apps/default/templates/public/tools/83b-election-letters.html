@@ -1,0 +1,62 @@
+{% extends 'public/base.html' %}
+
+{% load url from future %}
+
+{% block prebody %}
+<div class="tool-landing">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-lg-8 col-lg-offset-2 header text-center">
+				<div class="icon-wrap"><img src="{{STATIC_URL}}images/icons/mail.svg"></div>
+			    <h1 style="">83(b) Election Letter Tool</h1>
+			    <h2>Filing without the fuss.</h2>
+			    <p class="lead">
+					We make it as easy as possible for clients to make their 83(b) filings<br /> and notify you when it’s done.
+				</p>
+				<img src="{{STATIC_URL}}images/83b-2.png" width="90%">
+				<div class="feature-grid">
+					<div class="row">
+						<div class="col-lg-4 feature"><span class="fui-play"></span> <br />Automatic 83(B) creation</div>
+						<div class="col-lg-4 feature"><span class="fui-info"></span> <br />Regular client reminders</div>
+						<div class="col-lg-4 feature"><span class="fui-list"></span> <br />Progress tracking</div>
+						<div class="col-lg-4 feature"><span class="fui-mail"></span> <br />United States Postal Service integration</div>
+			  			<div class="col-lg-4 feature"><span class="fui-new"></span> <br />A signed copy of the election sent directly to your email</div>
+						<div class="col-lg-4 feature"><span class="fui-check-inverted"></span> <br />Electronic confirmation of receipt by IRS</div>
+					</div>
+				</div>
+				<br />
+				<a href="{% url 'public:signup' %}" class="btn btn-success btn-hg btn-embossed">Sign up as an attorney</a>
+				<br />
+				<br />
+				<br />
+				<br />
+			</div>
+		</div>
+	</div>
+</div>
+<div class="bottom-menu bottom-menu-inverse">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-2 navbar-brand">
+        LawPal Inc
+      </div>
+
+      <div class="col-md-8">
+        <ul class="bottom-links">
+          <li><a href="http://angel.co/lawpal">Investors</a></li>
+          <li><a href="/legal/terms">Terms</a></li>
+        </ul>
+      </div>
+
+      <div class="col-md-2">
+        <ul class="bottom-icons">
+          <li><a href="http://twitter.com/lawpalhq" class="fui-facebook"></a></li>
+          <li><a href="http://facebook.com/lawpalhq" class="fui-twitter"></a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block body %}
+{% endblock %}
