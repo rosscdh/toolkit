@@ -2,45 +2,20 @@
 from django.core.urlresolvers import reverse
 
 from toolkit.apps.workspace.markers import BaseSignalMarkers, Marker
-from toolkit.apps.workspace.markers.lawyers import LawyerSetupTemplateMarker as BaseLawyerSetupTemplateMarker
+
+from toolkit.apps.workspace.markers.lawyers import LawyerSetupTemplateMarker
 
 
-class LawyerSetupTemplatePrerequisite(BaseLawyerSetupTemplateMarker):
-    """
-    Override
-    """
-    action_type = Marker.ACTION_TYPE.redirect
-
+class LawyerSetupTemplatePrerequisite(LawyerSetupTemplateMarker):
     def get_action_url(self):
-        if self.tool is not None:
-            url = reverse('engageletter:lawyer_template', kwargs={'slug': self.tool.slug})
-            return '%s?next=%s' % (url, self.tool.get_absolute_url(),)
-        else:
+        if self.is_complete is True:
             return None
 
-    @property
-    def action(self):
-        if self.tool:
-            if self.tool.is_complete is True:
-                return reverse('workspace:tool_object_new', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.slug})
-            else:
-                return self.get_action_url()
-        return None
-
-
-class LawyerReviewEngagementLetterMarker(Marker):
-    name = 'lawyer_review_letter_text'
-    description = 'Attorney: Review Engagement Letter Text'
-    signals = ['toolkit.apps.engageletter.signals.lawyer_review_letter_text']
-
-    action_name = 'Engagement Letter Text'
-    action_type = Marker.ACTION_TYPE.redirect
-    action_user_class = ['lawyer']
-
-    def get_action_url(self):
-        if self.tool is not None:
-            return reverse('engageletter:lawyer_template', kwargs={'slug': self.tool.slug})
-        return None
+        else:
+            url = reverse('me:letterhead')
+            tool_slug = self.workspace.tools.filter(slug='engagement-letters').first().slug
+            next = reverse('workspace:tool_object_new', kwargs={'workspace': self.workspace.slug, 'tool': tool_slug})
+            return '%s?next=%s' % (url, next)
 
 
 class LawyerCreateLetterMarker(Marker):
@@ -67,6 +42,21 @@ class LawyerCreateLetterMarker(Marker):
                 return None
             else:
                 return self.get_action_url()
+        return None
+
+
+class LawyerReviewEngagementLetterMarker(Marker):
+    name = 'lawyer_review_letter_text'
+    description = 'Attorney: Review Engagement Letter Text'
+    signals = ['toolkit.apps.engageletter.signals.lawyer_review_letter_text']
+
+    action_name = 'Engagement Letter Text'
+    action_type = Marker.ACTION_TYPE.redirect
+    action_user_class = ['lawyer']
+
+    def get_action_url(self):
+        if self.tool is not None:
+            return reverse('engageletter:lawyer_template', kwargs={'slug': self.tool.slug})
         return None
 
 
@@ -137,8 +127,10 @@ class ProcessCompleteMarker(Marker):
 
 
 class EngagementLetterMarkers(BaseSignalMarkers):
+    prerequisite_signal_map = [
+        LawyerSetupTemplatePrerequisite,
+    ]
     signal_map = [
-        LawyerSetupTemplatePrerequisite(0),
         LawyerCreateLetterMarker(1),
         LawyerReviewEngagementLetterMarker(2),
         LawyerInviteUserMarker(3),
