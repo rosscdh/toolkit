@@ -5,3 +5,4 @@ from .test_lawyer_as_customer import *
 from .test_markers import *
 from .test_lawyer_markers import *
 from .test_invite_customer import *
+from .test_word_service import *
