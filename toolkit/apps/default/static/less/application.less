@@ -20,6 +20,10 @@
   }
 }
 
+.breadcrumb-text {
+  margin-bottom: 10px;
+}
+
 
 // Content
 // -------------------------
@@ -37,14 +41,16 @@
 // -------------------------
 
 .form-inline {
-  .form-group .input-group {
-    .form-control {
+  .form-group {
+    .input-group .form-control {
       display: inline-block;
-      margin-bottom: 15px;
     }
 
-    .input-group-btn .btn {
-      margin-top: -18px;
+    &.datetime .input-group {
+      .form-control,
+      .input-group-btn .btn {
+        margin-bottom: 15px;
+      }
     }
   }
 

@@ -9,6 +9,9 @@
   background-color: transparent;
   margin-bottom: 0;
 }
+.breadcrumb-text {
+  margin-bottom: 10px;
+}
 .container-fluid {
   padding: 0 50px;
 }
@@ -17,10 +20,10 @@
 }
 .form-inline .form-group .input-group .form-control {
   display: inline-block;
-  margin-bottom: 15px;
 }
-.form-inline .form-group .input-group .input-group-btn .btn {
-  margin-top: -18px;
+.form-inline .form-group.datetime .input-group .form-control,
+.form-inline .form-group.datetime .input-group .input-group-btn .btn {
+  margin-bottom: 15px;
 }
 .form-inline .form-group + .form-group,
 .form-inline .form-group + .help-block,
