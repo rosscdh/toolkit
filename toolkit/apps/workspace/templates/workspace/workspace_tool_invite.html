@@ -10,9 +10,18 @@
 {% endblock %}
 
 {% block header %}
-    <h4 class="caption"><a href="{% url 'workspace:view' workspace.slug %}">{{ workspace.name }}</a></h4>
-    <h4 class="caption"><a href="{% url 'workspace:tool_object_overview' workspace.slug tool.slug item.slug %}">{{ item }}</a></h4>
-    <h4>Invite {{ item.user.get_full_name }}</h4>
+    <div class="breadcrumb-text">
+        <h4 class="caption">
+            <a href="{% url 'workspace:view' slug=workspace.slug %}">{{ workspace.name }}</a>
+        </h4>
+        <h4 class="caption">
+            <a href="{% url 'workspace:tool_object_list' workspace=workspace.slug tool=tool.slug %}">{{ tool.name }}</a>
+        </h4>
+        <h4 class="caption">
+            <a href="{% url 'workspace:tool_object_overview' workspace=workspace.slug tool=tool.slug slug=item.slug %}">{{ item }}</a>
+        </h4>
+    </div>
+    <h4>Invite {{ item.user.get_full_name }} ({{ item.user.email }})</h4>
 {% endblock %}
 
 {% block main %}
