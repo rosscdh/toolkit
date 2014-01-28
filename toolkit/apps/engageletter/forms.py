@@ -186,7 +186,8 @@ class LawyerForm(BaseForm):
                 css_class='dialog dialog-info form-dialog'
             ),
 
-            'description',
+            'legal_services',
+            'service_description',
             'fees',
             ButtonHolder(
                 Submit('submit', 'Continue', css_class='btn-hg btn-primary'),
