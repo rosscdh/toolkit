@@ -29,7 +29,7 @@ from .mixins import (IsDeletedMixin,
 from .managers import EightyThreeBManager, AttachmentManger
 
 
-def _83b_upload_file(instance, filename):
+def _upload_file(instance, filename):
     filename = os.path.split(filename)[-1]
     filename_no_ext, ext = os.path.splitext(filename)
     return '83b/%d-%s%s' % (instance.eightythreeb.user.pk, slugify(filename_no_ext), ext)
@@ -127,7 +127,7 @@ rulez_registry.register("can_delete", EightyThreeB)
 
 class Attachment(IsDeletedMixin, models.Model):
     eightythreeb = models.ForeignKey('eightythreeb.EightyThreeB')
-    attachment = models.FileField(upload_to=_83b_upload_file, blank=True, storage=S3BotoStorage())
+    attachment = models.FileField(upload_to=_upload_file, blank=True, storage=S3BotoStorage())
     is_deleted = models.BooleanField(default=False)
 
     objects = AttachmentManger()
