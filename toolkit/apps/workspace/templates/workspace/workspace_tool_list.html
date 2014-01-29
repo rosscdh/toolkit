@@ -10,9 +10,7 @@
 
 {% block header_right %}
     {% if can_create %}
-        {% if object_list %}
-            <a href="{% url 'workspace:tool_object_new' workspace=workspace.slug tool=tool.slug %}" class="btn btn-primary">New {{ tool.short_name }}</a>
-        {% endif %}
+        <a href="{{ create_url }}" class="btn btn-primary">New {{ tool.short_name }}</a>
     {% endif %}
 {% endblock %}
 
@@ -29,8 +27,8 @@
             <br />
             <p class="lead">{{ tool.description }}</p>
 
-            {% if user.profile.is_lawyer %}
-                <a href="{% url 'workspace:tool_object_new' workspace=workspace.slug tool=tool.slug %}" class="btn btn-primary btn-wide btn-hg">New {{ tool.short_name }}</a>
+            {% if can_create %}
+                <a href="{{ create_url }}" class="btn btn-primary">New {{ tool.short_name }}</a>
             {% endif %}
           </div>
         </div>
