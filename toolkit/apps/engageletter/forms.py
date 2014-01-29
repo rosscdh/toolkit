@@ -11,7 +11,9 @@ from localflavor.us.us_states import USPS_CHOICES
 from localflavor.us.forms import USZipCodeField
 
 from toolkit.apps.workspace.mixins import WorkspaceToolFormMixin
-from toolkit.apps.workspace.services import EnsureCustomerService
+from toolkit.apps.workspace.services import EnsureCustomerService, WordService
+
+from .models import Attachment
 
 import logging
 logger = logging.getLogger('django.request')
@@ -236,7 +238,7 @@ class LawyerEngagementLetterTemplateForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance', None)
         self.request = kwargs.pop('request', None)
-        self.user = kwargs.pop('user', None)
+        self.user = kwargs.pop('user', self.request.user)
 
         super(LawyerEngagementLetterTemplateForm, self).__init__(*args, **kwargs)
 
@@ -255,12 +257,28 @@ class LawyerEngagementLetterTemplateForm(forms.Form):
     def get_success_url(self):
         return reverse('workspace:tool_object_overview', kwargs={'workspace': self.instance.workspace.slug, 'tool': self.instance.workspace.tools.filter(slug=self.instance.tool_slug).first().slug, 'slug': self.instance.slug})
 
-    def issue_signals(self, instance):
-        instance.markers.marker('lawyer_review_letter_text').issue_signals(request=self.request, instance=instance, actor=self.user)
+    def issue_signals(self):
+        self.instance.markers.marker('lawyer_review_letter_text').issue_signals(request=self.request, instance=self.instance, actor=self.user)
 
     def save(self):
-        # @TODO make this save the template
-        self.issue_signals(instance=self.instance)
+        body = self.cleaned_data.get('body')
+        #
+        # Get or create the Attachment object
+        #
+        attachment_object, is_new = Attachment.objects.get_or_create(tool=self.instance)
+        #
+        # if its new or the body has changed
+        #
+        if is_new is True or attachment_object.body != body:
+            attachment_object.body = body
+            #
+            # Convert the doc html to a docx file and save it
+            #
+            service = WordService()
+            file_object = service.generate(html=attachment_object.body)
+            attachment_object.attachment.save(file_object.name, file_object)
+
+        self.issue_signals()
 
 
 @parsleyfy

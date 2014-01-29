@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import EngagementLetter
+from .models import EngagementLetter, Attachment
 
 
 class EngagementLetterAdmin(admin.ModelAdmin):
@@ -10,3 +10,4 @@ class EngagementLetterAdmin(admin.ModelAdmin):
 
 
 admin.site.register(EngagementLetter, EngagementLetterAdmin)
+admin.site.register([Attachment])

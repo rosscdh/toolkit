@@ -1,4 +1,4 @@
-// Some general UI pack related JS
+  // Some general UI pack related JS
 
 // Extend JS Date with month name methods
 // @TODO @Jamie shoudl really be using moment.js http://momentjs.com/docs/#/get-set/month/
@@ -40,7 +40,7 @@ String.prototype.repeat = function(num) {
     // Popover
     $("[data-toggle=popover]").popover();
 
-    $(".auto-show").popover('show');
+    $(".auto-show").tooltip('show');
 
     // Tags Input
     $(".tagsinput").tagsInput();

@@ -30,7 +30,7 @@ class DocxServiceTest(unittest.TestCase):
 
         resp = subject.generate(html=html)
 
-        self.assertEqual(resp.__class__.__name__, '_TemporaryFileWrapper')
+        self.assertEqual(resp.__class__.__name__, 'File')
 
         subject_content = resp.read()
         resp.seek(0)  # reset pointer
