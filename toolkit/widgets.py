@@ -10,9 +10,9 @@ class SummerNoteWidget(Textarea):
 
     class Media:
         css = {
-            'all': ('css/summernote.css',),
+            'all': ('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css', 'css/summernote.css',),
         }
-        js = ('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css', 'js/summernote.min.js', 'js/jquery.summernote-django.js',)
+        js = ('js/summernote.min.js', 'js/jquery.summernote-django.js',)
 
     def __init__(self, *args, **kwargs):
         self.custom_attrs.update(kwargs.get('attrs', {}))
