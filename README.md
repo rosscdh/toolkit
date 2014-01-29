@@ -13,6 +13,22 @@ Getting started
 3. honcho start
 
 
+Pandoc
+------
+
+__Installing__
+
+1. Mac: https://code.google.com/p/pandoc/downloads/detail?name=pandoc-1.12.3.pkg.zip&can=2&q= install the osx package
+2. Ubuntu: apt-get install pandoc should do it
+
+__PDF Latext__
+
+In order to use the pandoc conversion of html to pdf you need to install latex
+
+1. Mac: http://tug.org/mactex/
+2. Ubuntu: http://java.dzone.com/articles/installing-latex-ubuntu
+
+
 Testing
 -------
 

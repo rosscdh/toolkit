@@ -10,6 +10,7 @@ from storages.backends.s3boto import S3BotoStorage
 import os
 from uuidfield import UUIDField
 from jsonfield import JSONField
+from decimal import Decimal
 
 from rulez import registry as rulez_registry
 
@@ -28,7 +29,7 @@ from .mixins import (IsDeletedMixin,
 from .managers import EightyThreeBManager, AttachmentManger
 
 
-def _83b_upload_file(instance, filename):
+def _upload_file(instance, filename):
     filename = os.path.split(filename)[-1]
     filename_no_ext, ext = os.path.splitext(filename)
     return '83b/%d-%s%s' % (instance.eightythreeb.user.pk, slugify(filename_no_ext), ext)
@@ -91,6 +92,19 @@ class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferA
     def company_name(self):
         return self.data.get('company_name', self.workspace.name)
 
+    def get_context_data(self, **kwargs):
+        """
+        Append custom values to the HTMLMixin.get_context_data for the template
+        """
+        kwargs.update({
+            'aggregate_share_value': Decimal(self.data.get('total_shares_purchased', 0)) * Decimal(self.data.get('transfer_value_share', 0)),
+            'total_amount_paid': Decimal(self.data.get('total_shares_purchased', 0)) * Decimal(self.data.get('price_paid_per_share', 0)),
+        })
+
+        kwargs = super(EightyThreeB, self).get_context_data(**kwargs)
+
+        return kwargs
+
     def get_absolute_url(self):
         return reverse('workspace:tool_object_overview', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug=self.tool_slug).first().slug, 'slug': self.slug})
 
@@ -113,7 +127,7 @@ rulez_registry.register("can_delete", EightyThreeB)
 
 class Attachment(IsDeletedMixin, models.Model):
     eightythreeb = models.ForeignKey('eightythreeb.EightyThreeB')
-    attachment = models.FileField(upload_to=_83b_upload_file, blank=True, storage=S3BotoStorage())
+    attachment = models.FileField(upload_to=_upload_file, blank=True, storage=S3BotoStorage())
     is_deleted = models.BooleanField(default=False)
 
     objects = AttachmentManger()
