@@ -30,12 +30,12 @@ class DocxServiceTest(unittest.TestCase):
 
         resp = subject.generate(html=html)
 
-        self.assertEqual(resp.__class__.__name__, '_TemporaryFileWrapper')
+        self.assertEqual(resp.__class__.__name__, 'File')
 
         subject_content = resp.read()
         resp.seek(0)  # reset pointer
 
-        self.assertEqual(len(subject_content), 8394)
+        self.assertEqual(len(subject_content), 8395)
         # test we have the expected word gunk in there
         self.assertTrue('[Content_Types].xml' in subject_content)
         self.assertTrue('word/settings.xmlPK' in subject_content)
