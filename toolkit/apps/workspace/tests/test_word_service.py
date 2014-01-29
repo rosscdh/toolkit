@@ -22,7 +22,7 @@ class DocxServiceTest(unittest.TestCase):
     def test_valid_attribs(self):
         subject = self.subject()
         self.assertTrue(hasattr(subject, 'docx_file'))
-        self.assertEqual(subject.docx_file, None)
+        self.assertEqual(subject.file_object, None)
 
     def test_valid_generation(self):
         subject = self.subject()
