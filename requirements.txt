@@ -37,8 +37,10 @@ django-bootstrap-breadcrumbs
 django-email-obfuscator
 decorator
 
-pypandoc
 -e git+https://github.com/rosscdh/django-templated-email.git@attachments#egg=django-templated-email
+
+#PyPandoc
+-e git+https://github.com/rosscdh/pypandoc.git@utf8-encode#egg=pypandoc
 
 boto
 django-storages
