@@ -37,7 +37,7 @@ class ToolObjectListView(WorkspaceToolViewMixin, ListView):
         action_url = self.tool.markers.prerequisite_next_url(workspace=self.workspace)
         if action_url is not None:
             # append the next portion
-            create_url = '%s?next=%s' % (action_url, self.request.get_full_path())
+            create_url = action_url
 
         context.update({
             # if there are no tool.userclass_that_can_create defined then anyone can create
@@ -207,11 +207,11 @@ class ToolObjectPostFormPreviewView(DetailView):
         object
         """
         # get tool
-        obj = super(ToolObjectPostFormPreviewView, self).get_object(queryset=queryset)
+        tool = super(ToolObjectPostFormPreviewView, self).get_object(queryset=queryset)
         # do a search on the tool target model
-        tool_object = get_object_or_404(obj.model.objects, slug=self.kwargs.get('slug'))
+        tool_object_instance = get_object_or_404(tool.model.objects, slug=self.kwargs.get('slug'))
         
-        return tool_object
+        return tool_object_instance
 
     def get_template_names(self):
         template_name = 'after_form_preview.html'
