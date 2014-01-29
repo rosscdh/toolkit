@@ -9,7 +9,7 @@ class BasePandocService(object):
     """
     Base class for converting provided HTML to a doc or docx
     """
-    options = None
+    file_object = None
 
     def __init__(self):
         self.service = self.get_service()

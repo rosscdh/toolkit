@@ -11,47 +11,50 @@ from . import logger
 
 
 class PandocPDFService(BasePandocService):
-    docx_file = None
-
+    """
+    Generate html to pdf format
+    """
     def generate(self, html, **kwargs):
+        """
+        generate the pdf but needs to be set as tex so pandoc handles it
+        correctly see docs: http://johnmacfarlane.net/pandoc/ #search pdf
+        """
         from_format = kwargs.get('from_format', 'html')
         to_format = kwargs.get('to_format', 'tex')
         # create temp file
-        self.docx_file = NamedTemporaryFile(suffix='.pdf')
-
-        logger.info('Created .docx file at: %s' % (self.docx_file.name, ))
+        self.file_object = NamedTemporaryFile(suffix='.pdf')
 
         extra_args = (
             '--smart',
             '--standalone',
-            '-o', self.docx_file.name
+            '-o', self.file_object.name
         )
         # generate it using pandoc
         self.service.convert(html, to_format, format=from_format, extra_args=extra_args)
         # return the file which is now populated with the docx forms
-        return self.docx_file
+        return File(self.file_object)
 
 
 class PandocDocxService(BasePandocService):
-    docx_file = None
-
+    """
+    Generate html to docx format
+    """
     def generate(self, html, **kwargs):
         from_format = kwargs.get('from_format', 'html')
         to_format = kwargs.get('to_format', 'docx')
         # create temp file
-        self.docx_file = NamedTemporaryFile(suffix='.docx')
-
-        logger.info('Created .docx file at: %s' % (self.docx_file.name, ))
+        self.file_object = NamedTemporaryFile(suffix='.docx')
 
         extra_args = (
             '--smart',
             '--standalone',
-            '-o', self.docx_file.name
+            '-o', self.file_object.name
         )
         # generate it using pandoc
         self.service.convert(html, to_format, format=from_format, extra_args=extra_args)
         # return the file which is now populated with the docx forms
-        return File(self.docx_file)
+        return File(self.file_object)
+
 
 class WordService(PandocDocxService):
     """
