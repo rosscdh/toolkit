@@ -68,6 +68,9 @@ class BaseForm(WorkspaceToolFormMixin):
         self.helper = FormHelper()
         super(BaseForm, self).__init__(*args, **kwargs)
 
+    def get_success_url(self, instance):
+        return reverse('workspace:tool_object_after_save_preview', kwargs={'workspace': instance.workspace.slug, 'tool': instance.workspace.tools.filter(slug=instance.tool_slug).first().slug, 'slug': instance.slug})
+
     def save(self):
 
         if self.instance is not None:
@@ -196,9 +199,6 @@ class LawyerForm(BaseForm):
                 css_class='form-group'
             )
         )
-
-    def get_success_url(self, instance):
-        return reverse('workspace:tool_object_after_save_preview', kwargs={'workspace': instance.workspace.slug, 'tool': instance.workspace.tools.filter(slug=instance.tool_slug).first().slug, 'slug': instance.slug})
 
     def issue_signals(self, instance):
         instance.markers.marker('lawyer_complete_form').issue_signals(request=self.request, instance=instance, actor=self.user)
