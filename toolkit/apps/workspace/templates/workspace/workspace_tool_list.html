@@ -4,27 +4,33 @@
 
 {% block header %}
     {{ block.super }}
+
     <h4>{{ tool.name }}</h4>
 {% endblock %}
 
 {% block header_right %}
     {% if can_create %}
-    <a href="{{ create_url }}" class="btn btn-primary">New {{ tool.short_name }}</a>
+        <a href="{{ create_url }}" class="btn btn-primary">New {{ tool.short_name }}</a>
     {% endif %}
 {% endblock %}
 
 {% block main %}
-
     {% if object_list %}
         {% block list %}{% endblock %}
     {% else %}
-        <div class="alert alert-info">
-            <p>{{ tool.description }}</p>
+        <div class="row">
+            <div class="col-lg-10 col-lg-offset-1 text-center">
+                        <br />
+
+            <img src="{{STATIC_URL}}{{ tool.icon }}">
+            <br />
+            <br />
+            <p class="lead">{{ tool.description }}</p>
 
             {% if can_create %}
-                <p>Click below to create your first {{ tool.short_name }}.</p>
-                <a href="{{ create_url }}" class="btn btn-primary btn-wide">New {{ tool.short_name }}</a>
+                <a href="{{ create_url }}" class="btn btn-primary">New {{ tool.short_name }}</a>
             {% endif %}
           </div>
+        </div>
     {% endif %}
 {% endblock %}

@@ -19,6 +19,10 @@ urlpatterns = patterns('',
     url(r'^legal/privacy/$', PrivacyView.as_view(), name='privacy'),
     url(r'^legal/terms/$', TermsView.as_view(), name='terms'),
 
+
+    url(r'^tools/83b-election-letters/$', TemplateView.as_view(template_name='public/tools/83b-election-letters.html'), name='83b'),
+
+
     url(r'^start/$', StartView.as_view(), name='signin'),
     url(r'^start/signup/$', SignUpView.as_view(), name='signup'),
     url(r'^start/invite/(?P<key>.+)/$', InviteKeySignInView.as_view(), name='invite'),
