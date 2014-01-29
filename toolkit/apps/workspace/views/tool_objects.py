@@ -37,7 +37,7 @@ class ToolObjectListView(WorkspaceToolViewMixin, ListView):
         action_url = self.tool.markers.prerequisite_next_url(workspace=self.workspace)
         if action_url is not None:
             # append the next portion
-            create_url = '%s?next=%s' % (action_url, self.request.get_full_path())
+            create_url = action_url
 
         context.update({
             # if there are no tool.userclass_that_can_create defined then anyone can create
