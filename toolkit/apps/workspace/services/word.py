@@ -2,6 +2,7 @@
 """
 HTML to Word Conversion Services
 """
+from django.core.files import File
 from tempfile import NamedTemporaryFile
 
 from .pandoc import BasePandocService
@@ -50,7 +51,7 @@ class PandocDocxService(BasePandocService):
         # generate it using pandoc
         self.service.convert(html, to_format, format=from_format, extra_args=extra_args)
         # return the file which is now populated with the docx forms
-        return self.docx_file
+        return File(self.docx_file)
 
 class WordService(PandocDocxService):
     """
