@@ -230,7 +230,8 @@ class ToolObjectPostFormPreviewView(DetailView):
             # for Lawyer
             # get the current markers next_marker which will then
             # calculate based on Prerequisite Markers
-            marker = markers.current_marker.next_marker
+            marker = markers.current_marker
+
             return {
                 'previous_url': markers.marker(val='lawyer_complete_form').get_action_url(),
                 'next_url': marker.get_action_url() if 'lawyer' in marker.action_user_class and marker.action_type == marker.ACTION_TYPE.redirect else preview_workspace_url,
