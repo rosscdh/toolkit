@@ -7,11 +7,11 @@ from django.views.generic.detail import SingleObjectMixin
 from toolkit.apps.me.views import LawyerLetterheadView
 from toolkit.apps.workspace.mixins import IssueSignalsMixin
 
-from .models import EngagementLetter
+from .models import EngagementLetter, Attachment
 from .forms import LawyerEngagementLetterTemplateForm, SignEngagementLetterForm
 
 
-class SetupEngagementLetterView(IssueSignalsMixin, LawyerLetterheadView):
+class SetupEngagementLetterTemplateView(IssueSignalsMixin, LawyerLetterheadView):
     """
     View to allow the lawyer to setup their engagement letter text
     Overrides the lawyer letterhead view and form
@@ -20,14 +20,21 @@ class SetupEngagementLetterView(IssueSignalsMixin, LawyerLetterheadView):
     form_class = LawyerEngagementLetterTemplateForm
 
     def get_initial(self):
-        kwargs = super(SetupEngagementLetterView, self).get_initial()
+        kwargs = super(SetupEngagementLetterTemplateView, self).get_initial()
         #
         # set the engageletter which is the actual obejct instance
         #
         self.engageletter = get_object_or_404(EngagementLetter, slug=self.kwargs.get('slug'))
 
+        # @TODO load the customised lawyer letter
+        try:
+            body = Attachment.objects.get(tool=self.engageletter).body
+
+        except Attachment.DoesNotExist:
+            body = self.engageletter.template_source(template_name='engageletter/doc/body.html')
+
         kwargs.update({
-            'body': self.engageletter.template_source(template_name='engageletter/doc/body.html'),  # @TODO load the customised lawyer letter
+            'body': body,
         })
         return kwargs
 
@@ -36,14 +43,15 @@ class SetupEngagementLetterView(IssueSignalsMixin, LawyerLetterheadView):
         Update the engageletter object to the form kwargs because in this view
         "object" is UserProfile and not engageletter
         """
-        kwargs = super(SetupEngagementLetterView, self).get_form_kwargs()
+        kwargs = super(SetupEngagementLetterTemplateView, self).get_form_kwargs()
         kwargs.update({
+            'request': self.request,
             'instance': self.engageletter,
         })
         return kwargs
 
     def get_context_data(self, *args, **kwargs):
-        kwargs = super(SetupEngagementLetterView, self).get_context_data(*args, **kwargs)
+        kwargs = super(SetupEngagementLetterTemplateView, self).get_context_data(*args, **kwargs)
         kwargs.update({
             'engageletter': self.engageletter
         })

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.template import loader
+from django.template import Template
 from django.utils.safestring import mark_safe
 from django.template.loaders.app_directories import Loader
 
@@ -37,15 +38,15 @@ class HTMLMixin(object):
     def get_context_data(self, **kwargs):
         context_data = self.data.copy()  # must copy to avoid reference update
 
+        context_data.update({'object': self})
+        # update with kwargs passed in which take priority for overrides
+        context_data.update(kwargs)
+        local_context = loader.Context(context_data)
         # Mark strings as safe
         for k, v in context_data.items():
             if type(v) in [str, unicode]:
-                context_data[k] = mark_safe(v)
-
-        context_data.update({'object': self})
-
-        # update with kwargs passed in which take priority for overrides
-        context_data.update(kwargs)
+                t = Template(mark_safe(v))
+                context_data[k] = t.render(local_context)
 
         return context_data
 

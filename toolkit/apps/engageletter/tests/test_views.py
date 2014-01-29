@@ -8,15 +8,15 @@ from model_mommy import mommy
 
 from .data import ENGAGELETTER_DATA as BASE_ENGAGELETTER_DATA
 from ..models import EngagementLetter
-from ..views import SetupEngagementLetterView
+from ..views import SetupEngagementLetterTemplateView
 
 
-class SetupEngagementLetterViewTest(BaseProjectCaseMixin):
+class SetupEngagementLetterTemplateViewTest(BaseProjectCaseMixin):
     """
     Specifically test the crazy uppercase lowercase domain
     """
     def setUp(self):
-        super(SetupEngagementLetterViewTest, self).setUp()
+        super(SetupEngagementLetterTemplateViewTest, self).setUp()
         self.basic_workspace();
         self.tool = mommy.make('engageletter.EngagementLetter',
                     slug='d1c545082d1241849be039e338e47aa0',
@@ -37,7 +37,7 @@ class SetupEngagementLetterViewTest(BaseProjectCaseMixin):
         self.client.login(username=self.lawyer.username, password=self.password)
         resp = self.client.get(self.url)
 
-        self.assertEqual(type(resp.context_data.get('view')), SetupEngagementLetterView)
+        self.assertEqual(type(resp.context_data.get('view')), SetupEngagementLetterTemplateView)
         self.assertEqual(resp.context_data.get('form').fields.keys(), ['body'])
         self.assertEqual(resp.template_name, ['engageletter/setup_engageletter_form.html'])
         # test template data
