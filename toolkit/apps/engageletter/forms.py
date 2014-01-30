@@ -2,7 +2,7 @@
 from django import forms
 from django.core.urlresolvers import reverse
 
-from crispy_forms.bootstrap import AppendedText, FieldWithButtons, StrictButton
+from crispy_forms.bootstrap import AppendedText, FieldWithButtons, PrependedText, StrictButton
 from crispy_forms.helper import FormHelper, Layout
 from crispy_forms.layout import ButtonHolder, Div, HTML, Submit
 
@@ -152,10 +152,39 @@ class LawyerForm(BaseForm):
         widget=forms.TextInput(attrs={'placeholder': 'CEO', 'size': '20'})
     )
 
-    # rate_hourly_from = forms.DecimalField(max_digits=10, decimal_places=2)
-    # rate_hourly_to = forms.DecimalField(max_digits=10, decimal_places=2)
-    # rate_hourly_increments = forms.IntegerField()
-    # rate_flat_fee = forms.DecimalField(max_digits=10, decimal_places=2)
+    rate_hourly_from = forms.DecimalField(
+        decimal_places=2,
+        label='',
+        help_text='',
+        max_digits=10,
+        required=False,
+        widget=forms.NumberInput(attrs={'style': 'width: 100px;'})
+    )
+
+    rate_hourly_to = forms.DecimalField(
+        decimal_places=2,
+        label='',
+        help_text='',
+        max_digits=10,
+        required=False,
+        widget=forms.NumberInput(attrs={'style': 'width: 100px;'})
+    )
+
+    rate_hourly_increments = forms.IntegerField(
+        label='',
+        help_text='',
+        required=False,
+        widget=forms.NumberInput(attrs={'style': 'width: 100px;'})
+    )
+
+    rate_flat_fee = forms.DecimalField(
+        decimal_places=2,
+        label='Flat-rate fee',
+        help_text='',
+        max_digits=10,
+        required=False,
+        widget=forms.NumberInput
+    )
 
     legal_services = forms.CharField(
         error_messages={
@@ -237,12 +266,21 @@ class LawyerForm(BaseForm):
                 ),
                 'legal_services',
                 'service_description',
-                'fees',
 
-                # 'rate_hourly_from',
-                # 'rate_hourly_to',
-                # 'rate_hourly_increments',
-                # 'rate_flat_fee',
+                HTML('<label class="control-label">Hourly Rates</label>'),
+                Div(
+                    HTML('<span class="help-block">From</span>'),
+                    PrependedText('rate_hourly_from', '$'),
+                    HTML('<span class="help-block">to</span>'),
+                    PrependedText('rate_hourly_to', '$'),
+                    HTML('<span class="help-block">per hour</span>'),
+                    HTML('<span class="help-block">, billed in increments of</span>'),
+                    AppendedText('rate_hourly_increments', 'hour(s)'),
+                    css_class='form-group form-inline'
+                ),
+                'rate_flat_fee',
+
+                'fees',
             ),
             Div(
                 HTML('<legend>Additional details (Client to complete)</legend>'),

@@ -39,7 +39,8 @@ body {
 }
 .form-inline .form-group + .form-group,
 .form-inline .form-group + .help-block,
-.form-inline .help-block + .form-group {
+.form-inline .help-block + .form-group,
+.form-inline .input-group + .help-block {
   margin-left: 10px;
   margin-top: 0;
 }
