@@ -183,7 +183,8 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
         error_messages={
             'required': "Transfer value per share can't be blank."
         },
-        label='',
+        help_text='paid per share',
+        label='Value per share at time of transfer',
         initial='0.0001',
         widget=forms.TextInput(attrs={'size': '10'})
     )
@@ -192,16 +193,18 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
         error_messages={
             'required': "Total shares purchased can't be blank."
         },
-        label='',
+        help_text='',
+        label='Total number of shares purchased',
         initial='100',
-        widget=forms.TextInput(attrs={'size': '10'})
+        widget=forms.NumberInput(attrs={'size': '10'})
     )
 
     price_paid_per_share = forms.DecimalField(
         error_messages={
             'required': "Price paid per share can't be blank."
         },
-        label='',
+        help_text='paid per share',
+        label='Actual price paid per share',
         initial='0.0001',
         widget=forms.TextInput(attrs={'size': '10'})
     )
@@ -216,7 +219,6 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
         return reverse('workspace:tool_object_after_save_preview', kwargs={'workspace': instance.workspace.slug, 'tool': instance.workspace.tools.filter(slug=instance.tool_slug).first().slug, 'slug': instance.slug})
 
     def save(self):
-
         if self.instance is not None:
             # use the currently associated user
             user = self.instance.user
@@ -414,26 +416,9 @@ class LawyerEightyThreeBForm(BaseEightyThreeBForm):
                     StrictButton('<span class="fui-calendar"></span>'),
                     css_class='datetime'
                 ),
-                Div(
-                    HTML('<label class="control-label">Total number of shares purchased</label>'),
-                    'total_shares_purchased',
-
-                    HTML('<label class="control-label">Value per share at time of transfer</label>'),
-                    Div(
-                        PrependedText('transfer_value_share', '$'),
-                        HTML('<span class="help-block">per share</span>'),
-                        css_class='form-inline'
-                    ),
-                    HTML('<br />'),
-                    HTML('<label class="control-label">Actual price paid per share</label>'),
-                    Div(
-                        PrependedText('price_paid_per_share', '$'),
-                        HTML('<span class="help-block">paid per share</span>'),
-                    css_class='form-inline',
-
-                    ),
-                ),
-                HTML('<br />'),
+                'total_shares_purchased',
+                PrependedText('transfer_value_share', '$'),
+                PrependedText('price_paid_per_share', '$', css_class='form-inline'),
                 'description',
                 'tax_year',
                 'nature_of_restrictions',
