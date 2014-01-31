@@ -2,7 +2,7 @@
 from django.forms.widgets import Textarea
 
 
-class SummerNoteWidget(Textarea):
+class SummernoteWidget(Textarea):
     custom_attrs = {
         'data-toggle': 'summernote',
         'cols': '100',
@@ -17,4 +17,4 @@ class SummerNoteWidget(Textarea):
     def __init__(self, *args, **kwargs):
         self.custom_attrs.update(kwargs.get('attrs', {}))
         attrs = self.custom_attrs.copy()
-        super(SummerNoteWidget, self).__init__(attrs=attrs, *args, **kwargs)
+        super(SummernoteWidget, self).__init__(attrs=attrs, *args, **kwargs)

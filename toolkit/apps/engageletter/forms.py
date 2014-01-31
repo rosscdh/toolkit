@@ -10,7 +10,7 @@ from parsley.decorators import parsleyfy
 from localflavor.us.us_states import USPS_CHOICES
 from localflavor.us.forms import USZipCodeField
 
-from toolkit.fields import SummerNoteField
+from toolkit.fields import SummernoteField
 
 from toolkit.apps.workspace.mixins import WorkspaceToolFormMixin
 from toolkit.apps.workspace.services import EnsureCustomerService
@@ -233,7 +233,7 @@ class LawyerEngagementLetterTemplateForm(forms.Form):
     """
     Override the base letterhead and add out template letter HTML
     """
-    body = SummerNoteField(required=True)
+    body = SummernoteField(required=True)
 
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance', None)

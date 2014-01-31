@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.forms import CharField
 
-from .widgets import SummerNoteWidget
+from .widgets import SummernoteWidget
 
 
-class SummerNoteField(CharField):
-    widget = SummerNoteWidget
+class SummernoteField(CharField):
+    widget = SummernoteWidget
