@@ -12,6 +12,9 @@ body {
   background-color: transparent;
   margin-bottom: 0;
 }
+.breadcrumb-text {
+  margin-bottom: 10px;
+}
 .container-fluid {
   padding: 0 20px;
 }
@@ -30,9 +33,14 @@ body {
 .form-inline .form-group .input-group .form-control {
   display: inline-block;
 }
+.form-inline .form-group.datetime .input-group .form-control,
+.form-inline .form-group.datetime .input-group .input-group-btn .btn {
+  margin-bottom: 15px;
+}
 .form-inline .form-group + .form-group,
 .form-inline .form-group + .help-block,
-.form-inline .help-block + .form-group {
+.form-inline .help-block + .form-group,
+.form-inline .input-group + .help-block {
   margin-left: 10px;
   margin-top: 0;
 }
@@ -100,6 +108,9 @@ body {
 .popover-content {
   font-size: 14px;
   line-height: 1.226;
+}
+.firm-logo-preview {
+  margin-right: 15px;
 }
 .page-header h4 {
   font-size: 28px;
