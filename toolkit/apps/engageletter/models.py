@@ -4,8 +4,9 @@ from django.template import loader
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 
-from uuidfield import UUIDField
+from datetime import datetime
 from jsonfield import JSONField
+from uuidfield import UUIDField
 
 from rulez import registry as rulez_registry
 from storages.backends.s3boto import S3BotoStorage
@@ -53,7 +54,7 @@ class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, WorkspaceToolMode
     status = models.IntegerField(choices=ENGAGEMENTLETTER_STATUS.get_choices(), default=ENGAGEMENTLETTER_STATUS.lawyer_complete_form, db_index=True)
 
     def __unicode__(self):
-        return u'Engagement Letter for %s' % self.client_name
+        return u'#%s Engagement Letter' % self.file_number
 
     @property
     def tool_slug(self):
@@ -72,8 +73,21 @@ class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, WorkspaceToolMode
         return self.status == self.STATUS.complete
 
     @property
-    def client_name(self):
-        return self.data.get('client_full_name', None)
+    def file_number(self):
+        return self.data.get('file_number', None)
+
+    @property
+    def signatory_name(self):
+        return self.data.get('signatory_full_name', None)
+
+    @property
+    def signatory_title(self):
+        return self.data.get('signatory_title', None)
+
+    @property
+    def date_of_letter(self):
+        date = self.data.get('date_of_letter', None)
+        return datetime.strptime(date, '%Y-%m-%d')
 
     @property
     def filename(self):

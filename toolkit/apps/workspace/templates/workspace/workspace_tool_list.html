@@ -10,7 +10,7 @@
 
 {% block header_right %}
     {% if can_create %}
-        <a href="{{ create_url }}" class="btn btn-primary">New {{ tool.short_name }}</a>
+        <a href="{{ create_url }}" class="create-tool btn btn-primary">New {{ tool.short_name }}</a>
     {% endif %}
 {% endblock %}
 
@@ -28,7 +28,7 @@
             <p class="lead">{{ tool.description }}</p>
 
             {% if can_create %}
-                <a href="{{ create_url }}" class="btn btn-primary">New {{ tool.short_name }}</a>
+                <a href="{{ create_url }}" class="create-tool btn btn-primary">New {{ tool.short_name }}</a>
             {% endif %}
           </div>
         </div>
