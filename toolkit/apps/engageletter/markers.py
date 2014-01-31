@@ -127,7 +127,10 @@ class CustomerSignAndSendMarker(Marker):
         return None
 
 
-class LawyerSignMarker(Marker):
+class LawyerSignMarker(CustomerSignAndSendMarker):
+    """
+    Uses the same action urls as the CustomerSignAndSendMarker
+    """
     name = 'lawyer_sign'
     description = 'Attorney: Sign the Engagement Letter'
     signals = ['toolkit.apps.engageletter.signals.lawyer_sign']
@@ -135,10 +138,6 @@ class LawyerSignMarker(Marker):
     action_name = 'Sign & Confirm Engagment Letter'
     action_type = Marker.ACTION_TYPE.redirect
     action_user_class = ['lawyer']
-
-    def get_action_url(self):
-        if self.tool is not None:
-            return self.tool.signing_url
 
     @property
     def action(self):

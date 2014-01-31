@@ -240,7 +240,7 @@ class LawyerSignMarkerTest(BaseTestMarker):
     """
     val = 0
     clazz = LawyerSignMarker
-    expected_url = 'https://www.hellosign.com/editor/sign?guid=79d41104dcf47068457c813615516f92c4ee6d63'
+    expected_url = '/engagement-letters/d1c545082d1241849be039e338e47aa0/sign/'
 
     def test_properties(self):
         self.assertTrue(type(self.subject), self.clazz)
@@ -252,26 +252,17 @@ class LawyerSignMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
         self.assertEqual(self.subject.action_user_class, ['lawyer'])
 
-    @mock_http_requests
     def test_get_action_url(self):
-        """
-        The get_action_url will only return a value if we have a signature request
-        this is an exception cos normally get_action_url always returns a value
-        """
-        self.subject.tool.send_for_signing() # httpretty mocked this request
-        self.assertEqual(self.subject.get_action_url(), self.expected_url)
+        url = reverse('engageletter:sign', kwargs={'slug': self.subject.tool.slug})
+        self.assertEqual(self.subject.get_action_url(), url)
 
-    @mock_http_requests
     def test_action(self):
         # must set the current marker to complete
-        self.subject.tool.send_for_signing() # httpretty mocked this request
         self.subject.tool.status = self.subject.tool.STATUS.lawyer_sign
         self.subject.tool.save(update_fields=['status'])
 
-        self.assertEqual(self.subject.action, self.expected_url)
-
-    def test_get_action_url_if_not_correct_status(self):
-        self.assertEqual(self.subject.get_action_url(), None)
+        url = reverse('engageletter:sign', kwargs={'slug': self.subject.tool.slug})
+        self.assertEqual(self.subject.action, url)
 
     def test_action_if_not_correct_status(self):
         self.assertEqual(self.subject.action, None)
