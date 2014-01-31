@@ -155,7 +155,15 @@ class SendForSigningMixin(object):
 
     @property
     def signing_data(self):
-        return self.data.get('signature', {}) if hasattr(self, 'data') else None
+        return self.data.get('signature', {}) if hasattr(self, 'data') else {}
+
+    @property
+    def signature_request_id(self):
+        return self.signing_data.get('signature_request_id', None)
+
+    @property
+    def signing_url(self):
+        return self.signing_data.get('signing_url', None)
 
     @property
     def signatures(self):
