@@ -11,6 +11,8 @@ next() and prev() and allow traversal through the document flows
 >>>     nodes.append(Marker(val, name, desc, signals=[], next=None, previous=None))
 
 """
+from django.template.defaultfilters import floatformat
+
 from toolkit.utils import get_namedtuple_choices
 
 from .mixins import (MARKERS_MAP_DICT,
@@ -99,7 +101,7 @@ class BaseSignalMarkers(MarkerMapMixin, PrerequisitesMixin, object):
 
         percent = 100 * float(part) / float(whole)
 
-        return float("{0:.2f}".format(math.ceil(percent)))
+        return floatformat(percent, 0)
 
     @property
     def tool(self):
