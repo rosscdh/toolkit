@@ -2,7 +2,9 @@
 
 {% load url from future %}
 {% block css %}
-<script src="//cdn.optimizely.com/js/570472635.js"></script>
+{% if PROJECT_ENVIRONMENT == 'prod' %}
+	<script src="//cdn.optimizely.com/js/570472635.js"></script>
+{% endif %}
 {% endblock %}
 
 {% block navbar %}
