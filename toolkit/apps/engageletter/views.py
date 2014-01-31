@@ -84,6 +84,13 @@ class SignAndSendEngagementLetterView(SingleObjectMixin, FormView):
 
     def form_valid(self, form):
         self.object = self.get_object()
+        #
         # Send the object for signing
+        #
         self.object.send_for_signing()
+        #
+        # Issue the signals
+        #
+        self.object.markers.marker('customer_sign_and_send').issue_signals(request=self.request, instance=self.object, actor=self.request.user)
+
         return super(SignAndSendEngagementLetterView, self).form_valid(form=form)

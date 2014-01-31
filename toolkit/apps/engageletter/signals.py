@@ -14,6 +14,7 @@ lawyer_review_letter_text = Signal(providing_args=['actor'])
 lawyer_invite_customer = Signal(providing_args=['actor'])
 customer_complete_form = Signal(providing_args=['actor'])
 customer_sign_and_send = Signal(providing_args=['actor'])
+lawyer_sign = Signal(providing_args=['actor'])
 complete = Signal(providing_args=['actor'])
 
 
@@ -94,6 +95,18 @@ def on_customer_sign_and_send(sender, instance, actor, **kwargs):
                        actor_name=actor_name,
                        instance=instance)
 
+
+@receiver(lawyer_sign)
+def on_lawyer_sign(sender, instance, actor, **kwargs):
+    marker_name = 'lawyer_sign'
+    marker = instance.markers.marker(marker_name)
+
+    if marker.can_perform_action(user=actor):
+        actor_name = actor.get_full_name()
+        _update_marker(marker_name=marker_name,
+                       next_status=marker.next_marker.val,
+                       actor_name=actor_name,
+                       instance=instance)
 
 @receiver(complete)
 def on_complete(sender, instance, actor, **kwargs):
