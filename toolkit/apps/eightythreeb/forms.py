@@ -13,10 +13,11 @@ from parsley.decorators import parsleyfy
 
 from usps.validators import USPSTrackingCodeField
 
-from toolkit.mixins import ModalForm
 from toolkit.apps.workspace.mixins import WorkspaceToolFormMixin
 from toolkit.apps.workspace.services import EnsureCustomerService
 from toolkit.apps.workspace.services import USPSTrackingService
+from toolkit.fields import SummernoteField
+from toolkit.mixins import ModalForm
 
 from .models import EightyThreeB
 from .signals import customer_complete_form, lawyer_complete_form
@@ -146,16 +147,12 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
         )
     )
 
-    description = forms.CharField(
+    description = SummernoteField(
         error_messages={
             'required': "Property description can't be blank."
         },
         label='Description of property with respect to which election is being made',
-        initial='{{ total_shares_purchased }} shares (the “Shares”) of the Common Stock of {{ company_name }}, Inc. (the “Company”) (${{ price_paid_per_share }} per share)',
-        widget=forms.Textarea(attrs={
-            'cols': '80',
-            'data-toggle': 'summernote'
-        })
+        initial='{{ total_shares_purchased }} shares (the “Shares”) of the Common Stock of {{ company_name }}, Inc. (the “Company”) (${{ price_paid_per_share }} per share)'
     )
 
     tax_year = forms.IntegerField(
@@ -167,16 +164,12 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
         widget=forms.NumberInput(attrs={'size': '4'})
     )
 
-    nature_of_restrictions = forms.CharField(
+    nature_of_restrictions = SummernoteField(
         error_messages={
             'required': "Nature of restrictions can't be blank."
         },
         label='Nature of restrictions to which property is subject',
-        initial="The Shares may be repurchased by the Company, or its assignee, upon the occurrence of certain events. This right lapses with regard to a portion of the Shares over time.",
-        widget=forms.Textarea(attrs={
-            'cols': '80',
-            'data-toggle': 'summernote',
-        })
+        initial="The Shares may be repurchased by the Company, or its assignee, upon the occurrence of certain events. This right lapses with regard to a portion of the Shares over time."
     )
 
     transfer_value_share = forms.DecimalField(

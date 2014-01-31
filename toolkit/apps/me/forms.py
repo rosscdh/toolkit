@@ -14,6 +14,7 @@ from crispy_forms.layout import ButtonHolder, Div, Field, Fieldset, HTML, Submit
 
 from parsley.decorators import parsleyfy
 
+from toolkit.fields import SummernoteField
 from toolkit.mixins import ModalForm
 
 User = get_user_model()
@@ -204,17 +205,13 @@ class LawyerLetterheadForm(forms.Form):
         widget=forms.TextInput(attrs={'placeholder': 'Firm name', 'size': '40'})
     )
 
-    firm_address = forms.CharField(
+    firm_address = SummernoteField(
         error_messages={
             'required': "Firm address can not be blank."
         },
         help_text='',
         label='Firm address',
-        required=True,
-        widget=forms.Textarea(attrs={
-            'cols': '80',
-            'data-toggle': 'summernote'
-        })
+        required=True
     )
 
     firm_logo = forms.ImageField(
