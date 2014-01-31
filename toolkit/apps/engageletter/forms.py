@@ -11,10 +11,9 @@ from parsley.decorators import parsleyfy
 from localflavor.us.us_states import USPS_CHOICES
 from localflavor.us.forms import USZipCodeField
 
-from toolkit.fields import SummernoteField
-
 from toolkit.apps.workspace.mixins import WorkspaceToolFormMixin
 from toolkit.apps.workspace.services import EnsureCustomerService, WordService
+from toolkit.fields import SummernoteField
 
 from .models import Attachment
 
@@ -188,43 +187,31 @@ class LawyerForm(BaseForm):
         widget=forms.NumberInput
     )
 
-    legal_services = forms.CharField(
+    legal_services = SummernoteField(
         error_messages={
             'required': "Legal services can not be blank."
         },
         help_text='',
         label='Legal services',
-        required=True,
-        widget=forms.Textarea(attrs={
-            'cols': '80',
-            'data-toggle': 'summernote'
-        })
+        required=True
     )
 
-    service_description = forms.CharField(
+    service_description = SummernoteField(
         error_messages={
             'required': "Engagement description can not be blank."
         },
         help_text='',
         label='Description of engagement',
-        required=True,
-        widget=forms.Textarea(attrs={
-            'cols': '80',
-            'data-toggle': 'summernote'
-        })
+        required=True
     )
 
-    fees = forms.CharField(
+    fees = SummernoteField(
         error_messages={
             'required': "Fees can not be blank."
         },
         help_text='',
         label='Fees',
-        required=True,
-        widget=forms.Textarea(attrs={
-            'cols': '80',
-            'data-toggle': 'summernote'
-        })
+        required=True
     )
 
     def __init__(self, *args, **kwargs):
