@@ -113,8 +113,8 @@
 
                     {% block content %}
                         <div class="page-header">
-                            <div class="pull-right">{% block header_right %}{% endblock %}</div>
                             {% block header %}{% endblock %}
+                            <div class="pull-right">{% block header_right %}{% endblock %}</div>
                         </div>
 
                         {% block main %}{% endblock %}
@@ -127,7 +127,7 @@
             </div>
         {% endblock %}
     </div>
-    
+
     {% block modals %}
         {% if user.profile.is_lawyer %}
             <div class="modal" id="workspace-create"></div>

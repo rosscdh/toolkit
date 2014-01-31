@@ -27,7 +27,7 @@
     "fields": {
       "data": {
         "icon": "images/icons/clipboard.svg",
-        "short_name": "Engagement Letter",
+        "short_name": "Letter",
         "summary": "",
         "description": "An app that provides a means of providing a client with your Engagement Letter and having it signed off on",
         "model_name": "EngagementLetter",
@@ -39,7 +39,7 @@
         "app_label": "engageletter",
         "can_create": ["lawyer"]
       },
-      "name": "Engagement Letter",
+      "name": "Engagement Letters",
       "slug": "engagement-letters"
     }
   }

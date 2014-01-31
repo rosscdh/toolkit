@@ -28,7 +28,11 @@ body {
     margin-bottom: 0;
   }
 }
- 
+
+.breadcrumb-text {
+  margin-bottom: 10px;
+}
+
 
 // Content
 // -------------------------
@@ -54,13 +58,23 @@ body {
   font-size:14px;
 }
 .form-inline {
-  .form-group .input-group .form-control {
-    display: inline-block;
+  .form-group {
+    .input-group .form-control {
+      display: inline-block;
+    }
+
+    &.datetime .input-group {
+      .form-control,
+      .input-group-btn .btn {
+        margin-bottom: 15px;
+      }
+    }
   }
 
   .form-group + .form-group,
   .form-group + .help-block,
-  .help-block + .form-group {
+  .help-block + .form-group,
+  .input-group + .help-block {
     margin-left: 10px;
     margin-top: 0;
   }
@@ -165,6 +179,10 @@ body {
 .popover-content {
   font-size: ceil(@component-font-size-base * 0.913); // ~14px
   line-height: 1.226; // 18px
+}
+
+.firm-logo-preview {
+  margin-right: 15px;
 }
 
 
@@ -280,7 +298,7 @@ body {
     background-color: lighten(@green-sea,5%);
     border-bottom: 3px solid #74bf80;
     padding: 15px 0px 20px 0px;
-    * { 
+    * {
       color:white;
     }
     span.ico {
