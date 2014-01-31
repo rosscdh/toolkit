@@ -21,7 +21,19 @@
             {% include 'partials/form-errors.html' with form=form %}
             {% crispy form %}
         {% else %}
-            <div id="hello_sign_interface"></div>
+            <div id="hello_sign_interface" class="row">
+                {% for s in object.signatures %}
+                <div class="col-md-3">
+                    <label><strong>{{ s.signer_name }}</strong></label><br/>{{ s.signer_email_address }}<br/>
+                    {% if s.signed_at %}
+                        <label><strong>Signed On:</strong></label> {{ s.signed_at }}<br/>
+                    {% else %}
+                        <label><strong>Viewed:</strong></label> {{ s.last_viewed_at|default:"Has not viewed the item yet." }}<br/>
+                        <label><strong>Reminded:</strong></label> {{ s.last_reminded_at|default:"Has not been reminded yet." }}
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
         {% endif %}
     {% endblock %}
 

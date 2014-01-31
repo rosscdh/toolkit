@@ -109,7 +109,7 @@ class CustomerCompleteLetterFormMarker(Marker):
 
 class CustomerSignAndSendMarker(Marker):
     name = 'customer_sign_and_send'
-    description = 'Client: Sign & Send the Engagement Letter'
+    description = 'Client: Sign the Engagement Letter'
     signals = ['toolkit.apps.engageletter.signals.customer_sign_and_send']
 
     action_name = 'Sign Engagment Letter'
@@ -123,6 +123,27 @@ class CustomerSignAndSendMarker(Marker):
     def action(self):
         if self.tool:
             if self.tool.status == self.tool.STATUS.customer_sign_and_send:
+                return self.get_action_url()
+        return None
+
+
+class LawyerSignMarker(Marker):
+    name = 'lawyer_sign'
+    description = 'Attorney: Sign the Engagement Letter'
+    signals = ['toolkit.apps.engageletter.signals.customer_sign_and_send']
+
+    action_name = 'Sign & Confirm Engagment Letter'
+    action_type = Marker.ACTION_TYPE.redirect
+    action_user_class = ['lawyer']
+
+    def get_action_url(self):
+        if self.tool is not None:
+            return self.tool.signing_url
+
+    @property
+    def action(self):
+        if self.tool:
+            if self.tool.status == self.tool.STATUS.lawyer_sign:
                 return self.get_action_url()
         return None
 
@@ -143,5 +164,6 @@ class EngagementLetterMarkers(BaseSignalMarkers):
         LawyerInviteUserMarker(3),
         CustomerCompleteLetterFormMarker(4),
         CustomerSignAndSendMarker(5),
-        ProcessCompleteMarker(6)
+        LawyerSignMarker(6),
+        ProcessCompleteMarker(7)
     ]
