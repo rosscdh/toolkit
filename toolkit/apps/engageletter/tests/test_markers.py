@@ -199,6 +199,9 @@ class CustomerCompleteLetterFormMarkerTest(BaseTestMarker):
 
 
 class CustomerSignAndSendMarkerTest(BaseTestMarker):
+    """
+    This step is ONLY valid if the tool.status is "customer_sign_and_send"
+    """
     val = 0
     clazz = CustomerSignAndSendMarker
 
@@ -217,8 +220,15 @@ class CustomerSignAndSendMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.get_action_url(), url)
 
     def test_action(self):
+        # must set the current marker to complete
+        self.subject.tool.status = self.subject.tool.STATUS.customer_sign_and_send
+        self.subject.tool.save(update_fields=['status'])
+
         url = reverse('engageletter:sign', kwargs={'slug': self.subject.tool.slug})
         self.assertEqual(self.subject.action, url)
+
+    def test_action_if_not_correct_status(self):
+        self.assertEqual(self.subject.action, None)
 
 
 class ProcessCompleteMarkerTest(BaseTestMarker):
