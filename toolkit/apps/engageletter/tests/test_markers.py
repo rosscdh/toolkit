@@ -7,6 +7,7 @@ import mock
 
 from toolkit.apps.workspace.markers import Marker
 from toolkit.casper.workflow_case import BaseScenarios
+from toolkit.casper.prettify import mock_http_requests  # must import directly
 
 from .data import ENGAGELETTER_DATA as BASE_ENGAGELETTER_DATA
 from ..models import EngagementLetter
@@ -16,6 +17,7 @@ from ..markers import (LawyerSetupTemplatePrerequisite,
                       LawyerInviteUserMarker,
                       CustomerCompleteLetterFormMarker,
                       CustomerSignAndSendMarker,
+                      LawyerSignMarker,
                       ProcessCompleteMarker)
 
 
@@ -29,20 +31,21 @@ class EngagementLetterMarkersTest(TestCase):
 
     def test_correct_init(self):
         subject = self.subject()
-        self.assertEqual(len(subject.signal_map), 6)
+        self.assertEqual(len(subject.signal_map), 7)
 
     def test_signal_map_name_vals(self):
         subject = self.subject()
         name_vals = [(m.name, m.val) for m in subject.signal_map]
 
-        self.assertEqual(len(name_vals), 6)
+        self.assertEqual(len(name_vals), 7)
 
         self.assertEqual(name_vals, [('lawyer_complete_form', 1),
                                      ('lawyer_review_letter_text', 2),
                                      ('lawyer_invite_customer', 3),
                                      ('customer_complete_form', 4),
                                      ('customer_sign_and_send', 5),
-                                     ('complete', 6)])
+                                     ('lawyer_sign', 6),
+                                     ('complete', 7)])
 
     def test_prerequisite_vals(self):
         subject = self.subject()
@@ -209,7 +212,7 @@ class CustomerSignAndSendMarkerTest(BaseTestMarker):
         self.assertTrue(type(self.subject), self.clazz)
         self.assertEqual(self.subject.val, self.val)
         self.assertEqual(self.subject.name, 'customer_sign_and_send')
-        self.assertEqual(self.subject.description, 'Client: Sign & Send the Engagement Letter')
+        self.assertEqual(self.subject.description, 'Client: Sign the Engagement Letter')
         self.assertEqual(self.subject.signals, ['toolkit.apps.engageletter.signals.customer_sign_and_send'])
         self.assertEqual(self.subject.action_name, 'Sign Engagment Letter')
         self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
@@ -226,6 +229,49 @@ class CustomerSignAndSendMarkerTest(BaseTestMarker):
 
         url = reverse('engageletter:sign', kwargs={'slug': self.subject.tool.slug})
         self.assertEqual(self.subject.action, url)
+
+    def test_action_if_not_correct_status(self):
+        self.assertEqual(self.subject.action, None)
+
+
+class LawyerSignMarkerTest(BaseTestMarker):
+    """
+    This step is ONLY valid if the tool.status is "lawyer_sign"
+    """
+    val = 0
+    clazz = LawyerSignMarker
+    expected_url = 'https://www.hellosign.com/editor/sign?guid=79d41104dcf47068457c813615516f92c4ee6d63'
+
+    def test_properties(self):
+        self.assertTrue(type(self.subject), self.clazz)
+        self.assertEqual(self.subject.val, self.val)
+        self.assertEqual(self.subject.name, 'lawyer_sign')
+        self.assertEqual(self.subject.description, 'Attorney: Sign the Engagement Letter')
+        self.assertEqual(self.subject.signals, ['toolkit.apps.engageletter.signals.lawyer_sign'])
+        self.assertEqual(self.subject.action_name, 'Sign & Confirm Engagment Letter')
+        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
+        self.assertEqual(self.subject.action_user_class, ['lawyer'])
+
+    @mock_http_requests
+    def test_get_action_url(self):
+        """
+        The get_action_url will only return a value if we have a signature request
+        this is an exception cos normally get_action_url always returns a value
+        """
+        self.subject.tool.send_for_signing() # httpretty mocked this request
+        self.assertEqual(self.subject.get_action_url(), self.expected_url)
+
+    @mock_http_requests
+    def test_action(self):
+        # must set the current marker to complete
+        self.subject.tool.send_for_signing() # httpretty mocked this request
+        self.subject.tool.status = self.subject.tool.STATUS.lawyer_sign
+        self.subject.tool.save(update_fields=['status'])
+
+        self.assertEqual(self.subject.action, self.expected_url)
+
+    def test_get_action_url_if_not_correct_status(self):
+        self.assertEqual(self.subject.get_action_url(), None)
 
     def test_action_if_not_correct_status(self):
         self.assertEqual(self.subject.action, None)
