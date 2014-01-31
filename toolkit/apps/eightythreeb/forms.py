@@ -343,6 +343,16 @@ class CustomerEightyThreeBForm(BaseEightyThreeBForm):
                 Field('details_confirmed', template='public/bootstrap3/t_and_c.html'),
                 css_class='dialog dialog-info form-section form-dialog'
             ),
+            'client_full_name',  # hidden widget
+            'client_email',  # hidden widget
+            'company_name',  # hidden widget
+            'date_of_property_transfer',  # hidden widget
+            'description',  # hidden widget
+            'tax_year',  # hidden widget
+            'nature_of_restrictions',  # hidden widget
+            'total_shares_purchased',  # hidden widget
+            'price_paid_per_share',  # hidden widget
+            'transfer_value_share',  # hidden widget
             ButtonHolder(
                 Submit('submit', 'Continue', css_class='btn-hg btn-primary'),
                 css_class='form-group'
