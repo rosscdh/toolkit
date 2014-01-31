@@ -130,7 +130,7 @@ class CustomerSignAndSendMarker(Marker):
 class LawyerSignMarker(Marker):
     name = 'lawyer_sign'
     description = 'Attorney: Sign the Engagement Letter'
-    signals = ['toolkit.apps.engageletter.signals.customer_sign_and_send']
+    signals = ['toolkit.apps.engageletter.signals.lawyer_sign']
 
     action_name = 'Sign & Confirm Engagment Letter'
     action_type = Marker.ACTION_TYPE.redirect
