@@ -12,6 +12,11 @@ from toolkit.apps.workspace.services import HelloSignService, WordService
 
 from toolkit.apps.engageletter.models import EngagementLetter
 
+import httpretty
+import re
+
+from toolkit.apps.workspace.tests.data import HELLOSIGN_200_RESPONSE
+
 
 class Command(BaseCommand):
     args = '<engageletter slug ...>'
@@ -24,7 +29,12 @@ class Command(BaseCommand):
     def records(self):
         return EngagementLetter.objects.filter(slug__in=self.slugs)
 
+    @httpretty.activate
     def handle(self, *args, **options):
+        httpretty.register_uri(httpretty.POST, re.compile(r"^https://api.hellosign.com/v3/(.*)$"),
+                               body=HELLOSIGN_200_RESPONSE,
+                               status=200)
+
         self.slugs = args
 
         try:
@@ -47,7 +57,6 @@ class Command(BaseCommand):
 
             # service = self.service(document=document, invitees=invitees, subject=subject, message=message)
             # result = service.send_for_signing(test_mode=1, client_id=settings.HELLOSIGN_CLIENT_ID)
-
             result = e.send_for_signing()
             PPP.pprint(result.json())
         import pdb;pdb.set_trace()
