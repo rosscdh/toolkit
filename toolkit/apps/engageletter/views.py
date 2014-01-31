@@ -78,3 +78,12 @@ class SignAndSendEngagementLetterView(SingleObjectMixin, FormView):
             'tool': self.object.workspace.tools.filter(slug=self.object.tool_slug).first(),
         })
         return kwargs
+
+    def get_success_url(self):
+        return self.object.markers.marker('customer_sign_and_send').get_action_url()
+
+    def form_valid(self, form):
+        self.object = self.get_object()
+        # Send the object for signing
+        self.object.send_for_signing()
+        return super(SignAndSendEngagementLetterView, self).form_valid(form=form)
