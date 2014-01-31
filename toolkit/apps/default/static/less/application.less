@@ -12,14 +12,9 @@
 @import "modules/checklist";
 
 
-// Typography tweak
-// -------------------------
-// Slight issue with the word spacing
-
 body {
   word-spacing: 2px;
 }
-
 
 // Breadcrumbs
 // -------------------------
@@ -246,6 +241,58 @@ body {
 // -------------------------
 
 .home{
+  .splash { 
+    background:url('/static/images/home-splash.jpg');
+    height:800px;
+    background-position: center bottom;
+    background-size: cover;
+    padding-top:150px;
+    .logo {
+      width:140px;
+    }
+    h2 {
+      font-size:45px;
+      font-weight: normal;
+      opacity:0.9;
+
+    }
+    .lead {
+      opacity:0.8;
+      font-size:22px;
+      margin-bottom:15px;
+    }
+    .lead.sub {
+      font-size:15px;
+      opacity: 0.6;
+      margin-top:0px;
+      margin-bottom:30px;
+    }
+    a {
+      color:white;
+    }
+    h2, .lead {
+      color:white;
+    }
+    .btn {
+      font-size:14px;
+      border-radius:3px;
+      font-weight:normal;
+    }
+    .btn-link {
+      color:white;
+    }
+    input {
+      padding:5px;
+      font-size:14px;
+      color:white;
+      &.email {
+        border-radius:3px;
+        background-color:transparent;
+        border:2px solid white;
+        opacity:0.8;
+      }
+    }
+  }
   .public-headline {
     margin: 100px 0 30px 0px;
   }
@@ -253,10 +300,6 @@ body {
     font-size:45px;
     color:#666;
     margin-top:10px;
-  }
-  .lead.sub {
-    font-size:19px;
-    padding:0px 70px;
   }
   .description {
     background-color:#f6f6f6;
@@ -278,7 +321,9 @@ body {
     }
   }
   .top .btn {
-    margin: 0 10px;
+    margin: 0 4px;
+    padding: 10px 16px;
+
   }
   .feature-wrap {
     background-color: lighten(@green-sea,5%);
@@ -332,6 +377,15 @@ body {
     border-radius:10px;
     img {
       width:45px;
+    }
+  }
+  .quote {
+    padding:90px 0px;
+    background-color:#e7f1f7;
+    color: #666;
+    h5 {
+      margin-top: 0px;
+      font-size:24px;
     }
   }
 }
