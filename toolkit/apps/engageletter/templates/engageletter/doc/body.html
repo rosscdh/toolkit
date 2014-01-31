@@ -4,12 +4,12 @@
 
 <h3>VIA LAWPAL & EMAIL</h3>
 
-<p>{{ client_full_name }} {{ object.name }}</p>
+<p>{{ signatory_full_name }} {{ object.name }}</p>
 
 <p><b>Re:</b>      Letter of Engagement for {{ object.workspace.name }} (the “Company”)</p>
 
 
-<p>Dear {{ client_full_name }}:</p>
+<p>Dear {{ signatory_full_name }}:</p>
 
 
 <p>We are grateful that {{ object.workspace.name }} (“we,” “us,” “our,” and the “Firm”) will have the opportunity to provide legal services to you. We will strive at all times to provide you with the highest quality of professional representation, efficiently and cost-effectively, to earn your continued business.</p>
@@ -81,33 +81,19 @@ You may terminate the Firm’s representation at any time; however, you will be 
 <p><b>ACCEPTED AND AGREED:</b></p>
 
 <p>&nbsp;</p><p>&nbsp;</p>
+
 <p>Dated: ________________<br/>
 {{ object.workspace.lawyer.get_full_name }}
 </p>
 
 
 <p>&nbsp;</p><p>&nbsp;</p>
+
 <p>Dated: ________________<br/>
-{{ client_full_name }}
+{{ signatory_full_name }}
 </p>
 
-<p>&nbsp;</p>
-
-<p>Please provide your billing contact information below:</p>
-<p>
-    <b>Contact:</b> ______________________________________<br/>
-    <b>Title:</b> ________________________________________<br/>
-    <b>Address:</b> ______________________________________<br/>
-    <b>Telephone: </b> ____________________________________<br/>
-    <b>Billing Email:</b> _________________________________________<br/>
-</p>
-
-
-<p>Invoices will be sent via email to client email specified above.
-</p>
-
-
-
+<p>&nbsp;</p><p>&nbsp;</p>
 
 <h3>Exhibit A-1</h3>
 
@@ -115,8 +101,7 @@ You may terminate the Firm’s representation at any time; however, you will be 
 
 {{ description_legal_services }}
 
-
-
+<p>&nbsp;</p><p>&nbsp;</p>
 
 <h3>Exhibit A-2</h3>
 

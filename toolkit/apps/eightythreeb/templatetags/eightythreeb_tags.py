@@ -2,7 +2,6 @@
 import datetime
 
 from django import template
-from django.template.defaultfilters import floatformat
 from django.utils.safestring import mark_safe, SafeText
 
 from dateutil import parser
@@ -40,7 +39,7 @@ def quick_status(eightythreeb):
         return mark_safe('<span class="label label-default">EXPIRED</span>')
 
     else:
-        return mark_safe('<span class="label label-success">%s%%</span>' % floatformat(eightythreeb.markers.percent_complete, '0'))
+        return mark_safe('<span class="label label-success">%s%%</span>' % eightythreeb.markers.percent_complete)
 
 
 @register.filter
