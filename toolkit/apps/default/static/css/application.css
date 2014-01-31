@@ -2,6 +2,9 @@
   border-bottom-color: #444444 !important;
   border-top-color: #444444 !important;
 }
+body {
+  word-spacing: 2px;
+}
 .breadcrumbs {
   background-color: #f4f4f4;
 }
@@ -9,18 +12,35 @@
   background-color: transparent;
   margin-bottom: 0;
 }
+.breadcrumb-text {
+  margin-bottom: 10px;
+}
 .container-fluid {
-  padding: 0 50px;
+  padding: 0 20px;
 }
 .main-content {
   margin-top: 20px;
 }
+.content .page-header h4 {
+  font-size: 20px;
+}
+.content .lead {
+  font-size: 22px;
+}
+.help-block {
+  font-size: 14px;
+}
 .form-inline .form-group .input-group .form-control {
   display: inline-block;
 }
+.form-inline .form-group.datetime .input-group .form-control,
+.form-inline .form-group.datetime .input-group .input-group-btn .btn {
+  margin-bottom: 15px;
+}
 .form-inline .form-group + .form-group,
 .form-inline .form-group + .help-block,
-.form-inline .help-block + .form-group {
+.form-inline .help-block + .form-group,
+.form-inline .input-group + .help-block {
   margin-left: 10px;
   margin-top: 0;
 }
@@ -62,11 +82,18 @@
 .navbar {
   margin-bottom: 0;
 }
-.nav-list .icon {
+.nav-list-vivid .nav-header {
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-top: 5px;
+  border-top: 2px solid #e5e5e5;
+  margin-top: 15px;
+}
+.nav-list-vivid .icon {
   float: left;
   margin-right: 5px;
 }
-.nav-list .icon img {
+.nav-list-vivid .icon img {
   height: 17px;
   margin-top: -4px;
   width: 22px;
@@ -81,6 +108,12 @@
 .popover-content {
   font-size: 14px;
   line-height: 1.226;
+}
+.firm-logo-preview {
+  margin-right: 15px;
+}
+.page-header h4 {
+  font-size: 28px;
 }
 .page-header .caption {
   color: #bdc3c7;
@@ -108,6 +141,9 @@
   border-width: 2px;
   margin-top: 0px;
   padding-bottom: 11px;
+}
+.sidebar {
+  padding-right: 30px;
 }
 .parsley-validated.parsley-error {
   color: #e74c3c;
@@ -144,12 +180,12 @@
   margin: 100px 0 30px 0px;
 }
 .home h2 {
-  font-size: 40px;
+  font-size: 45px;
   color: #666;
   margin-top: 10px;
 }
 .home .lead.sub {
-  font-size: 22px;
+  font-size: 19px;
   padding: 0px 70px;
 }
 .home .description {
@@ -159,7 +195,7 @@
 }
 .home .description .benefit {
   text-align: center;
-  padding: 20px;
+  padding: 15px;
 }
 .home .description .benefit img {
   height: 80px;
@@ -171,8 +207,96 @@
 .home .description .benefit p {
   font-size: 14px;
 }
-.home .btn {
+.home .top .btn {
   margin: 0 10px;
+}
+.home .feature-wrap {
+  background-color: #6fd17c;
+  border-bottom: 3px solid #74bf80;
+  padding: 15px 0px 20px 0px;
+}
+.home .feature-wrap * {
+  color: white;
+}
+.home .feature-wrap span.ico {
+  font-size: 60px;
+  line-height: 90px;
+}
+.home .feature-wrap h4 {
+  font-size: 22px;
+  margin-top: 0px;
+}
+.home .feature-wrap p {
+  font-size: 14px;
+  line-height: 19px;
+  padding: 0px 20px;
+  opacity: 0.8;
+}
+.home .toolkit-wrap {
+  background-color: #efefef;
+  min-height: 600px;
+  padding: 60px 0px;
+}
+.home .toolkit-wrap h2 {
+  color: #aaa;
+  font-size: 25px;
+  margin-bottom: 10px;
+}
+.home .toolkit-wrap h3 {
+  font-size: 25px;
+  margin-top: 10px;
+}
+.home .toolkit-wrap hr {
+  border-color: #ddd;
+  width: 60%;
+}
+.home .icon-wrap {
+  background-color: #f9f9f9;
+  padding: 12px 0px 20px 0px;
+  -webkit-box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.15);
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.15);
+  width: 70px;
+  height: 70px;
+  text-align: center;
+  margin: 0px 0 18px 0;
+  border-radius: 10px;
+}
+.home .icon-wrap img {
+  width: 45px;
+}
+.tool-landing {
+  min-height: 600px;
+}
+.tool-landing h1 {
+  margin: 25px 0px 30px 0px;
+  font-size: 50px;
+}
+.tool-landing h2 {
+  font-size: 30px;
+  font-weight: normal;
+}
+.tool-landing .icon-wrap {
+  background-color: #f9f9f9;
+  padding: 26px 0px 20px 0px;
+  -webkit-box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.15);
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.15);
+  width: 150px;
+  height: 150px;
+  text-align: center;
+  margin: 45px auto 0px auto;
+  border-radius: 10px;
+}
+.tool-landing .icon-wrap img {
+  width: 90px;
+}
+.tool-landing .feature-grid {
+  margin-top: 40px;
+}
+.tool-landing .feature-grid span {
+  font-size: 30px;
+}
+.tool-landing .feature-grid .feature {
+  padding: 20px 20px;
 }
 .section {
   margin-bottom: 20px;
@@ -241,4 +365,84 @@
 }
 .attachment-list-item-meta {
   margin-top: 20px;
+}
+.dashboard {
+  margin-top: -30px;
+}
+.dashboard .inner {
+  border: 2px solid #a2e1aa;
+  padding: 14px 18px 20px 18px;
+  border-radius: 0px 0px 10px 10px;
+}
+.dashboard .pending .inner {
+  border-color: #fde579;
+}
+.dashboard .pending .client {
+  background-color: #fde579;
+}
+.dashboard .pending .widget {
+  opacity: 1;
+}
+.dashboard .pending .widget h6 {
+  color: #222;
+}
+.dashboard .widget {
+  background-color: #f5f5f5;
+  border: 1px solid #ededed;
+  padding: 20px 0px 15px 0px;
+  border-radius: 5px;
+  font-size: 13px;
+  margin-top: 30px;
+  cursor: pointer;
+  opacity: 0.7;
+}
+.dashboard .widget:active {
+  margin: 31px -1px -1px 1px;
+  opacity: 1;
+}
+.dashboard .widget h6 {
+  font-size: 16px;
+  color: #44;
+  margin-bottom: 5px;
+}
+.dashboard .widget div.progress {
+  margin: 0 auto;
+  width: 75%;
+}
+.dashboard .widget div.img-wrap {
+  background-color: white;
+  width: 72px;
+  margin: 0 auto;
+  margin-top: -50px;
+  padding: 19px;
+  border-radius: 80px;
+  border: 2px solid #ededed;
+}
+.dashboard .widget div.img-wrap img {
+  width: 30px;
+}
+.dashboard .widget:hover {
+  background-color: #f1f1f1;
+}
+.dashboard .widget span.lg {
+  font-size: 17px;
+}
+.dashboard .widget ul {
+  margin-bottom: 5px;
+}
+.dashboard .widget ul li {
+  padding-left: 7px;
+  padding-right: 7px;
+}
+.dashboard .widget ul li * {
+  vertical-align: middle;
+}
+.dashboard .client {
+  font-size: 16px;
+  background-color: #9ee0a6;
+  color: white;
+  font-weight: normal;
+  margin-bottom: 0px;
+  padding: 10px;
+  border-radius: 5px 5px 0px 0px;
 }

@@ -4,10 +4,15 @@ from django.template import loader
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 
-from uuidfield import UUIDField
+from datetime import datetime
 from jsonfield import JSONField
+from uuidfield import UUIDField
 
 from rulez import registry as rulez_registry
+from storages.backends.s3boto import S3BotoStorage
+
+from toolkit.apps.eightythreeb.managers import AttachmentManger
+from toolkit.apps.eightythreeb.mixins import IsDeletedMixin
 
 from toolkit.apps.workspace.signals import base_signal
 from toolkit.apps.workspace.mixins import WorkspaceToolModelMixin
@@ -18,6 +23,14 @@ ENGAGEMENTLETTER_STATUS = EngagementLetterMarkers().named_tuple(name='ENGAGEMENT
 from .mixins import (IsDeletedMixin,
                      StatusMixin,
                      HTMLMixin)
+
+import os
+
+
+def _upload_file(instance, filename):
+    filename = os.path.split(filename)[-1]
+    filename_no_ext, ext = os.path.splitext(filename)
+    return 'templates/engageletter-%d-%s%s' % (instance.tool.user.pk, slugify(filename_no_ext), ext)
 
 
 class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, WorkspaceToolModelMixin, models.Model):
@@ -41,7 +54,7 @@ class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, WorkspaceToolMode
     status = models.IntegerField(choices=ENGAGEMENTLETTER_STATUS.get_choices(), default=ENGAGEMENTLETTER_STATUS.lawyer_complete_form, db_index=True)
 
     def __unicode__(self):
-        return u'Engagement Letter for %s' % self.client_name
+        return u'#%s Engagement Letter' % self.file_number
 
     @property
     def tool_slug(self):
@@ -60,8 +73,21 @@ class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, WorkspaceToolMode
         return self.status == self.STATUS.complete
 
     @property
-    def client_name(self):
-        return self.data.get('client_full_name', None)
+    def file_number(self):
+        return self.data.get('file_number', None)
+
+    @property
+    def signatory_name(self):
+        return self.data.get('signatory_full_name', None)
+
+    @property
+    def signatory_title(self):
+        return self.data.get('signatory_title', None)
+
+    @property
+    def date_of_letter(self):
+        date = self.data.get('date_of_letter', None)
+        return datetime.strptime(date, '%Y-%m-%d')
 
     @property
     def filename(self):
@@ -105,5 +131,19 @@ class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, WorkspaceToolMode
 rulez_registry.register("can_read", EngagementLetter)
 rulez_registry.register("can_edit", EngagementLetter)
 rulez_registry.register("can_delete", EngagementLetter)
+
+
+class Attachment(IsDeletedMixin, models.Model):
+    tool = models.ForeignKey('engageletter.EngagementLetter')
+    attachment = models.FileField(upload_to=_upload_file, blank=True, storage=S3BotoStorage())
+    body = models.TextField()
+    is_deleted = models.BooleanField(default=False)
+
+    objects = AttachmentManger()
+
+    def can_delete(self, user):
+        return user == self.tool.user
+
+rulez_registry.register("can_delete", Attachment)
 
 from .signals import *

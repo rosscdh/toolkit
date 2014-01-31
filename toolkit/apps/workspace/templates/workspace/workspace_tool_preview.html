@@ -3,7 +3,14 @@
 {% load url from future %}{% load humanize workspace_markers %}
 
 {% block header %}
-    <h4 class="caption"><a href="{% url 'workspace:view' slug=workspace.slug %}">{{ workspace.name }}</a></h4>
+    <div class="breadcrumb-text">
+        <h4 class="caption">
+            <a href="{% url 'workspace:view' slug=workspace.slug %}">{{ workspace.name }}</a>
+        </h4>
+        <h4 class="caption">
+            <a href="{% url 'workspace:tool_object_list' workspace=workspace.slug tool=tool.slug %}">{{ tool.name }}</a>
+        </h4>
+    </div>
     <h4>{{ object }}</h4>
 {% endblock %}
 

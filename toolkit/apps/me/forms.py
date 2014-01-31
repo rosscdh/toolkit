@@ -78,7 +78,8 @@ class AccountSettingsForm(forms.ModelForm):
                 )
             ),
             ButtonHolder(
-                Submit('submit', 'Save changes', css_class='btn btn-primary btn-lg')
+                Submit('submit', 'Save changes', css_class='btn btn-primary btn-lg'),
+                css_class='form-group'
             )
         )
 
@@ -170,9 +171,9 @@ class ConfirmAccountForm(AccountSettingsForm):
                 Field('new_password2', css_class='input-lg'),
             ),
             ButtonHolder(
-                Submit('submit', 'Create Account', css_class='btn btn-primary btn-hg')
+                Submit('submit', 'Continue', css_class='btn btn-primary btn-lg'),
+                css_class='form-group'
             )
-
         )
 
     def clean_new_password2(self):
@@ -193,9 +194,34 @@ class ConfirmAccountForm(AccountSettingsForm):
 
 @parsleyfy
 class LawyerLetterheadForm(forms.Form):
-    firm_name = forms.CharField(required=True)
-    firm_address = forms.CharField(required=True, widget=forms.Textarea)
-    firm_logo = forms.ImageField(required=False)
+    firm_name = forms.CharField(
+        error_messages={
+            'required': "Firm name can not be blank."
+        },
+        help_text='',
+        label='Firm name',
+        required=True,
+        widget=forms.TextInput(attrs={'placeholder': 'Firm name', 'size': '40'})
+    )
+
+    firm_address = forms.CharField(
+        error_messages={
+            'required': "Firm address can not be blank."
+        },
+        help_text='',
+        label='Firm address',
+        required=True,
+        widget=forms.Textarea(attrs={
+            'cols': '80',
+            'data-toggle': 'summernote'
+        })
+    )
+
+    firm_logo = forms.ImageField(
+        help_text='',
+        label='',
+        required=False
+    )
 
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance')
@@ -204,20 +230,24 @@ class LawyerLetterheadForm(forms.Form):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Div(
+                'firm_name',
+                HTML('<label>Firm logo</label>'),
                 Div(
-                    'firm_name',
-                    'firm_address',
-                    css_class='col-md-6'
+                    Div(
+                        HTML('{% load thumbnail %}{% thumbnail object.firm_logo "x150" crop="center" as im %}<img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" class="img-thumbnail">{% endthumbnail %}'),
+                        css_class='firm-logo-preview pull-left'
+                    ),
+                    Div(
+                        'firm_logo',
+                        css_class='pull-left',
+                    ),
+                    css_class='form-group clearfix'
                 ),
-                Div(
-                    'firm_logo',
-                    HTML('{% load thumbnail %}{% thumbnail object.firm_logo "210x100" crop="center" as im %}<img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">{% endthumbnail %}'),
-                    css_class='col-md-6'
-                ),
-                css_class='row'
+                'firm_address'
             ),
             ButtonHolder(
-                Submit('submit', 'Save', css_class='btn btn-primary btn-lg')
+                Submit('submit', 'Save', css_class='btn btn-primary btn-lg'),
+                css_class='form-group'
             )
         )
         super(LawyerLetterheadForm, self).__init__(*args, **kwargs)
