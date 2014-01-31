@@ -66,6 +66,9 @@ class SetupEngagementLetterTemplateView(IssueSignalsMixin, LawyerLetterheadView)
 
 
 class SignAndSendEngagementLetterView(SingleObjectMixin, FormView):
+    """
+    View to allow Customer to agree and sign the document using HelloSign
+    """
     model = EngagementLetter
     form_class = SignEngagementLetterForm
     template_name = 'engageletter/sign_engageletter.html'
