@@ -31,11 +31,11 @@
 {% endblock %}
 
 {% block css %}
-    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
-    <link href="{{ STATIC_URL }}css/summernote.css" rel="stylesheet">
+    {{ block.super }}
+    {{ form.media.css }}
 {% endblock %}
 
 {% block js %}
-    <script src="{{ STATIC_URL }}js/summernote.min.js"></script>
-    <script src="{{ STATIC_URL }}js/tool-form.js"></script>
+    {{ block.super }}
+    {{ form.media.js }}
 {% endblock %}
