@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
-
 from django import forms
+from django.conf import settings
 from django.shortcuts import get_object_or_404
-from django.views.generic import FormView, TemplateView
+from django.views.generic import FormView
 
 from crispy_forms.helper import FormHelper
+
+from toolkit.apps.workspace.services import HelloSignService, WordService
 
 from .models import Workspace
 
 import re
 import logging
+from datetime import datetime
 logger = logging.getLogger('django.request')
 
 
@@ -145,3 +147,19 @@ class IssueSignalsMixin(object):
 
         else:
             logger.error('The "%s" object must define a base_signal property which returns the app base signal' % instance._meta.model.__name__)
+
+
+class SendForSigningMixin(object):
+    signing_service = HelloSignService
+
+    def send_for_signing(self):
+        doc_service = WordService()
+        document = doc_service.generate(html=self.html())
+
+        subject = 'Signature Request for %s' % self
+        message = 'Please review and sign this document at your earliest convenience'
+        invitees = [{'name': u.get_full_name(), 'email': u.email} for u in [self.workspace.lawyer, self.user]]
+
+        service = self.signing_service(document=document, invitees=invitees, subject=subject, message=message)
+        result = service.send_for_signing(test_mode=1, client_id=settings.HELLOSIGN_CLIENT_ID)
+        return result
