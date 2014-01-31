@@ -1,4 +1,4 @@
-{% extends 'workspace/workspace_tool_preview.html' %}{% load url from future %}{% load crispy_forms_tags django_bootstrap_breadcrumbs %}
+{% extends 'workspace/workspace_tool_preview.html' %}{% load url from future %}{% load crispy_forms_tags django_bootstrap_breadcrumbs toolkit_tags %}
 
 {% block page_title %}Sign the Engagement Letter{% endblock  %}
 
@@ -16,9 +16,35 @@
     {% endblock %}
 
     {% block preview %}
-        {{ block.super }}
-        {% include 'partials/form-errors.html' with form=form %}
-        {% crispy form %}
+        {% if not object.signature_request_id %}
+            {{ block.super }}
+            {% include 'partials/form-errors.html' with form=form %}
+            {% crispy form %}
+        {% else %}
+            <div id="hello_sign_interface"></div>
+        {% endif %}
     {% endblock %}
 
+{% endblock %}
+
+{% block js %}
+    {% if not object.signature_request_id %}
+        {{ block.super }}
+    {% else %}
+        <script src="//s3.amazonaws.com/cdn.hellofax.com/js/embedded.js"></script>
+        <script type="text/javascript">
+        $(document).ready(function () {
+            'use strict';
+            HelloSign.init(window.GLOBALS.HELLOSIGN_CLIENT_ID);
+            HelloSign.open({
+                url: "{{ object.signing_url }}",                           // Signature url your fetched via the API on your server
+                redirectUrl: "{% FULL_DOMAIN_PATH object.get_absolute_url %}",     // (optional) Where to go after the user signed
+                allowCancel: true,                              // (optional) Whether to allow the user to cancel i.e. close the iFrame without signing (default is true)
+                messageListener: function(eventData) {          // (optional) Called whenever the iFrame is messaging your page
+                    /*  do something */ 
+                }    
+            });
+        });
+        </script>
+    {% endif %}
 {% endblock %}
