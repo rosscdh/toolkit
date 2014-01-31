@@ -11,6 +11,7 @@ from toolkit.apps.workspace.services import HelloSignService, WordService
 from .models import Workspace
 
 import re
+import json
 import logging
 from datetime import datetime
 logger = logging.getLogger('django.request')
@@ -152,14 +153,44 @@ class IssueSignalsMixin(object):
 class SendForSigningMixin(object):
     signing_service = HelloSignService
 
+    @property
+    def signing_data(self):
+        return self.data.get('signature', {}) if hasattr(self, 'data') else None
+
+    @property
+    def signatures(self):
+        return self.signing_data.get('signatures', [])
+
     def send_for_signing(self):
         doc_service = WordService()
         document = doc_service.generate(html=self.html())
 
+        # turn this into a method that can be overriden
         subject = 'Signature Request for %s' % self
+        # turn this into a method that can be overriden
         message = 'Please review and sign this document at your earliest convenience'
+        # turn this into a method that can be overriden
         invitees = [{'name': u.get_full_name(), 'email': u.email} for u in [self.workspace.lawyer, self.user]]
 
         service = self.signing_service(document=document, invitees=invitees, subject=subject, message=message)
-        result = service.send_for_signing(test_mode=1, client_id=settings.HELLOSIGN_CLIENT_ID)
-        return result
+        resp = service.send_for_signing(test_mode=1, client_id=settings.HELLOSIGN_CLIENT_ID)
+
+        if hasattr(self, 'data'):
+            if 'signature_request' not in resp.json() or resp.status_code not in [200]:
+                raise Exception('Could not send document for signing: %s' % resp.json())
+
+            result = resp.json()['signature_request']
+            #
+            # Add the date because HelloSign does not
+            #
+            result.update({
+                'date_sent': str(datetime.utcnow())
+            })
+            self.data['signature'] = result
+            self.save(update_fields=['data'])
+            #
+            # Update with our set date_sent variable
+            #
+            resp._content = json.dumps(result)
+
+        return resp
