@@ -2,11 +2,15 @@
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 
-from toolkit.apps.workspace.services import HelloSignService, WordService
-from toolkit.apps.sign.models import HelloSignRequest
+from .services import HelloSignService
+from .models import HelloSignRequest
+
+from . import logger
 
 import json
 import datetime
+
+HELLOSIGN_TEST_MODE = getattr(settings, 'HELLOSIGN_TEST_MODE', 1)
 
 
 class ModelContentTypeMixin(object):
@@ -21,7 +25,7 @@ class ModelContentTypeMixin(object):
                                        model=self._meta.model_name)
 
 
-class HelloSignModelMixin(§):
+class HelloSignModelMixin(ModelContentTypeMixin):
     def hellosign_requests(self):
         """
         QuerySet of HelloSignRequest objects
@@ -85,12 +89,17 @@ class HelloSignModelMixin(§):
         """
         return [{'name': u.get_full_name(), 'email': u.email} for u in [self.workspace.lawyer, self.user]]
 
+    def html(self):
+        """
+        Return the html to be converted into a pdf/word doc for signing
+        """
+        raise Exception('You must override this method and return the pdf/docx/doc file to send to HelloSign')
+
     def hs_document(self, html):
         """
         Return the document to be senf for signing
         """
-        doc_service = WordService()
-        return doc_service.generate(html=html)
+        raise Exception('You must override this method and return the pdf/docx/doc file to send to HelloSign')
 
     def get_hs_service(self):
         """
@@ -106,7 +115,7 @@ class HelloSignModelMixin(§):
         Primary method used to send a document for signing
         """
         service = self.get_hs_service()
-        resp = service.send_for_signing(test_mode=1,
+        resp = service.send_for_signing(test_mode=HELLOSIGN_TEST_MODE,
                                         client_id=settings.HELLOSIGN_CLIENT_ID)
 
         if 'signature_request' not in resp.json() or resp.status_code not in [200]:
@@ -130,5 +139,6 @@ class HelloSignModelMixin(§):
         # Update with our set date_sent variable
         #
         resp._content = json.dumps(result)
+        logger.info('Got HelloSign Signature Response: %s' % resp)
 
         return resp
