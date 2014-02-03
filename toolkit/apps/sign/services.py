@@ -13,7 +13,7 @@ class HelloSignService(object):
     """
     def __init__(self, document, invitees, **kwargs):
         self.document = document
-        logger.info('Submitting document to HelloSign: "%s"'%(document.name,))
+        logger.info('Submitting document to HelloSign: "%s"' % document.name)
 
         # Dependency injected class for testing
         self.HelloSignSignatureClass = kwargs.get('HelloSignSignatureClass', HelloSignEmbeddedDocumentSignature)
@@ -27,7 +27,6 @@ class HelloSignService(object):
             self.hellosign_authentication = settings.HELLOSIGN_AUTHENTICATION
         except AttributeError:
             logger.critical("No settings.HELLOSIGN_AUTH has been specified. Please provide them")
-
 
     def send_for_signing(self, **kwargs):
         signature = self.HelloSignSignatureClass(title=self.document.name, subject=self.subject, message=self.message)
