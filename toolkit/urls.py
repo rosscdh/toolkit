@@ -24,6 +24,9 @@ urlpatterns = patterns('',
     url(r'^83b/', include('toolkit.apps.eightythreeb.urls', namespace='eightythreeb')),
     url(r'^engagement-letters/', include('toolkit.apps.engageletter.urls', namespace='engageletter')),
 
+    # signing events
+    url(r'^sign/', include('toolkit.apps.sign.urls', namespace='sign')),
+
     # home default terminator
     url(r'^', include('toolkit.apps.default.urls', namespace='public')),
 )
