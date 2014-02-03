@@ -363,7 +363,7 @@ body {
   width: 140px;
 }
 .home .splash h2 {
-  font-size: 45px;
+  font-size: 50px;
   font-weight: normal;
   opacity: 0.9;
 }
@@ -393,16 +393,35 @@ body {
 .home .splash .btn-link {
   color: white;
 }
-.home .splash input {
+.home .splash input,
+.home .splash select {
   padding: 5px;
   font-size: 14px;
   color: white;
 }
-.home .splash input.email {
+.home .splash input.email,
+.home .splash select.email {
   border-radius: 3px;
   background-color: transparent;
   border: 2px solid white;
   opacity: 0.8;
+}
+.home .splash select {
+  margin: 0;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  opacity: 0.8;
+  background: transparent;
+  color: #FFF;
+  border: 2px solid white;
+  outline: none;
+  display: inline-block;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  width: 160px;
 }
 .home .public-headline {
   margin: 100px 0 30px 0px;
