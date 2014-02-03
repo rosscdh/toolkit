@@ -80,6 +80,7 @@ DJANGO_APPS = (
 
 PROJECT_APPS = (
     'toolkit.apps.api',
+    'toolkit.apps.sign',
     'toolkit.apps.default',
     'toolkit.apps.dash',
     'toolkit.apps.me',
