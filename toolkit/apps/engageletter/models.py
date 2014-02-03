@@ -14,7 +14,9 @@ from storages.backends.s3boto import S3BotoStorage
 from toolkit.apps.eightythreeb.managers import AttachmentManger
 
 from toolkit.apps.workspace.signals import base_signal
-from toolkit.apps.workspace.mixins import WorkspaceToolModelMixin, SendForSigningMixin
+from toolkit.apps.workspace.mixins import WorkspaceToolModelMixin
+
+from toolkit.apps.sign.mixins import HelloSignModelMixin
 
 from .markers import EngagementLetterMarkers
 ENGAGEMENTLETTER_STATUS = EngagementLetterMarkers().named_tuple(name='ENGAGEMENTLETTER_STATUS')
@@ -32,7 +34,7 @@ def _upload_file(instance, filename):
     return 'templates/engageletter-%d-%s%s' % (instance.tool.user.pk, slugify(filename_no_ext), ext)
 
 
-class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, SendForSigningMixin, WorkspaceToolModelMixin, models.Model):
+class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, HelloSignModelMixin, WorkspaceToolModelMixin, models.Model):
     """
     Enagement Letter model
     """

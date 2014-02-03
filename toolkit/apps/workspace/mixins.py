@@ -1,17 +1,13 @@
 # -*- coding: utf-8 -*-
 from django import forms
-from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.views.generic import FormView
 
 from crispy_forms.helper import FormHelper
 
-from toolkit.apps.workspace.services import HelloSignService, WordService
-
 from .models import Workspace
 
 import re
-import json
 import logging
 from datetime import datetime
 logger = logging.getLogger('django.request')
@@ -148,57 +144,3 @@ class IssueSignalsMixin(object):
 
         else:
             logger.error('The "%s" object must define a base_signal property which returns the app base signal' % instance._meta.model.__name__)
-
-
-class SendForSigningMixin(object):
-    signing_service = HelloSignService
-
-    @property
-    def signing_data(self):
-        return self.data.get('signature', {}) if hasattr(self, 'data') else {}
-
-    @property
-    def signature_request_id(self):
-        return self.signing_data.get('signature_request_id', None)
-
-    @property
-    def signing_url(self):
-        return self.signing_data.get('signing_url', None)
-
-    @property
-    def signatures(self):
-        return self.signing_data.get('signatures', [])
-
-    def send_for_signing(self):
-        doc_service = WordService()
-        document = doc_service.generate(html=self.html())
-
-        # turn this into a method that can be overriden
-        subject = 'Signature Request for %s' % self
-        # turn this into a method that can be overriden
-        message = 'Please review and sign this document at your earliest convenience'
-        # turn this into a method that can be overriden
-        invitees = [{'name': u.get_full_name(), 'email': u.email} for u in [self.workspace.lawyer, self.user]]
-
-        service = self.signing_service(document=document, invitees=invitees, subject=subject, message=message)
-        resp = service.send_for_signing(test_mode=1, client_id=settings.HELLOSIGN_CLIENT_ID)
-
-        if hasattr(self, 'data'):
-            if 'signature_request' not in resp.json() or resp.status_code not in [200]:
-                raise Exception('Could not send document for signing: %s' % resp.json())
-
-            result = resp.json()['signature_request']
-            #
-            # Add the date because HelloSign does not
-            #
-            result.update({
-                'date_sent': str(datetime.utcnow())
-            })
-            self.data['signature'] = result
-            self.save(update_fields=['data'])
-            #
-            # Update with our set date_sent variable
-            #
-            resp._content = json.dumps(result)
-
-        return resp
