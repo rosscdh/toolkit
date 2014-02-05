@@ -7,6 +7,8 @@ from .widgets import SummernoteWidget
 
 
 class SummernoteField(CharField):
+    widget = SummernoteWidget
+
     attributes = {
         'blockquote': ['style',],
         'div': ['style',],
@@ -32,8 +34,6 @@ class SummernoteField(CharField):
         'span',
         'ul',
     ]
-
-    widget = SummernoteWidget
 
     def __init__(self, tags=None, attributes=None, styles=None, strip=True, *args, **kwargs):
         super(SummernoteField, self).__init__(*args, **kwargs)
