@@ -115,13 +115,13 @@ class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, HelloSignModelMix
         context = loader.Context(context_data)
         return self.template.render(context)
 
-    def hs_document(self, html):
+    def hs_document(self):
         """
         Return the document to be senf for signing
         Ties in with HelloSignModelMixin method
         """
         doc_service = WordService()
-        return doc_service.generate(html=html)
+        return doc_service.generate(html=self.html())
 
     def get_absolute_url(self):
         return reverse('workspace:tool_object_overview', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug=self.tool_slug).first().slug, 'slug': self.slug})
