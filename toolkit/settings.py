@@ -80,7 +80,6 @@ DJANGO_APPS = (
 
 PROJECT_APPS = (
     'toolkit.apps.api',
-    'toolkit.apps.sign',
     'toolkit.apps.default',
     'toolkit.apps.dash',
     'toolkit.apps.me',
@@ -89,6 +88,8 @@ PROJECT_APPS = (
     # Apps
     'toolkit.apps.eightythreeb',
     'toolkit.apps.engageletter',
+    # Lawpal Modules
+    'hello_sign',
 )
 
 HELPER_APPS = (
