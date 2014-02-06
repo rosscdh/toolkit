@@ -9,7 +9,7 @@ PPP = pprint.PrettyPrinter(indent=4)
 from tempfile import NamedTemporaryFile
 
 from toolkit.apps.workspace.services import WordService
-from toolkit.apps.sign.services import HelloSignService
+from hello_sign.services import HelloSignService
 
 from toolkit.apps.engageletter.models import EngagementLetter
 

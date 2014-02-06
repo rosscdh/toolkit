@@ -25,7 +25,7 @@ urlpatterns = patterns('',
     url(r'^engagement-letters/', include('toolkit.apps.engageletter.urls', namespace='engageletter')),
 
     # signing events
-    url(r'^sign/', include('toolkit.apps.sign.urls', namespace='sign')),
+    url(r'^sign/', include('hello_sign.urls', namespace='sign')),
 
     # home default terminator
     url(r'^', include('toolkit.apps.default.urls', namespace='public')),

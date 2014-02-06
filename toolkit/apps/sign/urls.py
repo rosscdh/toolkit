@@ -1,9 +1,0 @@
-# -*- coding: utf-8 -*-
-from django.conf.urls import patterns, url, include
-
-from .views import HelloSignWebhookEventHandler
-
-
-urlpatterns = patterns('',
-    url(r'^hellosign/event/$', HelloSignWebhookEventHandler.as_view(), name='hellosign_webhook_event'),
-)

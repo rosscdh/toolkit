@@ -17,7 +17,7 @@ from toolkit.apps.workspace.services import WordService
 from toolkit.apps.workspace.signals import base_signal
 from toolkit.apps.workspace.mixins import WorkspaceToolModelMixin
 
-from toolkit.apps.sign.mixins import HelloSignModelMixin
+from hello_sign.mixins import HelloSignModelMixin
 
 from .markers import EngagementLetterMarkers
 ENGAGEMENTLETTER_STATUS = EngagementLetterMarkers().named_tuple(name='ENGAGEMENTLETTER_STATUS')

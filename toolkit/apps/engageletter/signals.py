@@ -3,6 +3,8 @@ from django.dispatch import Signal, receiver
 
 from toolkit.apps.workspace.signals import _update_marker
 
+from hello_sign.signals import hellosign_webhook_event_recieved
+
 import logging
 logger = logging.getLogger('django.request')
 
@@ -118,3 +120,14 @@ def on_complete(sender, instance, actor, **kwargs):
                    next_status=instance.STATUS.complete,
                    actor_name=actor_name,
                    instance=instance)
+
+
+@receiver(hellosign_webhook_event_recieved)
+def on_hellosign_webhook_event_recieved(sender, hellosign_log, signature_request_id, hellosign_request, event_type, data, **kwargs):
+  import pprint
+  import json
+  logging.info('Recieved event: %s for request: %s' % (event_type, hellosign_request,))
+  logging.info(data)
+  PPP = pprint.PrettyPrinter(indent=4)
+  PPP.pprint(json.dumps(data))
+
