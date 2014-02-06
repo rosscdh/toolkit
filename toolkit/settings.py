@@ -88,6 +88,8 @@ PROJECT_APPS = (
     # Apps
     'toolkit.apps.eightythreeb',
     'toolkit.apps.engageletter',
+
+    'toolkit.core',
 )
 
 HELPER_APPS = (

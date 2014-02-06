@@ -14,7 +14,7 @@ from crispy_forms.layout import ButtonHolder, Div, Field, Fieldset, HTML, Submit
 
 from parsley.decorators import parsleyfy
 
-from toolkit.fields import SummernoteField
+from toolkit.core.fields import SummernoteField
 from toolkit.mixins import ModalForm
 
 User = get_user_model()
