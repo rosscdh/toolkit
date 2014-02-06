@@ -13,8 +13,7 @@ td {-webkit-touch-callout: none; -webkit-user-select: none;-khtml-user-select: n
 td ul li {font-size:13px;}
 td ul li a {color:#666;}
 
-.fui-document {font-size:14px;padding-left:4px;}
-.checklist {overflow:scroll!important}
+.checklist {overflow :scroll!important}
 .document-drawer{display:none;}
 .doc-list {margin-bottom:3px;}
 .doc-list li {font-size:13px;padding:5px 0px 5px 0px;border-top:1px solid #ddd!important;}
@@ -35,7 +34,7 @@ td .tools {font-size:10px;}
 	padding:0px 10px 10px 10px;
 	color:#9b59b6;
 	margin-bottom:20px;
-	margin-top:20px;
+	margin-top:20px; 
 }
 .founders-fund {
 	border:1px solid #e67e22;
@@ -89,6 +88,10 @@ td .tools {font-size:10px;}
 #checklist table.checklist tr {
   border-top: 1px solid #f2f2f2;
 }
+#checklist table.checklist tr.item-file {
+  background-color: #f2f2f2;
+  display: none;
+}
 #checklist table.checklist th {
   background-color: #f2f2f2;
 }
@@ -118,13 +121,13 @@ td .tools {font-size:10px;}
   font-size: 12px;
 }
 #checklist table.checklist tr td.item-title {
-  font-size: 13px;
+  font-size: 14px;
   font-family: Helvetica;
   word-spacing: normal;
   color: #777;
   font-weight: bold;
   padding-left: 0px;
-  padding-top: 10px;
+  padding-top: 9px;
 }
 #checklist table.checklist tr td.item-title.text-success {
   color: #25a25a;
@@ -144,29 +147,40 @@ td .tools {font-size:10px;}
 #checklist table.checklist .msg .new span {
   font-size: 16px;
 }
-#checklist table.checklist div.who {
-  background-color: white;
-  border: 1px solid #83d78d;
-  border-left: 2px solid #3cbd4c;
-  color: #5ccb6a;
-  font-size: 12px;
-  display: inline;
-  height: 20px;
-  padding: 3px;
-  margin-right: 1px;
-}
 #checklist table.checklist div.what {
   background-color: #42d0e5;
   border-left: 2px solid #1ec3db;
   color: white;
-  font-size: 11px;
+  font-size: 12px;
+  display: inline;
+  height: 20px;
+  padding: 5px;
+  margin-right: 5px;
+}
+#checklist table.checklist div.what span {
+  font-size: 12px;
+}
+#checklist table.checklist div.what2 {
+  background-color: #6bdb7e;
+  border-left: 2px solid #46d25e;
+  color: white;
+  font-size: 12px;
   display: inline;
   height: 20px;
   padding: 5px;
   margin-right: 0px;
 }
-#checklist table.checklist div.what span {
+#checklist table.checklist div.what2 span {
   font-size: 12px;
+}
+#checklist table.checklist td.who {
+  text-align: center;
+  color: #ccc;
+  font-size: 14px;
+}
+#checklist table.checklist td.who div {
+  border: 1px solid #ccc;
+  padding: 0px 0px;
 }
 #checklist .checklist-switch-wrap {
   padding: 10px 0px 0px 0px;
