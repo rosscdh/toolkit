@@ -13,7 +13,7 @@ from localflavor.us.forms import USZipCodeField
 
 from toolkit.apps.workspace.mixins import WorkspaceToolFormMixin
 from toolkit.apps.workspace.services import EnsureCustomerService, WordService
-from toolkit.fields import SummernoteField
+from toolkit.core.fields import SummernoteField
 
 from .models import Attachment
 

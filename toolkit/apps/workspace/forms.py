@@ -12,7 +12,7 @@ from crispy_forms.layout import Layout, ButtonHolder, Submit, Div
 
 from toolkit.apps.workspace.services import EnsureCustomerService
 from toolkit.apps.workspace.models import InviteKey
-from toolkit.fields import SummernoteField
+from toolkit.core.fields import SummernoteField
 from toolkit.mixins import ModalForm
 
 from .models import Workspace

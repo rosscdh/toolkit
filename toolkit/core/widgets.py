@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.forms.widgets import Textarea
 
 
@@ -14,7 +13,8 @@ class SummernoteWidget(Textarea):
         }
         js = ('js/summernote.min.js', 'js/jquery.summernote-django.js',)
 
-    def __init__(self, *args, **kwargs):
-        self.custom_attrs.update(kwargs.get('attrs', {}))
-        attrs = self.custom_attrs.copy()
-        super(SummernoteWidget, self).__init__(attrs=attrs, *args, **kwargs)
+    def __init__(self, attrs=None):
+        default_attrs = self.custom_attrs.copy()
+        if attrs:
+            default_attrs.update(attrs)
+        super(Textarea, self).__init__(default_attrs)

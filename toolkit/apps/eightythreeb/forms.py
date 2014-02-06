@@ -16,7 +16,7 @@ from usps.validators import USPSTrackingCodeField
 from toolkit.apps.workspace.mixins import WorkspaceToolFormMixin
 from toolkit.apps.workspace.services import EnsureCustomerService
 from toolkit.apps.workspace.services import USPSTrackingService
-from toolkit.fields import SummernoteField
+from toolkit.core.fields import SummernoteField
 from toolkit.mixins import ModalForm
 
 from .models import EightyThreeB
