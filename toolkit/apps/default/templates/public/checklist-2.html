@@ -10,7 +10,7 @@ body {background-color: #f2f2f2;}
 	<div class="tool-landing">
 		<div class="container-fluid">
 			<div class="row">
-				<div class="col-sm-6 checklist">
+				<div class="col-sm-12 checklist">
 					<div class="row">
 						<div class="col-xs-6">
 							<h5>Checklist</h5> 
@@ -29,117 +29,113 @@ body {background-color: #f2f2f2;}
 					<table class="table checklist">
 			            <thead>
 				              <tr>
-				                <th colspan="4">Incorporation</th>
+				                <th colspan="3" class="col-sm-4">Incorporation</th>
+				              	<th colspan="1"  class="col-sm-5">Attachments</th>
+				              	<td class="who">
+			                		<div>AH</div>
+				                </td>
+				                 <td class="who">
+				                	<div>FF</div>
+				                </td>
+				                 <td class="who">
+				                	<div>VV</div>
+				                </td>
+				                 <td class="who">
+				                	<div>AB</div>
+				                </td>
 				              </tr>
 			            </thead>
 			            <tbody>
-			              <tr>
+			              <tr class="item-heading">
 			              	<td class="item-icon">
 			                	<div class="icon">
 				                	<span class="fui-checkbox-unchecked text-warning"></span>
 								</div>
 							</td>
+
 			                <td class="item-title">
 			                	Articles of Incorporation 
 			                </td>
-			                <td class="text-right attachments">
-<!-- 			                	<div class="who">AB</div>
- -->			                	<div class="what"><span class="fui-document"></span> {{ "Articles of incorporation.doc"|truncatechars:11 }}</div> +2
+			                	<td class="msg">
+                      				<span class="new"><span class="fui-mail"></span>
+                    			</span>
 			                </td>
-			                <td class="msg">
-                      			<span class="new"><span class="fui-mail"></span>
-                    		</span>
+			                <td class="attachments" id="attachment-demo">
+<!-- 			                <div class="who">AB</div>
+ -->			                <div class="what">
+ 									<span class="fui-document"></span> {{ "Articles of incorporation.doc" }}
+ 								</div>
+ 								<div class="what2">
+ 									<span class="fui-document"></span> {{ "Another doc.doc" }}
+ 								</div>
 			                </td>
-			              </tr>
-			              <tr>
-			              	<td class="item-icon">
-			                	<div class="icon">
-				                	<span class="fui-checkbox-checked text-success"></span>
-								</div>
-			              	</td>
-			                <td class="item-title text-success">
-			                	Bylaws 
+			                <td class="who">
+			                	<span class="fui-document"></span>
 			                </td>
-			                <td class="text-right attachments">
-<!-- 			                	<div class="who">AB</div>
- -->			                	<div class="what"><span class="fui-document"></span> Bylaws.doc</div>
+			                 <td class="who">
 			                </td>
-			                <td class="msg">
-                    		</span>
+			                 <td class="who">
+			                 	<span class="fui-document"></span>
+			                </td>
+			                 <td class="who">
 			                </td>
 			              </tr>
-			              <tr>
-			              	<td class="item-icon">
-			                	<div class="icon">
-				                	<span class="fui-checkbox-checked text-success"></span>
-								</div>
-			              	</td>
-			                <td class="item-title text-success">
-			                	Action by Unanimous Written Consent of the Board of Directors 
-			                </td>
-			                <td class="text-right attachments">
-<!-- 			                	<div class="who">AB</div>
- -->			                	<div class="what"><span class="fui-document"></span> Bylaws.doc</div>
+			              <tr class="item-file">
+			              	<td class="">
+							</td>
+
+			                <td class="">
 			                </td>
 			                <td class="msg">
                       			
-                    		</span>
 			                </td>
+			                <td class="attachments" id="attachment-demo">
+
+ 								<div class="what2">
+ 									<span class="fui-document"></span> {{ "Another doc.doc" }}
+ 								</div>
+			                </td>
+			                <td class="who">
+			                	<span class="fui-document"></span>
+			                </td>
+			                 <td class="who">
+			                </td>
+			                 <td class="who">
+			                 	<span class="fui-document"></span>
+			                </td>
+			                 <td class="who">
+			                </td>
+
 			              </tr>
-			            </tbody>
-						<thead>
-				              <tr>
-				                <th colspan="4">Founder Documents</th>
-				              </tr>
-			            </thead>
-			            <tbody>
-			              <tr>
+					      <tr>
 			              	<td class="item-icon">
 			                	<div class="icon">
-				                	<span class="fui-checkbox-unchecked text-warning"></span>
+				                	<span class="fui-checkbox-unchecked text-success"></span>
 								</div>
 							</td>
+
 			                <td class="item-title">
-			                	83(b) Election for A Halliday 
+			                	Bylaws 
 			                </td>
-			                <td class="text-right attachments">
+			                	<td class="msg">
+                      				<span class="new"><span class="fui-mail text-muted"></span>
+                    			</span>
 			                </td>
-			                <td class="msg">
-                      			<span class="new"><span class="fui-mail"></span>
-                    		</span>
+			                <td class="attachments" id="attachment-demo">
+<!-- 			                <div class="who">AB</div>
+ -->			                <div class="what">
+ 									<span class="fui-document"></span> {{ "Bylaws.pdf" }}
+ 								</div>
 			                </td>
-			              </tr>
-			              <tr>
-			              	<td class="item-icon">
-			                	<div class="icon">
-				                	<span class="fui-checkbox-checked text-success"></span>
-								</div>
-			              	</td>
-			                <td class="item-title text-success">
-			                	83(b) Election for Y Citro 
+			                <td class="who">
+			                	<span class="fui-check-filled"></span>
+
 			                </td>
-			                <td class="text-right attachments">
-<!-- 			                	<div class="who">AB</div>
- -->			                	<div class="what"><span class="fui-document"></span> 83(b) Election</div>
+			                 <td class="who">
 			                </td>
-			                <td class="msg">
-                    		</span>
+			                 <td class="who">
 			                </td>
-			              </tr>
-			              <tr>
-			              	<td class="item-icon">
-			                	<div class="icon">
-				                	<span class="fui-checkbox-unchecked text-warning"></span>
-								</div>
-			              	</td>
-			                <td class="item-title">
-			                	83(b) Election for R Crawford 
-			                </td>
-			                <td class="text-right attachments">
-			                </td>
-			                <td class="msg">
-                      			
-                    		</span>
+			                 <td class="who">
 			                </td>
 			              </tr>
 			            </tbody>
@@ -149,39 +145,41 @@ body {background-color: #f2f2f2;}
 		</div>
 	</div>
 </div>
-<div style="position:absolute;bottom:0;height:50px;background-color:#f1f1f1;width:100%;padding:8px;position:fixed;border-top:1px solid #eee" class="text-right">
-					<a href="#" class="btn btn-success btn-sm">Ready for closing</a>
-</div>
 {% endblock %}
 {% block js %}
-<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+
 <script>
 $( document ).ready(function() {
-	$('#toggle-docs').click(function(){
-    	$('.document-drawer').toggle();
+
+	// $('#toggle-docs').click(function(){
+ //    	$('.document-drawer').toggle();
+	// });
+
+	// $( "#doc-list, #client-doc-list, #client-doc-list-2, #client-doc-list-3" ).sortable({
+ //      connectWith: ".connectedSortable",
+ //      placeholder: "ui-state-highlight",
+ //       start: function(event, ui) {
+ //        is_dragging = true;
+ //        $('.drop-zone').toggle();
+	//   },
+ //      stop: function(event, ui) {
+ //        is_dragging = false;
+ //      	$('.drop-zone').toggle();
+ //      }
+
+ //    }).disableSelection();
+
+	// $('.hover-tools a').click(function() {
+	//   $( ".hover-tools-assign" ).toggle();
+	// });
+	// $('.hover-tools-assign .done').click(function() {
+	//   $( ".hover-tools-assign" ).toggle();
+	// });
+	$('#attachment-demo').click(function() {
+	  $('#attachment-demo').addClass('full-view');
+	  $('.item-file').toggle();
+	  $('#attachment-demo .what2:first').toggle();
 	});
-
-	$( "#doc-list, #client-doc-list, #client-doc-list-2, #client-doc-list-3" ).sortable({
-      connectWith: ".connectedSortable",
-      placeholder: "ui-state-highlight",
-       start: function(event, ui) {
-        is_dragging = true;
-        $('.drop-zone').toggle();
-	  },
-      stop: function(event, ui) {
-        is_dragging = false;
-      	$('.drop-zone').toggle();
-      }
-
-    }).disableSelection();
-
-	$('.hover-tools a').click(function() {
-	  $( ".hover-tools-assign" ).toggle();
-	});
-	$('.hover-tools-assign .done').click(function() {
-	  $( ".hover-tools-assign" ).toggle();
-	});
-
 
 });
 
