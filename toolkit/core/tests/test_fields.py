@@ -1,14 +1,11 @@
 from django.utils.unittest import TestCase
 
-from ..fields import SummernoteField
+from ..fields import HTMLField
 
 
-class SummernoteFieldTests(TestCase):
-    def test_to_python(self):
-        # test that the field strips HTML by default
-        f = SummernoteField(attributes=[], styles=[], tags=[])
-        self.assertEqual(f.to_python('<p>Hello world!</p>'), 'Hello world!')
-
-        # test that the field encodes HTML if strip=False
-        f = SummernoteField(attributes=[], styles=[], tags=[], strip=False)
-        self.assertEqual(f.to_python('<p>Hello world!</p>'), '&lt;p&gt;Hello world!&lt;/p&gt;')
+class HTMLFieldTests(TestCase):
+    def test_microsoft_word_html(self):
+        # test that we strip Microsoft Word HTML
+        f = HTMLField()
+        self.assertEqual(f.to_python("<p class=MsoNormal style='margin-top:3.0pt;margin-right:0in;margin-bottom:0in;margin-left:.2in;margin-bottom:.0001pt;text-indent:-.2in'>Hello world!</p>"), 'Hello world!')
+        self.assertEqual(f.to_python("<p style='margin-top:3.0pt;margin-right:0in;margin-bottom:0in;margin-left:.2in;margin-bottom:.0001pt;text-indent:-.2in'><a name=ahali></a><b>Hello</b> <i>[...]</i> world!</p>"), 'Hello [...] world!')
