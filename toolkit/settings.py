@@ -114,6 +114,7 @@ HELPER_APPS = (
     # forms
     'parsley',
     'crispy_forms',
+    'summernote',
 
     # db migrations
     'south',
