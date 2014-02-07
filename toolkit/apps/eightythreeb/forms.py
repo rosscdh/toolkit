@@ -16,7 +16,7 @@ from usps.validators import USPSTrackingCodeField
 from toolkit.apps.workspace.mixins import WorkspaceToolFormMixin
 from toolkit.apps.workspace.services import EnsureCustomerService
 from toolkit.apps.workspace.services import USPSTrackingService
-from toolkit.core.fields import SummernoteField
+from toolkit.core.fields import HTMLField
 from toolkit.mixins import ModalForm
 
 from .models import EightyThreeB
@@ -147,7 +147,7 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
         )
     )
 
-    description = SummernoteField(
+    description = HTMLField(
         error_messages={
             'required': "Property description can't be blank."
         },
@@ -164,7 +164,7 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
         widget=forms.NumberInput(attrs={'size': '4'})
     )
 
-    nature_of_restrictions = SummernoteField(
+    nature_of_restrictions = HTMLField(
         error_messages={
             'required': "Nature of restrictions can't be blank."
         },

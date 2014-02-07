@@ -12,7 +12,7 @@ from crispy_forms.layout import Layout, ButtonHolder, Submit, Div
 
 from toolkit.apps.workspace.services import EnsureCustomerService
 from toolkit.apps.workspace.models import InviteKey
-from toolkit.core.fields import SummernoteField
+from toolkit.core.fields import HTMLField
 from toolkit.mixins import ModalForm
 
 from .models import Workspace
@@ -99,7 +99,7 @@ class InviteUserForm(forms.Form):
     subject = forms.CharField(
          widget=forms.TextInput(attrs={'size':'45'})
     )
-    message = SummernoteField()
+    message = HTMLField()
 
     def __init__(self, *args, **kwargs):
         self.key_instance = kwargs.pop('key_instance', None)
