@@ -2,7 +2,7 @@ from django.forms import CharField
 
 import bleach
 
-from .widgets import SummernoteWidget
+from summernote.widgets import SummernoteWidget
 
 
 class SummernoteField(CharField):
