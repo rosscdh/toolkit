@@ -49,6 +49,7 @@ def _update_marker(marker_name, next_status, actor_name, instance, **kwargs):
     update_fields = []
 
     # set our key
+    # but only if we dont already have it
     if marker_name not in markers.keys():
         kwargs.update({
             'date_of': datetime.datetime.utcnow(),

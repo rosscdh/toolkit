@@ -124,10 +124,40 @@ def on_complete(sender, instance, actor, **kwargs):
 
 @receiver(hellosign_webhook_event_recieved)
 def on_hellosign_webhook_event_recieved(sender, hellosign_log, signature_request_id, hellosign_request, event_type, data, **kwargs):
-  import pprint
-  import json
-  logging.info('Recieved event: %s for request: %s' % (event_type, hellosign_request,))
-  logging.info(data)
-  PPP = pprint.PrettyPrinter(indent=4)
-  PPP.pprint(json.dumps(data))
+    logging.info('Recieved event: %s for request: %s' % (event_type, hellosign_request,))
 
+    #
+    # Issue the signals
+    #
+    # Should only be issued on recipet of the signed signal #
+    engageletter = hellosign_request.source_object
+    user, status = hellosign_log.signer_status
+
+    if hellosign_log.event_type == 'signature_request_all_signed':
+        #
+        # Mark as complete
+        #
+        logger.info('HelloSign Webhook: %s All signatures have been completed for: %s' % (event_type, engageletter))
+        engageletter.markers.marker('complete').issue_signals(request=sender, instance=engageletter, actor=user)
+
+    elif hellosign_log.event_type == 'signature_request_signed':
+
+        if user is not None and status == 'signed':
+            #
+            # Update the base Object with the current signature object
+            #
+            engageletter.signatures = hellosign_log.signatures
+
+            if user.profile.is_customer:
+                #
+                # Customer Signal
+                #
+                logger.info('HelloSign Webhook: %s for customer %s' % (event_type, user))
+                engageletter.markers.marker('customer_sign_and_send').issue_signals(request=sender, instance=engageletter, actor=user)
+
+            elif user.profile.is_lawyer:
+                #
+                # Lawyer Signal
+                #
+                logger.info('HelloSign Webhook: %s for lawyer %s' % (event_type, user))
+                engageletter.markers.marker('lawyer_sign').issue_signals(request=sender, instance=engageletter, actor=user)
