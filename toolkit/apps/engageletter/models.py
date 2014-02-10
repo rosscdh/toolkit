@@ -115,6 +115,12 @@ class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, HelloSignModelMix
         context = loader.Context(context_data)
         return self.template.render(context)
 
+    def hs_document_title(self):
+        """
+        Method to set the document title, displayed in the HelloSign Interface
+        """
+        return self.__unicode__()
+
     def hs_document(self):
         """
         Return the document to be senf for signing

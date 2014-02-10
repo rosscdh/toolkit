@@ -1,4 +1,4 @@
-{% extends 'workspace/workspace_tool_preview.html' %}{% load url from future %}{% load crispy_forms_tags django_bootstrap_breadcrumbs toolkit_tags %}
+{% extends 'workspace/workspace_tool_preview.html' %}{% load url from future %}{% load crispy_forms_tags django_bootstrap_breadcrumbs toolkit_tags hello_sign_tags %}
 
 {% block page_title %}Sign the Engagement Letter{% endblock  %}
 
@@ -23,15 +23,16 @@
         {% else %}
             <div id="hello_sign_interface" class="row">
                 {% for s in object.signatures %}
-                <div class="col-md-3">
-                    <label><strong>{{ s.signer_name }}</strong></label><br/>{{ s.signer_email_address }}<br/>
-                    {% if s.signed_at %}
-                        <label><strong>Signed On:</strong></label> {{ s.signed_at }}<br/>
-                    {% else %}
-                        <label><strong>Viewed:</strong></label> {{ s.last_viewed_at|default:"Has not viewed the item yet." }}<br/>
-                        <label><strong>Reminded:</strong></label> {{ s.last_reminded_at|default:"Has not been reminded yet." }}
-                    {% endif %}
-                </div>
+                    <div class="col-md-3">
+                        <label><strong>{{ s.signer_name }}</strong></label><br/>{{ s.signer_email_address }}<br/>
+                        <label><strong>Status:</strong></label> {{ s.status_code|status_code_name }}<br/>
+                        {% if s.signed_at %}
+                            <label><strong>Signed On:</strong></label> {{ s.signed_at|timestamp_to_date|date:"SHORT_DATETIME_FORMAT" }}<br/>
+                        {% else %}
+                            <label><strong>Viewed:</strong></label> {{ s.last_viewed_at|timestamp_to_date|default:"Has not viewed the item yet." }}<br/>
+                            <label><strong>Reminded:</strong></label> {{ s.last_reminded_at|timestamp_to_date|default:"Has not been reminded yet." }}
+                        {% endif %}
+                    </div>
                 {% endfor %}
             </div>
         {% endif %}
@@ -43,20 +44,8 @@
     {% if not object.signature_request_id %}
         {{ block.super }}
     {% else %}
-        <script src="//s3.amazonaws.com/cdn.hellofax.com/js/embedded.js"></script>
-        <script type="text/javascript">
-        $(document).ready(function () {
-            'use strict';
-            HelloSign.init(window.GLOBALS.HELLOSIGN_CLIENT_ID);
-            HelloSign.open({
-                url: "{{ object.signing_url }}",                           // Signature url your fetched via the API on your server
-                redirectUrl: "{% FULL_DOMAIN_PATH object.get_absolute_url %}",     // (optional) Where to go after the user signed
-                allowCancel: true,                              // (optional) Whether to allow the user to cancel i.e. close the iFrame without signing (default is true)
-                messageListener: function(eventData) {          // (optional) Called whenever the iFrame is messaging your page
-                    /*  do something */ 
-                }    
-            });
-        });
-        </script>
+
+        {% signer_url_js object user.email %}
+
     {% endif %}
 {% endblock %}
