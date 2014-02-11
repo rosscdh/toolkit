@@ -31,18 +31,9 @@ body {background-color: #f2f2f2;}
 				              <tr>
 				                <th colspan="3" class="col-sm-4">Incorporation</th>
 				              	<th colspan="1"  class="col-sm-5">Attachments</th>
-				              	<td class="who">
-			                		<div>AH</div>
-				                </td>
-				                 <td class="who">
-				                	<div>FF</div>
-				                </td>
-				                 <td class="who">
-				                	<div>VV</div>
-				                </td>
-				                 <td class="who">
-				                	<div>AB</div>
-				                </td>
+				              	<th>Who</th>
+				              	<th>Tasks</th>
+
 				              </tr>
 			            </thead>
 			            <tbody>
@@ -69,39 +60,8 @@ body {background-color: #f2f2f2;}
  									<span class="fui-document"></span> {{ "Another doc.doc" }}
  								</div>
 			                </td>
-			                <td class="who">
-			                	<span class="fui-document"></span>
-			                </td>
-			                 <td class="who">
-			                </td>
-			                 <td class="who">
-			                 	<span class="fui-document"></span>
-			                </td>
-			                 <td class="who">
-			                </td>
-			              </tr>
-			              <tr class="item-file">
-			              	<td class="">
-							</td>
-
 			                <td class="">
-			                </td>
-			                <td class="msg">
-                      			
-			                </td>
-			                <td class="attachments" id="attachment-demo">
-
- 								<div class="what2">
- 									<span class="fui-document"></span> {{ "Another doc.doc" }}
- 								</div>
-			                </td>
-			                <td class="who">
-			                	<span class="fui-document"></span>
-			                </td>
-			                 <td class="who">
-			                </td>
-			                 <td class="who">
-			                 	<span class="fui-document"></span>
+			                	<span class="text-muted"><small>Only You</small></span>
 			                </td>
 			                 <td class="who">
 			                </td>
@@ -129,14 +89,13 @@ body {background-color: #f2f2f2;}
 			                </td>
 			                <td class="who">
 			                	<span class="fui-check-filled"></span>
-
 			                </td>
-			                 <td class="who">
+			                 <td>
+			                 	<div class="progress">
+					            <div class="progress-bar" style="width: 45%;"></div>
+					          </div>
 			                </td>
-			                 <td class="who">
-			                </td>
-			                 <td class="who">
-			                </td>
+		
 			              </tr>
 			            </tbody>
 		          </table>
@@ -151,35 +110,6 @@ body {background-color: #f2f2f2;}
 <script>
 $( document ).ready(function() {
 
-	// $('#toggle-docs').click(function(){
- //    	$('.document-drawer').toggle();
-	// });
-
-	// $( "#doc-list, #client-doc-list, #client-doc-list-2, #client-doc-list-3" ).sortable({
- //      connectWith: ".connectedSortable",
- //      placeholder: "ui-state-highlight",
- //       start: function(event, ui) {
- //        is_dragging = true;
- //        $('.drop-zone').toggle();
-	//   },
- //      stop: function(event, ui) {
- //        is_dragging = false;
- //      	$('.drop-zone').toggle();
- //      }
-
- //    }).disableSelection();
-
-	// $('.hover-tools a').click(function() {
-	//   $( ".hover-tools-assign" ).toggle();
-	// });
-	// $('.hover-tools-assign .done').click(function() {
-	//   $( ".hover-tools-assign" ).toggle();
-	// });
-	$('#attachment-demo').click(function() {
-	  $('#attachment-demo').addClass('full-view');
-	  $('.item-file').toggle();
-	  $('#attachment-demo .what2:first').toggle();
-	});
 
 });
 
