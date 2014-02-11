@@ -10,9 +10,9 @@ from parsley.decorators import parsleyfy
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, ButtonHolder, Submit, Div
 
+from toolkit.apps.default.fields import HTMLField
 from toolkit.apps.workspace.services import EnsureCustomerService
 from toolkit.apps.workspace.models import InviteKey
-from toolkit.core.fields import HTMLField
 from toolkit.mixins import ModalForm
 
 from .models import Workspace

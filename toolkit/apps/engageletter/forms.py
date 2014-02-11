@@ -11,9 +11,9 @@ from parsley.decorators import parsleyfy
 from localflavor.us.us_states import USPS_CHOICES
 from localflavor.us.forms import USZipCodeField
 
+from toolkit.apps.default.fields import HTMLField
 from toolkit.apps.workspace.mixins import WorkspaceToolFormMixin
 from toolkit.apps.workspace.services import EnsureCustomerService, WordService
-from toolkit.core.fields import HTMLField
 
 from .models import Attachment
 
