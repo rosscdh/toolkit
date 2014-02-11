@@ -19,6 +19,8 @@ PROJECT_ENVIRONMENT = 'test'
 INSTALLED_APPS = INSTALLED_APPS + (
     'casper',
     'colortools',
+    # Lawpal module
+    'hello_sign.tests', ## added so that we get teh test models
 )
 
 SOUTH_TESTS_MIGRATE = False
