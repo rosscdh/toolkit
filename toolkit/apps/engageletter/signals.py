@@ -122,6 +122,14 @@ def on_complete(sender, instance, actor, **kwargs):
                    instance=instance)
 
 
+def _update_object_signatures(obj, new_signatures):
+    """
+    Update the base Object with the current signature object
+    """
+    # the method auto saves @TODO stop this auto sign behaviour?
+    obj.signatures = new_signatures
+
+
 @receiver(hellosign_webhook_event_recieved)
 def on_hellosign_webhook_event_recieved(sender, hellosign_log, signature_request_id, hellosign_request, event_type, data, **kwargs):
     logging.info('Recieved event: %s for request: %s' % (event_type, hellosign_request,))
@@ -135,6 +143,10 @@ def on_hellosign_webhook_event_recieved(sender, hellosign_log, signature_request
 
     if hellosign_log.event_type == 'signature_request_all_signed':
         #
+        # Update the base Object with the current signature object
+        #
+        _update_object_signatures(obj=engageletter, new_signatures=hellosign_log.signatures)
+        #
         # Mark as complete
         #
         logger.info('HelloSign Webhook: %s All signatures have been completed for: %s' % (event_type, engageletter))
@@ -146,7 +158,7 @@ def on_hellosign_webhook_event_recieved(sender, hellosign_log, signature_request
             #
             # Update the base Object with the current signature object
             #
-            engageletter.signatures = hellosign_log.signatures
+            _update_object_signatures(obj=engageletter, new_signatures=hellosign_log.signatures)
 
             if user.profile.is_customer:
                 #
