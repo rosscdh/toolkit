@@ -48,7 +48,7 @@ class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, HelloSignModelMix
     workspace = models.ForeignKey('workspace.Workspace')
     user = models.ForeignKey('auth.User')
 
-    data = JSONField(default={})
+    data = JSONField(default={}) # overriden by HelloSignModelMixin
 
     status = models.IntegerField(choices=ENGAGEMENTLETTER_STATUS.get_choices(), default=ENGAGEMENTLETTER_STATUS.lawyer_complete_form, db_index=True)
 
