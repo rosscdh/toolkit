@@ -179,7 +179,7 @@ class Marker(object):
         """
          @BUSINESS_RULE
          show the action to user that have the right class OR where the user
-         does not have the right class but IS the 83b.user but the action class
+         does not have the right class but IS the object.user but the action class
          is not lawyers only
         """
         if self.action is not None and \
