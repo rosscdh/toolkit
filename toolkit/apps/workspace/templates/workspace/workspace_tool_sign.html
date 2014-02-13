@@ -33,7 +33,7 @@
                     </div>
                 {% else %}
                     {% for s in object.signatures %}
-                        <div class="dialog">
+                        <div class="dialog {% if s.signed_at %}dialog-success{% endif %}">
                             <table class="table">
                                 <tbody>
                                     <tr>
@@ -47,17 +47,7 @@
                                     {% if s.signed_at %}
                                         <tr>
                                             <td><strong>Signed:</strong></td>
-                                            <td>{{ s.signed_at|timestamp_to_date }}</td>
-                                            <!-- <td>{{ s.signed_at|timestamp_to_date|date:"SHORT_DATETIME_FORMAT" }}</td> -->
-                                        </tr>
-                                    {% else %}
-                                        <tr>
-                                            <td><strong>Viewed:</strong></td>
-                                            <td>{{ s.last_viewed_at|timestamp_to_date|default:'Has not viewed the document.' }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Reminded:</strong></td>
-                                            <td>{{ s.last_reminded_at|timestamp_to_date|default:'Has not been reminded.' }}</td>
+                                            <td>{{ s.signed_at|timestamp_to_date|date:"SHORT_DATETIME_FORMAT" }}</td>
                                         </tr>
                                     {% endif %}
                                 </tbody>
