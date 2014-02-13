@@ -77,6 +77,7 @@ class SignAndSendEngagementLetterView(SingleObjectMixin, FormView):
         self.object = self.get_object()
         kwargs = super(SignAndSendEngagementLetterView, self).get_context_data(*args, **kwargs)
         kwargs.update({
+            'item': self.object,
             'workspace': self.object.workspace,
             'tool': self.object.workspace.tools.filter(slug=self.object.tool_slug).first(),
         })
