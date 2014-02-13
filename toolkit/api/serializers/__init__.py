@@ -1,8 +1,8 @@
 # -*- coding: UTF-8 -*-
-from .account import *
-from .attachment import *
-from .client import *
-from .item import *
-from .matter import *
-from .revision import *
-from .workflow import *
+from .account import AccountSerializer, PasswordSerializer
+from .client import ClientSerializer
+# from .matter import MatterSerializer
+# from .item import ItemSerializer
+# from .attachment import AttachmentSerializer
+# from .revision import RevisionSerializer
+# from .workflow import WorkflowSerializer
