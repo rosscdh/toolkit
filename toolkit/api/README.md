@@ -20,6 +20,16 @@ object, we provide a FSM obejct which will provide the "next" url as well as a
 representation of the current state of the requested object.
 
 
+Authentication
+==============
+
+We use basic django session authentication as well as JSON Web Tokens
+
+For more info on JWT read:
+
+http://blog.auth0.com/2014/01/07/angularjs-authentication-with-cookies-vs-token/
+
+
 Endpoint Overview
 =================
 
