@@ -9,7 +9,8 @@ sqlparse
 wsgiref
 
 Werkzeug
-djangorestframework==2.3.9
+djangorestframework
+djangorestframework-jwt
 -e git+https://github.com/alex/django-filter.git#egg=django-filter
 
 django-rulez
