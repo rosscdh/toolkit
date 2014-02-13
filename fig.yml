@@ -1,0 +1,13 @@
+db:
+  image: orchardup/postgresql
+  ports:
+    - 5432
+web:
+  build: .
+  command: python manage.py runserver_plus 0.0.0.0:8000 --threaded
+  volumes:
+    - .:/code
+  ports:
+    - 8000:8000
+  links:
+    - db
