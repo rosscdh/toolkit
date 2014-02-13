@@ -110,6 +110,7 @@ class StartView(LogOutMixin, SaveNextUrlInSessionMixin, AuthenticateUserMixin, F
 
     def get_success_url(self):
         url = reverse('dash:default')
+        tool_redirect_url = None
         if self.request.user.profile.is_customer is True:
             #
             # Redirect the user to the current invite workspace
