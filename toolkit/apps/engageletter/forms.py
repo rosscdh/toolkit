@@ -379,7 +379,6 @@ class SignEngagementLetterForm(forms.Form):
                 css_class='form-inline'
             ),
             ButtonHolder(
-                Submit('submit', 'Send for Signing', css_class='btn-hg btn-primary'),
-                css_class='form-group'
+                Submit('submit', 'Send for signing', css_class='btn btn-hg btn-primary'),
             )
         )
