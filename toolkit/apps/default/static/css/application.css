@@ -85,12 +85,26 @@ td .tools {font-size:10px;}
 #checklist table.checklist {
   background-color: white;
 }
+#checklist table.checklist .progress {
+  margin: 0px;
+  margin-top: 3px;
+}
 #checklist table.checklist tr {
-  border-top: 1px solid #f2f2f2;
+  border-top: 5px solid #f2f2f2;
 }
 #checklist table.checklist tr.item-file {
   background-color: #f2f2f2;
   display: none;
+}
+#checklist table.checklist tr.item-closed {
+  border-left: none;
+  color: #ffffff;
+  opacity: 0.7;
+  background-color: #2ecc71;
+  padding-top: 10px;
+}
+#checklist table.checklist tr.item-closed .item-title {
+  color: #ffffff;
 }
 #checklist table.checklist th {
   background-color: #f2f2f2;
@@ -126,19 +140,25 @@ td .tools {font-size:10px;}
   word-spacing: normal;
   color: #777;
   font-weight: bold;
-  padding-left: 0px;
+  padding-left: 9px;
   padding-top: 9px;
 }
-#checklist table.checklist tr td.item-title.text-success {
-  color: #25a25a;
-  opacity: 0.8;
+#checklist table.checklist tr td.item-title span {
+  outline: none;
+}
+#checklist table.checklist tr td.item-title span:focus {
+  border-bottom: 2px solid #f8e287;
+  background-color: #fefaed;
+  color: #444;
+}
+#checklist table.checklist tr td.item-title.item-openhover {
+  border-left-width: 6px;
 }
 #checklist table.checklist .attachments {
   font-size: 14px;
   color: #42d0e5;
 }
 #checklist table.checklist .msg {
-  background-color: #f2f2f2;
   width: 20px;
 }
 #checklist table.checklist .msg .new {
@@ -181,6 +201,10 @@ td .tools {font-size:10px;}
 #checklist table.checklist td.who div {
   border: 1px solid #ccc;
   padding: 0px 0px;
+}
+#checklist div.item {
+  background-color: #2980b9;
+  min-height: 800px;
 }
 #checklist .checklist-switch-wrap {
   padding: 10px 0px 0px 0px;

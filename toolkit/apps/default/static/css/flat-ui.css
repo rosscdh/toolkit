@@ -1200,7 +1200,7 @@ fieldset[disabled] .btn-link:focus {
   font-size: 24px;
   line-height: 29.55px;
   font-weight: 700;
-  padding: 20px 28px 18px 12px;
+  padding: 15px 28px 18px 12px;
   text-shadow: none;
   display: inline-block;
 }
@@ -1277,7 +1277,7 @@ fieldset[disabled] .btn-link:focus {
   font-weight: 700;
   font-size: 15px;
   line-height: 28px;
-  padding: 22px 20px;
+  padding: 16px 20px;
   text-shadow: none;
   -webkit-transition: background-color .25s, color .25s, border-bottom-color .25s;
   transition: background-color .25s, color .25s, border-bottom-color .25s;
