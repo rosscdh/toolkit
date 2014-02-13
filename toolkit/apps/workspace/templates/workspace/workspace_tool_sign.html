@@ -37,16 +37,16 @@
                             <table class="table">
                                 <tbody>
                                     <tr>
-                                        <td><strong>Signatory:</strong></td>
+                                        <td class="legend"><strong>Signatory:</strong></td>
                                         <td>{{ s.signer_name }}<br>{{ s.signer_email_address }}</td>
                                     </tr>
                                     <tr>
-                                        <td><strong>Status:</strong></td>
+                                        <td class="legend"><strong>Status:</strong></td>
                                         <td>{{ s.status_code|status_code_name }}</td>
                                     </tr>
                                     {% if s.signed_at %}
                                         <tr>
-                                            <td><strong>Signed:</strong></td>
+                                            <td class="legend"><strong>Signed:</strong></td>
                                             <td>{{ s.signed_at|timestamp_to_date|date:"SHORT_DATETIME_FORMAT" }}</td>
                                         </tr>
                                     {% endif %}

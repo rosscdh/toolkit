@@ -135,7 +135,7 @@ class LawyerSignMarker(CustomerSignAndSendMarker):
     description = 'Attorney: Sign the Engagement Letter'
     signals = ['toolkit.apps.engageletter.signals.lawyer_sign']
 
-    action_name = 'Sign & Confirm Engagment Letter'
+    action_name = 'Sign Engagment Letter'
     action_type = Marker.ACTION_TYPE.redirect
     action_user_class = ['lawyer']
 
