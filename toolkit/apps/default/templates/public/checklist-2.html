@@ -10,80 +10,53 @@ body {background-color: #f2f2f2;}
 	<div class="tool-landing">
 		<div class="container-fluid">
 			<div class="row">
-				<div class="col-sm-12 checklist">
+				<div class="col-sm-7 checklist">
 					<div class="row">
 						<div class="col-xs-6">
 							<h5>Checklist</h5> 
 						</div>
 						<div class="checklist-switch-wrap">
-							<div class="col-xs-6  text-right">
-								<small class="filter-title">Show</small>
-								<div class="btn-group checklist-switch">
-				                  <a class="btn btn-xs btn-default first" href="#fakelink"><span class="fui-radio-unchecked"></span> 4</a>
-				                  <a class="btn btn-xs btn-warning" href="#fakelink"><span class="fui-time"></span> 5</a>
-				                  <a class="btn btn-xs btn-primary last" href="#fakelink"><span class="fui-check-inverted"></span> 8</a>
-				                </div>
+							<div class="col-xs-3 pull-right">
+				                <input class="form-control flat input-sm" placeholder="Filter"></input>
 							</div>
 						</div>
 	            	</div>
 					<table class="table checklist">
 			            <thead>
 				              <tr>
-				                <th colspan="3" class="col-sm-4">Incorporation</th>
-				              	<th colspan="1"  class="col-sm-5">Attachments</th>
+				                <th colspan="2" class="col-sm-5">Incorporation</th>
+				              	<th colspan="1"  class="col-sm-4">Attachments</th>
 				              	<th>Who</th>
 				              	<th>Tasks</th>
-
 				              </tr>
 			            </thead>
 			            <tbody>
-			              <tr class="item-heading">
-			              	<td class="item-icon">
-			                	<div class="icon">
-				                	<span class="fui-checkbox-unchecked text-warning"></span>
-								</div>
-							</td>
-
+			              <tr class="item-heading item-closed">
 			                <td class="item-title">
-			                	Articles of Incorporation 
+			                	<span contenteditable="true">Articles of Incorporation</span> 
 			                </td>
-			                	<td class="msg">
-                      				<span class="new"><span class="fui-mail"></span>
-                    			</span>
+			                <td class="msg text-center">
 			                </td>
 			                <td class="attachments" id="attachment-demo">
-<!-- 			                <div class="who">AB</div>
- -->			                <div class="what">
+				                <div class="what">
  									<span class="fui-document"></span> {{ "Articles of incorporation.doc" }}
- 								</div>
- 								<div class="what2">
- 									<span class="fui-document"></span> {{ "Another doc.doc" }}
  								</div>
 			                </td>
 			                <td class="">
-			                	<span class="text-muted"><small>Only You</small></span>
 			                </td>
 			                 <td class="who">
 			                </td>
-
 			              </tr>
 					      <tr>
-			              	<td class="item-icon">
-			                	<div class="icon">
-				                	<span class="fui-checkbox-unchecked text-success"></span>
-								</div>
-							</td>
-
-			                <td class="item-title">
+			                <td class="item-title item-open" contenteditable="true">
 			                	Bylaws 
 			                </td>
-			                	<td class="msg">
+			                	<td class="msg text-center">
                       				<span class="new"><span class="fui-mail text-muted"></span>
                     			</span>
 			                </td>
 			                <td class="attachments" id="attachment-demo">
-<!-- 			                <div class="who">AB</div>
- -->			                <div class="what">
+				                <div class="what">
  									<span class="fui-document"></span> {{ "Bylaws.pdf" }}
  								</div>
 			                </td>
@@ -91,14 +64,93 @@ body {background-color: #f2f2f2;}
 			                	<span class="fui-check-filled"></span>
 			                </td>
 			                 <td>
-			                 	<div class="progress">
-					            <div class="progress-bar" style="width: 45%;"></div>
-					          </div>
+				                 <div class="progress">
+						            <div class="progress-bar" style="width: 45%;"></div>
+					          	</div>
+			                </td>
+		
+			              </tr>
+			                <tr class="item-heading">
+			                <td class="item-title item-closed" contenteditable="true">
+			                	Another document here
+			                </td>
+			                <td class="msg text-center">
+                      				<span class="new"><span class="fui-mail"></span>
+			                </td>
+			                <td class="attachments" id="attachment-demo">
+			                </td>
+			                <td class="">
+			                </td>
+			                 <td class="who">
+			                </td>
+			              </tr>
+					      <tr>
+			                <td class="item-title item-closed" contenteditable="true">
+			                	Bylaws 
+			                </td>
+			                	<td class="msg text-center">
+                      				<span class="new"><span class="fui-mail text-muted"></span>
+                    			</span>
+			                </td>
+			                <td class="attachments" id="attachment-demo">
+			                </td>
+			                <td class="who">
+			                	<span class="fui-check-filled"></span>
+			                </td>
+			                 <td>
+				                 <div class="progress">
+						            <div class="progress-bar" style="width: 45%;"></div>
+					          	</div>
+			                </td>
+		
+			              </tr>
+			                <tr class="item-heading">
+			                <td class="item-title item-closed" contenteditable="true">
+			                	Articles of Incorporation 
+			                </td>
+			                	<td class="msg text-center">
+                      				<span class="new"><span class="fui-mail"></span>
+                    			</span>
+			                </td>
+			                <td class="attachments" id="attachment-demo">
+			                	<div class="what">
+ 									<span class="fui-document"></span> {{ "Articles of incorporation.doc" }}
+ 								</div>
+			                </td>
+			                <td class="">
+			                </td>
+			                 <td class="who">
+			                </td>
+
+			              </tr>
+					      <tr>
+			                <td class="item-title item-open" contenteditable="true">
+			                	Bylaws 
+			                </td>
+			                	<td class="msg text-center">
+                      				<span class="new"><span class="fui-mail text-muted"></span>
+                    			</span>
+			                </td>
+			                <td class="attachments" id="attachment-demo">
+			                <div class="what">
+ 									<span class="fui-document"></span> {{ "Bylaws.pdf" }}
+ 								</div>
+			                </td>
+			                <td class="who">
+			                	<span class="fui-check-filled"></span>
+			                </td>
+			                 <td>
+				                 <div class="progress">
+						            <div class="progress-bar" style="width: 45%;"></div>
+					          	</div>
 			                </td>
 		
 			              </tr>
 			            </tbody>
 		          </table>
+				</div>
+				<div class="col-sm-5 item">
+
 				</div>
 			</div>
 		</div>
@@ -106,9 +158,10 @@ body {background-color: #f2f2f2;}
 </div>
 {% endblock %}
 {% block js %}
-
 <script>
 $( document ).ready(function() {
+$(".item-title").keypress(function(e){ return e.which != 13; });
+
 
 
 });

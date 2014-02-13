@@ -80,11 +80,25 @@ td .tools {font-size:10px;}
 	}
 	table.checklist {
 		background-color:white;
+		.progress {
+			margin:0px;
+			margin-top:3px;
+		}
 		tr {
-			border-top:1px solid #f2f2f2;
+			border-top:5px solid #f2f2f2;
 			&.item-file {
 				background-color:#f2f2f2;
 				display:none;
+			}
+			&.item-closed {
+				border-left:none;
+				color: lighten(@nephritis, 70%);
+				opacity:0.7;
+				background-color:@emerland;
+				padding-top:10px;
+				.item-title {
+					color: lighten(@nephritis, 70%);
+				}
 			}
 		}
 		th {
@@ -114,18 +128,26 @@ td .tools {font-size:10px;}
 					}
 				}
 			}
-
 			&.item-title {
 				font-size:14px;
 				font-family:Helvetica;
 				word-spacing: normal;
 				color:#777;
 				font-weight:bold;
-				padding-left:0px;
+				padding-left:9px;
 				padding-top:9px;
-				&.text-success {
-					color:darken(@brand-success, 10%);
-					opacity:0.8;
+				span {
+					outline:none;
+					&:focus {
+						border-bottom:2px solid lighten(@sun-flower, 25%);
+						background-color: lighten(@sun-flower, 46%);
+						color:#444;
+					}
+				}
+				&.item-open {
+					&hover {
+						border-left-width:6px;
+					}
 				}
 			}
 
@@ -135,7 +157,6 @@ td .tools {font-size:10px;}
 			color: @lp-blue;
 		}
 		.msg {
-			background-color: #f2f2f2;
 			width:20px;
 			.new {
 				color: @brand-danger;
@@ -179,6 +200,11 @@ td .tools {font-size:10px;}
 				padding:0px 0px;
 			}
 		}
+	}
+
+	div.item {
+		background-color:@belize-hole;
+		min-height:800px;
 	}
 
 	.checklist-switch-wrap {
