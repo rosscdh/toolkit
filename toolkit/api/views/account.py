@@ -20,27 +20,29 @@ class AccountEndpoint(APIView):
     def get_object(self):
         return self.get_queryset().first()
 
-    def get(self, request, format=None):
+    def get(self, request, **kwargs):
         user = self.get_object()
         serializer = self.serializer_class(user)
         return Response(serializer.data)
 
-    def update(self, request, format=None):
+    def update(self, request, **kwargs):
         user = self.get_object()
+
+        if 'password' in request.DATA:
+            return self.set_password(password=request.DATA.pop('password'))
+
         serializer = self.serializer_class(user, data=request.DATA, partial=True)
         return Response(serializer.data)
 
-    @action()
-    def set_password(self, request):
+    def set_password(self, password):
         """
         Update the users Account Password
         """
         user = self.get_object()
-        serializer = PasswordSerializer(data=request.DATA)
+        serializer = PasswordSerializer(user, data={'password': password})
 
         if serializer.is_valid():
-            user.set_password(serializer.data['password'])
-            user.save()
+            serializer.save()
             return Response({'status': 'password changed'})
 
         else:

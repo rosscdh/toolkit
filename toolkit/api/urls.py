@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
-from django.views.generic import TemplateView
-from django.conf.urls import patterns, include, url
+from django.conf.urls import patterns, url
+
+from rest_framework import routers
 
 from .views import AccountEndpoint
 from .views import ClientEndpoint
@@ -10,9 +11,11 @@ from .views import ClientEndpoint
 #from .views import RevisionEndpoint
 #from .views import WorkflowEndpoint
 
+router = routers.SimpleRouter()
+router.register(r'account', AccountEndpoint)
 
-urlpatterns = patterns('',
-    url(r'^account/', AccountEndpoint.as_view(), name='account'),
+urlpatterns = router.urls + patterns('',
+    #url(r'^account/', AccountEndpoint.as_view(), name='account'),
     url(r'^clients/', ClientEndpoint.as_view(), name='clients'),
 #    url(r'^matters/', MatterEndpoint.as_view(), name='matters'),
 #    url(r'^items/', ItemEndpoint.as_view(), name='items'),
