@@ -45,19 +45,19 @@ class LawyerCreateLetterMarker(Marker):
         return None
 
 
-class LawyerReviewEngagementLetterMarker(Marker):
-    name = 'lawyer_review_letter_text'
-    description = 'Attorney: Review Engagement Letter Text'
-    signals = ['toolkit.apps.engageletter.signals.lawyer_review_letter_text']
+# class LawyerReviewEngagementLetterMarker(Marker):
+    # name = 'lawyer_review_letter_text'
+    # description = 'Attorney: Review Engagement Letter Text'
+    # signals = ['toolkit.apps.engageletter.signals.lawyer_review_letter_text']
 
-    action_name = 'Engagement Letter Text'
-    action_type = Marker.ACTION_TYPE.redirect
-    action_user_class = ['lawyer']
+    # action_name = 'Engagement Letter Text'
+    # action_type = Marker.ACTION_TYPE.redirect
+    # action_user_class = ['lawyer']
 
-    def get_action_url(self):
-        if self.tool is not None:
-            return reverse('engageletter:lawyer_template', kwargs={'slug': self.tool.slug})
-        return None
+    # def get_action_url(self):
+        # if self.tool is not None:
+            # return reverse('engageletter:lawyer_template', kwargs={'slug': self.tool.slug})
+        # return None
 
 
 class LawyerInviteUserMarker(Marker):
@@ -159,10 +159,10 @@ class EngagementLetterMarkers(BaseSignalMarkers):
     ]
     signal_map = [
         LawyerCreateLetterMarker(1),
-        LawyerReviewEngagementLetterMarker(2),
-        LawyerInviteUserMarker(3),
-        CustomerCompleteLetterFormMarker(4),
-        CustomerSignAndSendMarker(5),
-        LawyerSignMarker(6),
-        ProcessCompleteMarker(7)
+        # LawyerReviewEngagementLetterMarker(2),
+        LawyerInviteUserMarker(2),
+        CustomerCompleteLetterFormMarker(3),
+        CustomerSignAndSendMarker(4),
+        LawyerSignMarker(5),
+        ProcessCompleteMarker(6)
     ]
