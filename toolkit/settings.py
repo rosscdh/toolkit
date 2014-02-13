@@ -79,6 +79,9 @@ DJANGO_APPS = (
 )
 
 PROJECT_APPS = (
+    # Api
+    'toolkit.api',
+    # Module Apps
     'toolkit.apps.api',
     'toolkit.apps.default',
     'toolkit.apps.dash',
@@ -209,10 +212,11 @@ REST_FRAMEWORK = {
     ),
     # Only used if the `serializer_class` attribute is not set on a view.
     'DEFAULT_MODEL_SERIALIZER_CLASS':
-        'rest_framework.serializers.HyperlinkedModelSerializer',  # @TODO change to primarykeymodelserializer
+        'rest_framework.serializers.PrimaryKeyRelatedField',  # @TODO change to primarykeymodelserializer
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication',
+        #'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ),
 

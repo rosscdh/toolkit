@@ -1,8 +1,8 @@
 # -*- coding: UTF-8 -*-
-from .account import *
-from .attachment import *
-from .client import *
-from .item import *
-from .matter import *
-from .revision import *
-from .workflow import *
+from .account import AccountEndpoint
+from .client import ClientEndpoint
+# from .matter import MatterEndpoint
+# from .item import ItemEndpoint
+# from .attachment import AttachmentEndpoint
+# from .revision import RevisionEndpoint
+# from .workflow import WorkflowEndpoint
