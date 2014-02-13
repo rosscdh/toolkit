@@ -11,3 +11,11 @@ web:
     - 8000:8000
   links:
     - db
+
+stamp:
+  image: binaryphile/ruby:2.0.0-p247
+  command: foreman start
+  volumes:
+    - .:/stamp
+  ports:
+    - 9292:9292
