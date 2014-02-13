@@ -2,6 +2,7 @@
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.db.models.loading import get_model
+from django.core.exceptions import ObjectDoesNotExist
 
 from toolkit.utils import _class_importer
 
@@ -90,8 +91,11 @@ class InviteKey(models.Model):
         return tool_instance.workspace.get_absolute_url()
 
     def get_tool_instance_absolute_url(self):
-        tool_instance = self.tool.model.objects.get(pk=self.tool_object_id)
-        return tool_instance.get_absolute_url()
+        try:
+            tool_instance = self.tool.model.objects.get(pk=self.tool_object_id)
+            return tool_instance.get_absolute_url()
+        except ObjectDoesNotExist:
+            return None
 
     def get_invite_login_url(self, request=None):
         return request.build_absolute_uri(self.get_absolute_url()) if request is not None else self.get_absolute_url()
