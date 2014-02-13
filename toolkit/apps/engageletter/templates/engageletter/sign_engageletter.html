@@ -1,1 +1,8 @@
 {% extends 'workspace/workspace_tool_sign.html' %}
+
+{% load django_bootstrap_breadcrumbs %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% breadcrumb 'Sign' 'engageletter:sign' object.slug %}
+{% endblock %}
