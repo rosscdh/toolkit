@@ -178,7 +178,7 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
         },
         help_text='paid per share',
         label='Value per share at time of transfer',
-        initial='0.0001',
+        initial='0.01',
         widget=forms.TextInput(attrs={'size': '10'})
     )
 
@@ -198,7 +198,7 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
         },
         help_text='paid per share',
         label='Actual price paid per share',
-        initial='0.0001',
+        initial='0.01',
         widget=forms.TextInput(attrs={'size': '10'})
     )
 
