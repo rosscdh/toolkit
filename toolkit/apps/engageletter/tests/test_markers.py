@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.core import mail
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 
@@ -232,6 +233,23 @@ class CustomerSignAndSendMarkerTest(BaseTestMarker):
 
     def test_action_if_not_correct_status(self):
         self.assertEqual(self.subject.action, None)
+
+    def test_on_complete_is_present_and_works(self):
+        """
+        @BUSINESSRULE on_complete of customer_sign_and_send step
+        the lawyer shoudl recieve an email informing them of the readines for
+        them to sign
+        """
+        self.subject.on_complete()  # call the method shoudl nto throw NotImplemented error
+
+        self.assertEqual(len(mail.outbox), 1)
+        email = mail.outbox[0]
+
+        self.assertEqual(email.subject, 'ACTION REQUIRED : Sign Engagement Letter')
+        self.assertEqual(email.extra_headers, {'Reply-To': 'support@lawpal.com'})
+
+        action_url = 'http://localhost:8000/engagement-letters/%s/sign/' % self.subject.tool.slug
+        self.assertTrue(action_url in str(email.message()))
 
 
 class LawyerSignMarkerTest(BaseTestMarker):
