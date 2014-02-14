@@ -5,6 +5,8 @@ from toolkit.apps.workspace.markers import BaseSignalMarkers, Marker
 
 from toolkit.apps.workspace.markers.lawyers import LawyerSetupTemplateMarker
 
+from .mailers import EngageLetterLawyerSignEmail
+
 
 class LawyerSetupTemplatePrerequisite(LawyerSetupTemplateMarker):
     def get_action_url(self):
@@ -125,6 +127,20 @@ class CustomerSignAndSendMarker(Marker):
             if self.tool.status == self.tool.STATUS.customer_sign_and_send:
                 return self.get_action_url()
         return None
+
+    def on_complete(self):
+        """
+        Optional on_complete
+        """
+        #
+        # Send the notification email
+        #
+        mailer = EngageLetterLawyerSignEmail(recipients=(('Alex', 'alex@lawpal.com'),))
+        # Get the lawyer_sign url
+        url = self.tool.markers.marker('lawyer_sign').get_action_url()
+        # send the email
+        mailer.process(instance=self.tool,
+                       url=url)
 
 
 class LawyerSignMarker(CustomerSignAndSendMarker):

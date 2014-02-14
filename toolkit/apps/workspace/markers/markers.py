@@ -206,3 +206,8 @@ class Marker(object):
             method = _class_importer(s)  # @TODO can optimise this and precache them
             method.send(sender=request, instance=instance, actor=actor, **kwargs)
 
+    def on_complete(self):
+        """
+        Method to allow markers to perform specific actions when they are completed
+        """
+        raise NotImplementedError
