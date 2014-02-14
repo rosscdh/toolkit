@@ -5,8 +5,6 @@ from hello_sign.signals import hellosign_webhook_event_recieved
 
 from toolkit.apps.workspace.signals import _update_marker
 
-from .mailers import EngageLetterLawyerSignEmail
-
 import logging
 logger = logging.getLogger('django.request')
 
@@ -98,11 +96,6 @@ def on_customer_sign_and_send(sender, instance, actor, **kwargs):
                        next_status=marker.next_marker.val,
                        actor_name=actor_name,
                        instance=instance)
-        #
-        # Send the notification email
-        #
-        mailer = EngageLetterLawyerSignEmail(recipients=(('Alex', 'alex@lawpal.com'),))
-        mailer.process(instance=instance)
 
 
 @receiver(lawyer_sign)
