@@ -8,6 +8,7 @@ from django.views.generic import FormView, UpdateView
 
 from toolkit.apps.me.signals import send_welcome_email
 from toolkit.apps.default.models import UserProfile
+from toolkit.mixins import AjaxModelFormView
 
 from .forms import (ConfirmAccountForm,
                     ChangePasswordForm,
@@ -77,7 +78,7 @@ class AccountSettingsView(UpdateView):
         return super(AccountSettingsView, self).get_success_url()
 
 
-class ChangePasswordView(FormView):
+class ChangePasswordView(AjaxModelFormView, FormView):
     form_class = ChangePasswordForm
     success_url = reverse_lazy('me:settings')
     template_name = 'user/settings/change-password.html'
