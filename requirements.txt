@@ -77,5 +77,6 @@ django-casper
 mock
 -e git+https://github.com/vandersonmota/model_mommy.git#egg=model_mommy
 -e git+git://github.com/neubloc/django-colortools#egg=django-colortools
+rainbowrunners
 pyquery
 django-inmemorystorage
