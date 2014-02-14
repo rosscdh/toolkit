@@ -12,10 +12,12 @@ from rulez import registry as rulez_registry
 from storages.backends.s3boto import S3BotoStorage
 
 from toolkit.apps.eightythreeb.managers import AttachmentManger
-from toolkit.apps.eightythreeb.mixins import IsDeletedMixin
 
+from toolkit.apps.workspace.services import WordService
 from toolkit.apps.workspace.signals import base_signal
 from toolkit.apps.workspace.mixins import WorkspaceToolModelMixin
+
+from hello_sign.mixins import HelloSignModelMixin
 
 from .markers import EngagementLetterMarkers
 ENGAGEMENTLETTER_STATUS = EngagementLetterMarkers().named_tuple(name='ENGAGEMENTLETTER_STATUS')
@@ -33,7 +35,7 @@ def _upload_file(instance, filename):
     return 'templates/engageletter-%d-%s%s' % (instance.tool.user.pk, slugify(filename_no_ext), ext)
 
 
-class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, WorkspaceToolModelMixin, models.Model):
+class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, HelloSignModelMixin, WorkspaceToolModelMixin, models.Model):
     """
     Enagement Letter model
     """
@@ -46,10 +48,7 @@ class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, WorkspaceToolMode
     workspace = models.ForeignKey('workspace.Workspace')
     user = models.ForeignKey('auth.User')
 
-    # header = models.TextField(default='', blank=True)  # store an instance of the workspace.lawyer header template
-    # letter = models.TextField(default='', blank=True)  # store the rendered html
-
-    data = JSONField(default={})
+    data = JSONField(default={}) # overriden by HelloSignModelMixin
 
     status = models.IntegerField(choices=ENGAGEMENTLETTER_STATUS.get_choices(), default=ENGAGEMENTLETTER_STATUS.lawyer_complete_form, db_index=True)
 
@@ -112,6 +111,20 @@ class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, WorkspaceToolMode
         # rerender it
         context = loader.Context(context_data)
         return self.template.render(context)
+
+    def hs_document_title(self):
+        """
+        Method to set the document title, displayed in the HelloSign Interface
+        """
+        return self.__unicode__()
+
+    def hs_document(self):
+        """
+        Return the document to be senf for signing
+        Ties in with HelloSignModelMixin method
+        """
+        doc_service = WordService()
+        return doc_service.generate(html=self.html())
 
     def get_absolute_url(self):
         return reverse('workspace:tool_object_overview', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug=self.tool_slug).first().slug, 'slug': self.slug})

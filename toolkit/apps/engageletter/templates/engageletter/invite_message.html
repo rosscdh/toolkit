@@ -1,9 +1,11 @@
-<p>Dear {{ instance.user.get_full_name|default:instance.user.email }}</p>
+<p>Dear {{ instance.user.get_full_name|default:instance.user.email }},</p>
 
-<p>I'm looking forward to working together and thank you for choosing our firm. Attached please find our engagement letter for {{ instance.workspace.name }}.</p>
+<p>I'm looking forward to working together and thank you for choosing our firm.</p>
+
+<p><strong>Follow this invitation link to gain access to your Engagement Letter:</strong><br>{{ action_url }}</p>
 
 <p>If you approve of the engagement letter, please go ahead and sign it. A fully executed copy will be stored on LawPal and is accessible by you at any time.</p>
-
 <p>Please feel free to contact me with any questions or concerns you may have.</p>
-<br/>
-{{ instance.workspace.lawyer.get_full_name|default:instance.workspace.lawyer.email }}
+
+<p>Regards</p>
+<p>{{ user.get_full_name|default:user.email }}</p>

@@ -112,6 +112,19 @@ body {
 .firm-logo-preview {
   margin-right: 15px;
 }
+.signing-info p {
+  padding: 0 10px;
+}
+.signing-info table {
+  margin-bottom: 0;
+  text-align: left;
+}
+.signing-info table tr td {
+  border-top: 0;
+}
+.signing-info table tr td.legend {
+  width: 100px;
+}
 .page-header h4 {
   font-size: 28px;
 }

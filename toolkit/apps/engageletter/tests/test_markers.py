@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.core import mail
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 
@@ -7,6 +8,7 @@ import mock
 
 from toolkit.apps.workspace.markers import Marker
 from toolkit.casper.workflow_case import BaseScenarios
+from toolkit.casper.prettify import mock_http_requests  # must import directly
 
 from .data import ENGAGELETTER_DATA as BASE_ENGAGELETTER_DATA
 from ..models import EngagementLetter
@@ -16,6 +18,7 @@ from ..markers import (LawyerSetupTemplatePrerequisite,
                       LawyerInviteUserMarker,
                       CustomerCompleteLetterFormMarker,
                       CustomerSignAndSendMarker,
+                      LawyerSignMarker,
                       ProcessCompleteMarker)
 
 
@@ -38,10 +41,11 @@ class EngagementLetterMarkersTest(TestCase):
         self.assertEqual(len(name_vals), 6)
 
         self.assertEqual(name_vals, [('lawyer_complete_form', 1),
-                                     ('lawyer_review_letter_text', 2),
-                                     ('lawyer_invite_customer', 3),
-                                     ('customer_complete_form', 4),
-                                     ('customer_sign_and_send', 5),
+                                     # ('lawyer_review_letter_text', 2),
+                                     ('lawyer_invite_customer', 2),
+                                     ('customer_complete_form', 3),
+                                     ('customer_sign_and_send', 4),
+                                     ('lawyer_sign', 5),
                                      ('complete', 6)])
 
     def test_prerequisite_vals(self):
@@ -108,25 +112,25 @@ class BaseTestMarker(BaseScenarios, TestCase):
                 self.subject.action
 
 
-class LawyerSetupTemplatePrerequisiteTest(BaseTestMarker):
-    val = 0
-    clazz = LawyerSetupTemplatePrerequisite
+# class LawyerSetupTemplatePrerequisiteTest(BaseTestMarker):
+    # val = 0
+    # clazz = LawyerSetupTemplatePrerequisite
 
-    def test_properties(self):
-        self.assertTrue(type(self.subject), self.clazz)
-        self.assertEqual(self.subject.val, self.val)
-        self.assertEqual(self.subject.name, 'lawyer_setup_template')
-        self.assertEqual(self.subject.description, 'Attorney: Setup Letterhead Template')
-        self.assertEqual(self.subject.signals, ['toolkit.apps.engageletter.signals.lawyer_setup_template'])
-        self.assertEqual(self.subject.action_name, 'Edit Letterhead Template')
-        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
-        self.assertEqual(self.subject.action_user_class, ['lawyer'])
+    # def test_properties(self):
+        # self.assertTrue(type(self.subject), self.clazz)
+        # self.assertEqual(self.subject.val, self.val)
+        # self.assertEqual(self.subject.name, 'lawyer_setup_template')
+        # self.assertEqual(self.subject.description, 'Attorney: Setup Letterhead Template')
+        # self.assertEqual(self.subject.signals, ['toolkit.apps.engageletter.signals.lawyer_setup_template'])
+        # self.assertEqual(self.subject.action_name, 'Edit Letterhead Template')
+        # self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
+        # self.assertEqual(self.subject.action_user_class, ['lawyer'])
 
-    def test_get_action_url(self):
-        self.assertEqual(self.subject.get_action_url(), '/me/settings/letterhead/?next=/workspace/lawpal-test/tool/engagement-letters/create/')
+    # def test_get_action_url(self):
+        # self.assertEqual(self.subject.get_action_url(), '/me/settings/letterhead/?next=/workspace/lawpal-test/tool/engagement-letters/create/')
 
-    def test_action(self):
-        self.assertEqual(self.subject.action, '/me/settings/letterhead/?next=/workspace/lawpal-test/tool/engagement-letters/create/')
+    # def test_action(self):
+        # self.assertEqual(self.subject.action, '/me/settings/letterhead/?next=/workspace/lawpal-test/tool/engagement-letters/create/')
 
 
 class LawyerCreateLetterMarkerTest(BaseTestMarker):
@@ -199,6 +203,9 @@ class CustomerCompleteLetterFormMarkerTest(BaseTestMarker):
 
 
 class CustomerSignAndSendMarkerTest(BaseTestMarker):
+    """
+    This step is ONLY valid if the tool.status is "customer_sign_and_send"
+    """
     val = 0
     clazz = CustomerSignAndSendMarker
 
@@ -206,7 +213,7 @@ class CustomerSignAndSendMarkerTest(BaseTestMarker):
         self.assertTrue(type(self.subject), self.clazz)
         self.assertEqual(self.subject.val, self.val)
         self.assertEqual(self.subject.name, 'customer_sign_and_send')
-        self.assertEqual(self.subject.description, 'Client: Sign & Send the Engagement Letter')
+        self.assertEqual(self.subject.description, 'Client: Sign the Engagement Letter')
         self.assertEqual(self.subject.signals, ['toolkit.apps.engageletter.signals.customer_sign_and_send'])
         self.assertEqual(self.subject.action_name, 'Sign Engagment Letter')
         self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
@@ -217,8 +224,66 @@ class CustomerSignAndSendMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.get_action_url(), url)
 
     def test_action(self):
+        # must set the current marker to complete
+        self.subject.tool.status = self.subject.tool.STATUS.customer_sign_and_send
+        self.subject.tool.save(update_fields=['status'])
+
         url = reverse('engageletter:sign', kwargs={'slug': self.subject.tool.slug})
         self.assertEqual(self.subject.action, url)
+
+    def test_action_if_not_correct_status(self):
+        self.assertEqual(self.subject.action, None)
+
+    def test_on_complete_is_present_and_works(self):
+        """
+        @BUSINESSRULE on_complete of customer_sign_and_send step
+        the lawyer shoudl recieve an email informing them of the readines for
+        them to sign
+        """
+        self.subject.on_complete()  # call the method shoudl nto throw NotImplemented error
+
+        self.assertEqual(len(mail.outbox), 1)
+        email = mail.outbox[0]
+
+        self.assertEqual(email.subject, 'ACTION REQUIRED : Sign Engagement Letter')
+        self.assertEqual(email.extra_headers, {'Reply-To': 'support@lawpal.com'})
+
+        action_url = 'http://localhost:8000/engagement-letters/%s/sign/' % self.subject.tool.slug
+        self.assertTrue(action_url in str(email.message()))
+
+
+class LawyerSignMarkerTest(BaseTestMarker):
+    """
+    This step is ONLY valid if the tool.status is "lawyer_sign"
+    """
+    val = 0
+    clazz = LawyerSignMarker
+    expected_url = '/engagement-letters/d1c545082d1241849be039e338e47aa0/sign/'
+
+    def test_properties(self):
+        self.assertTrue(type(self.subject), self.clazz)
+        self.assertEqual(self.subject.val, self.val)
+        self.assertEqual(self.subject.name, 'lawyer_sign')
+        self.assertEqual(self.subject.description, 'Attorney: Sign the Engagement Letter')
+        self.assertEqual(self.subject.signals, ['toolkit.apps.engageletter.signals.lawyer_sign'])
+        self.assertEqual(self.subject.action_name, 'Sign Engagment Letter')
+        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
+        self.assertEqual(self.subject.action_user_class, ['lawyer'])
+
+    def test_get_action_url(self):
+        url = reverse('engageletter:sign', kwargs={'slug': self.subject.tool.slug})
+        self.assertEqual(self.subject.get_action_url(), url)
+
+    def test_action(self):
+        # must set the current marker to complete
+        self.subject.tool.status = self.subject.tool.STATUS.lawyer_sign
+        self.subject.tool.save(update_fields=['status'])
+
+        url = reverse('engageletter:sign', kwargs={'slug': self.subject.tool.slug})
+        self.assertEqual(self.subject.action, url)
+
+    def test_action_if_not_correct_status(self):
+        self.assertEqual(self.subject.action, None)
 
 
 class ProcessCompleteMarkerTest(BaseTestMarker):
