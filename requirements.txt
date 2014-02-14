@@ -47,6 +47,9 @@ decorator
 #PyPandoc
 -e git+https://github.com/rosscdh/pypandoc.git@utf8-encode#egg=pypandoc
 
+# Hellosign integration
+-e git+https://github.com/rosscdh/django-hello_sign.git#egg=django-hello_sign
+
 boto
 django-storages
 

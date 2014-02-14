@@ -43,12 +43,16 @@ def _update_marker(marker_name, next_status, actor_name, instance, **kwargs):
     """
     Shared process used by signals to perform status updates
     """
+    # get the current marker
+    current_marker = instance.markers.marker(marker_name)
+
     # get the data markers
     markers = instance.data.get('markers', {})
     # capture fields to update
     update_fields = []
 
     # set our key
+    # but only if we dont already have it
     if marker_name not in markers.keys():
         kwargs.update({
             'date_of': datetime.datetime.utcnow(),
@@ -70,6 +74,12 @@ def _update_marker(marker_name, next_status, actor_name, instance, **kwargs):
         # save
         instance.save(update_fields=update_fields)
 
+        if hasattr(current_marker, 'on_complete'):
+            try:
+                current_marker.on_complete()
+
+            except NotImplementedError:
+                logger.debug('Marker has no on_complete action: %s for instance: %s' % (marker_name, instance))
 
 #
 # End Marker Signals

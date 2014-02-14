@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
-
 from django import forms
 from django.shortcuts import get_object_or_404
-from django.views.generic import FormView, TemplateView
+from django.views.generic import FormView
 
 from crispy_forms.helper import FormHelper
 
@@ -11,6 +9,7 @@ from .models import Workspace
 
 import re
 import logging
+from datetime import datetime
 logger = logging.getLogger('django.request')
 
 

@@ -66,10 +66,31 @@ class SetupEngagementLetterTemplateView(IssueSignalsMixin, LawyerLetterheadView)
 
 
 class SignAndSendEngagementLetterView(SingleObjectMixin, FormView):
+    """
+    View to allow Customer to agree and sign the document using HelloSign
+    """
     model = EngagementLetter
     form_class = SignEngagementLetterForm
     template_name = 'engageletter/sign_engageletter.html'
 
     def get_context_data(self, *args, **kwargs):
         self.object = self.get_object()
-        return super(SignAndSendEngagementLetterView, self).get_context_data(*args, **kwargs)
+        kwargs = super(SignAndSendEngagementLetterView, self).get_context_data(*args, **kwargs)
+        kwargs.update({
+            'item': self.object,
+            'workspace': self.object.workspace,
+            'tool': self.object.workspace.tools.filter(slug=self.object.tool_slug).first(),
+        })
+        return kwargs
+
+    def get_success_url(self):
+        return self.object.markers.marker('customer_sign_and_send').get_action_url()
+
+    def form_valid(self, form):
+        self.object = self.get_object()
+        #
+        # Send the object for signing
+        #
+        self.object.send_for_signing()
+
+        return super(SignAndSendEngagementLetterView, self).form_valid(form=form)

@@ -17,6 +17,13 @@ def mock_http_requests(view_func):
     @httpretty.activate
     def _decorator(request, *args, **kwargs):
         from toolkit.apps.eightythreeb.tests.usps_trackfield_response import TRACK_RESPONSE_XML_BODY
+        from toolkit.apps.workspace.tests.data import HELLOSIGN_200_RESPONSE
+        #
+        # HelloSign
+        #
+        httpretty.register_uri(httpretty.POST, re.compile(r"^https://api.hellosign.com/v3/(.*)$"),
+                               body=HELLOSIGN_200_RESPONSE,
+                               status=200)
         #
         # USPS
         # POST and GET are the same as USPS is not REST or even RESTFUL

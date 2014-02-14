@@ -91,6 +91,8 @@ PROJECT_APPS = (
     # Apps
     'toolkit.apps.eightythreeb',
     'toolkit.apps.engageletter',
+    # Lawpal Modules
+    'hello_sign',
 )
 
 HELPER_APPS = (
@@ -203,6 +205,12 @@ AWS_HEADERS = {
     'Cache-Control': 'max-age=300',
     'x-amz-acl': 'public-read',
 }
+
+HELLOSIGN_AUTHENTICATION = ("founders@lawpal.com", "test2007")
+HELLOSIGN_API_KEY = '0ea9011ce33b5de3b58af3b3f6d449f8f3f72e2ac06c14c6319439af39fe32f6'
+HELLOSIGN_CLIENT_ID = '9bc892af173754698e3fa30dedee3826'
+HELLOSIGN_CLIENT_SECRET = '8d770244b9971abfe789f5224552239d'
+
 
 REST_FRAMEWORK = {
     # Use hyperlinked styles by default.

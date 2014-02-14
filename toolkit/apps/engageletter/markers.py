@@ -5,6 +5,8 @@ from toolkit.apps.workspace.markers import BaseSignalMarkers, Marker
 
 from toolkit.apps.workspace.markers.lawyers import LawyerSetupTemplateMarker
 
+from .mailers import EngageLetterLawyerSignEmail
+
 
 class LawyerSetupTemplatePrerequisite(LawyerSetupTemplateMarker):
     def get_action_url(self):
@@ -45,19 +47,19 @@ class LawyerCreateLetterMarker(Marker):
         return None
 
 
-class LawyerReviewEngagementLetterMarker(Marker):
-    name = 'lawyer_review_letter_text'
-    description = 'Attorney: Review Engagement Letter Text'
-    signals = ['toolkit.apps.engageletter.signals.lawyer_review_letter_text']
+# class LawyerReviewEngagementLetterMarker(Marker):
+    # name = 'lawyer_review_letter_text'
+    # description = 'Attorney: Review Engagement Letter Text'
+    # signals = ['toolkit.apps.engageletter.signals.lawyer_review_letter_text']
 
-    action_name = 'Engagement Letter Text'
-    action_type = Marker.ACTION_TYPE.redirect
-    action_user_class = ['lawyer']
+    # action_name = 'Engagement Letter Text'
+    # action_type = Marker.ACTION_TYPE.redirect
+    # action_user_class = ['lawyer']
 
-    def get_action_url(self):
-        if self.tool is not None:
-            return reverse('engageletter:lawyer_template', kwargs={'slug': self.tool.slug})
-        return None
+    # def get_action_url(self):
+        # if self.tool is not None:
+            # return reverse('engageletter:lawyer_template', kwargs={'slug': self.tool.slug})
+        # return None
 
 
 class LawyerInviteUserMarker(Marker):
@@ -109,7 +111,7 @@ class CustomerCompleteLetterFormMarker(Marker):
 
 class CustomerSignAndSendMarker(Marker):
     name = 'customer_sign_and_send'
-    description = 'Client: Sign & Send the Engagement Letter'
+    description = 'Client: Sign the Engagement Letter'
     signals = ['toolkit.apps.engageletter.signals.customer_sign_and_send']
 
     action_name = 'Sign Engagment Letter'
@@ -118,6 +120,47 @@ class CustomerSignAndSendMarker(Marker):
 
     def get_action_url(self):
         return reverse('engageletter:sign', kwargs={'slug': self.tool.slug})
+
+    @property
+    def action(self):
+        if self.tool:
+            if self.tool.status == self.tool.STATUS.customer_sign_and_send:
+                return self.get_action_url()
+        return None
+
+    def on_complete(self):
+        """
+        Optional on_complete
+        """
+        #
+        # Send the notification email
+        #
+        mailer = EngageLetterLawyerSignEmail(recipients=(('Alex', 'alex@lawpal.com'),))
+        # Get the lawyer_sign url
+        url = self.tool.markers.marker('lawyer_sign').get_action_url()
+        # send the email
+        mailer.process(instance=self.tool,
+                       url=url)
+
+
+class LawyerSignMarker(CustomerSignAndSendMarker):
+    """
+    Uses the same action urls as the CustomerSignAndSendMarker
+    """
+    name = 'lawyer_sign'
+    description = 'Attorney: Sign the Engagement Letter'
+    signals = ['toolkit.apps.engageletter.signals.lawyer_sign']
+
+    action_name = 'Sign Engagment Letter'
+    action_type = Marker.ACTION_TYPE.redirect
+    action_user_class = ['lawyer']
+
+    @property
+    def action(self):
+        if self.tool:
+            if self.tool.status == self.tool.STATUS.lawyer_sign:
+                return self.get_action_url()
+        return None
 
 
 class ProcessCompleteMarker(Marker):
@@ -132,9 +175,10 @@ class EngagementLetterMarkers(BaseSignalMarkers):
     ]
     signal_map = [
         LawyerCreateLetterMarker(1),
-        LawyerReviewEngagementLetterMarker(2),
-        LawyerInviteUserMarker(3),
-        CustomerCompleteLetterFormMarker(4),
-        CustomerSignAndSendMarker(5),
+        # LawyerReviewEngagementLetterMarker(2),
+        LawyerInviteUserMarker(2),
+        CustomerCompleteLetterFormMarker(3),
+        CustomerSignAndSendMarker(4),
+        LawyerSignMarker(5),
         ProcessCompleteMarker(6)
     ]
