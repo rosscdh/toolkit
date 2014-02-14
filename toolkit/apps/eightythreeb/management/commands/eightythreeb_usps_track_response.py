@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
-from django.conf import settings
 from django.core.management.base import BaseCommand
-from django.contrib.sites.models import Site
 
 from usps.errors import USPSXMLError
 
 from toolkit.apps.workspace.services import USPSTrackingService
 
 from toolkit.apps.eightythreeb.models import EightyThreeB
-from toolkit.apps.eightythreeb.mailers import EightyThreeMailDeliveredEmail
 
 
 import logging
@@ -29,8 +26,6 @@ class Command(BaseCommand):
         return EightyThreeB.objects.mail_delivery_pending()
 
     def handle(self, *args, **options):
-        site = Site.objects.get(pk=settings.SITE_ID)
-
         service = self.service
 
         for instance in self.eightythreeb_list:
