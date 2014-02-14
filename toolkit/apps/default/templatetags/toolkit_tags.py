@@ -3,6 +3,8 @@ from django import template
 from django.conf import settings
 from toolkit.utils import CURRENT_SITE
 
+import urlparse
+
 register = template.Library()
 
 import logging
@@ -13,10 +15,9 @@ _DOMAIN_WITHOUT_END_SLASH = _CURRENT_SITE.domain[0:-1] if _CURRENT_SITE.domain[-
 
 
 @register.simple_tag
-def FULL_DOMAIN_PATH(path=None):
-    path = path if path is not None else '/'
-    return '{domain}{path}'.format(domain=_DOMAIN_WITHOUT_END_SLASH, path=path)
-FULL_DOMAIN_PATH.is_safe = True
+def ABSOLUTE_BASE_URL(path=None):
+    return urlparse.urljoin(_CURRENT_SITE, path)
+ABSOLUTE_BASE_URL.is_safe = True
 
 @register.simple_tag
 def ABSOLUTE_STATIC_URL(path=None):
