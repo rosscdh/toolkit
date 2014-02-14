@@ -6,8 +6,8 @@
 
 The Engagement letter has been signed by {{ instance.user.get_full_name }}.
 
-This is an automated notification that the Engagement Letter between yourself and is ready fro you to log in and sign.
+This is an automated notification that the Engagement Letter between yourself and "{{ instance.user.get_full_name }}" is ready for you to log in and sign.
 
-Please go to: {% ABSOLUTE_BASE_URL instance.get_absolute_url %}
+Please go to: {% ABSOLUTE_BASE_URL url %}
 
 {% endblock %}
