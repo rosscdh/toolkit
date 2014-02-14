@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from .test_eightythreeb_create import *
 
+from .test_forms import *
 from .test_attachments import *
 from .test_usps import *
 from .test_trackingcode import *

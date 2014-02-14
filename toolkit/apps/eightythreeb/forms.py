@@ -13,10 +13,10 @@ from parsley.decorators import parsleyfy
 
 from usps.validators import USPSTrackingCodeField
 
+from toolkit.apps.default.fields import HTMLField
 from toolkit.apps.workspace.mixins import WorkspaceToolFormMixin
 from toolkit.apps.workspace.services import EnsureCustomerService
 from toolkit.apps.workspace.services import USPSTrackingService
-from toolkit.fields import SummernoteField
 from toolkit.mixins import ModalForm
 
 from .models import EightyThreeB
@@ -147,7 +147,7 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
         )
     )
 
-    description = SummernoteField(
+    description = HTMLField(
         error_messages={
             'required': "Property description can't be blank."
         },
@@ -164,7 +164,7 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
         widget=forms.NumberInput(attrs={'size': '4'})
     )
 
-    nature_of_restrictions = SummernoteField(
+    nature_of_restrictions = HTMLField(
         error_messages={
             'required': "Nature of restrictions can't be blank."
         },
@@ -178,7 +178,7 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
         },
         help_text='paid per share',
         label='Value per share at time of transfer',
-        initial='0.0001',
+        initial='0.01',
         widget=forms.TextInput(attrs={'size': '10'})
     )
 
@@ -198,7 +198,7 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
         },
         help_text='paid per share',
         label='Actual price paid per share',
-        initial='0.0001',
+        initial='0.01',
         widget=forms.TextInput(attrs={'size': '10'})
     )
 
@@ -343,6 +343,12 @@ class CustomerEightyThreeBForm(BaseEightyThreeBForm):
                 Field('details_confirmed', template='public/bootstrap3/t_and_c.html'),
                 css_class='dialog dialog-info form-section form-dialog'
             ),
+
+
+            'total_shares_purchased',  # hidden widget
+            'price_paid_per_share',  # hidden widget
+            'transfer_value_share',  # hidden widget
+
             ButtonHolder(
                 Submit('submit', 'Continue', css_class='btn-hg btn-primary'),
                 css_class='form-group'
