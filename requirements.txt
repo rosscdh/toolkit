@@ -80,3 +80,4 @@ mock
 rainbowrunners
 pyquery
 django-inmemorystorage
+django-cors-headers

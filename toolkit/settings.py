@@ -120,6 +120,9 @@ HELPER_APPS = (
     'django_bleach',
     'summernote',
 
+    # Api helpers
+    'corsheaders',
+
     # db migrations
     'south',
     # jenkins
@@ -135,6 +138,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'toolkit.apps.me.middleware.EnsureUserHasPasswordMiddleware',
 )
 
@@ -211,6 +215,9 @@ HELLOSIGN_API_KEY = '0ea9011ce33b5de3b58af3b3f6d449f8f3f72e2ac06c14c6319439af39f
 HELLOSIGN_CLIENT_ID = '9bc892af173754698e3fa30dedee3826'
 HELLOSIGN_CLIENT_SECRET = '8d770244b9971abfe789f5224552239d'
 
+CORS_ORIGIN_WHITELIST = (
+    'localhost:9000'
+)
 
 REST_FRAMEWORK = {
     # Use hyperlinked styles by default.
