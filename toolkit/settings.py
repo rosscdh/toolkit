@@ -225,17 +225,15 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.JSONPRenderer',
     ),
-    # Only used if the `serializer_class` attribute is not set on a view.
-    'DEFAULT_MODEL_SERIALIZER_CLASS':
-        'rest_framework.serializers.PrimaryKeyRelatedField',  # @TODO change to primarykeymodelserializer
-
+    'DEFAULT_MODEL_SERIALIZER_CLASS': (
+        'rest_framework.serializers.HyperlinkedModelSerializer',
+    ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         #'rest_framework.authentication.TokenAuthentication',
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'rest_framework.authentication.BasicAuthentication', # Here Temporarily for dev
         'rest_framework.authentication.SessionAuthentication',
     ),
-
     'DEFAULT_FILTER_BACKENDS': (
         ('rest_framework.filters.DjangoFilterBackend',)
     ),
