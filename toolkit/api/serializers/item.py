@@ -70,19 +70,19 @@ class ItemSerializer(serializers.Serializer):
         placeholder
         """
         '/api/v1/users/:pk'
-        return ['/api/v1/users/%s' % UserSerializer(u).data.get('username') for u in random.choice([[], USERS[0:3]]) if u is not None]
+        return [UserSerializer(u).data.get('url') for u in random.choice([[], USERS[0:3]]) if u is not None]
 
     def get_reviewers(self, obj):
         """
         placeholder
         """
-        return ['/api/v1/users/%s' % UserSerializer(u).data.get('username') for u in random.choice([[], USERS[1:2]]) if u is not None]
+        return [UserSerializer(u).data.get('url') for u in random.choice([[], USERS[1:2]]) if u is not None]
 
     def get_signatories(self, obj):
         """
         placeholder
         """
-        return ['/api/v1/users/%s' % UserSerializer(u).data.get('username') for u in random.choice([[], USERS[2:3]]) if u is not None]
+        return [UserSerializer(u).data.get('url') for u in random.choice([[], USERS[2:3]]) if u is not None]
 
     def get_markers(self, obj):
         """
