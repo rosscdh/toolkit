@@ -11,7 +11,7 @@ from .item import ItemSerializer
 import datetime
 
 
-class MatterSerializer(serializers.ModelSerializer):
+class MatterSerializer(serializers.HyperlinkedModelSerializer):
     slug = serializers.CharField(read_only=True)
     date_created = serializers.DateTimeField(read_only=True)
     date_modified = serializers.DateTimeField(read_only=True)
