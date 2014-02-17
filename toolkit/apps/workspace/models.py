@@ -5,6 +5,7 @@ from django.db.models.loading import get_model
 from django.core.exceptions import ObjectDoesNotExist
 
 from toolkit.utils import _class_importer
+from toolkit.apps.eightythreeb.mixins import IsDeletedMixin
 
 from rulez import registry as rulez_registry
 
@@ -14,7 +15,7 @@ from jsonfield import JSONField
 from .managers import WorkspaceManager
 
 
-class Workspace(models.Model):
+class Workspace(IsDeletedMixin, models.Model):
     """
     Workspaces are areas that allow multiple tools
     to be associated with a group of users
@@ -49,20 +50,20 @@ class Workspace(models.Model):
         except IndexError:
             return None
 
-    def can_read(self, user):
-        return user in self.participants.all()
-
-    def can_edit(self, user):
-        return user.profile.is_lawyer and user in self.participants.all()
-
-    def can_delete(self, user):
-        return user.profile.is_lawyer and user in self.participants.all()
-
     def get_absolute_url(self):
         return reverse('workspace:view', kwargs={'slug': self.slug})
 
     def available_tools(self):
         return Tool.objects.exclude(pk__in=[t.pk for t in self.tools.all()])
+
+    def can_read(self, user):
+        return user in self.participants.all()
+
+    def can_edit(self, user):
+        return user.profile.is_lawyer and user == self.lawyer
+
+    def can_delete(self, user):
+        return user.profile.is_lawyer and user == self.lawyer
 
 
 rulez_registry.register("can_read", Workspace)
