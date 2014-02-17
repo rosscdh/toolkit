@@ -11,6 +11,7 @@ class MatterEndpoint(viewsets.ModelViewSet):
     """
     model = Workspace
     serializer_class = MatterSerializer
+    lookup_field = 'slug'
 
     def get_queryset(self):
         user = self.request.user
