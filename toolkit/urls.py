@@ -13,7 +13,7 @@ handler500 = 'toolkit.apps.default.views.handler500'
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
 
-    url(r'^api/v1/', include('toolkit.api.urls', namespace='api-v1')),
+    url(r'^api/v1/', include('toolkit.api.urls')),
     url(r'^api/', include('toolkit.apps.api.urls', namespace='api')),
 
     url(r'^dash/', include('toolkit.apps.dash.urls', namespace='dash')),

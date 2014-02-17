@@ -16,8 +16,8 @@ class MatterSerializer(serializers.ModelSerializer):
     date_created = serializers.DateTimeField(read_only=True)
     date_modified = serializers.DateTimeField(read_only=True)
 
-    lawyer = serializers.RelatedField(many=False)
-    participants = serializers.RelatedField(many=True)
+    lawyer = serializers.HyperlinkedRelatedField(view_name='user-detail', lookup_field = 'username', many=False)
+    participants = serializers.HyperlinkedRelatedField(view_name='user-detail', lookup_field = 'username', many=True)
     tools = serializers.RelatedField(many=True)
 
     items = serializers.SerializerMethodField('get_items')
