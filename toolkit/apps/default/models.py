@@ -73,3 +73,20 @@ def _get_or_create_user_profile(user):
 
 # used to trigger profile creation by accidental refernce. Rather use the _create_user_profile def above
 User.profile = property(lambda u: _get_or_create_user_profile(user=u)[0])
+
+
+"""
+Add our api permission handler methods to the User class
+"""
+def user_can_read(self, **kwargs):
+    return True
+
+def user_can_edit(self, **kwargs):
+    return False
+
+def user_can_delete(self, **kwargs):
+    return False
+
+User.add_to_class('can_read', user_can_read)
+User.add_to_class('can_edit', user_can_edit)
+User.add_to_class('can_delete', user_can_delete)
