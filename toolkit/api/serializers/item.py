@@ -23,6 +23,7 @@ class ItemSerializer(serializers.Serializer):
     participants = serializers.SerializerMethodField('get_participants')
     reviewers = serializers.SerializerMethodField('get_reviewers')
     signatories = serializers.SerializerMethodField('get_signatories')
+    markers = serializers.SerializerMethodField('get_markers')
     is_complete = serializers.SerializerMethodField('get_is_complete')
 
     date_created = serializers.SerializerMethodField('get_date_created')
@@ -82,6 +83,20 @@ class ItemSerializer(serializers.Serializer):
         placeholder
         """
         return ['/api/v1/users/%s' % UserSerializer(u).data.get('username') for u in random.choice([[], USERS[2:3]]) if u is not None]
+
+    def get_markers(self, obj):
+        """
+        placeholder
+        @NOTE a set of workflow markers that may apply to the current
+        """
+        marker = {
+            'name': 'Signature',
+            'description': 'Description of the current task',
+            'action': '/url/to/workflow/step',
+            'status': 'Text Description of current step',
+            'assignee': '/api/v1/rossc',
+        }
+        return [marker]
 
     def get_is_complete(self, obj):
         """

@@ -8,6 +8,8 @@ from rest_framework import serializers
 from toolkit.apps.workspace.models import Workspace
 from .item import ItemSerializer
 
+import datetime
+
 
 class MatterSerializer(serializers.ModelSerializer):
     slug = serializers.CharField(read_only=True)
@@ -39,16 +41,30 @@ class MatterSerializer(serializers.ModelSerializer):
         tmp method will eventually be replaced by getting all the latest
         comments form all items in a workspace @TODO cache this
         """
-        return []
+        comments = {
+            'message': 'He said that she said that she was a S and a Y because of Z',
+            'url': '/api/v1/activity/:pk',
+            'date_of': datetime.datetime.utcnow()
+        }
+        return [comments.copy() for i in xrange(0,5)]
 
     def get_activity(self, obj):
         """
         tmp method will eventually be replaced by matter.activity.all()
         """
-        return []
+        activity = {
+            'message': 'X did a Y to a J because of G',
+            'url': '/api/v1/activity/:pk',
+            'date_of': datetime.datetime.utcnow()
+        }
+        return [activity.copy() for i in xrange(0,5)]
 
     def get_todo(self, obj):
         """
         tmp method will eventually be replaced by matter.todo.filter(user=request.user)
         """
-        return []
+        todo = {
+            'url': '/api/v1/todo/:pk',
+            'message': 'You need to X, Y, and Z this mattter'
+        }
+        return [todo.copy() for i in xrange(0,5)]
