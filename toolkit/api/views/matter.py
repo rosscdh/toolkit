@@ -1,33 +1,17 @@
 # -*- coding: UTF-8 -*-
-from rest_framework.views import APIView
+from rest_framework import viewsets
 from rest_framework.response import Response
 
+from toolkit.apps.workspace.models import Workspace
 from ..serializers import MatterSerializer
 
 
-class MatterEndpoint(APIView):
+class MatterEndpoint(viewsets.ModelViewSet):
     """
     """
-    def get(self, request, format=None):
-        """
-        """
-        resp = {}
-        return Response(resp)
+    model = Workspace
+    serializer_class = MatterSerializer
 
-    def patch(self, request, format=None):
-        """
-        """
-        resp = {}
-        return Response(resp)
-
-    def post(self, request, format=None):
-        """
-        """
-        resp = {}
-        return Response(resp)
-
-    def delete(self, request, format=None):
-        """
-        """
-        resp = {}
-        return Response(resp)
+    def get_queryset(self):
+        user = self.request.user
+        return user.workspace_set.mine(user=user)
