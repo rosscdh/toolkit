@@ -15,8 +15,7 @@ import random
 
 USERS = User.objects.all()
 
-#class ItemSerializer(serializers.ModelSerializer):
-class ItemSerializer(serializers.Serializer):
+class ItemSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField('get_name')
     item_type = serializers.SerializerMethodField('get_item_type')
     date_due = serializers.SerializerMethodField('get_date_due')
@@ -29,6 +28,12 @@ class ItemSerializer(serializers.Serializer):
 
     date_created = serializers.SerializerMethodField('get_date_created')
     date_modified = serializers.SerializerMethodField('get_date_modified')
+
+    class Meta:
+        model = Item
+        exclude = ('name', 'workspace', 'item_type', 'revisions',
+                   'participants', 'reviewers', 'signatories', 'is_complete',
+                   'data', 'date_due', 'date_created', 'date_modified',)
 
     def get_name(self, obj):
         """
