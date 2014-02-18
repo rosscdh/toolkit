@@ -81,16 +81,22 @@ DJANGO_APPS = (
 PROJECT_APPS = (
     # Api
     'toolkit.api',
+
+    # Core Apps
+    'toolkit.apps.workspace',  # Matters
+    'toolkit.core.item',
+    'toolkit.core.attachment',
+
     # Module Apps
     'toolkit.apps.api',
     'toolkit.apps.default',
     'toolkit.apps.dash',
     'toolkit.apps.me',
-    # Main Workspace
-    'toolkit.apps.workspace',
-    # Apps
+
+    # Routine Apps
     'toolkit.apps.eightythreeb',
     'toolkit.apps.engageletter',
+
     # Lawpal Modules
     'hello_sign',
 )
