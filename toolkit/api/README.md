@@ -80,6 +80,9 @@ In order to provide feedback and initiate workflows
 /matters/:slug/activity/ (GET) - these are created within the system and as part of the system flows
     Allow the [lawyer,customer] user to list activity related to a matter
 
+/matters/:slug/todo/ (GET) - a compiled set of items assigned to the viewing user
+    Allow [lawyer,customer] user to list todo items within a matter
+
 
 Matter Items
 ============
@@ -103,7 +106,6 @@ Matter Items
 /items/:slug/activity/ (GET) - these are created within the system and as part
                                of the system flows
     Allow [lawyer,customer] user to list activity relating to an item object
-
 
 Attachments
 ===========
