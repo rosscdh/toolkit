@@ -94,14 +94,40 @@ Matter Items
     Allow the [lawyer,customer] user to list, and update an existing item
     objects; that belong to them
 
-/items/:slug/attachments/ (GET,POST)
+/items/:slug/attachments/ (GET)
     Allow [lawyer,customer] user to list and create attachment objects for item objects
 
-/items/:slug/workflows/ (GET,POST)
+#
+# Is catered to in Attachments section
+#
+#/items/:slug/attachments/:slug/revisions/ (GET,POST,DELETE)
+#    Allow the [lawyer,customer] user to list, create and delete revisions
+#    (attachment) objects that belong to the item.
+
+/items/:slug/reviewers/ (GET,POST)
+    Allow the [lawyer,customer] user to list, and create people who should review
+    the attachment
+
+/items/:slug/reviewers/:reviewer (GET,DELETE)
+    Allow the [lawyer,customer] user to list, and delete reviewer
+
+/items/:slug/signatories/ (GET,POST) - these are created within the system and as part of the system flows
+    Allow the [lawyer,customer] user to list activity related to a matter
+
+/items/:slug/signatories/:signatory (GET,DELETE)
+    Allow the [lawyer,customer] user to list, and delete reviewer
+
+/items/:slug/states/ (GET,POST)
     Allow [lawyer] user to list and associate workflows with an item object
+
+/items/:slug/states/:state (GET,DELETE)
+    Allow [lawyer] user to list and delete individual associated workflows
 
 /items/:slug/comments/ (GET,POST)
     Allow [lawyer,customer] user to list and create comments on an item object
+
+/items/:slug/comments/:comment (GET,PATCH,DELETE)
+    Allow [lawyer,customer] user to list, update and delete comments
 
 /items/:slug/activity/ (GET) - these are created within the system and as part
                                of the system flows
