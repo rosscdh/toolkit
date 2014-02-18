@@ -5,12 +5,13 @@ from django.views.generic import FormView
 
 from crispy_forms.helper import FormHelper
 
-from .models import Workspace
+from toolkit.apps.workspace.models import Workspace
 
 import re
 import logging
 from datetime import datetime
 logger = logging.getLogger('django.request')
+
 
 
 class WorkspaceToolViewMixin(object):
