@@ -11,9 +11,9 @@ from parsley.decorators import parsleyfy
 from localflavor.us.us_states import USPS_CHOICES
 from localflavor.us.forms import USZipCodeField
 
+from toolkit.apps.default.fields import HTMLField
 from toolkit.apps.workspace.mixins import WorkspaceToolFormMixin
 from toolkit.apps.workspace.services import EnsureCustomerService, WordService
-from toolkit.fields import SummernoteField
 
 from .models import Attachment
 
@@ -187,7 +187,7 @@ class LawyerForm(BaseForm):
         widget=forms.NumberInput
     )
 
-    legal_services = SummernoteField(
+    legal_services = HTMLField(
         error_messages={
             'required': "Legal services can not be blank."
         },
@@ -196,7 +196,7 @@ class LawyerForm(BaseForm):
         required=True
     )
 
-    service_description = SummernoteField(
+    service_description = HTMLField(
         error_messages={
             'required': "Engagement description can not be blank."
         },
@@ -205,7 +205,7 @@ class LawyerForm(BaseForm):
         required=True
     )
 
-    fees = SummernoteField(
+    fees = HTMLField(
         error_messages={
             'required': "Fees can not be blank."
         },
@@ -321,7 +321,7 @@ class LawyerEngagementLetterTemplateForm(forms.Form):
     """
     Override the base letterhead and add out template letter HTML
     """
-    body = SummernoteField(required=True)
+    body = HTMLField(required=True)
 
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance', None)

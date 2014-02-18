@@ -13,7 +13,7 @@ from storages.backends.s3boto import S3BotoStorage
 
 from toolkit.apps.eightythreeb.managers import AttachmentManger
 
-from toolkit.apps.workspace.services import WordService
+from toolkit.apps.workspace.services import PDFKitService
 from toolkit.apps.workspace.signals import base_signal
 from toolkit.apps.workspace.mixins import WorkspaceToolModelMixin
 
@@ -123,8 +123,8 @@ class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, HelloSignModelMix
         Return the document to be senf for signing
         Ties in with HelloSignModelMixin method
         """
-        doc_service = WordService()
-        return doc_service.generate(html=self.html())
+        doc_service = PDFKitService(html=self.html())
+        return doc_service.pdf(template_name='engageletter.html')
 
     def get_absolute_url(self):
         return reverse('workspace:tool_object_overview', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug=self.tool_slug).first().slug, 'slug': self.slug})
