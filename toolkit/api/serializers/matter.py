@@ -27,7 +27,7 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Workspace
-        fields = ('slug', 'name', 'date_created', 'date_modified', 'is_deleted',
+        fields = ('slug', 'name', 'date_created', 'date_modified',
                   'lawyer', 'participants', 'items', 'comments', 'activity', 'todo')
 
     def get_items(self, obj):

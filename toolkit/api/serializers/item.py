@@ -59,7 +59,7 @@ class ItemSerializer(serializers.Serializer):
         is revision 3 in this case
         """
         doc = {
-            'url': '/api/v1/matter/:slug/items/:slug/revisions/:revision',
+            'url': '/api/v1/attachments/:slug/:revision',
             'revision': 1,
             'is_completed': False,
             'is_reviewed': False,
