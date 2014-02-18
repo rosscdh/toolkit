@@ -63,7 +63,9 @@ class ItemSerializer(serializers.Serializer):
             'is_reviewed': False,
             'is_signed': False
         }
-        return [doc.copy().update({'revision': i}) for i in xrange(0,3)]
+        for i in xrange(0,3):
+            doc.copy().update({'revision': i})
+            yield doc
 
     def get_participants(self, obj):
         """
