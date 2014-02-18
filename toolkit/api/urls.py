@@ -7,8 +7,8 @@ from .views import UserEndpoint
 from .views import AccountEndpoint
 from .views import ClientEndpoint
 from .views import MatterEndpoint
-#from .views import ItemEndpoint
-#from .views import AttachmentEndpoint
+from .views import ItemEndpoint
+from .views import AttachmentEndpoint
 #from .views import RevisionEndpoint
 #from .views import WorkflowEndpoint
 
@@ -16,6 +16,8 @@ router = routers.SimpleRouter()
 router.register(r'account', AccountEndpoint)
 router.register(r'users', UserEndpoint)
 router.register(r'matters', MatterEndpoint)
+router.register(r'items', ItemEndpoint)
+router.register(r'attachments', AttachmentEndpoint)
 
 urlpatterns = router.urls + patterns('',
     #url(r'^account/', AccountEndpoint.as_view(), name='account'),

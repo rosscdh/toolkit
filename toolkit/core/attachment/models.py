@@ -16,6 +16,8 @@ def _upload_file(instance, filename):
 
 class Attachment(models.Model):
     attachment = models.FileField(upload_to=_upload_file, storage=S3BotoStorage())
+
+    item = models.ForeignKey('item.Item')
     uploaded_by = models.ForeignKey('auth.User')
 
     revisions = models.ManyToManyField('attachment.Attachment', null=True, blank=True, symmetrical=False, related_name="own_revisions")

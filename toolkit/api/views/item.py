@@ -1,33 +1,17 @@
 # -*- coding: UTF-8 -*-
-from rest_framework.views import APIView
-from rest_framework.response import Response
+from rest_framework import viewsets
+from rest_framework.exceptions import PermissionDenied
 
+from toolkit.core.item.models import Item
 from ..serializers import ItemSerializer
 
 
-class ItemEndpoint(APIView):
+class ItemEndpoint(viewsets.ModelViewSet):
     """
     """
-    def get(self, request, format=None):
-        """
-        """
-        resp = {}
-        return Response(resp)
+    model = Item
+    lookup_field = 'username'
+    serializer_class = ItemSerializer
 
-    def patch(self, request, format=None):
-        """
-        """
-        resp = {}
-        return Response(resp)
-
-    def post(self, request, format=None):
-        """
-        """
-        resp = {}
-        return Response(resp)
-
-    def delete(self, request, format=None):
-        """
-        """
-        resp = {}
-        return Response(resp)
+    def get_queryset(self):
+        return Item.objects.filter(participants=self.request.user.pk)
