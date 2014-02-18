@@ -91,11 +91,20 @@ class LawyerCompleteFormMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.description, 'Set up 83(b) Election Letter')
         self.assertEqual(self.subject.signals, ['toolkit.apps.eightythreeb.signals.lawyer_complete_form'])
         self.assertEqual(self.subject.action_name, 'Setup 83(b)')
-        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.modal)
+        self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
         self.assertEqual(self.subject.action_user_class, ['lawyer'])
 
     def test_action_attribs(self):
-        self.assertEqual(self.subject.action_attribs, {'target': '#modal-lawyer_complete_form', 'toggle': 'modal'})
+        self.assertEqual(self.subject.action_attribs, {'toggle': 'action'})
+
+    def test_iscomplete_action_name(self):
+        prop_mock = mock.PropertyMock()
+        # mock out the is_complete property so we can test its post complete action name
+        with mock.patch.object(self.clazz, 'is_complete', prop_mock):
+            self.subject = self.clazz(self.val)
+            prop_mock.return_value = True
+
+            self.assertEqual(self.subject.action_name, 'Edit 83(b)')
 
     def test_get_action_url(self):
         self.assertEqual(self.subject.get_action_url(), self.subject.tool.get_edit_url())
@@ -109,7 +118,7 @@ class LawyerCompleteFormMarkerTest(BaseTestMarker):
 
         # set as greater than the LawyerCompleteFormMarker.val then the action should also return None
         self.subject.tool.status = self.subject.tool.STATUS.customer_download_pdf
-        self.assertEqual(self.subject.action, None)
+        self.assertEqual(self.subject.action, self.subject.tool.get_edit_url())
 
 
 class LawyerInviteUserMarkerTest(BaseTestMarker):
@@ -122,15 +131,11 @@ class LawyerInviteUserMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.val, self.val)
         self.assertEqual(self.subject.description, 'Invite taxpayer to complete the 83(b) Election Letter')
         self.assertEqual(self.subject.signals, ['toolkit.apps.eightythreeb.signals.lawyer_invite_customer'])
-        self.assertEqual(self.subject.action_name, 'Invite Client')
         self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
         self.assertEqual(self.subject.action_user_class, ['lawyer'])
 
     def test_action_attribs(self):
         self.assertEqual(self.subject.action_attribs, {'toggle': 'action'})
-
-    def test_action_name(self):
-        self.assertEqual(self.subject.action_name, 'Invite Client')
 
     def test_iscomplete_action_name(self):
         prop_mock = mock.PropertyMock()
