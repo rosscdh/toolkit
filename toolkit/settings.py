@@ -114,6 +114,8 @@ HELPER_APPS = (
     # forms
     'parsley',
     'crispy_forms',
+    'django_bleach',
+    'summernote',
 
     # db migrations
     'south',
@@ -319,6 +321,13 @@ LOGGING = {
 
 USPS_USERID = '756LAWPA4755'
 USPS_PASSWORD = '345LV41YU671'
+
+BLEACH_ALLOWED_ATTRIBUTES = {'blockquote': ['style',], 'div': ['style',], 'span': ['style',]}
+BLEACH_ALLOWED_STYLES = ['border', 'font-style', 'font-weight', 'margin', 'padding', 'text-align', 'text-decoration']
+BLEACH_ALLOWED_TAGS = ['blockquote', 'br', 'div', 'li', 'ol', 'span', 'ul']
+BLEACH_STRIP_COMMENTS = True
+BLEACH_STRIP_TAGS = True
+
 
 try:
     LOCAL_SETTINGS
