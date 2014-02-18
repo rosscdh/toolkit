@@ -18,7 +18,7 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
 
     lawyer = serializers.HyperlinkedRelatedField(view_name='user-detail', lookup_field = 'username', many=False)
     participants = serializers.HyperlinkedRelatedField(view_name='user-detail', lookup_field = 'username', many=True)
-    tools = serializers.RelatedField(many=True)
+    #tools = serializers.RelatedField(many=True)
 
     items = serializers.SerializerMethodField('get_items')
     comments = serializers.SerializerMethodField('get_comments')
@@ -28,7 +28,7 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Workspace
         fields = ('slug', 'name', 'date_created', 'date_modified', 'is_deleted',
-                  'lawyer', 'participants', 'tools', 'items', 'comments', 'activity', 'todo')
+                  'lawyer', 'participants', 'items', 'comments', 'activity', 'todo')
 
     def get_items(self, obj):
         """

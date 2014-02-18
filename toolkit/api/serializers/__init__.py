@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+from .hateoas import HATOAS
 from .user import UserSerializer
 from .account import AccountSerializer, PasswordSerializer
 from .client import ClientSerializer

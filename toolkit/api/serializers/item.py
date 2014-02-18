@@ -8,6 +8,7 @@ from rest_framework import serializers
 #from toolkit.core.item.models import Item
 
 from user import UserSerializer
+from . import HATOAS
 
 import datetime
 import random
@@ -23,7 +24,7 @@ class ItemSerializer(serializers.Serializer):
     participants = serializers.SerializerMethodField('get_participants')
     reviewers = serializers.SerializerMethodField('get_reviewers')
     signatories = serializers.SerializerMethodField('get_signatories')
-    markers = serializers.SerializerMethodField('get_markers')
+    state = serializers.SerializerMethodField('get_state')
     is_complete = serializers.SerializerMethodField('get_is_complete')
 
     date_created = serializers.SerializerMethodField('get_date_created')
@@ -58,47 +59,66 @@ class ItemSerializer(serializers.Serializer):
         is revision 3 in this case
         """
         doc = {
-            'pk': '/url/to/attachment/:pk',
+            'url': '/api/v1/matter/:slug/items/:slug/revisions/:revision',
             'revision': 1,
+            'is_completed': False,
             'is_reviewed': False,
             'is_signed': False
         }
+        revisions = []
         for i in xrange(0,3):
-            doc.copy().update({'revision': i})
-            yield doc
+            item = doc.copy()
+            item.update({'revision': i})
+            revisions.append(item)
+        revisions.reverse() # latest first
+        result = HATOAS.copy()
+        result.update({'url': '/api/v1/matter/:slug/items/:slug/revisions/', 'results': revisions[0]})
+        return result
 
     def get_participants(self, obj):
         """
         placeholder
-        """
         '/api/v1/users/:pk'
-        return [UserSerializer(u).data.get('url') for u in random.choice([[], USERS[0:3]]) if u is not None]
+        """
+        result = HATOAS.copy()
+        results = [UserSerializer(u).data.get('url') for u in random.choice([[], USERS[0:3]]) if u is not None]
+        result.update({'url': '/api/v1/matter/:slug/items/:slug/participants/', 'results': results})
+        return result
 
     def get_reviewers(self, obj):
         """
         placeholder
         """
-        return [UserSerializer(u).data.get('url') for u in random.choice([[], USERS[1:2]]) if u is not None]
+        result = HATOAS.copy()
+        results = [UserSerializer(u).data.get('url') for u in random.choice([[], USERS[1:2]]) if u is not None]
+        result.update({'url': '/api/v1/matter/:slug/items/:slug/reviewers/', 'results': results})
+        return result
 
     def get_signatories(self, obj):
         """
         placeholder
         """
-        return [UserSerializer(u).data.get('url') for u in random.choice([[], USERS[2:3]]) if u is not None]
+        result = HATOAS.copy()
+        results = [UserSerializer(u).data.get('url') for u in random.choice([[], USERS[2:3]]) if u is not None]
+        result.update({'url': '/api/v1/matter/:slug/items/:slug/signatories/', 'results': results})
+        return result
 
-    def get_markers(self, obj):
+    def get_state(self, obj):
         """
         placeholder
         @NOTE a set of workflow markers that may apply to the current
         """
         marker = {
+            'url': '/api/v1/matter/:slug/items/:slug/states/:uuid/',
             'name': 'Signature',
-            'description': 'Description of the current task',
-            'action': '/url/to/workflow/step',
+            'description': 'A Signature is required from Ross Customer',
             'status': 'Text Description of current step',
             'assignee': '/api/v1/rossc',
         }
-        return [marker]
+        result = HATOAS.copy()
+        results = [marker]
+        result.update({'url': '/api/v1/matter/:slug/items/:slug/states/', 'results': results})
+        return result
 
     def get_is_complete(self, obj):
         """
