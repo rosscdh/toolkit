@@ -15,6 +15,7 @@ class Item(models.Model):
     Matter.item (workspace tool)
     """
     name = models.CharField(max_length=255)
+    workspace = models.ForeignKey('workspace.Workspace')
 
     item_type = models.IntegerField(choices=ITEM_TYPES.get_choices(), default=ITEM_TYPES.negotiated, db_index=True)
     
