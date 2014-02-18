@@ -1,19 +1,9 @@
 # -*- coding: UTF-8 -*-
 from django.db import models
-from django.db.models.query import QuerySet
+
+from toolkit.core.mixins.managers import isDeletedQuerySet
 
 import datetime
-
-
-class isDeletedQuerySet(QuerySet):
-    """
-    Mixin to override the Queryset.delete() functionality of a manager
-    """
-    def delete(self, *args, **kwargs):
-        if 'is_deleted' in self.model._meta.get_all_field_names():
-            self.update(is_deleted=True)
-        else:
-            super(isDeletedQuerySet, self).delete()
 
 
 class EightyThreeBManager(models.Manager):

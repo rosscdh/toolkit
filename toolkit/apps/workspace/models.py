@@ -4,8 +4,9 @@ from django.core.urlresolvers import reverse
 from django.db.models.loading import get_model
 from django.core.exceptions import ObjectDoesNotExist
 
+from toolkit.core.mixins.is_deleted import IsDeletedMixin
+
 from toolkit.utils import _class_importer
-from toolkit.apps.eightythreeb.mixins import IsDeletedMixin
 
 from rulez import registry as rulez_registry
 

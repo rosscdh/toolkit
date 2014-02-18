@@ -1,6 +1,7 @@
+# -*- coding: UTF-8 -*-
 from django.db import models
 
-from toolkit.apps.eightythreeb.managers import isDeletedQuerySet
+from toolkit.core.mixins.managers import isDeletedQuerySet
 
 
 class WorkspaceManager(models.Manager):

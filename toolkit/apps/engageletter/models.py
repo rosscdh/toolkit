@@ -16,14 +16,14 @@ from toolkit.apps.eightythreeb.managers import AttachmentManger
 from toolkit.apps.workspace.services import WordService
 from toolkit.apps.workspace.signals import base_signal
 from toolkit.apps.workspace.mixins import WorkspaceToolModelMixin
+from toolkit.core.mixins import IsDeletedMixin
 
 from hello_sign.mixins import HelloSignModelMixin
 
 from .markers import EngagementLetterMarkers
 ENGAGEMENTLETTER_STATUS = EngagementLetterMarkers().named_tuple(name='ENGAGEMENTLETTER_STATUS')
 
-from .mixins import (IsDeletedMixin,
-                     StatusMixin,
+from .mixins import (StatusMixin,
                      HTMLMixin)
 
 import os
