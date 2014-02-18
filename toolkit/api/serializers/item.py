@@ -116,6 +116,7 @@ class ItemSerializer(serializers.ModelSerializer):
         marker = {
             'url': '/api/v1/matter/:slug/items/:slug/states/:uuid/',
             'name': 'Signature',
+            'slug': 'signature',
             'description': 'A Signature is required from Ross Customer',
             'status': 'Text Description of current step',
             'assignee': '/api/v1/rossc',
