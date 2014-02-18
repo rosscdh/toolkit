@@ -161,3 +161,10 @@ class Tool(models.Model):
     @property
     def icon(self):
         return self.data.get('icon', 'images/icons/mail.svg')
+
+"""
+Import workspace signals
+"""
+from .signals import (ensure_workspace_slug,
+                     ensure_workspace_has_83b_by_default,
+                     ensure_tool_slug)
