@@ -131,6 +131,7 @@ class LawyerInviteUserMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.val, self.val)
         self.assertEqual(self.subject.description, 'Invite taxpayer to complete the 83(b) Election Letter')
         self.assertEqual(self.subject.signals, ['toolkit.apps.eightythreeb.signals.lawyer_invite_customer'])
+        self.assertEqual(self.subject.action_name, 'Invite Client')
         self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
         self.assertEqual(self.subject.action_user_class, ['lawyer'])
 
