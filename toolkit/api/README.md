@@ -71,17 +71,24 @@ In order to provide feedback and initiate workflows
 /matters/ (GET,POST)
     Allow the [lawyer] user to list, and create new matter ("workspace") objects
 
+
 /matters/:slug/ (GET,PATCH,DELETE)
     Allow the [lawyer] user to list, and update an existing matter ("workspace") object
+
 
 /matters/:slug/items/ (GET,POST)
     Allow the [lawyer,customer] user to list, and create matter items
 
-/matters/:slug/activity/ (GET) - these are created within the system and as part of the system flows
+
+/matters/:slug/activity/ (GET,POST) - these are created within the system and as part of the system flows
     Allow the [lawyer,customer] user to list activity related to a matter
+    POST allows the angular service to send events that are then processed as activity stream items
+    @TODO define the params
+
 
 /matters/:slug/todo/ (GET) - a compiled set of items assigned to the viewing user
     Allow [lawyer,customer] user to list todo items within a matter
+
 
 /matters/:slug/closing_groups/ (GET)
     Allow [lawyer] user to list items in designated closing groups
@@ -100,7 +107,7 @@ Matter Items
     Allow the [lawyer,customer] user to list, and update an existing item
     objects; that belong to them
 
-/items/:slug/attachments/ (GET)
+/items/:slug/attachments/ (GET) - returns only the most RECENT revision
     Allow [lawyer,customer] user to list and create attachment objects for item objects
 
 #
@@ -117,17 +124,29 @@ Matter Items
 /items/:slug/reviewers/:reviewer (GET,DELETE)
     Allow the [lawyer,customer] user to list, and delete reviewer
 
+/items/:slug/reviewers/remind/ (POST)
+    Send reminder emails to any outstanding reviewers to please sign
+
+
 /items/:slug/signatories/ (GET,POST) - these are created within the system and as part of the system flows
     Allow the [lawyer,customer] user to list activity related to a matter
 
 /items/:slug/signatories/:signatory (GET,DELETE)
     Allow the [lawyer,customer] user to list, and delete reviewer
 
+/items/:slug/signatories/remind/ (POST)
+    Send reminder emails to any outstanding signatories to please sign
+
+
+#
+# Known as workflows/power ups/routines
+#
 /items/:slug/states/ (GET,POST)
     Allow [lawyer] user to list and associate workflows with an item object
 
 /items/:slug/states/:state (GET,DELETE)
     Allow [lawyer] user to list and delete individual associated workflows
+
 
 /items/:slug/comments/ (GET,POST)
     Allow [lawyer,customer] user to list and create comments on an item object
@@ -135,9 +154,11 @@ Matter Items
 /items/:slug/comments/:comment (GET,PATCH,DELETE)
     Allow [lawyer,customer] user to list, update and delete comments
 
+
 /items/:slug/activity/ (GET) - these are created within the system and as part
                                of the system flows
     Allow [lawyer,customer] user to list activity relating to an item object
+
 
 Attachments
 ===========

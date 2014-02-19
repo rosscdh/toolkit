@@ -6,6 +6,7 @@ or a document item
 from rest_framework import serializers
 
 from toolkit.apps.workspace.models import Workspace
+from toolkit.core.item.models import Item
 from .item import ItemSerializer
 
 import datetime
@@ -18,7 +19,6 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
 
     lawyer = serializers.HyperlinkedRelatedField(view_name='user-detail', lookup_field = 'username', many=False)
     participants = serializers.HyperlinkedRelatedField(view_name='user-detail', lookup_field = 'username', many=True)
-    #tools = serializers.RelatedField(many=True)
 
     closing_groups = serializers.SerializerMethodField('get_closing_groups')
     items = serializers.SerializerMethodField('get_items')
@@ -28,22 +28,22 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Workspace
-        fields = ('slug', 'name', 'date_created', 'date_modified',
-                  'lawyer', 'participants', 'items', 'comments', 'activity', 'todo')
-
+        fields = ('name', 'slug', 'date_created', 'date_modified',
+                  'lawyer', 'participants', 'closing_groups', 'items', 'comments', 'activity', 'todo')
 
     def get_closing_groups(self, obj):
         """
         placeholder
         list of closing groups
         """
-        return ['for finance', 'for phile']
+        return ['for finance', 'for phil']
 
     def get_items(self, obj):
         """
         tmp method will eventually be replaced by matter.items_set.all()
         """
-        return [ItemSerializer({}).data for i in xrange(0,2)]
+        #return [ItemSerializer(Item()).data for i in xrange(0,2)]
+        return [ItemSerializer(i).data for i in Item.objects.filter(matter=obj)]
 
     def get_comments(self, obj):
         """
@@ -55,7 +55,8 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
             'url': '/api/v1/activity/:pk',
             'date_of': datetime.datetime.utcnow()
         }
-        return [comments.copy() for i in xrange(0,5)]
+        #return [comments.copy() for i in xrange(0,5)]
+        return []
 
     def get_activity(self, obj):
         """
@@ -66,7 +67,8 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
             'url': '/api/v1/activity/:pk',
             'date_of': datetime.datetime.utcnow()
         }
-        return [activity.copy() for i in xrange(0,5)]
+        #return [activity.copy() for i in xrange(0,5)]
+        return []
 
     def get_todo(self, obj):
         """
@@ -76,4 +78,5 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
             'url': '/api/v1/todo/:pk',
             'message': 'You need to X, Y, and Z this mattter'
         }
-        return [todo.copy() for i in xrange(0,5)]
+        #return [todo.copy() for i in xrange(0,5)]
+        return []

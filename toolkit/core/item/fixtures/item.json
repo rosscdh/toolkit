@@ -1,0 +1,21 @@
+[
+  {
+    "pk": 1,
+    "model": "item.item",
+    "fields": {
+      "status": 0,
+      "date_due": "2014-02-19T15:25:39.378Z",
+      "name": "test",
+      "parent": null,
+      "date_modified": "2014-02-19T15:25:41.867Z",
+      "responsible_party": 3,
+      "is_final": false,
+      "matter": 1,
+      "date_created": "2014-02-19T15:25:41.867Z",
+      "revisions": [],
+      "data": {},
+      "is_complete": false,
+      "description": "stuff"
+    }
+  }
+]

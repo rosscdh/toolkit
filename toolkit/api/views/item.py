@@ -10,7 +10,6 @@ class ItemEndpoint(viewsets.ModelViewSet):
     """
     """
     model = Item
-    lookup_field = 'username'
     serializer_class = ItemSerializer
 
     def get_queryset(self):
