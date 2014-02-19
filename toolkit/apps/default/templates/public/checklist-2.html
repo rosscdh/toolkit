@@ -10,122 +10,47 @@ body {background-color: #f2f2f2;}
 	<div class="tool-landing">
 		<div class="container-fluid">
 			<div class="row">
-				<div class="col-sm-7 checklist">
+				<div class="col-sm-7 checklist-col">
 					<div class="row">
 						<div class="col-xs-6">
 							<h5>Checklist</h5> 
 						</div>
 						<div class="checklist-switch-wrap">
 							<div class="col-xs-3 pull-right">
-				                <input class="form-control flat input-sm" placeholder="Filter"></input>
+				                <input class="form-control flat input-sm" placeholder="Search"></input>
 							</div>
 						</div>
 	            	</div>
 					<table class="table checklist">
 			            <thead>
 				              <tr>
-				                <th colspan="2" class="col-sm-5">Incorporation</th>
+				                <th colspan="2" class="col-sm-5 category">Incorporation</th>
 				              	<th colspan="1"  class="col-sm-4">Attachments</th>
-				              	<th>Who</th>
-				              	<th>Tasks</th>
+				              	<th>Status</th>
 				              </tr>
 			            </thead>
 			            <tbody>
 			              <tr class="item-heading item-closed">
 			                <td class="item-title">
-			                	<span contenteditable="true">Articles of Incorporation</span> 
-			                </td>
-			                <td class="msg text-center">
-			                </td>
-			                <td class="attachments" id="attachment-demo">
-				                <div class="what">
- 									<span class="fui-document"></span> {{ "Articles of incorporation.doc" }}
- 								</div>
-			                </td>
-			                <td class="">
-			                </td>
-			                 <td class="who">
-			                </td>
-			              </tr>
-					      <tr>
-			                <td class="item-title item-open" contenteditable="true">
-			                	Bylaws 
-			                </td>
-			                	<td class="msg text-center">
-                      				<span class="new"><span class="fui-mail text-muted"></span>
-                    			</span>
-			                </td>
-			                <td class="attachments" id="attachment-demo">
-				                <div class="what">
- 									<span class="fui-document"></span> {{ "Bylaws.pdf" }}
- 								</div>
-			                </td>
-			                <td class="who">
-			                	<span class="fui-check-filled"></span>
-			                </td>
-			                 <td>
-				                 <div class="progress">
-						            <div class="progress-bar" style="width: 45%;"></div>
-					          	</div>
-			                </td>
-		
-			              </tr>
-			                <tr class="item-heading">
-			                <td class="item-title item-closed" contenteditable="true">
-			                	Another document here
-			                </td>
-			                <td class="msg text-center">
-                      				<span class="new"><span class="fui-mail"></span>
-			                </td>
-			                <td class="attachments" id="attachment-demo">
-			                </td>
-			                <td class="">
-			                </td>
-			                 <td class="who">
-			                </td>
-			              </tr>
-					      <tr>
-			                <td class="item-title item-closed" contenteditable="true">
-			                	Bylaws 
-			                </td>
-			                	<td class="msg text-center">
-                      				<span class="new"><span class="fui-mail text-muted"></span>
-                    			</span>
-			                </td>
-			                <td class="attachments" id="attachment-demo">
-			                </td>
-			                <td class="who">
-			                	<span class="fui-check-filled"></span>
-			                </td>
-			                 <td>
-				                 <div class="progress">
-						            <div class="progress-bar" style="width: 45%;"></div>
-					          	</div>
-			                </td>
-		
-			              </tr>
-			                <tr class="item-heading">
-			                <td class="item-title item-closed" contenteditable="true">
+			                	<span class="fui-list-columned"></span> 
 			                	Articles of Incorporation 
 			                </td>
-			                	<td class="msg text-center">
-                      				<span class="new"><span class="fui-mail"></span>
-                    			</span>
+			                <td class="msg text-center">
 			                </td>
 			                <td class="attachments" id="attachment-demo">
-			                	<div class="what">
- 									<span class="fui-document"></span> {{ "Articles of incorporation.doc" }}
+				                <div class="what">
+ 									<span class="fui-document"></span> 
+ 									{{ "Articles of incorporation.doc" }}
  								</div>
 			                </td>
-			                <td class="">
-			                </td>
-			                 <td class="who">
-			                </td>
+			                <td class="status text-right">
+			                	<span class="fui-check-inverted"></span>
 
+			                </td>
 			              </tr>
 					      <tr>
-			                <td class="item-title item-open" contenteditable="true">
-			                	Bylaws 
+			                <td class="item-title item-open">
+			                	<span class="fui-list-columned"></span> Bylaws 
 			                </td>
 			                	<td class="msg text-center">
                       				<span class="new"><span class="fui-mail text-muted"></span>
@@ -136,33 +61,285 @@ body {background-color: #f2f2f2;}
  									<span class="fui-document"></span> {{ "Bylaws.pdf" }}
  								</div>
 			                </td>
-			                <td class="who">
+			                <td class="status">
 			                	<span class="fui-check-filled"></span>
 			                </td>
-			                 <td>
-				                 <div class="progress">
-						            <div class="progress-bar" style="width: 45%;"></div>
-					          	</div>
+			              </tr>
+						  <tr class="shareholders">
+			                <td class="item-title item-open">
+			                	<span class="fui-list-columned"></span> Shareholders agreement 
+			                </td>
+			                	<td class="msg text-center">
+                      				<span class="new"><span class="fui-mail text-muted"></span>
+                    			</span>
+			                </td>
+			                <td class="attachments" id="attachment-demo">
+			                </td>
+			                <td class="status">
 			                </td>
 		
 			              </tr>
+						  <tr class="note">
+			                <td class="item-title item-open">
+			                	<span class="fui-list-columned"></span> Note purchase agreement 
+			                </td>
+			                	<td class="msg text-center">
+                      				<span class="new"><span class="fui-mail text-muted"></span>
+                    			</span>
+			                </td>
+			                <td class="attachments" id="attachment-demo">
+			                </td>
+			                <td class="status">
+			                	<button class="btn btn-warning btn-xs"><span class="fui-time"></span> Awaiting Files (BW)</button>
+
+			                </td>
+		
+			              </tr>
+						<tr class="spa">
+			                <td class="item-title item-open">
+			                	<span class="fui-list-columned"></span> Stock purchase agreement 
+			                </td>
+			                	<td class="msg text-center">
+                      				<span class="new"><span class="fui-mail text-muted"></span>
+                    			</span>
+			                </td>
+			                <td class="attachments" id="attachment-demo">
+			                </td>
+			                <td class="status">
+			                	<button class="btn btn-success btn-xs"><span class="fui-check"></span> File Received</button>
+			                </td>
+			              </tr>
+						  <tr class="custom">
+			                <td class="item-title item-open">
+			                	<span class="fui-list-columned"></span> Custom agreement B 
+			                </td>
+			                	<td class="msg text-center">
+                      				<span class="new"><span class="fui-mail text-muted"></span>
+                    			</span>
+			                </td>
+			                <td class="attachments" id="attachment-demo">
+			                </td>
+			                <td class="status">
+			                	<button class="btn btn-warning btn-xs"><span class="fui-user"></span> Review 66%</button>
+			                </td>
+			              </tr>
 			            </tbody>
 		          </table>
-				</div>
-				<div class="col-sm-5 item">
+		          <a href="" class="btn btn-default btn-sm"><span class="fui-plus-inverted"></span> Add Checklist Item</a>
+		          <hr />
+		          <br />
+		          <br />
+		          <br />
+		          <br />		          <br />
+		          <br />		          <br />
+		          <a href="" class="btn btn-info btn-sm" style="opacity:0.7"><span class="fui-check-inverted"></span> Start closing</a> <small class="text-muted">4 Documents ready for closing</small>
 
+				</div>
+				<!--Example of blank-->
+				<div class="col-sm-5 item shareholders" style="display:none;">
+					<h3>Shareholders Agreement <a href="#" class="btn btn-xs btn-info pull-right" data-toggle="modal" data-target="#attachWorkflowModal"><span class="fui-list-bulleted"></span> Attach Workflow</a></h3>
+					<p><small class="text-muted">Descriptive text goes here.</small></p>
+					<ul class="list-unstyled">
+						<li class="step active first">
+							<h4>Add or request file</h4>
+							<p>Start by uploading a file or requesting a file from another person.</p>
+							<a href="#" class="btn btn-info btn-embossed" id="upload-doc"><span class="fui-clip"></span> Drop or Upload File</a>
+							<a href="#" class="btn btn-info" data-toggle="modal" data-target="#requestFileModal"><span class="fui-user"></span> Request File</a>
+						</li>
+					</ul>
+				</div>
+				<div class="col-sm-5 item note" style="display:none;">
+					<h3>Note Purchase Agreement</h3>
+					<ul class="list-unstyled">
+						<li class="step active first">
+							<h4><span class="fui-time"></span> Waiting for file from Barry White</h4>
+							<div class="text-left">
+								<a href="#" class="btn btn-info  btn-sm" id="upload-doc"><span class="fui-alert"></span> Remind</a>
+								<a href="#" class="btn btn-warning btn-sm" id="upload-doc"><span class="fui-cross"></span> Cancel</a>
+							</div>
+						</li>
+					</ul>
+				</div>
+				<div class="col-sm-5 item spa" style="display:none;">
+					<h3>Stock Purchase Agreement
+					</h3>
+					<ul class="list-unstyled">
+						<li class="step" style="opacity:0.6;">
+							<h4><span class="fui-check"></span> File received from Barry White</h4>
+						</li>
+						<li class="step active first">
+							<h4><span class="fui-document"></span> stock_purchase_agreement.doc</h4>
+
+							<div class="text-left">
+								<a href="#" class="btn btn-belize  btn-sm" id="upload-doc"><span class="fui-search"></span> View</a>
+								<a href="#" class="btn btn-belize  btn-sm" id="upload-doc"><span class="fui-triangle-down"></span> Download</a>
+								<a href="#" class="btn btn-user btn-info btn-sm" id="upload-doc"><span class="fui-user"></span> Request Review</a>
+								<a href="#" class="btn btn-success btn-sm" id="upload-doc"><span class="fui-star-2"></span> Mark as Final</a>
+							</div>
+						</li>
+						<li class="text-center" style="font-size:30px;">
+							&middot; <br />
+							<a href="#" class="btn btn-belize btn-sm">Add new version</a>
+						</li>
+					</ul>
+				</div>
+				<div class="col-sm-5 item custom" style="display:none;">
+					<h3>Stock Purchase Agreement
+					</h3>
+					<ul class="list-unstyled">
+						<li class="step" style="opacity:0.6;">
+							<h4><span class="fui-check"></span> File received from Barry White</h4>
+						</li>
+						<li class="step active first">
+							<h4><span class="fui-document"></span> stock_purchase_agreement.doc</h4>
+
+							<div class="text-left">
+								<ul class="review list-unstyled">
+									<li><strong>REVIEW IN PROGRESS</strong></li>
+									<li class=""><span class="fui-time"></span> Founders Fund <span class="pull-right">(awaiting review)</span></li>
+									<li class="text-success"><span class="fui-check"></span> Alex Halliday <span class="pull-right">Approved</span></li>
+									<li class="text-warning"><span class="fui-time"></span> Veddis Ventures 
+
+										<span class="pull-right"><strong>Alternative added</strong></span><br /><a href="#" class="btn btn-xs btn-warning">View</a>  <a href="#" class="btn btn-xs btn-warning">Download</a>  <a href="#" class="btn btn-xs btn-warning">Redline</a><br /></li>
+								</ul>
+							</div>
+						</li>
+						<li class="text-center" style="font-size:30px;">
+							&middot; <br />
+							<a href="#" class="btn btn-belize btn-sm">Add new version</a>
+						</li>
+					</ul>
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
+
+
+<!-- Modals -->
+
+<!-- 1. Add Party -->
+<div class="modal" id="requestFileModal" tabindex="-1" role="dialog" aria-labelledby="requestFileModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Request file for Shareholders Agreement</h4>
+      </div>
+      <div class="modal-body">
+		<strong>Existing members</strong>
+        <div class="media">
+		  <a class="pull-left" href="#">
+		    <img class="media-object" src="http://placehold.it/30x30/" alt="...">
+		  </a>
+		  <div class="media-body">
+		    Alex Halliday
+		    <a href="#" class="btn btn-info btn-sm pull-right">Request File</a>
+		  </div>
+		</div>
+		<div class="media">
+		  <a class="pull-left" href="#">
+		    <img class="media-object" src="http://placehold.it/30x30/" alt="...">
+		  </a>
+		  <div class="media-body">
+		    Yael Citro
+		    <a href="#" class="btn btn-info btn-sm pull-right">Request File</a>
+		  </div>
+		</div>
+		<hr />
+		<strong>Request file from someone new</strong>
+		<div class="row">
+			<div class="col-sm-8">
+				<input class="form-control" type="text" data-provide="typeahead" data-items="4" data-source="[&quot;Alabama&quot;,&quot;Alaska&quot;,&quot;Arizona&quot;,&quot;Arkansas&quot;,&quot;California&quot;,&quot;Colorado&quot;,&quot;Connecticut&quot;,&quot;Delaware&quot;,&quot;Florida&quot;,&quot;Georgia&quot;,&quot;Hawaii&quot;,&quot;Idaho&quot;,&quot;Illinois&quot;,&quot;Indiana&quot;,&quot;Iowa&quot;,&quot;Kansas&quot;,&quot;Kentucky&quot;,&quot;Louisiana&quot;,&quot;Maine&quot;,&quot;Maryland&quot;,&quot;Massachusetts&quot;,&quot;Michigan&quot;,&quot;Minnesota&quot;,&quot;Mississippi&quot;,&quot;Missouri&quot;,&quot;Montana&quot;,&quot;Nebraska&quot;,&quot;Nevada&quot;,&quot;New Hampshire&quot;,&quot;New Jersey&quot;,&quot;New Mexico&quot;,&quot;New York&quot;,&quot;North Dakota&quot;,&quot;North Carolina&quot;,&quot;Ohio&quot;,&quot;Oklahoma&quot;,&quot;Oregon&quot;,&quot;Pennsylvania&quot;,&quot;Rhode Island&quot;,&quot;South Carolina&quot;,&quot;South Dakota&quot;,&quot;Tennessee&quot;,&quot;Texas&quot;,&quot;Utah&quot;,&quot;Vermont&quot;,&quot;Virginia&quot;,&quot;Washington&quot;,&quot;West Virginia&quot;,&quot;Wisconsin&quot;,&quot;Wyoming&quot;]" placeholder="atticus.finch@gmail.com">
+	      	</div>
+			<div class="col-sm-4">
+	      		<a href="#" class="btn btn-default">Invite</a>
+	      	</div>
+	     </div>
+	     <div class="row">
+	     	<div class="col-sm-8">
+		     	<textarea class="form-control" placeholder="Add an optional message...."></textarea>
+			</div>
+	     </div>
+	     <div class="row">
+			<div class="col-sm-12">
+	      		<small class="text-muted">User will be invited to the workspace to supply just this file.</small>
+	      	</div>
+	      </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 2. Attach Workflow -->
+<div class="modal" id="attachWorkflowModal" tabindex="-1" role="dialog" aria-labelledby="attachWorkflowModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Attach Workflow</h4>
+      </div>
+      <div class="modal-body">
+      	<p>We are creating a range of custom workflows to power specific checklist items. You can optionally choose to enable these workflows for checklist items.</p>
+		<strong>Available Workflow</strong>
+        <div class="media">
+		  <a class="pull-left" href="#">
+		    <img class="media-object" src="/static/images/icons/mail.svg" alt="..." width="30">
+		  </a>
+		  <div class="media-body">
+		    83(b) Election Letters
+		    <a href="#" class="btn btn-info btn-sm pull-right">Enable Workflow</a>
+		  </div>
+		</div>
+		<div class="media">
+		  <a class="pull-left" href="#">
+		    <img class="media-object" src="/static/images/icons/magic.svg" alt="..." width="30">
+		  </a>
+		  <div class="media-body">
+		    Engagement Letter
+		    <a href="#" class="btn btn-info btn-sm pull-right">Enable Workflow</a>
+		  </div>
+		</div>
+		<hr />
+	     <div class="row">
+			<div class="col-sm-12">
+	      		<small class="text-muted">Custom workflow apps coming soon.</small>
+	      	</div>
+	      </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 {% endblock %}
 {% block js %}
 <script>
 $( document ).ready(function() {
-$(".item-title").keypress(function(e){ return e.which != 13; });
-
-
+	$("table.checklist tr.shareholders").click(function(e){ 
+		$("table.checklist tr").removeClass('selected'); 
+		$(this).addClass('selected');
+		$('.item.shareholders').show(); 
+	})
+	$("table.checklist tr.note").click(function(e){ 
+		$('.item').hide();
+		$("table.checklist tr").removeClass('selected'); 
+		$(this).addClass('selected');
+		$('.item.note').show();
+	})
+	$("table.checklist tr.spa").click(function(e){ 
+		$('.item').hide();
+		$("table.checklist tr").removeClass('selected'); 
+		$(this).addClass('selected');
+		$('.item.spa').show();
+	})
+	$("table.checklist tr.custom").click(function(e){ 
+		$('.item').hide();
+		$("table.checklist tr").removeClass('selected'); 
+		$(this).addClass('selected');
+		$('.item.custom').show();
+	})
+	$("#upload-doc").click(function(e){ alert('filerpicker, this should also be a drop zone. to be discussed.') });
 
 });
 

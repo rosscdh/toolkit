@@ -2,77 +2,6 @@
   border-bottom-color: #444444 !important;
   border-top-color: #444444 !important;
 }
-/* Checklist stuff */
-/*
-.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td { padding: 5px 10px; font-size:14px;border-left-width:0px!important;border-right-width:0px!important;}
-th {background-color: #f1f1f1;}
-.icon {font-size:17px;}
-h5 {font-size:20px;}
-h6 {font-size:18px;}
-td {-webkit-touch-callout: none; -webkit-user-select: none;-khtml-user-select: none;-moz-user-select: none;-ms-user-select: none; user-select: none;}
-td ul li {font-size:13px;}
-td ul li a {color:#666;}
-
-.checklist {overflow :scroll!important}
-.document-drawer{display:none;}
-.doc-list {margin-bottom:3px;}
-.doc-list li {font-size:13px;padding:5px 0px 5px 0px;border-top:1px solid #ddd!important;}
-.doc-list li.action {border-top:1px solid #ddd;padding-top:6px;margin-top:3px;} 
-.doc-list li a {color:#777;}
-.dropdown-menu li {border-top:none!important;}
-.dropdown-menu li a {color:white;}
-.table [class*="fui-"] {font-size:22px;}
-td .tools {font-size:10px;}
-.dropdown-inverse li > a {
-	padding:3px 3px 3px 3px;
-}
-.dropdown-inverse li > a:hover {
-	color:white;
-}
-.acme-inc {
-	border:1px solid #9b59b6;
-	padding:0px 10px 10px 10px;
-	color:#9b59b6;
-	margin-bottom:20px;
-	margin-top:20px; 
-}
-.founders-fund {
-	border:1px solid #e67e22;
-	color:#e67e22;
-	padding:0px 10px 10px 10px;
-}
-.veddis-ventures {
-	border:1px solid #2ecc71;
-	color:#2ecc71;
-	padding:0px 10px 10px 10px;
-	margin-top:20px;
-}
-.veddis-ventures h5, .founders-fund h5, .acme-inc h5 {
-	font-size: 16px;
-	margin-top:8px;
-}
-.connectedSortable {
-	min-height:20px;
-}
-.table .tools, .table .tools [class*="fui-"] {
-	font-size:12px;
-	margin-right:2px;
-	cursor: pointer;
-}
-.drop-zone {display:none;color:#aaa!important;text-align: center;border:1px dashed #ccc;font-size:14px!important;}
-.hover-wrap {position:relative;}
-.hover-tools { z-index:500;float:right;text-align:center;width:90px; font-size:12px;padding:5px;top:0px;background-color:#999;color:white;border-radius:5px;}
-
-.hover-tools a {color:white;}
-.hover-tools-assign { display:none;z-index:500;position:absolute;text-align:left;right:-160px;width:200px; font-size:12px;padding:10px;top:30px;background-color:#efefef; color:#222;border-radius:5px; box-shadow: 0px 0px 10px #666}
-
-.hover-tools-assign label {font-weight: bold; }
-
-.hover-wrap:hover .hover-tools {display:block;}
-.ui-sortable li {color:#222;}
-
-.item-view {background-color:#eee;min-height:700px;} 
-
 /* New stuff */
 #checklist {
   background-color: #f2f2f2;
@@ -85,26 +14,30 @@ td .tools {font-size:10px;}
 #checklist table.checklist {
   background-color: white;
 }
-#checklist table.checklist .progress {
-  margin: 0px;
-  margin-top: 3px;
-}
 #checklist table.checklist tr {
   border-top: 5px solid #f2f2f2;
-}
-#checklist table.checklist tr.item-file {
-  background-color: #f2f2f2;
-  display: none;
+  cursor: pointer;
 }
 #checklist table.checklist tr.item-closed {
-  border-left: none;
   color: #ffffff;
-  opacity: 0.7;
-  background-color: #2ecc71;
+  opacity: 1;
+  background-color: #69dd9a;
   padding-top: 10px;
 }
 #checklist table.checklist tr.item-closed .item-title {
   color: #ffffff;
+}
+#checklist table.checklist tr.item-closed.selected {
+  background-color: #29b765;
+}
+#checklist table.checklist tr.selected {
+  background-color: #409ad5;
+  color: white;
+}
+#checklist table.checklist tr.selected td,
+#checklist table.checklist tr.selected td.item-title {
+  color: white;
+  opacity: 1;
 }
 #checklist table.checklist th {
   background-color: #f2f2f2;
@@ -114,6 +47,10 @@ td .tools {font-size:10px;}
   padding: 8px 0px 2px 0px;
   color: #AAA;
   font-size: 13px;
+}
+#checklist table.checklist tr th.category {
+  color: #666;
+  font-size: 14px;
 }
 #checklist table.checklist tr td {
   padding: 8px 9px;
@@ -134,13 +71,28 @@ td .tools {font-size:10px;}
 #checklist table.checklist tr td.item-icon .icon span {
   font-size: 12px;
 }
+#checklist table.checklist tr td:hover .fui-list-columned {
+  opacity: 0.9;
+}
+#checklist table.checklist tr td .fui-list-columned {
+  opacity: 0;
+  font-size: 18px;
+  cursor: move;
+  position: relative;
+  top: 0px;
+  width: 9px;
+  overflow: hidden;
+}
+#checklist table.checklist tr td .fui-list-columned:hover {
+  opacity: 1;
+}
 #checklist table.checklist tr td.item-title {
   font-size: 14px;
   font-family: Helvetica;
   word-spacing: normal;
   color: #777;
   font-weight: bold;
-  padding-left: 9px;
+  padding-left: 0px;
   padding-top: 9px;
 }
 #checklist table.checklist tr td.item-title span {
@@ -154,12 +106,17 @@ td .tools {font-size:10px;}
 #checklist table.checklist tr td.item-title.item-openhover {
   border-left-width: 6px;
 }
+#checklist table.checklist tr td.status {
+  font-size: 14px;
+  text-align: right;
+}
 #checklist table.checklist .attachments {
   font-size: 14px;
   color: #42d0e5;
 }
 #checklist table.checklist .msg {
   width: 20px;
+  color: white;
 }
 #checklist table.checklist .msg .new {
   color: #e74c3c;
@@ -193,18 +150,56 @@ td .tools {font-size:10px;}
 #checklist table.checklist div.what2 span {
   font-size: 12px;
 }
-#checklist table.checklist td.who {
-  text-align: center;
-  color: #ccc;
-  font-size: 14px;
+#checklist table.checklist td.status {
+  padding-top: 5px;
+  padding-bottom: 0px;
 }
-#checklist table.checklist td.who div {
-  border: 1px solid #ccc;
-  padding: 0px 0px;
+#checklist table.checklist td.status .fui-check-inverted {
+  padding-top: 4px;
 }
 #checklist div.item {
   background-color: #2980b9;
   min-height: 800px;
+  color: white;
+  padding-left: 30px;
+  padding-top: 20px;
+}
+#checklist div.item h3 {
+  font-size: 19px;
+  margin-bottom: 26px;
+}
+#checklist div.item ul li {
+  padding-left: 15px;
+}
+#checklist div.item ul li.step h4 {
+  background-color: #20638f;
+  font-size: 16px;
+  padding: 13px 0px 13px 15px;
+  border-radius: 6px;
+  margin-left: -15px;
+}
+#checklist div.item ul li.step p {
+  font-size: 14px;
+  margin-left: 0px;
+  color: #cadfee;
+}
+#checklist ul.review {
+  padding: 15px 0px;
+  width: 90%;
+  margin-top: -14px;
+  background-color: #ffffff;
+  border-radius: 0px 0px 10px 10px;
+  color: #666;
+}
+#checklist ul.review li {
+  padding: 6px;
+  font-size: 14px;
+  border-top: 1px solid #f1f1f1;
+}
+#checklist ul.review li .btn {
+  float: right;
+  margin-left: 10px;
+  margin-bottom: 10px;
 }
 #checklist .checklist-switch-wrap {
   padding: 10px 0px 0px 0px;
