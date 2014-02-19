@@ -413,7 +413,7 @@ you can use the generic selector below, but it's slower:
   border-top-color: #444444 !important;
 }
 body {
-  font-family: "Lato", Helvetica, Arial, sans-serif;
+  font-family: Helvetica, Arial, sans-serif;
   font-size: 18px;
   line-height: 1.72222;
   color: #444444;
@@ -506,7 +506,7 @@ h6,
 .h4,
 .h5,
 .h6 {
-  font-family: "Lato", Helvetica, Arial, sans-serif;
+  font-family: Helvetica, Arial, sans-serif;
   font-weight: 700;
   line-height: 1.1;
   color: inherit;
@@ -658,7 +658,7 @@ pre {
   border-radius: 4px;
   padding: 10px 15px;
   -webkit-font-smoothing: subpixel-antialiased;
-  font-family: Lato, "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 .btn:hover,
 .btn:focus {
@@ -937,6 +937,41 @@ fieldset[disabled] .btn-inverse:active,
 .btn-inverse[disabled].active,
 fieldset[disabled] .btn-inverse.active {
   background-color: #444444;
+}
+.btn-belize {
+  color: #ffffff;
+  background-color: #2980b9;
+}
+.btn-belize:hover,
+.btn-belize:focus,
+.btn-belize:active,
+.btn-belize.active,
+.open .dropdown-toggle.btn-belize {
+  color: #ffffff;
+  background-color: #20638f;
+  border-color: #20638f;
+}
+.btn-belize:active,
+.btn-belize.active,
+.open .dropdown-toggle.btn-belize {
+  background: #20638f;
+}
+.btn-belize.disabled,
+.btn-belize[disabled],
+fieldset[disabled] .btn-belize,
+.btn-belize.disabled:hover,
+.btn-belize[disabled]:hover,
+fieldset[disabled] .btn-belize:hover,
+.btn-belize.disabled:focus,
+.btn-belize[disabled]:focus,
+fieldset[disabled] .btn-belize:focus,
+.btn-belize.disabled:active,
+.btn-belize[disabled]:active,
+fieldset[disabled] .btn-belize:active,
+.btn-belize.disabled.active,
+.btn-belize[disabled].active,
+fieldset[disabled] .btn-belize.active {
+  background-color: #2980b9;
 }
 .btn-embossed {
   -webkit-box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.15);
@@ -1442,7 +1477,7 @@ fieldset[disabled] .btn-link:focus {
 }
 .navbar-unread,
 .navbar-new {
-  font-family: "Lato", Helvetica, Arial, sans-serif;
+  font-family: Helvetica, Arial, sans-serif;
   background-color: #6bdb7e;
   border-radius: 50%;
   color: #ffffff;
@@ -1940,7 +1975,7 @@ label {
 .form-control {
   border: 1px solid #bdc3c7;
   color: #444444;
-  font-family: "Lato", Helvetica, Arial, sans-serif;
+  font-family: Helvetica, Arial, sans-serif;
   font-size: 15px;
   padding: 8px 12px;
   height: 42px;
@@ -2666,7 +2701,7 @@ fieldset[disabled] .input-group .input-group-btn:first-child .btn-default.active
   background: transparent;
   border: none;
   color: #444444;
-  font-family: "Lato", Helvetica, Arial, sans-serif;
+  font-family: Helvetica, Arial, sans-serif;
   font-size: 14px;
   margin: 0px;
   padding: 0 0 0 5px;
@@ -4765,7 +4800,7 @@ a.list-group-item.active > .badge,
   background-color: #2a7aaf;
   border-radius: 50%;
   color: #ffffff;
-  font-family: "Lato", Helvetica, Arial, sans-serif;
+  font-family: Helvetica, Arial, sans-serif;
   font-size: 12px;
   font-weight: 700;
   line-height: 1.667;
@@ -5077,7 +5112,7 @@ a.list-group-item.active > .badge,
 }
 .modal-title {
   margin: 0;
-  font-size: 24px;
+  font-size: 20px;
   line-height: 30px;
 }
 .modal-body {
