@@ -17,12 +17,16 @@ USERS = User.objects.all()
 
 class ItemSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField('get_name')
-    item_type = serializers.SerializerMethodField('get_item_type')
+    description = serializers.SerializerMethodField('get_description')
     date_due = serializers.SerializerMethodField('get_date_due')
     revisions = serializers.SerializerMethodField('get_revisions')
+
     participants = serializers.SerializerMethodField('get_participants')
     reviewers = serializers.SerializerMethodField('get_reviewers')
     signatories = serializers.SerializerMethodField('get_signatories')
+
+    closing_group = serializers.SerializerMethodField('get_closing_group')
+
     state = serializers.SerializerMethodField('get_state')
     is_complete = serializers.SerializerMethodField('get_is_complete')
 
@@ -41,15 +45,11 @@ class ItemSerializer(serializers.ModelSerializer):
         """
         return 'Fixture Item: %s' % random.random()
 
-    def get_item_type(self, obj):
+    def get_description(self, obj):
         """
         placeholder
-        @NOTE I dont feel this is necessary as all items have an attachment
-        which has revisions and possibly could have reviewers and/or signatories
-        so why seperate them. simply show the buttons on all and if they are
-        used, then they are used if not then they are not used.
         """
-        return 'One of (negotiated|upload_only)'
+        return 'This is a small note about the Fixture Item: %s to give the client context' % random.random()
 
     def get_date_due(self, obj):
         """
@@ -107,6 +107,12 @@ class ItemSerializer(serializers.ModelSerializer):
         results = [UserSerializer(u).data.get('url') for u in random.choice([[], USERS[2:3]]) if u is not None]
         result.update({'url': '/api/v1/matter/:slug/items/:slug/signatories/', 'results': results})
         return result
+
+    def get_closing_group(self, obj):
+        """
+        placeholder
+        """
+        return 'Closing Group 1 (custom name as set in interface)'
 
     def get_state(self, obj):
         """

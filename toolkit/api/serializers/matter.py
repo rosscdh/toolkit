@@ -20,6 +20,7 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
     participants = serializers.HyperlinkedRelatedField(view_name='user-detail', lookup_field = 'username', many=True)
     #tools = serializers.RelatedField(many=True)
 
+    closing_groups = serializers.SerializerMethodField('get_closing_groups')
     items = serializers.SerializerMethodField('get_items')
     comments = serializers.SerializerMethodField('get_comments')
     activity = serializers.SerializerMethodField('get_activity')
@@ -29,6 +30,14 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
         model = Workspace
         fields = ('slug', 'name', 'date_created', 'date_modified',
                   'lawyer', 'participants', 'items', 'comments', 'activity', 'todo')
+
+
+    def get_closing_groups(self, obj):
+        """
+        placeholder
+        list of closing groups
+        """
+        return ['for finance', 'for phile']
 
     def get_items(self, obj):
         """

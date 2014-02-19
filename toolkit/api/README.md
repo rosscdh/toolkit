@@ -83,6 +83,12 @@ In order to provide feedback and initiate workflows
 /matters/:slug/todo/ (GET) - a compiled set of items assigned to the viewing user
     Allow [lawyer,customer] user to list todo items within a matter
 
+/matters/:slug/closing_groups/ (GET)
+    Allow [lawyer] user to list items in designated closing groups
+
+/matters/:slug/closing_groups/:name/ (GET)
+    Allow [lawyer] user to list items in a specific closing group
+
 
 Matter Items
 ============
