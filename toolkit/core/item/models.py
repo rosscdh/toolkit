@@ -53,7 +53,7 @@ class Item(models.Model):
         @BUSINESSRULE always return the latest revision
         revisions are ordered by -id
         """
-        return self.revisions.all().first()
+        return self.revision_set.all().first()
 
     def participants(self):
         return self.data.get('participants', [])

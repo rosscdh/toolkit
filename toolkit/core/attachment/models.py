@@ -35,11 +35,12 @@ class Revision(models.Model):
         # @BUSINESS RULE always return the latest revision first!
         ordering = ('-id',)
 
+    @property
     def revision_id(self):
         """
         return the relative revision id for this revision
         """
-        for i, obj in enumerate(self.revisions.all()):
+        for i, obj in enumerate(self.revisions.all().reverse()):
             if obj.pk == self.pk:
                 return i + 1
         return 1

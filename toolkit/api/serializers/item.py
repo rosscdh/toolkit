@@ -102,9 +102,8 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
         """
         placeholder
         '/api/v1/users/:pk'
+        @TODO is this necessary for items?
         """
-        if obj.latest_revision is not None:
-            return obj.latest_revision.participants
         return []
 
     def get_reviewers(self, obj):
@@ -112,7 +111,7 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
         placeholder
         """
         if obj.latest_revision is not None:
-            return obj.latest_revision.reviewers
+            return obj.latest_revision.reviewers.all()
         return []
 
     def get_signatories(self, obj):
@@ -120,7 +119,7 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
         placeholder
         """
         if obj.latest_revision is not None:
-            return obj.latest_revision.signatories
+            return obj.latest_revision.signatories.all()
         return []
 
     def get_closing_group(self, obj):
