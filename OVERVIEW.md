@@ -1,0 +1,79 @@
+Project Components
+------------------
+
+
+Matters
+=======
+
+create edit delete
+open closed
+
+
+Members
+=======
+
+create delete
+on delete: deleted members cant access matter/items other related; notifications are no longer sent to them
+
+
+Search
+=======
+
+2 types 1 interface
+
+"filter" on keyup does basic javascript matching on title and description for items as well as closing_group
+if the user hits enter a search panel shows and the results of a deep-search are shown (elastic search)
+
+
+Items
+-----
+
+1. Items provide access to a documents revisions as well as an interface to allow commenting and feedback
+2. Can belong to a category but this is not mandatory
+3. Soft Delted
+4. they always provide access to the latest_revision by default
+5. they provide acess to all revision
+
+
+Super Powers
+------------
+
+
+Item Reviewers
+==============
+
+1. Are invited explicitly
+2. have access only to the revision they are explicitly associated with
+
+
+Item Signatories
+================
+
+1. Are invited explicitly
+2. have access only to the revision they are explicitly associated with
+
+
+Permissions
+===========
+
+Permissions are on a level basis
+
+matter level : has access to the matter, al lof the matters items, and all of the items revisions
+item level : has access ony to the item and its revisions
+revision level : has access only to the revision and can read some of the item info but can only comment on.
+
+
+Security
+========
+
+1. use https://github.com/authy/authy-python to implement 2 step auth for added Lawyer and Client only security
+2. implies that when the lawyer/cietn logs in from another device they will be authenticated via sms
+3. review + signature urls expire after 14 days
+
+
+Matter Templates
+----------------
+
+1. in dev set a matter up as you want it
+2. manage.py dumpdata matter item > name_of_template.json
+3. need an interface to load a template as a new matter (drop down list select and create)
