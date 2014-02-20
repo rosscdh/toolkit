@@ -3805,6 +3805,10 @@ fieldset[disabled] .input-group .input-group-btn:first-child .btn-default.active
   -webkit-transition: 0.25s;
   transition: 0.25s;
 }
+.dropdown-menu.dropdown-small li {
+  font-size: 11px;
+  padding: 0;
+}
 .dropdown-menu.typeahead {
   display: none;
   opacity: 1;
