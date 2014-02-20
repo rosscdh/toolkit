@@ -4,7 +4,8 @@ from django.db import models
 from toolkit.utils import get_namedtuple_choices
 
 from jsonfield import JSONField
-
+from uuidfield import UUIDField
+from rulez import registry as rulez_registry
 
 ITEM_STATUS = get_namedtuple_choices('ITEM_STATUS', (
                                 (0, 'new', 'New'),
@@ -18,6 +19,7 @@ class Item(models.Model):
     """
     Matter.item (workspace tool)
     """
+    slug = UUIDField(auto=True, db_index=True)
     name = models.CharField(max_length=255)
     description = models.TextField()
     matter = models.ForeignKey('workspace.Workspace')
@@ -61,3 +63,16 @@ class Item(models.Model):
 
     def signatories(self):
         return self.data.get('signatories', [])
+
+    def can_read(self, user):
+        return user in self.matter.participants.all()
+
+    def can_edit(self, user):
+        return user in self.matter.participants.all()
+
+    def can_delete(self, user):
+        return user.profile.is_lawyer and user in self.matter.participants.all()
+
+rulez_registry.register("can_read", Item)
+rulez_registry.register("can_edit", Item)
+rulez_registry.register("can_delete", Item)

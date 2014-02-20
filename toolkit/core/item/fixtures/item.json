@@ -3,6 +3,7 @@
     "pk": 1,
     "model": "item.item",
     "fields": {
+      "slug": "4bcfaef627864c61a2a731473d40470e",
       "status": 0,
       "date_due": "2014-02-19T15:25:39.378Z",
       "name": "test",
