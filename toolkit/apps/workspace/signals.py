@@ -86,9 +86,9 @@ def _update_marker(marker_name, next_status, actor_name, instance, **kwargs):
 #
 
 
-def _model_slug_exists(model, slug):
+def _model_slug_exists(model, **kwargs):
     try:
-        return model.objects.get(slug=slug)
+        return model.objects.get(**kwargs)
     except model.DoesNotExist:
         return None
 
@@ -112,6 +112,29 @@ def ensure_workspace_slug(sender, **kwargs):
             final_slug = slugify(slug)
 
         workspace.slug = final_slug
+
+
+@receiver(pre_save, sender=Workspace, dispatch_uid='workspace.ensure_workspace_matter_code')
+def ensure_workspace_matter_code(sender, **kwargs):
+    """
+    signal to handle creating the workspace matter_code
+    """
+    workspace = kwargs.get('instance')
+
+    if workspace.matter_code in [None, '']:
+
+        # the current number of matters this lawyer has
+        count = workspace.lawyer.workspace_set.all().count()
+        workspace_name = slugify(workspace.name)
+
+        final_matter_code = "{0:05d}-{1}".format(count, workspace_name)
+
+        while _model_slug_exists(model=Workspace, matter_code=final_matter_code):
+            logger.info('Workspace %s exists, trying to create another' % final_matter_code)
+            count = count + 1
+            final_matter_code = "{0:05d}-{1}".format(count, workspace_name)
+
+        workspace.matter_code = final_matter_code
 
 
 @receiver(post_save, sender=Workspace, dispatch_uid='workspace.ensure_workspace_has_83b_by_default')
