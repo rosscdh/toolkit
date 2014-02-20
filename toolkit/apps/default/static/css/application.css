@@ -157,29 +157,70 @@
 #checklist table.checklist td.status .fui-check-inverted {
   padding-top: 4px;
 }
+#checklist table.checklist td.status a {
+  text-decoration: underline;
+}
+#checklist table.checklist td.add-new {
+  text-align: right;
+  padding: 4px 0px 4px 0px;
+  font-size: 13px;
+  background-color: #f2f2f2;
+}
+#checklist table.checklist td.add-new a {
+  color: #bdc3c7;
+  font-weight: bold;
+}
+#checklist table.checklist td.add-new a.set-property {
+  font-size: 11px;
+}
+#checklist table.checklist tr.add-new-controls .input-group {
+  width: 100%;
+}
 #checklist div.item {
   background-color: #2980b9;
   min-height: 800px;
   color: white;
-  padding-left: 30px;
-  padding-top: 20px;
+}
+#checklist div.item .text-muted {
+  opacity: 0.5;
+}
+#checklist div.item a.link {
+  color: white;
+  text-decoration: underline;
+}
+#checklist div.item .btn-link {
+  color: white;
+}
+#checklist div.item small {
+  font-size: 13px;
 }
 #checklist div.item h3 {
   font-size: 19px;
-  margin-bottom: 26px;
+  margin-bottom: 13px;
+}
+#checklist div.item input:focus,
+#checklist div.item textarea:focus {
+  border-color: #69a6ce;
+}
+#checklist div.item #item-description textarea {
+  margin-top: 10px;
+  margin-bottom: 3px;
+  font-size: 12px;
 }
 #checklist div.item ul li {
   padding-left: 15px;
 }
 #checklist div.item ul li.step h4 {
-  background-color: #20638f;
-  font-size: 16px;
-  padding: 13px 0px 13px 15px;
+  background-color: #34495e;
+  font-size: 14px;
+  padding: 8px 0px 9px 15px;
   border-radius: 6px;
   margin-left: -15px;
+  margin-bottom: 10px;
 }
 #checklist div.item ul li.step p {
-  font-size: 14px;
+  font-size: 13px;
+  line-height: 1.2em;
   margin-left: 0px;
   color: #cadfee;
 }
