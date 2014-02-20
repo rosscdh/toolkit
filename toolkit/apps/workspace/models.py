@@ -23,6 +23,7 @@ class Workspace(IsDeletedMixin, models.Model):
     """
     name = models.CharField(max_length=255)
     slug = models.SlugField(blank=True)
+    matter_code = models.SlugField(blank=True)
     lawyer = models.ForeignKey('auth.User', null=True, related_name='lawyer_workspace')  # Lawyer that created this workspace
     participants = models.ManyToManyField('auth.User', blank=True)
     tools = models.ManyToManyField('workspace.Tool', blank=True)
@@ -167,5 +168,6 @@ class Tool(models.Model):
 Import workspace signals
 """
 from .signals import (ensure_workspace_slug,
-                     ensure_workspace_has_83b_by_default,
-                     ensure_tool_slug)
+                      ensure_workspace_matter_code,
+                      ensure_workspace_has_83b_by_default,
+                      ensure_tool_slug)
