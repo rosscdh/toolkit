@@ -7,4 +7,3 @@ from toolkit.core.client.models import Client
 class ClientSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Client
-        #exclude = ()
