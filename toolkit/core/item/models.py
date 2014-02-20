@@ -26,14 +26,12 @@ class Item(models.Model):
     status = models.IntegerField(choices=ITEM_STATUS.get_choices(), default=ITEM_STATUS.new)
 
     # enables Forking and Cloning for document automation
-    # parent = models.ManyToManyField('item.Item', null=True, blank=True, related_name="own_parent")
     parent = models.ForeignKey('item.Item', blank=True, null=True)
 
     # if is final is true, then the latest_revision will be available for sending for signing
     is_final = models.BooleanField(default=False, db_index=True)
-    revisions = models.ManyToManyField('attachment.Revision', related_name='item_revisions', blank=True, null=True)
 
-    #closing_groups = Tags
+    closing_group = models.CharField(max_length=128, null=True)
 
     is_complete = models.BooleanField(default=False, db_index=True)
 
