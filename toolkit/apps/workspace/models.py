@@ -25,6 +25,7 @@ class Workspace(IsDeletedMixin, models.Model):
     slug = models.SlugField(blank=True)
     matter_code = models.SlugField(blank=True)
     lawyer = models.ForeignKey('auth.User', null=True, related_name='lawyer_workspace')  # Lawyer that created this workspace
+    client = models.ForeignKey('client.Client', null=True)
     participants = models.ManyToManyField('auth.User', blank=True)
     tools = models.ManyToManyField('workspace.Tool', blank=True)
     data = JSONField(default={}, blank=True)
