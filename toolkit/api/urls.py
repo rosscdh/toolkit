@@ -6,12 +6,16 @@ from rest_framework import routers
 from .views import UserEndpoint
 from .views import AccountEndpoint
 from .views import ClientEndpoint
-from .views import MatterEndpoint
+from .views import (MatterEndpoint, MatterItemsView, MatterItemView)
 from .views import ItemEndpoint
 from .views import RevisionEndpoint
 #from .views import WorkflowEndpoint
 
 router = routers.SimpleRouter()
+
+"""
+ViewSets
+"""
 router.register(r'users', UserEndpoint)
 router.register(r'account', AccountEndpoint)
 
@@ -21,12 +25,12 @@ router.register(r'items', ItemEndpoint)
 router.register(r'revisions', RevisionEndpoint)
 
 
+"""
+Generics
+"""
 urlpatterns = router.urls + patterns('',
-    #url(r'^account/', AccountEndpoint.as_view(), name='account'),
-    #url(r'^clients/', ClientEndpoint.as_view(), name='clients'),
-    #url(r'^matters/', MatterEndpoint.as_view(), name='matters'),
-    #url(r'^items/', ItemEndpoint.as_view(), name='items'),
-    #url(r'^attachments/', AttachmentEndpoint.as_view(), name='attachments'),
-    #    url(r'^attachments/(?P<slug>(.*))/revisions/(?P<revision>(\d+))/', AttachmentEndpoint.as_view(), name='attachment_revision'),
-    #url(r'^workflows/', WorkflowEndpoint.as_view(), name='workflows'),
+
+    url(r'^matters/(?P<matter_slug>[\w-]+)/items/$', MatterItemsView.as_view(), name='matter_items'),
+    url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/$', MatterItemView.as_view(), name='matter_item'),
+
 )
