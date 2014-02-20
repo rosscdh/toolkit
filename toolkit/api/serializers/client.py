@@ -1,10 +1,10 @@
 # -*- coding: UTF-8 -*-
 from rest_framework import serializers
 
-from toolkit.apps.default.models import UserProfile
+from toolkit.core.client.models import Client
 
 
-class ClientSerializer(serializers.ModelSerializer):
+class ClientSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = UserProfile
+        model = Client
         #exclude = ()

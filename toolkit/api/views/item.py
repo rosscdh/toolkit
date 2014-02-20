@@ -11,6 +11,3 @@ class ItemEndpoint(viewsets.ModelViewSet):
     """
     model = Item
     serializer_class = ItemSerializer
-
-    def get_queryset(self):
-        return Item.objects.filter(participants=self.request.user.pk)

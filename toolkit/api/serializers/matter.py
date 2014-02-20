@@ -28,7 +28,7 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Workspace
-        fields = ('name', 'slug', 'date_created', 'date_modified',
+        fields = ('name', 'slug', 'matter_code', 'client', 'date_created', 'date_modified',
                   'lawyer', 'participants', 'closing_groups', 'items', 'comments', 'activity', 'todo')
 
     def get_closing_groups(self, obj):

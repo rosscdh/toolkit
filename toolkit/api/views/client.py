@@ -1,33 +1,20 @@
 # -*- coding: UTF-8 -*-
-from rest_framework.views import APIView
-from rest_framework.response import Response
+from rest_framework import viewsets
+from rest_framework.exceptions import PermissionDenied
 
+from toolkit.core.client.models import Client
 from ..serializers import ClientSerializer
 
 
-class ClientEndpoint(APIView):
+class ClientEndpoint(viewsets.ModelViewSet):
     """
     """
-    def get(self, request, format=None):
-        """
-        """
-        resp = {}
-        return Response(resp)
+    model = Client
+    serializer_class = ClientSerializer
 
-    def patch(self, request, format=None):
+    def list(self, request, **kwargs):
         """
+        @TODO limit by user client
         """
-        resp = {}
-        return Response(resp)
-
-    def post(self, request, format=None):
-        """
-        """
-        resp = {}
-        return Response(resp)
-
-    def delete(self, request, format=None):
-        """
-        """
-        resp = {}
-        return Response(resp)
+        return super(ClientEndpoint, self).list(request=request, **kwargs)
+        

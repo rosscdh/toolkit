@@ -14,7 +14,7 @@ from . import HATOAS
 import datetime
 import random
 
-USERS = User.objects.all()
+#USERS = User.objects.all()
 
 
 class ItemSerializer(serializers.HyperlinkedModelSerializer):
@@ -27,9 +27,9 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
 
     latest_revision = serializers.Field(source='latest_revision')
 
-    participants = serializers.SerializerMethodField('get_participants')
-    reviewers = serializers.SerializerMethodField('get_reviewers')
-    signatories = serializers.SerializerMethodField('get_signatories')
+    # participants = serializers.SerializerMethodField('get_participants')
+    # reviewers = serializers.SerializerMethodField('get_reviewers')
+    # signatories = serializers.SerializerMethodField('get_signatories')
 
     closing_group = serializers.SerializerMethodField('get_closing_group')
 

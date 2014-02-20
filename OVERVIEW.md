@@ -9,6 +9,14 @@ create edit delete
 open closed
 
 
+Clients
+=======
+
+Clients are a simple bag of metadata that allow us to associate matters with them
+no explicit relationship is made with users and clients (yet) but this may be done
+after mvp
+
+
 Members
 =======
 
@@ -35,8 +43,12 @@ Items
 5. they provide acess to all revision
 
 
-Super Powers
-------------
+Super Powers (1 ups)
+--------------------
+
+Are routines 
+
+
 
 
 Item Reviewers
@@ -56,7 +68,7 @@ Item Signatories
 Permissions
 ===========
 
-Permissions are on a level basis
+Permissions are on a simple level basis
 
 matter level : has access to the matter, al lof the matters items, and all of the items revisions
 item level : has access ony to the item and its revisions
