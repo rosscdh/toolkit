@@ -100,52 +100,52 @@ In order to provide feedback and initiate workflows
 Matter Items
 ============
 
-/items/ (GET)
+/matters/:slug/items/ (GET)
     Allow the [lawyer,customer] user to list items that belong to them
 
-/items/:slug/ (GET,PATCH,DELETE)
+/matters/:slug/items/:slug/ (GET,PATCH,DELETE)
     Allow the [lawyer,customer] user to list, and update an existing item
     objects; that belong to them
 
-/items/:slug/attachments/ (GET) - returns only the most RECENT revision
+/matters/:slug/items/:slug/attachments/ (GET) - returns only the most RECENT revision
     Allow [lawyer,customer] user to list and create attachment objects for item objects
 
-#
-# Is catered to in Attachments section
-#
-#/items/:slug/attachments/:slug/revisions/ (GET,POST,DELETE)
-#    Allow the [lawyer,customer] user to list, create and delete revisions
-#    (attachment) objects that belong to the item.
+/matters/:slug/items/ (GET)
+/matters/:slug/items/:slug/ (GET,PATCH,DELETE)
 
-/items/:slug/reviewers/ (GET,POST)
+### Current revision
+/matters/:slug/items/:slug/reviewers/ (GET,POST)
     Allow the [lawyer,customer] user to list, and create people who should review
     the attachment
-
-/items/:slug/reviewers/:reviewer (GET,DELETE)
+/matters/:slug/items/:slug/reviewers/:reviewer (GET,DELETE)
     Allow the [lawyer,customer] user to list, and delete reviewer
-
-/items/:slug/reviewers/remind/ (POST)
+/matters/:slug/items/:slug/reviewers/remind/ (POST)
     Send reminder emails to any outstanding reviewers to please sign
 
+### Historic revision
+/matters/:slug/items/:slug/revision/:number/reviewers/ (GET,POST)
+/matters/:slug/items/:slug/revision/:number/reviewers/:reviewer (GET,DELETE)
+/matters/:slug/items/:slug/revision/:number/reviewers/remind/ (POST)
 
-/items/:slug/signatories/ (GET,POST) - these are created within the system and as part of the system flows
-    Allow the [lawyer,customer] user to list activity related to a matter
 
-/items/:slug/signatories/:signatory (GET,DELETE)
-    Allow the [lawyer,customer] user to list, and delete reviewer
-
-/items/:slug/signatories/remind/ (POST)
+### Current signatures
+/matters/:slug/items/:slug/signatories/ (GET,POST) - these are created within the system and as part of the system flows
+    Allow the [lawyer,customer] user to list signatories related to an item
+/matters/:slug/items/:slug/signatories/:signatory (GET,DELETE)
+    Allow the [lawyer,customer] user to list, and delete signatory
+/matters/:slug/items/:slug/signatories/remind/ (POST)
     Send reminder emails to any outstanding signatories to please sign
 
+### Historic signatures
+/matters/:slug/items/:slug/revision/:number/signatories/ (GET,POST)
+/matters/:slug/items/:slug/revision/:number/signatories/:reviewer (GET,DELETE)
+/matters/:slug/items/:slug/revision/:number/signatories/remind/ (POST)
 
-#
-# Known as workflows/power ups/routines
-#
-/items/:slug/states/ (GET,POST)
-    Allow [lawyer] user to list and associate workflows with an item object
 
-/items/:slug/states/:state (GET,DELETE)
-    Allow [lawyer] user to list and delete individual associated workflows
+Item details
+============
+
+Once we know an items pk/slug/url we can request specific info about them
 
 
 /items/:slug/comments/ (GET,POST)
@@ -155,49 +155,25 @@ Matter Items
     Allow [lawyer,customer] user to list, update and delete comments
 
 
-/items/:slug/activity/ (GET) - these are created within the system and as part
-                               of the system flows
+/items/:slug/activity/ (GET) 
     Allow [lawyer,customer] user to list activity relating to an item object
+    Note: These are created within the system and as part
+    of the backend.
 
 
-Attachments
+Revisions
 ===========
 
-/attachments/ (GET)
+/revisions/ (GET)
     Allow user to list their attachment objects
 
-/attachments/:slug/ (GET,PATCH,DELETE)
+/revisions/:pk/ (GET,PATCH,DELETE)
     Allow user to view and update the most recent revision (defaults to highest
     revision)
-    -- Note A: All Items marked between "Begin: Note A" and "End: Note A" are
-       applicable here
 
-/attachments/:slug/revisions/ (GET,POST)
-    Allow user to list and create new document revisions
-
-__ Begin: Note A __
-
-/attachments/:slug/revisions/:revision/ (GET,PATCH)
-    Allow [lawyer,customer] user to list and update document revisions that
-    belong to them
-
-/attachments/:slug/revisions/:revision/comments/ (GET,POST)
-    - @DISCUSS do we need this? or are comments at item level acceptable
-    Allow [lawyer,customer] user to list and create comments on an attachment
+/revisions/:pk/comments/ (GET,POST)
+    Allow [lawyer,customer,reviewer,signatory] user to list and create comments on an attachment
     object
 
-/attachments/:slug/revisions/:revision/activity/ (GET)
-    - @DISCUSS do we need this? or is activity at item level acceptable
-    Allow [lawyer,customer] user to list activity on an attachment
-
-__ End: Note A __
-
-
-Workfows
-========
-
-/workflows/ (GET)
-    Allow [lawyer,customer] user to list public workflow objects
-
-/workflows/:slug/ (GET)
-    Allow [lawyer,customer] user to view the details of a specific workflow object
+/revisions/:pk/activity/ (GET)
+    Allow [lawyer,customer,reviewer,signatory] user to list activity on an attachment
