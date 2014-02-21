@@ -8,6 +8,8 @@ from rest_framework import serializers
 from toolkit.apps.workspace.models import Workspace
 from toolkit.core.item.models import Item
 from .item import ItemSerializer
+from .user import UserSerializer
+from .client import ClientSerializer
 
 import datetime
 
@@ -17,33 +19,39 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
     date_created = serializers.DateTimeField(read_only=True)
     date_modified = serializers.DateTimeField(read_only=True)
 
-    lawyer = serializers.HyperlinkedRelatedField(view_name='user-detail', lookup_field = 'username', many=False)
-    participants = serializers.HyperlinkedRelatedField(view_name='user-detail', lookup_field = 'username', many=True)
+    client = ClientSerializer()
+    lawyer = UserSerializer()
+    participants = UserSerializer()
 
     closing_groups = serializers.SerializerMethodField('get_closing_groups')
+
     items = serializers.SerializerMethodField('get_items')
     comments = serializers.SerializerMethodField('get_comments')
     activity = serializers.SerializerMethodField('get_activity')
-    todo = serializers.SerializerMethodField('get_todo')
+    current_user_todo = serializers.SerializerMethodField('get_current_user_todo')
+    current_user = serializers.SerializerMethodField('get_current_user')
 
     class Meta:
         model = Workspace
-        fields = ('name', 'slug', 'matter_code', 'client', 'date_created', 'date_modified',
-                  'lawyer', 'participants', 'closing_groups', 'items', 'comments', 'activity', 'todo')
+        fields = ('name', 'slug', 'matter_code', 'client',
+                  'lawyer', 'participants', 'closing_groups', 
+                  'items', 'comments', 'activity',
+                  'current_user', 'current_user_todo',
+                  'date_created', 'date_modified',)
 
     def get_closing_groups(self, obj):
         """
         placeholder
         list of closing groups
         """
-        return ['for finance', 'for phil']
+        #return ['for finance', 'for phil']
+        return obj.closing_groups
 
     def get_items(self, obj):
         """
         tmp method will eventually be replaced by matter.items_set.all()
         """
-        #return [ItemSerializer(Item()).data for i in xrange(0,2)]
-        return [ItemSerializer(i).data for i in Item.objects.filter(matter=obj)]
+        return [ItemSerializer(i).data for i in obj.item_set.filter(parent=None)]
 
     def get_comments(self, obj):
         """
@@ -70,7 +78,11 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
         #return [activity.copy() for i in xrange(0,5)]
         return []
 
-    def get_todo(self, obj):
+    def get_current_user(self, obj):
+        user = obj.lawyer
+        return UserSerializer(user).data
+
+    def get_current_user_todo(self, obj):
         """
         tmp method will eventually be replaced by matter.todo.filter(user=request.user)
         """

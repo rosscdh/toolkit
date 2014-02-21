@@ -21,11 +21,19 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
     status = serializers.SerializerMethodField('get_status')
     latest_revision = serializers.Field(source='latest_revision')
 
-    closing_group = serializers.SerializerMethodField('get_closing_group')
+    #closing_groups = serializers.SerializerMethodField('get_closing_groups')
+
+    parent = serializers.SlugRelatedField(many=False, slug_field='slug')
+    children = serializers.SerializerMethodField('get_children')
 
     class Meta:
         model = Item
         lookup_field = 'slug'
+        fields = ('slug', 'url', 'status', 'name', 'description', 'matter',
+                  'parent', 'children', 'closing_group', 'latest_revision',
+                  'is_final', 'is_complete', 'date_due',
+                  'date_created', 'date_modified',)
+
         exclude = ('data', 'responsible_party')
 
     def get_status(self, obj):
@@ -62,8 +70,11 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
             return obj.latest_revision.signatories.all()
         return []
 
-    def get_closing_group(self, obj):
-        """
-        placeholder
-        """
-        return 'for finance'
+    def get_children(self, obj):
+        return [ItemSerializer(i).data for i in obj.item_set.all()]
+
+    # def get_closing_groups(self, obj):
+    #     """
+    #     placeholder
+    #     """
+    #     return obj.closing_groups
