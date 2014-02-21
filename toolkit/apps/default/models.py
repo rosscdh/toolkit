@@ -76,6 +76,18 @@ User.profile = property(lambda u: _get_or_create_user_profile(user=u)[0])
 
 
 """
+Overide the user get_full_name method to actually return somethign useful if
+there is no name
+"""
+def get_full_name(self, **kwargs):
+    name = '%s %s' % (self.first_name, self.last_name)
+    if name.strip() in ['', None]:
+        name = self.email
+    return name
+
+User.add_to_class('get_full_name', get_full_name)
+
+"""
 Add our api permission handler methods to the User class
 """
 def user_can_read(self, **kwargs):
