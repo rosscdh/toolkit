@@ -3,6 +3,6 @@
 {% load crispy_forms_tags %}
 
 {% block form %}
-    <p>The 83(b) Election Letter has been set up. You can now invite {{ tool_instance.user.get_full_name }} to complete the process on LawPal. Please review the message below, ammend it where necessary and click "Send Invite".</p>
+    <p>You can now invite {{ tool_instance.user.get_full_name }} to complete his/her 83(b) election filing. Please review the message below, amend it where necessary and click "Send Invite".</p>
     {% crispy form %}
 {% endblock %}
