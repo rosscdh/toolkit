@@ -5,8 +5,6 @@ from django.views.generic import FormView
 
 from crispy_forms.helper import FormHelper
 
-from toolkit.apps.workspace.models import Workspace
-
 import re
 import logging
 from datetime import datetime
@@ -16,6 +14,8 @@ logger = logging.getLogger('django.request')
 
 class WorkspaceToolViewMixin(object):
     def dispatch(self, request, *args, **kwargs):
+        from toolkit.apps.workspace.models import Workspace  # to avoid cyclic imports
+
         self.workspace = get_object_or_404(Workspace, slug=self.kwargs.get('workspace'))
         self.tool = get_object_or_404(self.workspace.tools, slug=self.kwargs.get('tool'))
 
