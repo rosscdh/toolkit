@@ -96,36 +96,45 @@ Matter Items
     Allow the [lawyer,customer] user to list, and update an existing item
     objects; that belong to them
 
-/matters/:matter_slug/items/:item_slug/revision/ (GET) - returns only the most RECENT revision
-    Allow [lawyer,customer] user to list and create attachment objects for item objects
+# Revisions
 
-### Current revision reviewer
-/matters/:matter_slug/items/:item_slug/reviewers/ (GET,POST)
-    Allow the [lawyer,customer] user to list, and create people who should review
-    the attachment
-/matters/:matter_slug/items/:item_slug/reviewers/:reviewer (GET,DELETE)
-    Allow the [lawyer,customer] user to list, and delete reviewer
-/matters/:matter_slug/items/:item_slug/reviewers/remind/ (POST)
-    Send reminder emails to any outstanding reviewers to please sign
+reviewers and signatories are represented on the item object, they are actually
+derived from the current revision object which is represented on the item.
 
-### Historic revision reviewer
-/matters/:matter_slug/items/:item_slug/revision/:number/reviewers/ (GET,POST)
-/matters/:matter_slug/items/:item_slug/revision/:number/reviewers/:reviewer (GET,DELETE)
-/matters/:matter_slug/items/:item_slug/revision/:number/reviewers/remind/ (POST)
+We can also call specific revisions and access the reviewers and signatories for
+that particular revisions.
+
+/matters/:matter_slug/items/:item_slug/revision (GET,POST,PATCH,DELETE)
+    [lawyer,customer] to get,create,update,delete the latst revision
 
 
-### Current revision signatures
-/matters/:matter_slug/items/:item_slug/signatories/ (GET,POST) - these are created within the system and as part of the system flows
-    Allow the [lawyer,customer] user to list signatories related to an item
-/matters/:matter_slug/items/:item_slug/signatories/:signatory (GET,DELETE)
-    Allow the [lawyer,customer] user to list, and delete signatory
-/matters/:matter_slug/items/:item_slug/signatories/remind/ (POST)
-    Send reminder emails to any outstanding signatories to please sign
+### Reviewers
 
-### Historic revision signatures
-/matters/:matter_slug/items/:item_slug/revision/:number/signatories/ (GET,POST)
-/matters/:matter_slug/items/:item_slug/revision/:number/signatories/:reviewer (GET,DELETE)
-/matters/:matter_slug/items/:item_slug/revision/:number/signatories/remind/ (POST)
+<!-- /matters/:matter_slug/items/:item_slug/revision/reviewers (GET,POST
+    [lawyer,customer] to list and create reviewers 
+    Method not required as we get the reviewers from the GET :item_slug/revision
+    JSON payload
+-->
+/matters/:matter_slug/items/:item_slug/revision/reviewer/:username (GET,POST,DELETE)
+    [lawyer,customer] to view, create and delete reviewers
+/matters/:matter_slug/items/:item_slug/revision/reviewers/remind (GET)
+    Send reminder emails to any outstanding reviewers
+
+** Historic revision reviewers **
+/matters/:matter_slug/items/:item_slug/revisions/:number/ (GET,POST)
+
+
+### Signatories
+
+/matters/:matter_slug/items/:item_slug/revision/signatory/:username (GET,POST,DELETE)
+    [lawyer,customer] to list,create and delete signatories
+
+/matters/:matter_slug/items/:item_slug/revision/signatories/remind (GET)
+    [lawyer,customer] Send reminder emails to any outstanding signatories
+
+** Historic revision signatures **
+/matters/:matter_slug/items/:item_slug/revisions/:number/ (GET)
+
 
 
 Item details
