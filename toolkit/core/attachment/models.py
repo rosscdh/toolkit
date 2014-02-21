@@ -40,10 +40,14 @@ class Revision(models.Model):
         """
         return the relative revision id for this revision
         """
+        label = 'v{version}'
+        version = 1
+
         for i, obj in enumerate(self.revisions.all().reverse()):
             if obj.pk == self.pk:
-                return i + 1
-        return 1
+                version = i + 1
+
+        return label.format(version=version)
 
     def next(self):
         return self.revisions.filter(pk__gt=self.pk).first()
