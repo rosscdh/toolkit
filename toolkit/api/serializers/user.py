@@ -11,8 +11,10 @@ from toolkit.apps.default.models import UserProfile
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
+    #account = serializers.HyperlinkedRelatedField(source='profile', many=False, view_name='account-detail', lookup_field='username')
+
     class Meta:
         model = User
         lookup_field = 'username'
-        fields = ('id', 'url', 'last_login', 'username', 'first_name',
+        fields = ('url', 'last_login', 'username', 'first_name',
                   'last_name', 'email', 'is_active', 'date_joined',)
