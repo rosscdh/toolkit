@@ -239,7 +239,7 @@ class BaseReminderMixin(ItemCurrentRevisionView):
                           from_name=self.request.user.get_full_name(),
                           action_url='http://lawpal.com/etc/')
 
-                sent_to['results'].append({'name': u.get_full_name(), 'email': u.email})
+                sent_to['results'].append(UserSerializer(u).data)
 
             except Exception as e:
                 logger.critical('Could not send "%s" reminder email: %s' % (self.mailer, e))
