@@ -16,12 +16,13 @@ import datetime
 
 class MatterSerializer(serializers.HyperlinkedModelSerializer):
     slug = serializers.CharField(read_only=True)
+    matter_code = serializers.CharField(required=False)
     date_created = serializers.DateTimeField(read_only=True)
     date_modified = serializers.DateTimeField(read_only=True)
 
-    client = ClientSerializer()
-    lawyer = UserSerializer()
-    participants = UserSerializer()
+    client = serializers.HyperlinkedRelatedField(many=False, required=False, view_name='client-detail', lookup_field='slug')
+    lawyer = serializers.HyperlinkedRelatedField(many=False, view_name='user-detail', lookup_field='username')
+    participants = serializers.HyperlinkedRelatedField(many=True, required=False, view_name='user-detail', lookup_field='username')
 
     categories = serializers.SerializerMethodField('get_categories')
     closing_groups = serializers.SerializerMethodField('get_closing_groups')
@@ -29,13 +30,14 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
     items = serializers.SerializerMethodField('get_items')
     comments = serializers.SerializerMethodField('get_comments')
     activity = serializers.SerializerMethodField('get_activity')
+
     current_user_todo = serializers.SerializerMethodField('get_current_user_todo')
     current_user = serializers.SerializerMethodField('get_current_user')
 
     class Meta:
         model = Workspace
-        fields = ('name', 'slug', 'matter_code', 'client',
-                  'lawyer', 'participants',
+        fields = ('name', 'slug', 'matter_code',
+                  'client', 'lawyer', 'participants',
                   'closing_groups', 'categories', 
                   'items', 'comments', 'activity',
                   'current_user', 'current_user_todo',
