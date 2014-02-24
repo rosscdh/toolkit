@@ -14,16 +14,14 @@ from . import HATOAS
 import datetime
 import random
 
-#USERS = User.objects.all()
-
 
 class ItemSerializer(serializers.HyperlinkedModelSerializer):
     status = serializers.SerializerMethodField('get_status')
     latest_revision = serializers.Field(source='latest_revision')
 
-    #closing_groups = serializers.SerializerMethodField('get_closing_groups')
+    matter = serializers.HyperlinkedRelatedField(many=False, required=True, view_name='workspace-detail', lookup_field='slug')
 
-    parent = serializers.SlugRelatedField(many=False, slug_field='slug')
+    parent = serializers.HyperlinkedRelatedField(required=False, many=False, view_name='item-detail', lookup_field='slug')
     children = serializers.SerializerMethodField('get_children')
 
     class Meta:
@@ -72,9 +70,3 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_children(self, obj):
         return [ItemSerializer(i).data for i in obj.item_set.all()]
-
-    # def get_closing_groups(self, obj):
-    #     """
-    #     placeholder
-    #     """
-    #     return obj.closing_groups
