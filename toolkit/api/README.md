@@ -71,6 +71,17 @@ In order to provide feedback and initiate workflows
 /matters/ (GET,POST)
     Allow the [lawyer] user to list, and create new matter ("workspace") objects
 
+POST new matter
+```
+{
+    "name": "LawPal (internal)", 
+    "client": null, 
+    "lawyer": "http://localhost:8000/api/v1/users/rosslawyer/", 
+    "participants": [
+        "http://localhost:8000/api/v1/users/rossc/"
+    ]
+}
+```
 
 /matters/:matter_slug/ (GET,PATCH,DELETE)
     Allow the [lawyer] user to list, and update an existing matter ("workspace") object
