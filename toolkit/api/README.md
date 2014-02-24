@@ -75,6 +75,15 @@ In order to provide feedback and initiate workflows
 /matters/:matter_slug/ (GET,PATCH,DELETE)
     Allow the [lawyer] user to list, and update an existing matter ("workspace") object
 
+### Categories
+/matters/:matter_slug/category/:category (GET,POST,DELETE)
+    [lawyer] can assign an item to a category
+
+
+### Closing Groups
+/matters/:matter_slug/closing_group/:group (GET,POST,DELETE)
+    [lawyer] can assign an item to a closing group
+
 
 Matter Items
 ============
@@ -125,15 +134,6 @@ Item details
 ============
 
 Once we know an items id we can request specific info about them
-
-### Categories
-/matters/:matter_slug/items/:item_slug/category/:category (GET,POST,DELETE)
-    [lawyer] can assign an item to a category
-
-
-### Closing Groups
-/matters/:matter_slug/items/:item_slug/closinggroup/:group (GET,POST,DELETE)
-    [lawyer] can assign an item to a closing group
 
 ### Comments
 /matters/:matter_slug/items/:item_slug/comments/ (GET,POST)
