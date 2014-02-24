@@ -56,13 +56,15 @@ class ClosingGroupsMixin(object):
         """
         Add a new value to the closing_groups set
         """
+        value = value.strip()
         closing_groups = self.closing_groups
 
-        if value not in closing_groups:
-            # append the value
-            closing_groups.append(value)
-            # and then set our groups to the new list
-            self.closing_groups = closing_groups
+        if value not in ['', None]:
+            if value not in closing_groups:
+                # append the value
+                closing_groups.append(value)
+                # and then set our groups to the new list
+                self.closing_groups = closing_groups
 
     def delete_closing_group(self, value):
         """
@@ -70,33 +72,39 @@ class ClosingGroupsMixin(object):
         """
         self.remove_closing_group(value=value)
 
-    def remove_closing_group(self, value):
+    def remove_closing_group(self, value, instance=None):
         """
         Remove an existing value from the set
         but only if there are no items that have that value
         """
+        value = value.strip()
         closing_groups = self.closing_groups
 
-        if value not in closing_groups:
-            #
-            # did not find this value in the set
-            #
-            raise ClosingGroupDoesNotExist
-
-        else:
-            #
-            # Now check to see if any other items are still using it
-            #
-            num_items_using_closing_group = self.item_set.filter(closing_group=value).count()
-
-            if num_items_using_closing_group > 0:
+        if value not in ['', None]:
+            if value not in closing_groups:
                 #
-                # There are still items using this closing_group
+                # did not find this value in the set
                 #
-                raise ClosingGroupStillInUse
+                raise ClosingGroupDoesNotExist
 
             else:
-                # remove it
-                closing_groups.remove(value)
-                # update the set
-                self.closing_groups = closing_groups
+                #
+                # Now check to see if any other items are still using it
+                #
+                instance_pk = instance.pk if instance is not None else None
+                # exclude the instance if present
+                num_items_using_closing_group = self.item_set  \
+                                                    .exclude(pk=instance_pk) \
+                                                    .filter(closing_group=value).count()
+
+                if num_items_using_closing_group > 0:
+                    #
+                    # There are still items using this closing_group
+                    #
+                    raise ClosingGroupStillInUse
+
+                else:
+                    # remove it
+                    closing_groups.remove(value)
+                    # update the set
+                    self.closing_groups = closing_groups
