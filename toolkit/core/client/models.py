@@ -3,7 +3,7 @@ from django.db import models
 
 class Client(models.Model):
     name = models.CharField(max_length=255)
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(null=True, blank=True, unique=True)
     lawyer = models.ForeignKey('auth.User')
 
 
