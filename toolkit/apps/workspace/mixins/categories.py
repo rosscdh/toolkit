@@ -55,7 +55,7 @@ class CategoriesMixin(object):
         """
         Add a new value to the categories set
         """
-        value = value.strip()
+        value = value.strip() if type(value) in [str, unicode] else value
         categories = self.categories
 
         if value not in ['', None]:
@@ -78,7 +78,7 @@ class CategoriesMixin(object):
         Remove an existing value from the set
         but only if there are no items that have that value
         """
-        value = value.strip()
+        value = value.strip() if type(value) in [str, unicode] else value
         categories = self.categories
 
         if value not in ['', None]:
