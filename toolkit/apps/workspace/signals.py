@@ -124,7 +124,7 @@ def ensure_workspace_matter_code(sender, **kwargs):
     if workspace.matter_code in [None, '']:
 
         # the current number of matters this lawyer has
-        count = workspace.lawyer.workspace_set.all().count()
+        count = workspace.lawyer.workspace_set.all().count() if workspace.lawyer is not None else 1
         workspace_name = slugify(workspace.name)
 
         final_matter_code = "{0:05d}-{1}".format(count, workspace_name)
