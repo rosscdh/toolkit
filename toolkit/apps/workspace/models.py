@@ -24,10 +24,13 @@ class Workspace(IsDeletedMixin, ClosingGroupsMixin, CategoriesMixin, models.Mode
     """
     name = models.CharField(max_length=255)
     slug = models.SlugField(blank=True)
-    matter_code = models.SlugField(blank=True)
+    matter_code = models.SlugField(null=True, blank=True)
+
     lawyer = models.ForeignKey('auth.User', null=True, related_name='lawyer_workspace')  # Lawyer that created this workspace
     client = models.ForeignKey('client.Client', null=True, blank=True)
+
     participants = models.ManyToManyField('auth.User', blank=True)
+
     tools = models.ManyToManyField('workspace.Tool', blank=True)
 
     data = JSONField(default={})
