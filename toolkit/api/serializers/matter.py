@@ -23,6 +23,7 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
     lawyer = UserSerializer()
     participants = UserSerializer()
 
+    categories = serializers.SerializerMethodField('get_categories')
     closing_groups = serializers.SerializerMethodField('get_closing_groups')
 
     items = serializers.SerializerMethodField('get_items')
@@ -34,7 +35,8 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Workspace
         fields = ('name', 'slug', 'matter_code', 'client',
-                  'lawyer', 'participants', 'closing_groups', 
+                  'lawyer', 'participants',
+                  'closing_groups', 'categories', 
                   'items', 'comments', 'activity',
                   'current_user', 'current_user_todo',
                   'date_created', 'date_modified',)
@@ -44,8 +46,14 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
         placeholder
         list of closing groups
         """
-        #return ['for finance', 'for phil']
         return obj.closing_groups
+
+    def get_categories(self, obj):
+        """
+        placeholder
+        list of categories
+        """
+        return obj.categories
 
     def get_items(self, obj):
         """
