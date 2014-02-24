@@ -89,3 +89,16 @@ Matter Templates
 1. in dev set a matter up as you want it
 2. manage.py dumpdata matter item > name_of_template.json
 3. need an interface to load a template as a new matter (drop down list select and create)
+
+
+Tasks
+-----
+
+1. 2 step auth for clients and lawyers when using Authy python-authy
+2. Google Doc Edit and save update locally
+3. search integration using Haystack + Elastic search + Realtime Model
+4. Backup all documents + revisions to dropbox structure /lawpal/:matter-name/final && /lawpal/:matter-name/drafts && /lawpal/:matter-name/executed
+5. subscription plan
+6. docusign alternative to hello-sign
+7. Blog
+
