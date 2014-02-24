@@ -1,45 +1,114 @@
 {% extends 'public/base.html' %}
 
 {% load url from future %}
+{% block navbar %}
+ <div class="navbar navbar-inverse checklist-nav">
+    <div class="navbar-header">
+        <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-collapse-03"></button>
+        <a href="#fakelink" class="navbar-brand">Matter Name</a>
+    </div>
+    <div class="navbar-collapse collapse navbar-collapse-03">
+        <ul class="nav navbar-nav">
+            <li class="active">
+                <a href="#fakelink">Checklist</a>
+            </li>
+            <li>
+                <a href="#fakelink">Closing</a>
+            </li>
+           
+            <li class="checklist-members">
+                <a href="#fakelink">
+                <span class="fui-user"></span> 
+                <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash3/t1/c0.0.100.100/p100x100/1014416_10100118438650161_136799916_a.jpg" class="user">
+                <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/t1/c12.12.155.155/314032_10150303812474864_594285312_a.jpg" class="user">
+                <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-frc3/t1/c42.26.328.328/s320x320/229934_10150955684263644_890325486_n.jpg" class="user">
+                </a>
+            </li>
+            <li class="">
+                <a href="#fakelink">
+                	<span class="fui-chat"></span>
+                	<span class="navbar-new animated">1</span>
+                </a>
+            </li>
+        </ul>
+        <!-- /nav -->
+        <form class="navbar-form navbar-left" action="#">
+            <div class="form-group">
+                <div class="input-group input-group-sm">
+                    <input class="form-control" id="navbarInput-02" type="search" placeholder="Search">
+                    <span class="input-group-btn">
+                    <button type="submit" class="btn"><span class="fui-search"></span></button>
+                    </span>            
+                </div>
+            </div>
+        </form>
+        <ul class="nav navbar-nav navbar-right">
+            <li class="divider"></li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                {{ user.get_full_name|default:'Jon Smith' }} <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href="{% url 'me:settings' %}">Account</a></li>
+                    {% if user.profile.is_lawyer %}
+                    <li><a href="{% url 'me:letterhead' %}">Letterhead</a></li>
+                    {% endif %}
+                    <li><a href="{% url 'public:logout' %}">Sign out</a></li>
+                </ul>
+            </li>
+        </ul>
+        <!-- /nav -->
+    </div>
+    <!--/.navbar-collapse -->
+</div>
+
+
+{% endblock %}
+
 
 {% block prebody %}
 <style>
 body {background-color: #f2f2f2;}
 </style>
 	<div id="checklist">		
-	<div class="tool-landing">
 		<div class="container-fluid">
 			<div class="row">
 				<div class="col-sm-5 checklist-col">
-					<div class="row">
-						<div class="col-xs-8">
-							<h5>Checklist </h5> 
-						</div>
-						<div class="checklist-switch-wrap">
-							<div class="btn-group">              
-					            <button class="btn btn-link dropdown-toggle" data-toggle="dropdown">
-					            	By Category <span class="caret"></span>
-					            </button>
-				            	<span class="dropdown-arrow dropdown-arrow-inverse"></span>
-				            	<ul class="dropdown-menu dropdown-inverse">
-					                <li><a href="#fakelink">Sub Menu Element</a></li>
-					                <li><a href="#fakelink">Sub Menu Element</a></li>
-					                <li><a href="#fakelink">Sub Menu Element</a></li>
-				            	</ul>
-							</div>
-							<div class="col-xs-4 pull-right">
-				                <input class="form-control flat input-sm" placeholder="Quick search"></input>
-							</div>
-						</div>
-	            	</div>
 					<table class="table checklist">
 			            <thead>
 				              <tr>
-				                <th colspan="1" class="col-sm-8 category">Incorporation</th>
-				              	<th>Status</th>
+				                <th colspan="1" class="col-sm-6 category">Incorporation</th>
+				              	<th class="category-controls">
+				              		<!-- TODO : make these buttons appear when the tbody appears-->
+									<div class="btn-group pull-right">              
+				              			<button class="btn btn-success btn-xs" id="add-new"><span class="fui-plus-inverted"></span></button>
+				              			<button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown"><span class="fui-triangle-down"></span></button>
+						          	  	<ul class="dropdown-menu dropdown-inverse dropdown-small">
+						                	<li><a href="#fakelink">New Category</a></li>
+						                	<li><a href="#fakelink">Edit Category</a></li>
+						                	<li><a href="#fakelink">Delete Category</a></li>
+
+						              	</ul>
+						            </div>
+				              	</th>
 				              </tr>
 			            </thead>
 			            <tbody>
+			            <tr class="add-new-controls warning" style="display:none;">
+			              	<td colspan="2">
+			              		<div class="input-group">
+					          	  	<input class="form-control input-sm" id="appendedInputButton-03" type="search" placeholder="Enter item name and press enter">
+					          	  	<div class="input-group-btn">
+					          	    	<button class="btn btn-link  dropdown-toggle input-sm" type="button" data-toggle="dropdown"><span class="fui-gear"></span></button>
+						          	  	<ul class="dropdown-menu dropdown-inverse dropdown-small">
+						                	<li><a href="#fakelink">Set closing group</a></li>
+						                	<li><a href="#fakelink">Set description</a></li>
+						                	<li><a href="#fakelink">Set due date</a></li>
+						              	</ul>
+					          	  </div>
+					          	</div>	
+			              	</td>
+			              </tr>
 			              <tr class="item-heading item-closed">
 			                <td class="item-title">
 			                	<span class="fui-list-columned"></span> 
@@ -47,7 +116,6 @@ body {background-color: #f2f2f2;}
 			                </td>
 			                <td class="status text-right">
 			                	<span class="fui-check-inverted"></span>
-
 			                </td>
 			              </tr>
 					      <tr>
@@ -70,8 +138,7 @@ body {background-color: #f2f2f2;}
 			                	<span class="fui-list-columned"></span> Note purchase agreement 
 			                </td>
 			                <td class="status">
-			                	<button class="btn btn-warning btn-xs"><span class="fui-time"></span> Awaiting Files (BW)</button>
-
+			                	<button class="btn btn-warning btn-xs" disabled><span class="fui-time"></span> Awaiting Files (BW)</button>
 			                </td>
 			              </tr>
 						  <tr class="spa">
@@ -79,7 +146,7 @@ body {background-color: #f2f2f2;}
 			                	<span class="fui-list-columned"></span> Stock purchase agreement 
 			                </td>
 			                <td class="status">
-			                	<button class="btn btn-success btn-xs"><span class="fui-check"></span> File Received</button>
+			                	<button class="btn btn-success btn-xs" disabled><span class="fui-check"></span> File Received</button>
 			                </td>
 			              </tr>
 						  <tr class="custom">
@@ -87,20 +154,35 @@ body {background-color: #f2f2f2;}
 			                	<span class="fui-list-columned"></span> Custom agreement B 
 			                </td>
 			                <td class="status">
-			                	<button class="btn btn-warning btn-xs"><span class="fui-user"></span> Review 66%</button>
+			                	<button class="btn btn-warning btn-xs" disabled><span class="fui-user"></span> Review 66%</button>
 			                </td>
 			              </tr>
-			              <tr>
-			              	<td class="col-xs-6 add-new" colspan="2">
-			              		<a href="#" id="add-new">Add Item</a>
-			              	</td>
-			              </tr>
-			              <tr class="add-new-controls warning" style="display:none;">
+			            </tbody>
+						<thead>
+				              <tr>
+				                <th colspan="1" class="col-sm-6 category">Incorporation</th>
+				              	<th class="category-controls">
+				              		<!-- TODO : make these buttons appear when the tbody appears-->
+									<div class="btn-group pull-right">              
+				              			<button class="btn btn-success btn-xs" id="add-new"><span class="fui-plus-inverted"></span></button>
+				              			<button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown"><span class="fui-triangle-down"></span></button>
+						          	  	<ul class="dropdown-menu dropdown-inverse dropdown-small">
+						                	<li><a href="#fakelink">New Category</a></li>
+						                	<li><a href="#fakelink">Edit Category</a></li>
+						                	<li><a href="#fakelink">Delete Category</a></li>
+
+						              	</ul>
+						            </div>
+				              	</th>
+				              </tr>
+			            </thead>
+			            <tbody>
+			            <tr class="add-new-controls warning" style="display:none;">
 			              	<td colspan="2">
 			              		<div class="input-group">
-					          	  	<input class="form-control input-sm flat" id="appendedInputButton-03" type="search" placeholder="Enter item name and press enter">
+					          	  	<input class="form-control input-sm" id="appendedInputButton-03" type="search" placeholder="Enter item name and press enter">
 					          	  	<div class="input-group-btn">
-					          	    	<button class="btn btn-default  dropdown-toggle input-sm" type="button" data-toggle="dropdown"><span class="fui-gear"></span></button>
+					          	    	<button class="btn btn-link  dropdown-toggle input-sm" type="button" data-toggle="dropdown"><span class="fui-gear"></span></button>
 						          	  	<ul class="dropdown-menu dropdown-inverse dropdown-small">
 						                	<li><a href="#fakelink">Set closing group</a></li>
 						                	<li><a href="#fakelink">Set description</a></li>
@@ -110,6 +192,56 @@ body {background-color: #f2f2f2;}
 					          	</div>	
 			              	</td>
 			              </tr>
+			              <tr class="item-closed">
+			                <td class="item-title">
+			                	<span class="fui-list-columned"></span> 
+			                	Articles of Incorporation 
+			                </td>
+			                <td class="status text-right">
+			                	<span class="fui-check-inverted"></span>
+			                </td>
+			              </tr>
+					      <tr class="item-closed">
+			                <td class="item-title item-closed">
+			                	<span class="fui-list-columned"></span> Bylaws 
+			                </td>
+			                <td class="status">
+			                	<span class="fui-check-inverted"></span>
+			                </td>
+			              </tr>
+						  <tr class="item-closed">
+			                <td class="item-title item-closed">
+			                	<span class="fui-list-columned"></span> Shareholders agreement 
+			                </td>
+			                <td class="status">
+			                	<span class="fui-check-inverted"></span>
+
+			                </td>
+			              </tr>
+						  <tr class="item-closed">
+			                <td class="item-title item-open">
+			                	<span class="fui-list-columned"></span> Note purchase agreement 
+			                </td>
+			                <td class="status">
+			                	<span class="fui-check-inverted"></span>
+			                </td>
+			              </tr>
+						  <tr class="spa">
+			                <td class="item-title item-open">
+			                	<span class="fui-list-columned"></span> Stock purchase agreement 
+			                </td>
+			                <td class="status">
+			                	<button class="btn btn-success btn-xs" disabled><span class="fui-check"></span> File Received</button>
+			                </td>
+			              </tr>
+						  <tr class="custom">
+			                <td class="item-title item-open">
+			                	<span class="fui-list-columned"></span> Custom agreement B 
+			                </td>
+			                <td class="status">
+			                	<button class="btn btn-warning btn-xs" disabled><span class="fui-user"></span> Review 66%</button>
+			                </td>
+			              </tr>
 			            </tbody>
 		          </table>
 		      	</div>
@@ -118,14 +250,6 @@ body {background-color: #f2f2f2;}
 				<div class="col-sm-4 item shareholders" style="display:none;">
 					<h3>Shareholders Agreement <a href="#" class="btn btn-xs btn-info pull-right" data-toggle="modal" data-target="#attachWorkflowModal"><span class="fui-list-bulleted"></span> Add Tool</a></h3>
 					<!--Item description. Can only be entered by a lawyer on the deal. A comparable interface is the one used inside Trello.s-->
-					<div id="item-description-toggle"><small class="text-muted"><a href="#" class="link">Enter item description</a></small></div>
-					<div id="item-description" style="display:none;">
-						<textarea class="form-control" rows="3" placeholder="Enter a description for this item"></textarea>
-						<a href="#" class="btn btn-primary btn-xs">Save description</a>
-						<a href="#" class="btn btn-inverse btn-xs">Cancel</a>
-						<a href="#" class="btn btn-link btn-xs pull-right" title="Markdown help">Formatting Help</a>
-					</div>
-
 					<ul class="list-unstyled">
 						<li class="step active first">
 							<h4><span class="fui-question"></span> Add or request file</h4>
@@ -138,70 +262,95 @@ body {background-color: #f2f2f2;}
 				<div class="col-sm-4 item note" style="display:none;">
 					<h3>Note Purchase Agreement</h3>
 					<ul class="list-unstyled">
-						<li class="step active first">
+						<li class="step active first in-progress">
 							<h4><span class="fui-time"></span> Waiting for file from Barry White</h4>
-							<div class="text-left">
-								<a href="#" class="btn btn-info  btn-sm" id="upload-doc"><span class="fui-alert"></span> Remind</a>
-								<a href="#" class="btn btn-warning btn-sm" id="upload-doc"><span class="fui-cross"></span> Cancel</a>
+							<div class="text-left btn-group">
+								<a href="#" class="btn btn-inverse  btn-sm" id="upload-doc"><span class="fui-alert"></span> Remind</a>
+								<a href="#" class="btn btn-default btn-sm" id="upload-doc"><span class="fui-cross"></span> Cancel</a>
 							</div>
 						</li>
 					</ul>
 				</div>
-				<div class="col-sm-4 item spa" style="display:none;">
-					<h3>Stock Purchase Agreement
-					</h3>
-					<ul class="list-unstyled">
-						<li class="step" style="opacity:0.6;">
-							<h4><span class="fui-check"></span> File received from Barry White</h4>
-						</li>
-						<li class="step active first">
-							<h4><span class="fui-document"></span> stock_purchase_agreement.doc</h4>
+				<div class="col-sm-7 item spa" style="display:;">
+					<h3>Stock Purchase Agreement 
+						<div id="item-description-toggle"><small class="text-muted"><a href="#" class="link">Enter item description</a></small></div>
+						<div class="btn-group pull-right">
+							<a href="#" class="btn-inverse btn-xs pull-right" class="dropdown-toggle" data-toggle="dropdown">Options</a>
+							<ul class="dropdown-menu dropdown-inverse">
+								<li><a href="#"><span class="fui-calendar"></span> Set due date</a></li>
+								<li><a href="#"><span class="fui-calendar"></span> Add wizard</a></li>
+								<li><a href="#"><span class="fui-star-2"></span> Set closing group</a></li>
+								<li><a href="#"><span class="fui-loop r"></span> Clone</a></li>
+								<li><a href="#"><span class="fui-trash text-danger"></span> Delete</a></li>
+							</ul>
+						</div>
+					</h3>	
+			
+					<div id="item-description" style="display:none;">
+						<textarea class="form-control" rows="3" placeholder="Enter a description for this item"></textarea>
+						<a href="#" class="btn btn-primary btn-xs">Save description</a>
+						<a href="#" class="btn btn-inverse btn-xs">Cancel</a>
+						<a href="#" class="btn btn-link btn-xs pull-right" title="Markdown help">Formatting Help</a>
+					</div>
+					<div class="row">
+						<div class="col-sm-7">
+							<ul class="list-unstyled item-progress">
+								<li class="">
+									<div class="fui-check"></div> <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash3/t1/c0.0.100.100/p100x100/1014416_10100118438650161_136799916_a.jpg" class="user"> <span>File received from Barry white</span>
+									<div class="file">
+										<div class="col-sm-3 icon icon-doc" style="text-align:center;">
+											<span class="fui-document"></span>
+										</div>
+										<div class="col-sm-9 meta">
+											<a href="#">Document.doc</a>
+										</div>
+									</div> 
+									<div class="btn-group">
+										<a href="#" class="btn btn-xs btn-default">View</a>
+										<a href="#" class="btn btn-xs btn-default">Download</a>
+										<a href="#" class="btn btn-xs btn-default">Edit</a>
+										<a href="#" class="btn btn-xs btn-default">Request Review</a>
+										<a href="#" class="btn btn-xs btn-success pull-right">Mark as Final</a> 
+									</div>
 
-							<div class="text-left">
-								<a href="#" class="btn btn-belize  btn-sm" id="upload-doc"><span class="fui-search"></span> View</a>
-								<a href="#" class="btn btn-belize  btn-sm" id="upload-doc"><span class="fui-triangle-down"></span> Download</a>
-								<a href="#" class="btn btn-user btn-info btn-sm" id="upload-doc"><span class="fui-user"></span> Request Review</a>
-								<a href="#" class="btn btn-success btn-sm" id="upload-doc"><span class="fui-star-2"></span> Final</a>
+								</li>
+							</ul>
+						</div>
+						<div class="col-sm-5 chat">
+							<h4><span class="fui-chat"></span> Discuss</h4>
+							<ul class="list-unstyled">
+								<li class="message me">
+									<div class="media">
+										<a class="user-icon" href="#"><span class="fui-user"></span></a>
+										<div class="media-body">
+										    <div class="msg-body">I've attached the new draft and will shortly send it for review. We'll see what the other side says.</div>
+										    <div class="msg-meta">Adam Bier, 25th June to AH, BC</div>
+										</div>
+									</div>
+								</li>
+								<li class="message other">
+									<div class="media">
+										<a class="user-icon" href="#"><span class="fui-user"></span></a>
+										<div class="media-body">
+										    <div class="msg-body">I've attached the new draft and will shortly send it for review. We'll see what the other side says.</div>
+										    <div class="msg-meta">Adam Bier, 25th June to AH, BC</div>
+										</div>
+									</div>
+								</li>
+								<li class="action">
+									<span class="fui-document"></span> Adam uploaded a new draft.
+								</li>
+							</ul>
+							<div class="new-message">
+								<textarea class="form-control" rows="2" placeholder="Say something about Shareholders Agreement and press enter..."></textarea>
+								
 							</div>
-						</li>
-						<li class="text-center" style="font-size:30px;">
-							&middot; <br />
-							<a href="#" class="btn btn-belize btn-sm">Add new version</a>
-						</li>
-					</ul>
-				</div>
-				<div class="col-sm-4 item custom" style="display:none;">
-					<h3>Stock Purchase Agreement
-					</h3>
-					<ul class="list-unstyled">
-						<li class="step" style="opacity:0.6;">
-							<h4><span class="fui-check"></span> File received from Barry White</h4>
-						</li>
-						<li class="step active first">
-							<h4><span class="fui-document"></span> stock_purchase_agreement.doc</h4>
-
-							<div class="text-left">
-								<ul class="review list-unstyled">
-									<li><strong>REVIEW IN PROGRESS</strong></li>
-									<li class=""><span class="fui-time"></span> Founders Fund <span class="pull-right">(awaiting review)</span></li>
-									<li class="text-success"><span class="fui-check"></span> Alex Halliday <span class="pull-right">Approved</span></li>
-									<li class="text-warning"><span class="fui-time"></span> Veddis Ventures 
-									<span class="pull-right"><strong>Alternative added</strong></span><br /><a href="#" class="btn btn-xs btn-warning">View</a>  <a href="#" class="btn btn-xs btn-warning">Download</a>  <a href="#" class="btn btn-xs btn-warning">Redline</a><br /></li>
-								</ul>
-							</div>
-						</li>
-						<li class="text-center" style="font-size:30px;">
-							&middot; <br />
-							<a href="#" class="btn btn-belize btn-sm">Add new version</a>
-						</li>
-					</ul>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-</div>
-
-
 <!-- Modals -->
 
 <!-- 1. Add Party -->
@@ -331,8 +480,8 @@ $( document ).ready(function() {
 		$("#item-description").toggle();
 	})
 	$("#add-new").click(function(e){ 
-		$(".add-new").toggle();
 		$(".add-new-controls").toggle();
+		$("#add-new").css('opacity','.5');
 	})
 
 

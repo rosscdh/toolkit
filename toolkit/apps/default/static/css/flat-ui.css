@@ -938,40 +938,40 @@ fieldset[disabled] .btn-inverse:active,
 fieldset[disabled] .btn-inverse.active {
   background-color: #444444;
 }
-.btn-belize {
+.btn-silver {
   color: #ffffff;
-  background-color: #2980b9;
+  background-color: #bdc3c7;
 }
-.btn-belize:hover,
-.btn-belize:focus,
-.btn-belize:active,
-.btn-belize.active,
-.open .dropdown-toggle.btn-belize {
+.btn-silver:hover,
+.btn-silver:focus,
+.btn-silver:active,
+.btn-silver.active,
+.open .dropdown-toggle.btn-silver {
   color: #ffffff;
-  background-color: #20638f;
-  border-color: #20638f;
+  background-color: #a1aab0;
+  border-color: #a1aab0;
 }
-.btn-belize:active,
-.btn-belize.active,
-.open .dropdown-toggle.btn-belize {
-  background: #20638f;
+.btn-silver:active,
+.btn-silver.active,
+.open .dropdown-toggle.btn-silver {
+  background: #a1aab0;
 }
-.btn-belize.disabled,
-.btn-belize[disabled],
-fieldset[disabled] .btn-belize,
-.btn-belize.disabled:hover,
-.btn-belize[disabled]:hover,
-fieldset[disabled] .btn-belize:hover,
-.btn-belize.disabled:focus,
-.btn-belize[disabled]:focus,
-fieldset[disabled] .btn-belize:focus,
-.btn-belize.disabled:active,
-.btn-belize[disabled]:active,
-fieldset[disabled] .btn-belize:active,
-.btn-belize.disabled.active,
-.btn-belize[disabled].active,
-fieldset[disabled] .btn-belize.active {
-  background-color: #2980b9;
+.btn-silver.disabled,
+.btn-silver[disabled],
+fieldset[disabled] .btn-silver,
+.btn-silver.disabled:hover,
+.btn-silver[disabled]:hover,
+fieldset[disabled] .btn-silver:hover,
+.btn-silver.disabled:focus,
+.btn-silver[disabled]:focus,
+fieldset[disabled] .btn-silver:focus,
+.btn-silver.disabled:active,
+.btn-silver[disabled]:active,
+fieldset[disabled] .btn-silver:active,
+.btn-silver.disabled.active,
+.btn-silver[disabled].active,
+fieldset[disabled] .btn-silver.active {
+  background-color: #bdc3c7;
 }
 .btn-embossed {
   -webkit-box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.15);
@@ -1016,7 +1016,7 @@ fieldset[disabled] .btn-link:focus {
   border-radius: 6px;
 }
 .btn-sm {
-  padding: 9px 13px;
+  padding: 8px 11px;
   font-size: 13px;
   line-height: 1.385;
   border-radius: 4px;
@@ -1140,7 +1140,7 @@ fieldset[disabled] .btn-link:focus {
   border-radius: 3px;
 }
 .btn-group-sm > .btn {
-  padding: 9px 13px;
+  padding: 8px 11px;
   font-size: 13px;
   line-height: 1.385;
   border-radius: 4px;
@@ -1238,6 +1238,7 @@ fieldset[disabled] .btn-link:focus {
   padding: 15px 28px 18px 12px;
   text-shadow: none;
   display: inline-block;
+  font-size: 18px;
 }
 .navbar .navbar-brand:hover,
 .navbar .navbar-brand:focus {
@@ -1612,7 +1613,7 @@ fieldset[disabled] .btn-link:focus {
 }
 .navbar .navbar-form {
   margin: 0;
-  padding: 20px 5px 19px 20px;
+  padding: 13px 5px 0px 20px;
   max-width: 229px;
 }
 .navbar .navbar-form .form-group {
@@ -3807,6 +3808,7 @@ fieldset[disabled] .input-group .input-group-btn:first-child .btn-default.active
 }
 .dropdown-menu.dropdown-small li {
   font-size: 11px;
+  text-transform: none;
   padding: 0;
 }
 .dropdown-menu.typeahead {
