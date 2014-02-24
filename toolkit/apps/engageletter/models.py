@@ -11,7 +11,7 @@ from uuidfield import UUIDField
 from rulez import registry as rulez_registry
 from storages.backends.s3boto import S3BotoStorage
 
-from toolkit.apps.eightythreeb.managers import AttachmentManger
+from toolkit.core.mixins import IsDeletedMixin
 
 from toolkit.apps.workspace.services import PDFKitService
 from toolkit.apps.workspace.signals import base_signal
@@ -22,9 +22,7 @@ from hello_sign.mixins import HelloSignModelMixin
 from .markers import EngagementLetterMarkers
 ENGAGEMENTLETTER_STATUS = EngagementLetterMarkers().named_tuple(name='ENGAGEMENTLETTER_STATUS')
 
-from .mixins import (IsDeletedMixin,
-                     StatusMixin,
-                     HTMLMixin)
+from .mixins import StatusMixin, HTMLMixin
 
 import os
 
@@ -35,7 +33,7 @@ def _upload_file(instance, filename):
     return 'templates/engageletter-%d-%s%s' % (instance.tool.user.pk, slugify(filename_no_ext), ext)
 
 
-class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, HelloSignModelMixin, WorkspaceToolModelMixin, models.Model):
+class EngagementLetter(StatusMixin, HTMLMixin, HelloSignModelMixin, WorkspaceToolModelMixin, IsDeletedMixin, models.Model):
     """
     Enagement Letter model
     """
@@ -150,9 +148,6 @@ class Attachment(IsDeletedMixin, models.Model):
     tool = models.ForeignKey('engageletter.EngagementLetter')
     attachment = models.FileField(upload_to=_upload_file, blank=True, storage=S3BotoStorage())
     body = models.TextField()
-    is_deleted = models.BooleanField(default=False)
-
-    objects = AttachmentManger()
 
     def can_delete(self, user):
         return user == self.tool.user

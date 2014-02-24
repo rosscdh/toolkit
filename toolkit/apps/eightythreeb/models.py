@@ -14,19 +14,20 @@ from decimal import Decimal
 
 from rulez import registry as rulez_registry
 
+from toolkit.core.mixins import IsDeletedMixin
+
 from toolkit.apps.workspace.signals import base_signal
 from toolkit.apps.workspace.mixins import WorkspaceToolModelMixin
 
 from .markers import EightyThreeBSignalMarkers
 EIGHTYTHREEB_STATUS = EightyThreeBSignalMarkers().named_tuple(name='EIGHTYTHREEB_STATUS')
 
-from .mixins import (IsDeletedMixin,
-                     StatusMixin,
+from .mixins import (StatusMixin,
                      IRSMixin,
                      HTMLMixin,
                      TransferAndFilingDatesMixin,
                      USPSReponseMixin)
-from .managers import EightyThreeBManager, AttachmentManger
+from .managers import EightyThreeBManager
 
 
 def _upload_file(instance, filename):
@@ -35,7 +36,7 @@ def _upload_file(instance, filename):
     return '83b/%d-%s%s' % (instance.eightythreeb.user.pk, slugify(filename_no_ext), ext)
 
 
-class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferAndFilingDatesMixin, WorkspaceToolModelMixin, models.Model):
+class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferAndFilingDatesMixin, WorkspaceToolModelMixin, IsDeletedMixin, models.Model):
     """
     83b Form to be associated with a Workspace and a particular user
     """
@@ -128,9 +129,6 @@ rulez_registry.register("can_delete", EightyThreeB)
 class Attachment(IsDeletedMixin, models.Model):
     eightythreeb = models.ForeignKey('eightythreeb.EightyThreeB')
     attachment = models.FileField(upload_to=_upload_file, blank=True, storage=S3BotoStorage())
-    is_deleted = models.BooleanField(default=False)
-
-    objects = AttachmentManger()
 
     def can_delete(self, user):
         return user == self.eightythreeb.user
