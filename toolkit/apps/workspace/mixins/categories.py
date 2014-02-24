@@ -55,13 +55,15 @@ class CategoriesMixin(object):
         """
         Add a new value to the categories set
         """
+        value = value.strip()
         categories = self.categories
 
-        if value not in categories:
-            # append the value
-            categories.append(value)
-            # and then set our groups to the new list
-            self.categories = categories
+        if value not in ['', None]:
+            if value not in categories:
+                # append the value
+                categories.append(value)
+                # and then set our groups to the new list
+                self.categories = categories
 
     def delete_category(self, value):
         """
@@ -69,33 +71,39 @@ class CategoriesMixin(object):
         """
         self.remove_category(value=value)
 
-    def remove_category(self, value):
+    def remove_category(self, value, instance=None):
         """
         Remove an existing value from the set
         but only if there are no items that have that value
         """
+        value = value.strip()
         categories = self.categories
 
-        if value not in categories:
-            #
-            # did not find this value in the set
-            #
-            raise CategoryDoesNotExist
-
-        else:
-            #
-            # Now check to see if any other items are still using it
-            #
-            num_items_using_category = self.item_set.filter(category=value).count()
-
-            if num_items_using_category > 0:
+        if value not in ['', None]:
+            if value not in categories:
                 #
-                # There are still items using this category
+                # did not find this value in the set
                 #
-                raise CategoryStillInUse
+                raise CategoryDoesNotExist
 
             else:
-                # remove it
-                categories.remove(value)
-                # update the set
-                self.categories = categories
+                #
+                # Now check to see if any other items are still using it
+                #
+                instance_pk = instance.pk if instance is not None else None
+                # exclude the instance if present
+                num_items_using_category = self.item_set  \
+                                               .exclude(pk=instance_pk)  \
+                                               .filter(category=value).count()
+
+                if num_items_using_category > 0:
+                    #
+                    # There are still items using this category
+                    #
+                    raise CategoryStillInUse
+
+                else:
+                    # remove it
+                    categories.remove(value)
+                    # update the set
+                    self.categories = categories
