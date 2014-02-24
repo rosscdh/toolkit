@@ -10,13 +10,21 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         # Adding field 'Workspace.matter_code'
         db.add_column(u'workspace_workspace', 'matter_code',
-                      self.gf('django.db.models.fields.SlugField')(default='', max_length=50, blank=True),
+                      self.gf('django.db.models.fields.SlugField')(max_length=50, null=True, blank=True),
+                      keep_default=False)
+
+        # Adding field 'Workspace.client'
+        db.add_column(u'workspace_workspace', 'client',
+                      self.gf('django.db.models.fields.related.ForeignKey')(to=orm['client.Client'], null=True, blank=True),
                       keep_default=False)
 
 
     def backwards(self, orm):
         # Deleting field 'Workspace.matter_code'
         db.delete_column(u'workspace_workspace', 'matter_code')
+
+        # Deleting field 'Workspace.client'
+        db.delete_column(u'workspace_workspace', 'client_id')
 
 
     models = {
@@ -49,6 +57,12 @@ class Migration(SchemaMigration):
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "u'user_set'", 'blank': 'True', 'to': u"orm['auth.Permission']"}),
             'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
         },
+        u'client.client': {
+            'Meta': {'object_name': 'Client'},
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50'})
+        },
         u'contenttypes.contenttype': {
             'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
             'app_label': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
@@ -77,13 +91,14 @@ class Migration(SchemaMigration):
         },
         u'workspace.workspace': {
             'Meta': {'ordering': "['name', '-pk']", 'object_name': 'Workspace'},
-            'data': ('jsonfield.fields.JSONField', [], {'default': '{}', 'blank': 'True'}),
+            'client': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['client.Client']", 'null': 'True', 'blank': 'True'}),
+            'data': ('jsonfield.fields.JSONField', [], {'default': '{}'}),
             'date_created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'db_index': 'True', 'blank': 'True'}),
             'date_modified': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'auto_now_add': 'True', 'db_index': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_deleted': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'db_index': 'True'}),
             'lawyer': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'lawyer_workspace'", 'null': 'True', 'to': u"orm['auth.User']"}),
-            'matter_code': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'blank': 'True'}),
+            'matter_code': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'null': 'True', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'participants': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.User']", 'symmetrical': 'False', 'blank': 'True'}),
             'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'blank': 'True'}),
