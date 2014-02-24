@@ -64,12 +64,14 @@ class CategoriesMixin(object):
                 categories.append(value)
                 # and then set our groups to the new list
                 self.categories = categories
+            return self.categories
+        return False
 
     def delete_category(self, value):
         """
         Alias
         """
-        self.remove_category(value=value)
+        return self.remove_category(value=value)
 
     def remove_category(self, value, instance=None):
         """
@@ -107,3 +109,5 @@ class CategoriesMixin(object):
                     categories.remove(value)
                     # update the set
                     self.categories = categories
+                return self.categories
+        return False
