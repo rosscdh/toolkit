@@ -14,10 +14,10 @@ from uuidfield import UUIDField
 from jsonfield import JSONField
 
 from .managers import WorkspaceManager
-from .mixins import ClosingGroupsMixin
+from .mixins import ClosingGroupsMixin, CategoriesMixin
 
 
-class Workspace(IsDeletedMixin, ClosingGroupsMixin, models.Model):
+class Workspace(IsDeletedMixin, ClosingGroupsMixin, CategoriesMixin, models.Model):
     """
     Workspaces are areas that allow multiple tools
     to be associated with a group of users
@@ -26,7 +26,7 @@ class Workspace(IsDeletedMixin, ClosingGroupsMixin, models.Model):
     slug = models.SlugField(blank=True)
     matter_code = models.SlugField(blank=True)
     lawyer = models.ForeignKey('auth.User', null=True, related_name='lawyer_workspace')  # Lawyer that created this workspace
-    client = models.ForeignKey('client.Client', null=True)
+    client = models.ForeignKey('client.Client', null=True, blank=True)
     participants = models.ManyToManyField('auth.User', blank=True)
     tools = models.ManyToManyField('workspace.Tool', blank=True)
     data = JSONField(default={})
