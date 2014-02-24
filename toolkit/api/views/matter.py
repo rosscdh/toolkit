@@ -62,6 +62,115 @@ class MatterItemsQuerySetMixin(MatterMixin):
 Custom Api Endpoints
 """
 
+class SpecificAttributeMixin(object):
+    """
+    mixin to allow use of specific attribute mixin
+    """
+    specific_attribute = None
+
+    def __init__(self, *args, **kwargs):
+        if self.specific_attribute is None:
+            raise Exception('You must define a self.specific_attribute attrib that exists on the object')
+        super(SpecificAttributeMixin, self).__init__(*args, **kwargs)
+
+    def get_object(self):
+        self.object = super(SpecificAttributeMixin, self).get_object()
+        return getattr(self.object, self.specific_attribute, None)
+
+
+"""
+Matter specific endpoints
+"""
+
+class CategoryView(SpecificAttributeMixin,
+                   generics.DestroyAPIView,
+                   generics.CreateAPIView,
+                   generics.RetrieveAPIView,
+                   MatterMixin,):
+    """
+    /matters/:matter_slug/category/:category (GET,POST,DELETE)
+        [lawyer] can assign an item to a category
+    
+    view/create/delete a specific closing_group
+    """
+    model = Workspace
+    serializer_class = MatterSerializer
+    lookup_field = 'slug'
+    lookup_url_kwarg = 'matter_slug'
+
+    specific_attribute = 'categories'
+
+    def retrieve(self, request, **kwargs):
+        obj = self.get_object()
+        return Response(obj)
+
+    def create(self, request, **kwargs):
+        self.get_object()
+
+        cats = self.object.add_category(self.kwargs.get('category'))
+        self.object.save(update_fields=['data'])
+
+        return Response(cats)
+
+    def delete(self, request, **kwargs):
+        cats = self.get_object()
+        category = self.kwargs.get('category')
+
+        try:
+            cats = self.object.remove_category(category, instance=self.object)
+            self.object.save(update_fields=['data'])
+        except Exception as e:
+            logger.info('Could not delete category: %s due to: %s' % (category, e,))
+
+        return Response(cats)
+
+
+class ClosingGroupView(SpecificAttributeMixin,
+                       generics.DestroyAPIView,
+                       generics.CreateAPIView,
+                       generics.RetrieveAPIView,
+                       MatterMixin,):
+    """
+    /matters/:matter_slug/closing_group/:group (GET,POST,DELETE)
+        [lawyer] can assign an item to a closing group
+
+    view/create/delete a specific closing_group
+    """
+    model = Workspace
+    serializer_class = MatterSerializer
+    lookup_field = 'slug'
+    lookup_url_kwarg = 'matter_slug'
+
+    specific_attribute = 'closing_groups'
+
+    def retrieve(self, request, **kwargs):
+        obj = self.get_object()
+        return Response(obj)
+
+    def create(self, request, **kwargs):
+        self.get_object()
+        closing_group = self.kwargs.get('closing_group')
+
+        closing_groups = self.object.add_closing_group(closing_group)
+        self.object.save(update_fields=['data'])
+
+        return Response(closing_groups)
+
+    def delete(self, request, **kwargs):
+        closing_groups = self.get_object()
+        closing_group = self.kwargs.get('closing_group')
+
+        try:
+            closing_groups = self.object.remove_closing_group(closing_group, instance=self.object)
+            self.object.save(update_fields=['data'])
+        except Exception as e:
+            logger.info('Could not delete closing_group: %s due to: %s' % (closing_group, e,))
+
+        return Response(closing_groups)
+
+"""
+Matter item endpoints
+"""
 
 class MatterItemsView(generics.ListAPIView, MatterMixin):
     """
