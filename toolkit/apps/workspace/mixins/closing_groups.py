@@ -56,7 +56,7 @@ class ClosingGroupsMixin(object):
         """
         Add a new value to the closing_groups set
         """
-        value = value.strip()
+        value = value.strip() if type(value) in [str, unicode] else value
         closing_groups = self.closing_groups
 
         if value not in ['', None]:
@@ -79,7 +79,7 @@ class ClosingGroupsMixin(object):
         Remove an existing value from the set
         but only if there are no items that have that value
         """
-        value = value.strip()
+        value = value.strip() if type(value) in [str, unicode] else value
         closing_groups = self.closing_groups
 
         if value not in ['', None]:
