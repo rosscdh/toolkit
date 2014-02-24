@@ -29,6 +29,7 @@ class Workspace(IsDeletedMixin, ClosingGroupsMixin, CategoriesMixin, models.Mode
     client = models.ForeignKey('client.Client', null=True, blank=True)
     participants = models.ManyToManyField('auth.User', blank=True)
     tools = models.ManyToManyField('workspace.Tool', blank=True)
+
     data = JSONField(default={})
 
     date_created = models.DateTimeField(auto_now=False, auto_now_add=True, db_index=True)
