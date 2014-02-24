@@ -65,12 +65,14 @@ class ClosingGroupsMixin(object):
                 closing_groups.append(value)
                 # and then set our groups to the new list
                 self.closing_groups = closing_groups
+            return self.closing_groups
+        return False
 
     def delete_closing_group(self, value):
         """
         Alias
         """
-        self.remove_closing_group(value=value)
+        return self.remove_closing_group(value=value)
 
     def remove_closing_group(self, value, instance=None):
         """
@@ -108,3 +110,5 @@ class ClosingGroupsMixin(object):
                     closing_groups.remove(value)
                     # update the set
                     self.closing_groups = closing_groups
+                return self.closing_groups
+        return False
