@@ -33,7 +33,7 @@ http://blog.auth0.com/2014/01/07/angularjs-authentication-with-cookies-vs-token/
 Endpoint Overview
 =================
 
-__ prefix: /api/v2/ __
+__ prefix: /api/v1/ __
 
 Account
 =======
@@ -76,16 +76,6 @@ In order to provide feedback and initiate workflows
     Allow the [lawyer] user to list, and update an existing matter ("workspace") object
 
 
-/matters/:matter_slug/items/ (GET,POST)
-    Allow the [lawyer,customer] user to list, and create matter items
-
-
-/matters/:matter_slug/activity/ (GET,POST) - these are created within the system and as part of the system flows
-    Allow the [lawyer,customer] user to list activity related to a matter
-    POST allows the angular service to send events that are then processed as activity stream items
-    @TODO define the params
-
-
 Matter Items
 ============
 
@@ -110,14 +100,9 @@ that particular revisions.
 
 ### Reviewers
 
-<!-- /matters/:matter_slug/items/:item_slug/revision/reviewers (GET,POST
-    [lawyer,customer] to list and create reviewers 
-    Method not required as we get the reviewers from the GET :item_slug/revision
-    JSON payload
--->
 /matters/:matter_slug/items/:item_slug/revision/reviewer/:username (GET,POST,DELETE)
     [lawyer,customer] to view, create and delete reviewers
-/matters/:matter_slug/items/:item_slug/revision/reviewers/remind (GET)
+/matters/:matter_slug/items/:item_slug/revision/reviewers/remind (POST)
     Send reminder emails to any outstanding reviewers
 
 ** Historic revision reviewers **
@@ -129,46 +114,36 @@ that particular revisions.
 /matters/:matter_slug/items/:item_slug/revision/signatory/:username (GET,POST,DELETE)
     [lawyer,customer] to list,create and delete signatories
 
-/matters/:matter_slug/items/:item_slug/revision/signatories/remind (GET)
+/matters/:matter_slug/items/:item_slug/revision/signatories/remind (POST)
     [lawyer,customer] Send reminder emails to any outstanding signatories
 
 ** Historic revision signatures **
 /matters/:matter_slug/items/:item_slug/revisions/:number/ (GET)
 
 
-
 Item details
 ============
 
-Once we know an items pk/slug/url we can request specific info about them
+Once we know an items id we can request specific info about them
+
+### Categories
+/matters/:matter_slug/items/:item_slug/category/:category (GET,POST,DELETE)
+    [lawyer] can assign an item to a category
 
 
-/items/:slug/comments/ (GET,POST)
+### Closing Groups
+/matters/:matter_slug/items/:item_slug/closinggroup/:group (GET,POST,DELETE)
+    [lawyer] can assign an item to a closing group
+
+### Comments
+/matters/:matter_slug/items/:item_slug/comments/ (GET,POST)
     Allow [lawyer,customer] user to list and create comments on an item object
 
-/items/:slug/comments/:comment (GET,PATCH,DELETE)
+/matters/:matter_slug/items/:item_slug/comments/:comment (GET,PATCH,DELETE)
     Allow [lawyer,customer] user to list, update and delete comments
 
-
-/items/:slug/activity/ (GET) 
+### Activity
+/matters/:matter_slug/items/:item_slug/activity/ (GET) 
     Allow [lawyer,customer] user to list activity relating to an item object
     Note: These are created within the system and as part
     of the backend.
-
-
-Revisions
-===========
-
-/revisions/ (GET)
-    Allow user to list their attachment objects
-
-/revisions/:pk/ (GET,PATCH,DELETE)
-    Allow user to view and update the most recent revision (defaults to highest
-    revision)
-
-/revisions/:pk/comments/ (GET,POST)
-    Allow [lawyer,customer,reviewer,signatory] user to list and create comments on an attachment
-    object
-
-/revisions/:pk/activity/ (GET)
-    Allow [lawyer,customer,reviewer,signatory] user to list activity on an attachment
