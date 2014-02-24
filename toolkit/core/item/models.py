@@ -30,8 +30,8 @@ class Item(models.Model):
     # enables Forking and Cloning for document automation
     parent = models.ForeignKey('item.Item', blank=True, null=True)
 
-    closing_group = models.CharField(max_length=128, null=True, db_index=True)
-    category = models.CharField(max_length=128, null=True, db_index=True)
+    closing_group = models.CharField(max_length=128, null=True, blank=True, db_index=True)
+    category = models.CharField(max_length=128, null=True, blank=True, db_index=True)
 
     # if is final is true, then the latest_revision will be available for sending for signing
     is_final = models.BooleanField(default=False, db_index=True)
@@ -77,3 +77,8 @@ class Item(models.Model):
 rulez_registry.register("can_read", Item)
 rulez_registry.register("can_edit", Item)
 rulez_registry.register("can_delete", Item)
+
+"""
+Signals
+"""
+from .signals import (on_item_save_category, on_item_save_closing_group,)
