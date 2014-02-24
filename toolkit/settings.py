@@ -231,6 +231,7 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.JSONPRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
     ),
     'DEFAULT_MODEL_SERIALIZER_CLASS': (
         'rest_framework.serializers.HyperlinkedModelSerializer',
