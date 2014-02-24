@@ -39,7 +39,7 @@ router.register(r'revisions', RevisionEndpoint)
 """
 Generics
 """
-urlpatterns = patterns('',
+urlpatterns = router.urls + patterns('',
     #
     # Matter Specific
     #
