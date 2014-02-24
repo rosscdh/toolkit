@@ -6,7 +6,7 @@ from toolkit.core.mixins.managers import isDeletedQuerySet
 
 class WorkspaceManager(models.Manager):
     def get_query_set(self):
-        return isDeletedQuerySet(self.model, using=self._db).filter(is_deleted=False)
+        return super(WorkspaceManager, self).get_query_set().filter(is_deleted=False)
 
     def mine(self, user):
         if not user.is_authenticated():
