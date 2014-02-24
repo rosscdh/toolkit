@@ -7,13 +7,17 @@ from .views import UserEndpoint
 from .views import AccountEndpoint
 from .views import ClientEndpoint
 from .views import (MatterEndpoint,
-                    MatterItemsView,
+                    MatterCategoryView,
+                    MatterClosingGroupView,)
+
+from .views import (MatterItemsView,
                     MatterItemView,
                     MatterItemCurrentRevisionView,
                     ItemRevisionReviewerView,
                     ItemRevisionSignatoryView,
                     RemindReviewers,
                     RemindSignatories)
+
 from .views import ItemEndpoint
 from .views import RevisionEndpoint
 #from .views import WorkflowEndpoint
@@ -35,7 +39,13 @@ router.register(r'revisions', RevisionEndpoint)
 """
 Generics
 """
-urlpatterns = router.urls + patterns('',
+urlpatterns = patterns('',
+    #
+    # Matter Specific
+    #
+    url(r'^matters/(?P<matter_slug>[\w-]+)/category/(?P<category>[\w-]+)/$', MatterCategoryView.as_view(), name='matter_category'),
+    url(r'^matters/(?P<matter_slug>[\w-]+)/closing_group/(?P<closing_group>[\w-]+)/$', MatterClosingGroupView.as_view(), name='matter_closing_group'),
+
     #
     # Matter Items
     #
