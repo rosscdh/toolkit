@@ -3,6 +3,36 @@
   border-top-color: #444444 !important;
 }
 /* New stuff */
+.navbar.checklist-nav li a {
+  font-size: 15px;
+}
+.navbar.checklist-nav li a [class*="fui-"] {
+  font-size: 20px;
+  margin-top: -2px;
+}
+.navbar.checklist-nav li a .navbar-new {
+  top: 18px;
+  right: 3px;
+  font-size: 11px;
+  padding-top: 1px;
+}
+.navbar.checklist-nav li span {
+  margin-right: 7px;
+  font-size: 14px;
+}
+.navbar.checklist-nav li img.user {
+  width: 26px;
+  border-radius: 15px;
+  margin-top: -9px;
+  margin-bottom: -5px;
+  opacity: 0.6;
+}
+.navbar.checklist-nav .navbar-form .form-control {
+  border: 0px solid transparent;
+}
+.navbar.checklist-nav .input-group .btn {
+  border: none!important;
+}
 #checklist {
   background-color: #f2f2f2;
 }
@@ -20,7 +50,7 @@
 }
 #checklist table.checklist tr.item-closed {
   color: #ffffff;
-  opacity: 1;
+  opacity: 0.8;
   background-color: #69dd9a;
   padding-top: 10px;
 }
@@ -41,6 +71,13 @@
 }
 #checklist table.checklist th {
   background-color: #f2f2f2;
+}
+#checklist table.checklist th.category-controls .btn-group {
+  opacity: 0.5;
+  transition: opacity 0.3s;
+}
+#checklist table.checklist th:hover .btn-group {
+  opacity: 1;
 }
 #checklist table.checklist tr th {
   text-transform: uppercase;
@@ -110,46 +147,6 @@
   font-size: 14px;
   text-align: right;
 }
-#checklist table.checklist .attachments {
-  font-size: 14px;
-  color: #42d0e5;
-}
-#checklist table.checklist .msg {
-  width: 20px;
-  color: white;
-}
-#checklist table.checklist .msg .new {
-  color: #e74c3c;
-}
-#checklist table.checklist .msg .new span {
-  font-size: 16px;
-}
-#checklist table.checklist div.what {
-  background-color: #42d0e5;
-  border-left: 2px solid #1ec3db;
-  color: white;
-  font-size: 12px;
-  display: inline;
-  height: 20px;
-  padding: 5px;
-  margin-right: 5px;
-}
-#checklist table.checklist div.what span {
-  font-size: 12px;
-}
-#checklist table.checklist div.what2 {
-  background-color: #6bdb7e;
-  border-left: 2px solid #46d25e;
-  color: white;
-  font-size: 12px;
-  display: inline;
-  height: 20px;
-  padding: 5px;
-  margin-right: 0px;
-}
-#checklist table.checklist div.what2 span {
-  font-size: 12px;
-}
 #checklist table.checklist td.status {
   padding-top: 5px;
   padding-bottom: 0px;
@@ -177,94 +174,192 @@
   width: 100%;
 }
 #checklist div.item {
-  background-color: #2980b9;
-  min-height: 800px;
-  color: white;
+  background-color: #e4e6e8;
+  border-left: 1px solid #dee1e3;
+  min-height: 600px;
+  color: #3d4448;
+}
+#checklist div.item hr {
+  border-color: #d9dcde;
 }
 #checklist div.item .text-muted {
   opacity: 0.5;
 }
 #checklist div.item a.link {
-  color: white;
+  color: #545e64;
+}
+#checklist div.item a.link:hover {
   text-decoration: underline;
 }
 #checklist div.item .btn-link {
-  color: white;
+  color: #3d4448;
 }
 #checklist div.item small {
   font-size: 13px;
 }
 #checklist div.item h3 {
   font-size: 19px;
-  margin-bottom: 13px;
+  padding-bottom: 16px;
+  background-color: #d9dcde;
+  margin-bottom: 0px;
+  margin: 0px -15px 0px -15px;
+  padding: 20px 15px 20px 15px;
+}
+#checklist div.item .dropdown-inverse a {
+  color: white;
 }
 #checklist div.item input:focus,
 #checklist div.item textarea:focus {
-  border-color: #69a6ce;
+  border-color: #a5afaf;
+}
+#checklist div.item #item-description-toggle {
+  display: inline;
+  padding-left: 10px;
 }
 #checklist div.item #item-description textarea {
   margin-top: 10px;
   margin-bottom: 3px;
   font-size: 12px;
 }
-#checklist div.item ul li {
-  padding-left: 15px;
+#checklist div.item ul.item-progress {
+  padding-top: 20px;
 }
-#checklist div.item ul li.step h4 {
-  background-color: #34495e;
-  font-size: 14px;
-  padding: 8px 0px 9px 15px;
-  border-radius: 6px;
-  margin-left: -15px;
-  margin-bottom: 10px;
+#checklist div.item ul.item-progress li {
+  padding-left: 7px;
+  padding-right: 10px;
+  /* border-left: 1px solid lighten(@gray-light, 10%); */
+
+  margin-left: 30px;
+  padding-bottom: 25px;
+  font-size: 15px;
+  font-weight: bold;
+  clear: both;
+  color: #545e64;
+  opacity: 0.4;
 }
-#checklist div.item ul li.step p {
-  font-size: 13px;
-  line-height: 1.2em;
-  margin-left: 0px;
-  color: #cadfee;
+#checklist div.item ul.item-progress li img.user {
+  width: 32px;
+  margin-top: -5px;
+  border-radius: 30px;
 }
-#checklist ul.review {
-  padding: 15px 0px;
-  width: 90%;
-  margin-top: -14px;
-  background-color: #ffffff;
-  border-radius: 0px 0px 10px 10px;
-  color: #666;
-}
-#checklist ul.review li {
-  padding: 6px;
-  font-size: 14px;
-  border-top: 1px solid #f1f1f1;
-}
-#checklist ul.review li .btn {
-  float: right;
-  margin-left: 10px;
-  margin-bottom: 10px;
-}
-#checklist .checklist-switch-wrap {
-  padding: 10px 0px 0px 0px;
-}
-#checklist .checklist-switch-wrap .filter-title {
-  font-size: 13px;
-  color: #ccc;
-}
-#checklist .checklist-switch-wrap .checklist-switch .btn {
-  opacity: 0.65;
-}
-#checklist .checklist-switch-wrap .checklist-switch .btn.active {
+#checklist div.item ul.item-progress li:last-child {
   opacity: 1;
 }
-#checklist .checklist-switch-wrap .checklist-switch .btn.first {
-  border-radius: 15px 0px 0px 15px;
-  margin-right: 1px;
+#checklist div.item ul.item-progress div[class*="fui-"] {
+  color: white;
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  padding-top: 3px;
+  margin-top: -5px;
+  margin-bottom: -5px;
+  margin-left: -36px;
+  margin-right: 3px;
+  border-radius: 20px;
 }
-#checklist .checklist-switch-wrap .checklist-switch .btn.last {
-  border-radius: 0px 15px 15px 0px;
-  margin-right: 1px;
+#checklist div.item ul.item-progress div.fui-check {
+  background-color: #6bdb7e;
 }
-body {
-  word-spacing: 2px;
+#checklist div.item ul.item-progress div.fui-time {
+  background-color: #f1c40f;
+}
+#checklist div.item ul.item-progress div.file {
+  margin: 10px 0px 10px 0px;
+  border: 1px solid #e1e4e5;
+  padding-left: 10px;
+  background-color: white;
+  overflow: auto;
+}
+#checklist div.item ul.item-progress div.file .icon {
+  font-size: 30px;
+  text-align: center;
+  border-right: 1px solid #f4f5f6;
+}
+#checklist div.item ul.item-progress div.file .meta {
+  font-size: 16px;
+  padding-top: 14px;
+}
+#checklist div.item ul.item-progress div.file .meta a {
+  color: #869198;
+}
+#checklist div.chat {
+  background-color: #bdc3c7;
+  min-height: 600px;
+  border-left: 1px solid #b5bbc0;
+}
+#checklist div.chat h4 {
+  font-size: 14px;
+  color: #f4f5f6;
+  margin-bottom: 0px;
+  text-transform: uppercase;
+}
+#checklist div.chat h4 span {
+  font-size: 12px;
+}
+#checklist div.chat ul {
+  padding-top: 27px;
+}
+#checklist div.chat ul li .media {
+  padding-bottom: 0px;
+}
+#checklist div.chat ul li.message {
+  margin-bottom: 0px;
+  padding: 3px 0px 3px 0px;
+}
+#checklist div.chat ul li.message .user-icon {
+  float: left;
+  padding-right: 5px;
+  color: white;
+}
+#checklist div.chat ul li.message .media-body .msg-body {
+  font-size: 12px;
+  line-height: 1.45em;
+  margin-bottom: 0px;
+  background-color: white;
+  padding: 10px 12px;
+  border-bottom: 1px solid #e6e6e6;
+}
+#checklist div.chat ul li.message .media-body .msg-meta {
+  font-size: 11px;
+  color: #e8eaeb;
+  line-height: 15px;
+  margin-top: 5px;
+  margin-bottom: 6px;
+}
+#checklist div.chat ul li.message.me .user-icon {
+  float: right;
+  padding-right: 0px;
+  color: #3498db;
+  padding-left: 5px;
+}
+#checklist div.chat ul li.message.me .msg-body {
+  background-color: #3498db;
+  color: white;
+  border-bottom: 2px solid #217dbb;
+  text-rendering: optimizeLegibility;
+}
+#checklist div.chat ul li.message.me .msg-meta {
+  text-align: right;
+}
+#checklist div.chat ul li.action {
+  border: 1px solid #d0d5d7;
+  padding: 3px 6px;
+  color: #eff0f1;
+  font-size: 12px;
+}
+#checklist div.chat div.new-message {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding-right: 30px;
+}
+#checklist div.chat div.new-message textarea {
+  font-size: 12px;
+  transition: height 0.3s;
+  height: 60px;
+}
+#checklist div.chat div.new-message textarea:focus {
+  height: 120px;
 }
 .breadcrumbs {
   background-color: #f4f4f4;
@@ -361,6 +456,15 @@ body {
 .popover-content {
   font-size: 14px;
   line-height: 1.226;
+}
+.icon-pdf {
+  color: #e74b3c;
+}
+.icon-doc {
+  color: #2e75b6;
+}
+.icon-xls {
+  color: #e74b3c;
 }
 .page-header h4 {
   font-size: 28px;
