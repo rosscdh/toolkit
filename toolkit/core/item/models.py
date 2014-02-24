@@ -44,6 +44,9 @@ class Item(models.Model):
     date_created = models.DateTimeField(auto_now=False, auto_now_add=True, db_index=True)
     date_modified = models.DateTimeField(auto_now=True, auto_now_add=True, db_index=True)
 
+    def __unicode__(self):
+        return u'%s' % self.name
+
     @property
     def display_status(self):
         return ITEM_STATUS.get_desc_by_value(self.status)
