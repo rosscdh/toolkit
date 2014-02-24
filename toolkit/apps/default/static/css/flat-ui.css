@@ -1957,6 +1957,12 @@ label {
   font-weight: normal;
   line-height: 1.8953031100000002em;
   margin-bottom: 0px;
+  font-size: 15px;
+  font-weight: bold;
+}
+label .asteriskField {
+  color: #95a5a6;
+  padding-left: 2px;
 }
 .form-control:-moz-placeholder {
   color: #b7b7b7;
