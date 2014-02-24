@@ -17,7 +17,7 @@ ITEM_STATUS = get_namedtuple_choices('ITEM_STATUS', (
 
 class Item(models.Model):
     """
-    Matter.item (workspace tool)
+    Matter.item
     """
     slug = UUIDField(auto=True, db_index=True)
     name = models.CharField(max_length=255)
@@ -30,11 +30,12 @@ class Item(models.Model):
     # enables Forking and Cloning for document automation
     parent = models.ForeignKey('item.Item', blank=True, null=True)
 
+    closing_group = models.CharField(max_length=128, null=True, db_index=True)
+    category = models.CharField(max_length=128, null=True, db_index=True)
+
     # if is final is true, then the latest_revision will be available for sending for signing
     is_final = models.BooleanField(default=False, db_index=True)
-
-    closing_group = models.CharField(max_length=128, null=True)
-
+    # this item is complete and signed off on
     is_complete = models.BooleanField(default=False, db_index=True)
 
     data = JSONField(default={})
