@@ -11,7 +11,9 @@ class AccountSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('last_login', 'username', 'first_name', 'last_name', 'email', 'date_joined', 'user_class',)
+        fields = ('username', 'first_name', 'last_name', 'email',
+                  'user_class',
+                  'last_login', 'date_joined',)
 
 
 class PasswordSerializer(serializers.ModelSerializer):
