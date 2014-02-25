@@ -1,4 +1,9 @@
 
+html,body, div.full
+{
+  height: 100%;
+}
+
 
 /* New stuff */
 .navbar {
@@ -39,8 +44,14 @@
 	}
 }
 
-#checklist {
+#checklist, #closing {
 	background-color: #f2f2f2;
+	height:100%;
+	margin-top:-55px;
+	padding-top:55px;
+	.checklist-col {
+		overflow-y:scroll;
+	}
 	h5 {
 		font-size:20px;
 		text-transform: uppercase;
@@ -48,6 +59,7 @@
 	}
 	table.checklist {
 		background-color:white;
+		margin-top:20px;
 		tr {
 			border-top:5px solid #f2f2f2;
 			cursor:pointer;
@@ -72,30 +84,39 @@
 					color:white;
 					opacity:1;
 				}
+				td.status .btn-success, td.status .btn-warning {
+					background-color:transparent;
+					color:white;
+					border-color:white;
+				}
+
 			}
 		}
 		th {
 			background-color:#f2f2f2;
 			&.category-controls {
 				.btn-group {
-					opacity:0.5;
-					transition: opacity 0.3s;
-				}
+					.dropdown-menu {
+					}
+				} 
 			}
 			&:hover {
 				.btn-group {
-					opacity: 1;
 				}
 			}
-		}
-		tr th {
+			&.category {
+				padding:13px 0px 0px 0px;
+			}
 			text-transform: uppercase;
-			padding:8px 0px 2px 0px;
+			padding:8px 0px 0px 0px;
 			color: #AAA;
 			font-size:13px;
 			&.category {
 				color:#666;
 				font-size:14px;
+			}
+			td {
+				padding-top:20px;
 			}
 		}
 		tr td {
@@ -153,20 +174,26 @@
 					}
 				}
 			}
-			&.status {
-				font-size:14px;
-				text-align:right;
-			}
-
 		}
 		td.status {
 			padding-top:5px;
 			padding-bottom:0px;
+			text-align:right;
 			.fui-check-inverted {
 				padding-top:4px;
 			}
 			a {
 				text-decoration:underline;
+			}
+			.btn-success {
+				background-color:white;
+				color:lighten(@nephritis, 20%);
+				border:1px solid lighten(@nephritis, 40%);
+			}
+			.btn-warning {
+				background-color:white;
+				color:lighten(@brand-warning, 3%);
+				border:1px solid lighten(@brand-warning, 30%);
 			}
 		}
 		td.add-new {
@@ -194,7 +221,7 @@
 		background-color:lighten(@silver, 14%);
 		border-left: 1px solid lighten(@silver, 12%);
 		// Todo, make height 100%;
-		min-height:600px;
+		height:100%;
 		hr {
 			border-color: lighten(@silver, 10%);
 		}
@@ -230,7 +257,7 @@
 		}
 		#item-description-toggle {
 			display:inline;
-			padding-left:10px;
+			padding-top:10px;
 		}
 		#item-description {
 			textarea {
@@ -240,26 +267,41 @@
 			}
 		}
 		ul.item-progress {
-			padding-top:20px;
+			padding-top:10px;
 			li {
 				padding-left:7px;
 				padding-right:10px;
 				/* border-left: 1px solid lighten(@gray-light, 10%); */
 				margin-left: 30px;
-				padding-bottom: 25px;
-
-				font-size:15px;
+				padding-bottom: 15px;
+				padding-top:15px;
+				font-size:16px;
 				font-weight:bold;
 				clear:both;
 				color: darken(@silver, 40%);
 				opacity: 0.4;
+				transition: opacity 0.3s;
+				&:hover {
+					opacity:0.8;
+				} 
 				img.user {
 					width:32px;
 					margin-top:-5px;
 					border-radius:30px;
+					opacity:0.6;
 				}
 				&:last-child {
 					opacity:1;
+				}
+				p {
+					font-size:14px;
+					color: darken(@silver, 20%);
+					line-height:1.25em;
+					font-weight:normal;
+					margin-top:10px;
+				}
+				.final-actions {
+				margin-top:10px;
 				}
 			}
 
@@ -268,12 +310,13 @@
 				width:30px;
 				height:30px;
 				text-align:center;
-				padding-top:3px;
+				padding-top:2px;
 				margin-top:-5px;
 				margin-bottom:-5px;
 				margin-left:-36px;
 				margin-right:3px;
 				border-radius:20px;
+				background-color:@peter-river;
 			}
 			div.fui-check {
 				background-color:@turquoise;
@@ -281,23 +324,56 @@
 			div.fui-time { 
 				background-color:@sun-flower;
 			}
+			.actions {
+				margin-top:10px;
+			}
 			div.file {
-				margin:10px 0px 10px 0px;
+				margin:8px 0px 0px 0px;
 				border: 1px solid lighten(@silver, 13%);
 				padding-left:10px;
 				background-color:white;
 				overflow: auto;
+				transition:background-color 0.2s;
+				&.final {
+					background-color:@turquoise;
+					*, a, a.btn {
+						color:white!important;
+						border-color:@turquoise;
+					}
+					small {
+						opacity:0.6;
+					}
+					.meta {
+						order-left-color:@turquoise;
+					}
+				}
 				.icon {
 					font-size:30px;
 					text-align:center;
-					border-right: 1px solid lighten(@silver, 20%);
+					padding-top:3px;
 				}
 				.meta {
-					font-size:16px;
-					padding-top:14px;
-					a {
-						color:darken(@silver, 20%);
+					padding-top:8px;
+					padding-bottom:8px;
+					border-left: 1px solid lighten(@silver, 20%);
+					h5 {
+						text-transform:none;
+						margin:4px 0px 0px 0px;
+						font-size:13px;
 					}
+					a {
+						color:darken(@silver, 40%);
+					}
+					small a {
+						font-size: 12px;
+						padding-right:10px;
+						color:darken(@silver, 10%);
+					}
+					.reviewers li {
+						font-size:13px;
+						padding:0px 0px 0px 0px;
+					}
+
 				}
 			}
 		}
@@ -305,7 +381,6 @@
 	}
 	div.chat {
 		background-color:@silver;
-		min-height:600px;
 		border-left: 1px solid darken(@silver, 3%);
 		h4 {
 			font-size:14px;
@@ -393,4 +468,53 @@
 			}
 		}
 	}
+}
+
+#closing {
+	background-color: lighten(@wet-asphalt, 65%);
+	table.checklist, table.checklist tr {
+		background-color: lighten(@wet-asphalt, 20%);
+		color:white;
+		border-top-color: lighten(@wet-asphalt, 65%); 
+	}
+	table.checklist {
+		tr {
+			td.item-title{
+				color:white;
+			}
+			th.category {
+				background-color:lighten(@wet-asphalt, 65%);
+			}
+			&.item-closed {
+				opacity:1;
+			}
+		}
+	}
+	.closing-group {
+		padding:0px 15px 0px 15px;
+		.group-inner {
+			.header {
+				padding:15px;
+				background-color:lighten(@wet-asphalt, 20%);
+				.progress {
+					background-color:transparent;
+					border:1px solid lighten(@wet-asphalt, 50%);
+					.progress-bar {
+						background-color:white;
+					}
+				}
+				h3 {
+					font-size:17px;
+					color:white;
+					margin-top:10px;
+					small {
+						color:white;
+						opacity:0.6;
+					}
+				}
+			}
+		}
+
+	}
+
 }
