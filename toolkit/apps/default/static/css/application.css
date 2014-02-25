@@ -2,6 +2,11 @@
   border-bottom-color: #444444 !important;
   border-top-color: #444444 !important;
 }
+html,
+body,
+div.full {
+  height: 100%;
+}
 /* New stuff */
 .navbar.checklist-nav li a {
   font-size: 15px;
@@ -33,85 +38,118 @@
 .navbar.checklist-nav .input-group .btn {
   border: none!important;
 }
-#checklist {
+#checklist,
+#closing {
   background-color: #f2f2f2;
+  height: 100%;
+  margin-top: -55px;
+  padding-top: 55px;
 }
-#checklist h5 {
+#checklist .checklist-col,
+#closing .checklist-col {
+  overflow-y: scroll;
+}
+#checklist h5,
+#closing h5 {
   font-size: 20px;
   text-transform: uppercase;
   color: #666;
 }
-#checklist table.checklist {
+#checklist table.checklist,
+#closing table.checklist {
   background-color: white;
+  margin-top: 20px;
 }
-#checklist table.checklist tr {
+#checklist table.checklist tr,
+#closing table.checklist tr {
   border-top: 5px solid #f2f2f2;
   cursor: pointer;
 }
-#checklist table.checklist tr.item-closed {
+#checklist table.checklist tr.item-closed,
+#closing table.checklist tr.item-closed {
   color: #ffffff;
   opacity: 0.8;
   background-color: #69dd9a;
   padding-top: 10px;
 }
-#checklist table.checklist tr.item-closed .item-title {
+#checklist table.checklist tr.item-closed .item-title,
+#closing table.checklist tr.item-closed .item-title {
   color: #ffffff;
 }
-#checklist table.checklist tr.item-closed.selected {
+#checklist table.checklist tr.item-closed.selected,
+#closing table.checklist tr.item-closed.selected {
   background-color: #29b765;
 }
-#checklist table.checklist tr.selected {
+#checklist table.checklist tr.selected,
+#closing table.checklist tr.selected {
   background-color: #409ad5;
   color: white;
 }
 #checklist table.checklist tr.selected td,
-#checklist table.checklist tr.selected td.item-title {
+#closing table.checklist tr.selected td,
+#checklist table.checklist tr.selected td.item-title,
+#closing table.checklist tr.selected td.item-title {
   color: white;
   opacity: 1;
 }
-#checklist table.checklist th {
+#checklist table.checklist tr.selected td.status .btn-success,
+#closing table.checklist tr.selected td.status .btn-success,
+#checklist table.checklist tr.selected td.status .btn-warning,
+#closing table.checklist tr.selected td.status .btn-warning {
+  background-color: transparent;
+  color: white;
+  border-color: white;
+}
+#checklist table.checklist th,
+#closing table.checklist th {
   background-color: #f2f2f2;
-}
-#checklist table.checklist th.category-controls .btn-group {
-  opacity: 0.5;
-  transition: opacity 0.3s;
-}
-#checklist table.checklist th:hover .btn-group {
-  opacity: 1;
-}
-#checklist table.checklist tr th {
   text-transform: uppercase;
-  padding: 8px 0px 2px 0px;
+  padding: 8px 0px 0px 0px;
   color: #AAA;
   font-size: 13px;
 }
-#checklist table.checklist tr th.category {
+#checklist table.checklist th.category,
+#closing table.checklist th.category {
+  padding: 13px 0px 0px 0px;
+}
+#checklist table.checklist th.category,
+#closing table.checklist th.category {
   color: #666;
   font-size: 14px;
 }
-#checklist table.checklist tr td {
+#checklist table.checklist th td,
+#closing table.checklist th td {
+  padding-top: 20px;
+}
+#checklist table.checklist tr td,
+#closing table.checklist tr td {
   padding: 8px 9px;
   border-top: none;
   border-bottom: none;
 }
-#checklist table.checklist tr td.item-icon {
+#checklist table.checklist tr td.item-icon,
+#closing table.checklist tr td.item-icon {
   padding-left: 5px;
   padding-right: 0px;
   width: 20px;
 }
-#checklist table.checklist tr td.item-icon .icon {
+#checklist table.checklist tr td.item-icon .icon,
+#closing table.checklist tr td.item-icon .icon {
   line-height: 20px;
   width: 18px;
   float: left;
   margin: -4px 1px 0px 3px;
 }
-#checklist table.checklist tr td.item-icon .icon span {
+#checklist table.checklist tr td.item-icon .icon span,
+#closing table.checklist tr td.item-icon .icon span {
   font-size: 12px;
 }
-#checklist table.checklist tr td:hover .fui-list-columned {
+#checklist table.checklist tr td:hover .fui-list-columned,
+#closing table.checklist tr td:hover .fui-list-columned {
   opacity: 0.9;
 }
-#checklist table.checklist tr td .fui-list-columned {
+#checklist table.checklist tr td .fui-list-columned,
+#closing table.checklist tr td .fui-list-columned {
   opacity: 0;
   font-size: 18px;
   cursor: move;
@@ -120,10 +158,12 @@
   width: 9px;
   overflow: hidden;
 }
-#checklist table.checklist tr td .fui-list-columned:hover {
+#checklist table.checklist tr td .fui-list-columned:hover,
+#closing table.checklist tr td .fui-list-columned:hover {
   opacity: 1;
 }
-#checklist table.checklist tr td.item-title {
+#checklist table.checklist tr td.item-title,
+#closing table.checklist tr td.item-title {
   font-size: 14px;
   font-family: Helvetica;
   word-spacing: normal;
@@ -132,72 +172,99 @@
   padding-left: 0px;
   padding-top: 9px;
 }
-#checklist table.checklist tr td.item-title span {
+#checklist table.checklist tr td.item-title span,
+#closing table.checklist tr td.item-title span {
   outline: none;
 }
-#checklist table.checklist tr td.item-title span:focus {
+#checklist table.checklist tr td.item-title span:focus,
+#closing table.checklist tr td.item-title span:focus {
   border-bottom: 2px solid #f8e287;
   background-color: #fefaed;
   color: #444;
 }
-#checklist table.checklist tr td.item-title.item-openhover {
+#checklist table.checklist tr td.item-title.item-openhover,
+#closing table.checklist tr td.item-title.item-openhover {
   border-left-width: 6px;
 }
-#checklist table.checklist tr td.status {
-  font-size: 14px;
-  text-align: right;
-}
-#checklist table.checklist td.status {
+#checklist table.checklist td.status,
+#closing table.checklist td.status {
   padding-top: 5px;
   padding-bottom: 0px;
+  text-align: right;
 }
-#checklist table.checklist td.status .fui-check-inverted {
+#checklist table.checklist td.status .fui-check-inverted,
+#closing table.checklist td.status .fui-check-inverted {
   padding-top: 4px;
 }
-#checklist table.checklist td.status a {
+#checklist table.checklist td.status a,
+#closing table.checklist td.status a {
   text-decoration: underline;
 }
-#checklist table.checklist td.add-new {
+#checklist table.checklist td.status .btn-success,
+#closing table.checklist td.status .btn-success {
+  background-color: white;
+  color: #60db94;
+  border: 1px solid #b3eecc;
+}
+#checklist table.checklist td.status .btn-warning,
+#closing table.checklist td.status .btn-warning {
+  background-color: white;
+  color: #f2c81d;
+  border: 1px solid #f9e8a0;
+}
+#checklist table.checklist td.add-new,
+#closing table.checklist td.add-new {
   text-align: right;
   padding: 4px 0px 4px 0px;
   font-size: 13px;
   background-color: #f2f2f2;
 }
-#checklist table.checklist td.add-new a {
+#checklist table.checklist td.add-new a,
+#closing table.checklist td.add-new a {
   color: #bdc3c7;
   font-weight: bold;
 }
-#checklist table.checklist td.add-new a.set-property {
+#checklist table.checklist td.add-new a.set-property,
+#closing table.checklist td.add-new a.set-property {
   font-size: 11px;
 }
-#checklist table.checklist tr.add-new-controls .input-group {
+#checklist table.checklist tr.add-new-controls .input-group,
+#closing table.checklist tr.add-new-controls .input-group {
   width: 100%;
 }
-#checklist div.item {
+#checklist div.item,
+#closing div.item {
   background-color: #e4e6e8;
   border-left: 1px solid #dee1e3;
-  min-height: 600px;
+  height: 100%;
   color: #3d4448;
 }
-#checklist div.item hr {
+#checklist div.item hr,
+#closing div.item hr {
   border-color: #d9dcde;
 }
-#checklist div.item .text-muted {
+#checklist div.item .text-muted,
+#closing div.item .text-muted {
   opacity: 0.5;
 }
-#checklist div.item a.link {
+#checklist div.item a.link,
+#closing div.item a.link {
   color: #545e64;
 }
-#checklist div.item a.link:hover {
+#checklist div.item a.link:hover,
+#closing div.item a.link:hover {
   text-decoration: underline;
 }
-#checklist div.item .btn-link {
+#checklist div.item .btn-link,
+#closing div.item .btn-link {
   color: #3d4448;
 }
-#checklist div.item small {
+#checklist div.item small,
+#closing div.item small {
   font-size: 13px;
 }
-#checklist div.item h3 {
+#checklist div.item h3,
+#closing div.item h3 {
   font-size: 19px;
   padding-bottom: 16px;
   background-color: #d9dcde;
@@ -205,113 +272,200 @@
   margin: 0px -15px 0px -15px;
   padding: 20px 15px 20px 15px;
 }
-#checklist div.item .dropdown-inverse a {
+#checklist div.item .dropdown-inverse a,
+#closing div.item .dropdown-inverse a {
   color: white;
 }
 #checklist div.item input:focus,
-#checklist div.item textarea:focus {
+#closing div.item input:focus,
+#checklist div.item textarea:focus,
+#closing div.item textarea:focus {
   border-color: #a5afaf;
 }
-#checklist div.item #item-description-toggle {
+#checklist div.item #item-description-toggle,
+#closing div.item #item-description-toggle {
   display: inline;
-  padding-left: 10px;
+  padding-top: 10px;
 }
-#checklist div.item #item-description textarea {
+#checklist div.item #item-description textarea,
+#closing div.item #item-description textarea {
   margin-top: 10px;
   margin-bottom: 3px;
   font-size: 12px;
 }
-#checklist div.item ul.item-progress {
-  padding-top: 20px;
+#checklist div.item ul.item-progress,
+#closing div.item ul.item-progress {
+  padding-top: 10px;
 }
-#checklist div.item ul.item-progress li {
+#checklist div.item ul.item-progress li,
+#closing div.item ul.item-progress li {
   padding-left: 7px;
   padding-right: 10px;
   /* border-left: 1px solid lighten(@gray-light, 10%); */
 
   margin-left: 30px;
-  padding-bottom: 25px;
-  font-size: 15px;
+  padding-bottom: 15px;
+  padding-top: 15px;
+  font-size: 16px;
   font-weight: bold;
   clear: both;
   color: #545e64;
   opacity: 0.4;
+  transition: opacity 0.3s;
 }
-#checklist div.item ul.item-progress li img.user {
+#checklist div.item ul.item-progress li:hover,
+#closing div.item ul.item-progress li:hover {
+  opacity: 0.8;
+}
+#checklist div.item ul.item-progress li img.user,
+#closing div.item ul.item-progress li img.user {
   width: 32px;
   margin-top: -5px;
   border-radius: 30px;
+  opacity: 0.6;
 }
-#checklist div.item ul.item-progress li:last-child {
+#checklist div.item ul.item-progress li:last-child,
+#closing div.item ul.item-progress li:last-child {
   opacity: 1;
 }
-#checklist div.item ul.item-progress div[class*="fui-"] {
+#checklist div.item ul.item-progress li p,
+#closing div.item ul.item-progress li p {
+  font-size: 14px;
+  color: #869198;
+  line-height: 1.25em;
+  font-weight: normal;
+  margin-top: 10px;
+}
+#checklist div.item ul.item-progress li .final-actions,
+#closing div.item ul.item-progress li .final-actions {
+  margin-top: 10px;
+}
+#checklist div.item ul.item-progress div[class*="fui-"],
+#closing div.item ul.item-progress div[class*="fui-"] {
   color: white;
   width: 30px;
   height: 30px;
   text-align: center;
-  padding-top: 3px;
+  padding-top: 2px;
   margin-top: -5px;
   margin-bottom: -5px;
   margin-left: -36px;
   margin-right: 3px;
   border-radius: 20px;
+  background-color: #3498db;
 }
-#checklist div.item ul.item-progress div.fui-check {
+#checklist div.item ul.item-progress div.fui-check,
+#closing div.item ul.item-progress div.fui-check {
   background-color: #6bdb7e;
 }
-#checklist div.item ul.item-progress div.fui-time {
+#checklist div.item ul.item-progress div.fui-time,
+#closing div.item ul.item-progress div.fui-time {
   background-color: #f1c40f;
 }
-#checklist div.item ul.item-progress div.file {
-  margin: 10px 0px 10px 0px;
+#checklist div.item ul.item-progress .actions,
+#closing div.item ul.item-progress .actions {
+  margin-top: 10px;
+}
+#checklist div.item ul.item-progress div.file,
+#closing div.item ul.item-progress div.file {
+  margin: 8px 0px 0px 0px;
   border: 1px solid #e1e4e5;
   padding-left: 10px;
   background-color: white;
   overflow: auto;
+  transition: background-color 0.2s;
 }
-#checklist div.item ul.item-progress div.file .icon {
+#checklist div.item ul.item-progress div.file.final,
+#closing div.item ul.item-progress div.file.final {
+  background-color: #6bdb7e;
+}
+#checklist div.item ul.item-progress div.file.final *,
+#closing div.item ul.item-progress div.file.final *,
+#checklist div.item ul.item-progress div.file.final a,
+#closing div.item ul.item-progress div.file.final a,
+#checklist div.item ul.item-progress div.file.final a.btn,
+#closing div.item ul.item-progress div.file.final a.btn {
+  color: white!important;
+  border-color: #6bdb7e;
+}
+#checklist div.item ul.item-progress div.file.final small,
+#closing div.item ul.item-progress div.file.final small {
+  opacity: 0.6;
+}
+#checklist div.item ul.item-progress div.file.final .meta,
+#closing div.item ul.item-progress div.file.final .meta {
+  order-left-color: #6bdb7e;
+}
+#checklist div.item ul.item-progress div.file .icon,
+#closing div.item ul.item-progress div.file .icon {
   font-size: 30px;
   text-align: center;
-  border-right: 1px solid #f4f5f6;
+  padding-top: 3px;
 }
-#checklist div.item ul.item-progress div.file .meta {
-  font-size: 16px;
-  padding-top: 14px;
+#checklist div.item ul.item-progress div.file .meta,
+#closing div.item ul.item-progress div.file .meta {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  border-left: 1px solid #f4f5f6;
 }
-#checklist div.item ul.item-progress div.file .meta a {
-  color: #869198;
+#checklist div.item ul.item-progress div.file .meta h5,
+#closing div.item ul.item-progress div.file .meta h5 {
+  text-transform: none;
+  margin: 4px 0px 0px 0px;
+  font-size: 13px;
 }
-#checklist div.chat {
+#checklist div.item ul.item-progress div.file .meta a,
+#closing div.item ul.item-progress div.file .meta a {
+  color: #545e64;
+}
+#checklist div.item ul.item-progress div.file .meta small a,
+#closing div.item ul.item-progress div.file .meta small a {
+  font-size: 12px;
+  padding-right: 10px;
+  color: #a1aab0;
+}
+#checklist div.item ul.item-progress div.file .meta .reviewers li,
+#closing div.item ul.item-progress div.file .meta .reviewers li {
+  font-size: 13px;
+  padding: 0px 0px 0px 0px;
+}
+#checklist div.chat,
+#closing div.chat {
   background-color: #bdc3c7;
-  min-height: 600px;
   border-left: 1px solid #b5bbc0;
 }
-#checklist div.chat h4 {
+#checklist div.chat h4,
+#closing div.chat h4 {
   font-size: 14px;
   color: #f4f5f6;
   margin-bottom: 0px;
   text-transform: uppercase;
 }
-#checklist div.chat h4 span {
+#checklist div.chat h4 span,
+#closing div.chat h4 span {
   font-size: 12px;
 }
-#checklist div.chat ul {
+#checklist div.chat ul,
+#closing div.chat ul {
   padding-top: 27px;
 }
-#checklist div.chat ul li .media {
+#checklist div.chat ul li .media,
+#closing div.chat ul li .media {
   padding-bottom: 0px;
 }
-#checklist div.chat ul li.message {
+#checklist div.chat ul li.message,
+#closing div.chat ul li.message {
   margin-bottom: 0px;
   padding: 3px 0px 3px 0px;
 }
-#checklist div.chat ul li.message .user-icon {
+#checklist div.chat ul li.message .user-icon,
+#closing div.chat ul li.message .user-icon {
   float: left;
   padding-right: 5px;
   color: white;
 }
-#checklist div.chat ul li.message .media-body .msg-body {
+#checklist div.chat ul li.message .media-body .msg-body,
+#closing div.chat ul li.message .media-body .msg-body {
   font-size: 12px;
   line-height: 1.45em;
   margin-bottom: 0px;
@@ -319,47 +473,96 @@
   padding: 10px 12px;
   border-bottom: 1px solid #e6e6e6;
 }
-#checklist div.chat ul li.message .media-body .msg-meta {
+#checklist div.chat ul li.message .media-body .msg-meta,
+#closing div.chat ul li.message .media-body .msg-meta {
   font-size: 11px;
   color: #e8eaeb;
   line-height: 15px;
   margin-top: 5px;
   margin-bottom: 6px;
 }
-#checklist div.chat ul li.message.me .user-icon {
+#checklist div.chat ul li.message.me .user-icon,
+#closing div.chat ul li.message.me .user-icon {
   float: right;
   padding-right: 0px;
   color: #3498db;
   padding-left: 5px;
 }
-#checklist div.chat ul li.message.me .msg-body {
+#checklist div.chat ul li.message.me .msg-body,
+#closing div.chat ul li.message.me .msg-body {
   background-color: #3498db;
   color: white;
   border-bottom: 2px solid #217dbb;
   text-rendering: optimizeLegibility;
 }
-#checklist div.chat ul li.message.me .msg-meta {
+#checklist div.chat ul li.message.me .msg-meta,
+#closing div.chat ul li.message.me .msg-meta {
   text-align: right;
 }
-#checklist div.chat ul li.action {
+#checklist div.chat ul li.action,
+#closing div.chat ul li.action {
   border: 1px solid #d0d5d7;
   padding: 3px 6px;
   color: #eff0f1;
   font-size: 12px;
 }
-#checklist div.chat div.new-message {
+#checklist div.chat div.new-message,
+#closing div.chat div.new-message {
   position: absolute;
   bottom: 0;
   width: 100%;
   padding-right: 30px;
 }
-#checklist div.chat div.new-message textarea {
+#checklist div.chat div.new-message textarea,
+#closing div.chat div.new-message textarea {
   font-size: 12px;
   transition: height 0.3s;
   height: 60px;
 }
-#checklist div.chat div.new-message textarea:focus {
+#checklist div.chat div.new-message textarea:focus,
+#closing div.chat div.new-message textarea:focus {
   height: 120px;
+}
+#closing {
+  background-color: #eaeff3;
+}
+#closing table.checklist,
+#closing table.checklist tr {
+  background-color: #587ca0;
+  color: white;
+  border-top-color: #eaeff3;
+}
+#closing table.checklist tr td.item-title {
+  color: white;
+}
+#closing table.checklist tr th.category {
+  background-color: #eaeff3;
+}
+#closing table.checklist tr.item-closed {
+  opacity: 1;
+}
+#closing .closing-group {
+  padding: 0px 15px 0px 15px;
+}
+#closing .closing-group .group-inner .header {
+  padding: 15px;
+  background-color: #587ca0;
+}
+#closing .closing-group .group-inner .header .progress {
+  background-color: transparent;
+  border: 1px solid #b9c8d8;
+}
+#closing .closing-group .group-inner .header .progress .progress-bar {
+  background-color: white;
+}
+#closing .closing-group .group-inner .header h3 {
+  font-size: 17px;
+  color: white;
+  margin-top: 10px;
+}
+#closing .closing-group .group-inner .header h3 small {
+  color: white;
+  opacity: 0.6;
 }
 .breadcrumbs {
   background-color: #f4f4f4;

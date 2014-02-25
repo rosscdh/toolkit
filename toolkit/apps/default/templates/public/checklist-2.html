@@ -5,14 +5,14 @@
  <div class="navbar navbar-inverse checklist-nav">
     <div class="navbar-header">
         <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-collapse-03"></button>
-        <a href="#fakelink" class="navbar-brand">Matter Name</a>
+        <a href="#fakelink" class="navbar-brand">Matter name</a>
     </div>
     <div class="navbar-collapse collapse navbar-collapse-03">
         <ul class="nav navbar-nav">
-            <li class="active">
+            <li class="active"  id="checklist-nav">
                 <a href="#fakelink">Checklist</a>
             </li>
-            <li>
+            <li id="closing-nav">
                 <a href="#fakelink">Closing</a>
             </li>
            
@@ -46,7 +46,7 @@
             <li class="divider"></li>
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                {{ user.get_full_name|default:'Jon Smith' }} <b class="caret"></b>
+                Jon Smith <b class="caret"></b>
                 </a>
                 <ul class="dropdown-menu">
                     <li><a href="{% url 'me:settings' %}">Account</a></li>
@@ -67,33 +67,44 @@
 
 
 {% block prebody %}
-<style>
-body {background-color: #f2f2f2;}
-</style>
 	<div id="checklist">		
-		<div class="container-fluid">
-			<div class="row">
-				<div class="col-sm-5 checklist-col">
+		<div class="container-fluid full">
+			<div class="row full">
+				<div class="col-sm-5 checklist-col full">
 					<table class="table checklist">
-			            <thead>
-				              <tr>
-				                <th colspan="1" class="col-sm-6 category">Incorporation</th>
-				              	<th class="category-controls">
-				              		<!-- TODO : make these buttons appear when the tbody appears-->
-									<div class="btn-group pull-right">              
-				              			<button class="btn btn-success btn-xs" id="add-new"><span class="fui-plus-inverted"></span></button>
-				              			<button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown"><span class="fui-triangle-down"></span></button>
-						          	  	<ul class="dropdown-menu dropdown-inverse dropdown-small">
-						                	<li><a href="#fakelink">New Category</a></li>
-						                	<li><a href="#fakelink">Edit Category</a></li>
-						                	<li><a href="#fakelink">Delete Category</a></li>
+			             <tr class="item-heading item-closed">
+			                <td class="item-title">
+			                	<span class="fui-list-columned"></span> 
+			                	Articles of Incorporation 
+			                </td>
+			                <td class="status text-right">
+			                	<span class="fui-check-inverted"></span>
+			                </td>
+			              </tr>
+					      <tr>
+			                <td class="item-title item-open">
+			                	<span class="fui-list-columned"></span> Bylaws 
+			                </td>
+			                <td class="status">
+			                	<span class="fui-check-filled"></span>
+			                </td>
+			              </tr>
+			              <tr>
+			                <th colspan="1" class="col-sm-6 category">Incorporation</th>
+			              	<th class="category-controls">
+			              		<!-- TODO : make these buttons appear when the tbody appears-->
+								<div class="btn-group pull-right">              
+			              			<button class="btn btn-default btn-xs" id="add-new"><span class="fui-plus-inverted"></span></button>
+			              			<button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown"><span class="fui-triangle-down"></span></button>
+					          	  	<ul class="dropdown-menu dropdown-inverse dropdown-small">
+					                	<li><a href="#fakelink">New Category</a></li>
+					                	<li><a href="#fakelink">Edit Category</a></li>
+					                	<li><a href="#fakelink">Delete Category</a></li>
 
-						              	</ul>
-						            </div>
-				              	</th>
-				              </tr>
-			            </thead>
-			            <tbody>
+					              	</ul>
+					            </div>
+			              	</th>
+			              </tr>
 			            <tr class="add-new-controls warning" style="display:none;">
 			              	<td colspan="2">
 			              		<div class="input-group">
@@ -157,14 +168,13 @@ body {background-color: #f2f2f2;}
 			                	<button class="btn btn-warning btn-xs" disabled><span class="fui-user"></span> Review 66%</button>
 			                </td>
 			              </tr>
-			            </tbody>
-						<thead>
+
 				              <tr>
-				                <th colspan="1" class="col-sm-6 category">Incorporation</th>
+				                <th colspan="1" class="col-sm-6 category">Founder Documents</th>
 				              	<th class="category-controls">
 				              		<!-- TODO : make these buttons appear when the tbody appears-->
 									<div class="btn-group pull-right">              
-				              			<button class="btn btn-success btn-xs" id="add-new"><span class="fui-plus-inverted"></span></button>
+				              			<button class="btn btn-default btn-xs" id="add-new"><span class="fui-plus-inverted"></span></button>
 				              			<button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown"><span class="fui-triangle-down"></span></button>
 						          	  	<ul class="dropdown-menu dropdown-inverse dropdown-small">
 						                	<li><a href="#fakelink">New Category</a></li>
@@ -175,8 +185,7 @@ body {background-color: #f2f2f2;}
 						            </div>
 				              	</th>
 				              </tr>
-			            </thead>
-			            <tbody>
+
 			            <tr class="add-new-controls warning" style="display:none;">
 			              	<td colspan="2">
 			              		<div class="input-group">
@@ -188,7 +197,7 @@ body {background-color: #f2f2f2;}
 						                	<li><a href="#fakelink">Set description</a></li>
 						                	<li><a href="#fakelink">Set due date</a></li>
 						              	</ul>
-					          	  </div>
+					          	  	</div>
 					          	</div>	
 			              	</td>
 			              </tr>
@@ -242,115 +251,347 @@ body {background-color: #f2f2f2;}
 			                	<button class="btn btn-warning btn-xs" disabled><span class="fui-user"></span> Review 66%</button>
 			                </td>
 			              </tr>
-			            </tbody>
 		          </table>
 		      	</div>
 				<!--Example of blank-->
 
-				<div class="col-sm-4 item shareholders" style="display:none;">
-					<h3>Shareholders Agreement <a href="#" class="btn btn-xs btn-info pull-right" data-toggle="modal" data-target="#attachWorkflowModal"><span class="fui-list-bulleted"></span> Add Tool</a></h3>
-					<!--Item description. Can only be entered by a lawyer on the deal. A comparable interface is the one used inside Trello.s-->
-					<ul class="list-unstyled">
-						<li class="step active first">
-							<h4><span class="fui-question"></span> Add or request file</h4>
-							<p>Start by uploading a file or requesting a file from another person.</p>
-							<a href="#" class="btn btn-info btn-sm" id="upload-doc"><span class="fui-clip"></span> Drop or Upload File</a>
-							<a href="#" class="btn btn-info  btn-sm" data-toggle="modal" data-target="#requestFileModal"><span class="fui-user"></span> Request File</a>
-						</li>
-					</ul>
-				</div>
-				<div class="col-sm-4 item note" style="display:none;">
-					<h3>Note Purchase Agreement</h3>
-					<ul class="list-unstyled">
-						<li class="step active first in-progress">
-							<h4><span class="fui-time"></span> Waiting for file from Barry White</h4>
-							<div class="text-left btn-group">
-								<a href="#" class="btn btn-inverse  btn-sm" id="upload-doc"><span class="fui-alert"></span> Remind</a>
-								<a href="#" class="btn btn-default btn-sm" id="upload-doc"><span class="fui-cross"></span> Cancel</a>
-							</div>
-						</li>
-					</ul>
-				</div>
-				<div class="col-sm-7 item spa" style="display:;">
-					<h3>Stock Purchase Agreement 
-						<div id="item-description-toggle"><small class="text-muted"><a href="#" class="link">Enter item description</a></small></div>
-						<div class="btn-group pull-right">
-							<a href="#" class="btn-inverse btn-xs pull-right" class="dropdown-toggle" data-toggle="dropdown">Options</a>
-							<ul class="dropdown-menu dropdown-inverse">
-								<li><a href="#"><span class="fui-calendar"></span> Set due date</a></li>
-								<li><a href="#"><span class="fui-calendar"></span> Add wizard</a></li>
-								<li><a href="#"><span class="fui-star-2"></span> Set closing group</a></li>
-								<li><a href="#"><span class="fui-loop r"></span> Clone</a></li>
-								<li><a href="#"><span class="fui-trash text-danger"></span> Delete</a></li>
-							</ul>
-						</div>
-					</h3>	
-			
-					<div id="item-description" style="display:none;">
-						<textarea class="form-control" rows="3" placeholder="Enter a description for this item"></textarea>
-						<a href="#" class="btn btn-primary btn-xs">Save description</a>
-						<a href="#" class="btn btn-inverse btn-xs">Cancel</a>
-						<a href="#" class="btn btn-link btn-xs pull-right" title="Markdown help">Formatting Help</a>
-					</div>
-					<div class="row">
+				<div class="col-sm-7 item shareholders full" style="display:none;">
+					<div class="row full">
 						<div class="col-sm-7">
+							<h3>Shareholders agreement 
+								<div class="tools-inject"></div>
+							</h3>
 							<ul class="list-unstyled item-progress">
 								<li class="">
-									<div class="fui-check"></div> <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash3/t1/c0.0.100.100/p100x100/1014416_10100118438650161_136799916_a.jpg" class="user"> <span>File received from Barry white</span>
-									<div class="file">
-										<div class="col-sm-3 icon icon-doc" style="text-align:center;">
-											<span class="fui-document"></span>
-										</div>
-										<div class="col-sm-9 meta">
-											<a href="#">Document.doc</a>
-										</div>
-									</div> 
-									<div class="btn-group">
-										<a href="#" class="btn btn-xs btn-default">View</a>
-										<a href="#" class="btn btn-xs btn-default">Download</a>
-										<a href="#" class="btn btn-xs btn-default">Edit</a>
-										<a href="#" class="btn btn-xs btn-default">Request Review</a>
-										<a href="#" class="btn btn-xs btn-success pull-right">Mark as Final</a> 
+									<div class="fui-question"></div> <span>Add or request a file</span>
+									<p>Start by uploading a file or requesting a file from another person.</p>
+									<div class="actions">
+										<a href="#" class="btn btn-info btn-sm" id="upload-doc"><span class="fui-clip"></span> Drop or Upload File</a>
+										<a href="#" class="btn btn-info  btn-sm" data-toggle="modal" data-target="#requestFileModal"><span class="fui-user"></span> Request File</a> 
 									</div>
-
 								</li>
 							</ul>
 						</div>
-						<div class="col-sm-5 chat">
-							<h4><span class="fui-chat"></span> Discuss</h4>
-							<ul class="list-unstyled">
-								<li class="message me">
-									<div class="media">
-										<a class="user-icon" href="#"><span class="fui-user"></span></a>
-										<div class="media-body">
-										    <div class="msg-body">I've attached the new draft and will shortly send it for review. We'll see what the other side says.</div>
-										    <div class="msg-meta">Adam Bier, 25th June to AH, BC</div>
-										</div>
+						<div class="col-sm-5 chat full">
+						</div>
+					</div>
+				</div>
+
+
+				<div class="col-sm-7 item note full" style="display:none;">
+					<div class="row full">
+						<div class="col-sm-7">
+							<h3>Note Purchase Agreement 
+								<div class="tools-inject"></div>
+							</h3>
+							<ul class="list-unstyled item-progress">
+								<li class="">
+									<div class="fui-time"></div> <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/t1/c12.12.155.155/314032_10150303812474864_594285312_a.jpg" class="user"> <span>Waiting for file from Ross Crawford</span>
+									<div class="actions">
+										<a href="#" class="btn btn-sm btn-warning">Remind</a>
+										<a href="#" class="btn btn-sm btn-danger">Cancel</a> 
 									</div>
-								</li>
-								<li class="message other">
-									<div class="media">
-										<a class="user-icon" href="#"><span class="fui-user"></span></a>
-										<div class="media-body">
-										    <div class="msg-body">I've attached the new draft and will shortly send it for review. We'll see what the other side says.</div>
-										    <div class="msg-meta">Adam Bier, 25th June to AH, BC</div>
-										</div>
-									</div>
-								</li>
-								<li class="action">
-									<span class="fui-document"></span> Adam uploaded a new draft.
 								</li>
 							</ul>
-							<div class="new-message">
-								<textarea class="form-control" rows="2" placeholder="Say something about Shareholders Agreement and press enter..."></textarea>
-								
-							</div>
+						</div>
+						<div class="col-sm-5 chat full">
+						</div>
+					</div>
+				</div>
+				<div class="col-sm-7 item spa full">
+					<div class="row full">
+						<div class="col-sm-7">
+							<h3>Stock Purchase Agreement 
+								<div class="tools-inject"></div>
+							</h3>	
+							<ul class="list-unstyled item-progress">
+								<li class="">
+									<div class="fui-check"></div> <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/t1/c12.12.155.155/314032_10150303812474864_594285312_a.jpg" class="user"> <span>File received from Ross Crawford</span>
+									<div class="file" id="final-demo-file">
+										<div class="col-sm-2 icon icon-doc" style="text-align:center;">
+											<span class="fui-document"></span>
+										</div>
+										<div class="col-sm-10 meta">
+											<h5><a href="#">stock_purchase_agreement_929928.doc</a></h5>
+											<small>
+												<a href="#" class="">View</a>
+												<a href="#" class="">Download</a>
+												<a href="#" class="">Edit</a>
+											</small>
+										</div>
+									</div> 
+									<div class="actions final">
+										<a href="#" class="btn btn-sm btn-inverse">Request Review</a>
+										<a href="#" class="btn btn-sm btn-success" id="mark-final"><span class="fui-check-inverted" style="display:none;"></span> Mark as Final</a>
+									</div>
+									<div class="final-actions" style="display:none">
+										<a href="#" class="btn btn-sm btn-silver final-btn">Request Signature</a>
+										<a href="#" class="btn btn-sm btn-silver final-btn">Add to Closing Group</a>
+									</div>
+								</li>
+							</ul>
+						</div>
+						<div class="col-sm-5 chat full">
+						</div>
+					</div>
+				</div>
+
+				<div class="col-sm-7 item custom full" style="display:none;">
+					<div class="row full">
+						<div class="col-sm-7">
+							<h3>Custom Agreement B 
+								<div class="tools-inject"></div>
+							</h3>	
+							<ul class="list-unstyled item-progress">
+								<li class="">
+									<div class="fui-check"></div> <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/t1/c12.12.155.155/314032_10150303812474864_594285312_a.jpg" class="user"> <span>File received from Ross Crawford</span>
+									<div class="file" id="final-demo-file">
+										<div class="col-sm-2 icon icon-doc" style="text-align:center;">
+											<span class="fui-document"></span>
+										</div>
+										<div class="col-sm-10 meta">
+											<h5><a href="#">stock_purchase_agreement_929928.doc</a></h5>
+											<small>
+												<a href="#" class="">View</a>
+												<a href="#" class="">Download</a>
+												<a href="#" class="">Edit</a>
+											</small>
+										</div>
+									</div> 
+								</li>
+								<li class="">
+									<div class="fui-check"></div> <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash3/t1/c0.0.100.100/p100x100/1014416_10100118438650161_136799916_a.jpg" class="user"> <span>New revision added by Alex Halliday</span>
+								</li>
+								<li class="">
+									<div class="fui-time"></div> <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash3/t1/c0.0.100.100/p100x100/1014416_10100118438650161_136799916_a.jpg" class="user"> <span>Review requested by Alex Halliday</span>
+									<div class="file" id="final-demo-file">
+										<div class="col-sm-2 icon icon-doc" style="text-align:center;">
+											<span class="fui-document"></span>
+										</div>
+										<div class="col-sm-10 meta">
+											<h5><a href="#">stock_purchase_agreement_929928_2.doc</a></h5>
+											<small>
+												<a href="#" class="">View</a>
+												<a href="#" class="">Download</a>
+												<a href="#" class="">Edit</a>
+											</small>
+											<ul class="reviewers list-unstyled">
+												<li><span class="fui-check"></span> Yael Citro</li>
+												<li><span class="fui-check"></span> Eran Fromen</li>
+												<li><span class="fui-time"></span> Howard Caro</li>
+											</ul>
+										</div>
+									</div> 
+									<div class="actions final">
+										<a href="#" class="btn btn-sm btn-inverse">Request Review</a>
+										<a href="#" class="btn btn-sm btn-success" id="mark-final"><span class="fui-check-inverted" style="display:none;"></span> Mark as Final</a>
+									</div>
+									<div class="final-actions" style="display:none">
+										<a href="#" class="btn btn-sm btn-silver final-btn">Request Signature</a>
+										<a href="#" class="btn btn-sm btn-silver final-btn">Add to Closing Group</a>
+									</div>
+								</li>
+							</ul>
+						</div>
+						<div class="col-sm-5 chat full">
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
+
+
+	<div id="closing" style="display:none;">		
+		<div class="container-fluid full">
+			<div class="row full">
+				<div class="col-sm-4 checklist-col full">
+					<table class="table checklist">
+			             <tr class="item-heading item-closed">
+			                <td class="item-title">
+			                	<span class="fui-list-columned"></span> 
+			                	Articles of Incorporation 
+			                </td>
+			              </tr>
+					      <tr>
+			                <td class="item-title item-open">
+			                	<span class="fui-list-columned"></span> 
+			                	Bylaws 
+			                </td>
+			              </tr>
+			              <tr>
+			                <th colspan="1" class="category">Incorporation</th>
+			              </tr>
+			            <tr class="add-new-controls warning" style="display:none;">
+			              	<td colspan="2">
+			              		<div class="input-group">
+					          	  	<input class="form-control input-sm" id="appendedInputButton-03" type="search" placeholder="Enter item name and press enter">
+					          	  	<div class="input-group-btn">
+					          	    	<button class="btn btn-link  dropdown-toggle input-sm" type="button" data-toggle="dropdown"><span class="fui-gear"></span></button>
+						          	  	<ul class="dropdown-menu dropdown-inverse dropdown-small">
+						                	<li><a href="#fakelink">Set closing group</a></li>
+						                	<li><a href="#fakelink">Set description</a></li>
+						                	<li><a href="#fakelink">Set due date</a></li>
+						              	</ul>
+					          	  </div>
+					          	</div>	
+			              	</td>
+			              </tr>
+			              <tr class="item-heading item-closed">
+			                <td class="item-title">
+			                	<span class="fui-list-columned"></span> 
+			                	Articles of Incorporation 
+			                </td>
+			              </tr>
+					      <tr>
+			                <td class="item-title item-open">
+			                	<span class="fui-list-columned"></span> Bylaws 
+			                </td>
+			              </tr>
+						  <tr class="shareholders">
+			                <td class="item-title item-open">
+			                	<span class="fui-list-columned"></span> Shareholders agreement 
+			                </td>
+			              </tr>
+						  <tr class="note">
+			                <td class="item-title item-open">
+			                	<span class="fui-list-columned"></span> Note purchase agreement 
+			                </td>
+			              </tr>
+						  <tr class="spa">
+			                <td class="item-title item-open">
+			                	<span class="fui-list-columned"></span> Stock purchase agreement 
+			                </td>
+			              </tr>
+						  <tr class="custom">
+			                <td class="item-title item-open">
+			                	<span class="fui-list-columned"></span> Custom agreement B 
+			                </td>
+			              </tr>
+
+				              <tr>
+				                <th colspan="1" class="col-sm-6 category">Founder Documents</th>
+				              </tr>
+
+			            <tr class="add-new-controls warning" style="display:none;">
+			              	<td colspan="2">
+			              		<div class="input-group">
+					          	  	<input class="form-control input-sm" id="appendedInputButton-03" type="search" placeholder="Enter item name and press enter">
+					          	  	<div class="input-group-btn">
+					          	    	<button class="btn btn-link  dropdown-toggle input-sm" type="button" data-toggle="dropdown"><span class="fui-gear"></span></button>
+						          	  	<ul class="dropdown-menu dropdown-inverse dropdown-small">
+						                	<li><a href="#fakelink">Set closing group</a></li>
+						                	<li><a href="#fakelink">Set description</a></li>
+						                	<li><a href="#fakelink">Set due date</a></li>
+						              	</ul>
+					          	  	</div>
+					          	</div>	
+			              	</td>
+			              </tr>
+			              <tr class="item-closed">
+			                <td class="item-title">
+			                	<span class="fui-list-columned"></span> 
+			                	Articles of Incorporation 
+			                </td>
+			              </tr>
+					      <tr class="item-closed">
+			                <td class="item-title item-closed">
+			                	<span class="fui-list-columned"></span> Bylaws 
+			                </td>
+			              </tr>
+						  <tr class="item-closed">
+			                <td class="item-title item-closed">
+			                	<span class="fui-list-columned"></span> Shareholders agreement 
+			                </td>
+			              </tr>
+						  <tr class="item-closed">
+			                <td class="item-title item-open">
+			                	<span class="fui-list-columned"></span> Note purchase agreement 
+			                </td>
+			              </tr>
+						  <tr class="spa">
+			                <td class="item-title item-open">
+			                	<span class="fui-list-columned"></span> Stock purchase agreement 
+			                </td>
+			              </tr>
+						  <tr class="custom">
+			                <td class="item-title item-open">
+			                	<span class="fui-list-columned"></span> Custom agreement B 
+			                </td>
+			              </tr>
+		          </table>
+		      	</div>
+		      	<div class="closing-group checklist-col col-sm-3">
+		      		<div class="group-inner">
+		      			<div class="header">
+		      				<h3>Closing Group 1 <small class="pull-right">2/6 complete</small></h3>
+		      				<div class="progress">
+								<div class="progress-bar" style="width: 33%;"></div>
+		      				</div>
+		      				<a href="#" class="btn btn-info btn-sm">Download All</a>
+		      			</div>
+						<table class="table checklist">
+				             <tr class="item-heading item-closed">
+				                <td class="item-title">
+				                	<span class="fui-list-columned"></span> 
+				                	Articles of Incorporation 
+				                </td>
+				              </tr>
+						      <tr>
+				                <td class="item-title item-open">
+				                	<span class="fui-list-columned"></span> 
+				                	Bylaws 
+				                </td>
+				              </tr>
+				            <tr class="add-new-controls warning" style="display:none;">
+				              	<td colspan="2">
+				              		<div class="input-group">
+						          	  	<input class="form-control input-sm" id="appendedInputButton-03" type="search" placeholder="Enter item name and press enter">
+						          	  	<div class="input-group-btn">
+						          	    	<button class="btn btn-link  dropdown-toggle input-sm" type="button" data-toggle="dropdown"><span class="fui-gear"></span></button>
+							          	  	<ul class="dropdown-menu dropdown-inverse dropdown-small">
+							                	<li><a href="#fakelink">Set closing group</a></li>
+							                	<li><a href="#fakelink">Set description</a></li>
+							                	<li><a href="#fakelink">Set due date</a></li>
+							              	</ul>
+						          	  </div>
+						          	</div>	
+				              	</td>
+				              </tr>
+				              <tr class="item-heading item-closed">
+				                <td class="item-title">
+				                	<span class="fui-list-columned"></span> 
+				                	Articles of Incorporation 
+				                </td>
+				              </tr>
+						      <tr>
+				                <td class="item-title item-open">
+				                	<span class="fui-list-columned"></span> Bylaws 
+				                </td>
+				              </tr>
+							  <tr class="shareholders">
+				                <td class="item-title item-open">
+				                	<span class="fui-list-columned"></span> Shareholders agreement 
+				                </td>
+				              </tr>
+							  <tr class="note">
+				                <td class="item-title item-open">
+				                	<span class="fui-list-columned"></span> Note purchase agreement 
+				                </td>
+				              </tr>
+				            </table>
+			        </div>
+		      	</div>
+		      	<div class="closing-group checklist-col col-sm-3">
+		      		<br />
+		      		<a href="#" class="btn btn-inverse btn-sm">New Closing Group</a>
+		      	</div>
+			</div>
+		</div>
+	</div>
+
+
+
 <!-- Modals -->
 
 <!-- 1. Add Party -->
@@ -451,6 +692,77 @@ body {background-color: #f2f2f2;}
 {% block js %}
 <script>
 $( document ).ready(function() {
+
+	// Inject the tools
+
+	var toolsinject = '	<div class="btn-group pull-right">\
+		<a href="#" class="btn-inverse btn-xs pull-right" class="dropdown-toggle" data-toggle="dropdown">Options</a>\
+		<ul class="dropdown-menu dropdown-inverse">\
+			<li><a href="#"><span class="fui-calendar"></span> Set due date</a></li>\
+			<li><a href="#"><span class="fui-calendar"></span> Add wizard</a></li>\
+			<li><a href="#"><span class="fui-star-2"></span> Set closing group</a></li>\
+			<li><a href="#"><span class="fui-loop r"></span> Clone</a></li>\
+			<li><a href="#"><span class="fui-trash text-danger"></span> Delete</a></li>\
+		</ul>\
+	</div>\
+	<br />\
+	<div class="item-description-toggle"><small class="text-muted"><a href="#" class="link">Enter item description</a></small></div>\
+	<div class="item-description" style="display:none;">\
+		<textarea class="form-control" rows="3" placeholder="Enter a description for this item"></textarea>\
+		<a href="#" class="btn btn-primary btn-xs">Save description</a>\
+		<a href="#" class="btn btn-inverse btn-xs item-description-cancel">Cancel</a>\
+		<a href="#" class="btn btn-link btn-xs pull-right" title="Markdown help" onclick="alert(\'Markdown help popup like trello\');">Formatting Help</a>\
+	</div>\
+	';
+	$("div.tools-inject").replaceWith(toolsinject);
+
+
+	// Inject a chat div into each of the chat elements
+	var chatdiv = '<h4><span class="fui-chat"></span> Discuss</h4>\
+	<ul class="list-unstyled">\
+		<li class="message me">\
+			<div class="media">\
+				<a class="user-icon" href="#"><span class="fui-user"></span></a>\
+				<div class="media-body">\
+				    <div class="msg-body">I\'ve attached the new draft and will shortly send it for review. We\'ll see what the other side says.</div>\
+				    <div class="msg-meta">Adam Bier, 25th June to AH, BC</div>\
+				</div>\
+			</div>\
+		</li>\
+		<li class="message other">\
+			<div class="media">\
+				<a class="user-icon" href="#"><span class="fui-user"></span></a>\
+				<div class="media-body">\
+				    <div class="msg-body">I\'ve attached the new draft and will shortly send it for review. We\'ll see what the other side says.</div>\
+				    <div class="msg-meta">Adam Bier, 25th June to AH, BC</div>\
+				</div>\
+			</div>\
+		</li>\
+		<li class="action">\
+			<span class="fui-document"></span> Adam uploaded a new draft.\
+		</li>\
+	</ul>\
+	<div class="new-message">\
+		<textarea class="form-control" rows="2" placeholder="Say something about Shareholders Agreement and press enter..."></textarea>\
+	</div>';
+	$("div.chat").append(chatdiv);
+
+
+
+
+	var blankchatdiv = '<div class="col-sm-5 chat full">\
+	<h4><span class="fui-chat"></span> Discuss</h4>\
+	<ul class="list-unstyled">\
+	</ul>\
+	<div class="new-message">\
+		<textarea class="form-control" rows="2" placeholder="Say something about Shareholders Agreement and press enter..."></textarea>\
+	</div>\
+	</div>\
+	';
+
+	$(".shareholders div.chat").replaceWith(blankchatdiv);
+
+
 	$("table.checklist tr.shareholders").click(function(e){ 
 		$("table.checklist tr").removeClass('selected'); 
 		$(this).addClass('selected');
@@ -475,15 +787,34 @@ $( document ).ready(function() {
 		$('.item.custom').show();
 	})
 	$("#upload-doc").click(function(e){ alert('filerpicker, this should also be a drop zone. to be discussed.') });
-	$("#item-description-toggle").click(function(e){ 
-		$("#item-description-toggle").toggle();
-		$("#item-description").toggle();
+	$(".item-description-toggle, .item-description-cancel").click(function(e){ 
+		$(".item-description-toggle").toggle();
+		$(".item-description").toggle();
 	})
 	$("#add-new").click(function(e){ 
 		$(".add-new-controls").toggle();
 		$("#add-new").css('opacity','.5');
-	})
+	});
+	$("#mark-final").click(function(e){ 
+		// $(".actions.final").animate({'opacity': '0.3'})
+		$(".actions.final").toggle();
 
+		$(".final-actions").toggle();
+		$("#mark-final span").toggle();
+		$('#final-demo-file').addClass('final');
+	});
+	$("#checklist-nav").click(function(e){ 
+		$("#checklist").show();
+		$("#closing").hide();
+		$("#checklist-nav").addClass('active');
+		$("#closing-nav").removeClass('active');
+	});
+	$("#closing-nav").click(function(e){ 
+		$("#closing").show();
+		$("#checklist").hide();
+		$("#checklist-nav").removeClass('active');
+		$("#closing-nav").addClass('active');
+	});
 
 });
 
