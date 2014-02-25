@@ -28,7 +28,6 @@ router = routers.SimpleRouter()
 ViewSets
 """
 router.register(r'users', UserEndpoint)
-router.register(r'account', AccountEndpoint, base_name='account')
 
 router.register(r'matters', MatterEndpoint)
 router.register(r'clients', ClientEndpoint)
@@ -40,6 +39,10 @@ router.register(r'revisions', RevisionEndpoint)
 Generics
 """
 urlpatterns = router.urls + patterns('',
+    #
+    # Account
+    #
+    url(r'^account/$', AccountEndpoint.as_view(), name='account'),
     #
     # Matter Specific
     #
