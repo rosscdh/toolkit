@@ -8,7 +8,6 @@ class IsDeletedQuerySet(QuerySet):
     """
     def delete(self, *args, **kwargs):
         if 'is_deleted' in self.model._meta.get_all_field_names():
-            # should this call .delete on the model
             self.update(is_deleted=True)
         else:
             super(IsDeletedQuerySet, self).delete()
