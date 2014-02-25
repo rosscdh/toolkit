@@ -46,6 +46,10 @@ so that I can change my password and email and various details
     Allow the [lawyer,customer] user to modify various aspects of their account; automatically
     patches only their account based on session.
 
+PATCH
+```
+
+```
 
 Client
 ======
@@ -99,8 +103,25 @@ POST new matter
 Matter Items
 ============
 
-/matters/:matter_slug/items/ (GET)
+/matters/:matter_slug/items/ (GET,POST)
     Allow the [lawyer,customer] user to list items that belong to them
+
+POST
+```
+{
+    "status": "New",
+    "name": "test again",
+    "description": "stuff goes here",
+    "matter": "http://localhost:8000/api/v1/matters/lawpal-internal/",
+    "parent": null,
+    "children": [],
+    "closing_group": null,
+    "latest_revision": null,
+    "is_final": false,
+    "is_complete": false,
+    "date_due": null
+}
+```
 
 /matters/:matter_slug/items/:item_slug/ (GET,PATCH,DELETE)
     Allow the [lawyer,customer] user to list, and update an existing item
@@ -116,6 +137,18 @@ that particular revisions.
 
 /matters/:matter_slug/items/:item_slug/revision (GET,POST,PATCH,DELETE)
     [lawyer,customer] to get,create,update,delete the latst revision
+
+POST
+```
+{
+    "executed_file": "", 
+    "item": "http://localhost:8000/api/v1/matters/lawpal-internal/items/4bcfaef627864c61a2a731473d40470e/",
+    "uploaded_by": "http://localhost:8000/api/v1/users/rosslawyer/"
+    "reviewers": null, 
+    "signatories": null, 
+    "revisions": []
+}
+```
 
 
 ### Reviewers
