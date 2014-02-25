@@ -10,6 +10,7 @@ from django.http import HttpResponse
 from django.views.generic import (ListView,
                                   CreateView,
                                   UpdateView,
+                                  DeleteView,
                                   DetailView)
 
 from ..models import Tool, InviteKey
@@ -100,6 +101,16 @@ class UpdateViewToolObjectView(WorkspaceToolFormViewMixin, UpdateView):
     def form_valid(self, form):
         self.object = form.save()
         return super(UpdateViewToolObjectView, self).form_valid(form)
+
+
+class DeleteToolObjectView(WorkspaceToolFormViewMixin, DeleteView):
+    """
+    View to delete a specific Tool Object
+    """
+    context_object_name = 'item'
+
+    def get_success_url(self):
+        return reverse('workspace:tool_object_list', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug})
 
 
 class InviteClientToolObjectView(IssueSignalsMixin, WorkspaceToolViewMixin, UpdateView):
