@@ -40,3 +40,22 @@ class IsDeletedMixinTestCase(TestCase):
         self.assertFalse(thing.is_deleted)
         thing.delete()
         self.assertTrue(thing.is_deleted)
+
+
+class IsDeletedQuerySetTestCase(TestCase):
+    def setUp(self):
+        Thing.objects.create(name='thing1')
+        Thing.objects.create(name='thing2')
+        Thing.objects.create(name='thing3')
+        Thing.objects.create(name='thing4', is_deleted=True)
+        Thing.objects.create(name='thing5', is_deleted=True)
+
+    def test_delete(self):
+        self.assertEqual(Thing.objects.all().count(), 3)
+        self.assertEqual(Thing.objects.deleted().count(), 2)
+
+        Thing.objects.all().delete()
+
+        self.assertEqual(Thing.objects.all().count(), 0)
+        self.assertEqual(Thing.objects.deleted().count(), 5)
+
