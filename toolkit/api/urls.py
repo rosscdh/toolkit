@@ -6,13 +6,17 @@ from rest_framework import routers
 from .views import UserEndpoint
 from .views import AccountEndpoint
 from .views import ClientEndpoint
+
 from .views import (MatterEndpoint,
                     MatterCategoryView,
                     MatterClosingGroupView,)
 
 from .views import (MatterItemsView,
                     MatterItemView,
+
                     MatterItemCurrentRevisionView,
+                    MatterItemSpecificReversionView,
+
                     ItemRevisionReviewerView,
                     ItemRevisionSignatoryView,
                     RemindReviewers,
@@ -54,7 +58,14 @@ urlpatterns = router.urls + patterns('',
     #
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/$', MatterItemsView.as_view(), name='matter_items'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/$', MatterItemView.as_view(), name='matter_item'),
+    #
+    # Revisions
+    #
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/$', MatterItemCurrentRevisionView.as_view(), name='matter_item_revision'),
+    url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/v(?P<version>[\d]+)/$', MatterItemSpecificReversionView.as_view(), name='matter_item_specific_revision'),
+    #
+    # Revision reviewers and signatories
+    #
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/reviewer/(?P<username>\w+)/$', ItemRevisionReviewerView.as_view(), name='item_revision_reviewer'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/signatory/(?P<username>\w+)/$', ItemRevisionSignatoryView.as_view(), name='item_revision_signatory'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/reviewers/remind/$', RemindReviewers.as_view(), name='item_revision_remind_reviewers'),

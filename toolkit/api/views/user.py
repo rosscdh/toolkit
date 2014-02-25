@@ -13,12 +13,12 @@ class UserEndpoint(viewsets.ModelViewSet):
     lookup_field = 'username'
     serializer_class = UserSerializer
 
-    def list(self, request, **kwargs):
-        """
-        @BUSINESSRULE only admin and superusers can see the list of users
-        """
-        user = request.user
-        if user.is_staff is True or user.is_superuser is True:
-            return super(UserEndpoint, self).list(request=request, **kwargs)
+    # def list(self, request, **kwargs):
+    #     """
+    #     @BUSINESSRULE only admin and superusers can see the list of users
+    #     """
+    #     user = request.user
+    #     if user.is_staff is True or user.is_superuser is True:
+    #         return super(UserEndpoint, self).list(request=request, **kwargs)
 
-        raise PermissionDenied()
+    #     raise PermissionDenied()
