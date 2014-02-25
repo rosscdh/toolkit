@@ -20,13 +20,20 @@
                         </td>
                         <td><small>{{ t.transfer_date }}</small></td>
                         <td><small>{{ t.filing_date }}</small></td>
-                        <td>
-                            {{ t|quick_status }}
-                            <small>{{ t.current_status }}</small>
-                        </td>
-                        <td>
-                            <a href="{% url 'workspace:tool_object_delete' workspace=workspace.slug tool=tool.slug slug=t.slug %}" class="fui-cross text-danger" style="vertical-align: middle;"></a>
-                        </td>
+                        {% if user.profile.is_lawyer %}
+                            <td>
+                                {{ t|quick_status }}
+                                <small>{{ t.current_status }}</small>
+                            </td>
+                            <td>
+                                <a href="{% url 'workspace:tool_object_delete' workspace=workspace.slug tool=tool.slug slug=t.slug %}" class="fui-cross text-danger" style="vertical-align: middle;"></a>
+                            </td>
+                        {% else %}
+                            <td colspan="2">
+                                {{ t|quick_status }}
+                                <small>{{ t.current_status }}</small>
+                            </td>
+                        {% endif %}
                     </tr>
                 {% empty %}
                     <tr>
