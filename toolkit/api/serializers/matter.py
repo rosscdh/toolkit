@@ -36,7 +36,7 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Workspace
-        fields = ('name', 'slug', 'matter_code',
+        fields = ('url', 'name', 'slug', 'matter_code',
                   'client', 'lawyer', 'participants',
                   'closing_groups', 'categories', 
                   'items', 'comments', 'activity',
