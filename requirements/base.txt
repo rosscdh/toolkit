@@ -9,8 +9,8 @@ Werkzeug
 
 # REST framework
 djangorestframework==2.3.9
-djangorestframework-jwt
-django-cors-headers
+# djangorestframework-jwt  ## not required yet
+# django-cors-headers  ## not required yet
 
 django-rulez
 django-password-reset
