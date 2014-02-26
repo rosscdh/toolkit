@@ -1,0 +1,36 @@
+{% extends 'workspace/workspace_tool_base.html' %}
+
+{% load url from future %}{% load django_bootstrap_breadcrumbs %}
+
+{% block page_title %}Delete — {{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% breadcrumb 'Delete' 'workspace:tool_object_delete' workspace.slug tool.slug item.slug %}
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-lg-8 col-lg-offset-2 content">
+            {% block content %}
+                <div class="page-header">
+                    <h4>Delete {{ item }}</h4>
+                </div>
+
+                {% block main %}
+                    <p>Are you sure you want to delete the {{ item }}? This action cannot be undone.</p>
+                {% endblock %}
+
+                <form method="POST" action="">
+                    {% csrf_token %}
+                    <a href="{% url 'workspace:tool_object_overview' workspace=workspace.slug tool=tool.slug slug=item.slug %}" type="button" class="btn btn-hg btn-default">
+                        <i class="glyphicon glyphicon-chevron-left"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-hg btn-danger pull-right">
+                        Yes, delete this 83(b) <i class="glyphicon glyphicon-chevron-right"></i>
+                    </button>
+                </form>
+            {% endblock %}
+        </div>
+    </div>
+{% endblock %}

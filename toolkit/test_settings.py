@@ -20,6 +20,7 @@ INSTALLED_APPS = INSTALLED_APPS + (
     'casper',
     'colortools',
     # Lawpal module
+    'toolkit.core.tests',
     'hello_sign.tests', ## added so that we get teh test models
 )
 
@@ -29,6 +30,9 @@ SKIP_SOUTH_TESTS = True
 PASSWORD_HASHERS = (
     'django.contrib.auth.hashers.MD5PasswordHasher',
 )
+
+HELLOSIGN_CLIENT_ID = '9bc892af173754698e3fa30dedee3826'
+HELLOSIGN_CLIENT_SECRET = '8d770244b9971abfe789f5224552239d'
 
 
 # def AutoSlugFieldGenerator():

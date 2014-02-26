@@ -1,12 +1,13 @@
 # -*- coding: UTF-8 -*-
 from django.db import models
 
-from toolkit.core.mixins.managers import isDeletedQuerySet
+from toolkit.core.mixins import IsDeletedQuerySet
+from toolkit.core.mixins import IsDeletedManager
 
 import datetime
 
 
-class EightyThreeBManager(models.Manager):
+class EightyThreeBManager(IsDeletedManager):
     """
     Default objects manager with helper methods
     """
@@ -29,7 +30,7 @@ class AttachmentManger(models.Manager):
     Manager for 83b attachments
     """
     def get_query_set(self):
-        return isDeletedQuerySet(self.model, using=self._db).filter(is_deleted=False)
+        return IsDeletedQuerySet(self.model, using=self._db).filter(is_deleted=False)
 
     def deleted(self):
         return super(AttachmentManger, self).get_query_set().filter(is_deleted=True)
