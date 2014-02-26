@@ -102,3 +102,15 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
         }
         #return [todo.copy() for i in xrange(0,5)]
         return []
+
+
+class LiteMatterSerializer(MatterSerializer):
+    """
+    @BUSINESSRULE used for the matters/ GET (shows lighter version of the serializer)
+    """
+    #participants = UserSerializer(many=True)
+
+    class Meta(MatterSerializer.Meta):
+        fields = ('url', 'name', 'slug', 'matter_code',
+                  'client', 'lawyer', 'participants',
+                  'date_created', 'date_modified',)
