@@ -23,6 +23,12 @@ urlpatterns = patterns('',
 
     # primary workspace
     url(r'^workspace/', include('toolkit.apps.workspace.urls', namespace='workspace')),
+
+    #matter angular app
+    url (r'^matter/(?P<matter_slug>[a-zA-Z0-9_.-]+)/$',
+         TemplateView.as_view(template_name="index_deployed.html"), name="matter-details-view"),
+
+
     # apps
     url(r'^83b/', include('toolkit.apps.eightythreeb.urls', namespace='eightythreeb')),
     url(r'^engagement-letters/', include('toolkit.apps.engageletter.urls', namespace='engageletter')),

@@ -79,8 +79,9 @@ module.exports = function (grunt) {
     copy: {
       main: {
         files: [
-          {src: ['index.html'], dest: 'dist/'},
+          {src: ['index.html'], dest: 'index_deployed.html'},
           {src: ['img/**'], dest: 'dist/'},
+          {src: ['fonts/**'], dest: 'dist/'},
           {src: ['bower_components/angular-ui-utils/ui-utils-ieshiv.min.js'], dest: 'dist/'},
           {src: ['bower_components/font-awesome/fonts/**'], dest: 'dist/',filter:'isFile',expand:true}
           // {src: ['bower_components/select2/*.png','bower_components/select2/*.gif'], dest:'dist/css/',flatten:true,expand:true},
@@ -104,28 +105,30 @@ module.exports = function (grunt) {
       removescripts: {
         options:{
           remove:'script[data-remove!="exclude"]',
-          append:{selector:'head',html:'<script src="app.full.min.js"></script>'}
+          append:{selector:'head',html:'<script src="/static/ng/app.full.min.js"></script>'}
         },
-        src:'dist/index.html'
+        src:'index_deployed.html'
       },
+      //add verbatim and endverbatim to prohibit conflicts with the django template tags
       addscript: {
         options:{
-          append:{selector:'body',html:'<script src="app.full.min.js"></script>'}
+          prepend:{selector:'body',html:'{% verbatim %}'},
+          append:{selector:'body',html:'<script src="/static/ng/app.full.min.js"></script>{% endverbatim %}'}
         },
-        src:'dist/index.html'
+        src:'index_deployed.html'
       },
       removecss: {
         options:{
           remove:'link',
-          append:{selector:'head',html:'<link rel="stylesheet" href="css/app.full.min.css">'}
+          append:{selector:'head',html:'<link rel="stylesheet" href="/static/ng/css/app.full.min.css">'}
         },
-        src:'dist/index.html'
+        src:'index_deployed.html'
       },
       addcss: {
         options:{
-          append:{selector:'head',html:'<link rel="stylesheet" href="css/app.full.min.css">'}
+          append:{selector:'head',html:'<link rel="stylesheet" href="/static/ng/css/app.full.min.css">'}
         },
-        src:'dist/index.html'
+        src:'index_deployed.html'
       }
     },
     cssmin: {
@@ -165,7 +168,7 @@ module.exports = function (grunt) {
           removeStyleLinkTypeAttributes: true
         },
         files: {
-          'dist/index.html': 'dist/index.html'
+          'index_deployed.html': 'index_deployed.html'
         }
       }
     },
