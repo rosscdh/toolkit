@@ -107,5 +107,6 @@ Tasks
 TODO
 
 1. matter needs description field
+1a. matter status/archived concept
 2. angular helper to degrade avatar to initials
 3. 
