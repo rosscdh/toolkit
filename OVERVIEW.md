@@ -102,3 +102,10 @@ Tasks
 6. docusign alternative to hello-sign
 7. Blog
 
+
+
+TODO
+
+1. matter needs description field
+2. angular helper to degrade avatar to initials
+3. 
