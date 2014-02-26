@@ -8,9 +8,10 @@ workspace.
 Getting started
 ---------------
 
-1. pip install -r requirements/dev.txt
-2. fab rebuild_local
-3. honcho start
+1. mkvirtualenv toolkit
+2. pip install -r requirements/dev.txt
+3. fab rebuild_local
+4. honcho start
 
 
 Pandoc
