@@ -4,8 +4,15 @@
 {% block navbar %}
  <div class="navbar navbar-inverse checklist-nav">
     <div class="navbar-header">
+    	<div class="logo-mark">
+			<a href="#fakelink"> 
+		    	<img src="{{STATIC_URL}}images/logo-white-icon.png">
+    		</a>
+        </div>
         <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-collapse-03"></button>
-        <a href="#fakelink" class="navbar-brand">Matter name</a>
+        <a href="#fakelink" class="navbar-brand"> 
+ 			Matter name
+ 		</a>
     </div>
     <div class="navbar-collapse collapse navbar-collapse-03">
         <ul class="nav navbar-nav">
@@ -17,7 +24,7 @@
             </li>
            
             <li class="checklist-members">
-                <a href="#fakelink">
+                <a href="#fakelink"  data-toggle="modal" data-target="#projectMembersModal">
                 <span class="fui-user"></span> 
                 <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash3/t1/c0.0.100.100/p100x100/1014416_10100118438650161_136799916_a.jpg" class="user">
                 <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/t1/c12.12.155.155/314032_10150303812474864_594285312_a.jpg" class="user">
@@ -142,6 +149,7 @@
 			                	<span class="fui-list-columned"></span> Shareholders agreement 
 			                </td>
 			                <td class="status">
+			                	<button class="btn btn-default btn-xs" disabled>25 Jun</button>
 			                </td>
 			              </tr>
 						  <tr class="note">
@@ -166,6 +174,7 @@
 			                </td>
 			                <td class="status">
 			                	<button class="btn btn-warning btn-xs" disabled><span class="fui-user"></span> Review 66%</button>
+			                	<button class="btn btn-danger btn-xs" disabled>25 Jun</button>
 			                </td>
 			              </tr>
 
@@ -304,20 +313,34 @@
 							<h3>Stock Purchase Agreement 
 								<div class="tools-inject"></div>
 							</h3>	
+							<table>
+								<tr>
+									<td>Version</td>
+									<td></td>
+									<td></td>
+									<td></td>
+									<td></td>
+								</tr>
+
+							</table>
+
+
+
 							<ul class="list-unstyled item-progress">
 								<li class="">
-									<div class="fui-check"></div> <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/t1/c12.12.155.155/314032_10150303812474864_594285312_a.jpg" class="user"> <span>File received from Ross Crawford</span>
+									<div class="fui-check"></div> <span>File received from Ross Crawford</span>
 									<div class="file" id="final-demo-file">
-										<div class="col-sm-2 icon icon-doc" style="text-align:center;">
+										<div class="col-sm-12 icon icon-doc" style="text-align:center;">
 											<span class="fui-document"></span>
-										</div>
-										<div class="col-sm-10 meta">
-											<h5><a href="#">stock_purchase_agreement_929928.doc</a></h5>
-											<small>
-												<a href="#" class="">View</a>
-												<a href="#" class="">Download</a>
-												<a href="#" class="">Edit</a>
-											</small>
+											<img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/t1/c12.12.155.155/314032_10150303812474864_594285312_a.jpg" class="user">
+											<div class="meta">
+												<h5><a href="#">stock_purchase_agreement_929928.doc</a></h5>
+												<small>
+													<a href="#" class="">View</a>
+													<a href="#" class="">Download</a>
+													<a href="#" class="">Edit</a>
+												</small>
+											</div>
 										</div>
 									</div> 
 									<div class="actions final">
@@ -344,7 +367,7 @@
 							</h3>	
 							<ul class="list-unstyled item-progress">
 								<li class="">
-									<div class="fui-check"></div> <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/t1/c12.12.155.155/314032_10150303812474864_594285312_a.jpg" class="user"> <span>File received from Ross Crawford</span>
+									<div class="fui-check"></div> <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/t1/c12.12.155.155/314032_10150303812474864_594285312_a.jpg" class="user"> <span>File received (RC)</span>
 									<div class="file" id="final-demo-file">
 										<div class="col-sm-2 icon icon-doc" style="text-align:center;">
 											<span class="fui-document"></span>
@@ -360,10 +383,23 @@
 									</div> 
 								</li>
 								<li class="">
-									<div class="fui-check"></div> <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash3/t1/c0.0.100.100/p100x100/1014416_10100118438650161_136799916_a.jpg" class="user"> <span>New revision added by Alex Halliday</span>
+									<div class="fui-check"></div> <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash3/t1/c0.0.100.100/p100x100/1014416_10100118438650161_136799916_a.jpg" class="user"> <span>New revision added (AH)</span>
+									<div class="file" id="final-demo-file">
+										<div class="col-sm-2 icon icon-doc" style="text-align:center;">
+											<span class="fui-document"></span>
+										</div>
+										<div class="col-sm-10 meta">
+											<h5><a href="#">stock_purchase_agreement_929928.doc</a></h5>
+											<small>
+												<a href="#" class="">View</a>
+												<a href="#" class="">Download</a>
+												<a href="#" class="">Edit</a>
+											</small>
+										</div>
+									</div> 
 								</li>
 								<li class="">
-									<div class="fui-time"></div> <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash3/t1/c0.0.100.100/p100x100/1014416_10100118438650161_136799916_a.jpg" class="user"> <span>Review requested by Alex Halliday</span>
+									<div class="fui-check"></div> <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash3/t1/c0.0.100.100/p100x100/1014416_10100118438650161_136799916_a.jpg" class="user"> <span>New revision added (AH), review complete</span>
 									<div class="file" id="final-demo-file">
 										<div class="col-sm-2 icon icon-doc" style="text-align:center;">
 											<span class="fui-document"></span>
@@ -594,7 +630,7 @@
 
 <!-- Modals -->
 
-<!-- 1. Add Party -->
+<!-- 1. Request File -->
 <div class="modal" id="requestFileModal" tabindex="-1" role="dialog" aria-labelledby="requestFileModal" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -602,52 +638,78 @@
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         <h4 class="modal-title" id="myModalLabel">Request file for Shareholders Agreement</h4>
       </div>
-      <div class="modal-body">
-		<strong>Existing members</strong>
-        <div class="media">
-		  <a class="pull-left" href="#">
-		    <img class="media-object" src="http://placehold.it/30x30/" alt="...">
-		  </a>
-		  <div class="media-body">
-		    Alex Halliday
-		    <a href="#" class="btn btn-info btn-sm pull-right">Request File</a>
-		  </div>
-		</div>
-		<div class="media">
-		  <a class="pull-left" href="#">
-		    <img class="media-object" src="http://placehold.it/30x30/" alt="...">
-		  </a>
-		  <div class="media-body">
-		    Yael Citro
-		    <a href="#" class="btn btn-info btn-sm pull-right">Request File</a>
-		  </div>
-		</div>
-		<hr />
-		<strong>Request file from someone new</strong>
-		<div class="row">
-			<div class="col-sm-8">
-				<input class="form-control" type="text" data-provide="typeahead" data-items="4" data-source="[&quot;Alabama&quot;,&quot;Alaska&quot;,&quot;Arizona&quot;,&quot;Arkansas&quot;,&quot;California&quot;,&quot;Colorado&quot;,&quot;Connecticut&quot;,&quot;Delaware&quot;,&quot;Florida&quot;,&quot;Georgia&quot;,&quot;Hawaii&quot;,&quot;Idaho&quot;,&quot;Illinois&quot;,&quot;Indiana&quot;,&quot;Iowa&quot;,&quot;Kansas&quot;,&quot;Kentucky&quot;,&quot;Louisiana&quot;,&quot;Maine&quot;,&quot;Maryland&quot;,&quot;Massachusetts&quot;,&quot;Michigan&quot;,&quot;Minnesota&quot;,&quot;Mississippi&quot;,&quot;Missouri&quot;,&quot;Montana&quot;,&quot;Nebraska&quot;,&quot;Nevada&quot;,&quot;New Hampshire&quot;,&quot;New Jersey&quot;,&quot;New Mexico&quot;,&quot;New York&quot;,&quot;North Dakota&quot;,&quot;North Carolina&quot;,&quot;Ohio&quot;,&quot;Oklahoma&quot;,&quot;Oregon&quot;,&quot;Pennsylvania&quot;,&quot;Rhode Island&quot;,&quot;South Carolina&quot;,&quot;South Dakota&quot;,&quot;Tennessee&quot;,&quot;Texas&quot;,&quot;Utah&quot;,&quot;Vermont&quot;,&quot;Virginia&quot;,&quot;Washington&quot;,&quot;West Virginia&quot;,&quot;Wisconsin&quot;,&quot;Wyoming&quot;]" placeholder="atticus.finch@gmail.com">
-	      	</div>
-			<div class="col-sm-4">
-	      		<a href="#" class="btn btn-default">Invite</a>
-	      	</div>
-	     </div>
-	     <div class="row">
-	     	<div class="col-sm-8">
-		     	<textarea class="form-control" placeholder="Add an optional message...."></textarea>
+      	<div class="modal-body">
+			<strong>Existing members</strong>
+        	<label class="radio">
+            	<input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" data-toggle="radio" checked="">
+            	Yael Citro
+          	</label>
+          	<label class="radio">
+            	<input type="radio" name="optionsRadios" id="optionsRadios2" value="option1" data-toggle="radio">
+            	Alex Halliday
+          	</label>
+          	<label class="radio">
+            	<input type="radio" name="optionsRadios" id="optionsRadios2" value="option1" data-toggle="radio">
+            	External party <span class="fui-lock" data-toggle="tooltip" title="Requesting a file from a third party does not give them access to this matter."></span>
+          	</label>
+          	<input class="form-control input-sm" type="text" placeholder="atticus.finch@gmail.com" disabled>
+	     	<div class="row">
+		     	<div class="col-sm-8">
+			     	<textarea class="form-control" placeholder="Add an optional message...."></textarea>
+				</div>
 			</div>
 	     </div>
-	     <div class="row">
-			<div class="col-sm-12">
-	      		<small class="text-muted">User will be invited to the workspace to supply just this file.</small>
-	      	</div>
-	      </div>
+		<div class="modal-footer">
+			<a href="#" class="btn btn-default btn-wide"  data-dismiss="modal" aria-hidden="true">Cancel</a>
+			<a href="#" class="btn btn-primary btn-wide">Request file</a>
+	   	</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- 2. Attach Workflow -->
+
+<!-- 2. Workspace Team -->
+<div class="modal" id="projectMembersModal" tabindex="-1" role="dialog" aria-labelledby="projectMembersModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Matter Participants</h4>
+        <p>In LawPal, a Matter Participant is a high level user who can see the checklist and the revisions that have been added. This should be <u>your client</u> and your <u>co-counsel</u> only.</p>
+      </div>
+      	<div class="modal-body">
+			<strong>Existing Participants</strong>
+        	<label class="radio">
+            	Yael Citro
+          	</label>
+          	<label class="radio">
+            	Alex Halliday
+          	</label>
+          	<hr />
+			<strong>Add a Participants</strong>
+
+          	<label class="radio">
+            	<input type="radio" name="optionsRadios" id="optionsRadios2" value="option1" data-toggle="radio">
+            	External party <span class="fui-lock" data-toggle="tooltip" title="Requesting a file from a third party does not give them access to this matter."></span>
+          	</label>
+          	<input class="form-control input-sm" type="text" placeholder="atticus.finch@gmail.com" disabled>
+	     	<div class="row">
+		     	<div class="col-sm-8">
+			     	<textarea class="form-control" placeholder="Add an optional message...."></textarea>
+				</div>
+			</div>
+	     </div>
+		<div class="modal-footer">
+			<a href="#" class="btn btn-default btn-wide"  data-dismiss="modal" aria-hidden="true">Cancel</a>
+			<a href="#" class="btn btn-primary btn-wide">Request file</a>
+	   	</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 3. Attach Workflow -->
 <div class="modal" id="attachWorkflowModal" tabindex="-1" role="dialog" aria-labelledby="attachWorkflowModal" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -676,12 +738,12 @@
 		    <a href="#" class="btn btn-info btn-sm pull-right">Enable Workflow</a>
 		  </div>
 		</div>
-		<hr />
 	     <div class="row">
 			<div class="col-sm-12">
 	      		<small class="text-muted">Custom workflow apps coming soon.</small>
 	      	</div>
-	      </div>
+	    </div>
+
       </div>
     </div>
   </div>
@@ -696,13 +758,13 @@ $( document ).ready(function() {
 	// Inject the tools
 
 	var toolsinject = '	<div class="btn-group pull-right">\
-		<a href="#" class="btn-inverse btn-xs pull-right" class="dropdown-toggle" data-toggle="dropdown">Options</a>\
-		<ul class="dropdown-menu dropdown-inverse">\
+		<a href="#" class="btn-silver btn-xs" data-toggle="tooltip" title="datepicker!" data-placement="bottom">25 June</a>\
+		<a href="#" class="btn-info btn-xs" data-toggle="tooltip" title="Part of Closing Group A" data-placement="bottom"><span class="fui-radio-checked"></span> A</a>\
+		<a href="#" class="btn-inverse btn-xs" class="dropdown-toggle" data-toggle="dropdown">Options</a>\
+		<ul class="dropdown-menu dropdown-small dropdown-inverse">\
 			<li><a href="#"><span class="fui-calendar"></span> Set due date</a></li>\
-			<li><a href="#"><span class="fui-calendar"></span> Add wizard</a></li>\
-			<li><a href="#"><span class="fui-star-2"></span> Set closing group</a></li>\
-			<li><a href="#"><span class="fui-loop r"></span> Clone</a></li>\
-			<li><a href="#"><span class="fui-trash text-danger"></span> Delete</a></li>\
+			<li><a href="#" data-toggle="modal" data-target="#attachWorkflowModal"><span class="fui-calendar"></span> Add workflow</a></li>\
+			<li><a href="#" class="text-danger"><span class="fui-trash text-danger"></span> Delete</a></li>\
 		</ul>\
 	</div>\
 	<br />\
@@ -713,7 +775,7 @@ $( document ).ready(function() {
 		<a href="#" class="btn btn-inverse btn-xs item-description-cancel">Cancel</a>\
 		<a href="#" class="btn btn-link btn-xs pull-right" title="Markdown help" onclick="alert(\'Markdown help popup like trello\');">Formatting Help</a>\
 	</div>\
-	';
+';
 	$("div.tools-inject").replaceWith(toolsinject);
 
 
@@ -815,6 +877,9 @@ $( document ).ready(function() {
 		$("#checklist-nav").removeClass('active');
 		$("#closing-nav").addClass('active');
 	});
+
+   // Tooltips
+    $("[data-toggle=tooltip]").tooltip();
 
 });
 

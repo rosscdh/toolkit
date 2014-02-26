@@ -38,6 +38,18 @@ div.full {
 .navbar.checklist-nav .input-group .btn {
   border: none!important;
 }
+.navbar a.navbar-brand {
+  font-size: 16px;
+  padding: 12px 18px 11px 18px;
+}
+.navbar .logo-mark {
+  float: left;
+  background-color: #373737;
+  padding: 14px 12px 15px 13px;
+}
+.navbar .logo-mark img {
+  width: 30px;
+}
 #checklist,
 #closing {
   background-color: #f2f2f2;
@@ -95,7 +107,9 @@ div.full {
 #checklist table.checklist tr.selected td.status .btn-success,
 #closing table.checklist tr.selected td.status .btn-success,
 #checklist table.checklist tr.selected td.status .btn-warning,
-#closing table.checklist tr.selected td.status .btn-warning {
+#closing table.checklist tr.selected td.status .btn-warning,
+#checklist table.checklist tr.selected td.status .btn-default,
+#closing table.checklist tr.selected td.status .btn-default {
   background-color: transparent;
   color: white;
   border-color: white;
@@ -192,6 +206,11 @@ div.full {
   padding-bottom: 0px;
   text-align: right;
 }
+#checklist table.checklist td.status .btn-xs,
+#closing table.checklist td.status .btn-xs {
+  padding: 5px 5px;
+  font-size: 11.5px;
+}
 #checklist table.checklist td.status .fui-check-inverted,
 #closing table.checklist td.status .fui-check-inverted {
   padding-top: 4px;
@@ -203,14 +222,20 @@ div.full {
 #checklist table.checklist td.status .btn-success,
 #closing table.checklist td.status .btn-success {
   background-color: white;
-  color: #60db94;
+  color: #2cc36b;
   border: 1px solid #b3eecc;
 }
 #checklist table.checklist td.status .btn-warning,
 #closing table.checklist td.status .btn-warning {
   background-color: white;
-  color: #f2c81d;
+  color: #f1c40f;
   border: 1px solid #f9e8a0;
+}
+#checklist table.checklist td.status .btn-default,
+#closing table.checklist td.status .btn-default {
+  background-color: #f3f5f5;
+  color: #9dacad;
+  border: 1px solid #e8ecec;
 }
 #checklist table.checklist td.add-new,
 #closing table.checklist td.add-new {
@@ -282,13 +307,12 @@ div.full {
 #closing div.item textarea:focus {
   border-color: #a5afaf;
 }
-#checklist div.item #item-description-toggle,
-#closing div.item #item-description-toggle {
-  display: inline;
+#checklist div.item .item-description-toggle,
+#closing div.item .item-description-toggle {
   padding-top: 10px;
 }
-#checklist div.item #item-description textarea,
-#closing div.item #item-description textarea {
+#checklist div.item .item-description textarea,
+#closing div.item .item-description textarea {
   margin-top: 10px;
   margin-bottom: 3px;
   font-size: 12px;
@@ -303,11 +327,11 @@ div.full {
   padding-right: 10px;
   /* border-left: 1px solid lighten(@gray-light, 10%); */
 
-  margin-left: 30px;
+  margin-left: 0px;
   padding-bottom: 15px;
   padding-top: 15px;
-  font-size: 16px;
-  font-weight: bold;
+  font-size: 12px;
+  font-weight: normal;
   clear: both;
   color: #545e64;
   opacity: 0.4;
@@ -323,6 +347,7 @@ div.full {
   margin-top: -5px;
   border-radius: 30px;
   opacity: 0.6;
+  display: inline;
 }
 #checklist div.item ul.item-progress li:last-child,
 #closing div.item ul.item-progress li:last-child {
@@ -343,13 +368,13 @@ div.full {
 #checklist div.item ul.item-progress div[class*="fui-"],
 #closing div.item ul.item-progress div[class*="fui-"] {
   color: white;
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
   text-align: center;
   padding-top: 2px;
   margin-top: -5px;
   margin-bottom: -5px;
-  margin-left: -36px;
+  margin-left: 0px;
   margin-right: 3px;
   border-radius: 20px;
   background-color: #3498db;
@@ -398,8 +423,7 @@ div.full {
 }
 #checklist div.item ul.item-progress div.file .icon,
 #closing div.item ul.item-progress div.file .icon {
-  font-size: 30px;
-  text-align: center;
+  font-size: 20px;
   padding-top: 3px;
 }
 #checklist div.item ul.item-progress div.file .meta,
@@ -411,8 +435,8 @@ div.full {
 #checklist div.item ul.item-progress div.file .meta h5,
 #closing div.item ul.item-progress div.file .meta h5 {
   text-transform: none;
-  margin: 4px 0px 0px 0px;
-  font-size: 13px;
+  margin: 0px 0px 0px 0px;
+  font-size: 12px;
 }
 #checklist div.item ul.item-progress div.file .meta a,
 #closing div.item ul.item-progress div.file .meta a {
@@ -657,7 +681,7 @@ div.full {
   background-color: #2c81ba;
 }
 .popover-content {
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.226;
 }
 .icon-pdf {
@@ -683,8 +707,8 @@ div.full {
   margin: 0 4px 0 9px;
 }
 .page-header .progress {
-  margin-bottom: 15px;
-  margin-top: 15px;
+  margin-bottom: 12px;
+  margin-top: 12px;
   width: 200px;
 }
 .page-header h4 {
@@ -859,7 +883,7 @@ div.full {
   margin-bottom: 20px;
 }
 .section .section-header {
-  margin-bottom: 14px;
+  margin-bottom: 11px;
 }
 .section .section-header .btn {
   margin-top: -5px;
@@ -870,23 +894,23 @@ div.full {
   filter: alpha(opacity=50);
 }
 .status-list-item-icon {
-  font-size: 24px;
+  font-size: 22px;
 }
 .status-next .status-list-item-icon {
-  font-size: 29px;
+  font-size: 25px;
 }
 .status-list-item-heading {
-  font-size: 18px;
-  margin-bottom: 10px;
-  margin-top: 10px;
+  font-size: 16px;
+  margin-bottom: 8px;
+  margin-top: 8px;
 }
 .status-next .status-list-item-heading {
-  font-size: 24px;
+  font-size: 22px;
 }
 .status-list-item-meta {
   font-size: 75%;
-  margin-bottom: 7.5px;
-  margin-top: 7.5px;
+  margin-bottom: 6px;
+  margin-top: 6px;
 }
 .status-list-item-text {
   font-size: 75%;
@@ -895,8 +919,8 @@ div.full {
   font-size: 100%;
 }
 .status-list-item-actions {
-  margin-bottom: 7.5px;
-  margin-top: 7.5px;
+  margin-bottom: 6px;
+  margin-top: 6px;
 }
 .status-pending {
   color: #bdc3c7;
