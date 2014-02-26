@@ -10,11 +10,12 @@ from django.http import HttpResponse
 from django.views.generic import (ListView,
                                   CreateView,
                                   UpdateView,
+                                  DeleteView,
                                   DetailView)
 
 from ..models import Tool, InviteKey
 from ..forms import InviteUserForm
-from ..mixins import WorkspaceToolViewMixin, WorkspaceToolFormViewMixin, IssueSignalsMixin
+from ..mixins import WorkspaceToolViewMixin, WorkspaceToolFormViewMixin, WorkspaceToolTemplateViewMixin, IssueSignalsMixin
 from ..services import PDFKitService  # , HTMLtoPDForPNGService
 
 import datetime
@@ -102,10 +103,20 @@ class UpdateViewToolObjectView(WorkspaceToolFormViewMixin, UpdateView):
         return super(UpdateViewToolObjectView, self).form_valid(form)
 
 
-class InviteClientToolObjectView(IssueSignalsMixin, WorkspaceToolViewMixin, UpdateView):
+class DeleteToolObjectView(WorkspaceToolFormViewMixin, DeleteView):
+    """
+    View to delete a specific Tool Object
+    """
+    context_object_name = 'item'
+
+    def get_success_url(self):
+        return reverse('workspace:tool_object_list', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug})
+
+
+class InviteClientToolObjectView(IssueSignalsMixin, WorkspaceToolViewMixin, WorkspaceToolTemplateViewMixin, UpdateView):
     model = InviteKey
     form_class = InviteUserForm
-    template_name = 'workspace/workspace_tool_invite.html'
+    template_name_suffix = '_invite'
 
     def get_success_url(self):
         return reverse('workspace:tool_object_overview', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug, 'slug': self.tool_instance.slug})

@@ -11,9 +11,9 @@ from uuidfield import UUIDField
 from rulez import registry as rulez_registry
 from storages.backends.s3boto import S3BotoStorage
 
-from toolkit.apps.eightythreeb.managers import AttachmentManger
+from toolkit.core.mixins import IsDeletedMixin
 
-from toolkit.apps.workspace.services import WordService
+from toolkit.apps.workspace.services import PDFKitService
 from toolkit.apps.workspace.signals import base_signal
 from toolkit.apps.workspace.mixins import WorkspaceToolModelMixin
 from toolkit.core.mixins import IsDeletedMixin
@@ -35,7 +35,7 @@ def _upload_file(instance, filename):
     return 'templates/engageletter-%d-%s%s' % (instance.tool.user.pk, slugify(filename_no_ext), ext)
 
 
-class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, HelloSignModelMixin, WorkspaceToolModelMixin, models.Model):
+class EngagementLetter(StatusMixin, HTMLMixin, HelloSignModelMixin, WorkspaceToolModelMixin, IsDeletedMixin, models.Model):
     """
     Enagement Letter model
     """
@@ -123,8 +123,8 @@ class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, HelloSignModelMix
         Return the document to be senf for signing
         Ties in with HelloSignModelMixin method
         """
-        doc_service = WordService()
-        return doc_service.generate(html=self.html())
+        doc_service = PDFKitService(html=self.html())
+        return doc_service.pdf(template_name='engageletter.html')
 
     def get_absolute_url(self):
         return reverse('workspace:tool_object_overview', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug=self.tool_slug).first().slug, 'slug': self.slug})
@@ -150,9 +150,6 @@ class Attachment(IsDeletedMixin, models.Model):
     tool = models.ForeignKey('engageletter.EngagementLetter')
     attachment = models.FileField(upload_to=_upload_file, blank=True, storage=S3BotoStorage())
     body = models.TextField()
-    is_deleted = models.BooleanField(default=False)
-
-    objects = AttachmentManger()
 
     def can_delete(self, user):
         return user == self.tool.user

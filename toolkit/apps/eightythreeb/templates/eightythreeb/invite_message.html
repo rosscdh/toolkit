@@ -1,12 +1,17 @@
-<p>Dear {{ instance.user.get_full_name|default:instance.user.email }},</p>
-
-<p>In connection with your recent purchase of shares of {{ instance.company_name }}, you may wish to make a Section 83(b) election. I am not your lawyer and this is not intended as legal advice.  I am also not your tax advisor and this is not intended as tax advice. You should consult your own lawyer and your own tax advisor on whether it is best to make the 83(b) election or not.</p>
-
-<p><strong>Follow this invitation link to gain access to your 83b Election:</strong><br>{{ action_url }}</p>
-
-<p>For the sake of ease, I have included the company-specific information. Although you are not my client, you should feel free to contact me with any questions if something is not clear. THE FILING OF SUCH ELECTION IS SOLEY YOUR RESPONSIBILITY.  YOU MUST FILE THIS FORM WITHIN 30 DAYS OF PURCHASING THE SHARES.</p>
-
-<p>You (and not the company, any of its agents or any other person, including myself or LawPal) shall be solely responsible for making this filing with the IRS, even if you request the company, any of its agents or any other person, including myself or LawPal, to make the filing on your behalf and even if the company, its agents or any other person, including myself or LawPal has previously made this filing on your behalf.</p>
-
-<p>Regards</p>
-<p>{{ user.get_full_name|default:user.email }}</p>
+Dear {{ instance.user.get_full_name|default:instance.user.email }},
+<br>
+<br>
+In connection with your recent purchase of shares of {{ instance.company_name }}, you may wish to make a Section 83(b) election. I am not your lawyer and this is not intended as legal advice.  I am also not your tax advisor and this is not intended as tax advice. You should consult your own lawyer and your own tax advisor on whether it is best to make the 83(b) election or not.
+<br>
+<br>
+<strong>Follow this invitation link to gain access to your 83b Election:</strong>
+<br>
+{{ action_url }}
+<br>
+<br>
+For the sake of ease, I have included the company-specific information. Although you are not my client, you should feel free to contact me with any questions if something is not clear. THE FILING OF SUCH ELECTION IS SOLEY YOUR RESPONSIBILITY. YOU MUST FILE THIS FORM WITHIN 30 DAYS OF PURCHASING THE SHARES.
+<br>
+<br>
+Regards
+<br>
+{{ user.get_full_name|default:user.email }}
