@@ -129,7 +129,7 @@ HELPER_APPS = (
     'summernote',
 
     # Api helpers
-    'corsheaders',
+    #'corsheaders',  # not required yet
 
     # db migrations
     'south',
@@ -146,7 +146,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+    # 'corsheaders.middleware.CorsMiddleware',  # not required yet
     'toolkit.apps.me.middleware.EnsureUserHasPasswordMiddleware',
 )
 
@@ -239,7 +239,7 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         #'rest_framework.authentication.TokenAuthentication',
-        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        #'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'rest_framework.authentication.BasicAuthentication', # Here Temporarily for dev
         'rest_framework.authentication.SessionAuthentication',
     ),
