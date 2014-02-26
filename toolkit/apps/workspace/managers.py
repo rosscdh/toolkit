@@ -1,8 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django.db import models
 
-from toolkit.core.mixins.managers import isDeletedQuerySet
-
 
 class WorkspaceManager(models.Manager):
     def get_query_set(self):

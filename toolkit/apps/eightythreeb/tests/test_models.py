@@ -12,6 +12,10 @@ class EightyThreeBTestCase(BaseScenarios, TestCase):
         super(EightyThreeBTestCase, self).setUp()
         self.basic_workspace()
 
+    def test_get_edit_url(self):
+        eightythreeb = EightyThreeB(workspace=self.workspace, slug='e0c545082d1241849be039e338e47a0f')
+        self.assertEquals(eightythreeb.get_edit_url(), '/workspace/lawpal-test/tool/83b-election-letters/e0c545082d1241849be039e338e47a0f/edit/')
+
     def test_has_expired(self):
         # Date in future (not complete)
         self.eightythreeb.status = EightyThreeB.STATUS.lawyer_complete_form

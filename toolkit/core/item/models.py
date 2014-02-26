@@ -55,9 +55,8 @@ class Item(models.Model):
     def latest_revision(self):
         """
         @BUSINESSRULE always return the latest revision
-        revisions are ordered by -id
         """
-        return self.revision_set.all().first()
+        return self.revision_set.all().last()
 
     def participants(self):
         return self.data.get('participants', [])

@@ -13,9 +13,12 @@ class LawyerCompleteFormMarker(Marker):
     description = 'Set up 83(b) Election Letter'
     signals = ['toolkit.apps.eightythreeb.signals.lawyer_complete_form']
 
-    action_name = 'Setup 83(b)'
-    action_type = Marker.ACTION_TYPE.modal
+    action_type = Marker.ACTION_TYPE.redirect
     action_user_class = ['lawyer']
+
+    @property
+    def action_name(self):
+        return 'Edit 83(b)' if self.is_complete is True else 'Setup 83(b)'
 
     def get_action_url(self):
         if self.tool is not None:
@@ -24,7 +27,7 @@ class LawyerCompleteFormMarker(Marker):
 
     @property
     def action(self):
-        if self.tool.is_complete is True or self.tool.status > self.val:
+        if self.tool.status > self.tool.STATUS.customer_download_pdf:
             return None
         else:
             return self.get_action_url()
@@ -35,13 +38,12 @@ class LawyerInviteUserMarker(Marker):
     description = 'Invite taxpayer to complete the 83(b) Election Letter'
     signals = ['toolkit.apps.eightythreeb.signals.lawyer_invite_customer']
 
-    action_name = 'Invite Client'
     action_type = Marker.ACTION_TYPE.redirect
     action_user_class = ['lawyer']
 
     @property
     def action_name(self):
-        return 'Reinvite Client' if self.is_complete is True else 'Invite Client'
+        return 'Reinvite Taxpayer' if self.is_complete is True else 'Invite Taxpayer'
 
     def get_action_url(self):
         return reverse('workspace:tool_object_invite', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.tool_slug, 'slug': self.tool.slug})

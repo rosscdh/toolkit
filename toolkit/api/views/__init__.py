@@ -8,11 +8,15 @@ from .matter import (MatterEndpoint,
 
 from .matter import (MatterItemsView,
                      MatterItemView,
+
                      ItemCurrentRevisionView as MatterItemCurrentRevisionView,
+                     ItemSpecificReversionView as MatterItemSpecificReversionView,
+
                      ItemRevisionReviewerView,
                      ItemRevisionSignatoryView,
                      RemindReviewers,
                      RemindSignatories,)
+
 from .item import ItemEndpoint
 from .revision import RevisionEndpoint
 # from .workflow import WorkflowEndpoint
