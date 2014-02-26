@@ -79,6 +79,8 @@ DJANGO_APPS = (
 )
 
 PROJECT_APPS = (
+    'toolkit.core',
+
     'toolkit.apps.api',
     'toolkit.apps.default',
     'toolkit.apps.dash',

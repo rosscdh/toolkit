@@ -20,6 +20,7 @@ INSTALLED_APPS = INSTALLED_APPS + (
     'casper',
     'colortools',
     # Lawpal module
+    'toolkit.core.tests',
     'hello_sign.tests', ## added so that we get teh test models
 )
 

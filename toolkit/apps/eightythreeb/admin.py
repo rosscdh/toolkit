@@ -1,5 +1,7 @@
 from django.contrib import admin
 
+from toolkit.core.mixins import IsDeletedModelAdmin
+
 from .models import EightyThreeB, Attachment
 
 
@@ -8,9 +10,9 @@ class AttachmentInline(admin.StackedInline):
     extra = 1
 
 
-class EightyThreeBAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__', 'slug', 'status',)
-    list_filter = ['status']
+class EightyThreeBAdmin(IsDeletedModelAdmin, admin.ModelAdmin):
+    list_display = ('__unicode__', 'slug', 'status', 'is_deleted')
+    list_filter = ('status', 'is_deleted')
     search_fields = ('slug', 'id')
 
     inlines = [
