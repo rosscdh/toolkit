@@ -14,6 +14,7 @@ from toolkit.core.item.models import Item
 from toolkit.core.item.mailers import ReviewerReminderEmail, SignatoryReminderEmail
 
 from ..serializers import MatterSerializer
+from ..serializers.matter import LiteMatterSerializer
 from ..serializers import ItemSerializer
 from ..serializers import RevisionSerializer
 from ..serializers import UserSerializer
@@ -29,6 +30,13 @@ class MatterEndpoint(viewsets.ModelViewSet):
     model = Workspace
     serializer_class = MatterSerializer
     lookup_field = 'slug'
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            # @BUSINESSRULE show the light matter serializer
+            # if we are looking at the list
+            return LiteMatterSerializer
+        return self.serializer_class
 
     def get_queryset(self):
         user = self.request.user
