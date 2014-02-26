@@ -8,10 +8,10 @@ workspace.
 Getting started
 ---------------
 
-1. mkvirtualenv toolkit
+1. mkvirtualenv toolkit (assume you have virtualenv and virtualenvwrapper installed)
 2. pip install -r requirements/dev.txt
-3. fab rebuild_local
-4. honcho start
+3. fab rebuild_local (will download and install "stamp" - ruby rest api)
+4. honcho start (starts runserver_plus in threaded mode as well as the stamp service)
 
 
 Pandoc
