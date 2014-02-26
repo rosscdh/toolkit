@@ -131,7 +131,7 @@ class LawyerInviteUserMarkerTest(BaseTestMarker):
         self.assertEqual(self.subject.val, self.val)
         self.assertEqual(self.subject.description, 'Invite taxpayer to complete the 83(b) Election Letter')
         self.assertEqual(self.subject.signals, ['toolkit.apps.eightythreeb.signals.lawyer_invite_customer'])
-        self.assertEqual(self.subject.action_name, 'Invite Client')
+        self.assertEqual(self.subject.action_name, 'Invite Taxpayer')
         self.assertEqual(self.subject.action_type, Marker.ACTION_TYPE.redirect)
         self.assertEqual(self.subject.action_user_class, ['lawyer'])
 
@@ -145,7 +145,7 @@ class LawyerInviteUserMarkerTest(BaseTestMarker):
             self.subject = self.clazz(self.val)
             prop_mock.return_value = True
 
-            self.assertEqual(self.subject.action_name, 'Reinvite Client')
+            self.assertEqual(self.subject.action_name, 'Reinvite Taxpayer')
 
     def test_get_action_url(self):
         url = reverse('workspace:tool_object_invite', kwargs={'workspace': self.subject.tool.workspace.slug, 'tool': self.subject.tool.tool_slug, 'slug': self.subject.tool.slug})

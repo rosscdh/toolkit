@@ -135,7 +135,7 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
             'invalid': "Property transfer date is invalid.",
             'required': "Property transfer date can't be blank."
         },
-        help_text='The filing deadline is 30 days from this date. Your election must be post-marked no later than <span id="filing-deadline"></span>.',
+        help_text='The filing deadline is 30 days from this date. Your election must be post-marked no later than <span id="filing-deadline">+30 days</span>.',
         input_formats=['%B %d, %Y', '%Y-%m-%d %H:%M:%S'],
         label='Date on which the property was transferred',
         widget=forms.DateInput(
@@ -176,9 +176,9 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
         error_messages={
             'required': "Transfer value per share can't be blank."
         },
-        help_text='paid per share',
+        help_text='',
         label='Value per share at time of transfer',
-        initial='0.01',
+        initial='0.001',
         widget=forms.TextInput(attrs={'size': '10'})
     )
 
@@ -196,9 +196,9 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
         error_messages={
             'required': "Price paid per share can't be blank."
         },
-        help_text='paid per share',
+        help_text='',
         label='Actual price paid per share',
-        initial='0.01',
+        initial='0.001',
         widget=forms.TextInput(attrs={'size': '10'})
     )
 
