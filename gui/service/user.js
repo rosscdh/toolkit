@@ -13,8 +13,8 @@ angular.module('toolkit-gui').factory('userService', ['$q', '$resource', functio
 	function userResource() {
 		// get API resource
 		return $resource('/api/matter/:mid/user/:id', {}, {
-				'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json', 'token': token.value }, 'isArray': true },
-				'list': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json', 'token': token.value } }
+				'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }, 'isArray': true },
+				'list': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } }
 			});
 	}
 
