@@ -1,0 +1,8 @@
+{% extends 'workspace/workspace_tool_invite.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block form %}
+    <p>You can now invite {{ tool_instance.user.get_full_name }} to complete his/her 83(b) election filing. Please review the message below, amend it where necessary and click "Send Invite".</p>
+    {% crispy form %}
+{% endblock %}

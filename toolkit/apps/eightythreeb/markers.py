@@ -43,7 +43,7 @@ class LawyerInviteUserMarker(Marker):
 
     @property
     def action_name(self):
-        return 'Reinvite Client' if self.is_complete is True else 'Invite Client'
+        return 'Reinvite Taxpayer' if self.is_complete is True else 'Invite Taxpayer'
 
     def get_action_url(self):
         return reverse('workspace:tool_object_invite', kwargs={'workspace': self.tool.workspace.slug, 'tool': self.tool.tool_slug, 'slug': self.tool.slug})
