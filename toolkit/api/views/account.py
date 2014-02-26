@@ -1,14 +1,14 @@
 # -*- coding: UTF-8 -*-
 from django.contrib.auth.models import User
 
-from rest_framework import viewsets
+from rest_framework import generics
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from ..serializers import AccountSerializer, PasswordSerializer
 
 
-class AccountEndpoint(viewsets.ViewSet):
+class AccountEndpoint(generics.RetrieveUpdateAPIView):
     """
     """
     queryset = User.objects.all()
@@ -32,6 +32,10 @@ class AccountEndpoint(viewsets.ViewSet):
             return self.set_password(password=request.DATA.pop('password'))
 
         serializer = self.serializer_class(user, data=request.DATA, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+
         return Response(serializer.data)
 
     def set_password(self, password):

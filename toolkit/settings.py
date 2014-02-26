@@ -83,6 +83,7 @@ PROJECT_APPS = (
     'toolkit.api',
 
     # Core Apps
+    'toolkit.core',
     'toolkit.apps.workspace',  # Matters
     'toolkit.core.client',
     'toolkit.core.item',

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.core import mail
 from django.test import TestCase
-from django.db.models.query import QuerySet
 
 import datetime
 import httpretty
@@ -14,6 +13,8 @@ from toolkit.apps.workspace.services import USPSTrackingService, USPSResponse
 
 from .data import EIGHTYTHREEB_DATA
 from .usps_trackfield_response import TRACK_UNDELIVERED_RESPONSE_XML_BODY
+
+from toolkit.core.mixins import IsDeletedQuerySet
 
 from toolkit.apps.workspace.models import Tool
 from toolkit.apps.eightythreeb.models import EightyThreeB
@@ -71,7 +72,7 @@ class USPSTrackingCodeCliCommandTest(BaseUSPSTrackingCode):
         """
         Test the subject contains the correct items in its action list
         """
-        self.assertEqual(type(self.subject.eightythreeb_list), QuerySet)
+        self.assertEqual(type(self.subject.eightythreeb_list), IsDeletedQuerySet)
         self.assertEqual(len(self.subject.eightythreeb_list), 1)
         self.assertTrue(self.eightythreeb in self.subject.eightythreeb_list)
 

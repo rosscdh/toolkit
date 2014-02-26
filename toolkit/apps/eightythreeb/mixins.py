@@ -11,7 +11,7 @@ from toolkit.apps.workspace.services import USPSResponse
 
 class HTMLMixin(object):
     """
-    Mixin to deal with loading the model templates 
+    Mixin to deal with loading the model templates
     and template
     """
     @property
