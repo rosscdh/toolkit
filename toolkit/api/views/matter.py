@@ -3,6 +3,8 @@ from django.http import Http404
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 
+from rulez import registry as rulez_registry
+
 from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework import exceptions
@@ -42,6 +44,19 @@ class MatterEndpoint(viewsets.ModelViewSet):
         user = self.request.user
         return user.workspace_set.mine(user=user)
 
+    def can_read(self, user):
+        return user.profile.user_class in ['lawyer', 'customer']
+
+    def can_edit(self, user):
+        return user.profile.is_lawyer
+
+    def can_delete(self, user):
+        return user.profile.is_lawyer
+
+
+rulez_registry.register("can_read", MatterEndpoint)
+rulez_registry.register("can_edit", MatterEndpoint)
+rulez_registry.register("can_delete", MatterEndpoint)
 
 """
 Matter resolver Mixins
@@ -104,6 +119,20 @@ class MatterItemsView(MatterItemsQuerySetMixin,
         obj.matter = self.matter  # set in MatterItemsQuerySetMixin
         return super(MatterItemsView, self).pre_save(obj=obj)
 
+    def can_read(self, user):
+        return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
+
+    def can_edit(self, user):
+        return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
+
+    def can_delete(self, user):
+        return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
+
+
+rulez_registry.register("can_read", MatterItemsView)
+rulez_registry.register("can_edit", MatterItemsView)
+rulez_registry.register("can_delete", MatterItemsView)
+
 
 class MatterItemView(generics.UpdateAPIView,
                      generics.DestroyAPIView,
@@ -118,6 +147,20 @@ class MatterItemView(generics.UpdateAPIView,
     serializer_class = ItemSerializer
     lookup_field = 'slug'
     lookup_url_kwarg = 'item_slug'
+
+    def can_read(self, user):
+        return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
+
+    def can_edit(self, user):
+        return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
+
+    def can_delete(self, user):
+        return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
+
+
+rulez_registry.register("can_read", MatterItemView)
+rulez_registry.register("can_edit", MatterItemView)
+rulez_registry.register("can_delete", MatterItemView)
 
 
 class ItemCurrentRevisionView(generics.CreateAPIView,
@@ -174,7 +217,7 @@ class BaseReviewerSignatoryMixin(ItemCurrentRevisionView):
     serializer_class = UserSerializer  # as we are returning the revision and not the item
 
     def get_revision_object_set_queryset(self):
-        raise NotImplemented
+        raise NotImplementedError
 
     def get_object(self):
         username = self.kwargs.get('username')
