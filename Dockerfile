@@ -6,7 +6,7 @@ RUN mkdir /toolkit
 WORKDIR /toolkit
 ADD requirements.txt /toolkit/
 ADD . /toolkit/
-RUN pip install -r /toolkit/requirements.txt --use-mirrors
+RUN pip install -r /toolkit/requirements/dev.txt --use-mirrors
 
 RUN mkdir /stamp
 WORKDIR /stamp

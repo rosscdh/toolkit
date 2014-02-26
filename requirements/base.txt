@@ -1,17 +1,16 @@
 Django==1.6.2
-django-extensions==1.2.5
+django-extensions
 south
+
 # Procfile service management
 honcho
 
-six
-sqlparse
-wsgiref
-
 Werkzeug
-djangorestframework
+
+# REST framework
+djangorestframework==2.3.9
 djangorestframework-jwt
--e git+https://github.com/alex/django-filter.git#egg=django-filter
+django-cors-headers
 
 django-rulez
 django-password-reset
@@ -27,10 +26,6 @@ django-crispy-forms
 bleach==1.4
 django-bleach
 -e git+https://github.com/lawpal/django-summernote-widget.git#egg=django-summernote-widget
-
-django-debug-toolbar==0.11.0
--e git+https://github.com/orf/django-debug-toolbar-template-timings.git@2e6d5c29c268cac4b707991e15264b0f915727e9#egg=django_debug_toolbar_template_timings-dev
--e git+https://github.com/playfire/django-debug-toolbar-user-panel.git@29a163dc985c4b173ead57b09b3cfdd6ca84e76f#egg=django_debug_toolbar_user_panel-dev
 
 -e git+https://github.com/jezdez/django_compressor.git#egg=django_compressor
 -e git+https://github.com/rosscdh/django-jsonfield.git@lawpal#egg=django-jsonfield
@@ -53,10 +48,6 @@ decorator
 boto
 django-storages
 
-# pyhandlebars
-# -e git+https://github.com/rosscdh/pybars.git#egg=pybars
-# -e git+https://github.com/rosscdh/lenker.git#egg=lenker
-
 requests>=2.0.1
 
 python-dateutil
@@ -69,15 +60,3 @@ raven # getsentry
 
 # package tracking
 -e git+https://github.com/rosscdh/python-usps.git#egg=python-usps
-
-# Testing
-django-jenkins
-HTTPretty
-django-casper
-mock
--e git+https://github.com/vandersonmota/model_mommy.git#egg=model_mommy
--e git+git://github.com/neubloc/django-colortools#egg=django-colortools
-rainbowrunners
-pyquery
-django-inmemorystorage
-django-cors-headers

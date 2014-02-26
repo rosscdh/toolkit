@@ -8,7 +8,7 @@ workspace.
 Getting started
 ---------------
 
-1. pip install -r requirements.txt
+1. pip install -r requirements/dev.txt
 2. fab rebuild_local
 3. honcho start
 
