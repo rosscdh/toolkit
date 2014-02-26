@@ -1,0 +1,58 @@
+Django==1.6.2
+django-extensions
+south
+
+# Procfile service management
+honcho
+
+Werkzeug
+djangorestframework==2.3.9
+
+django-rulez
+django-password-reset
+django-uuidfield
+
+# Image Thumbnails
+pillow
+sorl-thumbnail
+
+django-crispy-forms
+-e git+https://github.com/agiliq/Django-parsley.git#egg=django-parsley
+
+bleach==1.4
+django-bleach
+-e git+https://github.com/lawpal/django-summernote-widget.git#egg=django-summernote-widget
+
+-e git+https://github.com/jezdez/django_compressor.git#egg=django_compressor
+-e git+https://github.com/rosscdh/django-jsonfield.git@lawpal#egg=django-jsonfield
+
+# US and other fields etc
+django-localflavor
+
+django-bootstrap-breadcrumbs
+django-email-obfuscator
+decorator
+
+-e git+https://github.com/rosscdh/django-templated-email.git@attachments#egg=django-templated-email
+
+#PyPandoc
+-e git+https://github.com/rosscdh/pypandoc.git@utf8-encode#egg=pypandoc
+
+# Hellosign integration
+-e git+https://github.com/rosscdh/django-hello_sign.git#egg=django-hello_sign
+
+boto
+django-storages
+
+requests>=2.0.1
+
+python-dateutil
+
+python-memcached
+
+-e git+https://github.com/GoodCloud/django-ajax-uploader.git#egg=django-ajax-uploader
+
+raven # getsentry
+
+# package tracking
+-e git+https://github.com/rosscdh/python-usps.git#egg=python-usps
