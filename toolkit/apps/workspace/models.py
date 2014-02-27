@@ -4,6 +4,8 @@ from django.core.urlresolvers import reverse
 from django.db.models.loading import get_model
 from django.core.exceptions import ObjectDoesNotExist
 
+from toolkit.core.mixins.is_deleted import IsDeletedMixin
+
 from toolkit.utils import _class_importer
 
 from rulez import registry as rulez_registry
@@ -12,19 +14,26 @@ from uuidfield import UUIDField
 from jsonfield import JSONField
 
 from .managers import WorkspaceManager
+from .mixins import ClosingGroupsMixin, CategoriesMixin
 
 
-class Workspace(models.Model):
+class Workspace(IsDeletedMixin, ClosingGroupsMixin, CategoriesMixin, models.Model):
     """
     Workspaces are areas that allow multiple tools
     to be associated with a group of users
     """
     name = models.CharField(max_length=255)
     slug = models.SlugField(blank=True)
+    matter_code = models.SlugField(null=True, blank=True)
+
     lawyer = models.ForeignKey('auth.User', null=True, related_name='lawyer_workspace')  # Lawyer that created this workspace
+    client = models.ForeignKey('client.Client', null=True, blank=True)
+
     participants = models.ManyToManyField('auth.User', blank=True)
+
     tools = models.ManyToManyField('workspace.Tool', blank=True)
-    data = JSONField(default={}, blank=True)
+
+    data = JSONField(default={})
 
     date_created = models.DateTimeField(auto_now=False, auto_now_add=True, db_index=True)
     date_modified = models.DateTimeField(auto_now=True, auto_now_add=True, db_index=True)
@@ -49,20 +58,20 @@ class Workspace(models.Model):
         except IndexError:
             return None
 
-    def can_read(self, user):
-        return user in self.participants.all()
-
-    def can_edit(self, user):
-        return user.profile.is_lawyer and user in self.participants.all()
-
-    def can_delete(self, user):
-        return user.profile.is_lawyer and user in self.participants.all()
-
     def get_absolute_url(self):
         return reverse('workspace:view', kwargs={'slug': self.slug})
 
     def available_tools(self):
         return Tool.objects.exclude(pk__in=[t.pk for t in self.tools.all()])
+
+    def can_read(self, user):
+        return user in self.participants.all()
+
+    def can_edit(self, user):
+        return user.profile.is_lawyer and user == self.lawyer
+
+    def can_delete(self, user):
+        return user.profile.is_lawyer and user == self.lawyer
 
 
 rulez_registry.register("can_read", Workspace)
@@ -160,3 +169,11 @@ class Tool(models.Model):
     @property
     def icon(self):
         return self.data.get('icon', 'images/icons/mail.svg')
+
+"""
+Import workspace signals
+"""
+from .signals import (ensure_workspace_slug,
+                      ensure_workspace_matter_code,
+                      ensure_workspace_has_83b_by_default,
+                      ensure_tool_slug)
