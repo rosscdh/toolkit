@@ -21,18 +21,18 @@ class LawyerSetupTemplateMarker_IsCompleteTest(BaseScenarios, TestCase):
         self.basic_workspace()
 
         data = {}
-        for key in LawyerSetupTemplateMarker.required_markers:
+        for key in LawyerSetupTemplateMarker.required_data_markers:
             data[key] = 'Yes we have a value for %s' % key
 
         profile = self.lawyer.profile
         profile.data = data
         profile.save(update_fields=['data'])
 
-        self.subject = LawyerSetupTemplateMarker(1)
+        self.subject = LawyerSetupTemplateMarker(1, workspace=self.workspace)
         self.subject.tool = self.eightythreeb
 
-    def test_required_markers(self):
-        self.assertEqual(LawyerSetupTemplateMarker.required_markers, REQUIRED_MARKERS)
+    def test_required_data_markers(self):
+        self.assertEqual(LawyerSetupTemplateMarker.required_data_markers, REQUIRED_MARKERS)
 
     def test_is_complete(self):
         self.assertEqual(self.subject.tool.workspace.lawyer.profile.data, {u'firm_address': u'Yes we have a value for firm_address', u'firm_logo': u'Yes we have a value for firm_logo'})
@@ -50,7 +50,7 @@ class LawyerSetupTemplateMarker_IsNotCompleteTest(BaseScenarios, TestCase):
 
         data = {}
         invalid = [None, '']
-        for i, key in enumerate(LawyerSetupTemplateMarker.required_markers):
+        for i, key in enumerate(LawyerSetupTemplateMarker.required_data_markers):
             val = invalid[1] if i%2 else invalid[0]  # set teh value to an invalid value from the list
             data[key] = val
 
@@ -58,7 +58,7 @@ class LawyerSetupTemplateMarker_IsNotCompleteTest(BaseScenarios, TestCase):
         profile.data = data
         profile.save(update_fields=['data'])
 
-        self.subject = LawyerSetupTemplateMarker(1)
+        self.subject = LawyerSetupTemplateMarker(1, workspace=self.workspace)
         self.subject.tool = self.eightythreeb
 
     def test_is_complete_is_false(self):

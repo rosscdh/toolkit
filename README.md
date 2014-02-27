@@ -8,9 +8,26 @@ workspace.
 Getting started
 ---------------
 
-1. pip install -r requirements.txt
-2. fab rebuild_local
-3. honcho start
+1. mkvirtualenv toolkit (assume you have virtualenv and virtualenvwrapper installed)
+2. pip install -r requirements/dev.txt
+3. fab rebuild_local (will download and install "stamp" - ruby rest api)
+4. honcho start (starts runserver_plus in threaded mode as well as the stamp service)
+
+
+Pandoc
+------
+
+__Installing__
+
+1. Mac: https://code.google.com/p/pandoc/downloads/detail?name=pandoc-1.12.3.pkg.zip&can=2&q= install the osx package
+2. Ubuntu: apt-get install pandoc should do it
+
+__PDF Latext__
+
+In order to use the pandoc conversion of html to pdf you need to install latex
+
+1. Mac: http://tug.org/mactex/
+2. Ubuntu: http://java.dzone.com/articles/installing-latex-ubuntu
 
 
 Testing

@@ -1,0 +1,76 @@
+{% extends 'workspace/workspace_tool_base.html' %}
+
+{% load crispy_forms_tags hello_sign_tags %}
+
+{% block page_title %}Sign — {{ block.super }}{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-sm-12 content">
+            <div class="page-header">
+                <h4>Sign the {{ object }}</h4>
+            </div>
+        </div>
+
+        {% block content %}
+            <div class="col-sm-8">
+                {% block main %}
+                    <div id="overview">
+                        {% block overview %}
+                            <iframe name="id_preview" id="tool-preview" class="fade" style="width: 100%;" src="{% url 'workspace:tool_object_display' workspace=object.workspace.slug tool=object.tool_slug slug=object.slug %}"></iframe>
+                        {% endblock %}
+                    </div>
+                {% endblock %}
+            </div>
+
+            <div class="col-sm-4 signing-info">
+                {% if not object.signature_request_id %}
+                    <div class="dialog">
+                        <p>Once you are ready to digitally sign the document, click the button below.</p>
+                        <p>You will be taken to <a href="https://www.hellosign.com/" target="_blank">HelloSign</a> where this document can be signed.</p>
+                        {% include 'partials/form-errors.html' with form=form %}
+                        {% crispy form %}
+                    </div>
+                {% else %}
+                    {% for s in object.signatures %}
+                        <div class="dialog {% if s.signed_at %}dialog-success{% endif %}">
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <td class="legend"><strong>Signatory:</strong></td>
+                                        <td>{{ s.signer_name }}<br>{{ s.signer_email_address }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="legend"><strong>Status:</strong></td>
+                                        <td>{{ s.status_code|status_code_name }}</td>
+                                    </tr>
+                                    {% if s.signed_at %}
+                                        <tr>
+                                            <td class="legend"><strong>Signed:</strong></td>
+                                            <td>{{ s.signed_at|timestamp_to_date|date:"SHORT_DATETIME_FORMAT" }}</td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        {% endblock %}
+    </div>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+    $(document).ready(function () {
+        'use strict';
+
+        var $iframe = $('iframe#tool-preview');
+        var $overview = $('#overview');
+        $iframe.height('600px').removeClass('fade');
+    });
+</script>
+{% if object.signature_request_id %}
+    {% signer_url_js object user.email %}
+{% endif %}
+{% endblock %}

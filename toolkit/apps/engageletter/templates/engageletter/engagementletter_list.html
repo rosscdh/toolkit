@@ -1,31 +1,43 @@
 {% extends 'workspace/workspace_tool_list.html' %}
 
-{% load url from future %}
+{% load url from future %}{% load engageletter_tags %}
 
 {% block list %}
     <div class="table-responsive">
         <table class="table table-striped {{ tool.slug }}">
             <tbody>
                 <tr>
-                    <th>Client Name</th>
-                    <th>Transfer Date</th>
-                    <th>Filing Deadline</th>
+                    <th>File Number</th>
+                    <th>Date of Letter</th>
+                    <th>Signatory</th>
                     <th>Current Step</th>
+                    <th></th>
                 </tr>
                 {% for t in object_list %}
-                    <tr class="{% if 't.markers.percent_complete' == '100.0' %} success{% endif %}">
+                    <tr class="{{ t|status_row_class }}">
                         <td>
-                            <a href="{% url 'workspace:tool_object_overview' workspace=workspace.slug tool=tool.slug slug=t.slug %}">{{ t.client_name }}</a>
+                            <a href="{% url 'workspace:tool_object_overview' workspace=workspace.slug tool=tool.slug slug=t.slug %}">{{ t.file_number }}</a>
                         </td>
-                        <td><small>{{ t.transfer_date }}</small></td>
-                        <td><small>{{ t.filing_date }}</small></td>
-                        <td><small>{{ t.current_status }} </small>
-                            <span class="label label-success">{{ t.markers.percent_complete }}%</span>
-                        </td>
+                        <td><small>{{ t.date_of_letter|date:"F j, Y" }}</small></td>
+                        <td><small>{{ t.signatory_name }}</small></td>
+                        {% if user.profile.is_lawyer %}
+                            <td>
+                                {{ t|quick_status }}
+                                <small>{{ t.current_status }}</small>
+                            </td>
+                            <td>
+                                <a href="{% url 'workspace:tool_object_delete' workspace=workspace.slug tool=tool.slug slug=t.slug %}" class="fui-cross text-danger" style="vertical-align: middle;"></a>
+                            </td>
+                        {% else %}
+                            <td colspan="2">
+                                {{ t|quick_status }}
+                                <small>{{ t.current_status }}</small>
+                            </td>
+                        {% endif %}
                     </tr>
                 {% empty %}
                     <tr>
-                        <td colspan="5" class="text-center"><span class="text-muted">None found</span></td>
+                        <td colspan="6" class="text-center"><span class="text-muted">None found</span></td>
                     </tr>
                 {% endfor %}
             </tbody>

@@ -1,4 +1,6 @@
 .sonar
+hellosign
+hello_sign
 *_valid.html
 *_invalid.html
 \.coverage

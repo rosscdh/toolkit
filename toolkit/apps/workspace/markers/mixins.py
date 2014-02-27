@@ -7,6 +7,39 @@ MARKERS_MAP_DICT = {
 }
 
 
+class PrerequisitesMixin(object):
+    """
+    Class to contain functionality relating to Prerequisistes
+    which are Markers that must be is_complete=True before the user can continue
+    with the process flow
+    """
+    prerequisite_signal_map = []  # list of prereqs to instantiate
+    _prerequisites = {}  # cache the prereq by class.name
+
+    def __init__(self, tool=None, *args, **kwargs):
+        self._prerequisites = kwargs.get('_prerequisites', {})
+        super(PrerequisitesMixin, self).__init__(*args, **kwargs)
+
+    def prerequisites(self, workspace, **kwargs):
+        # simple caching of prereq classes
+        for klass in self.prerequisite_signal_map:
+            self._prerequisites[klass.name] = self._prerequisites.get(klass.name, klass(val=0, workspace=workspace))
+
+        return self._prerequisites.values()  # return the actual class instances and not the keys
+
+    def prerequisite_next_url(self, workspace):
+        for prereq in self.prerequisites(workspace=workspace):
+            prereq.workspace = workspace
+            #
+            # if we have an incomplete marker
+            # then return its url instead
+            #
+            if prereq.is_complete is False:
+                return prereq.get_action_url()
+
+        return None
+
+
 class MarkerMapMixin(object):
     """
     Mixin to allow access to Markers via the signal_map

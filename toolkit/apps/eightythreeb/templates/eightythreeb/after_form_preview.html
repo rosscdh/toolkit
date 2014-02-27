@@ -1,8 +1,10 @@
 {% extends 'workspace/after_form_preview.html' %}
 
-{% block content %}
-    <div class="page-header">
-        <h4>Review {{ item }}</h4>
-    </div>
-    <p>Below is a preview of the 83(b) Election complete with IRS Transmittal Letter, 2 x 83(b) Election Letter and a set of mailing instructions. {% if user.profile.is_lawyer %}Information highlighted in yellow will be entered by the client when they sign into LawPal to complete the process.{% endif %}</p>
+{% block main %}
+    {% if user.profile.is_lawyer %}
+        <p>Below is a preview of the taxpayer's 83(b) Election. The taxpayer will receive the following: IRS Transmittal Letter, two copies of the 83(b) election letter, and a set of mailing instructions.</p>
+        <p>Information highlighted in yellow will be entered by the taxpayer when they sign into LawPal to complete the process.</p>
+    {% else %}
+        <p>Below is a preview of the your 83(b) Election complete with the following: IRS Transmittal Letter, two copies of the 83(b) election letter, and a set of mailing instructions.</p>
+    {% endif %}
 {% endblock %}

@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 
 from toolkit.casper import BaseScenarios
 from toolkit.apps.eightythreeb.forms import LawyerEightyThreeBForm, CustomerEightyThreeBForm
-from toolkit.apps.workspace.views import CreateToolObjectView, UpdateViewToolObjectView
+from toolkit.apps.workspace.views import CreateToolObjectView, UpdateViewToolObjectView, DeleteToolObjectView
 
 
 class LawyerAsLawyerTest(BaseScenarios, TestCase):
@@ -39,6 +39,15 @@ class LawyerAsLawyerTest(BaseScenarios, TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(type(resp.context_data.get('view')), UpdateViewToolObjectView)
         self.assertEqual(type(resp.context_data.get('form')), LawyerEightyThreeBForm)
+
+    def test_view_tool_form_delete(self):
+        """
+        The Lawyer should always be allowed to delete
+        """
+        resp = self.client.get(reverse('workspace:tool_object_delete', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug='83b-election-letters').first().slug, 'slug': self.eightythreeb.slug}), follow=True)
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(type(resp.context_data.get('view')), DeleteToolObjectView)
 
     def test_view_tool_get_form_key(self):
         """

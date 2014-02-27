@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from ..views import (ToolObjectListView,
                     CreateToolObjectView,
                     UpdateViewToolObjectView,
+                    DeleteToolObjectView,
                     InviteClientToolObjectView,
                     ToolObjectPostFormPreviewView,
                     ToolObjectPreviewView,
@@ -30,6 +31,10 @@ urlpatterns = patterns('',
     url(r'^(?P<workspace>[\w-]+)/tool/(?P<tool>[\w-]+)/(?P<slug>[\w-]+)/edit/$',
         login_required(UpdateViewToolObjectView.as_view()),
         name='tool_object_edit'),
+
+    url(r'^(?P<workspace>[\w-]+)/tool/(?P<tool>[\w-]+)/(?P<slug>[\w-]+)/delete/$',
+        login_required(DeleteToolObjectView.as_view()),
+        name='tool_object_delete'),
 
     url(r'^(?P<workspace>[\w-]+)/tool/(?P<tool>[\w-]+)/(?P<slug>[\w-]+)/invite/client/$',
         login_required(InviteClientToolObjectView.as_view()),
