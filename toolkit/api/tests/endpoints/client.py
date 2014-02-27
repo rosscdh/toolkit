@@ -20,7 +20,7 @@ class ClientsTest(BaseEndpointTest):
     endpoint = reverse('client-list')
 
     def test_endpoint_name(self):
-        self.assertEqual(self.endpoint, '/api/v1/clients/')
+        self.assertEqual(self.endpoint, '/api/v1/clients')
 
     def test_lawyer_get(self):
         self.client.login(username=self.lawyer.username, password=self.password)
