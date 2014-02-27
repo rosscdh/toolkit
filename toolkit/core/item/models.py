@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 
+from toolkit.core.mixins import IsDeletedMixin, IsDeletedManager
 from toolkit.utils import get_namedtuple_choices
 
 from jsonfield import JSONField
@@ -15,7 +16,7 @@ ITEM_STATUS = get_namedtuple_choices('ITEM_STATUS', (
                             ))
 
 
-class Item(models.Model):
+class Item(IsDeletedMixin, models.Model):
     """
     Matter.item
     """
@@ -43,6 +44,8 @@ class Item(models.Model):
     date_due = models.DateTimeField(auto_now=False, auto_now_add=False, null=True, blank=True, db_index=True)
     date_created = models.DateTimeField(auto_now=False, auto_now_add=True, db_index=True)
     date_modified = models.DateTimeField(auto_now=True, auto_now_add=True, db_index=True)
+
+    objects = IsDeletedManager()
 
     def __unicode__(self):
         return u'%s' % self.name
