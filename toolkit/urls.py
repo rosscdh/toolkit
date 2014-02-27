@@ -3,7 +3,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import TemplateView
 from django.conf.urls import patterns, include, url
-from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.contrib.auth.decorators import login_required
 
 from django.contrib import admin
 admin.autodiscover()
@@ -25,8 +25,8 @@ urlpatterns = patterns('',
     url(r'^workspace/', include('toolkit.apps.workspace.urls', namespace='workspace')),
 
     #matter angular app
-    url (r'^matter/(?P<matter_slug>[a-zA-Z0-9_.-]+)/$',
-         TemplateView.as_view(template_name="index_deployed.html"), name="matter-details-view"),
+    url(r'^matters/(?P<matter_slug>[a-zA-Z0-9_.-]+)/$',
+         login_required(TemplateView.as_view(template_name="index_deployed.html"), name="matter-details-view")),
 
 
     # apps
