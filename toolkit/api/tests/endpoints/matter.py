@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.core.urlresolvers import reverse
 
+from toolkit.apps.workspace.models import Workspace
+
 from . import BaseEndpointTest
 from ...serializers import ClientSerializer
 
@@ -43,9 +45,13 @@ class MattersTest(BaseEndpointTest):
 
     def test_lawyer_patch(self):
         self.client.login(username=self.lawyer.username, password=self.password)
-        resp = self.client.patch(self.endpoint, {})
+        resp = self.client.patch(self.endpoint, {}, content_type='application/json')
         self.assertEqual(resp.status_code, 405)  # not allowed
 
+    def test_lawyer_delete(self):
+        self.client.login(username=self.lawyer.username, password=self.password)
+        resp = self.client.delete(self.endpoint, {}, content_type='application/json')
+        self.assertEqual(resp.status_code, 405)  # not allowed
 
     def test_customer_get(self):
         self.client.login(username=self.user.username, password=self.password)
@@ -64,7 +70,12 @@ class MattersTest(BaseEndpointTest):
 
     def test_customer_patch(self):
         self.client.login(username=self.user.username, password=self.password)
-        resp = self.client.patch(self.endpoint, {})
+        resp = self.client.patch(self.endpoint, {}, content_type='application/json')
+        self.assertEqual(resp.status_code, 403)  # method forbidden
+
+    def test_customer_delete(self):
+        self.client.login(username=self.user.username, password=self.password)
+        resp = self.client.delete(self.endpoint, {}, content_type='application/json')
         self.assertEqual(resp.status_code, 403)  # method forbidden
 
     def test_anon_get(self):
@@ -72,11 +83,15 @@ class MattersTest(BaseEndpointTest):
         self.assertEqual(resp.status_code, 401)  # denied
 
     def test_anon_post(self):
-        resp = self.client.post(self.endpoint, {})
+        resp = self.client.post(self.endpoint, {}, content_type='application/json')
         self.assertEqual(resp.status_code, 401)  # denied
 
     def test_anon_patch(self):
-        resp = self.client.patch(self.endpoint, {})
+        resp = self.client.patch(self.endpoint, {}, content_type='application/json')
+        self.assertEqual(resp.status_code, 401)  # denied
+
+    def test_anon_delete(self):
+        resp = self.client.delete(self.endpoint, {}, content_type='application/json')
         self.assertEqual(resp.status_code, 401)  # denied
 
 
@@ -118,6 +133,20 @@ class MatterDetailTest(BaseEndpointTest):
         json_data = json.loads(resp.content)
         self.assertEqual(json_data['name'], expected_name)
 
+    def test_lawyer_delete(self):
+        """
+        Lawyer can Soft delete workspaces
+        """
+        self.client.login(username=self.lawyer.username, password=self.password)
+        resp = self.client.delete(self.endpoint, {}, content_type='application/json')
+
+        self.assertEqual(resp.status_code, 204)  # no content but 2** success
+
+        deleted_workspaces = Workspace.objects.deleted()
+        self.assertEqual(len(deleted_workspaces), 1)
+
+        deleted_workspace = deleted_workspaces[0]
+        self.assertEqual(deleted_workspace.name, self.workspace.name)
 
     def test_customer_get(self):
         self.client.login(username=self.user.username, password=self.password)
@@ -139,6 +168,13 @@ class MatterDetailTest(BaseEndpointTest):
         resp = self.client.patch(self.endpoint, json.dumps({}), content_type='application/json')
         self.assertEqual(resp.status_code, 403)  # forbidden
 
+    def test_customer_delete(self):
+        """
+        customers may not delete
+        """
+        self.client.login(username=self.user.username, password=self.password)
+        resp = self.client.delete(self.endpoint, {}, content_type='application/json')
+        self.assertEqual(resp.status_code, 403)  # method forbidden
 
     def test_anon_get(self):
         resp = self.client.get(self.endpoint)
@@ -146,4 +182,12 @@ class MatterDetailTest(BaseEndpointTest):
 
     def test_anon_post(self):
         resp = self.client.post(self.endpoint, {})
+        self.assertEqual(resp.status_code, 401)  # denied
+
+    def test_anon_patch(self):
+        resp = self.client.patch(self.endpoint, {}, content_type='application/json')
+        self.assertEqual(resp.status_code, 401)  # denied
+
+    def test_anon_delete(self):
+        resp = self.client.delete(self.endpoint, {}, content_type='application/json')
         self.assertEqual(resp.status_code, 401)  # denied
