@@ -1,1 +1,68 @@
-Dashboard
+{% extends LAYOUT %}
+
+{% load url from future %}
+
+{% block navbar %}
+    <div class="navbar navbar-inverse checklist-nav">
+        <div class="navbar-header">
+            <a href="/" class="navbar-brand"><img src="{{ STATIC_URL }}images/logo-white.png" height="21" alt="LawPal"></a>
+        </div>
+
+        <div class="navbar-collapse collapse navbar-collapse-01">
+            <ul class="nav navbar-nav navbar-right">
+                <li class="divider"></li>
+                <li><a href="#" class="intercom">Help</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.get_full_name|default:user.username }}<b class="caret"></b></a>
+                    <ul>
+                        <li><a href="{% url 'me:settings' %}">Account</a></li>
+                        <li><a href="{% url 'public:logout' %}">Sign out</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block body %}
+    <div id="dashboard" class="content col-lg-12">
+        <section class="matters cards">
+            <header class="page-header">
+                <h4>All Matters</h4>
+                <div class="pull-right">
+                    <a href="#" class="btn btn-sm btn-primary"><i class="fui-plus"></i> New Matter</a>
+                </div>
+            </header>
+
+            <div class="row">
+                {% for i in "1234"|make_list %}
+
+                    <article class="col-md-4 matter">
+                        <div class="card">
+                            <a href="#" class="edit"><span class="fui-gear"></span></a>
+
+                            <a href="#" title="Matter Name" class="content">
+                                <div class="title">
+                                    <h6>Acme Inc</h6>
+                                    <h5>Matter Name</h5>
+                                    <p>A sample project to help you discover LawPal.</p>
+                                </div>
+                                <div class="meta clearfix">
+                                    <p class="small pull-left">Last updated <time data-time-ago="" datetime="2014-02-27T09:57:49Z">27 seconds ago</time></p>
+                                    <div class="people pull-right">
+                                        <img class="img-circle" height="40" src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash3/t1/c0.0.100.100/p100x100/1014416_10100118438650161_136799916_a.jpg" title="" width="40">
+                                        <img class="img-circle" height="40" src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/t1/c12.12.155.155/314032_10150303812474864_594285312_a.jpg" title="" width="40">
+                                        <img class="img-circle" height="40" src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-frc3/t1/c42.26.328.328/s320x320/229934_10150955684263644_890325486_n.jpg" title="" width="40">
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </article>
+
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+{% endblock %}
