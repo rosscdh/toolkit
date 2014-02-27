@@ -1,11 +1,11 @@
 from django.views.generic import ListView
 
-from toolkit.api.serializers import MatterSerializer
+from toolkit.api.serializers import LiteMatterSerializer
 from toolkit.apps.workspace.models import Workspace
 
 
 class DashboardView(ListView):
-    serializer_class = MatterSerializer
+    serializer_class = LiteMatterSerializer
     template_name = 'dashboard/dashboard.html'
 
     def get_queryset(self):
