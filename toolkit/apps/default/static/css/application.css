@@ -462,7 +462,7 @@ div.full {
 }
 #checklist div.item ul.revisions li .review.in-progress,
 #closing div.item ul.revisions li .review.in-progress {
-  background-color: #f5aa34;
+  background-color: #f7ba5b;
 }
 #checklist div.item ul.revisions li .review ul,
 #closing div.item ul.revisions li .review ul {
@@ -511,8 +511,8 @@ div.full {
   border-color: #e8bd0e;
   color: white;
 }
-#checklist div.item ul.revisions li.current .doc-wrap h4,
-#closing div.item ul.revisions li.current .doc-wrap h4 {
+#checklist div.item ul.revisions li.current .doc-wrap h4 a,
+#closing div.item ul.revisions li.current .doc-wrap h4 a {
   color: #606a71;
 }
 #checklist div.item ul.revisions li.final .doc-wrap,

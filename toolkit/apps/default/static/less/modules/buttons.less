@@ -116,6 +116,24 @@
   }
 }
 
+.btn-success-link {
+  color: @brand-success;
+  &:hover,
+  &:focus {
+    color: darker(@brand-success, 10%);
+    text-decoration: underline;
+    background-color: transparent;
+  }
+  &[disabled],
+  fieldset[disabled] & {
+    &:hover,
+    &:focus {
+      color: black;
+      text-decoration: none;
+    }
+  }
+}
+
 
 // Button sizes
 // --------------------------------------------------
