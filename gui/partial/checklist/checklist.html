@@ -1,0 +1,68 @@
+<div id="checklist">
+	<div class="container-fluid full">
+		<div class="row full">
+			<div class="col-sm-5 checklist-col full">
+				<!-- checklist //-->
+				<table class="table checklist">
+					<tbody>
+						<!-- items heading //-->
+						<tr class="item-heading item-closed">
+							<td class="item-title">
+								<span class="fui-list-columned"></span> <span ng-bind="matter.name"></span>
+							</td>
+							<td class="status text-right">
+								<span class="fui-check-inverted">[[status]]</span>
+							</td>
+						</tr>
+						<!-- end items heading //-->
+							<td class="item-title item-open">
+								<span class="fui-list-columned"></span> [[name]]
+							</td>
+							<td class="status">
+								<button class="btn btn-warning btn-xs" disabled=""><span class="fui-time"></span> [[status]]</button>
+							</td>
+						<!-- items //-->
+						<tr>
+						</tr>
+						<!-- end items //-->
+					</tbody>
+				</table>
+				<!-- end checklist //-->
+			</div>
+			<div class="col-sm-7 item spa full">
+				<div class="row full">
+					<div class="col-sm-7">
+					</div>
+					<div class="col-sm-5 chat full">
+						<!-- chat //-->
+						<h4><span class="fui-chat"></span> Discuss</h4>
+						<ul class="list-unstyled">
+							<li class="message me">
+								<div class="media">
+									<a class="user-icon" href="#"><span class="fui-user"></span></a>				
+									<div class="media-body">
+										<div class="msg-body">I've attached the new draft and will shortly send it for review. We'll see what the other side says.</div>
+										<div class="msg-meta">Adam Bier, 25th June to AH, BC</div>
+									</div>
+								</div>
+							</li>
+							<li class="message other">
+								<div class="media">
+									<a class="user-icon" href="#"><span class="fui-user"></span></a>				
+									<div class="media-body">
+										<div class="msg-body">I've attached the new draft and will shortly send it for review. We'll see what the other side says.</div>
+										<div class="msg-meta">Adam Bier, 25th June to AH, BC</div>
+									</div>
+								</div>
+							</li>
+							<li class="action">			<span class="fui-document"></span> Adam uploaded a new draft.		</li>
+						</ul>
+						<div class="new-message">		<textarea class="form-control" rows="2" placeholder="Say something about Shareholders Agreement and press enter..."></textarea>	</div>
+						<!-- end: chat //-->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
