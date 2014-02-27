@@ -30,7 +30,7 @@
       "last_login": "2014-02-27T09:22:15.540Z",
       "groups": [],
       "user_permissions": [],
-      "password": "",
+      "password": "pbkdf2_sha256$12000$VLQ0x5nWieuA$+PcDpNonflXGHvDCPk7XVIY1+8Ft5HQ0WhUfNOE4tr0=",
       "email": "testlawyer@lawpal.com",
       "date_joined": "2014-02-27T09:22:15.540Z"
     }
@@ -48,7 +48,7 @@
       "last_login": "2014-02-27T09:23:02.889Z",
       "groups": [],
       "user_permissions": [],
-      "password": "",
+      "password": "pbkdf2_sha256$12000$VLQ0x5nWieuA$+PcDpNonflXGHvDCPk7XVIY1+8Ft5HQ0WhUfNOE4tr0=",
       "email": "testlawyerinproject@lawpal.com",
       "date_joined": "2014-02-27T09:23:02.889Z"
     }
@@ -66,7 +66,7 @@
       "last_login": "2014-02-27T09:23:24.978Z",
       "groups": [],
       "user_permissions": [],
-      "password": "",
+      "password": "pbkdf2_sha256$12000$VLQ0x5nWieuA$+PcDpNonflXGHvDCPk7XVIY1+8Ft5HQ0WhUfNOE4tr0=",
       "email": "testlawyernotinproject@lawpal.com",
       "date_joined": "2014-02-27T09:23:24.978Z"
     }
