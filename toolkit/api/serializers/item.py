@@ -2,17 +2,9 @@
 """
 Items are either todo items or document items
 """
-from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from toolkit.core.item.models import Item
-
-from .user import UserSerializer
-
-from . import HATOAS
-
-import datetime
-import random
 
 
 class ItemSerializer(serializers.HyperlinkedModelSerializer):
