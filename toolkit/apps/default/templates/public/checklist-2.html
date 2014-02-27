@@ -215,7 +215,7 @@
 					          	  	</div>
 					          	</div>	
 			              	</td>
-			              </tr>
+			            </tr>
 			              <tr class="item-closed">
 			                <td class="item-title">
 			                	<span class="fui-list-columned"></span> 
@@ -331,13 +331,13 @@
 								<li class="current">
 									<div class="doc-wrap">
 										<span class="version">V3</span>
-										<h4>Shareholders_agreement_lawpal_299929.doc </h4><span class="close">x</span>
+										<h4><a href="#" data-toggle="modal" data-target="#viewDocumentModal">Shareholders_agreement_lawpal_299929.doc </a></h4><span class="close">x</span>
 										<div class="desc">This is the final version. Let's see if this get's the ball moving.</div>
 										<div class="sub">Ross Crawford, 2 days ago</div>
 										<div class="tools">
 											<a href="#" class="btn btn-link btn-xs">View</a>
-											<a href="#" class="btn btn-link btn-xs">Request Review</a>
-											<a href="#" class="btn btn-success btn-xs pull-right"><span class="fui-check-inverted"></span> Mark as Final</a>
+											<a href="#" class="btn btn-link btn-xs" data-toggle="modal" data-target="#requestReviewModal">Request Review</a>
+											<a href="#" class="btn btn-link-success btn-xs pull-right"><span class="fui-check-inverted"></span> Mark as Final</a>
 										</div>
 									</div>
 								</li>
@@ -363,7 +363,6 @@
 						</div>
 					</div>
 				</div>
-
 				<div class="col-sm-7 item custom full" style="display:none;">
 					<div class="row full">
 						<div class="col-sm-7">
@@ -385,8 +384,8 @@
 										<div class="sub">Ross Crawford, 2 days ago</div>
 										<div class="tools">
 											<a href="#" class="btn btn-link btn-xs">View</a>
-											<a href="#" class="btn btn-link btn-xs">Request Review</a>
-											<a href="#" class="btn btn-success btn-xs pull-right"><span class="fui-check-inverted"></span> Mark as Final</a>
+											<a href="#" class="btn btn-link btn-xs" data-toggle="modal" data-target="#requestReviewModal">Request Review</a>
+											<a href="#" class="btn btn-link-success btn-xs pull-right"><span class="fui-check-inverted"></span> Mark as Final</a>
 										</div>
 									</div>
 									<div class="review in-progress">
@@ -424,8 +423,6 @@
 						</div>
 					</div>
 				</div>
-
-
 				<div class="col-sm-7 item closed full" style="display:none;">
 					<div class="row full">
 						<div class="col-sm-7">
@@ -445,11 +442,7 @@
 										<h4>Shareholders_agreement_lawpal_299929.doc </h4><span class="close">x</span>
 										<div class="desc">This is the final version. Let's see if this get's the ball moving.</div>
 										<div class="sub">Ross Crawford, 2 days ago</div>
-<!-- 										<div class="tools">
-											<a href="#" class="btn btn-link btn-xs">View</a>
-											<a href="#" class="btn btn-link btn-xs">Request Review (2)</a>
-											<a href="#" class="btn btn-success btn-xs pull-right" disabled><span class="fui-check-inverted"></span> Final</a>
-										</div> -->
+
 									</div>
 									<div class="review">
 										Review complete
@@ -684,6 +677,48 @@
 
 <!-- Modals -->
 
+
+
+<!-- 4. Request Review -->
+<div class="modal" id="requestReviewModal" tabindex="-1" role="dialog" aria-labelledby="requestReviewModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Request review for Shareholders Agreement</h4>
+      </div>
+      	<div class="modal-body">
+			<strong>Existing members</strong>
+        	<label class="checkbox" for="checkbox1">
+			  <input type="checkbox" value="" id="checkbox1" data-toggle="checkbox">
+			  Yael Citro
+			</label>
+        	<label class="checkbox" for="checkbox1">
+			  <input type="checkbox" value="" id="checkbox1" data-toggle="checkbox">
+			  Alex Halliday
+			</label>
+			<label class="checkbox" for="checkbox1">
+			  <input type="checkbox" value="" id="checkbox1" data-toggle="checkbox">
+			  External party   <span class="fui-lock" data-toggle="tooltip" title="Requesting document review from a third party does not give them access to this matter, only the specific revision of this document."></span>
+			</label>
+          	<input class="form-control input-sm" type="text" placeholder="atticus.finch@gmail.com" disabled>
+	     	<div class="row">
+		     	<div class="col-sm-8">
+			     	<textarea class="form-control" placeholder="Add an optional message...."></textarea>
+				</div>
+			</div>
+	     </div>
+		<div class="modal-footer">
+			<a href="#" class="btn btn-default btn-wide"  data-dismiss="modal" aria-hidden="true">Cancel</a>
+			<a href="#" class="btn btn-primary btn-wide">Add matter participants</a>
+	   	</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
 <!-- 1. Request File -->
 <div class="modal" id="requestFileModal" tabindex="-1" role="dialog" aria-labelledby="requestFileModal" aria-hidden="true">
   <div class="modal-dialog">
@@ -802,6 +837,35 @@
     </div>
   </div>
 </div>
+
+
+<!-- 3. View document -->
+<div class="modal modal-full" id="viewDocumentModal" tabindex="-1" role="dialog" aria-labelledby="viewDocumentModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">View and annotate Shareholders_agreement_lawpal_299929.doc <i class="fui-lock" data-toggle="tooltip" title="Annotations are only visible to matter participants." data-placement="bottom"></i></h4>
+      </div>
+      <div class="modal-body">
+	     <div class="row">
+			<div class="col-sm-12">
+	      	<iframe src="https://view-api.box.com/1/sessions/7ee5ef1bc6d24dd58af1da2eb55823bf/view?theme=light" seamless fullscreen style="width:100%;height:600px"></iframe>
+      	</div>
+    </div>
+  </div>
+  <div class="modal-footer">
+	<a href="#" class="btn btn-default btn-sm pull-left">New Version</a> 
+	<p class="text-muted pull-left footer-note">This version was added 2 days ago by Ross Crawford</p>
+	<a href="#" class="btn btn-inverse btn-sm">Download</a>
+	<a href="#" class="btn btn-inverse btn-sm">Share</a>
+	<!--<a href="#" class="btn btn-primary">Send to</a>-->
+	<!--<a href="#" class="btn btn-primary">Copy</a> -->
+	<a href="#" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#requestReviewModal">Request Review</a>
+	<a href="#" class="btn btn-primary btn-sm"><span class="fui-check-inverted"></span> Mark as Final</a>
+  </div>
+</div>
+
 
 
 {% endblock %}
