@@ -101,14 +101,13 @@
 			              	<th class="category-controls">
 			              		<!-- TODO : make these buttons appear when the tbody appears-->
 								<div class="btn-group pull-right">              
-			              			<button class="btn btn-default btn-xs" id="add-new"><span class="fui-plus-inverted"></span></button>
-			              			<button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown"><span class="fui-triangle-down"></span></button>
-					          	  	<ul class="dropdown-menu dropdown-inverse dropdown-small">
-					                	<li><a href="#fakelink">New Category</a></li>
-					                	<li><a href="#fakelink">Edit Category</a></li>
-					                	<li><a href="#fakelink">Delete Category</a></li>
-
-					              	</ul>
+										<button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown"><span class="fui-triangle-down"></span></button>
+						          	  	<ul class="dropdown-menu dropdown-inverse dropdown-small">
+						          	  		<li><a href="#" id="add-new">New Item</a></li>
+						                	<li><a href="#fakelink">New Category</a></li>
+						                	<li><a href="#fakelink">Edit Category</a></li>
+						                	<li><a href="#fakelink">Delete Category</a></li>
+						              	</ul>
 					            </div>
 			              	</th>
 			              </tr>
@@ -173,19 +172,26 @@
 			                	<span class="fui-list-columned"></span> Custom agreement B 
 			                </td>
 			                <td class="status">
-			                	<button class="btn btn-warning btn-xs" disabled><span class="fui-user"></span> Review 66%</button>
+			                	<button class="btn btn-warning btn-xs" disabled><span class="fui-user"></span> Review 50%</button>
 			                	<button class="btn btn-danger btn-xs" disabled>25 Jun</button>
 			                </td>
 			              </tr>
-
+						  <tr class="closed item-closed">
+			                <td class="item-title item-open">
+			                	<span class="fui-list-columned"></span> Custom agreement C Final 
+			                </td>
+			                <td class="status">
+			                	<span class="fui-check-inverted"></span>
+			                </td>
+			              </tr>
 				              <tr>
 				                <th colspan="1" class="col-sm-6 category">Founder Documents</th>
 				              	<th class="category-controls">
 				              		<!-- TODO : make these buttons appear when the tbody appears-->
 									<div class="btn-group pull-right">              
-				              			<button class="btn btn-default btn-xs" id="add-new"><span class="fui-plus-inverted"></span></button>
 				              			<button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown"><span class="fui-triangle-down"></span></button>
 						          	  	<ul class="dropdown-menu dropdown-inverse dropdown-small">
+						          	  		<li><a href="#" id="add-new">New Item</a></li>
 						                	<li><a href="#fakelink">New Category</a></li>
 						                	<li><a href="#fakelink">Edit Category</a></li>
 						                	<li><a href="#fakelink">Delete Category</a></li>
@@ -267,41 +273,43 @@
 				<div class="col-sm-7 item shareholders full" style="display:none;">
 					<div class="row full">
 						<div class="col-sm-7">
-							<h3>Shareholders agreement 
+							<h3>Shareholders Agreement 
 								<div class="tools-inject"></div>
-							</h3>
-							<ul class="list-unstyled item-progress">
-								<li class="">
-									<div class="fui-question"></div> <span>Add or request a file</span>
-									<p>Start by uploading a file or requesting a file from another person.</p>
-									<div class="actions">
-										<a href="#" class="btn btn-info btn-sm" id="upload-doc"><span class="fui-clip"></span> Drop or Upload File</a>
-										<a href="#" class="btn btn-info  btn-sm" data-toggle="modal" data-target="#requestFileModal"><span class="fui-user"></span> Request File</a> 
-									</div>
-								</li>
-							</ul>
+							</h3>	
+							<div class="add-new text-center">
+								<div class="fui-upload"></div>
+								<a href="" class="btn btn-sm btn-add-new"><span class="fui-upload"></span> Upload Revision</a>
+								<a href="" class="btn btn-sm btn-add-new" data-toggle="modal" data-target="#requestFileModal"><span class="fui-user"></span> Request Revision</a>
+							</div>
+							<div class="item-help">
+								<span class="fui-upload"></span> 
+								<h4>Upload a first revision</h4>
+								Upload a first draft of this document. Move your mouse to the green upload bar at the top of this item to either upload a file or request one from another participant. You can also drag a document directly on a checklist item to add it as a revision.
+							</div>
 						</div>
 						<div class="col-sm-5 chat full">
 						</div>
 					</div>
 				</div>
-
-
 				<div class="col-sm-7 item note full" style="display:none;">
 					<div class="row full">
 						<div class="col-sm-7">
-							<h3>Note Purchase Agreement 
+							<h3>Note purchase agreement
 								<div class="tools-inject"></div>
-							</h3>
-							<ul class="list-unstyled item-progress">
-								<li class="">
-									<div class="fui-time"></div> <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/t1/c12.12.155.155/314032_10150303812474864_594285312_a.jpg" class="user"> <span>Waiting for file from Ross Crawford</span>
-									<div class="actions">
-										<a href="#" class="btn btn-sm btn-warning">Remind</a>
-										<a href="#" class="btn btn-sm btn-danger">Cancel</a> 
-									</div>
-								</li>
-							</ul>
+							</h3>	
+							<div class="add-new text-center">
+								<div class="fui-upload"></div>
+								<a href="" class="btn btn-sm btn-add-new"><span class="fui-upload"></span> Upload Revision</a>
+								<a href="" class="btn btn-sm btn-add-new"><span class="fui-user"></span> Request Revision</a>
+							</div>
+							<div class="waiting-revision text-center">
+								<span class="fui-time"></span> Waiting for a revision from Ross Crawford. <a href="#">Remind</a> <a href="#" class="close">x</a>
+							</div>
+							<div class="item-help">
+								<span class="fui-time"></span> 
+								<h4>Waiting for a revision</h4>
+								You have requested a revision from another user. Once they have supplied this revision you will be notified. 
+							</div>
 						</div>
 						<div class="col-sm-5 chat full">
 						</div>
@@ -313,43 +321,47 @@
 							<h3>Stock Purchase Agreement 
 								<div class="tools-inject"></div>
 							</h3>	
-							<table>
-								<tr>
-									<td>Version</td>
-									<td></td>
-									<td></td>
-									<td></td>
-									<td></td>
-								</tr>
-
-							</table>
-
-
-
-							<ul class="list-unstyled item-progress">
-								<li class="">
-									<div class="fui-check"></div> <span>File received from Ross Crawford</span>
-									<div class="file" id="final-demo-file">
-										<div class="col-sm-12 icon icon-doc" style="text-align:center;">
-											<span class="fui-document"></span>
-											<img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/t1/c12.12.155.155/314032_10150303812474864_594285312_a.jpg" class="user">
-											<div class="meta">
-												<h5><a href="#">stock_purchase_agreement_929928.doc</a></h5>
-												<small>
-													<a href="#" class="">View</a>
-													<a href="#" class="">Download</a>
-													<a href="#" class="">Edit</a>
-												</small>
-											</div>
-										</div>
-									</div> 
-									<div class="actions final">
-										<a href="#" class="btn btn-sm btn-inverse">Request Review</a>
-										<a href="#" class="btn btn-sm btn-success" id="mark-final"><span class="fui-check-inverted" style="display:none;"></span> Mark as Final</a>
+							<div class="add-new text-center">
+								<div class="fui-upload"></div>
+								<a href="" class="btn btn-sm btn-add-new"><span class="fui-upload"></span> Upload Revision</a>
+								<a href="" class="btn btn-sm btn-add-new"><span class="fui-user"></span> Request Revision</a>
+							</div>
+							<ul class="revisions list-unstyled">
+								<li class="header">Current Revision</li>
+								<li class="current">
+									<div class="doc-wrap">
+										<span class="version">V3</span>
+										<h4>Shareholders_agreement_lawpal_299929.doc </h4><span class="close">x</span>
+									<div class="desc">This is the final version. Let's see if this get's the ball moving.</div>
+										<div class="sub">Ross Crawford, 2 days ago</div>
 									</div>
-									<div class="final-actions" style="display:none">
-										<a href="#" class="btn btn-sm btn-silver final-btn">Request Signature</a>
-										<a href="#" class="btn btn-sm btn-silver final-btn">Add to Closing Group</a>
+									<div class="tools">
+										<a href="#" class="btn btn-link btn-xs">View</a>
+										<a href="#" class="btn btn-link btn-xs">Request Review</a>
+										<a href="#" class="btn btn-success btn-xs pull-right"><span class="fui-check-inverted"></span> Mark as Final</a>
+									</div>
+								</li>
+<!-- 								<li class="final">
+									<div class="doc-wrap">
+										<span class="version">V3</span>
+										<h4>Shareholders_agreement_lawpal_299929.doc</h4>
+										<div class="sub">Ross Crawford, 2 days ago</div>
+									</div>
+								</li> -->
+								<li class="header toggle-previous"><a href="#" class="text-muted">2 Previous Revisions</a></li>
+								<li class="header previous-toggle">Previous Revisions</li>
+								<li class="previous-toggle">
+									<div class="doc-wrap">
+										<span class="version">V2</span>
+										<h4>Shareholders_agreement_lawpal_299929.doc</h4>
+										<div class="sub">Ross Crawford, 2 days ago</div>
+									</div>
+								</li>
+								<li class="previous-toggle">
+									<div class="doc-wrap">
+										<span class="label version">V1</span>
+										<h4>Shareholders_agreement_lawpal_299929.doc</h4>
+										<div class="sub">Ross Crawford, 2 days ago</div>
 									</div>
 								</li>
 							</ul>
@@ -362,69 +374,118 @@
 				<div class="col-sm-7 item custom full" style="display:none;">
 					<div class="row full">
 						<div class="col-sm-7">
-							<h3>Custom Agreement B 
+							<h3>Custom agreement B 
 								<div class="tools-inject"></div>
 							</h3>	
-							<ul class="list-unstyled item-progress">
-								<li class="">
-									<div class="fui-check"></div> <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/t1/c12.12.155.155/314032_10150303812474864_594285312_a.jpg" class="user"> <span>File received (RC)</span>
-									<div class="file" id="final-demo-file">
-										<div class="col-sm-2 icon icon-doc" style="text-align:center;">
-											<span class="fui-document"></span>
-										</div>
-										<div class="col-sm-10 meta">
-											<h5><a href="#">stock_purchase_agreement_929928.doc</a></h5>
-											<small>
-												<a href="#" class="">View</a>
-												<a href="#" class="">Download</a>
-												<a href="#" class="">Edit</a>
-											</small>
-										</div>
-									</div> 
-								</li>
-								<li class="">
-									<div class="fui-check"></div> <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash3/t1/c0.0.100.100/p100x100/1014416_10100118438650161_136799916_a.jpg" class="user"> <span>New revision added (AH)</span>
-									<div class="file" id="final-demo-file">
-										<div class="col-sm-2 icon icon-doc" style="text-align:center;">
-											<span class="fui-document"></span>
-										</div>
-										<div class="col-sm-10 meta">
-											<h5><a href="#">stock_purchase_agreement_929928.doc</a></h5>
-											<small>
-												<a href="#" class="">View</a>
-												<a href="#" class="">Download</a>
-												<a href="#" class="">Edit</a>
-											</small>
-										</div>
-									</div> 
-								</li>
-								<li class="">
-									<div class="fui-check"></div> <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash3/t1/c0.0.100.100/p100x100/1014416_10100118438650161_136799916_a.jpg" class="user"> <span>New revision added (AH), review complete</span>
-									<div class="file" id="final-demo-file">
-										<div class="col-sm-2 icon icon-doc" style="text-align:center;">
-											<span class="fui-document"></span>
-										</div>
-										<div class="col-sm-10 meta">
-											<h5><a href="#">stock_purchase_agreement_929928_2.doc</a></h5>
-											<small>
-												<a href="#" class="">View</a>
-												<a href="#" class="">Download</a>
-												<a href="#" class="">Edit</a>
-											</small>
-											<ul class="reviewers list-unstyled">
-												<li><span class="fui-check"></span> Yael Citro</li>
-												<li><span class="fui-check"></span> Eran Fromen</li>
+							<div class="add-new text-center">
+								<div class="fui-upload"></div>
+								<a href="" class="btn btn-sm btn-add-new"><span class="fui-upload"></span> Upload Revision</a>
+								<a href="" class="btn btn-sm btn-add-new"><span class="fui-user"></span> Request Revision</a>
+							</div>
+							<ul class="revisions list-unstyled">
+								<li class="header">Current Revision</li>
+								<li class="current">
+									<div class="doc-wrap">
+										<span class="version">V3</span>
+										<h4>Shareholders_agreement_lawpal_299929.doc </h4><span class="close">x</span>
+									<div class="desc">This is the final version. Let's see if this get's the ball moving.</div>
+										<div class="sub">Ross Crawford, 2 days ago</div>
+									</div>
+									<div class="tools">
+										<a href="#" class="btn btn-link btn-xs">View</a>
+										<a href="#" class="btn btn-link btn-xs">Request Review</a>
+										<a href="#" class="btn btn-success btn-xs pull-right"><span class="fui-check-inverted"></span> Mark as Final</a>
+									</div>
+									<div class="review in-progress">
+										Review in progress
+										<a href="#" class="btn btn-link btn-xs pull-right"><span class="fui-cross-inverted"></span> Cancel</a>
+										<div class="review-members">
+											<ul class="list-unstyled">
 												<li><span class="fui-time"></span> Howard Caro</li>
+												<li class="complete">
+													<button class="btn btn-success btn-xs pull-right"><span class="fui-check"></span> View Response </button> Yael Citro
+												</li>
 											</ul>
 										</div>
-									</div> 
-									<div class="actions final">
-										<a href="#" class="btn btn-sm btn-inverse">Request Review</a>
-										<a href="#" class="btn btn-sm btn-success" id="mark-final"><span class="fui-check-inverted" style="display:none;"></span> Mark as Final</a>
+									</div>									
+								</li>
+								<li class="header toggle-previous text-right"><a href="#" class="btn btn-sm btn-silver">2 Previous Revisions</a></li>
+								<li class="header previous-toggle">Previous Revisions</li>
+								<li class="previous-toggle">
+									<div class="doc-wrap">
+										<span class="version">V2</span>
+										<h4>Shareholders_agreement_lawpal_299929.doc</h4>
+										<div class="sub">Ross Crawford, 2 days ago</div>
 									</div>
-									<div class="final-actions" style="display:none">
-										<a href="#" class="btn btn-sm btn-silver final-btn">Request Signature</a>
-										<a href="#" class="btn btn-sm btn-silver final-btn">Add to Closing Group</a>
+								</li>
+								<li class="previous-toggle">
+									<div class="doc-wrap">
+										<span class="label version">V1</span>
+										<h4>Shareholders_agreement_lawpal_299929.doc</h4>
+										<div class="sub">Ross Crawford, 2 days ago</div>
+									</div>
+								</li>
+							</ul>
+						</div>
+						<div class="col-sm-5 chat full">
+						</div>
+					</div>
+				</div>
+
+
+				<div class="col-sm-7 item closed full" style="display:none;">
+					<div class="row full">
+						<div class="col-sm-7">
+							<h3>Custom agreement C 
+								<div class="tools-inject"></div>
+							</h3>	
+							<div class="add-new text-center">
+								<div class="fui-upload"></div>
+								<a href="" class="btn btn-sm btn-add-new"><span class="fui-upload"></span> Upload Revision</a>
+								<a href="" class="btn btn-sm btn-add-new"><span class="fui-user"></span> Request Revision</a>
+							</div>
+							<ul class="revisions list-unstyled">
+								<li class="header">Current Revision</li>
+								<li class="final">
+									<div class="doc-wrap final">
+										<span class="version">V3</span>
+										<h4>Shareholders_agreement_lawpal_299929.doc </h4><span class="close">x</span>
+									<div class="desc">This is the final version. Let's see if this get's the ball moving.</div>
+										<div class="sub">Ross Crawford, 2 days ago</div>
+									</div>
+									<div class="tools">
+										<a href="#" class="btn btn-link btn-xs">View</a>
+										<a href="#" class="btn btn-link btn-xs">Request Review (2)</a>
+										<a href="#" class="btn btn-success btn-xs pull-right" disabled><span class="fui-check-inverted"></span> Final</a>
+									</div>
+									<div class="review">
+										Review complete
+										<a href="#" class="btn btn-link btn-xs pull-right"><span class="fui-cross-inverted"></span> Cancel</a>
+										<div class="review-members">
+											<ul class="list-unstyled">
+												<li class="complete">
+													<button class="btn btn-success btn-xs pull-right"><span class="fui-check"></span> View Response </button> Howard Caro
+												<li class="complete">
+													<button class="btn btn-success btn-xs pull-right"><span class="fui-check"></span> View Response </button> Yael Citro
+												</li>
+											</ul>
+										</div>
+									</div>									
+								</li>
+								<li class="header toggle-previous text-right"><a href="#" class="btn btn-sm btn-silver">2 Previous Revisions</a></li>
+								<li class="header previous-toggle">Previous Revisions</li>
+								<li class="previous-toggle">
+									<div class="doc-wrap">
+										<span class="version">V2</span>
+										<h4>Shareholders_agreement_lawpal_299929.doc</h4>
+										<div class="sub">Ross Crawford, 2 days ago</div>
+									</div>
+								</li>
+								<li class="previous-toggle">
+									<div class="doc-wrap">
+										<span class="label version">V1</span>
+										<h4>Shareholders_agreement_lawpal_299929.doc</h4>
+										<div class="sub">Ross Crawford, 2 days ago</div>
 									</div>
 								</li>
 							</ul>
@@ -661,7 +722,7 @@
 	     </div>
 		<div class="modal-footer">
 			<a href="#" class="btn btn-default btn-wide"  data-dismiss="modal" aria-hidden="true">Cancel</a>
-			<a href="#" class="btn btn-primary btn-wide">Request file</a>
+			<a href="#" class="btn btn-primary btn-wide">Add matter participants</a>
 	   	</div>
       </div>
     </div>
@@ -702,7 +763,7 @@
 	     </div>
 		<div class="modal-footer">
 			<a href="#" class="btn btn-default btn-wide"  data-dismiss="modal" aria-hidden="true">Cancel</a>
-			<a href="#" class="btn btn-primary btn-wide">Request file</a>
+			<a href="#" class="btn btn-primary btn-wide">Add participant</a>
 	   	</div>
       </div>
     </div>
@@ -759,15 +820,14 @@ $( document ).ready(function() {
 
 	var toolsinject = '	<div class="btn-group pull-right">\
 		<a href="#" class="btn-silver btn-xs" data-toggle="tooltip" title="datepicker!" data-placement="bottom">25 June</a>\
-		<a href="#" class="btn-info btn-xs" data-toggle="tooltip" title="Part of Closing Group A" data-placement="bottom"><span class="fui-radio-checked"></span> A</a>\
-		<a href="#" class="btn-inverse btn-xs" class="dropdown-toggle" data-toggle="dropdown">Options</a>\
+		<a href="#" class="btn-silver btn-xs" data-toggle="tooltip" title="Part of Closing Group A" data-placement="bottom"><span class="fui-radio-checked"></span> A</a>\
+		<a href="#" class="btn-silver btn-xs" class="dropdown-toggle" data-toggle="dropdown">Options</a>\
 		<ul class="dropdown-menu dropdown-small dropdown-inverse">\
 			<li><a href="#"><span class="fui-calendar"></span> Set due date</a></li>\
 			<li><a href="#" data-toggle="modal" data-target="#attachWorkflowModal"><span class="fui-calendar"></span> Add workflow</a></li>\
 			<li><a href="#" class="text-danger"><span class="fui-trash text-danger"></span> Delete</a></li>\
 		</ul>\
 	</div>\
-	<br />\
 	<div class="item-description-toggle"><small class="text-muted"><a href="#" class="link">Enter item description</a></small></div>\
 	<div class="item-description" style="display:none;">\
 		<textarea class="form-control" rows="3" placeholder="Enter a description for this item"></textarea>\
@@ -780,7 +840,7 @@ $( document ).ready(function() {
 
 
 	// Inject a chat div into each of the chat elements
-	var chatdiv = '<h4><span class="fui-chat"></span> Discuss</h4>\
+	var chatdiv = '<h4>Discuss</h4>\
 	<ul class="list-unstyled">\
 		<li class="message me">\
 			<div class="media">\
@@ -848,6 +908,12 @@ $( document ).ready(function() {
 		$(this).addClass('selected');
 		$('.item.custom').show();
 	})
+	$("table.checklist tr.closed").click(function(e){ 
+		$('.item').hide();
+		$("table.checklist tr").removeClass('selected'); 
+		$(this).addClass('selected');
+		$('.item.closed').show();
+	})
 	$("#upload-doc").click(function(e){ alert('filerpicker, this should also be a drop zone. to be discussed.') });
 	$(".item-description-toggle, .item-description-cancel").click(function(e){ 
 		$(".item-description-toggle").toggle();
@@ -876,6 +942,12 @@ $( document ).ready(function() {
 		$("#checklist").hide();
 		$("#checklist-nav").removeClass('active');
 		$("#closing-nav").addClass('active');
+	});
+
+	$(".toggle-previous").click(function(e){ 
+		$(".previous-toggle").show();
+		$(".toggle-previous").hide();
+
 	});
 
    // Tooltips

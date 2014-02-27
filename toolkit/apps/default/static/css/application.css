@@ -280,178 +280,275 @@ div.full {
 #closing div.item a.link:hover {
   text-decoration: underline;
 }
-#checklist div.item .btn-link,
-#closing div.item .btn-link {
-  color: #3d4448;
-}
 #checklist div.item small,
 #closing div.item small {
   font-size: 13px;
+}
+#checklist div.item .item-help,
+#closing div.item .item-help {
+  margin: 20px 35px;
+  text-align: center;
+  color: #acb4b9;
+  font-size: 13px;
+}
+#checklist div.item .item-help .fui-upload,
+#closing div.item .item-help .fui-upload,
+#checklist div.item .item-help .fui-time,
+#closing div.item .item-help .fui-time {
+  font-size: 40px;
+  color: #d9dcde;
+}
+#checklist div.item .item-help h4,
+#closing div.item .item-help h4 {
+  font-size: 20px;
 }
 #checklist div.item h3,
 #closing div.item h3 {
   font-size: 19px;
   padding-bottom: 16px;
-  background-color: #d9dcde;
+  background-color: #e1e4e5;
   margin-bottom: 0px;
   margin: 0px -15px 0px -15px;
-  padding: 20px 15px 20px 15px;
+  padding: 23px 15px 16px 15px;
 }
-#checklist div.item .dropdown-inverse a,
-#closing div.item .dropdown-inverse a {
-  color: white;
+#checklist div.item h3 .btn-silver,
+#closing div.item h3 .btn-silver {
+  color: #606a71;
+  padding: 5px 6px;
+  background-color: transparent;
+  font-size: 11px;
+  border: 1px solid #c3c8cc;
 }
-#checklist div.item input:focus,
-#closing div.item input:focus,
-#checklist div.item textarea:focus,
-#closing div.item textarea:focus {
-  border-color: #a5afaf;
+#checklist div.item h3 .item-description-toggle,
+#closing div.item h3 .item-description-toggle {
+  padding-top: 5px;
 }
-#checklist div.item .item-description-toggle,
-#closing div.item .item-description-toggle {
-  padding-top: 10px;
+#checklist div.item h3 .item-description-toggle a.link,
+#closing div.item h3 .item-description-toggle a.link {
+  font-size: 13px;
 }
-#checklist div.item .item-description textarea,
-#closing div.item .item-description textarea {
+#checklist div.item h3 .item-description textarea,
+#closing div.item h3 .item-description textarea {
   margin-top: 10px;
   margin-bottom: 3px;
   font-size: 12px;
 }
-#checklist div.item ul.item-progress,
-#closing div.item ul.item-progress {
-  padding-top: 10px;
+#checklist div.item .add-new,
+#closing div.item .add-new {
+  text-align: center;
+  background-color: #5fd873;
+  margin-left: -15px;
+  margin-right: -15px;
+  padding: 10px 0px 14px 0px;
+  color: #d2f4d7;
+  border-top: 2px solid #4ad361;
 }
-#checklist div.item ul.item-progress li,
-#closing div.item ul.item-progress li {
-  padding-left: 7px;
-  padding-right: 10px;
-  /* border-left: 1px solid lighten(@gray-light, 10%); */
-
-  margin-left: 0px;
-  padding-bottom: 15px;
-  padding-top: 15px;
-  font-size: 12px;
+#checklist div.item .add-new .btn-add-new,
+#closing div.item .add-new .btn-add-new {
+  color: #e6f9e9;
   font-weight: normal;
-  clear: both;
-  color: #545e64;
-  opacity: 0.4;
-  transition: opacity 0.3s;
+  border: 1px solid #6bdb7e;
+  display: none;
 }
-#checklist div.item ul.item-progress li:hover,
-#closing div.item ul.item-progress li:hover {
-  opacity: 0.8;
+#checklist div.item .add-new:hover div.fui-upload,
+#closing div.item .add-new:hover div.fui-upload {
+  opacity: 0;
 }
-#checklist div.item ul.item-progress li img.user,
-#closing div.item ul.item-progress li img.user {
-  width: 32px;
-  margin-top: -5px;
-  border-radius: 30px;
-  opacity: 0.6;
+#checklist div.item .add-new:hover .btn-add-new,
+#closing div.item .add-new:hover .btn-add-new {
+  border: 1px solid #a9eab4;
   display: inline;
 }
-#checklist div.item ul.item-progress li:last-child,
-#closing div.item ul.item-progress li:last-child {
-  opacity: 1;
-}
-#checklist div.item ul.item-progress li p,
-#closing div.item ul.item-progress li p {
-  font-size: 14px;
-  color: #869198;
-  line-height: 1.25em;
-  font-weight: normal;
-  margin-top: 10px;
-}
-#checklist div.item ul.item-progress li .final-actions,
-#closing div.item ul.item-progress li .final-actions {
-  margin-top: 10px;
-}
-#checklist div.item ul.item-progress div[class*="fui-"],
-#closing div.item ul.item-progress div[class*="fui-"] {
-  color: white;
-  width: 24px;
-  height: 24px;
+#checklist div.item .waiting-revision,
+#closing div.item .waiting-revision {
   text-align: center;
-  padding-top: 2px;
-  margin-top: -5px;
-  margin-bottom: -5px;
-  margin-left: 0px;
-  margin-right: 3px;
-  border-radius: 20px;
-  background-color: #3498db;
-}
-#checklist div.item ul.item-progress div.fui-check,
-#closing div.item ul.item-progress div.fui-check {
-  background-color: #6bdb7e;
-}
-#checklist div.item ul.item-progress div.fui-time,
-#closing div.item ul.item-progress div.fui-time {
   background-color: #f1c40f;
+  margin-left: -15px;
+  margin-right: -15px;
+  padding: 10px;
+  color: #ffffff;
+  border-top: 2px solid #e3b90d;
+  font-size: 14px;
 }
-#checklist div.item ul.item-progress .actions,
-#closing div.item ul.item-progress .actions {
+#checklist div.item .waiting-revision .close,
+#closing div.item .waiting-revision .close {
+  color: white;
+  opacity: 0.7;
+  font-size: 14px;
+}
+#checklist div.item .waiting-revision a,
+#closing div.item .waiting-revision a {
+  color: #ffffff;
+}
+#checklist div.item ul.revisions,
+#closing div.item ul.revisions {
   margin-top: 10px;
 }
-#checklist div.item ul.item-progress div.file,
-#closing div.item ul.item-progress div.file {
-  margin: 8px 0px 0px 0px;
-  border: 1px solid #e1e4e5;
-  padding-left: 10px;
+#checklist div.item ul.revisions li,
+#closing div.item ul.revisions li {
+  padding: 3px 5px 15px 25px;
+}
+#checklist div.item ul.revisions li .doc-wrap,
+#closing div.item ul.revisions li .doc-wrap {
   background-color: white;
-  overflow: auto;
-  transition: background-color 0.2s;
+  padding: 9px 10px 0px 10px;
+  position: relative;
+  font-size: 13px;
 }
-#checklist div.item ul.item-progress div.file.final,
-#closing div.item ul.item-progress div.file.final {
-  background-color: #6bdb7e;
-}
-#checklist div.item ul.item-progress div.file.final *,
-#closing div.item ul.item-progress div.file.final *,
-#checklist div.item ul.item-progress div.file.final a,
-#closing div.item ul.item-progress div.file.final a,
-#checklist div.item ul.item-progress div.file.final a.btn,
-#closing div.item ul.item-progress div.file.final a.btn {
-  color: white!important;
-  border-color: #6bdb7e;
-}
-#checklist div.item ul.item-progress div.file.final small,
-#closing div.item ul.item-progress div.file.final small {
-  opacity: 0.6;
-}
-#checklist div.item ul.item-progress div.file.final .meta,
-#closing div.item ul.item-progress div.file.final .meta {
-  order-left-color: #6bdb7e;
-}
-#checklist div.item ul.item-progress div.file .icon,
-#closing div.item ul.item-progress div.file .icon {
-  font-size: 20px;
-  padding-top: 3px;
-}
-#checklist div.item ul.item-progress div.file .meta,
-#closing div.item ul.item-progress div.file .meta {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  border-left: 1px solid #f4f5f6;
-}
-#checklist div.item ul.item-progress div.file .meta h5,
-#closing div.item ul.item-progress div.file .meta h5 {
-  text-transform: none;
-  margin: 0px 0px 0px 0px;
+#checklist div.item ul.revisions li .doc-wrap span.version,
+#closing div.item ul.revisions li .doc-wrap span.version {
+  position: absolute;
+  left: -24px;
+  top: 0px;
+  height: 100%;
+  padding: 6px 4px 4px 5px;
   font-size: 12px;
+  line-height: 25px;
+  border: none;
+  background-color: #c0c6c9;
+  color: #ffffff;
+  vertical-align: middle;
 }
-#checklist div.item ul.item-progress div.file .meta a,
-#closing div.item ul.item-progress div.file .meta a {
-  color: #545e64;
+#checklist div.item ul.revisions li .doc-wrap .close,
+#closing div.item ul.revisions li .doc-wrap .close {
+  font-size: 15px;
+  display: none;
 }
-#checklist div.item ul.item-progress div.file .meta small a,
-#closing div.item ul.item-progress div.file .meta small a {
-  font-size: 12px;
-  padding-right: 10px;
+#checklist div.item ul.revisions li .doc-wrap:hover .close,
+#closing div.item ul.revisions li .doc-wrap:hover .close {
+  display: block;
+}
+#checklist div.item ul.revisions li .doc-wrap .sub,
+#closing div.item ul.revisions li .doc-wrap .sub {
+  margin-top: 5px;
+  margin-right: -5px;
+  font-size: 11px;
+  color: #ccd4d5;
+  text-align: right;
+}
+#checklist div.item ul.revisions li .doc-wrap h4,
+#closing div.item ul.revisions li .doc-wrap h4 {
+  font-size: 14px;
+  line-height: 16px;
+  display: inline;
+  margin-bottom: 0px;
   color: #a1aab0;
 }
-#checklist div.item ul.item-progress div.file .meta .reviewers li,
-#closing div.item ul.item-progress div.file .meta .reviewers li {
-  font-size: 13px;
-  padding: 0px 0px 0px 0px;
+#checklist div.item ul.revisions li .tools,
+#closing div.item ul.revisions li .tools {
+  border-top: 1px solid #F3f3f3;
+  background-color: #f7f7f7;
+  padding: 4px 3px 3px 8px;
+}
+#checklist div.item ul.revisions li .tools .btn-link,
+#closing div.item ul.revisions li .tools .btn-link {
+  color: #666;
+}
+#checklist div.item ul.revisions li .review,
+#closing div.item ul.revisions li .review {
+  padding: 9px 3px 9px 8px;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  background-color: #69dd9a;
+}
+#checklist div.item ul.revisions li .review .btn,
+#closing div.item ul.revisions li .review .btn {
+  margin-top: -3px;
+}
+#checklist div.item ul.revisions li .review .btn-link,
+#closing div.item ul.revisions li .review .btn-link {
+  color: white;
+}
+#checklist div.item ul.revisions li .review.in-progress,
+#closing div.item ul.revisions li .review.in-progress {
+  background-color: #f5aa34;
+}
+#checklist div.item ul.revisions li .review ul,
+#closing div.item ul.revisions li .review ul {
+  padding-top: 10px;
+}
+#checklist div.item ul.revisions li .review ul li,
+#closing div.item ul.revisions li .review ul li {
+  margin-bottom: 5px;
+  margin-top: 5px;
+  padding: 5px 5px 5px 5px;
+  background-color: white;
+  color: #f39c12;
+}
+#checklist div.item ul.revisions li .review ul li span,
+#closing div.item ul.revisions li .review ul li span {
+  font-size: 20px;
+  opacity: 0.7;
+}
+#checklist div.item ul.revisions li .review ul li.complete,
+#closing div.item ul.revisions li .review ul li.complete {
+  color: #2ecc71;
+}
+#checklist div.item ul.revisions li .review ul li [class*="fui-"],
+#closing div.item ul.revisions li .review ul li [class*="fui-"] {
+  float: right;
+  margin-top: -6px;
+}
+#checklist div.item ul.revisions li .review ul li button [class*="fui-"],
+#closing div.item ul.revisions li .review ul li button [class*="fui-"] {
+  font-size: inherit;
+  margin-top: 0px;
+  float: none;
+}
+#checklist div.item ul.revisions li.current .doc-wrap,
+#closing div.item ul.revisions li.current .doc-wrap {
+  border-left-color: #f1c40f;
+}
+#checklist div.item ul.revisions li.current .doc-wrap span.version,
+#closing div.item ul.revisions li.current .doc-wrap span.version {
+  background-color: #f1c40f;
+  border-color: #e8bd0e;
+  color: white;
+}
+#checklist div.item ul.revisions li.current .doc-wrap h4,
+#closing div.item ul.revisions li.current .doc-wrap h4 {
+  color: #606a71;
+}
+#checklist div.item ul.revisions li.final .doc-wrap,
+#closing div.item ul.revisions li.final .doc-wrap {
+  border-left-color: #2ecc71;
+}
+#checklist div.item ul.revisions li.final .doc-wrap span.version,
+#closing div.item ul.revisions li.final .doc-wrap span.version {
+  background-color: #2ecc71;
+  border-color: #2cc46c;
+  color: white;
+}
+#checklist div.item ul.revisions li.final .doc-wrap h4,
+#closing div.item ul.revisions li.final .doc-wrap h4 {
+  color: #606a71;
+}
+#checklist div.item ul.revisions li.final .review,
+#closing div.item ul.revisions li.final .review {
+  display: none;
+}
+#checklist div.item ul.revisions li .desc,
+#closing div.item ul.revisions li .desc {
+  color: #869198;
+  font-weight: normal;
+  margin-top: 0px;
+  font-size: 12px;
+}
+#checklist div.item ul.revisions li.header,
+#closing div.item ul.revisions li.header {
+  font-weight: bold;
+  font-size: 12px;
+  padding-top: 6px;
+  padding-left: 0px;
+  padding-bottom: 4px;
+  margin-top: 15px;
+  text-transform: uppercase;
+  color: #a1aab0;
+}
+#checklist div.item ul.revisions li.previous-toggle,
+#closing div.item ul.revisions li.previous-toggle {
+  display: none;
 }
 #checklist div.chat,
 #closing div.chat {
@@ -460,7 +557,8 @@ div.full {
 }
 #checklist div.chat h4,
 #closing div.chat h4 {
-  font-size: 14px;
+  padding-top: 13px;
+  font-size: 16px;
   color: #f4f5f6;
   margin-bottom: 0px;
   text-transform: uppercase;
