@@ -1195,6 +1195,21 @@ div.full {
 .attachment-list-item-meta {
   margin-top: 20px;
 }
+.avatar {
+  background-color: #c7c7c7;
+  position: relative;
+}
+.avatar .initials {
+  color: #444;
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+  height: 40px;
+  overflow: hidden;
+  line-height: 40px;
+  text-align: center;
+  width: 40px;
+}
 .dashboard {
   margin-top: -30px;
 }
