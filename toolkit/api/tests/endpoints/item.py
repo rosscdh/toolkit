@@ -23,7 +23,7 @@ class ItemsTest(BaseEndpointTest):
         return reverse('matter_items', kwargs={'matter_slug': self.workspace.slug})
 
     def test_endpoint_name(self):
-        self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/items/')
+        self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/items')
 
     def test_lawyer_get(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -102,7 +102,7 @@ class ItemDetailTest(BaseEndpointTest):
         return reverse('matter_item', kwargs={'matter_slug': self.workspace.slug, 'item_slug': self.item.slug})
 
     def test_endpoint_name(self):
-        self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/items/%s/' % self.item.slug)
+        self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/items/%s' % self.item.slug)
 
     def test_lawyer_get(self):
         self.client.login(username=self.lawyer.username, password=self.password)
