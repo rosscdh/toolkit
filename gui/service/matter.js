@@ -8,6 +8,7 @@ angular.module('toolkit-gui').factory('matterService',[ '$q', '$resource', funct
 		'items': [],
 		'selected': null
 	};
+	
 	function matterResource() {
 		return $resource('http://127.0.0.1:8000/api/v1/matters/:matterSlug/?format=json', {}, {
 			'list': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }, 'isArray': true },
