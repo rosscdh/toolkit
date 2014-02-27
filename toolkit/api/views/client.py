@@ -12,6 +12,7 @@ class ClientEndpoint(viewsets.ModelViewSet):
     """
     """
     model = Client
+    lookup_field = 'slug'
     serializer_class = ClientSerializer
 
     def list(self, request, **kwargs):
