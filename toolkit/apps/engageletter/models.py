@@ -4,23 +4,36 @@ from django.template import loader
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 
-from uuidfield import UUIDField
+from datetime import datetime
 from jsonfield import JSONField
+from uuidfield import UUIDField
 
 from rulez import registry as rulez_registry
+from storages.backends.s3boto import S3BotoStorage
 
+from toolkit.core.mixins import IsDeletedMixin
+
+from toolkit.apps.workspace.services import PDFKitService
 from toolkit.apps.workspace.signals import base_signal
 from toolkit.apps.workspace.mixins import WorkspaceToolModelMixin
+
+from hello_sign.mixins import HelloSignModelMixin
 
 from .markers import EngagementLetterMarkers
 ENGAGEMENTLETTER_STATUS = EngagementLetterMarkers().named_tuple(name='ENGAGEMENTLETTER_STATUS')
 
-from .mixins import (IsDeletedMixin,
-                     StatusMixin,
-                     HTMLMixin)
+from .mixins import StatusMixin, HTMLMixin
+
+import os
 
 
-class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, WorkspaceToolModelMixin, models.Model):
+def _upload_file(instance, filename):
+    filename = os.path.split(filename)[-1]
+    filename_no_ext, ext = os.path.splitext(filename)
+    return 'templates/engageletter-%d-%s%s' % (instance.tool.user.pk, slugify(filename_no_ext), ext)
+
+
+class EngagementLetter(StatusMixin, HTMLMixin, HelloSignModelMixin, WorkspaceToolModelMixin, IsDeletedMixin, models.Model):
     """
     Enagement Letter model
     """
@@ -33,15 +46,12 @@ class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, WorkspaceToolMode
     workspace = models.ForeignKey('workspace.Workspace')
     user = models.ForeignKey('auth.User')
 
-    # header = models.TextField(default='', blank=True)  # store an instance of the workspace.lawyer header template
-    # letter = models.TextField(default='', blank=True)  # store the rendered html
+    data = JSONField(default={}) # overriden by HelloSignModelMixin
 
-    data = JSONField(default={})
-
-    status = models.IntegerField(choices=ENGAGEMENTLETTER_STATUS.get_choices(), default=ENGAGEMENTLETTER_STATUS.lawyer_setup_template, db_index=True)
+    status = models.IntegerField(choices=ENGAGEMENTLETTER_STATUS.get_choices(), default=ENGAGEMENTLETTER_STATUS.lawyer_complete_form, db_index=True)
 
     def __unicode__(self):
-        return u'Engagement Letter for %s' % self.client_name
+        return u'#%s Engagement Letter' % self.file_number
 
     @property
     def tool_slug(self):
@@ -60,8 +70,21 @@ class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, WorkspaceToolMode
         return self.status == self.STATUS.complete
 
     @property
-    def client_name(self):
-        return self.data.get('client_full_name', None)
+    def file_number(self):
+        return self.data.get('file_number', None)
+
+    @property
+    def signatory_name(self):
+        return self.data.get('signatory_full_name', None)
+
+    @property
+    def signatory_title(self):
+        return self.data.get('signatory_title', None)
+
+    @property
+    def date_of_letter(self):
+        date = self.data.get('date_of_letter', None)
+        return datetime.strptime(date, '%Y-%m-%d')
 
     @property
     def filename(self):
@@ -87,6 +110,20 @@ class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, WorkspaceToolMode
         context = loader.Context(context_data)
         return self.template.render(context)
 
+    def hs_document_title(self):
+        """
+        Method to set the document title, displayed in the HelloSign Interface
+        """
+        return self.__unicode__()
+
+    def hs_document(self):
+        """
+        Return the document to be senf for signing
+        Ties in with HelloSignModelMixin method
+        """
+        doc_service = PDFKitService(html=self.html())
+        return doc_service.pdf(template_name='engageletter.html')
+
     def get_absolute_url(self):
         return reverse('workspace:tool_object_overview', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug=self.tool_slug).first().slug, 'slug': self.slug})
 
@@ -105,5 +142,16 @@ class EngagementLetter(StatusMixin, IsDeletedMixin, HTMLMixin, WorkspaceToolMode
 rulez_registry.register("can_read", EngagementLetter)
 rulez_registry.register("can_edit", EngagementLetter)
 rulez_registry.register("can_delete", EngagementLetter)
+
+
+class Attachment(IsDeletedMixin, models.Model):
+    tool = models.ForeignKey('engageletter.EngagementLetter')
+    attachment = models.FileField(upload_to=_upload_file, blank=True, storage=S3BotoStorage())
+    body = models.TextField()
+
+    def can_delete(self, user):
+        return user == self.tool.user
+
+rulez_registry.register("can_delete", Attachment)
 
 from .signals import *

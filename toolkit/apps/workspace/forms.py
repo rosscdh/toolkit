@@ -10,6 +10,7 @@ from parsley.decorators import parsleyfy
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, ButtonHolder, Submit, Div
 
+from toolkit.apps.default.fields import HTMLField
 from toolkit.apps.workspace.services import EnsureCustomerService
 from toolkit.apps.workspace.models import InviteKey
 from toolkit.mixins import ModalForm
@@ -98,10 +99,7 @@ class InviteUserForm(forms.Form):
     subject = forms.CharField(
          widget=forms.TextInput(attrs={'size':'45'})
     )
-    message = forms.CharField(widget=forms.Textarea(attrs={
-            'cols': '80',
-            'data-toggle': 'summernote'
-        }))
+    message = HTMLField()
 
     def __init__(self, *args, **kwargs):
         self.key_instance = kwargs.pop('key_instance', None)
@@ -142,7 +140,7 @@ class InviteUserForm(forms.Form):
         return template.render(Context({'request': self.request,
                                         'instance': self.tool_instance,
                                         'user': self.user,
-                                        '83b_action_url': '%s' % self.key_instance.get_invite_login_url(request=self.request)
+                                        'action_url': '%s' % self.key_instance.get_invite_login_url(request=self.request)
                                         }))
     def save(self, **kwargs):
         """

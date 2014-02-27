@@ -1,9 +1,19 @@
 {% extends 'base.html' %}{% load crispy_forms_tags %}
 
-{% block page_title %}Your Letterhead{% endblock %}
+{% block page_title %}Your Firm's Letterhead{% endblock %}
 
-{% block header %}<h4>Your Letterhead</h4>{% endblock %}
+{% block header %}<h4>Your Firm's Letterhead</h4>{% endblock %}
 
 {% block main %}
     {% crispy form %}
+{% endblock %}
+
+{% block css %}
+    {{ block.super }}
+    {{ form.media.css }}
+{% endblock %}
+
+{% block js %}
+    {{ block.super }}
+    {{ form.media.js }}
 {% endblock %}

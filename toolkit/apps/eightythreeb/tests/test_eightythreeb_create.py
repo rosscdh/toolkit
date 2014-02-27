@@ -43,7 +43,6 @@ class LawyerCreateEightythreebTest(BaseScenarios, TestCase):
         self.assertEqual(type(markers.next_marker), CustomerCompleteFormMarker)
 
         # test the urls are set correctly
-        preview_url = reverse('workspace:tool_object_overview', kwargs={'workspace': self.eightythreeb.workspace.slug, 'tool': self.eightythreeb.tool_slug, 'slug': self.eightythreeb.slug})
-        self.assertEqual(resp.context_data.get('next_url'), preview_url)
+        self.assertEqual(resp.context_data.get('next_url'), '/workspace/lawpal-test/tool/83b-election-letters/e0c545082d1241849be039e338e47a0f/invite/client/')
         self.assertEqual(resp.context_data.get('previous_url'), markers.previous_marker.get_action_url())
         

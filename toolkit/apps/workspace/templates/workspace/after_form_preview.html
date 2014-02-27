@@ -9,38 +9,34 @@
     {% breadcrumb 'Review' 'eightythreeb:preview' workspace.slug tool.slug item.slug %}
 {% endblock %}
 
-{% block header %}
-    <h4 class="caption"><a href="{% url 'workspace:view' workspace.slug %}">{{ workspace.name }}</a></h4>
-    <h4 class="caption"><a href="{% url 'workspace:tool_object_overview' workspace.slug tool.slug item.slug %}">{{ item }}</a></h4>
-    <h4>Review</h4>
-{% endblock %}
-
 {% block body %}
     <div class="row">
-        <div class="content col-lg-8 col-lg-offset-2">
+        <div class="col-lg-8 col-lg-offset-2 content">
             {% block content %}
                 <div class="page-header">
-                    <h4>Review {{ item }}</h4>
+                    <h4>Review the {{ item }}</h4>
                 </div>
 
-                <p>Below is a preview of {{ item }}.</p>
-                {% if user.profile.is_lawyer %}<p>Information highlighted in yellow will be entered by the client when they sign into LawPal to complete the process.</p>{% endif %}
-            {% endblock %}
-            {% block navigation %}
-                <a href="{{ previous_url }}" type="button" class="btn btn-hg btn-default">
-                    <i class="glyphicon glyphicon-chevron-left"></i> Back and Edit
-                </a>
-                <a href="{{ next_url }}" type="button" class="btn btn-success btn-hg pull-right">
-                    Continue <i class="glyphicon glyphicon-chevron-right"></i>
-                </a>
-            {% endblock %}
-        </div>
-        <div class="col-lg-8 col-lg-offset-2">
-            <div id="overview">
-                {% block overview %}
-                <iframe name="id_preview" id="tool-preview" class="fade" style="width: 100%;" src="{% url 'workspace:tool_object_display' workspace=object.workspace.slug tool=object.tool_slug slug=object.slug %}"></iframe>
+                {% block main %}
+                    <p>Below is a preview of the {{ item }}.</p>
+                    {% if user.profile.is_lawyer %}<p>Information highlighted in yellow will be entered by the client when they sign into LawPal to complete the process.</p>{% endif %}
                 {% endblock %}
-            </div>
+
+                {% block navigation %}
+                    <a href="{{ previous_url }}" type="button" class="btn btn-hg btn-default">
+                        <i class="glyphicon glyphicon-chevron-left"></i> Back and Edit
+                    </a>
+                    <a href="{{ next_url }}" type="button" class="btn btn-hg btn-success pull-right">
+                        Continue <i class="glyphicon glyphicon-chevron-right"></i>
+                    </a>
+                {% endblock %}
+
+                <div id="overview">
+                    {% block overview %}
+                        <iframe name="id_preview" id="tool-preview" class="fade" style="width: 100%;" src="{% url 'workspace:tool_object_display' workspace=object.workspace.slug tool=object.tool_slug slug=object.slug %}"></iframe>
+                    {% endblock %}
+                </div>
+            {% endblock %}
         </div>
     </div>
 {% endblock %}

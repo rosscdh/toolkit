@@ -13,10 +13,11 @@ from parsley.decorators import parsleyfy
 
 from usps.validators import USPSTrackingCodeField
 
-from toolkit.mixins import ModalForm
+from toolkit.apps.default.fields import HTMLField
 from toolkit.apps.workspace.mixins import WorkspaceToolFormMixin
 from toolkit.apps.workspace.services import EnsureCustomerService
 from toolkit.apps.workspace.services import USPSTrackingService
+from toolkit.mixins import ModalForm
 
 from .models import EightyThreeB
 from .signals import customer_complete_form, lawyer_complete_form
@@ -134,7 +135,7 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
             'invalid': "Property transfer date is invalid.",
             'required': "Property transfer date can't be blank."
         },
-        help_text='The filing deadline is 30 days from this date. Your election must be post-marked no later than <span id="filing-deadline"></span>.',
+        help_text='The filing deadline is 30 days from this date. Your election must be post-marked no later than <span id="filing-deadline">+30 days</span>.',
         input_formats=['%B %d, %Y', '%Y-%m-%d %H:%M:%S'],
         label='Date on which the property was transferred',
         widget=forms.DateInput(
@@ -146,16 +147,12 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
         )
     )
 
-    description = forms.CharField(
+    description = HTMLField(
         error_messages={
             'required': "Property description can't be blank."
         },
         label='Description of property with respect to which election is being made',
-        initial='[____] shares (the “Shares”) of the Common Stock of [____], Inc. (the “Company”) ($0.0001 per share)',
-        widget=forms.Textarea(attrs={
-            'cols': '80',
-            'data-toggle': 'summernote'
-        })
+        initial='{{ total_shares_purchased }} shares (the “Shares”) of the Common Stock of {{ company_name }}, Inc. (the “Company”) (${{ price_paid_per_share }} per share)'
     )
 
     tax_year = forms.IntegerField(
@@ -167,24 +164,21 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
         widget=forms.NumberInput(attrs={'size': '4'})
     )
 
-    nature_of_restrictions = forms.CharField(
+    nature_of_restrictions = HTMLField(
         error_messages={
             'required': "Nature of restrictions can't be blank."
         },
         label='Nature of restrictions to which property is subject',
-        initial="The Shares may be repurchased by the Company, or its assignee, upon the occurrence of certain events. This right lapses with regard to a portion of the Shares over time.",
-        widget=forms.Textarea(attrs={
-            'cols': '80',
-            'data-toggle': 'summernote',
-        })
+        initial="The Shares may be repurchased by the Company, or its assignee, upon the occurrence of certain events. This right lapses with regard to a portion of the Shares over time."
     )
 
     transfer_value_share = forms.DecimalField(
         error_messages={
             'required': "Transfer value per share can't be blank."
         },
-        label='',
-        initial='0.0001',
+        help_text='',
+        label='Value per share at time of transfer',
+        initial='0.001',
         widget=forms.TextInput(attrs={'size': '10'})
     )
 
@@ -192,17 +186,19 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
         error_messages={
             'required': "Total shares purchased can't be blank."
         },
-        label='',
+        help_text='',
+        label='Total number of shares purchased',
         initial='100',
-        widget=forms.TextInput(attrs={'size': '10'})
+        widget=forms.NumberInput(attrs={'size': '10'})
     )
 
     price_paid_per_share = forms.DecimalField(
         error_messages={
             'required': "Price paid per share can't be blank."
         },
-        label='',
-        initial='0.0001',
+        help_text='',
+        label='Actual price paid per share',
+        initial='0.001',
         widget=forms.TextInput(attrs={'size': '10'})
     )
 
@@ -216,7 +212,6 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
         return reverse('workspace:tool_object_after_save_preview', kwargs={'workspace': instance.workspace.slug, 'tool': instance.workspace.tools.filter(slug=instance.tool_slug).first().slug, 'slug': instance.slug})
 
     def save(self):
-
         if self.instance is not None:
             # use the currently associated user
             user = self.instance.user
@@ -348,6 +343,12 @@ class CustomerEightyThreeBForm(BaseEightyThreeBForm):
                 Field('details_confirmed', template='public/bootstrap3/t_and_c.html'),
                 css_class='dialog dialog-info form-section form-dialog'
             ),
+
+
+            'total_shares_purchased',  # hidden widget
+            'price_paid_per_share',  # hidden widget
+            'transfer_value_share',  # hidden widget
+
             ButtonHolder(
                 Submit('submit', 'Continue', css_class='btn-hg btn-primary'),
                 css_class='form-group'
@@ -414,55 +415,13 @@ class LawyerEightyThreeBForm(BaseEightyThreeBForm):
                     StrictButton('<span class="fui-calendar"></span>'),
                     css_class='datetime'
                 ),
-                Div(
-                    HTML('<label class="control-label">Total number of shares purchased</label>'),
-                    'total_shares_purchased',    
-
-                    HTML('<label class="control-label">Value per share at time of transfer</label>'),
-                    Div(
-                        PrependedText('transfer_value_share', '$'),
-                        HTML('<span class="help-block">per share</span>'),
-                        css_class='form-inline'
-                    ),
-                    HTML('<br />'),
-                    HTML('<label class="control-label">Actual price paid per share</label>'),
-                    Div(
-                        PrependedText('price_paid_per_share', '$'),
-                        HTML('<span class="help-block">paid per share</span>'),
-                    css_class='form-inline',
-
-                    ),
-                ),
-                HTML('<br />'),
+                'total_shares_purchased',
+                PrependedText('transfer_value_share', '$'),
+                PrependedText('price_paid_per_share', '$', css_class='form-inline'),
                 'description',
                 'tax_year',
                 'nature_of_restrictions',
             ),
-            # Div(
-            #     HTML('<legend>Additional details (Client to complete)</legend>'),
-            #     'address1',
-            #     'address2',
-            #     'city',
-            #     Div(
-            #         'state',
-            #         'post_code',
-            #         css_class='form-inline'
-            #     ),
-            #     Div(
-            #         Div(
-            #             'ssn',
-            #             HTML('<span class="help-block">or</span>'),
-            #             'itin',
-            #             css_class='form-inline'
-            #         ),
-            #         HTML('<span class="help-block">This tool is currently only available to people with an SSN or ITIN number.</span>'),
-            #         css_class='form-inline'
-            #     ),
-            #     'accountant_email',
-            #     HTML('<label>Do you have a spouse?</label>'),
-            #     Field('has_spouse', template='public/bootstrap3/t_and_c.html'),
-            #     css_class='dialog dialog-info form-dialog'
-            # ),
             ButtonHolder(
                 Submit('submit', 'Continue', css_class='btn-hg btn-primary'),
                 css_class='form-group'

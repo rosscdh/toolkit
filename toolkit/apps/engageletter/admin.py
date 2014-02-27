@@ -1,12 +1,15 @@
 from django.contrib import admin
 
-from .models import EngagementLetter
+from toolkit.core.mixins import IsDeletedModelAdmin
+
+from .models import EngagementLetter, Attachment
 
 
-class EngagementLetterAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__', 'slug', 'status',)
-    list_filter = ['status']
+class EngagementLetterAdmin(IsDeletedModelAdmin, admin.ModelAdmin):
+    list_display = ('__unicode__', 'slug', 'status', 'is_deleted')
+    list_filter = ('status', 'is_deleted')
     search_fields = ('slug', 'id')
 
 
 admin.site.register(EngagementLetter, EngagementLetterAdmin)
+admin.site.register([Attachment])

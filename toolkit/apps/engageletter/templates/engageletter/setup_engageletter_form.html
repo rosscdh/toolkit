@@ -1,5 +1,5 @@
 {% extends 'lawyer/lawyerletterhead_form.html' %}{% load crispy_forms_tags %}
 
-{% block page_title %}Your Engagement Letter &amp; Letterhead{% endblock %}
+{% block page_title %}The Engagement Letter{% endblock %}
 
-{% block header %}<h4>Your Engagement Letter &amp; Letterhead</h4>{% endblock %}
+{% block header %}<h4>The Engagement Letter for {{ engageletter.workspace }} - {{ engageletter.user.get_full_name }}</h4>{% endblock %}

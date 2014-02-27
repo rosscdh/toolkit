@@ -109,15 +109,17 @@ class StartView(LogOutMixin, SaveNextUrlInSessionMixin, AuthenticateUserMixin, F
     form_class = SignInForm
 
     def get_success_url(self):
+        url = reverse('dash:default')
+        tool_redirect_url = None
         if self.request.user.profile.is_customer is True:
             #
             # Redirect the user to the current invite workspace
             #
             invite_key = InviteKey.objects.filter(invited_user=self.request.user).first()
             if invite_key is not None:
-                return invite_key.get_tool_instance_absolute_url()
+                tool_redirect_url = invite_key.get_tool_instance_absolute_url()
 
-        return reverse('dash:default')
+        return url if tool_redirect_url is None else tool_redirect_url
 
     def form_valid(self, form):
         # user a valid form log them in

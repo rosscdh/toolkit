@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
-
 from django import forms
 from django.shortcuts import get_object_or_404
-from django.views.generic import FormView, TemplateView
+from django.views.generic import FormView
 
 from crispy_forms.helper import FormHelper
 
@@ -11,6 +9,7 @@ from .models import Workspace
 
 import re
 import logging
+from datetime import datetime
 logger = logging.getLogger('django.request')
 
 
@@ -33,7 +32,19 @@ class WorkspaceToolViewMixin(object):
         return context
 
 
-class WorkspaceToolFormViewMixin(WorkspaceToolViewMixin, FormView):
+class WorkspaceToolTemplateViewMixin(object):
+    def get_template_names(self):
+        """
+        Returns the form template names associated with the tool.
+        """
+        names = []
+        if hasattr(self.tool, 'model'):
+            opts = self.tool.model._meta
+            names.append("%s/%s%s.html" % (opts.app_label, opts.model_name, self.template_name_suffix))
+        return names
+
+
+class WorkspaceToolFormViewMixin(WorkspaceToolViewMixin, WorkspaceToolTemplateViewMixin, FormView):
     def get_form_key(self):
         """
         Allow us to override the selected form; ie if a lawyer **somehow** https://trello.com/c/NckWffLg
@@ -72,18 +83,6 @@ class WorkspaceToolFormViewMixin(WorkspaceToolViewMixin, FormView):
         if self.object:
             initial.update(**self.object.get_form_data())
         return initial
-
-    def get_template_names(self):
-        """
-        Returns the form template names associated with the tool.
-        """
-        names = []
-
-        if hasattr(self.tool, 'model'):
-            opts = self.tool.model._meta
-            names.append("%s/%s%s.html" % (opts.app_label, opts.model_name, self.template_name_suffix))
-
-        return names
 
 
 class WorkspaceToolFormMixin(forms.Form):

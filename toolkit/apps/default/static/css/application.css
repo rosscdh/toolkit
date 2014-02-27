@@ -698,6 +698,9 @@ div.full {
   background-color: transparent;
   margin-bottom: 0;
 }
+.breadcrumb-text {
+  margin-bottom: 10px;
+}
 .container-fluid {
   padding: 0 20px;
 }
@@ -716,9 +719,14 @@ div.full {
 .form-inline .form-group .input-group .form-control {
   display: inline-block;
 }
+.form-inline .form-group.datetime .input-group .form-control,
+.form-inline .form-group.datetime .input-group .input-group-btn .btn {
+  margin-bottom: 15px;
+}
 .form-inline .form-group + .form-group,
 .form-inline .form-group + .help-block,
-.form-inline .help-block + .form-group {
+.form-inline .help-block + .form-group,
+.form-inline .input-group + .help-block {
   margin-left: 10px;
   margin-top: 0;
 }
@@ -796,6 +804,22 @@ div.full {
 .icon-xls {
   color: #e74b3c;
 }
+.firm-logo-preview {
+  margin-right: 15px;
+}
+.signing-info p {
+  padding: 0 10px;
+}
+.signing-info table {
+  margin-bottom: 0;
+  text-align: left;
+}
+.signing-info table tr td {
+  border-top: 0;
+}
+.signing-info table tr td.legend {
+  width: 100px;
+}
 .page-header h4 {
   font-size: 28px;
 }
@@ -860,6 +884,83 @@ div.full {
   border-color: #e74c3c;
   background-color: #ffffff;
 }
+.home .splash {
+  background: url('/static/images/home-splash.jpg');
+  height: 800px;
+  background-position: center bottom;
+  background-size: cover;
+  padding-top: 150px;
+}
+.home .splash .logo {
+  width: 140px;
+}
+.home .splash h2 {
+  font-size: 50px;
+  font-weight: normal;
+  opacity: 0.9;
+}
+.home .splash .lead {
+  opacity: 0.8;
+  font-size: 22px;
+  margin-bottom: 15px;
+}
+.home .splash .lead.sub {
+  font-size: 15px;
+  opacity: 0.6;
+  margin-top: 0px;
+  margin-bottom: 30px;
+}
+.home .splash a {
+  color: white;
+}
+.home .splash h2,
+.home .splash .lead {
+  color: white;
+}
+.home .splash .btn {
+  font-size: 14px;
+  border-radius: 3px;
+  font-weight: normal;
+}
+.home .splash .btn-link {
+  color: white;
+}
+.home .splash input,
+.home .splash select {
+  padding: 5px;
+  font-size: 14px;
+  color: white;
+  width: 100%;
+  margin-top: 10px;
+}
+.home .splash input.email,
+.home .splash select.email {
+  border-radius: 3px;
+  background-color: transparent;
+  border: 2px solid white;
+  opacity: 0.8;
+}
+.home .splash select {
+  margin: 0;
+  margin-top: 10px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  opacity: 0.8;
+  background: transparent;
+  color: #FFF;
+  border: 2px solid white;
+  outline: none;
+  display: inline-block;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  width: 100%;
+}
+.home .splash .pre-register .col-sm-3 {
+  padding-right: 0px;
+}
 .home .public-headline {
   margin: 100px 0 30px 0px;
 }
@@ -867,10 +968,6 @@ div.full {
   font-size: 45px;
   color: #666;
   margin-top: 10px;
-}
-.home .lead.sub {
-  font-size: 19px;
-  padding: 0px 70px;
 }
 .home .description {
   background-color: #f6f6f6;
@@ -892,7 +989,7 @@ div.full {
   font-size: 14px;
 }
 .home .top .btn {
-  margin: 0 10px;
+  padding: 10px 16px;
 }
 .home .feature-wrap {
   background-color: #6fd17c;
@@ -947,6 +1044,15 @@ div.full {
 }
 .home .icon-wrap img {
   width: 45px;
+}
+.home .quote {
+  padding: 90px 0px;
+  background-color: #e7f1f7;
+  color: #666;
+}
+.home .quote h5 {
+  margin-top: 0px;
+  font-size: 24px;
 }
 .tool-landing {
   min-height: 600px;

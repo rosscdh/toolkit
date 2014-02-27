@@ -10,11 +10,12 @@ from django.http import HttpResponse
 from django.views.generic import (ListView,
                                   CreateView,
                                   UpdateView,
+                                  DeleteView,
                                   DetailView)
 
 from ..models import Tool, InviteKey
 from ..forms import InviteUserForm
-from ..mixins import WorkspaceToolViewMixin, WorkspaceToolFormViewMixin, IssueSignalsMixin
+from ..mixins import WorkspaceToolViewMixin, WorkspaceToolFormViewMixin, WorkspaceToolTemplateViewMixin, IssueSignalsMixin
 from ..services import PDFKitService  # , HTMLtoPDForPNGService
 
 import datetime
@@ -31,10 +32,13 @@ class ToolObjectListView(WorkspaceToolViewMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super(ToolObjectListView, self).get_context_data(**kwargs)
 
+        # standard create object url
         create_url = reverse('workspace:tool_object_new', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug})
 
-        if self.tool.markers.current_marker.is_prerequisite is True and self.tool.markers.current_marker.get_action_url() is not None:
-            create_url = self.tool.markers.current_marker.get_action_url()
+        action_url = self.tool.markers.prerequisite_next_url(workspace=self.workspace)
+        if action_url is not None:
+            # append the next portion
+            create_url = action_url
 
         context.update({
             # if there are no tool.userclass_that_can_create defined then anyone can create
@@ -99,10 +103,20 @@ class UpdateViewToolObjectView(WorkspaceToolFormViewMixin, UpdateView):
         return super(UpdateViewToolObjectView, self).form_valid(form)
 
 
-class InviteClientToolObjectView(IssueSignalsMixin, WorkspaceToolViewMixin, UpdateView):
+class DeleteToolObjectView(WorkspaceToolFormViewMixin, DeleteView):
+    """
+    View to delete a specific Tool Object
+    """
+    context_object_name = 'item'
+
+    def get_success_url(self):
+        return reverse('workspace:tool_object_list', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug})
+
+
+class InviteClientToolObjectView(IssueSignalsMixin, WorkspaceToolViewMixin, WorkspaceToolTemplateViewMixin, UpdateView):
     model = InviteKey
     form_class = InviteUserForm
-    template_name = 'workspace/workspace_tool_invite.html'
+    template_name_suffix = '_invite'
 
     def get_success_url(self):
         return reverse('workspace:tool_object_overview', kwargs={'workspace': self.workspace.slug, 'tool': self.tool.slug, 'slug': self.tool_instance.slug})
@@ -194,6 +208,7 @@ class ToolObjectPostFormPreviewView(DetailView):
     after they have completed the tool form
     and redirect on to the next marker step
     """
+    context_object_name = 'item'
     model = Tool
     slug_url_kwarg = 'tool'
 
@@ -204,11 +219,11 @@ class ToolObjectPostFormPreviewView(DetailView):
         object
         """
         # get tool
-        obj = super(ToolObjectPostFormPreviewView, self).get_object(queryset=queryset)
+        tool = super(ToolObjectPostFormPreviewView, self).get_object(queryset=queryset)
         # do a search on the tool target model
-        tool_object = get_object_or_404(obj.model.objects, slug=self.kwargs.get('slug'))
-        
-        return tool_object
+        tool_object_instance = get_object_or_404(tool.model.objects, slug=self.kwargs.get('slug'))
+
+        return tool_object_instance
 
     def get_template_names(self):
         template_name = 'after_form_preview.html'
@@ -223,11 +238,12 @@ class ToolObjectPostFormPreviewView(DetailView):
         markers = self.object.markers
         preview_workspace_url = reverse('workspace:tool_object_overview', kwargs={'workspace': self.object.workspace.slug, 'tool': self.object.tool_slug, 'slug': self.object.slug})
 
+        # get the current markers next_marker which will then
+        # calculate based on Prerequisite Markers
+        marker = markers.current_marker
+
         if self.request.user.profile.is_lawyer is True:
             # for Lawyer
-            # get the current markers next_marker which will then
-            # calculate based on Prerequisite Markers
-            marker = markers.current_marker.next_marker
             return {
                 'previous_url': markers.marker(val='lawyer_complete_form').get_action_url(),
                 'next_url': marker.get_action_url() if 'lawyer' in marker.action_user_class and marker.action_type == marker.ACTION_TYPE.redirect else preview_workspace_url,
@@ -237,7 +253,7 @@ class ToolObjectPostFormPreviewView(DetailView):
             # for Customer
             return {
                 'previous_url': markers.marker(val='customer_complete_form').get_action_url(),
-                'next_url': preview_workspace_url,
+                'next_url': marker.get_action_url() if 'customer' in marker.action_user_class and marker.action_type == marker.ACTION_TYPE.redirect else preview_workspace_url,
             }
 
     def get_context_data(self, **kwargs):

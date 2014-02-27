@@ -1,96 +1,81 @@
 {% extends 'public/base.html' %}
 
 {% load url from future %}
+{% block css %}
+{% if PROJECT_ENVIRONMENT == 'prod' %}
+	<script src="//cdn.optimizely.com/js/570472635.js"></script>
+{% endif %}
+{% endblock %}
+
+{% block navbar %}
+<div class="navbar navbar-fixed-top">
+    <div class="container-fluid">
+   		<div class="navbar-header">
+            <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-collapse-01"></button>
+            <a href="/" class="navbar-brand"><img src="{{ STATIC_URL }}images/logo-white.png" height="26"  alt="LawPal"></a>
+        </div>
+		<div class="navbar-collapse collapse navbar-collapse-01">
+            <ul class="nav navbar-nav navbar-right">
+                <li class="divider"></li>
+                {% if user.is_authenticated %}
+                        <li><a href="#" class="intercom">Help</a></li>
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.get_full_name|default:user.username }}<b class="caret"></b></a>
+                        <ul>
+                            <li><a href="{% url 'me:settings' %}">Account</a></li>
+                            {% if user.profile.is_lawyer %}<li><a href="{% url 'me:letterhead' %}">Letterhead</a></li>{% endif %}
+                            <li><a href="{% url 'public:logout' %}">Sign out</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li><a href="{% url 'public:signin' %}">Sign In</a></li>
+                {% endif %}
+            </ul>
+        </div>	
+    </div>
+</div>
+{% endblock %}
 
 {% block prebody %}
 <div class="home">
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-lg-12">
-			    <div class="public-headline text-center">
-			    	<img src="{{STATIC_URL}}images/large-logo.png" style="max-width:580px" width="100%">
-			    </div>
-			</div>
-		</div>
+	<div class="container-fluid splash">
 		<div class="row top">
-			<div class="col-lg-8 col-lg-offset-2 text-center">
-			    <h2>Makes practice perfect.</h2>
-			    <p class="lead sub">
-				    LawPal is redefining the practice of law, one tool at a time.
+			<div class="col-lg-8 col-lg-offset-2">
+			    <h2>Collaborate.</h2>
+			    <p class="lead">
+				   We are changing the way lawyers and clients work together.</a>
 				</p>
+				<p class="lead sub">
+				   The best lawyers going forward will be lean, doing away with unnecessary costs and cutting out inefficiencies. They’ll do more work in less time with smaller staffs.  Technology is going to play a key role in this transition.
+  					LawPal is building a set of tools to help  lawyers collaborate with their clients to deliver legal services in a less costly, more transparent and client-friendly way. 
+				</p>
+				<form action="http://lawpal.us6.list-manage.com/subscribe/post?u=a28c24eb98757a383d43fb6dc&amp;id=c7db87ceac" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+					<div class="row pre-register">
+            <div class="col-sm-3 col-xs-10">
+              <input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" required class="email" placeholder="Enter email"></input>
+            </div>
+            <div class="col-sm-3 col-xs-10">
+              <select name="MMERGE3" class="required dropdown" id="mce-MMERGE3" placeholder="Practice type">
+                <option value="">Select practice type</option>
+                <option value="General Counsel">General Counsel</option>
+                <option value="Solo Practioner">Solo Practitioner</option>
+                <option value="2-10 Lawyer Firm">2-10 Lawyer Firm</option>
+                <option value="10-50 Lawyer Firm">10-50 Lawyer Firm</option>
+                <option value="50+ Lawyer Firm">50+ Lawyer Firm</option>
+                <option value="I'm not an attorney">I'm not an attorney</option>
+             </select>              
+            </div>
+            <div class="col-sm-3 col-xs-10">
+              <input type="submit" value="Get Early Access" name="subscribe" id="mc-embedded-subscribe" class="btn btn-lg btn-info" style="background-color:#d35400"> 
+            </div>
+          </div>
+	 			</form>
 				<br />
-			    <p>
-			    	<a href="{% url 'public:signup' %}" class="btn btn-hg btn-embossed btn-primary">Free Attorney Sign Up</a>		
-			    	<a href="{% url 'public:signin' %}" class="btn btn-hg btn-default">Sign In</a>
-			    	<br />
-			    	<br />
-			    	<a href="#" data-toggle="popover" title="Invite Only" data-content="For the moment, you must be invited by your lawyer to use LawPal. If you have an account, please Sign In." class="text-muted" data-original-title="" data-placement="bottom">Are you a client?</a>
-			    </p>
-				<br />
-				<br />
-			</div>
-		</div>
-	</div>
-	<div class="feature-wrap">
-		<div class="container-fluid">
-			<div class="row">
-				<div class="col-lg-8 col-lg-offset-2 text-center">
-					<div class="row">
-						<div class="col-sm-4">
-							<span class="fui-time ico"></span>
-							<br />
-							<h4>Efficient</h4>
-							<p>LawPal helps make repetitive tasks within your practice more efficient and transparent saving you time and improving your client's experience.</p>
-						</div>
-						<div class="col-sm-4">
-							<span class="fui-chat ico"></span>
-							<br />
-							<h4>Collaborative</h4>
-							<p>We are building a better way to work with your client. When all parties in a transaction have complete visibility, things move quicker. </p>
-						</div>
-						<div class="col-sm-4">
-							<span class="fui-gear ico"></span>
-							<br />
-							<h4>Adapts to you</h4>
-							<p>Choose which tools you use with which clients. You know your clients and their needs and you can customize the LawPal experience to suit.</p>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="toolkit-wrap">
-		<div class="container-fluid">
-			<div class="row">
-				<div class="col-lg-12 text-center">
-					<h2>Our Toolkit</h2>
-					<hr />
-					<br />
-				</div>
-				<div class="col-sm-6 col-lg-offset-1 text-center">
-					<img src="{{STATIC_URL}}images/83b-1.png" width="90%">
-				</div>
-				<div class="col-sm-4">
-					<div class="row">
-						<div class="col-lg-12">
-							<div class="icon-wrap"><img src="{{STATIC_URL}}images/icons/mail.svg"></div>
-							<h3>83(b) Election Letter Tool</h3>
-							<p>Filing without the fuss. We make it as easy as possible for clients to make their 83(b) filings and notify you when it’s done.
-							<blockquote>
-								<small><p><em>We have walked to their homes to make sure that they mail them in!!</em> </p>
-								<small>Silicon Valley Lawyer</small>
-							</blockquote>
- 							<a href="/tools/83b-election-letters" class="btn btn-info btn-lg">Learn More</a>
-							</p>
-
-						</div>
-					</div>
-				</div>
 			</div>
 		</div>
 	</div>
 </div>
-
 <div class="bottom-menu bottom-menu-inverse">
   <div class="container">
     <div class="row">
@@ -107,13 +92,14 @@
 
       <div class="col-md-2">
         <ul class="bottom-icons">
-          <li><a href="http://twitter.com/lawpalhq" class="fui-facebook"></a></li>
-          <li><a href="http://facebook.com/lawpalhq" class="fui-twitter"></a></li>
+          <li><a href="http://facebook.com/lawpalhq" class="fui-facebook"></a></li>
+          <li><a href="http://twitter.com/lawpalhq" class="fui-twitter"></a></li>
         </ul>
       </div>
     </div>
   </div>
 </div>
+
 {% endblock %}
 {% block body %}
 {% endblock %}

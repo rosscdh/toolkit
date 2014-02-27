@@ -3,9 +3,13 @@
 HTML to PDF Conversion Services
 """
 from django.conf import settings
+from django.core.files.base import ContentFile
+
+from tempfile import gettempdir
 
 import os
 import json
+import uuid
 import requests
 
 from . import logger
@@ -37,20 +41,28 @@ class PDFKitRubyService(BasePdfService):
     def get_service(self):
         return requests
 
-    def pdf(self, template_name, file_object):
-        filename = os.path.basename(template_name)
+    def pdf(self, file_object=None, template_name=None):
+        file_object = open('%s%s' % (gettempdir(), '%s.pdf' % uuid.uuid4()), 'w+') if file_object is None else file_object
+        filename =  os.path.basename(file_object.name) if template_name is None else os.path.basename(template_name)
 
         payload = {
             "html": self.html,
-            "footer": 'fdafds',
+            #"footer": '',
             "filename": filename
         }
         headers = {'content-type': 'application/json'}
+        payload_json = json.dumps(payload)
 
-        r = self.service.post(self.PDFKIT_SERVICE_URI, data=json.dumps(payload), headers=headers)
-        logger.info('Send HTML to PDF conversion request')
+        logger.info('Send HTML to PDF conversion request: %s' % payload_json)
+        r = self.service.post(self.PDFKIT_SERVICE_URI, data=payload_json, headers=headers)
 
-        file_object.write(r.content)
+        logger.info('Got status_code %s for request' % r.status_code)
+
+        if r.status_code in [201]:
+            logger.info('Got status_code %s for request' % r.status_code)
+            file_object.write(r.content)
+            file_object.close()
+
         return file_object
 
 

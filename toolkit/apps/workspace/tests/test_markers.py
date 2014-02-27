@@ -100,7 +100,16 @@ class InvalidMarkerTest(unittest.TestCase):
         with self.assertRaises(TypeError) as context:
             subject = self.subject()
 
-        self.assertEqual(context.exception.message, '__init__() takes exactly 2 arguments (1 given)')
+        self.assertEqual(context.exception.message, '__init__() takes at least 2 arguments (1 given)')
+
+    def test_on_complete_raises_exception(self):
+        """
+        def on_complete must be overriden by inheriting markers
+        """
+        subject = self.subject(1, name='test_marker')
+
+        with self.assertRaises(NotImplementedError):
+            subject.on_complete()
 
 
 class ValidMarkerTest(unittest.TestCase):

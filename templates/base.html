@@ -49,8 +49,8 @@
                             </li>
                         {% else %}
                             <li><a href="{% url 'public:signin' %}">Sign In</a></li>
-                            <li><a href="{% url 'public:signup' %}">Sign Up</a></li>
-                        {% endif %}
+<!--                             <li><a href="{% url 'public:signup' %}">Sign Up</a></li>
+ -->                        {% endif %}
                     </ul>
                 </div>
             </div>
@@ -114,8 +114,8 @@
 
                     {% block content %}
                         <div class="page-header">
-                            <div class="pull-right">{% block header_right %}{% endblock %}</div>
                             {% block header %}{% endblock %}
+                            <div class="pull-right">{% block header_right %}{% endblock %}</div>
                         </div>
 
                         {% block main %}{% endblock %}
@@ -128,7 +128,7 @@
             </div>
         {% endblock %}
     </div>
-    
+
     {% block modals %}
         {% if user.profile.is_lawyer %}
             <div class="modal" id="workspace-create"></div>

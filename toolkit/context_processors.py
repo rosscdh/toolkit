@@ -15,6 +15,8 @@ def EXPOSED_GLOBALS(request):
 
             'SHORT_DATE_FORMAT': settings.SHORT_DATE_FORMAT,
             'JS_SHORT_DATE_FORMAT': settings.JS_SHORT_DATE_FORMAT,
+
+            'HELLOSIGN_CLIENT_ID': settings.HELLOSIGN_CLIENT_ID,
         }
     }
 

@@ -50,9 +50,9 @@ def get_namedtuple_choices(name, choices_tuple):
         [('fr', 'Freshman'), ('sr', 'Senior')]
 
     """
-    class Choices(namedtuple(name, [name for val,name,desc in choices_tuple])):
+    class Choices(namedtuple(name, [name for val, name, desc in choices_tuple])):
         __slots__ = ()
-        _choices = tuple([desc for val,name,desc in choices_tuple])
+        _choices = tuple([desc for val, name, desc in choices_tuple])
 
         def get_choices(self):
             return zip(tuple(self), self._choices)

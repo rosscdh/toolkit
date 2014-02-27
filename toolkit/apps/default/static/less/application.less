@@ -11,7 +11,6 @@
 // Import checklist app
 @import "modules/checklist";
 
-
 // Breadcrumbs
 // -------------------------
 
@@ -23,7 +22,11 @@
     margin-bottom: 0;
   }
 }
- 
+
+.breadcrumb-text {
+  margin-bottom: 10px;
+}
+
 
 // Content
 // -------------------------
@@ -49,13 +52,23 @@
   font-size:14px;
 }
 .form-inline {
-  .form-group .input-group .form-control {
-    display: inline-block;
+  .form-group {
+    .input-group .form-control {
+      display: inline-block;
+    }
+
+    &.datetime .input-group {
+      .form-control,
+      .input-group-btn .btn {
+        margin-bottom: 15px;
+      }
+    }
   }
 
   .form-group + .form-group,
   .form-group + .help-block,
-  .help-block + .form-group {
+  .help-block + .form-group,
+  .input-group + .help-block {
     margin-left: 10px;
     margin-top: 0;
   }
@@ -174,6 +187,29 @@
   color:@doc-pdf;
 }
 
+.firm-logo-preview {
+  margin-right: 15px;
+}
+
+.signing-info {
+  p {
+    padding: 0 10px;
+  }
+
+  table {
+    margin-bottom: 0;
+    text-align: left;
+
+    tr td {
+      border-top: 0;
+
+      &.legend {
+        width: 100px;
+      }
+    }
+  }
+}
+
 
 // Page header
 // -------------------------
@@ -218,6 +254,7 @@
 
 // Sidebar
 // -------------------------
+
 .sidebar {
   padding-right: 30px;
 }
@@ -249,6 +286,81 @@
 // -------------------------
 
 .home{
+  .splash { 
+    background:url('/static/images/home-splash.jpg');
+    height:800px;
+    background-position: center bottom;
+    background-size: cover;
+    padding-top:150px;
+    .logo {
+      width:140px;
+    }
+    h2 {
+      font-size:50px;
+      font-weight: normal;
+      opacity:0.9;
+
+    }
+    .lead {
+      opacity:0.8;
+      font-size:22px;
+      margin-bottom:15px;
+    }
+    .lead.sub {
+      font-size:15px;
+      opacity: 0.6;
+      margin-top:0px;
+      margin-bottom:30px;
+    }
+    a {
+      color:white;
+    }
+    h2, .lead {
+      color:white;
+    }
+    .btn {
+      font-size:14px;
+      border-radius:3px;
+      font-weight:normal;
+    }
+    .btn-link {
+      color:white;
+    }
+    input,select {
+      padding:5px;
+      font-size:14px;
+      color:white;
+      width:100%;
+      margin-top:10px;
+      &.email {
+        border-radius:3px;
+        background-color:transparent;
+        border:2px solid white;
+        opacity:0.8;
+      }
+    }
+    select {
+      margin: 0;
+      margin-top:10px;
+      -webkit-border-radius:4px;
+      -moz-border-radius:4px;
+      border-radius:4px;
+      opacity:0.8;
+      background: transparent;
+      color:#FFF;
+      border:2px solid white;
+      outline:none;
+      display: inline-block;
+      -webkit-appearance:none;
+      -moz-appearance:none;
+      appearance:none;
+      cursor:pointer;
+      width:100%;
+      }
+      .pre-register .col-sm-3 {
+        padding-right:0px
+      }
+  }
   .public-headline {
     margin: 100px 0 30px 0px;
   }
@@ -256,10 +368,6 @@
     font-size:45px;
     color:#666;
     margin-top:10px;
-  }
-  .lead.sub {
-    font-size:19px;
-    padding:0px 70px;
   }
   .description {
     background-color:#f6f6f6;
@@ -281,13 +389,14 @@
     }
   }
   .top .btn {
-    margin: 0 10px;
+    padding: 10px 16px;
+
   }
   .feature-wrap {
     background-color: lighten(@green-sea,5%);
     border-bottom: 3px solid #74bf80;
     padding: 15px 0px 20px 0px;
-    * { 
+    * {
       color:white;
     }
     span.ico {
@@ -335,6 +444,15 @@
     border-radius:10px;
     img {
       width:45px;
+    }
+  }
+  .quote {
+    padding:90px 0px;
+    background-color:#e7f1f7;
+    color: #666;
+    h5 {
+      margin-top: 0px;
+      font-size:24px;
     }
   }
 }
