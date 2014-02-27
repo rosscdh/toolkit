@@ -1,3 +1,5 @@
+gui/dist/
+setup.cfg
 .sonar
 hellosign
 hello_sign
