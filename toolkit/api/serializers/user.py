@@ -13,12 +13,16 @@ from toolkit.apps.default.models import UserProfile
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     #account = serializers.HyperlinkedRelatedField(source='profile', many=False, view_name='account-detail', lookup_field='username')
     initials = serializers.SerializerMethodField('get_initials')
+    name = serializers.SerializerMethodField('get_full_name')
     user_class = serializers.SerializerMethodField('get_user_class')
 
     class Meta:
         model = User
         lookup_field = 'username'
-        fields = ('url', 'first_name', 'last_name', 'initials', 'user_class')
+        fields = ('url', 'first_name', 'last_name', 'name', 'initials', 'user_class')
+
+    def get_full_name(self, obj):
+        return obj.get_full_name()
 
     def get_initials(self, obj):
         return obj.get_initials()
