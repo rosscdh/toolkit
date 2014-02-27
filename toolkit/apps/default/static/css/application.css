@@ -779,6 +779,44 @@ div.full {
 .form-section + .form-section {
   margin-top: 40px;
 }
+.matter .card {
+  background-color: #eeeeee;
+  border-top: 2px solid #dadada;
+  margin-bottom: 20px;
+  position: relative;
+}
+.matter .card .content {
+  display: block;
+  padding: 16px 14px 10px;
+}
+.matter .card .content .title {
+  margin: 45px 0 25px 0;
+}
+.matter .card .content .title h5,
+.matter .card .content .title h6 {
+  margin: 0 0 3px;
+}
+.matter .card .content .title h6 {
+  font-size: 14px;
+}
+.matter .card .content .title p {
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+.matter .card .content .meta {
+  margin-bottom: 10px;
+}
+.matter .card .content .meta p {
+  font-size: 12px;
+  line-height: 40px;
+  margin-bottom: 5px;
+}
+.matter .card .edit {
+  display: block;
+  position: absolute;
+  right: 5px;
+  top: 5px;
+}
 .navbar {
   margin-bottom: 0;
 }
@@ -852,6 +890,7 @@ div.full {
   margin-top: 12px;
   width: 200px;
 }
+.page-header h3,
 .page-header h4 {
   display: inline-block;
   margin: 0;
