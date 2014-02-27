@@ -26,7 +26,7 @@ urlpatterns = patterns('',
 
     #matter angular app
     url(r'^matters/(?P<matter_slug>[a-zA-Z0-9_.-]+)/$',
-         login_required(TemplateView.as_view(template_name="index_deployed.html"), name="matter-details-view")),
+         login_required(TemplateView.as_view(template_name="index_deployed.html")), name="matter-details-view"),
 
 
     # apps
