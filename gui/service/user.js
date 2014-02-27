@@ -23,7 +23,7 @@ angular.module('toolkit-gui').factory('userService', ['$q', '$resource', functio
 			return user;
 		},
 
-		'getUser': function( /*uid*/ ) {
+		'get': function( /*uid*/ ) {
 			var api = userResource();
 			// append/update users in user.data.items
 			var deferred = $q.defer();
@@ -40,7 +40,7 @@ angular.module('toolkit-gui').factory('userService', ['$q', '$resource', functio
 			return deferred.promise;
 		},
 
-		'getUsers': function( /**/ ) {
+		'list': function( /**/ ) {
 			// Retrieve a list of users
 		},
 

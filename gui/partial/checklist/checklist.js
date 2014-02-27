@@ -1,6 +1,7 @@
 angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routeParams', 'matterService', function($scope, $routeParams, matterService){
 	$scope.data = {
-		'id': $routeParams.id,
+		'slug': $routeParams.slug,
+		'matter': {},
 		'items': [],
 		'categories': {},
 		'users': [
@@ -10,9 +11,21 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routePar
 		]
 	};
 
-	$scope.matter = matterService.data();
+	//$scope.matter = matterService.data();
+	/*
+	if( $scope.data.slug && $scope.data.slug!=='' ) {
+		matterService.get( $scope.data.slug );
+	}
+	*/
+	
+	if( $scope.data.slug && $scope.data.slug!=='' ) {
+		matterService.get( $scope.data.slug ).then(
+			function success( singleMatter ){
+				$scope.data.matter = singleMatter;
+			},
+			function error(err){
 
-	if(!$scope.matter.items || $scope.matter.items.length===0) {
-		matterService.list( $scope.data.id );
+			}
+		);
 	}
 }]);
