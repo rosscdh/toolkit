@@ -23,6 +23,8 @@ class Workspace(IsDeletedMixin, ClosingGroupsMixin, CategoriesMixin, models.Mode
     to be associated with a group of users
     """
     name = models.CharField(max_length=255)
+    description = models.CharField(max_length=255, null=True, blank=True)
+
     slug = models.SlugField(blank=True)
     matter_code = models.SlugField(null=True, blank=True)
 
