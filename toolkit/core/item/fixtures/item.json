@@ -1,0 +1,22 @@
+[
+  {
+    "pk": 1,
+    "model": "item.item",
+    "fields": {
+      "slug": "4bcfaef627864c61a2a731473d40470e",
+      "status": 0,
+      "date_due": "2014-02-19T15:25:39.378Z",
+      "name": "test",
+      "parent": null,
+      "closing_group": null,
+      "date_modified": "2014-02-19T15:25:41.867Z",
+      "responsible_party": null,
+      "is_final": false,
+      "matter": 1,
+      "date_created": "2014-02-19T15:25:41.867Z",
+      "data": {},
+      "is_complete": false,
+      "description": "stuff"
+    }
+  }
+]

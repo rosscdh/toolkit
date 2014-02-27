@@ -19,11 +19,17 @@ from pprint import pprint
 debug = True
 
 env.local_project_path = os.path.dirname(os.path.realpath(__file__))
+# default to local override in env
+env.remote_project_path = env.local_project_path
 
 env.repo = Repo(env.local_project_path)
 
+env.environment_class = 'local'
 env.project = 'toolkit'
+
+env.dev_fixtures = 'dev-fixtures'
 env.fixtures = 'sites tools'
+
 env.SHA1_FILENAME = None
 env.timestamp = time.time()
 env.is_predeploy = False
@@ -432,10 +438,9 @@ def start_service():
 def stop_service():
     env_run(env.stop_service)
 
-@task
 def fixtures():
-    # Activate virtualenv
-    virtualenv('python %s/%s/manage.py loaddata %s' % (env.remote_project_path, env.project, env.fixtures,))
+    # if were in any non staging,prod env then load the dev fixtures too
+    return env.fixtures + ' ' + env.dev_fixtures if env.environment not in ['production', 'staging'] else env.fixtures
 
 
 @task
@@ -534,9 +539,11 @@ def rebuild_local():
         print colored('Local Database Backedup %s...' % new_db_name, 'green')
         local('rm ./dev.db')
 
-    local('python manage.py syncdb')
+    local('python manage.py syncdb  --noinput')
     local('python manage.py migrate')
-    local('python manage.py loaddata {fixtures}'.format(fixtures=env.fixtures))
+    local('python manage.py loaddata %s' % fixtures())
+    local('python manage.py createsuperuser')  #manually as we rely on the dev-fixtures
+
 
 
 @task
