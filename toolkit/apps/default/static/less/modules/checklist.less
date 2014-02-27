@@ -1,18 +1,19 @@
 
+/* Hack to display the navbar at the top of the matter  */
+
 html,body, div.full
 {
   height: 100%;
 }
 
-
-/* New stuff */
+/* Navbar - this is the top of the matter  */
 .navbar {
 	&.checklist-nav {
 		li {
 			a {
-				font-size:15px;
+				font-size:14px;
 				[class*="fui-"] {
-					font-size:20px;
+					font-size:17px;
 					margin-top:-2px;
 				}
 				.navbar-new {
@@ -43,13 +44,18 @@ html,body, div.full
 		}
 	}
 	a.navbar-brand{
-		font-size:16px;
+		font-size:13px;
 		padding:12px 18px 11px 18px;
+		max-width: 240px;
+		  white-space: nowrap;
+		  overflow: hidden;
+		  text-overflow: ellipsis;
+
 	}
 	.logo-mark {
 		float:left;
-		background-color:darken(@brand-primary, 5%);
-		padding:14px 12px 15px 13px;
+		border-right:1px solid darken(@brand-primary, 5%);
+		padding:13px 12px 15px 17px;
 		img {
 			width:30px;
 		}
@@ -251,6 +257,11 @@ html,body, div.full
 		.text-muted {
 			opacity:0.5;
 		}
+		.btn-silver {
+			background:none;
+			border:1px solid @silver;
+			color: darken(@silver, 20%);
+		}
 		a.link {
 			color:darken(@silver, 40%);
 			&:hover {
@@ -261,10 +272,11 @@ html,body, div.full
 			font-size:13px;
 		}
 		.item-help {
-			margin:20px 35px;
+			margin:50px 35px;
 			text-align:center;
 			color: darken(@silver, 6%);
 			font-size:13px;
+			line-height: 18px;
 			.fui-upload, .fui-time {
 				font-size:40px;
 				color: lighten(@silver, 10%);
@@ -382,10 +394,10 @@ html,body, div.full
 					}
 					.sub {
 						margin-top:5px;
-						margin-right:-5px;
 						font-size:11px;
 						color:lighten(@gray, 20%);
 						text-align:right;
+						margin-bottom:3px
 					}
 					h4 {
 						font-size:14px;
@@ -399,6 +411,8 @@ html,body, div.full
 					border-top:1px solid #F3f3f3;
 					background-color:#f7f7f7;
 					padding:4px 3px 3px 8px;
+					margin-right:-10px;
+					margin-left:-10px;
 					.btn-link {
 						color:#666;
 					}
@@ -502,8 +516,8 @@ html,body, div.full
 
 	}
 	div.chat {
-		background-color:@silver;
-		border-left: 1px solid darken(@silver, 3%);
+		background-color:lighten(@silver, 3%);
+		border-left: 1px solid lighten(@silver, 1%);
 		h4 {
 			padding-top:13px;
 			font-size:16px;
@@ -552,13 +566,13 @@ html,body, div.full
 							 float:right;
 							 float:right;
 							 padding-right:0px;
-							 color: @peter-river;
+							 color: @asbestos;
 							 padding-left:5px;
 						}
 						.msg-body{
-							background-color:@peter-river;
+							background-color:darken(@asbestos, 0%);
 							color:white;
-							border-bottom:2px solid darken(@peter-river, 10%);
+							border-bottom:2px solid darken(@asbestos, 10%);
 							  text-rendering: optimizeLegibility; 
 						}
 						.msg-meta {
@@ -571,7 +585,7 @@ html,body, div.full
 				&.action {
 					border: 1px solid lighten(@silver, 7%);
 					padding:3px 6px;
-					color:lighten(@silver, 18%);
+					color:lighten(@silver, 23%);
 					font-size:12px;	
 				}
 			}

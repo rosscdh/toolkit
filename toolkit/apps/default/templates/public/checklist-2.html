@@ -11,7 +11,7 @@
         </div>
         <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-collapse-03"></button>
         <a href="#fakelink" class="navbar-brand"> 
- 			Matter name
+ 			Incorporation and formation
  		</a>
     </div>
     <div class="navbar-collapse collapse navbar-collapse-03">
@@ -23,14 +23,19 @@
                 <a href="#fakelink">Closing</a>
             </li>
            
-            <li class="checklist-members">
+            <li class="checklist-members hidden-md">
                 <a href="#fakelink"  data-toggle="modal" data-target="#projectMembersModal">
-                <span class="fui-user"></span> 
-                <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash3/t1/c0.0.100.100/p100x100/1014416_10100118438650161_136799916_a.jpg" class="user">
-                <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/t1/c12.12.155.155/314032_10150303812474864_594285312_a.jpg" class="user">
-                <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-frc3/t1/c42.26.328.328/s320x320/229934_10150955684263644_890325486_n.jpg" class="user">
+	                <span class="fui-user"></span> 
+		                <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash3/t1/c0.0.100.100/p100x100/1014416_10100118438650161_136799916_a.jpg" class="user">
+	    	            <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/t1/c12.12.155.155/314032_10150303812474864_594285312_a.jpg" class="user">
+	        	        <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-frc3/t1/c42.26.328.328/s320x320/229934_10150955684263644_890325486_n.jpg" class="user">
                 </a>
             </li>
+            <li class="checklist-members visible-md visible-lg">
+                <a href="#fakelink"  data-toggle="modal" data-target="#projectMembersModal">
+	                <span class="fui-user"></span> 
+	            </a>
+	        </li>
             <li class="">
                 <a href="#fakelink">
                 	<span class="fui-chat"></span>
@@ -335,13 +340,13 @@
 										<div class="desc">This is the final version. Let's see if this get's the ball moving.</div>
 										<div class="sub">Ross Crawford, 2 days ago</div>
 										<div class="tools">
-											<a href="#" class="btn btn-link btn-xs">View</a>
+											<a href="#" class="btn btn-link btn-xs"  data-toggle="modal" data-target="#viewDocumentModal">View</a>
 											<a href="#" class="btn btn-link btn-xs" data-toggle="modal" data-target="#requestReviewModal">Request Review</a>
 											<a href="#" class="btn btn-link-success btn-xs pull-right"><span class="fui-check-inverted"></span> Mark as Final</a>
 										</div>
 									</div>
 								</li>
-								<li class="header toggle-previous text-right"><a href="#" class="btn btn-sm btn-silver">2 Previous Revisions</a></li>
+								<li class="toggle-previous text-center"><a href="#" class="btn btn-sm btn-silver">Show 2 Previous Revisions</a></li>
 								<li class="header previous-toggle">Previous Revisions</li>
 								<li class="previous-toggle">
 									<div class="doc-wrap">
@@ -379,11 +384,11 @@
 								<li class="current">
 									<div class="doc-wrap">
 										<span class="version">V3</span>
-										<h4>Shareholders_agreement_lawpal_299929.doc </h4><span class="close">x</span>
+										<h4><a href="#" data-toggle="modal" data-target="#viewDocumentModal">Shareholders_agreement_lawpal_299929.doc </a></h4><span class="close">x</span>
 										<div class="desc">This is the final version. Let's see if this get's the ball moving.</div>
 										<div class="sub">Ross Crawford, 2 days ago</div>
 										<div class="tools">
-											<a href="#" class="btn btn-link btn-xs">View</a>
+											<a href="#" class="btn btn-link btn-xs"  data-toggle="modal" data-target="#viewDocumentModal">View</a>
 											<a href="#" class="btn btn-link btn-xs" data-toggle="modal" data-target="#requestReviewModal">Request Review</a>
 											<a href="#" class="btn btn-link-success btn-xs pull-right"><span class="fui-check-inverted"></span> Mark as Final</a>
 										</div>
@@ -401,7 +406,7 @@
 										</div>
 									</div>									
 								</li>
-								<li class="header toggle-previous text-right"><a href="#" class="btn btn-sm btn-silver">2 Previous Revisions</a></li>
+								<li class="toggle-previous text-center"><a href="#" class="btn btn-sm btn-silver">Show 2 Previous Revisions</a></li>
 								<li class="header previous-toggle">Previous Revisions</li>
 								<li class="previous-toggle">
 									<div class="doc-wrap">
@@ -458,7 +463,7 @@
 										</div>
 									</div>									
 								</li>
-								<li class="header toggle-previous text-right"><a href="#" class="btn btn-sm btn-silver">2 Previous Revisions</a></li>
+								<li class="toggle-previous text-center"><a href="#" class="btn btn-sm btn-silver">2 Previous Revisions</a></li>
 								<li class="header previous-toggle">Previous Revisions</li>
 								<li class="previous-toggle">
 									<div class="doc-wrap">
@@ -710,7 +715,7 @@
 	     </div>
 		<div class="modal-footer">
 			<a href="#" class="btn btn-default btn-wide"  data-dismiss="modal" aria-hidden="true">Cancel</a>
-			<a href="#" class="btn btn-primary btn-wide">Add matter participants</a>
+			<a href="#" class="btn btn-primary btn-wide">Request review</a>
 	   	</div>
       </div>
     </div>
@@ -765,33 +770,26 @@
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         <h4 class="modal-title" id="myModalLabel">Matter Participants</h4>
-        <p>In LawPal, a Matter Participant is a high level user who can see the checklist and the revisions that have been added. This should be <u>your client</u> and your <u>co-counsel</u> only.</p>
+        <div class="sub">A Matter Participant is a high level user who can see the checklist and the revisions that have been added. This should be <u>your client</u> and your <u>co-counsel</u> only.</div>
       </div>
       	<div class="modal-body">
 			<strong>Existing Participants</strong>
-        	<label class="radio">
-            	Yael Citro
-          	</label>
-          	<label class="radio">
-            	Alex Halliday
-          	</label>
+        	<ul class="list-unstyled">
+        		<li><label>Yael Citro</label> <small>(you)</small></li>
+        		<li><label>Alex Halliday</label>  <a href="#" class="text-danger"><small>Revoke access</small></a></li>
+        	</ul>
           	<hr />
 			<strong>Add a Participants</strong>
-
-          	<label class="radio">
-            	<input type="radio" name="optionsRadios" id="optionsRadios2" value="option1" data-toggle="radio">
-            	External party <span class="fui-lock" data-toggle="tooltip" title="Requesting a file from a third party does not give them access to this matter."></span>
-          	</label>
-          	<input class="form-control input-sm" type="text" placeholder="atticus.finch@gmail.com" disabled>
+          	<input class="form-control input-sm" type="text" placeholder="atticus.finch@gmail.com">
 	     	<div class="row">
 		     	<div class="col-sm-8">
 			     	<textarea class="form-control" placeholder="Add an optional message...."></textarea>
+			     	<a href="#" class="btn btn-primary btn-wide btn-sm">Add participant</a>
 				</div>
 			</div>
 	     </div>
 		<div class="modal-footer">
-			<a href="#" class="btn btn-default btn-wide"  data-dismiss="modal" aria-hidden="true">Cancel</a>
-			<a href="#" class="btn btn-primary btn-wide">Add participant</a>
+			<a href="#" class="btn btn-default"  data-dismiss="modal" aria-hidden="true">Close</a>
 	   	</div>
       </div>
     </div>

@@ -1003,19 +1003,19 @@ fieldset[disabled] .btn-link:focus {
   color: black;
   text-decoration: none;
 }
-.btn-success-link {
+.btn-link-success {
   color: #2ecc71;
 }
-.btn-success-link:hover,
-.btn-success-link:focus {
-  color: darker(#2ecc71, 10%);
+.btn-link-success:hover,
+.btn-link-success:focus {
+  color: #2bc06a !important;
   text-decoration: underline;
   background-color: transparent;
 }
-.btn-success-link[disabled]:hover,
-fieldset[disabled] .btn-success-link:hover,
-.btn-success-link[disabled]:focus,
-fieldset[disabled] .btn-success-link:focus {
+.btn-link-success[disabled]:hover,
+fieldset[disabled] .btn-link-success:hover,
+.btn-link-success[disabled]:focus,
+fieldset[disabled] .btn-link-success:focus {
   color: black;
   text-decoration: none;
 }
@@ -5164,6 +5164,11 @@ a.list-group-item.active > .badge,
   border-bottom: 1px solid #ececec;
   background-color: #2980b9;
   color: white;
+}
+.modal-header .sub {
+  font-size: 13px;
+  color: #a9d1ec;
+  margin-top: 5px;
 }
 .modal-header .close {
   margin: 5px 0 0;
