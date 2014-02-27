@@ -1,6 +1,6 @@
 {% extends LAYOUT %}
 
-{% load url from future %}
+{% load url from future %}{% load dashboard_tags %}
 
 {% block navbar %}
     <div class="navbar navbar-inverse checklist-nav">
@@ -37,30 +37,32 @@
             </header>
 
             <div class="row">
-                {% for i in "1234"|make_list %}
-
+                {% for m in object_list %}
                     <article class="col-md-4 matter">
                         <div class="card">
                             <a href="#" class="edit"><span class="fui-gear"></span></a>
 
                             <a href="#" title="Matter Name" class="content">
                                 <div class="title">
-                                    <h6>Acme Inc</h6>
-                                    <h5>Matter Name</h5>
-                                    <p>A sample project to help you discover LawPal.</p>
+                                    {% if user.profile.is_lawyer %}
+                                        <h6>{{ m.client.name }}</h6>
+                                    {% else %}
+                                        <h6>{{ m.lawyer.name }}</h6>
+                                    {% endif %}
+                                    <h5>{{ m.name }}</h5>
+                                    <p>{{ m.description }}</p>
                                 </div>
                                 <div class="meta clearfix">
                                     <p class="small pull-left">Last updated <time data-time-ago="" datetime="2014-02-27T09:57:49Z">27 seconds ago</time></p>
                                     <div class="people pull-right">
-                                        <img class="img-circle" height="40" src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash3/t1/c0.0.100.100/p100x100/1014416_10100118438650161_136799916_a.jpg" title="" width="40">
-                                        <img class="img-circle" height="40" src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/t1/c12.12.155.155/314032_10150303812474864_594285312_a.jpg" title="" width="40">
-                                        <img class="img-circle" height="40" src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-frc3/t1/c42.26.328.328/s320x320/229934_10150955684263644_890325486_n.jpg" title="" width="40">
+                                        {% for user in m.participants %}
+                                            {% avatar user %}
+                                        {% endfor %}
                                     </div>
                                 </div>
                             </a>
                         </div>
                     </article>
-
                 {% endfor %}
             </div>
         </section>
