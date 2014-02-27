@@ -8,9 +8,8 @@
 @import "mixins";
 
 
-body {
-  word-spacing: 2px;
-}
+// Import checklist app
+@import "modules/checklist";
 
 // Breadcrumbs
 // -------------------------
@@ -174,6 +173,18 @@ body {
 .popover-content {
   font-size: ceil(@component-font-size-base * 0.913); // ~14px
   line-height: 1.226; // 18px
+}
+
+// Document Icons
+
+.icon-pdf {
+  color:@doc-pdf;
+}
+.icon-doc {
+  color:@doc-doc;
+}
+.icon-xls {
+  color:@doc-pdf;
 }
 
 .firm-logo-preview {
