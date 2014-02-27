@@ -33,6 +33,7 @@ SECRET_KEY = 'lgi%*e=%s@y3-jos^uydhc5gz80m9ts&9io5xh6myf+$fuy7+n'
 # List of callables that know how to import templates from various sources.
 TEMPLATE_DIRS = (
     os.path.join(SITE_ROOT, 'templates'),
+    os.path.join(SITE_ROOT, 'gui'),
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -48,6 +49,7 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
+    ("ng", os.path.join(SITE_ROOT, 'gui/dist')),
 )
 
 MEDIA_ROOT = os.path.join(SITE_ROOT, 'media')
