@@ -8,9 +8,8 @@ angular.module('toolkit-gui').factory('matterService',[ '$q', '$resource', funct
 		'items': [],
 		'selected': null
 	};
-
 	function matterResource() {
-		return $resource('http://127.0.0.1:8000/api/v1/matters/:slug/?format=json', {}, {
+		return $resource('http://127.0.0.1:8000/api/v1/matters/:matterSlug/?format=json', {}, {
 			'list': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }, 'isArray': true },
 			'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } }
 		});
@@ -25,25 +24,33 @@ angular.module('toolkit-gui').factory('matterService',[ '$q', '$resource', funct
 			matter.selected = objMAtter;
 		},
 
-		'list': function( matterSlug ) {
+		'list': function() {
 			var api = matterResource();
 			var deferred = $q.defer();
 
 			api.list( {},
 				function success( result ) {
-					deferred.resolve();
+					deferred.resolve( result );
 				},
-				function error( /*err*/ ) {
-					/*deferred.reject();*/
-					deferred.resolve( matters );
-					matter.items = matters.results;
-					if( matterSlug ) {
-						for(var i=0;i<matter.items.length;i++) {
-							if(matter.items[i].slug===matterSlug) {
-								matter.selected = matter.items[i];
-							}
-						}
-					}
+				function error( err ) {
+					deferred.reject( err );
+				}
+			);
+
+			return deferred.promise;
+		},
+
+		'get': function( matterSlug ) {
+			var deferred = $q.defer();
+
+			var api = matterResource();
+
+			api.get( { 'matterSlug': matterSlug },
+				function success( singleMatter ){
+					deferred.resolve( singleMatter );
+				},
+				function error(err) {
+					deferred.reject( err );
 				}
 			);
 
