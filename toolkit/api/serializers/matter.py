@@ -20,9 +20,12 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
     date_created = serializers.DateTimeField(read_only=True)
     date_modified = serializers.DateTimeField(read_only=True)
 
-    client = serializers.HyperlinkedRelatedField(many=False, required=False, view_name='client-detail', lookup_field='slug')
-    lawyer = serializers.HyperlinkedRelatedField(many=False, view_name='user-detail', lookup_field='username')
-    participants = serializers.HyperlinkedRelatedField(many=True, required=False, view_name='user-detail', lookup_field='username')
+    # client = serializers.HyperlinkedRelatedField(many=False, required=False, view_name='client-detail', lookup_field='slug')
+    client = ClientSerializer()
+    # lawyer = serializers.HyperlinkedRelatedField(many=False, view_name='user-detail', lookup_field='username')
+    lawyer = UserSerializer()
+    # participants = serializers.HyperlinkedRelatedField(many=True, required=False, view_name='user-detail', lookup_field='username')
+    participants = UserSerializer(many=True)
 
     categories = serializers.SerializerMethodField('get_categories')
     closing_groups = serializers.SerializerMethodField('get_closing_groups')
@@ -36,9 +39,9 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Workspace
-        fields = ('url', 'name', 'slug', 'matter_code',
+        fields = ('url', 'name', 'description', 'slug', 'matter_code',
                   'client', 'lawyer', 'participants',
-                  'closing_groups', 'categories', 
+                  'closing_groups', 'categories',
                   'items', 'comments', 'activity',
                   'current_user', 'current_user_todo',
                   'date_created', 'date_modified',)
@@ -108,9 +111,11 @@ class LiteMatterSerializer(MatterSerializer):
     """
     @BUSINESSRULE used for the matters/ GET (shows lighter version of the serializer)
     """
-    #participants = UserSerializer(many=True)
+    client = ClientSerializer()
+    lawyer = UserSerializer()
+    participants = UserSerializer(many=True)
 
     class Meta(MatterSerializer.Meta):
         fields = ('url', 'name', 'slug', 'matter_code',
-                  'client', 'lawyer', 'participants',
-                  'date_created', 'date_modified',)
+                  'description', 'client', 'lawyer',
+                  'participants', 'date_created', 'date_modified')

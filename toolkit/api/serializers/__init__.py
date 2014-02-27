@@ -3,7 +3,7 @@ from .hateoas import HATOAS
 from .user import UserSerializer
 from .account import AccountSerializer, PasswordSerializer
 from .client import ClientSerializer
-from .matter import MatterSerializer
+from .matter import MatterSerializer, LiteMatterSerializer
 from .item import ItemSerializer
 from .revision import RevisionSerializer
 # from .workflow import WorkflowSerializer
