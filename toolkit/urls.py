@@ -17,6 +17,7 @@ urlpatterns = patterns('',
     url(r'^api/', include('toolkit.apps.api.urls', namespace='api')),
 
     url(r'^dash/', include('toolkit.apps.dash.urls', namespace='dash')),
+    url(r'^dashboard/', include('toolkit.apps.dashboard.urls', namespace='dashboard')),
 
     url(r'^me/pasword/', include('password_reset.urls')),
     url(r'^me/', include('toolkit.apps.me.urls', namespace='me')),
