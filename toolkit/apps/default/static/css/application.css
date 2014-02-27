@@ -496,6 +496,11 @@ div.full {
   margin-top: 0px;
   float: none;
 }
+#checklist div.item ul.revisions li .review ul li .close,
+#closing div.item ul.revisions li .review ul li .close {
+  font-size: 14px;
+  padding-left: 4px;
+}
 #checklist div.item ul.revisions li.current .doc-wrap,
 #closing div.item ul.revisions li.current .doc-wrap {
   border-left-color: #f1c40f;
