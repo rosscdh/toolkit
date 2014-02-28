@@ -3,6 +3,8 @@ from django.views.generic import ListView
 from toolkit.api.serializers import LiteMatterSerializer
 from toolkit.apps.workspace.models import Workspace
 
+from django.utils.safestring import mark_safe
+
 
 class DashboardView(ListView):
     serializer_class = LiteMatterSerializer
@@ -15,7 +17,7 @@ class DashboardView(ListView):
         context = super(DashboardView, self).get_context_data(**kwargs)
 
         context.update({
-            'object_list': self.get_serializer(self.object_list, many=True).data
+            'object_list': self.get_serializer(self.object_list, many=True).data,
         })
 
         return context

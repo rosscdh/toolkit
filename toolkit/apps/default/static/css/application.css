@@ -701,6 +701,9 @@ div.full {
 .breadcrumb-text {
   margin-bottom: 10px;
 }
+body.checklist {
+  background-color: #f2f2f2;
+}
 .container-fluid {
   padding: 0 20px;
 }
@@ -766,8 +769,9 @@ div.full {
   margin-top: 40px;
 }
 .matter .card {
-  background-color: #eeeeee;
-  border-top: 2px solid #dadada;
+  background-color: #ffffff;
+  border-right: 2px solid #dadada;
+  border-bottom: 2px solid #dadada;
   margin-bottom: 20px;
   position: relative;
 }
@@ -793,11 +797,13 @@ div.full {
   margin-bottom: 10px;
 }
 .matter .card .content .meta p {
+  color: grey;
   font-size: 12px;
   line-height: 40px;
   margin-bottom: 5px;
 }
 .matter .card .edit {
+  color: #95a5a6;
   display: block;
   position: absolute;
   right: 5px;
@@ -1196,7 +1202,7 @@ div.full {
   margin-top: 20px;
 }
 .avatar {
-  background-color: #c7c7c7;
+  background-color: #ecf0f1;
   display: inline-block;
   position: relative;
 }

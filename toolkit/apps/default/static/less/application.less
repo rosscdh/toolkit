@@ -31,6 +31,14 @@
 // Content
 // -------------------------
 
+body.checklist {
+  background-color: #f2f2f2;
+}
+
+
+// Content
+// -------------------------
+
 .container-fluid {
   padding: 0 20px;
 }
@@ -123,12 +131,13 @@
 }
 
 
-// Navbar
+// Matter
 // -------------------------
 
 .matter .card {
-  background-color: mix(@brand-primary, white, 9%);
-  border-top: 2px solid mix(@brand-primary, white, 20);
+  background-color: lighten(@nephritis, 70%);
+  border-right: 2px solid mix(@brand-primary, white, 20);
+  border-bottom: 2px solid mix(@brand-primary, white, 20);
   margin-bottom: 20px;
   position: relative;
 
@@ -157,6 +166,7 @@
       margin-bottom: 10px;
 
       p {
+        color: grey;
         font-size: 12px;
         line-height: 40px;
         margin-bottom: 5px;
@@ -165,6 +175,7 @@
   }
 
   .edit {
+    color: @concrete;
     display: block;
     position: absolute;
     right: 5px;
@@ -664,11 +675,11 @@
 }
 
 
-// Widget
+// Avatar
 // -------------------------
 
 .avatar {
-  background-color: #c7c7c7;
+  background-color: @clouds;
   display: inline-block;
   position: relative;
 

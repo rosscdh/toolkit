@@ -39,7 +39,7 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Workspace
-        fields = ('url', 'name', 'description', 'slug', 'matter_code',
+        fields = ('url', 'name', 'slug', 'matter_code',
                   'client', 'lawyer', 'participants',
                   'closing_groups', 'categories',
                   'items', 'comments', 'activity',
@@ -116,6 +116,5 @@ class LiteMatterSerializer(MatterSerializer):
     participants = UserSerializer(many=True)
 
     class Meta(MatterSerializer.Meta):
-        fields = ('url', 'name', 'slug', 'matter_code',
-                  'description', 'client', 'lawyer',
-                  'participants', 'date_created', 'date_modified')
+        fields = ('url', 'name', 'slug', 'matter_code', 'client',
+                  'lawyer', 'participants', 'date_created', 'date_modified')
