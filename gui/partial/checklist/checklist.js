@@ -1,6 +1,6 @@
 angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routeParams', 'matterService', function($scope, $routeParams, matterService){
 	$scope.data = {
-		'slug': $routeParams.slug,
+		'slug': $routeParams.matterSlug,
 		'matter': {},
 		'items': [],
 		'categories': {},
@@ -17,7 +17,8 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routePar
 		matterService.get( $scope.data.slug );
 	}
 	*/
-	
+
+    console.log($scope.data.slug);
 	if( $scope.data.slug && $scope.data.slug!=='' ) {
 		matterService.get( $scope.data.slug ).then(
 			function success( singleMatter ){

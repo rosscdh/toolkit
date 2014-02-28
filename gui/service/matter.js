@@ -9,7 +9,7 @@ angular.module('toolkit-gui').factory('matterService',[ '$q', '$resource', funct
 		'selected': null
 	};
 	function matterResource() {
-		return $resource('http://127.0.0.1:8000/api/v1/matters/:matterSlug/?format=json', {}, {
+		return $resource('http://localhost:8000/api/v1/matters/:matterSlug/', {}, {
 			'list': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }, 'isArray': true },
 			'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } }
 		});
