@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.db.models.loading import get_model
 from django.core.exceptions import ObjectDoesNotExist
 
-from toolkit.core.mixins.is_deleted import IsDeletedMixin
+from toolkit.core.mixins import IsDeletedMixin
 
 from toolkit.utils import _class_importer
 
@@ -39,7 +39,6 @@ class Workspace(IsDeletedMixin, ClosingGroupsMixin, CategoriesMixin, models.Mode
 
     date_created = models.DateTimeField(auto_now=False, auto_now_add=True, db_index=True)
     date_modified = models.DateTimeField(auto_now=True, auto_now_add=True, db_index=True)
-    is_deleted = models.BooleanField(default=False, db_index=True)
 
     objects = WorkspaceManager()
 
