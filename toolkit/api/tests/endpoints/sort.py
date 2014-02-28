@@ -99,8 +99,6 @@ class MatterSortTest(BaseEndpointTest):
         # the items should return from .all() in the same order as they are specified
         self.assertTrue(all(i.pk is item_order[sort_index] for sort_index, i in enumerate(self.matter.item_set.all())))
 
-
-
     def test_lawyer_patch_invalid(self):
         self.client.login(username=self.lawyer.username, password=self.password)
         resp = self.client.patch(self.endpoint, json.dumps({}), content_type='application/json')
@@ -120,3 +118,14 @@ class MatterSortTest(BaseEndpointTest):
         resp = self.client.delete(self.endpoint, json.dumps({}), content_type='application/json')
         self.assertEqual(resp.status_code, 405)  # not allowed
 
+
+    def test_customer_cant(self):
+        self.client.login(username=self.user.username, password=self.password)
+        for event, status_code in [('get', 405), ('post', 403), ('patch', 403), ('delete', 403)]:
+            resp = getattr(self.client, event)(self.endpoint, {}, content_type='application/json')
+            self.assertEqual(resp.status_code, status_code)
+
+    def test_anon_cant(self):
+        for event in ['get', 'post', 'patch', 'delete']:
+            resp = getattr(self.client, event)(self.endpoint, {}, content_type='application/json')
+            self.assertEqual(resp.status_code, 401)  # denied
