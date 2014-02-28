@@ -200,6 +200,20 @@ PATCH /matters/:matter_slug/items/:item_slug/
 ```
 
 
+Participants
+============
+
+Participants are added and removed via a controlled endpoint
+
+```
+POST,DELETE /matters/:matter_slug/participant
+{
+    "email": "username@example.com"
+}
+```
+
+
+
 Item details
 ============
 
