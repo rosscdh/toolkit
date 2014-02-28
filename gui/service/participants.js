@@ -1,7 +1,7 @@
 angular.module('toolkit-gui').factory('participantService', [
 	'$q',
 	'$resource',
-	function() {
+	function($q, $resource) {
 
 		function participantAPI() {
 			return $resource('http://127.0.0.1:8000/api/v1/matters/:matterSlug/participant/:id', {}, {
