@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 from django.db import models
 
-from toolkit.core.mixins import IsDeletedQuerySet
+from toolkit.core.mixins.query import IsDeletedQuerySet
 from toolkit.core.mixins import IsDeletedManager
 
 import datetime

@@ -57,12 +57,12 @@ class ApiObjectPermission(permissions.IsAuthenticated):
         #
         if self.permission_granted is True:
             if request.method in ['POST', 'PUT', 'PATCH']:
-                has_permission = self.can_edit(request=request, view=view, obj=obj)
+                self.permission_granted = self.can_edit(request=request, view=view, obj=obj)
 
             elif request.method in ['DELETE']:
-                has_permission = self.can_delete(request=request, view=view, obj=obj)
+                self.permission_granted = self.can_delete(request=request, view=view, obj=obj)
 
             elif request.method in ['GET']:
-                has_permission = self.can_read(request=request, view=view, obj=obj)
+                self.permission_granted = self.can_read(request=request, view=view, obj=obj)
 
-        return has_permission
+        return self.permission_granted
