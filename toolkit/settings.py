@@ -49,7 +49,7 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    ("ng", os.path.join(SITE_ROOT, 'gui/dist')),
+    ("ng", os.path.join(SITE_ROOT, 'gui')),
 )
 
 MEDIA_ROOT = os.path.join(SITE_ROOT, 'media')

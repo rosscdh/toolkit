@@ -9,7 +9,8 @@ from .views import ClientEndpoint
 
 from .views import (MatterEndpoint,
                     MatterCategoryView,
-                    MatterClosingGroupView,)
+                    MatterClosingGroupView,
+                    MatterSortView)
 
 from .views import (MatterItemsView,
                     MatterItemView,
@@ -52,6 +53,9 @@ urlpatterns = router.urls + patterns('',
     #
     url(r'^matters/(?P<matter_slug>[\w-]+)/category/(?P<category>[\w-]+)/?$', MatterCategoryView.as_view(), name='matter_category'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/closing_group/(?P<closing_group>[\w-]+)/?$', MatterClosingGroupView.as_view(), name='matter_closing_group'),
+
+    url(r'^matters/(?P<matter_slug>[\w-]+)/sort/?$', MatterSortView.as_view(), name='matter_sort'),
+    url(r'^matters/(?P<matter_slug>[\w-]+)/participant/?$', MatterCategoryView.as_view(), name='matter_participant'),
 
     #
     # Matter Items
