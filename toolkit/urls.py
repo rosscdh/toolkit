@@ -24,11 +24,6 @@ urlpatterns = patterns('',
     # primary workspace
     url(r'^workspace/', include('toolkit.apps.workspace.urls', namespace='workspace')),
 
-    #matter angular app
-    url(r'^matters/(?P<matter_slug>[\w\d-]+)/$',
-         login_required(TemplateView.as_view(template_name="index.html")), name="matter-details-view"),
-
-
     # apps
     url(r'^83b/', include('toolkit.apps.eightythreeb.urls', namespace='eightythreeb')),
     url(r'^engagement-letters/', include('toolkit.apps.engageletter.urls', namespace='engageletter')),
@@ -43,3 +38,13 @@ urlpatterns = patterns('',
 if settings.DEBUG:
     # Add the MEDIA_URL to the dev environment
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+    #matter angular app
+    urlpatterns += url(r'^matters/(?P<matter_slug>[\w\d-]+)/$',
+             login_required(TemplateView.as_view(template_name="index.html")), name="matter-details-view"),
+else:
+    urlpatterns += url(r'^matters/(?P<matter_slug>[\w\d-]+)/$',
+             login_required(TemplateView.as_view(template_name="dist/index.html")), name="matter-details-view"),
+
+
+
