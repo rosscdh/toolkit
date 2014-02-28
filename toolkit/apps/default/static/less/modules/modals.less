@@ -25,7 +25,7 @@
 .modal-content {
 	width: 624px;
 	background-color: @modal-content-bg;
-  border: 2px solid @modal-content-border-color;
+  border: 0px solid @modal-content-border-color;
   border-radius: @modal-content-border-radius;
   .background-clip(border-box);
   .box-shadow(@modal-content-box-shadow);
@@ -42,11 +42,52 @@
   }
 }
 
+// This is the mega modal. Used in the checklist to view documents full screen
+.modal.modal-full {
+  .modal-header {
+    padding: 10px 19px 9px 14px;
+    border-bottom: 1px solid @modal-content-border-color;
+    background-color:@belize-hole;
+    color:white;
+    .modal-title {
+      margin: 0;
+      font-size: ceil(@component-font-size-base * 1.10); // ~24px
+      line-height: 24px;
+    }
+    .close {
+      margin: 3px 0 0;
+      padding: 0;
+      font-size: 18px;
+      line-height: 1;
+      color: white;
+    }
+  }
+  .modal-dialog, .modal-content {
+    width:100%;
+  }
+  .btn + .btn {
+    margin-left: 4px;
+  }
+  .footer-note {
+    margin:7px;
+    color:@gray;
+    font-size:12px;
+  }
+}
+
+
 // Modal header
 // Top section of the modal w/ title and dismiss
 .modal-header {
   padding: 17px 19px 15px 24px;
   border-bottom: 1px solid @modal-content-border-color;
+  background-color:@belize-hole;
+  color:white;
+  .sub {
+    font-size:13px;
+    color:lighten(@belize-hole, 35%);
+    margin-top:5px;
+  }
 }
 
  // Close icon
@@ -55,7 +96,7 @@
 	padding: 0;
 	font-size: 18px;
 	line-height: 1;
-	color: @brand-primary;
+	color: white;
 }
 
 // Title text within header
@@ -77,11 +118,15 @@
 
 // Footer (for actions)
 .modal-footer {
-  padding: 19px 22px 20px;
+  padding: 15px 22px 13px;
   margin-top: 0;
   background-color: @modal-footer-bg;
   border-top: none;
   border-radius: 0 0 @modal-content-border-radius @modal-content-border-radius;
+
+  .btn-wide {
+    padding:8px 17px 8px 17px;
+  }
 
   .btn + .btn {
     margin-left: 12px;

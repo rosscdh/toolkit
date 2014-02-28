@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.core.urlresolvers import reverse
 
+from toolkit.core.item.models import Item
+
 from . import BaseEndpointTest
 from ...serializers import ItemSerializer
 
@@ -23,7 +25,7 @@ class ItemsTest(BaseEndpointTest):
         return reverse('matter_items', kwargs={'matter_slug': self.workspace.slug})
 
     def test_endpoint_name(self):
-        self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/items/')
+        self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/items')
 
     def test_lawyer_get(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -49,7 +51,12 @@ class ItemsTest(BaseEndpointTest):
 
     def test_lawyer_patch(self):
         self.client.login(username=self.lawyer.username, password=self.password)
-        resp = self.client.patch(self.endpoint, {})
+        resp = self.client.patch(self.endpoint, {}, content_type='application/json')
+        self.assertEqual(resp.status_code, 405)  # not allowed
+
+    def test_lawyer_delete(self):
+        self.client.login(username=self.lawyer.username, password=self.password)
+        resp = self.client.delete(self.endpoint, {})
         self.assertEqual(resp.status_code, 405)  # not allowed
 
 
@@ -70,7 +77,12 @@ class ItemsTest(BaseEndpointTest):
 
     def test_customer_patch(self):
         self.client.login(username=self.user.username, password=self.password)
-        resp = self.client.patch(self.endpoint, {})
+        resp = self.client.patch(self.endpoint, {}, content_type='application/json')
+        self.assertEqual(resp.status_code, 403)  # method forbidden
+
+    def test_customer_delete(self):
+        self.client.login(username=self.user.username, password=self.password)
+        resp = self.client.delete(self.endpoint, {})
         self.assertEqual(resp.status_code, 403)  # method forbidden
 
     def test_anon_get(self):
@@ -82,7 +94,11 @@ class ItemsTest(BaseEndpointTest):
         self.assertEqual(resp.status_code, 401)  # denied
 
     def test_anon_patch(self):
-        resp = self.client.patch(self.endpoint, {})
+        resp = self.client.patch(self.endpoint, {}, content_type='application/json')
+        self.assertEqual(resp.status_code, 401)  # denied
+
+    def test_anon_delete(self):
+        resp = self.client.delete(self.endpoint, {})
         self.assertEqual(resp.status_code, 401)  # denied
 
 
@@ -102,7 +118,7 @@ class ItemDetailTest(BaseEndpointTest):
         return reverse('matter_item', kwargs={'matter_slug': self.workspace.slug, 'item_slug': self.item.slug})
 
     def test_endpoint_name(self):
-        self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/items/%s/' % self.item.slug)
+        self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/items/%s' % self.item.slug)
 
     def test_lawyer_get(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -129,6 +145,20 @@ class ItemDetailTest(BaseEndpointTest):
         json_data = json.loads(resp.content)
         self.assertEqual(json_data['name'], expected_name)
 
+    def test_lawyer_delete(self):
+        """
+        Lawyers can delete items
+        """
+        self.client.login(username=self.lawyer.username, password=self.password)
+        resp = self.client.delete(self.endpoint, {}, content_type='application/json')
+        self.assertEqual(resp.status_code, 204)  # no content but 2** success
+
+        deleted_items = Item.objects.deleted()
+        self.assertEqual(len(deleted_items), 1)
+
+        deleted_item = deleted_items[0]
+        self.assertEqual(deleted_item.name, self.item.name)
+
 
     def test_customer_get(self):
         self.client.login(username=self.user.username, password=self.password)
@@ -150,11 +180,27 @@ class ItemDetailTest(BaseEndpointTest):
         resp = self.client.patch(self.endpoint, json.dumps({}), content_type='application/json')
         self.assertEqual(resp.status_code, 403)  # forbidden
 
+    def test_customer_delete(self):
+        """
+        Customers cannot delete items
+        """
+        self.client.login(username=self.user.username, password=self.password)
+        resp = self.client.delete(self.endpoint, {}, content_type='application/json')
+        self.assertEqual(resp.status_code, 403)  # forbidden
+
 
     def test_anon_get(self):
         resp = self.client.get(self.endpoint)
         self.assertEqual(resp.status_code, 401)  # denied
 
     def test_anon_post(self):
-        resp = self.client.post(self.endpoint, {})
+        resp = self.client.post(self.endpoint, {}, content_type='application/json')
+        self.assertEqual(resp.status_code, 401)  # denied
+
+    def test_anon_patch(self):
+        resp = self.client.patch(self.endpoint, {}, content_type='application/json')
+        self.assertEqual(resp.status_code, 401)  # denied
+
+    def test_anon_delete(self):
+        resp = self.client.delete(self.endpoint, {}, content_type='application/json')
         self.assertEqual(resp.status_code, 401)  # denied

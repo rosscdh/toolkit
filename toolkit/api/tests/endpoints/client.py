@@ -20,7 +20,7 @@ class ClientsTest(BaseEndpointTest):
     endpoint = reverse('client-list')
 
     def test_endpoint_name(self):
-        self.assertEqual(self.endpoint, '/api/v1/clients/')
+        self.assertEqual(self.endpoint, '/api/v1/clients')
 
     def test_lawyer_get(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -49,6 +49,11 @@ class ClientsTest(BaseEndpointTest):
         resp = self.client.patch(self.endpoint, json.dumps({}), content_type='application/json')
         self.assertEqual(resp.status_code, 405)  # not allowed
 
+    def test_lawyer_delete(self):
+        self.client.login(username=self.lawyer.username, password=self.password)
+        resp = self.client.delete(self.endpoint, json.dumps({}), content_type='application/json')
+        self.assertEqual(resp.status_code, 405)  # not allowed
+
     def test_customer_get(self):
         self.client.login(username=self.user.username, password=self.password)
         resp = self.client.get(self.endpoint)
@@ -64,6 +69,11 @@ class ClientsTest(BaseEndpointTest):
         resp = self.client.patch(self.endpoint, json.dumps({}), content_type='application/json')
         self.assertEqual(resp.status_code, 403)  # forbidden
 
+    def test_customer_delete(self):
+        self.client.login(username=self.user.username, password=self.password)
+        resp = self.client.delete(self.endpoint, {}, content_type='application/json')
+        self.assertEqual(resp.status_code, 403)  # forbidden
+
     def test_anon_get(self):
         resp = self.client.get(self.endpoint)
         self.assertEqual(resp.status_code, 401)  # denied
@@ -73,6 +83,9 @@ class ClientsTest(BaseEndpointTest):
         self.assertEqual(resp.status_code, 401)  # denied
 
     def test_anon_patch(self):
-        self.client.login(username=self.user.username, password=self.password)
         resp = self.client.patch(self.endpoint, {})
-        self.assertEqual(resp.status_code, 403)  # forbidden
+        self.assertEqual(resp.status_code, 401)  # forbidden
+
+    def test_anon_delete(self):
+        resp = self.client.delete(self.endpoint, {})
+        self.assertEqual(resp.status_code, 401)  # forbidden
