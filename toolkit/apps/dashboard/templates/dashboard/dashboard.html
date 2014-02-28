@@ -54,7 +54,7 @@
                                     <h5>{{ m.name|widont|safe }}</h5>
                                 </div>
                                 <div class="meta clearfix">
-                                    <p class="small pull-left">Last updated <time datetime="2014-02-27T09:57:49Z">{{ m.date_modified }}</time></p>
+                                    <p class="small pull-left">Last updated <time datetime="{{ m.date_modified|date:'Y-m-d\TH:i:s\Z' }}">{{ m.date_modified|date }}</time></p>
                                     <div class="people pull-right">
                                         {% for user in m.participants %}
                                             {% avatar user %}
