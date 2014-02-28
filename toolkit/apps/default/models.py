@@ -41,6 +41,11 @@ class UserProfile(models.Model):
     def user_class(self):
         return self.data.get('user_class', None)
 
+    @user_class.setter
+    def user_class(self, value):
+        if value in [self.CUSTOMER, self.LAWYER]:
+            self.data['user_class'] = value
+
     @property
     def is_lawyer(self):
         return self.user_class == self.LAWYER
