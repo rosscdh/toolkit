@@ -1,6 +1,8 @@
 {% extends LAYOUT %}
 
-{% load url from future %}{% load dashboard_tags %}
+{% load url from future %}{% load dashboard_tags widont %}
+
+{% block body_class %}checklist{% endblock %}
 
 {% block navbar %}
     <div class="navbar navbar-inverse checklist-nav">
@@ -49,11 +51,10 @@
                                     {% else %}
                                         <h6>{{ m.lawyer.name }}</h6>
                                     {% endif %}
-                                    <h5>{{ m.name }}</h5>
-                                    <p>{{ m.description }}</p>
+                                    <h5>{{ m.name|widont|safe }}</h5>
                                 </div>
                                 <div class="meta clearfix">
-                                    <p class="small pull-left">Last updated <time data-time-ago="" datetime="2014-02-27T09:57:49Z">27 seconds ago</time></p>
+                                    <p class="small pull-left">Last updated <time datetime="2014-02-27T09:57:49Z">{{ m.date_modified }}</time></p>
                                     <div class="people pull-right">
                                         {% for user in m.participants %}
                                             {% avatar user %}
