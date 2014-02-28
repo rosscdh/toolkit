@@ -3,7 +3,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import TemplateView
 from django.conf.urls import patterns, include, url
-from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.contrib.auth.decorators import login_required
 
 from django.contrib import admin
 admin.autodiscover()
@@ -12,7 +12,10 @@ handler500 = 'toolkit.apps.default.views.handler500'
 
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
+
+    url(r'^api/v1/', include('toolkit.api.urls')),
     url(r'^api/', include('toolkit.apps.api.urls', namespace='api')),
+
     url(r'^dash/', include('toolkit.apps.dash.urls', namespace='dash')),
 
     url(r'^me/pasword/', include('password_reset.urls')),
@@ -20,6 +23,12 @@ urlpatterns = patterns('',
 
     # primary workspace
     url(r'^workspace/', include('toolkit.apps.workspace.urls', namespace='workspace')),
+
+    #matter angular app
+    url(r'^matters/(?P<matter_slug>[\w\d-]+)/$',
+         login_required(TemplateView.as_view(template_name="index.html")), name="matter-details-view"),
+
+
     # apps
     url(r'^83b/', include('toolkit.apps.eightythreeb.urls', namespace='eightythreeb')),
     url(r'^engagement-letters/', include('toolkit.apps.engageletter.urls', namespace='engageletter')),
