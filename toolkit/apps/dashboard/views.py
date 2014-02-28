@@ -3,8 +3,6 @@ from django.views.generic import ListView
 from toolkit.api.serializers import LiteMatterSerializer
 from toolkit.apps.workspace.models import Workspace
 
-from django.utils.safestring import mark_safe
-
 
 class DashboardView(ListView):
     serializer_class = LiteMatterSerializer
