@@ -21,8 +21,10 @@ class MatterParticipantTest(BaseEndpointTest):
     {
         "email": "username@example.com"
     }
-    DELETE /matters/:matter_slug/participant/:email_address
-
+    DELETE /matters/:matter_slug/participant/
+    {
+        "email": "username@example.com"
+    }
     @RULE Can not delete the participant if it is the same as matter.lawyer
     @RULE Can not delete a participant if it is the same as the matter.client.primary @TODO this is a discussion point
     """
