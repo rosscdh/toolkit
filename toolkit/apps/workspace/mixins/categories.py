@@ -61,7 +61,7 @@ class CategoriesMixin(object):
         if value not in ['', None]:
             if value not in categories:
                 # append the value
-                categories.append(value)
+                categories.insert(0, value) #@BUSINESSRULE we dont add to the end we put at the front by default, this ties in with "sort"
                 # and then set our groups to the new list
                 self.categories = categories
             return self.categories
