@@ -14,14 +14,6 @@
 			                </td>
 			              </tr>
 
-					      <tr>
-			                <td class="item-title item-open">
-			                	<span class="fui-list-columned"></span> Bylaws
-			                </td>
-			                <td class="status">
-			                	<span class="fui-check-filled"></span>
-			                </td>
-			              </tr>
 			              <tr>
 			                <th colspan="1" class="col-sm-6 category">Incorporation</th>
 			              	<th class="category-controls">
@@ -29,7 +21,7 @@
 								<div class="btn-group pull-right">
 										<button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown"><span class="fui-triangle-down"></span></button>
 						          	  	<ul class="dropdown-menu dropdown-inverse dropdown-small">
-						          	  		<li><a href="#" id="add-new">New Item</a></li>
+						          	  		<li><a href="javascript:;" id="add-new" ng-click="data.showAddForm=!data.showAddForm">New Item</a></li>
 						                	<li><a href="#fakelink">New Category</a></li>
 						                	<li><a href="#fakelink">Edit Category</a></li>
 						                	<li><a href="#fakelink">Delete Category</a></li>
@@ -37,10 +29,12 @@
 					            </div>
 			              	</th>
 			              </tr>
-			            <tr class="add-new-controls warning" style="display:none;">
+
+			            <tr class="add-new-controls warning" ng-show="data.showAddForm">
 			              	<td colspan="2">
 			              		<div class="input-group">
-					          	  	<input class="form-control input-sm" id="appendedInputButton-03" type="search" placeholder="Enter item name and press enter">
+					          	  	<input class="form-control input-sm" id="appendedInputButton-03" type="search" placeholder="Enter item name and press enter"
+                                           ng-model="data.newItemName" ng-enter="submitNewItem('testcat')">
 					          	  	<div class="input-group-btn">
 					          	    	<button class="btn btn-link  dropdown-toggle input-sm" type="button" data-toggle="dropdown"><span class="fui-gear"></span></button>
 						          	  	<ul class="dropdown-menu dropdown-inverse dropdown-small">
@@ -52,6 +46,7 @@
 					          	</div>
 			              	</td>
 			              </tr>
+
 			              <tr class="item-heading item-closed">
 			                <td class="item-title">
 			                	<span class="fui-list-columned"></span>
@@ -61,88 +56,7 @@
 			                	<span class="fui-check-inverted"></span>
 			                </td>
 			              </tr>
-					      <tr>
-			                <td class="item-title item-open">
-			                	<span class="fui-list-columned"></span> Bylaws
-			                </td>
-			                <td class="status">
-			                	<span class="fui-check-filled"></span>
-			                </td>
-			              </tr>
-						  <tr class="shareholders">
-			                <td class="item-title item-open">
-			                	<span class="fui-list-columned"></span> Shareholders agreement
-			                </td>
-			                <td class="status">
-			                	<button class="btn btn-default btn-xs" disabled>25 Jun</button>
-			                </td>
-			              </tr>
-						  <tr class="note">
-			                <td class="item-title item-open">
-			                	<span class="fui-list-columned"></span> Note purchase agreement
-			                </td>
-			                <td class="status">
-			                	<button class="btn btn-warning btn-xs" disabled><span class="fui-time"></span> Awaiting Files (BW)</button>
-			                </td>
-			              </tr>
-						  <tr class="spa">
-			                <td class="item-title item-open">
-			                	<span class="fui-list-columned"></span> Stock purchase agreement
-			                </td>
-			                <td class="status">
-			                	<button class="btn btn-success btn-xs" disabled><span class="fui-check"></span> File Received</button>
-			                </td>
-			              </tr>
-						  <tr class="custom">
-			                <td class="item-title item-open">
-			                	<span class="fui-list-columned"></span> Custom agreement B
-			                </td>
-			                <td class="status">
-			                	<button class="btn btn-warning btn-xs" disabled><span class="fui-user"></span> Review 50%</button>
-			                	<button class="btn btn-danger btn-xs" disabled>25 Jun</button>
-			                </td>
-			              </tr>
-						  <tr class="closed item-closed">
-			                <td class="item-title item-open">
-			                	<span class="fui-list-columned"></span> Custom agreement C Final
-			                </td>
-			                <td class="status">
-			                	<span class="fui-check-inverted"></span>
-			                </td>
-			              </tr>
-				              <tr>
-				                <th colspan="1" class="col-sm-6 category">Founder Documents</th>
-				              	<th class="category-controls">
-				              		<!-- TODO : make these buttons appear when the tbody appears-->
-									<div class="btn-group pull-right">
-				              			<button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown"><span class="fui-triangle-down"></span></button>
-						          	  	<ul class="dropdown-menu dropdown-inverse dropdown-small">
-						          	  		<li><a href="#" id="add-new">New Item</a></li>
-						                	<li><a href="#fakelink">New Category</a></li>
-						                	<li><a href="#fakelink">Edit Category</a></li>
-						                	<li><a href="#fakelink">Delete Category</a></li>
-
-						              	</ul>
-						            </div>
-				              	</th>
-				              </tr>
-
-			            <tr class="add-new-controls warning" style="display:none;">
-			              	<td colspan="2">
-			              		<div class="input-group">
-					          	  	<input class="form-control input-sm" id="appendedInputButton-03" type="search" placeholder="Enter item name and press enter">
-					          	  	<div class="input-group-btn">
-					          	    	<button class="btn btn-link  dropdown-toggle input-sm" type="button" data-toggle="dropdown"><span class="fui-gear"></span></button>
-						          	  	<ul class="dropdown-menu dropdown-inverse dropdown-small">
-						                	<li><a href="#fakelink">Set closing group</a></li>
-						                	<li><a href="#fakelink">Set description</a></li>
-						                	<li><a href="#fakelink">Set due date</a></li>
-						              	</ul>
-					          	  	</div>
-					          	</div>
-			              	</td>
-			              </tr>
-			              <tr class="item-closed">
+                          <tr class="item-heading item-closed">
 			                <td class="item-title">
 			                	<span class="fui-list-columned"></span>
 			                	Articles of Incorporation
@@ -151,74 +65,17 @@
 			                	<span class="fui-check-inverted"></span>
 			                </td>
 			              </tr>
-					      <tr class="item-closed">
-			                <td class="item-title item-closed">
-			                	<span class="fui-list-columned"></span> Bylaws
+                          <tr class="item-heading item-closed">
+			                <td class="item-title">
+			                	<span class="fui-list-columned"></span>
+			                	Articles of Incorporation
 			                </td>
-			                <td class="status">
+			                <td class="status text-right">
 			                	<span class="fui-check-inverted"></span>
 			                </td>
 			              </tr>
-						  <tr class="item-closed">
-			                <td class="item-title item-closed">
-			                	<span class="fui-list-columned"></span> Shareholders agreement
-			                </td>
-			                <td class="status">
-			                	<span class="fui-check-inverted"></span>
 
-			                </td>
-			              </tr>
-						  <tr class="item-closed">
-			                <td class="item-title item-open">
-			                	<span class="fui-list-columned"></span> Note purchase agreement
-			                </td>
-			                <td class="status">
-			                	<span class="fui-check-inverted"></span>
-			                </td>
-			              </tr>
-						  <tr class="spa">
-			                <td class="item-title item-open">
-			                	<span class="fui-list-columned"></span> Stock purchase agreement
-			                </td>
-			                <td class="status">
-			                	<button class="btn btn-success btn-xs" disabled><span class="fui-check"></span> File Received</button>
-			                </td>
-			              </tr>
-						  <tr class="custom">
-			                <td class="item-title item-open">
-			                	<span class="fui-list-columned"></span> Custom agreement B
-			                </td>
-			                <td class="status">
-			                	<button class="btn btn-warning btn-xs" disabled><span class="fui-user"></span> Review 66%</button>
-			                </td>
-			              </tr>
 		          </table>
-
-
-                <table class="table checklist">
-					<tbody>
-						<!-- items heading //-->
-						<tr class="item-heading item-closed">
-							<td class="item-title">
-								<span class="fui-list-columned"></span> <span ng-bind="matter.name"></span>
-							</td>
-							<td class="status text-right">
-								<span class="fui-check-inverted">[[status]]</span>
-							</td>
-						</tr>
-						<!-- end items heading //-->
-							<td class="item-title item-open">
-								<span class="fui-list-columned"></span> [[name]]
-							</td>
-							<td class="status">
-								<button class="btn btn-warning btn-xs" disabled=""><span class="fui-time"></span> [[status]]</button>
-							</td>
-						<!-- items //-->
-						<tr>
-						</tr>
-						<!-- end items //-->
-					</tbody>
-				</table>
 				<!-- end checklist //-->
 			</div>
 			<div class="col-sm-7 item spa full">
