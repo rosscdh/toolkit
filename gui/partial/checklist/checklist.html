@@ -1,32 +1,81 @@
-<div id="checklist">
+<div id="checklist" ng-controller="ChecklistCtrl">
 	<div class="container-fluid full">
 		<div class="row full">
 			<div class="col-sm-5 checklist-col full">
 				<!-- checklist //-->
 				<table class="table checklist">
-					<tbody>
-						<!-- items heading //-->
-						<tr class="item-heading item-closed">
-							<td class="item-title">
-								<span class="fui-list-columned"></span> <span ng-bind="matter.name"></span>
-							</td>
-							<td class="status text-right">
-								<span class="fui-check-inverted">[[status]]</span>
-							</td>
-						</tr>
-						<!-- end items heading //-->
-							<td class="item-title item-open">
-								<span class="fui-list-columned"></span> [[name]]
-							</td>
-							<td class="status">
-								<button class="btn btn-warning btn-xs" disabled=""><span class="fui-time"></span> [[status]]</button>
-							</td>
-						<!-- items //-->
-						<tr>
-						</tr>
-						<!-- end items //-->
-					</tbody>
-				</table>
+			             <tr class="item-heading item-closed" ng-repeat="item in data.matter.items">
+			                <td class="item-title">
+			                	<span class="fui-list-columned"></span>
+			                	<span ng-bind="item.name"></span>
+			                </td>
+			                <td class="status text-right">
+			                	<span class="fui-check-inverted"></span>
+			                </td>
+			              </tr>
+
+			              <tr>
+			                <th colspan="1" class="col-sm-6 category">Incorporation</th>
+			              	<th class="category-controls">
+			              		<!-- TODO : make these buttons appear when the tbody appears-->
+								<div class="btn-group pull-right">
+										<button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown"><span class="fui-triangle-down"></span></button>
+						          	  	<ul class="dropdown-menu dropdown-inverse dropdown-small">
+						          	  		<li><a href="javascript:;" id="add-new" ng-click="data.showAddForm=!data.showAddForm">New Item</a></li>
+						                	<li><a href="#fakelink">New Category</a></li>
+						                	<li><a href="#fakelink">Edit Category</a></li>
+						                	<li><a href="#fakelink">Delete Category</a></li>
+						              	</ul>
+					            </div>
+			              	</th>
+			              </tr>
+
+			            <tr class="add-new-controls warning" ng-show="data.showAddForm">
+			              	<td colspan="2">
+			              		<div class="input-group">
+					          	  	<input class="form-control input-sm" id="appendedInputButton-03" type="search" placeholder="Enter item name and press enter"
+                                           ng-model="data.newItemName" ng-enter="submitNewItem('testcat')">
+					          	  	<div class="input-group-btn">
+					          	    	<button class="btn btn-link  dropdown-toggle input-sm" type="button" data-toggle="dropdown"><span class="fui-gear"></span></button>
+						          	  	<ul class="dropdown-menu dropdown-inverse dropdown-small">
+						                	<li><a href="#fakelink">Set closing group</a></li>
+						                	<li><a href="#fakelink">Set description</a></li>
+						                	<li><a href="#fakelink">Set due date</a></li>
+						              	</ul>
+					          	  </div>
+					          	</div>
+			              	</td>
+			              </tr>
+
+			              <tr class="item-heading item-closed">
+			                <td class="item-title">
+			                	<span class="fui-list-columned"></span>
+			                	Articles of Incorporation
+			                </td>
+			                <td class="status text-right">
+			                	<span class="fui-check-inverted"></span>
+			                </td>
+			              </tr>
+                          <tr class="item-heading item-closed">
+			                <td class="item-title">
+			                	<span class="fui-list-columned"></span>
+			                	Articles of Incorporation
+			                </td>
+			                <td class="status text-right">
+			                	<span class="fui-check-inverted"></span>
+			                </td>
+			              </tr>
+                          <tr class="item-heading item-closed">
+			                <td class="item-title">
+			                	<span class="fui-list-columned"></span>
+			                	Articles of Incorporation
+			                </td>
+			                <td class="status text-right">
+			                	<span class="fui-check-inverted"></span>
+			                </td>
+			              </tr>
+
+		          </table>
 				<!-- end checklist //-->
 			</div>
 			<div class="col-sm-7 item spa full">

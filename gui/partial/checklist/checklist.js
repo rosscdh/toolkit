@@ -1,8 +1,9 @@
-angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routeParams', 'matterService', function($scope, $routeParams, matterService){
+angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routeParams', 'matterService', 'matterItemService', function($scope, $routeParams, matterService, matterItemService){
 	$scope.data = {
-		'slug': $routeParams.slug,
+		'slug': $routeParams.matterSlug,
 		'matter': {},
 		'items': [],
+        'showAddForm': false,
 		'categories': {},
 		'users': [
 			{ 'name': 'Sam Jackson', 'img': 'https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash3/t1/c0.0.100.100/p100x100/1014416_10100118438650161_136799916_a.jpg' },
@@ -17,7 +18,7 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routePar
 		matterService.get( $scope.data.slug );
 	}
 	*/
-	
+
 	if( $scope.data.slug && $scope.data.slug!=='' ) {
 		matterService.get( $scope.data.slug ).then(
 			function success( singleMatter ){
@@ -28,4 +29,21 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routePar
 			}
 		);
 	}
+
+
+    $scope.submitNewItem = function(category) {
+       if ($scope.data.newItemName) {
+         matterItemService.create($scope.data.newItemName, category).then(
+             function success(item){
+                $scope.data.matter.items.push({'name':$scope.data.newItemName});
+                $scope.data.newItemName = '';
+             },
+             function error(err){
+                $scope.data.matter.items.push({'name':$scope.data.newItemName});
+                $scope.data.showAddForm = true;
+             }
+         );
+         $scope.data.showAddForm = false;
+       }
+    };
 }]);
