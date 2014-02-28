@@ -22,6 +22,39 @@ module.exports = function (grunt) {
         }
       }
     },
+    /**
+    * Constants for the Gruntfile so we can easily change the path for our environments.
+    */
+    DJANGO_STATIC_PATH: '/static/ng/',
+    PRODUCTION_PATH: 'dist/',
+
+    /**
+    * Allows us to pass in variables to files that have place holders so we can similar files with different data.
+    * This plugin works with the 'env' plugin above.
+    * @example <!-- @echo appVersion --> or <!-- @echo filePath -->
+    */
+    preprocess : {
+        // Task to create the index.html file that will be used during development.
+        // Passes the app version and creates the /index.html
+        django : {
+            src : 'config.html',
+            dest : 'index.html',
+            options : {
+                context : {
+                    staticPath : '<%= DJANGO_STATIC_PATH %>'
+                }
+            }
+        },
+        gruntserver : {
+            src : 'config.html',
+            dest : 'index.html',
+            options : {
+                context : {
+                    staticPath : ''
+                }
+            }
+        }
+    },
     watch: {
       main: {
         options: {
@@ -42,7 +75,7 @@ module.exports = function (grunt) {
     },
     clean: {
       before:{
-        src:['dist','temp']
+        src:['<%= PRODUCTION_PATH %>','temp']
       },
       after: {
         src:['temp']
@@ -79,11 +112,11 @@ module.exports = function (grunt) {
     copy: {
       main: {
         files: [
-          {src: ['index.html'], dest: 'index_deployed.html'},
-          {src: ['img/**'], dest: 'dist/'},
-          {src: ['fonts/**'], dest: 'dist/'},
-          {src: ['bower_components/angular-ui-utils/ui-utils-ieshiv.min.js'], dest: 'dist/'},
-          {src: ['bower_components/font-awesome/fonts/**'], dest: 'dist/',filter:'isFile',expand:true}
+          {src: ['index.html'], dest: '<%= PRODUCTION_PATH %>' + 'index.html'},
+          {src: ['img/**'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['fonts/**'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['bower_components/angular-ui-utils/ui-utils-ieshiv.min.js'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['bower_components/font-awesome/fonts/**'], dest: '<%= PRODUCTION_PATH %>',filter:'isFile',expand:true}
           // {src: ['bower_components/select2/*.png','bower_components/select2/*.gif'], dest:'dist/css/',flatten:true,expand:true},
           // {src: ['bower_components/angular-mocks/angular-mocks.js'], dest: 'dist/'}
         ]
@@ -105,36 +138,36 @@ module.exports = function (grunt) {
       removescripts: {
         options:{
           remove:'script[data-remove!="exclude"]',
-          append:{selector:'head',html:'<script src="/static/ng/app.full.min.js"></script>'}
+          append:{selector:'head',html:'<script src="' + '<%= STATIC_PATH %>' + 'app.full.min.js"></script>'}
         },
-        src:'index_deployed.html'
+        src:'<%= PRODUCTION_PATH %>' + 'index.html'
       },
       //add verbatim and endverbatim to prohibit conflicts with the django template tags
       addscript: {
         options:{
           prepend:{selector:'body',html:'{% verbatim %}'},
-          append:{selector:'body',html:'<script src="/static/ng/app.full.min.js"></script>{% endverbatim %}'}
+          append:{selector:'body',html:'<script src="' + '<%= STATIC_PATH %>' + 'app.full.min.js"></script>{% endverbatim %}'}
         },
-        src:'index_deployed.html'
+        src:'<%= PRODUCTION_PATH %>' + 'index.html'
       },
       removecss: {
         options:{
           remove:'link',
-          append:{selector:'head',html:'<link rel="stylesheet" href="/static/ng/css/app.full.min.css">'}
+          append:{selector:'head',html:'<link rel="stylesheet" href="' + '<%= STATIC_PATH %>' + 'css/app.full.min.css">'}
         },
-        src:'index_deployed.html'
+        src:'<%= PRODUCTION_PATH %>' + 'index.html'
       },
       addcss: {
         options:{
-          append:{selector:'head',html:'<link rel="stylesheet" href="/static/ng/css/app.full.min.css">'}
+          append:{selector:'head',html:'<link rel="stylesheet" href="' + '<%= STATIC_PATH %>' + 'css/app.full.min.css">'}
         },
-        src:'index_deployed.html'
+        src:'<%= PRODUCTION_PATH %>' + 'index.html'
       }
     },
     cssmin: {
       main: {
         src:['temp/app.css','<%= dom_munger.data.appcss %>'],
-        dest:'dist/css/app.full.min.css'
+        dest:'<%= PRODUCTION_PATH %>' + 'css/app.full.min.css'
       }
     },
     concat: {
@@ -152,7 +185,7 @@ module.exports = function (grunt) {
     uglify: {
       main: {
         src: 'temp/app.full.js',
-        dest:'dist/app.full.min.js'
+        dest:'<%= PRODUCTION_PATH %>' + 'app.full.min.js'
       }
     },
     htmlmin: {
@@ -168,16 +201,16 @@ module.exports = function (grunt) {
           removeStyleLinkTypeAttributes: true
         },
         files: {
-          'index_deployed.html': 'index_deployed.html'
+          'dist/index.html': '<%= PRODUCTION_PATH %>' + 'index.html'
         }
       }
     },
     imagemin: {
       main:{
         files: [{
-          expand: true, cwd:'dist/',
+          expand: true, cwd:'<%= PRODUCTION_PATH %>',
           src:['**/{*.png,*.jpg}'],
-          dest: 'dist/'
+          dest: '<%= PRODUCTION_PATH %>'
         }]
       }
     },
@@ -192,8 +225,9 @@ module.exports = function (grunt) {
     }
   });
 
-  grunt.registerTask('build',['jshint','clean:before','less','dom_munger:readcss','dom_munger:readscripts','ngtemplates','cssmin','concat','ngmin','uglify','copy','dom_munger:removecss','dom_munger:addcss','dom_munger:removescripts','dom_munger:addscript','htmlmin','imagemin','clean:after']);
-  grunt.registerTask('server', ['dom_munger:readscripts','jshint','connect', 'watch']);
+  grunt.registerTask('build',['preprocess:gruntserver','jshint','clean:before','less','dom_munger:readcss','dom_munger:readscripts','ngtemplates','cssmin','concat','ngmin','uglify','copy','dom_munger:removecss','dom_munger:addcss','dom_munger:removescripts','dom_munger:addscript','htmlmin','imagemin','clean:after']);
+  grunt.registerTask('django', ['preprocess:django','dom_munger:readscripts','jshint', 'watch']);
+  grunt.registerTask('server', ['preprocess:gruntserver','dom_munger:readscripts','jshint','connect', 'watch']);
   grunt.registerTask('test',['dom_munger:readscripts','jasmine']);
 
 
