@@ -9,7 +9,7 @@
   <link href="/static/ng/css/app.less" type="text/css" rel="stylesheet/less">
 
 </head>
-<body>
+<body>{% verbatim %}
 
   <!-- Livereload script for development only (stripped during dist build) -->
   <script src="http://localhost:35729/livereload.js" data-build="exclude"></script>
@@ -27,17 +27,17 @@
   <script src="/static/ng/bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
   <script src="/static/ng/bower_components/angular-ui-utils/ui-utils.js"></script>
 
+
   <!-- Main App JS -->
   <script src="/static/ng/js/setup.js"></script>
 
-  <!-- To remove later //-->
-  <script src="controllers/mock.js"></script>
+    <!-- To remove later //-->
+  <script src="/static/ng/controllers/mock.js"></script>
 
   <!-- Service JS -->
   <script src="/static/ng/service/user.js"></script>
   <script src="/static/ng/service/matter.js"></script>
   <script src="/static/ng/service/matterItem.js"></script>
-
   <!-- Add New Service JS Above -->
 
   <!-- Directive JS -->
@@ -52,9 +52,6 @@
   <script src="/static/ng/partial/checklist/checklist.js"></script>
   <script src="/static/ng/partial/closing/closing.js"></script>
   <script src="/static/ng/partial/navigation/navigation.js"></script>
-  <script src="/static/ng/partial/participant-invite/participant-invite.js"></script>
-  <script src="/static/ng/partial/view-document/view-document.js"></script>
-
   <!-- Add New Partial JS Above -->
 
   <div class="navbar navbar-inverse checklist-nav" ng-controller="NavigationCtrl">
@@ -65,10 +62,10 @@
 
     <div class="navbar-collapse collapse navbar-collapse-03">
       <ul class="nav navbar-nav" ng-show="matter.selected">
-        <li id="checklist-nav" ng-class="{'active': isActive('/checklist')}">
+        <li id="checklist-nav" ng-class="{&apos;active&apos;: isActive(&apos;/checklist&apos;)}">
           <a href="#/matter/{{matter.selected.slug}}/checklist">Checklist</a>
         </li>
-        <li id="closing-nav" ng-class="{'active': isActive('/closing')}">
+        <li id="closing-nav" ng-class="{&apos;active&apos;: isActive(&apos;/closing&apos;)}">
           <a ng-href="#/matter/{{matter.selected.slug}}/closing">Closing</a>
         </li>
          
@@ -114,7 +111,7 @@
     <!--/.navbar-collapse -->
   </div>
 
-  <div ng-view>
+  <div ng-view="">
 
-</body>
+</div>{% endverbatim %}</body>
 </html>

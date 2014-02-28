@@ -3,7 +3,7 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routePar
 		'slug': $routeParams.matterSlug,
 		'matter': {},
 		'items': [],
-        'showAddForm': false,
+        'showAddForm': -1,
 		'categories': {},
 		'users': [
 			{ 'name': 'Sam Jackson', 'img': 'https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash3/t1/c0.0.100.100/p100x100/1014416_10100118438650161_136799916_a.jpg' },
@@ -35,15 +35,23 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routePar
        if ($scope.data.newItemName) {
          matterItemService.create($scope.data.newItemName, category).then(
              function success(item){
-                $scope.data.matter.items.push({'name':$scope.data.newItemName});
+                $scope.data.matter.items.push(item);
                 $scope.data.newItemName = '';
              },
              function error(err){
-                $scope.data.matter.items.push({'name':$scope.data.newItemName});
+                $scope.data.matter.items.push({'name':$scope.data.newItemName, 'category':'FIRST CATEGORY'});
                 $scope.data.showAddForm = true;
              }
          );
          $scope.data.showAddForm = false;
        }
+    };
+
+    $scope.showAddItemForm = function(index) {
+        if ($scope.data.showAddForm != index)
+            $scope.data.showAddForm=index;
+        else
+            $scope.data.showAddForm=-1;
+        console.log($scope.data.showAddForm);
     };
 }]);
