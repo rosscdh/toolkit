@@ -5,7 +5,8 @@ from .client import ClientEndpoint
 from .matter import (MatterEndpoint,
                      CategoryView as MatterCategoryView,
                      ClosingGroupView as MatterClosingGroupView,
-                     MatterSortView,)
+                     MatterSortView,
+                     MatterParticipant,)
 
 from .matter import (MatterItemsView,
                      MatterItemView,
