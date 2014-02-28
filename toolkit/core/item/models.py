@@ -23,10 +23,13 @@ class Item(IsDeletedMixin, models.Model):
     slug = UUIDField(auto=True, db_index=True)
     name = models.CharField(max_length=255)
     description = models.TextField()
+
     matter = models.ForeignKey('workspace.Workspace')
     responsible_party = models.ForeignKey('auth.User', null=True, blank=True)
 
     status = models.IntegerField(choices=ITEM_STATUS.get_choices(), default=ITEM_STATUS.new)
+
+    sort_order = models.IntegerField(blank=True, null=True)  # global sort_order for the item within the checklist
 
     # enables Forking and Cloning for document automation
     parent = models.ForeignKey('item.Item', blank=True, null=True)
@@ -42,10 +45,14 @@ class Item(IsDeletedMixin, models.Model):
     data = JSONField(default={})
 
     date_due = models.DateTimeField(auto_now=False, auto_now_add=False, null=True, blank=True, db_index=True)
+
     date_created = models.DateTimeField(auto_now=False, auto_now_add=True, db_index=True)
     date_modified = models.DateTimeField(auto_now=True, auto_now_add=True, db_index=True)
 
     objects = IsDeletedManager()
+
+    class Meta:
+        ordering = ('sort_order',)
 
     def __unicode__(self):
         return u'%s' % self.name
