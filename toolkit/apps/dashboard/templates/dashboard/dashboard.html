@@ -44,7 +44,7 @@
                         <div class="card">
                             <a href="#" class="edit"><span class="fui-gear"></span></a>
 
-                            <a href="#" title="Matter Name" class="content">
+                            <a href="{% url 'matter-details-view' matter_slug=m.slug %}" title="{{ m.name }}" class="content">
                                 <div class="title">
                                     {% if user.profile.is_lawyer %}
                                         <h6>{{ m.client.name }}</h6>
