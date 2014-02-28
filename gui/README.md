@@ -12,8 +12,6 @@ Skip this section if you have a node evironment setup.
 ##### Prerequisites
 
 This guides assumes you have installed the following tools successfully:
-- Xcode
-- Xcode developer tools
 - git
 - Homebrew
 
@@ -23,8 +21,12 @@ to use the latest stable version of Node.js.
 In a terminal, run:
 
 	brew install node
-	npm install -g nave
-	nave use stable
+	wget -qO- https://raw.github.com/creationix/nvm/master/install.sh | sh
+	nvm use 0.10
+
+Then each time you open a terminal:
+
+	nvm use 0.10
 
 ### 2. Install development tools
 
