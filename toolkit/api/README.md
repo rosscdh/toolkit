@@ -174,6 +174,32 @@ POST
 /matters/:matter_slug/items/:item_slug/revisions/:number/ (GET)
 
 
+Categories
+==========
+
+There are 2 ways to add categories to a matter
+
+**Add category to matter**
+
+This allows us to have a new blank category
+
+```
+POST to /matters/:matter_slug/category/:category
+```
+
+**Add a category to a specifc item**
+
+When you drag an item and drop it into the category container; to associate the
+item with a category it will need to send a PATCH to the api for that item
+
+```
+PATCH /matters/:matter_slug/items/:item_slug/
+{
+    "category": "My Category Name"
+}
+```
+
+
 Item details
 ============
 
