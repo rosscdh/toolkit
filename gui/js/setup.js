@@ -6,6 +6,8 @@ angular.module('toolkit-gui').config(function($routeProvider) {
     when('/',{templateUrl: 'partial/home/home.html'}).
 	when('/matter/:id/checklist',{'templateUrl': 'partial/checklist/checklist.html', 'controller': 'ChecklistCtrl'}).
 	when('/matter/:id/closing',{templateUrl: 'partial/closing/closing.html'}).
+	when('/matter/:matterSlug/invite',{templateUrl: 'partial/participant-invite/participant-invite.html'}).
+	when('/matter/:matterSlug/attachment/:id',{templateUrl: 'partial/view-document/view-document.html'}).
 	/* Add New Routes Above */
     otherwise({redirectTo:'/'});
 
