@@ -10,6 +10,12 @@ Provide a means to invite a current user, or create a new user based on email
 to review a document at a unique to that user+document-revision url.
 
 
+Dependencies
+------------
+
+1. https://github.com/rosscdh/django-crocdoc (pending)
+
+
 Models
 ------
 
@@ -25,11 +31,6 @@ __review__
 1. view to provide reviewer with access to the crocdoc url for a document
 2. should provide basic info about the lawyer, client, client-user and the 
 document being reviewed
-
-__webhook__
-
-1. handle callbacks from the crocdoc application
-2. create activity stream entries for the matter.item.revision being reviewed.
 
 
 Signals
