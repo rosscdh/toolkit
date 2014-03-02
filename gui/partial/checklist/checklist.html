@@ -3,9 +3,10 @@
 		<div class="row full">
 			<div class="col-sm-5 checklist-col full">
 				<!-- checklist //-->
-				<table class="table checklist" ng-repeat="cat in data.matter.categories">
+				<table class="table checklist" ng-repeat="cat in data.categories">
+					<thead>
                          <tr>
-			                <th colspan="1" class="col-sm-6 category"><span ng-bind="cat"></span></th>
+			                <th colspan="1" class="col-sm-6 category"><span ng-bind="cat.name"></span></th>
 			              	<th class="category-controls">
 			              		<!-- TODO : make these buttons appear when the tbody appears-->
 								<div class="btn-group pull-right">
@@ -36,8 +37,9 @@
 					          	</div>
 			              	</td>
 			             </tr>
-
-			             <tr class="item-heading item-closed" ng-repeat="item in data.matter.items | filter:{category:cat}">
+			        </thead>
+			        <tbody ui:sortable="sortableOptions" ng:model="cat.items" class="group">
+			             <tr class="item-heading item-closed" ng-repeat="item in cat.items">
 			                <td class="item-title">
 			                	<span class="fui-list-columned"></span>
 			                	<span ng-bind="item.name"></span>
@@ -46,7 +48,9 @@
 			                	<span class="fui-check-inverted"></span>
 			                </td>
 			             </tr>
+			        </tbody>
 		          </table>
+		          <!--
                   <table class="table checklist">
                         <tr>
 			                <th colspan="1" class="col-sm-6 category">No category</th>
@@ -62,6 +66,7 @@
 			                </td>
 			            </tr>
                   </table>
+                  //-->
 				<!-- end checklist //-->
 			</div>
 			<div class="col-sm-7 item spa full">

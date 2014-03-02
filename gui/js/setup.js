@@ -1,4 +1,4 @@
-angular.module('toolkit-gui', ['ui.bootstrap','ui.utils','ngRoute','ngAnimate', 'ngResource']);
+angular.module('toolkit-gui', ['ui.bootstrap', 'ui.sortable', 'ui.utils','ngRoute','ngAnimate', 'ngResource']);
 
 angular.module('toolkit-gui').config(function($routeProvider) {
 
