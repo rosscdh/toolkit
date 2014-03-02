@@ -1,12 +1,16 @@
 Django==1.6.2
-django-extensions
+django-extensions>=1.3
 south
 
 # Procfile service management
 honcho
 
 Werkzeug
+
+# REST framework
 djangorestframework==2.3.9
+# djangorestframework-jwt  ## not required yet
+# django-cors-headers  ## not required yet
 
 django-rulez
 django-password-reset

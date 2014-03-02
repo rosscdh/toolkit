@@ -16,13 +16,15 @@ from toolkit.core.mixins import IsDeletedMixin
 from toolkit.apps.workspace.services import PDFKitService
 from toolkit.apps.workspace.signals import base_signal
 from toolkit.apps.workspace.mixins import WorkspaceToolModelMixin
+from toolkit.core.mixins import IsDeletedMixin
 
 from hello_sign.mixins import HelloSignModelMixin
 
 from .markers import EngagementLetterMarkers
 ENGAGEMENTLETTER_STATUS = EngagementLetterMarkers().named_tuple(name='ENGAGEMENTLETTER_STATUS')
 
-from .mixins import StatusMixin, HTMLMixin
+from .mixins import (StatusMixin,
+                     HTMLMixin)
 
 import os
 
