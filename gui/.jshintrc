@@ -24,5 +24,6 @@
         "inject": true,
         "it": true,
         "expect": true
-    }
+    },
+    "-W083": false
 }
