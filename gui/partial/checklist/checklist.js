@@ -123,9 +123,14 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routePar
 	}
 
 	// UI.sortable options
-	$scope.sortableOptions = {
+	$scope.checklistItemSortableOptions = {
 		'stop':  recalculateCategories, /* Fires once the drag and drop event has finished */
 		'connectWith': ".group",
+		'axis': 'y'
+	};
+
+	$scope.checklistCategorySortableOptions = {
+		'stop':  recalculateCategories, /* Fires once the drag and drop event has finished */
 		'axis': 'y'
 	};
 }]);
