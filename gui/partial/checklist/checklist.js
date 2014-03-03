@@ -75,17 +75,30 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routePar
 	   if ($scope.data.newItemName) {
 		 matterItemService.create($scope.data.newItemName, category).then(
 			 function success(item){
-				$scope.data.matter.items.push(item);
+                console.log(item);
+                console.log(category);
+                category.items.push(item);
+				//$scope.data.matter.items.push(item);
 				$scope.data.newItemName = '';
 			 },
 			 function error(err){
-				$scope.data.matter.items.push( {'name':$scope.data.newItemName, 'category':'FIRST CATEGORY'} );
-				$scope.data.showAddForm = true;
+				// @TODO show an error message
 			 }
 		 );
-		 $scope.data.showAddForm = false;
+		 $scope.data.showAddForm = -1;
 	   }
 	};
+
+    $scope.deleteItem = function(item) {
+        matterItemService.delete(item).then(
+			 function success(item){
+                category.items.remove(item);
+			 },
+			 function error(err){
+				// @TODO show an error message
+			 }
+		);
+    }
 
 	$scope.showAddItemForm = function(index) {
 		if ($scope.data.showAddForm !== index) {
@@ -120,6 +133,9 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routePar
 		}
 
 		// @TODO Post updates to API
+        console.log(APIUpdates);
+
+
 	}
 
 	// UI.sortable options
