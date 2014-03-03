@@ -69,7 +69,7 @@ angular.module('toolkit-gui').factory('matterService',[ '$q', '$resource', funct
 
 			var api = matterResource();
 
-			api.sort({'categories': APIUpdate.categories, 'items': APIUpdate.items },
+			api.sort(APIUpdate,
 				function success(){
 					deferred.resolve();
 				},
