@@ -1,4 +1,6 @@
 from django.conf import settings
+from django.contrib import messages
+from django.core.urlresolvers import reverse
 from django.views.generic import CreateView, ListView, TemplateView
 
 from toolkit.api.serializers import LiteMatterSerializer
@@ -43,6 +45,23 @@ class MatterListView(ListView):
 
 class MatterCreateView(ModalView, AjaxModelFormView, CreateView):
     form_class = MatterForm
+
+    def form_valid(self, form):
+        response = super(MatterCreateView, self).form_valid(form)
+
+        # add lawyer
+        self.object.lawyer = self.request.user
+        self.object.save(update_fields=['lawyer'])
+
+        # add user as participant
+        self.object.participants.add(self.request.user)
+
+        messages.success(self.request, 'You have sucessfully created a new workspace')
+
+        return response
+
+    def get_success_url(self):
+        return reverse('matter:detail', kwargs={'matter_slug': self.object.slug})
 
 
 class MatterDetailView(TemplateView):
