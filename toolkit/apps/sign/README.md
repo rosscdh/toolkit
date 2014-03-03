@@ -31,15 +31,10 @@ __sign__
 2. should provide basic info about the lawyer, client, client-user and the 
 document being signed as well as display the hellosign interface
 
-__webhook__
-
-1. create activity stream entries for the matter.item.revision being signed, 
-based on the django-hello_sign app signals
-
 
 Signals
 -------
 
-1. listen for django-crocdoc module events and generate activity stream for each
-type of event
+1. listen for django-hello_sign module events and generate activity stream for each
+type of event listend for hello_sign.signals.hellosign_webhook_event_recieved
 
