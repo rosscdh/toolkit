@@ -95,6 +95,7 @@ PROJECT_APPS = (
     'toolkit.apps.api',
     'toolkit.apps.default',
     'toolkit.apps.dash',
+    'toolkit.apps.matters',
     'toolkit.apps.me',
 
     # Routine Apps
