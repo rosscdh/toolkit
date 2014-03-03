@@ -1,18 +1,19 @@
-from django.views.generic import ListView
+from django.conf import settings
+from django.views.generic import ListView, TemplateView
 
 from toolkit.api.serializers import LiteMatterSerializer
 from toolkit.apps.workspace.models import Workspace
 
 
-class DashboardView(ListView):
+class MatterListView(ListView):
     serializer_class = LiteMatterSerializer
-    template_name = 'dashboard/dashboard.html'
+    template_name = 'matters/matter_list.html'
 
     def get_queryset(self):
         return Workspace.objects.mine(self.request.user)
 
     def get_context_data(self, **kwargs):
-        context = super(DashboardView, self).get_context_data(**kwargs)
+        context = super(MatterListView, self).get_context_data(**kwargs)
 
         context.update({
             'object_list': self.get_serializer(self.object_list, many=True).data,
@@ -34,3 +35,14 @@ class DashboardView(ListView):
         return {
             'request': self.request
         }
+
+
+class MatterDetailView(TemplateView):
+    """
+    Just a proxy view through to the AngularJS app.
+    """
+    def get_template_names(self):
+        if settings.DEBUG:
+            return 'index.html'
+        else:
+            return 'dist/index.html'
