@@ -25,8 +25,10 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routePar
 	if( $scope.data.slug && $scope.data.slug!=='' ) {
 		matterService.get( $scope.data.slug ).then(
 			function success( singleMatter ){
+                //set matter in the services
+                matterService.selectMatter(singleMatter);
+                matterItemService.selectMatter(singleMatter);
 				$scope.initialiseMatter( singleMatter );
-				//$scope.data.matter = singleMatter;
 			},
 			function error(err){
 
@@ -55,22 +57,10 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routePar
 				categories.push( { 'name': categoryName, 'items': items } );
 			});
 
-			/*
-			for(i =0;categoryName=matter.categories[i],i<matter.categories.length;i++) {
-				items = [];
-				items = jQuery.grep( matter.items, function( item ){ return item.category===categoryName; } );
-				categories.push(
-					{ 'name': categoryName, 'items': items }
-				);
-			}*/
-
 			$scope.data.matter = matter;
 			$scope.data.categories = categories;
 
 			window.categories = $scope.data.categories;
-
-            //set matter in matteritemservice
-            matterItemService.selectMatter(matter);
 		} else {
 			// Display error
 		}
@@ -124,26 +114,40 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routePar
 	function recalculateCategories( evt, ui ) {
 		var cats = $scope.data.categories;
 		var categoryName, items = [], item, i;
-		var APIUpdate = {}, APIUpdates = [];
+		var APIUpdate = {
+            'categories': [],
+            'items': []
+        };
 
 		function getItemIDs( item ) {
-			return item.slug;
+            console.log(item);
+			return item.id;
 		}
 
 		for(i =0;i<cats.length;i++) {
 			categoryName=cats[i].name;
 			items=cats[i].items;
-			// Create API messages
-			// @TODO Create exact API JSON data PATCH data
-			APIUpdate = { 'category': cats[i].name, 'items': jQuery.map( items, getItemIDs ) };
-			APIUpdates.push( APIUpdate );
+
+			// Create API message
+            if(cats[i].name != null) {
+                APIUpdate.categories.push(cats[i].name);
+            }
+            jQuery.merge(APIUpdate.items, jQuery.map( items, getItemIDs ));
+
 			// Update local data, setting category name
 			jQuery.each( items, function( index, item ){
 				item.category = categoryName;
 			});
 		}
 
-		// @TODO Post updates to API
+		matterService.saveSortOrder(APIUpdate).then(
+			 function success(){
+                //do nothing
+			 },
+			 function error(err){
+				// @TODO: Show error message
+			 }
+		);
 	}
 
 	// UI.sortable options
