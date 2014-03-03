@@ -22,6 +22,7 @@ class MatterListView(ListView):
 
         context.update({
             'can_create': self.request.user.profile.is_lawyer,
+            'can_edit': self.request.user.profile.is_lawyer,
             'object_list': self.get_serializer(self.object_list, many=True).data,
         })
 
