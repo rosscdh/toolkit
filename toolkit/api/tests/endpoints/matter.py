@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from toolkit.apps.workspace.models import Workspace
 
 from . import BaseEndpointTest
-from ...serializers import ClientSerializer
+from ...serializers import LiteClientSerializer
 
 from model_mommy import mommy
 
@@ -36,7 +36,7 @@ class MattersTest(BaseEndpointTest):
 
         new_client = mommy.prepare('client.Client', lawyer=self.lawyer, name='A new Client for Test Lawyer')
 
-        resp = self.client.post(self.endpoint, json.dumps(ClientSerializer(new_client).data), content_type='application/json')
+        resp = self.client.post(self.endpoint, json.dumps(LiteClientSerializer(new_client).data), content_type='application/json')
 
         self.assertEqual(resp.status_code, 201)  # created
 
