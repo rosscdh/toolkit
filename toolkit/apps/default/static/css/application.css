@@ -757,6 +757,9 @@ body.checklist {
   border: 0;
   padding: 0;
 }
+.modal .form-group .form-control.select {
+  margin-bottom: 0;
+}
 .form-group .input-group-addon {
   width: inherit;
 }
@@ -794,7 +797,9 @@ body.checklist {
   padding: 16px 14px 10px;
 }
 .matter .card .content .title {
-  margin: 45px 0 25px 0;
+  display: table-cell;
+  height: 125px;
+  vertical-align: middle;
 }
 .matter .card .content .title h5,
 .matter .card .content .title h6 {
