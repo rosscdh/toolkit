@@ -47,6 +47,16 @@ class MatterEndpoint(viewsets.ModelViewSet):
         user = self.request.user
         return user.workspace_set.mine(user=user)
 
+    def pre_save(self, obj):
+        """
+        @BUSINESSRULE Enforce the lawyer being set as the current user
+        """
+        if obj.lawyer in [None, '']:
+            if self.request.user.profile.is_lawyer:
+                obj.lawyer = self.request.user
+
+        return super(MatterEndpoint, self).pre_save(obj=obj)
+
     def can_read(self, user):
         return user.profile.user_class in ['lawyer', 'customer']
 
