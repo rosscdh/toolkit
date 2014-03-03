@@ -152,7 +152,7 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
             'required': "Property description can't be blank."
         },
         label='Description of property with respect to which election is being made',
-        initial='{{ total_shares_purchased }} shares (the “Shares”) of the Common Stock of {{ company_name }}, Inc. (the “Company”) (${{ price_paid_per_share }} per share)'
+        initial='{{ total_shares_purchased }} shares (the “Shares”) of the Common Stock of {{ company_name }} (the “Company”) (${{ price_paid_per_share }} per share)'
     )
 
     tax_year = forms.IntegerField(
