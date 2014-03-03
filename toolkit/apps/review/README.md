@@ -10,6 +10,12 @@ Provide a means to invite a current user, or create a new user based on email
 to review a document at a unique to that user+document-revision url.
 
 
+Dependencies
+------------
+
+1. https://github.com/rosscdh/django-crocdoc (pending)
+
+
 Models
 ------
 
