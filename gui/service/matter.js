@@ -10,9 +10,15 @@ angular.module('toolkit-gui').factory('matterService',[ '$q', '$resource', funct
 	};
 
 	function matterResource() {
-		return $resource('http://localhost:8000/api/v1/matters/:matterSlug/', {}, {
+        var matterSlug = '';
+        if(matter.selected != null){
+            matterSlug = matter.selected.slug;
+        }
+
+		return $resource('http://localhost:8000/api/v1/matters/:matterSlug/:action', {'matterSlug':matterSlug, 'action':'@action'}, {
 			'list': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }, 'isArray': true },
-			'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } }
+			'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } },
+			'sort': { 'method': 'PATCH', params:{'action': 'sort'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } }
 		});
 	}
 
@@ -56,7 +62,24 @@ angular.module('toolkit-gui').factory('matterService',[ '$q', '$resource', funct
 			);
 
 			return deferred.promise;
-		}
+		},
+
+        'saveSortOrder': function ( APIUpdate ) {
+            var deferred = $q.defer();
+
+			var api = matterResource();
+
+			api.sort({'categories': APIUpdate.categories, 'items': APIUpdate.items },
+				function success(){
+					deferred.resolve();
+				},
+				function error(err) {
+					deferred.reject( err );
+				}
+			);
+
+			return deferred.promise;
+        }
 	};
 }]);
 
