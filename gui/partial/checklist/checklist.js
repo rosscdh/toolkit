@@ -4,6 +4,9 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routePar
 		'matter': {},
 		/*'items': [],*/
 		'showAddForm': -1,
+        'showItemDetailsOptions': false,
+        'selectedItem': null,
+        'selectedCategory': null,
 		'categories': [],
 		'users': [
 			{ 'name': 'Sam Jackson', 'img': 'https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash3/t1/c0.0.100.100/p100x100/1014416_10100118438650161_136799916_a.jpg' },
@@ -65,6 +68,9 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routePar
 			$scope.data.categories = categories;
 
 			window.categories = $scope.data.categories;
+
+            //set matter in matteritemservice
+            matterItemService.selectMatter(matter);
 		} else {
 			// Display error
 		}
@@ -73,32 +79,38 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routePar
 
 	$scope.submitNewItem = function(category) {
 	   if ($scope.data.newItemName) {
-		 matterItemService.create($scope.data.newItemName, category).then(
+		 matterItemService.create($scope.data.newItemName, category.name).then(
 			 function success(item){
-                console.log(item);
-                console.log(category);
-                category.items.push(item);
-				//$scope.data.matter.items.push(item);
+				category.items.push(item);
 				$scope.data.newItemName = '';
 			 },
 			 function error(err){
-				// @TODO show an error message
+				// @TODO: Show error message
 			 }
 		 );
 		 $scope.data.showAddForm = -1;
 	   }
 	};
 
-    $scope.deleteItem = function(item) {
-        matterItemService.delete(item).then(
-			 function success(item){
-                category.items.remove(item);
+    $scope.selectItem = function(item, category) {
+        $scope.data.selectedItem = item;
+        $scope.data.selectedCategory = category;
+    };
+
+    $scope.deleteItem = function() {
+       if ($scope.data.selectedItem) {
+		 matterItemService.delete($scope.data.selectedItem).then(
+			 function success(){
+                var index = $scope.data.selectedCategory.items.indexOf($scope.data.selectedItem);
+                $scope.data.selectedCategory.items.splice(index,1);
+                $scope.data.selectedItem = null;
 			 },
 			 function error(err){
-				// @TODO show an error message
+				// @TODO: Show error message
 			 }
-		);
-    }
+		 );
+	   }
+    };
 
 	$scope.showAddItemForm = function(index) {
 		if ($scope.data.showAddForm !== index) {
@@ -107,7 +119,6 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routePar
 		else {
 			$scope.data.showAddForm = -1;
 		}
-		console.log($scope.data.showAddForm);
 	};
 
 	function recalculateCategories( evt, ui ) {
@@ -133,9 +144,6 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routePar
 		}
 
 		// @TODO Post updates to API
-        console.log(APIUpdates);
-
-
 	}
 
 	// UI.sortable options
