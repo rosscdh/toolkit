@@ -1,6 +1,6 @@
 {% extends LAYOUT %}
 
-{% load url from future %}{% load dashboard_tags widont %}
+{% load url from future %}{% load user_tags widont %}
 
 {% block body_class %}checklist{% endblock %}
 
@@ -15,7 +15,7 @@
                 <li class="divider"></li>
                 <li><a href="#" class="intercom">Help</a></li>
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.get_full_name|default:user.username }}<b class="caret"></b></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.get_full_name }}<b class="caret"></b></a>
                     <ul>
                         <li><a href="{% url 'me:settings' %}">Account</a></li>
                         <li><a href="{% url 'public:logout' %}">Sign out</a></li>
@@ -29,7 +29,7 @@
 {% block breadcrumbs %}{% endblock %}
 
 {% block body %}
-    <div id="dashboard" class="content col-lg-12">
+    <div id="matter-list" class="content col-lg-12">
         <section class="matters cards">
             <header class="page-header">
                 <h4>All Matters</h4>
@@ -44,7 +44,7 @@
                         <div class="card">
                             <a href="#" class="edit"><span class="fui-gear"></span></a>
 
-                            <a href="{% url 'matter-details-view' matter_slug=m.slug %}" title="{{ m.name }}" class="content">
+                            <a href="{% url 'matter:detail' matter_slug=m.slug %}" title="{{ m.name }}" class="content">
                                 <div class="title">
                                     {% if user.profile.is_lawyer %}
                                         <h6>{{ m.client.name }}</h6>
