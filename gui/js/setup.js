@@ -16,6 +16,13 @@ angular.module('toolkit-gui').config(function($routeProvider) {
 
 });
 
+//Required to be compatible with the django CSRF protection
+angular.module('toolkit-gui').config(['$httpProvider', function($httpProvider) {
+    $httpProvider.defaults.xsrfCookieName = 'csrftoken';
+    $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';    }
+]);
+
+
 angular.module('toolkit-gui').run(function($rootScope) {
 
 	$rootScope.safeApply = function(fn) {
@@ -28,5 +35,7 @@ angular.module('toolkit-gui').run(function($rootScope) {
 			this.$apply(fn);
 		}
 	};
+
+    $rootScope.API_BASE_URL = "http://localhost:8000/api/v1/";
 
 });
