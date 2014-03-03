@@ -44,7 +44,11 @@
                 {% for m in object_list %}
                     <article class="col-md-4 matter">
                         <div class="card">
-                            <a href="#" class="edit"><span class="fui-gear"></span></a>
+                            {% if can_edit %}
+                                <a href="{% url 'matter:edit' matter_slug=m.slug %}" data-toggle="modal" data-target="#matter-edit-{{ m.slug }}" class="edit">
+                                    <span class="fui-gear"></span>
+                                </a>
+                            {% endif %}
 
                             <a href="{% url 'matter:detail' matter_slug=m.slug %}" title="{{ m.name }}" class="content">
                                 <div class="title">
@@ -73,7 +77,12 @@
 {% endblock %}
 
 {% block modals %}
-    {% if user.profile.is_lawyer %}
+    {% if can_create %}
         <div class="modal" id="matter-create"></div>
     {% endif %}
+    {% for m in object_list %}
+        {% if can_edit %}
+            <div class="modal" id="matter-edit-{{ m.slug }}"></div>
+        {% endif %}
+    {% endfor %}
 {% endblock %}
