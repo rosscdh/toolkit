@@ -69,6 +69,11 @@ class MatterForm(ModalForm, forms.ModelForm):
 
         self.user = user
 
+        if kwargs['instance']:
+            kwargs['initial'].update({
+                'client_name': kwargs['instance'].client.name
+            })
+
         super(MatterForm, self).__init__(*args, **kwargs)
 
         # Show all the available clients to the user
