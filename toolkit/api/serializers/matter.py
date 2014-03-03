@@ -7,9 +7,9 @@ from rest_framework import serializers
 
 from toolkit.apps.workspace.models import Workspace
 from toolkit.core.item.models import Item
+from .client import LiteClientSerializer
 from .item import ItemSerializer
-from .user import UserSerializer
-from .client import ClientSerializer
+from .user import LiteUserSerializer
 
 import datetime
 
@@ -20,12 +20,9 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
     date_created = serializers.DateTimeField(read_only=True)
     date_modified = serializers.DateTimeField(read_only=True)
 
-    # client = serializers.HyperlinkedRelatedField(many=False, required=False, view_name='client-detail', lookup_field='slug')
-    client = ClientSerializer()
-    # lawyer = serializers.HyperlinkedRelatedField(many=False, view_name='user-detail', lookup_field='username')
-    lawyer = UserSerializer()
-    # participants = serializers.HyperlinkedRelatedField(many=True, required=False, view_name='user-detail', lookup_field='username')
-    participants = UserSerializer(many=True)
+    client = LiteClientSerializer(required=False)
+    lawyer = LiteUserSerializer(required=False)
+    participants = LiteUserSerializer(many=True, required=False)
 
     categories = serializers.SerializerMethodField('get_categories')
     closing_groups = serializers.SerializerMethodField('get_closing_groups')
@@ -93,7 +90,7 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_current_user(self, obj):
         user = obj.lawyer
-        return UserSerializer(user).data
+        return LiteUserSerializer(user).data
 
     def get_current_user_todo(self, obj):
         """
@@ -111,10 +108,6 @@ class LiteMatterSerializer(MatterSerializer):
     """
     @BUSINESSRULE used for the matters/ GET (shows lighter version of the serializer)
     """
-    client = ClientSerializer()
-    lawyer = UserSerializer()
-    participants = UserSerializer(many=True)
-
     class Meta(MatterSerializer.Meta):
         fields = ('url', 'name', 'slug', 'matter_code', 'client',
                   'lawyer', 'participants', 'date_created', 'date_modified')
