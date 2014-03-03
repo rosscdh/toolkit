@@ -21,8 +21,8 @@ angular.module('toolkit-gui').factory('matterService',[ '$q', '$resource', funct
 			return matter;
 		},
 
-		'selectMatter': function( objMAtter ) {
-			matter.selected = objMAtter;
+		'selectMatter': function( objMatter ) {
+			matter.selected = objMatter;
 		},
 
 		'list': function() {

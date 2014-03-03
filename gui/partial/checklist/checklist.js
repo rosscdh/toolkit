@@ -3,7 +3,7 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routePar
 		'slug': $routeParams.matterSlug,
 		'matter': {},
 		/*'items': [],*/
-		'showAddForm': -1,
+		'showAddForm': null,
         'showItemDetailsOptions': false,
         'selectedItem': null,
         'selectedCategory': null,
@@ -88,7 +88,7 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routePar
 				// @TODO: Show error message
 			 }
 		 );
-		 $scope.data.showAddForm = -1;
+		 $scope.data.showAddForm = null;
 	   }
 	};
 
@@ -117,7 +117,7 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routePar
 			$scope.data.showAddForm = index;
 		}
 		else {
-			$scope.data.showAddForm = -1;
+			$scope.data.showAddForm = null;
 		}
 	};
 
