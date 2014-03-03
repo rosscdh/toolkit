@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.views.generic import CreateView, ListView, TemplateView
+from django.views.generic import CreateView, ListView, TemplateView, UpdateView
 
 from toolkit.api.serializers import LiteMatterSerializer
 from toolkit.apps.workspace.models import Workspace
@@ -43,6 +43,17 @@ class MatterListView(ListView):
         }
 
 
+class MatterDetailView(TemplateView):
+    """
+    Just a proxy view through to the AngularJS app.
+    """
+    def get_template_names(self):
+        if settings.DEBUG:
+            return 'index.html'
+        else:
+            return 'dist/index.html'
+
+
 class MatterCreateView(ModalView, AjaxModelFormView, CreateView):
     form_class = MatterForm
 
@@ -53,21 +64,27 @@ class MatterCreateView(ModalView, AjaxModelFormView, CreateView):
 
     def form_valid(self, form):
         response = super(MatterCreateView, self).form_valid(form)
-
-        messages.success(self.request, 'You have sucessfully created a new workspace')
-
+        messages.success(self.request, 'You have sucessfully created a new matter')
         return response
 
     def get_success_url(self):
         return reverse('matter:detail', kwargs={'matter_slug': self.object.slug})
 
 
-class MatterDetailView(TemplateView):
-    """
-    Just a proxy view through to the AngularJS app.
-    """
-    def get_template_names(self):
-        if settings.DEBUG:
-            return 'index.html'
-        else:
-            return 'dist/index.html'
+class MatterUpdateView(ModalView, AjaxModelFormView, UpdateView):
+    form_class = MatterForm
+    model = Workspace
+    slug_url_kwarg = 'matter_slug'
+
+    def get_form_kwargs(self):
+        kwargs = super(MatterUpdateView, self).get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        response = super(MatterUpdateView, self).form_valid(form)
+        messages.success(self.request, 'You have sucessfully updated the matter')
+        return response
+
+    def get_success_url(self):
+        return reverse('matter:detail', kwargs={'matter_slug': self.object.slug})

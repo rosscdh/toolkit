@@ -15,8 +15,6 @@ from toolkit.mixins import ModalForm
 
 @parsleyfy
 class MatterForm(ModalForm, forms.ModelForm):
-    title = 'Create a new Matter'
-
     client_name = forms.CharField(
         error_messages={
             'required': "Client name can not be blank."
@@ -92,3 +90,9 @@ class MatterForm(ModalForm, forms.ModelForm):
         matter.participants.add(self.user)
 
         return matter
+
+    @property
+    def title(self):
+        if self.instance.pk:
+            return 'Update: %s' % self.instance.name
+        return 'Create a new Matter'
