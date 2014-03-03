@@ -1,7 +1,7 @@
 <div id="checklist" ng-controller="ChecklistCtrl">
 	<div class="container-fluid full">
 		<div class="row full">
-			<div class="col-sm-5 checklist-col full">
+			<div class="col-sm-5 checklist-col full" ui-sortable="checklistCategorySortableOptions" ng-model="data.categories">
 				<!-- checklist //-->
 				<table class="table checklist" ng-repeat="cat in data.categories">
 					<thead>
@@ -38,7 +38,7 @@
 			              	</td>
 			             </tr>
 			        </thead>
-			        <tbody ui:sortable="sortableOptions" ng:model="cat.items" class="group">
+			        <tbody ui:sortable="checklistItemSortableOptions" ng:model="cat.items" class="group">
 			             <tr class="item-heading item-closed" ng-repeat="item in cat.items">
 			                <td class="item-title">
 			                	<span class="fui-list-columned"></span>
