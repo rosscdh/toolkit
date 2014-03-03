@@ -28,7 +28,7 @@ class MatterForm(ModalForm, forms.ModelForm):
         fields = ['name']
         model = Workspace
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, user, *args, **kwargs):
         self.helper = FormHelper()
         self.helper.form_action = reverse('matter:create')
 
@@ -36,4 +36,18 @@ class MatterForm(ModalForm, forms.ModelForm):
             'name',
         )
 
+        self.user = user
+
         super(MatterForm, self).__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        matter = super(MatterForm, self).save(commit=commit)
+
+        # add lawyer
+        matter.lawyer = self.user
+        matter.save(update_fields=['lawyer'])
+
+        # add user as participant
+        matter.participants.add(self.user)
+
+        return matter

@@ -46,15 +46,13 @@ class MatterListView(ListView):
 class MatterCreateView(ModalView, AjaxModelFormView, CreateView):
     form_class = MatterForm
 
+    def get_form_kwargs(self):
+        kwargs = super(MatterCreateView, self).get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
     def form_valid(self, form):
         response = super(MatterCreateView, self).form_valid(form)
-
-        # add lawyer
-        self.object.lawyer = self.request.user
-        self.object.save(update_fields=['lawyer'])
-
-        # add user as participant
-        self.object.participants.add(self.request.user)
 
         messages.success(self.request, 'You have sucessfully created a new workspace')
 
