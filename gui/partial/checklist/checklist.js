@@ -2,7 +2,6 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routePar
 	$scope.data = {
 		'slug': $routeParams.matterSlug,
 		'matter': {},
-		/*'items': [],*/
 		'showAddForm': null,
         'showItemDetailsOptions': false,
         'selectedItem': null,
@@ -118,10 +117,10 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routePar
             'categories': [],
             'items': []
         };
+        var itemToUpdate = null;
 
 		function getItemIDs( item ) {
-            console.log(item);
-			return item.id;
+			return item.slug;
 		}
 
 		for(i =0;i<cats.length;i++) {
@@ -136,13 +135,26 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routePar
 
 			// Update local data, setting category name
 			jQuery.each( items, function( index, item ){
-				item.category = categoryName;
+                if (item.category != categoryName){
+				    item.category = categoryName;
+                    itemToUpdate = item;
+                }
 			});
 		}
 
 		matterService.saveSortOrder(APIUpdate).then(
 			 function success(){
-                //do nothing
+                //if category changed for an item, save that
+                if (itemToUpdate != null){
+                    matterItemService.update(itemToUpdate).then(
+                        function success(){
+                            // do nothing
+                        },
+                        function error(err){
+                            // @TODO: Show error message
+                        }
+                );
+                }
 			 },
 			 function error(err){
 				// @TODO: Show error message
