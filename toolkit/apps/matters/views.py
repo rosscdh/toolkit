@@ -1,8 +1,11 @@
 from django.conf import settings
-from django.views.generic import ListView, TemplateView
+from django.views.generic import CreateView, ListView, TemplateView
 
 from toolkit.api.serializers import LiteMatterSerializer
 from toolkit.apps.workspace.models import Workspace
+from toolkit.mixins import AjaxModelFormView, ModalView
+
+from .forms import MatterForm
 
 
 class MatterListView(ListView):
@@ -16,6 +19,7 @@ class MatterListView(ListView):
         context = super(MatterListView, self).get_context_data(**kwargs)
 
         context.update({
+            'can_create': self.request.user.profile.is_lawyer,
             'object_list': self.get_serializer(self.object_list, many=True).data,
         })
 
@@ -35,6 +39,10 @@ class MatterListView(ListView):
         return {
             'request': self.request
         }
+
+
+class MatterCreateView(ModalView, AjaxModelFormView, CreateView):
+    form_class = MatterForm
 
 
 class MatterDetailView(TemplateView):
