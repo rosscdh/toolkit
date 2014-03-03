@@ -2,11 +2,15 @@
 from django.db import models
 from rulez import registry as rulez_registry
 
+from .managers import ClientManager
+
 
 class Client(models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField(null=True, blank=True, unique=True)
-    lawyer = models.ForeignKey('auth.User')
+    lawyer = models.ForeignKey('auth.User', related_name='clients')
+
+    objects = ClientManager()
 
     def can_read(self, user):
         return self.lawyer == user
