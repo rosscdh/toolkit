@@ -26,15 +26,10 @@ __review__
 2. should provide basic info about the lawyer, client, client-user and the 
 document being reviewed
 
-__webhook__
-
-1. handle callbacks from the crocdoc application
-2. create activity stream entries for the matter.item.revision being reviewed.
-
 
 Signals
 -------
 
 1. listen for django-crocdoc module events and generate activity stream for each
 type of event
-
+2. create activity stream entries for the matter.item.revision being reviewed.
