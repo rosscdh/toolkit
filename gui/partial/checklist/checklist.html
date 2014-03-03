@@ -39,7 +39,7 @@
 			             </tr>
 			        </thead>
 			        <tbody ui:sortable="sortableOptions" ng:model="cat.items" class="group">
-			             <tr class="item-heading item-closed" ng-repeat="item in cat.items">
+			             <tr class="item-heading item-closed" ng-repeat="item in cat.items" ng-click="selectItem(item, cat)">
 			                <td class="item-title">
 			                	<span class="fui-list-columned"></span>
 			                	<span ng-bind="item.name"></span>
@@ -50,6 +50,7 @@
 			             </tr>
 			        </tbody>
 		          </table>
+
 		          <!--
                   <table class="table checklist">
                         <tr>
@@ -71,8 +72,43 @@
 			</div>
 			<div class="col-sm-7 item spa full">
 				<div class="row full">
+                    <!-- begin item details //-->
 					<div class="col-sm-7">
+                        <div ng-show="data.selectedItem">
+                            <h3><span ng-bind="data.selectedItem.name"></span>
+                                <div class="btn-group pull-right">
+                                    <a href="javascript:;" class="btn-silver btn-xs" data-toggle="tooltip" title="datepicker!" data-placement="bottom">25 June</a>
+                                    <a href="javascript:;" class="btn-silver btn-xs" data-toggle="tooltip" title="Part of Closing Group A" data-placement="bottom"><span class="fui-radio-checked"></span> A</a>
+                                    <a href="javascript:;" class="btn-silver btn-xs" class="dropdown-toggle" data-toggle="dropdown" ng-click="data.showItemDetailsOptions=!data.showItemDetailsOptions">Options</a>
+                                    <ul class="dropdown-menu dropdown-small dropdown-inverse" ng-show="data.showItemDetailsOptions">
+                                        <li><a href="#"><span class="fui-calendar"></span> Set due date</a></li>
+                                        <li><a href="#" data-toggle="modal" data-target="#attachWorkflowModal"><span class="fui-calendar"></span> Add workflow</a></li>
+                                        <li><a href="javascript:;" class="text-danger" ng-click="deleteItem()"><span class="fui-trash text-danger"></span> Delete</a></li>
+                                    </ul>
+                                </div>
+                                <div class="item-description-toggle"><small class="text-muted"><a href="#" class="link">Enter item description</a></small></div>
+                                <div class="item-description" style="display:none;">
+                                    <textarea class="form-control" rows="3" placeholder="Enter a description for this item"></textarea>
+                                    <a href="#" class="btn btn-primary btn-xs">Save description</a>
+                                    <a href="#" class="btn btn-inverse btn-xs item-description-cancel">Cancel</a>
+                                    <a href="#" class="btn btn-link btn-xs pull-right" title="Markdown help" onclick="alert('Markdown help popup like trello');">Formatting Help</a>
+                                </div>
+                            </h3>
+                            <div class="add-new text-center">
+                                <div class="fui-upload"></div>
+                                <a href="" class="btn btn-sm btn-add-new"><span class="fui-upload"></span> Upload Revision</a>
+                                <a href="" class="btn btn-sm btn-add-new" data-toggle="modal" data-target="#requestFileModal"><span class="fui-user"></span> Request Revision</a>
+                            </div>
+                            <div class="item-help">
+                                <span class="fui-upload"></span>
+                                <h4>Upload a first revision</h4>
+                                Upload a first draft of this document. Move your mouse to the green upload bar at the top of this item to either upload a file or request one from another participant. You can also drag a document directly on a checklist item to add it as a revision.
+                            </div>
+					    </div>
 					</div>
+                    <!-- end item details //-->
+
+
 					<div class="col-sm-5 chat full">
 						<!-- chat //-->
 						<h4><span class="fui-chat"></span> Discuss</h4>
