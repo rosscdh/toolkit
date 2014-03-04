@@ -7,9 +7,9 @@ angular.module('toolkit-gui').factory('matterCategoryService',[ '$q', '$resource
 
 	function matterCategoryResource() {
 		return $resource( $rootScope.API_BASE_URL + 'matters/:matterSlug/category/:categorySlug', {'matterSlug':matter.slug}, {
-			'create': { 'method': 'POST', params:{'categorySlug':'@slug'}, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
-            'update': { 'method': 'PATCH', params:{'categorySlug':'@slug'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
-            'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
+			'create': { 'method': 'POST', params:{'categorySlug':'@categorySlug'}, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } , 'isArray': true},
+            'update': { 'method': 'PATCH', params:{'categorySlug':'@categorySlug'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
+            'delete': { 'method': 'DELETE', params:{'categorySlug':'@categorySlug'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }, 'isArray': true}
 		});
 	}
 
@@ -28,14 +28,9 @@ angular.module('toolkit-gui').factory('matterCategoryService',[ '$q', '$resource
 
 			var api = matterCategoryResource();
 
-            var matterCategory = {
-                "status": "New",
-                "name": categoryName
-            };
-
-			api.create({'slug': categoryName},
-				function success(category){
-					deferred.resolve(category);
+			api.create({'categorySlug': categoryName},
+				function success(){
+					deferred.resolve();
 				},
 				function error(err) {
 					deferred.reject( err );
@@ -67,7 +62,7 @@ angular.module('toolkit-gui').factory('matterCategoryService',[ '$q', '$resource
 
 			var api = matterCategoryResource();
 
-			api.delete({'categorySlug': category.slug},
+			api.delete({'categorySlug': category.name},
 				function success(){
 					deferred.resolve();
 				},
