@@ -576,7 +576,6 @@ class CategoryView(SpecificAttributeMixin,
         return user.profile.user_class in ['lawyer', 'customer']
 
     def can_edit(self, user):
-        import pdb;pdb.set_trace()
         return user.profile.is_lawyer
 
     def can_delete(self, user):
