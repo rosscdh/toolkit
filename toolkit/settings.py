@@ -92,6 +92,7 @@ PROJECT_APPS = (
     'toolkit.apps.engageletter',
     # Lawpal Modules
     'hello_sign',
+    'dj_crocodoc',
 )
 
 HELPER_APPS = (
