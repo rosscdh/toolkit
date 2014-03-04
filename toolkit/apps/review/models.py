@@ -27,7 +27,10 @@ class ReviewDocument(models.Model):
         @BUSINESSRULE requested users must be in the reviewers object
         """
         for u in self.reviewers.all():
-            if u in users:
+            #
+            # @BUSINESSRULE if no users passed in then send to all of the reviewers
+            #
+            if users is [] or u in users:
                 #
                 # send email
                 #
