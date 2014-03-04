@@ -5,7 +5,8 @@ angular.module('toolkit-gui').controller('ParticipantInviteCtrl',[
 	'currentUser',
 	'matter',
 	'participantService',
-	function($scope, $modalInstance, participants, currentUser, matter, participantService){
+	'toaster',
+	function($scope, $modalInstance, participants, currentUser, matter, participantService, toaster){
 		$scope.participants = participants;
 		$scope.currentUser = currentUser;
 		$scope.matter = matter;
@@ -24,7 +25,7 @@ angular.module('toolkit-gui').controller('ParticipantInviteCtrl',[
 					//
 				},
 				function error() {
-					//
+					toaster.pop('error', "Error!", "Unable to invite this person to particpate, please try again in a few moments");
 				}
 			);
 		};
