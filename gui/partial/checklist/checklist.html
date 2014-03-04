@@ -1,0 +1,144 @@
+<div id="checklist" ng-controller="ChecklistCtrl">
+	<div class="container-fluid full">
+		<div class="row full">
+			<div class="col-sm-5 checklist-col full" ui-sortable="checklistCategorySortableOptions" ng-model="data.categories">
+				<!-- checklist //-->
+				<table class="table checklist" ng-repeat="cat in data.categories">
+					<thead>
+                         <tr>
+			                <th colspan="1" class="col-sm-6 category"><span ng-bind="cat.name"></span></th>
+			              	<th class="category-controls">
+			              		<!-- TODO : make these buttons appear when the tbody appears-->
+								<div class="btn-group pull-right">
+										<button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown"><span class="fui-triangle-down"></span></button>
+						          	  	<ul class="dropdown-menu dropdown-inverse dropdown-small">
+						          	  		<li><a href="javascript:;" id="add-new" ng-click="showAddItemForm($index);">New Item</a></li>
+						                	<li><a href="#fakelink">New Category</a></li>
+						                	<li><a href="#fakelink">Edit Category</a></li>
+						                	<li><a href="#fakelink">Delete Category</a></li>
+						              	</ul>
+					            </div>
+			              	</th>
+			             </tr>
+
+                         <tr class="add-new-controls warning" ng-show="data.showAddForm==$index">
+			              	<td colspan="2">
+			              		<div class="input-group">
+					          	  	<input class="form-control input-sm" id="appendedInputButton-03" type="search" placeholder="Enter item name and press enter"
+                                           ng-model="data.newItemName" ng-enter="submitNewItem(cat)">
+					          	  	<div class="input-group-btn">
+					          	    	<button class="btn btn-link  dropdown-toggle input-sm" type="button" data-toggle="dropdown"><span class="fui-gear"></span></button>
+						          	  	<ul class="dropdown-menu dropdown-inverse dropdown-small">
+						                	<li><a href="#fakelink">Set closing group</a></li>
+						                	<li><a href="#fakelink">Set description</a></li>
+						                	<li><a href="#fakelink">Set due date</a></li>
+						              	</ul>
+					          	  </div>
+					          	</div>
+			              	</td>
+			             </tr>
+			        </thead>
+			        <tbody ui:sortable="checklistItemSortableOptions" ng:model="cat.items" class="group">
+			             <tr class="item-heading" ng-repeat="item in cat.items" ng-click="selectItem(item, cat)" ng-class="{ 'item-closed': item.is_complete, 'item-open': !item.is_complete, 'selected': item.slug===data.selectedItem.slug }">
+			                <td class="item-title">
+			                	<span class="fui-list-columned"></span>
+			                	<span ng-bind="item.name"></span>
+			                </td>
+			                <td class="status text-right">
+			                	<span class="fui-check-inverted" ng-show="item.is_complete"></span>
+			                </td>
+			             </tr>
+			        </tbody>
+		          </table>
+
+		          <!--
+                  <table class="table checklist">
+                        <tr>
+			                <th colspan="1" class="col-sm-6 category">No category</th>
+                        </tr>
+
+                        <tr class="item-heading item-closed" ng-repeat="item in data.matter.items | filter:{category:'!'}">
+			                <td class="item-title">
+			                	<span class="fui-list-columned"></span>
+			                	<span ng-bind="item.name"></span>
+			                </td>
+			                <td class="status text-right">
+			                	<span class="fui-check-inverted"></span>
+			                </td>
+			            </tr>
+                  </table>
+                  //-->
+				<!-- end checklist //-->
+			</div>
+			<div class="col-sm-7 item spa full">
+				<div class="row full">
+                    <!-- begin item details //-->
+					<div class="col-sm-7">
+                        <div ng-show="data.selectedItem">
+                            <h3><span ng-bind="data.selectedItem.name"></span>
+                                <div class="btn-group pull-right">
+                                    <a href="javascript:;" class="btn-silver btn-xs" data-toggle="tooltip" title="datepicker!" data-placement="bottom">25 June</a>
+                                    <a href="javascript:;" class="btn-silver btn-xs" data-toggle="tooltip" title="Part of Closing Group A" data-placement="bottom"><span class="fui-radio-checked"></span> A</a>
+                                    <a href="javascript:;" class="btn-silver btn-xs" class="dropdown-toggle" data-toggle="dropdown" ng-click="data.showItemDetailsOptions=!data.showItemDetailsOptions">Options</a>
+                                    <ul class="dropdown-menu dropdown-small dropdown-inverse" ng-show="data.showItemDetailsOptions">
+                                        <li><a href="#"><span class="fui-calendar"></span> Set due date</a></li>
+                                        <li><a href="#" data-toggle="modal" data-target="#attachWorkflowModal"><span class="fui-calendar"></span> Add workflow</a></li>
+                                        <li><a href="javascript:;" class="text-danger" ng-click="deleteItem()"><span class="fui-trash text-danger"></span> Delete</a></li>
+                                    </ul>
+                                </div>
+                                <div class="item-description-toggle"><small class="text-muted"><a href="#" class="link">Enter item description</a></small></div>
+                                <div class="item-description" style="display:none;">
+                                    <textarea class="form-control" rows="3" placeholder="Enter a description for this item"></textarea>
+                                    <a href="#" class="btn btn-primary btn-xs">Save description</a>
+                                    <a href="#" class="btn btn-inverse btn-xs item-description-cancel">Cancel</a>
+                                    <a href="#" class="btn btn-link btn-xs pull-right" title="Markdown help" onclick="alert('Markdown help popup like trello');">Formatting Help</a>
+                                </div>
+                            </h3>
+                            <div class="add-new text-center">
+                                <div class="fui-upload"></div>
+                                <a href="" class="btn btn-sm btn-add-new"><span class="fui-upload"></span> Upload Revision</a>
+                                <a href="" class="btn btn-sm btn-add-new" data-toggle="modal" data-target="#requestFileModal"><span class="fui-user"></span> Request Revision</a>
+                            </div>
+                            <div class="item-help">
+                                <span class="fui-upload"></span>
+                                <h4>Upload a first revision</h4>
+                                Upload a first draft of this document. Move your mouse to the green upload bar at the top of this item to either upload a file or request one from another participant. You can also drag a document directly on a checklist item to add it as a revision.
+                            </div>
+					    </div>
+					</div>
+                    <!-- end item details //-->
+
+
+					<div class="col-sm-5 chat full">
+						<!-- chat //-->
+						<h4><span class="fui-chat"></span> Discuss</h4>
+						<ul class="list-unstyled">
+							<li class="message me">
+								<div class="media">
+									<a class="user-icon" href="#"><span class="fui-user"></span></a>				
+									<div class="media-body">
+										<div class="msg-body">I've attached the new draft and will shortly send it for review. We'll see what the other side says.</div>
+										<div class="msg-meta">Adam Bier, 25th June to AH, BC</div>
+									</div>
+								</div>
+							</li>
+							<li class="message other">
+								<div class="media">
+									<a class="user-icon" href="#"><span class="fui-user"></span></a>				
+									<div class="media-body">
+										<div class="msg-body">I've attached the new draft and will shortly send it for review. We'll see what the other side says.</div>
+										<div class="msg-meta">Adam Bier, 25th June to AH, BC</div>
+									</div>
+								</div>
+							</li>
+							<li class="action">			<span class="fui-document"></span> Adam uploaded a new draft.		</li>
+						</ul>
+						<div class="new-message">		<textarea class="form-control" rows="2" placeholder="Say something about Shareholders Agreement and press enter..."></textarea>	</div>
+						<!-- end: chat //-->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<toaster-container toaster-options="{'position-class': 'toast-bottom-right'}"></toaster-container>
