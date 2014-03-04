@@ -1,5 +1,12 @@
-angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routeParams', 'matterService', 'matterItemService', 'matterCategoryService',
-    function($scope, $routeParams, matterService, matterItemService, matterCategoryService){
+angular.module('toolkit-gui').controller('ChecklistCtrl', [
+    '$scope',
+    '$routeParams',
+    'ezConfirm',
+	'toaster',
+    'matterService',
+    'matterItemService',
+    'matterCategoryService',
+    function($scope, $routeParams, ezConfirm, toaster, matterService, matterItemService, matterCategoryService){
 	$scope.data = {
 		'slug': $routeParams.matterSlug,
 		'matter': {},
@@ -15,197 +22,221 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routePar
 		]
 	};
 
-	//$scope.matter = matterService.data();
-	/*
-	if( $scope.data.slug && $scope.data.slug!=='' ) {
-		matterService.get( $scope.data.slug );
-	}
-	*/
+		if( $scope.data.slug && $scope.data.slug!=='' ) {
+			matterService.get( $scope.data.slug ).then(
+				function success( singleMatter ){
+					//set matter in the services
+					matterService.selectMatter(singleMatter);
+					matterItemService.selectMatter(singleMatter);
+					$scope.initialiseMatter( singleMatter );
+				},
+				function error(err){
+					toaster.pop('error', "Error!", "Unable to load matter");
+					// @TODO: redirect user maybe?
+				}
+			);
+		}
 
-	if( $scope.data.slug && $scope.data.slug!=='' ) {
-		matterService.get( $scope.data.slug ).then(
-			function success( singleMatter ){
-                //set matter in the services
-                matterService.selectMatter(singleMatter);
-                matterItemService.selectMatter(singleMatter);
-				$scope.initialiseMatter( singleMatter );
-			},
-			function error(err){
+		/**
+		 * initialiseMatter: spilts the matter items into seperate arrays for the purpose of displaying seperate sortable lists, where items can be dragged
+		 * @param  {Object} matter Full matter object as recieved from API
+		 */
+		$scope.initialiseMatter = function( matter ) {
+			var i, categoryName = null, categories = [], items = [];
 
+			// Items with blank category name
+			items = jQuery.grep( matter.items, function( item ){ return item.category===categoryName; } );
+			categories.push(
+				{ 'name': categoryName, 'items': items }
+			);
+			
+			if( matter && matter.categories ) {
+				// Allocate items to specific categories to make multiple arrays
+				jQuery.each( matter.categories, function( index, cat ) {
+					var categoryName = cat;
+                    var items = jQuery.grep( matter.items, function( item ){ return item.category===categoryName; } );
+					categories.push( { 'name': categoryName, 'items': items } );
+				});
+
+				$scope.data.matter = matter;
+				$scope.data.categories = categories;
+
+				window.categories = $scope.data.categories;
+			} else {
+				// Display error
+				toaster.pop('warning', "Unable to load matter details");
 			}
-		);
-	}
+		};
 
-	/**
-	 * initialiseMatter: spilts the matter items into seperate arrays for the purpose of displaying seperate sortable lists, where items can be dragged
-	 * @param  {Object} matter Full matter object as recieved from API
-	 */
-	$scope.initialiseMatter = function( matter ) {
-		var i, categoryName = null, categories = [], items = [];
+        <!-- Begin CRUD Item -->
+		$scope.submitNewItem = function(category) {
+		   if ($scope.data.newItemName) {
+			 matterItemService.create($scope.data.newItemName, category.name).then(
+				 function success(item){
+					category.items.push(item);
+					$scope.data.newItemName = '';
+				 },
+				 function error(err){
+					toaster.pop('error', "Error!", "Unable to create new item");
+				 }
+			 );
+			 $scope.data.showAddForm = null;
+		   }
+		};
 
-		// Items with blank category name
-		items = jQuery.grep( matter.items, function( item ){ return item.category===categoryName; } );
-		categories.push(
-			{ 'name': categoryName, 'items': items }
-		);
-		
-		if( matter && matter.categories ) {
-			// Allocate items to specific categories to make multiple arrays
-			jQuery.each( matter.categories, function( index, cat ) {
-				var categoryName = cat;
-				var items = jQuery.grep( matter.items, function( item ){ return item.category===categoryName; } );
-				categories.push( { 'name': categoryName, 'items': items } );
-			});
+		$scope.selectItem = function(item, category) {
+			$scope.data.selectedItem = item;
+			$scope.data.selectedCategory = category;
+		};
 
-			$scope.data.matter = matter;
-			$scope.data.categories = categories;
+		$scope.deleteItem = function() {
+			if ($scope.data.selectedItem) {
+				ezConfirm.create('Delete Item', 'Please confirm you would like to delete this item?',
+					function yes() {
+						// Confirmed- delete item
+						matterItemService.delete($scope.data.selectedItem).then(
+							function success(){
+								var index = $scope.data.selectedCategory.items.indexOf($scope.data.selectedItem);
+								$scope.data.selectedCategory.items.splice(index,1);
+								$scope.data.selectedItem = null;
+							},
+							function error(err){
+								toaster.pop('error', "Error!", "Unable to delete item");
+							}
+						);
+					}
+				);
+			}
+		};
 
-			window.categories = $scope.data.categories;
-		} else {
-			// Display error
-		}
-	};
+		$scope.showAddItemForm = function(index) {
+			if ($scope.data.showAddForm !== index) {
+				$scope.data.showAddForm = index;
+			}
+			else {
+				$scope.data.showAddForm = null;
+			}
+		};
+        <!-- End CRUD Item -->
+
+        <!-- Begin CRUD Category -->
+        $scope.submitNewCategory = function() {
+           if ($scope.data.newCatName) {
+             matterCategoryService.create($scope.data.newCatName).then(
+                 function success(cat){
+                    $scope.data.categories.push(cat);
+                    $scope.data.newCatName = '';
+
+                 },
+                 function error(err){
+                    toaster.pop('error', "Error!", "Unable to create a new category");
+                 }
+             );
+             $scope.data.showCategoryAddForm = null;
+           }
+        };
 
 
-	$scope.submitNewItem = function(category) {
-	   if ($scope.data.newItemName) {
-		 matterItemService.create($scope.data.newItemName, category.name).then(
-			 function success(item){
-				category.items.push(item);
-				$scope.data.newItemName = '';
-			 },
-			 function error(err){
-				// @TODO: Show error message
-			 }
-		 );
-		 $scope.data.showAddForm = null;
-	   }
-	};
-
-    $scope.selectItem = function(item, category) {
-        $scope.data.selectedItem = item;
-        $scope.data.selectedCategory = category;
-    };
-
-    $scope.deleteItem = function() {
-       if ($scope.data.selectedItem) {
-		 matterItemService.delete($scope.data.selectedItem).then(
-			 function success(){
-                var index = $scope.data.selectedCategory.items.indexOf($scope.data.selectedItem);
-                $scope.data.selectedCategory.items.splice(index,1);
-                $scope.data.selectedItem = null;
-			 },
-			 function error(err){
-				// @TODO: Show error message
-			 }
-		 );
-	   }
-    };
-
-	$scope.showAddItemForm = function(index) {
-		if ($scope.data.showAddForm !== index) {
-			$scope.data.showAddForm = index;
-		}
-		else {
-			$scope.data.showAddForm = null;
-		}
-	};
-
-    $scope.submitNewCategory = function() {
-	   if ($scope.data.newCatName) {
-		 matterCategoryService.create($scope.data.newCatName).then(
-			 function success(cat){
-				$scope.data.categories.push(cat);
-				$scope.data.newCatName = '';
-			 },
-			 function error(err){
-				// @TODO: Show error message
-			 }
-		 );
-		 $scope.data.showAddForm = null;
-	   }
-	};
-
-    $scope.deleteCategory = function(cat) {
-		jQuery.each(cat.items, function( index, item) {
-            item.category = null;
-            matterItemService.delete(item).then(
+        $scope.deleteCategory = function(cat) {
+            matterCategoryService.delete(cat).then(
                 function success(){
-                    var index = cat.items.indexOf($scope.data.selectedItem);
-                    cat.items.splice(index,1);
+                    var index = $scope.data.categories.indexOf(cat);
+                    $scope.data.categories.splice(index,1);
 
-                    if (item === $scope.data.selectedItem) {
+                    if (cat === $scope.data.selectedCategory){
                         $scope.data.selectedItem = null;
                     }
                 },
                 function error(err){
-                    // @TODO: Show error message
+                    toaster.pop('error', "Error!", "Unable to delete category");
                 }
             );
-        });
-	};
-
-	function recalculateCategories( evt, ui ) {
-		var cats = $scope.data.categories;
-		var categoryName, items = [], item, i;
-		var APIUpdate = {
-            'categories': [],
-            'items': []
         };
-        var itemToUpdate = null;
 
-		function getItemIDs( item ) {
-			return item.slug;
-		}
+        $scope.showEditCategoryForm = function(index) {
+			if ($scope.data.showEditCategoryForm !== index) {
+				$scope.data.showEditCategoryForm = index;
+			}
+			else {
+				$scope.data.showEditCategoryForm = null;
+			}
+		};
 
-		for(i =0;i<cats.length;i++) {
-			categoryName=cats[i].name;
-			items=cats[i].items;
+        $scope.editCategory = function(cat) {
+            matterCategoryService.update(cat).then(
+                function success(){
+                    //do nothing?
+                },
+                function error(err){
+                    toaster.pop('error', "Error!", "Unable to delete category");
+                }
+            );
+            $scope.data.showEditCategoryForm = null;
+        };
+        <!-- End CRUD Category -->
 
-			// Create API message
-            if(cats[i].name != null) {
-                APIUpdate.categories.push(cats[i].name);
+        function recalculateCategories( evt, ui ) {
+            var cats = $scope.data.categories;
+            var categoryName, items = [], item, i;
+            var APIUpdate = {
+                'categories': [],
+                'items': []
+            };
+            var itemToUpdate = null;
+
+            function getItemIDs( item ) {
+                return item.slug;
             }
-            jQuery.merge(APIUpdate.items, jQuery.map( items, getItemIDs ));
 
-			// Update local data, setting category name
-			jQuery.each( items, function( index, item ){
-                if (item.category !== categoryName){
-				    item.category = categoryName;
-                    itemToUpdate = item;
+            for(i =0;i<cats.length;i++) {
+                categoryName=cats[i].name;
+                items=cats[i].items;
+
+                // Create API message
+                if(cats[i].name != null) {
+                    APIUpdate.categories.push(cats[i].name);
                 }
-			});
-		}
+                jQuery.merge(APIUpdate.items, jQuery.map( items, getItemIDs ));
 
-		matterService.saveSortOrder(APIUpdate).then(
-			 function success(){
-                //if category changed for an item, save that
-                if (itemToUpdate != null){
-                    matterItemService.update(itemToUpdate).then(
-                        function success(){
-                            // do nothing
-                        },
-                        function error(err){
-                            // @TODO: Show error message
-                        }
-                );
-                }
-			 },
-			 function error(err){
-				// @TODO: Show error message
-			 }
-		);
-	}
+                // Update local data, setting category name
+                jQuery.each( items, function( index, item ){
+                    if (item.category !== categoryName){
+                        item.category = categoryName;
+                        itemToUpdate = item;
+                    }
+                });
+            }
 
-	// UI.sortable options
-	$scope.checklistItemSortableOptions = {
-		'stop':  recalculateCategories, /* Fires once the drag and drop event has finished */
-		'connectWith': ".group",
-		'axis': 'y'
-	};
+            matterService.saveSortOrder(APIUpdate).then(
+                 function success(){
+                    //if category changed for an item, save that
+                    if (itemToUpdate != null){
+                        matterItemService.update(itemToUpdate).then(
+                            function success(){
+                                // do nothing
+                            },
+                            function error(err){
+                                toaster.pop('error', "Error!", "Unable to update the order of items, please reload the page");
+                            }
+                    );
+                    }
+                 },
+                 function error(err){
+                    toaster.pop('error', "Error!", "Unable to update the order of items, please reload the page");
+                 }
+            );
+        }
 
-	$scope.checklistCategorySortableOptions = {
-		'stop':  recalculateCategories, /* Fires once the drag and drop event has finished */
-		'axis': 'y'
-	};
+        // UI.sortable options
+        $scope.checklistItemSortableOptions = {
+            'stop':  recalculateCategories, /* Fires once the drag and drop event has finished */
+            'connectWith': ".group",
+            'axis': 'y'
+        };
+
+        $scope.checklistCategorySortableOptions = {
+            'stop':  recalculateCategories, /* Fires once the drag and drop event has finished */
+            'axis': 'y'
+        };
+
 }]);

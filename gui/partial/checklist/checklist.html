@@ -4,8 +4,8 @@
 			<div class="col-sm-5 checklist-col full" ui-sortable="checklistCategorySortableOptions" ng-model="data.categories">
 				<!-- checklist //-->
 
-                <a href="javascript:;" ng-click="addCategory(cat);">New Category</a>
-                <table class="table checklist">
+                <a href="javascript:;" ng-click="data.showCategoryAddForm=!data.showCategoryAddForm">New Category</a>
+                <table class="table checklist" ng-show="data.showCategoryAddForm">
                      <tr class="add-new-controls warning" ng-show="data.showAddForm==$index">
 			              	<td colspan="2">
 			              		<div class="input-group">
@@ -21,14 +21,18 @@
 				<table class="table checklist" ng-repeat="cat in data.categories">
 					<thead>
                          <tr>
-			                <th colspan="1" class="col-sm-6 category"><span ng-bind="cat.name"></span></th>
+			                <th colspan="1" class="col-sm-6 category">
+                                <span ng-bind="cat.name" ng-hide="data.showEditCategoryForm==$index"></span>
+                                <input class="form-control input-sm" ng-show="data.showEditCategoryForm==$index" type="search"
+                                       ng-model="cat.name" ng-enter="editCategory(cat)">
+                            </th>
 			              	<th class="category-controls">
 			              		<!-- TODO : make these buttons appear when the tbody appears-->
 								<div class="btn-group pull-right">
 										<button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown"><span class="fui-triangle-down"></span></button>
 						          	  	<ul class="dropdown-menu dropdown-inverse dropdown-small">
 						          	  		<li><a href="javascript:;" id="add-new" ng-click="showAddItemForm($index);">New Item</a></li>
-						                	<li><a href="javascript:;" ng-click="editCategory(cat);">Edit Category</a></li>
+						                	<li><a href="javascript:;" ng-click="showEditCategoryForm($index);">Edit Category</a></li>
 						                	<li><a href="javascript:;" ng-click="deleteCategory(cat);">Delete Category</a></li>
 						              	</ul>
 					            </div>
@@ -53,13 +57,13 @@
 			             </tr>
 			        </thead>
 			        <tbody ui:sortable="checklistItemSortableOptions" ng:model="cat.items" class="group">
-			             <tr class="item-heading item-closed" ng-repeat="item in cat.items">
+			             <tr class="item-heading" ng-repeat="item in cat.items" ng-click="selectItem(item, cat)" ng-class="{ 'item-closed': item.is_complete, 'item-open': !item.is_complete, 'selected': item.slug===data.selectedItem.slug }">
 			                <td class="item-title">
 			                	<span class="fui-list-columned"></span>
 			                	<span ng-bind="item.name"></span>
 			                </td>
 			                <td class="status text-right">
-			                	<span class="fui-check-inverted"></span>
+			                	<span class="fui-check-inverted" ng-show="item.is_complete"></span>
 			                </td>
 			             </tr>
 			        </tbody>
@@ -155,4 +159,4 @@
 		</div>
 	</div>
 </div>
-</div>
+<toaster-container toaster-options="{'position-class': 'toast-bottom-right'}"></toaster-container>
