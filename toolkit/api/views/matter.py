@@ -410,7 +410,10 @@ class BaseReviewerSignatoryMixin(ItemCurrentRevisionView):
             # Only create the join if it doesnt already exist
             #
             username = self.kwargs.get('username')
-            user = get_object_or_404(User, username=username)
+
+            service = EnsureCustomerService(username=username, full_name=None)
+            is_new, user, profile = service.process()
+
             # add to the join
             self.get_revision_object_set_queryset().add(user)
 
