@@ -9,8 +9,8 @@
 			<li ng-repeat="person in participants">
 				<label ng-bind="person.first_name"></label>
 				<label ng-bind="person.last_name"></label>
-				<small ng-show="compareUrls(person.url,currentUser.url)">(you)</small>
-				<a class="text-danger" ng-show="!compareUrls(person.url,currentUser.url)" href="javascript:;"><small>Revoke access</small></a>
+				<small ng-show="person.username==currentUser.username">(you)</small>
+				<a class="text-danger" ng-show="person.username!==currentUser.username" href="javascript:;" ng-click="revoke(person)"><small>Revoke access</small></a>
 			</li>
 		</ul>
 
