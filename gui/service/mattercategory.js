@@ -7,7 +7,7 @@ angular.module('toolkit-gui').factory('matterCategoryService',[ '$q', '$resource
 
 	function matterCategoryResource() {
 		return $resource( $rootScope.API_BASE_URL + 'matters/:matterSlug/category/:categorySlug', {'matterSlug':matter.slug}, {
-			'create': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
+			'create': { 'method': 'POST', params:{'categorySlug':'@slug'}, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
             'update': { 'method': 'PATCH', params:{'categorySlug':'@slug'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
             'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
 		});
@@ -30,10 +30,10 @@ angular.module('toolkit-gui').factory('matterCategoryService',[ '$q', '$resource
 
             var matterCategory = {
                 "status": "New",
-                "name": itemName
+                "name": categoryName
             };
 
-			api.create(matterCategory,
+			api.create({'slug': categoryName},
 				function success(category){
 					deferred.resolve(category);
 				},

@@ -1,4 +1,5 @@
-angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routeParams', 'matterService', 'matterItemService', function($scope, $routeParams, matterService, matterItemService){
+angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routeParams', 'matterService', 'matterItemService', 'matterCategoryService',
+    function($scope, $routeParams, matterService, matterItemService, matterCategoryService){
 	$scope.data = {
 		'slug': $routeParams.matterSlug,
 		'matter': {},
@@ -110,11 +111,11 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routePar
 		}
 	};
 
-    $scope.submitNewCategory = function(catName) {
+    $scope.submitNewCategory = function() {
 	   if ($scope.data.newCatName) {
-		 matterItemService.create($scope.data.newCatName).then(
+		 matterCategoryService.create($scope.data.newCatName).then(
 			 function success(cat){
-				$scope.data.categories.push(item);
+				$scope.data.categories.push(cat);
 				$scope.data.newCatName = '';
 			 },
 			 function error(err){
@@ -126,14 +127,14 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routePar
 	};
 
     $scope.deleteCategory = function(cat) {
-		jQuery.each(cat.items), function( index, item) {
+		jQuery.each(cat.items, function( index, item) {
             item.category = null;
             matterItemService.delete(item).then(
                 function success(){
                     var index = cat.items.indexOf($scope.data.selectedItem);
                     cat.items.splice(index,1);
 
-                    if (item == $scope.data.selectedItem) {
+                    if (item === $scope.data.selectedItem) {
                         $scope.data.selectedItem = null;
                     }
                 },
@@ -141,7 +142,7 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routePar
                     // @TODO: Show error message
                 }
             );
-        }
+        });
 	};
 
 	function recalculateCategories( evt, ui ) {
@@ -169,7 +170,7 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routePar
 
 			// Update local data, setting category name
 			jQuery.each( items, function( index, item ){
-                if (item.category != categoryName){
+                if (item.category !== categoryName){
 				    item.category = categoryName;
                     itemToUpdate = item;
                 }
