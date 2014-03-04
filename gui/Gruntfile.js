@@ -278,8 +278,8 @@ module.exports = function (grunt) {
 
       //if the spec exists then lets run it
       if (grunt.file.exists(spec)) {
-        grunt.config('jasmine.unit.options.specs',spec);
-        grunt.task.run('jasmine:unit');
+        //grunt.config('jasmine.unit.options.specs',spec);
+        //grunt.task.run('jasmine:unit');
       }
     }
 
