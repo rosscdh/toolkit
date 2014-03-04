@@ -16,6 +16,8 @@ from rest_framework.renderers import UnicodeJSONRenderer
 
 from toolkit.apps.workspace.services import EnsureCustomerService
 from toolkit.apps.workspace.models import Workspace
+from toolkit.apps.review.models import ReviewDocument
+
 from toolkit.core.item.models import Item
 from toolkit.core.item.mailers import ReviewerReminderEmail, SignatoryReminderEmail
 
@@ -386,6 +388,12 @@ class BaseReviewerSignatoryMixin(ItemCurrentRevisionView):
     def get_revision_object_set_queryset(self):
         raise NotImplementedError
 
+    def process_event_purpose_object(self, user):
+        """
+        is this a review or a signature?
+        """
+        raise NotImplementedError
+
     def get_object(self):
         username = self.kwargs.get('username')
         self.revision = super(BaseReviewerSignatoryMixin, self).get_object()
@@ -414,10 +422,13 @@ class BaseReviewerSignatoryMixin(ItemCurrentRevisionView):
             service = EnsureCustomerService(username=username, full_name=None)
             is_new, user, profile = service.process()
 
-            # add to the join
-            self.get_revision_object_set_queryset().add(user)
+            # add to the join if not there already
+            self.get_revision_object_set_queryset().add(user) if user not in self.get_revision_object_set_queryset().all() else None
 
             status = http_status.HTTP_201_CREATED
+
+        # add the user to the purpose of this endpoint object review||signature
+        self.process_event_purpose_object(user=user)
 
         # we have the user at this point
         serializer = self.get_serializer(user)
@@ -459,6 +470,13 @@ class ItemRevisionReviewerView(BaseReviewerSignatoryMixin):
 
     def get_revision_object_set_queryset(self):
         return self.revision.reviewers
+
+    def process_event_purpose_object(self, user):
+        # perform ReviewDocument get or create
+        review_doc, is_new = ReviewDocument.objects.get_or_create(document=self.revision)
+        # add the user to the reviewers if not there alreadt
+        review_doc.reviewers.add(user) if user not in review_doc.reviewers.all() else None
+        logger.info("Added %s to the ReviewDocument %s is_new: %s for revision: %s" %(user, review_doc, is_new, self.revision))
 
 
 class ItemRevisionSignatoryView(BaseReviewerSignatoryMixin):
