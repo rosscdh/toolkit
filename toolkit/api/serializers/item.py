@@ -8,6 +8,7 @@ from toolkit.core.item.models import Item
 
 
 class ItemSerializer(serializers.HyperlinkedModelSerializer):
+    description = serializers.CharField(source='description', required=False)
     status = serializers.SerializerMethodField('get_status')
     latest_revision = serializers.Field(source='latest_revision')
 
