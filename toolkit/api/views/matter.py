@@ -47,6 +47,16 @@ class MatterEndpoint(viewsets.ModelViewSet):
         user = self.request.user
         return user.workspace_set.mine(user=user)
 
+    def pre_save(self, obj):
+        """
+        @BUSINESSRULE Enforce the lawyer being set as the current user
+        """
+        if obj.lawyer in [None, '']:
+            if self.request.user.profile.is_lawyer:
+                obj.lawyer = self.request.user
+
+        return super(MatterEndpoint, self).pre_save(obj=obj)
+
     def can_read(self, user):
         return user.profile.user_class in ['lawyer', 'customer']
 
@@ -112,7 +122,8 @@ To allow for categories and items within the categories to be set
 PATCH /matters/:matter_slug/sort
 {
     "categories": ["cat 1", "cat 2", "im not a cat, im a dog"],
-    "items": [2,5,7,1,12,22,4]
+    ##"items": [2,5,7,1,12,22,4] ## changed to slug to stay in line with standards
+    "items": ['fdafdfsdsfdsa', 'fdafdfgrwge24rt32r32', 't42rt32r32fdsfds']
 }
 
 As the cats and order represent the state of the project they need to be handled
@@ -146,8 +157,8 @@ class MatterSortView(generics.UpdateAPIView,
             self.matter.categories = data.get('categories')
             self.matter.save(update_fields=['data'])  # because categories is a derrived value from data
             
-            for sort_order, pk in enumerate(data.get('items')):
-                item = self.matter.item_set.get(pk=pk)  # item must exist by this point as we have its id from the rest call
+            for sort_order, slug in enumerate(data.get('items')):
+                item = self.matter.item_set.get(slug=slug)  # item must exist by this point as we have its id from the rest call
                 item.sort_order = sort_order
                 item.save(update_fields=['sort_order'])
 
