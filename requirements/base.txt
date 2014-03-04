@@ -59,4 +59,5 @@ raven # getsentry
 
 # Crocdoc
 bunch
--e git+https://github.com/crocodoc/crocodoc-python.git#egg=crocdoc-python
+crocodoc
+-e git+https://github.com/rosscdh/django-crocodoc.git#egg=django-crocodoc
