@@ -17,6 +17,7 @@ def on_item_save_category(sender, instance, **kwargs):
     Update and modify matter categories when item is changes
     """
     matter = instance.matter
+    previous_instance = None
     prev_cat = None
     new_cat = instance.category
 
@@ -36,7 +37,8 @@ def on_item_save_category(sender, instance, **kwargs):
         #
         # We want to remove the previous cat from the matter
         #
-        matter.remove_category(prev_cat, instance=instance)
+        if previous_instance is not None:
+            matter.remove_category(prev_cat, instance=previous_instance)
 
     # add the new cat to the matter
     matter.add_category(new_cat)
