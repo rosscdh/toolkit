@@ -30,14 +30,27 @@ angular.module('toolkit-gui').controller('ParticipantInviteCtrl',[
 			);
 		};
 
+		$scope.revoke = function ( person ) {
+			participantService.invite( matter.selected.slug, person ).then(
+				function success() {
+					//
+				},
+				function error() {
+					toaster.pop('error', "Error!", "Unable to invite this person to particpate, please try again in a few moments");
+				}
+			);
+		};
+
 		$scope.cancel = function () {
 			$modalInstance.dismiss('cancel');
 		};
 
+		/*
 		$scope.compareUrls = function( urla, urlb ) {
 			console.log(urla, urlb, urla.indexOf(urlb)>=0||urlb.indexOf(urla)>=0);
 			return urla.indexOf(urlb)>=0||urlb.indexOf(urla)>=0;
 		};
+		*/
 	}
 ]);
 
