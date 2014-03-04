@@ -225,10 +225,12 @@ class MatterParticipant(generics.CreateAPIView,
 
 
     def delete(self, request, **kwargs):
-        data = request.DATA.copy()
+        # extract from url arg
+        data = {"email": self.kwargs.get('email')}
         self.validate_data(data=data)
         email = data.get('email')
 
+        # will raise Does not exist if not found
         participant_to_remove = User.objects.get(email=email)
 
         #
