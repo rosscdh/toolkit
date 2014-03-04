@@ -69,10 +69,10 @@ class Workspace(IsDeletedMixin, ClosingGroupsMixin, CategoriesMixin, models.Mode
         return user in self.participants.all()
 
     def can_edit(self, user):
-        return user.profile.is_lawyer and user == self.lawyer
+        return user.profile.is_lawyer and (user == self.lawyer or user in self.participants.all())
 
     def can_delete(self, user):
-        return user.profile.is_lawyer and user == self.lawyer
+        return user.profile.is_lawyer and (user == self.lawyer or user in self.participants.all())
 
 
 rulez_registry.register("can_read", Workspace)
