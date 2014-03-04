@@ -2,9 +2,9 @@
 // --------------------------------------------------
 
 .tooltip {
-  font-size: ceil(@component-font-size-base * 0.933); // ~14px
+  font-size: ceil(@component-font-size-base * 0.86); // ~14px
   line-height: 1.286; // 18px
-  
+  font-weight:normal;
   &.in {
     opacity: 1;
   }
@@ -49,10 +49,11 @@
 .tooltip-inner {
   background-color: @brand-primary;
   line-height: 1.286; // 18px
-  padding: 12px 12px;
+  padding: 7px 6px;
   text-align: center;
   width: 183px;
   border-radius: @border-radius-large;
+  font-size:12px;
 }
 
 // Alternate Color
