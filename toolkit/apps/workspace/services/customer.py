@@ -23,6 +23,7 @@ class EnsureCustomerService(object):
             logger.error('Email is None, cant create user')
         else:
             self.is_new, self.user, self.profile = self.get_user(email=self.email)
+        return self.is_new, self.user, self.profile
 
     def get_user(self, email, **kwargs):
 
