@@ -16,15 +16,15 @@ class ReviewRevisionView(DetailView):
 
     def get_context_data(self, **kwargs):
         kwargs = super(ReviewRevisionView, self).get_context_data(**kwargs)
-        obj = kwargs.get('object', self.get_object())
 
-        crocodoc = CrocoDocConnectService(document_object=obj,
-                                         app_label='review',
-                                         field_name='attachment',
-                                         upload_immediately=True)
+        crocodoc = CrocoDocConnectService(document_object=self.object.document,
+                                          app_label='attachment',
+                                          field_name='executed_file',
+                                          upload_immediately=True)
 
         kwargs.update({
-            'crocodoc': crocodoc,
+            'crocodoc': crocodoc.obj.crocodoc_service,
+            'crocodoc_view_url': crocodoc.obj.crocodoc_service.view_url(),
         })
 
         return kwargs
