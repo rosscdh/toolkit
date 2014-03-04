@@ -87,6 +87,8 @@ PROJECT_APPS = (
     'toolkit.apps.me',
     # Main Workspace
     'toolkit.apps.workspace',
+    # Core related apps
+    'toolkit.apps.review',
     # Apps
     'toolkit.apps.eightythreeb',
     'toolkit.apps.engageletter',
