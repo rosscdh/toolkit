@@ -135,7 +135,7 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routePar
 
 			// Update local data, setting category name
 			jQuery.each( items, function( index, item ){
-                if (item.category != categoryName){
+                if (item.category !== categoryName){
 				    item.category = categoryName;
                     itemToUpdate = item;
                 }
@@ -145,7 +145,7 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routePar
 		matterService.saveSortOrder(APIUpdate).then(
 			 function success(){
                 //if category changed for an item, save that
-                if (itemToUpdate != null){
+                if (itemToUpdate !== null){
                     matterItemService.update(itemToUpdate).then(
                         function success(){
                             // do nothing
