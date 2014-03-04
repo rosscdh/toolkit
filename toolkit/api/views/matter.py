@@ -526,9 +526,9 @@ Category and Closing Groups
 """
 
 class CategoryView(SpecificAttributeMixin,
-                   generics.DestroyAPIView,
                    generics.CreateAPIView,
                    generics.RetrieveAPIView,
+                   generics.DestroyAPIView,
                    MatterMixin,):
     """
     /matters/:matter_slug/category/:category (GET,POST,DELETE)
@@ -559,13 +559,32 @@ class CategoryView(SpecificAttributeMixin,
         cats = self.get_object()
         category = self.kwargs.get('category')
 
-        try:
-            cats = self.object.remove_category(category, instance=self.object)
-            self.object.save(update_fields=['data'])
-        except Exception as e:
-            logger.info('Could not delete category: %s due to: %s' % (category, e,))
+        # try:
+        #
+        # @BUSINESSRULE at the matter level if we delete a category it will
+        # also delete all items below that category
+        #
+        cats = self.object.remove_category(category, instance=self.object, delete_items_still_using_category=True)
+        self.object.save(update_fields=['data'])
+
+        # except Exception as e:
+        #     logger.info('Could not delete category: %s due to: %s' % (category, e,))
 
         return Response(cats)
+
+    def can_read(self, user):
+        return user.profile.user_class in ['lawyer', 'customer']
+
+    def can_edit(self, user):
+        return user.profile.is_lawyer
+
+    def can_delete(self, user):
+        return user.profile.is_lawyer
+
+
+rulez_registry.register("can_read", CategoryView)
+rulez_registry.register("can_edit", CategoryView)
+rulez_registry.register("can_delete", CategoryView)
 
 
 class ClosingGroupView(SpecificAttributeMixin,
