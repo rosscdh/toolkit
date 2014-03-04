@@ -39,13 +39,13 @@
 			             </tr>
 			        </thead>
 			        <tbody ui:sortable="checklistItemSortableOptions" ng:model="cat.items" class="group">
-			             <tr class="item-heading item-closed" ng-repeat="item in cat.items">
+			             <tr class="item-heading" ng-repeat="item in cat.items" ng-click="selectItem(item, cat)" ng-class="{ 'item-closed': item.is_complete, 'item-open': !item.is_complete, 'selected': item.slug===data.selectedItem.slug }">
 			                <td class="item-title">
 			                	<span class="fui-list-columned"></span>
 			                	<span ng-bind="item.name"></span>
 			                </td>
 			                <td class="status text-right">
-			                	<span class="fui-check-inverted"></span>
+			                	<span class="fui-check-inverted" ng-show="item.is_complete"></span>
 			                </td>
 			             </tr>
 			        </tbody>
