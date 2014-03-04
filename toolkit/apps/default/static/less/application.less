@@ -7,9 +7,9 @@
 // Utility mixins for greater good
 @import "mixins";
 
-
 // Import checklist app
 @import "modules/checklist";
+
 
 // Breadcrumbs
 // -------------------------
@@ -31,6 +31,14 @@
 // Content
 // -------------------------
 
+body.checklist {
+  background-color: #f2f2f2;
+}
+
+
+// Content
+// -------------------------
+
 .container-fluid {
   padding: 0 20px;
 }
@@ -45,12 +53,15 @@
 .content .lead {
     font-size:22px;
 }
+
+
 // Forms
 // -------------------------
 
 .help-block {
   font-size:14px;
 }
+
 .form-inline {
   .form-group {
     .input-group .form-control {
@@ -117,6 +128,60 @@
 
 .form-section + .form-section {
   margin-top: 40px;
+}
+
+
+// Matter
+// -------------------------
+
+.matter .card {
+  background-color: lighten(@nephritis, 70%);
+  border-right: 2px solid mix(@brand-primary, white, 20);
+  border-bottom: 2px solid mix(@brand-primary, white, 20);
+  margin-bottom: 20px;
+  position: relative;
+
+  .content {
+    display: block;
+    padding: 16px 14px 10px;
+
+    .title {
+      margin: 45px 0 25px 0;
+
+      h5, h6 {
+        margin: 0 0 3px;
+      }
+
+      h6 {
+        font-size: 14px;
+      }
+
+      p {
+        font-size: 16px;
+        margin-bottom: 5px;
+      }
+    }
+
+    .meta {
+      margin-bottom: 10px;
+
+      p {
+        color: grey;
+        font-size: 12px;
+        font-style: italic;
+        line-height: 40px;
+        margin-bottom: 5px;
+      }
+    }
+  }
+
+  .edit {
+    color: @concrete;
+    display: block;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+  }
 }
 
 
@@ -236,7 +301,7 @@
     width: 200px;
   }
 
-  h4 {
+  h3, h4 {
     display: inline-block;
     margin: 0;
   }
@@ -286,7 +351,7 @@
 // -------------------------
 
 .home{
-  .splash { 
+  .splash {
     background:url('/static/images/home-splash.jpg');
     height:800px;
     background-position: center bottom;
@@ -608,6 +673,28 @@
 
 .attachment-list-item-meta {
     margin-top: 20px;
+}
+
+
+// Avatar
+// -------------------------
+
+.avatar {
+  background-color: @clouds;
+  display: inline-block;
+  position: relative;
+
+  .initials {
+    color: #444;
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    height: 40px;
+    overflow: hidden;
+    line-height: 40px;
+    text-align: center;
+    width: 40px;
+  }
 }
 
 

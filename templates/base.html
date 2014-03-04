@@ -21,11 +21,11 @@
     <!--[if lt IE 9]>
         <script src="{{ STATIC_URL }}js/html5shiv.js"></script>
     <![endif]-->
-    
+
     <!-- Loading page specific styles -->
     {% block css %}{% endblock  %}
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
     {% block navbar %}
         <div class="navbar navbar-default">
             <div class="container-fluid">

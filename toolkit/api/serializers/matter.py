@@ -7,9 +7,9 @@ from rest_framework import serializers
 
 from toolkit.apps.workspace.models import Workspace
 from toolkit.core.item.models import Item
+from .client import LiteClientSerializer
 from .item import ItemSerializer
-from .user import UserSerializer
-from .client import ClientSerializer
+from .user import LiteUserSerializer
 
 import datetime
 
@@ -20,9 +20,9 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
     date_created = serializers.DateTimeField(read_only=True)
     date_modified = serializers.DateTimeField(read_only=True)
 
-    client = serializers.HyperlinkedRelatedField(many=False, required=False, view_name='client-detail', lookup_field='slug')
-    lawyer = serializers.HyperlinkedRelatedField(many=False, view_name='user-detail', lookup_field='username')
-    participants = serializers.HyperlinkedRelatedField(many=True, required=False, view_name='user-detail', lookup_field='username')
+    client = LiteClientSerializer(required=False)
+    lawyer = LiteUserSerializer(required=False)
+    participants = LiteUserSerializer(many=True, required=False)
 
     categories = serializers.SerializerMethodField('get_categories')
     closing_groups = serializers.SerializerMethodField('get_closing_groups')
@@ -38,7 +38,7 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
         model = Workspace
         fields = ('url', 'name', 'slug', 'matter_code',
                   'client', 'lawyer', 'participants',
-                  'closing_groups', 'categories', 
+                  'closing_groups', 'categories',
                   'items', 'comments', 'activity',
                   'current_user', 'current_user_todo',
                   'date_created', 'date_modified',)
@@ -90,7 +90,7 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_current_user(self, obj):
         user = obj.lawyer
-        return UserSerializer(user).data
+        return LiteUserSerializer(user).data
 
     def get_current_user_todo(self, obj):
         """
@@ -108,9 +108,6 @@ class LiteMatterSerializer(MatterSerializer):
     """
     @BUSINESSRULE used for the matters/ GET (shows lighter version of the serializer)
     """
-    #participants = UserSerializer(many=True)
-
     class Meta(MatterSerializer.Meta):
-        fields = ('url', 'name', 'slug', 'matter_code',
-                  'client', 'lawyer', 'participants',
-                  'date_created', 'date_modified',)
+        fields = ('url', 'name', 'slug', 'matter_code', 'client',
+                  'lawyer', 'participants', 'date_created', 'date_modified')

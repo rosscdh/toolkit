@@ -82,7 +82,9 @@ User.profile = property(lambda u: _get_or_create_user_profile(user=u)[0])
 
 """
 Overide the user get_full_name method to actually return somethign useful if
-there is no name
+there is no name.
+
+Used to return the email address as their name, if no first/last name exist.
 """
 def get_full_name(self, **kwargs):
     name = '%s %s' % (self.first_name, self.last_name)
@@ -91,6 +93,18 @@ def get_full_name(self, **kwargs):
     return name
 
 User.add_to_class('get_full_name', get_full_name)
+
+"""
+Add in the get_initials method, which returns the user initials based on their
+first and last name
+"""
+def get_initials(self, **kwargs):
+    initials = '%s%s' % (self.first_name[0], self.last_name[0])
+    if initials.strip() in ['', None]:
+        return None
+    return initials.upper()
+
+User.add_to_class('get_initials', get_initials)
 
 """
 Add our api permission handler methods to the User class
