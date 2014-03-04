@@ -97,7 +97,7 @@ PROJECT_APPS = (
     'toolkit.apps.dash',
     'toolkit.apps.matters',
     'toolkit.apps.me',
-    # Main Workspace
+    # Main Workspace (matters)
     'toolkit.apps.workspace',
     # Core related apps
     'toolkit.apps.review',
