@@ -8,6 +8,7 @@ angular.module('toolkit-gui').factory('matterItemService',[ '$q', '$resource', '
 	function matterItemResource() {
 		return $resource( $rootScope.API_BASE_URL + 'matters/:matterSlug/items/:itemSlug', {'matterSlug':matter.slug}, {
 			'create': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
+            'update': { 'method': 'PATCH', params:{'itemSlug':'@slug'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
             'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
 		});
 	}
@@ -43,6 +44,23 @@ angular.module('toolkit-gui').factory('matterItemService',[ '$q', '$resource', '
             };
 
 			api.create(matterItem,
+				function success(item){
+					deferred.resolve(item);
+				},
+				function error(err) {
+					deferred.reject( err );
+				}
+			);
+
+			return deferred.promise;
+        },
+
+        'update': function ( matterItem ) {
+            var deferred = $q.defer();
+
+			var api = matterItemResource();
+
+			api.update(matterItem,
 				function success(item){
 					deferred.resolve(item);
 				},
