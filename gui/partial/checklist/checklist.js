@@ -135,7 +135,7 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routePar
 
 			// Update local data, setting category name
 			jQuery.each( items, function( index, item ){
-                if (item.category != categoryName){
+                if (item.category !== categoryName){
 				    item.category = categoryName;
                     itemToUpdate = item;
                 }
