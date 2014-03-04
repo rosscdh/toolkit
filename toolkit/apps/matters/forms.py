@@ -34,9 +34,7 @@ class MatterForm(ModalForm, forms.ModelForm):
     )
 
     matter_code = forms.CharField(
-        error_messages={
-            'required': "Matter code can not be blank."
-        },
+
         help_text='',
         label='Matter code',
         required=False,
@@ -69,12 +67,10 @@ class MatterForm(ModalForm, forms.ModelForm):
 
         self.user = user
 
-        if kwargs['instance']:
-            kwargs['initial'].update({
-                'client_name': kwargs['instance'].client.name
-            })
-
         super(MatterForm, self).__init__(*args, **kwargs)
+
+        if self.instance.client:
+            self.initial['client_name'] = self.instance.client.name
 
         # Show all the available clients to the user
         data = json.dumps(list(Client.objects.mine(self.user).values_list('name', flat=True)))
