@@ -22,6 +22,22 @@ class ReviewRevisionView(DetailView):
                                           field_name='executed_file',
                                           upload_immediately=True)
 
+        CROCDOC_PARAMS = {
+                "user": { "name": self.request.user.get_full_name(), 
+                "id": self.request.user.pk
+            }, 
+            "sidebar": 'auto', 
+            "editable": True, 
+            "admin": False, 
+            "downloadable": True, 
+            "copyprotected": False, 
+            "demo": False
+        }
+        #
+        # Set out session key based on params above
+        #
+        crocodoc.obj.crocodoc_service.session_key(**CROCDOC_PARAMS),
+
         kwargs.update({
             'crocodoc': crocodoc.obj.crocodoc_service,
             'crocodoc_view_url': crocodoc.obj.crocodoc_service.view_url(),
