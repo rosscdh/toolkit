@@ -14,6 +14,7 @@ from rest_framework.response import Response
 from rest_framework import status as http_status
 from rest_framework.renderers import UnicodeJSONRenderer
 
+from toolkit.apps.workspace.services import EnsureCustomerService
 from toolkit.apps.workspace.models import Workspace
 from toolkit.core.item.models import Item
 from toolkit.core.item.mailers import ReviewerReminderEmail, SignatoryReminderEmail
@@ -216,7 +217,15 @@ class MatterParticipant(generics.CreateAPIView,
         self.validate_data(data=data)
         email = data.get('email')
 
-        new_participant = User.objects.get(email=email)
+        try:
+            new_participant = User.objects.get(email=email)
+        except User.DoesNotExist:
+            #
+            # @BUSINESSRULE if an email does not exist then create them as
+            # customer
+            #
+            service = EnsureCustomerService(email=email, full_name=None)
+            is_new, new_participant, profile = service.process()
 
         if new_participant not in self.matter.participants.all():
             self.matter.participants.add(new_participant)  #@TODO @QUESTION send email to main lawyer and customer when this happens via a singal?
