@@ -5,6 +5,9 @@ from django.core.urlresolvers import reverse
 from uuidfield import UUIDField
 from jsonfield import JSONField
 
+import logging
+logger = logging.getLogger('django.request')
+
 
 class ReviewDocument(models.Model):
     """
@@ -18,3 +21,14 @@ class ReviewDocument(models.Model):
 
     def get_absolute_url(self):
         return reverse('review:review_document', kwargs={'slug': self.slug})
+
+    def send_invite_emails(self, users=[]):
+        """
+        @BUSINESSRULE requested users must be in the reviewers object
+        """
+        for u in self.reviewers.all():
+            if u in users:
+                #
+                # send email
+                #
+                logger.info('Sending ReviewDocument invite email to: %s' % u)
