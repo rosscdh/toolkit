@@ -208,6 +208,7 @@ AUTHENTICATION_BACKENDS = (
     'toolkit.auth_backends.EmailBackend',
     'django.contrib.auth.backends.ModelBackend',
     'toolkit.auth_backends.SecretKeyBackend',
+    'toolkit.apps.review.auth_backends.ReviewDocumentBackend',  # allow users to log in via review urls
 )
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

@@ -35,3 +35,5 @@ class ReviewDocument(models.Model):
                 # send email
                 #
                 logger.info('Sending ReviewDocument invite email to: %s' % u)
+
+from .signals import (on_reviewer_add, on_reviewer_remove,)

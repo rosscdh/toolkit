@@ -476,8 +476,6 @@ class ItemRevisionReviewerView(BaseReviewerSignatoryMixin):
         review_doc, is_new = ReviewDocument.objects.get_or_create(document=self.revision)
         # add the user to the reviewers if not there alreadt
         review_doc.reviewers.add(user) if user not in review_doc.reviewers.all() else None
-        # email the user
-        review_doc.send_invite_emails(users=[user])
 
         logger.info("Added %s to the ReviewDocument %s is_new: %s for revision: %s" %(user, review_doc, is_new, self.revision))
 
