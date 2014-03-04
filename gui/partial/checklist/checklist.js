@@ -110,6 +110,40 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [ '$scope', '$routePar
 		}
 	};
 
+    $scope.submitNewCategory = function(catName) {
+	   if ($scope.data.newCatName) {
+		 matterItemService.create($scope.data.newCatName).then(
+			 function success(cat){
+				$scope.data.categories.push(item);
+				$scope.data.newCatName = '';
+			 },
+			 function error(err){
+				// @TODO: Show error message
+			 }
+		 );
+		 $scope.data.showAddForm = null;
+	   }
+	};
+
+    $scope.deleteCategory = function(cat) {
+		jQuery.each(cat.items), function( index, item) {
+            item.category = null;
+            matterItemService.delete(item).then(
+                function success(){
+                    var index = cat.items.indexOf($scope.data.selectedItem);
+                    cat.items.splice(index,1);
+
+                    if (item == $scope.data.selectedItem) {
+                        $scope.data.selectedItem = null;
+                    }
+                },
+                function error(err){
+                    // @TODO: Show error message
+                }
+            );
+        }
+	};
+
 	function recalculateCategories( evt, ui ) {
 		var cats = $scope.data.categories;
 		var categoryName, items = [], item, i;
