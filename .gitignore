@@ -1,3 +1,4 @@
+*.diff
 .sonar
 hellosign
 hello_sign
