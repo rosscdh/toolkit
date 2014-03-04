@@ -28,6 +28,7 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 					//set matter in the services
 					matterService.selectMatter(singleMatter);
 					matterItemService.selectMatter(singleMatter);
+					matterCategoryService.selectMatter(singleMatter);
 					$scope.initialiseMatter( singleMatter );
 				},
 				function error(err){
@@ -68,7 +69,7 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 			}
 		};
 
-        <!-- Begin CRUD Item -->
+        /* Begin CRUD Item */
 		$scope.submitNewItem = function(category) {
 		   if ($scope.data.newItemName) {
 			 matterItemService.create($scope.data.newItemName, category.name).then(
@@ -117,14 +118,14 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 				$scope.data.showAddForm = null;
 			}
 		};
-        <!-- End CRUD Item -->
+        /* End CRUD Item */
 
-        <!-- Begin CRUD Category -->
+        /* Begin CRUD Category */
         $scope.submitNewCategory = function() {
            if ($scope.data.newCatName) {
              matterCategoryService.create($scope.data.newCatName).then(
-                 function success(cat){
-                    $scope.data.categories.push(cat);
+                 function success(){
+                    $scope.data.categories.unshift({'name': $scope.data.newCatName, 'items': []});
                     $scope.data.newCatName = '';
 
                  },
@@ -168,12 +169,12 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
                     //do nothing?
                 },
                 function error(err){
-                    toaster.pop('error', "Error!", "Unable to delete category");
+                    toaster.pop('error', "Error!", "Unable to edit category");
                 }
             );
             $scope.data.showEditCategoryForm = null;
         };
-        <!-- End CRUD Category -->
+        /* End CRUD Category */
 
         function recalculateCategories( evt, ui ) {
             var cats = $scope.data.categories;
