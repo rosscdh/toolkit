@@ -1,8 +1,13 @@
 from django.conf import settings
-from django.views.generic import ListView, TemplateView
+from django.contrib import messages
+from django.core.urlresolvers import reverse
+from django.views.generic import CreateView, ListView, TemplateView, UpdateView
 
 from toolkit.api.serializers import LiteMatterSerializer
 from toolkit.apps.workspace.models import Workspace
+from toolkit.mixins import AjaxModelFormView, ModalView
+
+from .forms import MatterForm
 
 
 class MatterListView(ListView):
@@ -16,6 +21,8 @@ class MatterListView(ListView):
         context = super(MatterListView, self).get_context_data(**kwargs)
 
         context.update({
+            'can_create': self.request.user.profile.is_lawyer,
+            'can_edit': self.request.user.profile.is_lawyer,
             'object_list': self.get_serializer(self.object_list, many=True).data,
         })
 
@@ -46,3 +53,39 @@ class MatterDetailView(TemplateView):
             return 'index.html'
         else:
             return 'dist/index.html'
+
+
+class MatterCreateView(ModalView, AjaxModelFormView, CreateView):
+    form_class = MatterForm
+
+    def get_form_kwargs(self):
+        kwargs = super(MatterCreateView, self).get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        response = super(MatterCreateView, self).form_valid(form)
+        messages.success(self.request, 'You have sucessfully created a new matter')
+        return response
+
+    def get_success_url(self):
+        return reverse('matter:detail', kwargs={'matter_slug': self.object.slug})
+
+
+class MatterUpdateView(ModalView, AjaxModelFormView, UpdateView):
+    form_class = MatterForm
+    model = Workspace
+    slug_url_kwarg = 'matter_slug'
+
+    def get_form_kwargs(self):
+        kwargs = super(MatterUpdateView, self).get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        response = super(MatterUpdateView, self).form_valid(form)
+        messages.success(self.request, 'You have sucessfully updated the matter')
+        return response
+
+    def get_success_url(self):
+        return reverse('matter:detail', kwargs={'matter_slug': self.object.slug})
