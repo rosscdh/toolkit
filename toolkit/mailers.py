@@ -21,8 +21,8 @@ class BaseMailerService(object):
         from_tuple : (:name, :email)
         recipients : ((:name, :email), (:name, :email),)
         """
-        self.subject = subject
-        self.message = message
+        self.subject = getattr(self, 'subject', subject)
+        self.message = getattr(self, 'message', message)
 
         self.from_tuple = self.make_from_tuple(from_tuple=from_tuple)
 
