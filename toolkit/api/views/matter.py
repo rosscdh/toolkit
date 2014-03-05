@@ -362,6 +362,19 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
         else:
             raise Http404
 
+    def can_read(self, user):
+        return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
+
+    def can_edit(self, user):
+        return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
+
+    def can_delete(self, user):
+        return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
+
+rulez_registry.register("can_read", ItemCurrentRevisionView)
+rulez_registry.register("can_edit", ItemCurrentRevisionView)
+rulez_registry.register("can_delete", ItemCurrentRevisionView)
+
 
 class ItemSpecificReversionView(ItemCurrentRevisionView):
     def get_revision(self):
