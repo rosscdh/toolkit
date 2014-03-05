@@ -97,13 +97,17 @@ PROJECT_APPS = (
     'toolkit.apps.dash',
     'toolkit.apps.matters',
     'toolkit.apps.me',
-
+    # Main Workspace (matters)
+    'toolkit.apps.workspace',
+    # Core related apps
+    'toolkit.apps.review',
     # Routine Apps
     'toolkit.apps.eightythreeb',
     'toolkit.apps.engageletter',
 
     # Lawpal Modules
     'hello_sign',
+    'dj_crocodoc',
 )
 
 HELPER_APPS = (
@@ -204,6 +208,7 @@ AUTHENTICATION_BACKENDS = (
     'toolkit.auth_backends.EmailBackend',
     'django.contrib.auth.backends.ModelBackend',
     'toolkit.auth_backends.SecretKeyBackend',
+    'toolkit.apps.review.auth_backends.ReviewDocumentBackend',  # allow users to log in via review urls
 )
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
