@@ -70,7 +70,7 @@ class ItemRevisionTest(BaseEndpointTest):
 
         resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
         resp_json = json.loads(resp.content)
-
+        
         self.assertEqual(resp.status_code, 201)  # created
         self.assertEqual(resp_json.get('slug'), 'v1')
         self.assertEqual(self.item.revision_set.all().count(), 1)
