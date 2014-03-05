@@ -69,7 +69,7 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 			}
 		};
 
-        /* Begin CRUD Item */
+        /* Begin item handling */
 		$scope.submitNewItem = function(category) {
 		   if ($scope.data.newItemName) {
 			 matterItemService.create($scope.data.newItemName, category.name).then(
@@ -88,6 +88,9 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 		$scope.selectItem = function(item, category) {
 			$scope.data.selectedItem = item;
 			$scope.data.selectedCategory = category;
+
+            //Reset controls
+            $scope.data.showEditItemDescriptionForm = false;
 		};
 
 		$scope.deleteItem = function() {
@@ -118,7 +121,20 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 				$scope.data.showAddForm = null;
 			}
 		};
-        /* End CRUD Item */
+
+        $scope.saveSelectedItem = function () {
+            if ($scope.data.selectedItem) {
+                matterItemService.update($scope.data.selectedItem).then(
+                    function success(){
+                        //do nothing
+                    },
+                    function error(err){
+                        toaster.pop('error', "Error!", "Unable to update item");
+                    }
+                );
+            }
+        }
+        /* End item handling */
 
         /* Begin CRUD Category */
         $scope.submitNewCategory = function() {

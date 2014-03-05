@@ -16,7 +16,7 @@ angular.module('toolkit-gui').factory('matterService',[ '$q', '$resource', funct
         }
 
 		return $resource('http://localhost:8000/api/v1/matters/:matterSlug/:action', {'matterSlug':matterSlug, 'action':'@action'}, {
-			'list': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }, 'isArray': true },
+			'list': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } },
 			'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } },
 			'sort': { 'method': 'PATCH', params:{'action': 'sort'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } }
 		});
@@ -37,7 +37,7 @@ angular.module('toolkit-gui').factory('matterService',[ '$q', '$resource', funct
 
 			api.list( {},
 				function success( result ) {
-					deferred.resolve( result );
+					deferred.resolve( result.results );
 				},
 				function error( err ) {
 					deferred.reject( err );
