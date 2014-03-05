@@ -18,6 +18,7 @@ class BaseDataProvider(BaseScenarios):
         super(BaseDataProvider, self).setUp()
         self.basic_workspace()
 
+        self.invalid_reviewer = mommy.make('auth.User', username='invalid_reviewer', email='invalid_reviewer@lawpal.com')
         self.reviewer = mommy.make('auth.User', username='invited_reviewer', email='invited_reviewer@lawpal.com')
 
         self.item = mommy.make('item.Item', matter=self.matter, name='Test Item No. 1', category="A")
@@ -76,12 +77,39 @@ class ReviewerSendEmailTest(BaseDataProvider, TestCase):
         # add the reviewer for this test
         self.review_document.reviewers.add(self.reviewer)
 
+    def test_email_send_to_all_reviewers(self):
+        self.review_document.send_invite_email(from_user=self.lawyer)
+
+        self.assertEqual(len(mail.outbox), 1)
+        email = mail.outbox[0]
+        self.assertEqual(email.subject, u'[ACTION REQUIRED] Invitation to review a document')
+        self.assertEqual(email.to, [self.reviewer.email])
+        #
+        # Contains the invite url
+        #
+        self.assertTrue(self.review_document.get_absolute_url(user=self.reviewer) in email.body)
+
     def test_email_send_to_valid_reviewer(self):
-        self.review_document.send_invite_email(users=[self.reviewer])
+        self.review_document.send_invite_email(from_user=self.lawyer, users=[self.reviewer])
+
         self.assertEqual(len(mail.outbox), 1)
         email = mail.outbox[0]
 
-    def test_email_send_to_invalid_reviewer(self): pass
+        self.assertEqual(email.subject, u'[ACTION REQUIRED] Invitation to review a document')
+        self.assertEqual(email.to, [self.reviewer.email])
+        #
+        # Contains the invite url
+        #
+        self.assertTrue(self.review_document.get_absolute_url(user=self.reviewer) in email.body)
+
+    def test_email_send_to_invalid_reviewer(self):
+        """
+        in order to send a reminder email to a user they MUST be an authorised
+        reviewer and cant be some random user from anywhere
+        """
+        self.review_document.send_invite_email(from_user=self.lawyer, users=[self.invalid_reviewer])
+
+        self.assertEqual(len(mail.outbox), 0)  # no email was sent
 
 """
 View tests
