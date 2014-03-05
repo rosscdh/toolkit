@@ -51,6 +51,21 @@ class ReviewDocumentModelTest(BaseDataProvider, TestCase):
         self.review_document.auth = {"monkey-key": 12345}
         self.assertEqual(self.review_document.auth, {"monkey-key": 12345})
 
+    def test_get_auth(self):
+        """
+        test that the get_auth method returns the User.pk for authentication backend
+        """
+        self.review_document.reviewers.add(self.reviewer)  # add the user
+        key = self.review_document.make_user_auth_key(user=self.reviewer)
+        self.assertEqual(self.review_document.get_auth(key=key), self.reviewer.pk)
+
+    def test_get_auth_invalid(self):
+        """
+        test that the get_auth method returns None when the user is not a reviewer
+        """
+        self.review_document.reviewers.clear()
+        key = self.review_document.make_user_auth_key(user=self.reviewer)
+        self.assertEqual(self.review_document.get_auth(key=key), None)
 
 class ReviewerAuthorisationTest(BaseDataProvider, TestCase):
     def test_authorise_user(self):
@@ -113,5 +128,8 @@ class ReviewerSendEmailTest(BaseDataProvider, TestCase):
 
 """
 View tests
-
+1. logs current user out (if session is present)
+2. logs user in based on url :auth_slug matching with a currently authorized reviewer
+3. if the user is not lawyer or a participant then they can only see their own commments annotation etc
+3a. this is done using the crocodoc_service.view_url(filter=id,id,id)
 """
