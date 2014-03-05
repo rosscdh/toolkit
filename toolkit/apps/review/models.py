@@ -2,6 +2,8 @@
 from django.db import models
 from django.core.urlresolvers import reverse
 
+from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
+
 from .mixins import UserAuthMixin
 from .mailers import ReviewerReminderEmail
 
@@ -36,21 +38,18 @@ class ReviewDocument(UserAuthMixin, models.Model):
             #
             # @BUSINESSRULE if no users passed in then send to all of the reviewers
             #
-            if users is [] or u in users:
+            if users == [] or u in users:
                 #
                 # send email
                 #
                 logger.info('Sending ReviewDocument invite email to: %s' % u)
 
-                subject = '[ACTION REQUIRED] Invitation to review a document'
-                #subject = '[ACTION REQUIRED] Reminder to please review a document'
-
-                m = ReviewerReminderEmail(recipients=((u.get_full_name(), u.email,)))
-                m.process(subject=subject,
+                m = ReviewerReminderEmail(recipients=((u.get_full_name(), u.email,),))
+                m.process(subject=m.subject,
                           item=self.document.item,
                           document=self.document,
                           from_name=from_user.get_full_name(),
-                          action_url=self.get_absolute_url(user=u))
+                          action_url=ABSOLUTE_BASE_URL(path=self.get_absolute_url(user=u)))
 
 
 from .signals import (on_reviewer_add, on_reviewer_remove,)
