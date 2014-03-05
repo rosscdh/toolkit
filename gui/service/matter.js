@@ -79,24 +79,6 @@ angular.module('toolkit-gui').factory('matterService',[ '$q', '$resource', funct
 			);
 
 			return deferred.promise;
-        },
-
-        'addRevision': function( matterSlug, filesDetails ) {
-        	debugger;
-        	var deferred = $q.defer();
-
-			var api = matterResource();
-			/*
-			api.newRevision( { 'matterSlug': matterSlug },
-				function success(){
-					deferred.resolve();
-				},
-				function error(err) {
-					deferred.reject( err );
-				}
-			);*/
-
-			return deferred.promise;
         }
 	};
 }]);
