@@ -170,7 +170,6 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
            }
         };
 
-
         $scope.deleteCategory = function(cat) {
             matterCategoryService.delete(cat).then(
                 function success(){
@@ -260,6 +259,20 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
                  }
             );
         }
+
+        $scope.processUpload = function( files, item ) {
+        	var matterSlug = $scope.data.slug;
+        	var itemSlug = item.slug;
+
+        	matterItemService.uploadRevision( matterSlug, itemSlug, files ).then(
+        		function success( response ) {
+        			// @TODO show in view
+        		},
+        		function error(err) {
+        			toaster.pop('error', "Error!", "Unable to upload revision");
+        		}
+        	);
+        };
 
         // UI.sortable options
         $scope.checklistItemSortableOptions = {

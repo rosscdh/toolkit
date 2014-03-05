@@ -13,6 +13,12 @@ angular.module('toolkit-gui').factory('matterItemService',[ '$q', '$resource', '
 		});
 	}
 
+	function revisionItemResource() {
+		return $resource( $rootScope.API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/revision/:version', {}, {
+			'create': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
+		});
+	}
+
 	return {
 		'data': function() {
 			return item;
@@ -77,6 +83,26 @@ angular.module('toolkit-gui').factory('matterItemService',[ '$q', '$resource', '
 			var api = matterItemResource();
 
 			api.delete({'itemSlug': matterItem.slug},
+				function success(){
+					deferred.resolve();
+				},
+				function error(err) {
+					deferred.reject( err );
+				}
+			);
+
+			return deferred.promise;
+        },
+
+        'uploadRevision': function( matterSlug, itemSlug, fileDetails ) {
+        	var deferred = $q.defer();
+
+			var api = revisionItemResource();
+
+			var formData = new FormData();
+			formData.append("executed_file", fileDetails);
+
+			api.create({'matterSlug': matterSlug, 'itemSlug': itemSlug }, { 'executed_file': fileDetails },
 				function success(){
 					deferred.resolve();
 				},
