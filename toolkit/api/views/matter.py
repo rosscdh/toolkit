@@ -377,15 +377,6 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
         else:
             raise Http404
 
-    def can_read(self, user):
-        return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
-
-    def can_edit(self, user):
-        return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
-
-    def can_delete(self, user):
-        return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
-
     def validate_filepicker_file(self, filedict):
         validate = URLValidator()
         try:
@@ -395,23 +386,37 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
             raise Exception('The given url is not valid')
 
     def create(self, request, **kwargs):
+        self.get_object()
         data = request.DATA.copy()
 
         #Just handle the first file
-        if data.get('executed_file') is None or len(data.get('executed_file')) != 1:
-            raise exceptions.ParseError('request.DATA must be: {"executed_file": []} with exactly one object.')
+        #import pdb;pdb.set_trace()
+        # if data.get('executed_file') is None or len(data.get('executed_file')) != 1:
+        #     raise exceptions.ParseError('request.DATA must be: {"executed_file": []} with exactly one object.')
+        if data.get('executed_file', None) is not None:
+            filedict = data.get('executed_file')
+            self.validate_filepicker_file(filedict=filedict)
+            tasks._download_file(filedict, revision)
 
-        filedict = data.get('executed_file')[0]
-        self.validate_filepicker_file(filedict=filedict)
-
-        revision = Revision(item=super(ItemCurrentRevisionView, self).get_object(), uploaded_by=self.request.user, slug=1)
-        revision = tasks.download_file(filedict, revision)
-        revision.save()
-
+        revision = Revision(item=self.item, uploaded_by=self.request.user)
         serializer = self.get_serializer(revision)
-        headers = self.get_success_headers(serializer.data)
 
-        return Response(serializer.data, status=http_status.HTTP_202_ACCEPTED, headers=headers)
+        if serializer.is_valid():
+            serializer.save()
+            headers = self.get_success_headers(serializer.data)
+
+            return Response(serializer.data, status=http_status.HTTP_201_CREATED, headers=headers)
+        import pdb;pdb.set_trace()
+        return Response(serializer.data, status=http_status.HTTP_406_NOT_ACCEPTABLE, headers=headers)
+
+    def can_read(self, user):
+        return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
+
+    def can_edit(self, user):
+        return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
+
+    def can_delete(self, user):
+        return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
 
 rulez_registry.register("can_read", ItemCurrentRevisionView)
 rulez_registry.register("can_edit", ItemCurrentRevisionView)

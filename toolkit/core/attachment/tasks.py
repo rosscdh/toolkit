@@ -1,9 +1,10 @@
+# -*- coding: UTF-8 -*-
 from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
-import urllib2
+import urllib2  # should use requests here
 
 
-def download_file(filedict, revision):
+def _download_file(filedict, revision):
     try:
         img_temp = NamedTemporaryFile(delete=True)
         img_temp.write(urllib2.urlopen(filedict.get('url')).read())
@@ -12,4 +13,4 @@ def download_file(filedict, revision):
         raise Exception('Filedownload from URL failed.')
 
     revision.executed_file.save(filedict.get('filename'), File(img_temp))
-    return revision
+    revision.save(updated_fields=['executed_file'])
