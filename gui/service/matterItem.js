@@ -37,7 +37,6 @@ angular.module('toolkit-gui').factory('matterItemService',[ '$q', '$resource', '
             var matterItem = {
                 "status": "New",
                 "name": itemName,
-                "description": itemName,
                 "category": categoryName,
                 "matter": $rootScope.API_BASE_URL + 'matters/' + matter.slug,
                 "parent": null,
