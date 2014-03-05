@@ -20,7 +20,9 @@ def ensure_revision_slug(sender, instance, **kwargs):
     #
     # Dont perform this action if we are manually updating the slug
     #
-    if 'slug' not in kwargs['update_fields']:
+
+    #Update fields is none is the revision is newly created
+    if kwargs['update_fields'] is not None and 'slug' not in kwargs['update_fields']:
 
         if instance.slug in [None, '']:
             revision_id = int(instance.get_revision_id())
