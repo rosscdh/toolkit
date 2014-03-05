@@ -4,6 +4,8 @@ from django.db import transaction
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.forms import EmailField
+from django.core.validators import URLValidator
+from django.core.exceptions import ValidationError
 
 from rulez import registry as rulez_registry
 
@@ -17,7 +19,11 @@ from rest_framework.renderers import UnicodeJSONRenderer
 
 from toolkit.apps.workspace.services import EnsureCustomerService
 from toolkit.apps.workspace.models import Workspace
+
 from toolkit.apps.review.models import ReviewDocument
+
+from toolkit.core.attachment import tasks
+from toolkit.core.attachment.models import Revision
 
 from toolkit.core.item.models import Item
 from toolkit.core.item.mailers import SignatoryReminderEmail
@@ -341,11 +347,12 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
                               MatterItemsQuerySetMixin):
     """
     /matters/:matter_slug/items/:item_slug/revision (GET,POST,PATCH,DELETE)
-        [lawyer,customer] to get,create,update,delete the latst revision
+        [lawyer,customer] to get,create,update,delete the latest revision
     Get the Item object and access its item.latest_revision to get access to
     the latest revision, but then return the serialized revision in the response
     """
     #parser_classes = (parsers.FileUploadParser,) # his will obly be necessary if we stop using filepicker.io which passes us a url
+
     model = Item  # to allow us to use get_object generically
     serializer_class = RevisionSerializer  # as we are returning the revision and not the item
     lookup_field = 'slug'
@@ -378,6 +385,33 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
 
     def can_delete(self, user):
         return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
+
+    def validate_filepicker_file(self, filedict):
+        validate = URLValidator()
+        try:
+            validate(filedict.get('url'))
+
+        except ValidationError, e:
+            raise Exception('The given url is not valid')
+
+    def create(self, request, **kwargs):
+        data = request.DATA.copy()
+
+        #Just handle the first file
+        if data.get('executed_file') is None or len(data.get('executed_file')) != 1:
+            raise exceptions.ParseError('request.DATA must be: {"executed_file": []} with exactly one object.')
+
+        filedict = data.get('executed_file')[0]
+        self.validate_filepicker_file(filedict=filedict)
+
+        revision = Revision(item=super(ItemCurrentRevisionView, self).get_object(), uploaded_by=self.request.user, slug=1)
+        revision = tasks.download_file(filedict, revision)
+        revision.save()
+
+        serializer = self.get_serializer(revision)
+        headers = self.get_success_headers(serializer.data)
+
+        return Response(serializer.data, status=http_status.HTTP_202_ACCEPTED, headers=headers)
 
 rulez_registry.register("can_read", ItemCurrentRevisionView)
 rulez_registry.register("can_edit", ItemCurrentRevisionView)

@@ -1,12 +1,13 @@
 angular.module('toolkit-gui').controller('ChecklistCtrl', [
     '$scope',
+    '$rootScope',
     '$routeParams',
     'ezConfirm',
 	'toaster',
     'matterService',
     'matterItemService',
     'matterCategoryService',
-    function($scope, $routeParams, ezConfirm, toaster, matterService, matterItemService, matterCategoryService){
+    function($scope, $rootScope, $routeParams, ezConfirm, toaster, matterService, matterItemService, matterCategoryService){
 	$scope.data = {
 		'slug': $routeParams.matterSlug,
 		'matter': {},
@@ -69,7 +70,7 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 			}
 		};
 
-        /* Begin CRUD Item */
+        /* Begin item handling */
 		$scope.submitNewItem = function(category) {
 		   if ($scope.data.newItemName) {
 			 matterItemService.create($scope.data.newItemName, category.name).then(
@@ -88,6 +89,9 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 		$scope.selectItem = function(item, category) {
 			$scope.data.selectedItem = item;
 			$scope.data.selectedCategory = category;
+
+            //Reset controls
+            $scope.data.showEditItemDescriptionForm = false;
 		};
 
 		$scope.deleteItem = function() {
@@ -118,7 +122,36 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 				$scope.data.showAddForm = null;
 			}
 		};
-        /* End CRUD Item */
+
+        $scope.saveSelectedItem = function () {
+            if ($scope.data.selectedItem) {
+                matterItemService.update($scope.data.selectedItem).then(
+                    function success(item){
+                        //Reinitiate selected item
+                        $scope.data.selectedItem = item;
+                    },
+                    function error(err){
+                        toaster.pop('error', "Error!", "Unable to update item");
+                    }
+                );
+            }
+        };
+
+        $scope.getItemDueDateStatus = function (item) {
+            if (item.date_due) {
+                var curr_date = new Date();
+                var item_date = new Date(item.date_due);
+
+                if (curr_date <= item_date){
+                    return $rootScope.STATUS_LEVEL.OK;
+                } else {
+                    return $rootScope.STATUS_LEVEL.WARNING;
+                }
+            }
+
+            return $rootScope.STATUS_LEVEL.OK;
+        };
+        /* End item handling */
 
         /* Begin CRUD Category */
         $scope.submitNewCategory = function() {
@@ -163,9 +196,9 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 		};
 
         $scope.editCategory = function(cat) {
-            matterCategoryService.update(cat).then(
+            matterCategoryService.update(cat.name, $scope.data.newCategoryName).then(
                 function success(){
-                    //do nothing?
+                    cat.name = $scope.data.newCategoryName;
                 },
                 function error(err){
                     toaster.pop('error', "Error!", "Unable to edit category");
