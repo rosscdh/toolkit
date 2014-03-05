@@ -1,21 +1,40 @@
 <div id="checklist" ng-controller="ChecklistCtrl">
 	<div class="container-fluid full">
 		<div class="row full">
-			<div class="col-sm-5 checklist-col full" ui-sortable="checklistCategorySortableOptions" ng-model="data.categories">
+			<div class="col-sm-5 checklist-col full">
+				<!-- add new category //-->
+				<a href="javascript:;" ng-click="data.showCategoryAddForm=!data.showCategoryAddForm">New Category</a>
+	            <table class="table checklist" ng-show="data.showCategoryAddForm">
+	                 <tr class="add-new-controls warning" ng-show="data.showAddForm==$index">
+			              	<td colspan="2">
+			              		<div class="input-group">
+					          	    <input class="form-control input-sm" id="appendedInputButton-03" type="search" placeholder="Enter category name and press enter"
+	                                       ng-model="data.newCatName" ng-enter="submitNewCategory()">
+					          	    <div class="input-group-btn">
+					          	    </div>
+					          	</div>
+			              	</td>
+			             </tr>
+	            </table>
+
+				<div ui-sortable="checklistCategorySortableOptions" ng-model="data.categories">
 				<!-- checklist //-->
 				<table class="table checklist" ng-repeat="cat in data.categories">
 					<thead>
                          <tr>
-			                <th colspan="1" class="col-sm-6 category"><span ng-bind="cat.name"></span></th>
+			                <th colspan="1" class="col-sm-6 category">
+                                <span ng-bind="cat.name" ng-hide="data.showEditCategoryForm==$index"></span>
+                                <input class="form-control input-sm" ng-show="data.showEditCategoryForm==$index" type="search"
+                                       ng-model="cat.name" ng-enter="editCategory(cat)">
+                            </th>
 			              	<th class="category-controls">
 			              		<!-- TODO : make these buttons appear when the tbody appears-->
 								<div class="btn-group pull-right">
 										<button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown"><span class="fui-triangle-down"></span></button>
 						          	  	<ul class="dropdown-menu dropdown-inverse dropdown-small">
 						          	  		<li><a href="javascript:;" id="add-new" ng-click="showAddItemForm($index);">New Item</a></li>
-						                	<li><a href="#fakelink">New Category</a></li>
-						                	<li><a href="#fakelink">Edit Category</a></li>
-						                	<li><a href="#fakelink">Delete Category</a></li>
+						                	<li><a href="javascript:;" ng-click="showEditCategoryForm($index);">Edit Category</a></li>
+						                	<li><a href="javascript:;" ng-click="deleteCategory(cat);">Delete Category</a></li>
 						              	</ul>
 					            </div>
 			              	</th>
@@ -50,7 +69,7 @@
 			             </tr>
 			        </tbody>
 		          </table>
-
+		          </div><!-- /ui-sortable="checklistCategorySortableOptions" //-->
 		          <!--
                   <table class="table checklist">
                         <tr>
@@ -95,8 +114,10 @@
                                 </div>
                             </h3>
                             <div class="add-new text-center">
-                                <div class="fui-upload"></div>
-                                <a href="" class="btn btn-sm btn-add-new"><span class="fui-upload"></span> Upload Revision</a>
+                                <!--<div class="fui-upload"></div>//-->
+                                <!--<a href="" class="btn btn-sm btn-add-new"> Upload Revision</a>//-->
+                                <span filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)" btnclasses="'btn-sm btn-add-new'"><span class="fui-upload"></span> Upload Revision</span>
+
                                 <a href="" class="btn btn-sm btn-add-new" data-toggle="modal" data-target="#requestFileModal"><span class="fui-user"></span> Request Revision</a>
                             </div>
                             <div class="item-help">
@@ -142,3 +163,4 @@
 	</div>
 </div>
 <toaster-container toaster-options="{'position-class': 'toast-bottom-right'}"></toaster-container>
+<!--<input type="filepicker" data-fp-apikey="A4Ly2eCpkR72XZVBKwJ06z" data-fp-mimetypes="*/*" data-fp-container="modal" onchange="alert(event.fpfile.url)">//-->

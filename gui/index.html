@@ -42,10 +42,13 @@
   <script src="/static/ng/service/user.js"></script>
   <script src="/static/ng/service/matter.js"></script>
   <script src="/static/ng/service/matterItem.js"></script>
+  <script src="/static/ng/service/mattercategory.js"></script>
+  <script src="/static/ng/service/participants.js"></script>
   <!-- Add New Service JS Above -->
 
   <!-- Directive JS -->
   <script src="/static/ng/directive/form.js"></script>
+  <script src="/static/ng/directive/filepicker.js"></script>
   <!-- Add New Directive JS Above -->
 
   <!-- Filter JS -->
@@ -56,6 +59,7 @@
   <script src="/static/ng/partial/checklist/checklist.js"></script>
   <script src="/static/ng/partial/closing/closing.js"></script>
   <script src="/static/ng/partial/navigation/navigation.js"></script>
+  <script src="/static/ng/partial/participant-invite/participant-invite.js"></script>
   <!-- Add New Partial JS Above -->
 
   <div class="navbar navbar-inverse checklist-nav" ng-controller="NavigationCtrl">
@@ -74,9 +78,9 @@
         </li>
          
         <li class="checklist-members">
-          <a href="#fakelink">
-          <span class="fui-user"></span> 
-          <img ng-src="{{user.img}}" class="user" ng-repeat="user in users.data.items">
+          <a href="javascript:;" ng-click="invite()">
+            <span class="fui-user"></span> 
+            <img ng-src="{{user.img}}" class="user" ng-repeat="user in users.data.items">
           </a>
         </li>
         <li class="">
@@ -117,5 +121,8 @@
 
   <div ng-view="">
 
-</div>{% endverbatim %}</body>
+</div>
+<script type="text/javascript" src="//api.filepicker.io/v1/filepicker.js"></script>
+{% endverbatim %}
+</body>
 </html>
