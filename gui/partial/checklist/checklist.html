@@ -16,7 +16,7 @@
 			              	</td>
 			             </tr>
 	            </table>
-            
+
 				<div ui-sortable="checklistCategorySortableOptions" ng-model="data.categories">
 				<!-- checklist //-->
 				<table class="table checklist" ng-repeat="cat in data.categories">
@@ -114,8 +114,10 @@
                                 </div>
                             </h3>
                             <div class="add-new text-center">
-                                <div class="fui-upload"></div>
-                                <a href="" class="btn btn-sm btn-add-new"><span class="fui-upload"></span> Upload Revision</a>
+                                <!--<div class="fui-upload"></div>//-->
+                                <!--<a href="" class="btn btn-sm btn-add-new"> Upload Revision</a>//-->
+                                <span filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)" btnclasses="'btn-sm btn-add-new'"><span class="fui-upload"></span> Upload Revision</span>
+
                                 <a href="" class="btn btn-sm btn-add-new" data-toggle="modal" data-target="#requestFileModal"><span class="fui-user"></span> Request Revision</a>
                             </div>
                             <div class="item-help">
@@ -161,3 +163,4 @@
 	</div>
 </div>
 <toaster-container toaster-options="{'position-class': 'toast-bottom-right'}"></toaster-container>
+<!--<input type="filepicker" data-fp-apikey="A4Ly2eCpkR72XZVBKwJ06z" data-fp-mimetypes="*/*" data-fp-container="modal" onchange="alert(event.fpfile.url)">//-->
