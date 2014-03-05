@@ -103,7 +103,7 @@ angular.module('toolkit-gui').factory('matterItemService',[ '$q', '$resource', '
 			var formData = new FormData();
 			formData.append("executed_file", fileDetails);
 
-			api.create({'matterSlug': matterSlug, 'itemSlug': itemSlug }, formData,
+			api.create({'matterSlug': matterSlug, 'itemSlug': itemSlug }, { 'executed_file': fileDetails },
 				function success(){
 					deferred.resolve();
 				},
