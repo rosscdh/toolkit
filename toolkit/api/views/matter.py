@@ -10,6 +10,7 @@ from rulez import registry as rulez_registry
 from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework import exceptions
+from rest_framework import parsers
 from rest_framework.response import Response
 from rest_framework import status as http_status
 from rest_framework.renderers import UnicodeJSONRenderer
@@ -344,6 +345,7 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
     Get the Item object and access its item.latest_revision to get access to
     the latest revision, but then return the serialized revision in the response
     """
+    parser_classes = (parsers.FileUploadParser,)
     model = Item  # to allow us to use get_object generically
     serializer_class = RevisionSerializer  # as we are returning the revision and not the item
     lookup_field = 'slug'
@@ -364,6 +366,19 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
             return self.revision
         else:
             raise Http404
+
+    def can_read(self, user):
+        return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
+
+    def can_edit(self, user):
+        return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
+
+    def can_delete(self, user):
+        return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
+
+rulez_registry.register("can_read", ItemCurrentRevisionView)
+rulez_registry.register("can_edit", ItemCurrentRevisionView)
+rulez_registry.register("can_delete", ItemCurrentRevisionView)
 
 
 class ItemSpecificReversionView(ItemCurrentRevisionView):
@@ -562,6 +577,7 @@ Category and Closing Groups
 class CategoryView(SpecificAttributeMixin,
                    generics.CreateAPIView,
                    generics.RetrieveAPIView,
+                   generics.UpdateAPIView,
                    generics.DestroyAPIView,
                    MatterMixin,):
     """
@@ -580,6 +596,17 @@ class CategoryView(SpecificAttributeMixin,
     def retrieve(self, request, **kwargs):
         obj = self.get_object()
         return Response(obj)
+
+    def update(self, request, **kwargs):
+        current_category = kwargs.get('category')
+        new_category = request.DATA.get('category')
+
+        if new_category != current_category:
+            self.matter.item_set.filter(category=current_category).update(category=new_category)
+            self.matter.remove_category(value=current_category)
+            self.matter.add_category(value=new_category)
+
+        return Response(self.matter.categories)
 
     def create(self, request, **kwargs):
         self.get_object()
