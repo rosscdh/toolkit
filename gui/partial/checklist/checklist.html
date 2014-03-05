@@ -25,7 +25,7 @@
 			                <th colspan="1" class="col-sm-6 category">
                                 <span ng-bind="cat.name" ng-hide="data.showEditCategoryForm==$index"></span>
                                 <input class="form-control input-sm" ng-show="data.showEditCategoryForm==$index" type="search"
-                                       ng-model="cat.name" ng-enter="editCategory(cat)">
+                                       ng-model="data.newCategoryName" ng-enter="editCategory(cat)">
                             </th>
 			              	<th class="category-controls">
 			              		<!-- TODO : make these buttons appear when the tbody appears-->
@@ -33,7 +33,7 @@
 										<button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown"><span class="fui-triangle-down"></span></button>
 						          	  	<ul class="dropdown-menu dropdown-inverse dropdown-small">
 						          	  		<li><a href="javascript:;" id="add-new" ng-click="showAddItemForm($index);">New Item</a></li>
-						                	<li><a href="javascript:;" ng-click="showEditCategoryForm($index);">Edit Category</a></li>
+						                	<li><a href="javascript:;" ng-click="data.newCategoryName=cat.name;showEditCategoryForm($index);">Edit Category</a></li>
 						                	<li><a href="javascript:;" ng-click="deleteCategory(cat);">Delete Category</a></li>
 						              	</ul>
 					            </div>
@@ -71,27 +71,7 @@
 			             </tr>
 			        </tbody>
 		          </table>
-<<<<<<< HEAD
-=======
-		          </div><!-- /ui-sortable="checklistCategorySortableOptions" //-->
-		          <!--
-                  <table class="table checklist">
-                        <tr>
-			                <th colspan="1" class="col-sm-6 category">No category</th>
-                        </tr>
-
-                        <tr class="item-heading item-closed" ng-repeat="item in data.matter.items | filter:{category:'!'}">
-			                <td class="item-title">
-			                	<span class="fui-list-columned"></span>
-			                	<span ng-bind="item.name"></span>
-			                </td>
-			                <td class="status text-right">
-			                	<span class="fui-check-inverted"></span>
-			                </td>
-			            </tr>
-                  </table>
-                  //-->
->>>>>>> gui/checklist
+		          </div>
 				<!-- end checklist //-->
 			</div>
 			<div class="col-sm-7 item spa full">
