@@ -8,7 +8,7 @@ angular.module('toolkit-gui').factory('matterCategoryService',[ '$q', '$resource
 	function matterCategoryResource() {
 		return $resource( $rootScope.API_BASE_URL + 'matters/:matterSlug/category/:categorySlug', {'matterSlug':matter.slug}, {
 			'create': { 'method': 'POST', params:{'categorySlug':'@categorySlug'}, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } , 'isArray': true},
-            'update': { 'method': 'PATCH', params:{'categorySlug':'@categorySlug'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
+            'update': { 'method': 'PATCH', params:{'categorySlug':'@categorySlug'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } , 'isArray': true},
             'delete': { 'method': 'DELETE', params:{'categorySlug':'@categorySlug'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }, 'isArray': true}
 		});
 	}
@@ -40,12 +40,12 @@ angular.module('toolkit-gui').factory('matterCategoryService',[ '$q', '$resource
 			return deferred.promise;
         },
 
-        'update': function ( category ) {
+        'update': function ( oldCategoryName, newCategoryName ) {
             var deferred = $q.defer();
 
 			var api = matterCategoryResource();
 
-			api.update(category,
+			api.update({'categorySlug': oldCategoryName}, {'category': newCategoryName },
 				function success(category){
 					deferred.resolve(category);
 				},

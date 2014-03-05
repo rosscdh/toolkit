@@ -196,9 +196,9 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 		};
 
         $scope.editCategory = function(cat) {
-            matterCategoryService.update(cat).then(
+            matterCategoryService.update(cat.name, $scope.data.newCategoryName).then(
                 function success(){
-                    //do nothing?
+                    cat.name = $scope.data.newCategoryName;
                 },
                 function error(err){
                     toaster.pop('error', "Error!", "Unable to edit category");
