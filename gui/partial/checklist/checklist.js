@@ -1,12 +1,13 @@
 angular.module('toolkit-gui').controller('ChecklistCtrl', [
     '$scope',
+    '$rootScope',
     '$routeParams',
     'ezConfirm',
 	'toaster',
     'matterService',
     'matterItemService',
     'matterCategoryService',
-    function($scope, $routeParams, ezConfirm, toaster, matterService, matterItemService, matterCategoryService){
+    function($scope, $rootScope, $routeParams, ezConfirm, toaster, matterService, matterItemService, matterCategoryService){
 	$scope.data = {
 		'slug': $routeParams.matterSlug,
 		'matter': {},
@@ -125,15 +126,31 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
         $scope.saveSelectedItem = function () {
             if ($scope.data.selectedItem) {
                 matterItemService.update($scope.data.selectedItem).then(
-                    function success(){
-                        //do nothing
+                    function success(item){
+                        //Reinitiate selected item
+                        $scope.data.selectedItem = item;
                     },
                     function error(err){
                         toaster.pop('error', "Error!", "Unable to update item");
                     }
                 );
             }
-        }
+        };
+
+        $scope.getItemDueDateStatus = function (item) {
+            if (item.date_due) {
+                var curr_date = new Date();
+                var item_date = new Date(item.date_due);
+
+                if (curr_date <= item_date){
+                    return $rootScope.STATUS_LEVEL.OK;
+                } else {
+                    return $rootScope.STATUS_LEVEL.WARNING;
+                }
+            }
+
+            return $rootScope.STATUS_LEVEL.OK;
+        };
         /* End item handling */
 
         /* Begin CRUD Category */
