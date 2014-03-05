@@ -19,7 +19,8 @@ from toolkit.apps.workspace.models import Workspace
 from toolkit.apps.review.models import ReviewDocument
 
 from toolkit.core.item.models import Item
-from toolkit.core.item.mailers import ReviewerReminderEmail, SignatoryReminderEmail
+from toolkit.core.item.mailers import SignatoryReminderEmail
+from toolkit.apps.review.mailers import ReviewerReminderEmail
 
 from ..serializers import MatterSerializer
 from ..serializers.matter import LiteMatterSerializer

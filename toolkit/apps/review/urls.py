@@ -5,5 +5,5 @@ from .views import ReviewRevisionView
 
 
 urlpatterns = patterns('',
-    url(r'^(?P<slug>[\w-]+)/$', ReviewRevisionView.as_view(), name='review_document'),
+    url(r'^(?P<slug>[\w-]+)/(?P<auth_slug>[\w\W]+)/$', ReviewRevisionView.as_view(), name='review_document'),
 )
