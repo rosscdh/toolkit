@@ -53,6 +53,37 @@ class MatterCategoryTest(BaseEndpointTest):
         resp_json = json.loads(resp.content)
         self.assertEqual(resp_json, [expected_category, "C", "B", "A"])
 
+    def test_category_update(self):
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        current_category = u'My Test Category with Mönchengladbach unicode'
+
+        mommy.make('item.Item', matter=self.matter, name='Test Item: category change 1', category=current_category)
+        mommy.make('item.Item', matter=self.matter, name='Test Item: category change 2', category=current_category)
+        mommy.make('item.Item', matter=self.matter, name='Test Item: category change 3', category=current_category)
+
+        # we have the items associatd with the current_category
+        self.assertEqual(self.matter.item_set.filter(category=current_category).count(), 3)
+
+        expected_category = u'Mönchengladbach vs Bayern'
+
+        endpoint = reverse('matter_category', kwargs={"matter_slug": self.matter.slug, "category": current_category})
+
+        # send a json PATCH request with data attaches
+        data = {
+            "category": expected_category
+        }
+
+        resp = self.client.patch(endpoint, json.dumps(data), content_type='application/json')
+        resp_json = json.loads(resp.content)
+        #
+        # the new category should be present and not the old one
+        #
+        self.assertEqual(resp_json, [expected_category, "C", "B", "A"])
+        self.assertTrue(current_category not in resp_json)
+        self.assertEqual(self.matter.item_set.filter(category=current_category).count(), 0)
+        self.assertEqual(self.matter.item_set.filter(category=expected_category).count(), 3)
+
     def test_category_delete(self):
         """
         Delete an existing Category

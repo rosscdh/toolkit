@@ -539,6 +539,7 @@ Category and Closing Groups
 class CategoryView(SpecificAttributeMixin,
                    generics.CreateAPIView,
                    generics.RetrieveAPIView,
+                   generics.UpdateAPIView,
                    generics.DestroyAPIView,
                    MatterMixin,):
     """
@@ -557,6 +558,17 @@ class CategoryView(SpecificAttributeMixin,
     def retrieve(self, request, **kwargs):
         obj = self.get_object()
         return Response(obj)
+
+    def update(self, request, **kwargs):
+        current_category = kwargs.get('category')
+        new_category = request.DATA.get('category')
+
+        if new_category != current_category:
+            self.matter.item_set.filter(category=current_category).update(category=new_category)
+            self.matter.remove_category(value=current_category)
+            self.matter.add_category(value=new_category)
+
+        return Response(self.matter.categories)
 
     def create(self, request, **kwargs):
         self.get_object()
