@@ -582,6 +582,7 @@ class CategoryView(SpecificAttributeMixin,
             self.matter.item_set.filter(category=current_category).update(category=new_category)
             self.matter.remove_category(value=current_category)
             self.matter.add_category(value=new_category)
+            self.matter.save(update_fields=['data'])
 
         return Response(self.matter.categories)
 
