@@ -10,6 +10,7 @@ from rulez import registry as rulez_registry
 from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework import exceptions
+from rest_framework import parsers
 from rest_framework.response import Response
 from rest_framework import status as http_status
 from rest_framework.renderers import UnicodeJSONRenderer
@@ -341,6 +342,7 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
     Get the Item object and access its item.latest_revision to get access to
     the latest revision, but then return the serialized revision in the response
     """
+    parser_classes = (parsers.FileUploadParser,)
     model = Item  # to allow us to use get_object generically
     serializer_class = RevisionSerializer  # as we are returning the revision and not the item
     lookup_field = 'slug'
