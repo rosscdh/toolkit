@@ -20,8 +20,8 @@ def ensure_revision_slug(sender, instance, **kwargs):
     #
     # Dont perform this action if we are manually updating the slug
     #
-    if (kwargs['update_fields'] is None) or (kwargs['update_fields'] is not None and 'slug' not in kwargs['update_fields']):
-
+    #Update fields is none is the revision is newly created
+    if kwargs['update_fields'] is not None and 'slug' not in kwargs['update_fields']:
         #
         # if the slug somehow gets set as somethign weird like a normal slug
         # then take it back and make it a vXXX number
