@@ -1,22 +1,23 @@
 <div id="checklist" ng-controller="ChecklistCtrl">
 	<div class="container-fluid full">
 		<div class="row full">
-			<!-- add new category //-->
-			<a href="javascript:;" ng-click="data.showCategoryAddForm=!data.showCategoryAddForm">New Category</a>
-            <table class="table checklist" ng-show="data.showCategoryAddForm">
-                 <tr class="add-new-controls warning" ng-show="data.showAddForm==$index">
-		              	<td colspan="2">
-		              		<div class="input-group">
-				          	    <input class="form-control input-sm" id="appendedInputButton-03" type="search" placeholder="Enter category name and press enter"
-                                       ng-model="data.newCatName" ng-enter="submitNewCategory()">
-				          	    <div class="input-group-btn">
-				          	    </div>
-				          	</div>
-		              	</td>
-		             </tr>
-            </table>
-
-			<div class="col-sm-5 checklist-col full" ui-sortable="checklistCategorySortableOptions" ng-model="data.categories">
+			<div class="col-sm-5 checklist-col full">
+				<!-- add new category //-->
+				<a href="javascript:;" ng-click="data.showCategoryAddForm=!data.showCategoryAddForm">New Category</a>
+	            <table class="table checklist" ng-show="data.showCategoryAddForm">
+	                 <tr class="add-new-controls warning" ng-show="data.showAddForm==$index">
+			              	<td colspan="2">
+			              		<div class="input-group">
+					          	    <input class="form-control input-sm" id="appendedInputButton-03" type="search" placeholder="Enter category name and press enter"
+	                                       ng-model="data.newCatName" ng-enter="submitNewCategory()">
+					          	    <div class="input-group-btn">
+					          	    </div>
+					          	</div>
+			              	</td>
+			             </tr>
+	            </table>
+            
+				<div ui-sortable="checklistCategorySortableOptions" ng-model="data.categories">
 				<!-- checklist //-->
 				<table class="table checklist" ng-repeat="cat in data.categories">
 					<thead>
@@ -68,7 +69,7 @@
 			             </tr>
 			        </tbody>
 		          </table>
-
+		          </div><!-- /ui-sortable="checklistCategorySortableOptions" //-->
 		          <!--
                   <table class="table checklist">
                         <tr>
