@@ -1,11 +1,11 @@
 from django.conf import settings
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.views.generic import CreateView, ListView, TemplateView, UpdateView
+from django.views.generic import CreateView, DeleteView, ListView, TemplateView, UpdateView
 
 from toolkit.api.serializers import LiteMatterSerializer
 from toolkit.apps.workspace.models import Workspace
-from toolkit.mixins import AjaxModelFormView, ModalView
+from toolkit.mixins import AjaxFormView, AjaxModelFormView, ModalView
 
 from .forms import MatterForm
 
@@ -22,6 +22,7 @@ class MatterListView(ListView):
 
         context.update({
             'can_create': self.request.user.profile.is_lawyer,
+            'can_delete': self.request.user.profile.is_lawyer,
             'can_edit': self.request.user.profile.is_lawyer,
             'object_list': self.get_serializer(self.object_list, many=True).data,
         })
@@ -89,3 +90,22 @@ class MatterUpdateView(ModalView, AjaxModelFormView, UpdateView):
 
     def get_success_url(self):
         return reverse('matter:detail', kwargs={'matter_slug': self.object.slug})
+
+
+class MatterDeleteView(ModalView, AjaxFormView, DeleteView):
+    model = Workspace
+    slug_url_kwarg = 'matter_slug'
+    template_name = 'matters/matter_confirm_delete.html'
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        self.object.delete()
+
+        return self.render_to_json_response({
+            'redirect': True,
+            'url': success_url
+        })
+
+    def get_success_url(self):
+        return reverse('matter:list')
