@@ -22,7 +22,7 @@ class Item(IsDeletedMixin, models.Model):
     """
     slug = UUIDField(auto=True, db_index=True)
     name = models.CharField(max_length=255)
-    description = models.TextField()
+    description = models.TextField(blank=True, null=True)
 
     matter = models.ForeignKey('workspace.Workspace')
     responsible_party = models.ForeignKey('auth.User', null=True, blank=True)
