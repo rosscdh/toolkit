@@ -60,7 +60,7 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 				// Allocate items to specific categories to make multiple arrays
 				jQuery.each( matter.categories, function( index, cat ) {
 					var categoryName = cat;
-					var items = jQuery.grep( matter.itesingleMatterms, function( item ){ return item.category===categoryName; } );
+					var items = jQuery.grep( matter.items, function( item ){ return item.category===categoryName; } );
 					categories.push( { 'name': categoryName, 'items': items } );
 				});
 
