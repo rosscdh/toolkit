@@ -29,11 +29,11 @@ class ReviewRevisionView(DetailView):
         if they are just an invitee then they can only see their own comments
         """
         user = self.request.user
-
-        if user in self.object.document.item.matter.participants.all():
-            return []
+        matter = self.object.document.item.matter
+        if user in matter.participants.all():
+            return None
         else:
-            return [user.pk]
+            return ','.join([str(user.pk), str(user.pk)])
 
     def get_context_data(self, **kwargs):
         kwargs = super(ReviewRevisionView, self).get_context_data(**kwargs)
@@ -45,20 +45,23 @@ class ReviewRevisionView(DetailView):
 
         # @TODO this should ideally be set in the service on init
         # and session automatically updated
+        # https://crocodoc.com/docs/api/ for more info
         CROCDOC_PARAMS = {
                 "user": { "name": self.request.user.get_full_name(), 
                 "id": self.request.user.pk
             }, 
-            "sidebar": 'auto', 
-            "editable": True, 
-            "admin": False, 
-            "downloadable": True, 
-            "copyprotected": False, 
-            "demo": False
-        }
-
-        view_url_kwargs = {
-            'filter': self.get_filter_ids()
+            "sidebar": 'auto',
+            "editable": True, # allow comments
+            "admin": False, # noone should be able to delete other comments
+            "downloadable": True, # everyone should be able to download a copy
+            "copyprotected": False, # should not have copyprotection
+            "demo": False,
+            #
+            # We create a ReviewDocument object for each and every reviewer
+            # for the matter.participants there is 1 ReviewDocument object
+            # that they all can see
+            #
+            #"filter": self.get_filter_ids() # must be a comma seperated list
         }
         #
         # Set out session key based on params above
@@ -67,7 +70,7 @@ class ReviewRevisionView(DetailView):
 
         kwargs.update({
             'crocodoc': crocodoc.obj.crocodoc_service,
-            'crocodoc_view_url': crocodoc.obj.crocodoc_service.view_url(**view_url_kwargs),
+            'crocodoc_view_url': crocodoc.obj.crocodoc_service.view_url(),
             'CROCDOC_PARAMS': CROCDOC_PARAMS, # for testing the values
         })
 
