@@ -19,7 +19,6 @@ class ReviewDocumentBackend(object):
     def authenticate(self, username=None, password=None):
         # Check the username/password and return a User.
         user = None
-        import pdb;pdb.set_trace()
         try:
 
             review = ReviewDocument.objects.get(slug=username)
@@ -34,3 +33,9 @@ class ReviewDocumentBackend(object):
             logger.error('ReviewDocument.auth does not exist: %s reason: %s' % (username, e))
 
         return user
+
+    def get_user(self, user_id):
+        try:
+            return User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return None
