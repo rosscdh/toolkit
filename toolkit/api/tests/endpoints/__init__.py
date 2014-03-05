@@ -21,8 +21,6 @@ class BaseEndpointTest(BaseScenarios, TestCase):
         # basics
         self.basic_workspace()
 
-        self.matter = self.workspace  # alias
-
         # provide a lawyer client
         self.lawyer_client = mommy.make('client.Client', lawyer=self.lawyer, name='Test Client for Test Lawyer')
 

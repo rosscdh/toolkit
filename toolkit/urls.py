@@ -31,6 +31,7 @@ urlpatterns = patterns('',
 
     # reviews
     url(r'^review/', include('toolkit.apps.review.urls', namespace='review')),
+    url(r'^crocodoc/', include('dj_crocodoc.urls', namespace='review')),
 
     # signing events
     url(r'^sign/', include('hello_sign.urls', namespace='sign')),

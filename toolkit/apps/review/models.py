@@ -2,6 +2,9 @@
 from django.db import models
 from django.core.urlresolvers import reverse
 
+from .mixins import UserAuthMixin
+from .mailers import ReviewerReminderEmail
+
 from uuidfield import UUIDField
 from jsonfield import JSONField
 
@@ -9,7 +12,7 @@ import logging
 logger = logging.getLogger('django.request')
 
 
-class ReviewDocument(models.Model):
+class ReviewDocument(UserAuthMixin, models.Model):
     """
     An object to represent a url that allows multiple reviewers to view
     a document using a service like crocodoc
@@ -19,13 +22,16 @@ class ReviewDocument(models.Model):
     reviewers = models.ManyToManyField('auth.User')
     data = JSONField(default={})
 
-    def get_absolute_url(self):
-        return reverse('review:review_document', kwargs={'slug': self.slug})
+    def get_absolute_url(self, user):
+        return reverse('review:review_document', kwargs={'slug': self.slug, 'auth_slug': self.make_user_auth_key(user=user)})
 
-    def send_invite_emails(self, users=[]):
+    def send_invite_email(self, from_user, users=[]):
         """
         @BUSINESSRULE requested users must be in the reviewers object
         """
+        if type(users) not in [list]:
+            raise Exception('users must be of type list: users=[<User>]')
+
         for u in self.reviewers.all():
             #
             # @BUSINESSRULE if no users passed in then send to all of the reviewers
@@ -35,5 +41,16 @@ class ReviewDocument(models.Model):
                 # send email
                 #
                 logger.info('Sending ReviewDocument invite email to: %s' % u)
+
+                subject = '[ACTION REQUIRED] Invitation to review a document'
+                #subject = '[ACTION REQUIRED] Reminder to please review a document'
+
+                m = ReviewerReminderEmail(recipients=((u.get_full_name(), u.email,)))
+                m.process(subject=subject,
+                          item=self.document.item,
+                          document=self.document,
+                          from_name=from_user.get_full_name(),
+                          action_url=self.get_absolute_url(user=u))
+
 
 from .signals import (on_reviewer_add, on_reviewer_remove,)
