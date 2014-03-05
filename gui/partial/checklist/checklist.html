@@ -68,24 +68,6 @@
 			             </tr>
 			        </tbody>
 		          </table>
-
-		          <!--
-                  <table class="table checklist">
-                        <tr>
-			                <th colspan="1" class="col-sm-6 category">No category</th>
-                        </tr>
-
-                        <tr class="item-heading item-closed" ng-repeat="item in data.matter.items | filter:{category:'!'}">
-			                <td class="item-title">
-			                	<span class="fui-list-columned"></span>
-			                	<span ng-bind="item.name"></span>
-			                </td>
-			                <td class="status text-right">
-			                	<span class="fui-check-inverted"></span>
-			                </td>
-			            </tr>
-                  </table>
-                  //-->
 				<!-- end checklist //-->
 			</div>
 			<div class="col-sm-7 item spa full">
@@ -104,12 +86,18 @@
                                         <li><a href="javascript:;" class="text-danger" ng-click="deleteItem()"><span class="fui-trash text-danger"></span> Delete</a></li>
                                     </ul>
                                 </div>
-                                <div class="item-description-toggle"><small class="text-muted"><a href="#" class="link">Enter item description</a></small></div>
-                                <div class="item-description" style="display:none;">
-                                    <textarea class="form-control" rows="3" placeholder="Enter a description for this item"></textarea>
-                                    <a href="#" class="btn btn-primary btn-xs">Save description</a>
-                                    <a href="#" class="btn btn-inverse btn-xs item-description-cancel">Cancel</a>
-                                    <a href="#" class="btn btn-link btn-xs pull-right" title="Markdown help" onclick="alert('Markdown help popup like trello');">Formatting Help</a>
+                                <div class="item-description-toggle" ng-hide="data.showEditItemDescriptionForm">
+                                    <small class="text-muted">
+                                        <p ng-bind="data.selectedItem.description"></p>
+                                        <a href="javascript:;" class="link" ng-click="data.showEditItemDescriptionForm=!data.showEditItemDescriptionForm;data.editItemDescription=data.selectedItem.description;">
+                                        Edit item description</a>
+                                    </small>
+                                </div>
+                                <div class="item-description" ng-show="data.showEditItemDescriptionForm">
+                                    <textarea class="form-control" rows="3" placeholder="Enter a description for this item" ng-model="data.editItemDescription"></textarea>
+                                    <a href="javascript:;" class="btn btn-primary btn-xs" ng-click="data.selectedItem.description=data.editItemDescription;saveSelectedItem();data.showEditItemDescriptionForm=false;">Save description</a>
+                                    <a href="javascript:;" class="btn btn-inverse btn-xs item-description-cancel" ng-click="data.showEditItemDescriptionForm=false;">Cancel</a>
+                                    <a href="javascript:;" class="btn btn-link btn-xs pull-right" title="Markdown help" onclick="alert('Markdown help popup like trello');">Formatting Help</a>
                                 </div>
                             </h3>
                             <div class="add-new text-center">
@@ -117,6 +105,24 @@
                                 <a href="" class="btn btn-sm btn-add-new"><span class="fui-upload"></span> Upload Revision</a>
                                 <a href="" class="btn btn-sm btn-add-new" data-toggle="modal" data-target="#requestFileModal"><span class="fui-user"></span> Request Revision</a>
                             </div>
+
+                            <ul class="revisions list-unstyled">
+								<li class="header">Current Revision</li>
+								<li class="current">
+									<div class="doc-wrap">
+										<span class="version">V3</span>
+										<h4><a href="#" data-toggle="modal" data-target="#viewDocumentModal">Shareholders_agreement_lawpal_299929.doc </a></h4><span class="close">x</span>
+										<div class="desc">This is the final version. Let's see if this get's the ball moving.</div>
+										<div class="sub">Ross Crawford, 2 days ago</div>
+										<div class="tools">
+											<a href="#" class="btn btn-link btn-xs"  data-toggle="modal" data-target="#viewDocumentModal">View</a>
+											<a href="#" class="btn btn-link btn-xs" data-toggle="modal" data-target="#requestReviewModal">Request Review</a>
+											<a href="#" class="btn btn-link-success btn-xs pull-right"><span class="fui-check-inverted"></span> Mark as Final</a>
+										</div>
+									</div>
+								</li>
+                            </ul>
+
                             <div class="item-help">
                                 <span class="fui-upload"></span>
                                 <h4>Upload a first revision</h4>
