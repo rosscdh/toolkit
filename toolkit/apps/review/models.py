@@ -21,6 +21,7 @@ class ReviewDocument(UserAuthMixin, models.Model):
     """
     slug = UUIDField(auto=True, db_index=True)
     document = models.ForeignKey('attachment.Revision')
+    participants = models.ManyToManyField('auth.User', related_name='matter_participants')
     reviewers = models.ManyToManyField('auth.User')
     data = JSONField(default={})
 
@@ -52,4 +53,7 @@ class ReviewDocument(UserAuthMixin, models.Model):
                           action_url=ABSOLUTE_BASE_URL(path=self.get_absolute_url(user=u)))
 
 
-from .signals import (on_reviewer_add, on_reviewer_remove,)
+from .signals import (on_participant_add,
+                      on_participant_add,
+                      on_reviewer_add,
+                      on_reviewer_remove,)
