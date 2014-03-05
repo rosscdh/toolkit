@@ -206,10 +206,11 @@ Participants
 Participants are added and removed via a controlled endpoint
 
 ```
-POST,DELETE /matters/:matter_slug/participant
+POST /matters/:matter_slug/participant
 {
     "email": "username@example.com"
 }
+DELETE /matters/:matter_slug/participant/username@example.com
 ```
 
 
