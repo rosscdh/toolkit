@@ -15,8 +15,8 @@ def _upload_file(instance, filename):
 
 
 class Revision(models.Model):
+    slug = models.SlugField(blank=True, null=True)  # stores the revision number v3..v2..v1
     executed_file = models.FileField(upload_to=_upload_file, storage=S3BotoStorage(), null=True, blank=True)
-    slug = models.SlugField(null=True)  # stores the revision number v3..v2..v1
 
     item = models.ForeignKey('item.Item')
     uploaded_by = models.ForeignKey('auth.User')
@@ -58,7 +58,7 @@ class Revision(models.Model):
         Used in the signal to generate the attachment slug
         and revision_label
         """
-        version = 0
+        version = 1 # default is 1
         for c, r in enumerate(self.revisions):
             version = c + 1
             if r.pk == self.pk:

@@ -345,11 +345,14 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
     Get the Item object and access its item.latest_revision to get access to
     the latest revision, but then return the serialized revision in the response
     """
-    parser_classes = (parsers.FileUploadParser,)
+    #parser_classes = (parsers.FileUploadParser,) # his will obly be necessary if we stop using filepicker.io which passes us a url
     model = Item  # to allow us to use get_object generically
     serializer_class = RevisionSerializer  # as we are returning the revision and not the item
     lookup_field = 'slug'
     lookup_url_kwarg = 'item_slug'
+
+    def get_serializer_context(self):
+        return {'request': self.request}
 
     def get_revision(self):
         return self.item.latest_revision

@@ -25,6 +25,10 @@ class ReviewDocument(UserAuthMixin, models.Model):
     reviewers = models.ManyToManyField('auth.User')
     data = JSONField(default={})
 
+    class Meta:
+        # @BUSINESS RULE always return the oldest to newest
+        ordering = ('id',)
+
     def get_absolute_url(self, user):
         return reverse('review:review_document', kwargs={'slug': self.slug, 'auth_slug': self.make_user_auth_key(user=user)})
 
