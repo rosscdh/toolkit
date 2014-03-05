@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
 from toolkit.apps.workspace.models import Workspace
@@ -56,7 +57,7 @@ class MatterParticipantTest(BaseEndpointTest):
 
         self.assertEqual(resp.status_code, 405)  # method not allowed
 
-    def test_lawyer_post(self):
+    def test_lawyer_post_existing_user(self):
         """
         Test we can add users to the participants
         """
@@ -90,6 +91,28 @@ class MatterParticipantTest(BaseEndpointTest):
         self.assertEqual(len(participants), 4)  # we have 3 users and a lawyer
         self.assertTrue(self.user_to_add in participants)
 
+    def test_lawyer_post_new_user_who_does_not_yet_exist(self):
+        """
+        Can add a user from just the email
+        """
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        #
+        # Add the New Lawyer
+        #
+        data = {'email': 'test+monkey@lawyer.com'}
+
+        resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
+        self.assertEqual(resp.status_code, 202)  # accepted
+
+        new_user = User.objects.get(email=data.get('email'))
+
+        self.assertTrue(new_user) # exists
+        self.assertEqual(new_user.first_name, '')
+        self.assertEqual(new_user.last_name, '')
+        self.assertTrue(new_user.profile.is_customer)
+        # we patch the get_full_name object to return email if first_name and last_name are nothing
+        self.assertEqual(new_user.get_full_name(), 'test+monkey@lawyer.com')
 
     def test_lawyer_patch(self):
         self.client.login(username=self.lawyer.username, password=self.password)
