@@ -40,4 +40,4 @@ class LiteUserSerializer(UserSerializer):
     Used when a user is referenced in other API objects.
     """
     class Meta(UserSerializer.Meta):
-        fields = ('first_name', 'initials', 'last_name', 'name', 'url', 'user_class')
+        fields = ('username', 'first_name', 'initials', 'last_name', 'email', 'name', 'url', 'user_class')

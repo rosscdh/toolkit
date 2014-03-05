@@ -21,10 +21,8 @@ class MatterParticipantTest(BaseEndpointTest):
     {
         "email": "username@example.com"
     }
-    DELETE /matters/:matter_slug/participant/
-    {
-        "email": "username@example.com"
-    }
+    DELETE /matters/:matter_slug/participant/username@example.com
+
     @RULE Can not delete the participant if it is the same as matter.lawyer
     @RULE Can not delete a participant if it is the same as the matter.client.primary @TODO this is a discussion point
     """
@@ -109,10 +107,10 @@ class MatterParticipantTest(BaseEndpointTest):
         # Test the primary lawyer can delete other lawyers/users
         #
         user_to_delete = self.matter.participants.all().first()
-        data = {'email': user_to_delete.email}
+        # append the email to the url for DELETE
+        endpoint = '%s/%s' % (self.endpoint, user_to_delete.email)
 
-        resp = self.client.delete(self.endpoint, json.dumps(data), content_type='application/json')
-
+        resp = self.client.delete(endpoint, None)
         self.assertEqual(resp.status_code, 202)  # accepted
 
         # refresh
@@ -140,9 +138,10 @@ class MatterParticipantTest(BaseEndpointTest):
         # Test the primary lawyer cant be removed
         #
         user_to_delete = self.lawyer
-        data = {'email': user_to_delete.email}
 
-        resp = self.client.delete(self.endpoint, json.dumps(data), content_type='application/json')
+        endpoint = '%s/%s' % (self.endpoint, user_to_delete.email)
+
+        resp = self.client.delete(endpoint, None)
         
         self.assertEqual(resp.status_code, 403)  # forbidden
 
