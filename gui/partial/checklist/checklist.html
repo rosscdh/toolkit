@@ -90,9 +90,13 @@
                                     </a>
                                     <a href="javascript:;" class="btn-silver btn-xs" class="dropdown-toggle" data-toggle="dropdown" ng-click="data.showItemDetailsOptions=!data.showItemDetailsOptions">Options</a>
                                     <ul class="dropdown-menu dropdown-small dropdown-inverse" ng-show="data.showItemDetailsOptions">
-                                        <li><a href="javascript:;" ng-click="data.selectedItem.date_due='2014-03-01 00:00';saveSelectedItem();data.showItemDetailsOptions=!data.showItemDetailsOptions;"><span class="fui-calendar"></span> Set due date</a></li>
+                                        <li><a href="javascript:;" ng-click="data.selectedItem.date_due='2014-03-01T00:00:00';saveSelectedItem();data.showItemDetailsOptions=!data.showItemDetailsOptions;">
+                                            <span class="fui-calendar"></span> Set due date</a>
+                                        </li>
                                         <li><a href="#" data-toggle="modal" data-target="#attachWorkflowModal"><span class="fui-calendar"></span> Add workflow</a></li>
-                                        <li><a href="javascript:;" class="text-danger" ng-click="deleteItem();data.showItemDetailsOptions=!data.showItemDetailsOptions"><span class="fui-trash text-danger"></span> Delete</a></li>
+                                        <li><a href="javascript:;" class="text-danger" ng-click="deleteItem();data.showItemDetailsOptions=!data.showItemDetailsOptions">
+                                            <span class="fui-trash text-danger"></span> Delete</a>
+                                        </li>
                                     </ul>
                                 </div>
                                 <div class="item-description-toggle" ng-hide="data.showEditItemDescriptionForm">
