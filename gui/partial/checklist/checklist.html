@@ -62,7 +62,9 @@
 			                	<span class="fui-list-columned"></span>
 			                	<span ng-bind="item.name"></span>
 			                </td>
+
 			                <td class="status text-right">
+			                	<button class="btn btn-xs" ng-class="{'btn-default': getItemDueDateStatus(item)==0, 'btn-danger': getItemDueDateStatus(item)==1}" ng-show="item.date_due" disabled>{{ item.date_due | date:'dd MMM' }}</button>
 			                	<span class="fui-check-inverted" ng-show="item.is_complete"></span>
 			                </td>
 			             </tr>
@@ -77,13 +79,18 @@
                         <div ng-show="data.selectedItem">
                             <h3><span ng-bind="data.selectedItem.name"></span>
                                 <div class="btn-group pull-right">
-                                    <a href="javascript:;" class="btn-silver btn-xs" data-toggle="tooltip" title="datepicker!" data-placement="bottom">25 June</a>
-                                    <a href="javascript:;" class="btn-silver btn-xs" data-toggle="tooltip" title="Part of Closing Group A" data-placement="bottom"><span class="fui-radio-checked"></span> A</a>
+                                    <a href="javascript:;" class="btn-silver btn-xs" data-toggle="tooltip" data-placement="bottom" ng-show="data.selectedItem.date_due">
+                                        {{ data.selectedItem.date_due | date:'dd MMMM' }}
+                                    </a>
+                                    <a href="javascript:;" class="btn-silver btn-xs" data-toggle="tooltip" title="Part of Closing Group {{ data.selectedItem.closing_group }}"
+                                       ng-show="data.selectedItem.closing_group" data-placement="bottom">
+                                        <span class="fui-radio-checked"></span> {{ data.selectedItem.closing_group }}
+                                    </a>
                                     <a href="javascript:;" class="btn-silver btn-xs" class="dropdown-toggle" data-toggle="dropdown" ng-click="data.showItemDetailsOptions=!data.showItemDetailsOptions">Options</a>
                                     <ul class="dropdown-menu dropdown-small dropdown-inverse" ng-show="data.showItemDetailsOptions">
-                                        <li><a href="#"><span class="fui-calendar"></span> Set due date</a></li>
+                                        <li><a href="javascript:;" ng-click="data.selectedItem.date_due='2014-03-01 00:00';saveSelectedItem();data.showItemDetailsOptions=!data.showItemDetailsOptions;"><span class="fui-calendar"></span> Set due date</a></li>
                                         <li><a href="#" data-toggle="modal" data-target="#attachWorkflowModal"><span class="fui-calendar"></span> Add workflow</a></li>
-                                        <li><a href="javascript:;" class="text-danger" ng-click="deleteItem()"><span class="fui-trash text-danger"></span> Delete</a></li>
+                                        <li><a href="javascript:;" class="text-danger" ng-click="deleteItem();data.showItemDetailsOptions=!data.showItemDetailsOptions"><span class="fui-trash text-danger"></span> Delete</a></li>
                                     </ul>
                                 </div>
                                 <div class="item-description-toggle" ng-hide="data.showEditItemDescriptionForm">
@@ -117,7 +124,7 @@
 										<div class="tools">
 											<a href="#" class="btn btn-link btn-xs"  data-toggle="modal" data-target="#viewDocumentModal">View</a>
 											<a href="#" class="btn btn-link btn-xs" data-toggle="modal" data-target="#requestReviewModal">Request Review</a>
-											<a href="#" class="btn btn-link-success btn-xs pull-right"><span class="fui-check-inverted"></span> Mark as Final</a>
+											<a href="javascript:;" class="btn btn-link-success btn-xs pull-right" ng-click="data.selectedItem.is_final=true;saveSelectedItem();"><span class="fui-check-inverted"></span> Mark as Final</a>
 										</div>
 									</div>
 								</li>
