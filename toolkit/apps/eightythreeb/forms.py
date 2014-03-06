@@ -458,16 +458,17 @@ class TrackingCodeForm(ModalForm, forms.ModelForm):
         model = EightyThreeB
 
     def __init__(self, *args, **kwargs):
-        self.helper = FormHelper()
-        self.helper.form_action = reverse('eightythreeb:tracking_code', kwargs={'slug': kwargs['instance'].slug})
+        super(TrackingCodeForm, self).__init__(*args, **kwargs)
 
         self.helper.layout = Layout(
             'tracking_code',
         )
 
-        super(TrackingCodeForm, self).__init__(*args, **kwargs)
-
         self.fields['tracking_code'].initial = self.instance.tracking_code
+
+    @property
+    def action_url(self):
+        return reverse('eightythreeb:tracking_code', kwargs={'slug': self.instance.slug})
 
     def clean_tracking_code(self):
         tracking_code = self.cleaned_data.get('tracking_code')
