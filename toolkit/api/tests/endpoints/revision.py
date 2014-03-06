@@ -101,13 +101,13 @@ class ItemRevisionTest(BaseEndpointTest):
         self.assertTrue(all(i.pk == c+1 for c, i in enumerate(self.item.revision_set.all())))
 
 
-class RevisionExecutedFileAsUrlTest(BaseEndpointTest, LiveServerTestCase):
+class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerTestCase):
     @property
     def endpoint(self):
         return reverse('matter_item_revision', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug})
 
     def setUp(self):
-        super(RevisionExecutedFileAsUrlTest, self).setUp()
+        super(RevisionExecutedFileAsUrlOrMultipartDataTest, self).setUp()
         # setup the items for testing
         self.item = mommy.make('item.Item', matter=self.matter, name='Test Item with Revision', category=None)
         revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
