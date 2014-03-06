@@ -27,7 +27,11 @@ class HyperlinkedFileField(serializers.FileField):
             except ValueError:
                 logger.info('No url associated with this file: %s' % value)
                 pass
-
+        #
+        # NB this must return None!
+        # else it will raise attribute has no file associated with it
+        # errors
+        #
         return None
 
 
@@ -60,6 +64,12 @@ class HyperlinkedAutoDownloadFileField(serializers.URLField):
                 # is probably a normal file at this point but jsut continue to be safe
                 #
                 logger.info('HyperlinkedAutoDownloadFileField field.name is not a url: %s' % field)
+        #
+        # NB this must return None!
+        # else it will raise attribute has no file associated with it
+        # errors
+        #
+        return None
 
 
 class RevisionSerializer(serializers.HyperlinkedModelSerializer):
