@@ -9,8 +9,8 @@ import os
 
 from storages.backends.s3boto import S3BotoStorage
 
-from crispy_forms.helper import FormHelper, Layout
-from crispy_forms.layout import ButtonHolder, Div, Field, Fieldset, HTML, Submit
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import ButtonHolder, Div, Field, Fieldset, HTML, Layout, Submit
 
 from parsley.decorators import parsleyfy
 
@@ -89,6 +89,8 @@ class AccountSettingsForm(forms.ModelForm):
 
 @parsleyfy
 class ChangePasswordForm(ModalForm, SetPasswordForm):
+    title = "Chnage your password"
+
     new_password1 = forms.CharField(
         error_messages={
             'required': "New password can't be blank."
@@ -110,8 +112,7 @@ class ChangePasswordForm(ModalForm, SetPasswordForm):
     )
 
     def __init__(self, *args, **kwargs):
-        self.helper = FormHelper()
-        self.helper.form_action = reverse('me:change-password')
+        super(ChangePasswordForm, self).__init__(*args, **kwargs)
 
         self.helper.layout = Layout(
             Fieldset(
@@ -121,7 +122,9 @@ class ChangePasswordForm(ModalForm, SetPasswordForm):
             )
         )
 
-        super(ChangePasswordForm, self).__init__(*args, **kwargs)
+    @property
+    def action_url(self):
+        return reverse('me:change-password')
 
 
 @parsleyfy
