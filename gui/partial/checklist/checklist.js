@@ -4,10 +4,11 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 	'$routeParams',
 	'ezConfirm',
 	'toaster',
+	'$modal',
 	'matterService',
 	'matterItemService',
 	'matterCategoryService',
-	function($scope, $rootScope, $routeParams, ezConfirm, toaster, matterService, matterItemService, matterCategoryService){
+	function($scope, $rootScope, $routeParams, ezConfirm, toaster, $modal, matterService, matterItemService, matterCategoryService){
 	$scope.data = {
 		'slug': $routeParams.matterSlug,
 		'matter': {},
@@ -270,6 +271,40 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 				},
 				function error(err) {
 					toaster.pop('error', "Error!", "Unable to upload revision");
+				}
+			);
+		};
+
+		/**
+		 * Initiate the process of requesting reviews from existing participants or new participants
+		 * @return {[type]} [description]
+		 */
+		$scope.requestRevision = function( checklistItem ) {
+			var modalInstance = $modal.open({
+				'templateUrl': '/static/ng/partial/request-revision/request-revision.html',
+				'controller': 'RequestrevisionCtrl',
+				'resolve': {
+					'participants': function () {
+						return $scope.data.matter.participants;
+					},
+					'currentUser': function () {
+						return $scope.data.matter.current_user;
+					},
+					'matter': function () {
+						return $scope.data.matter;
+					},
+					'checklistItem': function () {
+						return checklistItem;
+					}
+				}
+			});
+
+			modalInstance.result.then(
+				function ok(selectedItem) {
+					
+				},
+				function cancel() {
+					//
 				}
 			);
 		};
