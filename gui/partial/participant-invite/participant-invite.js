@@ -15,10 +15,6 @@ angular.module('toolkit-gui').controller('ParticipantInviteCtrl',[
 			'invitee': { 'email': '', 'message': '' }
 		};
 
-		$scope.ok = function () {
-			$modalInstance.close( $scope.participants );
-		};
-
 		$scope.invite = function () {
 			participantService.invite( matter.selected.slug, $scope.data.invitee ).then(
 				function success() {
@@ -39,6 +35,10 @@ angular.module('toolkit-gui').controller('ParticipantInviteCtrl',[
 					toaster.pop('error', "Error!", "Unable to invite this person to particpate, please try again in a few moments");
 				}
 			);
+		};
+
+		$scope.ok = function () {
+			$modalInstance.close( $scope.participants );
 		};
 
 		$scope.cancel = function () {
