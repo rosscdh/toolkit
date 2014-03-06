@@ -12,6 +12,7 @@ angular.module('toolkit-gui').controller('RequestrevisionCtrl',[
 		$scope.participants = angular.copy(participants);
 		$scope.currentUser = currentUser;
 		$scope.matter = matter;
+		$scope.checklistItem = checklistItem;
 
 		$scope.data = {
 			'inviteExternal': false,
