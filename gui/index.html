@@ -60,6 +60,7 @@
   <script src="/static/ng/partial/closing/closing.js"></script>
   <script src="/static/ng/partial/navigation/navigation.js"></script>
   <script src="/static/ng/partial/participant-invite/participant-invite.js"></script>
+  <script src="/static/ng/partial/request-revision/request-revision.js"></script>
   <!-- Add New Partial JS Above -->
 
   <div class="navbar navbar-inverse checklist-nav" ng-controller="NavigationCtrl">
@@ -119,10 +120,7 @@
     <!--/.navbar-collapse -->
   </div>
 
-  <div ng-view="">
-
-</div>
-<script type="text/javascript" src="//api.filepicker.io/v1/filepicker.js"></script>
-{% endverbatim %}
-</body>
+  <div ng-view="" class="full">
+  <script type="text/javascript" src="//api.filepicker.io/v1/filepicker.js"></script>
+</div>{% endverbatim %}</body>
 </html>

@@ -1,20 +1,21 @@
 angular.module('toolkit-gui').controller('ChecklistCtrl', [
-    '$scope',
-    '$rootScope',
-    '$routeParams',
-    'ezConfirm',
+	'$scope',
+	'$rootScope',
+	'$routeParams',
+	'ezConfirm',
 	'toaster',
-    'matterService',
-    'matterItemService',
-    'matterCategoryService',
-    function($scope, $rootScope, $routeParams, ezConfirm, toaster, matterService, matterItemService, matterCategoryService){
+	'$modal',
+	'matterService',
+	'matterItemService',
+	'matterCategoryService',
+	function($scope, $rootScope, $routeParams, ezConfirm, toaster, $modal, matterService, matterItemService, matterCategoryService){
 	$scope.data = {
 		'slug': $routeParams.matterSlug,
 		'matter': {},
 		'showAddForm': null,
-        'showItemDetailsOptions': false,
-        'selectedItem': null,
-        'selectedCategory': null,
+		'showItemDetailsOptions': false,
+		'selectedItem': null,
+		'selectedCategory': null,
 		'categories': [],
 		'users': [
 			{ 'name': 'Sam Jackson', 'img': 'https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash3/t1/c0.0.100.100/p100x100/1014416_10100118438650161_136799916_a.jpg' },
@@ -56,7 +57,7 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 				// Allocate items to specific categories to make multiple arrays
 				jQuery.each( matter.categories, function( index, cat ) {
 					var categoryName = cat;
-                    var items = jQuery.grep( matter.items, function( item ){ return item.category===categoryName; } );
+					var items = jQuery.grep( matter.items, function( item ){ return item.category===categoryName; } );
 					categories.push( { 'name': categoryName, 'items': items } );
 				});
 
@@ -70,7 +71,7 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 			}
 		};
 
-        /* Begin item handling */
+		/* Begin item handling */
 		$scope.submitNewItem = function(category) {
 		   if ($scope.data.newItemName) {
 			 matterItemService.create($scope.data.newItemName, category.name).then(
@@ -90,8 +91,8 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 			$scope.data.selectedItem = item;
 			$scope.data.selectedCategory = category;
 
-            //Reset controls
-            $scope.data.showEditItemDescriptionForm = false;
+			//Reset controls
+			$scope.data.showEditItemDescriptionForm = false;
 		};
 
 		$scope.deleteItem = function() {
@@ -123,70 +124,70 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 			}
 		};
 
-        $scope.saveSelectedItem = function () {
-            if ($scope.data.selectedItem) {
-                matterItemService.update($scope.data.selectedItem).then(
-                    function success(item){
-                        //Reinitiate selected item
-                        $scope.data.selectedItem = item;
-                    },
-                    function error(err){
-                        toaster.pop('error', "Error!", "Unable to update item");
-                    }
-                );
-            }
-        };
+		$scope.saveSelectedItem = function () {
+			if ($scope.data.selectedItem) {
+				matterItemService.update($scope.data.selectedItem).then(
+					function success(item){
+						//Reinitiate selected item
+						$scope.data.selectedItem = item;
+					},
+					function error(err){
+						toaster.pop('error', "Error!", "Unable to update item");
+					}
+				);
+			}
+		};
 
-        $scope.getItemDueDateStatus = function (item) {
-            if (item.date_due) {
-                var curr_date = new Date();
-                var item_date = new Date(item.date_due);
+		$scope.getItemDueDateStatus = function (item) {
+			if (item.date_due) {
+				var curr_date = new Date();
+				var item_date = new Date(item.date_due);
 
-                if (curr_date <= item_date){
-                    return $rootScope.STATUS_LEVEL.OK;
-                } else {
-                    return $rootScope.STATUS_LEVEL.WARNING;
-                }
-            }
+				if (curr_date <= item_date){
+					return $rootScope.STATUS_LEVEL.OK;
+				} else {
+					return $rootScope.STATUS_LEVEL.WARNING;
+				}
+			}
 
-            return $rootScope.STATUS_LEVEL.OK;
-        };
-        /* End item handling */
+			return $rootScope.STATUS_LEVEL.OK;
+		};
+		/* End item handling */
 
-        /* Begin CRUD Category */
-        $scope.submitNewCategory = function() {
-           if ($scope.data.newCatName) {
-             matterCategoryService.create($scope.data.newCatName).then(
-                 function success(){
-                    $scope.data.categories.unshift({'name': $scope.data.newCatName, 'items': []});
-                    $scope.data.newCatName = '';
+		/* Begin CRUD Category */
+		$scope.submitNewCategory = function() {
+		   if ($scope.data.newCatName) {
+			 matterCategoryService.create($scope.data.newCatName).then(
+				 function success(){
+					$scope.data.categories.unshift({'name': $scope.data.newCatName, 'items': []});
+					$scope.data.newCatName = '';
 
-                 },
-                 function error(err){
-                    toaster.pop('error', "Error!", "Unable to create a new category");
-                 }
-             );
-             $scope.data.showCategoryAddForm = null;
-           }
-        };
+				 },
+				 function error(err){
+					toaster.pop('error', "Error!", "Unable to create a new category");
+				 }
+			 );
+			 $scope.data.showCategoryAddForm = null;
+		   }
+		};
 
-        $scope.deleteCategory = function(cat) {
-            matterCategoryService.delete(cat).then(
-                function success(){
-                    var index = $scope.data.categories.indexOf(cat);
-                    $scope.data.categories.splice(index,1);
+		$scope.deleteCategory = function(cat) {
+			matterCategoryService.delete(cat).then(
+				function success(){
+					var index = $scope.data.categories.indexOf(cat);
+					$scope.data.categories.splice(index,1);
 
-                    if (cat === $scope.data.selectedCategory){
-                        $scope.data.selectedItem = null;
-                    }
-                },
-                function error(err){
-                    toaster.pop('error', "Error!", "Unable to delete category");
-                }
-            );
-        };
+					if (cat === $scope.data.selectedCategory){
+						$scope.data.selectedItem = null;
+					}
+				},
+				function error(err){
+					toaster.pop('error', "Error!", "Unable to delete category");
+				}
+			);
+		};
 
-        $scope.showEditCategoryForm = function(index) {
+		$scope.showEditCategoryForm = function(index) {
 			if ($scope.data.showEditCategoryForm !== index) {
 				$scope.data.showEditCategoryForm = index;
 			}
@@ -195,95 +196,129 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 			}
 		};
 
-        $scope.editCategory = function(cat) {
-            matterCategoryService.update(cat.name, $scope.data.newCategoryName).then(
-                function success(){
-                    cat.name = $scope.data.newCategoryName;
-                },
-                function error(err){
-                    toaster.pop('error', "Error!", "Unable to edit category");
-                }
-            );
-            $scope.data.showEditCategoryForm = null;
-        };
-        /* End CRUD Category */
+		$scope.editCategory = function(cat) {
+			matterCategoryService.update(cat.name, $scope.data.newCategoryName).then(
+				function success(){
+					cat.name = $scope.data.newCategoryName;
+				},
+				function error(err){
+					toaster.pop('error', "Error!", "Unable to edit category");
+				}
+			);
+			$scope.data.showEditCategoryForm = null;
+		};
+		/* End CRUD Category */
 
-        function recalculateCategories( evt, ui ) {
-            var cats = $scope.data.categories;
-            var categoryName, items = [], item, i;
-            var APIUpdate = {
-                'categories': [],
-                'items': []
-            };
-            var itemToUpdate = null;
+		function recalculateCategories( evt, ui ) {
+			var cats = $scope.data.categories;
+			var categoryName, items = [], item, i;
+			var APIUpdate = {
+				'categories': [],
+				'items': []
+			};
+			var itemToUpdate = null;
 
-            function getItemIDs( item ) {
-                return item.slug;
-            }
+			function getItemIDs( item ) {
+				return item.slug;
+			}
 
-            for(i =0;i<cats.length;i++) {
-                categoryName=cats[i].name;
-                items=cats[i].items;
+			for(i =0;i<cats.length;i++) {
+				categoryName=cats[i].name;
+				items=cats[i].items;
 
-                // Create API message
-                if(cats[i].name != null) {
-                    APIUpdate.categories.push(cats[i].name);
-                }
-                jQuery.merge(APIUpdate.items, jQuery.map( items, getItemIDs ));
+				// Create API message
+				if(cats[i].name != null) {
+					APIUpdate.categories.push(cats[i].name);
+				}
+				jQuery.merge(APIUpdate.items, jQuery.map( items, getItemIDs ));
 
-                // Update local data, setting category name
-                jQuery.each( items, function( index, item ){
-                    if (item.category !== categoryName){
-                        item.category = categoryName;
-                        itemToUpdate = item;
-                    }
-                });
-            }
+				// Update local data, setting category name
+				jQuery.each( items, function( index, item ){
+					if (item.category !== categoryName){
+						item.category = categoryName;
+						itemToUpdate = item;
+					}
+				});
+			}
 
-            matterService.saveSortOrder(APIUpdate).then(
-                 function success(){
-                    //if category changed for an item, save that
-                    if (itemToUpdate != null){
-                        matterItemService.update(itemToUpdate).then(
-                            function success(){
-                                // do nothing
-                            },
-                            function error(err){
-                                toaster.pop('error', "Error!", "Unable to update the order of items, please reload the page");
-                            }
-                    );
-                    }
-                 },
-                 function error(err){
-                    toaster.pop('error', "Error!", "Unable to update the order of items, please reload the page");
-                 }
-            );
-        }
+			matterService.saveSortOrder(APIUpdate).then(
+				 function success(){
+					//if category changed for an item, save that
+					if (itemToUpdate != null){
+						matterItemService.update(itemToUpdate).then(
+							function success(){
+								// do nothing
+							},
+							function error(err){
+								toaster.pop('error', "Error!", "Unable to update the order of items, please reload the page");
+							}
+					);
+					}
+				 },
+				 function error(err){
+					toaster.pop('error', "Error!", "Unable to update the order of items, please reload the page");
+				 }
+			);
+		}
 
-        $scope.processUpload = function( files, item ) {
-        	var matterSlug = $scope.data.slug;
-        	var itemSlug = item.slug;
+		$scope.processUpload = function( files, item ) {
+			var matterSlug = $scope.data.slug;
+			var itemSlug = item.slug;
 
-        	matterItemService.uploadRevision( matterSlug, itemSlug, files ).then(
-        		function success( response ) {
-        			// @TODO show in view
-        		},
-        		function error(err) {
-        			toaster.pop('error', "Error!", "Unable to upload revision");
-        		}
-        	);
-        };
+			matterItemService.uploadRevision( matterSlug, itemSlug, files ).then(
+				function success( response ) {
+					// @TODO show in view
+				},
+				function error(err) {
+					toaster.pop('error', "Error!", "Unable to upload revision");
+				}
+			);
+		};
 
-        // UI.sortable options
-        $scope.checklistItemSortableOptions = {
-            'stop':  recalculateCategories, /* Fires once the drag and drop event has finished */
-            'connectWith': ".group",
-            'axis': 'y'
-        };
+		/**
+		 * Initiate the process of requesting reviews from existing participants or new participants
+		 * @return {[type]} [description]
+		 */
+		$scope.requestRevision = function( checklistItem ) {
+			var modalInstance = $modal.open({
+				'templateUrl': '/static/ng/partial/request-revision/request-revision.html',
+				'controller': 'RequestrevisionCtrl',
+				'resolve': {
+					'participants': function () {
+						return $scope.data.matter.participants;
+					},
+					'currentUser': function () {
+						return $scope.data.matter.current_user;
+					},
+					'matter': function () {
+						return $scope.data.matter;
+					},
+					'checklistItem': function () {
+						return checklistItem;
+					}
+				}
+			});
 
-        $scope.checklistCategorySortableOptions = {
-            'stop':  recalculateCategories, /* Fires once the drag and drop event has finished */
-            'axis': 'y'
-        };
+			modalInstance.result.then(
+				function ok(selectedItem) {
+					
+				},
+				function cancel() {
+					//
+				}
+			);
+		};
+
+		// UI.sortable options
+		$scope.checklistItemSortableOptions = {
+			'stop':  recalculateCategories, /* Fires once the drag and drop event has finished */
+			'connectWith': ".group",
+			'axis': 'y'
+		};
+
+		$scope.checklistCategorySortableOptions = {
+			'stop':  recalculateCategories, /* Fires once the drag and drop event has finished */
+			'axis': 'y'
+		};
 
 }]);

@@ -48,6 +48,7 @@
 
   <!-- Directive JS -->
   <script src="<!-- @echo staticPath -->directive/form.js"></script>
+  <script src="<!-- @echo staticPath -->directive/filepicker.js"></script>
   <!-- Add New Directive JS Above -->
 
   <!-- Filter JS -->
@@ -59,6 +60,7 @@
   <script src="<!-- @echo staticPath -->partial/closing/closing.js"></script>
   <script src="<!-- @echo staticPath -->partial/navigation/navigation.js"></script>
   <script src="<!-- @echo staticPath -->partial/participant-invite/participant-invite.js"></script>
+  <script src="<!-- @echo staticPath -->partial/request-revision/request-revision.js"></script>
   <!-- Add New Partial JS Above -->
 
   <div class="navbar navbar-inverse checklist-nav" ng-controller="NavigationCtrl">
@@ -118,7 +120,7 @@
     <!--/.navbar-collapse -->
   </div>
 
-  <div ng-view>
+  <div ng-view class="full">
   <script type="text/javascript" src="//api.filepicker.io/v1/filepicker.js"></script>
 </body>
 </html>
