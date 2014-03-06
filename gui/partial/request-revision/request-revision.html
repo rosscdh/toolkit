@@ -1,22 +1,41 @@
 <div class="modal-content">
 	<div class="modal-header">
-		<h4 class="modal-title" id="myModalLabel">Request file for Shareholders Agreement</h4>
+		<h4 class="modal-title" id="myModalLabel">Request file for <span ng-bind="checklistItem.name"></span></h4>
 	</div>
+	<form name="requestForm" ng-submit="request()">
 	<div class="modal-body">
-		<h5 ng-show="participants.length>0">Existing members</h5>
-
-		<ul class="list-unstyled">
-			<li ng-repeat="person in participants">
-				<label ng-bind="person.first_name"></label>
-				<label ng-bind="person.last_name"></label>
-				<small ng-show="person.username==currentUser.username">(you)</small>
-				<a class="text-danger" ng-show="person.username!==currentUser.username" href="javascript:;" ng-click="revoke(person)"><small>Revoke access</small></a>
-			</li>
-		</ul>
+		<strong ng-show="participants.length>0">Existing members</strong>
+		
+			<ul class="list-unstyled">
+				<li ng-repeat="person in participants">
+					<label class="radio" ng-class="{'checked':person.username===data.request.person}">
+						<span class="icons">
+							<span class="first-icon fui-radio-unchecked"></span>
+							<span class="second-icon fui-radio-checked"></span>
+						</span>
+						<input type="radio" value="{{person.username}}" ng-model="data.request.person" name="participants">
+						<font ng-bind="person.first_name"></font> <font ng-bind="person.last_name"></font>
+					</label>
+				</li>
+				<li>
+					<label class="radio" ng-class="{'checked':data.request.person==''}">
+						<span class="icons"><span class="first-icon fui-radio-unchecked"></span><span class="second-icon fui-radio-checked"></span></span>
+						<input type="radio" ng-model="data.request.person" name="participants" value="">
+						External party <span class="fui-lock" data-toggle="tooltip" title="" data-original-title="Requesting a file from a third party does not give them access to this matter."></span>
+					</label>
+				</li>
+			</ul>
+			<div class="form-group" ng-show="data.request.person==''">
+				<input type="email" name="email" class="form-control form-control-full-width input-sm" ng-model="data.request.email" placeholder="email@gmail.com" ng-required="data.request.person==''" />
+			</div>
+			<div class="form-group">
+				<textarea class="form-control form-control-full-width" ng-model="data.request.message" placeholder="Add an optional message"></textarea>
+			</div>
 		
 	</div>
 	<div class="modal-footer">
-		<!--<button class="btn btn-primary" ng-click="ok()">OK</button>//-->
-		<button class="btn btn-default" ng-click="cancel()">Close</button>
+		<button class="btn btn-default" ng-click="cancel()">Cancel</button>
+		<button class="btn btn-primary" type="submit" ng-disabled="invalid()">Add matter participants</button>
 	</div>
+	</form>
 </div>
