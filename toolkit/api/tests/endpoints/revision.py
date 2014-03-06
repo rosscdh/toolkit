@@ -215,3 +215,6 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         self.assertEqual(resp.status_code, 201)  # created
         self.assertEqual(resp_json.get('slug'), 'v1')
         self.assertEqual(self.item.revision_set.all().count(), 1)
+        revision = self.item.revision_set.all().first()
+        self.assertEqual(revision.executed_file.name, 'executed_files/v1-1-%s-test-image.png' % self.lawyer.username)
+        self.assertEqual(revision.executed_file.url, 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-1-%s-test-image.png' % self.lawyer.username)
