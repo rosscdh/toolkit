@@ -169,7 +169,11 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         data = {
             'executed_file': expected_image_url,
         }
-
+        #
+        # @BUSINESSRULE if you are sending a url of a file that needs to be download
+        # ie. filepicker.io then the CONTENT_TYPE must be application/json and
+        # the field "executed_file": "http://example.com/myfile.pdf"
+        #
         resp = self.client.patch(self.endpoint, json.dumps(data), content_type='application/json')
         resp_json = json.loads(resp.content)
 
@@ -200,6 +204,11 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
             # NB. uploading files must be a patch
             #
             self.assertEqual(self.item.revision_set.all().count(), 0)
+            #
+            # @BUSINESSRULE if you are sending a binary file that needs to be download
+            # ie. plain post then the CONTENT_TYPE must be MULTIPART_CONTENT and
+            # the field "executed_file": a binary file object
+            #
             resp = self.client.post(self.endpoint, data, content_type=MULTIPART_CONTENT)
         resp_json = json.loads(resp.content)
 
