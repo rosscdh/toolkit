@@ -1,9 +1,17 @@
 # -*- coding: UTF-8 -*-
+from django.core.files import File
 from django.core.urlresolvers import reverse
+from django.core.validators import URLValidator
+from django.core.files.temp import NamedTemporaryFile
+
 
 from rest_framework import serializers
 
+from toolkit.core.attachment.tasks import _download_file
 from toolkit.core.attachment.models import Revision
+
+import logging
+logger = logging.getLogger('django.request')
 
 
 class HyperlinkedFileField(serializers.FileField): 
@@ -12,18 +20,48 @@ class HyperlinkedFileField(serializers.FileField):
     representation
     """
     def to_native(self, value):
-        request = self.context.get('request', None) 
-        if request is not None:
+        request = self.context.get('request', None)
+        if request is not None and value is not None:
             try:
-                return request.build_absolute_uri(value.url) 
+                return request.build_absolute_uri(value.url)
             except ValueError:
                 pass
 
         return None
 
 
+class HyperlinkedAutoDownloadFileField(serializers.URLField):
+#class HyperlinkedAutoDownloadFileField(serializers.FileField): 
+    """
+    Autodownload a file specified by a url
+    """
+    def field_to_native(self, obj, field_name):
+        field = getattr(obj, field_name)
+
+        try:
+            if field.name in [None, '']:
+                raise Exception('File has no name')
+            # Validate the url
+            URLValidator(field.name)
+            #
+            # Start download if the file does not exist
+            #
+            _download_file(url=field.name, obj=obj, obj_fieldname=field_name)
+            # set to blank so we dont get Suspicious operation on urls
+            field.file = File(NamedTemporaryFile())
+            setattr(obj, field_name, field)
+
+        except Exception as e:
+            #
+            # is probably a normal file at this point but jsut continue to be safe
+            #
+            logger.info('HyperlinkedAutoDownloadFileField field.name is not a url: %s' % field)
+
+        return super(HyperlinkedAutoDownloadFileField, self).field_to_native(obj, field_name)
+
+
 class RevisionSerializer(serializers.HyperlinkedModelSerializer):
-    executed_file = HyperlinkedFileField(allow_empty_file=True, required=False)
+    executed_file = HyperlinkedAutoDownloadFileField(required=False)
     item = serializers.HyperlinkedRelatedField(many=False, view_name='item-detail')
 
     reviewers = serializers.HyperlinkedRelatedField(many=True, view_name='user-detail', lookup_field='username')
@@ -45,6 +83,27 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
                   'reviewers', 'signatories',
                   'revisions', 'user_review_url',)
                   #'date_created', 'date_modified',)
+
+    def __init__(self, *args, **kwargs):
+
+        #
+        # If we are passing in a multipart form
+        #
+        if 'context' in kwargs and 'request' in kwargs['context'] and 'multipart/form-data;' in kwargs['context']['request'].content_type:
+            #
+            # set the executed_file field to be a seriallizer.FileField and behave like one of those
+            #
+            if kwargs['context']['request'].FILES:
+                self.base_fields['executed_file'] = serializers.FileField(allow_empty_file=True)
+
+        else:
+            # We are using a hyperlink because its a normal post/patch
+            #
+            # must handle switching it back
+            #
+            self.base_fields['executed_file'] = HyperlinkedAutoDownloadFileField(required=False)
+
+        super(RevisionSerializer, self).__init__(*args, **kwargs)
 
     def get_user_review_url(self, obj):
         """

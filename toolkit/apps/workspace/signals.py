@@ -86,9 +86,13 @@ def _update_marker(marker_name, next_status, actor_name, instance, **kwargs):
 #
 
 
-def _model_slug_exists(model, **kwargs):
+def _model_slug_exists(model, queryset=None, **kwargs):
+    #
+    # allow override of queryset
+    #
+    queryset = model.objects if queryset is None else queryset
     try:
-        return model.objects.get(**kwargs)
+        return queryset.get(**kwargs)
     except model.DoesNotExist:
         return None
 
