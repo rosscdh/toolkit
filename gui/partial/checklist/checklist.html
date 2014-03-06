@@ -101,9 +101,11 @@
                                 </div>
                                 <div class="item-description-toggle" ng-hide="data.showEditItemDescriptionForm">
                                     <small class="text-muted">
-                                        <p ng-bind="data.selectedItem.description"></p>
-                                        <a href="javascript:;" class="link" ng-click="data.showEditItemDescriptionForm=!data.showEditItemDescriptionForm;data.editItemDescription=data.selectedItem.description;">
-                                        Edit item description</a>
+                                        <a href="javascript:;" class="link"
+                                           ng-click="data.showEditItemDescriptionForm=!data.showEditItemDescriptionForm;data.editItemDescription=data.selectedItem.description;">
+                                            <btf-markdown ng-bind="data.selectedItem.description"></btf-markdown>
+                                            <span ng-hide="data.selectedItem.description">Enter item description</span>
+                                        </a>
                                     </small>
                                 </div>
                                 <div class="item-description" ng-show="data.showEditItemDescriptionForm">
