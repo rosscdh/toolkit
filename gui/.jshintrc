@@ -23,7 +23,8 @@
         "module": true,
         "inject": true,
         "it": true,
-        "expect": true
+        "expect": true,
+        "filepicker": true
     },
     "-W083": false
 }
