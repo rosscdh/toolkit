@@ -8,7 +8,8 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 	'matterService',
 	'matterItemService',
 	'matterCategoryService',
-	function($scope, $rootScope, $routeParams, ezConfirm, toaster, $modal, matterService, matterItemService, matterCategoryService){
+	'$timeout',
+	function($scope, $rootScope, $routeParams, ezConfirm, toaster, $modal, matterService, matterItemService, matterCategoryService, $timeout){
 	$scope.data = {
 		'slug': $routeParams.matterSlug,
 		'matter': {},
@@ -76,14 +77,13 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 		   if ($scope.data.newItemName) {
 			 matterItemService.create($scope.data.newItemName, category.name).then(
 				 function success(item){
-					category.items.push(item);
+					category.items.unshift(item);
 					$scope.data.newItemName = '';
 				 },
 				 function error(err){
 					toaster.pop('error', "Error!", "Unable to create new item");
 				 }
 			 );
-			 $scope.data.showAddForm = null;
 		   }
 		};
 
@@ -308,6 +308,12 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 				}
 			);
 		};
+
+        $scope.focus = function(name) {
+            $timeout(function (){
+              $scope.$broadcast('focusOn', name);
+            }, 300);
+        };
 
 		// UI.sortable options
 		$scope.checklistItemSortableOptions = {

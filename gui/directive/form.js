@@ -14,3 +14,16 @@ angular.module('toolkit-gui').directive('ngEnter', function () {
         });
     };
 });
+
+
+angular.module('toolkit-gui').directive('focusOn', function() {
+   return function(scope, elem, attr) {
+      scope.$on('focusOn', function(e, name) {
+        console.log("received broadcast: " + name);
+        console.log("waiting for broadcast: " + attr.focusOn);
+        if(name === attr.focusOn) {
+          elem[0].focus();
+        }
+      });
+   };
+});

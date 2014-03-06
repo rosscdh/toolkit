@@ -44,7 +44,7 @@
 			              	<td colspan="2">
 			              		<div class="input-group">
 					          	  	<input class="form-control input-sm" id="appendedInputButton-03" type="search" placeholder="Enter item name and press enter"
-                                           ng-model="data.newItemName" ng-enter="submitNewItem(cat)">
+                                           ng-model="data.newItemName" ng-enter="submitNewItem(cat)" ng-blur="data.showAddForm=null">
 					          	  	<div class="input-group-btn">
 					          	    	<button class="btn btn-link  dropdown-toggle input-sm" type="button" data-toggle="dropdown"><span class="fui-gear"></span></button>
 						          	  	<ul class="dropdown-menu dropdown-inverse dropdown-small">
@@ -79,7 +79,14 @@
                     <!-- begin item details //-->
 					<div class="col-sm-7">
                         <div ng-show="data.selectedItem">
-                            <h3><span ng-bind="data.selectedItem.name"></span>
+                            <h3>
+                                <a href="javascript:;" ng-click="data.editItemTitle=data.selectedItem.name;data.showEditItemTitleForm=!data.showEditItemTitleForm;focus('eventEditItemTitle')"
+                                        ng-hide="data.showEditItemTitleForm">
+                                    <span ng-bind="data.selectedItem.name"></span>
+                                </a>
+                                <input class="form-control input-sm" ng-show="data.showEditItemTitleForm" type="search"
+                                       ng-model="data.editItemTitle" ng-enter="data.selectedItem.name=data.editItemTitle;saveSelectedItem();data.showEditItemTitleForm=false"
+                                       ng-blur="data.showEditItemTitleForm=false" focus-on="eventEditItemTitle">
                                 <div class="btn-group pull-right">
                                     <a href="javascript:;" class="btn-silver btn-xs" data-toggle="tooltip" data-placement="bottom" ng-show="data.selectedItem.date_due">
                                         {{ data.selectedItem.date_due | date:'dd MMMM' }}
@@ -103,13 +110,14 @@
                                     <small class="text-muted">
                                         <a href="javascript:;" class="link"
                                            ng-click="data.showEditItemDescriptionForm=!data.showEditItemDescriptionForm;data.editItemDescription=data.selectedItem.description;">
-                                            <btf-markdown ng-bind="data.selectedItem.description"></btf-markdown>
+                                            <div btf-markdown="data.selectedItem.description | newlines"></div>
                                             <span ng-hide="data.selectedItem.description">Enter item description</span>
                                         </a>
                                     </small>
                                 </div>
                                 <div class="item-description" ng-show="data.showEditItemDescriptionForm">
-                                    <textarea class="form-control" rows="3" placeholder="Enter a description for this item" ng-model="data.editItemDescription"></textarea>
+                                    <textarea class="form-control" msd-elastic placeholder="Enter a description for this item"
+                                              ng-model="data.editItemDescription"></textarea>
                                     <a href="javascript:;" class="btn btn-primary btn-xs" ng-click="data.selectedItem.description=data.editItemDescription;saveSelectedItem();data.showEditItemDescriptionForm=false;">Save description</a>
                                     <a href="javascript:;" class="btn btn-inverse btn-xs item-description-cancel" ng-click="data.showEditItemDescriptionForm=false;">Cancel</a>
                                     <a href="javascript:;" class="btn btn-link btn-xs pull-right" title="Markdown help" onclick="alert('Markdown help popup like trello');">Formatting Help</a>
