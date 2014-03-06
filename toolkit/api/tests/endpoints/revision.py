@@ -104,10 +104,10 @@ class ItemRevisionTest(BaseEndpointTest):
         self.assertEqual(resp_json.get('slug'), 'v%s' % str(self.version_no + 1))
         self.assertEqual(self.item.revision_set.all().count(), self.expected_num + 1)
         # @BUSINESSRULE order is preserved, oldest to newest
-        self.assertTrue(all(i.pk == c+1 for c, i in enumerate(self.item.revision_set.all())))
+        self.assertTrue(all(i.slug == 'v%s' % str(c+1) for c, i in enumerate(self.item.revision_set.all())))
 
 
-class TestItemSubRevision(ItemRevisionTest):
+class ItemSubRevision2Test(ItemRevisionTest):
     version_no = 2
     expected_num = 2
 
@@ -116,10 +116,25 @@ class TestItemSubRevision(ItemRevisionTest):
         return reverse('matter_item_specific_revision', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug, 'version': self.version_no})
 
     def setUp(self):
-        super(TestItemSubRevision, self).setUp()
+        super(ItemSubRevision2Test, self).setUp()
         # setup the items for testing
         self.item = mommy.make('item.Item', matter=self.matter, name='Test Item with Revision', category=None)
-        revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
+        mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
+
+    def test_endpoint_name(self):
+        self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/items/%s/revision/v%d' % (self.item.slug, self.version_no))
+
+
+class ItemSubRevision3Test(ItemSubRevision2Test):
+    version_no = 3
+    expected_num = 3
+
+    def setUp(self):
+        super(ItemSubRevision3Test, self).setUp()
+        # setup the items for testing
+        self.item = mommy.make('item.Item', matter=self.matter, name='Test Item with Revision', category=None)
+        mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
+        mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
 
     def test_endpoint_name(self):
         self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/items/%s/revision/v%d' % (self.item.slug, self.version_no))
