@@ -366,8 +366,9 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
     def get_serializer(self, instance=None, data=None,
                        files=None, many=False, partial=False):
         # pop it
-        data['item'] = ItemSerializer(self.item).data.get('url')
-        data['uploaded_by'] = UserSerializer(self.request.user).data.get('url')
+        if data is not None:
+            data['item'] = ItemSerializer(self.item).data.get('url')
+            data['uploaded_by'] = UserSerializer(self.request.user).data.get('url')
 
         return super(ItemCurrentRevisionView, self).get_serializer(instance=instance, data=data,
                                                                    files=files, many=many, partial=partial)
@@ -393,6 +394,8 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
         else:
             # get,patch
             self.revision = self.get_revision()
+            if self.request.method in ['GET'] and self.revision is None:
+                raise Http404
 
         return self.revision
 

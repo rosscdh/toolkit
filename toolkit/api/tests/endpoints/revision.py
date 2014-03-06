@@ -47,8 +47,11 @@ class ItemRevisionTest(BaseEndpointTest):
         """
         should return 404 if not present
         """
+        self.item.revision_set.all().delete()
+
         self.client.login(username=self.lawyer.username, password=self.password)
         resp = self.client.get(self.endpoint)
+
         self.assertEqual(resp.status_code, 404)  # not found
 
     def test_revision_get(self):
