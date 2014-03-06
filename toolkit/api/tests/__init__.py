@@ -5,4 +5,4 @@ from .endpoints.item import (ItemsTest, ItemDetailTest)
 from .endpoints.sort import (MatterSortTest,)
 from .endpoints.participant import (MatterParticipantTest,)
 from .endpoints.category import (MatterCategoryTest,)
-from .endpoints.revision import (ItemRevisionTest,)
+from .endpoints.revision import *

@@ -12,7 +12,7 @@ from rulez import registry as rulez_registry
 from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework import exceptions
-from rest_framework import parsers
+
 from rest_framework.response import Response
 from rest_framework import status as http_status
 from rest_framework.renderers import UnicodeJSONRenderer
@@ -22,10 +22,8 @@ from toolkit.apps.workspace.models import Workspace
 
 from toolkit.apps.review.models import ReviewDocument
 
-from toolkit.core.attachment import tasks
-from toolkit.core.attachment.models import Revision
-
 from toolkit.core.item.models import Item
+from toolkit.core.attachment.models import Revision
 from toolkit.core.item.mailers import SignatoryReminderEmail
 from toolkit.apps.review.mailers import ReviewerReminderEmail
 
@@ -353,13 +351,33 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
     """
     #parser_classes = (parsers.FileUploadParser,) # his will obly be necessary if we stop using filepicker.io which passes us a url
 
-    model = Item  # to allow us to use get_object generically
+    model = Revision  # to allow us to use get_object generically
     serializer_class = RevisionSerializer  # as we are returning the revision and not the item
     lookup_field = 'slug'
     lookup_url_kwarg = 'item_slug'
 
+    def initial(self, request, *args, **kwargs):
+        self.get_object()
+        super(ItemCurrentRevisionView, self).initial(request, *args, **kwargs)
+
     def get_serializer_context(self):
         return {'request': self.request}
+
+    def get_serializer(self, instance=None, data=None,
+                       files=None, many=False, partial=False):
+        # pop it
+        data['item'] = ItemSerializer(self.item).data.get('url')
+        data['uploaded_by'] = UserSerializer(self.request.user).data.get('url')
+
+        return super(ItemCurrentRevisionView, self).get_serializer(instance=instance, data=data,
+                                                                   files=files, many=many, partial=partial)
+
+    def pre_save(self, obj):
+        """
+        @BUSINESSRULE Enforce the revision.uploaded_by and revision.item
+        """
+        obj.item = self.item
+        obj.uploaded_by = self.request.user
 
     def get_revision(self):
         return self.item.latest_revision
@@ -370,44 +388,45 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
         but return the Revision object as self.object
         """
         self.item = super(ItemCurrentRevisionView, self).get_object()
-        self.revision = self.get_revision()
-
-        if self.revision is not None:
-            return self.revision
+        if self.request.method in ['POST']:
+            self.revision = Revision(uploaded_by=self.request.user, item=self.item)
         else:
-            raise Http404
+            # get,patch
+            self.revision = self.get_revision()
 
-    def validate_filepicker_file(self, filedict):
-        validate = URLValidator()
-        try:
-            validate(filedict.get('url'))
+        return self.revision
 
-        except ValidationError, e:
-            raise Exception('The given url is not valid')
+    # def validate_filepicker_file(self, filedict):
+    #     validate = URLValidator()
+    #     try:
+    #         validate(filedict.get('url'))
 
-    def create(self, request, **kwargs):
-        self.get_object()
-        data = request.DATA.copy()
+    #     except ValidationError, e:
+    #         raise Exception('The given url is not valid')
 
-        #Just handle the first file
-        #import pdb;pdb.set_trace()
-        # if data.get('executed_file') is None or len(data.get('executed_file')) != 1:
-        #     raise exceptions.ParseError('request.DATA must be: {"executed_file": []} with exactly one object.')
-        if data.get('executed_file', None) is not None:
-            filedict = data.get('executed_file')
-            self.validate_filepicker_file(filedict=filedict)
-            tasks._download_file(filedict, revision)
+    # def create(self, request, **kwargs):
+    #     self.get_object()
+    #     data = request.DATA.copy()
 
-        revision = Revision(item=self.item, uploaded_by=self.request.user)
-        serializer = self.get_serializer(revision)
+    #     #Just handle the first file
+    #     #import pdb;pdb.set_trace()
+    #     # if data.get('executed_file') is None or len(data.get('executed_file')) != 1:
+    #     #     raise exceptions.ParseError('request.DATA must be: {"executed_file": []} with exactly one object.')
+    #     if data.get('executed_file', None) is not None:
+    #         filedict = data.get('executed_file')
+    #         self.validate_filepicker_file(filedict=filedict)
+    #         tasks._download_file(filedict, revision)
 
-        if serializer.is_valid():
-            serializer.save()
-            headers = self.get_success_headers(serializer.data)
+    #     revision = Revision(item=self.item, uploaded_by=self.request.user)
+    #     serializer = self.get_serializer(revision)
 
-            return Response(serializer.data, status=http_status.HTTP_201_CREATED, headers=headers)
-        import pdb;pdb.set_trace()
-        return Response(serializer.data, status=http_status.HTTP_406_NOT_ACCEPTABLE, headers=headers)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         headers = self.get_success_headers(serializer.data)
+
+    #         return Response(serializer.data, status=http_status.HTTP_201_CREATED, headers=headers)
+
+    #     return Response(serializer.data, status=http_status.HTTP_406_NOT_ACCEPTABLE, headers=headers)
 
     def can_read(self, user):
         return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
