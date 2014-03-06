@@ -31,7 +31,7 @@ def ensure_revision_slug(sender, instance, **kwargs):
             revision_id = int(instance.get_revision_id())
             final_slug = instance.get_revision_label(version=revision_id)
 
-            while _model_slug_exists(model=Revision, queryset=Revision.objects.exclude(item=instance.item), slug=final_slug):
+            while _model_slug_exists(model=Revision, queryset=Revision.objects.filter(item=instance.item), slug=final_slug):
                 logger.info('Revision.slug %s exists, trying to create another' % final_slug)
                 final_slug = instance.get_revision_label(version=(revision_id + 1))
 

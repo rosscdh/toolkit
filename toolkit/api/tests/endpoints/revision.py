@@ -28,6 +28,8 @@ class ItemRevisionTest(BaseEndpointTest):
         "items": [2,5,7,1,12,22,4]
     }
     """
+    version_no = 1
+    expected_num = 1
     # fixtures = ['sites', 'tools', 'dev-fixtures']
 
     @property
@@ -68,7 +70,7 @@ class ItemRevisionTest(BaseEndpointTest):
         # it is the correct url for this specific user
         self.assertEqual(resp_json.get('user_review_url'), document_review.get_absolute_url(user=self.lawyer))
 
-    def test_revision_post(self):
+    def test_revision_post_with_url(self):
         self.client.login(username=self.lawyer.username, password=self.password)
 
         data = {
@@ -80,14 +82,14 @@ class ItemRevisionTest(BaseEndpointTest):
         resp_json = json.loads(resp.content)
 
         self.assertEqual(resp.status_code, 201)  # created
-        self.assertEqual(resp_json.get('slug'), 'v1')
-        self.assertEqual(self.item.revision_set.all().count(), 1)
+        self.assertEqual(resp_json.get('slug'), 'v%d' % self.version_no)
+        self.assertEqual(self.item.revision_set.all().count(), self.expected_num)
 
-    def test_revision_post_increment(self):
+    def test_revision_post_increment_with_url(self):
         self.client.login(username=self.lawyer.username, password=self.password)
         # set up a preexisting revision
-        revision = mommy.make('attachment.Revision', executed_file=None, slug='v1', item=self.item, uploaded_by=self.lawyer)
-        self.assertEqual(self.item.revision_set.all().count(), 1)
+        revision = mommy.make('attachment.Revision', executed_file=None, item=self.item, uploaded_by=self.lawyer)
+        self.assertEqual(self.item.revision_set.all().count(), self.expected_num)
 
         data = {
             'item': ItemSerializer(self.item).data.get('url'),
@@ -98,10 +100,29 @@ class ItemRevisionTest(BaseEndpointTest):
         resp_json = json.loads(resp.content)
 
         self.assertEqual(resp.status_code, 201)  # created
-        self.assertEqual(resp_json.get('slug'), 'v2')
-        self.assertEqual(self.item.revision_set.all().count(), 2)
+
+        self.assertEqual(resp_json.get('slug'), 'v%s' % str(self.version_no + 1))
+        self.assertEqual(self.item.revision_set.all().count(), self.expected_num + 1)
         # @BUSINESSRULE order is preserved, oldest to newest
         self.assertTrue(all(i.pk == c+1 for c, i in enumerate(self.item.revision_set.all())))
+
+
+class TestItemSubRevision(ItemRevisionTest):
+    version_no = 2
+    expected_num = 2
+
+    @property
+    def endpoint(self):
+        return reverse('matter_item_specific_revision', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug, 'version': self.version_no})
+
+    def setUp(self):
+        super(TestItemSubRevision, self).setUp()
+        # setup the items for testing
+        self.item = mommy.make('item.Item', matter=self.matter, name='Test Item with Revision', category=None)
+        revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
+
+    def test_endpoint_name(self):
+        self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/items/%s/revision/v%d' % (self.item.slug, self.version_no))
 
 
 class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerTestCase):
@@ -170,5 +191,3 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         self.assertEqual(resp.status_code, 201)  # created
         self.assertEqual(resp_json.get('slug'), 'v1')
         self.assertEqual(self.item.revision_set.all().count(), 1)
-
-
