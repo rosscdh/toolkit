@@ -300,8 +300,8 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 			});
 
 			modalInstance.result.then(
-				function ok(selectedItem) {
-					
+				function ok( details ) {
+					console.log( details );
 				},
 				function cancel() {
 					//
