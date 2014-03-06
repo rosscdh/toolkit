@@ -1,0 +1,22 @@
+<div class="modal-content">
+	<div class="modal-header">
+		<h4 class="modal-title" id="myModalLabel">Request file for Shareholders Agreement</h4>
+	</div>
+	<div class="modal-body">
+		<h5 ng-show="participants.length>0">Existing members</h5>
+
+		<ul class="list-unstyled">
+			<li ng-repeat="person in participants">
+				<label ng-bind="person.first_name"></label>
+				<label ng-bind="person.last_name"></label>
+				<small ng-show="person.username==currentUser.username">(you)</small>
+				<a class="text-danger" ng-show="person.username!==currentUser.username" href="javascript:;" ng-click="revoke(person)"><small>Revoke access</small></a>
+			</li>
+		</ul>
+		
+	</div>
+	<div class="modal-footer">
+		<!--<button class="btn btn-primary" ng-click="ok()">OK</button>//-->
+		<button class="btn btn-default" ng-click="cancel()">Close</button>
+	</div>
+</div>

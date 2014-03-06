@@ -4,7 +4,7 @@
 		<div class="sub">A Matter Participant is a high level user who can see the checklist and the revisions that have been added. This should be <u>your client</u> and your <u>co-counsel</u> only.</div>
 	</div>
 	<div class="modal-body">
-		<h5>Existing Participants</h5>
+		<h5 ng-show="participants.length>0">Existing Participants</h5>
 		<ul class="list-unstyled">
 			<li ng-repeat="person in participants">
 				<label ng-bind="person.first_name"></label>

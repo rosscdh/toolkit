@@ -114,11 +114,11 @@
                                 </div>
                             </h3>
                             <div class="add-new text-center">
-                                <!--<div class="fui-upload"></div>//-->
+                                <div class="fui-upload"></div>
                                 <!--<a href="" class="btn btn-sm btn-add-new"> Upload Revision</a>//-->
                                 <span filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)" btnclasses="'btn-sm btn-add-new'"><span class="fui-upload"></span> Upload Revision</span>
 
-                                <a href="" class="btn btn-sm btn-add-new" data-toggle="modal" data-target="#requestFileModal"><span class="fui-user"></span> Request Revision</a>
+                                <a href="javascript:;" class="btn btn-sm btn-add-new" data-toggle="modal" data-target="#requestFileModal" ng-click="requestRevision(data.selectedItem)"><span class="fui-user"></span> Request Revision</a>
                             </div>
 
                             <ul class="revisions list-unstyled">
