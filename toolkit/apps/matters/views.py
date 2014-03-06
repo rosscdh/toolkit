@@ -64,11 +64,6 @@ class MatterCreateView(ModalView, AjaxModelFormView, CreateView):
         kwargs['user'] = self.request.user
         return kwargs
 
-    def form_valid(self, form):
-        response = super(MatterCreateView, self).form_valid(form)
-        messages.success(self.request, 'You have sucessfully created a new matter')
-        return response
-
     def get_success_url(self):
         return reverse('matter:detail', kwargs={'matter_slug': self.object.slug})
 
@@ -83,29 +78,14 @@ class MatterUpdateView(ModalView, AjaxModelFormView, UpdateView):
         kwargs['user'] = self.request.user
         return kwargs
 
-    def form_valid(self, form):
-        response = super(MatterUpdateView, self).form_valid(form)
-        messages.success(self.request, 'You have sucessfully updated the matter')
-        return response
-
     def get_success_url(self):
-        return reverse('matter:detail', kwargs={'matter_slug': self.object.slug})
+        return reverse('matter:list')
 
 
-class MatterDeleteView(ModalView, AjaxFormView, DeleteView):
+class MatterDeleteView(ModalView, DeleteView):
     model = Workspace
     slug_url_kwarg = 'matter_slug'
     template_name = 'matters/matter_confirm_delete.html'
-
-    def delete(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        success_url = self.get_success_url()
-        self.object.delete()
-
-        return self.render_to_json_response({
-            'redirect': True,
-            'url': success_url
-        })
 
     def get_success_url(self):
         return reverse('matter:list')

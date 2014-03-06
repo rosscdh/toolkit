@@ -4,7 +4,7 @@ from django import forms
 from django.core.urlresolvers import reverse
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Div, HTML, Layout
+from crispy_forms.layout import Button, Layout
 
 from parsley.decorators import parsleyfy
 
@@ -34,7 +34,6 @@ class MatterForm(ModalForm, forms.ModelForm):
     )
 
     matter_code = forms.CharField(
-
         help_text='',
         label='Matter code',
         required=False,
@@ -55,9 +54,11 @@ class MatterForm(ModalForm, forms.ModelForm):
         fields = ['matter_code', 'name']
         model = Workspace
 
-    def __init__(self, user, *args, **kwargs):
-        self.helper = FormHelper()
-        self.helper.form_action = reverse('matter:create')
+    def __init__(self, *args, **kwargs):
+        if 'user' in kwargs:
+            self.user = kwargs.pop('user')
+
+        super(MatterForm, self).__init__(*args, **kwargs)
 
         self.helper.layout = Layout(
             'name',
@@ -65,9 +66,13 @@ class MatterForm(ModalForm, forms.ModelForm):
             'matter_code'
         )
 
-        self.user = user
-
-        super(MatterForm, self).__init__(*args, **kwargs)
+        if self.instance.pk:
+            self.helper.inputs.insert(0, Button('delete', 'Delete', css_class='btn btn-danger pull-left', **{
+                'data-dismiss': 'modal',
+                'data-remote': reverse('matter:delete', kwargs={'matter_slug': self.instance.slug}),
+                'data-target': '#matter-delete-%s' % self.instance.slug,
+                'data-toggle': 'modal',
+            }))
 
         if self.instance.client:
             self.initial['client_name'] = self.instance.client.name
@@ -91,6 +96,12 @@ class MatterForm(ModalForm, forms.ModelForm):
         matter.participants.add(self.user)
 
         return matter
+
+    @property
+    def action_url(self):
+        if self.instance.pk:
+            return reverse('matter:edit', kwargs={'matter_slug': self.instance.slug})
+        return reverse('matter:create')
 
     @property
     def title(self):

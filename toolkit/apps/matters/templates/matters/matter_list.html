@@ -84,5 +84,8 @@
         {% if can_edit %}
             <div class="modal" id="matter-edit-{{ m.slug }}"></div>
         {% endif %}
+        {% if can_delete %}
+            <div class="modal" id="matter-delete-{{ m.slug }}"></div>
+        {% endif %}
     {% endfor %}
 {% endblock %}

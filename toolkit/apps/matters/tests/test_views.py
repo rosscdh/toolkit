@@ -81,7 +81,7 @@ class MatterUpdateViewTestCase(BaseScenarios, TestCase):
 
         actual_response = {
             'redirect': True,
-            'url': reverse('matter:detail', kwargs={'matter_slug': self.workspace.slug})
+            'url': reverse('matter:list')
         }
 
         self.assertEqual(response.status_code, 200)
@@ -107,15 +107,9 @@ class MatterDeleteViewTestCase(BaseScenarios, TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.post(url, {}, follow=True)
-
-        actual_response = {
-            'redirect': True,
-            'url': reverse('matter:list')
-        }
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, json.dumps(actual_response))
+        response = self.client.post(url, {})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['Location'], 'http://testserver/matters/')
 
         # test the matter is deleted
         with self.assertRaises(Workspace.DoesNotExist):
