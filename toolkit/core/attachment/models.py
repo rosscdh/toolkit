@@ -15,7 +15,11 @@ def _upload_file(instance, filename):
 
 
 class Revision(models.Model):
+    name = models.CharField(max_length=255, null=True, blank=True)
+    description = models.CharField(max_length=255, null=True, blank=True)
+
     slug = models.SlugField(blank=True, null=True)  # stores the revision number v3..v2..v1
+
     executed_file = models.FileField(upload_to=_upload_file, storage=S3BotoStorage(), null=True, blank=True)
 
     item = models.ForeignKey('item.Item')
