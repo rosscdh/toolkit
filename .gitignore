@@ -8,6 +8,7 @@ hello_sign
 *_invalid.html
 \.coverage
 test_steps.json
+toolkit/production_settings\.py # placed here temporarily for testing
 *.pyc
 *.sqlite3
 *.swp
@@ -28,18 +29,9 @@ composer.lock
 .venv
 /venv/
 /reports/*
-/bdd/vendor/*
-/bdd/results/*
 /media/*
 /static/*
 /log/*.log
 /MANIFEST
 /build
 /dist
-/dateutil
-/django
-/djangoappengine
-/djangotoolbox
-/pyactiveresource
-/shopify
-/socialregistration
