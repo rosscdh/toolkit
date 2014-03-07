@@ -128,11 +128,6 @@ rulez_registry.register("can_read", EightyThreeB)
 rulez_registry.register("can_edit", EightyThreeB)
 rulez_registry.register("can_delete", EightyThreeB)
 
-# # test stuff for django-action-stream
-# def my_handler(sender, instance, created, **kwargs):
-#     action.send(instance.user, verb='created comment', color='red', ip='127.0.0.1')
-# post_save.connect(my_handler, sender=EightyThreeB)
-
 
 class Attachment(IsDeletedMixin, models.Model):
     eightythreeb = models.ForeignKey('eightythreeb.EightyThreeB')

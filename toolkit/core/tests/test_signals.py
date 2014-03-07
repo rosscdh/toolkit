@@ -1,5 +1,6 @@
 from django.test import TestCase
 from .models import ActivityTester
+from actstream.models import Action
 from toolkit.core.signals import send_activity_log
 
 
@@ -28,7 +29,6 @@ class ActivitySignalTestCase(TestCase):
         send_activity_log.send("somesender", **information_to_send)
 
         # If I import it on top the test won't run. Any clues?
-        from actstream.models import Action
 
         # generic relation lookup not working, but database is empty anyway
         action = Action.objects.get(actor=actor, verb=verb, action_object=letter, target=workspace)
