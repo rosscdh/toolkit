@@ -3,11 +3,8 @@
 Items are either todo items or document items
 """
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
 
 from rest_framework import serializers
-
-from toolkit.apps.default.models import UserProfile
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -40,4 +37,9 @@ class LiteUserSerializer(UserSerializer):
     Used when a user is referenced in other API objects.
     """
     class Meta(UserSerializer.Meta):
-        fields = ('username', 'first_name', 'initials', 'last_name', 'email', 'name', 'url', 'user_class')
+        fields = ('url', 'username', 'name', 'initials', 'first_name', 'last_name', 'email', 'user_class')
+
+
+class SimpleUserSerializer(UserSerializer):
+    class Meta(UserSerializer.Meta):
+        fields = ('url', 'name', 'initials', 'user_class')

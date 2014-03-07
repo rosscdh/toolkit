@@ -7,7 +7,7 @@ from django.test.client import MULTIPART_CONTENT
 from toolkit.core.item.models import Item
 
 from . import BaseEndpointTest
-from ...serializers import ItemSerializer, UserSerializer
+from ...serializers import ItemSerializer, UserSerializer, SimpleUserSerializer
 
 from model_mommy import mommy
 
@@ -59,16 +59,35 @@ class ItemRevisionTest(BaseEndpointTest):
     def test_revision_get(self):
         self.client.login(username=self.lawyer.username, password=self.password)
 
-        revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
+        revision = mommy.make('attachment.Revision',
+                              executed_file=None,
+                              slug=None,
+                              name='filename.txt',
+                              description='A test file',
+                              item=self.item,
+                              uploaded_by=self.lawyer)
 
         resp = self.client.get(self.endpoint)
         resp_json = json.loads(resp.content)
 
         document_review = revision.reviewdocument_set.all().first()
+
+        self.assertEqual(resp_json.get('name'), 'filename.txt')
+        self.assertEqual(resp_json.get('description'), 'A test file')
         # we have a user_review_url
         self.assertFalse(resp_json.get('user_review_url') == None)
         # it is the correct url for this specific user
         self.assertEqual(resp_json.get('user_review_url'), document_review.get_absolute_url(user=self.lawyer))
+        # test date is present
+        self.assertTrue(resp_json.get('date_created') is not None)
+        # test user is provided as a SimpleUserserializer
+        # and has the correct keys
+        provided_keys = resp_json.get('uploaded_by').keys()
+        provided_keys.sort()
+        expected_keys = SimpleUserSerializer(self.lawyer).data.keys()
+        expected_keys.sort()
+        self.assertEqual(provided_keys, expected_keys)
+
 
     def test_revision_post_with_url(self):
         self.client.login(username=self.lawyer.username, password=self.password)
