@@ -4,11 +4,12 @@ from django.core.urlresolvers import reverse
 from django.core.validators import URLValidator
 from django.core.files.temp import NamedTemporaryFile
 
-
 from rest_framework import serializers
 
 from toolkit.core.attachment.tasks import _download_file
 from toolkit.core.attachment.models import Revision
+
+from .user import SimpleUserSerializer
 
 import logging
 logger = logging.getLogger('django.request')
@@ -75,22 +76,26 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
     user_review_url = serializers.SerializerMethodField('get_user_review_url')
     revisions = serializers.SerializerMethodField('get_revisions')
 
-    uploaded_by = serializers.HyperlinkedRelatedField(many=False, view_name='user-detail', lookup_field='username')
+    uploaded_by = SimpleUserSerializer()
 
-    # date_created = serializers.DateTimeField(read_only=True)
-    # date_modified = serializers.DateTimeField(read_only=True)
+    date_created = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = Revision
         fields = ('url', 'slug',
+                  'name', 'description',
                   'executed_file', 
                   'item', 'uploaded_by', 
                   'reviewers', 'signatories',
-                  'revisions', 'user_review_url',)
-                  #'date_created', 'date_modified',)
+                  'revisions', 'user_review_url',
+                  'date_created',)
 
     def __init__(self, *args, **kwargs):
+        #
+        # @TODO turn these into nice clean methods
+        #
         self.base_fields['executed_file'] = HyperlinkedAutoDownloadFileField(required=False)
+        self.base_fields['uploaded_by'] = SimpleUserSerializer()
         #
         # If we are passing in a multipart form
         #
@@ -102,6 +107,10 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
             # set the executed_file field to be a seriallizer.FileField and behave like one of those
             #
             if request.method in ['PATCH', 'POST']:
+
+                # ensure the uploaded_by is just a simple hyplinkrelatedfield on update,create
+                self.base_fields['uploaded_by'] = serializers.HyperlinkedRelatedField(many=False, view_name='user-detail', lookup_field='username')
+
                 if 'multipart/form-data;' in kwargs['context']['request'].content_type:
                     if kwargs['context']['request'].FILES:
                         self.base_fields['executed_file'] = FileFieldAsUrlField(allow_empty_file=True, required=False)
