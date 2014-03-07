@@ -104,8 +104,8 @@ angular.module('toolkit-gui').factory('matterItemService',[ '$q', '$resource', '
             var fileurl = files[0].url;
 
 			api.create({'matterSlug': matterSlug, 'itemSlug': itemSlug }, { 'executed_file': fileurl },
-				function success(){
-					deferred.resolve();
+				function success(revision){
+					deferred.resolve(revision);
 				},
 				function error(err) {
 					deferred.reject( err );

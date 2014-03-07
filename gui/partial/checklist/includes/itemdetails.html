@@ -1,0 +1,76 @@
+ <div ng-show="data.selectedItem">
+    <h3>
+        <a href="javascript:;" ng-click="data.editItemTitle=data.selectedItem.name;data.showEditItemTitleForm=!data.showEditItemTitleForm;focus('eventEditItemTitle')"
+                ng-hide="data.showEditItemTitleForm">
+            <span ng-bind="data.selectedItem.name"></span>
+        </a>
+        <input class="form-control input-sm" ng-show="data.showEditItemTitleForm" type="search"
+               ng-model="data.editItemTitle" ng-enter="data.selectedItem.name=data.editItemTitle;saveSelectedItem();data.showEditItemTitleForm=false"
+               ng-blur="data.showEditItemTitleForm=false" focus-on="eventEditItemTitle">
+        <div class="btn-group pull-right" ng-hide="data.showEditItemTitleForm">
+            <a href="javascript:;" class="btn-silver btn-xs" data-toggle="tooltip" data-placement="bottom" ng-show="data.selectedItem.date_due">
+                {{ data.selectedItem.date_due | date:'dd MMMM' }}
+            </a>
+            <a href="javascript:;" class="btn-silver btn-xs" data-toggle="tooltip" title="Part of Closing Group {{ data.selectedItem.closing_group }}"
+               ng-show="data.selectedItem.closing_group" data-placement="bottom">
+                <span class="fui-radio-checked"></span> {{ data.selectedItem.closing_group }}
+            </a>
+            <a href="javascript:;" class="btn-silver btn-xs" class="dropdown-toggle" data-toggle="dropdown" ng-click="data.showItemDetailsOptions=!data.showItemDetailsOptions">Options</a>
+            <ul class="dropdown-menu dropdown-small dropdown-inverse" ng-show="data.showItemDetailsOptions">
+                <li><a href="javascript:;" ng-click="data.selectedItem.date_due='2014-03-01T00:00:00';saveSelectedItem();data.showItemDetailsOptions=!data.showItemDetailsOptions;">
+                    <span class="fui-calendar"></span> Set due date</a>
+                </li>
+                <li><a href="#" data-toggle="modal" data-target="#attachWorkflowModal"><span class="fui-calendar"></span> Add workflow</a></li>
+                <li><a href="javascript:;" class="text-danger" ng-click="deleteItem();data.showItemDetailsOptions=!data.showItemDetailsOptions">
+                    <span class="fui-trash text-danger"></span> Delete</a>
+                </li>
+            </ul>
+        </div>
+        <div class="item-description-toggle" ng-hide="data.showEditItemDescriptionForm">
+            <small class="text-muted">
+                <a href="javascript:;" class="link"
+                   ng-click="data.showEditItemDescriptionForm=!data.showEditItemDescriptionForm;data.editItemDescription=data.selectedItem.description;">
+                    <div btf-markdown="data.selectedItem.description | newlines"></div>
+                    <span ng-hide="data.selectedItem.description">Enter item description</span>
+                </a>
+            </small>
+        </div>
+        <div class="item-description" ng-show="data.showEditItemDescriptionForm">
+            <textarea class="form-control" msd-elastic placeholder="Enter a description for this item"
+                      ng-model="data.editItemDescription"></textarea>
+            <a href="javascript:;" class="btn btn-primary btn-xs" ng-click="data.selectedItem.description=data.editItemDescription;saveSelectedItem();data.showEditItemDescriptionForm=false;">Save description</a>
+            <a href="javascript:;" class="btn btn-inverse btn-xs item-description-cancel" ng-click="data.showEditItemDescriptionForm=false;">Cancel</a>
+            <a href="javascript:;" class="btn btn-link btn-xs pull-right" title="Markdown help" onclick="alert('Markdown help popup like trello');">Formatting Help</a>
+        </div>
+    </h3>
+    <div class="add-new text-center">
+        <div class="fui-upload"></div>
+        <!--<a href="" class="btn btn-sm btn-add-new"> Upload Revision</a>//-->
+        <span filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)" btnclasses="'btn-sm btn-add-new'"><span class="fui-upload"></span> Upload Revision</span>
+
+        <a href="javascript:;" class="btn btn-sm btn-add-new" data-toggle="modal" data-target="#requestFileModal" ng-click="requestRevision(data.selectedItem)"><span class="fui-user"></span> Request Revision</a>
+    </div>
+
+    <ul class="revisions list-unstyled" ng-show="data.selectedItem.latest_revision">
+        <li class="header">Current Revision</li>
+        <li class="current">
+            <div class="doc-wrap">
+                <span class="version">V3</span>
+                <h4><a href="{{ data.selectedItem.latest_revision.executed_file }}" target="_blank">Filename missing</a></h4><span class="close">x</span>
+                <div class="desc">This is the final version. Let's see if this get's the ball moving.</div>
+                <div class="sub">Ross Crawford, 2 days ago</div>
+                <div class="tools">
+                    <a href="#" class="btn btn-link btn-xs"  data-toggle="modal" data-target="#viewDocumentModal">View</a>
+                    <a href="#" class="btn btn-link btn-xs" data-toggle="modal" data-target="#requestReviewModal">Request Review</a>
+                    <a href="javascript:;" class="btn btn-link-success btn-xs pull-right" ng-click="data.selectedItem.is_final=true;saveSelectedItem();"><span class="fui-check-inverted"></span> Mark as Final</a>
+                </div>
+            </div>
+        </li>
+    </ul>
+
+    <div class="item-help" ng-hide="data.selectedItem.latest_revision">
+        <span class="fui-upload"></span>
+        <h4>Upload a first revision</h4>
+        Upload a first draft of this document. Move your mouse to the green upload bar at the top of this item to either upload a file or request one from another participant. You can also drag a document directly on a checklist item to add it as a revision.
+    </div>
+</div>
