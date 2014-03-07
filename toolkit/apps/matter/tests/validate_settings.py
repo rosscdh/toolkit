@@ -9,7 +9,7 @@ from toolkit import production_settings
 import os
 
 
-class TestMatterProductionSettings(unittest.TestCase):
+class MatterProductionSettingsTest(unittest.TestCase):
     """
     Ensure that the production settings are correct and setup so that in
     production; we hook up to the dist version of the angular app and not the
