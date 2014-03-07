@@ -93,6 +93,7 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 
 			//Reset controls
 			$scope.data.showEditItemDescriptionForm = false;
+			$scope.data.showEditItemTitleForm = false;
 		};
 
 		$scope.deleteItem = function() {
@@ -118,6 +119,7 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 		$scope.showAddItemForm = function(index) {
 			if ($scope.data.showAddForm !== index) {
 				$scope.data.showAddForm = index;
+                $scope.focus('eventNewItem-'+index);
 			}
 			else {
 				$scope.data.showAddForm = null;
@@ -161,7 +163,6 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 				 function success(){
 					$scope.data.categories.unshift({'name': $scope.data.newCatName, 'items': []});
 					$scope.data.newCatName = '';
-
 				 },
 				 function error(err){
 					toaster.pop('error', "Error!", "Unable to create a new category");
@@ -190,6 +191,7 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 		$scope.showEditCategoryForm = function(index) {
 			if ($scope.data.showEditCategoryForm !== index) {
 				$scope.data.showEditCategoryForm = index;
+                $scope.focus('eventEditCategorytitle-'+index);
 			}
 			else {
 				$scope.data.showEditCategoryForm = null;
