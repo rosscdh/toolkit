@@ -28,8 +28,6 @@ class ActivitySignalTestCase(TestCase):
 
         send_activity_log.send("somesender", **information_to_send)
 
-        # If I import it on top the test won't run. Any clues?
-
         # generic relation lookup not working, but database is empty anyway
         action = Action.objects.get(actor=actor, verb=verb, action_object=letter, target=workspace)
         self.assertEqual(action.data['ip'], ip)
