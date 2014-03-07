@@ -49,6 +49,7 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
+    # These are the dev files
     ("ng", os.path.join(SITE_ROOT, 'gui')),
 )
 
@@ -95,6 +96,7 @@ PROJECT_APPS = (
     'toolkit.apps.api',
     'toolkit.apps.default',
     'toolkit.apps.dash',
+    'toolkit.apps.matter',
     'toolkit.apps.me',
     # Main Workspace (matters)
     'toolkit.apps.workspace',

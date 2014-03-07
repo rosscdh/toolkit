@@ -14,7 +14,7 @@ import logging
 logger = logging.getLogger('django.request')
 
 
-class HyperlinkedFileField(serializers.FileField): 
+class HyperlinkedFileField(serializers.FileField):
     """
     Custom FieldField to allow us to show the FileField url and not its std
     representation
@@ -25,43 +25,55 @@ class HyperlinkedFileField(serializers.FileField):
             try:
                 return request.build_absolute_uri(value.url)
             except ValueError:
+                logger.info('No url associated with this file: %s' % value)
                 pass
-
+        #
+        # NB this must return None!
+        # else it will raise attribute has no file associated with it
+        # errors
+        #
         return None
 
 
 class HyperlinkedAutoDownloadFileField(serializers.URLField):
-#class HyperlinkedAutoDownloadFileField(serializers.FileField): 
     """
     Autodownload a file specified by a url
     """
     def field_to_native(self, obj, field_name):
-        field = getattr(obj, field_name)
+        if obj is not None:
+            field = getattr(obj, field_name)
 
-        try:
-            if field.name in [None, '']:
-                raise Exception('File has no name')
-            # Validate the url
-            URLValidator(field.name)
-            #
-            # Start download if the file does not exist
-            #
-            _download_file(url=field.name, obj=obj, obj_fieldname=field_name)
-            # set to blank so we dont get Suspicious operation on urls
-            field.file = File(NamedTemporaryFile())
-            setattr(obj, field_name, field)
+            try:
+                if field.name in [None, '']:
+                    raise Exception('File has no name')
 
-        except Exception as e:
-            #
-            # is probably a normal file at this point but jsut continue to be safe
-            #
-            logger.info('HyperlinkedAutoDownloadFileField field.name is not a url: %s' % field)
+                # Validate the url
+                URLValidator(field.name)
 
-        return super(HyperlinkedAutoDownloadFileField, self).field_to_native(obj, field_name)
+                #
+                # Start download if the file does not exist
+                #
+                _download_file(url=field.name, obj=obj, obj_fieldname=field_name)
+
+                # set to blank so we dont get Suspicious operation on urls
+                field.file = File(NamedTemporaryFile())
+                setattr(obj, field_name, field)
+                return super(HyperlinkedAutoDownloadFileField, self).field_to_native(obj, field_name)
+            except Exception as e:
+                #
+                # is probably a normal file at this point but jsut continue to be safe
+                #
+                logger.info('HyperlinkedAutoDownloadFileField field.name is not a url: %s' % field)
+        #
+        # NB this must return None!
+        # else it will raise attribute has no file associated with it
+        # errors
+        #
+        return None
 
 
 class RevisionSerializer(serializers.HyperlinkedModelSerializer):
-    executed_file = HyperlinkedAutoDownloadFileField(required=False)
+    executed_file = HyperlinkedFileField(allow_empty_file=True, required=False)
     item = serializers.HyperlinkedRelatedField(many=False, view_name='item-detail')
 
     reviewers = serializers.HyperlinkedRelatedField(many=True, view_name='user-detail', lookup_field='username')
@@ -85,23 +97,23 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
                   #'date_created', 'date_modified',)
 
     def __init__(self, *args, **kwargs):
-
+        self.base_fields['executed_file'] = HyperlinkedFileField(allow_empty_file=True, required=False)
         #
         # If we are passing in a multipart form
         #
-        if 'context' in kwargs and 'request' in kwargs['context'] and 'multipart/form-data;' in kwargs['context']['request'].content_type:
-            #
-            # set the executed_file field to be a seriallizer.FileField and behave like one of those
-            #
-            if kwargs['context']['request'].FILES:
-                self.base_fields['executed_file'] = serializers.FileField(allow_empty_file=True)
+        if 'request' in kwargs['context']:
 
-        else:
-            # We are using a hyperlink because its a normal post/patch
-            #
-            # must handle switching it back
-            #
-            self.base_fields['executed_file'] = HyperlinkedAutoDownloadFileField(required=False)
+            request = kwargs['context'].get('request')
+
+            if request.method in ['PATCH', 'POST']:
+
+                self.base_fields['executed_file'] = HyperlinkedAutoDownloadFileField(required=False)
+                #
+                # set the executed_file field to be a seriallizer.FileField and behave like one of those
+                #
+                if 'multipart/form-data;' in kwargs['context']['request'].content_type:
+                    if kwargs['context']['request'].FILES:
+                        self.base_fields['executed_file'] = serializers.FileField(allow_empty_file=True, required=False)
 
         super(RevisionSerializer, self).__init__(*args, **kwargs)
 
