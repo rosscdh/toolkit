@@ -41,7 +41,8 @@ class MatterParticipant(generics.CreateAPIView,
     lookup_url_kwarg = 'matter_slug'
 
     def validate_data(self, data):
-        if all(k in data.keys() for k in ["email"]) is False: raise exceptions.ParseError('request.DATA must be: {"email": "username@example.com"}')
+        if all(k in data.keys() for k in ["email"]) is False:
+            raise exceptions.ParseError('request.DATA must be: {"email": "username@example.com"}')
 
         email_validator = EmailField()
         # will raise error if incorrect
