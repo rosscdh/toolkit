@@ -43,12 +43,25 @@
             <a href="javascript:;" class="btn btn-link btn-xs pull-right" title="Markdown help" onclick="alert('Markdown help popup like trello');">Formatting Help</a>
         </div>
     </h3>
-    <div class="add-new text-center">
-        <div class="fui-upload"></div>
-        <!--<a href="" class="btn btn-sm btn-add-new"> Upload Revision</a>//-->
-        <span filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)" btnclasses="'btn-sm btn-add-new'"><span class="fui-upload"></span> Upload Revision</span>
 
-        <a href="javascript:;" class="btn btn-sm btn-add-new" data-toggle="modal" data-target="#requestFileModal" ng-click="requestRevision(data.selectedItem)"><span class="fui-user"></span> Request Revision</a>
+    <div class="add-new">
+        <div class="btn-group">
+          <button class="btn btn-sm btn-info btn-embossed btn-add "><span class="fui-upload"></span> Add File</button><button class="btn btn-info btn-sm btn-embossed dropdown-toggle" data-toggle="dropdown">
+            <span class="caret"></span>
+          </button>
+          <span class="dropdown-arrow dropdown-arrow-inverse dropdown-small"></span>
+          <ul class="dropdown-menu dropdown-inverse">
+            <li><div class="fui-upload"></div><span filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)" btnclasses="'btn-sm btn-add-new'"><span class="fui-upload"></span>Upload File</span></li>
+            <li><a href="javascript:;" class="btn btn-sm btn-add-new" data-toggle="modal" data-target="#requestFileModal" ng-click="requestRevision(data.selectedItem)"><span class="fui-user"></span> Request Revision</a></li>
+          </ul>
+        </div>
+        <a href="" class="btn btn-sm btn-silver btn-embossed "><span class="fui-calendar"></span></a>
+        <a href="" class="btn btn-sm btn-silver btn-embossed ">Options</a>
+        <a href="#" class="btn btn-sm btn-success btn-embossed pull-right"><span class="fui-checkbox-checked"></span> Mark Complete</a>
+    </div>
+
+    <div class="add-new text-center">
+        <!--<a href="" class="btn btn-sm btn-add-new"> Upload Revision</a>//-->
     </div>
 
     <ul class="revisions list-unstyled" ng-show="data.selectedItem.latest_revision">
