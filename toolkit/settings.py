@@ -33,6 +33,7 @@ SECRET_KEY = 'lgi%*e=%s@y3-jos^uydhc5gz80m9ts&9io5xh6myf+$fuy7+n'
 # List of callables that know how to import templates from various sources.
 TEMPLATE_DIRS = (
     os.path.join(SITE_ROOT, 'templates'),
+    os.path.join(SITE_ROOT, 'gui'),
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -48,6 +49,7 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
+    ("ng", os.path.join(SITE_ROOT, 'gui')),
 )
 
 MEDIA_ROOT = os.path.join(SITE_ROOT, 'media')
@@ -79,19 +81,33 @@ DJANGO_APPS = (
 )
 
 PROJECT_APPS = (
-    'toolkit.core',
+    # Api
+    'toolkit.api',
 
+    # Core Apps
+    'toolkit.core',
+    'toolkit.apps.workspace',  # Matters
+    'toolkit.core.client',
+    'toolkit.core.item',
+    'toolkit.core.attachment',
+
+    # Module Apps
     'toolkit.apps.api',
     'toolkit.apps.default',
     'toolkit.apps.dash',
+    'toolkit.apps.matter',
     'toolkit.apps.me',
-    # Main Workspace
+    # Main Workspace (matters)
     'toolkit.apps.workspace',
-    # Apps
+    # Core related apps
+    'toolkit.apps.review',
+    # Routine Apps
     'toolkit.apps.eightythreeb',
     'toolkit.apps.engageletter',
+
     # Lawpal Modules
     'hello_sign',
+    'dj_crocodoc',
 )
 
 HELPER_APPS = (
@@ -119,6 +135,9 @@ HELPER_APPS = (
     'django_bleach',
     'summernote',
 
+    # Api helpers
+    #'corsheaders',  # not required yet
+
     # db migrations
     'south',
     # jenkins
@@ -134,6 +153,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'corsheaders.middleware.CorsMiddleware',  # not required yet
     'toolkit.apps.me.middleware.EnsureUserHasPasswordMiddleware',
 )
 
@@ -188,6 +208,7 @@ AUTHENTICATION_BACKENDS = (
     'toolkit.auth_backends.EmailBackend',
     'django.contrib.auth.backends.ModelBackend',
     'toolkit.auth_backends.SecretKeyBackend',
+    'toolkit.apps.review.auth_backends.ReviewDocumentBackend',  # allow users to log in via review urls
 )
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -210,24 +231,27 @@ HELLOSIGN_API_KEY = '0ea9011ce33b5de3b58af3b3f6d449f8f3f72e2ac06c14c6319439af39f
 HELLOSIGN_CLIENT_ID = '9bc892af173754698e3fa30dedee3826'
 HELLOSIGN_CLIENT_SECRET = '8d770244b9971abfe789f5224552239d'
 
+CORS_ORIGIN_WHITELIST = (
+    'localhost:9000'
+)
 
 REST_FRAMEWORK = {
     # Use hyperlinked styles by default.
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.JSONPRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
     ),
-    # Only used if the `serializer_class` attribute is not set on a view.
-    'DEFAULT_MODEL_SERIALIZER_CLASS':
-        'rest_framework.serializers.HyperlinkedModelSerializer',  # @TODO change to primarykeymodelserializer
-
+    'DEFAULT_MODEL_SERIALIZER_CLASS': (
+        'rest_framework.serializers.HyperlinkedModelSerializer',
+    ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication',
+        #'rest_framework.authentication.TokenAuthentication',
+        #'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.BasicAuthentication', # Here Temporarily for dev
         'rest_framework.authentication.SessionAuthentication',
     ),
-
     'DEFAULT_FILTER_BACKENDS': (
-        ('rest_framework.filters.DjangoFilterBackend',)
     ),
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.

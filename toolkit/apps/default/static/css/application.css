@@ -2,8 +2,708 @@
   border-bottom-color: #444444 !important;
   border-top-color: #444444 !important;
 }
-body {
-  word-spacing: 2px;
+/* Hack to display the navbar at the top of the matter  */
+html,
+body,
+div.full {
+  height: 100%;
+}
+/* Navbar - this is the top of the matter  */
+.navbar.checklist-nav li a {
+  font-size: 14px;
+}
+.navbar.checklist-nav li a [class*="fui-"] {
+  font-size: 17px;
+  margin-top: -2px;
+}
+.navbar.checklist-nav li a .navbar-new {
+  top: 18px;
+  right: 3px;
+  font-size: 11px;
+  padding-top: 1px;
+}
+.navbar.checklist-nav li span {
+  margin-right: 7px;
+  font-size: 14px;
+}
+.navbar.checklist-nav li img.user {
+  width: 26px;
+  border-radius: 15px;
+  margin-top: -9px;
+  margin-bottom: -5px;
+  opacity: 0.6;
+}
+.navbar.checklist-nav .navbar-form .form-control {
+  border: 0px solid transparent;
+}
+.navbar.checklist-nav .input-group .btn {
+  border: none!important;
+}
+.navbar a.navbar-brand {
+  font-size: 13px;
+  padding: 12px 18px 11px 18px;
+  max-width: 240px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.navbar .logo-mark {
+  float: left;
+  border-right: 1px solid #373737;
+  padding: 13px 12px 15px 17px;
+}
+.navbar .logo-mark img {
+  width: 30px;
+}
+#checklist,
+#closing {
+  background-color: #f2f2f2;
+  height: 100%;
+  margin-top: -55px;
+  padding-top: 55px;
+}
+#checklist .checklist-col,
+#closing .checklist-col {
+  overflow-y: scroll;
+}
+#checklist h5,
+#closing h5 {
+  font-size: 20px;
+  text-transform: uppercase;
+  color: #666;
+}
+#checklist table.checklist,
+#closing table.checklist {
+  background-color: white;
+  margin-top: 20px;
+}
+#checklist table.checklist tr,
+#closing table.checklist tr {
+  border-top: 5px solid #f2f2f2;
+  cursor: pointer;
+}
+#checklist table.checklist tr.item-closed,
+#closing table.checklist tr.item-closed {
+  color: #ffffff;
+  opacity: 0.8;
+  background-color: #69dd9a;
+  padding-top: 10px;
+}
+#checklist table.checklist tr.item-closed .item-title,
+#closing table.checklist tr.item-closed .item-title {
+  color: #ffffff;
+}
+#checklist table.checklist tr.item-closed.selected,
+#closing table.checklist tr.item-closed.selected {
+  background-color: #29b765;
+}
+#checklist table.checklist tr.selected,
+#closing table.checklist tr.selected {
+  background-color: #409ad5;
+  color: white;
+}
+#checklist table.checklist tr.selected td,
+#closing table.checklist tr.selected td,
+#checklist table.checklist tr.selected td.item-title,
+#closing table.checklist tr.selected td.item-title {
+  color: white;
+  opacity: 1;
+}
+#checklist table.checklist tr.selected td.status .btn-success,
+#closing table.checklist tr.selected td.status .btn-success,
+#checklist table.checklist tr.selected td.status .btn-warning,
+#closing table.checklist tr.selected td.status .btn-warning,
+#checklist table.checklist tr.selected td.status .btn-default,
+#closing table.checklist tr.selected td.status .btn-default {
+  background-color: transparent;
+  color: white;
+  border-color: white;
+}
+#checklist table.checklist th,
+#closing table.checklist th {
+  background-color: #f2f2f2;
+  text-transform: uppercase;
+  padding: 8px 0px 0px 0px;
+  color: #AAA;
+  font-size: 13px;
+}
+#checklist table.checklist th.category,
+#closing table.checklist th.category {
+  padding: 13px 0px 0px 0px;
+}
+#checklist table.checklist th.category,
+#closing table.checklist th.category {
+  color: #666;
+  font-size: 14px;
+}
+#checklist table.checklist th td,
+#closing table.checklist th td {
+  padding-top: 20px;
+}
+#checklist table.checklist tr td,
+#closing table.checklist tr td {
+  padding: 8px 9px;
+  border-top: none;
+  border-bottom: none;
+}
+#checklist table.checklist tr td.item-icon,
+#closing table.checklist tr td.item-icon {
+  padding-left: 5px;
+  padding-right: 0px;
+  width: 20px;
+}
+#checklist table.checklist tr td.item-icon .icon,
+#closing table.checklist tr td.item-icon .icon {
+  line-height: 20px;
+  width: 18px;
+  float: left;
+  margin: -4px 1px 0px 3px;
+}
+#checklist table.checklist tr td.item-icon .icon span,
+#closing table.checklist tr td.item-icon .icon span {
+  font-size: 12px;
+}
+#checklist table.checklist tr td:hover .fui-list-columned,
+#closing table.checklist tr td:hover .fui-list-columned {
+  opacity: 0.9;
+}
+#checklist table.checklist tr td .fui-list-columned,
+#closing table.checklist tr td .fui-list-columned {
+  opacity: 0;
+  font-size: 18px;
+  cursor: move;
+  position: relative;
+  top: 0px;
+  width: 9px;
+  overflow: hidden;
+}
+#checklist table.checklist tr td .fui-list-columned:hover,
+#closing table.checklist tr td .fui-list-columned:hover {
+  opacity: 1;
+}
+#checklist table.checklist tr td.item-title,
+#closing table.checklist tr td.item-title {
+  font-size: 14px;
+  font-family: Helvetica;
+  word-spacing: normal;
+  color: #777;
+  font-weight: bold;
+  padding-left: 0px;
+  padding-top: 9px;
+}
+#checklist table.checklist tr td.item-title span,
+#closing table.checklist tr td.item-title span {
+  outline: none;
+}
+#checklist table.checklist tr td.item-title span:focus,
+#closing table.checklist tr td.item-title span:focus {
+  border-bottom: 2px solid #f8e287;
+  background-color: #fefaed;
+  color: #444;
+}
+#checklist table.checklist tr td.item-title.item-openhover,
+#closing table.checklist tr td.item-title.item-openhover {
+  border-left-width: 6px;
+}
+#checklist table.checklist td.status,
+#closing table.checklist td.status {
+  padding-top: 5px;
+  padding-bottom: 0px;
+  text-align: right;
+}
+#checklist table.checklist td.status .btn-xs,
+#closing table.checklist td.status .btn-xs {
+  padding: 5px 5px;
+  font-size: 11.5px;
+}
+#checklist table.checklist td.status .fui-check-inverted,
+#closing table.checklist td.status .fui-check-inverted {
+  padding-top: 4px;
+}
+#checklist table.checklist td.status a,
+#closing table.checklist td.status a {
+  text-decoration: underline;
+}
+#checklist table.checklist td.status .btn-success,
+#closing table.checklist td.status .btn-success {
+  background-color: white;
+  color: #2cc36b;
+  border: 1px solid #b3eecc;
+}
+#checklist table.checklist td.status .btn-warning,
+#closing table.checklist td.status .btn-warning {
+  background-color: white;
+  color: #f1c40f;
+  border: 1px solid #f9e8a0;
+}
+#checklist table.checklist td.status .btn-default,
+#closing table.checklist td.status .btn-default {
+  background-color: #f3f5f5;
+  color: #9dacad;
+  border: 1px solid #e8ecec;
+}
+#checklist table.checklist td.add-new,
+#closing table.checklist td.add-new {
+  text-align: right;
+  padding: 4px 0px 4px 0px;
+  font-size: 13px;
+  background-color: #f2f2f2;
+}
+#checklist table.checklist td.add-new a,
+#closing table.checklist td.add-new a {
+  color: #bdc3c7;
+  font-weight: bold;
+}
+#checklist table.checklist td.add-new a.set-property,
+#closing table.checklist td.add-new a.set-property {
+  font-size: 11px;
+}
+#checklist table.checklist tr.add-new-controls .input-group,
+#closing table.checklist tr.add-new-controls .input-group {
+  width: 100%;
+}
+#checklist div.item,
+#closing div.item {
+  background-color: #e4e6e8;
+  border-left: 1px solid #dee1e3;
+  height: 100%;
+  color: #3d4448;
+}
+#checklist div.item hr,
+#closing div.item hr {
+  border-color: #d9dcde;
+}
+#checklist div.item .text-muted,
+#closing div.item .text-muted {
+  opacity: 0.5;
+}
+#checklist div.item .btn-silver,
+#closing div.item .btn-silver {
+  background: none;
+  border: 1px solid #bdc3c7;
+  color: #869198;
+}
+#checklist div.item a.link,
+#closing div.item a.link {
+  color: #545e64;
+}
+#checklist div.item a.link:hover,
+#closing div.item a.link:hover {
+  text-decoration: underline;
+}
+#checklist div.item small,
+#closing div.item small {
+  font-size: 13px;
+}
+#checklist div.item .item-help,
+#closing div.item .item-help {
+  margin: 50px 35px;
+  text-align: center;
+  color: #acb4b9;
+  font-size: 13px;
+  line-height: 18px;
+}
+#checklist div.item .item-help .fui-upload,
+#closing div.item .item-help .fui-upload,
+#checklist div.item .item-help .fui-time,
+#closing div.item .item-help .fui-time {
+  font-size: 40px;
+  color: #d9dcde;
+}
+#checklist div.item .item-help h4,
+#closing div.item .item-help h4 {
+  font-size: 20px;
+}
+#checklist div.item h3,
+#closing div.item h3 {
+  font-size: 19px;
+  padding-bottom: 16px;
+  background-color: #e1e4e5;
+  margin-bottom: 0px;
+  margin: 0px -15px 0px -15px;
+  padding: 23px 15px 16px 15px;
+}
+#checklist div.item h3 .btn-silver,
+#closing div.item h3 .btn-silver {
+  color: #606a71;
+  padding: 5px 6px;
+  background-color: transparent;
+  font-size: 11px;
+  border: 1px solid #c3c8cc;
+}
+#checklist div.item h3 .item-description-toggle,
+#closing div.item h3 .item-description-toggle {
+  padding-top: 5px;
+}
+#checklist div.item h3 .item-description-toggle a.link,
+#closing div.item h3 .item-description-toggle a.link {
+  font-size: 13px;
+}
+#checklist div.item h3 .item-description textarea,
+#closing div.item h3 .item-description textarea {
+  margin-top: 10px;
+  margin-bottom: 3px;
+  font-size: 12px;
+}
+#checklist div.item .add-new,
+#closing div.item .add-new {
+  text-align: center;
+  background-color: #5fd873;
+  margin-left: -15px;
+  margin-right: -15px;
+  padding: 10px 0px 14px 0px;
+  color: #d2f4d7;
+  border-top: 2px solid #4ad361;
+}
+#checklist div.item .add-new .btn-add-new,
+#closing div.item .add-new .btn-add-new {
+  color: #e6f9e9;
+  font-weight: normal;
+  border: 1px solid #6bdb7e;
+  display: none;
+}
+#checklist div.item .add-new:hover div.fui-upload,
+#closing div.item .add-new:hover div.fui-upload {
+  opacity: 0;
+}
+#checklist div.item .add-new:hover .btn-add-new,
+#closing div.item .add-new:hover .btn-add-new {
+  border: 1px solid #a9eab4;
+  display: inline;
+}
+#checklist div.item .waiting-revision,
+#closing div.item .waiting-revision {
+  text-align: center;
+  background-color: #f1c40f;
+  margin-left: -15px;
+  margin-right: -15px;
+  padding: 10px;
+  color: #ffffff;
+  border-top: 2px solid #e3b90d;
+  font-size: 14px;
+}
+#checklist div.item .waiting-revision .close,
+#closing div.item .waiting-revision .close {
+  color: white;
+  opacity: 0.7;
+  font-size: 14px;
+}
+#checklist div.item .waiting-revision a,
+#closing div.item .waiting-revision a {
+  color: #ffffff;
+}
+#checklist div.item ul.revisions,
+#closing div.item ul.revisions {
+  margin-top: 10px;
+}
+#checklist div.item ul.revisions li,
+#closing div.item ul.revisions li {
+  padding: 3px 5px 15px 25px;
+}
+#checklist div.item ul.revisions li .doc-wrap,
+#closing div.item ul.revisions li .doc-wrap {
+  background-color: white;
+  padding: 9px 10px 0px 10px;
+  position: relative;
+  font-size: 13px;
+}
+#checklist div.item ul.revisions li .doc-wrap span.version,
+#closing div.item ul.revisions li .doc-wrap span.version {
+  position: absolute;
+  left: -24px;
+  top: 0px;
+  height: 100%;
+  padding: 6px 4px 4px 5px;
+  font-size: 12px;
+  line-height: 25px;
+  border: none;
+  background-color: #c0c6c9;
+  color: #ffffff;
+  vertical-align: middle;
+}
+#checklist div.item ul.revisions li .doc-wrap .close,
+#closing div.item ul.revisions li .doc-wrap .close {
+  font-size: 15px;
+  display: none;
+}
+#checklist div.item ul.revisions li .doc-wrap:hover .close,
+#closing div.item ul.revisions li .doc-wrap:hover .close {
+  display: block;
+}
+#checklist div.item ul.revisions li .doc-wrap .sub,
+#closing div.item ul.revisions li .doc-wrap .sub {
+  margin-top: 5px;
+  font-size: 11px;
+  color: #ccd4d5;
+  text-align: right;
+  margin-bottom: 3px;
+}
+#checklist div.item ul.revisions li .doc-wrap h4,
+#closing div.item ul.revisions li .doc-wrap h4 {
+  font-size: 14px;
+  line-height: 16px;
+  display: inline;
+  margin-bottom: 0px;
+  color: #a1aab0;
+}
+#checklist div.item ul.revisions li .tools,
+#closing div.item ul.revisions li .tools {
+  border-top: 1px solid #F3f3f3;
+  background-color: #f7f7f7;
+  padding: 4px 3px 3px 8px;
+  margin-right: -10px;
+  margin-left: -10px;
+}
+#checklist div.item ul.revisions li .tools .btn-link,
+#closing div.item ul.revisions li .tools .btn-link {
+  color: #666;
+}
+#checklist div.item ul.revisions li .review,
+#closing div.item ul.revisions li .review {
+  padding: 9px 3px 9px 8px;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  background-color: #69dd9a;
+}
+#checklist div.item ul.revisions li .review .btn,
+#closing div.item ul.revisions li .review .btn {
+  margin-top: -3px;
+}
+#checklist div.item ul.revisions li .review .btn-link,
+#closing div.item ul.revisions li .review .btn-link {
+  color: white;
+}
+#checklist div.item ul.revisions li .review.in-progress,
+#closing div.item ul.revisions li .review.in-progress {
+  background-color: #f7ba5b;
+}
+#checklist div.item ul.revisions li .review ul,
+#closing div.item ul.revisions li .review ul {
+  padding-top: 10px;
+}
+#checklist div.item ul.revisions li .review ul li,
+#closing div.item ul.revisions li .review ul li {
+  margin-bottom: 5px;
+  margin-top: 5px;
+  padding: 5px 5px 5px 5px;
+  background-color: white;
+  color: #f39c12;
+}
+#checklist div.item ul.revisions li .review ul li span,
+#closing div.item ul.revisions li .review ul li span {
+  font-size: 20px;
+  opacity: 0.7;
+}
+#checklist div.item ul.revisions li .review ul li.complete,
+#closing div.item ul.revisions li .review ul li.complete {
+  color: #2ecc71;
+}
+#checklist div.item ul.revisions li .review ul li [class*="fui-"],
+#closing div.item ul.revisions li .review ul li [class*="fui-"] {
+  float: right;
+  margin-top: -6px;
+}
+#checklist div.item ul.revisions li .review ul li button [class*="fui-"],
+#closing div.item ul.revisions li .review ul li button [class*="fui-"] {
+  font-size: inherit;
+  margin-top: 0px;
+  float: none;
+}
+#checklist div.item ul.revisions li .review ul li .close,
+#closing div.item ul.revisions li .review ul li .close {
+  font-size: 14px;
+  padding-left: 4px;
+}
+#checklist div.item ul.revisions li.current .doc-wrap,
+#closing div.item ul.revisions li.current .doc-wrap {
+  border-left-color: #f1c40f;
+}
+#checklist div.item ul.revisions li.current .doc-wrap span.version,
+#closing div.item ul.revisions li.current .doc-wrap span.version {
+  background-color: #f1c40f;
+  border-color: #e8bd0e;
+  color: white;
+}
+#checklist div.item ul.revisions li.current .doc-wrap h4 a,
+#closing div.item ul.revisions li.current .doc-wrap h4 a {
+  color: #606a71;
+}
+#checklist div.item ul.revisions li.final .doc-wrap,
+#closing div.item ul.revisions li.final .doc-wrap {
+  border-left-color: #2ecc71;
+}
+#checklist div.item ul.revisions li.final .doc-wrap span.version,
+#closing div.item ul.revisions li.final .doc-wrap span.version {
+  background-color: #2ecc71;
+  border-color: #2cc46c;
+  color: white;
+}
+#checklist div.item ul.revisions li.final .doc-wrap h4,
+#closing div.item ul.revisions li.final .doc-wrap h4 {
+  color: #606a71;
+}
+#checklist div.item ul.revisions li.final .review,
+#closing div.item ul.revisions li.final .review {
+  display: none;
+}
+#checklist div.item ul.revisions li .desc,
+#closing div.item ul.revisions li .desc {
+  color: #869198;
+  font-weight: normal;
+  margin-top: 0px;
+  font-size: 12px;
+}
+#checklist div.item ul.revisions li.header,
+#closing div.item ul.revisions li.header {
+  font-weight: bold;
+  font-size: 12px;
+  padding-top: 6px;
+  padding-left: 0px;
+  padding-bottom: 4px;
+  margin-top: 15px;
+  text-transform: uppercase;
+  color: #a1aab0;
+}
+#checklist div.item ul.revisions li.previous-toggle,
+#closing div.item ul.revisions li.previous-toggle {
+  display: none;
+}
+#checklist div.chat,
+#closing div.chat {
+  background-color: #c5cbce;
+  border-left: 1px solid #c0c6c9;
+}
+#checklist div.chat h4,
+#closing div.chat h4 {
+  padding-top: 13px;
+  font-size: 16px;
+  color: #f4f5f6;
+  margin-bottom: 0px;
+  text-transform: uppercase;
+}
+#checklist div.chat h4 span,
+#closing div.chat h4 span {
+  font-size: 12px;
+}
+#checklist div.chat ul,
+#closing div.chat ul {
+  padding-top: 27px;
+}
+#checklist div.chat ul li .media,
+#closing div.chat ul li .media {
+  padding-bottom: 0px;
+}
+#checklist div.chat ul li.message,
+#closing div.chat ul li.message {
+  margin-bottom: 0px;
+  padding: 3px 0px 3px 0px;
+}
+#checklist div.chat ul li.message .user-icon,
+#closing div.chat ul li.message .user-icon {
+  float: left;
+  padding-right: 5px;
+  color: white;
+}
+#checklist div.chat ul li.message .media-body .msg-body,
+#closing div.chat ul li.message .media-body .msg-body {
+  font-size: 12px;
+  line-height: 1.45em;
+  margin-bottom: 0px;
+  background-color: white;
+  padding: 10px 12px;
+  border-bottom: 1px solid #e6e6e6;
+}
+#checklist div.chat ul li.message .media-body .msg-meta,
+#closing div.chat ul li.message .media-body .msg-meta {
+  font-size: 11px;
+  color: #e8eaeb;
+  line-height: 15px;
+  margin-top: 5px;
+  margin-bottom: 6px;
+}
+#checklist div.chat ul li.message.me .user-icon,
+#closing div.chat ul li.message.me .user-icon {
+  float: right;
+  padding-right: 0px;
+  color: #7f8c8d;
+  padding-left: 5px;
+}
+#checklist div.chat ul li.message.me .msg-body,
+#closing div.chat ul li.message.me .msg-body {
+  background-color: #7f8c8d;
+  color: white;
+  border-bottom: 2px solid #667273;
+  text-rendering: optimizeLegibility;
+}
+#checklist div.chat ul li.message.me .msg-meta,
+#closing div.chat ul li.message.me .msg-meta {
+  text-align: right;
+}
+#checklist div.chat ul li.action,
+#closing div.chat ul li.action {
+  border: 1px solid #d0d5d7;
+  padding: 3px 6px;
+  color: #fcfdfd;
+  font-size: 12px;
+}
+#checklist div.chat div.new-message,
+#closing div.chat div.new-message {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding-right: 30px;
+}
+#checklist div.chat div.new-message textarea,
+#closing div.chat div.new-message textarea {
+  font-size: 12px;
+  transition: height 0.3s;
+  height: 60px;
+}
+#checklist div.chat div.new-message textarea:focus,
+#closing div.chat div.new-message textarea:focus {
+  height: 120px;
+}
+#closing {
+  background-color: #eaeff3;
+}
+#closing table.checklist,
+#closing table.checklist tr {
+  background-color: #587ca0;
+  color: white;
+  border-top-color: #eaeff3;
+}
+#closing table.checklist tr td.item-title {
+  color: white;
+}
+#closing table.checklist tr th.category {
+  background-color: #eaeff3;
+}
+#closing table.checklist tr.item-closed {
+  opacity: 1;
+}
+#closing .closing-group {
+  padding: 0px 15px 0px 15px;
+}
+#closing .closing-group .group-inner .header {
+  padding: 15px;
+  background-color: #587ca0;
+}
+#closing .closing-group .group-inner .header .progress {
+  background-color: transparent;
+  border: 1px solid #b9c8d8;
+}
+#closing .closing-group .group-inner .header .progress .progress-bar {
+  background-color: white;
+}
+#closing .closing-group .group-inner .header h3 {
+  font-size: 17px;
+  color: white;
+  margin-top: 10px;
+}
+#closing .closing-group .group-inner .header h3 small {
+  color: white;
+  opacity: 0.6;
 }
 .breadcrumbs {
   background-color: #f4f4f4;
@@ -14,6 +714,9 @@ body {
 }
 .breadcrumb-text {
   margin-bottom: 10px;
+}
+body.checklist {
+  background-color: #f2f2f2;
 }
 .container-fluid {
   padding: 0 20px;
@@ -54,6 +757,9 @@ body {
   border: 0;
   padding: 0;
 }
+.modal .form-group .form-control.select {
+  margin-bottom: 0;
+}
 .form-group .input-group-addon {
   width: inherit;
 }
@@ -78,6 +784,50 @@ body {
 }
 .form-section + .form-section {
   margin-top: 40px;
+}
+.matter .card {
+  background-color: #ffffff;
+  border-right: 2px solid #dadada;
+  border-bottom: 2px solid #dadada;
+  margin-bottom: 20px;
+  position: relative;
+}
+.matter .card .content {
+  display: block;
+  padding: 16px 14px 10px;
+}
+.matter .card .content .title {
+  display: table-cell;
+  height: 125px;
+  vertical-align: middle;
+}
+.matter .card .content .title h5,
+.matter .card .content .title h6 {
+  margin: 0 0 3px;
+}
+.matter .card .content .title h6 {
+  font-size: 14px;
+}
+.matter .card .content .title p {
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+.matter .card .content .meta {
+  margin-bottom: 10px;
+}
+.matter .card .content .meta p {
+  color: grey;
+  font-size: 12px;
+  font-style: italic;
+  line-height: 40px;
+  margin-bottom: 5px;
+}
+.matter .card .edit {
+  color: #95a5a6;
+  display: block;
+  position: absolute;
+  right: 5px;
+  top: 5px;
 }
 .navbar {
   margin-bottom: 0;
@@ -106,8 +856,17 @@ body {
   background-color: #2c81ba;
 }
 .popover-content {
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.226;
+}
+.icon-pdf {
+  color: #e74b3c;
+}
+.icon-doc {
+  color: #2e75b6;
+}
+.icon-xls {
+  color: #e74b3c;
 }
 .firm-logo-preview {
   margin-right: 15px;
@@ -139,10 +898,11 @@ body {
   margin: 0 4px 0 9px;
 }
 .page-header .progress {
-  margin-bottom: 15px;
-  margin-top: 15px;
+  margin-bottom: 12px;
+  margin-top: 12px;
   width: 200px;
 }
+.page-header h3,
 .page-header h4 {
   display: inline-block;
   margin: 0;
@@ -397,7 +1157,7 @@ body {
   margin-bottom: 20px;
 }
 .section .section-header {
-  margin-bottom: 14px;
+  margin-bottom: 11px;
 }
 .section .section-header .btn {
   margin-top: -5px;
@@ -408,23 +1168,23 @@ body {
   filter: alpha(opacity=50);
 }
 .status-list-item-icon {
-  font-size: 24px;
+  font-size: 22px;
 }
 .status-next .status-list-item-icon {
-  font-size: 29px;
+  font-size: 25px;
 }
 .status-list-item-heading {
-  font-size: 18px;
-  margin-bottom: 10px;
-  margin-top: 10px;
+  font-size: 16px;
+  margin-bottom: 8px;
+  margin-top: 8px;
 }
 .status-next .status-list-item-heading {
-  font-size: 24px;
+  font-size: 22px;
 }
 .status-list-item-meta {
   font-size: 75%;
-  margin-bottom: 7.5px;
-  margin-top: 7.5px;
+  margin-bottom: 6px;
+  margin-top: 6px;
 }
 .status-list-item-text {
   font-size: 75%;
@@ -433,8 +1193,8 @@ body {
   font-size: 100%;
 }
 .status-list-item-actions {
-  margin-bottom: 7.5px;
-  margin-top: 7.5px;
+  margin-bottom: 6px;
+  margin-top: 6px;
 }
 .status-pending {
   color: #bdc3c7;
@@ -460,6 +1220,22 @@ body {
 }
 .attachment-list-item-meta {
   margin-top: 20px;
+}
+.avatar {
+  background-color: #ecf0f1;
+  display: inline-block;
+  position: relative;
+}
+.avatar .initials {
+  color: #444;
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+  height: 40px;
+  overflow: hidden;
+  line-height: 40px;
+  text-align: center;
+  width: 40px;
 }
 .dashboard {
   margin-top: -30px;

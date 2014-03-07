@@ -1,0 +1,184 @@
+<div id="checklist" ng-controller="ChecklistCtrl">
+	<div class="container-fluid full">
+		<div class="row full">
+			<div class="col-sm-5 checklist-col full">
+				<!-- add new category //-->
+				<a href="javascript:;" ng-click="data.showCategoryAddForm=!data.showCategoryAddForm">New Category</a>
+	            <table class="table checklist" ng-show="data.showCategoryAddForm">
+	                 <tr class="add-new-controls warning" ng-show="data.showAddForm==$index">
+			              	<td colspan="2">
+			              		<div class="input-group">
+					          	    <input class="form-control input-sm" id="appendedInputButton-03" type="search" placeholder="Enter category name and press enter"
+	                                       ng-model="data.newCatName" ng-enter="submitNewCategory()">
+					          	    <div class="input-group-btn">
+					          	    </div>
+					          	</div>
+			              	</td>
+			             </tr>
+	            </table>
+
+				<div ui-sortable="checklistCategorySortableOptions" ng-model="data.categories">
+				<!-- checklist //-->
+				<table class="table checklist" ng-repeat="cat in data.categories">
+					<thead>
+                         <tr>
+			                <th colspan="1" class="col-sm-6 category">
+                                <span ng-bind="cat.name" ng-hide="data.showEditCategoryForm==$index"></span>
+                                <input class="form-control input-sm" ng-show="data.showEditCategoryForm==$index" type="search"
+                                       ng-model="data.newCategoryName" ng-enter="editCategory(cat)">
+                            </th>
+			              	<th class="category-controls">
+			              		<!-- TODO : make these buttons appear when the tbody appears-->
+								<div class="btn-group pull-right">
+										<button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown"><span class="fui-triangle-down"></span></button>
+						          	  	<ul class="dropdown-menu dropdown-inverse dropdown-small">
+						          	  		<li><a href="javascript:;" id="add-new" ng-click="showAddItemForm($index);">New Item</a></li>
+						                	<li><a href="javascript:;" ng-click="data.newCategoryName=cat.name;showEditCategoryForm($index);">Edit Category</a></li>
+						                	<li><a href="javascript:;" ng-click="deleteCategory(cat);">Delete Category</a></li>
+						              	</ul>
+					            </div>
+			              	</th>
+			             </tr>
+
+                         <tr class="add-new-controls warning" ng-show="data.showAddForm==$index">
+			              	<td colspan="2">
+			              		<div class="input-group">
+					          	  	<input class="form-control input-sm" id="appendedInputButton-03" type="search" placeholder="Enter item name and press enter"
+                                           ng-model="data.newItemName" ng-enter="submitNewItem(cat)">
+					          	  	<div class="input-group-btn">
+					          	    	<button class="btn btn-link  dropdown-toggle input-sm" type="button" data-toggle="dropdown"><span class="fui-gear"></span></button>
+						          	  	<ul class="dropdown-menu dropdown-inverse dropdown-small">
+						                	<li><a href="#fakelink">Set closing group</a></li>
+						                	<li><a href="#fakelink">Set description</a></li>
+						                	<li><a href="#fakelink">Set due date</a></li>
+						              	</ul>
+					          	  </div>
+					          	</div>
+			              	</td>
+			             </tr>
+			        </thead>
+			        <tbody ui:sortable="checklistItemSortableOptions" ng:model="cat.items" class="group">
+			             <tr class="item-heading" ng-repeat="item in cat.items" ng-click="selectItem(item, cat)" ng-class="{ 'item-closed': item.is_complete, 'item-open': !item.is_complete, 'selected': item.slug===data.selectedItem.slug }">
+			                <td class="item-title">
+			                	<span class="fui-list-columned"></span>
+			                	<span ng-bind="item.name"></span>
+			                </td>
+
+			                <td class="status text-right">
+			                	<button class="btn btn-xs" ng-class="{'btn-default': getItemDueDateStatus(item)==0, 'btn-danger': getItemDueDateStatus(item)==1}" ng-show="item.date_due" disabled>{{ item.date_due | date:'dd MMM' }}</button>
+			                	<span class="fui-check-inverted" ng-show="item.is_complete"></span>
+			                </td>
+			             </tr>
+			        </tbody>
+		          </table>
+		          </div>
+				<!-- end checklist //-->
+			</div>
+			<div class="col-sm-7 item spa full">
+				<div class="row full">
+                    <!-- begin item details //-->
+					<div class="col-sm-7">
+                        <div ng-show="data.selectedItem">
+                            <h3><span ng-bind="data.selectedItem.name"></span>
+                                <div class="btn-group pull-right">
+                                    <a href="javascript:;" class="btn-silver btn-xs" data-toggle="tooltip" data-placement="bottom" ng-show="data.selectedItem.date_due">
+                                        {{ data.selectedItem.date_due | date:'dd MMMM' }}
+                                    </a>
+                                    <a href="javascript:;" class="btn-silver btn-xs" data-toggle="tooltip" title="Part of Closing Group {{ data.selectedItem.closing_group }}"
+                                       ng-show="data.selectedItem.closing_group" data-placement="bottom">
+                                        <span class="fui-radio-checked"></span> {{ data.selectedItem.closing_group }}
+                                    </a>
+                                    <a href="javascript:;" class="btn-silver btn-xs" class="dropdown-toggle" data-toggle="dropdown" ng-click="data.showItemDetailsOptions=!data.showItemDetailsOptions">Options</a>
+                                    <ul class="dropdown-menu dropdown-small dropdown-inverse" ng-show="data.showItemDetailsOptions">
+                                        <li><a href="javascript:;" ng-click="data.selectedItem.date_due='2014-03-01T00:00:00';saveSelectedItem();data.showItemDetailsOptions=!data.showItemDetailsOptions;">
+                                            <span class="fui-calendar"></span> Set due date</a>
+                                        </li>
+                                        <li><a href="#" data-toggle="modal" data-target="#attachWorkflowModal"><span class="fui-calendar"></span> Add workflow</a></li>
+                                        <li><a href="javascript:;" class="text-danger" ng-click="deleteItem();data.showItemDetailsOptions=!data.showItemDetailsOptions">
+                                            <span class="fui-trash text-danger"></span> Delete</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="item-description-toggle" ng-hide="data.showEditItemDescriptionForm">
+                                    <small class="text-muted">
+                                        <p ng-bind="data.selectedItem.description"></p>
+                                        <a href="javascript:;" class="link" ng-click="data.showEditItemDescriptionForm=!data.showEditItemDescriptionForm;data.editItemDescription=data.selectedItem.description;">
+                                        Edit item description</a>
+                                    </small>
+                                </div>
+                                <div class="item-description" ng-show="data.showEditItemDescriptionForm">
+                                    <textarea class="form-control" rows="3" placeholder="Enter a description for this item" ng-model="data.editItemDescription"></textarea>
+                                    <a href="javascript:;" class="btn btn-primary btn-xs" ng-click="data.selectedItem.description=data.editItemDescription;saveSelectedItem();data.showEditItemDescriptionForm=false;">Save description</a>
+                                    <a href="javascript:;" class="btn btn-inverse btn-xs item-description-cancel" ng-click="data.showEditItemDescriptionForm=false;">Cancel</a>
+                                    <a href="javascript:;" class="btn btn-link btn-xs pull-right" title="Markdown help" onclick="alert('Markdown help popup like trello');">Formatting Help</a>
+                                </div>
+                            </h3>
+                            <div class="add-new text-center">
+                                <div class="fui-upload"></div>
+                                <!--<a href="" class="btn btn-sm btn-add-new"> Upload Revision</a>//-->
+                                <span filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)" btnclasses="'btn-sm btn-add-new'"><span class="fui-upload"></span> Upload Revision</span>
+
+                                <a href="javascript:;" class="btn btn-sm btn-add-new" data-toggle="modal" data-target="#requestFileModal" ng-click="requestRevision(data.selectedItem)"><span class="fui-user"></span> Request Revision</a>
+                            </div>
+
+                            <ul class="revisions list-unstyled">
+								<li class="header">Current Revision</li>
+								<li class="current">
+									<div class="doc-wrap">
+										<span class="version">V3</span>
+										<h4><a href="#" data-toggle="modal" data-target="#viewDocumentModal">Shareholders_agreement_lawpal_299929.doc </a></h4><span class="close">x</span>
+										<div class="desc">This is the final version. Let's see if this get's the ball moving.</div>
+										<div class="sub">Ross Crawford, 2 days ago</div>
+										<div class="tools">
+											<a href="#" class="btn btn-link btn-xs"  data-toggle="modal" data-target="#viewDocumentModal">View</a>
+											<a href="#" class="btn btn-link btn-xs" data-toggle="modal" data-target="#requestReviewModal">Request Review</a>
+											<a href="javascript:;" class="btn btn-link-success btn-xs pull-right" ng-click="data.selectedItem.is_final=true;saveSelectedItem();"><span class="fui-check-inverted"></span> Mark as Final</a>
+										</div>
+									</div>
+								</li>
+                            </ul>
+
+                            <div class="item-help">
+                                <span class="fui-upload"></span>
+                                <h4>Upload a first revision</h4>
+                                Upload a first draft of this document. Move your mouse to the green upload bar at the top of this item to either upload a file or request one from another participant. You can also drag a document directly on a checklist item to add it as a revision.
+                            </div>
+					    </div>
+					</div>
+                    <!-- end item details //-->
+
+
+					<div class="col-sm-5 chat full">
+						<!-- chat //-->
+						<h4><span class="fui-chat"></span> Discuss</h4>
+						<ul class="list-unstyled">
+							<li class="message me">
+								<div class="media">
+									<a class="user-icon" href="#"><span class="fui-user"></span></a>				
+									<div class="media-body">
+										<div class="msg-body">I've attached the new draft and will shortly send it for review. We'll see what the other side says.</div>
+										<div class="msg-meta">Adam Bier, 25th June to AH, BC</div>
+									</div>
+								</div>
+							</li>
+							<li class="message other">
+								<div class="media">
+									<a class="user-icon" href="#"><span class="fui-user"></span></a>				
+									<div class="media-body">
+										<div class="msg-body">I've attached the new draft and will shortly send it for review. We'll see what the other side says.</div>
+										<div class="msg-meta">Adam Bier, 25th June to AH, BC</div>
+									</div>
+								</div>
+							</li>
+							<li class="action">			<span class="fui-document"></span> Adam uploaded a new draft.		</li>
+						</ul>
+						<div class="new-message">		<textarea class="form-control" rows="2" placeholder="Say something about Shareholders Agreement and press enter..."></textarea>	</div>
+						<!-- end: chat //-->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<toaster-container toaster-options="{'position-class': 'toast-bottom-right'}"></toaster-container>
+<!--<input type="filepicker" data-fp-apikey="A4Ly2eCpkR72XZVBKwJ06z" data-fp-mimetypes="*/*" data-fp-container="modal" onchange="alert(event.fpfile.url)">//-->
