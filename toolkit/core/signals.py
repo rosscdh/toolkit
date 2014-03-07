@@ -22,12 +22,12 @@ def on_activity_recieved(sender, **kwargs):
         # do stuff depending on given information
 
         # add relevant information to kwargs for django-activity-stream and send
-        kwargs['actor'] = actor
-        kwargs['verb'] = verb
-        kwargs['action_object'] = action_object
-        kwargs['target'] = target
-
-        print kwargs
+        kwargs.update({
+            'actor': actor,
+            'verb': verb,
+            'action_object': action_object,
+            'target': target
+        })
 
         action.send(actor, verb=verb, action_object=action_object)
         # action.send(sender, **kwargs)
