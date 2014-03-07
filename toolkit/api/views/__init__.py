@@ -4,7 +4,9 @@ from .account import AccountEndpoint
 from .client import ClientEndpoint
 from .matter import (MatterEndpoint,
                      CategoryView as MatterCategoryView,
-                     ClosingGroupView as MatterClosingGroupView,)
+                     ClosingGroupView as MatterClosingGroupView,
+                     MatterSortView,
+                     MatterParticipant,)
 
 from .matter import (MatterItemsView,
                      MatterItemView,

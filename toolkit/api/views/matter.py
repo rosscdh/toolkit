@@ -1,19 +1,31 @@
 # -*- coding: UTF-8 -*-
 from django.http import Http404
+from django.db import transaction
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
+from django.forms import EmailField
+from django.core.validators import URLValidator
+from django.core.exceptions import ValidationError
 
 from rulez import registry as rulez_registry
 
 from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework import exceptions
+
 from rest_framework.response import Response
 from rest_framework import status as http_status
+from rest_framework.renderers import UnicodeJSONRenderer
 
+from toolkit.apps.workspace.services import EnsureCustomerService
 from toolkit.apps.workspace.models import Workspace
+
+from toolkit.apps.review.models import ReviewDocument
+
 from toolkit.core.item.models import Item
-from toolkit.core.item.mailers import ReviewerReminderEmail, SignatoryReminderEmail
+from toolkit.core.attachment.models import Revision
+from toolkit.core.item.mailers import SignatoryReminderEmail
+from toolkit.apps.review.mailers import ReviewerReminderEmail
 
 from ..serializers import MatterSerializer
 from ..serializers.matter import LiteMatterSerializer
@@ -43,6 +55,16 @@ class MatterEndpoint(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         return user.workspace_set.mine(user=user)
+
+    def pre_save(self, obj):
+        """
+        @BUSINESSRULE Enforce the lawyer being set as the current user
+        """
+        if obj.lawyer in [None, '']:
+            if self.request.user.profile.is_lawyer:
+                obj.lawyer = self.request.user
+
+        return super(MatterEndpoint, self).pre_save(obj=obj)
 
     def can_read(self, user):
         return user.profile.user_class in ['lawyer', 'customer']
@@ -100,6 +122,159 @@ class SpecificAttributeMixin(object):
     def get_object(self):
         self.object = super(SpecificAttributeMixin, self).get_object()
         return getattr(self.object, self.specific_attribute, None)
+
+
+"""
+Sort endpoint
+To allow for categories and items within the categories to be set
+
+PATCH /matters/:matter_slug/sort
+{
+    "categories": ["cat 1", "cat 2", "im not a cat, im a dog"],
+    ##"items": [2,5,7,1,12,22,4] ## changed to slug to stay in line with standards
+    "items": ['fdafdfsdsfdsa', 'fdafdfgrwge24rt32r32', 't42rt32r32fdsfds']
+}
+
+As the cats and order represent the state of the project they need to be handled
+as a full state; this also makes it simpler for the angular app simply to filter
+and generate a set of categories and their order as well as the items in one go
+NB! notice that the ALL of the items are sent so it is a GLOBAL sort_order of
+items the angular app simply orders the categories and then inserts the items
+in the order they appear in
+"""
+
+class MatterSortView(generics.UpdateAPIView,
+                     MatterMixin):
+    """
+    Endpoint to sort categories and items
+    """
+    model = Workspace
+    serializer_class = MatterSerializer
+    lookup_field = 'slug'
+    lookup_url_kwarg = 'matter_slug'
+
+    def update(self, request, **kwargs):
+        data = request.DATA.copy()
+
+        if all(k in data.keys() for k in ["categories", "items"]) is False: raise exceptions.ParseError('request.DATA must be: {"categories": [], "items": []}')
+        if all(type(v) is list for v in data.values()) is False: raise exceptions.ParseError('categories and items must be of type list {"categories": [], "items": []}')
+        #
+        # @BUSINESSRULE run this update as an atomic update (transactions)
+        #
+        with transaction.atomic():
+            # this will override the categories in the order specified
+            self.matter.categories = data.get('categories')
+            self.matter.save(update_fields=['data'])  # because categories is a derrived value from data
+            
+            for sort_order, slug in enumerate(data.get('items')):
+                item = self.matter.item_set.get(slug=slug)  # item must exist by this point as we have its id from the rest call
+                item.sort_order = sort_order
+                item.save(update_fields=['sort_order'])
+
+        return Response(UnicodeJSONRenderer().render(data=data))
+
+    def can_read(self, user):
+        return user.profile.user_class in ['lawyer', 'customer']
+
+    def can_edit(self, user):
+        return user.profile.is_lawyer
+
+    def can_delete(self, user):
+        return user.profile.is_lawyer
+
+
+rulez_registry.register("can_read", MatterSortView)
+rulez_registry.register("can_edit", MatterSortView)
+rulez_registry.register("can_delete", MatterSortView)
+
+
+"""
+Matter Participant endpoint
+"""
+
+class MatterParticipant(generics.CreateAPIView,
+                        generics.DestroyAPIView,
+                        MatterMixin):
+    """
+    Endpoint for adding and removing matter level participants
+    these participants have the same level permission as the lawyer
+    unless they are user.profile.is_customer == True
+    
+    POST,DELETE /matters/:matter_slug/participant
+    {
+        "email": "username@example.com"
+    }
+
+    @TODO @QUESTION security hazard a lawyer can add another lawyer, but can that new
+    lawyer add other lawyers?
+    """
+    model = Workspace
+    serializer_class = MatterSerializer
+    lookup_field = 'slug'
+    lookup_url_kwarg = 'matter_slug'
+
+    def validate_data(self, data):
+        if all(k in data.keys() for k in ["email"]) is False: raise exceptions.ParseError('request.DATA must be: {"email": "username@example.com"}')
+
+        email_validator = EmailField()
+        # will raise error if incorrect
+        email_validator.clean(data.get('email'))
+
+    def create(self, request, **kwargs):
+        data = request.DATA.copy()
+        self.validate_data(data=data)
+        email = data.get('email')
+
+        try:
+            new_participant = User.objects.get(email=email)
+        except User.DoesNotExist:
+            #
+            # @BUSINESSRULE if an email does not exist then create them as
+            # customer
+            #
+            service = EnsureCustomerService(email=email, full_name=None)
+            is_new, new_participant, profile = service.process()
+
+        if new_participant not in self.matter.participants.all():
+            self.matter.participants.add(new_participant)  #@TODO @QUESTION send email to main lawyer and customer when this happens via a singal?
+
+        return Response(status=http_status.HTTP_202_ACCEPTED)
+
+
+    def delete(self, request, **kwargs):
+        # extract from url arg
+        data = {"email": self.kwargs.get('email')}
+        self.validate_data(data=data)
+        email = data.get('email')
+
+        # will raise Does not exist if not found
+        participant_to_remove = User.objects.get(email=email)
+
+        #
+        # @BUSINESSRULE you cannot delete the primary lawyer
+        #
+        if participant_to_remove == self.matter.lawyer:
+            raise exceptions.PermissionDenied('You are not able to remove the primary lawyer')
+
+        if participant_to_remove in self.matter.participants.all():
+            self.matter.participants.remove(participant_to_remove)
+
+        return Response(status=http_status.HTTP_202_ACCEPTED)
+
+    def can_read(self, user):
+        return user.profile.user_class in ['lawyer', 'customer']
+
+    def can_edit(self, user):
+        return user.profile.is_lawyer
+
+    def can_delete(self, user):
+        return user.profile.is_lawyer
+
+
+rulez_registry.register("can_read", MatterParticipant)
+rulez_registry.register("can_edit", MatterParticipant)
+rulez_registry.register("can_delete", MatterParticipant)
+
 
 
 """
@@ -170,14 +345,40 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
                               MatterItemsQuerySetMixin):
     """
     /matters/:matter_slug/items/:item_slug/revision (GET,POST,PATCH,DELETE)
-        [lawyer,customer] to get,create,update,delete the latst revision
+        [lawyer,customer] to get,create,update,delete the latest revision
     Get the Item object and access its item.latest_revision to get access to
     the latest revision, but then return the serialized revision in the response
     """
-    model = Item  # to allow us to use get_object generically
+    #parser_classes = (parsers.FileUploadParser,) # his will obly be necessary if we stop using filepicker.io which passes us a url
+
+    model = Revision  # to allow us to use get_object generically
     serializer_class = RevisionSerializer  # as we are returning the revision and not the item
     lookup_field = 'slug'
     lookup_url_kwarg = 'item_slug'
+
+    def initial(self, request, *args, **kwargs):
+        self.get_object()
+        super(ItemCurrentRevisionView, self).initial(request, *args, **kwargs)
+
+    def get_serializer_context(self):
+        return {'request': self.request}
+
+    def get_serializer(self, instance=None, data=None,
+                       files=None, many=False, partial=False):
+        # pop it
+        if data is not None:
+            data['item'] = ItemSerializer(self.item).data.get('url')
+            data['uploaded_by'] = UserSerializer(self.request.user).data.get('url')
+
+        return super(ItemCurrentRevisionView, self).get_serializer(instance=instance, data=data,
+                                                                   files=files, many=many, partial=partial)
+
+    def pre_save(self, obj):
+        """
+        @BUSINESSRULE Enforce the revision.uploaded_by and revision.item
+        """
+        obj.item = self.item
+        obj.uploaded_by = self.request.user
 
     def get_revision(self):
         return self.item.latest_revision
@@ -188,12 +389,60 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
         but return the Revision object as self.object
         """
         self.item = super(ItemCurrentRevisionView, self).get_object()
-        self.revision = self.get_revision()
-
-        if self.revision is not None:
-            return self.revision
+        if self.request.method in ['POST']:
+            self.revision = Revision(uploaded_by=self.request.user, item=self.item)
         else:
-            raise Http404
+            # get,patch
+            self.revision = self.get_revision()
+            if self.request.method in ['GET'] and self.revision is None:
+                raise Http404
+
+        return self.revision
+
+    # def validate_filepicker_file(self, filedict):
+    #     validate = URLValidator()
+    #     try:
+    #         validate(filedict.get('url'))
+
+    #     except ValidationError, e:
+    #         raise Exception('The given url is not valid')
+
+    # def create(self, request, **kwargs):
+    #     self.get_object()
+    #     data = request.DATA.copy()
+
+    #     #Just handle the first file
+    #     #import pdb;pdb.set_trace()
+    #     # if data.get('executed_file') is None or len(data.get('executed_file')) != 1:
+    #     #     raise exceptions.ParseError('request.DATA must be: {"executed_file": []} with exactly one object.')
+    #     if data.get('executed_file', None) is not None:
+    #         filedict = data.get('executed_file')
+    #         self.validate_filepicker_file(filedict=filedict)
+    #         tasks._download_file(filedict, revision)
+
+    #     revision = Revision(item=self.item, uploaded_by=self.request.user)
+    #     serializer = self.get_serializer(revision)
+
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         headers = self.get_success_headers(serializer.data)
+
+    #         return Response(serializer.data, status=http_status.HTTP_201_CREATED, headers=headers)
+
+    #     return Response(serializer.data, status=http_status.HTTP_406_NOT_ACCEPTABLE, headers=headers)
+
+    def can_read(self, user):
+        return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
+
+    def can_edit(self, user):
+        return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
+
+    def can_delete(self, user):
+        return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
+
+rulez_registry.register("can_read", ItemCurrentRevisionView)
+rulez_registry.register("can_edit", ItemCurrentRevisionView)
+rulez_registry.register("can_delete", ItemCurrentRevisionView)
 
 
 class ItemSpecificReversionView(ItemCurrentRevisionView):
@@ -217,6 +466,12 @@ class BaseReviewerSignatoryMixin(ItemCurrentRevisionView):
     serializer_class = UserSerializer  # as we are returning the revision and not the item
 
     def get_revision_object_set_queryset(self):
+        raise NotImplementedError
+
+    def process_event_purpose_object(self, user):
+        """
+        is this a review or a signature?
+        """
         raise NotImplementedError
 
     def get_object(self):
@@ -243,11 +498,17 @@ class BaseReviewerSignatoryMixin(ItemCurrentRevisionView):
             # Only create the join if it doesnt already exist
             #
             username = self.kwargs.get('username')
-            user = get_object_or_404(User, username=username)
-            # add to the join
-            self.get_revision_object_set_queryset().add(user)
+
+            service = EnsureCustomerService(username=username, full_name=None)
+            is_new, user, profile = service.process()
+
+            # add to the join if not there already
+            self.get_revision_object_set_queryset().add(user) if user not in self.get_revision_object_set_queryset().all() else None
 
             status = http_status.HTTP_201_CREATED
+
+        # add the user to the purpose of this endpoint object review||signature
+        self.process_event_purpose_object(user=user)
 
         # we have the user at this point
         serializer = self.get_serializer(user)
@@ -289,6 +550,14 @@ class ItemRevisionReviewerView(BaseReviewerSignatoryMixin):
 
     def get_revision_object_set_queryset(self):
         return self.revision.reviewers
+
+    def process_event_purpose_object(self, user):
+        # perform ReviewDocument get or create
+        review_doc, is_new = ReviewDocument.objects.get_or_create(document=self.revision)
+        # add the user to the reviewers if not there alreadt
+        review_doc.reviewers.add(user) if user not in review_doc.reviewers.all() else None
+
+        logger.info("Added %s to the ReviewDocument %s is_new: %s for revision: %s" %(user, review_doc, is_new, self.revision))
 
 
 class ItemRevisionSignatoryView(BaseReviewerSignatoryMixin):
@@ -370,9 +639,10 @@ Category and Closing Groups
 """
 
 class CategoryView(SpecificAttributeMixin,
-                   generics.DestroyAPIView,
                    generics.CreateAPIView,
                    generics.RetrieveAPIView,
+                   generics.UpdateAPIView,
+                   generics.DestroyAPIView,
                    MatterMixin,):
     """
     /matters/:matter_slug/category/:category (GET,POST,DELETE)
@@ -391,6 +661,18 @@ class CategoryView(SpecificAttributeMixin,
         obj = self.get_object()
         return Response(obj)
 
+    def update(self, request, **kwargs):
+        current_category = kwargs.get('category')
+        new_category = request.DATA.get('category')
+
+        if new_category != current_category:
+            self.matter.item_set.filter(category=current_category).update(category=new_category)
+            self.matter.remove_category(value=current_category)
+            self.matter.add_category(value=new_category)
+            self.matter.save(update_fields=['data'])
+
+        return Response(self.matter.categories)
+
     def create(self, request, **kwargs):
         self.get_object()
 
@@ -403,13 +685,32 @@ class CategoryView(SpecificAttributeMixin,
         cats = self.get_object()
         category = self.kwargs.get('category')
 
-        try:
-            cats = self.object.remove_category(category, instance=self.object)
-            self.object.save(update_fields=['data'])
-        except Exception as e:
-            logger.info('Could not delete category: %s due to: %s' % (category, e,))
+        # try:
+        #
+        # @BUSINESSRULE at the matter level if we delete a category it will
+        # also delete all items below that category
+        #
+        cats = self.object.remove_category(category, instance=self.object, delete_items_still_using_category=True)
+        self.object.save(update_fields=['data'])
+
+        # except Exception as e:
+        #     logger.info('Could not delete category: %s due to: %s' % (category, e,))
 
         return Response(cats)
+
+    def can_read(self, user):
+        return user.profile.user_class in ['lawyer', 'customer']
+
+    def can_edit(self, user):
+        return user.profile.is_lawyer
+
+    def can_delete(self, user):
+        return user.profile.is_lawyer
+
+
+rulez_registry.register("can_read", CategoryView)
+rulez_registry.register("can_edit", CategoryView)
+rulez_registry.register("can_delete", CategoryView)
 
 
 class ClosingGroupView(SpecificAttributeMixin,

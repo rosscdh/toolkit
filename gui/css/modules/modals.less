@@ -12,7 +12,7 @@
 }
 
 // Container that the modal scrolls within
-.modal {
+.modal { 
 	z-index: @zindex-modal-background;
 }
 
@@ -25,8 +25,9 @@
 .modal-content {
 	width: 624px;
 	background-color: @modal-content-bg;
-  border: 2px solid @modal-content-border-color;
-  border-radius: @modal-content-border-radius;
+  /*border: 2px solid @modal-content-border-color;*/
+  border: 0;
+  /*border-radius: @modal-content-border-radius;*/
   .background-clip(border-box);
   .box-shadow(@modal-content-box-shadow);
   
@@ -47,6 +48,8 @@
 .modal-header {
   padding: 17px 19px 15px 24px;
   border-bottom: 1px solid @modal-content-border-color;
+  background-color: #2980b9;
+  color: #FFF;
 }
 
  // Close icon
@@ -109,9 +112,15 @@
 @media screen and (min-width: 768px) {
 
   .modal-dialog {
-    left: 50%;
+    /*left: 50%;*/
     right: auto;
     width: 624px;
   }
 
+}
+
+.modal-header .sub {
+  font-size: 13px;
+  color: #a9d1ec;
+  margin-top: 5px;
 }

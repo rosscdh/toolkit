@@ -8,6 +8,7 @@ from toolkit.core.item.models import Item
 
 
 class ItemSerializer(serializers.HyperlinkedModelSerializer):
+    description = serializers.CharField(source='description', required=False)
     status = serializers.SerializerMethodField('get_status')
     latest_revision = serializers.Field(source='latest_revision')
 
@@ -20,7 +21,8 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
         model = Item
         lookup_field = 'slug'
         fields = ('slug', 'url', 'status', 'name', 'description', 'matter',
-                  'parent', 'children', 'closing_group', 'latest_revision',
+                  'parent', 'children', 'closing_group', 'category',
+                  'latest_revision',
                   'is_final', 'is_complete', 'date_due',
                   'date_created', 'date_modified',)
 

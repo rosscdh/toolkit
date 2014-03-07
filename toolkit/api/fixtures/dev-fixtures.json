@@ -127,7 +127,7 @@
         3
       ],
       "client": 1,
-      "lawyer": 4,
+      "lawyer": 2,
       "date_created": "2014-02-27T09:31:38.345Z",
       "matter_code": "00000-test-workspace",
       "data": {
@@ -138,7 +138,7 @@
           "First Closing Group"
         ]
       },
-      "slug": "test-workspace-1"
+      "slug": "test-matter-1"
     }
   },
   {

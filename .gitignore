@@ -1,3 +1,4 @@
+*.diff
 gui/dist/
 setup.cfg
 .sonar

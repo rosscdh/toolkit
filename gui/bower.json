@@ -21,6 +21,8 @@
     "angular-bootstrap": "~0.9",
     "moment": "~2.5",
     "less.js": "~1.5",
-    "font-awesome": "~4.0"
+    "font-awesome": "~4.0",
+    "angular-ui-sortable": "~0.12.1",
+    "ez-confirm": "*"
   }
 }

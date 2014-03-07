@@ -1,0 +1,34 @@
+<div class="modal-content">
+	<div class="modal-header">
+		<h4 class="modal-title" id="myModalLabel">Matter Participants</h4>
+		<div class="sub">A Matter Participant is a high level user who can see the checklist and the revisions that have been added. This should be <u>your client</u> and your <u>co-counsel</u> only.</div>
+	</div>
+	<div class="modal-body">
+		<h5 ng-show="participants.length>0">Existing Participants</h5>
+		<ul class="list-unstyled">
+			<li ng-repeat="person in participants">
+				<label ng-bind="person.first_name"></label>
+				<label ng-bind="person.last_name"></label>
+				<small ng-show="person.username==currentUser.username">(you)</small>
+				<a class="text-danger" ng-show="person.username!==currentUser.username" href="javascript:;" ng-click="revoke(person)"><small>Revoke access</small></a>
+			</li>
+		</ul>
+
+		<h5>Add a participant</h5>
+		<form class="form" ng-submit="invite()">
+			<div class="form-group">
+				<input type="email" class="form-control form-control-full-width input-sm" ng-model="data.invitee.email" placeholder="your_email@gmail.com" required />
+			</div>
+			<div class="form-group">
+				<textarea class="form-control form-control-full-width" ng-model="data.invitee.message" placeholder="Add an optional message"></textarea>
+			</div>
+			<div class="form-group">
+				<button class="btn btn-primary btn-wide btn-sm">Add participant</button>
+			</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<!--<button class="btn btn-primary" ng-click="ok()">OK</button>//-->
+		<button class="btn btn-default" ng-click="cancel()">Close</button>
+	</div>
+</div>

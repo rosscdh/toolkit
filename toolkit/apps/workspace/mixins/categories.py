@@ -20,14 +20,14 @@ class CategoryDoesNotExist(Exception):
     msg = 'The specified category name does not exist'
 
 
-class CategoryStillInUse(Exception):
-    """
-    A dev can only delete a category if NONE of the matters.item_set are
-    still making use of it.
-    i.e. you have to set an item.category = None and save the item
-    BEFORE trying to delete the closing group
-    """
-    msg = 'There are still items using this category'
+# class CategoryStillInUse(Exception):
+#     """
+#     A dev can only delete a category if NONE of the matters.item_set are
+#     still making use of it.
+#     i.e. you have to set an item.category = None and save the item
+#     BEFORE trying to delete the closing group
+#     """
+#     msg = 'There are still items using this category'
 
 
 class CategoriesMixin(object):
@@ -61,7 +61,7 @@ class CategoriesMixin(object):
         if value not in ['', None]:
             if value not in categories:
                 # append the value
-                categories.append(value)
+                categories.insert(0, value) #@BUSINESSRULE we dont add to the end we put at the front by default, this ties in with "sort"
                 # and then set our groups to the new list
                 self.categories = categories
             return self.categories
@@ -73,7 +73,7 @@ class CategoriesMixin(object):
         """
         return self.remove_category(value=value)
 
-    def remove_category(self, value, instance=None):
+    def remove_category(self, value, instance=None, delete_items_still_using_category=False):
         """
         Remove an existing value from the set
         but only if there are no items that have that value
@@ -94,20 +94,30 @@ class CategoriesMixin(object):
                 #
                 instance_pk = instance.pk if instance is not None else None
                 # exclude the instance if present
-                num_items_using_category = self.item_set  \
+                items_using_category = self.item_set  \
                                                .exclude(pk=instance_pk)  \
-                                               .filter(category=value).count()
+                                               .filter(category=value)
 
-                if num_items_using_category > 0:
+                if items_using_category.count() > 0:
                     #
-                    # There are still items using this category
+                    # We have other items using this cat
                     #
-                    raise CategoryStillInUse
+                    if delete_items_still_using_category is True:
+                        #
+                        # There are still items using this category
+                        # @BUSINESSRULE delete those items as we assume the lawyer
+                        # no longer wants. Set cat to none and delete (sfot delete)
+                        #
+                        [obj.delete() for obj in items_using_category]  # clear the set
 
+                        # remove it
+                        categories.remove(value)
                 else:
                     # remove it
                     categories.remove(value)
-                    # update the set
-                    self.categories = categories
-                return self.categories
+
+            # update the set
+            self.categories = categories
+
+            return self.categories
         return False

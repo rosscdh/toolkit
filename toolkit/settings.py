@@ -49,7 +49,7 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    ("ng", os.path.join(SITE_ROOT, 'gui/dist')),
+    ("ng", os.path.join(SITE_ROOT, 'gui')),
 )
 
 MEDIA_ROOT = os.path.join(SITE_ROOT, 'media')
@@ -95,14 +95,19 @@ PROJECT_APPS = (
     'toolkit.apps.api',
     'toolkit.apps.default',
     'toolkit.apps.dash',
+    'toolkit.apps.matter',
     'toolkit.apps.me',
-
+    # Main Workspace (matters)
+    'toolkit.apps.workspace',
+    # Core related apps
+    'toolkit.apps.review',
     # Routine Apps
     'toolkit.apps.eightythreeb',
     'toolkit.apps.engageletter',
 
     # Lawpal Modules
     'hello_sign',
+    'dj_crocodoc',
 )
 
 HELPER_APPS = (
@@ -203,6 +208,7 @@ AUTHENTICATION_BACKENDS = (
     'toolkit.auth_backends.EmailBackend',
     'django.contrib.auth.backends.ModelBackend',
     'toolkit.auth_backends.SecretKeyBackend',
+    'toolkit.apps.review.auth_backends.ReviewDocumentBackend',  # allow users to log in via review urls
 )
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -246,7 +252,6 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ),
     'DEFAULT_FILTER_BACKENDS': (
-        ('rest_framework.filters.DjangoFilterBackend',)
     ),
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.

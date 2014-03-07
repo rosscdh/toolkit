@@ -715,6 +715,9 @@ div.full {
 .breadcrumb-text {
   margin-bottom: 10px;
 }
+body.checklist {
+  background-color: #f2f2f2;
+}
 .container-fluid {
   padding: 0 20px;
 }
@@ -754,6 +757,9 @@ div.full {
   border: 0;
   padding: 0;
 }
+.modal .form-group .form-control.select {
+  margin-bottom: 0;
+}
 .form-group .input-group-addon {
   width: inherit;
 }
@@ -778,6 +784,50 @@ div.full {
 }
 .form-section + .form-section {
   margin-top: 40px;
+}
+.matter .card {
+  background-color: #ffffff;
+  border-right: 2px solid #dadada;
+  border-bottom: 2px solid #dadada;
+  margin-bottom: 20px;
+  position: relative;
+}
+.matter .card .content {
+  display: block;
+  padding: 16px 14px 10px;
+}
+.matter .card .content .title {
+  display: table-cell;
+  height: 125px;
+  vertical-align: middle;
+}
+.matter .card .content .title h5,
+.matter .card .content .title h6 {
+  margin: 0 0 3px;
+}
+.matter .card .content .title h6 {
+  font-size: 14px;
+}
+.matter .card .content .title p {
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+.matter .card .content .meta {
+  margin-bottom: 10px;
+}
+.matter .card .content .meta p {
+  color: grey;
+  font-size: 12px;
+  font-style: italic;
+  line-height: 40px;
+  margin-bottom: 5px;
+}
+.matter .card .edit {
+  color: #95a5a6;
+  display: block;
+  position: absolute;
+  right: 5px;
+  top: 5px;
 }
 .navbar {
   margin-bottom: 0;
@@ -852,6 +902,7 @@ div.full {
   margin-top: 12px;
   width: 200px;
 }
+.page-header h3,
 .page-header h4 {
   display: inline-block;
   margin: 0;
@@ -1169,6 +1220,22 @@ div.full {
 }
 .attachment-list-item-meta {
   margin-top: 20px;
+}
+.avatar {
+  background-color: #ecf0f1;
+  display: inline-block;
+  position: relative;
+}
+.avatar .initials {
+  color: #444;
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+  height: 40px;
+  overflow: hidden;
+  line-height: 40px;
+  text-align: center;
+  width: 40px;
 }
 .dashboard {
   margin-top: -30px;

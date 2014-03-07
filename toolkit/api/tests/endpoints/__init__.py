@@ -20,8 +20,9 @@ class BaseEndpointTest(BaseScenarios, TestCase):
         super(BaseEndpointTest, self).setUp()
         # basics
         self.basic_workspace()
+
         # provide a lawyer client
         self.lawyer_client = mommy.make('client.Client', lawyer=self.lawyer, name='Test Client for Test Lawyer')
 
     def test_endpoint_name(self):
-        raise NotImplementedError
+        self.assertEqual(self.endpoint, None)

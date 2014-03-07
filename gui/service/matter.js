@@ -8,10 +8,17 @@ angular.module('toolkit-gui').factory('matterService',[ '$q', '$resource', funct
 		'items': [],
 		'selected': null
 	};
+
 	function matterResource() {
-		return $resource('http://127.0.0.1:8000/api/v1/matters/:matterSlug/?format=json', {}, {
-			'list': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }, 'isArray': true },
-			'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } }
+        var matterSlug = '';
+        if(matter.selected != null){
+            matterSlug = matter.selected.slug;
+        }
+
+		return $resource('http://localhost:8000/api/v1/matters/:matterSlug/:action', {'matterSlug':matterSlug, 'action':'@action'}, {
+			'list': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } },
+			'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } },
+			'sort': { 'method': 'PATCH', 'params': {'action': 'sort'}, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } }
 		});
 	}
 
@@ -20,8 +27,8 @@ angular.module('toolkit-gui').factory('matterService',[ '$q', '$resource', funct
 			return matter;
 		},
 
-		'selectMatter': function( objMAtter ) {
-			matter.selected = objMAtter;
+		'selectMatter': function( objMatter ) {
+			matter.selected = objMatter;
 		},
 
 		'list': function() {
@@ -30,7 +37,7 @@ angular.module('toolkit-gui').factory('matterService',[ '$q', '$resource', funct
 
 			api.list( {},
 				function success( result ) {
-					deferred.resolve( result );
+					deferred.resolve( result.results );
 				},
 				function error( err ) {
 					deferred.reject( err );
@@ -55,7 +62,24 @@ angular.module('toolkit-gui').factory('matterService',[ '$q', '$resource', funct
 			);
 
 			return deferred.promise;
-		}
+		},
+
+        'saveSortOrder': function ( APIUpdate ) {
+            var deferred = $q.defer();
+
+			var api = matterResource();
+
+			api.sort(APIUpdate,
+				function success(){
+					deferred.resolve();
+				},
+				function error(err) {
+					deferred.reject( err );
+				}
+			);
+
+			return deferred.promise;
+        }
 	};
 }]);
 

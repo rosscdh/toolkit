@@ -62,7 +62,7 @@ class ClosingGroupsMixin(object):
         if value not in ['', None]:
             if value not in closing_groups:
                 # append the value
-                closing_groups.append(value)
+                closing_groups.insert(0, value)  #@BUSINESSRULE we insert at 0 rather than at end to allow global sort
                 # and then set our groups to the new list
                 self.closing_groups = closing_groups
             return self.closing_groups
