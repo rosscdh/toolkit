@@ -94,17 +94,18 @@ angular.module('toolkit-gui').factory('matterItemService',[ '$q', '$resource', '
 			return deferred.promise;
 		},
 
-		'uploadRevision': function( matterSlug, itemSlug, fileDetails ) {
+		'uploadRevision': function( matterSlug, itemSlug, files ) {
 			var deferred = $q.defer();
 
 			var api = revisionItemResource();
 
-			var formData = new FormData();
-			formData.append("executed_file", fileDetails);
+			//var formData = new FormData();
+			//formData.append("executed_file", fileDetails);
+            var fileurl = files[0].url;
 
-			api.create({'matterSlug': matterSlug, 'itemSlug': itemSlug }, { 'executed_file': fileDetails },
-				function success(){
-					deferred.resolve();
+			api.create({'matterSlug': matterSlug, 'itemSlug': itemSlug }, { 'executed_file': fileurl },
+				function success(revision){
+					deferred.resolve(revision);
 				},
 				function error(err) {
 					deferred.reject( err );

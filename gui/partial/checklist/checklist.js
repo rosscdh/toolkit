@@ -8,7 +8,8 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 	'matterService',
 	'matterItemService',
 	'matterCategoryService',
-	function($scope, $rootScope, $routeParams, ezConfirm, toaster, $modal, matterService, matterItemService, matterCategoryService){
+	'$timeout',
+	function($scope, $rootScope, $routeParams, ezConfirm, toaster, $modal, matterService, matterItemService, matterCategoryService, $timeout){
 	$scope.data = {
 		'slug': $routeParams.matterSlug,
 		'matter': {},
@@ -76,14 +77,13 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 		   if ($scope.data.newItemName) {
 			 matterItemService.create($scope.data.newItemName, category.name).then(
 				 function success(item){
-					category.items.push(item);
+					category.items.unshift(item);
 					$scope.data.newItemName = '';
 				 },
 				 function error(err){
 					toaster.pop('error', "Error!", "Unable to create new item");
 				 }
 			 );
-			 $scope.data.showAddForm = null;
 		   }
 		};
 
@@ -93,6 +93,7 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 
 			//Reset controls
 			$scope.data.showEditItemDescriptionForm = false;
+			$scope.data.showEditItemTitleForm = false;
 		};
 
 		$scope.deleteItem = function() {
@@ -118,6 +119,7 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 		$scope.showAddItemForm = function(index) {
 			if ($scope.data.showAddForm !== index) {
 				$scope.data.showAddForm = index;
+                $scope.focus('eventNewItem-'+index);
 			}
 			else {
 				$scope.data.showAddForm = null;
@@ -161,7 +163,6 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 				 function success(){
 					$scope.data.categories.unshift({'name': $scope.data.newCatName, 'items': []});
 					$scope.data.newCatName = '';
-
 				 },
 				 function error(err){
 					toaster.pop('error', "Error!", "Unable to create a new category");
@@ -190,6 +191,7 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 		$scope.showEditCategoryForm = function(index) {
 			if ($scope.data.showEditCategoryForm !== index) {
 				$scope.data.showEditCategoryForm = index;
+                $scope.focus('eventEditCategorytitle-'+index);
 			}
 			else {
 				$scope.data.showEditCategoryForm = null;
@@ -208,6 +210,23 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 			$scope.data.showEditCategoryForm = null;
 		};
 		/* End CRUD Category */
+
+        /* Begin revision handling */
+		$scope.processUpload = function( files, item ) {
+			var matterSlug = $scope.data.slug;
+			var itemSlug = item.slug;
+
+			matterItemService.uploadRevision( matterSlug, itemSlug, files ).then(
+				function success( revision ) {
+					item.latest_revision = revision;
+                    console.log(revision);
+				},
+				function error(err) {
+					toaster.pop('error', "Error!", "Unable to upload revision");
+				}
+			);
+		};
+        /* End revision handling */
 
 		function recalculateCategories( evt, ui ) {
 			var cats = $scope.data.categories;
@@ -261,19 +280,6 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 			);
 		}
 
-		$scope.processUpload = function( files, item ) {
-			var matterSlug = $scope.data.slug;
-			var itemSlug = item.slug;
-
-			matterItemService.uploadRevision( matterSlug, itemSlug, files ).then(
-				function success( response ) {
-					// @TODO show in view
-				},
-				function error(err) {
-					toaster.pop('error', "Error!", "Unable to upload revision");
-				}
-			);
-		};
 
 		/**
 		 * Initiate the process of requesting reviews from existing participants or new participants
@@ -300,14 +306,20 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 			});
 
 			modalInstance.result.then(
-				function ok( details ) {
-					console.log( details );
+				function ok(selectedItem) {
+					
 				},
 				function cancel() {
 					//
 				}
 			);
 		};
+
+        $scope.focus = function(name) {
+            $timeout(function (){
+              $scope.$broadcast('focusOn', name);
+            }, 300);
+        };
 
 		// UI.sortable options
 		$scope.checklistItemSortableOptions = {

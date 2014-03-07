@@ -5,12 +5,14 @@ Items are either todo items or document items
 from rest_framework import serializers
 
 from toolkit.core.item.models import Item
+from .revision import RevisionSerializer
 
 
 class ItemSerializer(serializers.HyperlinkedModelSerializer):
     description = serializers.CharField(source='description', required=False)
     status = serializers.SerializerMethodField('get_status')
-    latest_revision = serializers.Field(source='latest_revision')
+    # must be read_only=True
+    latest_revision = RevisionSerializer(source='latest_revision', read_only=True)
 
     matter = serializers.HyperlinkedRelatedField(many=False, required=True, view_name='workspace-detail', lookup_field='slug')
 
