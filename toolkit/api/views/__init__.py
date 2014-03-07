@@ -1,24 +1,31 @@
 # -*- coding: UTF-8 -*-
 from .user import UserEndpoint
+
 from .account import AccountEndpoint
+
 from .client import ClientEndpoint
+
 from .matter import (MatterEndpoint,
-                     CategoryView as MatterCategoryView,
-                     ClosingGroupView as MatterClosingGroupView,
-                     MatterSortView,
-                     MatterParticipant,)
+                     ClosingGroupView as MatterClosingGroupView,)
 
-from .matter import (MatterItemsView,
-                     MatterItemView,
+from .matter import (ItemRevisionReviewerView,
+                     ItemRevisionSignatoryView,)
 
-                     ItemCurrentRevisionView as MatterItemCurrentRevisionView,
-                     ItemSpecificReversionView as MatterItemSpecificReversionView,
+from .sort import (MatterSortView,)
 
-                     ItemRevisionReviewerView,
-                     ItemRevisionSignatoryView,
-                     RemindReviewers,
-                     RemindSignatories,)
+from .category import (CategoryView as MatterCategoryView,)
 
-from .item import ItemEndpoint
+from .participant import (MatterParticipant,)
+
+from .revision import (ItemCurrentRevisionView as MatterItemCurrentRevisionView,
+                       ItemSpecificReversionView as MatterItemSpecificReversionView,)
+
+from .item import (ItemEndpoint,
+                   MatterItemsView,
+                   MatterItemView,)
+
+from .reminder import (RemindReviewers,
+                       RemindSignatories)
+
 from .revision import RevisionEndpoint
 # from .workflow import WorkflowEndpoint
