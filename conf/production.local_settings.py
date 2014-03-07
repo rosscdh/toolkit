@@ -31,6 +31,13 @@ DATABASES = {
 
 USE_ETAGS = True
 
+# Additional locations of static files
+STATICFILES_DIRS = (
+    # These are the production files
+    # not that static is in gui/dist/static *not to be confused with the django {{ STATIC_URL }}ng/ which will now point correctly
+    ("ng", os.path.join(SITE_ROOT, 'gui', 'dist', 'static')),
+)
+
 MEDIA_URL = '/m/'
 STATIC_URL = '/s/'
 

@@ -60,5 +60,4 @@ class Command(BaseCommand):
             # result = service.send_for_signing(test_mode=1, client_id=settings.HELLOSIGN_CLIENT_ID)
             result = e.send_for_signing()
             PPP.pprint(result.json())
-        import pdb;pdb.set_trace()
             

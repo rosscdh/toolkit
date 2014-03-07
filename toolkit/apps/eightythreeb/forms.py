@@ -152,7 +152,7 @@ class BaseEightyThreeBForm(WorkspaceToolFormMixin):
             'required': "Property description can't be blank."
         },
         label='Description of property with respect to which election is being made',
-        initial='{{ total_shares_purchased }} shares (the “Shares”) of the Common Stock of {{ company_name }}, Inc. (the “Company”) (${{ price_paid_per_share }} per share)'
+        initial='{{ total_shares_purchased }} shares (the “Shares”) of the Common Stock of {{ company_name }} (the “Company”) (${{ price_paid_per_share }} per share)'
     )
 
     tax_year = forms.IntegerField(
@@ -458,16 +458,17 @@ class TrackingCodeForm(ModalForm, forms.ModelForm):
         model = EightyThreeB
 
     def __init__(self, *args, **kwargs):
-        self.helper = FormHelper()
-        self.helper.form_action = reverse('eightythreeb:tracking_code', kwargs={'slug': kwargs['instance'].slug})
+        super(TrackingCodeForm, self).__init__(*args, **kwargs)
 
         self.helper.layout = Layout(
             'tracking_code',
         )
 
-        super(TrackingCodeForm, self).__init__(*args, **kwargs)
-
         self.fields['tracking_code'].initial = self.instance.tracking_code
+
+    @property
+    def action_url(self):
+        return reverse('eightythreeb:tracking_code', kwargs={'slug': self.instance.slug})
 
     def clean_tracking_code(self):
         tracking_code = self.cleaned_data.get('tracking_code')

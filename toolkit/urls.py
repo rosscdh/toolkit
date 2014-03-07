@@ -18,6 +18,8 @@ urlpatterns = patterns('',
 
     url(r'^dash/', include('toolkit.apps.dash.urls', namespace='dash')),
 
+    url(r'^matters/', include('toolkit.apps.matter.urls', namespace='matter')),
+
     url(r'^me/pasword/', include('password_reset.urls')),
     url(r'^me/', include('toolkit.apps.me.urls', namespace='me')),
 
