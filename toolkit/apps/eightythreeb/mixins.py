@@ -2,7 +2,6 @@
 from django.template import loader
 from django.template import Template
 from django.utils.safestring import mark_safe
-from django.template.loaders.app_directories import Loader
 
 from datetime import date, datetime, timedelta
 
@@ -19,6 +18,8 @@ class HTMLMixin(object):
         return loader.get_template(self.pdf_template_name)
 
     def template_source(self, template_name):
+        from django.template.loaders.app_directories import Loader
+
         source_loader = Loader()
         source, file_path = source_loader.load_template_source(template_name)
         return source
