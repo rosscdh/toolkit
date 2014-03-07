@@ -18,6 +18,8 @@ class HTMLMixin(object):
         return loader.get_template(self.pdf_template_name)
 
     def template_source(self, template_name):
+        from django.template.loaders.app_directories import Loader
+
         source_loader = Loader()
         from django.template.loaders.app_directories import Loader
         source, file_path = source_loader.load_template_source(template_name)
