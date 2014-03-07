@@ -201,6 +201,11 @@ class MatterDetailProvidedDataTest(BaseEndpointTest):
     def endpoint(self):
         return reverse('workspace-detail', kwargs={'slug': self.matter.slug})
 
+    def setUp(self):
+        super(MatterDetailProvidedDataTest, self).setUp()
+        self.item = mommy.make('item.Item', matter=self.matter, name='Test Item No. 1', category="A")
+        self.revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
+
     def test_endpoint_name(self):
         self.assertEqual(self.endpoint, '/api/v1/matters/%s' % self.matter.slug)
 
@@ -212,6 +217,16 @@ class MatterDetailProvidedDataTest(BaseEndpointTest):
         # must have full url
         self.assertEqual(participants[0].get('url'), 'http://testserver/api/v1/users/%s' % self.user.username)
 
+    def confirm_item_latest_revision(self, items):
+        """
+        Test that the latest_revision is as it shoudl be
+        """
+        self.assertEqual(type(items), list)
+
+        latest_revision = items[0].get('latest_revision')
+        self.assertEqual(type(latest_revision), dict)
+        self.assertEqual(latest_revision.get('url'), '/api/v1/revisions/%d' % self.revision.pk)
+
     def test_endpoint_data_lawyer(self):
         self.client.login(username=self.lawyer.username, password=self.password)
         resp = self.client.get(self.endpoint)
@@ -220,6 +235,8 @@ class MatterDetailProvidedDataTest(BaseEndpointTest):
 
         # participants
         self.confirm_participants(participants=resp_data.get('participants'))
+        # revisions
+        self.confirm_item_latest_revision(items=resp_data.get('items'))
 
     def test_endpoint_data_customer(self):
         self.client.login(username=self.user.username, password=self.password)
@@ -229,3 +246,5 @@ class MatterDetailProvidedDataTest(BaseEndpointTest):
 
         # participants
         self.confirm_participants(participants=resp_data.get('participants'))
+        # revisions
+        self.confirm_item_latest_revision(items=resp_data.get('items'))
