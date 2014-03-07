@@ -3,13 +3,13 @@
 		<div class="row full">
 			<div class="col-sm-5 checklist-col full">
 				<!-- add new category //-->
-				<a href="javascript:;" ng-click="data.showCategoryAddForm=!data.showCategoryAddForm">New Category</a>
+				<a href="javascript:;" ng-click="data.showCategoryAddForm=!data.showCategoryAddForm;focus('eventAddCategory')">New Category</a>
 	            <table class="table checklist" ng-show="data.showCategoryAddForm">
-	                 <tr class="add-new-controls warning" ng-show="data.showAddForm==$index">
+	                 <tr class="add-new-controls warning">
 			              	<td colspan="2">
 			              		<div class="input-group">
 					          	    <input class="form-control input-sm" id="appendedInputButton-03" type="search" placeholder="Enter category name and press enter"
-	                                       ng-model="data.newCatName" ng-enter="submitNewCategory()">
+	                                       ng-model="data.newCatName" ng-enter="submitNewCategory()" ng-blur="data.showCategoryAddForm=false" focus-on="eventAddCategory">
 					          	    <div class="input-group-btn">
 					          	    </div>
 					          	</div>
@@ -18,6 +18,7 @@
 	            </table>
 
 				<div ui-sortable="checklistCategorySortableOptions" ng-model="data.categories">
+
 				<!-- checklist //-->
 				<table class="table checklist" ng-repeat="cat in data.categories">
 					<thead>
@@ -25,7 +26,7 @@
 			                <th colspan="1" class="col-sm-6 category">
                                 <span ng-bind="cat.name" ng-hide="data.showEditCategoryForm==$index"></span>
                                 <input class="form-control input-sm" ng-show="data.showEditCategoryForm==$index" type="search"
-                                       ng-model="data.newCategoryName" ng-enter="editCategory(cat)">
+                                       ng-model="data.newCategoryName" ng-enter="editCategory(cat)" ng-blur="data.showEditCategoryForm=false" focus-on="eventEditCategorytitle-{{$index}}">
                             </th>
 			              	<th class="category-controls">
 			              		<!-- TODO : make these buttons appear when the tbody appears-->
@@ -44,7 +45,7 @@
 			              	<td colspan="2">
 			              		<div class="input-group">
 					          	  	<input class="form-control input-sm" id="appendedInputButton-03" type="search" placeholder="Enter item name and press enter"
-                                           ng-model="data.newItemName" ng-enter="submitNewItem(cat)" ng-blur="data.showAddForm=null">
+                                           ng-model="data.newItemName" ng-enter="submitNewItem(cat)" ng-blur="data.showAddForm=null" focus-on="eventNewItem-{{$index}}">
 					          	  	<div class="input-group-btn">
 					          	    	<button class="btn btn-link  dropdown-toggle input-sm" type="button" data-toggle="dropdown"><span class="fui-gear"></span></button>
 						          	  	<ul class="dropdown-menu dropdown-inverse dropdown-small">
@@ -87,7 +88,7 @@
                                 <input class="form-control input-sm" ng-show="data.showEditItemTitleForm" type="search"
                                        ng-model="data.editItemTitle" ng-enter="data.selectedItem.name=data.editItemTitle;saveSelectedItem();data.showEditItemTitleForm=false"
                                        ng-blur="data.showEditItemTitleForm=false" focus-on="eventEditItemTitle">
-                                <div class="btn-group pull-right">
+                                <div class="btn-group pull-right" ng-hide="data.showEditItemTitleForm">
                                     <a href="javascript:;" class="btn-silver btn-xs" data-toggle="tooltip" data-placement="bottom" ng-show="data.selectedItem.date_due">
                                         {{ data.selectedItem.date_due | date:'dd MMMM' }}
                                     </a>

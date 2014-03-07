@@ -18,6 +18,8 @@ urlpatterns = patterns('',
 
     url(r'^dash/', include('toolkit.apps.dash.urls', namespace='dash')),
 
+    url(r'^matters/', include('toolkit.apps.matter.urls', namespace='matter')),
+
     url(r'^me/pasword/', include('password_reset.urls')),
     url(r'^me/', include('toolkit.apps.me.urls', namespace='me')),
 
@@ -42,10 +44,3 @@ urlpatterns = patterns('',
 if settings.DEBUG:
     # Add the MEDIA_URL to the dev environment
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-    #matter angular app
-    urlpatterns += url(r'^matters/(?P<matter_slug>[\w\d-]+)/$',
-             login_required(TemplateView.as_view(template_name="index.html")), name="matter-details-view"),
-else:
-    urlpatterns += url(r'^matters/(?P<matter_slug>[\w\d-]+)/$',
-             login_required(TemplateView.as_view(template_name="dist/index.html")), name="matter-details-view"),

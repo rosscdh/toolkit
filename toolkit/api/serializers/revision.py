@@ -24,28 +24,36 @@ class HyperlinkedAutoDownloadFileField(serializers.URLField):
         return getattr(value, 'url', value)
 
     def field_to_native(self, obj, field_name):
-        field = getattr(obj, field_name)
+        if obj is not None:
+            field = getattr(obj, field_name)
 
-        try:
-            if field.name in [None, '']:
-                raise Exception('File has no name')
-            # Validate the url
-            URLValidator(field.name)
-            #
-            # Start download if the file does not exist
-            #
-            _download_file(url=field.name, obj=obj, obj_fieldname=field_name)
-            # set to blank so we dont get Suspicious operation on urls
-            field.file = File(NamedTemporaryFile())
-            setattr(obj, field_name, field)
+            try:
+                if field.name in [None, '']:
+                    raise Exception('File has no name')
 
-        except Exception as e:
-            #
-            # is probably a normal file at this point but jsut continue to be safe
-            #
-            logger.info('HyperlinkedAutoDownloadFileField field.name is not a url: %s' % field)
+                # Validate the url
+                URLValidator(field.name)
 
-        return super(HyperlinkedAutoDownloadFileField, self).field_to_native(obj, field_name)
+                #
+                # Start download if the file does not exist
+                #
+                _download_file(url=field.name, obj=obj, obj_fieldname=field_name)
+
+                # set to blank so we dont get Suspicious operation on urls
+                field.file = File(NamedTemporaryFile())
+                setattr(obj, field_name, field)
+                return super(HyperlinkedAutoDownloadFileField, self).field_to_native(obj, field_name)
+            except Exception as e:
+                #
+                # is probably a normal file at this point but jsut continue to be safe
+                #
+                logger.info('HyperlinkedAutoDownloadFileField field.name is not a url: %s' % field)
+        #
+        # NB this must return None!
+        # else it will raise attribute has no file associated with it
+        # errors
+        #
+        return None
 
 class FileFieldAsUrlField(serializers.FileField):
     """
@@ -58,6 +66,7 @@ class FileFieldAsUrlField(serializers.FileField):
 
 class RevisionSerializer(serializers.HyperlinkedModelSerializer):
     executed_file = HyperlinkedAutoDownloadFileField(required=False)
+
     item = serializers.HyperlinkedRelatedField(many=False, view_name='item-detail')
 
     reviewers = serializers.HyperlinkedRelatedField(many=True, view_name='user-detail', lookup_field='username')
