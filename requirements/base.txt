@@ -54,6 +54,8 @@ python-dateutil
 
 python-memcached
 
+pytz
+
 -e git+https://github.com/GoodCloud/django-ajax-uploader.git#egg=django-ajax-uploader
 
 raven # getsentry

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
+from django.db.models.signals import post_save
+from actstream import action
 
 from django.db import models
 from django.core.urlresolvers import reverse
@@ -37,7 +39,7 @@ def _upload_file(instance, filename):
     return '83b/%d-%s%s' % (instance.eightythreeb.user.pk, slugify(filename_no_ext), ext)
 
 
-class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferAndFilingDatesMixin, WorkspaceToolModelMixin, IsDeletedMixin, models.Model):
+class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferAndFilingDatesMixin, WorkspaceToolModelMixin, IsDeletedMixin,  models.Model):
     """
     83b Form to be associated with a Workspace and a particular user
     """
@@ -125,6 +127,11 @@ class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferA
 rulez_registry.register("can_read", EightyThreeB)
 rulez_registry.register("can_edit", EightyThreeB)
 rulez_registry.register("can_delete", EightyThreeB)
+
+# # test stuff for django-action-stream
+# def my_handler(sender, instance, created, **kwargs):
+#     action.send(instance.user, verb='created comment', color='red', ip='127.0.0.1')
+# post_save.connect(my_handler, sender=EightyThreeB)
 
 
 class Attachment(IsDeletedMixin, models.Model):

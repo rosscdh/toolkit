@@ -135,6 +135,9 @@ HELPER_APPS = (
     'django_bleach',
     'summernote',
 
+    # activity-stream
+    'actstream',
+
     # Api helpers
     #'corsheaders',  # not required yet
 
@@ -354,6 +357,16 @@ BLEACH_ALLOWED_TAGS = ['blockquote', 'br', 'div', 'li', 'ol', 'span', 'ul']
 BLEACH_STRIP_COMMENTS = True
 BLEACH_STRIP_TAGS = True
 
+
+# activity stream
+ACTSTREAM_SETTINGS = {
+    'MODELS': ('auth.user', 'eightythreeb.eightythreeb', 'workspace.workspace', 'tests.activitytester'),
+    #'MANAGER': 'myapp.streams.MyActionManager',
+    'FETCH_RELATIONS': True,
+    'USE_PREFETCH': True,
+    'USE_JSONFIELD': True,
+    'GFK_FETCH_DEPTH': 1,
+}
 
 try:
     LOCAL_SETTINGS
