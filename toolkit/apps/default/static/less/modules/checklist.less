@@ -1,0 +1,657 @@
+
+/* Hack to display the navbar at the top of the matter  */
+
+html,body, div.full
+{
+  height: 100%;
+}
+
+/* Navbar - this is the top of the matter  */
+.navbar {
+	&.checklist-nav {
+		li {
+			a {
+				font-size:14px;
+				[class*="fui-"] {
+					font-size:17px;
+					margin-top:-2px;
+				}
+				.navbar-new {
+					top:18px;
+					right:3px;
+					font-size:11px;
+					padding-top:1px;
+				}
+			}
+			span {
+				margin-right:7px;
+				font-size:14px;
+			}
+			img.user { 
+				width:26px;
+				border-radius: 15px;
+				margin-top:-9px;
+				margin-bottom:-5px;
+				opacity:0.6;
+
+			}
+		}
+		.navbar-form .form-control {
+			border: 0px solid transparent;
+		}
+		.input-group .btn {
+				border: none!important;
+		}
+	}
+	a.navbar-brand{
+		font-size:13px;
+		padding:12px 18px 11px 18px;
+		max-width: 240px;
+		  white-space: nowrap;
+		  overflow: hidden;
+		  text-overflow: ellipsis;
+
+	}
+	.logo-mark {
+		float:left;
+		border-right:1px solid darken(@brand-primary, 5%);
+		padding:13px 12px 15px 17px;
+		img {
+			width:30px;
+		}
+	}
+}
+
+#checklist, #closing {
+	background-color: #f2f2f2;
+	height:100%;
+	margin-top:-55px;
+	padding-top:55px;
+	.checklist-col {
+		overflow-y:scroll;
+	}
+	h5 {
+		font-size:20px;
+		text-transform: uppercase;
+		color:#666;
+	}
+	table.checklist {
+		background-color:white;
+		margin-top:20px;
+		tr {
+			border-top:5px solid #f2f2f2;
+			cursor:pointer;
+			&.item-closed {
+				color: lighten(@nephritis, 70%);
+				opacity:0.8;
+				background-color:lighten(@emerland, 15%);
+				padding-top:10px;
+				td {
+				}
+				.item-title { 
+					color: lighten(@nephritis, 70%);
+				}
+				&.selected {
+					background-color:darken(@emerland, 5%);
+				}
+			}
+			&.selected {
+				background-color: lighten(@belize-hole, 10%);
+				color:white;
+				td, td.item-title {
+					color:white;
+					opacity:1;
+				}
+				td.status {
+					.btn-success, .btn-warning, .btn-default {
+						background-color:transparent;
+						color:white;
+						border-color:white;
+					} 
+				}
+			}
+		}
+		th {
+			background-color:#f2f2f2;
+			&.category-controls {
+				.btn-group {
+					.dropdown-menu {
+					}
+				} 
+			}
+			&:hover {
+				.btn-group {
+				}
+			}
+			&.category {
+				padding:13px 0px 0px 0px;
+			}
+			text-transform: uppercase;
+			padding:8px 0px 0px 0px;
+			color: #AAA;
+			font-size:13px;
+			&.category {
+				color:#666;
+				font-size:14px;
+			}
+			td {
+				padding-top:20px;
+			}
+		}
+		tr td {
+			padding:8px 9px;
+			border-top:none;
+			border-bottom:none;
+			&.item-icon {
+				padding-left:5px;
+				padding-right:0px;
+				width:20px;
+				.icon {
+					line-height: 20px;
+					width:18px;
+					float:left;
+					margin:-4px 1px 0px 3px;
+					span {
+						font-size: 12px;
+					}
+				}
+			}
+			&:hover .fui-list-columned {
+				opacity:0.9;
+			}
+			.fui-list-columned {
+				opacity:0;
+				font-size:18px;
+				cursor:move;
+				position: relative;
+				top:0px;
+				width:9px;
+				overflow:hidden;
+				&:hover {
+					opacity:1;
+				}
+			}
+			&.item-title {
+				font-size:14px;
+				font-family:Helvetica;
+				word-spacing: normal;
+				color:#777;
+				font-weight:bold;
+				padding-left:0px;
+				padding-top:9px;
+				span {
+					outline:none;
+					&:focus {
+						border-bottom:2px solid lighten(@sun-flower, 25%);
+						background-color: lighten(@sun-flower, 46%);
+						color:#444;
+					}
+				}
+				&.item-open {
+					&hover {
+						border-left-width:6px;
+					}
+				}
+			}
+		}
+		td.status {
+			padding-top:5px;
+			padding-bottom:0px;
+			text-align:right;
+			.btn-xs {
+				padding:5px 5px;
+				font-size:11.5px;
+			}
+			.fui-check-inverted {
+				padding-top:4px;
+			}
+			a {
+				text-decoration:underline;
+			}
+			.btn-success {
+				background-color:white;
+				color:lighten(@nephritis, 5%);
+				border:1px solid lighten(@nephritis, 40%);
+			}
+			.btn-warning {
+				background-color:white;
+				color:@brand-warning;
+				border:1px solid lighten(@brand-warning, 30%);
+			}
+			.btn-default {
+				background-color:lighten(@gray, 34%);
+				color:lighten(@gray, 3%);
+				border:1px solid lighten(@gray, 30%);
+			}
+		}
+		td.add-new {
+			text-align:right;
+			padding:4px 0px 4px 0px;
+			font-size:13px;
+			background-color:#f2f2f2;
+			a {
+				color: @gray-light;
+				font-weight:bold;
+			}
+			a.set-property {
+				font-size:11px;
+			}
+		}
+		tr.add-new-controls {
+			.input-group {
+				width:100%;
+			}
+		}
+	}
+
+	// Middle panel, item view
+	div.item {
+		background-color:lighten(@silver, 14%);
+		border-left: 1px solid lighten(@silver, 12%);
+		// Todo, make height 100%;
+		height:100%;
+		hr {
+			border-color: lighten(@silver, 10%);
+		}
+		color:darken(@silver, 50%);
+		.text-muted {
+			opacity:0.5;
+		}
+		.btn-silver {
+			background:none;
+			border:1px solid @silver;
+			color: darken(@silver, 20%);
+		}
+		a.link {
+			color:darken(@silver, 40%);
+			&:hover {
+				text-decoration:underline;
+			}
+		}
+		small { 
+			font-size:13px;
+		}
+		.item-help {
+			margin:50px 35px;
+			text-align:center;
+			color: darken(@silver, 6%);
+			font-size:13px;
+			line-height: 18px;
+			.fui-upload, .fui-time {
+				font-size:40px;
+				color: lighten(@silver, 10%);
+			}
+			h4 {
+				font-size:20px;
+			}
+		}
+
+
+
+		h3 {
+			font-size:19px;
+			padding-bottom:16px;
+			background-color: lighten(@silver, 13%);
+			margin-bottom:0px;
+			margin:0px -15px 0px -15px;
+			padding: 23px 15px 16px 15px;
+
+			// Make buttons inside the item header small.
+			.btn-silver {
+				color:darken(@silver, 35%);
+				padding:5px 6px;
+				background-color:transparent;
+				font-size:11px;
+				border: 1px solid lighten(@silver, 2%);
+			}
+
+			// Item description toggle
+
+			.item-description-toggle {
+				padding-top:5px;
+				a.link {
+					font-size:13px;
+				}
+			}
+			.item-description {
+				textarea {
+					margin-top:10px;
+					margin-bottom:3px;
+					font-size:12px;
+				}
+			}
+		}
+		.add-new {
+			text-align:center;
+			background-color:darken(@turquoise, 3%);
+			margin-left:-15px;
+			margin-right:-15px;
+			padding:10px 0px 14px 0px;
+			color:lighten(@turquoise, 25%);
+			border-top:2px solid darken(@turquoise, 8%);;
+			.btn-add-new {
+				color:lighten(@turquoise, 30%);
+				font-weight:normal;
+				border:1px solid lighten(@turquoise, 0%);
+				display:none;
+			}
+			&:hover div.fui-upload {
+				opacity:0;
+			}
+			&:hover .btn-add-new {
+				border:1px solid lighten(@turquoise, 15%);
+				display:inline;
+			}
+		}
+		.waiting-revision {
+			text-align:center;
+			background-color:@brand-warning;
+			margin-left:-15px;
+			margin-right:-15px;
+			padding:10px;
+			color:lighten(@brand-warning, 55%);
+			border-top:2px solid darken(@brand-warning, 3%);
+			font-size:14px;
+			.close {
+				color:white;
+				opacity:0.7;
+				font-size:14px;
+			}
+			a {
+				color:lighten(@brand-warning, 55%);
+			}
+		}
+
+
+		ul.revisions {
+			margin-top:10px;
+			li {
+				padding:3px 5px 15px 25px;
+				.doc-wrap {
+					background-color:white;
+					padding:9px 10px 0px 10px;
+					position:relative;
+					font-size:13px;
+					span.version {
+						position:absolute;
+						left:-24px;
+						top:0px;
+						height:100%;
+						padding:6px 4px 4px 5px;
+						font-size:12px;
+						line-height:25px;
+						border:none;
+						background-color:lighten(@silver, 1%);
+						color:lighten(@silver, 40%);
+						vertical-align:middle;
+					}
+					.close {
+						font-size:15px;
+						display:none;
+					}
+					&:hover .close {
+						display:block;
+					}
+					.sub {
+						margin-top:5px;
+						font-size:11px;
+						color:lighten(@gray, 20%);
+						text-align:right;
+						margin-bottom:3px
+					}
+					h4 {
+						font-size:14px;
+						line-height:16px;
+						display:inline;
+						margin-bottom:0px;
+						color: darken(@silver, 10%);
+					}
+				}
+				.tools {
+					border-top:1px solid #F3f3f3;
+					background-color:#f7f7f7;
+					padding:4px 3px 3px 8px;
+					margin-right:-10px;
+					margin-left:-10px;
+					.btn-link {
+						color:#666;
+					}
+				}
+				.review {
+					padding:9px 3px 9px 8px;
+					color:white;
+					font-size:12px;
+					font-weight:bold;
+					background-color:lighten(@brand-success, 15%);
+					.btn {
+						margin-top:-3px;
+					}
+					.btn-link {
+						color:white;
+					}
+					&.in-progress {
+						background-color:lighten(@orange, 15%);
+					}
+					ul {
+						padding-top:10px;
+						li {
+							margin-bottom:5px;
+							margin-top:5px;
+							padding:5px 5px 5px 5px;
+							background-color:white;
+							color: @orange;
+							span {
+								font-size:20px;
+								opacity:0.7;
+							}
+							&.complete {
+								color:@brand-success;
+							}
+							[class*="fui-"] {
+								float:right;
+								margin-top:-6px;
+							}
+							button [class*="fui-"] {
+								font-size:inherit;
+								margin-top:0px;
+								float:none;
+							}
+							.close {
+								font-size:14px;
+								padding-left:4px;
+							}
+						}
+					}
+				}
+				&.current {
+					.doc-wrap {
+						border-left-color:@brand-warning;
+						span.version {
+							background-color:@brand-warning;
+							border-color:darken(@brand-warning, 2%);
+							color:white;
+						}
+						h4 a {
+							color: darken(@silver, 35%);
+						}
+					}
+				}
+				&.final {
+					.doc-wrap {
+						border-left-color:@brand-success;
+						span.version {
+							background-color:@brand-success;
+							border-color:darken(@brand-success, 2%);
+							color:white;
+						}
+						h4 {
+							color: darken(@silver, 35%);
+						}
+					}
+					.review {
+						display:none;
+					}
+				}
+				.desc {
+					color:darken(@silver, 20%);
+					font-weight:normal;
+					margin-top:0px;
+					font-size:12px;
+				}
+			}
+			li.header {
+				font-weight:bold;
+				font-size:12px;
+				padding-top:6px;
+				padding-left:0px;
+				padding-bottom:4px;
+				margin-top:15px;
+				text-transform:uppercase;
+				color:darken(@silver, 10%);
+			}
+			li.previous-toggle {
+				display:none;
+			}
+		}
+
+	}
+	div.chat {
+		background-color:lighten(@silver, 3%);
+		border-left: 1px solid lighten(@silver, 1%);
+		h4 {
+			padding-top:13px;
+			font-size:16px;
+			color:lighten(@silver,20%);
+			margin-bottom:0px;
+			text-transform:uppercase;
+			span {
+				font-size:12px;
+			}
+		}
+		ul {
+			padding-top:27px;
+			li {
+				.media {
+					padding-bottom:0px;
+				}
+				&.message {
+					margin-bottom:0px;
+					padding: 3px 0px 3px 0px;
+						.user-icon {
+							 float:left;
+							 padding-right:5px;
+							 color: white;
+
+						}
+					.media-body {
+						.msg-body {
+							font-size:12px;
+							line-height:1.45em;
+							margin-bottom:0px;
+							background-color:white;
+							padding:10px 12px;
+							border-bottom:1px solid darken(white, 10%);
+
+						}
+						.msg-meta {
+							font-size: 11px;
+							color: mix(white, @silver, 65%);
+							line-height: 15px;
+							margin-top: 5px;
+							margin-bottom: 6px;
+						}
+					}
+					&.me {
+						.user-icon {
+							 float:right;
+							 float:right;
+							 padding-right:0px;
+							 color: @asbestos;
+							 padding-left:5px;
+						}
+						.msg-body{
+							background-color:darken(@asbestos, 0%);
+							color:white;
+							border-bottom:2px solid darken(@asbestos, 10%);
+							  text-rendering: optimizeLegibility; 
+						}
+						.msg-meta {
+							text-align:right;
+						}
+
+					}
+
+				}
+				&.action {
+					border: 1px solid lighten(@silver, 7%);
+					padding:3px 6px;
+					color:lighten(@silver, 23%);
+					font-size:12px;	
+				}
+			}
+		}
+		div.new-message {
+			position:absolute;
+			bottom:0;
+			width:100%;
+			padding-right:30px;
+			textarea {
+				font-size:12px;
+					transition: height 0.3s;
+					height:60px;
+				&:focus {
+					height:120px;
+				}
+			}
+		}
+	}
+}
+
+#closing {
+	background-color: lighten(@wet-asphalt, 65%);
+	table.checklist, table.checklist tr {
+		background-color: lighten(@wet-asphalt, 20%);
+		color:white;
+		border-top-color: lighten(@wet-asphalt, 65%); 
+	}
+	table.checklist {
+		tr {
+			td.item-title{
+				color:white;
+			}
+			th.category {
+				background-color:lighten(@wet-asphalt, 65%);
+			}
+			&.item-closed {
+				opacity:1;
+			}
+		}
+	}
+	.closing-group {
+		padding:0px 15px 0px 15px;
+		.group-inner {
+			.header {
+				padding:15px;
+				background-color:lighten(@wet-asphalt, 20%);
+				.progress {
+					background-color:transparent;
+					border:1px solid lighten(@wet-asphalt, 50%);
+					.progress-bar {
+						background-color:white;
+					}
+				}
+				h3 {
+					font-size:17px;
+					color:white;
+					margin-top:10px;
+					small {
+						color:white;
+						opacity:0.6;
+					}
+				}
+			}
+		}
+
+	}
+
+}

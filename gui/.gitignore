@@ -1,0 +1,6 @@
+.grunt
+bower_components
+node_modules
+index.html
+*.sublime-project
+*.sublime-workspace

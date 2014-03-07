@@ -10,8 +10,9 @@ register = template.Library()
 import logging
 logger = logging.getLogger('django.request')
 
-_CURRENT_SITE = CURRENT_SITE()
-_DOMAIN_WITH_END_SLASH = _CURRENT_SITE.domain if _CURRENT_SITE.domain[-1] == '/' else '%s/' % _CURRENT_SITE.domain
+def _DOMAIN_WITH_END_SLASH():
+    _CURRENT_SITE = CURRENT_SITE()
+    return _CURRENT_SITE.domain if _CURRENT_SITE.domain[-1] == '/' else '%s/' % _CURRENT_SITE.domain
 
 
 @register.simple_tag
@@ -24,7 +25,7 @@ def ABSOLUTE_BASE_URL(path=None):
     ABSOLUTE_BASE_URL(path='/my/path/specified.html')
         returns: http://example.com/my/path/specified.html
     """
-    return urlparse.urljoin(_DOMAIN_WITH_END_SLASH, path)
+    return urlparse.urljoin(_DOMAIN_WITH_END_SLASH(), path)
 ABSOLUTE_BASE_URL.is_safe = True
 
 
@@ -40,7 +41,7 @@ def ABSOLUTE_STATIC_URL(path=None):
     """
     if path is not None:
         path = path if settings.STATIC_URL in path else '%s%s' % (settings.STATIC_URL, path)
-    return urlparse.urljoin(_DOMAIN_WITH_END_SLASH, path)
+    return urlparse.urljoin(_DOMAIN_WITH_END_SLASH(), path)
 ABSOLUTE_STATIC_URL.is_safe = True
 
 
@@ -56,5 +57,5 @@ def ABSOLUTE_MEDIA_URL(path=None):
     """
     if path is not None:
         path = path if settings.MEDIA_URL in path else '%s%s' % (settings.MEDIA_URL, path)
-    return urlparse.urljoin(_DOMAIN_WITH_END_SLASH, path)
+    return urlparse.urljoin(_DOMAIN_WITH_END_SLASH(), path)
 ABSOLUTE_MEDIA_URL.is_safe = True

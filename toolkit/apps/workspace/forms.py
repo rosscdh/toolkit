@@ -34,17 +34,19 @@ class WorkspaceForm(ModalForm, forms.ModelForm):
 
     class Meta:
         model = Workspace
-        exclude = ['lawyer',]
+        #exclude = ['lawyer', 'slug', 'matter_code', 'client', 'participants', 'tools', 'data', 'is_deleted']
+        fields = ['name']
 
     def __init__(self, *args, **kwargs):
-        self.helper = FormHelper()
-        self.helper.form_action = reverse('workspace:create')
+        super(WorkspaceForm, self).__init__(*args, **kwargs)
 
         self.helper.layout = Layout(
             'name',
         )
 
-        super(WorkspaceForm, self).__init__(*args, **kwargs)
+    @property
+    def action_url(self):
+        return reverse('workspace:create')
 
 
 @parsleyfy
@@ -68,15 +70,16 @@ class AddWorkspaceTeamMemberForm(ModalForm, forms.Form):
     def __init__(self, *args, **kwargs):
         self.workspace = kwargs.pop('workspace')
 
-        self.helper = FormHelper()
-        self.helper.form_action = reverse('workspace:add_team_member', args=(self.workspace.slug,))
+        super(AddWorkspaceTeamMemberForm, self).__init__(*args, **kwargs)
 
         self.helper.layout = Layout(
             'client_full_name',
             'client_email_address'
         )
 
-        super(AddWorkspaceTeamMemberForm, self).__init__(*args, **kwargs)
+    @property
+    def action_url(self):
+        return reverse('workspace:add_team_member', args=(self.workspace.slug,))
 
     def clean_client_email_address(self):
         email = self.cleaned_data.get('client_email_address')

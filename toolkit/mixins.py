@@ -4,7 +4,8 @@ from django.utils import simplejson as json
 from django.views.generic.base import View
 from django.views.generic.edit import FormView
 
-from crispy_forms.layout import ButtonHolder, Div, HTML, Layout, Submit
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Button, Submit
 
 from .decorators import json_response
 
@@ -100,26 +101,23 @@ class ModalForm(BaseForm):
     def __init__(self, *args, **kwargs):
         super(ModalForm, self).__init__(*args, **kwargs)
 
-        self.helper.attrs = {
-            'data-remote': 'true',
-            'parsley-validate': ''
-        }
+        self.helper = FormHelper()
+        self.helper.form_action = self.action_url
         self.helper.form_show_errors = False
+        self.helper.modal_form = True
 
-        form_layout = self.helper.layout
+        self.helper.attrs.update({'data-remote': 'true', 'parsley-validate': ''})
 
-        self.helper.layout = Layout(
-            Div(
-                HTML('{% include "partials/form-errors.html" with form=form %}'),
-                form_layout,
-                css_class='modal-body'
-            ),
-            ButtonHolder(
-                HTML('<a href="#" class="btn btn-default btn-wide" data-dismiss="modal">Cancel</a>'),
-                Submit('submit', 'Submit', css_class='btn-wide'),
-                css_class='modal-footer'
-            )
-        )
+        self.helper.add_input(Button('cancel', 'Cancel', css_class='btn btn-default', data_dismiss='modal'))
+        self.helper.add_input(Submit('submit', 'Submit', css_class='btn-wide'))
+
+    @property
+    def action_url(self):
+        raise NotImplemented
+
+    @property
+    def title(self):
+        raise NotImplemented
 
 
 class ModalView(View):

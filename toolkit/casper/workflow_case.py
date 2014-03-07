@@ -28,6 +28,7 @@ class BaseScenarios(object):
     fixtures = ['sites', 'tools']
     password = 'password'
 
+    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def basic_workspace(self):
         from toolkit.apps.workspace.models import Tool
         from toolkit.apps.eightythreeb.models import EightyThreeB
@@ -45,7 +46,9 @@ class BaseScenarios(object):
         lawyer_profile.data['user_class'] = 'lawyer'
         lawyer_profile.save(update_fields=['data'])
 
-        self.workspace = mommy.make('workspace.Workspace', name='Lawpal (test)', lawyer=self.lawyer)
+        # have to set worksace as well as matter
+        # @TODO remove tests using workspace and use matter instead
+        self.workspace = self.matter = mommy.make('workspace.Workspace', name='Lawpal (test)', lawyer=self.lawyer)
 
         # Add all the toolks to the workspace
         for tool in Tool.objects.all():

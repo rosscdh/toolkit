@@ -1,0 +1,785 @@
+// Toolkit Application
+
+
+// Loading config with variables (changing them leads to changing a color scheme)
+@import "variables";
+
+// Utility mixins for greater good
+@import "mixins";
+
+// Import checklist app
+@import "modules/checklist";
+
+
+// Breadcrumbs
+// -------------------------
+
+.breadcrumbs {
+  background-color: mix(@brand-primary, white, 6%);
+
+  .breadcrumb {
+    background-color: transparent;
+    margin-bottom: 0;
+  }
+}
+
+.breadcrumb-text {
+  margin-bottom: 10px;
+}
+
+
+// Content
+// -------------------------
+
+body.checklist {
+  background-color: #f2f2f2;
+}
+
+
+// Content
+// -------------------------
+
+.container-fluid {
+  padding: 0 20px;
+}
+
+.main-content {
+  margin-top: 20px;
+}
+.content .page-header h4 {
+  font-size:20px;
+}
+
+.content .lead {
+    font-size:22px;
+}
+
+
+// Forms
+// -------------------------
+
+.help-block {
+  font-size:14px;
+}
+
+.form-inline {
+  .form-group {
+    .input-group .form-control {
+      display: inline-block;
+    }
+
+    &.datetime .input-group {
+      .form-control,
+      .input-group-btn .btn {
+        margin-bottom: 15px;
+      }
+    }
+  }
+
+  .form-group + .form-group,
+  .form-group + .help-block,
+  .help-block + .form-group,
+  .input-group + .help-block {
+    margin-left: 10px;
+    margin-top: 0;
+  }
+
+  .help-block {
+    display: inline-block;
+  }
+}
+
+.form-group {
+  .form-control {
+    width: inherit;
+
+    &.select {
+      border: 0;
+      padding: 0;
+    }
+  }
+
+  .input-group-addon {
+    width: inherit;
+  }
+
+  &.datetime .input-group {
+    width: 240px;
+  }
+}
+
+.form-dialog,
+.form-errors {
+  text-align: left;
+
+  p {
+    margin-bottom: 0;
+  }
+
+  ul {
+    margin-bottom: 0;
+  }
+}
+
+.form-dialog {
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+.form-section + .form-section {
+  margin-top: 40px;
+}
+
+
+// Matter
+// -------------------------
+
+.matter .card {
+  background-color: lighten(@nephritis, 70%);
+  border-right: 2px solid mix(@brand-primary, white, 20);
+  border-bottom: 2px solid mix(@brand-primary, white, 20);
+  margin-bottom: 20px;
+  position: relative;
+
+  .content {
+    display: block;
+    padding: 16px 14px 10px;
+
+    .title {
+      margin: 45px 0 25px 0;
+
+      h5, h6 {
+        margin: 0 0 3px;
+      }
+
+      h6 {
+        font-size: 14px;
+      }
+
+      p {
+        font-size: 16px;
+        margin-bottom: 5px;
+      }
+    }
+
+    .meta {
+      margin-bottom: 10px;
+
+      p {
+        color: grey;
+        font-size: 12px;
+        font-style: italic;
+        line-height: 40px;
+        margin-bottom: 5px;
+      }
+    }
+  }
+
+  .edit {
+    color: @concrete;
+    display: block;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+  }
+}
+
+
+// Navbar
+// -------------------------
+
+.navbar {
+  margin-bottom: 0;
+}
+
+
+// Navs
+// -------------------------
+
+.nav-list-vivid {
+  .nav-header {
+    padding-left:8px;
+    padding-right:8px;
+    padding-top:5px;
+    border-top: 2px solid mix(@brand-primary, white, 14%);
+    margin-top:15px;
+  }
+  .icon {
+    float: left;
+    margin-right: 5px;
+
+    img {
+      height: 17px;
+      margin-top: -4px;
+      width: 22px;
+      opacity:0.8;
+    }
+  }
+}
+
+
+// HTML Editor
+// -------------------------
+
+.note-editor {
+  .btn {
+    background-color: @brand-info;
+
+    &:hover {
+      background-color: mix(@brand-info, black, 85%)
+    }
+  }
+}
+
+
+// Misc
+// -------------------------
+
+.popover-content {
+  font-size: ceil(@component-font-size-base * 0.913); // ~14px
+  line-height: 1.226; // 18px
+}
+
+// Document Icons
+
+.icon-pdf {
+  color:@doc-pdf;
+}
+.icon-doc {
+  color:@doc-doc;
+}
+.icon-xls {
+  color:@doc-pdf;
+}
+
+.firm-logo-preview {
+  margin-right: 15px;
+}
+
+.signing-info {
+  p {
+    padding: 0 10px;
+  }
+
+  table {
+    margin-bottom: 0;
+    text-align: left;
+
+    tr td {
+      border-top: 0;
+
+      &.legend {
+        width: 100px;
+      }
+    }
+  }
+}
+
+
+// Page header
+// -------------------------
+
+.page-header {
+  h4 {
+    font-size:28px;
+  }
+  .caption {
+    color: @gray-light;
+    display: inline-block;
+
+    &:after {
+      color: @gray-light;
+      content: "/";
+      font-weight: normal;
+      margin: 0 4px 0 9px;
+    }
+  }
+
+  .progress {
+    margin-bottom: (@line-height-computed / 2);
+    margin-top: (@line-height-computed / 2);
+    width: 200px;
+  }
+
+  h3, h4 {
+    display: inline-block;
+    margin: 0;
+  }
+
+  .btn {
+    margin-top: -5px;
+  }
+
+  .content & {
+    border-width: 2px;
+    margin-top: 0px;
+    padding-bottom: 11px;
+  }
+}
+
+// Sidebar
+// -------------------------
+
+.sidebar {
+  padding-right: 30px;
+}
+
+// Parsley.js
+// -------------------------
+
+.parsley-validated {
+  &.parsley-error {
+    color: @brand-danger;
+    border-color: @brand-danger;
+    .box-shadow(none);
+    .placeholder(@brand-danger);
+
+    &:focus {
+      border-color: @brand-danger;
+      .box-shadow(none);
+    }
+
+    + .input-group-btn .btn {
+      color: @brand-danger;
+      border-color: @brand-danger;
+      background-color: @inverse;
+    }
+  }
+}
+
+// Public
+// -------------------------
+
+.home{
+  .splash {
+    background:url('/static/images/home-splash.jpg');
+    height:800px;
+    background-position: center bottom;
+    background-size: cover;
+    padding-top:150px;
+    .logo {
+      width:140px;
+    }
+    h2 {
+      font-size:50px;
+      font-weight: normal;
+      opacity:0.9;
+
+    }
+    .lead {
+      opacity:0.8;
+      font-size:22px;
+      margin-bottom:15px;
+    }
+    .lead.sub {
+      font-size:15px;
+      opacity: 0.6;
+      margin-top:0px;
+      margin-bottom:30px;
+    }
+    a {
+      color:white;
+    }
+    h2, .lead {
+      color:white;
+    }
+    .btn {
+      font-size:14px;
+      border-radius:3px;
+      font-weight:normal;
+    }
+    .btn-link {
+      color:white;
+    }
+    input,select {
+      padding:5px;
+      font-size:14px;
+      color:white;
+      width:100%;
+      margin-top:10px;
+      &.email {
+        border-radius:3px;
+        background-color:transparent;
+        border:2px solid white;
+        opacity:0.8;
+      }
+    }
+    select {
+      margin: 0;
+      margin-top:10px;
+      -webkit-border-radius:4px;
+      -moz-border-radius:4px;
+      border-radius:4px;
+      opacity:0.8;
+      background: transparent;
+      color:#FFF;
+      border:2px solid white;
+      outline:none;
+      display: inline-block;
+      -webkit-appearance:none;
+      -moz-appearance:none;
+      appearance:none;
+      cursor:pointer;
+      width:100%;
+      }
+      .pre-register .col-sm-3 {
+        padding-right:0px
+      }
+  }
+  .public-headline {
+    margin: 100px 0 30px 0px;
+  }
+  h2 {
+    font-size:45px;
+    color:#666;
+    margin-top:10px;
+  }
+  .description {
+    background-color:#f6f6f6;
+    padding:20px 0px;
+    color: #999;
+    .benefit {
+      text-align:center;
+      padding:15px;
+      img {
+        height:80px;
+      }
+      h3 {
+        font-size:18px;
+        margin-bottom:5px;
+      }
+      p {
+        font-size:14px;
+      }
+    }
+  }
+  .top .btn {
+    padding: 10px 16px;
+
+  }
+  .feature-wrap {
+    background-color: lighten(@green-sea,5%);
+    border-bottom: 3px solid #74bf80;
+    padding: 15px 0px 20px 0px;
+    * {
+      color:white;
+    }
+    span.ico {
+      font-size:60px;
+      line-height:90px;
+    }
+    h4 {
+      font-size:22px;
+      margin-top:0px;
+    }
+    p {
+      font-size:14px;
+      line-height:19px;
+      padding:0px 20px;
+      opacity:0.8;
+    }
+  }
+  .toolkit-wrap {
+    background-color:#efefef;
+    min-height:600px;
+    padding: 60px 0px;
+    h2 {
+      color: #aaa;
+      font-size:25px;
+      margin-bottom:10px;
+    }
+    h3 {
+      font-size: 25px;
+      margin-top:10px;
+    }
+    hr {
+      border-color:#ddd;
+      width:60%;
+    }
+  }
+  .icon-wrap {
+    background-color:#f9f9f9;
+    padding:12px 0px 20px 0px;
+    -webkit-box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.15);
+    box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.15);
+    width:70px;
+    height:70px;
+    text-align:center;
+    margin: 0px 0 18px 0;
+    border-radius:10px;
+    img {
+      width:45px;
+    }
+  }
+  .quote {
+    padding:90px 0px;
+    background-color:#e7f1f7;
+    color: #666;
+    h5 {
+      margin-top: 0px;
+      font-size:24px;
+    }
+  }
+}
+
+// Tool Landing Page
+// -------------------------
+
+
+.tool-landing {
+  min-height:600px;
+  h1 {
+    margin:25px 0px 30px 0px;
+    font-size:50px;
+  }
+  h2 {
+    font-size:30px;
+    font-weight:normal;
+  }
+  .icon-wrap {
+    background-color:#f9f9f9;
+    padding:26px 0px 20px 0px;
+    -webkit-box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.15);
+    box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.15);
+    width:150px;
+    height:150px;
+    text-align:center;
+    margin: 45px auto 0px auto;
+    border-radius:10px;
+    img {
+      width:90px;
+    }
+  }
+  .feature-grid {
+    margin-top:40px;
+    span {
+      font-size:30px;
+    }
+    .feature {
+      padding:20px 20px;
+    }
+  }
+}
+
+
+
+// Sections
+// -------------------------
+
+.section {
+  margin-bottom: 20px;
+
+  .section-header {
+    margin-bottom: ((@line-height-computed / 2) - 1);
+    .btn {
+      margin-top: -5px;
+    }
+  }
+}
+
+
+// Tool List
+// -------------------------
+
+.table tbody tr {
+  &.expired > td,
+  & > td.expired {
+    .opacity(.5);
+  }
+}
+
+
+// Tool Status List
+// -------------------------
+
+// Base classes
+.status-list-item {
+
+}
+
+.status-list-item-icon {
+  font-size: @font-size-h6;
+
+  .status-next & {
+    font-size: @font-size-h5;
+  }
+}
+
+.status-list-item-heading {
+  font-size: @font-size-base;
+  margin-bottom: (@line-height-computed / 3);
+  margin-top: (@line-height-computed / 3);
+
+  .status-next & {
+    font-size: @font-size-h6;
+  }
+}
+
+.status-list-item-meta {
+  font-size: 75%;
+  margin-bottom: (@line-height-computed / 4);
+  margin-top: (@line-height-computed / 4);
+}
+
+.status-list-item-text {
+  font-size: 75%;
+
+  .status-next & {
+    font-size: 100%;
+  }
+}
+
+.status-list-item-actions {
+  margin-bottom: (@line-height-computed / 4);
+  margin-top: (@line-height-computed / 4);
+}
+
+// Statuses
+// Contextual variations
+
+.status-pending {
+  color: @gray-light;
+}
+
+.status-next {
+  background-color: @table-info;
+  color: @brand-info;
+}
+
+.status-done {
+  background-color: @table-success;
+  color: @brand-success;
+}
+
+
+// Tool Attachment List
+// -------------------------
+
+.attachment-list-item {
+    padding: 15px;
+}
+
+.attachment-list-item-preview {
+    img {
+        background-color: #dcdcdc;
+        border-radius: 3px;
+        padding: 4px;
+
+        &:hover {
+            background-color: #b9b9b9;
+        }
+    }
+}
+
+.attachment-list-item-meta {
+    margin-top: 20px;
+}
+
+
+// Avatar
+// -------------------------
+
+.avatar {
+  background-color: @clouds;
+  display: inline-block;
+  position: relative;
+
+  .initials {
+    color: #444;
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    height: 40px;
+    overflow: hidden;
+    line-height: 40px;
+    text-align: center;
+    width: 40px;
+  }
+}
+
+
+// Widget
+// -------------------------
+
+.dashboard {
+  margin-top:-30px;
+  .inner {
+    border:2px solid lighten(#5ccb6a, 18%);
+    padding:14px 18px 20px 18px;
+    border-radius: 0px 0px 10px 10px;
+  }
+  .pending {
+    .inner {
+      border-color:lighten(#fcd423,17%);
+    }
+    .client {
+      background-color:lighten(#fcd423,17%);
+    }
+    .widget {
+      opacity:1;
+        h6 {
+          color:#222;
+        }
+    }
+  }
+  .widget {
+    background-color:#f5f5f5;
+    border: 1px solid #ededed;
+    padding: 20px 0px 15px 0px;
+    border-radius: 5px;
+    font-size: 13px;
+    margin-top:30px;
+    cursor:pointer;
+    opacity:0.7;
+    &:active {
+      margin:31px -1px -1px 1px;
+      opacity:1;
+    }
+    h6 {
+      font-size:16px;
+      color:#44;
+      margin-bottom: 5px;
+    }
+    div.progress {
+      margin: 0 auto;
+      width:75%;
+    }
+    div.img-wrap {
+      background-color:white;
+      width:72px;
+      margin:0 auto;
+      margin-top:-50px;
+      padding:19px;
+      border-radius:80px;
+      border: 2px solid #ededed;
+      img {
+        width:30px;
+      }
+    }
+    &:hover {
+    background-color:#f1f1f1;
+    }
+    span.lg {
+      font-size:17px;
+    }
+    ul {
+      margin-bottom: 5px;
+    }
+    ul li {
+      padding-left:7px;
+      padding-right:7px;
+      * {
+        vertical-align:middle;
+      }
+    }
+  }
+  .client {
+    font-size:16px;
+    background-color:lighten(#5ccb6a,17%);
+    color:white;
+    font-weight:normal;
+    margin-bottom:0px;
+    padding:10px;
+    border-radius: 5px 5px 0px 0px;
+  }
+}
