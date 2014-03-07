@@ -211,6 +211,23 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 		};
 		/* End CRUD Category */
 
+        /* Begin revision handling */
+		$scope.processUpload = function( files, item ) {
+			var matterSlug = $scope.data.slug;
+			var itemSlug = item.slug;
+
+			matterItemService.uploadRevision( matterSlug, itemSlug, files ).then(
+				function success( revision ) {
+					item.latest_revision = revision;
+                    console.log(revision);
+				},
+				function error(err) {
+					toaster.pop('error', "Error!", "Unable to upload revision");
+				}
+			);
+		};
+        /* End revision handling */
+
 		function recalculateCategories( evt, ui ) {
 			var cats = $scope.data.categories;
 			var categoryName, items = [], item, i;
@@ -263,19 +280,6 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 			);
 		}
 
-		$scope.processUpload = function( files, item ) {
-			var matterSlug = $scope.data.slug;
-			var itemSlug = item.slug;
-
-			matterItemService.uploadRevision( matterSlug, itemSlug, files ).then(
-				function success( response ) {
-					// @TODO show in view
-				},
-				function error(err) {
-					toaster.pop('error', "Error!", "Unable to upload revision");
-				}
-			);
-		};
 
 		/**
 		 * Initiate the process of requesting reviews from existing participants or new participants
