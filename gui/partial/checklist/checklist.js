@@ -142,9 +142,13 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 		$scope.getItemDueDateStatus = function (item) {
 			if (item.date_due) {
 				var curr_date = new Date();
-				var item_date = new Date(item.date_due);
+				var due_date = new Date(item.date_due);
 
-				if (curr_date <= item_date){
+                //Set warn level if due date is less than 5 days in future
+                //@TODO: check if it works between month
+                due_date.setDate(due_date.getDate()-4);
+
+				if (curr_date <= due_date){
 					return $rootScope.STATUS_LEVEL.OK;
 				} else {
 					return $rootScope.STATUS_LEVEL.WARNING;
@@ -218,12 +222,46 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 			matterItemService.uploadRevision( matterSlug, itemSlug, files ).then(
 				function success( revision ) {
 					item.latest_revision = revision;
-                    console.log(revision);
 				},
 				function error(err) {
 					toaster.pop('error', "Error!", "Unable to upload revision");
 				}
 			);
+		};
+
+        $scope.saveLatestRevision = function () {
+            var matterSlug = $scope.data.slug;
+			var item = $scope.data.selectedItem;
+
+			if (item && item.latest_revision) {
+				matterItemService.updateRevision(matterSlug, item.slug, $scope.data.selectedItem.latest_revision).then(
+					function success(item){
+						//do nothing
+					},
+					function error(err){
+						toaster.pop('error', "Error!", "Unable to update revision");
+					}
+				);
+			}
+		};
+         $scope.deleteLatestRevision = function () {
+            var matterSlug = $scope.data.slug;
+			var item = $scope.data.selectedItem;
+
+			if (item && item.latest_revision) {
+                ezConfirm.create('Delete Revision', 'Please confirm you would like to delete this revision?',
+					function yes() {
+                        matterItemService.deleteRevision(matterSlug, item.slug, $scope.data.selectedItem.latest_revision).then(
+                            function success(){
+                                item.latest_revision = null;
+                            },
+                            function error(err){
+                                toaster.pop('error', "Error!", "Unable to delete revision");
+                            }
+                        );
+                    }
+                );
+			}
 		};
         /* End revision handling */
 

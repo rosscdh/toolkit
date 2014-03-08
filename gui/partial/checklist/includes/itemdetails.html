@@ -7,29 +7,19 @@
         <input class="form-control input-sm" ng-show="data.showEditItemTitleForm" type="search"
                ng-model="data.editItemTitle" ng-enter="data.selectedItem.name=data.editItemTitle;saveSelectedItem();data.showEditItemTitleForm=false"
                ng-blur="data.showEditItemTitleForm=false" focus-on="eventEditItemTitle">
+
+        <!--
         <div class="btn-group pull-right" ng-hide="data.showEditItemTitleForm">
-            <a href="javascript:;" class="btn-silver btn-xs" data-toggle="tooltip" data-placement="bottom" ng-show="data.selectedItem.date_due">
-                {{ data.selectedItem.date_due | date:'dd MMMM' }}
-            </a>
             <a href="javascript:;" class="btn-silver btn-xs" data-toggle="tooltip" title="Part of Closing Group {{ data.selectedItem.closing_group }}"
                ng-show="data.selectedItem.closing_group" data-placement="bottom">
                 <span class="fui-radio-checked"></span> {{ data.selectedItem.closing_group }}
             </a>
-            <a href="javascript:;" class="btn-silver btn-xs" class="dropdown-toggle" data-toggle="dropdown" ng-click="data.showItemDetailsOptions=!data.showItemDetailsOptions">Options</a>
-            <ul class="dropdown-menu dropdown-small dropdown-inverse" ng-show="data.showItemDetailsOptions">
-                <li><a href="javascript:;" ng-click="data.selectedItem.date_due='2014-03-01T00:00:00';saveSelectedItem();data.showItemDetailsOptions=!data.showItemDetailsOptions;">
-                    <span class="fui-calendar"></span> Set due date</a>
-                </li>
-                <li><a href="#" data-toggle="modal" data-target="#attachWorkflowModal"><span class="fui-calendar"></span> Add workflow</a></li>
-                <li><a href="javascript:;" class="text-danger" ng-click="deleteItem();data.showItemDetailsOptions=!data.showItemDetailsOptions">
-                    <span class="fui-trash text-danger"></span> Delete</a>
-                </li>
-            </ul>
-        </div>
+        </div>-->
+
         <div class="item-description-toggle" ng-hide="data.showEditItemDescriptionForm">
             <small class="text-muted">
                 <a href="javascript:;" class="link"
-                   ng-click="data.showEditItemDescriptionForm=!data.showEditItemDescriptionForm;data.editItemDescription=data.selectedItem.description;">
+                   ng-click="data.showEditItemDescriptionForm=!data.showEditItemDescriptionForm;data.editItemDescription=data.selectedItem.description;focus('eventEditItemDescription')">
                     <div btf-markdown="data.selectedItem.description | newlines"></div>
                     <span ng-hide="data.selectedItem.description">Enter item description</span>
                 </a>
@@ -37,7 +27,7 @@
         </div>
         <div class="item-description" ng-show="data.showEditItemDescriptionForm">
             <textarea class="form-control" msd-elastic placeholder="Enter a description for this item"
-                      ng-model="data.editItemDescription"></textarea>
+                      ng-model="data.editItemDescription" focus-on="eventEditItemDescription"></textarea>
             <a href="javascript:;" class="btn btn-primary btn-xs" ng-click="data.selectedItem.description=data.editItemDescription;saveSelectedItem();data.showEditItemDescriptionForm=false;">Save description</a>
             <a href="javascript:;" class="btn btn-inverse btn-xs item-description-cancel" ng-click="data.showEditItemDescriptionForm=false;">Cancel</a>
             <a href="javascript:;" class="btn btn-link btn-xs pull-right" title="Markdown help" onclick="alert('Markdown help popup like trello');">Formatting Help</a>
@@ -46,17 +36,34 @@
 
     <div class="add-new">
         <div class="btn-group">
-          <button class="btn btn-sm btn-info btn-embossed btn-add "><span class="fui-upload"></span> Add File</button><button class="btn btn-info btn-sm btn-embossed dropdown-toggle" data-toggle="dropdown">
+            <button class="btn btn-sm btn-info btn-embossed btn-add "><span class="fui-upload"></span> Add File</button>
+            <button class="btn btn-info btn-sm btn-embossed dropdown-toggle" data-toggle="dropdown">
             <span class="caret"></span>
-          </button>
-          <span class="dropdown-arrow dropdown-arrow-inverse dropdown-small"></span>
-          <ul class="dropdown-menu dropdown-inverse">
-            <li><span filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)">Upload File</span></li>
-            <li><a href="javascript:;" data-toggle="modal" data-target="#requestFileModal" ng-click="requestRevision(data.selectedItem)">Request Revision</a></li>
-          </ul>
+            </button>
+            <span class="dropdown-arrow dropdown-arrow-inverse dropdown-small"></span>
+            <ul class="dropdown-menu dropdown-inverse">
+                <li filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)">Upload File</li>
+                <li><a href="javascript:;" data-toggle="modal" data-target="#requestFileModal" ng-click="requestRevision(data.selectedItem)">Request Revision</a></li>
+            </ul>
         </div>
-        <a href="" class="btn btn-sm btn-silver btn-embossed "><span class="fui-calendar"></span></a>
-        <a href="" class="btn btn-sm btn-silver btn-embossed ">Options</a>
+
+        <div class="btn-group">
+            <a href="javascript:;" class="btn btn-sm btn-silver btn-embossed dropdown-toggle" data-toggle="dropdown">Options</a>
+            <ul class="dropdown-menu dropdown-small dropdown-inverse" >
+                <li><a href="javascript:;" ng-click="data.selectedItem.date_due='2014-03-12T00:00:00';saveSelectedItem();data.showItemDetailsOptions=!data.showItemDetailsOptions;">
+                    <span class="fui-calendar"></span> Set due date</a>
+                </li>
+                <li><a href="#" data-toggle="modal" data-target="#attachWorkflowModal"><span class="fui-calendar"></span> Add workflow</a></li>
+                <li><a href="javascript:;" class="text-danger" ng-click="deleteItem();data.showItemDetailsOptions=!data.showItemDetailsOptions">
+                    <span class="fui-trash text-danger"></span> Delete</a>
+                </li>
+            </ul>
+        </div>
+
+        <a href="javascript:;" class="btn btn-sm btn-silver btn-embossed" ng-show="data.selectedItem.date_due">
+            <span class="fui-calendar"></span>{{ data.selectedItem.date_due | date:'dd MMMM' }}
+        </a>
+
         <a href="javascript:;" ng-click="data.selectedItem.is_complete=!data.selectedItem.is_complete;saveSelectedItem();"
            class="btn btn-sm btn-embossed pull-right" ng-class="{ 'btn-success': !data.selectedItem.is_complete, 'btn-warning': data.selectedItem.is_complete}">
             <span class="fui-checkbox-checked"></span> <span ng-hide="data.selectedItem.is_complete">Mark Complete</span><span ng-show="data.selectedItem.is_complete">Mark Incomplete</span>
@@ -67,14 +74,27 @@
         <li class="header">Current Revision</li>
         <li class="current">
             <div class="doc-wrap">
-                <span class="version">V3</span>
-                <h4><a href="{{ data.selectedItem.latest_revision.executed_file }}" target="_blank">Filename missing</a></h4><span class="close">x</span>
-                <div class="desc">This is the final version. Let's see if this get's the ball moving.</div>
-                <div class="sub">Ross Crawford, 2 days ago</div>
+                <span class="version">{{ data.selectedItem.latest_revision.slug }}</span>
+                <h4><a href="{{ data.selectedItem.latest_revision.executed_file }}" target="_blank">{{ data.selectedItem.latest_revision.name }}</a></h4>
+                <span class="close" ng-click="deleteLatestRevision()">x</span>
+                <div class="desc" ng-hide="data.showEditRevisionDescriptionForm">
+                     <a href="javascript:;" class="link"
+                        ng-click="data.showEditRevisionDescriptionForm=!data.showEditRevisionDescriptionForm;data.editRevisionDescription=data.selectedItem.latest_revision.description;focus('eventEditLatestRevisionDescription')">
+                        <div btf-markdown="data.selectedItem.latest_revision.description | newlines"></div>
+                        <span ng-hide="data.selectedItem.latest_revision.description">Enter revision description</span>
+                    </a>
+                </div>
+                <div class="item-description" ng-show="data.showEditRevisionDescriptionForm">
+                    <textarea class="form-control" msd-elastic placeholder="Enter a description for this revision"
+                              ng-model="data.editRevisionDescription" focus-on="eventEditLatestRevisionDescription"></textarea>
+                    <a href="javascript:;" class="btn btn-primary btn-xs" ng-click="data.selectedItem.latest_revision.description=data.editRevisionDescription;saveLatestRevision();data.showEditRevisionDescriptionForm=false;">Save description</a>
+                    <a href="javascript:;" class="btn btn-inverse btn-xs item-description-cancel" ng-click="data.showEditRevisionDescriptionForm=false;">Cancel</a>
+                    <a href="javascript:;" class="btn btn-link btn-xs pull-right" title="Markdown help" onclick="alert('Markdown help popup like trello');">Formatting Help</a>
+                </div>
+                <div class="sub">{{ data.selectedItem.latest_revision.uploaded_by.name }}, {{ data.selectedItem.latest_revision.date_created | readabletimediff }}</div>
                 <div class="tools">
                     <a href="#" class="btn btn-link btn-xs"  data-toggle="modal" data-target="#viewDocumentModal">View</a>
                     <a href="#" class="btn btn-link btn-xs" data-toggle="modal" data-target="#requestReviewModal">Request Review</a>
-                    <a href="javascript:;" class="btn btn-link-success btn-xs pull-right"><span class="fui-check-inverted"></span> Mark as Final</a>
                 </div>
             </div>
         </li>
