@@ -130,8 +130,7 @@ angular.module('toolkit-gui').controller('ChecklistCtrl', [
 			if ($scope.data.selectedItem) {
 				matterItemService.update($scope.data.selectedItem).then(
 					function success(item){
-						//Reinitiate selected item
-						$scope.data.selectedItem = item;
+						//do nothing
 					},
 					function error(err){
 						toaster.pop('error', "Error!", "Unable to update item");
