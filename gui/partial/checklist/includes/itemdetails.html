@@ -51,17 +51,16 @@
           </button>
           <span class="dropdown-arrow dropdown-arrow-inverse dropdown-small"></span>
           <ul class="dropdown-menu dropdown-inverse">
-            <li><div class="fui-upload"></div><span filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)" btnclasses="'btn-sm btn-add-new'"><span class="fui-upload"></span>Upload File</span></li>
-            <li><a href="javascript:;" class="btn btn-sm btn-add-new" data-toggle="modal" data-target="#requestFileModal" ng-click="requestRevision(data.selectedItem)"><span class="fui-user"></span> Request Revision</a></li>
+            <li><span filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)">Upload File</span></li>
+            <li><a href="javascript:;" data-toggle="modal" data-target="#requestFileModal" ng-click="requestRevision(data.selectedItem)">Request Revision</a></li>
           </ul>
         </div>
         <a href="" class="btn btn-sm btn-silver btn-embossed "><span class="fui-calendar"></span></a>
         <a href="" class="btn btn-sm btn-silver btn-embossed ">Options</a>
-        <a href="#" class="btn btn-sm btn-success btn-embossed pull-right"><span class="fui-checkbox-checked"></span> Mark Complete</a>
-    </div>
-
-    <div class="add-new text-center">
-        <!--<a href="" class="btn btn-sm btn-add-new"> Upload Revision</a>//-->
+        <a href="javascript:;" ng-click="data.selectedItem.is_complete=!data.selectedItem.is_complete;saveSelectedItem();"
+           class="btn btn-sm btn-embossed pull-right" ng-class="{ 'btn-success': !data.selectedItem.is_complete, 'btn-warning': data.selectedItem.is_complete}">
+            <span class="fui-checkbox-checked"></span> <span ng-hide="data.selectedItem.is_complete">Mark Complete</span><span ng-show="data.selectedItem.is_complete">Mark Incomplete</span>
+        </a>
     </div>
 
     <ul class="revisions list-unstyled" ng-show="data.selectedItem.latest_revision">
@@ -75,7 +74,7 @@
                 <div class="tools">
                     <a href="#" class="btn btn-link btn-xs"  data-toggle="modal" data-target="#viewDocumentModal">View</a>
                     <a href="#" class="btn btn-link btn-xs" data-toggle="modal" data-target="#requestReviewModal">Request Review</a>
-                    <a href="javascript:;" class="btn btn-link-success btn-xs pull-right" ng-click="data.selectedItem.is_final=true;saveSelectedItem();"><span class="fui-check-inverted"></span> Mark as Final</a>
+                    <a href="javascript:;" class="btn btn-link-success btn-xs pull-right"><span class="fui-check-inverted"></span> Mark as Final</a>
                 </div>
             </div>
         </li>
