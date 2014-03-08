@@ -6,7 +6,7 @@ angular.module('toolkit-gui').directive("filepicker", function($location){
 		},
 		'transclude': true,
 		'restrict': "A",
-		'template': "<a href='' class='btn {{btnclasses}}' ng-click='pickFiles()' ng-transclude></a>",
+		'template': "<a href='' class='{{btnclasses}}' ng-click='pickFiles()' ng-transclude></a>",
 		'link': function(scope, element, attrs) {
 			scope.pickFiles = function () {
 				var picker_options = {

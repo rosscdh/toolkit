@@ -66,10 +66,12 @@
 			                	<span ng-bind="item.name"></span>
 			                </td>
 
-			                <td class="status text-right">
+			                <td class="status text-right" ng-hide="item.is_complete">
                                 <button disabled="" class="btn btn-success btn-xs" ng-show="item.latest_revision"><span class="fui-check"></span> File Received</button>
 			                	<button class="btn btn-xs" ng-class="{'btn-default': getItemDueDateStatus(item)==0, 'btn-danger': getItemDueDateStatus(item)==1}" ng-show="item.date_due" disabled>{{ item.date_due | date:'dd MMM' }}</button>
-			                	<span class="fui-check-inverted" ng-show="item.is_complete"></span>
+			                </td>
+                            <td class="status text-right" ng-show="item.is_complete">
+			                	<span class="fui-check-inverted"></span>
 			                </td>
 			             </tr>
 			        </tbody>
@@ -81,10 +83,12 @@
 				<div class="row full">
 
                     <!-- begin item details //-->
+                    <!-- @TODO Make the URL dynamic -->
 					<div class="col-sm-7" ng-include="'/static/ng/partial/checklist/includes/itemdetails.html'"></div>
                     <!-- end item details //-->
 
                     <!-- chat //-->
+                    <!-- @TODO Make the URL dynamic -->
 					<div class="col-sm-5 chat full" ng-include="'/static/ng/partial/checklist/includes/itemchat.html'"></div>
                     <!-- end: chat //-->
 				</div>

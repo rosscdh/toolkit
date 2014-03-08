@@ -15,7 +15,9 @@ angular.module('toolkit-gui').factory('matterItemService',[ '$q', '$resource', '
 
 	function revisionItemResource() {
 		return $resource( $rootScope.API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/revision/:version', {}, {
-			'create': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
+			'create': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
+			'update': { 'method': 'PATCH', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
+            'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
 		});
 	}
 
@@ -99,11 +101,10 @@ angular.module('toolkit-gui').factory('matterItemService',[ '$q', '$resource', '
 
 			var api = revisionItemResource();
 
-			//var formData = new FormData();
-			//formData.append("executed_file", fileDetails);
             var fileurl = files[0].url;
+            var filename = files[0].filename;
 
-			api.create({'matterSlug': matterSlug, 'itemSlug': itemSlug }, { 'executed_file': fileurl },
+			api.create({'matterSlug': matterSlug, 'itemSlug': itemSlug }, { 'executed_file': fileurl, 'name': filename },
 				function success(revision){
 					deferred.resolve(revision);
 				},
@@ -113,7 +114,41 @@ angular.module('toolkit-gui').factory('matterItemService',[ '$q', '$resource', '
 			);
 
 			return deferred.promise;
-		}
+		},
 
+
+        'updateRevision': function ( matterSlug, itemSlug, revisionItem ) {
+			var deferred = $q.defer();
+
+			var api = revisionItemResource();
+
+			api.update({'matterSlug': matterSlug, 'itemSlug': itemSlug }, revisionItem,
+				function success(item){
+					deferred.resolve(item);
+				},
+				function error(err) {
+					deferred.reject( err );
+				}
+			);
+
+			return deferred.promise;
+		},
+
+        'deleteRevision': function ( matterSlug, itemSlug, revisionItem  ) {
+			var deferred = $q.defer();
+
+			var api = revisionItemResource();
+
+			api.delete({'matterSlug': matterSlug, 'itemSlug': itemSlug }, revisionItem,
+				function success(){
+					deferred.resolve();
+				},
+				function error(err) {
+					deferred.reject( err );
+				}
+			);
+
+			return deferred.promise;
+		}
 	};
 }]);
