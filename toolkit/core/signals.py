@@ -7,11 +7,11 @@ from django.dispatch.dispatcher import Signal
 
 
 # first four args as in django-activity-stream, plus custom stuff
-send_activity_log = Signal(providing_args=['actor', 'verb', 'action_object', 'target', 'ip', 'whatever'])
+send_activity_log = Signal(providing_args=['actor', 'verb', 'action_object', 'target', 'ip'])
 
 
-@receiver(send_activity_log, dispatch_uid="check_if_i_must_be_dynamic")
-def on_activity_recieved(sender, **kwargs):
+@receiver(send_activity_log, dispatch_uid="WkkDwb4BVw")
+def on_activity_received(sender, **kwargs):
     actor = kwargs.pop('actor', False)
     verb = kwargs.pop('verb', False)
     action_object = kwargs.pop('action_object', False)
