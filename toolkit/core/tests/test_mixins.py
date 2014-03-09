@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
 from django.test import TestCase
 
 from .models import Thing
 
 
-class IsDeletedManagerTestCase(TestCase):
+class IsDeletedManagerTest(TestCase):
     def setUp(self):
         Thing.objects.create(name='thing1')
         Thing.objects.create(name='thing2')
@@ -34,7 +35,7 @@ class IsDeletedManagerTestCase(TestCase):
         self.assertEqual(things[1].name, 'thing5')
 
 
-class IsDeletedMixinTestCase(TestCase):
+class IsDeletedMixinTest(TestCase):
     def test_delete(self):
         thing = Thing.objects.create(name='thing')
         self.assertFalse(thing.is_deleted)
@@ -42,7 +43,7 @@ class IsDeletedMixinTestCase(TestCase):
         self.assertTrue(thing.is_deleted)
 
 
-class IsDeletedQuerySetTestCase(TestCase):
+class IsDeletedQuerySetTest(TestCase):
     def setUp(self):
         Thing.objects.create(name='thing1')
         Thing.objects.create(name='thing2')
