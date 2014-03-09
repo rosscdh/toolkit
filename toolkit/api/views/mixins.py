@@ -91,7 +91,7 @@ class _CreateActionMixin(JSONRenderer):
     def render(self, data, accepted_media_type=None, renderer_context=None):
         if data is not None:
             #
-            # Update with out meta object
+            # Update without meta object
             #
             get_meta_method = getattr(renderer_context.get('view'), 'get_meta', None)
 
