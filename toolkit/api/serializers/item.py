@@ -10,7 +10,9 @@ from .revision import RevisionSerializer
 
 class ItemSerializer(serializers.HyperlinkedModelSerializer):
     description = serializers.CharField(source='description', required=False)
-    status = serializers.SerializerMethodField('get_status')
+
+    status = serializers.ChoiceField()
+
     # must be read_only=True
     latest_revision = RevisionSerializer(source='latest_revision', read_only=True)
 
@@ -22,23 +24,15 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Item
         lookup_field = 'slug'
-        fields = ('slug', 'url', 'status', 'name', 'description', 'matter',
+        fields = ('slug', 'url',
+                  'status',
+                  'name', 'description', 'matter',
                   'parent', 'children', 'closing_group', 'category',
                   'latest_revision',
                   'is_final', 'is_complete', 'date_due',
                   'date_created', 'date_modified',)
 
         exclude = ('data', 'responsible_party')
-
-    def get_status(self, obj):
-        """
-        placeholder
-        open = new and pending
-        final = ready for review+signing (may not actually happen tho)
-        executed = approved and signed
-        'one of open|awaiting document|final|executed'
-        """
-        return obj.display_status
 
     def get_participants(self, obj):
         """

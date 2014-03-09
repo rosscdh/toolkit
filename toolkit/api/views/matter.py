@@ -10,13 +10,18 @@ from rest_framework import exceptions
 from rest_framework.response import Response
 from rest_framework import status as http_status
 
-from toolkit.apps.workspace.services import EnsureCustomerService
-from toolkit.apps.workspace.models import Workspace
+from toolkit.core.item.models import Item
 
+from toolkit.core.attachment.models import Revision
+
+from toolkit.apps.workspace.models import Workspace
 from toolkit.apps.review.models import ReviewDocument
+from toolkit.apps.workspace.services import EnsureCustomerService
 
 from .mixins import (MatterMixin,
-                     SpecificAttributeMixin, _CreateActionMixin)
+                     _MetaJSONRendererMixin,
+                     SpecificAttributeMixin,
+                     _CreateActionMixin)
 
 from .revision import ItemCurrentRevisionView
 
@@ -35,7 +40,14 @@ class MatterEndpoint(viewsets.ModelViewSet):
     model = Workspace
     serializer_class = MatterSerializer
     lookup_field = 'slug'
-    renderer_classes = (_CreateActionMixin, )
+    renderer_classes = (_MetaJSONRendererMixin, _CreateActionMixin)
+
+    def get_meta(self):
+        return {
+            'matter': {'status': None},
+            'item': {'status': Item.ITEM_STATUS.get_choices_dict()},
+            'revision': {'status': Revision.REVISION_STATUS.get_choices_dict()},
+        }
 
     def get_serializer_class(self):
         if self.action == 'list':

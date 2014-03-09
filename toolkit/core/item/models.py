@@ -10,7 +10,7 @@ from jsonfield import JSONField
 from uuidfield import UUIDField
 from rulez import registry as rulez_registry
 
-ITEM_STATUS = get_namedtuple_choices('ITEM_STATUS', (
+BASE_ITEM_STATUS = get_namedtuple_choices('ITEM_STATUS', (
                                 (0, 'new', 'New'),
                                 (1, 'awaiting_document', 'Awaiting Document'),
                                 (2, 'final', 'Final'),
@@ -22,6 +22,8 @@ class Item(IsDeletedMixin, models.Model):
     """
     Matter.item
     """
+    ITEM_STATUS = BASE_ITEM_STATUS
+
     slug = UUIDField(auto=True, db_index=True)
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
@@ -61,7 +63,7 @@ class Item(IsDeletedMixin, models.Model):
 
     @property
     def display_status(self):
-        return ITEM_STATUS.get_desc_by_value(self.status)
+        return self.ITEM_STATUS.get_desc_by_value(self.status)
 
     @property
     def latest_revision(self):

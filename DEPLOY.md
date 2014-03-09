@@ -1,6 +1,10 @@
 Deployment actions by branch
 ----------------------------
 
+[master]
+
+pip install djangorestframework==2.3.13  ## to have access to the is_success from status
+
 [gui/checklist]
 
 1. manage.py migrate workspace 0001 --fake  # intial

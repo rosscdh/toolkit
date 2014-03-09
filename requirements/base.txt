@@ -8,7 +8,7 @@ honcho
 Werkzeug
 
 # REST framework
-djangorestframework==2.3.9
+djangorestframework==2.3.13  ## to have access to the is_success from status
 # djangorestframework-jwt  ## not required yet
 # django-cors-headers  ## not required yet
 
