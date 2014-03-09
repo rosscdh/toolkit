@@ -13,17 +13,17 @@ send_activity_log = Signal(providing_args=['actor', 'verb', 'action_object', 'ta
 @receiver(send_activity_log, dispatch_uid="core.on_activity_received")
 def on_activity_received(sender, **kwargs):
     # actor has to be popped, the rest has to remain in kwargs
+    # Pops
     actor = kwargs.pop('actor', False)
+    signal = kwargs.pop('signal', None)
+    # Gets
     verb = kwargs.get('verb', False)
     action_object = kwargs.get('action_object', False)
     target = kwargs.get('target', False)
 
-    # kwargs will be reused and "old" signal is not needed any more
-    del kwargs['signal']
-
+    #
+    # Test that we have the required arguments to send the action signal
+    #
     if actor and verb and action_object and target:
-
-        # do stuff depending on given information, including updating kwargs if needed
-
         # send to django-activity-stream
         action.send(actor, **kwargs)
