@@ -1,3 +1,12 @@
+/**
+ * @class readabletimediff
+ * @classdesc                           Convert a date to n years/months/days/hours/minutes and seconds ago
+ *
+ * @example
+ * &lt;div ng-bind="lastUpdated | readabletimediff"&gt;&lt;/div&gt;
+ *
+ * @return {String} Reformatted text
+ */
 angular.module('toolkit-gui').filter('readabletimediff', function () {
     return function (datestr) {
         var diff, rv, yrs;
