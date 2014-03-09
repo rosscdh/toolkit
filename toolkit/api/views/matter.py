@@ -16,7 +16,7 @@ from toolkit.apps.workspace.models import Workspace
 from toolkit.apps.review.models import ReviewDocument
 
 from .mixins import (MatterMixin,
-                     SpecificAttributeMixin,)
+                     SpecificAttributeMixin, _CreateActionMixin)
 
 from .revision import ItemCurrentRevisionView
 
@@ -35,6 +35,7 @@ class MatterEndpoint(viewsets.ModelViewSet):
     model = Workspace
     serializer_class = MatterSerializer
     lookup_field = 'slug'
+    renderer_classes = (_CreateActionMixin, )
 
     def get_serializer_class(self):
         if self.action == 'list':

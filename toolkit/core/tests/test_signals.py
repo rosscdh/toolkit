@@ -1,19 +1,15 @@
 # -*- coding: utf-8 -*-
+import datetime
 from django.core.cache import cache
-from django.core.urlresolvers import reverse
-from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 from django.dispatch import receiver
 
 from model_mommy import mommy
-from actstream.models import Action
-from actstream.models import action_object_stream
+from actstream.models import action_object_stream, Action
+import time
 
 from toolkit.casper import BaseScenarios
-from toolkit.api.serializers import ItemSerializer
 from toolkit.core.signals import send_activity_log
-
-import json
 
 cache_key = 'activity_stream_signal_received_keys'
 
@@ -55,3 +51,12 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         self.assertEqual(stream_item.verb, 'created')
         self.assertEqual(stream_item.target, workspace)
         self.assertEqual(stream_item.actor, self.lawyer)
+
+    def test_customer_stream(self):
+        workspace = mommy.make('workspace.Workspace', name='Action Created by Signal Workspace', lawyer=self.lawyer)
+        mommy.make('item.Item', name='Test Item #1', matter=workspace)
+        time.sleep(2)
+        mommy.make('item.Item', name='Test Item #2', matter=workspace)
+
+        stream = Action.objects.target_by_customer_stream(workspace, self.lawyer)
+        print stream

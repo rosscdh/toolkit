@@ -5,9 +5,13 @@ Matter resolver Mixins
 from django.shortcuts import get_object_or_404
 
 from rest_framework import generics
+from rest_framework.renderers import JSONRenderer
 
 from toolkit.core.item.models import Item
 from toolkit.apps.workspace.models import Workspace
+
+import logging
+logger = logging.getLogger('django.request')
 
 
 class MatterMixin(generics.GenericAPIView):
@@ -43,3 +47,28 @@ class SpecificAttributeMixin(object):
     def get_object(self):
         self.object = super(SpecificAttributeMixin, self).get_object()
         return getattr(self.object, self.specific_attribute, None)
+
+
+class _CreateActionMixin(JSONRenderer):
+    """
+    Mixin to append a _meta object at the root of the default json response
+    which then contains everything that is accesssd via self.get_meta(self)
+    """
+    def get_meta(self):
+        raise NotImplementedError
+
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        if data is not None:
+            #
+            # Update with out meta object
+            #
+            get_meta_method = getattr(renderer_context.get('view'), 'get_meta', None)
+
+            if get_meta_method is None:
+                logger.info('_MetaJSONRendererMixin.get_meta_method requires the view to define a .get_meta method')
+
+            print data
+
+        return super(_CreateActionMixin, self).render(data=data,
+                                                      accepted_media_type=accepted_media_type,
+                                                      renderer_context=renderer_context)
