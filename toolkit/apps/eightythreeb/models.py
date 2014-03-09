@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 import datetime
-from django.db.models.signals import post_save
-from actstream import action
 
 from django.db import models
 from django.core.urlresolvers import reverse
@@ -20,7 +18,6 @@ from toolkit.core.mixins import IsDeletedMixin
 
 from toolkit.apps.workspace.signals import base_signal
 from toolkit.apps.workspace.mixins import WorkspaceToolModelMixin
-from toolkit.core.mixins import IsDeletedMixin
 
 from .markers import EightyThreeBSignalMarkers
 EIGHTYTHREEB_STATUS = EightyThreeBSignalMarkers().named_tuple(name='EIGHTYTHREEB_STATUS')
@@ -39,7 +36,7 @@ def _upload_file(instance, filename):
     return '83b/%d-%s%s' % (instance.eightythreeb.user.pk, slugify(filename_no_ext), ext)
 
 
-class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferAndFilingDatesMixin, WorkspaceToolModelMixin, IsDeletedMixin,  models.Model):
+class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferAndFilingDatesMixin, WorkspaceToolModelMixin, IsDeletedMixin, models.Model):
     """
     83b Form to be associated with a Workspace and a particular user
     """
