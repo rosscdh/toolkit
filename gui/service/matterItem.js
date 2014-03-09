@@ -32,15 +32,6 @@ angular.module('toolkit-gui')
 		var item;
 
 		/**
-		 * Selected matter.
-		 * 
-		 * @memberof matterService
-		 * @type {Object}
-		 * @private
-		 */
-		var matter;
-
-		/**
 		 * Returns a key/value object containing $resource methods to access matter API end-points
 		 *
 		 * @name				matterItemResource
@@ -52,7 +43,7 @@ angular.module('toolkit-gui')
 		 * @return {Function}   $resource
 		 */
 		function matterItemResource() {
-			return $resource( $rootScope.API_BASE_URL + 'matters/:matterSlug/items/:itemSlug', {'matterSlug':matter.slug}, {
+			return $resource( $rootScope.API_BASE_URL + 'matters/:matterSlug/items/:itemSlug', {}, {
 				'create': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'update': { 'method': 'PATCH', params:{'itemSlug':'@slug'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
@@ -74,7 +65,8 @@ angular.module('toolkit-gui')
 			return $resource( $rootScope.API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/revision/:version', {}, {
 				'create': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'update': { 'method': 'PATCH', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
-	            'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
+	            'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
+	            'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
 			});
 		}
 
@@ -98,26 +90,10 @@ angular.module('toolkit-gui')
 			},
 
 			/**
-			 * Sets the selected matter to the one passed through.
-			 * the selected matter is available across views.
-			 *
-			 * @name				data
-			 *
-			 * @example
-		 	 * matterItemService.selectMatter( { ... } );
-			 * 
-			 * @public
-			 * @method				data
-			 * @memberof			matterItemService
-		 	 */
-			'selectMatter': function( objMatter ) {
-				matter = objMatter;
-			},
-
-			/**
 			 * Reqests that the API create a new matter checklist item
 			 *
-			 * @name				create
+             * @param {String}      matterSlug    Database slug, used as a unquie idenitfier for a matter.
+			 * @param {String} matterSlug
 			 * @param {String} itemName Text string as provided by end user
 			 * @param {String} categoryName Name of the catgeoy to place the new item within
 			 *
@@ -130,16 +106,16 @@ angular.module('toolkit-gui')
 			 *
 			 * @return {Promise}    New item object as provided by API
 		 	 */
-			'create': function ( itemName, categoryName ) {
+			'create': function ( matterSlug, itemName, categoryName ) {
 				var deferred = $q.defer();
 
 				var api = matterItemResource();
 
 				var matterItem = {
-					"status": "New",
+					"status": 0,
 					"name": itemName,
 					"category": categoryName,
-					"matter": $rootScope.API_BASE_URL + 'matters/' + matter.slug,
+					"matter": $rootScope.API_BASE_URL + 'matters/' + matterSlug,
 					"parent": null,
 					"children": [],
 					"closing_group": null,
@@ -149,7 +125,7 @@ angular.module('toolkit-gui')
 					"date_due": null
 				};
 
-				api.create(matterItem,
+				api.create({'matterSlug': matterSlug }, matterItem,
 					function success(item){
 						deferred.resolve(item);
 					},
@@ -165,6 +141,7 @@ angular.module('toolkit-gui')
 			 * Reqests that the API update an existing matter checklist item
 			 *
 			 * @name				update
+             * @param {String}      matterSlug    Database slug, used as a unquie idenitfier for a matter.
 			 * @param {String}      itemName Text string as provided by end user
 			 * @param {String}      categoryName Name of the catgeoy to place the new item within
 			 *
@@ -177,12 +154,22 @@ angular.module('toolkit-gui')
 			 *
 			 * @return {Promise}    Updated item object as provided by API
 		 	 */
-			'update': function ( matterItem ) {
+			'update': function ( matterSlug, matterItem ) {
 				var deferred = $q.defer();
 
 				var api = matterItemResource();
 
-				api.update(matterItem,
+                 var updateFields = {
+                    'slug': matterItem.slug,
+                    'status': matterItem.status,
+                    'name': matterItem.name,
+                    'category': matterItem.category,
+                    'description': matterItem.description,
+                    'date_due': matterItem.date_due,
+                    'is_complete': matterItem.is_complete
+                };
+
+				api.update({'matterSlug': matterSlug }, updateFields,
 					function success(item){
 						deferred.resolve(item);
 					},
@@ -198,6 +185,7 @@ angular.module('toolkit-gui')
 			 * Reqests that the API delete an existing matter checklist item
 			 *
 			 * @name				delete
+             * @param {String}      matterSlug    Database slug, used as a unquie idenitfier for a matter.
 			 * @param {Object}      matterItem    JSON representation of matter that is to be deleted
 			 *
 			 * @example
@@ -209,12 +197,12 @@ angular.module('toolkit-gui')
 			 *
 			 * @return {Promise}    Updated item object as provided by API
 		 	 */
-			'delete': function ( matterItem ) {
+			'delete': function ( matterSlug, matterItem ) {
 				var deferred = $q.defer();
 
 				var api = matterItemResource();
 
-				api.delete({'itemSlug': matterItem.slug},
+				api.delete({'matterSlug': matterSlug, 'itemSlug': matterItem.slug},
 					function success(){
 						deferred.resolve();
 					},
@@ -285,7 +273,12 @@ angular.module('toolkit-gui')
 
 				var api = revisionItemResource();
 
-				api.update({'matterSlug': matterSlug, 'itemSlug': itemSlug }, revisionItem,
+                var updateFields = {
+                    'status': revisionItem.status,
+                    'description': revisionItem.description
+                };
+
+				api.update({'matterSlug': matterSlug, 'itemSlug': itemSlug }, updateFields,
 					function success(item){
 						deferred.resolve(item);
 					},
@@ -303,7 +296,7 @@ angular.module('toolkit-gui')
 			 * @name				deleteRevision
 			 * @param {String}      matterSlug    Database slug, used as a unquie idenitfier for a matter.
 			 * @param {String}      itemSlug      Database slug, used as a unquie identifier for a checklist item.
-			 * @param {Object}      files         Details as provided by filerpicker.io
+			 * @param {Object}      revisionItem  Revision object
 			 *
 			 * @example
 		 	 * matterItemService.deleteRevision( 'myItemName', 'ItemCategoryName', {} );
@@ -322,6 +315,40 @@ angular.module('toolkit-gui')
 				api.delete({'matterSlug': matterSlug, 'itemSlug': itemSlug }, revisionItem,
 					function success(){
 						deferred.resolve();
+					},
+					function error(err) {
+						deferred.reject( err );
+					}
+				);
+
+				return deferred.promise;
+			},
+
+            /**
+			 * Load a revision from URL
+			 *
+			 * @name				loadRevisionByURL
+			 * @param {String}      matterSlug    Database slug, used as a unquie idenitfier for a matter.
+			 * @param {String}      itemSlug      Database slug, used as a unquie identifier for a checklist item.
+			 * @param {String}      revisionSlug  Database slug, used as a unquie identifier for a revision.
+			 *
+			 * @example
+		 	 * matterItemService.loadRevisionByURL( 'myMatterName', 'myItemName', 'v1' );
+			 *
+			 * @public
+			 * @method				loadRevisionByURL
+			 * @memberof			matterItemService
+			 *
+			 * @return {Promise}    Updated item object as provided by API
+		 	 */
+	        'loadRevision': function ( matterSlug, itemSlug, revisionSlug ) {
+				var deferred = $q.defer();
+
+				var api = revisionItemResource();
+
+				api.get({'matterSlug': matterSlug, 'itemSlug': itemSlug, 'version':revisionSlug  },
+					function success(revision){
+						deferred.resolve(revision);
 					},
 					function error(err) {
 						deferred.reject( err );
