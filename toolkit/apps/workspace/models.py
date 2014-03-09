@@ -79,9 +79,7 @@ class Workspace(IsDeletedMixin, ClosingGroupsMixin, CategoriesMixin, models.Mode
 
 def on_workspace_post_save(sender, instance, created, **kwargs):
     """
-        ATTENTION:
-        This is NOT correct. The lawyer is not necessarily the actor.
-        We need to call the signal from places where we know the actor.
+        The owning lawyer is the only one who can create, modify or delete the workspace, so this is possible.
     """
     if created:
         information_dict = dict(
