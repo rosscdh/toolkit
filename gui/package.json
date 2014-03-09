@@ -24,8 +24,6 @@
     "grunt-jsdoc": "~0.5.1"
   },
   "dependencies": {
-    "grunt-ngdocs": "~0.2.1",
-    "grunt-docular": "^0.1.2",
-    "grunt-jsdoc": "^0.5.1"
+    
   }
 }
