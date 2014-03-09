@@ -360,8 +360,7 @@ BLEACH_STRIP_TAGS = True
 
 # activity stream
 ACTSTREAM_SETTINGS = {
-    'MODELS': ('auth.user', 'eightythreeb.eightythreeb', 'workspace.workspace', 'tests.activitytester'),
-    #'MANAGER': 'myapp.streams.MyActionManager',
+    'MODELS': ('auth.User', 'workspace.Workspace', 'item.Item', 'attachment.Revision'),
     'FETCH_RELATIONS': True,
     'USE_PREFETCH': True,
     'USE_JSONFIELD': True,

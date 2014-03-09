@@ -37,9 +37,6 @@ urlpatterns = patterns('',
     # signing events
     url(r'^sign/', include('hello_sign.urls', namespace='sign')),
 
-    # activity stream
-    ('^activity/', include('actstream.urls')),
-
     # home default terminator
     url(r'^', include('toolkit.apps.default.urls', namespace='public')),
 )
