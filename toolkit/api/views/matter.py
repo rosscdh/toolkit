@@ -245,3 +245,12 @@ class ClosingGroupView(SpecificAttributeMixin,
             logger.info('Could not delete closing_group: %s due to: %s' % (closing_group, e,))
 
         return Response(closing_groups)
+
+
+
+class MatterActivityView(object):
+    pass
+    # perhaps later endpoint:
+    # class MatterActivityEndpoint
+    #     def get_queryset(self):
+    #         user = self.request.user

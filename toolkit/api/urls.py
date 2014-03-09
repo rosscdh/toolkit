@@ -44,6 +44,8 @@ router.register(r'revisions', RevisionEndpoint)
 """
 Generics
 """
+
+
 urlpatterns = router.urls + patterns('',
     #
     # Account
@@ -57,6 +59,8 @@ urlpatterns = router.urls + patterns('',
 
     url(r'^matters/(?P<matter_slug>[\w-]+)/sort/?$', MatterSortView.as_view(), name='matter_sort'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/participant(/(?P<email>.+))?/?$', MatterParticipant.as_view(), name='matter_participant'),
+
+    url(r'^matters/(?P<matter_slug>[\w-]+)/activity/?$', MatterActivityView.as_view(), name='matter_activity'),
 
     #
     # Matter Items
