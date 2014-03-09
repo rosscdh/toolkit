@@ -7,7 +7,7 @@ from rest_framework import generics
 
 from toolkit.core.item.models import Item
 
-from .mixins import (MatterItemsQuerySetMixin, _CreateActionMixin)
+from .mixins import (MatterItemsQuerySetMixin, _CreateActivityStreamActionMixin)
 
 from ..serializers import ItemSerializer
 
@@ -85,7 +85,7 @@ class MatterItemView(generics.UpdateAPIView,
     serializer_class = ItemSerializer
     lookup_field = 'slug'
     lookup_url_kwarg = 'item_slug'
-    renderer_classes = (_CreateActionMixin, )
+    renderer_classes = (_CreateActivityStreamActionMixin, )
 
     def get_serializer_context(self):
         return {'request': self.request}
