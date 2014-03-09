@@ -4,41 +4,26 @@ from django.core.urlresolvers import reverse
 from django.core.validators import URLValidator
 from django.core.files.temp import NamedTemporaryFile
 
-
 from rest_framework import serializers
 
 from toolkit.core.attachment.tasks import _download_file
 from toolkit.core.attachment.models import Revision
 
+from .user import SimpleUserSerializer
+
 import logging
 logger = logging.getLogger('django.request')
-
-
-class HyperlinkedFileField(serializers.FileField):
-    """
-    Custom FieldField to allow us to show the FileField url and not its std
-    representation
-    """
-    def to_native(self, value):
-        request = self.context.get('request', None)
-        if request is not None and value is not None:
-            try:
-                return request.build_absolute_uri(value.url)
-            except ValueError:
-                logger.info('No url associated with this file: %s' % value)
-                pass
-        #
-        # NB this must return None!
-        # else it will raise attribute has no file associated with it
-        # errors
-        #
-        return None
 
 
 class HyperlinkedAutoDownloadFileField(serializers.URLField):
     """
     Autodownload a file specified by a url
+    but also return just the url and not the FileObject on to_native unless it
+    does not exist
     """
+    def to_native(self, value):
+        return getattr(value, 'url', value)
+
     def field_to_native(self, obj, field_name):
         if obj is not None:
             field = getattr(obj, field_name)
@@ -71,9 +56,18 @@ class HyperlinkedAutoDownloadFileField(serializers.URLField):
         #
         return None
 
+class FileFieldAsUrlField(serializers.FileField):
+    """
+    Acts like a normal FileField but to_native will return the url if it exists
+    otherwise if url not present just behave normally
+    """
+    def to_native(self, value):
+        return getattr(value, 'url', super(FileFieldAsUrlField, self).to_native(value=value))
+
 
 class RevisionSerializer(serializers.HyperlinkedModelSerializer):
-    executed_file = HyperlinkedFileField(allow_empty_file=True, required=False)
+    executed_file = HyperlinkedAutoDownloadFileField(required=False)
+
     item = serializers.HyperlinkedRelatedField(many=False, view_name='item-detail')
 
     reviewers = serializers.HyperlinkedRelatedField(many=True, view_name='user-detail', lookup_field='username')
@@ -82,38 +76,44 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
     user_review_url = serializers.SerializerMethodField('get_user_review_url')
     revisions = serializers.SerializerMethodField('get_revisions')
 
-    uploaded_by = serializers.HyperlinkedRelatedField(many=False, view_name='user-detail', lookup_field='username')
+    uploaded_by = SimpleUserSerializer()
 
-    # date_created = serializers.DateTimeField(read_only=True)
-    # date_modified = serializers.DateTimeField(read_only=True)
+    date_created = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = Revision
         fields = ('url', 'slug',
+                  'name', 'description',
                   'executed_file', 
                   'item', 'uploaded_by', 
                   'reviewers', 'signatories',
-                  'revisions', 'user_review_url',)
-                  #'date_created', 'date_modified',)
+                  'revisions', 'user_review_url',
+                  'date_created',)
 
     def __init__(self, *args, **kwargs):
-        self.base_fields['executed_file'] = HyperlinkedFileField(allow_empty_file=True, required=False)
+        #
+        # @TODO turn these into nice clean methods
+        #
+        self.base_fields['executed_file'] = HyperlinkedAutoDownloadFileField(required=False)
+        self.base_fields['uploaded_by'] = SimpleUserSerializer()
         #
         # If we are passing in a multipart form
         #
-        if 'request' in kwargs['context']:
+        if 'context' in kwargs and 'request' in kwargs['context']:
 
             request = kwargs['context'].get('request')
 
+            #
+            # set the executed_file field to be a seriallizer.FileField and behave like one of those
+            #
             if request.method in ['PATCH', 'POST']:
 
-                self.base_fields['executed_file'] = HyperlinkedAutoDownloadFileField(required=False)
-                #
-                # set the executed_file field to be a seriallizer.FileField and behave like one of those
-                #
+                # ensure the uploaded_by is just a simple hyplinkrelatedfield on update,create
+                self.base_fields['uploaded_by'] = serializers.HyperlinkedRelatedField(many=False, view_name='user-detail', lookup_field='username')
+
                 if 'multipart/form-data;' in kwargs['context']['request'].content_type:
                     if kwargs['context']['request'].FILES:
-                        self.base_fields['executed_file'] = serializers.FileField(allow_empty_file=True, required=False)
+                        self.base_fields['executed_file'] = FileFieldAsUrlField(allow_empty_file=True, required=False)
 
         super(RevisionSerializer, self).__init__(*args, **kwargs)
 

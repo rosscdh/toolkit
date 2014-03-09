@@ -1,15 +1,19 @@
+# -*- coding: utf-8 -*-
 import json
 
 from django.core.urlresolvers import reverse
+
 from django.test import TestCase
 
 from toolkit.apps.workspace.models import Workspace
 from toolkit.casper.workflow_case import BaseScenarios
 
+from ..views import MatterDetailView
 
-class MatterListViewTestCase(BaseScenarios, TestCase):
+
+class MatterListViewTest(BaseScenarios, TestCase):
     def setUp(self):
-        super(MatterListViewTestCase, self).setUp()
+        super(MatterListViewTest, self).setUp()
         self.basic_workspace()
 
     def test_queryset(self):
@@ -26,9 +30,39 @@ class MatterListViewTestCase(BaseScenarios, TestCase):
         self.assertEqual(response['Location'], 'http://testserver/start/?next=/matters/')
 
 
-class MatterCreateViewTestCase(BaseScenarios, TestCase):
+class MatterDetailViewTest(TestCase):
+    subject = MatterDetailView
+
+    def test_get_template_names_dev(self):
+        with self.settings(PROJECT_ENVIRONMENT='prod'):
+            subject = self.subject()
+            self.assertEqual(subject.get_template_names(), ['dist/index.html'])
+        #
+        # in prod even with debug True we should not see the debug gui
+        #
+        with self.settings(PROJECT_ENVIRONMENT='prod', DEBUG=True):
+            subject = self.subject()
+            self.assertEqual(subject.get_template_names(), ['dist/index.html'])
+
+    def test_get_template_names_prod(self):
+        with self.settings(PROJECT_ENVIRONMENT='dev', DEBUG=True):
+            subject = self.subject()
+            self.assertEqual(subject.get_template_names(), ['index.html'])
+
+        #
+        # We should be able to test how it would look in production
+        # from within the dev environment
+        #
+        with self.settings(PROJECT_ENVIRONMENT='dev', DEBUG=False):
+            subject = self.subject()
+            self.assertEqual(subject.get_template_names(), ['dist/index.html'])
+
+
+
+
+class MatterCreateViewTest(BaseScenarios, TestCase):
     def setUp(self):
-        super(MatterCreateViewTestCase, self).setUp()
+        super(MatterCreateViewTest, self).setUp()
         self.basic_workspace()
 
     def test_valid_form(self):
@@ -60,9 +94,9 @@ class MatterCreateViewTestCase(BaseScenarios, TestCase):
         self.assertEqual(response['Location'], 'http://testserver/start/?next=/matters/create/')
 
 
-class MatterUpdateViewTestCase(BaseScenarios, TestCase):
+class MatterUpdateViewTest(BaseScenarios, TestCase):
     def setUp(self):
-        super(MatterUpdateViewTestCase, self).setUp()
+        super(MatterUpdateViewTest, self).setUp()
         self.basic_workspace()
 
     def test_valid_form(self):
@@ -94,9 +128,9 @@ class MatterUpdateViewTestCase(BaseScenarios, TestCase):
         self.assertEqual(response['Location'], 'http://testserver/start/?next=/matters/lawpal-test/edit/')
 
 
-class MatterDeleteViewTestCase(BaseScenarios, TestCase):
+class MatterDeleteViewTest(BaseScenarios, TestCase):
     def setUp(self):
-        super(MatterDeleteViewTestCase, self).setUp()
+        super(MatterDeleteViewTest, self).setUp()
         self.basic_workspace()
 
     def test_valid_form(self):

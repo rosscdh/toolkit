@@ -98,11 +98,17 @@ User.add_to_class('get_full_name', get_full_name)
 Add in the get_initials method, which returns the user initials based on their
 first and last name
 """
-def get_initials(self, **kwargs):
-    initials = '%s%s' % (self.first_name[0], self.last_name[0])
-    if initials.strip() in ['', None]:
+def get_initials(self):
+    initials = None
+    try:
+        initials = '%s%s' % (self.first_name[0], self.last_name[0])
+        initials = initials.strip().upper()
+    except IndexError:
+        pass
+
+    if initials in ['', None]:
         return None
-    return initials.upper()
+    return initials
 
 User.add_to_class('get_initials', get_initials)
 

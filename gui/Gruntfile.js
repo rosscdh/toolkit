@@ -235,11 +235,23 @@ module.exports = function (grunt) {
           specs: ['js/**/*-spec.js','partial/**/*-spec.js','service/**/*-spec.js','filter/**/*-spec.js','directive/**/*-spec.js']
         }
       }
+    },
+     jsdoc : {
+        dist : {
+            src: ['partial/**/*.js', '!partial/**/*-spec.js', 'filter/**/*.js', '!filter/**/*-spec.js', 'service/**/*.js', '!service/**/*-spec.js', 'README.md'], 
+            options: {
+                destination: 'doc',
+                template: "node_modules/ink-docstrap/template",
+                configure: "node_modules/ink-docstrap/template/jsdoc.conf.json"
+            }
+        }
     }
   });
 
   grunt.registerTask('django', ['preprocess:django','dom_munger:readscripts','dom_munger:addverbatim', 'jshint', 'watch']);
   grunt.registerTask('server', ['preprocess:gruntserver','dom_munger:readscripts','jshint','connect', 'watch']);
+  grunt.registerTask('makedoc', ['jsdoc']);
+  grunt.registerTask('validate', ['jshint']);
   grunt.registerTask('test',['dom_munger:readscripts','jasmine']);
 
 

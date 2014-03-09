@@ -41,3 +41,5 @@ DEBUG_TOOLBAR_CONFIG = {
 }
 
 CROCDOC_API_KEY = 'pRzHhZS4jaGes193db28cwyu'
+
+AUTHY_API_KEY = 'e19afad3c1c207a03ef6a1dcb2adb0c3'

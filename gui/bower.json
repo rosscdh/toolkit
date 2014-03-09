@@ -19,10 +19,13 @@
     "angular-mocks": "~1.2",
     "angular-ui-utils": "~0.1",
     "angular-bootstrap": "~0.9",
+    "angular-markdown-directive": "latest",
+    "angular-elastic": "latest",
     "moment": "~2.5",
     "less.js": "~1.5",
     "font-awesome": "~4.0",
     "angular-ui-sortable": "~0.12.1",
-    "ez-confirm": "*"
+    "ez-confirm": "*",
+    "datejs": "latest"
   }
 }
