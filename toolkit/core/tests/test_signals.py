@@ -53,10 +53,11 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         self.assertEqual(stream_item.actor, self.lawyer)
 
     def test_customer_stream(self):
+        # just for testing during development, only works because of hard set starting time in target_by_customer_stream
         workspace = mommy.make('workspace.Workspace', name='Action Created by Signal Workspace', lawyer=self.lawyer)
         mommy.make('item.Item', name='Test Item #1', matter=workspace)
         time.sleep(2)
         mommy.make('item.Item', name='Test Item #2', matter=workspace)
 
         stream = Action.objects.target_by_customer_stream(workspace, self.lawyer)
-        print stream
+        self.assertEqual(len(stream), 1)  # shall only find the newest entry, the 2 other ones are too old.

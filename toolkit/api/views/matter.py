@@ -20,7 +20,8 @@ from toolkit.apps.workspace.services import EnsureCustomerService
 
 from .mixins import (MatterMixin,
                      _MetaJSONRendererMixin,
-                     SpecificAttributeMixin,)
+                     SpecificAttributeMixin,
+                     _CreateActionMixin)
 
 from .revision import ItemCurrentRevisionView
 
@@ -39,7 +40,7 @@ class MatterEndpoint(viewsets.ModelViewSet):
     model = Workspace
     serializer_class = MatterSerializer
     lookup_field = 'slug'
-    renderer_classes = (_MetaJSONRendererMixin,)
+    renderer_classes = (_CreateActionMixin, _MetaJSONRendererMixin)  # this ONLY calls the first JSONRenderer. Need to combine them.
 
     def get_meta(self):
         return {

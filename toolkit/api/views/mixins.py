@@ -5,13 +5,15 @@ Matter resolver Mixins
 from django.shortcuts import get_object_or_404
 
 from rest_framework import generics
-from rest_framework.renderers import JSONRenderer
+from rest_framework.renderers import JSONRenderer, BaseRenderer
 from rest_framework.status import is_success
 
 from toolkit.core.item.models import Item
 from toolkit.apps.workspace.models import Workspace
 
 import logging
+from toolkit.core.signals import send_activity_log
+
 logger = logging.getLogger('django.request')
 
 
@@ -80,25 +82,29 @@ class SpecificAttributeMixin(object):
         return getattr(self.object, self.specific_attribute, None)
 
 
-class _CreateActionMixin(JSONRenderer):
+class _CreateActionMixin(BaseRenderer):
     """
-    Mixin to append a _meta object at the root of the default json response
-    which then contains everything that is accesssd via self.get_meta(self)
+    mixin that sends relevant information to django-activitiy-stream signal
     """
-    def get_meta(self):
-        raise NotImplementedError
-
     def render(self, data, accepted_media_type=None, renderer_context=None):
         if data is not None:
-            #
-            # Update without meta object
-            #
-            get_meta_method = getattr(renderer_context.get('view'), 'get_meta', None)
+            # get_meta_method = getattr(renderer_context.get('view'), 'get_meta', None)
+            method = getattr(renderer_context.get('request'), 'method', None)
+            user = getattr(renderer_context.get('request'), 'user', None)
+            matter = getattr(renderer_context.get('view'), 'matter', None)
+            object = getattr(renderer_context.get('view'), 'object', None)
 
-            if get_meta_method is None:
-                logger.info('_MetaJSONRendererMixin.get_meta_method requires the view to define a .get_meta method')
+            if user and method and object and matter:
+                # TODO: look for action from djangorestframework instead of HTTP method
+                if method == 'POST':
+                    verb = u'created'
+                elif method == 'PATCH':
+                    verb = u'edited'
+                elif method == 'DELETE':
+                    verb = u'deleted'
 
-            print data
+                if verb:
+                    send_activity_log.send(self.__class__, actor=user, verb=verb, action_object=object, target=matter)
 
         return super(_CreateActionMixin, self).render(data=data,
                                                       accepted_media_type=accepted_media_type,
