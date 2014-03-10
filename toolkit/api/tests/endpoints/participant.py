@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.dispatch import Signal, receiver
 
+from toolkit.apps.matter.signals import MATTER_ADD_PARTICIPANT
 from toolkit.apps.workspace.models import Workspace
 
 from . import BaseEndpointTest
@@ -63,13 +65,29 @@ class MatterParticipantTest(BaseEndpointTest):
         """
         self.client.login(username=self.lawyer.username, password=self.password)
 
+        @receiver(MATTER_ADD_PARTICIPANT)
+        def f(matter, user, **kwargs):
+            self.signal_called = True
+
         #
-        # Add the New Lawyer
+        # Add the new Lawyer (Signal gets called)
         #
         data = {'email': self.lawyer_to_add.email}
 
+        self.signal_called = False
         resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
         self.assertEqual(resp.status_code, 202)  # accepted
+        self.assertTrue(self.signal_called)
+
+        #
+        # Try to re-add the lawyer (Signal doesn't get called)
+        #
+        data = {'email': self.lawyer_to_add.email}
+
+        self.signal_called = False
+        resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
+        self.assertEqual(resp.status_code, 202)  # accepted
+        self.assertFalse(self.signal_called)
 
         # refresh
         self.matter = Workspace.objects.get(pk=self.matter.pk)
@@ -78,12 +96,14 @@ class MatterParticipantTest(BaseEndpointTest):
         self.assertTrue(self.lawyer in participants)
 
         #
-        # Add the New User
+        # Add the New User (Signal gets called)
         #
         data = {'email': self.user_to_add.email}
 
+        self.signal_called = False
         resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
         self.assertEqual(resp.status_code, 202)  # accepted
+        self.assertTrue(self.signal_called)
 
         # refresh
         self.matter = Workspace.objects.get(pk=self.matter.pk)
@@ -165,7 +185,7 @@ class MatterParticipantTest(BaseEndpointTest):
         endpoint = '%s/%s' % (self.endpoint, user_to_delete.email)
 
         resp = self.client.delete(endpoint, None)
-        
+
         self.assertEqual(resp.status_code, 403)  # forbidden
 
         # refresh
