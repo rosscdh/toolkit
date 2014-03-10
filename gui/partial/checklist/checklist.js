@@ -223,34 +223,6 @@ angular.module('toolkit-gui')
 				);
 			}
 		};
-
-		/**
-		 * Return item due status
-		 *
-		 * @name 				getItemDueDateStatus
-		 * 
-		 * @private
-		 * @method				getItemDueDateStatus
-		 * @memberof			ChecklistCtrl
-		 */
-		$scope.getItemDueDateStatus = function (item) {
-			if (item.date_due) {
-				var curr_date = new Date();
-				var due_date = new Date(item.date_due);
-
-                //Set warn level if due date is less than 5 days in future
-                //@TODO: check if it works between month
-                due_date.setDate(due_date.getDate()-4);
-
-				if (curr_date <= due_date){
-					return $rootScope.STATUS_LEVEL.OK;
-				} else {
-					return $rootScope.STATUS_LEVEL.WARNING;
-				}
-			}
-
-			return $rootScope.STATUS_LEVEL.OK;
-		};
 		/*** End item handling */
 
 		/*
@@ -445,8 +417,24 @@ angular.module('toolkit-gui')
 					function yes() {
                         matterItemService.deleteRevision(matterSlug, item.slug, $scope.data.selectedItem.latest_revision).then(
                             function success(){
-                                //TODO set prev Revision as current if existing
-                                item.latest_revision = null;
+                                //Set latest prev Revision as current if existing
+                                if(item.latest_revision.revisions != null && item.latest_revision.revisions.length>0){
+                                    //First revision in array is the latest one
+                                    matterItemService.loadRevision(matterSlug, item.slug, item.latest_revision[0]).then(
+                                        function success(revision){
+                                            item.latest_revision = revision;
+                                        },
+                                        function error(err){
+                                            toaster.pop('error', "Error!", "Unable to set new current revision");
+                                        }
+                                    );
+                                } else {
+                                    item.latest_revision = null;
+                                }
+
+                                //Reset previous revisions
+                                item.previousRevisions = null;
+                                $scope.data.showPreviousRevisions = false;
                             },
                             function error(err){
                                 toaster.pop('error', "Error!", "Unable to delete revision");
@@ -470,6 +458,12 @@ angular.module('toolkit-gui')
             var matterSlug = $scope.data.slug;
 			var item = $scope.data.selectedItem;
 
+            function SortDescendingByCreationDate(a, b){
+                var aDate = moment(a.date_created, "YYYY-MM-DDTHH:mm:ss.SSSZ");
+                var bDate = moment(b.date_created, "YYYY-MM-DDTHH:mm:ss.SSSZ");
+                return (aDate < bDate) ? 1 : -1;
+            }
+
             if (item && item.previousRevisions) {
                 //show the revisions from the local storage
             }
@@ -484,8 +478,9 @@ angular.module('toolkit-gui')
 					matterItemService.loadRevision(matterSlug, item.slug, revslug).then(
                         function success(revision){
                             //store revisisions locally
-                            //TODO: implement the correct sort order
                             item.previousRevisions.unshift(revision);
+                            //Sort array
+                            item.previousRevisions.sort(SortDescendingByCreationDate);
                         },
                         function error(err){
                             toaster.pop('error', "Error!", "Unable to load previous revision");
