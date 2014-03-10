@@ -12,6 +12,7 @@ from rest_framework import exceptions
 from rest_framework.response import Response
 from rest_framework import status as http_status
 
+from toolkit.apps.matter.signals import MATTER_ADD_PARTICIPANT
 from toolkit.apps.workspace.models import Workspace
 from toolkit.apps.workspace.services import EnsureCustomerService
 
@@ -64,7 +65,8 @@ class MatterParticipant(generics.CreateAPIView,
             is_new, new_participant, profile = service.process()
 
         if new_participant not in self.matter.participants.all():
-            self.matter.participants.add(new_participant)  #@TODO @QUESTION send email to main lawyer and customer when this happens via a singal?
+            self.matter.participants.add(new_participant)
+            MATTER_ADD_PARTICIPANT.send(sender=self, matter=self.matter, user=new_participant)
 
         return Response(status=http_status.HTTP_202_ACCEPTED)
 
