@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 
-from toolkit.core.mixins import IsDeletedMixin, IsDeletedManager
+from toolkit.core.mixins import IsDeletedMixin
 from toolkit.utils import get_namedtuple_choices
+
+from .managers import ItemManager
 
 from jsonfield import JSONField
 from uuidfield import UUIDField
@@ -51,7 +53,7 @@ class Item(IsDeletedMixin, models.Model):
     date_created = models.DateTimeField(auto_now=False, auto_now_add=True, db_index=True)
     date_modified = models.DateTimeField(auto_now=True, auto_now_add=True, db_index=True)
 
-    objects = IsDeletedManager()
+    objects = ItemManager()
 
     class Meta:
         ordering = ('sort_order',)
