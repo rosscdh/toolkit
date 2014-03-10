@@ -123,6 +123,11 @@ POST
 }
 ```
 
+/matters/:matter_slug/items/request_document (GET,POST) DELETE is handled in the 
+    standard item endpoint
+    Allow the [lawyer,customer] user to list, and create an item
+    object that requests that a user provide a document
+
 /matters/:matter_slug/items/:item_slug/ (GET,PATCH,DELETE)
     Allow the [lawyer,customer] user to list, and update an existing item
     objects; that belong to them

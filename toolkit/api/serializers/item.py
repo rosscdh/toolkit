@@ -13,6 +13,8 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
 
     status = serializers.ChoiceField(required=False, choices=Item.ITEM_STATUS.get_choices())
 
+    responsible_party = serializers.HyperlinkedRelatedField(many=False, required=False, view_name='user-detail', lookup_field='username')
+
     # must be read_only=True
     latest_revision = RevisionSerializer(source='latest_revision', read_only=True)
 
@@ -25,14 +27,14 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
         model = Item
         lookup_field = 'slug'
         fields = ('slug', 'url',
-                  'status',
+                  'status', 'responsible_party',
                   'name', 'description', 'matter',
                   'parent', 'children', 'closing_group', 'category',
                   'latest_revision',
                   'is_final', 'is_complete', 'date_due',
                   'date_created', 'date_modified',)
 
-        exclude = ('data', 'responsible_party')
+        exclude = ('data',)
 
     def get_participants(self, obj):
         """
