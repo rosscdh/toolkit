@@ -5,10 +5,11 @@ from django.test import TestCase
 from django.dispatch import receiver
 
 from model_mommy import mommy
-from actstream.models import action_object_stream, Action
+from actstream.models import action_object_stream, Action, model_stream
 import time
 
 from toolkit.casper import BaseScenarios
+from toolkit.core.attachment.models import Revision
 from toolkit.core.signals import send_activity_log
 
 cache_key = 'activity_stream_signal_received_keys'
@@ -38,8 +39,8 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         """
         # in setUp the workspace was created which should have reached on_activity_received above:
         cache_obj = cache.get(cache_key)
-        self.assertItemsEqual(cache_obj.keys(), ['sender', 'signal', 'actor', 'verb', 'action_object', 'target', 'ip'])
-        self.assertItemsEqual(cache_obj.values(), ["<class 'django.db.models.base.ModelBase'>", '127.0.0.1', "<class 'django.dispatch.dispatcher.Signal'>", "<class 'django.contrib.auth.models.User'>", u'created', "<class 'toolkit.apps.workspace.models.Workspace'>", "<class 'toolkit.apps.workspace.models.Workspace'>"])
+        self.assertItemsEqual(cache_obj.keys(), ['sender', 'signal', 'actor', 'verb', 'action_object', 'target'])
+        self.assertItemsEqual(cache_obj.values(), ["<class 'django.db.models.base.ModelBase'>", "<class 'django.dispatch.dispatcher.Signal'>", "<class 'django.contrib.auth.models.User'>", u'created', "<class 'toolkit.apps.workspace.models.Workspace'>", "<class 'toolkit.apps.workspace.models.Workspace'>"])
         cache.delete(cache_key)
 
     def test_stream_item_created_manually(self):
@@ -50,6 +51,38 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         stream_item = stream[0]
         self.assertEqual(stream_item.verb, 'created')
         self.assertEqual(stream_item.target, workspace)
+        self.assertEqual(stream_item.actor, self.lawyer)
+
+    def test_item_created(self):
+        item = mommy.make('item.Item', name='Test Item #1', matter=self.workspace)
+        stream = action_object_stream(item)
+        self.assertEqual(len(stream), 1)
+
+        stream_item = stream[0]
+        self.assertEqual(stream_item.verb, 'created')
+        self.assertEqual(stream_item.target, self.workspace)
+        self.assertEqual(stream_item.action_object, item)
+        self.assertEqual(stream_item.actor, self.lawyer)
+
+    def test_revision_created(self):
+        """
+        create item and two revisions.
+        then check, if objects of class Revision were created and if they belong to revision.
+        """
+        item = mommy.make('item.Item', name='Test Item #1', matter=self.workspace)
+        revision1 = mommy.make('attachment.Revision', name='Test Revision #1', item=item)
+        revision2 = mommy.make('attachment.Revision', name='Test Revision #2', item=item)
+        stream = model_stream(Revision)
+        self.assertEqual(len(stream), 2)
+
+        stream_item = stream[0]
+        self.assertEqual(stream_item.verb, 'created')
+        self.assertEqual(stream_item.action_object, revision2)
+        self.assertEqual(stream_item.actor, self.lawyer)
+
+        stream_item = stream[1]
+        self.assertEqual(stream_item.verb, 'created')
+        self.assertEqual(stream_item.action_object, revision1)
         self.assertEqual(stream_item.actor, self.lawyer)
 
     def test_customer_stream(self):

@@ -21,7 +21,7 @@ from toolkit.apps.workspace.services import EnsureCustomerService
 
 from .mixins import (MatterMixin,
                      _MetaJSONRendererMixin,
-                     SpecificAttributeMixin, MatterItemsQuerySetMixin)
+                     SpecificAttributeMixin)
 
 from .revision import ItemCurrentRevisionView
 
@@ -259,7 +259,7 @@ class MatterActivityView(generics.RetrieveAPIView,
 
     def retrieve(self, request, *args, **kwargs):
         self.object = self.get_object()
-        
+
         # here we should add our customised stream some time later:
         # self.object.custom_stream_actions = action_object_stream(self.matter)
 

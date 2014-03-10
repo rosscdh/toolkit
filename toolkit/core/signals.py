@@ -41,22 +41,34 @@ def on_workspace_post_save(sender, instance, created, **kwargs):
             actor=instance.lawyer,
             verb=u'created',
             action_object=instance,
-            target=instance,
-            ip='127.0.0.1'
+            target=instance
         )
         send_activity_log.send(sender, **information_dict)
 
 
 def on_item_post_save(sender, instance, created, **kwargs):
     """
-        ATTENTION: actor is set wrong! Just for testing.
+        At this moment only the layer can edit items. So this is possible.
     """
     if created:
         information_dict = dict(
             actor=instance.matter.lawyer,
             verb=u'created',
             action_object=instance,
-            target=instance.matter,
-            ip='127.0.0.1'
+            target=instance.matter
+        )
+        send_activity_log.send(sender, **information_dict)
+
+
+def on_revision_post_save(sender, instance, created, **kwargs):
+    """
+        Who can create revisions? Is this valid?
+    """
+    if created:
+        information_dict = dict(
+            actor=instance.item.matter.lawyer,
+            verb=u'created',
+            action_object=instance,
+            target=instance.item.matter
         )
         send_activity_log.send(sender, **information_dict)
