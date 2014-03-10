@@ -49,10 +49,10 @@ class MatterDetailView(TemplateView):
     Just a proxy view through to the AngularJS app.
     """
     def get_template_names(self):
-        if settings.DEBUG:
-            return 'index.html'
+        if settings.PROJECT_ENVIRONMENT in ['prod'] or settings.DEBUG is False:
+            return ['dist/index.html']
         else:
-            return 'dist/index.html'
+            return ['index.html']
 
 
 class MatterCreateView(ModalView, AjaxModelFormView, CreateView):
