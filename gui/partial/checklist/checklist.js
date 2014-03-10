@@ -52,8 +52,6 @@ angular.module('toolkit-gui')
 				function success( singleMatter ){
 					//set matter in the services
 					matterService.selectMatter(singleMatter);
-					matterItemService.selectMatter(singleMatter);
-					matterCategoryService.selectMatter(singleMatter);
 					$scope.initialiseMatter( singleMatter );
 				},
 				function error(err){
@@ -116,8 +114,10 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
 		$scope.submitNewItem = function(category) {
+           var matterSlug = $scope.data.slug;
+
 		   if ($scope.data.newItemName) {
-			 matterItemService.create($scope.data.newItemName, category.name).then(
+			 matterItemService.create(matterSlug, $scope.data.newItemName, category.name).then(
 				 function success(item){
 					category.items.unshift(item);
 					$scope.data.newItemName = '';
@@ -159,11 +159,13 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
 		$scope.deleteItem = function() {
+            var matterSlug = $scope.data.slug;
+
 			if ($scope.data.selectedItem) {
 				ezConfirm.create('Delete Item', 'Please confirm you would like to delete this item?',
 					function yes() {
 						// Confirmed- delete item
-						matterItemService.delete($scope.data.selectedItem).then(
+						matterItemService.delete(matterSlug, $scope.data.selectedItem).then(
 							function success(){
 								var index = jQuery.inArray( $scope.data.selectedItem, $scope.data.selectedCategory.items );
 								if( index>=0 ) {
@@ -212,8 +214,10 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
 		$scope.saveSelectedItem = function () {
+            var matterSlug = $scope.data.slug;
+
 			if ($scope.data.selectedItem) {
-				matterItemService.update($scope.data.selectedItem).then(
+				matterItemService.update(matterSlug, $scope.data.selectedItem).then(
 					function success(item){
 						//do nothing
 					},
@@ -243,18 +247,20 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
 		$scope.submitNewCategory = function() {
-		   if ($scope.data.newCatName) {
-			 matterCategoryService.create($scope.data.newCatName).then(
-				 function success(){
-					$scope.data.categories.unshift({'name': $scope.data.newCatName, 'items': []});
-					$scope.data.newCatName = '';
-				 },
-				 function error(err){
-					toaster.pop('error', "Error!", "Unable to create a new category");
-				 }
-			 );
-			 $scope.data.showCategoryAddForm = null;
-		   }
+            var matterSlug = $scope.data.slug;
+
+            if ($scope.data.newCatName) {
+                matterCategoryService.create(matterSlug, $scope.data.newCatName).then(
+                    function success(){
+                        $scope.data.categories.unshift({'name': $scope.data.newCatName, 'items': []});
+                        $scope.data.newCatName = '';
+                    },
+                    function error(err){
+                        toaster.pop('error', "Error!", "Unable to create a new category");
+                    }
+                );
+                $scope.data.showCategoryAddForm = null;
+            }
 		};
 
 		/**
@@ -269,7 +275,9 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
 		$scope.deleteCategory = function(cat) {
-			matterCategoryService.delete(cat).then(
+            var matterSlug = $scope.data.slug;
+
+			matterCategoryService.delete(matterSlug, cat).then(
 				function success(){
                     var index = jQuery.inArray( cat, $scope.data.categories );
                     if( index>=0 ) {
@@ -321,7 +329,9 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
 		$scope.editCategory = function(cat) {
-			matterCategoryService.update(cat.name, $scope.data.newCategoryName).then(
+            var matterSlug = $scope.data.slug;
+
+			matterCategoryService.update(matterSlug, cat.name, $scope.data.newCategoryName).then(
 				function success(){
 					cat.name = $scope.data.newCategoryName;
 				},
