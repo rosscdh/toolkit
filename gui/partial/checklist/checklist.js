@@ -145,6 +145,9 @@ angular.module('toolkit-gui')
 			//Reset controls
 			$scope.data.showEditItemDescriptionForm = false;
 			$scope.data.showEditItemTitleForm = false;
+            $scope.data.showPreviousRevisions = false;
+
+            console.log($scope.data.selectedItem.latest_revision);
 		};
 
 		/**
@@ -162,7 +165,6 @@ angular.module('toolkit-gui')
 						// Confirmed- delete item
 						matterItemService.delete($scope.data.selectedItem).then(
 							function success(){
-								// $scope.data.selectedCategory.items.indexOf($scope.data.selectedItem);
 								var index = jQuery.inArray( $scope.data.selectedItem, $scope.data.selectedCategory.items );
 								if( index>=0 ) {
 									// Remove item from in RAM array
@@ -297,8 +299,12 @@ angular.module('toolkit-gui')
 		$scope.deleteCategory = function(cat) {
 			matterCategoryService.delete(cat).then(
 				function success(){
-					var index = $scope.data.categories.indexOf(cat); // TODO: convert to jQuery inArray
-					$scope.data.categories.splice(index,1);
+                    var index = jQuery.inArray( cat, $scope.data.categories );
+                    if( index>=0 ) {
+                        // Remove item from in RAM array
+					    $scope.data.categories.splice(index,1);
+                    }
+
 
 					if (cat === $scope.data.selectedCategory){
 						$scope.data.selectedItem = null;
@@ -381,7 +387,12 @@ angular.module('toolkit-gui')
 
 			matterItemService.uploadRevision( matterSlug, itemSlug, files ).then(
 				function success( revision ) {
-					item.latest_revision = revision;
+                    revision.uploaded_by = matterService.data().selected.current_user;
+                    item.latest_revision = revision;
+
+                    //Reset previous revisions
+                    item.previousRevisions = null;
+                    $scope.data.showPreviousRevisions = false;
 				},
 				function error(err) {
 					toaster.pop('error', "Error!", "Unable to upload revision");
@@ -414,6 +425,8 @@ angular.module('toolkit-gui')
 			}
 		};
 
+
+
 		/**
 		 * Request API to delete latest revision
 		 *
@@ -432,6 +445,7 @@ angular.module('toolkit-gui')
 					function yes() {
                         matterItemService.deleteRevision(matterSlug, item.slug, $scope.data.selectedItem.latest_revision).then(
                             function success(){
+                                //TODO set prev Revision as current if existing
                                 item.latest_revision = null;
                             },
                             function error(err){
@@ -441,6 +455,45 @@ angular.module('toolkit-gui')
                     }
                 );
 			}
+		};
+
+        /**
+		 * Request API to get all previous revisions of the item
+		 *
+		 * @name 				loadPreviousRevisions
+		 *
+		 * @private
+		 * @method				loadPreviousRevisions
+		 * @memberof			ChecklistCtrl
+		 */
+         $scope.loadPreviousRevisions = function () {
+            var matterSlug = $scope.data.slug;
+			var item = $scope.data.selectedItem;
+
+            if (item && item.previousRevisions) {
+                //show the revisions from the local storage
+            }
+            else if (item && item.latest_revision && item.latest_revision.revisions) {
+                if (item.previousRevisions == null) {
+                    item.previousRevisions = [];
+                }
+
+                jQuery.each( item.latest_revision.revisions, function( index, revurl ){
+                    var revslug = revurl.substring(revurl.lastIndexOf('/')+1, revurl.length);
+
+					matterItemService.loadRevision(matterSlug, item.slug, revslug).then(
+                        function success(revision){
+                            //store revisisions locally
+                            //TODO: implement the correct sort order
+                            item.previousRevisions.unshift(revision);
+                        },
+                        function error(err){
+                            toaster.pop('error', "Error!", "Unable to load previous revision");
+                        }
+                    );
+				});
+			}
+            $scope.data.showPreviousRevisions = true;
 		};
         /* End revision handling */
 

@@ -74,7 +74,8 @@ angular.module('toolkit-gui')
 			return $resource( $rootScope.API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/revision/:version', {}, {
 				'create': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'update': { 'method': 'PATCH', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
-	            'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
+	            'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
+	            'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
 			});
 		}
 
@@ -303,7 +304,7 @@ angular.module('toolkit-gui')
 			 * @name				deleteRevision
 			 * @param {String}      matterSlug    Database slug, used as a unquie idenitfier for a matter.
 			 * @param {String}      itemSlug      Database slug, used as a unquie identifier for a checklist item.
-			 * @param {Object}      files         Details as provided by filerpicker.io
+			 * @param {Object}      revisionItem  Revision object
 			 *
 			 * @example
 		 	 * matterItemService.deleteRevision( 'myItemName', 'ItemCategoryName', {} );
@@ -322,6 +323,40 @@ angular.module('toolkit-gui')
 				api.delete({'matterSlug': matterSlug, 'itemSlug': itemSlug }, revisionItem,
 					function success(){
 						deferred.resolve();
+					},
+					function error(err) {
+						deferred.reject( err );
+					}
+				);
+
+				return deferred.promise;
+			},
+
+            /**
+			 * Load a revision from URL
+			 *
+			 * @name				loadRevisionByURL
+			 * @param {String}      matterSlug    Database slug, used as a unquie idenitfier for a matter.
+			 * @param {String}      itemSlug      Database slug, used as a unquie identifier for a checklist item.
+			 * @param {String}      revisionSlug  Database slug, used as a unquie identifier for a revision.
+			 *
+			 * @example
+		 	 * matterItemService.loadRevisionByURL( 'myMatterName', 'myItemName', 'v1' );
+			 *
+			 * @public
+			 * @method				loadRevisionByURL
+			 * @memberof			matterItemService
+			 *
+			 * @return {Promise}    Updated item object as provided by API
+		 	 */
+	        'loadRevision': function ( matterSlug, itemSlug, revisionSlug ) {
+				var deferred = $q.defer();
+
+				var api = revisionItemResource();
+
+				api.get({'matterSlug': matterSlug, 'itemSlug': itemSlug, 'version':revisionSlug  },
+					function success(revision){
+						deferred.resolve(revision);
 					},
 					function error(err) {
 						deferred.reject( err );
