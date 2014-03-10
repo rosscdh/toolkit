@@ -18,6 +18,7 @@ angular.module('toolkit-gui')
 	'$scope',
 	'$rootScope',
 	'$routeParams',
+	'smartRoutes',
 	'ezConfirm',
 	'toaster',
 	'$modal',
@@ -25,15 +26,17 @@ angular.module('toolkit-gui')
 	'matterItemService',
 	'matterCategoryService',
 	'$timeout',
-	function($scope, $rootScope, $routeParams, ezConfirm, toaster, $modal, matterService, matterItemService, matterCategoryService, $timeout){
+	function($scope, $rootScope, $routeParams, smartRoutes, ezConfirm, toaster, $modal, matterService, matterItemService, matterCategoryService, $timeout){
 		/**
 		 * Scope based data for the checklist controller
 		 * @memberof			ChecklistCtrl
 		 * @private
 		 * @type {Object}
 		 */
+		
+		var routeParams = smartRoutes.params();
 		$scope.data = {
-			'slug': $routeParams.matterSlug,
+			'slug': routeParams.matterSlug,
 			'matter': {},
 			'showAddForm': null,
 			'showItemDetailsOptions': false,

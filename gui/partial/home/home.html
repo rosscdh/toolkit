@@ -1,7 +1,7 @@
 <div class="col-md-12" ng-controller="HomeCtrl">
 	<h1>Home</h1>
 	<ul>
-		<li ng-repeat="matter in data.matters.items"><a ng-href="#/matter/{{matter.slug}}/checklist" ng-bind="matter.name" ng-click="selectMatter(matter)"></a></li>
+		<li ng-repeat="matter in data.matters.items"><a ng-href="#/checklist" ng-bind="matter.name" ng-click="selectMatter(matter)"></a></li>
 	</ul>
 
 	<h3>GUI build</h3>
