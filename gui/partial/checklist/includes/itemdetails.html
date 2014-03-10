@@ -95,7 +95,39 @@
                 <div class="tools">
                     <a href="#" class="btn btn-link btn-xs"  data-toggle="modal" data-target="#viewDocumentModal">View</a>
                     <a href="#" class="btn btn-link btn-xs" data-toggle="modal" data-target="#requestReviewModal">Request Review</a>
+                    <div class="btn-group pull-right">
+                        <button type="button" class="btn btn-default btn-xs status-0" data-toggle="dropdown">
+                          Draft
+                        </button>
+                        <button class="btn btn-default btn-xs status-0" data-toggle="dropdown">
+                          <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                          <li class="status-0"><a href="#"><span class="fui-checkbox-unchecked"></span> Draft</a></li>
+                          <li class="status-1"><a href="#"><span class="fui-checkbox-unchecked"></span> For discussion</a></li>
+                          <li class="status-2"><a href="#"><span class="fui-checkbox-unchecked"></span> Final</a></li>
+                          <li class="status-3"><a href="#"><span class="fui-checkbox-unchecked"></span> Executed</a></li>
+                          <li class="status-4"><a href="#"><span class="fui-checkbox-unchecked"></span> Filed</a></li>
+                          <li class="status-5"><a href="#"><span class="fui-checkbox-unchecked"></span> Custom</a></li>
+                        </ul>
+                    </div>
                 </div>
+            </div>
+        </li>
+
+        <li class="toggle-previous text-center" ng-show="data.selectedItem.latest_revision.revisions.length>0&&!data.showPreviousRevisions">
+            <a class="btn btn-sm btn-silver" href="javascript:;" ng-click="loadPreviousRevisions()">
+                <span ng-show="data.selectedItem.latest_revision.revisions.length==1">Show Previous Revision</span>
+                <span ng-show="data.selectedItem.latest_revision.revisions.length>1">Show {{ data.selectedItem.latest_revision.revisions.length }} Previous Revisions</span>
+            </a>
+        </li>
+
+        <li class="header previous-toggle" style="display: list-item;" ng-show="data.showPreviousRevisions">Previous Revisions</li>
+        <li class="previous-toggle" style="display: list-item;" ng-show="data.showPreviousRevisions" ng-repeat="rev in data.selectedItem.previousRevisions">
+            <div class="doc-wrap">
+                <span class="version">{{ rev.slug }}</span>
+                <h4>{{ rev.name }}</h4>
+                <div class="sub">{{ rev.uploaded_by.name }}, {{ rev.date_created | readabletimediff }}</div>
             </div>
         </li>
     </ul>

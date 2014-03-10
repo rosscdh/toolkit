@@ -26,6 +26,7 @@
     "font-awesome": "~4.0",
     "angular-ui-sortable": "~0.12.1",
     "ez-confirm": "*",
-    "datejs": "latest"
+    "datejs": "latest",
+    "momentjs": "latest"
   }
 }
