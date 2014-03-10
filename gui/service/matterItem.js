@@ -286,7 +286,12 @@ angular.module('toolkit-gui')
 
 				var api = revisionItemResource();
 
-				api.update({'matterSlug': matterSlug, 'itemSlug': itemSlug }, revisionItem,
+                var updateFields = {
+                    'status': revisionItem.status,
+                    'description': revisionItem.description
+                }
+
+				api.update({'matterSlug': matterSlug, 'itemSlug': itemSlug }, updateFields,
 					function success(item){
 						deferred.resolve(item);
 					},
