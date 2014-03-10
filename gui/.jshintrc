@@ -24,7 +24,9 @@
         "inject": true,
         "it": true,
         "expect": true,
-        "filepicker": true
+        "filepicker": true,
+        "TimeSpan": true
     },
-    "-W083": false
+    "-W083": false,
+    "-W099": false
 }

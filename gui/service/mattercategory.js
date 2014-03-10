@@ -1,8 +1,16 @@
 var category;
 var matter;
 
-angular.module('toolkit-gui').factory('matterCategoryService',[ '$q', '$resource', '$rootScope', function( $q, $resource, $rootScope) {
-
+angular.module('toolkit-gui')
+/**
+ * @class matterCategoryService
+ * @classdesc 		                      Responsible for managing and requesting the API to invite participants into a matter
+ * @param  {Function} $q                  Contains the scope of this controller
+ * @param  {Function} $resource           Provides access to close and cancel methods
+ * @param  {Function} $rootScope          Access to the root sccope
+ * @param  {Function} anon                Controller function
+ */
+.factory('matterCategoryService',[ '$q', '$resource', '$rootScope', function( $q, $resource, $rootScope) {
 	var token = { 'value': 'xyz' };
 
 	function matterCategoryResource() {
