@@ -21,7 +21,7 @@ class ReviewDocument(UserAuthMixin, models.Model):
     """
     slug = UUIDField(auto=True, db_index=True)
     document = models.ForeignKey('attachment.Revision')
-    participants = models.ManyToManyField('auth.User', related_name='matter_participants')
+    participants = models.ManyToManyField('auth.User', related_name='review_owners')
     reviewers = models.ManyToManyField('auth.User')
     data = JSONField(default={})
 
