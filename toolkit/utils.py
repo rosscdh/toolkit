@@ -57,6 +57,12 @@ def get_namedtuple_choices(name, choices_tuple):
         def get_choices(self):
             return zip(tuple(self), self._choices)
 
+        def get_choices_dict(self):
+            choices = {}
+            for v, k in self.get_choices():
+                choices[k] = v
+            return choices
+
         def get_all(self):
             for val, name, desc in choices_tuple:
                 yield val, name, desc
