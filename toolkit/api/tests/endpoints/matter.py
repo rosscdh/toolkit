@@ -2,6 +2,7 @@
 from django.core.urlresolvers import reverse
 
 from toolkit.core.item.models import Item
+from toolkit.core.attachment.models import Revision
 from toolkit.apps.workspace.models import Workspace
 
 from . import BaseEndpointTest
@@ -217,15 +218,18 @@ class MatterDetailProvidedDataTest(BaseEndpointTest):
         _meta = data['_meta']
         self.assertEqual(type(_meta), dict)
 
-        self.assertEqual(_meta.keys(), ['matter', 'item'])
+        self.assertEqual(_meta.keys(), ['matter', 'item', 'revision'])
 
         self.assertTrue('status' in _meta['matter'])
         self.assertTrue('status' in _meta['item'])
+        self.assertTrue('status' in _meta['revision'])
 
         self.assertEqual(_meta['matter']['status'], None) # for the moment
         self.assertEqual(type(_meta['item']['status']), dict)
+        self.assertEqual(type(_meta['revision']['status']), dict)
 
         self.assertEqual(_meta['item'].get('status'), Item.ITEM_STATUS.get_choices_dict())
+        self.assertEqual(_meta['revision'].get('status'), Revision.REVISION_STATUS.get_choices_dict())
 
     def confirm_participants(self, participants):
         """

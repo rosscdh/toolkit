@@ -10,8 +10,9 @@ from .revision import RevisionSerializer
 
 class ItemSerializer(serializers.HyperlinkedModelSerializer):
     description = serializers.CharField(source='description', required=False)
-    # return a compoint object
-    status = serializers.ChoiceField() # must be set in __init__ as well
+
+    status = serializers.ChoiceField()
+
     # must be read_only=True
     latest_revision = RevisionSerializer(source='latest_revision', read_only=True)
 
@@ -32,31 +33,6 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
                   'date_created', 'date_modified',)
 
         exclude = ('data', 'responsible_party')
-
-    def __init__(self, *args, **kwargs):
-        #
-        # @TODO turn these into nice clean methods
-        #
-        self.base_fields['status'] = serializers.ChoiceField()
-        #
-        # If we are passing in a multipart form
-        #
-        if 'context' in kwargs and 'request' in kwargs['context']:
-
-            request = kwargs['context'].get('request')
-            #
-            # set the status field to be a seriallizer.ChoiceField
-            #
-            if request.method in ['PATCH', 'POST']:
-                    self.base_fields['status'] = serializers.ChoiceField()
-
-        super(ItemSerializer, self).__init__(*args, **kwargs)
-
-    # def get_status(self, obj):
-    #     """
-    #     should return a dict of {"name": "name", "value": 1}
-    #     """
-    #     return {"name": obj.display_status, "value": obj.status}
 
     def get_participants(self, obj):
         """
