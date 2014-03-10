@@ -111,3 +111,15 @@ class LiteMatterSerializer(MatterSerializer):
     class Meta(MatterSerializer.Meta):
         fields = ('url', 'name', 'slug', 'matter_code', 'client',
                   'lawyer', 'participants', 'date_created', 'date_modified')
+
+
+class MatterActionsSerializer(MatterSerializer):
+    """
+    Serializer adds information to show in activity-stream
+    """
+    action_object_actions = serializers.RelatedField(many=True)
+    target_actions = serializers.RelatedField(many=True)
+    custom_stream_actions = serializers.RelatedField(many=True)
+
+    class Meta(MatterSerializer.Meta):
+        fields = MatterSerializer.Meta.fields + ('action_object_actions', 'target_actions', 'custom_stream_actions')

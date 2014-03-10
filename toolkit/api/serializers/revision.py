@@ -56,6 +56,7 @@ class HyperlinkedAutoDownloadFileField(serializers.URLField):
         #
         return None
 
+
 class FileFieldAsUrlField(serializers.FileField):
     """
     Acts like a normal FileField but to_native will return the url if it exists

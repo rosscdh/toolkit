@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+from actstream.models import Action, model_stream, action_object_stream
 from django.shortcuts import get_object_or_404
 
 from rulez import registry as rulez_registry
@@ -20,12 +21,12 @@ from toolkit.apps.workspace.services import EnsureCustomerService
 
 from .mixins import (MatterMixin,
                      _MetaJSONRendererMixin,
-                     SpecificAttributeMixin,)
+                     SpecificAttributeMixin, MatterItemsQuerySetMixin)
 
 from .revision import ItemCurrentRevisionView
 
 from ..serializers import MatterSerializer
-from ..serializers.matter import LiteMatterSerializer
+from ..serializers.matter import LiteMatterSerializer, MatterActionsSerializer
 from ..serializers import UserSerializer
 
 import logging
@@ -246,10 +247,26 @@ class ClosingGroupView(SpecificAttributeMixin,
         return Response(closing_groups)
 
 
+class MatterActivityView(generics.RetrieveAPIView,
+                         MatterMixin):
+    """
+    Endpoint for getting (and creating?) activity-stream-actions for matter
+    """
+    model = Workspace  # check if needed or if we do everything with stream_* functions
+    serializer_class = MatterActionsSerializer  # ActivityStreamActionSerializer
+    lookup_field = 'slug'
+    lookup_url_kwarg = 'matter_slug'
 
-class MatterActivityView(object):
-    pass
-    # perhaps later endpoint:
-    # class MatterActivityEndpoint
-    #     def get_queryset(self):
-    #         user = self.request.user
+    def retrieve(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        # here we should add our customised stream some time later:
+        self.object.custom_stream_actions = action_object_stream(self.matter)
+
+        serializer = self.get_serializer(self.object)
+        return Response(serializer.data)
+
+    def can_read(self, user):
+        return user.profile.user_class in ['lawyer', 'customer']
+
+
+rulez_registry.register("can_read", MatterActivityView)

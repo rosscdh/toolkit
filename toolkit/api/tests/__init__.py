@@ -7,3 +7,4 @@ from .endpoints.sort import (MatterSortTest,)
 from .endpoints.participant import (MatterParticipantTest,)
 from .endpoints.category import (MatterCategoryTest,)
 from .endpoints.revision import *
+from .endpoints.activity_stream_action import *
