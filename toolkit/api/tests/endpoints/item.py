@@ -43,7 +43,6 @@ class ItemsTest(BaseEndpointTest):
         new_item = mommy.prepare('item.Item', matter=self.workspace, name='New Test Item No. 2')
 
         resp = self.client.post(self.endpoint, json.dumps(ItemSerializer(new_item).data), content_type='application/json')
-
         self.assertEqual(resp.status_code, 201)  # created
 
         json_data = json.loads(resp.content)
@@ -159,7 +158,6 @@ class ItemDetailTest(BaseEndpointTest):
         deleted_item = deleted_items[0]
         self.assertEqual(deleted_item.name, self.item.name)
 
-
     def test_customer_get(self):
         self.client.login(username=self.user.username, password=self.password)
         resp = self.client.get(self.endpoint)
@@ -188,7 +186,6 @@ class ItemDetailTest(BaseEndpointTest):
         resp = self.client.delete(self.endpoint, {}, content_type='application/json')
         self.assertEqual(resp.status_code, 403)  # forbidden
 
-
     def test_anon_get(self):
         resp = self.client.get(self.endpoint)
         self.assertEqual(resp.status_code, 401)  # denied
@@ -204,3 +201,36 @@ class ItemDetailTest(BaseEndpointTest):
     def test_anon_delete(self):
         resp = self.client.delete(self.endpoint, {}, content_type='application/json')
         self.assertEqual(resp.status_code, 401)  # denied
+
+
+class ItemDataTest(BaseEndpointTest):
+    """
+    Test the various object attributes are as they should be
+    """
+    def setUp(self):
+        super(ItemDataTest, self).setUp()
+        self.item = mommy.make('item.Item',
+                               matter=self.workspace,
+                               name='Item Data Test No. 1')
+
+    @property
+    def endpoint(self):
+        return reverse('matter_item', kwargs={'matter_slug': self.workspace.slug, 'item_slug': self.item.slug})
+
+    def test_endpoint_name(self):
+        self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/items/%s' % self.item.slug)
+
+    def test_default_status(self):
+        self.assertEqual(self.item.status, Item.ITEM_STATUS.new)
+
+    def test_json_details(self):
+        self.client.login(username=self.user.username, password=self.password)
+        resp = self.client.get(self.endpoint)
+
+        json_data = json.loads(resp.content)
+
+        # test status is correct
+        self.assertEqual(type(json_data['status']), int)
+        self.assertEqual(json_data['status'], 0)  # New == 0
+
+

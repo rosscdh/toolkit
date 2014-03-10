@@ -238,22 +238,13 @@ module.exports = function (grunt) {
     },
      jsdoc : {
         dist : {
-            src: ['partial/**/*.js', '!partial/**/*-spec.js','filter/**/*.js', '!filter/**/*-spec.js', 'README.md'], 
+            src: ['partial/**/*.js', '!partial/**/*-spec.js', 'filter/**/*.js', '!filter/**/*-spec.js', 'service/**/*.js', '!service/**/*-spec.js', 'README.md'], 
             options: {
                 destination: 'doc',
                 template: "node_modules/ink-docstrap/template",
                 configure: "node_modules/ink-docstrap/template/jsdoc.conf.json"
             }
         }
-    },
-    ngdocs: {
-      options: {
-        dest: 'docs',
-        api: {
-          src: ['partial/**/*.js', '!src/**/*.spec.js'],
-          title: 'API Documentation'
-        }
-      }
     }
   });
 

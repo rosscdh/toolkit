@@ -19,12 +19,8 @@ class ItemEndpoint(viewsets.ModelViewSet):
     lookup_field = 'slug'
     serializer_class = ItemSerializer
 
-    # def list(self, request, **kwargs):
-    #     """
-    #     @TODO limit by user client
-    #     """
-    #     import pdb;pdb.set_trace()
-    #     return super(ItemEndpoint, self).list(request=request, **kwargs)
+    def get_serializer_context(self):
+        return {'request': self.request}
 
     def can_read(self, user):
         return user.profile.user_class in ['lawyer', 'customer'] and user in self.object.participants.all()
@@ -53,6 +49,9 @@ class MatterItemsView(MatterItemsQuerySetMixin,
     """
     model = Item
     serializer_class = ItemSerializer
+
+    def get_serializer_context(self):
+        return {'request': self.request}
 
     def pre_save(self, obj):
         obj.matter = self.matter  # set in MatterItemsQuerySetMixin
@@ -86,6 +85,9 @@ class MatterItemView(generics.UpdateAPIView,
     serializer_class = ItemSerializer
     lookup_field = 'slug'
     lookup_url_kwarg = 'item_slug'
+
+    def get_serializer_context(self):
+        return {'request': self.request}
 
     def can_read(self, user):
         return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()

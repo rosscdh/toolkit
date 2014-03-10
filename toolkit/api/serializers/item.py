@@ -10,7 +10,8 @@ from .revision import RevisionSerializer
 
 class ItemSerializer(serializers.HyperlinkedModelSerializer):
     description = serializers.CharField(source='description', required=False)
-    status = serializers.SerializerMethodField('get_status')
+    # return a compoint object
+    status = serializers.ChoiceField() # must be set in __init__ as well
     # must be read_only=True
     latest_revision = RevisionSerializer(source='latest_revision', read_only=True)
 
@@ -22,7 +23,9 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Item
         lookup_field = 'slug'
-        fields = ('slug', 'url', 'status', 'name', 'description', 'matter',
+        fields = ('slug', 'url',
+                  'status',
+                  'name', 'description', 'matter',
                   'parent', 'children', 'closing_group', 'category',
                   'latest_revision',
                   'is_final', 'is_complete', 'date_due',
@@ -30,15 +33,30 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
 
         exclude = ('data', 'responsible_party')
 
-    def get_status(self, obj):
-        """
-        placeholder
-        open = new and pending
-        final = ready for review+signing (may not actually happen tho)
-        executed = approved and signed
-        'one of open|awaiting document|final|executed'
-        """
-        return obj.display_status
+    def __init__(self, *args, **kwargs):
+        #
+        # @TODO turn these into nice clean methods
+        #
+        self.base_fields['status'] = serializers.ChoiceField()
+        #
+        # If we are passing in a multipart form
+        #
+        if 'context' in kwargs and 'request' in kwargs['context']:
+
+            request = kwargs['context'].get('request')
+            #
+            # set the status field to be a seriallizer.ChoiceField
+            #
+            if request.method in ['PATCH', 'POST']:
+                    self.base_fields['status'] = serializers.ChoiceField()
+
+        super(ItemSerializer, self).__init__(*args, **kwargs)
+
+    # def get_status(self, obj):
+    #     """
+    #     should return a dict of {"name": "name", "value": 1}
+    #     """
+    #     return {"name": obj.display_status, "value": obj.status}
 
     def get_participants(self, obj):
         """

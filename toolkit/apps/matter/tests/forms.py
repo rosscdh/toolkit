@@ -10,9 +10,9 @@ from toolkit.casper.workflow_case import BaseScenarios
 from ..forms import MatterForm
 
 
-class MatterFormTestCase(BaseScenarios, TestCase):
+class MatterFormTest(BaseScenarios, TestCase):
     def setUp(self):
-        super(MatterFormTestCase, self).setUp()
+        super(MatterFormTest, self).setUp()
         self.basic_workspace()
 
     def test_initial_values(self):

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.core.urlresolvers import reverse
 
+from toolkit.core.item.models import Item
 from toolkit.apps.workspace.models import Workspace
 
 from . import BaseEndpointTest
@@ -209,6 +210,23 @@ class MatterDetailProvidedDataTest(BaseEndpointTest):
     def test_endpoint_name(self):
         self.assertEqual(self.endpoint, '/api/v1/matters/%s' % self.matter.slug)
 
+    def confirm_meta(self, data):
+        #import pdb;pdb.set_trace()
+        self.assertTrue('_meta' in data)
+
+        _meta = data['_meta']
+        self.assertEqual(type(_meta), dict)
+
+        self.assertEqual(_meta.keys(), ['matter', 'item'])
+
+        self.assertTrue('status' in _meta['matter'])
+        self.assertTrue('status' in _meta['item'])
+
+        self.assertEqual(_meta['matter']['status'], None) # for the moment
+        self.assertEqual(type(_meta['item']['status']), dict)
+
+        self.assertEqual(_meta['item'].get('status'), Item.ITEM_STATUS.get_choices_dict())
+
     def confirm_participants(self, participants):
         """
         Test the participants construct
@@ -233,6 +251,8 @@ class MatterDetailProvidedDataTest(BaseEndpointTest):
         resp_data = json.loads(resp.content)
         self.assertTrue(resp_data.get('url') is not None)
 
+        # _meta
+        self.confirm_meta(data=resp_data)
         # participants
         self.confirm_participants(participants=resp_data.get('participants'))
         # revisions
