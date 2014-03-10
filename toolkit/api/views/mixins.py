@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404
 
 from rest_framework import generics
 from rest_framework.renderers import JSONRenderer
+from rest_framework.status import is_success
 
 from toolkit.core.item.models import Item
 from toolkit.apps.workspace.models import Workspace
@@ -26,15 +27,18 @@ class _MetaJSONRendererMixin(JSONRenderer):
         if data is not None:
             #
             # Update with out meta object
+            # but only when its a 2* response
             #
-            get_meta_method = getattr(renderer_context.get('view'), 'get_meta', None)
+            if is_success(renderer_context.get('view').response.status_code) is True:
+                get_meta_method = getattr(renderer_context.get('view'), 'get_meta', None)
 
-            if get_meta_method is None:
-                logger.info('_MetaJSONRendererMixin.get_meta_method requires the view to define a .get_meta method')
+                if get_meta_method is None:
+                    logger.error('_MetaJSONRendererMixin.get_meta_method requires the view to define a .get_meta method')
+                    raise Exception('_MetaJSONRendererMixin requires the calling view to have a .get_meta(self) method defined')
 
-            data.update({
-                '_meta': get_meta_method() if get_meta_method is not None else None
-            })
+                data.update({
+                    '_meta': get_meta_method() if get_meta_method is not None else None
+                })
 
         return super(_MetaJSONRendererMixin, self).render(data=data,
                                                       accepted_media_type=accepted_media_type,
