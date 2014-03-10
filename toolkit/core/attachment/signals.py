@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.db import transaction
 from django.dispatch import receiver
 from django.db.models.signals import pre_save, post_save
 
@@ -38,13 +39,19 @@ def ensure_revision_slug(sender, instance, **kwargs):
             instance.slug = final_slug
 
 
-@receiver(post_save, sender=Revision, dispatch_uid='revision.ensure_revision_initial_reviewdocument')
-def ensure_revision_initial_reviewdocument(sender, instance, **kwargs):
+@receiver(post_save, sender=Revision, dispatch_uid='revision.ensure_revision_reviewdocument_object')
+def ensure_revision_reviewdocument_object(sender, instance, **kwargs):
     """
-    signal to handle creating the DocumentReview object for the initial Revision
+    signal to handle creating the DocumentReview object for each Revision Object
+    which has the matter.participants as the ReviewDocument.participants
     """
     if instance.reviewdocument_set.all().count() == 0:
-        #
-        # Detected that no ReviewDocument is preset
-        #
-        instance.reviewdocument_set.add(ReviewDocument.objects.create(document=instance))
+        with transaction.atomic():
+            #
+            # Detected that no ReviewDocument is preset
+            #
+            review = ReviewDocument.objects.create(document=instance)
+            # set the review participants to be the same as the matter.participants
+            review.participants = instance.item.matter.participants.all()
+            # now add the revew object to the instance reivewdocument_set
+            instance.reviewdocument_set.add(review)

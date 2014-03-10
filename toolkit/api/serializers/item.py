@@ -11,7 +11,7 @@ from .revision import RevisionSerializer
 class ItemSerializer(serializers.HyperlinkedModelSerializer):
     description = serializers.CharField(source='description', required=False)
 
-    status = serializers.ChoiceField()
+    status = serializers.ChoiceField(required=False, choices=Item.ITEM_STATUS.get_choices())
 
     # must be read_only=True
     latest_revision = RevisionSerializer(source='latest_revision', read_only=True)
