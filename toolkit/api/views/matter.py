@@ -252,15 +252,16 @@ class MatterActivityView(generics.RetrieveAPIView,
     """
     Endpoint for getting (and creating?) activity-stream-actions for matter
     """
-    model = Workspace  # check if needed or if we do everything with stream_* functions
-    serializer_class = MatterActionsSerializer  # ActivityStreamActionSerializer
+    model = Workspace
+    serializer_class = MatterActionsSerializer
     lookup_field = 'slug'
     lookup_url_kwarg = 'matter_slug'
 
     def retrieve(self, request, *args, **kwargs):
         self.object = self.get_object()
+        
         # here we should add our customised stream some time later:
-        self.object.custom_stream_actions = action_object_stream(self.matter)
+        # self.object.custom_stream_actions = action_object_stream(self.matter)
 
         serializer = self.get_serializer(self.object)
         return Response(serializer.data)
