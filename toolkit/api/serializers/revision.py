@@ -68,6 +68,8 @@ class FileFieldAsUrlField(serializers.FileField):
 class RevisionSerializer(serializers.HyperlinkedModelSerializer):
     executed_file = HyperlinkedAutoDownloadFileField(required=False)
 
+    status = serializers.ChoiceField(required=False)
+
     item = serializers.HyperlinkedRelatedField(many=False, view_name='item-detail')
 
     reviewers = serializers.HyperlinkedRelatedField(many=True, view_name='user-detail', lookup_field='username')
@@ -85,6 +87,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'slug',
                   'name', 'description',
                   'executed_file', 
+                  'status', 
                   'item', 'uploaded_by', 
                   'reviewers', 'signatories',
                   'revisions', 'user_review_url',
