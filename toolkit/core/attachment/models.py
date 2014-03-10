@@ -1,11 +1,22 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 from django.template.defaultfilters import slugify
+
 from storages.backends.s3boto import S3BotoStorage
+
+from toolkit.utils import get_namedtuple_choices
 
 from jsonfield import JSONField
 
 import os
+
+BASE_REVISION_STATUS = get_namedtuple_choices('REVISION_STATUS', (
+                                (0, 'draft', 'Draft'),
+                                (1, 'for_discussion', 'For Discussion'),
+                                (2, 'final', 'Final'),
+                                (3, 'executed', 'Executed'),
+                                (4, 'filed', 'Filed'),
+                            ))
 
 
 def _upload_file(instance, filename):
@@ -15,12 +26,16 @@ def _upload_file(instance, filename):
 
 
 class Revision(models.Model):
+    REVISION_STATUS = BASE_REVISION_STATUS
+
     name = models.CharField(max_length=255, null=True, blank=True)
     description = models.CharField(max_length=255, null=True, blank=True)
 
     slug = models.SlugField(blank=True, null=True)  # stores the revision number v3..v2..v1
 
     executed_file = models.FileField(upload_to=_upload_file, storage=S3BotoStorage(), null=True, blank=True)
+
+    status = models.IntegerField(choices=REVISION_STATUS.get_choices(), default=REVISION_STATUS.draft)
 
     item = models.ForeignKey('item.Item')
     uploaded_by = models.ForeignKey('auth.User')

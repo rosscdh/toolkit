@@ -12,6 +12,8 @@ from rest_framework import status as http_status
 
 from toolkit.core.item.models import Item
 
+from toolkit.core.attachment.models import Revision
+
 from toolkit.apps.workspace.models import Workspace
 from toolkit.apps.review.models import ReviewDocument
 from toolkit.apps.workspace.services import EnsureCustomerService
@@ -43,6 +45,7 @@ class MatterEndpoint(viewsets.ModelViewSet):
         return {
             'matter': {'status': None},
             'item': {'status': Item.ITEM_STATUS.get_choices_dict()},
+            'revision': {'status': Revision.REVISION_STATUS.get_choices_dict()},
         }
 
     def get_serializer_class(self):
