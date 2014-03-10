@@ -12,11 +12,13 @@ angular.module('toolkit-gui')
 .controller('NavigationCtrl',[
 	'$scope',
 	'$routeParams',
+	'smartRoutes',
 	'$location',
 	'$modal',
 	'userService',
 	'matterService',
-	function( $scope, $routeParams, $location, $modal, userService, matterService ){
+	function( $scope, $routeParams, smartRoutes, $location, $modal, userService, matterService ){
+		var routeParams = smartRoutes.params(); 
 		/**
 		 * In scope variable containing containing a list of participants
 		 * @memberof NavigationCtrl
@@ -40,7 +42,7 @@ angular.module('toolkit-gui')
 		 * @type {Object}
 		 */
 		$scope.data = {
-			'id': $routeParams.id,
+			'id': routeParams.id,
 		};
 
 		/**
@@ -101,7 +103,8 @@ angular.module('toolkit-gui')
 		 * @memberof			NavigationCtrl
 		 */
 		$scope.$on('$routeChangeSuccess', function updateNavigationID() {
-			$scope.data.id = $routeParams.id;
+			var routeParams = smartRoutes.params(); 
+			$scope.data.id = routeParams.id;
 		});
 	}
 ]);
