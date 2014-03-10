@@ -68,7 +68,7 @@
 
 			                <td class="status text-right" ng-hide="item.is_complete">
                                 <button disabled="" class="btn btn-success btn-xs" ng-show="item.latest_revision"><span class="fui-check"></span> File Received</button>
-			                	<button class="btn btn-xs" ng-class="{'btn-default': getItemDueDateStatus(item)==0, 'btn-danger': getItemDueDateStatus(item)==1}" ng-show="item.date_due" disabled>{{ item.date_due | date:'dd MMM' }}</button>
+			                	<button class="btn btn-xs {{ item.date_due | duestatus }}" ng-show="item.date_due" disabled>{{ item.date_due | date:'dd MMM' }}</button>
 			                </td>
                             <td class="status text-right" ng-show="item.is_complete">
 			                	<span class="fui-check-inverted"></span>
