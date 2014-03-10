@@ -20,6 +20,8 @@ from .participant import (MatterParticipant,)
 from .revision import (ItemCurrentRevisionView as MatterItemCurrentRevisionView,
                        ItemSpecificReversionView as MatterItemSpecificReversionView,)
 
+from .item_request import (ItemRequestRevisionView as MatterItemRequestRevisionView,)
+
 from .item import (ItemEndpoint,
                    MatterItemsView,
                    MatterItemView,)
