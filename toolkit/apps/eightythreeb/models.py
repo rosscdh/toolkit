@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
+from django.db.models.signals import post_save
+from actstream import action
 
 from django.db import models
 from django.core.urlresolvers import reverse
@@ -37,7 +39,7 @@ def _upload_file(instance, filename):
     return '83b/%d-%s%s' % (instance.eightythreeb.user.pk, slugify(filename_no_ext), ext)
 
 
-class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferAndFilingDatesMixin, WorkspaceToolModelMixin, IsDeletedMixin, models.Model):
+class EightyThreeB(StatusMixin, IRSMixin, HTMLMixin, USPSReponseMixin, TransferAndFilingDatesMixin, WorkspaceToolModelMixin, IsDeletedMixin,  models.Model):
     """
     83b Form to be associated with a Workspace and a particular user
     """
