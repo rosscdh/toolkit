@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
 
 from storages.backends.s3boto import S3BotoStorage
+from toolkit.core.signals import on_revision_post_save
 
 from toolkit.utils import get_namedtuple_choices
 
@@ -12,10 +14,11 @@ import os
 
 BASE_REVISION_STATUS = get_namedtuple_choices('REVISION_STATUS', (
                                 (0, 'draft', 'Draft'),
-                                (1, 'for_discussion', 'For Discussion'),
-                                (2, 'final', 'Final'),
-                                (3, 'executed', 'Executed'),
-                                (4, 'filed', 'Filed'),
+                                (1, 'requested', 'Requested'),
+                                (2, 'for_discussion', 'For Discussion'),
+                                (3, 'final', 'Final'),
+                                (4, 'executed', 'Executed'),
+                                (5, 'filed', 'Filed'),
                             ))
 
 
@@ -89,6 +92,9 @@ class Revision(models.Model):
 
     def previous(self):
         return self.revisions.filter(pk__lt=self.pk).first()
+
+
+post_save.connect(on_revision_post_save, sender=Revision)
 
 
 from .signals import (ensure_revision_slug,)

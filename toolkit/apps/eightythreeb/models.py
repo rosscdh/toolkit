@@ -18,7 +18,6 @@ from toolkit.core.mixins import IsDeletedMixin
 
 from toolkit.apps.workspace.signals import base_signal
 from toolkit.apps.workspace.mixins import WorkspaceToolModelMixin
-from toolkit.core.mixins import IsDeletedMixin
 
 from .markers import EightyThreeBSignalMarkers
 EIGHTYTHREEB_STATUS = EightyThreeBSignalMarkers().named_tuple(name='EIGHTYTHREEB_STATUS')

@@ -198,6 +198,7 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         resp_json = json.loads(resp.content)
         #import pdb;pdb.set_trace()
         self.assertEqual(resp.status_code, 201)  # ok created
+
         self.assertEqual(resp_json.get('slug'), 'v1')
         self.assertEqual(resp_json.get('executed_file'), 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-1-%s-logo-white.png' % self.lawyer.username)
         self.assertEqual(self.item.revision_set.all().count(), 1)
