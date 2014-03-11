@@ -4,10 +4,15 @@ angular.module('toolkit-gui').directive("filepicker", function($location){
 			'callback': '&',
 			'btnclasses': '='
 		},
-		'transclude': true,
+		/*'transclude': true,*/
 		'restrict': "A",
-		'template': "<a href='' class='{{btnclasses}}' ng-click='pickFiles()' ng-transclude></a>",
+		/*'template': "<a href='' class='{{btnclasses}}' ng-click='pickFiles()' ng-transclude></a>",*/
 		'link': function(scope, element, attrs) {
+
+			element.bind("click", function(e){
+				scope.pickFiles();
+			});
+
 			scope.pickFiles = function () {
 				var picker_options = {
 					'container': 'modal',

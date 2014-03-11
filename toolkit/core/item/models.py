@@ -72,6 +72,20 @@ class Item(IsDeletedMixin, models.Model):
         """
         return self.revision_set.all().last()
 
+    @property
+    def note(self):
+        return self.data.get('request_document', {}).get('note', None)
+
+    @note.setter
+    def note(self, value):
+        request_document = self.data.get('request_document', {})
+        request_document['note'] = value
+
+        self.data['request_document'] = request_document
+
+        return request_document['note']
+
+
     def participants(self):
         return self.data.get('participants', [])
 

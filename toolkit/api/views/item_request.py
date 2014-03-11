@@ -48,15 +48,7 @@ class ItemRequestRevisionView(MatterItemsView):
 
     def pre_save(self, obj):
         obj.status = obj.ITEM_STATUS.awaiting_document
-        # get the data json object
-        data = obj.data
-        # get the request_document from within that
-        request_document = data.get('request_document', {})
-        request_document['note'] = self.note
-
-        # update
-        data['request_document'] = request_document
-        obj.data = data
+        obj.note = self.note
 
         #is_new, obj.responsible_party, profile = self.responsible_party(obj=obj)
 
