@@ -578,10 +578,13 @@ angular.module('toolkit-gui')
 		 * @param {Object} checklistItem checklist item to perform action upon
 		 * 
 		 * @private
-		 * @method				recalculateCategories
+		 * @method				requestRevision
 		 * @memberof			ChecklistCtrl
 		 */
 		$scope.requestRevision = function( checklistItem ) {
+            var matterSlug = $scope.data.slug;
+			var item = $scope.data.selectedItem;
+
 			var modalInstance = $modal.open({
 				'templateUrl': '/static/ng/partial/request-revision/request-revision.html',
 				'controller': 'RequestrevisionCtrl',
@@ -602,8 +605,49 @@ angular.module('toolkit-gui')
 			});
 
 			modalInstance.result.then(
-				function ok(selectedItem) {
-					
+				function ok(result) {
+					console.log(result);
+                    matterItemService.requestRevision(matterSlug, item.slug, result).then(
+							function success(){
+
+							},
+							function error(err){
+								toaster.pop('error', "Error!", "Unable to request a revision.");
+							}
+                    );
+				},
+				function cancel() {
+					//
+				}
+			);
+		};
+
+        /**
+		 *
+		 *
+		 * @param {Object} revision object to view
+		 *
+		 * @private
+		 * @method				showRevisionDocument
+		 * @memberof			ChecklistCtrl
+		 */
+		$scope.showRevisionDocument = function( revision ) {
+            var matterSlug = $scope.data.slug;
+			var item = $scope.data.selectedItem;
+
+			var modalInstance = $modal.open({
+				'templateUrl': '/static/ng/partial/view-document/view-document.html',
+				'controller': 'ViewDocumentCtrl',
+				'resolve': {
+					'data': function () {
+						return revision;
+					}
+				}
+			});
+
+			modalInstance.result.then(
+				function ok(result) {
+					//
 				},
 				function cancel() {
 					//
