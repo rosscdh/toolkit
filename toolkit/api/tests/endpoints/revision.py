@@ -168,7 +168,6 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         super(RevisionExecutedFileAsUrlOrMultipartDataTest, self).setUp()
         # setup the items for testing
         self.item = mommy.make('item.Item', matter=self.matter, name='Test Item with Revision', category=None)
-        revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
 
     def test_endpoint_name(self):
         self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/items/%s/revision' % self.item.slug)
@@ -185,6 +184,8 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
 
         self.client.login(username=self.lawyer.username, password=self.password)
 
+#        self.item.revision_set.all().delete()
+
         data = {
             'executed_file': expected_image_url,
         }
@@ -196,7 +197,7 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         resp = self.client.patch(self.endpoint, json.dumps(data), content_type='application/json')
         resp_json = json.loads(resp.content)
         #import pdb;pdb.set_trace()
-        self.assertEqual(resp.status_code, 200)  # ok updated
+        self.assertEqual(resp.status_code, 201)  # ok created
         self.assertEqual(resp_json.get('slug'), 'v1')
         self.assertEqual(resp_json.get('executed_file'), 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-1-%s-logo-white.png' % self.lawyer.username)
         self.assertEqual(self.item.revision_set.all().count(), 1)
@@ -208,13 +209,33 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         self.assertEqual(revision.executed_file.url, 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-1-%s-logo-white.png' % self.lawyer.username)
 
     @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
+    def test_post_with_URL_executed_file(self):
+        """
+        POSTING and PATCHING to the endpoint BOTH return a "new" revision with the slug
+        changing to v2..v3..etc
+        This is confusing but is important for history preservation
+        """
+        mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
+
+        expected_image_url = 'http://localhost:8081/static/images/logo-white.png'
+
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        data = {
+            'executed_file': expected_image_url,
+        }
+        resp = self.client.patch(self.endpoint, json.dumps(data), content_type='application/json')
+        resp_json = json.loads(resp.content)
+        #import pdb;pdb.set_trace()
+        self.assertEqual(resp.status_code, 200)  # updated but actually a new one was created
+        self.assertEqual(resp_json.get('slug'), 'v2')
+
+    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_patch_with_FILE_executed_file(self):
         """
         ensure we can upload an actual file to the endpoint
         """
         self.client.login(username=self.lawyer.username, password=self.password)
-
-        self.item.revision_set.all().delete()
 
         with open(TEST_IMAGE_PATH) as file_being_posted:
             data = {

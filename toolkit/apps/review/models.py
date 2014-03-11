@@ -44,7 +44,8 @@ class ReviewDocument(UserAuthMixin, models.Model):
             self.download_if_not_exists()
 
         crocodoc, is_new = CrocodocDocument.objects.get_or_create(object_id=self.document.pk,
-                                                                  content_object_type=ContentType.objects.get_for_model(self.document))
+                                                                  content_object_type=ContentType.objects.get_for_model(self.document),
+                                                                  object_attachment_fieldname='executed_file')
         return crocodoc
 
     @property
