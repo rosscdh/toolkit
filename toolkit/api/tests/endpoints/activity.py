@@ -31,5 +31,8 @@ class ActivityStreamGetActionTest(BaseEndpointTest, LiveServerTestCase):
         self.assertEqual(resp.status_code, 200)
         json_data = json.loads(resp.content)
 
-        self.assertListEqual(json_data.keys(), [u'target_actions', u'name', u'closing_groups', u'date_modified', u'url', u'items', u'current_user', u'action_object_actions', u'comments', u'current_user_todo', u'participants', u'client', u'lawyer', u'activity', u'date_created', u'matter_code', u'slug', u'categories'])
+        events = json_data['results']
 
+        self.assertEqual(len(events), 3)
+        self.assertGreater(len(events[0]['event']), 10)  # just to see if event-text contains information. username is not fix.
+        self.assertListEqual(events[0].keys(), [u'data', u'id', u'event'])

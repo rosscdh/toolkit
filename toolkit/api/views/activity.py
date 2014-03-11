@@ -13,6 +13,7 @@ from toolkit.apps.workspace.models import Workspace
 
 class ActivityEndpoint(viewsets.ModelViewSet):
     """
+    Endpoint for Actions from activity-stream
     """
     model = Action
     lookup_field = 'id'
@@ -26,7 +27,7 @@ rulez_registry.register("can_read", ActivityEndpoint)
 
 class MatterActivityEndpoint(generics.ListAPIView):
     """
-    Endpoint for getting (and creating?) activity-stream-actions for matter
+    Endpoint for getting a list of activity-stream-actions for matter
     """
     model = Workspace
     serializer_class = ActivitySerializer

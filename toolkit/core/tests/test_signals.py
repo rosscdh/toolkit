@@ -70,20 +70,20 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         then check, if objects of class Revision were created and if they belong to revision.
         """
         item = mommy.make('item.Item', name='Test Item #1', matter=self.workspace)
-        revision1 = mommy.make('attachment.Revision', name='Test Revision #1', item=item)
-        revision2 = mommy.make('attachment.Revision', name='Test Revision #2', item=item)
+        revision1 = mommy.make('attachment.Revision', name='Test Revision #1', item=item, uploaded_by=self.user)
+        revision2 = mommy.make('attachment.Revision', name='Test Revision #2', item=item, uploaded_by=self.user)
         stream = model_stream(Revision)
         self.assertEqual(len(stream), 2)
 
         stream_item = stream[0]
         self.assertEqual(stream_item.verb, 'created')
         self.assertEqual(stream_item.action_object, revision2)
-        self.assertEqual(stream_item.actor, self.lawyer)
+        self.assertEqual(stream_item.actor, self.user)
 
         stream_item = stream[1]
         self.assertEqual(stream_item.verb, 'created')
         self.assertEqual(stream_item.action_object, revision1)
-        self.assertEqual(stream_item.actor, self.lawyer)
+        self.assertEqual(stream_item.actor, self.user)
 
     def test_customer_stream(self):
         # just for testing during development, only works because of hard set starting time in target_by_customer_stream

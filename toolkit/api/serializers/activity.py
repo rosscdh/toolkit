@@ -14,4 +14,5 @@ class ActivitySerializer(serializers.HyperlinkedModelSerializer):
         fields = ('id', 'event', 'data',)
 
     def get_event(self, obj):
+        # just show a unicode-representation on GUI
         return unicode(obj)

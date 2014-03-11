@@ -61,12 +61,9 @@ def on_item_post_save(sender, instance, created, **kwargs):
 
 
 def on_revision_post_save(sender, instance, created, **kwargs):
-    """
-        Who can create revisions? Is this valid?
-    """
     if created:
         information_dict = dict(
-            actor=instance.item.matter.lawyer,
+            actor=instance.uploaded_by,
             verb=u'created',
             action_object=instance,
             target=instance.item.matter
