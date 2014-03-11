@@ -14,3 +14,31 @@ td.item-title {
 		padding:0;
 	}
 }
+
+tr.item-heading {
+	-webkit-transition: all 0.3s ease-out;
+    -moz-transition: all 0.3s ease-out;
+    -ms-transition: all 0.3s ease-out;
+    -o-transition: all 0.3s ease-out;
+    transition: all 0.3s ease-out;
+}
+
+tr .dropable-area {
+	width: 200%;
+	height:0;
+	position: absolute;
+	top:0;
+	left:0;
+    display: none;
+}
+
+tr.item-heading.file-drag-over {
+	background-color: rgba(0,0,0,0.15) !important;
+}
+
+tr.item-heading.file-drag-over td:nth-child(2):before {
+	content: "Drop files here";
+	float:left;
+	opacity:0.5;
+	padding: 0.25em;
+}
