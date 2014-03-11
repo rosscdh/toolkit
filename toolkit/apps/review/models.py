@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 from django.core.urlresolvers import reverse
+from django.core.files.storage import default_storage
+from django.contrib.contenttypes.models import ContentType
 
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 
 from .mixins import UserAuthMixin
 from .mailers import ReviewerReminderEmail
+
+from dj_crocodoc.models import CrocodocDocument
+from storages.backends.s3boto import S3BotoStorage
 
 from uuidfield import UUIDField
 from jsonfield import JSONField
@@ -31,6 +36,43 @@ class ReviewDocument(UserAuthMixin, models.Model):
 
     def get_absolute_url(self, user):
         return reverse('review:review_document', kwargs={'slug': self.slug, 'auth_slug': self.make_user_auth_key(user=user)})
+
+    @property
+    def crocodoc(self):
+
+        if self.file_exists_locally is False:
+            self.download_if_not_exists()
+
+        crocodoc, is_new = CrocodocDocument.objects.get_or_create(object_id=self.document.pk,
+                                                                  content_object_type=ContentType.objects.get_for_model(self.document))
+        return crocodoc
+
+    @property
+    def file_exists_locally(self):
+        """
+        Used to determin if we should download the file locally
+        """
+        return default_storage.exists(self.document.executed_file)
+
+    def download_if_not_exists(self):
+        """
+        Its necessary to download the file from s3 locally as we have restrictive s3
+        permissions (adds time but necessary for security)
+        """
+        file_name = self.document.executed_file.name
+
+        b = S3BotoStorage()
+
+        if b.exists(file_name) is False:
+            raise Exception('File does not exist on s3: %s' % file_name)
+
+        else:
+            #
+            # download from s3 and save the file locally
+            #
+            file_object = b._open(file_name)
+            return default_storage.save(file_name, file_object)
+        
 
     def send_invite_email(self, from_user, users=[]):
         """
