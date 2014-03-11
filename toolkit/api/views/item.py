@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+from actstream.models import Action
 from rest_framework import viewsets
 
 from rulez import registry as rulez_registry

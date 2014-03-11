@@ -26,7 +26,7 @@ from .mixins import (MatterMixin,
 from .revision import ItemCurrentRevisionView
 
 from ..serializers import MatterSerializer
-from ..serializers.matter import LiteMatterSerializer, MatterActionsSerializer
+from ..serializers.matter import LiteMatterSerializer
 from ..serializers import UserSerializer
 
 import logging
@@ -245,29 +245,3 @@ class ClosingGroupView(SpecificAttributeMixin,
             logger.info('Could not delete closing_group: %s due to: %s' % (closing_group, e,))
 
         return Response(closing_groups)
-
-
-class MatterActivityView(generics.RetrieveAPIView,
-                         MatterMixin):
-    """
-    Endpoint for getting (and creating?) activity-stream-actions for matter
-    """
-    model = Workspace
-    serializer_class = MatterActionsSerializer
-    lookup_field = 'slug'
-    lookup_url_kwarg = 'matter_slug'
-
-    def retrieve(self, request, *args, **kwargs):
-        self.object = self.get_object()
-
-        # here we should add our customised stream some time later:
-        # self.object.custom_stream_actions = action_object_stream(self.matter)
-
-        serializer = self.get_serializer(self.object)
-        return Response(serializer.data)
-
-    def can_read(self, user):
-        return user.profile.user_class in ['lawyer', 'customer']
-
-
-rulez_registry.register("can_read", MatterActivityView)

@@ -2,7 +2,7 @@
 from django.conf.urls import patterns, url
 
 from rest_framework import routers
-from toolkit.api.views.matter import MatterActivityView
+from toolkit.api.views.activity import MatterActivityView
 
 from .views import UserEndpoint
 from .views import AccountEndpoint
