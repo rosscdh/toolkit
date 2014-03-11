@@ -85,7 +85,6 @@ class MatterItemView(generics.UpdateAPIView,
     serializer_class = ItemSerializer
     lookup_field = 'slug'
     lookup_url_kwarg = 'item_slug'
-    renderer_classes = (_CreateActivityStreamActionMixin, )
 
     def get_serializer_context(self):
         return {'request': self.request}
