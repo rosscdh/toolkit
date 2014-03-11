@@ -2,8 +2,8 @@
 from django.db import models
 from django.db.models.signals import post_save
 
-from toolkit.core.mixins import IsDeletedMixin
 from toolkit.core.signals import on_item_post_save
+from toolkit.core.mixins import IsDeletedMixin
 
 from toolkit.utils import get_namedtuple_choices
 
@@ -74,6 +74,20 @@ class Item(IsDeletedMixin, models.Model):
         @BUSINESSRULE always return the latest revision
         """
         return self.revision_set.all().last()
+
+    @property
+    def note(self):
+        return self.data.get('request_document', {}).get('note', None)
+
+    @note.setter
+    def note(self, value):
+        request_document = self.data.get('request_document', {})
+        request_document['note'] = value
+
+        self.data['request_document'] = request_document
+
+        return request_document['note']
+
 
     def participants(self):
         return self.data.get('participants', [])

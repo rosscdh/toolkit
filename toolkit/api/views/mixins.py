@@ -5,15 +5,13 @@ Matter resolver Mixins
 from django.shortcuts import get_object_or_404
 
 from rest_framework import generics
-from rest_framework.renderers import JSONRenderer, BaseRenderer
+from rest_framework.renderers import JSONRenderer
 from rest_framework.status import is_success
 
 from toolkit.core.item.models import Item
-from toolkit.core.signals import send_activity_log
 from toolkit.apps.workspace.models import Workspace
 
 import logging
-
 logger = logging.getLogger('django.request')
 
 
@@ -80,33 +78,3 @@ class SpecificAttributeMixin(object):
     def get_object(self):
         self.object = super(SpecificAttributeMixin, self).get_object()
         return getattr(self.object, self.specific_attribute, None)
-
-
-class _CreateActivityStreamActionMixin(BaseRenderer):
-    """
-    mixin that sends relevant information to django-activitiy-stream signal
-    """
-    def render(self, data, accepted_media_type=None, renderer_context=None):
-        if data is not None:
-            view = getattr(renderer_context.get('view'))
-            request = getattr(renderer_context.get('request'))
-            method = request.get('method', None)
-            user = request.get('user', None)
-            matter = view.get('matter', None)
-            object = view.get('object', None)
-
-            if all(user, method, object, matter):
-                # TODO: look for action from djangorestframework instead of HTTP method
-                if method == 'POST':
-                    verb = u'created'
-                elif method == 'PATCH':
-                    verb = u'edited'
-                elif method == 'DELETE':
-                    verb = u'deleted'
-
-                if verb:
-                    send_activity_log.send(self.__class__, actor=user, verb=verb, action_object=object, target=matter)
-
-        return super(_CreateActivityStreamActionMixin, self).render(data=data,
-                                                      accepted_media_type=accepted_media_type,
-                                                      renderer_context=renderer_context)

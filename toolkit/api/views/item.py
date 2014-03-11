@@ -8,7 +8,7 @@ from rest_framework import generics
 
 from toolkit.core.item.models import Item
 
-from .mixins import (MatterItemsQuerySetMixin, _CreateActivityStreamActionMixin)
+from .mixins import (MatterItemsQuerySetMixin,)
 
 from ..serializers import ItemSerializer
 

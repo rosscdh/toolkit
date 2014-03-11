@@ -38,6 +38,12 @@ class ReviewRevisionView(DetailView):
     def get_context_data(self, **kwargs):
         kwargs = super(ReviewRevisionView, self).get_context_data(**kwargs)
 
+        # test the file is present locally
+        if self.object.file_exists_locally is False:
+            # its not so download it locally so we can send the file to crocodoc
+            # and not deal with s3 permissions
+            self.object.download_if_not_exists()
+
         crocodoc = CrocoDocConnectService(document_object=self.object.document,
                                           app_label='attachment',
                                           field_name='executed_file',
