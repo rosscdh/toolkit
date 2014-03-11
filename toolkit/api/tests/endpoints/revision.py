@@ -75,7 +75,7 @@ class ItemRevisionTest(BaseEndpointTest):
         self.assertEqual(resp_json.get('name'), 'filename.txt')
         self.assertEqual(resp_json.get('description'), 'A test file')
         # we have a user_review_url
-        self.assertFalse(resp_json.get('user_review_url') == None)
+        self.assertTrue(resp_json.get('user_review_url') is not None)
         # it is the correct url for this specific user
         self.assertEqual(resp_json.get('user_review_url'), document_review.get_absolute_url(user=self.lawyer))
         # test date is present
