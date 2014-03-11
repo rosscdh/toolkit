@@ -348,8 +348,8 @@ angular.module('toolkit-gui')
 				var api = matterItemResource();
 
 				api.requestdocument({'matterSlug': matterSlug, 'itemSlug': itemSlug }, participant,
-					function success(){
-						deferred.resolve();
+					function success(response){
+						deferred.resolve(response);
 					},
 					function error(err) {
 						deferred.reject( err );

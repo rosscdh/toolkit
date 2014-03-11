@@ -25,8 +25,9 @@ angular.module('toolkit-gui')
 	'matterService',
 	'matterItemService',
 	'matterCategoryService',
+	'participantService',
 	'$timeout',
-	function($scope, $rootScope, $routeParams, smartRoutes, ezConfirm, toaster, $modal, matterService, matterItemService, matterCategoryService, $timeout){
+	function($scope, $rootScope, $routeParams, smartRoutes, ezConfirm, toaster, $modal, matterService, matterItemService, matterCategoryService, participantService, $timeout){
 		/**
 		 * Scope based data for the checklist controller
 		 * @memberof			ChecklistCtrl
@@ -149,8 +150,6 @@ angular.module('toolkit-gui')
 			$scope.data.showEditItemDescriptionForm = false;
 			$scope.data.showEditItemTitleForm = false;
             $scope.data.showPreviousRevisions = false;
-
-            console.log($scope.data.selectedItem);
 		};
 
 		/**
@@ -230,6 +229,47 @@ angular.module('toolkit-gui')
 				);
 			}
 		};
+
+
+        $scope.getParticipantByUrl = function (participanturl, showOnlyInitials){
+            if ($scope.data.loadedParticipants == null) {
+                $scope.data.loadedParticipants = {};
+            }
+
+            function printUser(participant){
+                if (showOnlyInitials === true && participant.initials != null && participant.initials.length>0) {
+                    return '(' + participant.initials + ')';
+                } else if (showOnlyInitials === true && participant.initials == null) {
+                    return '';
+                }
+
+                if (participant.last_name != null && participant.last_name.length >0) {
+                    return participant.first_name + ' ' + participant.last_name;
+                } else {
+                    return participant.email;
+                }
+            }
+
+            //only load user from api, if not already loaded
+            if (participanturl != null && $scope.data.loadedParticipants[participanturl] == null) {
+                $scope.data.loadedParticipants[participanturl] = {};
+
+                participantService.getByURL(participanturl).then(
+                    function success(participant){
+                        //store user in dict with url as key
+                        $scope.data.loadedParticipants[participanturl] = participant;
+                        return printUser(participant);
+                    },
+                    function error(err){
+                        return '';
+                    }
+                );
+            } else if (participanturl != null && $scope.data.loadedParticipants[participanturl] != null){
+                return printUser($scope.data.loadedParticipants[participanturl]);
+            } else {
+                return '';
+            }
+        };
 		/*** End item handling */
 
 		/*
@@ -609,17 +649,15 @@ angular.module('toolkit-gui')
 
 			modalInstance.result.then(
 				function ok(result) {
-					console.log(result);
-
                     var requestdata = {
-                        'responsible_party': {'username': result.username, 'email': result.email },
+                        'responsible_party': result.participant.url,
                         'note': result.message
                     };
-					console.log(requestdata);
 
                     matterItemService.requestRevision(matterSlug, item.slug, requestdata).then(
-							function success(){
-
+							function success(response){
+                                item.status = response.status;
+                                item.responsible_party = response.responsible_party;
 							},
 							function error(err){
 								toaster.pop('error', "Error!", "Unable to request a revision.");

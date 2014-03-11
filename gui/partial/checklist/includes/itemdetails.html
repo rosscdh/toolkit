@@ -37,13 +37,8 @@
     <!-- Begin option toolbar -->
     <div class="add-new">
         <div class="btn-group">
-<<<<<<< HEAD
-            <button class="btn btn-sm btn-info btn-embossed btn-add"><span class="fui-upload"></span>
-               Add File
-=======
             <button class="btn btn-sm btn-info btn-embossed btn-add" filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)"><span class="fui-upload"></span>
                 Add File
->>>>>>> master
             </button>
             <button class="btn btn-info btn-sm btn-embossed dropdown-toggle" data-toggle="dropdown">
             <span class="caret"></span>
@@ -83,7 +78,7 @@
     <!-- End option toolbar -->
 
     <div class="waiting-revision text-center" ng-show="data.selectedItem.status==1">
-        <span class="fui-time"></span> Waiting for a revision from Ross Crawford. <a href="javascript">Remind</a> <a class="close" href="#">x</a>
+        <span class="fui-time"></span> Waiting for a revision from <span ng-bind="getParticipantByUrl(data.selectedItem.responsible_party)"></span>. <a href="javascript:;">Remind</a> <a class="close" href="#">x</a>
     </div>
 
     <div class="item-help" ng-show="data.uploading">
@@ -153,7 +148,7 @@
         </li>
     </ul>
 
-    <div class="item-help" ng-hide="data.selectedItem.latest_revision||data.uploading">
+    <div class="item-help" ng-hide="data.selectedItem.latest_revision||data.uploading||data.selectedItem.status==1">
         <span class="fui-upload"></span>
         <h4>Upload a first revision</h4>
         Upload a first draft of this document. Move your mouse to the green upload bar at the top of this item to either upload a file or request one from another participant. You can also drag a document directly on a checklist item to add it as a revision.

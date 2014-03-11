@@ -114,7 +114,25 @@ angular.module('toolkit-gui')
 			var message = $scope.data.request.message;
 			var person = $scope.data.request.person&&$scope.data.request.person!==''?$scope.data.request.person:null;
 
-			$modalInstance.close( { 'email': email, 'message': message, 'username': person } );
+            if (email != null && email.length > 0) {
+                participantService.invite($scope.matter.slug, {'email':email}).then(
+                    function success(participant){
+                        $modalInstance.close( { 'participant': participant, 'message': message } );
+                    },
+                    function error(err){
+                        toaster.pop('error', "Error!", "Unable to invite participant");
+                    }
+                );
+            } else {
+                participantService.getByUsername(person).then(
+                    function success(participant){
+                        $modalInstance.close( { 'participant': participant, 'message': message } );
+                    },
+                    function error(err){
+                        toaster.pop('error', "Error!", "Unable to invite participant");
+                    }
+                );
+            }
 		};
 
 		/**
