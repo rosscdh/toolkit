@@ -81,6 +81,10 @@
         <span class="fui-time"></span> Waiting for a revision from Ross Crawford. <a href="javascript">Remind</a> <a class="close" href="#">x</a>
     </div>
 
+    <div class="item-help" ng-show="data.uploading">
+        <i class="fa fa-spinner fa-3x fa-spin"></i>
+    </div>
+
     <ul class="revisions list-unstyled" ng-show="data.selectedItem.latest_revision">
         <!-- Begin current revision -->
         <li class="header">Current Revision</li>
@@ -144,7 +148,7 @@
         </li>
     </ul>
 
-    <div class="item-help" ng-hide="data.selectedItem.latest_revision">
+    <div class="item-help" ng-hide="data.selectedItem.latest_revision||data.uploading">
         <span class="fui-upload"></span>
         <h4>Upload a first revision</h4>
         Upload a first draft of this document. Move your mouse to the green upload bar at the top of this item to either upload a file or request one from another participant. You can also drag a document directly on a checklist item to add it as a revision.

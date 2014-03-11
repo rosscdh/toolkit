@@ -369,17 +369,20 @@ angular.module('toolkit-gui')
 		$scope.processUpload = function( files, item ) {
 			var matterSlug = $scope.data.slug;
 			var itemSlug = item.slug;
+            $scope.data.uploading = true;
 
 			matterItemService.uploadRevision( matterSlug, itemSlug, files ).then(
 				function success( revision ) {
                     revision.uploaded_by = matterService.data().selected.current_user;
                     item.latest_revision = revision;
 
+                    $scope.data.uploading = false;
                     //Reset previous revisions
                     item.previousRevisions = null;
                     $scope.data.showPreviousRevisions = false;
 				},
 				function error(err) {
+                    $scope.data.uploading = false;
 					toaster.pop('error', "Error!", "Unable to upload revision");
 				}
 			);
@@ -607,7 +610,14 @@ angular.module('toolkit-gui')
 			modalInstance.result.then(
 				function ok(result) {
 					console.log(result);
-                    matterItemService.requestRevision(matterSlug, item.slug, result).then(
+
+                    var requestdata = {
+                        'responsible_party': {'username': result.username, 'email': result.email },
+                        'note': result.message
+                    };
+					console.log(requestdata);
+
+                    matterItemService.requestRevision(matterSlug, item.slug, requestdata).then(
 							function success(){
 
 							},
@@ -639,7 +649,13 @@ angular.module('toolkit-gui')
 				'templateUrl': '/static/ng/partial/view-document/view-document.html',
 				'controller': 'ViewDocumentCtrl',
 				'resolve': {
-					'data': function () {
+                    'matter': function () {
+						return $scope.data.matter;
+					},
+					'checklistItem': function () {
+						return $scope.data.selectedItem;
+					},
+					'revision': function () {
 						return revision;
 					}
 				}

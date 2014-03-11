@@ -10,8 +10,12 @@ angular.module('toolkit-gui')
 .controller('ViewDocumentCtrl',[
 	'$scope',
 	'$modalInstance',
-	'data',
-	function($scope, $modalInstance, data ){
+	'toaster',
+	'matterItemService',
+	'matter',
+	'checklistItem',
+	'revision',
+	function($scope, $modalInstance, toaster, matterItemService, matter, checklistItem, revision ){
 
 		/**
 		 * WIP
@@ -38,5 +42,47 @@ angular.module('toolkit-gui')
 		$scope.cancel = function () {
 			$modalInstance.dismiss('cancel');
 		};
+
+        /**
+		 * In scope variable containing details about the matter. This is passed through from the originating controller.
+		 * @memberof ViewDocumentCtrl
+		 * @type {Object}
+		 * @private
+		 */
+		$scope.matter = matter;
+
+		/**
+		 * In scope variable containing details about the specific checklist item, with which to make the request
+		 * @memberof ViewDocumentCtrl
+		 * @type {Object}
+		 * @private
+		 */
+		$scope.item = checklistItem;
+
+
+        /**
+		 * In scope variable containing details about the specific revision
+		 * @memberof ViewDocumentCtrl
+		 * @type {Object}
+		 * @private
+		 */
+		$scope.revision = revision;
+
+
+        /**
+		 * Get the reviewer url from the matterItemService
+		 * @memberof ViewDocumentCtrl
+		 * @private
+		*/
+        if($scope.revision != null && $scope.revision.user_review_url == null) {
+            matterItemService.loadRevision($scope.matter.slug, $scope.item.slug, $scope.revision.slug).then(
+                function success(revision){
+                    $scope.revision.user_review_url = revision.user_review_url;
+                },
+                function error(err){
+                    toaster.pop('error', "Error!", "Unable to load revision details");
+                }
+            );
+        }
 	}
 ]);
