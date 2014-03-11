@@ -167,7 +167,7 @@ angular.module('toolkit-gui')
                     'description': matterItem.description,
                     'date_due': matterItem.date_due,
                     'is_complete': matterItem.is_complete
-                }
+                };
 
 				api.update({'matterSlug': matterSlug }, updateFields,
 					function success(item){
@@ -276,7 +276,7 @@ angular.module('toolkit-gui')
                 var updateFields = {
                     'status': revisionItem.status,
                     'description': revisionItem.description
-                }
+                };
 
 				api.update({'matterSlug': matterSlug, 'itemSlug': itemSlug }, updateFields,
 					function success(item){
