@@ -12,7 +12,7 @@ from rest_framework import exceptions
 from rest_framework.response import Response
 from rest_framework import status as http_status
 
-from toolkit.apps.matter.signals import MATTER_ADD_PARTICIPANT
+from toolkit.apps.matter.signals import PARTICIPANT_ADDED
 from toolkit.apps.workspace.models import Workspace
 from toolkit.apps.workspace.services import EnsureCustomerService
 
@@ -66,7 +66,7 @@ class MatterParticipant(generics.CreateAPIView,
 
         if new_participant not in self.matter.participants.all():
             self.matter.participants.add(new_participant)
-            MATTER_ADD_PARTICIPANT.send(sender=self, matter=self.matter, user=new_participant)
+            PARTICIPANT_ADDED.send(sender=self, matter=self.matter, participant=new_participant, user=request.user)
 
         return Response(status=http_status.HTTP_202_ACCEPTED)
 

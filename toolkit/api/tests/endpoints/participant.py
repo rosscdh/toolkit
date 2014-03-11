@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.dispatch import Signal, receiver
 
-from toolkit.apps.matter.signals import MATTER_ADD_PARTICIPANT
+from toolkit.apps.matter.signals import PARTICIPANT_ADDED
 from toolkit.apps.workspace.models import Workspace
 
 from . import BaseEndpointTest
@@ -65,8 +65,8 @@ class MatterParticipantTest(BaseEndpointTest):
         """
         self.client.login(username=self.lawyer.username, password=self.password)
 
-        @receiver(MATTER_ADD_PARTICIPANT)
-        def f(matter, user, **kwargs):
+        @receiver(PARTICIPANT_ADDED)
+        def f(matter, participant, user, **kwargs):
             self.signal_called = True
 
         #
