@@ -77,8 +77,8 @@
     </div>
     <!-- End option toolbar -->
 
-    <div class="waiting-revision text-center">
-        <span class="fui-time"></span> Waiting for a revision from Ross Crawford. <a href="#">Remind</a> <a class="close" href="#">x</a>
+    <div class="waiting-revision text-center" ng-show="data.selectedItem.status==1">
+        <span class="fui-time"></span> Waiting for a revision from Ross Crawford. <a href="javascript">Remind</a> <a class="close" href="#">x</a>
     </div>
 
     <ul class="revisions list-unstyled" ng-show="data.selectedItem.latest_revision">
@@ -105,7 +105,7 @@
                 </div>
                 <div class="sub">{{ data.selectedItem.latest_revision.uploaded_by.name }}, {{ data.selectedItem.latest_revision.date_created | timeago }}</div>
                 <div class="tools">
-                    <a href="#" class="btn btn-link btn-xs"  data-toggle="modal" data-target="#viewDocumentModal">View</a>
+                    <a href="javascript:;" class="btn btn-link btn-xs"  data-toggle="modal" data-target="#viewDocumentModal" ng-click="showRevisionDocument(data.selectedItem.latest_revision)">View</a>
                     <a href="#" class="btn btn-link btn-xs" data-toggle="modal" data-target="#requestReviewModal">Request Review</a>
                     <div class="btn-group pull-right">
                         <button type="button" class="btn btn-default btn-xs status-{{ data.selectedItem.latest_revision.status }}" data-toggle="dropdown">
@@ -150,7 +150,7 @@
         Upload a first draft of this document. Move your mouse to the green upload bar at the top of this item to either upload a file or request one from another participant. You can also drag a document directly on a checklist item to add it as a revision.
     </div>
 
-    <div class="item-help" ng-show="data.selectedItem.status==1">
+    <div class="item-help" ng-show="data.selectedItem.status==1&&!data.selectedItem.latest_revision">
         <span class="fui-time"></span>
         <h4>Waiting for a revision</h4>
         You have requested a revision from another user. Once they have supplied this revision you will be notified.

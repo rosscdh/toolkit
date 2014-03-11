@@ -46,7 +46,8 @@ angular.module('toolkit-gui')
 			return $resource( $rootScope.API_BASE_URL + 'matters/:matterSlug/items/:itemSlug', {}, {
 				'create': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'update': { 'method': 'PATCH', params:{'itemSlug':'@slug'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
-				'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
+				'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
+				'requestdocument': { 'method': 'PATCH', params:{'itemSlug':'@slug'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
 			});
 		}
 
@@ -313,6 +314,40 @@ angular.module('toolkit-gui')
 				var api = revisionItemResource();
 
 				api.delete({'matterSlug': matterSlug, 'itemSlug': itemSlug }, revisionItem,
+					function success(){
+						deferred.resolve();
+					},
+					function error(err) {
+						deferred.reject( err );
+					}
+				);
+
+				return deferred.promise;
+			},
+
+            /**
+			 * Requests the API to send a revision request to given participant.
+			 *
+			 * @name				deleteRevision
+			 * @param {String}      matterSlug    Database slug, used as a unquie idenitfier for a matter.
+			 * @param {String}      itemSlug      Database slug, used as a unquie identifier for a checklist item.
+			 * @param {Object}      participant   Dictionary consisting of email, message, username
+			 *
+			 * @example
+		 	 * matterItemService.requestRevision( 'myMatterName', 'myItemName', {} );
+			 *
+			 * @public
+			 * @method				requestRevision
+			 * @memberof			matterItemService
+			 *
+			 * @return {Promise}
+		 	 */
+	        'requestRevision': function ( matterSlug, itemSlug, participant  ) {
+				var deferred = $q.defer();
+
+				var api = revisionItemResource();
+
+				api.request({'matterSlug': matterSlug, 'itemSlug': itemSlug }, participant,
 					function success(){
 						deferred.resolve();
 					},
