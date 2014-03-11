@@ -27,3 +27,36 @@ def on_activity_received(sender, **kwargs):
     if actor and verb and action_object and target:
         # send to django-activity-stream
         action.send(actor, **kwargs)
+
+
+# signal handlers for post_save:
+
+
+def on_workspace_post_save(sender, instance, created, **kwargs):
+    """
+        The owning lawyer is the only one who can create, modify or delete the workspace, so this is possible.
+    """
+    if created:
+        information_dict = dict(
+            actor=instance.lawyer,
+            verb=u'created',
+            action_object=instance,
+            target=instance,
+            ip='127.0.0.1'
+        )
+        send_activity_log.send(sender, **information_dict)
+
+
+def on_item_post_save(sender, instance, created, **kwargs):
+    """
+        ATTENTION: actor is set wrong! Just for testing.
+    """
+    if created:
+        information_dict = dict(
+            actor=instance.matter.lawyer,
+            verb=u'created',
+            action_object=instance,
+            target=instance.matter,
+            ip='127.0.0.1'
+        )
+        send_activity_log.send(sender, **information_dict)

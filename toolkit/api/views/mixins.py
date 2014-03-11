@@ -82,19 +82,20 @@ class SpecificAttributeMixin(object):
         return getattr(self.object, self.specific_attribute, None)
 
 
-class _CreateActionMixin(BaseRenderer):
+class _CreateActivityStreamActionMixin(BaseRenderer):
     """
     mixin that sends relevant information to django-activitiy-stream signal
     """
     def render(self, data, accepted_media_type=None, renderer_context=None):
         if data is not None:
-            # get_meta_method = getattr(renderer_context.get('view'), 'get_meta', None)
-            method = getattr(renderer_context.get('request'), 'method', None)
-            user = getattr(renderer_context.get('request'), 'user', None)
-            matter = getattr(renderer_context.get('view'), 'matter', None)
-            object = getattr(renderer_context.get('view'), 'object', None)
+            view = getattr(renderer_context.get('view'))
+            request = getattr(renderer_context.get('request'))
+            method = request.get('method', None)
+            user = request.get('user', None)
+            matter = view.get('matter', None)
+            object = view.get('object', None)
 
-            if user and method and object and matter:
+            if all(user, method, object, matter):
                 # TODO: look for action from djangorestframework instead of HTTP method
                 if method == 'POST':
                     verb = u'created'
@@ -106,6 +107,6 @@ class _CreateActionMixin(BaseRenderer):
                 if verb:
                     send_activity_log.send(self.__class__, actor=user, verb=verb, action_object=object, target=matter)
 
-        return super(_CreateActionMixin, self).render(data=data,
+        return super(_CreateActivityStreamActionMixin, self).render(data=data,
                                                       accepted_media_type=accepted_media_type,
                                                       renderer_context=renderer_context)

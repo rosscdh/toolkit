@@ -6,7 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import post_save
 
 from toolkit.core.mixins import IsDeletedMixin
-from toolkit.core.signals import send_activity_log
+from toolkit.core.signals import send_activity_log, on_workspace_post_save
 
 from toolkit.utils import _class_importer
 
@@ -76,22 +76,7 @@ class Workspace(IsDeletedMixin, ClosingGroupsMixin, CategoriesMixin, models.Mode
     def can_delete(self, user):
         return user.profile.is_lawyer and (user == self.lawyer or user in self.participants.all())
 
-
-def on_workspace_post_save(sender, instance, created, **kwargs):
-    """
-        The owning lawyer is the only one who can create, modify or delete the workspace, so this is possible.
-    """
-    if created:
-        information_dict = dict(
-            actor=instance.lawyer,
-            verb=u'created',
-            action_object=instance,
-            target=instance,
-            ip='127.0.0.1'
-        )
-        send_activity_log.send(sender, **information_dict)
 post_save.connect(on_workspace_post_save, sender=Workspace)
-
 
 rulez_registry.register("can_read", Workspace)
 rulez_registry.register("can_edit", Workspace)

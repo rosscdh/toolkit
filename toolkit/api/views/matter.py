@@ -20,8 +20,7 @@ from toolkit.apps.workspace.services import EnsureCustomerService
 
 from .mixins import (MatterMixin,
                      _MetaJSONRendererMixin,
-                     SpecificAttributeMixin,
-                     _CreateActionMixin,)
+                     SpecificAttributeMixin,)
 
 from .revision import ItemCurrentRevisionView
 
