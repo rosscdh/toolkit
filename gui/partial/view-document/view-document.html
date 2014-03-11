@@ -1,9 +1,9 @@
 <div class="modal-content">
 	<div class="modal-header">
-		<h3>I'm a modal!</h3>
+		<h4 class="modal-title" ng-bind="revision.name"></h4>
 	</div>
 	<div class="modal-body">
-		<p>Hello</p>
+		<iframe src="{{ revision.user_review_url }}" style="width: 100%; height: 500px;"></iframe>
 	</div>
 	<div class="modal-footer">
 		<button class="btn btn-primary" ng-click="ok()">OK</button>

@@ -43,11 +43,11 @@ angular.module('toolkit-gui')
 		 * @return {Function}   $resource
 		 */
 		function matterItemResource() {
-			return $resource( $rootScope.API_BASE_URL + 'matters/:matterSlug/items/:itemSlug', {}, {
+			return $resource( $rootScope.API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/:action', {}, {
 				'create': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'update': { 'method': 'PATCH', params:{'itemSlug':'@slug'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
-				'requestdocument': { 'method': 'PATCH', params:{'itemSlug':'@slug'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
+				'requestdocument': { 'method': 'PATCH', params:{'action':'request_document'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
 			});
 		}
 
@@ -345,9 +345,9 @@ angular.module('toolkit-gui')
 	        'requestRevision': function ( matterSlug, itemSlug, participant  ) {
 				var deferred = $q.defer();
 
-				var api = revisionItemResource();
+				var api = matterItemResource();
 
-				api.request({'matterSlug': matterSlug, 'itemSlug': itemSlug }, participant,
+				api.requestdocument({'matterSlug': matterSlug, 'itemSlug': itemSlug }, participant,
 					function success(){
 						deferred.resolve();
 					},
