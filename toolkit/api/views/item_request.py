@@ -2,16 +2,17 @@
 from toolkit.apps.workspace.services import EnsureCustomerService
 
 from ..serializers import MatterSerializer
-from .item import MatterItemsView
+from .item import MatterItemView
 
 
-class ItemRequestRevisionView(MatterItemsView):
+class ItemRequestRevisionView(MatterItemView):
     """
     An item can be created that allows a request to be sent
     to the item.responsible_party user
     must also have a status of:
     (1, 'awaiting_document', 'Awaiting Document'),
     """
+    http_method_names = ('get', 'patch',)
     note = None  # provided by requesting party and added to item.data json obj
 
     def get_queryset(self):
@@ -21,25 +22,23 @@ class ItemRequestRevisionView(MatterItemsView):
         qs = super(ItemRequestRevisionView, self).get_queryset()
         return qs.filter(status=self.model.ITEM_STATUS.awaiting_document)
 
-    def get_serializer(self, **kwargs):
+    def get_serializer(self, instance, data=None,
+                       files=None, many=False, partial=False):
         """
         Remove the note from the data to be validated but use it again in 
         pre_save add it to the data
         """
-        data = kwargs.get('data', {})
         #
         # Save the note for later
         #
-        self.note = data.pop('note', None)
+        self.note = data.pop('note', None) if data is not None else None
+
         # add the item name if not present
-        data.update({
-            'matter': MatterSerializer(self.matter, context={'request': self.request}).data.get('url'),
-            'name': kwargs.get('name', 'Requested a document'),
-        })
+        instance.matter = self.matter
+        instance.name = '%s (Requested document)' % instance.name if instance.name not in [None, ''] else 'Requested document'
 
-        kwargs.update({'data': data})
-
-        return super(ItemRequestRevisionView, self).get_serializer(**kwargs)
+        return super(ItemRequestRevisionView, self).get_serializer(instance=instance, data=data,
+                                                                   files=files, many=many, partial=partial)
 
     def responsible_party(self, obj):
         service = EnsureCustomerService(username=username, full_name=None)
