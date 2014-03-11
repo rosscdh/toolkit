@@ -93,6 +93,7 @@ class Revision(models.Model):
     def previous(self):
         return self.revisions.filter(pk__lt=self.pk).first()
 
+
 post_save.connect(on_revision_post_save, sender=Revision)
 
 
