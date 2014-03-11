@@ -8,7 +8,8 @@ angular.module('toolkit-gui', [
     'ngAnimate',
     'ngResource',
     'btford.markdown',
-    'monospaced.elastic'
+    'monospaced.elastic',
+    'angularFileUpload'
 ]);
 
 angular.module('toolkit-gui').config(function($routeProvider) {

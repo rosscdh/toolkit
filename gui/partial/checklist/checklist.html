@@ -4,95 +4,99 @@
 			<div class="col-sm-5 checklist-col full">
 				<!-- add new category //-->
 				<a href="javascript:;" ng-click="data.showCategoryAddForm=!data.showCategoryAddForm;focus('eventAddCategory')">New Category</a>
-	            <table class="table checklist" ng-show="data.showCategoryAddForm">
-	                 <tr class="add-new-controls warning">
-			              	<td colspan="2">
-			              		<div class="input-group">
-					          	    <input class="form-control input-sm" id="appendedInputButton-03" type="search" placeholder="Enter category name and press enter"
-	                                       ng-model="data.newCatName" ng-enter="submitNewCategory()" ng-blur="data.showCategoryAddForm=false" focus-on="eventAddCategory">
-					          	    <div class="input-group-btn">
-					          	    </div>
-					          	</div>
-			              	</td>
-			             </tr>
-	            </table>
+				<table class="table checklist" ng-show="data.showCategoryAddForm">
+					 <tr class="add-new-controls warning">
+							<td colspan="2">
+								<div class="input-group">
+									<input class="form-control input-sm" id="appendedInputButton-03" type="search" placeholder="Enter category name and press enter"
+										   ng-model="data.newCatName" ng-enter="submitNewCategory()" ng-blur="data.showCategoryAddForm=false" focus-on="eventAddCategory">
+									<div class="input-group-btn">
+									</div>
+								</div>
+							</td>
+						 </tr>
+				</table>
 
 				<div ui-sortable="checklistCategorySortableOptions" ng-model="data.categories">
 
 				<!-- checklist //-->
 				<table class="table checklist" ng-repeat="cat in data.categories">
 					<thead>
-                         <tr>
-			                <th colspan="1" class="col-sm-6 category">
-                                <span ng-bind="cat.name" ng-hide="data.showEditCategoryForm==$index"></span>
-                                <input class="form-control input-sm" ng-show="data.showEditCategoryForm==$index" type="search"
-                                       ng-model="data.newCategoryName" ng-enter="editCategory(cat)" ng-blur="data.showEditCategoryForm=false" focus-on="eventEditCategorytitle-{{$index}}">
-                            </th>
-			              	<th class="category-controls">
-			              		<!-- TODO : make these buttons appear when the tbody appears-->
+						 <tr>
+							<th colspan="1" class="col-sm-6 category">
+								<span ng-bind="cat.name" ng-hide="data.showEditCategoryForm==$index"></span>
+								<input class="form-control input-sm" ng-show="data.showEditCategoryForm==$index" type="search"
+									   ng-model="data.newCategoryName" ng-enter="editCategory(cat)" ng-blur="data.showEditCategoryForm=false" focus-on="eventEditCategorytitle-{{$index}}">
+							</th>
+							<th class="category-controls">
+								<!-- TODO : make these buttons appear when the tbody appears-->
 								<div class="btn-group pull-right">
 										<button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown"><span class="fui-triangle-down"></span></button>
-						          	  	<ul class="dropdown-menu dropdown-inverse dropdown-small">
-						          	  		<li><a href="javascript:;" id="add-new" ng-click="showAddItemForm($index);">New Item</a></li>
-						                	<li><a href="javascript:;" ng-click="data.newCategoryName=cat.name;showEditCategoryForm($index);">Edit Category</a></li>
-						                	<li><a href="javascript:;" ng-click="deleteCategory(cat);">Delete Category</a></li>
-						              	</ul>
-					            </div>
-			              	</th>
-			             </tr>
+										<ul class="dropdown-menu dropdown-inverse dropdown-small">
+											<li><a href="javascript:;" id="add-new" ng-click="showAddItemForm($index);">New Item</a></li>
+											<li><a href="javascript:;" ng-click="data.newCategoryName=cat.name;showEditCategoryForm($index);">Edit Category</a></li>
+											<li><a href="javascript:;" ng-click="deleteCategory(cat);">Delete Category</a></li>
+										</ul>
+								</div>
+							</th>
+						 </tr>
 
-                         <tr class="add-new-controls warning" ng-show="data.showAddForm==$index">
-			              	<td colspan="2">
-			              		<div class="input-group">
-					          	  	<input class="form-control input-sm" id="appendedInputButton-03" type="search" placeholder="Enter item name and press enter"
-                                           ng-model="data.newItemName" ng-enter="submitNewItem(cat)" ng-blur="data.showAddForm=null" focus-on="eventNewItem-{{$index}}">
-					          	  	<div class="input-group-btn">
-					          	    	<button class="btn btn-link  dropdown-toggle input-sm" type="button" data-toggle="dropdown"><span class="fui-gear"></span></button>
-						          	  	<ul class="dropdown-menu dropdown-inverse dropdown-small">
-						                	<li><a href="#fakelink">Set closing group</a></li>
-						                	<li><a href="#fakelink">Set description</a></li>
-						                	<li><a href="#fakelink">Set due date</a></li>
-						              	</ul>
-					          	  </div>
-					          	</div>
-			              	</td>
-			             </tr>
-			        </thead>
-			        <tbody ui:sortable="checklistItemSortableOptions" ng:model="cat.items" class="group">
-			             <tr class="item-heading" ng-repeat="item in cat.items" ng-click="selectItem(item, cat)"
-                             ng-class="{ 'item-closed': item.is_complete, 'item-open': !item.is_complete, 'selected': item.slug===data.selectedItem.slug }">
-			                <td class="item-title">
-			                	<span class="fui-list-columned"></span>
-			                	<span ng-bind="item.name"></span>
-			                </td>
+						 <tr class="add-new-controls warning" ng-show="data.showAddForm==$index">
+							<td colspan="2">
+								<div class="input-group">
+									<input class="form-control input-sm" id="appendedInputButton-03" type="search" placeholder="Enter item name and press enter"
+										   ng-model="data.newItemName" ng-enter="submitNewItem(cat)" ng-blur="data.showAddForm=null" focus-on="eventNewItem-{{$index}}">
+									<div class="input-group-btn">
+										<button class="btn btn-link  dropdown-toggle input-sm" type="button" data-toggle="dropdown"><span class="fui-gear"></span></button>
+										<ul class="dropdown-menu dropdown-inverse dropdown-small">
+											<li><a href="#fakelink">Set closing group</a></li>
+											<li><a href="#fakelink">Set description</a></li>
+											<li><a href="#fakelink">Set due date</a></li>
+										</ul>
+								  </div>
+								</div>
+							</td>
+						 </tr>
+					</thead>
+					<tbody ui:sortable="checklistItemSortableOptions" ng:model="cat.items" class="group">
+						 <tr class="item-heading" ng-repeat="item in cat.items" ng-click="selectItem(item, cat)"
+							 ng-class="{ 'item-closed': item.is_complete, 'item-open': !item.is_complete, 'selected': item.slug===data.selectedItem.slug }"
+							 ng-file-drop="onFileDropped($files, item, this);selectItem(item, cat);" ng-file-drag-over-class="optional-css-class">
+							<td class="item-title">
+								<div class="progress progress-striped active">
+									<div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{item.uploadingPercent}}%;"></div>
+								</div>
+								<span class="fui-list-columned"></span>
+								<span ng-bind="item.name"></span>
+							</td>
 
-			                <td class="status text-right" ng-hide="item.is_complete">
-                                <button disabled="" class="btn btn-xs doc-status-{{ item.latest_revision.status }}" ng-show="item.latest_revision.status>0">
-                                   {{ data.matter._meta.revision.status | valueforkey:item.latest_revision.status }}
-                                </button>
-			                	<button class="btn btn-xs {{ item.date_due | duestatus }}" ng-show="item.date_due" disabled>{{ item.date_due | date:'dd MMM' }}</button>
-			                </td>
-                            <td class="status text-right" ng-show="item.is_complete">
-			                	<span class="fui-check-inverted"></span>
-			                </td>
-			             </tr>
-			        </tbody>
-		          </table>
-		          </div>
+							<td class="status text-right" ng-hide="item.is_complete">
+								<button disabled="" class="btn btn-xs doc-status-{{ item.latest_revision.status }}" ng-show="item.latest_revision.status>0">
+								   {{ data.matter._meta.revision.status | valueforkey:item.latest_revision.status }}
+								</button>
+								<button class="btn btn-xs {{ item.date_due | duestatus }}" ng-show="item.date_due" disabled>{{ item.date_due | date:'dd MMM' }}</button>
+							</td>
+							<td class="status text-right" ng-show="item.is_complete">
+								<span class="fui-check-inverted"></span>
+							</td>
+						 </tr>
+					</tbody>
+				  </table>
+				  </div>
 				<!-- end checklist //-->
 			</div>
 			<div class="col-sm-7 item spa full">
 				<div class="row full">
 
-                    <!-- begin item details //-->
-                    <!-- @TODO Make the URL dynamic -->
+					<!-- begin item details //-->
+					<!-- @TODO Make the URL dynamic -->
 					<div class="col-sm-7" ng-include="'/static/ng/partial/checklist/includes/itemdetails.html'"></div>
-                    <!-- end item details //-->
+					<!-- end item details //-->
 
-                    <!-- chat //-->
-                    <!-- @TODO Make the URL dynamic -->
+					<!-- chat //-->
+					<!-- @TODO Make the URL dynamic -->
 					<div class="col-sm-5 chat full" ng-include="'/static/ng/partial/checklist/includes/itemchat.html'"></div>
-                    <!-- end: chat //-->
+					<!-- end: chat //-->
 				</div>
 			</div>
 		</div>
