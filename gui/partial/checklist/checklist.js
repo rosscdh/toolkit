@@ -117,7 +117,7 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
 		$scope.submitNewItem = function(category) {
-           var matterSlug = $scope.data.slug;
+		   var matterSlug = $scope.data.slug;
 
 		   if ($scope.data.newItemName) {
 			 matterItemService.create(matterSlug, $scope.data.newItemName, category.name).then(
@@ -148,9 +148,9 @@ angular.module('toolkit-gui')
 			//Reset controls
 			$scope.data.showEditItemDescriptionForm = false;
 			$scope.data.showEditItemTitleForm = false;
-            $scope.data.showPreviousRevisions = false;
+			$scope.data.showPreviousRevisions = false;
 
-            console.log($scope.data.selectedItem.latest_revision);
+			console.log($scope.data.selectedItem.latest_revision);
 		};
 
 		/**
@@ -162,7 +162,7 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
 		$scope.deleteItem = function() {
-            var matterSlug = $scope.data.slug;
+			var matterSlug = $scope.data.slug;
 
 			if ($scope.data.selectedItem) {
 				ezConfirm.create('Delete Item', 'Please confirm you would like to delete this item?',
@@ -200,7 +200,7 @@ angular.module('toolkit-gui')
 		$scope.showAddItemForm = function(index) {
 			if ($scope.data.showAddForm !== index) {
 				$scope.data.showAddForm = index;
-                $scope.focus('eventNewItem-'+index);
+				$scope.focus('eventNewItem-'+index);
 			}
 			else {
 				$scope.data.showAddForm = null;
@@ -217,7 +217,7 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
 		$scope.saveSelectedItem = function () {
-            var matterSlug = $scope.data.slug;
+			var matterSlug = $scope.data.slug;
 
 			if ($scope.data.selectedItem) {
 				matterItemService.update(matterSlug, $scope.data.selectedItem).then(
@@ -238,7 +238,7 @@ angular.module('toolkit-gui')
 		| |   | |_) | | | | | | | | |   / _` | __/ _ \/ _` |/ _ \| '__| | | |
 		| |___|  _ <| |_| | |_| | | |__| (_| | ||  __/ (_| | (_) | |  | |_| |
 		 \____|_| \_\\___/|____/   \____\__,_|\__\___|\__, |\___/|_|   \__, |
-		                                              |___/            |___/ 
+													  |___/            |___/ 
 		 */ 
 		/**
 		 * Return item due status
@@ -250,20 +250,20 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
 		$scope.submitNewCategory = function() {
-            var matterSlug = $scope.data.slug;
+			var matterSlug = $scope.data.slug;
 
-            if ($scope.data.newCatName) {
-                matterCategoryService.create(matterSlug, $scope.data.newCatName).then(
-                    function success(){
-                        $scope.data.categories.unshift({'name': $scope.data.newCatName, 'items': []});
-                        $scope.data.newCatName = '';
-                    },
-                    function error(err){
-                        toaster.pop('error', "Error!", "Unable to create a new category");
-                    }
-                );
-                $scope.data.showCategoryAddForm = null;
-            }
+			if ($scope.data.newCatName) {
+				matterCategoryService.create(matterSlug, $scope.data.newCatName).then(
+					function success(){
+						$scope.data.categories.unshift({'name': $scope.data.newCatName, 'items': []});
+						$scope.data.newCatName = '';
+					},
+					function error(err){
+						toaster.pop('error', "Error!", "Unable to create a new category");
+					}
+				);
+				$scope.data.showCategoryAddForm = null;
+			}
 		};
 
 		/**
@@ -278,15 +278,15 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
 		$scope.deleteCategory = function(cat) {
-            var matterSlug = $scope.data.slug;
+			var matterSlug = $scope.data.slug;
 
 			matterCategoryService.delete(matterSlug, cat).then(
 				function success(){
-                    var index = jQuery.inArray( cat, $scope.data.categories );
-                    if( index>=0 ) {
-                        // Remove item from in RAM array
-					    $scope.data.categories.splice(index,1);
-                    }
+					var index = jQuery.inArray( cat, $scope.data.categories );
+					if( index>=0 ) {
+						// Remove item from in RAM array
+						$scope.data.categories.splice(index,1);
+					}
 
 
 					if (cat === $scope.data.selectedCategory){
@@ -313,7 +313,7 @@ angular.module('toolkit-gui')
 		$scope.showEditCategoryForm = function(index) {
 			if ($scope.data.showEditCategoryForm !== index) {
 				$scope.data.showEditCategoryForm = index;
-                $scope.focus('eventEditCategorytitle-'+index);
+				$scope.focus('eventEditCategorytitle-'+index);
 			}
 			else {
 				$scope.data.showEditCategoryForm = null;
@@ -332,7 +332,7 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
 		$scope.editCategory = function(cat) {
-            var matterSlug = $scope.data.slug;
+			var matterSlug = $scope.data.slug;
 
 			matterCategoryService.update(matterSlug, cat.name, $scope.data.newCategoryName).then(
 				function success(){
@@ -352,10 +352,10 @@ angular.module('toolkit-gui')
 		| |_) / _ \ \ / / / __| |/ _ \| '_ \ 
 		|  _ <  __/\ V /| \__ \ | (_) | | | |
 		|_| \_\___| \_/ |_|___/_|\___/|_| |_|
-		                                     
+											 
 		 */
 
-        /**
+		/**
 		 * Recieves file details from filepicker.io directive
 		 *
 		 * @name 				processUpload
@@ -372,15 +372,43 @@ angular.module('toolkit-gui')
 
 			matterItemService.uploadRevision( matterSlug, itemSlug, files ).then(
 				function success( revision ) {
-                    revision.uploaded_by = matterService.data().selected.current_user;
-                    item.latest_revision = revision;
+					revision.uploaded_by = matterService.data().selected.current_user;
+					item.latest_revision = revision;
 
-                    //Reset previous revisions
-                    item.previousRevisions = null;
-                    $scope.data.showPreviousRevisions = false;
+					//Reset previous revisions
+					item.previousRevisions = null;
+					$scope.data.showPreviousRevisions = false;
 				},
 				function error(err) {
 					toaster.pop('error', "Error!", "Unable to upload revision");
+				}
+			);
+		};
+
+		/**
+		 * Initiate the file upload process
+		 * @param  {Array} $files HTML5 files object
+		 * @param  {Object} item   Matter checklist item object
+		 */
+		$scope.onFileDropped = function( $files, item ) {
+			var matterSlug = $scope.data.slug;
+			var itemSlug = item.slug;
+
+			matterItemService.uploadRevisionFile( matterSlug, itemSlug, $files ).then(
+				function success( revision ) {
+					revision.uploaded_by = matterService.data().selected.current_user;
+					item.latest_revision = revision;
+
+					//Reset previous revisions
+					item.previousRevisions = null;
+					$scope.data.showPreviousRevisions = false;
+					item.uploadingPercent = 0;
+				},
+				function error(err) {
+					toaster.pop('error', "Error!", "Unable to upload revision");
+				},
+				function progress( num ) {
+					item.uploadingPercent = num;
 				}
 			);
 		};
@@ -394,8 +422,8 @@ angular.module('toolkit-gui')
 		 * @method				saveLatestRevision
 		 * @memberof			ChecklistCtrl
 		 */
-        $scope.saveLatestRevision = function () {
-            var matterSlug = $scope.data.slug;
+		$scope.saveLatestRevision = function () {
+			var matterSlug = $scope.data.slug;
 			var item = $scope.data.selectedItem;
 
 			if (item && item.latest_revision) {
@@ -421,44 +449,44 @@ angular.module('toolkit-gui')
 		 * @method				deleteLatestRevision
 		 * @memberof			ChecklistCtrl
 		 */
-         $scope.deleteLatestRevision = function () {
-            var matterSlug = $scope.data.slug;
+		 $scope.deleteLatestRevision = function () {
+			var matterSlug = $scope.data.slug;
 			var item = $scope.data.selectedItem;
 
 			if (item && item.latest_revision) {
-                ezConfirm.create('Delete Revision', 'Please confirm you would like to delete this revision?',
+				ezConfirm.create('Delete Revision', 'Please confirm you would like to delete this revision?',
 					function yes() {
-                        matterItemService.deleteRevision(matterSlug, item.slug, $scope.data.selectedItem.latest_revision).then(
-                            function success(){
-                                //Set latest prev Revision as current if existing
-                                if(item.latest_revision.revisions != null && item.latest_revision.revisions.length>0){
-                                    //First revision in array is the latest one
-                                    matterItemService.loadRevision(matterSlug, item.slug, item.latest_revision[0]).then(
-                                        function success(revision){
-                                            item.latest_revision = revision;
-                                        },
-                                        function error(err){
-                                            toaster.pop('error', "Error!", "Unable to set new current revision");
-                                        }
-                                    );
-                                } else {
-                                    item.latest_revision = null;
-                                }
+						matterItemService.deleteRevision(matterSlug, item.slug, $scope.data.selectedItem.latest_revision).then(
+							function success(){
+								//Set latest prev Revision as current if existing
+								if(item.latest_revision.revisions != null && item.latest_revision.revisions.length>0){
+									//First revision in array is the latest one
+									matterItemService.loadRevision(matterSlug, item.slug, item.latest_revision[0]).then(
+										function success(revision){
+											item.latest_revision = revision;
+										},
+										function error(err){
+											toaster.pop('error', "Error!", "Unable to set new current revision");
+										}
+									);
+								} else {
+									item.latest_revision = null;
+								}
 
-                                //Reset previous revisions
-                                item.previousRevisions = null;
-                                $scope.data.showPreviousRevisions = false;
-                            },
-                            function error(err){
-                                toaster.pop('error', "Error!", "Unable to delete revision");
-                            }
-                        );
-                    }
-                );
+								//Reset previous revisions
+								item.previousRevisions = null;
+								$scope.data.showPreviousRevisions = false;
+							},
+							function error(err){
+								toaster.pop('error', "Error!", "Unable to delete revision");
+							}
+						);
+					}
+				);
 			}
 		};
 
-        /**
+		/**
 		 * Request API to get all previous revisions of the item
 		 *
 		 * @name 				loadPreviousRevisions
@@ -467,45 +495,45 @@ angular.module('toolkit-gui')
 		 * @method				loadPreviousRevisions
 		 * @memberof			ChecklistCtrl
 		 */
-         $scope.loadPreviousRevisions = function () {
-            var matterSlug = $scope.data.slug;
+		 $scope.loadPreviousRevisions = function () {
+			var matterSlug = $scope.data.slug;
 			var item = $scope.data.selectedItem;
 
-            function SortDescendingByCreationDate(a, b){
-                var aDate = moment(a.date_created, "YYYY-MM-DDTHH:mm:ss.SSSZ");
-                var bDate = moment(b.date_created, "YYYY-MM-DDTHH:mm:ss.SSSZ");
-                return (aDate < bDate) ? 1 : -1;
-            }
+			function SortDescendingByCreationDate(a, b){
+				var aDate = moment(a.date_created, "YYYY-MM-DDTHH:mm:ss.SSSZ");
+				var bDate = moment(b.date_created, "YYYY-MM-DDTHH:mm:ss.SSSZ");
+				return (aDate < bDate) ? 1 : -1;
+			}
 
-            if (item && item.previousRevisions) {
-                //show the revisions from the local storage
-            }
-            else if (item && item.latest_revision && item.latest_revision.revisions) {
-                if (item.previousRevisions == null) {
-                    item.previousRevisions = [];
-                }
+			if (item && item.previousRevisions) {
+				//show the revisions from the local storage
+			}
+			else if (item && item.latest_revision && item.latest_revision.revisions) {
+				if (item.previousRevisions == null) {
+					item.previousRevisions = [];
+				}
 
-                jQuery.each( item.latest_revision.revisions, function( index, revurl ){
-                    var revslug = revurl.substring(revurl.lastIndexOf('/')+1, revurl.length);
+				jQuery.each( item.latest_revision.revisions, function( index, revurl ){
+					var revslug = revurl.substring(revurl.lastIndexOf('/')+1, revurl.length);
 
 					matterItemService.loadRevision(matterSlug, item.slug, revslug).then(
-                        function success(revision){
-                            //store revisisions locally
-                            item.previousRevisions.unshift(revision);
-                            //Sort array
-                            item.previousRevisions.sort(SortDescendingByCreationDate);
-                        },
-                        function error(err){
-                            toaster.pop('error', "Error!", "Unable to load previous revision");
-                        }
-                    );
+						function success(revision){
+							//store revisisions locally
+							item.previousRevisions.unshift(revision);
+							//Sort array
+							item.previousRevisions.sort(SortDescendingByCreationDate);
+						},
+						function error(err){
+							toaster.pop('error', "Error!", "Unable to load previous revision");
+						}
+					);
 				});
 			}
-            $scope.data.showPreviousRevisions = true;
+			$scope.data.showPreviousRevisions = true;
 		};
-        /* End revision handling */
+		/* End revision handling */
 
-        /**
+		/**
 		 * Called when dropping (after dragging) a checklist items or checklist categories.
 		 * This method is responsible for getting the order of items within each categry formatted in a way that the API will beable to save the new order.  This medthod also initiates the request to the API to save the calculated order.
 		 * Based on https://github.com/angular-ui/ui-sortable (ui-sortable) and http://jqueryui.com/draggable/ (jQuery-ui-draggable).
@@ -620,11 +648,11 @@ angular.module('toolkit-gui')
 		 * @method				focus
 		 * @memberof			ChecklistCtrl
 		 */
-        $scope.focus = function(name) {
-            $timeout(function (){
-              $scope.$broadcast('focusOn', name);
-            }, 300);
-        };
+		$scope.focus = function(name) {
+			$timeout(function (){
+			  $scope.$broadcast('focusOn', name);
+			}, 300);
+		};
 
 		/**
 		 * UI.sortable options for checklist items
