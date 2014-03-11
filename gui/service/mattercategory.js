@@ -1,5 +1,4 @@
 var category;
-var matter;
 
 angular.module('toolkit-gui')
 /**
@@ -10,77 +9,76 @@ angular.module('toolkit-gui')
  * @param  {Function} $rootScope          Access to the root sccope
  * @param  {Function} anon                Controller function
  */
-.factory('matterCategoryService',[ '$q', '$resource', '$rootScope', function( $q, $resource, $rootScope) {
-	var token = { 'value': 'xyz' };
+.factory('matterCategoryService',[
+        '$q',
+        '$resource',
+        '$rootScope',
+        function( $q, $resource, $rootScope) {
+            var token = { 'value': 'xyz' };
 
-	function matterCategoryResource() {
-		return $resource( $rootScope.API_BASE_URL + 'matters/:matterSlug/category/:categorySlug', {'matterSlug':matter.slug}, {
-			'create': { 'method': 'POST', params:{'categorySlug':'@categorySlug'}, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } , 'isArray': true},
-            'update': { 'method': 'PATCH', params:{'categorySlug':'@categorySlug'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } , 'isArray': true},
-            'delete': { 'method': 'DELETE', params:{'categorySlug':'@categorySlug'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }, 'isArray': true}
-		});
-	}
+            function matterCategoryResource() {
+                return $resource( $rootScope.API_BASE_URL + 'matters/:matterSlug/category/:categorySlug', {}, {
+                    'create': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }, 'isArray': true},
+                    'update': { 'method': 'PATCH', params:{'categorySlug':'@categorySlug'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } , 'isArray': true},
+                    'delete': { 'method': 'DELETE', params:{'categorySlug':'@categorySlug'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }, 'isArray': true}
+                });
+            }
 
-	return {
-		'data': function() {
-			return category;
-		},
+            return {
+                'data': function() {
+                    return category;
+                },
 
-        'selectMatter': function( objMatter ) {
-			matter = objMatter;
-		},
+                'create': function ( matterSlug, categoryName ) {
+                    var deferred = $q.defer();
 
+                    var api = matterCategoryResource();
 
-        'create': function ( categoryName ) {
-            var deferred = $q.defer();
+                    api.create({'matterSlug': matterSlug, 'categorySlug': categoryName}, {},
+                        function success(){
+                            deferred.resolve();
+                        },
+                        function error(err) {
+                            deferred.reject( err );
+                        }
+                    );
 
-			var api = matterCategoryResource();
+                    return deferred.promise;
+                },
 
-			api.create({'categorySlug': categoryName},
-				function success(){
-					deferred.resolve();
-				},
-				function error(err) {
-					deferred.reject( err );
-				}
-			);
+                'update': function ( matterSlug, oldCategoryName, newCategoryName ) {
+                    var deferred = $q.defer();
 
-			return deferred.promise;
-        },
+                    var api = matterCategoryResource();
 
-        'update': function ( oldCategoryName, newCategoryName ) {
-            var deferred = $q.defer();
+                    api.update({'matterSlug': matterSlug, 'categorySlug': oldCategoryName}, {'category': newCategoryName },
+                        function success(category){
+                            deferred.resolve(category);
+                        },
+                        function error(err) {
+                            deferred.reject( err );
+                        }
+                    );
 
-			var api = matterCategoryResource();
+                    return deferred.promise;
+                },
 
-			api.update({'categorySlug': oldCategoryName}, {'category': newCategoryName },
-				function success(category){
-					deferred.resolve(category);
-				},
-				function error(err) {
-					deferred.reject( err );
-				}
-			);
+                'delete': function ( matterSlug, category ) {
+                    var deferred = $q.defer();
 
-			return deferred.promise;
-        },
+                    var api = matterCategoryResource();
 
-        'delete': function ( category ) {
-            var deferred = $q.defer();
+                    api.delete({'matterSlug': matterSlug, 'categorySlug': category.name},
+                        function success(){
+                            deferred.resolve();
+                        },
+                        function error(err) {
+                            deferred.reject( err );
+                        }
+                    );
 
-			var api = matterCategoryResource();
+                    return deferred.promise;
+                }
 
-			api.delete({'categorySlug': category.name},
-				function success(){
-					deferred.resolve();
-				},
-				function error(err) {
-					deferred.reject( err );
-				}
-			);
-
-			return deferred.promise;
-        }
-
-	};
+            };
 }]);

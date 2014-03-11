@@ -90,6 +90,9 @@ class MatterItemView(generics.UpdateAPIView,
     def get_serializer_context(self):
         return {'request': self.request}
 
+    def get_serializer_context(self):
+        return {'request': self.request}
+
     def can_read(self, user):
         return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
 

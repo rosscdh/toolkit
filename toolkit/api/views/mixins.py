@@ -9,10 +9,10 @@ from rest_framework.renderers import JSONRenderer, BaseRenderer
 from rest_framework.status import is_success
 
 from toolkit.core.item.models import Item
+from toolkit.core.signals import send_activity_log
 from toolkit.apps.workspace.models import Workspace
 
 import logging
-from toolkit.core.signals import send_activity_log
 
 logger = logging.getLogger('django.request')
 

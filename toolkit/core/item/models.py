@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from django.db import models
-from django.db.models.signals import post_save
 
-from toolkit.core.mixins import IsDeletedMixin, IsDeletedManager
-from toolkit.core.signals import send_activity_log
+from toolkit.core.mixins import IsDeletedMixin
+
 from toolkit.utils import get_namedtuple_choices
+
+from .managers import ItemManager
 
 from jsonfield import JSONField
 from uuidfield import UUIDField
@@ -53,7 +54,7 @@ class Item(IsDeletedMixin, models.Model):
     date_created = models.DateTimeField(auto_now=False, auto_now_add=True, db_index=True)
     date_modified = models.DateTimeField(auto_now=True, auto_now_add=True, db_index=True)
 
-    objects = IsDeletedManager()
+    objects = ItemManager()
 
     class Meta:
         ordering = ('sort_order',)
@@ -91,20 +92,20 @@ class Item(IsDeletedMixin, models.Model):
         return user.profile.is_lawyer and user in self.matter.participants.all()
 
 
-def on_workspace_post_save(sender, instance, created, **kwargs):
-    """
-        ATTENTION: actor is set wrong! Just for testing.
-    """
-    if created:
-        information_dict = dict(
-            actor=instance.matter.lawyer,
-            verb=u'created',
-            action_object=instance,
-            target=instance.matter,
-            ip='127.0.0.1'
-        )
-        send_activity_log.send(sender, **information_dict)
-post_save.connect(on_workspace_post_save, sender=Item)
+# def on_workspace_post_save(sender, instance, created, **kwargs):
+#     """
+#         ATTENTION: actor is set wrong! Just for testing.
+#     """
+#     if created:
+#         information_dict = dict(
+#             actor=instance.matter.lawyer,
+#             verb=u'created',
+#             action_object=instance,
+#             target=instance.matter,
+#             ip='127.0.0.1'
+#         )
+#         send_activity_log.send(sender, **information_dict)
+# post_save.connect(on_workspace_post_save, sender=Item)
 
 rulez_registry.register("can_read", Item)
 rulez_registry.register("can_edit", Item)

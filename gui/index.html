@@ -35,7 +35,6 @@
   <script src="/static/ng/bower_components/AngularJS-Toaster/toaster.js"></script>
   <script src="/static/ng/bower_components/ez-confirm/dist/ez-confirm.min.js"></script>
   <script src="/static/ng/bower_components/ez-confirm/dist/ez-confirm-tpl.js"></script>
-  <script src="/static/ng/bower_components/datejs/build/time.js"></script>
 
   <script type="text/javascript" src="//api.filepicker.io/v1/filepicker.js"></script>
 
@@ -51,6 +50,7 @@
   <script src="/static/ng/service/matterItem.js"></script>
   <script src="/static/ng/service/mattercategory.js"></script>
   <script src="/static/ng/service/participants.js"></script>
+  <script src="/static/ng/service/smartRoutes.js"></script>
   <!-- Add New Service JS Above -->
 
   <!-- Directive JS -->
@@ -61,6 +61,7 @@
   <!-- Filter JS -->
   <script src="/static/ng/filter/string.js"></script>
   <script src="/static/ng/filter/datetime.js"></script>
+  <script src="/static/ng/filter/dictionary.js"></script>
   <!-- Add New Filter JS Above -->
 
   <!-- Partial JS -->
@@ -81,10 +82,10 @@
     <div class="navbar-collapse collapse navbar-collapse-03">
       <ul class="nav navbar-nav" ng-show="matter.selected">
         <li id="checklist-nav" ng-class="{&apos;active&apos;: isActive(&apos;/checklist&apos;)}">
-          <a href="#/matter/{{matter.selected.slug}}/checklist">Checklist</a>
+          <a href="#/checklist">Checklist</a>
         </li>
         <li id="closing-nav" ng-class="{&apos;active&apos;: isActive(&apos;/closing&apos;)}">
-          <a ng-href="#/matter/{{matter.selected.slug}}/closing">Closing</a>
+          <a ng-href="#/closing">Closing</a>
         </li>
          
         <li class="checklist-members">
