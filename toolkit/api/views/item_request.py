@@ -15,12 +15,6 @@ class ItemRequestRevisionView(MatterItemView):
     http_method_names = ('get', 'patch',)
     note = None  # provided by requesting party and added to item.data json obj
 
-    def get_queryset(self):
-        """
-        Filter the default set of items by status = awaiting_document
-        """
-        qs = super(ItemRequestRevisionView, self).get_queryset()
-        return qs.filter(status=self.model.ITEM_STATUS.awaiting_document)
 
     def get_serializer(self, instance, data=None,
                        files=None, many=False, partial=False):
@@ -32,10 +26,6 @@ class ItemRequestRevisionView(MatterItemView):
         # Save the note for later
         #
         self.note = data.pop('note', None) if data is not None else None
-
-        # add the item name if not present
-        instance.matter = self.matter
-        instance.name = '%s (Requested document)' % instance.name if instance.name not in [None, ''] else 'Requested document'
 
         return super(ItemRequestRevisionView, self).get_serializer(instance=instance, data=data,
                                                                    files=files, many=many, partial=partial)

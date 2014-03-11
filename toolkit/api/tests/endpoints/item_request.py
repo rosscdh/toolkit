@@ -23,7 +23,7 @@ class ItemsRequestDocumentTest(BaseEndpointTest):
                                 matter=self.workspace,
                                 name='Test Item No. 1', # test that "(Requested document)" get appended
                                 responsible_party=self.user,
-                                status=Item.ITEM_STATUS.awaiting_document)
+                                status=0)
 
     @property
     def endpoint(self):
@@ -39,7 +39,7 @@ class ItemsRequestDocumentTest(BaseEndpointTest):
         self.assertEqual(resp.status_code, 200)
 
         json_data = json.loads(resp.content)
-        self.assertEqual(json_data['name'], u'%s (Requested document)' % self.item.name)
+        self.assertEqual(json_data['name'], self.item.name)
         # the user url is in the base
         # urls are different bcause the serializer here has no request object
         self.assertTrue(UserSerializer(self.user).data.get('url') in json_data['responsible_party'])
@@ -83,7 +83,7 @@ class ItemsRequestDocumentTest(BaseEndpointTest):
         self.assertEqual(resp.status_code, 200)
 
         json_data = json.loads(resp.content)
-        self.assertEqual(json_data['name'], u'%s (Requested document)' % self.item.name)
+        self.assertEqual(json_data['name'], self.item.name)
         # the user url is in the base
         # urls are different bcause the serializer here has no request object
         self.assertTrue(UserSerializer(self.user).data.get('url') in json_data['responsible_party'])
