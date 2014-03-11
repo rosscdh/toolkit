@@ -39,7 +39,6 @@ class MatterActivityEndpoint(generics.ListAPIView):
         return super(MatterActivityEndpoint, self).initialize_request(request, *args, **kwargs)
 
     def get_queryset(self):
-        import pdb;pdb.set_trace()
         return model_stream(self.model).filter(target_object_id=self.matter.pk)
 
     def can_read(self, user):

@@ -28,8 +28,6 @@ class ActivityStreamGetActionTest(BaseEndpointTest, LiveServerTestCase):
 
         resp = self.client.get(self.endpoint)
 
-        import pdb;pdb.set_trace()
-
         self.assertEqual(resp.status_code, 200)
         json_data = json.loads(resp.content)
 
