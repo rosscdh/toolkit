@@ -119,7 +119,7 @@ class MatterActionsSerializer(MatterSerializer):
     """
     action_object_actions = serializers.RelatedField(many=True)
     target_actions = serializers.RelatedField(many=True)
-    custom_stream_actions = serializers.RelatedField(many=True)
+    # custom_stream_actions = serializers.SerializerMethodField()    # add method with empty list
 
     class Meta(MatterSerializer.Meta):
-        fields = MatterSerializer.Meta.fields + ('action_object_actions', 'target_actions', 'custom_stream_actions')
+        fields = MatterSerializer.Meta.fields + ('action_object_actions', 'target_actions')#, 'custom_stream_actions')
