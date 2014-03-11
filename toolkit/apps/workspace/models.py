@@ -3,8 +3,10 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.db.models.loading import get_model
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models.signals import post_save
 
 from toolkit.core.mixins import IsDeletedMixin
+from toolkit.core.signals import send_activity_log, on_workspace_post_save
 
 from toolkit.utils import _class_importer
 
@@ -74,6 +76,7 @@ class Workspace(IsDeletedMixin, ClosingGroupsMixin, CategoriesMixin, models.Mode
     def can_delete(self, user):
         return user.profile.is_lawyer and (user == self.lawyer or user in self.participants.all())
 
+post_save.connect(on_workspace_post_save, sender=Workspace)
 
 rulez_registry.register("can_read", Workspace)
 rulez_registry.register("can_edit", Workspace)

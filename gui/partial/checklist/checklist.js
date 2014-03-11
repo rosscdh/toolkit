@@ -288,7 +288,6 @@ angular.module('toolkit-gui')
 						$scope.data.categories.splice(index,1);
 					}
 
-
 					if (cat === $scope.data.selectedCategory){
 						$scope.data.selectedItem = null;
 					}
@@ -532,6 +531,99 @@ angular.module('toolkit-gui')
 			$scope.data.showPreviousRevisions = true;
 		};
 		/* End revision handling */
+
+		/**
+		 * Request API to get all previous revisions of the item
+		 *
+		 * @name 				loadPreviousRevisions
+		 *
+		 * @private
+		 * @method				loadPreviousRevisions
+		 * @memberof			ChecklistCtrl
+		 */
+		 $scope.loadPreviousRevisions = function () {
+			var matterSlug = $scope.data.slug;
+			var item = $scope.data.selectedItem;
+
+			function SortDescendingByCreationDate(a, b){
+				var aDate = moment(a.date_created, "YYYY-MM-DDTHH:mm:ss.SSSZ");
+				var bDate = moment(b.date_created, "YYYY-MM-DDTHH:mm:ss.SSSZ");
+				return (aDate < bDate) ? 1 : -1;
+			}
+
+			if (item && item.previousRevisions) {
+				//show the revisions from the local storage
+			}
+			else if (item && item.latest_revision && item.latest_revision.revisions) {
+				if (item.previousRevisions == null) {
+					item.previousRevisions = [];
+				}
+
+				jQuery.each( item.latest_revision.revisions, function( index, revurl ){
+					var revslug = revurl.substring(revurl.lastIndexOf('/')+1, revurl.length);
+
+					matterItemService.loadRevision(matterSlug, item.slug, revslug).then(
+						function success(revision){
+							//store revisisions locally
+							item.previousRevisions.unshift(revision);
+							//Sort array
+							item.previousRevisions.sort(SortDescendingByCreationDate);
+						},
+						function error(err){
+							toaster.pop('error', "Error!", "Unable to load previous revision");
+						}
+					);
+				});
+			}
+			$scope.data.showPreviousRevisions = true;
+		};
+
+        /**
+		 * Request API to get all previous revisions of the item
+		 *
+		 * @name 				loadPreviousRevisions
+		 *
+		 * @private
+		 * @method				loadPreviousRevisions
+		 * @memberof			ChecklistCtrl
+		 */
+         $scope.loadPreviousRevisions = function () {
+            var matterSlug = $scope.data.slug;
+			var item = $scope.data.selectedItem;
+
+            function SortDescendingByCreationDate(a, b){
+                var aDate = moment(a.date_created, "YYYY-MM-DDTHH:mm:ss.SSSZ");
+                var bDate = moment(b.date_created, "YYYY-MM-DDTHH:mm:ss.SSSZ");
+                return (aDate < bDate) ? 1 : -1;
+            }
+
+            if (item && item.previousRevisions) {
+                //show the revisions from the local storage
+            }
+            else if (item && item.latest_revision && item.latest_revision.revisions) {
+                if (item.previousRevisions == null) {
+                    item.previousRevisions = [];
+                }
+
+                jQuery.each( item.latest_revision.revisions, function( index, revurl ){
+                    var revslug = revurl.substring(revurl.lastIndexOf('/')+1, revurl.length);
+
+					matterItemService.loadRevision(matterSlug, item.slug, revslug).then(
+                        function success(revision){
+                            //store revisisions locally
+                            item.previousRevisions.unshift(revision);
+                            //Sort array
+                            item.previousRevisions.sort(SortDescendingByCreationDate);
+                        },
+                        function error(err){
+                            toaster.pop('error', "Error!", "Unable to load previous revision");
+                        }
+                    );
+				});
+			}
+            $scope.data.showPreviousRevisions = true;
+		};
+        /* End revision handling */
 
 		/**
 		 * Called when dropping (after dragging) a checklist items or checklist categories.

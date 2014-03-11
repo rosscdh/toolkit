@@ -1,5 +1,4 @@
 from django.db import models
-
 from toolkit.core.mixins import IsDeletedMixin
 
 
