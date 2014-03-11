@@ -69,7 +69,6 @@
 								<span class="fui-list-columned"></span>
 								<span ng-bind="item.name"></span>
 							</td>
-
 							<td class="status text-right" ng-hide="item.is_complete">
 								<button disabled="" class="btn btn-xs doc-status-{{ item.latest_revision.status }}" ng-show="item.latest_revision.status>0">
 								   {{ data.matter._meta.revision.status | valueforkey:item.latest_revision.status }}

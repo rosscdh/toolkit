@@ -3,6 +3,8 @@ from .user import UserEndpoint
 
 from .account import AccountEndpoint
 
+from .activity import ActivityEndpoint, MatterActivityEndpoint
+
 from .client import ClientEndpoint
 
 from .matter import (MatterEndpoint,
