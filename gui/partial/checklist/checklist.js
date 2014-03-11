@@ -150,7 +150,7 @@ angular.module('toolkit-gui')
 			$scope.data.showEditItemTitleForm = false;
             $scope.data.showPreviousRevisions = false;
 
-            console.log($scope.data.selectedItem.latest_revision);
+            console.log($scope.data.selectedItem);
 		};
 
 		/**

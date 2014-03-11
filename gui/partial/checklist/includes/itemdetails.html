@@ -34,17 +34,18 @@
         </div>
     </h3>
 
+    <!-- Begin option toolbar -->
     <div class="add-new">
         <div class="btn-group">
             <button class="btn btn-sm btn-info btn-embossed btn-add"><span class="fui-upload"></span>
-                Add File
+               Add File
             </button>
             <button class="btn btn-info btn-sm btn-embossed dropdown-toggle" data-toggle="dropdown">
             <span class="caret"></span>
             </button>
             <span class="dropdown-arrow dropdown-arrow-inverse dropdown-small"></span>
             <ul class="dropdown-menu dropdown-inverse">
-                <li filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)">Upload File</li>
+                <li><a href="javascript:;" filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)">Upload File</a></li>
                 <li><a href="javascript:;" data-toggle="modal" data-target="#requestFileModal" ng-click="requestRevision(data.selectedItem)">Request Revision</a></li>
             </ul>
         </div>
@@ -74,8 +75,14 @@
             <span class="fui-checkbox-checked"></span> <span ng-hide="data.selectedItem.is_complete">Close item</span><span ng-show="data.selectedItem.is_complete">Reopen item</span>
         </a>
     </div>
+    <!-- End option toolbar -->
+
+    <div class="waiting-revision text-center">
+        <span class="fui-time"></span> Waiting for a revision from Ross Crawford. <a href="#">Remind</a> <a class="close" href="#">x</a>
+    </div>
 
     <ul class="revisions list-unstyled" ng-show="data.selectedItem.latest_revision">
+        <!-- Begin current revision -->
         <li class="header">Current Revision</li>
         <li class="current">
             <div class="doc-wrap">
@@ -118,6 +125,7 @@
                 </div>
             </div>
         </li>
+        <!-- End current revision -->
 
         <li class="toggle-previous text-center" ng-show="data.selectedItem.latest_revision.revisions.length>0&&!data.showPreviousRevisions">
             <a class="btn btn-sm btn-silver" href="javascript:;" ng-click="loadPreviousRevisions()">
@@ -141,4 +149,11 @@
         <h4>Upload a first revision</h4>
         Upload a first draft of this document. Move your mouse to the green upload bar at the top of this item to either upload a file or request one from another participant. You can also drag a document directly on a checklist item to add it as a revision.
     </div>
+
+    <div class="item-help" ng-show="data.selectedItem.status==1">
+        <span class="fui-time"></span>
+        <h4>Waiting for a revision</h4>
+        You have requested a revision from another user. Once they have supplied this revision you will be notified.
+    </div>
+
 </div>
