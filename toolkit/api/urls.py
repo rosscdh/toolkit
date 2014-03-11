@@ -64,7 +64,7 @@ urlpatterns = router.urls + patterns('',
     # Matter Items
     #
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/?$', MatterItemsView.as_view(), name='matter_items'),
-    url(r'^matters/(?P<matter_slug>[\w-]+)/items/request_document/?$', MatterItemRequestRevisionView.as_view(), name='matter_item_request_doc'),
+    url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/request_document/?$', MatterItemRequestRevisionView.as_view(), name='matter_item_request_doc'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/?$', MatterItemView.as_view(), name='matter_item'),
     #
     # Revisions
