@@ -2,7 +2,6 @@
 from django.conf.urls import patterns, url
 
 from rest_framework import routers
-from toolkit.api.views.activity import MatterActivityView
 
 from .views import UserEndpoint
 from .views import AccountEndpoint
@@ -13,6 +12,9 @@ from .views import (MatterEndpoint,
                     MatterClosingGroupView,
                     MatterSortView,
                     MatterParticipant,)
+
+from .views import (ActivityEndpoint,
+                    MatterActivityEndpoint)
 
 from .views import (MatterItemsView,
                     MatterItemView,
@@ -39,6 +41,7 @@ ViewSets
 router.register(r'users', UserEndpoint)
 
 router.register(r'matters', MatterEndpoint)
+router.register(r'activity', ActivityEndpoint)
 router.register(r'clients', ClientEndpoint)
 router.register(r'items', ItemEndpoint)
 router.register(r'revisions', RevisionEndpoint)
@@ -63,7 +66,7 @@ urlpatterns = router.urls + patterns('',
     url(r'^matters/(?P<matter_slug>[\w-]+)/sort/?$', MatterSortView.as_view(), name='matter_sort'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/participant(/(?P<email>.+))?/?$', MatterParticipant.as_view(), name='matter_participant'),
 
-    url(r'^matters/(?P<matter_slug>[\w-]+)/activity/?$', MatterActivityView.as_view(), name='matter_activity'),
+    url(r'^matters/(?P<matter_slug>[\w-]+)/activity/?$', MatterActivityEndpoint.as_view(), name='matter_activity'),
 
     #
     # Matter Items
