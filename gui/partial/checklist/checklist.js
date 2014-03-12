@@ -245,43 +245,43 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
         $scope.getParticipantByUrl = function (participanturl, showOnlyInitials){
-            if ($scope.data.loadedParticipants == null) {
-                $scope.data.loadedParticipants = {};
-            }
+             if ($scope.data.loadedParticipants == null) {
+                 $scope.data.loadedParticipants = {};
+             }
 
-            function printUser(participant){
-                if (showOnlyInitials === true && participant.initials != null && participant.initials.length>0) {
-                    return '(' + participant.initials + ')';
-                } else if (showOnlyInitials === true && participant.initials == null) {
-                    return '';
-                }
+             function printUser(participant){
+                 if (showOnlyInitials === true && participant.initials != null && participant.initials.length>0) {
+                     return '(' + participant.initials + ')';
+                 } else if (showOnlyInitials === true && participant.initials == null) {
+                     return '';
+                 }
 
-                if (participant.last_name != null && participant.last_name.length >0) {
-                    return participant.first_name + ' ' + participant.last_name;
-                } else {
-                    return participant.email;
-                }
-            }
+                 if (participant.last_name != null && participant.last_name.length >0) {
+                     return participant.first_name + ' ' + participant.last_name;
+                 } else {
+                     return participant.email;
+                 }
+             }
 
-            //only load user from api, if not already loaded
-            if (participanturl != null && $scope.data.loadedParticipants[participanturl] == null) {
-                $scope.data.loadedParticipants[participanturl] = {};
+             //only load user from api, if not already loaded
+             if (participanturl != null && $scope.data.loadedParticipants[participanturl] == null) {
+                 $scope.data.loadedParticipants[participanturl] = {};
 
-                participantService.getByURL(participanturl).then(
-                    function success(participant){
-                        //store user in dict with url as key
-                        $scope.data.loadedParticipants[participanturl] = participant;
-                        return printUser(participant);
-                    },
-                    function error(err){
-                        return '';
-                    }
-                );
-            } else if (participanturl != null && $scope.data.loadedParticipants[participanturl] != null){
-                return printUser($scope.data.loadedParticipants[participanturl]);
-            } else {
-                return '';
-            }
+                 participantService.getByURL(participanturl).then(
+                     function success(participant){
+                         //store user in dict with url as key
+                         $scope.data.loadedParticipants[participanturl] = participant;
+                         return printUser(participant);
+                     },
+                     function error(err){
+                         return '';
+                     }
+                 );
+             } else if (participanturl != null && $scope.data.loadedParticipants[participanturl] != null){
+                 return printUser($scope.data.loadedParticipants[participanturl]);
+             } else {
+                 return '';
+             }
         };
 		/*** End item handling */
 

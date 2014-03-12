@@ -18,25 +18,66 @@ angular.module('toolkit-gui').factory('participantService', [
 			});
 		}
 
-		var participants = {
+        var data = {
+            loadedParticipants: {}
+        };
+
+		return {
+            /**
+			 * Returns object containing 'loaded Participants'.
+			 * This data lives beyond the life of a single view.
+			 *
+			 * @name				data
+			 *
+			 * @example
+		 	 * participantService.data()
+			 *
+			 * @public
+			 * @method				data
+			 * @memberof			participantService
+			 *
+			 * @return {Object}     { 'items': [], 'selected': {} }
+		 	 */
+			'data': function() {
+				return data;
+			},
+
+            /**
+			 * Stores the loaded participant in data.
+			 *
+			 * @name				setParticipant
+			 *
+			 * @example
+		 	 * participantService.setParticipant( mySParticipant );
+			 *
+			 * @public
+			 * @method				setParticipant
+			 * @memberof			participantService
+		 	 */
+			'setParticipant': function( participanturl, participant ) {
+				data.loadedParticipants[participanturl] = participant;
+                console.log(data.loadedParticipants[participanturl]);
+			},
+
+
             'getByURL': function(participanturl) {
                 var deferred = $q.defer();
 
-				var api = $resource(participanturl, {}, {
-                    'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json' }}
+                var api = $resource(participanturl, {}, {
+                        'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json' }}
                 });
 
-				api.get({},
-					function success( response ) {
-						deferred.resolve( response );
-					},
-					function error( err ) {
-						deferred.reject( err );
-					}
-				);
+                api.get({},
+                    function success( response ) {
+                        deferred.resolve( response );
+                    },
+                    function error( err ) {
+                        deferred.reject( err );
+                    }
+                );
 
-				return deferred.promise;
-            },
+                return deferred.promise;
+             },
 
             'getByUsername': function(username) {
                 var deferred = $q.defer();
@@ -87,7 +128,5 @@ angular.module('toolkit-gui').factory('participantService', [
 				return deferred.promise;
 			}
 		};
-
-		return participants;
 	}
 ]);
