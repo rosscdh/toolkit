@@ -232,7 +232,8 @@ angular.module('toolkit-gui')
 
 
 		/**
-		 * Executes a save of the selected item, using the in scope variable selectedItem
+		 * Receives the user object from the API by the given URL and returns his full name if existing or
+         * the email address. When showOnlyInitials is set, then it just returns the initials of the user.
 		 *
 		 * @name 				getParticipantByUrl
 		 *
