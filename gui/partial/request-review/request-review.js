@@ -1,27 +1,27 @@
 angular.module('toolkit-gui')
 /**
- * @class RequestrevisionCtrl
+ * @class RequestreviewCtrl
  * @classdesc 		                      Responsible for managing and requesting the API to request a new revision
  * @param  {Object} $scope                Contains the scope of this controller
  * @param  {Function} $modalInstance      Provides access to close and cancel methods
  * @param  {Array} participants           List of participants within a matter
  * @param  {Object} currentUser           The current user
- * @param  {Object} checklistItem         A specific checklist item, upon which to execute requeest for new revision
+ * @param  {Object} revision              A specific revision object, upon which to execute request for review
  * @param  {Object} matter                The matter for which participants will be invited
  * @param  {Object} participantService    Contains methods to make participant related requests to the API
  * @param  {Function} toaster             Provides a handle to show/hide UI toasters
  * @param  {Function} anon                Controller function
  */
-.controller('RequestrevisionCtrl',[
+.controller('RequestreviewCtrl',[
 	'$scope',
 	'$modalInstance',
 	'participants',
 	'currentUser',
 	'matter',
-	'checklistItem',
+	'revision',
 	'participantService',
 	'toaster',
-	function($scope, $modalInstance, participants, currentUser, matter, checklistItem, participantService, toaster){
+	function($scope, $modalInstance, participants, currentUser, matter, revision, participantService, toaster){
 
 
 		/**
@@ -54,7 +54,7 @@ angular.module('toolkit-gui')
 		 * @type {Object}
 		 * @private
 		 */
-		$scope.checklistItem = checklistItem;
+		$scope.revision = revision;
 
 		/**
 		 * Scope based data for this controller
