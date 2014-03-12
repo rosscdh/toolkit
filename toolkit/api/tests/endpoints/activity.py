@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
-import json
-from actstream.models import Action
 from django.core.urlresolvers import reverse
 from django.test import LiveServerTestCase
+
 from model_mommy import mommy
+from actstream.models import Action
+
 from toolkit.api.tests import BaseEndpointTest
 
-__author__ = 'Marius Burfey <marius.burfey@ambient-innovation.com> - 10.03.14'
+import json
 
 
 class ActivityStreamGetActionTest(BaseEndpointTest, LiveServerTestCase):
