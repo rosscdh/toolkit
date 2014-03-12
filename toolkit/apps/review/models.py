@@ -35,7 +35,10 @@ class ReviewDocument(UserAuthMixin, models.Model):
         ordering = ('id',)
 
     def get_absolute_url(self, user):
-        return reverse('review:review_document', kwargs={'slug': self.slug, 'auth_slug': self.make_user_auth_key(user=user)})
+        auth_key = self.get_user_auth(user=user)
+        if auth_key is not None:
+            return reverse('review:review_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)})
+        return None
 
     @property
     def crocodoc(self):
