@@ -10,7 +10,10 @@ from .client import ClientEndpoint
 from .matter import (MatterEndpoint,
                      ClosingGroupView as MatterClosingGroupView,)
 
-from .matter import (ItemRevisionReviewerView,
+from .review import (ItemRevisionReviewersView,
+                     ItemRevisionReviewerView,)
+
+from .sign import   (ItemRevisionSignatoriesView,
                      ItemRevisionSignatoryView,)
 
 from .sort import (MatterSortView,)
