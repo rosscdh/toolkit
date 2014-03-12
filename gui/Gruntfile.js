@@ -25,8 +25,15 @@ module.exports = function (grunt) {
     /**
     * Constants for the Gruntfile so we can easily change the path for our environments.
     */
-    DJANGO_STATIC_URL: '/static/ng/',
+    DJANGO_STATIC_DEV_PATH: '/static/ng/',
+    DJANGO_DEV_API: 'http://localhost:8000',
+
+    DJANGO_STATIC_PRODUCTION_PATH: 'static/ng/',
+    DJANGO_PRODUCTION_API: 'http://localhost:8001',
+    DJANGO_PRODUCTION_ASSET_SERVER: 'http://localhost:8002/',
     PRODUCTION_PATH: 'dist/',
+
+    /* <%= DJANGO_STATIC_PRODUCTION_SERVER %> */
 
     /**
     * Allows us to pass in variables to files that have place holders so we can similar files with different data.
@@ -41,7 +48,18 @@ module.exports = function (grunt) {
             dest : 'index.html',
             options : {
                 context : {
-                    staticPath : '<%= DJANGO_STATIC_URL %>'
+                    staticPath : '<%= DJANGO_STATIC_DEV_PATH %>',
+                    apiBaseUrl : '<%= DJANGO_DEV_API %>'
+                }
+            }
+        },
+        djangoProd : {
+            src : 'config.html',
+            dest : 'index.html',
+            options : {
+                context : {
+                    staticPath : '',
+                    apiBaseUrl : '<%= DJANGO_PRODUCTION_API %>'
                 }
             }
         },
@@ -50,7 +68,8 @@ module.exports = function (grunt) {
             dest : 'index.html',
             options : {
                 context : {
-                    staticPath : ''
+                    staticPath : '',
+                    apiBaseUrl : '<%= DJANGO_DEV_API %>'
                 }
             }
         }
@@ -113,10 +132,11 @@ module.exports = function (grunt) {
       main: {
         files: [
           {src: ['index.html'], dest: '<%= PRODUCTION_PATH %>'},
-          {src: ['img/**'], dest: '<%= PRODUCTION_PATH %>' + 'static/'},
-          {src: ['fonts/**'], dest: '<%= PRODUCTION_PATH %>' + 'static/'},
-          {src: ['bower_components/angular-ui-utils/ui-utils-ieshiv.min.js'], dest: '<%= PRODUCTION_PATH %>' + 'static/'},
-          {src: ['bower_components/font-awesome/fonts/**'], dest: '<%= PRODUCTION_PATH %>' + 'static/',filter:'isFile',expand:true}
+          {src: ['img/**'], dest: '<%= PRODUCTION_PATH %>' + '<%= DJANGO_STATIC_PRODUCTION_PATH %>'},
+          {src: ['fonts/**'], dest: '<%= PRODUCTION_PATH %>' + '<%= DJANGO_STATIC_PRODUCTION_PATH %>'},
+          {src: ['partial/**'], dest: '<%= PRODUCTION_PATH %>' + '<%= DJANGO_STATIC_PRODUCTION_PATH %>'},
+          {src: ['bower_components/angular-ui-utils/ui-utils-ieshiv.min.js'], dest: '<%= PRODUCTION_PATH %>' + '<%= DJANGO_STATIC_PRODUCTION_PATH %>'},
+          {src: ['bower_components/font-awesome/fonts/**'], dest: '<%= PRODUCTION_PATH %>' + '<%= DJANGO_STATIC_PRODUCTION_PATH %>',filter:'isFile',expand:true}
           // {src: ['bower_components/select2/*.png','bower_components/select2/*.gif'], dest:'dist/css/',flatten:true,expand:true},
           // {src: ['bower_components/angular-mocks/angular-mocks.js'], dest: 'dist/'}
         ]
@@ -138,15 +158,15 @@ module.exports = function (grunt) {
       removescripts: {
         options:{
           remove:'script[data-remove!="exclude"]',
-          append:{selector:'head',html:'<script src="' + '<%= grunt.option(\"PRODUCTION_STATIC_URL\") %>' + 'app.full.min.js"></script>'}
+          append:{selector:'head',html:'<script src="' + '<%= DJANGO_STATIC_PRODUCTION_PATH %>' + 'app.full.min.js"></script>'}
         },
         src:'<%= PRODUCTION_PATH %>' + 'index.html'
       },
       //add verbatim and endverbatim to prohibit conflicts with the django template tags
       addscript: {
         options:{
-              append:{selector:'body',html:'<script src="' + '<%= grunt.option(\"PRODUCTION_STATIC_URL\") %>' + 'app.full.min.js"></script>'}
-            },
+              append:{selector:'#landmine',html:'<script src="' + '<%= DJANGO_PRODUCTION_ASSET_SERVER %><%= DJANGO_STATIC_PRODUCTION_PATH %>' + 'app.full.min.js"></script>'}
+            },/* <%= DJANGO_PRODUCTION_ASSET_SERVER => */
             src:'<%= PRODUCTION_PATH %>' + 'index.html'
       },
       addverbatimprod:{
@@ -166,13 +186,13 @@ module.exports = function (grunt) {
       removecss: {
         options:{
           remove:'link',
-          append:{selector:'head',html:'<link rel="stylesheet" href="' + '<%= grunt.option(\"PRODUCTION_STATIC_URL\") %>' + 'css/app.full.min.css">'}
+          append:{selector:'head',html:'<link rel="stylesheet" href="' + '<%= DJANGO_PRODUCTION_ASSET_SERVER %><%= DJANGO_STATIC_PRODUCTION_PATH %>' + 'css/app.full.min.css">'}
         },
         src:'<%= PRODUCTION_PATH %>' + 'index.html'
       },
       addcss: {
         options:{
-          append:{selector:'head',html:'<link rel="stylesheet" href="' + '<%= grunt.option(\"PRODUCTION_STATIC_URL\") %>' + 'css/app.full.min.css">'}
+          append:{selector:'head',html:'<link rel="stylesheet" href="' + '<%= DJANGO_PRODUCTION_ASSET_SERVER %><%= DJANGO_STATIC_PRODUCTION_PATH %>' + 'css/app.full.min.css">'}
         },
         src:'<%= PRODUCTION_PATH %>' + 'index.html'
       }
@@ -180,7 +200,7 @@ module.exports = function (grunt) {
     cssmin: {
       main: {
         src:['temp/app.css','<%= dom_munger.data.appcss %>'],
-        dest:'<%= PRODUCTION_PATH %>' + 'static/' + 'css/app.full.min.css'
+        dest:'<%= PRODUCTION_PATH %>' + '<%= DJANGO_STATIC_PRODUCTION_PATH %>' + 'css/app.full.min.css'
       }
     },
     concat: {
@@ -198,7 +218,7 @@ module.exports = function (grunt) {
     uglify: {
       main: {
         src: 'temp/app.full.js',
-        dest:'<%= PRODUCTION_PATH %>' + 'static/' + 'app.full.min.js'
+        dest:'<%= PRODUCTION_PATH %>' + '<%= DJANGO_STATIC_PRODUCTION_PATH %>' + 'app.full.min.js'
       }
     },
     htmlmin: {
@@ -223,7 +243,7 @@ module.exports = function (grunt) {
         files: [{
           expand: true, cwd:'<%= PRODUCTION_PATH %>' + 'static/',
           src:['**/{*.png,*.jpg}'],
-          dest: '<%= PRODUCTION_PATH %>' + 'static/'
+          dest: '<%= PRODUCTION_PATH %>' + '<%= DJANGO_STATIC_PRODUCTION_PATH %>'
         }]
       }
     },
@@ -258,17 +278,13 @@ module.exports = function (grunt) {
   grunt.registerTask('build', 'Deploys the app in the dist folder. Target django as option.', function(n) {
     var target = grunt.option('target');
 
-    if (target == 'django'){
-        grunt.option("PRODUCTION_STATIC_URL", '/static/ng/');
-    } else {
-        grunt.option("PRODUCTION_STATIC_URL", 'static/');
-    }
+    console.log('>> target', target);
 
-    grunt.task.run('preprocess:gruntserver','jshint','clean:before','less','dom_munger:readcss','dom_munger:readscripts','ngtemplates','cssmin','concat','ngmin','uglify','copy','dom_munger:removecss','dom_munger:addcss','dom_munger:removescripts','dom_munger:addscript');
+    grunt.option("PRODUCTION_STATIC_URL", '/static/ng/');
+    //grunt.option("DJANGO_DEV_API", 'http://localhost:8001/');
 
-    if (target == 'django'){
-        grunt.task.run('dom_munger:addverbatimprod');
-    }
+    //djangoProd
+    grunt.task.run('preprocess:djangoProd','jshint','clean:before','less','dom_munger:readcss','dom_munger:readscripts','ngtemplates','cssmin','concat','ngmin','uglify','copy','dom_munger:removecss','dom_munger:addcss','dom_munger:removescripts','dom_munger:addscript');
 
     grunt.task.run('htmlmin','imagemin','clean:after');
   });

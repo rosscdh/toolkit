@@ -1,7 +1,8 @@
 angular.module('toolkit-gui').factory('participantService', [
 	'$q',
 	'$resource',
-	function($q, $resource) {
+	'API_BASE_URL',
+	function($q, $resource, API_BASE_URL) {
 
         function userAPI() {
             return $resource('/api/v1/users/:username', {}, {
@@ -10,7 +11,7 @@ angular.module('toolkit-gui').factory('participantService', [
         }
 
 		function participantAPI() {
-			return $resource('/api/v1/matters/:matterSlug/participant', {}, {
+			return $resource( API_BASE_URL + '/api/v1/matters/:matterSlug/participant/:id', {}, {
 				'list': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }, 'isArray': true },
 				'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } },
 				'invite': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } },
