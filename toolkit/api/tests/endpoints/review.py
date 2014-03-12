@@ -23,7 +23,7 @@ class RevisionReviewsTest(BaseEndpointTest):
 
     @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def setUp(self):
-        super(RevisionReviewTest, self).setUp()
+        super(RevisionReviewsTest, self).setUp()
 
         # setup the items for testing
         self.item = mommy.make('item.Item', matter=self.matter, name='Test Item with Revision', category=None)
