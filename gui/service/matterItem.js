@@ -44,10 +44,11 @@ angular.module('toolkit-gui')
 		 * @return {Function}   $resource
 		 */
 		function matterItemResource() {
-			return $resource( $rootScope.API_BASE_URL + 'matters/:matterSlug/items/:itemSlug', {}, {
+			return $resource( $rootScope.API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/:action', {}, {
 				'create': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'update': { 'method': 'PATCH', params:{'itemSlug':'@slug'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
-				'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
+				'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
+				'requestdocument': { 'method': 'PATCH', params:{'action':'request_document'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
 			});
 		}
 
@@ -365,6 +366,41 @@ angular.module('toolkit-gui')
 				return deferred.promise;
 			},
 
+            /**
+			 * Requests the API to send a revision request to given participant.
+			 *
+			 * @name				deleteRevision
+			 * @param {String}      matterSlug    Database slug, used as a unquie idenitfier for a matter.
+			 * @param {String}      itemSlug      Database slug, used as a unquie identifier for a checklist item.
+			 * @param {Object}      participant   Dictionary consisting of email, message, username
+			 *
+			 * @example
+		 	 * matterItemService.requestRevision( 'myMatterName', 'myItemName', {} );
+			 *
+			 * @public
+			 * @method				requestRevision
+			 * @memberof			matterItemService
+			 *
+			 * @return {Promise}
+		 	 */
+	        'requestRevision': function ( matterSlug, itemSlug, participant  ) {
+				var deferred = $q.defer();
+
+				var api = matterItemResource();
+
+				api.requestdocument({'matterSlug': matterSlug, 'itemSlug': itemSlug }, participant,
+					function success(response){
+						deferred.resolve(response);
+					},
+					function error(err) {
+						deferred.reject( err );
+					}
+				);
+
+				return deferred.promise;
+			},
+
+            /**
 			/**
 			 * Load a revision from URL
 			 *
