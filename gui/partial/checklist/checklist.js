@@ -25,8 +25,9 @@ angular.module('toolkit-gui')
 	'matterService',
 	'matterItemService',
 	'matterCategoryService',
+	'participantService',
 	'$timeout',
-	function($scope, $rootScope, $routeParams, smartRoutes, ezConfirm, toaster, $modal, matterService, matterItemService, matterCategoryService, $timeout){
+	function($scope, $rootScope, $routeParams, smartRoutes, ezConfirm, toaster, $modal, matterService, matterItemService, matterCategoryService, participantService, $timeout){
 		/**
 		 * Scope based data for the checklist controller
 		 * @memberof			ChecklistCtrl
@@ -148,9 +149,7 @@ angular.module('toolkit-gui')
 			//Reset controls
 			$scope.data.showEditItemDescriptionForm = false;
 			$scope.data.showEditItemTitleForm = false;
-			$scope.data.showPreviousRevisions = false;
-
-			console.log($scope.data.selectedItem.latest_revision);
+            $scope.data.showPreviousRevisions = false;
 		};
 
 		/**
@@ -230,6 +229,60 @@ angular.module('toolkit-gui')
 				);
 			}
 		};
+
+
+		/**
+		 * Receives the user object from the API by the given URL and returns his full name if existing or
+         * the email address. When showOnlyInitials is set, then it just returns the initials of the user.
+		 *
+		 * @name 				getParticipantByUrl
+		 *
+         * @param  {String}  API url of the participant
+         * @param  {Boolean} If set to true, just return the initials of the user
+         *
+		 * @private
+		 * @method				getParticipantByUrl
+		 * @memberof			ChecklistCtrl
+		 */
+        $scope.getParticipantByUrl = function (participanturl, showOnlyInitials){
+             if ($scope.data.loadedParticipants == null) {
+                 $scope.data.loadedParticipants = {};
+             }
+
+             function printUser(participant){
+                 if (showOnlyInitials === true && participant.initials != null && participant.initials.length>0) {
+                     return '(' + participant.initials + ')';
+                 } else if (showOnlyInitials === true && participant.initials == null) {
+                     return '';
+                 }
+
+                 if (participant.last_name != null && participant.last_name.length >0) {
+                     return participant.first_name + ' ' + participant.last_name;
+                 } else {
+                     return participant.email;
+                 }
+             }
+
+             //only load user from api, if not already loaded
+             if (participanturl != null && $scope.data.loadedParticipants[participanturl] == null) {
+                 $scope.data.loadedParticipants[participanturl] = {};
+
+                 participantService.getByURL(participanturl).then(
+                     function success(participant){
+                         //store user in dict with url as key
+                         $scope.data.loadedParticipants[participanturl] = participant;
+                         return printUser(participant);
+                     },
+                     function error(err){
+                         return '';
+                     }
+                 );
+             } else if (participanturl != null && $scope.data.loadedParticipants[participanturl] != null){
+                 return printUser($scope.data.loadedParticipants[participanturl]);
+             } else {
+                 return '';
+             }
+        };
 		/*** End item handling */
 
 		/*
@@ -368,17 +421,20 @@ angular.module('toolkit-gui')
 		$scope.processUpload = function( files, item ) {
 			var matterSlug = $scope.data.slug;
 			var itemSlug = item.slug;
+            $scope.data.uploading = true;
 
 			matterItemService.uploadRevision( matterSlug, itemSlug, files ).then(
 				function success( revision ) {
 					revision.uploaded_by = matterService.data().selected.current_user;
 					item.latest_revision = revision;
 
-					//Reset previous revisions
-					item.previousRevisions = null;
-					$scope.data.showPreviousRevisions = false;
+                    $scope.data.uploading = false;
+                    //Reset previous revisions
+                    item.previousRevisions = null;
+                    $scope.data.showPreviousRevisions = false;
 				},
 				function error(err) {
+                    $scope.data.uploading = false;
 					toaster.pop('error', "Error!", "Unable to upload revision");
 				}
 			);
@@ -483,99 +539,6 @@ angular.module('toolkit-gui')
 					}
 				);
 			}
-		};
-
-		/**
-		 * Request API to get all previous revisions of the item
-		 *
-		 * @name 				loadPreviousRevisions
-		 *
-		 * @private
-		 * @method				loadPreviousRevisions
-		 * @memberof			ChecklistCtrl
-		 */
-		 $scope.loadPreviousRevisions = function () {
-			var matterSlug = $scope.data.slug;
-			var item = $scope.data.selectedItem;
-
-			function SortDescendingByCreationDate(a, b){
-				var aDate = moment(a.date_created, "YYYY-MM-DDTHH:mm:ss.SSSZ");
-				var bDate = moment(b.date_created, "YYYY-MM-DDTHH:mm:ss.SSSZ");
-				return (aDate < bDate) ? 1 : -1;
-			}
-
-			if (item && item.previousRevisions) {
-				//show the revisions from the local storage
-			}
-			else if (item && item.latest_revision && item.latest_revision.revisions) {
-				if (item.previousRevisions == null) {
-					item.previousRevisions = [];
-				}
-
-				jQuery.each( item.latest_revision.revisions, function( index, revurl ){
-					var revslug = revurl.substring(revurl.lastIndexOf('/')+1, revurl.length);
-
-					matterItemService.loadRevision(matterSlug, item.slug, revslug).then(
-						function success(revision){
-							//store revisisions locally
-							item.previousRevisions.unshift(revision);
-							//Sort array
-							item.previousRevisions.sort(SortDescendingByCreationDate);
-						},
-						function error(err){
-							toaster.pop('error', "Error!", "Unable to load previous revision");
-						}
-					);
-				});
-			}
-			$scope.data.showPreviousRevisions = true;
-		};
-		/* End revision handling */
-
-		/**
-		 * Request API to get all previous revisions of the item
-		 *
-		 * @name 				loadPreviousRevisions
-		 *
-		 * @private
-		 * @method				loadPreviousRevisions
-		 * @memberof			ChecklistCtrl
-		 */
-		 $scope.loadPreviousRevisions = function () {
-			var matterSlug = $scope.data.slug;
-			var item = $scope.data.selectedItem;
-
-			function SortDescendingByCreationDate(a, b){
-				var aDate = moment(a.date_created, "YYYY-MM-DDTHH:mm:ss.SSSZ");
-				var bDate = moment(b.date_created, "YYYY-MM-DDTHH:mm:ss.SSSZ");
-				return (aDate < bDate) ? 1 : -1;
-			}
-
-			if (item && item.previousRevisions) {
-				//show the revisions from the local storage
-			}
-			else if (item && item.latest_revision && item.latest_revision.revisions) {
-				if (item.previousRevisions == null) {
-					item.previousRevisions = [];
-				}
-
-				jQuery.each( item.latest_revision.revisions, function( index, revurl ){
-					var revslug = revurl.substring(revurl.lastIndexOf('/')+1, revurl.length);
-
-					matterItemService.loadRevision(matterSlug, item.slug, revslug).then(
-						function success(revision){
-							//store revisisions locally
-							item.previousRevisions.unshift(revision);
-							//Sort array
-							item.previousRevisions.sort(SortDescendingByCreationDate);
-						},
-						function error(err){
-							toaster.pop('error', "Error!", "Unable to load previous revision");
-						}
-					);
-				});
-			}
-			$scope.data.showPreviousRevisions = true;
 		};
 
         /**
@@ -698,10 +661,13 @@ angular.module('toolkit-gui')
 		 * @param {Object} checklistItem checklist item to perform action upon
 		 * 
 		 * @private
-		 * @method				recalculateCategories
+		 * @method				requestRevision
 		 * @memberof			ChecklistCtrl
 		 */
 		$scope.requestRevision = function( checklistItem ) {
+            var matterSlug = $scope.data.slug;
+			var item = $scope.data.selectedItem;
+
 			var modalInstance = $modal.open({
 				'templateUrl': '/static/ng/partial/request-revision/request-revision.html',
 				'controller': 'RequestrevisionCtrl',
@@ -722,8 +688,60 @@ angular.module('toolkit-gui')
 			});
 
 			modalInstance.result.then(
-				function ok(selectedItem) {
-					
+				function ok(result) {
+                    var requestdata = {
+                        'responsible_party': result.participant.url,
+                        'note': result.message
+                    };
+
+                    matterItemService.requestRevision(matterSlug, item.slug, requestdata).then(
+							function success(response){
+                                item.status = response.status;
+                                item.responsible_party = response.responsible_party;
+							},
+							function error(err){
+								toaster.pop('error', "Error!", "Unable to request a revision.");
+							}
+                    );
+				},
+				function cancel() {
+					//
+				}
+			);
+		};
+
+        /**
+		 * Initiates the view of a document as modal window.
+		 *
+		 * @param {Object} revision object to view
+		 *
+		 * @private
+		 * @method				showRevisionDocument
+		 * @memberof			ChecklistCtrl
+		 */
+		$scope.showRevisionDocument = function( revision ) {
+            var matterSlug = $scope.data.slug;
+			var item = $scope.data.selectedItem;
+
+			var modalInstance = $modal.open({
+				'templateUrl': '/static/ng/partial/view-document/view-document.html',
+				'controller': 'ViewDocumentCtrl',
+				'resolve': {
+                    'matter': function () {
+						return $scope.data.matter;
+					},
+					'checklistItem': function () {
+						return $scope.data.selectedItem;
+					},
+					'revision': function () {
+						return revision;
+					}
+				}
+			});
+
+			modalInstance.result.then(
+				function ok(result) {
+					//
 				},
 				function cancel() {
 					//
@@ -732,7 +750,9 @@ angular.module('toolkit-gui')
 		};
 
 		/**
-		 * [ dennis please describe this function ]
+		 * Broadcasts the event with the given name to the scope. The focus directive is listening to this broadcast.
+         * Timeout is required, because the UI element has to visible to receive the focus. The rendering process
+         * takes a few milliseconds.
 		 *
 		 * @name 				focus
 		 * 

@@ -16,7 +16,7 @@ from toolkit.apps.matter.signals import PARTICIPANT_ADDED
 from toolkit.apps.workspace.models import Workspace
 from toolkit.apps.workspace.services import EnsureCustomerService
 
-from ..serializers import MatterSerializer
+from ..serializers import MatterSerializer, SimpleUserSerializer
 from .mixins import (MatterMixin,)
 
 
@@ -68,7 +68,7 @@ class MatterParticipant(generics.CreateAPIView,
             self.matter.participants.add(new_participant)
             PARTICIPANT_ADDED.send(sender=self, matter=self.matter, participant=new_participant, user=request.user)
 
-        return Response(status=http_status.HTTP_202_ACCEPTED)
+        return Response(SimpleUserSerializer(new_participant, context={'request': self.request}).data, status=http_status.HTTP_202_ACCEPTED)
 
     def delete(self, request, **kwargs):
         # extract from url arg
