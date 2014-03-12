@@ -35,6 +35,17 @@ class UserAuthMixin(object):
             return self.auth.get(key)
         return None
 
+    def get_user_auth(self, user):
+        """
+        Provide the auth key for the user
+        """
+        if user.pk in self.auth.values():
+            try:
+                return [auth for auth, pk in self.auth.iteritems() if pk == user.pk][0]
+            except IndexError:
+                pass
+        return None
+
     def make_user_auth_key(self, user):
         hasher = hashlib.sha1('%s-%s' % (str(self.slug), user.email))
         return base64.urlsafe_b64encode(hasher.digest()[0:10])

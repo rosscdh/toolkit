@@ -41,7 +41,7 @@ Handle when a matter.participant is added to the object
 """
 
 
-@receiver(m2m_changed, sender=ReviewDocument.participants.through)
+@receiver(m2m_changed, sender=ReviewDocument.participants.through, dispatch_uid='reviewdocument.on_participant_add')
 def on_participant_add(sender, instance, action, **kwargs):
     """
     when a reviewer is added from the m2m then authorise them
@@ -51,7 +51,7 @@ def on_participant_add(sender, instance, action, **kwargs):
         _add_as_authorised(instance=instance, pk_set=kwargs.get('pk_set'))
 
 
-@receiver(m2m_changed, sender=ReviewDocument.participants.through)
+@receiver(m2m_changed, sender=ReviewDocument.participants.through, dispatch_uid='reviewdocument.on_participant_remove')
 def on_participant_remove(sender, instance, action, **kwargs):
     """
     when a reviewer is removed from the m2m then deauthorise them
@@ -65,7 +65,7 @@ Handle when a reviewer is added to the object
 """
 
 
-@receiver(m2m_changed, sender=ReviewDocument.reviewers.through)
+@receiver(m2m_changed, sender=ReviewDocument.reviewers.through, dispatch_uid='reviewdocument.on_reviewer_add')
 def on_reviewer_add(sender, instance, action, **kwargs):
     """
     when a reviewer is added from the m2m then authorise them
@@ -75,7 +75,7 @@ def on_reviewer_add(sender, instance, action, **kwargs):
         _add_as_authorised(instance=instance, pk_set=kwargs.get('pk_set'))
 
 
-@receiver(m2m_changed, sender=ReviewDocument.reviewers.through)
+@receiver(m2m_changed, sender=ReviewDocument.reviewers.through, dispatch_uid='reviewdocument.on_reviewer_remove')
 def on_reviewer_remove(sender, instance, action, **kwargs):
     """
     when a reviewer is removed from the m2m then deauthorise them
