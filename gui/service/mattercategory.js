@@ -13,11 +13,12 @@ angular.module('toolkit-gui')
         '$q',
         '$resource',
         '$rootScope',
-        function( $q, $resource, $rootScope) {
+        'API_BASE_URL',
+        function( $q, $resource, $rootScope, API_BASE_URL) {
             var token = { 'value': 'xyz' };
 
             function matterCategoryResource() {
-                return $resource( $rootScope.API_BASE_URL + 'matters/:matterSlug/category/:categorySlug', {}, {
+                return $resource(API_BASE_URL + 'matters/:matterSlug/category/:categorySlug', {}, {
                     'create': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }, 'isArray': true},
                     'update': { 'method': 'PATCH', params:{'categorySlug':'@categorySlug'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } , 'isArray': true},
                     'delete': { 'method': 'DELETE', params:{'categorySlug':'@categorySlug'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }, 'isArray': true}

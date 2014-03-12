@@ -11,7 +11,8 @@ angular.module('toolkit-gui')
 .factory('matterService',[
 	'$q',
 	'$resource',
-	function( $q, $resource ) {
+	'API_BASE_URL',
+	function( $q, $resource, API_BASE_URL ) {
 		/**
 		 * TBC: this variable will contain the JWT token requied to make authenticated requests
 		 * @memberof matterService
@@ -53,7 +54,7 @@ angular.module('toolkit-gui')
 	            matterSlug = matter.selected.slug;
 	        }
 
-			return $resource('http://localhost:8000/api/v1/matters/:matterSlug/:action', {'matterSlug':matterSlug, 'action':'@action'}, {
+			return $resource( API_BASE_URL + 'matters/:matterSlug/:action', {'matterSlug':matterSlug, 'action':'@action'}, {
 				'list': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } },
 				'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } },
 				'sort': { 'method': 'PATCH', 'params': {'action': 'sort'}, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } }

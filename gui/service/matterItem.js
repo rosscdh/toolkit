@@ -11,7 +11,8 @@ angular.module('toolkit-gui')
 	'$resource',
 	'$rootScope',
 	'$upload',
-	function( $q, $resource, $rootScope, $upload) {
+	'API_BASE_URL',
+	function( $q, $resource, $rootScope, $upload, API_BASE_URL) {
 		/**
 		 * TBC: this variable will contain the JWT token requied to make authenticated requests
 		 * @memberof matterItemService
@@ -44,7 +45,7 @@ angular.module('toolkit-gui')
 		 * @return {Function}   $resource
 		 */
 		function matterItemResource() {
-			return $resource( $rootScope.API_BASE_URL + 'matters/:matterSlug/items/:itemSlug', {}, {
+			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug', {}, {
 				'create': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'update': { 'method': 'PATCH', params:{'itemSlug':'@slug'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
