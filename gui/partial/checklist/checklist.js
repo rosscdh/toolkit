@@ -494,7 +494,6 @@ angular.module('toolkit-gui')
 		};
 
 
-
 		/**
 		 * Request API to delete latest revision
 		 *
@@ -586,80 +585,12 @@ angular.module('toolkit-gui')
 			}
             $scope.data.showPreviousRevisions = true;
 		};
-        /* End revision handling */
 
-		/**
-		 * Called when dropping (after dragging) a checklist items or checklist categories.
-		 * This method is responsible for getting the order of items within each categry formatted in a way that the API will beable to save the new order.  This medthod also initiates the request to the API to save the calculated order.
-		 * Based on https://github.com/angular-ui/ui-sortable (ui-sortable) and http://jqueryui.com/draggable/ (jQuery-ui-draggable).
+        /**
+		 * Initiate the process of requesting revisions from existing participants or new participants
 		 *
-		 * @name 				recalculateCategories
-		 *
-		 * @param {Event} evt Event as passed through from jQuery-ui drag and drop
-		 * @param {DOM} ui DOM element
-		 * 
-		 * @private
-		 * @method				recalculateCategories
-		 * @memberof			ChecklistCtrl
-		 */
-		function recalculateCategories( evt, ui ) {
-			var cats = $scope.data.categories;
-			var categoryName, items = [], item, i;
-			var APIUpdate = {
-				'categories': [],
-				'items': []
-			};
-			var itemToUpdate = null;
-
-			function getItemIDs( item ) {
-				return item.slug;
-			}
-
-			for(i =0;i<cats.length;i++) {
-				categoryName=cats[i].name;
-				items=cats[i].items;
-
-				// Create API message
-				if(cats[i].name != null) {
-					APIUpdate.categories.push(cats[i].name);
-				}
-				jQuery.merge(APIUpdate.items, jQuery.map( items, getItemIDs ));
-
-				// Update local data, setting category name
-				jQuery.each( items, function( index, item ){
-					if (item.category !== categoryName){
-						item.category = categoryName;
-						itemToUpdate = item;
-					}
-				});
-			}
-
-			matterService.saveSortOrder(APIUpdate).then(
-				 function success(){
-					//if category changed for an item, save that
-					if (itemToUpdate != null){
-						matterItemService.update(itemToUpdate).then(
-							function success(){
-								// do nothing
-							},
-							function error(err){
-								toaster.pop('error', "Error!", "Unable to update the order of items, please reload the page");
-							}
-					);
-					}
-				 },
-				 function error(err){
-					toaster.pop('error', "Error!", "Unable to update the order of items, please reload the page");
-				 }
-			);
-		}
-
-
-		/**
-		 * Initiate the process of requesting reviews from existing participants or new participants
-		 * 
 		 * @param {Object} checklistItem checklist item to perform action upon
-		 * 
+		 *
 		 * @private
 		 * @method				requestRevision
 		 * @memberof			ChecklistCtrl
@@ -748,6 +679,129 @@ angular.module('toolkit-gui')
 				}
 			);
 		};
+
+        /**
+		 * Initiate the process of requesting reviews from existing participants or new participants
+		 *
+		 * @param {Object} Revision  object to perform action upon
+		 *
+		 * @private
+		 * @method				requestReview
+		 * @memberof			ChecklistCtrl
+		 */
+		$scope.requestReview = function( revision ) {
+            var matterSlug = $scope.data.slug;
+			var item = $scope.data.selectedItem;
+
+			var modalInstance = $modal.open({
+				'templateUrl': '/static/ng/partial/request-review/request-review.html',
+				'controller': 'RequestreviewCtrl',
+				'resolve': {
+					'participants': function () {
+						return $scope.data.matter.participants;
+					},
+					'currentUser': function () {
+						return $scope.data.matter.current_user;
+					},
+					'matter': function () {
+						return $scope.data.matter;
+					},
+					'revision': function () {
+						return revision;
+					}
+				}
+			});
+
+			modalInstance.result.then(
+				function ok(result) {
+                    var requestdata = {
+                        'responsible_party': result.participant.url,
+                        'note': result.message
+                    };
+
+                    matterItemService.requestRevisionReview(matterSlug, item.slug, requestdata).then(
+							function success(response){
+                                item.status = response.status;
+                                item.responsible_party = response.responsible_party;
+							},
+							function error(err){
+								toaster.pop('error', "Error!", "Unable to request a revision.");
+							}
+                    );
+				},
+				function cancel() {
+					//
+				}
+			);
+		};
+        /* End revision handling */
+
+		/**
+		 * Called when dropping (after dragging) a checklist items or checklist categories.
+		 * This method is responsible for getting the order of items within each categry formatted in a way that the API will beable to save the new order.  This medthod also initiates the request to the API to save the calculated order.
+		 * Based on https://github.com/angular-ui/ui-sortable (ui-sortable) and http://jqueryui.com/draggable/ (jQuery-ui-draggable).
+		 *
+		 * @name 				recalculateCategories
+		 *
+		 * @param {Event} evt Event as passed through from jQuery-ui drag and drop
+		 * @param {DOM} ui DOM element
+		 * 
+		 * @private
+		 * @method				recalculateCategories
+		 * @memberof			ChecklistCtrl
+		 */
+		function recalculateCategories( evt, ui ) {
+			var cats = $scope.data.categories;
+			var categoryName, items = [], item, i;
+			var APIUpdate = {
+				'categories': [],
+				'items': []
+			};
+			var itemToUpdate = null;
+
+			function getItemIDs( item ) {
+				return item.slug;
+			}
+
+			for(i =0;i<cats.length;i++) {
+				categoryName=cats[i].name;
+				items=cats[i].items;
+
+				// Create API message
+				if(cats[i].name != null) {
+					APIUpdate.categories.push(cats[i].name);
+				}
+				jQuery.merge(APIUpdate.items, jQuery.map( items, getItemIDs ));
+
+				// Update local data, setting category name
+				jQuery.each( items, function( index, item ){
+					if (item.category !== categoryName){
+						item.category = categoryName;
+						itemToUpdate = item;
+					}
+				});
+			}
+
+			matterService.saveSortOrder(APIUpdate).then(
+				 function success(){
+					//if category changed for an item, save that
+					if (itemToUpdate != null){
+						matterItemService.update(itemToUpdate).then(
+							function success(){
+								// do nothing
+							},
+							function error(err){
+								toaster.pop('error', "Error!", "Unable to update the order of items, please reload the page");
+							}
+					);
+					}
+				 },
+				 function error(err){
+					toaster.pop('error', "Error!", "Unable to update the order of items, please reload the page");
+				 }
+			);
+		}
+
 
 		/**
 		 * Broadcasts the event with the given name to the scope. The focus directive is listening to this broadcast.
