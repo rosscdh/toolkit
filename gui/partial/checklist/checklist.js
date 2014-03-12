@@ -231,6 +231,18 @@ angular.module('toolkit-gui')
 		};
 
 
+		/**
+		 * Executes a save of the selected item, using the in scope variable selectedItem
+		 *
+		 * @name 				getParticipantByUrl
+		 *
+         * @param  {String}  API url of the participant
+         * @param  {Boolean} If set to true, just return the initials of the user
+         *
+		 * @private
+		 * @method				getParticipantByUrl
+		 * @memberof			ChecklistCtrl
+		 */
         $scope.getParticipantByUrl = function (participanturl, showOnlyInitials){
             if ($scope.data.loadedParticipants == null) {
                 $scope.data.loadedParticipants = {};
