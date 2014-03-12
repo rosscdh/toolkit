@@ -65,11 +65,18 @@ angular.module('toolkit-gui')
 		 * @return {Function}   $resource
 		 */
 		function revisionItemResource() {
-			return $resource( $rootScope.API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/revision/:version', {}, {
+			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/revision/:version', {}, {
 				'create': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'update': { 'method': 'PATCH', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
+			});
+		}
+
+
+		function reviewItemResource() {
+			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/revision/reviewer/:username', {}, {
+				'request': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
 			});
 		}
 
@@ -118,7 +125,7 @@ angular.module('toolkit-gui')
 					"status": 0,
 					"name": itemName,
 					"category": categoryName,
-					"matter": $rootScope.API_BASE_URL + 'matters/' + matterSlug,
+					"matter": API_BASE_URL + 'matters/' + matterSlug,
 					"parent": null,
 					"children": [],
 					"closing_group": null,
@@ -427,6 +434,40 @@ angular.module('toolkit-gui')
 				api.get({'matterSlug': matterSlug, 'itemSlug': itemSlug, 'version':revisionSlug  },
 					function success(revision){
 						deferred.resolve(revision);
+					},
+					function error(err) {
+						deferred.reject( err );
+					}
+				);
+
+				return deferred.promise;
+			},
+
+			/**
+			 * Requests the API to send a revision review request to given participant
+			 *
+			 * @name				loadRevisionByURL
+			 * @param {String}      matterSlug    Database slug, used as a unquie idenitfier for a matter.
+			 * @param {String}      itemSlug      Database slug, used as a unquie identifier for a checklist item.
+			 * @param {String}      revisionSlug  Database slug, used as a unquie identifier for a revision.
+			 *
+			 * @example
+			 * matterItemService.loadRevisionByURL( 'myMatterName', 'myItemName', 'v1' );
+			 *
+			 * @public
+			 * @method				loadRevisionByURL
+			 * @memberof			matterItemService
+			 *
+			 * @return {Promise}    Updated item object as provided by API
+			 */
+			'requestRevisionReview': function ( matterSlug, itemSlug, participant ) {
+				var deferred = $q.defer();
+
+				var api = reviewItemResource();
+
+				api.request({'matterSlug': matterSlug, 'itemSlug': itemSlug, 'username':participant.username },
+					function success(response){
+						deferred.resolve(response);
 					},
 					function error(err) {
 						deferred.reject( err );
