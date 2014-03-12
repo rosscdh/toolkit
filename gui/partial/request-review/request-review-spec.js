@@ -1,4 +1,4 @@
-describe('RequestrevisionCtrl', function() {
+describe('RequestreviewCtrl', function() {
 
 	beforeEach(module('toolkit-gui'));
 
@@ -6,7 +6,7 @@ describe('RequestrevisionCtrl', function() {
 
     beforeEach(inject(function($rootScope, $controller) {
       scope = $rootScope.$new();
-      ctrl = $controller('RequestrevisionCtrl', {$scope: scope});
+      ctrl = $controller('RequestreviewCtrl', {$scope: scope});
     }));	
 
 	it('should ...', inject(function() {
