@@ -26,8 +26,7 @@ import logging
 logger = logging.getLogger('django.request')
 
 
-class BaseReviewerSignatoryMixin(generics.ListAPIView,
-                                 generics.CreateAPIView):
+class BaseReviewerSignatoryMixin(generics.CreateAPIView):
     """
     Provides the object to access .signatories or .reviewers
     and their required functionality
@@ -43,6 +42,12 @@ class BaseReviewerSignatoryMixin(generics.ListAPIView,
         self.revision = self.item.latest_revision
         super(BaseReviewerSignatoryMixin, self).initial(request, *args, **kwargs)
 
+    def get_queryset_provider(self):
+        raise NotImplementedError
+
+    def get_queryset(self):
+        return self.get_queryset_provider().all()
+
     def process_event_purpose_object(self, user):
         """
         is this a review or a signature?
@@ -53,16 +58,14 @@ class BaseReviewerSignatoryMixin(generics.ListAPIView,
         raise exceptions.MethodNotAllowed(method=self.request.method)
 
 
-class ItemRevisionReviewersView(BaseReviewerSignatoryMixin):
+class ItemRevisionReviewersView(generics.ListAPIView,
+                                BaseReviewerSignatoryMixin):
     """
     /matters/:matter_slug/items/:item_slug/revision/reviewers/ (GET,POST)
         [lawyer,customer] to list, create reviewers
     """
     def get_queryset_provider(self):
         return self.revision.reviewers
-
-    def get_queryset(self):
-        return self.get_queryset_provider().all()
 
     def process_event_purpose_object(self, user):
         # perform ReviewDocument get or create
@@ -110,12 +113,48 @@ rulez_registry.register("can_delete", ItemRevisionReviewersView)
 
 
 # singular looking at a specific
-class ItemRevisionReviewerView(BaseReviewerSignatoryMixin):
+class ItemRevisionReviewerView(generics.RetrieveAPIView,
+                               generics.DestroyAPIView,
+                               BaseReviewerSignatoryMixin):
     """
     Singular
     /matters/:matter_slug/items/:item_slug/revision/reviewer/:username (GET,DELETE)
         [lawyer,customer] to view, delete reviewers
     """
+    model = Revision  # to allow us to use get_object generically
+    serializer_class = SimpleUserSerializer  # as we are returning the revision and not the item
+    lookup_field = 'username'
+    lookup_url_kwarg = 'username'
+
+    def get_queryset_provider(self):
+        return self.revision.reviewers
+
+    def get_object(self):
+        return get_object_or_404(User, username=self.kwargs.get('username'))
+
+    def retrieve(self, request, **kwargs):
+        user = self.get_object()
+        #import pdb;pdb.set_trace()
+
+        if user in self.revision.reviewers.all():
+            if user in self.revision.reviewdocument_set.all().first().reviewers.all():
+                auth_url = self.revision.reviewdocument_set.all().first().get_absolute_url(user=user)
+                # self.revision.reviewdocument_set.all().first()
+                # self.revision.reviewdocument_set.all().first().participants.all()
+                # self.revision.reviewdocument_set.all().first().reviewers.all()
+                #.get_auth(user=user)
+                serializer = self.get_serializer(user)
+                data = serializer.data
+                data.update({
+                    'auth_url': auth_url
+                })
+
+                headers = self.get_success_headers(serializer.data)
+
+        return Response(data, status=http_status.HTTP_200_OK, headers=headers)
+
+    def delete(self, request, **kwargs):
+        return Response()
     # def delete(self, request, **kwargs):
     #     """
     #     as we are dealign with a set here we can actually delete the object,

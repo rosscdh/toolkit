@@ -134,9 +134,35 @@ class RevisionReviewerTest(BaseEndpointTest):
         # setup the items for testing
         self.item = mommy.make('item.Item', matter=self.matter, name='Test Item with Revision', category=None)
         self.revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
-        self.participant = mommy.make('auth.User', first_name='Participant', last_name='Number 1', email='participant+1@lawpal.com')
+        self.participant = mommy.make('auth.User', username='authorised-reviewer', first_name='Participant', last_name='Number 1', email='participant+1@lawpal.com')
+        self.revision.reviewers.add(self.participant)
+        #self.revision.reviewdocument_set.all().first().authorise_user_to_review(self.participant)
 
     def test_endpoint_name(self):
         self.assertEqual(self.endpoint, '/api/v1/matters/%s/items/%s/revision/reviewer/%s' % (self.matter.slug, self.item.slug, self.participant.username))
 
+    def test_lawyer_get(self):
+        self.client.login(username=self.lawyer.username, password=self.password)
 
+        resp = self.client.get(self.endpoint)
+        import pdb;pdb.set_trace()
+        self.assertEqual(resp.status_code, 200)
+
+        json_data = json.loads(resp.content)
+        self.assertEqual(json_data['count'], 0)
+
+    # def test_anon_get(self):
+    #     resp = self.client.get(self.endpoint)
+    #     self.assertEqual(resp.status_code, 401)  # unauthorized
+
+    # def test_anon_post(self):
+    #     resp = self.client.post(self.endpoint, {}, content_type='application/json')
+    #     self.assertEqual(resp.status_code, 401)  # unauthorized
+
+    # def test_anon_patch(self):
+    #     resp = self.client.patch(self.endpoint, {})
+    #     self.assertEqual(resp.status_code, 405)  # method not allowed
+
+    # def test_anon_delete(self):
+    #     resp = self.client.delete(self.endpoint, {})
+    #     self.assertEqual(resp.status_code, 404)  # method not allowed

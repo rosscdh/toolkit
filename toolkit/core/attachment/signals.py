@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db import transaction
 from django.dispatch import receiver
-from django.db.models.signals import pre_save, post_save
+from django.db.models.signals import pre_save, post_save, m2m_changed
 
 from toolkit.apps.workspace.signals import _model_slug_exists
 
@@ -55,3 +55,29 @@ def ensure_revision_reviewdocument_object(sender, instance, **kwargs):
             review.participants = instance.item.matter.participants.all()
             # now add the revew object to the instance reivewdocument_set
             instance.reviewdocument_set.add(review)
+
+
+@receiver(m2m_changed, sender=Revision.reviewers.through, dispatch_uid='revision.on_reviewer_add')
+def on_reviewer_add(sender, instance, action, **kwargs):
+    """
+    when a reviewer is added from the m2m then authorise them
+    for access
+    """
+    if action in ['post_add']:
+        reviewdocument = instance.reviewdocument_set.all().first()
+        for reviewer in instance.reviewers.all():
+            if reviewer not in reviewdocument.reviewers.all():
+                reviewdocument.reviewers.add(reviewer)
+
+
+@receiver(m2m_changed, sender=Revision.reviewers.through, dispatch_uid='revision.on_reviewer_remove')
+def on_reviewer_remove(sender, instance, action, **kwargs):
+    """
+    when a reviewer is removed from the m2m then deauthorise them
+    """
+    if action in ['post_remove']:
+        reviewdocument = instance.reviewdocument_set.all().first()
+        for reviewer in reviewdocument.reviewers.all():
+            if reviewer not in instance.reviewers.all():
+                reviewdocument.reviewers.remove(reviewer)
+
