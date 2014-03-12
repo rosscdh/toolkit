@@ -775,7 +775,9 @@ angular.module('toolkit-gui')
 		$scope.checklistItemSortableOptions = {
 			'stop':  recalculateCategories, /* Fires once the drag and drop event has finished */
 			'connectWith': ".group",
-			'axis': 'y'
+			'axis': 'y',
+			'distance': 15,
+			'delay': 100
 		};
 
 		/**
@@ -786,7 +788,9 @@ angular.module('toolkit-gui')
 		 */
 		$scope.checklistCategorySortableOptions = {
 			'stop':  recalculateCategories, /* Fires once the drag and drop event has finished */
-			'axis': 'y'
+			'axis': 'y',
+			'distance': 15,
+			'delay': 100
 		};
 
 }]);
