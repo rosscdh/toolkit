@@ -71,6 +71,7 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
         """
         obj.item = self.item
         obj.uploaded_by = self.request.user
+        super(ItemCurrentRevisionView, self).pre_save(obj=obj)
 
     def get_revision(self):
         return self.item.latest_revision

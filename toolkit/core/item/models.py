@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from django.db.models.signals import post_save
 
+from toolkit.core.signals import on_item_post_save
 from toolkit.core.mixins import IsDeletedMixin
+
 from toolkit.utils import get_namedtuple_choices
 
 from .managers import ItemManager
@@ -103,6 +106,8 @@ class Item(IsDeletedMixin, models.Model):
 
     def can_delete(self, user):
         return user.profile.is_lawyer and user in self.matter.participants.all()
+
+post_save.connect(on_item_post_save, sender=Item)
 
 rulez_registry.register("can_read", Item)
 rulez_registry.register("can_edit", Item)
