@@ -164,8 +164,11 @@ POST
 
 ### Reviewers
 
-/matters/:matter_slug/items/:item_slug/revision/reviewer/:username (GET,POST,DELETE)
-    [lawyer,customer] to view, create and delete reviewers
+/matters/:matter_slug/items/:item_slug/revision/reviewers/ (GET,POST)
+    [lawyer,customer] to list, create reviewers
+/matters/:matter_slug/items/:item_slug/revision/reviewer/:username (GET,DELETE)
+    [lawyer,customer] to view, delete reviewers
+
 /matters/:matter_slug/items/:item_slug/revision/reviewers/remind (POST)
     Send reminder emails to any outstanding reviewers
 
@@ -175,8 +178,10 @@ POST
 
 ### Signatories
 
-/matters/:matter_slug/items/:item_slug/revision/signatory/:username (GET,POST,DELETE)
-    [lawyer,customer] to list,create and delete signatories
+/matters/:matter_slug/items/:item_slug/revision/signatories (GET,POST)
+    [lawyer,customer] to list and create signatories
+/matters/:matter_slug/items/:item_slug/revision/signatory/:username (GET,DELETE)
+    [lawyer,customer] to show and delete signatories
 
 /matters/:matter_slug/items/:item_slug/revision/signatories/remind (POST)
     [lawyer,customer] Send reminder emails to any outstanding signatories
