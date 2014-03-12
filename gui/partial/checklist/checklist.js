@@ -12,6 +12,8 @@ angular.module('toolkit-gui')
  * @param  {Object} matterService         An angular service designed to work with MATTER API end-points
  * @param  {Object} matterItemService     A custom angular service designed to work with MATTER ITEM API end-points
  * @param  {Object} matterCategoryService A custom angular service designed to work with MATTER CATEGORY end-points
+ * @param  {Object} participantService    A custom angular service designed to work with USER end-points
+ * @param  {Object} activityService       A custom angular service designed to work with ACTIVITY end-points
  * @param  {Function} $timeout            An angular wrapper for setTimeout that allows angular to keep track of when to update views
  */
 .controller('ChecklistCtrl', [
@@ -26,8 +28,9 @@ angular.module('toolkit-gui')
 	'matterItemService',
 	'matterCategoryService',
 	'participantService',
+	'activityService',
 	'$timeout',
-	function($scope, $rootScope, $routeParams, smartRoutes, ezConfirm, toaster, $modal, matterService, matterItemService, matterCategoryService, participantService, $timeout){
+	function($scope, $rootScope, $routeParams, smartRoutes, ezConfirm, toaster, $modal, matterService, matterItemService, matterCategoryService, participantService, activityService, $timeout){
 		/**
 		 * Scope based data for the checklist controller
 		 * @memberof			ChecklistCtrl
@@ -38,7 +41,7 @@ angular.module('toolkit-gui')
 		var routeParams = smartRoutes.params();
 		$scope.data = {
 			'slug': routeParams.matterSlug,
-			'matter': {},
+			'matter': null,
 			'showAddForm': null,
 			'showItemDetailsOptions': false,
 			'selectedItem': null,
@@ -51,12 +54,18 @@ angular.module('toolkit-gui')
 			]
 		};
 
-		if( $scope.data.slug && $scope.data.slug!=='' ) {
-			matterService.get( $scope.data.slug ).then(
+
+		if( $scope.data.slug && $scope.data.slug!=='' && $scope.data.matterCalled==null) {
+            $scope.data.matterCalled = true;
+
+            matterService.get( $scope.data.slug ).then(
 				function success( singleMatter ){
+                    $scope.data.matter = singleMatter;
+
 					//set matter in the services
 					matterService.selectMatter(singleMatter);
 					$scope.initialiseMatter( singleMatter );
+					$scope.initializeActivityStream( singleMatter );
 				},
 				function error(err){
 					toaster.pop('error', "Error!", "Unable to load matter");
@@ -150,6 +159,8 @@ angular.module('toolkit-gui')
 			$scope.data.showEditItemDescriptionForm = false;
 			$scope.data.showEditItemTitleForm = false;
             $scope.data.showPreviousRevisions = false;
+
+            console.log(item);
 		};
 
 		/**
@@ -595,9 +606,8 @@ angular.module('toolkit-gui')
 		 * @method				requestRevision
 		 * @memberof			ChecklistCtrl
 		 */
-		$scope.requestRevision = function( checklistItem ) {
+		$scope.requestRevision = function( item ) {
             var matterSlug = $scope.data.slug;
-			var item = $scope.data.selectedItem;
 
 			var modalInstance = $modal.open({
 				'templateUrl': '/static/ng/partial/request-revision/request-revision.html',
@@ -613,7 +623,7 @@ angular.module('toolkit-gui')
 						return $scope.data.matter;
 					},
 					'checklistItem': function () {
-						return checklistItem;
+						return item;
 					}
 				}
 			});
@@ -640,6 +650,52 @@ angular.module('toolkit-gui')
 				}
 			);
 		};
+
+
+        /**
+        * Remind the responsible user to upload a revision document.
+        *
+        * @param {Object} The item with the current revision
+        *
+        * @private
+        * @method		    remindRevisionRequest
+        * @memberof			ChecklistCtrl
+        */
+        $scope.remindRevisionRequest = function( item ) {
+            var matterSlug = $scope.data.slug;
+
+            matterItemService.remindRevisionRequest(matterSlug, item.slug).then(
+                    function success(){
+                    },
+                    function error(err){
+                        toaster.pop('error', "Error!", "Unable to remind the participant.");
+                    }
+            );
+        };
+
+
+        /**
+        * Delete the revision request for the item
+        *
+        * @param {Object} The item with the current revision
+        *
+        * @private
+        * @method		    deleteRevisionRequest
+        * @memberof			ChecklistCtrl
+        */
+        $scope.deleteRevisionRequest = function( item ) {
+            var matterSlug = $scope.data.slug;
+
+            matterItemService.deleteRevisionRequest(matterSlug, item.slug).then(
+                    function success(response){
+                        item.status = response.status;
+                    },
+                    function error(err){
+                        toaster.pop('error', "Error!", "Unable to remind the participant.");
+                    }
+            );
+        };
+
 
         /**
 		 * Initiates the view of a document as modal window.
@@ -734,7 +790,52 @@ angular.module('toolkit-gui')
 				}
 			);
 		};
+
+
+        /**
+        * Remind all review users who haven´t reviewed yet.
+        *
+        * @param {Object} The item with the current revision
+        *
+        * @private
+        * @method		    remindRevisionReview
+        * @memberof			ChecklistCtrl
+        */
+        $scope.remindRevisionReview = function( item ) {
+            var matterSlug = $scope.data.slug;
+
+            matterItemService.remindRevisionReview(matterSlug, item.slug).then(
+                    function success(){
+                    },
+                    function error(err){
+                        toaster.pop('error', "Error!", "Unable to remind the participant.");
+                    }
+            );
+        };
+
+        /**
+        * Delete the review request for a specific user
+        *
+        * @param {Object} The item with the current revision
+        * @param {Object} The reviewer whos review request should be deleted
+        *
+        * @private
+        * @method		    deleteRevisionReview
+        * @memberof			ChecklistCtrl
+        */
+        $scope.deleteRevisionReviewRequest = function( item, participant ) {
+            var matterSlug = $scope.data.slug;
+
+            matterItemService.deleteRevisionReviewRequest(matterSlug, item.slug, participant).then(
+                function success(){
+                },
+                function error(err){
+                    toaster.pop('error', "Error!", "Unable to delete the revision review request.");
+                }
+            );
+        };
         /* End revision handling */
+
 
 		/**
 		 * Called when dropping (after dragging) a checklist items or checklist categories.
@@ -751,6 +852,7 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
 		function recalculateCategories( evt, ui ) {
+            var matterSlug = $scope.data.slug;
 			var cats = $scope.data.categories;
 			var categoryName, items = [], item, i;
 			var APIUpdate = {
@@ -782,7 +884,7 @@ angular.module('toolkit-gui')
 				});
 			}
 
-			matterService.saveSortOrder(APIUpdate).then(
+			matterService.saveSortOrder(matterSlug, APIUpdate).then(
 				 function success(){
 					//if category changed for an item, save that
 					if (itemToUpdate != null){
@@ -846,5 +948,36 @@ angular.module('toolkit-gui')
 			'distance': 15,
 			'delay': 100
 		};
+
+
+        /**
+         *       _        _   _       _ _               _                              _                     _ _ _
+         *      / \   ___| |_(_)_   _(_) |_ _   _   ___| |_ _ __ ___  __ _ _ __ ___   | |__   __ _ _ __   __| | (_)_ __   __ _
+         *     / _ \ / __| __| \ \ / / | __| | | | / __| __| '__/ _ \/ _` | '_ ` _ \  | '_ \ / _` | '_ \ / _` | | | '_ \ / _` |
+         *    / ___ \ (__| |_| |\ V /| | |_| |_| | \__ \ |_| | |  __/ (_| | | | | | | | | | | (_| | | | | (_| | | | | | | (_| |
+         *   /_/   \_\___|\__|_| \_/ |_|\__|\__, | |___/\__|_|  \___|\__,_|_| |_| |_| |_| |_|\__,_|_| |_|\__,_|_|_|_| |_|\__, |
+         *                                  |___/                                                                        |___/
+		 *
+         *
+         */
+
+        $scope.initializeActivityStream = function() {
+            var matterSlug = $scope.data.slug;
+
+            activityService.list(matterSlug).then(
+				 function success(result){
+                    $scope.data.activitystream = result;
+				 },
+				 function error(err){
+					toaster.pop('error', "Error!", "Unable to read activity stream");
+				 }
+			);
+
+            //reload activity stream every 30seconds
+            $timeout(function (){
+                $scope.initializeActivityStream();
+            }, 1000 * 30);
+        };
+
 
 }]);
