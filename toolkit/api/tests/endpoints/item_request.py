@@ -23,7 +23,7 @@ class ItemsRequestDocumentTest(BaseEndpointTest):
                                 matter=self.workspace,
                                 name='Test Item No. 1', # test that "(Requested document)" get appended
                                 responsible_party=self.user,
-                                status=0)
+                                status=Item.ITEM_STATUS.new)
 
     @property
     def endpoint(self):
