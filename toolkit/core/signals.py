@@ -47,10 +47,10 @@ def on_workspace_post_save(sender, instance, created, **kwargs):
     """
     if created:
         send_activity_log.send(sender, **{
-            actor=instance.lawyer,
-            verb=u'created',
-            action_object=instance,
-            target=instance
+            'actor': instance.lawyer,
+            'verb': u'created',
+            'action_object': instance,
+            'target': instance
         })
 
 
@@ -60,18 +60,18 @@ def on_item_post_save(sender, instance, created, **kwargs):
     """
     if created:
         send_activity_log.send(sender, **{
-            actor=instance.matter.lawyer,
-            verb=u'created',
-            action_object=instance,
-            target=instance.matter
+            'actor': instance.matter.lawyer,
+            'verb': u'created',
+            'action_object': instance,
+            'target': instance.matter
         })
 
 
 def on_revision_post_save(sender, instance, created, **kwargs):
     if created:
         send_activity_log.send(sender, **{
-            actor=instance.uploaded_by,
-            verb=u'created',
-            action_object=instance,
-            target=instance.item.matter
+            'actor': instance.uploaded_by,
+            'verb': u'created',
+            'action_object': instance,
+            'target': instance.item.matter
         })
