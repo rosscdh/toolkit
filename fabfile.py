@@ -543,6 +543,8 @@ def rebuild_local():
     local('python manage.py migrate')
     local('python manage.py loaddata %s' % fixtures())
     local('python manage.py createsuperuser')  #manually as we rely on the dev-fixtures
+    local('cd gui;npm install')
+    local('cd gui;bower install')
 
 
 
