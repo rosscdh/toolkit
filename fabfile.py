@@ -527,7 +527,7 @@ def rebuild_local():
         #
         # Clone the Stamp PDF application
         #
-        local('git clone git@github.com:rosscdh/Stamp.git ../Stamp')
+        local('git clone https://github.com/rosscdh/Stamp.git ../Stamp')
 
     if not os.path.exists('toolkit/local_settings.py'):
         local('cp conf/dev.local_settings.py toolkit/local_settings.py')
@@ -543,6 +543,8 @@ def rebuild_local():
     local('python manage.py migrate')
     local('python manage.py loaddata %s' % fixtures())
     local('python manage.py createsuperuser')  #manually as we rely on the dev-fixtures
+    local('cd gui;npm install')
+    local('cd gui;bower install')
 
 
 

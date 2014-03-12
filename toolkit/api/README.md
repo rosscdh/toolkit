@@ -132,6 +132,12 @@ POST
     Allow the [lawyer,customer] user to list, and update an existing item
     objects; that belong to them
 
+Matter Actions
+============
+
+/matters/:matter_slug/activity/ (GET)
+    Allow the [lawyer,customer] user to list activities that belong to that matter
+
 # Revisions
 
 reviewers and signatories are represented on the item object, they are actually
@@ -141,7 +147,7 @@ We can also call specific revisions and access the reviewers and signatories for
 that particular revisions.
 
 /matters/:matter_slug/items/:item_slug/revision (GET,POST,PATCH,DELETE)
-    [lawyer,customer] to get,create,update,delete the latst revision
+    [lawyer,customer] to get,create,update,delete the latest revision
 
 POST
 ```

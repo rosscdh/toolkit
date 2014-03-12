@@ -28,6 +28,7 @@ def _download_file(url, obj, obj_fieldname='executed_file'):
         img_temp = NamedTemporaryFile(delete=True)
         img_temp.write(urllib2.urlopen(url).read())
         img_temp.flush()
+
         # save the downloaded file to the specified model fieldname
         getattr(obj, obj_fieldname).save(filename, File(img_temp))
         obj.save(update_fields=[obj_fieldname])

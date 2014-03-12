@@ -44,6 +44,7 @@ class HyperlinkedAutoDownloadFileField(serializers.URLField):
                 field.file = File(NamedTemporaryFile())
                 setattr(obj, field_name, field)
                 return super(HyperlinkedAutoDownloadFileField, self).field_to_native(obj, field_name)
+
             except Exception as e:
                 #
                 # is probably a normal file at this point but jsut continue to be safe
@@ -55,6 +56,7 @@ class HyperlinkedAutoDownloadFileField(serializers.URLField):
         # errors
         #
         return None
+
 
 class FileFieldAsUrlField(serializers.FileField):
     """

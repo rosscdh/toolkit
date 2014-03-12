@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+from actstream.models import Action, model_stream, action_object_stream
 from django.shortcuts import get_object_or_404
 
 from rulez import registry as rulez_registry
