@@ -133,5 +133,10 @@
   </div>
 
   <div ng-view class="full">
+  <span id="landmine"></span>
+  <script language="javascript" data-remove="exclude">
+    angular.module('toolkit-gui').constant('API_BASE_URL', '<!-- @echo apiBaseUrl -->/api/v1/');
+    angular.module('toolkit-gui').constant('STATUS_LEVEL', {'OK':0,'WARNING':1,'ERROR':2} );
+  </script>
 </body>
 </html>
