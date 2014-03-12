@@ -266,7 +266,7 @@ angular.module('toolkit-gui')
 
 				if( $files.length>0 ) {
 					url = $rootScope.API_BASE_URL + 'matters/'+matterSlug+'/items/'+itemSlug+'/revision';
-					file = $files[0];
+					var file = $files[0];
 
 					$upload.upload({
 						'url': url, //upload.php script, node.js route, or servlet url
@@ -285,8 +285,8 @@ angular.module('toolkit-gui')
 					setTimeout(
 						function(){
 							deferred.reject();
-						}
-					,1);
+						},
+					1);
 				}
 
 				return deferred.promise;
