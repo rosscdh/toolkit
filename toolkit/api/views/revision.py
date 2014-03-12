@@ -52,30 +52,6 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
         self.get_object()
         super(ItemCurrentRevisionView, self).initial(request, *args, **kwargs)
 
-    def get_serializer_context(self):
-        return {'request': self.request}
-
-    def get_serializer(self, instance=None, data=None,
-                       files=None, many=False, partial=False):
-        # pop it
-        if data is not None:
-            data['item'] = ItemSerializer(self.item).data.get('url')
-            data['uploaded_by'] = UserSerializer(self.request.user).data.get('url')
-
-        return super(ItemCurrentRevisionView, self).get_serializer(instance=instance, data=data,
-                                                                   files=files, many=many, partial=partial)
-
-    def pre_save(self, obj):
-        """
-        @BUSINESSRULE Enforce the revision.uploaded_by and revision.item
-        """
-        obj.item = self.item
-        obj.uploaded_by = self.request.user
-        super(ItemCurrentRevisionView, self).pre_save(obj=obj)
-
-    def get_revision(self):
-        return self.item.latest_revision
-
     def get_object(self):
         """
         Ensure we get self.item
@@ -91,6 +67,33 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
                 raise Http404
 
         return self.revision
+
+    def get_serializer_context(self):
+        return {'request': self.request}
+
+    def get_serializer(self, instance=None, data=None,
+                       files=None, many=False, partial=False):
+        # pop it
+        if data is not None:
+            data['item'] = ItemSerializer(self.item).data.get('url')
+            data['uploaded_by'] = UserSerializer(self.request.user).data.get('url')
+
+        return super(ItemCurrentRevisionView, self).get_serializer(instance=instance,
+                                                                   data=data,
+                                                                   files=files,
+                                                                   many=many,
+                                                                   partial=partial)
+
+    def pre_save(self, obj):
+        """
+        @BUSINESSRULE Enforce the revision.uploaded_by and revision.item
+        """
+        obj.item = self.item
+        obj.uploaded_by = self.request.user
+        super(ItemCurrentRevisionView, self).pre_save(obj=obj)
+
+    def get_revision(self):
+        return self.item.latest_revision
 
     def can_read(self, user):
         return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
