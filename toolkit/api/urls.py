@@ -14,7 +14,8 @@ from .views import (MatterEndpoint,
                     MatterParticipant,)
 
 from .views import (ActivityEndpoint,
-                    MatterActivityEndpoint)
+                    MatterActivityEndpoint,
+                    ItemActivityEndpoint)
 
 from .views import (MatterItemsView,
                     MatterItemView,
@@ -73,6 +74,7 @@ urlpatterns = router.urls + patterns('',
     #
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/?$', MatterItemsView.as_view(), name='matter_items'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/request_document/?$', MatterItemRequestRevisionView.as_view(), name='matter_item_request_doc'),
+    url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/activity/?$', ItemActivityEndpoint.as_view(), name='item_activity'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/?$', MatterItemView.as_view(), name='matter_item'),
     #
     # Revisions
