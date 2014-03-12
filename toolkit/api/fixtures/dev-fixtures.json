@@ -143,6 +143,15 @@
   },
   {
     "pk": 1,
+    "model": "client.client",
+    "fields": {
+      "name": "Lawpal (internal)",
+      "lawyer": 1,
+      "slug": "lawpal-internal"
+    }
+  },
+  {
+    "pk": 1,
     "model": "workspace.tool",
     "fields": {
       "data": {
