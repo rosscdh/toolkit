@@ -49,12 +49,7 @@ angular.module('toolkit-gui')
 		 * @return {Function}   $resource
 		 */
 		function matterResource() {
-	        var matterSlug = '';
-	        if(matter.selected != null){
-	            matterSlug = matter.selected.slug;
-	        }
-
-			return $resource( API_BASE_URL + 'matters/:matterSlug/:action', {'matterSlug':matterSlug, 'action':'@action'}, {
+			return $resource( API_BASE_URL + 'matters/:matterSlug/:action', {}, {
 				'list': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } },
 				'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } },
 				'sort': { 'method': 'PATCH', 'params': {'action': 'sort'}, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } }
@@ -147,6 +142,7 @@ angular.module('toolkit-gui')
 
 				var api = matterResource();
 
+                console.log('firing get');
 				api.get( { 'matterSlug': matterSlug },
 					function success( singleMatter ){
 						deferred.resolve( singleMatter );
@@ -174,12 +170,12 @@ angular.module('toolkit-gui')
 			 *
 			 * @return {Promise}    Array of matters
 		 	 */
-	        'saveSortOrder': function ( APIUpdate ) {
+	        'saveSortOrder': function ( matterSlug, APIUpdate ) {
 	            var deferred = $q.defer();
 
 				var api = matterResource();
 
-				api.sort(APIUpdate,
+				api.sort({'matterSlug': matterSlug },APIUpdate,
 					function success(){
 						deferred.resolve();
 					},

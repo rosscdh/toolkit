@@ -5,13 +5,13 @@ angular.module('toolkit-gui').factory('participantService', [
 	function($q, $resource, API_BASE_URL) {
 
         function userAPI() {
-            return $resource('/api/v1/users/:username', {}, {
+            return $resource( API_BASE_URL + 'users/:username', {}, {
 				'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } }
 			});
         }
 
 		function participantAPI() {
-			return $resource( API_BASE_URL + '/api/v1/matters/:matterSlug/participant/:id', {}, {
+			return $resource( API_BASE_URL + 'matters/:matterSlug/participant/:id', {}, {
 				'list': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }, 'isArray': true },
 				'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } },
 				'invite': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } },
