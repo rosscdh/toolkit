@@ -25,11 +25,15 @@ module.exports = function (grunt) {
     /**
     * Constants for the Gruntfile so we can easily change the path for our environments.
     */
-    DJANGO_STATIC_URL: '/static/ng/',
-    DJANGO_API_URL: 'http://localhost:8000',
+    DJANGO_STATIC_DEV_PATH: '/static/ng/',
+    DJANGO_DEV_API: 'http://localhost:8000',
+
     DJANGO_STATIC_PRODUCTION_PATH: 'static/ng/',
-    DJANGO_API_PRODUCTION_URL: 'http://localhost:8001',
+    DJANGO_PRODUCTION_API: 'http://localhost:8001',
+    DJANGO_PRODUCTION_ASSET_SERVER: 'http://localhost:8002/',
     PRODUCTION_PATH: 'dist/',
+
+    /* <%= DJANGO_STATIC_PRODUCTION_SERVER %> */
 
     /**
     * Allows us to pass in variables to files that have place holders so we can similar files with different data.
@@ -44,8 +48,8 @@ module.exports = function (grunt) {
             dest : 'index.html',
             options : {
                 context : {
-                    staticPath : '<%= DJANGO_STATIC_URL %>',
-                    apiBaseUrl : '<%= DJANGO_API_URL %>'
+                    staticPath : '<%= DJANGO_STATIC_DEV_PATH %>',
+                    apiBaseUrl : '<%= DJANGO_DEV_API %>'
                 }
             }
         },
@@ -55,7 +59,7 @@ module.exports = function (grunt) {
             options : {
                 context : {
                     staticPath : '',
-                    apiBaseUrl : '<%= DJANGO_API_PRODUCTION_URL %>'
+                    apiBaseUrl : '<%= DJANGO_PRODUCTION_API %>'
                 }
             }
         },
@@ -65,7 +69,7 @@ module.exports = function (grunt) {
             options : {
                 context : {
                     staticPath : '',
-                    apiBaseUrl : '<%= DJANGO_API_URL %>'
+                    apiBaseUrl : '<%= DJANGO_DEV_API %>'
                 }
             }
         }
@@ -154,15 +158,15 @@ module.exports = function (grunt) {
       removescripts: {
         options:{
           remove:'script[data-remove!="exclude"]',
-          append:{selector:'head',html:'<script src="' + '<%= grunt.option(\"PRODUCTION_STATIC_URL\") %>' + 'app.full.min.js"></script>'}
+          append:{selector:'head',html:'<script src="' + '<%= DJANGO_STATIC_PRODUCTION_PATH %>' + 'app.full.min.js"></script>'}
         },
         src:'<%= PRODUCTION_PATH %>' + 'index.html'
       },
       //add verbatim and endverbatim to prohibit conflicts with the django template tags
       addscript: {
         options:{
-              append:{selector:'#landmine',html:'<script src="' + '<%= grunt.option(\"PRODUCTION_STATIC_URL\") %>' + 'app.full.min.js"></script>'}
-            },
+              append:{selector:'#landmine',html:'<script src="' + '<%= DJANGO_PRODUCTION_ASSET_SERVER %><%= DJANGO_STATIC_PRODUCTION_PATH %>' + 'app.full.min.js"></script>'}
+            },/* <%= DJANGO_PRODUCTION_ASSET_SERVER => */
             src:'<%= PRODUCTION_PATH %>' + 'index.html'
       },
       addverbatimprod:{
@@ -182,13 +186,13 @@ module.exports = function (grunt) {
       removecss: {
         options:{
           remove:'link',
-          append:{selector:'head',html:'<link rel="stylesheet" href="' + '<%= grunt.option(\"PRODUCTION_STATIC_URL\") %>' + 'css/app.full.min.css">'}
+          append:{selector:'head',html:'<link rel="stylesheet" href="' + '<%= DJANGO_PRODUCTION_ASSET_SERVER %><%= DJANGO_STATIC_PRODUCTION_PATH %>' + 'css/app.full.min.css">'}
         },
         src:'<%= PRODUCTION_PATH %>' + 'index.html'
       },
       addcss: {
         options:{
-          append:{selector:'head',html:'<link rel="stylesheet" href="' + '<%= grunt.option(\"PRODUCTION_STATIC_URL\") %>' + 'css/app.full.min.css">'}
+          append:{selector:'head',html:'<link rel="stylesheet" href="' + '<%= DJANGO_PRODUCTION_ASSET_SERVER %><%= DJANGO_STATIC_PRODUCTION_PATH %>' + 'css/app.full.min.css">'}
         },
         src:'<%= PRODUCTION_PATH %>' + 'index.html'
       }
@@ -277,7 +281,7 @@ module.exports = function (grunt) {
     console.log('>> target', target);
 
     grunt.option("PRODUCTION_STATIC_URL", '/static/ng/');
-    grunt.option("DJANGO_API_URL", 'http://localhost:8001/');
+    //grunt.option("DJANGO_DEV_API", 'http://localhost:8001/');
 
     //djangoProd
     grunt.task.run('preprocess:djangoProd','jshint','clean:before','less','dom_munger:readcss','dom_munger:readscripts','ngtemplates','cssmin','concat','ngmin','uglify','copy','dom_munger:removecss','dom_munger:addcss','dom_munger:removescripts','dom_munger:addscript');
