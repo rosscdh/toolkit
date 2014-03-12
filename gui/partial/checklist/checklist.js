@@ -671,7 +671,7 @@ angular.module('toolkit-gui')
 		};
 
         /**
-		 *
+		 * Initiates the view of a document as modal window.
 		 *
 		 * @param {Object} revision object to view
 		 *
@@ -710,7 +710,9 @@ angular.module('toolkit-gui')
 		};
 
 		/**
-		 * [ dennis please describe this function ]
+		 * Broadcasts the event with the given name to the scope. The focus directive is listening to this broadcast.
+         * Timeout is required, because the UI element has to visible to receive the focus. The rendering process
+         * takes a few milliseconds.
 		 *
 		 * @name 				focus
 		 * 
