@@ -183,8 +183,6 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest):
 
         self.client.login(username=self.lawyer.username, password=self.password)
 
-#        self.item.revision_set.all().delete()
-
         data = {
             'executed_file': expected_image_url,
         }
