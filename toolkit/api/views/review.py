@@ -14,7 +14,6 @@ from rest_framework.response import Response
 from rest_framework import status as http_status
 
 from toolkit.core.attachment.models import Revision
-from ..serializers import RevisionSerializer
 
 from toolkit.apps.review.models import ReviewDocument
 
@@ -88,14 +87,27 @@ class ItemRevisionReviewersView(generics.ListAPIView,
         2. is the user already a reviewer for this revision
         3. if not make them one
         """
-        if request.DATA.get('username') is None and request.DATA.get('email') is None:
+        username = request.DATA.get('username')
+        email = request.DATA.get('email')
+        if username is None and email is None:
             raise exceptions.APIException('You must provide a username or email')
 
-        if request.DATA.get('username') is not None:
-            user = get_object_or_404(User, username=request.DATA.get('username'))
+        try:
+            if username is not None:
+                user = User.objects.get(username=username)
 
-        if request.DATA.get('email') is not None:
-            user = get_object_or_404(User, email=request.DATA.get('email'))
+            elif email is not None:
+                user = User.objects.get(email=email)
+
+        except User.DoesNotExist:
+
+            if email is None:
+                raise Http404
+
+            else:
+                # we have a new user here
+                user_service = EnsureCustomerService(email=email)
+                is_new, user, profile = user_service.process()
 
         note = request.DATA.get('note')
 
