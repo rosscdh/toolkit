@@ -255,23 +255,9 @@ angular.module('toolkit-gui')
 		 * @method				getParticipantByUrl
 		 * @memberof			ChecklistCtrl
 		 */
-        $scope.getParticipantByUrl = function (participanturl, showOnlyInitials){
+        $scope.getParticipantByUrl = function (participanturl){
              if ($scope.data.loadedParticipants == null) {
                  $scope.data.loadedParticipants = {};
-             }
-
-             function printUser(participant){
-                 if (showOnlyInitials === true && participant.initials != null && participant.initials.length>0) {
-                     return '(' + participant.initials + ')';
-                 } else if (showOnlyInitials === true && participant.initials == null) {
-                     return '';
-                 }
-
-                 if (participant.last_name != null && participant.last_name.length >0) {
-                     return participant.first_name + ' ' + participant.last_name;
-                 } else {
-                     return participant.email;
-                 }
              }
 
              //only load user from api, if not already loaded
@@ -282,14 +268,14 @@ angular.module('toolkit-gui')
                      function success(participant){
                          //store user in dict with url as key
                          $scope.data.loadedParticipants[participanturl] = participant;
-                         return printUser(participant);
+                         return participant;
                      },
                      function error(err){
                          return '';
                      }
                  );
              } else if (participanturl != null && $scope.data.loadedParticipants[participanturl] != null){
-                 return printUser($scope.data.loadedParticipants[participanturl]);
+                 return $scope.data.loadedParticipants[participanturl];
              } else {
                  return '';
              }
@@ -779,7 +765,7 @@ angular.module('toolkit-gui')
                         'note': result.message
                     };
 
-                    matterItemService.requestRevisionReview(matterSlug, item.slug, requestdata).then(
+                    matterItemService.requestRevisionReview(matterSlug, item.slug, result.participant).then(
 							function success(response){
                                 item.status = response.status;
                                 item.responsible_party = response.responsible_party;
@@ -827,8 +813,9 @@ angular.module('toolkit-gui')
         * @method		    deleteRevisionReview
         * @memberof			ChecklistCtrl
         */
-        $scope.deleteRevisionReviewRequest = function( item, participant ) {
+        $scope.deleteRevisionReviewRequest = function( item, participant_url ) {
             var matterSlug = $scope.data.slug;
+            var participant = $scope.getParticipantByUrl(participant_url);
 
             matterItemService.deleteRevisionReviewRequest(matterSlug, item.slug, participant).then(
                 function success(){
@@ -925,6 +912,26 @@ angular.module('toolkit-gui')
 			  $scope.$broadcast('focusOn', name);
 			}, 300);
 		};
+
+        /*
+        $scope.handleDateDuePicker = function(){
+            jQuery('#datedue').popover({
+                html : true,
+                placement : 'bottom',
+                content: function() {
+                  return jQuery('#dateduepicker-container').html();
+                }
+            });
+        };*/
+        //TODO implement better datepicker!
+        $scope.$watch('data.dateduepickerdate', function(newValue, oldValue) {
+              //only save is date due picker is visible
+              if($scope.data.showDateDuePicker==true){
+                  'YYYY-MM-DDTHH:mm:ss.SSSZ'
+                  $scope.data.selectedItem.date_due = $scope.data.dateduepickerdate;
+                  $scope.saveSelectedItem();
+              }
+        });
 
 		/**
 		 * UI.sortable options for checklist items
