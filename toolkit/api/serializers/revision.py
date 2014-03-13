@@ -1,7 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django.core.files import File
 from django.core.urlresolvers import reverse
-from django.core.validators import URLValidator
 from django.core.files.temp import NamedTemporaryFile
 
 from rest_framework import serializers
@@ -32,13 +31,18 @@ class HyperlinkedAutoDownloadFileField(serializers.URLField):
                 if field.name in [None, '']:
                     raise Exception('File has no name')
 
-                # Validate the url
-                URLValidator(field.name)
-
                 #
                 # Start download if the file does not exist
                 #
-                _download_file(url=field.name, obj=obj, obj_fieldname=field_name)
+
+                # important as we then access the "name" attribute in teh serializer
+                # that allows us to name the file (as filepicker sends the name and url seperately)
+                request = self.context.get('request', {})
+
+                url = request.get('executed_file')
+                filename = request.get('name')
+
+                _download_file(url=url, filename=filename, obj=obj, obj_fieldname=field_name)
 
                 # set to blank so we dont get Suspicious operation on urls
                 field.file = File(NamedTemporaryFile())
@@ -49,7 +53,7 @@ class HyperlinkedAutoDownloadFileField(serializers.URLField):
                 #
                 # is probably a normal file at this point but jsut continue to be safe
                 #
-                logger.info('HyperlinkedAutoDownloadFileField field.name is not a url: %s' % field)
+                logger.info('HyperlinkedAutoDownloadFileField field.name is not a url: %s %s' % (field, e))
         #
         # NB this must return None!
         # else it will raise attribute has no file associated with it
