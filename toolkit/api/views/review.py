@@ -2,6 +2,7 @@
 """
 Item review a revision endpoint
 """
+from django.http import Http404
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 
@@ -26,7 +27,7 @@ import logging
 logger = logging.getLogger('django.request')
 
 
-class BaseReviewerSignatoryMixin(generics.CreateAPIView):
+class BaseReviewerSignatoryMixin(generics.GenericAPIView):
     """
     Provides the object to access .signatories or .reviewers
     and their required functionality
@@ -59,6 +60,7 @@ class BaseReviewerSignatoryMixin(generics.CreateAPIView):
 
 
 class ItemRevisionReviewersView(generics.ListAPIView,
+                                generics.CreateAPIView,
                                 BaseReviewerSignatoryMixin):
     """
     /matters/:matter_slug/items/:item_slug/revision/reviewers/ (GET,POST)
@@ -121,7 +123,7 @@ class ItemRevisionReviewerView(generics.RetrieveAPIView,
     /matters/:matter_slug/items/:item_slug/revision/reviewer/:username (GET,DELETE)
         [lawyer,customer] to view, delete reviewers
     """
-    model = Revision  # to allow us to use get_object generically
+    model = User  # to allow us to use get_object generically
     serializer_class = SimpleUserSerializer  # as we are returning the revision and not the item
     lookup_field = 'username'
     lookup_url_kwarg = 'username'
@@ -133,53 +135,62 @@ class ItemRevisionReviewerView(generics.RetrieveAPIView,
         return get_object_or_404(User, username=self.kwargs.get('username'))
 
     def retrieve(self, request, **kwargs):
+        status = http_status.HTTP_200_OK
+
         user = self.get_object()
-        #import pdb;pdb.set_trace()
+        serializer = self.get_serializer(user)
+        data = serializer.data
 
-        if user in self.revision.reviewers.all():
-            if user in self.revision.reviewdocument_set.all().first().reviewers.all():
-                auth_url = self.revision.reviewdocument_set.all().first().get_absolute_url(user=user)
-                # self.revision.reviewdocument_set.all().first()
-                # self.revision.reviewdocument_set.all().first().participants.all()
-                # self.revision.reviewdocument_set.all().first().reviewers.all()
-                #.get_auth(user=user)
-                serializer = self.get_serializer(user)
-                data = serializer.data
-                data.update({
-                    'auth_url': auth_url
-                })
+        #
+        # Find ReviewDocumets where this user is the reviewer
+        # Should only ever be one
+        #
+        reviewdocument_set = ReviewDocument.objects.filter(document=self.revision,
+                                                           reviewers__in=[user])
+        if len(reviewdocument_set) == 0:
+            #
+            # must not be 0 as we have the users username thus they should be
+            # part of the reviewers at this stage
+            #
+            raise Http404
 
-                headers = self.get_success_headers(serializer.data)
+        if len(reviewdocument_set) > 1:
+            #
+            # Should never have more than 1
+            #
+            status = http_status.HTTP_406_NOT_ACCEPTABLE
 
-        return Response(data, status=http_status.HTTP_200_OK, headers=headers)
+        for reviewdocument in reviewdocument_set:
+            auth_url = reviewdocument.get_absolute_url(user=user)
+
+            data.update({
+                'auth_url': auth_url
+            })
+
+            #headers = self.get_success_headers(serializer.data)
+            status = http_status.HTTP_200_OK
+            break
+
+        return Response(data, status=status)
 
     def delete(self, request, **kwargs):
-        return Response()
-    # def delete(self, request, **kwargs):
-    #     """
-    #     as we are dealign with a set here we can actually delete the object,
-    #     we are trying to delete just the join
-    #     """
-    #     user = self.get_object()
-    #     # we have the user at this point
-    #     serializer = self.get_serializer(user)
-    #     headers = None
+        status = http_status.HTTP_200_OK
 
-    #     try:
+        user = self.get_object()
+        serializer = self.get_serializer(user)
+        data = serializer.data
 
-    #         #
-    #         # Only delete the join if it exists
-    #         #
-    #         self.get_revision_object_set_queryset().remove(user)
+        if user in self.revision.reviewers.all():
+            #
+            # the user is in the reviewers set
+            # remove them. This will (via the signals) remove them from the
+            # reviewdocument object too
+            #
+            self.revision.reviewers.remove(user)
+        else:
+            status = http_status.HTTP_404_NOT_FOUND
 
-    #         status = http_status.HTTP_204_NO_CONTENT
-    #         headers = self.get_success_headers(serializer.data)
-
-    #     except Exception as e:
-    #         logger.critical('delete failed: %s' % e)
-    #         status = http_status.HTTP_400_BAD_REQUEST
-
-    #     return Response(serializer.data, status=status, headers=headers)
+        return Response(data, status=status)
 
     def can_read(self, user):
         return user.profile.user_class in ['lawyer', 'customer']
