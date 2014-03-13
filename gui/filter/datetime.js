@@ -28,6 +28,9 @@ angular.module('toolkit-gui').filter('duestatus', function () {
         var due_date = moment(datestr, "YYYY-MM-DDTHH:mm:ss.SSSZ");
         var curr_time = moment();
 
+        console.log(datestr);
+        console.log(due_date);
+
         if (curr_time.add(moment.duration(5, 'd')) > due_date){
             return 'btn-danger';
         } else {

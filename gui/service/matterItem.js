@@ -380,7 +380,7 @@ angular.module('toolkit-gui')
             /**
 			 * Requests the API to send a revision request to given participant.
 			 *
-			 * @name				deleteRevision
+			 * @name				requestRevision
 			 * @param {String}      matterSlug    Database slug, used as a unique identifier for a matter.
 			 * @param {String}      itemSlug      Database slug, used as a unique identifier for a checklist item.
 			 * @param {Object}      participant   Dictionary consisting of email, message, username
@@ -505,8 +505,9 @@ angular.module('toolkit-gui')
 				var deferred = $q.defer();
 
 				var api = reviewerItemResource();
+                console.log(participant);
 
-				api.request({'matterSlug': matterSlug, 'itemSlug': itemSlug }, {'reviewer': participant.username},
+				api.request({'matterSlug': matterSlug, 'itemSlug': itemSlug }, {'username': participant.username},
 					function success(response){
 						deferred.resolve(response);
 					},
@@ -540,7 +541,7 @@ angular.module('toolkit-gui')
 
 				var api = reviewerItemResource();
 
-				api.remind({'matterSlug': matterSlug, 'itemSlug': itemSlug },
+				api.remind({'matterSlug': matterSlug, 'itemSlug': itemSlug }, {},
 					function success(){
 						deferred.resolve();
 					},

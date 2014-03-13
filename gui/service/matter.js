@@ -142,7 +142,6 @@ angular.module('toolkit-gui')
 
 				var api = matterResource();
 
-                console.log('firing get');
 				api.get( { 'matterSlug': matterSlug },
 					function success( singleMatter ){
 						deferred.resolve( singleMatter );
