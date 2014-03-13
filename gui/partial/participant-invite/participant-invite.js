@@ -63,8 +63,15 @@ angular.module('toolkit-gui')
 		 */
 		$scope.invite = function () {
 			participantService.invite( matter.selected.slug, $scope.data.invitee ).then(
-				function success() {
-					//
+				function success(response) {
+                    participantService.getByURL(response.url).then(
+                        function success(participant){
+                            $scope.participants.push(participant);
+                        },
+                        function error(err){
+                            toaster.pop('error', "Error!", "Unable to load participant");
+                        }
+                    );
 				},
 				function error() {
 					toaster.pop('error', "Error!", "Unable to invite this person to particpate, please try again in a few moments");
@@ -83,12 +90,16 @@ angular.module('toolkit-gui')
 		 * @memberof			ParticipantInviteCtrl
 		 */
 		$scope.revoke = function ( person ) {
-			participantService.invite( matter.selected.slug, person ).then(
+			participantService.revoke( matter.selected.slug, person ).then(
 				function success() {
-					//
+					var index = jQuery.inArray( person, $scope.participants );
+                    if( index>=0 ) {
+                        // Remove user from in RAM array
+                        $scope.participants.splice(index,1);
+                    }
 				},
 				function error() {
-					toaster.pop('error', "Error!", "Unable to invite this person to particpate, please try again in a few moments");
+					toaster.pop('error', "Error!", "Unable to revoke the access of this person");
 				}
 			);
 		};
