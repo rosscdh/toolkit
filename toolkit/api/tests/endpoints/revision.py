@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.test import LiveServerTestCase
 from django.core.urlresolvers import reverse
 from django.core.files.storage import FileSystemStorage
 from django.test.client import MULTIPART_CONTENT
@@ -158,7 +159,7 @@ class ItemSubRevision3Test(ItemSubRevision2Test):
         self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/items/%s/revision/v%d' % (self.item.slug, self.version_no))
 
 
-class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest):
+class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerTestCase):
     @property
     def endpoint(self):
         return reverse('matter_item_revision', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug})
