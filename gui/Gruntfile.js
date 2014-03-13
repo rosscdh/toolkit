@@ -128,6 +128,16 @@ module.exports = function (grunt) {
         dest: 'temp/templates.js'
       }
     },
+    replace: {
+      template_paths: {
+        src: ['temp/templates.js'],
+        overwrite: true,                 // overwrite matched source files
+        replacements: [{
+          from: 'partial/',
+          to: '/static/ng/partial/'
+        }]
+      }
+    },
     copy: {
       main: {
         files: [
@@ -284,7 +294,7 @@ module.exports = function (grunt) {
     //grunt.option("DJANGO_DEV_API", 'http://localhost:8001/');
 
     //djangoProd
-    grunt.task.run('preprocess:djangoProd','jshint','clean:before','less','dom_munger:readcss','dom_munger:readscripts','ngtemplates','cssmin','concat','ngmin','uglify','copy','dom_munger:removecss','dom_munger:addcss','dom_munger:removescripts','dom_munger:addscript');
+    grunt.task.run('preprocess:djangoProd','jshint','clean:before','less','dom_munger:readcss','dom_munger:readscripts','ngtemplates','replace:template_paths','cssmin','concat','ngmin','uglify','copy','dom_munger:removecss','dom_munger:addcss','dom_munger:removescripts','dom_munger:addscript');
 
     grunt.task.run('htmlmin','imagemin','clean:after');
   });
