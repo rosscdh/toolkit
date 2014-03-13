@@ -102,6 +102,7 @@ PROJECT_APPS = (
     'toolkit.apps.workspace',
     # Core related apps
     'toolkit.apps.review',
+    'toolkit.apps.sign',
     # Routine Apps
     'toolkit.apps.eightythreeb',
     'toolkit.apps.engageletter',
