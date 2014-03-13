@@ -453,7 +453,6 @@ angular.module('toolkit-gui')
 
 			matterItemService.uploadRevisionFile( matterSlug, itemSlug, $files ).then(
 				function success( revision ) {
-					debugger;
 					revision.uploaded_by = matterService.data().selected.current_user;
 					item.latest_revision = revision;
 
