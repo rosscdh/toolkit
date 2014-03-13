@@ -14,7 +14,7 @@
 							<span class="second-icon fui-radio-checked"></span>
 						</span>
 						<input type="radio" value="{{person.username}}" ng-model="data.request.person" name="participants">
-						<font ng-bind="person.first_name"></font> <font ng-bind="person.last_name"></font>
+						<label ng-bind="person | fullname"></label>
 					</label>
 				</li>
 				<li>
