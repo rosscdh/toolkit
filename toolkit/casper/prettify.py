@@ -25,6 +25,24 @@ def mock_http_requests(view_func):
                                body=HELLOSIGN_200_RESPONSE,
                                status=200)
         #
+        # Crocdoc
+        #
+        httpretty.register_uri(httpretty.POST, "https://crocodoc.com/api/v2/session/create",
+                       body='{"session": i_12345-123_123_123-12345_123}',
+                       status=200)
+        httpretty.register_uri(httpretty.GET, "https://crocodoc.com/api/v2/document/status",
+                       body='{"success": true}',
+                       status=200)
+        httpretty.register_uri(httpretty.POST, "https://crocodoc.com/api/v2/document/upload",
+                       body='{"success": true, "uuid": "123-test-123-uuid"}',
+                       status=200)
+        httpretty.register_uri(httpretty.POST, "https://crocodoc.com/api/v2/document/delete",
+                       body='{"token": "pRzHhZS4jaGes193db28cwyu", "uuid": "123-test-123-uuid"}',
+                       status=200)
+        httpretty.register_uri(httpretty.GET, re.compile("https://crocodoc.com/view/(.*)"),
+                       body='This is a document',
+                       status=200)
+        #
         # USPS
         # POST and GET are the same as USPS is not REST or even RESTFUL
         #
@@ -43,7 +61,6 @@ def mock_http_requests(view_func):
         httpretty.register_uri(httpretty.GET, re.compile("http://abridge.local.dev/(.+)"),
                                body='{"success": true}',
                                status=200)
-
         #
         # Intercom & misc
         #
