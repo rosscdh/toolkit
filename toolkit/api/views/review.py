@@ -88,7 +88,15 @@ class ItemRevisionReviewersView(generics.ListAPIView,
         2. is the user already a reviewer for this revision
         3. if not make them one
         """
-        user = get_object_or_404(User, username=request.DATA.get('username'))
+        if request.DATA.get('username') is None and request.DATA.get('email') is None:
+            raise exceptions.APIException('You must provide a username or email')
+
+        if request.DATA.get('username') is not None:
+            user = get_object_or_404(User, username=request.DATA.get('username'))
+
+        if request.DATA.get('email') is not None:
+            user = get_object_or_404(User, email=request.DATA.get('email'))
+
         note = request.DATA.get('note')
 
         # add to the join if not there already
