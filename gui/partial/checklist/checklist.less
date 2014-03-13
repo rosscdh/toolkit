@@ -1,26 +1,9 @@
-td.item-title {
-	position: relative;
-	span { z-index:2; position: relative; }
-	div { z-index:1}
-	.progress {
-		position: absolute;
-		top: 0;
-		left: 0;
-		border-radius: 0;
-		width:200%;
-		height:100%;
-		background-color: transparent;
-		margin:0;
-		padding:0;
-	}
-}
-
 tr.item-heading {
 	-webkit-transition: all 0.3s ease-out;
-    -moz-transition: all 0.3s ease-out;
-    -ms-transition: all 0.3s ease-out;
-    -o-transition: all 0.3s ease-out;
-    transition: all 0.3s ease-out;
+	-moz-transition: all 0.3s ease-out;
+	-ms-transition: all 0.3s ease-out;
+	-o-transition: all 0.3s ease-out;
+	transition: all 0.3s ease-out;
 }
 
 tr .dropable-area {
@@ -29,7 +12,7 @@ tr .dropable-area {
 	position: absolute;
 	top:0;
 	left:0;
-    display: none;
+	display: none;
 }
 
 tr.item-heading.file-drag-over {
@@ -41,4 +24,21 @@ tr.item-heading.file-drag-over td:nth-child(2):before {
 	float:left;
 	opacity:0.5;
 	padding: 0.25em;
+}
+
+.upload-bar {
+	bottom: 0;
+	height: 30px;
+	left: 0;
+	position: absolute;
+	width: 100%;
+
+	.progress {
+		border-radius: 0;
+		float: left;
+		height: 20px;
+		margin: 0 10px 10px 0;
+		padding: 0;
+		width: 250px;
+	}
 }
