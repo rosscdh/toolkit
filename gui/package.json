@@ -22,7 +22,8 @@
     "grunt-contrib-jasmine": "~0.5",
     "load-grunt-tasks": "~0.2",
     "grunt-jsdoc": "~0.5.1",
-    "ink-docstrap": "~0.3.0-0"
+    "ink-docstrap": "~0.3.0-0",
+    "grunt-text-replace": "~0.3.11"
   },
   "dependencies": {}
 }
