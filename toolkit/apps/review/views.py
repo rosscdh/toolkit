@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.views.generic import DetailView
+from django.core.exceptions import PermissionDenied
 from django.contrib.auth import authenticate, login, logout
 
 from dj_crocodoc.services import CrocoDocConnectService
@@ -16,8 +17,19 @@ class ReviewRevisionView(DetailView):
     template_name = 'review/review.html'
 
     def dispatch(self, request, *args, **kwargs):
-
+        #
+        # Log in using the review backend
+        # 'toolkit.apps.review.auth_backends.ReviewDocumentBackend'
+        #
         user = authenticate(username=kwargs.get('slug'), password=kwargs.get('auth_slug'))
+
+        if request.user.is_authenticated() is True:
+            #
+            # user is we are already logged in then check this guys mojo!
+            #
+            if request.user != user:
+                raise PermissionDenied
+
         if user:
             login(request, user)
 
@@ -37,7 +49,7 @@ class ReviewRevisionView(DetailView):
 
     def get_context_data(self, **kwargs):
         kwargs = super(ReviewRevisionView, self).get_context_data(**kwargs)
-
+        
         # test the file is present locally
         if self.object.file_exists_locally is False:
             # its not so download it locally so we can send the file to crocodoc
@@ -76,7 +88,7 @@ class ReviewRevisionView(DetailView):
 
         kwargs.update({
             'crocodoc': crocodoc.obj.crocodoc_service,
-            'crocodoc_view_url': crocodoc.obj.crocodoc_service.view_url(),
+            'crocodoc_view_url': crocodoc.obj.crocodoc_service.view_url(**CROCDOC_PARAMS),  # this is where the view params must be sent in order to show toolbar etc
             'CROCDOC_PARAMS': CROCDOC_PARAMS, # for testing the values
         })
 
