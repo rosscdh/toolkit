@@ -65,7 +65,7 @@ Handle when a signer is added to the object
 """
 
 
-@receiver(m2m_changed, sender=SignDocument.signers.through, dispatch_uid='signdocument.on_signer_add')
+@receiver(m2m_changed, sender=SignDocument.signatories.through, dispatch_uid='signdocument.on_signer_add')
 def on_signer_add(sender, instance, action, **kwargs):
     """
     when a signer is added from the m2m then authorise them
@@ -75,7 +75,7 @@ def on_signer_add(sender, instance, action, **kwargs):
         _add_as_authorised(instance=instance, pk_set=kwargs.get('pk_set'))
 
 
-@receiver(m2m_changed, sender=SignDocument.signers.through, dispatch_uid='signdocument.on_signer_remove')
+@receiver(m2m_changed, sender=SignDocument.signatories.through, dispatch_uid='signdocument.on_signer_remove')
 def on_signer_remove(sender, instance, action, **kwargs):
     """
     when a signer is removed from the m2m then deauthorise them

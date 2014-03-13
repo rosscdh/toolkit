@@ -2,9 +2,9 @@
 from django.conf import settings
 
 from toolkit.utils import get_namedtuple_choices
-ASSOCIATION_STRATEGIES = get_namedtuple_choices('ASSOCIATION_STRATEGIES', (
+REVIEWER_ASSOCIATION_STRATEGIES = get_namedtuple_choices('REVIEWER_ASSOCIATION_STRATEGIES', (
                                                     ('single', 'single', 'Single Reviewer per ReviewDocument'),
                                                     ('multi', 'multi', 'Multiple Reviewer per ReviewDocument'),
                                                 ))
 
-REVIEWER_DOCUMENT_ASSOCIATION_STRATEGY = getattr(settings, 'REVIEWER_DOCUMENT_ASSOCIATION_STRATEGY', ASSOCIATION_STRATEGIES.single)
+REVIEWER_DOCUMENT_ASSOCIATION_STRATEGY = getattr(settings, 'REVIEWER_DOCUMENT_ASSOCIATION_STRATEGY', REVIEWER_ASSOCIATION_STRATEGIES.single)

@@ -29,7 +29,7 @@ class BaseDataProvider(BaseScenarios):
                                    executed_file=os.path.join(settings.SITE_ROOT, 'toolkit', 'casper', 'test.pdf'),
                                    uploaded_by=self.lawyer)
 
-        self.revision.signers.add(self.signer)
+        self.revision.signatories.add(self.signer)
 
         #
         # Matter.participants automatically get an auth so that they can individual view the object
@@ -69,7 +69,7 @@ class SignDocumentModelTest(BaseDataProvider, TestCase):
         """
         test that the get_auth method returns the User.pk for authentication backend
         """
-        self.sign_document.signers.add(self.signer)  # add the user
+        self.sign_document.signatories.add(self.signer)  # add the user
         key = self.sign_document.make_user_auth_key(user=self.signer)
         self.assertEqual(self.sign_document.get_auth(key=key), self.signer.pk)
 
@@ -88,26 +88,26 @@ class SignerAuthorisationTest(BaseDataProvider, TestCase):
         #
         # remove the current guy jsut for this test
         #
-        self.sign_document.signers.remove(self.signer)
+        self.sign_document.signatories.remove(self.signer)
 
-        self.assertEqual(self.sign_document.signers.all().count(), 0)
+        self.assertEqual(self.sign_document.signatories.all().count(), 0)
         self.assertEqual(self.sign_document.auth, self.BASE_EXPECTED_AUTH_USERS)  # no auths
 
         # add the signer and we should then get an auth setup
-        self.sign_document.signers.add(self.signer)
+        self.sign_document.signatories.add(self.signer)
         EXPECTED_AUTH_USERS.update({self.expected_auth_key: self.signer.pk})
         self.assertEqual(self.sign_document.auth, EXPECTED_AUTH_USERS)  # has auth
 
     def test_deauthorise_user(self):
         # add the signer and we should then get an auth setup
-        self.sign_document.signers.add(self.signer)
+        self.sign_document.signatories.add(self.signer)
 
         EXPECTED_AUTH_USERS = self.BASE_EXPECTED_AUTH_USERS.copy()
         EXPECTED_AUTH_USERS.update({self.expected_auth_key: self.signer.pk})
         self.assertEqual(self.sign_document.auth, EXPECTED_AUTH_USERS)  # has auth
 
         # now we remove them
-        self.sign_document.signers.remove(self.signer)
+        self.sign_document.signatories.remove(self.signer)
         self.assertEqual(self.sign_document.auth, self.BASE_EXPECTED_AUTH_USERS)  # no auths
 
 
@@ -115,9 +115,9 @@ class SignerSendEmailTest(BaseDataProvider, TestCase):
     def setUp(self):
         super(SignerSendEmailTest, self).setUp()
         # add the signer for this test
-        self.sign_document.signers.add(self.signer)
+        self.sign_document.signatories.add(self.signer)
 
-    def test_email_send_to_all_signers(self):
+    def test_email_send_to_all_signatories(self):
         self.sign_document.send_invite_email(from_user=self.lawyer)
 
         self.assertEqual(len(mail.outbox), 1)

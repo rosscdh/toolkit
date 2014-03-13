@@ -5,13 +5,15 @@ from django.db.models.signals import pre_save, post_save, m2m_changed
 
 from toolkit.apps.workspace.signals import _model_slug_exists
 
-from toolkit.apps.review import (ASSOCIATION_STRATEGIES,
+from toolkit.apps.review import (REVIEWER_ASSOCIATION_STRATEGIES,
                                  REVIEWER_DOCUMENT_ASSOCIATION_STRATEGY,)
+
+from toolkit.apps.sign import (SIGNER_ASSOCIATION_STRATEGIES,
+                               SIGNER_DOCUMENT_ASSOCIATION_STRATEGY,)
 
 from .models import Revision
 from toolkit.apps.review.models import ReviewDocument
 
-import uuid
 import logging
 logger = logging.getLogger('django.request')
 
@@ -60,6 +62,10 @@ def ensure_revision_reviewdocument_object(sender, instance, **kwargs):
             instance.reviewdocument_set.add(review)
 
 
+"""
+Reviewers
+"""
+
 @receiver(m2m_changed, sender=Revision.reviewers.through, dispatch_uid='revision.on_reviewer_add')
 def on_reviewer_add(sender, instance, action, model, pk_set, **kwargs):
     """
@@ -76,7 +82,7 @@ def on_reviewer_add(sender, instance, action, model, pk_set, **kwargs):
         #
         reviewdocument = instance.reviewdocument_set.all().first()
 
-        if REVIEWER_DOCUMENT_ASSOCIATION_STRATEGY == ASSOCIATION_STRATEGIES.single:
+        if REVIEWER_DOCUMENT_ASSOCIATION_STRATEGY == REVIEWER_ASSOCIATION_STRATEGIES.single:
             #
             # 1 ReviewDocument per reviewer
             # in this case we should immediately delete the review document
@@ -87,7 +93,7 @@ def on_reviewer_add(sender, instance, action, model, pk_set, **kwargs):
             reviewdocument.reviewers.add(user)  # add the reviewer
             reviewdocument.recompile_auth_keys()  # update teh auth keys to match the new slug
 
-        if REVIEWER_DOCUMENT_ASSOCIATION_STRATEGY == ASSOCIATION_STRATEGIES.multi:
+        if REVIEWER_DOCUMENT_ASSOCIATION_STRATEGY == REVIEWER_ASSOCIATION_STRATEGIES.multi:
             #
             # Multiple reviewers per reviewer document
             # just add the user to reviewres if they dont exist
@@ -108,7 +114,7 @@ def on_reviewer_remove(sender, instance, action, model, pk_set, **kwargs):
         reviewdocuments = ReviewDocument.objects.filter(document=instance,
                                                         reviewers__in=[user])
 
-        if REVIEWER_DOCUMENT_ASSOCIATION_STRATEGY == ASSOCIATION_STRATEGIES.single:
+        if REVIEWER_DOCUMENT_ASSOCIATION_STRATEGY == REVIEWER_ASSOCIATION_STRATEGIES.single:
             #
             # 1 ReviewDocument per reviewer
             # in this case we should immediately delete the review document
@@ -117,12 +123,83 @@ def on_reviewer_remove(sender, instance, action, model, pk_set, **kwargs):
                 # delete the reviewdoc
                 reviewdocument.delete()
 
-        elif REVIEWER_DOCUMENT_ASSOCIATION_STRATEGY == ASSOCIATION_STRATEGIES.multi:
+        elif REVIEWER_DOCUMENT_ASSOCIATION_STRATEGY == REVIEWER_ASSOCIATION_STRATEGIES.multi:
             #
             # Multiple reviewers per reviewer document only remove them as reviewers
             # but leave the document object alone!
             #
             for reviewdocument in reviewdocuments:
                 reviewdocument.reviewers.remove(user) if user in reviewdocument.reviewers.all() else None
+
+
+
+"""
+Signers
+"""
+
+@receiver(m2m_changed, sender=Revision.signatories.through, dispatch_uid='revision.on_signatory_add')
+def on_signatory_add(sender, instance, action, model, pk_set, **kwargs):
+    """
+    when a signatory is added from the m2m then authorise them
+    for access
+    """
+    if action in ['post_add']:
+        user_pk = next(iter(pk_set))  # get the first item in the set should only ever be 1 anyway
+        user = model.objects.get(pk=user_pk)
+
+        #
+        # Get the base review documnet; created to alow the participants to access
+        # and discuss a documnet
+        #
+        signdocument = instance.signdocument_set.all().first()
+
+        if SIGNER_DOCUMENT_ASSOCIATION_STRATEGY == SIGNER_ASSOCIATION_STRATEGIES.single:
+            #
+            # 1 ReviewDocument per signatory
+            # in this case we should immediately delete the review document
+            #
+            signdocument.pk = None  # set to null this is adjango stategy to copy the model
+            signdocument.slug = None  # set to non so it gets regenerated
+            signdocument.save()  # save it so we get a new pk so we can add reviewrs
+            signdocument.signatorys.add(user)  # add the signatory
+            signdocument.recompile_auth_keys()  # update teh auth keys to match the new slug
+
+        if SIGNER_DOCUMENT_ASSOCIATION_STRATEGY == SIGNER_ASSOCIATION_STRATEGIES.multi:
+            #
+            # Multiple signatorys per signatory document
+            # just add the user to reviewres if they dont exist
+
+            #
+            signdocument.signatorys.add(user) if user not in signdocument.signatorys.all() else None
+
+
+@receiver(m2m_changed, sender=Revision.signatories.through, dispatch_uid='revision.on_signatory_remove')
+def on_signatory_remove(sender, instance, action, model, pk_set, **kwargs):
+    """
+    when a signatory is removed from the m2m then deauthorise them
+    """
+    if action in ['pre_remove']:
+        user_pk = next(iter(pk_set))  # get the first item in the set should only ever be 1 anyway
+        user = model.objects.get(pk=user_pk)
+
+        signdocuments = ReviewDocument.objects.filter(document=instance,
+                                                        signatories__in=[user])
+
+        if SIGNER_DOCUMENT_ASSOCIATION_STRATEGY == SIGNER_ASSOCIATION_STRATEGIES.single:
+            #
+            # 1 ReviewDocument per signatory
+            # in this case we should immediately delete the review document
+            #
+            for signdocument in signdocuments:
+                # delete the reviewdoc
+                signdocument.delete()
+
+        elif SIGNER_DOCUMENT_ASSOCIATION_STRATEGY == SIGNER_ASSOCIATION_STRATEGIES.multi:
+            #
+            # Multiple signatorys per signatory document only remove them as signatorys
+            # but leave the document object alone!
+            #
+            for signdocument in signdocuments:
+                signdocument.signatorys.remove(user) if user in signdocument.signatorys.all() else None
 
 

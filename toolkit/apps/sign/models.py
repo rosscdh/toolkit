@@ -24,13 +24,13 @@ logger = logging.getLogger('django.request')
 
 class SignDocument(IsDeletedMixin, UserAuthMixin, models.Model):
     """
-    An object to represent a url that allows multiple signers to view
+    An object to represent a url that allows multiple signatories to view
     a document using a service like crocodoc
     """
     slug = UUIDField(auto=True, db_index=True)
     document = models.ForeignKey('attachment.Revision')
     participants = models.ManyToManyField('auth.User', related_name='sign_owners')
-    signers = models.ManyToManyField('auth.User')
+    signatories = models.ManyToManyField('auth.User')
     data = JSONField(default={})
 
     objects = SignDocumentManager()
@@ -89,14 +89,14 @@ class SignDocument(IsDeletedMixin, UserAuthMixin, models.Model):
 
     def send_invite_email(self, from_user, users=[]):
         """
-        @BUSINESSRULE requested users must be in the signers object
+        @BUSINESSRULE requested users must be in the signatories object
         """
         if type(users) not in [list]:
             raise Exception('users must be of type list: users=[<User>]')
 
-        for u in self.signers.all():
+        for u in self.signatories.all():
             #
-            # @BUSINESSRULE if no users passed in then send to all of the signers
+            # @BUSINESSRULE if no users passed in then send to all of the signatories
             #
             if users == [] or u in users:
                 #
