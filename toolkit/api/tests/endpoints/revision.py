@@ -107,7 +107,7 @@ class ItemRevisionTest(BaseEndpointTest):
     def test_revision_post_increment_with_url(self):
         self.client.login(username=self.lawyer.username, password=self.password)
         # set up a preexisting revision
-        revision = mommy.make('attachment.Revision', executed_file=None, item=self.item, uploaded_by=self.lawyer)
+        mommy.make('attachment.Revision', executed_file=None, item=self.item, uploaded_by=self.lawyer)
         self.assertEqual(self.item.revision_set.all().count(), self.expected_num)
 
         data = {
@@ -183,8 +183,6 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         expected_image_url = 'http://localhost:8081/static/images/logo-white.png'
 
         self.client.login(username=self.lawyer.username, password=self.password)
-
-#        self.item.revision_set.all().delete()
 
         data = {
             'executed_file': expected_image_url,

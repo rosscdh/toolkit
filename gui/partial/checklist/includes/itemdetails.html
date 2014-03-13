@@ -53,7 +53,7 @@
         <div class="btn-group">
             <a href="javascript:;" class="btn btn-sm btn-silver btn-embossed dropdown-toggle" data-toggle="dropdown">Options</a>
             <ul class="dropdown-menu dropdown-small dropdown-inverse" >
-                <li><a href="javascript:;" ng-click="data.selectedItem.date_due='2014-03-16T00:00:00';saveSelectedItem();data.showItemDetailsOptions=!data.showItemDetailsOptions;">
+                <li><a href="javascript:;" ng-click="data.showDateDuePicker=!data.showDateDuePicker;saveSelectedItem();data.showItemDetailsOptions=!data.showItemDetailsOptions;">
                     <span class="fui-calendar"></span> Set due date</a>
                 </li>
                 <li><a href="#" data-toggle="modal" data-target="#attachWorkflowModal"><span class="fui-calendar"></span> Add workflow</a></li>
@@ -63,12 +63,15 @@
             </ul>
         </div>
 
-        <a href="javascript:;" class="btn btn-sm btn-silver btn-embossed" ng-show="data.selectedItem.date_due" ng-click="data.showDateDueDatepicker=!data.showDateDueDatepicker">
+        <a href="javascript:;" id="datedue" class="btn btn-sm btn-silver btn-embossed" ng-show="data.selectedItem.date_due"
+           ng-click="data.showDateDuePicker=!data.showDateDuePicker">
             <span class="fui-calendar"></span>{{ data.selectedItem.date_due | date:'dd MMMM' }}
         </a>
-        <!--
-        <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="data.selectedItem.date_due" is-open="data.showDateDueDatepicker"
-                    min="minDate" max="'2015-06-22'" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />-->
+        <div id="dateduepicker-container" ng-show="data.showDateDuePicker">
+          <div class="well well-sm">
+              <datepicker ng-model="data.dateduepickerdate"></datepicker>
+          </div>
+        </div>
 
         <a href="javascript:;" ng-click="data.selectedItem.is_complete=!data.selectedItem.is_complete;saveSelectedItem();"
            class="btn btn-sm btn-embossed pull-right" ng-class="{ 'btn-success': !data.selectedItem.is_complete, 'btn-default': data.selectedItem.is_complete}">
@@ -78,7 +81,8 @@
     <!-- End option toolbar -->
 
     <div class="waiting-revision text-center" ng-show="data.selectedItem.status==1">
-        <span class="fui-time"></span> Waiting for a revision from <span ng-bind="getParticipantByUrl(data.selectedItem.responsible_party)"></span>. <a href="javascript:;">Remind</a> <a class="close" href="#">x</a>
+        <span class="fui-time"></span> Waiting for a revision from <span ng-bind="getParticipantByUrl(data.selectedItem.responsible_party) | fullname"></span>.
+        <a href="javascript:;" ng-click="remindRevisionRequest(data.selectedItem)">Remind</a> <a class="close" href="javascript:;" ng-click="deleteRevisionRequest(data.selectedItem)">x</a>
     </div>
 
     <div class="item-help" ng-show="data.uploading">
@@ -109,8 +113,8 @@
                 </div>
                 <div class="sub">{{ data.selectedItem.latest_revision.uploaded_by.name }}, {{ data.selectedItem.latest_revision.date_created | timeago }}</div>
                 <div class="tools">
-                    <a href="javascript:;" class="btn btn-link btn-xs"  data-toggle="modal" data-target="#viewDocumentModal" ng-click="showRevisionDocument(data.selectedItem.latest_revision)">View</a>
-                    <a href="#" class="btn btn-link btn-xs" data-toggle="modal" data-target="#requestReviewModal">Request Review</a>
+                    <a href="javascript:;" class="btn btn-link btn-xs" ng-click="showRevisionDocument(data.selectedItem.latest_revision)">View</a>
+                    <a href="javascript:;" class="btn btn-link btn-xs" ng-click="requestReview(data.selectedItem.latest_revision)">Request Review</a>
                     <div class="btn-group pull-right">
                         <button type="button" class="btn btn-default btn-xs status-{{ data.selectedItem.latest_revision.status }}" data-toggle="dropdown">
                           {{ data.matter._meta.revision.status | valueforkey:data.selectedItem.latest_revision.status }}
@@ -126,6 +130,24 @@
                           </li>
                         </ul>
                     </div>
+                </div>
+            </div>
+
+            <div class="review in-progress" ng-show="data.selectedItem.latest_revision.reviewers">
+                Review in progress
+                <a class="btn btn-link btn-xs pull-right" href="javascript:;" ng-click="remindRevisionReview(data.selectedItem)">
+                    Remind
+                </a>
+                <div class="review-members">
+                    <ul class="list-unstyled">
+                        <li ng-repeat="rev in data.selectedItem.latest_revision.reviewers">
+                            <a class="close" href="javascript:;" ng-click="deleteRevisionReviewRequest(data.selectedItem, rev)">x</a>
+                            <span class="fui-time"></span> {{ getParticipantByUrl(rev) | fullname }}
+                        </li>
+                        <li class="complete">
+                            <button class="btn btn-success btn-xs pull-right"><span class="fui-check"></span> View Response </button> Yael Citro
+                        </li>
+                    </ul>
                 </div>
             </div>
         </li>

@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django.http import Http404
+from django.shortcuts import get_object_or_404
 
 from rulez import registry as rulez_registry
 
@@ -24,9 +25,9 @@ class RevisionEndpoint(viewsets.ModelViewSet):
     def get_queryset(self):
         """
         @TODO limit to current users items
-        """
         # items = Item.objects.filter(participants=self.request.user)
         # return Revision.objects.filter(item__in=items)
+        """
         return super(RevisionEndpoint, self).get_queryset()
 
 
@@ -49,8 +50,30 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
     lookup_url_kwarg = 'item_slug'
 
     def initial(self, request, *args, **kwargs):
-        self.get_object()
+        self.item = get_object_or_404(self.matter.item_set.all(), slug=kwargs.get('item_slug'))
+        self.revision = self.get_object()
         super(ItemCurrentRevisionView, self).initial(request, *args, **kwargs)
+
+    def get_object(self):
+        """
+        Ensure we get self.item
+        but return the Revision object as self.object
+        """
+        if self.request.method in ['POST']:
+            self.revision = Revision(uploaded_by=self.request.user, item=self.item)
+
+        else:
+
+            # get,patch
+            self.revision = self.get_latest_revision()
+
+            if self.request.method in ['GET'] and self.revision is None:
+                raise Http404
+
+        return self.revision
+
+    def get_latest_revision(self):
+        return self.item.latest_revision
 
     def get_serializer_context(self):
         return {'request': self.request}
@@ -62,8 +85,11 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
             data['item'] = ItemSerializer(self.item).data.get('url')
             data['uploaded_by'] = UserSerializer(self.request.user).data.get('url')
 
-        return super(ItemCurrentRevisionView, self).get_serializer(instance=instance, data=data,
-                                                                   files=files, many=many, partial=partial)
+        return super(ItemCurrentRevisionView, self).get_serializer(instance=instance,
+                                                                   data=data,
+                                                                   files=files,
+                                                                   many=many,
+                                                                   partial=partial)
 
     def pre_save(self, obj):
         """
@@ -72,25 +98,6 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
         obj.item = self.item
         obj.uploaded_by = self.request.user
         super(ItemCurrentRevisionView, self).pre_save(obj=obj)
-
-    def get_revision(self):
-        return self.item.latest_revision
-
-    def get_object(self):
-        """
-        Ensure we get self.item
-        but return the Revision object as self.object
-        """
-        self.item = super(ItemCurrentRevisionView, self).get_object()
-        if self.request.method in ['POST']:
-            self.revision = Revision(uploaded_by=self.request.user, item=self.item)
-        else:
-            # get,patch
-            self.revision = self.get_revision()
-            if self.request.method in ['GET'] and self.revision is None:
-                raise Http404
-
-        return self.revision
 
     def can_read(self, user):
         return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
@@ -108,7 +115,7 @@ rulez_registry.register("can_delete", ItemCurrentRevisionView)
 
 
 class ItemSpecificReversionView(ItemCurrentRevisionView):
-    def get_revision(self):
+    def get_latest_revision(self):
         version = int(self.kwargs.get('version', 1))
 
         try:

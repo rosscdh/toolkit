@@ -6,7 +6,10 @@ from django.contrib.contenttypes.models import ContentType
 
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 
+from toolkit.core.mixins import IsDeletedMixin
+
 from .mixins import UserAuthMixin
+from .managers import ReviewDocumentManager
 from .mailers import ReviewerReminderEmail
 
 from dj_crocodoc.models import CrocodocDocument
@@ -19,7 +22,7 @@ import logging
 logger = logging.getLogger('django.request')
 
 
-class ReviewDocument(UserAuthMixin, models.Model):
+class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
     """
     An object to represent a url that allows multiple reviewers to view
     a document using a service like crocodoc
@@ -30,12 +33,17 @@ class ReviewDocument(UserAuthMixin, models.Model):
     reviewers = models.ManyToManyField('auth.User')
     data = JSONField(default={})
 
+    objects = ReviewDocumentManager()
+
     class Meta:
         # @BUSINESS RULE always return the oldest to newest
         ordering = ('id',)
 
     def get_absolute_url(self, user):
-        return reverse('review:review_document', kwargs={'slug': self.slug, 'auth_slug': self.make_user_auth_key(user=user)})
+        auth_key = self.get_user_auth(user=user)
+        if auth_key is not None:
+            return reverse('review:review_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)})
+        return None
 
     @property
     def crocodoc(self):
@@ -53,7 +61,11 @@ class ReviewDocument(UserAuthMixin, models.Model):
         """
         Used to determin if we should download the file locally
         """
-        return default_storage.exists(self.document.executed_file)
+        try:
+            return default_storage.exists(self.document.executed_file)
+        except Exception as e:
+            logger.critical('Crocodoc file does not exist locally: %s raised exception %s' % (self.document.executed_file, e))
+        return False
 
     def download_if_not_exists(self):
         """

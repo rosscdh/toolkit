@@ -22,11 +22,14 @@ from .views import (MatterItemsView,
                     MatterItemRequestRevisionView,
 
                     MatterItemCurrentRevisionView,
-                    MatterItemSpecificReversionView,
+                    MatterItemSpecificReversionView,)
 
+from .views import (ItemRevisionReviewersView,
                     ItemRevisionReviewerView,
-                    ItemRevisionSignatoryView,
                     RemindReviewers,
+
+                    ItemRevisionSignatoriesView,
+                    ItemRevisionSignatoryView,
                     RemindSignatories)
 
 from .views import ItemEndpoint
@@ -82,8 +85,11 @@ urlpatterns = router.urls + patterns('',
     #
     # Revision reviewers and signatories
     #
-    url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/reviewer/(?P<username>\w+)/?$', ItemRevisionReviewerView.as_view(), name='item_revision_reviewer'),
-    url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/signatory/(?P<username>\w+)/?$', ItemRevisionSignatoryView.as_view(), name='item_revision_signatory'),
+    url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/reviewers/?$', ItemRevisionReviewersView.as_view(), name='item_revision_reviewers'),
+    url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/reviewer/(?P<username>[\w\W\-\_]+)/?$', ItemRevisionReviewerView.as_view(), name='item_revision_reviewer'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/reviewers/remind/?$', RemindReviewers.as_view(), name='item_revision_remind_reviewers'),
+
+    url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/signatories/?$', ItemRevisionSignatoriesView.as_view(), name='item_revision_signatories'),
+    url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/signatory/(?P<username>[\w\W\-\_]+)/?$', ItemRevisionSignatoryView.as_view(), name='item_revision_signatory'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/signatories/remind/?$', RemindSignatories.as_view(), name='item_revision_remind_signatories'),
 )
