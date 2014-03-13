@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from django.contrib.auth.models import User
+
 import base64
 import hashlib
 
@@ -46,14 +48,27 @@ class UserAuthMixin(object):
                 pass
         return None
 
+    def recompile_auth_keys(self):
+        """
+        When we clone the template review document we need to regenerate all of the
+        keys for all of the participants
+        @DANGER @BUSINESSRULE this will change all auth urls issued
+        """
+        for user_pk in self.auth.values():
+            user = User.objects.get(pk=user_pk)
+            self.authorise_user_to_review(user=user)
+
     def make_user_auth_key(self, user):
+        """
+        do not enforce access for the user here to allow testing
+        """
         hasher = hashlib.sha1('%s-%s' % (str(self.slug), user.email))
         return base64.urlsafe_b64encode(hasher.digest()[0:10])
 
     def authorise_user_to_review(self, user):
-        #
-        # @BUSINESSRULE make sure the user only gets one key per review
-        #
+        """
+        @BUSINESSRULE make sure the user only gets one key per review
+        """
         auth = self.auth
         if user and user.pk not in auth.values():
             # generate a key
