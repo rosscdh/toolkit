@@ -82,8 +82,13 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
                        files=None, many=False, partial=False):
         # pop it
         if data is not None:
-            data['item'] = ItemSerializer(self.item).data.get('url')
-            data['uploaded_by'] = UserSerializer(self.request.user).data.get('url')
+            item_serializer_data = ItemSerializer(self.item, context={'request': self.request}).data
+            user_serializer_data = UserSerializer(self.request.user, context={'request': self.request}).data
+
+            data.update({
+                'item': item_serializer_data.get('url'),
+                'uploaded_by': user_serializer_data.get('url'),
+            })
 
         return super(ItemCurrentRevisionView, self).get_serializer(instance=instance,
                                                                    data=data,
