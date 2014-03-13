@@ -927,7 +927,7 @@ angular.module('toolkit-gui')
         $scope.$watch('data.dateduepickerdate', function(newValue, oldValue) {
               //only save is date due picker is visible
               if($scope.data.showDateDuePicker==true){
-                  'YYYY-MM-DDTHH:mm:ss.SSSZ'
+                  //'YYYY-MM-DDTHH:mm:ss.SSSZ'
                   $scope.data.selectedItem.date_due = $scope.data.dateduepickerdate;
                   $scope.saveSelectedItem();
               }
