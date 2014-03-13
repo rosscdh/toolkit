@@ -8,6 +8,7 @@ from toolkit.core.mixins import IsDeletedMixin
 from toolkit.utils import get_namedtuple_choices
 
 from .managers import ItemManager
+from .mixins import RequestDocumentUploadMixin
 
 from jsonfield import JSONField
 from uuidfield import UUIDField
@@ -21,7 +22,7 @@ BASE_ITEM_STATUS = get_namedtuple_choices('ITEM_STATUS', (
                             ))
 
 
-class Item(IsDeletedMixin, models.Model):
+class Item(IsDeletedMixin, RequestDocumentUploadMixin, models.Model):
     """
     Matter.item
     """
@@ -74,20 +75,6 @@ class Item(IsDeletedMixin, models.Model):
         @BUSINESSRULE always return the latest revision
         """
         return self.revision_set.all().last()
-
-    @property
-    def note(self):
-        return self.data.get('request_document', {}).get('note', None)
-
-    @note.setter
-    def note(self, value):
-        request_document = self.data.get('request_document', {})
-        request_document['note'] = value
-
-        self.data['request_document'] = request_document
-
-        return request_document['note']
-
 
     def participants(self):
         return self.data.get('participants', [])
