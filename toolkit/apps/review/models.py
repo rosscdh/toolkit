@@ -6,7 +6,10 @@ from django.contrib.contenttypes.models import ContentType
 
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 
+from toolkit.core.mixins import IsDeletedMixin
+
 from .mixins import UserAuthMixin
+from .managers import ReviewDocumentManager
 from .mailers import ReviewerReminderEmail
 
 from dj_crocodoc.models import CrocodocDocument
@@ -19,7 +22,7 @@ import logging
 logger = logging.getLogger('django.request')
 
 
-class ReviewDocument(UserAuthMixin, models.Model):
+class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
     """
     An object to represent a url that allows multiple reviewers to view
     a document using a service like crocodoc
@@ -29,6 +32,8 @@ class ReviewDocument(UserAuthMixin, models.Model):
     participants = models.ManyToManyField('auth.User', related_name='review_owners')
     reviewers = models.ManyToManyField('auth.User')
     data = JSONField(default={})
+
+    objects = ReviewDocumentManager()
 
     class Meta:
         # @BUSINESS RULE always return the oldest to newest
