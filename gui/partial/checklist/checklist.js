@@ -459,9 +459,11 @@ angular.module('toolkit-gui')
 		$scope.onFileDropped = function( $files, item ) {
 			var matterSlug = $scope.data.slug;
 			var itemSlug = item.slug;
+			debugger;
 
 			matterItemService.uploadRevisionFile( matterSlug, itemSlug, $files ).then(
 				function success( revision ) {
+					debugger;
 					revision.uploaded_by = matterService.data().selected.current_user;
 					item.latest_revision = revision;
 

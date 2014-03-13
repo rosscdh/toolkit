@@ -277,7 +277,7 @@ angular.module('toolkit-gui')
 				var api = revisionItemResource();
 
 				if( $files.length>0 ) {
-					url = $rootScope.API_BASE_URL + 'matters/'+matterSlug+'/items/'+itemSlug+'/revision';
+					url = API_BASE_URL + 'matters/'+matterSlug+'/items/'+itemSlug+'/revision';
 					var file = $files[0];
 
 					$upload.upload({
