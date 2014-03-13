@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from django.test import LiveServerTestCase
 from django.core.urlresolvers import reverse
 from django.core.files.storage import FileSystemStorage
 from django.test.client import MULTIPART_CONTENT
@@ -107,7 +106,7 @@ class ItemRevisionTest(BaseEndpointTest):
     def test_revision_post_increment_with_url(self):
         self.client.login(username=self.lawyer.username, password=self.password)
         # set up a preexisting revision
-        revision = mommy.make('attachment.Revision', executed_file=None, item=self.item, uploaded_by=self.lawyer)
+        mommy.make('attachment.Revision', executed_file=None, item=self.item, uploaded_by=self.lawyer)
         self.assertEqual(self.item.revision_set.all().count(), self.expected_num)
 
         data = {
@@ -159,7 +158,7 @@ class ItemSubRevision3Test(ItemSubRevision2Test):
         self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/items/%s/revision/v%d' % (self.item.slug, self.version_no))
 
 
-class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerTestCase):
+class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest):
     @property
     def endpoint(self):
         return reverse('matter_item_revision', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug})
