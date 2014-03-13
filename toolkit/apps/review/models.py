@@ -56,7 +56,11 @@ class ReviewDocument(UserAuthMixin, models.Model):
         """
         Used to determin if we should download the file locally
         """
-        return default_storage.exists(self.document.executed_file)
+        try:
+            return default_storage.exists(self.document.executed_file)
+        except Exception as e:
+            logger.critical('Crocodoc file does not exist locally: %s raised exception %s' % (self.document.executed_file, e))
+        return False
 
     def download_if_not_exists(self):
         """

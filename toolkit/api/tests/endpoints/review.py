@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
 from django.core.files import File
+from django.test import LiveServerTestCase
 from django.core.urlresolvers import reverse
+from django.core.validators import URLValidator
 from django.core.files.storage import FileSystemStorage
 
 from . import BaseEndpointTest
-from .revision import TEST_IMAGE_PATH
 
+from toolkit.casper.prettify import mock_http_requests
 from model_mommy import mommy
 
+import os
 import mock
 import json
 import urllib
@@ -118,7 +122,7 @@ class RevisionReviewsTest(BaseEndpointTest):
         self.assertEqual(resp.status_code, 401)  # unauthorized
 
 
-class RevisionReviewerTest(BaseEndpointTest):
+class RevisionReviewerTest(BaseEndpointTest, LiveServerTestCase):
     """
     /matters/:matter_slug/items/:item_slug/revision/reviewer/:username (GET,DELETE)
         [lawyer,customer] to view, delete reviewers
@@ -129,19 +133,29 @@ class RevisionReviewerTest(BaseEndpointTest):
 
     @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def setUp(self):
+
         super(RevisionReviewerTest, self).setUp()
 
         # setup the items for testing
         self.item = mommy.make('item.Item', matter=self.matter, name='Test Item with Revision', category=None)
-        self.revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
+        self.revision = mommy.make('attachment.Revision',
+                                   executed_file=None,
+                                   slug=None,
+                                   item=self.item,
+                                   uploaded_by=self.lawyer)
+
+        with open(os.path.join(settings.SITE_ROOT, 'toolkit', 'casper', 'test.pdf'), 'r') as filename:
+            self.revision.executed_file.save('test.pdf', File(filename))
+            self.revision.save(update_fields=['executed_file'])
+
         self.participant = mommy.make('auth.User', username='authorised-reviewer', first_name='Participant', last_name='Number 1', email='participant+1@lawpal.com')
+        self.participant.set_password(self.password)
         #
         # NB! by using the reviewdocument.signals and attachment.signals we are able to ensure that
         # all revision.reviewers are added to the appropriate reviewdocument objects
         # which means they can get an auth url to review the document
         #
         self.revision.reviewers.add(self.participant)
-        #self.revision.reviewdocument_set.all().first().authorise_user_to_review(self.participant)
 
     def test_endpoint_name(self):
         self.assertEqual(self.endpoint, '/api/v1/matters/%s/items/%s/revision/reviewer/%s' % (self.matter.slug, self.item.slug, self.participant.username))
@@ -184,11 +198,39 @@ class RevisionReviewerTest(BaseEndpointTest):
         self.assertEqual(url, '/review/%s/%s/' % (reviewdocument.slug, reviewdocument.make_user_auth_key(user=self.participant)))
         #
         # Test the auth urls for the matter.participants
+        # test that they cant log in when logged in already (as the lawyer above)
         #
         for u in self.matter.participants.all():
             url = urllib.unquote_plus(reviewdocument.get_absolute_url(user=u))
             self.assertEqual(url, '/review/%s/%s/' % (reviewdocument.slug, reviewdocument.get_user_auth(user=u)))
-        
+            # Test that permission is denied when logged in as a user that is not the auth_token user
+            resp = self.client.get(url)
+            self.assertTrue(resp.status_code, 403) # denied
+        #
+        # Now test the views not logged in
+        #
+        validate_url = URLValidator()
+
+        for u in self.matter.participants.all():
+            self.client.login(username=u.username, password=self.password)
+            url = reviewdocument.get_absolute_url(user=u)
+            resp = self.client.get(url)
+            self.assertTrue(resp.status_code, 200) # ok logged in
+
+            context_data = resp.context_data
+            self.assertEqual(context_data.keys(), ['crocodoc_view_url', 'reviewdocument', u'object', 'CROCDOC_PARAMS', 'crocodoc', u'view'])
+            # is a valid url for crocodoc
+            self.assertTrue(validate_url(context_data.get('crocodoc_view_url')) is None)
+            self.assertTrue('https://crocodoc.com/view/' in context_data.get('crocodoc_view_url'))
+            expected_crocodoc_params = {'admin': False, 
+                                        'demo': False,
+                                        'editable': True,
+                                        'downloadable': True, 
+                                        'user': {'name': u.get_full_name(), 'id': u.pk},
+                                        'copyprotected': False,
+                                        'sidebar': 'auto'}
+
+            self.assertEqual(context_data.get('CROCDOC_PARAMS'), expected_crocodoc_params)
 
     def test_lawyer_post(self):
         self.client.login(username=self.lawyer.username, password=self.password)
