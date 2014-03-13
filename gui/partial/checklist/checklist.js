@@ -764,11 +764,11 @@ angular.module('toolkit-gui')
                         'responsible_party': result.participant.url,
                         'note': result.message
                     };
+                    console.log(result);
 
                     matterItemService.requestRevisionReview(matterSlug, item.slug, result.participant).then(
 							function success(response){
-                                item.status = response.status;
-                                item.responsible_party = response.responsible_party;
+                                revision.reviewers.push(response.url);
 							},
 							function error(err){
 								toaster.pop('error', "Error!", "Unable to request a revision.");
@@ -819,6 +819,11 @@ angular.module('toolkit-gui')
 
             matterItemService.deleteRevisionReviewRequest(matterSlug, item.slug, participant).then(
                 function success(){
+                    var index = jQuery.inArray( participant.url, item.latest_revision.reviewers );
+                    if( index>=0 ) {
+                        // Remove reviewer from list in RAM array
+                        item.latest_revision.reviewers.splice(index,1);
+                    }
                 },
                 function error(err){
                     toaster.pop('error', "Error!", "Unable to delete the revision review request.");
@@ -913,23 +918,15 @@ angular.module('toolkit-gui')
 			}, 300);
 		};
 
-        /*
-        $scope.handleDateDuePicker = function(){
-            jQuery('#datedue').popover({
-                html : true,
-                placement : 'bottom',
-                content: function() {
-                  return jQuery('#dateduepicker-container').html();
-                }
-            });
-        };*/
-        //TODO implement better datepicker!
+        //TODO discuss if there is any better datepicker to use
         $scope.$watch('data.dateduepickerdate', function(newValue, oldValue) {
               //only save is date due picker is visible
               if($scope.data.showDateDuePicker==true){
-                  //'YYYY-MM-DDTHH:mm:ss.SSSZ'
-                  $scope.data.selectedItem.date_due = $scope.data.dateduepickerdate;
+                  //convert picked date to string
+                  var newdatestr = jQuery.datepicker.formatDate('yy-mm-ddT00:00:00', $scope.data.dateduepickerdate);
+                  $scope.data.selectedItem.date_due = newdatestr;
                   $scope.saveSelectedItem();
+                  $scope.data.showDateDuePicker=false;
               }
         });
 
