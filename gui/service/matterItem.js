@@ -65,7 +65,7 @@ angular.module('toolkit-gui')
 		 * @return {Function}   $resource
 		 */
 		function revisionItemResource() {
-			return $resource( $rootScope.API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/revision/:version', {}, {
+			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/revision/:version', {}, {
 				'create': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'update': { 'method': 'PATCH', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
@@ -118,7 +118,7 @@ angular.module('toolkit-gui')
 					"status": 0,
 					"name": itemName,
 					"category": categoryName,
-					"matter": $rootScope.API_BASE_URL + 'matters/' + matterSlug,
+					"matter": API_BASE_URL + 'matters/' + matterSlug,
 					"parent": null,
 					"children": [],
 					"closing_group": null,
@@ -267,7 +267,7 @@ angular.module('toolkit-gui')
 				var api = revisionItemResource();
 
 				if( $files.length>0 ) {
-					url = $rootScope.API_BASE_URL + 'matters/'+matterSlug+'/items/'+itemSlug+'/revision';
+					url = API_BASE_URL + 'matters/'+matterSlug+'/items/'+itemSlug+'/revision';
 					var file = $files[0];
 
 					$upload.upload({
