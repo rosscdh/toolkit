@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 from toolkit.apps.workspace.services import EnsureCustomerService
 
-from ..serializers import MatterSerializer
+from ..serializers import (MatterSerializer, SimpleUserSerializer)
 from .item import MatterItemView
 
 
@@ -13,6 +13,8 @@ class ItemRequestRevisionView(MatterItemView):
     (1, 'awaiting_document', 'Awaiting Document'),
     """
     http_method_names = ('get', 'patch',)
+
+    requested_by = None
     note = None  # provided by requesting party and added to item.data json obj
 
 
@@ -26,6 +28,7 @@ class ItemRequestRevisionView(MatterItemView):
         # Save the note for later
         #
         self.note = data.pop('note', None) if data is not None else None
+        self.requested_by = self.request.user
 
         return super(ItemRequestRevisionView, self).get_serializer(instance=instance, data=data,
                                                                    files=files, many=many, partial=partial)
@@ -37,14 +40,17 @@ class ItemRequestRevisionView(MatterItemView):
 
     def pre_save(self, obj):
         obj.status = obj.ITEM_STATUS.awaiting_document
-        obj.note = self.note
+        #
+        # Cant use the generic note and requested_by setters due to atomic locks
+        # raises TransactionManagementError
+        #
+        obj.data.update({
+            'request_document': {
+                'note': self.note,
+                'requested_by': SimpleUserSerializer(self.requested_by, context={'request': self.request}).data,
+            }
+        })
 
         #is_new, obj.responsible_party, profile = self.responsible_party(obj=obj)
 
         return super(ItemRequestRevisionView, self).pre_save(obj=obj)
-
-    # def post_save(self, obj):
-    #     #
-    #     # Send email to the user
-    #     #
-    #     pass
