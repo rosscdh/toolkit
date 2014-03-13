@@ -11,12 +11,7 @@ from uuidfield.fields import StringUUID
 from model_mommy import mommy
 
 import os
-
-#
-# Matter.participants automatically get an auth so that they can individual view the object
-# the 2 below are based on the matter.participants that are included as part of BaseScenarios
-#
-BASE_EXPECTED_AUTH_USERS = {'OZbNPaH8edeZ8Q==': 2, 'wZ-xxSxLq3Kziw==': 1}
+import urllib
 
 
 class BaseDataProvider(BaseScenarios):
@@ -34,9 +29,21 @@ class BaseDataProvider(BaseScenarios):
                                    executed_file=os.path.join(settings.SITE_ROOT, 'toolkit', 'casper', 'test.pdf'),
                                    uploaded_by=self.lawyer)
 
+        self.revision.reviewers.add(self.reviewer)
+
+        #
+        # Matter.participants automatically get an auth so that they can individual view the object
+        # the 2 below are based on the matter.participants that are included as part of BaseScenarios
+        #
+        self.base_review_document = self.revision.reviewdocument_set.all().first()
+
+        self.review_document = self.revision.reviewdocument_set.all().last()
+
+        self.BASE_EXPECTED_AUTH_USERS = self.review_document.auth
+
         # this is the test subject
-        self.review_document = mommy.make('review.ReviewDocument', document=self.revision, slug=StringUUID('2c3981a04f2a46b7a18912b77c0abdd4'))
-        self.expected_review_document_slug = '2RoAaR7gf9mh4Q=='
+        self.exected_uuid = self.review_document.slug
+        self.expected_auth_key = self.review_document.get_user_auth(user=self.reviewer)
 
 
 """
@@ -48,10 +55,11 @@ Model Tests
 """
 class ReviewDocumentModelTest(BaseDataProvider, TestCase):
     def test_get_absolute_url(self):
-        self.assertEqual(self.review_document.get_absolute_url(user=self.reviewer), '/review/2c3981a04f2a46b7a18912b77c0abdd4/2RoAaR7gf9mh4Q%3D%3D/')
+        self.assertEqual(self.review_document.get_absolute_url(user=self.reviewer), '/review/{uuid}/{auth_key}/'.format(uuid=self.exected_uuid,
+                                                                                                                        auth_key=urllib.quote(self.expected_auth_key)))
 
     def test_auth_get(self):
-        self.assertEqual(self.review_document.auth, BASE_EXPECTED_AUTH_USERS)
+        self.assertEqual(self.review_document.auth, self.BASE_EXPECTED_AUTH_USERS)
 
     def test_auth_set(self):
         self.review_document.auth = {"monkey-key": 12345}
@@ -69,32 +77,38 @@ class ReviewDocumentModelTest(BaseDataProvider, TestCase):
         """
         test that the get_auth method returns None when the user is not a reviewer
         """
-        self.review_document.reviewers.clear()
-        key = self.review_document.make_user_auth_key(user=self.reviewer)
+        non_authed_user = mommy.make('auth.User', username='Unauthorised Person', email='unauthorised@example.com')
+
+        key = self.review_document.make_user_auth_key(user=non_authed_user)
         self.assertEqual(self.review_document.get_auth(key=key), None)
 
 class ReviewerAuthorisationTest(BaseDataProvider, TestCase):
     def test_authorise_user(self):
+        EXPECTED_AUTH_USERS = self.BASE_EXPECTED_AUTH_USERS.copy()
+        #
+        # remove the current guy jsut for this test
+        #
+        self.review_document.reviewers.remove(self.reviewer)
+
         self.assertEqual(self.review_document.reviewers.all().count(), 0)
-        self.assertEqual(self.review_document.auth, BASE_EXPECTED_AUTH_USERS)  # no auths
+        self.assertEqual(self.review_document.auth, self.BASE_EXPECTED_AUTH_USERS)  # no auths
 
         # add the reviewer and we should then get an auth setup
         self.review_document.reviewers.add(self.reviewer)
-        EXPECTED_AUTH_USERS = BASE_EXPECTED_AUTH_USERS.copy()
-        EXPECTED_AUTH_USERS.update({self.expected_review_document_slug: self.reviewer.pk})
+        EXPECTED_AUTH_USERS.update({self.expected_auth_key: self.reviewer.pk})
         self.assertEqual(self.review_document.auth, EXPECTED_AUTH_USERS)  # has auth
 
     def test_deauthorise_user(self):
         # add the reviewer and we should then get an auth setup
         self.review_document.reviewers.add(self.reviewer)
 
-        EXPECTED_AUTH_USERS = BASE_EXPECTED_AUTH_USERS.copy()
-        EXPECTED_AUTH_USERS.update({self.expected_review_document_slug: self.reviewer.pk})
+        EXPECTED_AUTH_USERS = self.BASE_EXPECTED_AUTH_USERS.copy()
+        EXPECTED_AUTH_USERS.update({self.expected_auth_key: self.reviewer.pk})
         self.assertEqual(self.review_document.auth, EXPECTED_AUTH_USERS)  # has auth
 
         # now we remove them
         self.review_document.reviewers.remove(self.reviewer)
-        self.assertEqual(self.review_document.auth, BASE_EXPECTED_AUTH_USERS)  # no auths
+        self.assertEqual(self.review_document.auth, self.BASE_EXPECTED_AUTH_USERS)  # no auths
 
 
 class ReviewerSendEmailTest(BaseDataProvider, TestCase):

@@ -34,11 +34,11 @@ class BaseScenarios(object):
         from toolkit.apps.eightythreeb.models import EightyThreeB
         from toolkit.apps.eightythreeb.tests.data import EIGHTYTHREEB_DATA as BASE_EIGHTYTHREEB_DATA
 
-        self.user = mommy.make('auth.User', first_name='Customer', last_name='Test', email='test+customer@lawpal.com')
+        self.user = mommy.make('auth.User', username='test-customer', first_name='Customer', last_name='Test', email='test+customer@lawpal.com')
         self.user.set_password(self.password)
         self.user.save()
 
-        self.lawyer = mommy.make('auth.User', first_name='Lawyer', last_name='Test', email='test+lawyer@lawpal.com')
+        self.lawyer = mommy.make('auth.User', username='test-lawyer', first_name='Lawyer', last_name='Test', email='test+lawyer@lawpal.com')
         self.lawyer.set_password(self.password)
         self.lawyer.save()
 
