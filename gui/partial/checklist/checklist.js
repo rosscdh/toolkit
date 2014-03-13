@@ -448,7 +448,8 @@ angular.module('toolkit-gui')
 		$scope.onFileDropped = function( $files, item ) {
 			var matterSlug = $scope.data.slug;
 			var itemSlug = item.slug;
-			debugger;
+
+			item.uploading = true;
 
 			matterItemService.uploadRevisionFile( matterSlug, itemSlug, $files ).then(
 				function success( revision ) {
@@ -460,9 +461,11 @@ angular.module('toolkit-gui')
 					item.previousRevisions = null;
 					$scope.data.showPreviousRevisions = false;
 					item.uploadingPercent = 0;
+					item.uploading = false;
 				},
 				function error(err) {
 					toaster.pop('error', "Error!", "Unable to upload revision");
+					item.uploading = false;
 				},
 				function progress( num ) {
 					item.uploadingPercent = num;
