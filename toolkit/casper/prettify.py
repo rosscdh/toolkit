@@ -28,7 +28,7 @@ def mock_http_requests(view_func):
         # Crocdoc
         #
         httpretty.register_uri(httpretty.POST, "https://crocodoc.com/api/v2/session/create",
-                       body='{"session": i_12345-123_123_123-12345_123}',
+                       body='{"session": "i_12345-123_123_123-12345_123"}',
                        status=200)
         httpretty.register_uri(httpretty.GET, "https://crocodoc.com/api/v2/document/status",
                        body='{"success": true}',
