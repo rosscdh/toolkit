@@ -71,7 +71,7 @@ class ItemRevisionReviewersView(generics.ListAPIView,
     def process_event_purpose_object(self, user):
         # perform ReviewDocument get or create
         #
-        # @BUSINESSRULE NB: this will work as long as we have review.ASSOCIATION_STRATEGIES.single as default
+        # @BUSINESSRULE NB: this will work as long as we have review.REVIEWER_ASSOCIATION_STRATEGIES.single as default
         #
         review_doc, is_new = ReviewDocument.objects.get_or_create(document=self.revision,
                                                                   reviewers__in=[user])
