@@ -23,9 +23,19 @@ BASE_REVISION_STATUS = get_namedtuple_choices('REVISION_STATUS', (
 
 
 def _upload_file(instance, filename):
-    filename = os.path.split(filename)[-1]
-    filename_no_ext, ext = os.path.splitext(filename)
-    return 'executed_files/%s-%d-%s-%s%s' % (instance.slug, instance.item.pk, instance.uploaded_by.username, slugify(filename_no_ext), ext)
+    full_file_name = None
+
+    split_file_name = os.path.split(filename)[-1]
+    filename_no_ext, ext = os.path.splitext(split_file_name)
+    full_file_name = '%s-%d-%s-%s%s' % (instance.slug, instance.item.pk, instance.uploaded_by.username, slugify(filename_no_ext), ext)
+
+    if full_file_name in filename:
+        #
+        # If we already have this filename as part of the recombined filename
+        #
+        full_file_name = filename
+
+    return 'executed_files/%s' % full_file_name
 
 
 class Revision(models.Model):
