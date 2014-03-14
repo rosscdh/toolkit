@@ -149,6 +149,7 @@ angular.module('toolkit-gui')
 
 				api.get( { 'matterSlug': matterSlug },
 					function success( singleMatter ){
+						matter.items = singleMatter.items;
 						deferred.resolve( singleMatter );
 					},
 					function error(err) {
@@ -189,6 +190,14 @@ angular.module('toolkit-gui')
 				);
 
 				return deferred.promise;
+	        },
+
+	        /**
+	         * This function is used to maintain the array of checklist items (used for search)
+	         * @param  {Object} item Typically new item as recieved from API
+	         */
+	        'insertItem': function( item ) {
+	        	matter.items.push( item );
 	        }
 		};
 	}]

@@ -11,8 +11,9 @@ angular.module('toolkit-gui')
 	'$resource',
 	'$rootScope',
 	'$upload',
+	'matterService',
 	'API_BASE_URL',
-	function( $q, $resource, $rootScope, $upload, API_BASE_URL) {
+	function( $q, $resource, $rootScope, $upload, matterService, API_BASE_URL) {
 		/**
 		 * TBC: this variable will contain the JWT token requied to make authenticated requests
 		 * @memberof matterItemService
@@ -131,6 +132,7 @@ angular.module('toolkit-gui')
 				api.create({'matterSlug': matterSlug }, matterItem,
 					function success(item){
 						deferred.resolve(item);
+						matterService.insertItem( item ); /* keep search results up to date */
 					},
 					function error(err) {
 						deferred.reject( err );
