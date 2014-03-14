@@ -40,7 +40,7 @@ class LatestRevisionReminderEmailsMixin(object):
         #
         # Becase we are yield users need to call next on this to make it action
         #
-        return [next(self.send_review_emails(from_user=from_user, subject=ReviewerReminderEmail.subject, recipients=to))]
+        yield self.send_review_emails(from_user=from_user, subject=ReviewerReminderEmail.subject, recipients=to)
 
     def send_reminder_emails(self, from_user):
         """
@@ -50,7 +50,7 @@ class LatestRevisionReminderEmailsMixin(object):
         #
         # Becase we are yield users need to call next on this to make it action
         #
-        return [next(self.send_review_emails(from_user=from_user, subject='[REMINDER] Please review this document'))]
+        yield self.send_review_emails(from_user=from_user, subject='[REMINDER] Please review this document')
 
     def send_review_emails(self, from_user, subject, recipients=[]):
         #

@@ -114,7 +114,7 @@ class ItemRevisionReviewersView(generics.ListAPIView,
         if user not in self.get_queryset():
             # add to the join if not there already
             self.get_queryset_provider().add(user)
-            self.item.send_invite_emails(from_user=request.user, to=[user])
+            next(self.item.send_invite_emails(from_user=request.user, to=[user]))
 
         # add the user to the purpose of this endpoint object review||signature
         self.process_event_purpose_object(user=user)
