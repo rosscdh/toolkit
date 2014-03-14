@@ -92,11 +92,7 @@ class HomePageView(TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated():
-            try:
-                workspace = Workspace.objects.mine(user=request.user).first()
-                return HttpResponseRedirect(workspace.get_absolute_url())
-            except:
-                return HttpResponseRedirect(reverse('dash:default'))
+            return HttpResponseRedirect(reverse('matter:list'))
         else:
             return super(HomePageView, self).dispatch(request, *args, **kwargs)
 
