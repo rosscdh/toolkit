@@ -10,13 +10,13 @@ from toolkit.casper.prettify import mock_http_requests
 
 from . import BaseEndpointTest
 
-
 from model_mommy import mommy
 
 import os
 import mock
 import json
 import urllib
+
 
 class RevisionReviewsTest(BaseEndpointTest):
     """
