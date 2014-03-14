@@ -158,7 +158,7 @@ angular.module('toolkit-gui')
 			$scope.data.selectedCategory = category;
 
             //API EP doesnt exist yet
-            //$scope.initializeActivityItemStream();
+            $scope.initializeActivityItemStream();
 
 			//Reset controls
 			$scope.data.showEditItemDescriptionForm = false;
@@ -219,7 +219,7 @@ angular.module('toolkit-gui')
 									$scope.data.selectedCategory.items.splice(index,1);
 								}
 								$scope.data.selectedItem = null;
-                                $scope.data.activitystream = [];
+                                $scope.initializeActivityMatterStream();
 							},
 							function error(err){
 								toaster.pop('error', "Error!", "Unable to delete item");
