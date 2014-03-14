@@ -53,6 +53,7 @@
   <script src="/static/ng/service/mattercategory.js"></script>
   <script src="/static/ng/service/participants.js"></script>
   <script src="/static/ng/service/smartRoutes.js"></script>
+  <script src="/static/ng/service/search.js"></script>
   <script src="/static/ng/service/activity.js"></script>
   <!-- Add New Service JS Above -->
 
@@ -77,6 +78,7 @@
   <script src="/static/ng/partial/request-revision/request-revision.js"></script>
   <script src="/static/ng/partial/request-review/request-review.js"></script>
   <script src="/static/ng/partial/view-document/view-document.js"></script>
+  <script src="/static/ng/partial/searchCtrl/searchCtrl.js"></script>
   <!-- Add New Partial JS Above -->
 
   <div class="navbar navbar-inverse checklist-nav" ng-controller="NavigationCtrl">
@@ -108,13 +110,22 @@
         </li>
       </ul>
       <!-- /nav -->
-      <form class="navbar-form navbar-left" action="#" ng-show="matter.selected">
+      <form class="navbar-form navbar-left" ng-show="matter.selected" ng-controller="SearchCtrl" ng-submit="startSearch()">
         <div class="form-group">
           <div class="input-group input-group-sm">
-            <input class="form-control" id="navbarInput-02" type="search" placeholder="Search">
+            <input class="form-control" id="navbarInput-02" type="search" placeholder="Search" ng-model="data.term" ng-keyup="startSearch()" ng-blur="hide()" xng-focus="show()" autocomplete="off" onmouseup="this.select()">
             <span class="input-group-btn">
-            <button type="submit" class="btn"><span class="fui-search"></span></button>
+              <button type="submit" class="btn"><span class="fui-search"></span></button>
             </span>            
+          </div>
+        </div>
+        <div class="search-container">
+          <div ng-class="{&apos;show-results-container&apos;: data.display}">
+            <ul class="search-results list-unstyled">
+              <li class="result-item reveal-animation" ng-repeat="result in data.searchResults.results">
+                <a href="javascript:;" ng-bind="result.name" ng-click="selectItem(result)"></a>
+              </li>
+            </ul>
           </div>
         </div>
       </form>
