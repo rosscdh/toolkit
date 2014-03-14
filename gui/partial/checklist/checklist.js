@@ -28,9 +28,10 @@ angular.module('toolkit-gui')
 	'matterItemService',
 	'matterCategoryService',
 	'participantService',
+	'searchService',
 	'activityService',
 	'$timeout',
-	function($scope, $rootScope, $routeParams, smartRoutes, ezConfirm, toaster, $modal, matterService, matterItemService, matterCategoryService, participantService, activityService, $timeout){
+	function($scope, $rootScope, $routeParams, smartRoutes, ezConfirm, toaster, $modal, matterService, matterItemService, matterCategoryService, participantService, searchService, activityService, $timeout){
 		/**
 		 * Scope based data for the checklist controller
 		 * @memberof			ChecklistCtrl
@@ -51,7 +52,8 @@ angular.module('toolkit-gui')
 				{ 'name': 'Sam Jackson', 'img': 'https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash3/t1/c0.0.100.100/p100x100/1014416_10100118438650161_136799916_a.jpg' },
 				{ 'name': 'Bob Jackson', 'img': 'https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/t1/c12.12.155.155/314032_10150303812474864_594285312_a.jpg' },
 				{ 'name': 'Hugh Jackson', 'img': 'https://fbcdn-profile-a.akamaihd.net/hprofile-ak-frc3/t1/c42.26.328.328/s320x320/229934_10150955684263644_890325486_n.jpg' }
-			]
+			],
+			'searchData': searchService.data()
 		};
 
 
@@ -162,6 +164,34 @@ angular.module('toolkit-gui')
 
             console.log(item);
 		};
+
+		/**
+		 * Listen for itemslected events (for example for search results)
+		 * @param  {Event} evt
+		 * @param  {Object} item Checklist item selected
+		 */
+		$scope.$on('itemSelected', function( evt, item ){
+			var category = findCategory( item.category );
+			$scope.selectItem( item, category );
+		});
+
+		/**
+		 * Given a category string, findthe category object
+		 * @param  {String} name category name
+		 * @return {Object}      category object
+		 */
+		function findCategory(name) {
+			var cats = jQuery.grep( $scope.data.categories, function(cat) {
+				return cat.name === name;
+			});
+
+			if( cats.length===1) {
+				return cats[0];
+			} else {
+				return null;
+			}
+		}
+
 
 		/**
 		 * Requests the checklist API to delete the currently selected checklist item
