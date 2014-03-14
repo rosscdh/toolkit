@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+from toolkit.apps.review.mailers import ReviewerReminderEmail
+from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
+
 
 class RequestDocumentUploadMixin(object):
     """
@@ -25,3 +28,25 @@ class RequestDocumentUploadMixin(object):
         request_document.update({'requested_by': value})
 
         self.data['request_document'] = request_document
+
+
+class LatestRevisionReminderEmailsMixin(object):
+    def send_reminder_emails(self, from_user):
+        #
+        # @TODO filter by those reviewers that have not yet reviewed the doc
+        #
+        for u in self.latest_revision.reviewers.all():
+            mailer = ReviewerReminderEmail(recipients=((u.get_full_name(), u.email,),))
+
+            #
+            # Get the review document for this user
+            #
+            review_document = self.latest_revision.reviewdocument_set.filter(reviewers__in=[u]).first()
+            action_url = review_document.get_absolute_url(user=u)
+
+            mailer.process(subject='[REMINDER] Please review this document',
+                           item=self,
+                           from_name=from_user.get_full_name(),
+                           action_url=ABSOLUTE_BASE_URL(action_url))
+
+            yield u

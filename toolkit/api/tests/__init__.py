@@ -10,3 +10,4 @@ from .endpoints.category import (MatterCategoryTest,)
 from .endpoints.revision import *
 from .endpoints.user import (UsersTest,)
 from .endpoints.activity import *
+from .endpoints.remind import *
