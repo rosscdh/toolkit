@@ -27,6 +27,7 @@ class BaseMailerService(object):
         self.from_tuple = self.make_from_tuple(from_tuple=from_tuple)
 
         self.recipients = []
+
         for r in recipients:
             u = self.user.copy()
             u.update({
@@ -83,15 +84,16 @@ class BaseMailerService(object):
             self.send_mail(context=context, attachments=attachments)
 
     def send_mail(self, context, attachments=None):
-            send_templated_mail(
-                template_name=self.email_template,
-                template_prefix=self.base_email_template_location,
-                from_email=context.get('from_email'),
-                recipient_list=[context.get('to_email')],
-                bcc=['founders@lawpal.com'] if settings.PROJECT_ENVIRONMENT == 'prod' else [],  # only bcc us in on live mails
-                context=context,
-                attachments=attachments,
-                headers={'Reply-To': self.from_tuple.get('reply_to')})
+
+        send_templated_mail(
+            template_name=self.email_template,
+            template_prefix=self.base_email_template_location,
+            from_email=context.get('from_email'),
+            recipient_list=[context.get('to_email')],
+            bcc=['founders@lawpal.com'] if settings.PROJECT_ENVIRONMENT == 'prod' else [],  # only bcc us in on live mails
+            context=context,
+            attachments=attachments,
+            headers={'Reply-To': self.from_tuple.get('reply_to')})
 
 
 class BaseSpecifiedFromMailerService(BaseMailerService):

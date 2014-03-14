@@ -17,35 +17,40 @@ class ReviewRevisionView(DetailView):
     template_name = 'review/review.html'
 
     def dispatch(self, request, *args, **kwargs):
+        return super(ReviewRevisionView, self).dispatch(request=request, *args, **kwargs)
+
+    def can_read(self):
         #
         # Log in using the review backend
         # 'toolkit.apps.review.auth_backends.ReviewDocumentBackend'
         #
-        user = authenticate(username=kwargs.get('slug'), password=kwargs.get('auth_slug'))
+        requested_authenticated_user = authenticate(username=self.kwargs.get('slug'), password=self.kwargs.get('auth_slug'))
 
-        if request.user.is_authenticated() is True:
+        if self.request.user.is_authenticated() is True:
             #
-            # user is we are already logged in then check this guys mojo!
+            # if the request user is in the object.participants
+            # it means they are owners and should be able to view this regardless
             #
-            if request.user != user:
-                raise PermissionDenied
+            if self.request.user in self.matter.participants.all():
+                # we are an owner its all allowed
+                pass
+            else:
+                #
+                # user is we are already logged in then check this guys mojo!
+                #
+                if requested_authenticated_user != self.request.user:
+                    raise PermissionDenied
 
-        if user:
-            login(request, user)
+                if user:
+                    login(self.request, user)
 
-        return super(ReviewRevisionView, self).dispatch(request=request, *args, **kwargs)
+    def get_object(self):
+        obj = super(ReviewRevisionView, self).get_object()
+        self.matter = obj.document.item.matter
 
-    def get_filter_ids(self):
-        """
-        If the user is in the participants they can see everything
-        if they are just an invitee then they can only see their own comments
-        """
-        user = self.request.user
-        matter = self.object.document.item.matter
-        if user in matter.participants.all():
-            return None
-        else:
-            return ','.join([str(user.pk), str(user.pk)])
+        self.can_read()
+
+        return obj
 
     def get_context_data(self, **kwargs):
         kwargs = super(ReviewRevisionView, self).get_context_data(**kwargs)

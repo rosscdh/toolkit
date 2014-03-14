@@ -8,7 +8,8 @@ from toolkit.core.mixins import IsDeletedMixin
 from toolkit.utils import get_namedtuple_choices
 
 from .managers import ItemManager
-from .mixins import RequestDocumentUploadMixin
+from .mixins import (RequestDocumentUploadMixin,
+                     LatestRevisionReminderEmailsMixin)
 
 from jsonfield import JSONField
 from uuidfield import UUIDField
@@ -22,7 +23,9 @@ BASE_ITEM_STATUS = get_namedtuple_choices('ITEM_STATUS', (
                             ))
 
 
-class Item(IsDeletedMixin, RequestDocumentUploadMixin, models.Model):
+class Item(IsDeletedMixin, RequestDocumentUploadMixin,
+           LatestRevisionReminderEmailsMixin,
+           models.Model):
     """
     Matter.item
     """
