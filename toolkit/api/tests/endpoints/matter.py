@@ -212,7 +212,6 @@ class MatterDetailProvidedDataTest(BaseEndpointTest):
         self.assertEqual(self.endpoint, '/api/v1/matters/%s' % self.matter.slug)
 
     def confirm_meta(self, data):
-        #import pdb;pdb.set_trace()
         self.assertTrue('_meta' in data)
 
         _meta = data['_meta']

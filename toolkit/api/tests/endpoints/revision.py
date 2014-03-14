@@ -233,7 +233,7 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         }
         resp = self.client.patch(self.endpoint, json.dumps(data), content_type='application/json')
         resp_json = json.loads(resp.content)
-        #import pdb;pdb.set_trace()
+
         self.assertEqual(resp.status_code, 200)  # updated but actually a new one was created
         self.assertEqual(resp_json.get('slug'), 'v2')
 

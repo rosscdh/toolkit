@@ -133,7 +133,6 @@ class MatterCategoryTest(BaseEndpointTest):
         item.save()
 
         self.assertEqual(item.matter.categories, [u'M\xf6nkey', 'C', 'B', 'A'])
-        #import pdb;pdb.set_trace()
 
     def test_item_category_delete(self):
         """
