@@ -15,14 +15,21 @@
 
 		<h5>Add a participant</h5>
 		<form class="form" ng-submit="invite()">
-			<div class="form-group">
-				<input type="email" class="form-control form-control-full-width input-sm" ng-model="data.invitee.email" placeholder="your_email@gmail.com" required />
+			<div class="form-group" ng-class="{'has-success': data.invitee.participant, 'has-warning': data.invitee.isNew, 'has-error': data.validationError }">
+				<input type="email" id="inviteeEmail" class="form-control form-control-full-width input-sm" ng-model="data.invitee.email"
+                       placeholder="your_email@gmail.com" required ng-blur="checkIfUserExists()"/>
+                 <label class="control-label" for="inviteeEmail" ng-show="data.invitee.participant">User {{ data.invitee.participant | fullname }} found</label>
+                 <label class="control-label" for="inviteeEmail" ng-show="data.invitee.isNew">User does not exist yet</label>
 			</div>
+            <div class="form-group form-inline">
+                <input type="text" class="form-control input-sm" ng-model="data.invitee.firstname" placeholder="First name" ng-show="data.invitee.isNew" />
+                <input type="text" class="form-control input-sm" ng-model="data.invitee.lastname" placeholder="Last name" ng-show="data.invitee.isNew" />
+            </div>
 			<div class="form-group">
 				<textarea class="form-control form-control-full-width" ng-model="data.invitee.message" placeholder="Add an optional message"></textarea>
 			</div>
 			<div class="form-group">
-				<button class="btn btn-primary btn-wide btn-sm">Add participant</button>
+				<button class="btn btn-primary btn-wide btn-sm" id="addParticipant" disabled>Add participant</button>
 			</div>
 		</form>
 	</div>
