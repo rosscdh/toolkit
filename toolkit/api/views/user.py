@@ -1,7 +1,9 @@
 # -*- coding: UTF-8 -*-
 from django.shortcuts import get_object_or_404
+
 from rest_framework import viewsets
 from rest_framework import generics
+from rest_framework import filters
 
 from django.contrib.auth.models import User
 from ..serializers import UserSerializer
@@ -17,7 +19,9 @@ class UserEndpoint(viewsets.ModelViewSet,
     model = User
     lookup_field = 'username'
     serializer_class = UserSerializer
-    filter_fields = ('username', 'email',)
+
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('username', 'email',)
 
 
     def get_object(self):
@@ -41,6 +45,7 @@ class UserEndpoint(viewsets.ModelViewSet,
 
     def can_delete(self, user):
         return user.is_staff or user.is_superuser
+
 
 rulez_registry.register("can_read", UserEndpoint)
 rulez_registry.register("can_edit", UserEndpoint)
