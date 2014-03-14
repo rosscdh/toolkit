@@ -157,7 +157,6 @@ angular.module('toolkit-gui')
 			$scope.data.selectedItem = item;
 			$scope.data.selectedCategory = category;
 
-            //API EP doesnt exist yet
             $scope.initializeActivityItemStream();
 
 			//Reset controls
