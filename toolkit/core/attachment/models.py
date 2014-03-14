@@ -27,9 +27,11 @@ def _upload_file(instance, filename):
 
     split_file_name = os.path.split(filename)[-1]
     filename_no_ext, ext = os.path.splitext(split_file_name)
-    full_file_name = '%s-%d-%s-%s%s' % (instance.slug, instance.item.pk, instance.uploaded_by.username, slugify(filename_no_ext), ext)
 
-    if full_file_name in filename:
+    identifier = '%s-%d-%s' % (instance.slug, instance.item.pk, instance.uploaded_by.username)
+    full_file_name = '%s-%s%s' % (identifier, slugify(filename_no_ext), ext)
+
+    if identifier in slugify(filename):
         #
         # If we already have this filename as part of the recombined filename
         #
