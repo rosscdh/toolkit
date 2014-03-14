@@ -123,9 +123,9 @@
                           <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu">
-                          <li class="status-{{ value }}" ng-repeat="(name, value) in data.matter._meta.revision.status">
-                              <a href="javascript:;" ng-click="data.selectedItem.latest_revision.status=value;saveLatestRevision();">
-                                  <span class="fui-checkbox-unchecked"></span> {{ name }}
+                          <li class="status-{{ $index }}" ng-repeat="status in data.matter._meta.revision.status | setValueAsArrayIndex">
+                              <a href="javascript:;" ng-click="data.selectedItem.latest_revision.status=$index;saveLatestRevision();">
+                                  <span class="fui-checkbox-unchecked"></span> {{ status }}
                               </a>
                           </li>
                         </ul>

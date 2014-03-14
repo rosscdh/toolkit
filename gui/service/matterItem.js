@@ -77,10 +77,10 @@ angular.module('toolkit-gui')
 
 
 		function reviewerItemResource() {
-			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/revision/reviewers/:username:action', {}, {
-				'request': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
-				'remind': { 'method': 'POST', 'params': {'action':'remind'}, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
-				'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
+			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/revision/:type/:username:action', {}, {
+				'request': { 'method': 'POST', 'params' : { 'type': 'reviewers' }, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
+				'remind': { 'method': 'POST', 'params': { 'type': 'reviewers', 'action':'remind'}, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
+				'delete': { 'method': 'DELETE', 'params' : { 'type': 'reviewer' }, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
 			});
 		}
 
