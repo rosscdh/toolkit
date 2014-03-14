@@ -7,8 +7,7 @@
 		<h5 ng-show="participants.length>0">Existing Participants</h5>
 		<ul class="list-unstyled">
 			<li ng-repeat="person in participants">
-				<label ng-bind="person.first_name"></label>
-				<label ng-bind="person.last_name"></label>
+                <label ng-bind="person | fullname"></label>
 				<small ng-show="person.username==currentUser.username">(you)</small>
 				<a class="text-danger" ng-show="person.username!==currentUser.username" href="javascript:;" ng-click="revoke(person)"><small>Revoke access</small></a>
 			</li>

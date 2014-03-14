@@ -78,7 +78,7 @@
 	                                    {{ item.date_due | date:'dd MMM' }}
 	                                </button>
 	                                <button disabled="" class="btn btn-warning btn-xs" ng-show="item.status==1">
-	                                    <span class="fui-time"></span> Awaiting Files <span ng-bind="getParticipantByUrl(item.responsible_party,true)"></span>
+	                                    <span class="fui-time"></span> Awaiting Files <span ng-bind="getParticipantByUrl(item.responsible_party) | initials"></span>
 	                                </button>
                                 </span>
                                 <span class="fui-check-inverted" ng-show="item.is_complete"></span>
@@ -100,7 +100,8 @@
 
 					<!-- chat //-->
 					<!-- @TODO Make the URL dynamic -->
-					<div class="col-sm-5 chat full" ng-include="'/static/ng/partial/checklist/includes/itemchat.html'"></div>
+					<!--<div class="col-sm-5 chat full" ng-include="'/static/ng/partial/checklist/includes/itemchat.html'"></div>-->
+					<div class="col-sm-5 chat full" ng-include="'/static/ng/partial/checklist/includes/activitystream.html'"></div>
 					<!-- end: chat //-->
 				</div>
 			</div>

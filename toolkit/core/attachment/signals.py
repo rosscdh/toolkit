@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 from django.db import transaction
 from django.dispatch import receiver
-from django.db.models.signals import pre_save, post_save
+from django.db.models.signals import pre_save, post_save, m2m_changed
 
 from toolkit.apps.workspace.signals import _model_slug_exists
+
+from toolkit.apps.review import (ASSOCIATION_STRATEGIES,
+                                 REVIEWER_DOCUMENT_ASSOCIATION_STRATEGY,)
 
 from .models import Revision
 from toolkit.apps.review.models import ReviewDocument
@@ -55,3 +58,71 @@ def ensure_revision_reviewdocument_object(sender, instance, **kwargs):
             review.participants = instance.item.matter.participants.all()
             # now add the revew object to the instance reivewdocument_set
             instance.reviewdocument_set.add(review)
+
+
+@receiver(m2m_changed, sender=Revision.reviewers.through, dispatch_uid='revision.on_reviewer_add')
+def on_reviewer_add(sender, instance, action, model, pk_set, **kwargs):
+    """
+    when a reviewer is added from the m2m then authorise them
+    for access
+    """
+    if action in ['post_add']:
+        user_pk = next(iter(pk_set))  # get the first item in the set should only ever be 1 anyway
+        user = model.objects.get(pk=user_pk)
+
+        #
+        # Get the base review documnet; created to alow the participants to access
+        # and discuss a documnet
+        #
+        reviewdocument = instance.reviewdocument_set.all().first()
+
+        if REVIEWER_DOCUMENT_ASSOCIATION_STRATEGY == ASSOCIATION_STRATEGIES.single:
+            #
+            # 1 ReviewDocument per reviewer
+            # in this case we should immediately delete the review document
+            #
+            reviewdocument.pk = None  # set to null this is adjango stategy to copy the model
+            reviewdocument.slug = None  # set to non so it gets regenerated
+            reviewdocument.save()  # save it so we get a new pk so we can add reviewrs
+            reviewdocument.reviewers.add(user)  # add the reviewer
+            reviewdocument.recompile_auth_keys()  # update teh auth keys to match the new slug
+
+        if REVIEWER_DOCUMENT_ASSOCIATION_STRATEGY == ASSOCIATION_STRATEGIES.multi:
+            #
+            # Multiple reviewers per reviewer document
+            # just add the user to reviewres if they dont exist
+
+            #
+            reviewdocument.reviewers.add(user) if user not in reviewdocument.reviewers.all() else None
+
+
+@receiver(m2m_changed, sender=Revision.reviewers.through, dispatch_uid='revision.on_reviewer_remove')
+def on_reviewer_remove(sender, instance, action, model, pk_set, **kwargs):
+    """
+    when a reviewer is removed from the m2m then deauthorise them
+    """
+    if action in ['pre_remove']:
+        user_pk = next(iter(pk_set))  # get the first item in the set should only ever be 1 anyway
+        user = model.objects.get(pk=user_pk)
+
+        reviewdocuments = ReviewDocument.objects.filter(document=instance,
+                                                        reviewers__in=[user])
+
+        if REVIEWER_DOCUMENT_ASSOCIATION_STRATEGY == ASSOCIATION_STRATEGIES.single:
+            #
+            # 1 ReviewDocument per reviewer
+            # in this case we should immediately delete the review document
+            #
+            for reviewdocument in reviewdocuments:
+                # delete the reviewdoc
+                reviewdocument.delete()
+
+        elif REVIEWER_DOCUMENT_ASSOCIATION_STRATEGY == ASSOCIATION_STRATEGIES.multi:
+            #
+            # Multiple reviewers per reviewer document only remove them as reviewers
+            # but leave the document object alone!
+            #
+            for reviewdocument in reviewdocuments:
+                reviewdocument.reviewers.remove(user) if user in reviewdocument.reviewers.all() else None
+
+

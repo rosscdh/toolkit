@@ -15,7 +15,7 @@ angular.module('toolkit-gui')
 	'API_BASE_URL',
 	function( $q, $resource, $rootScope, $upload, matterService, API_BASE_URL) {
 		/**
-		 * TBC: this variable will contain the JWT token requied to make authenticated requests
+		 * TBC: this variable will contain the JWT token required to make authenticated requests
 		 * @memberof matterItemService
 		 * @type {Object}
 		 * @private
@@ -46,11 +46,12 @@ angular.module('toolkit-gui')
 		 * @return {Function}   $resource
 		 */
 		function matterItemResource() {
-			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug', {}, {
+			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/:action', {}, {
 				'create': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
-				'update': { 'method': 'PATCH', params:{'itemSlug':'@slug'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
+				'update': { 'method': 'PATCH', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
-				'requestdocument': { 'method': 'PATCH', params:{'action':'request_document'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
+				'requestdocument': { 'method': 'PATCH', 'params':{'action':'request_document'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
+				'remind': { 'method': 'POST', 'params':{'action':'remind'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
 			});
 		}
 
@@ -71,6 +72,15 @@ angular.module('toolkit-gui')
 				'update': { 'method': 'PATCH', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
+			});
+		}
+
+
+		function reviewerItemResource() {
+			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/revision/reviewers/:username:action', {}, {
+				'request': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
+				'remind': { 'method': 'POST', 'params': {'action':'remind'}, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
+				'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
 			});
 		}
 
@@ -96,10 +106,10 @@ angular.module('toolkit-gui')
 			/**
 			 * Reqests that the API create a new matter checklist item
 			 *
-			 * @param {String}      matterSlug    Database slug, used as a unquie idenitfier for a matter.
+			 * @param {String}      matterSlug    Database slug, used as a unique identifier for a matter.
 			 * @param {String} matterSlug
 			 * @param {String} itemName Text string as provided by end user
-			 * @param {String} categoryName Name of the catgeoy to place the new item within
+			 * @param {String} categoryName Name of the category to place the new item within
 			 *
 			 * @example
 			 * matterItemService.create( 'myItemName', 'ItemCategoryName' );
@@ -146,9 +156,9 @@ angular.module('toolkit-gui')
 			 * Reqests that the API update an existing matter checklist item
 			 *
 			 * @name				update
-			 * @param {String}      matterSlug    Database slug, used as a unquie idenitfier for a matter.
+			 * @param {String}      matterSlug    Database slug, used as a unique identifier for a matter.
 			 * @param {String}      itemName Text string as provided by end user
-			 * @param {String}      categoryName Name of the catgeoy to place the new item within
+			 * @param {String}      categoryName Name of the category to place the new item within
 			 *
 			 * @example
 			 * matterItemService.update( {...} );
@@ -174,7 +184,7 @@ angular.module('toolkit-gui')
 					'is_complete': matterItem.is_complete
 				};
 
-				api.update({'matterSlug': matterSlug }, updateFields,
+				api.update({'matterSlug': matterSlug, 'itemSlug': matterItem.slug }, updateFields,
 					function success(item){
 						deferred.resolve(item);
 					},
@@ -190,7 +200,7 @@ angular.module('toolkit-gui')
 			 * Reqests that the API delete an existing matter checklist item
 			 *
 			 * @name				delete
-			 * @param {String}      matterSlug    Database slug, used as a unquie idenitfier for a matter.
+			 * @param {String}      matterSlug    Database slug, used as a unique identifier for a matter.
 			 * @param {Object}      matterItem    JSON representation of matter that is to be deleted
 			 *
 			 * @example
@@ -223,9 +233,9 @@ angular.module('toolkit-gui')
 			 * Reqests that the API delete an existing matter checklist item
 			 *
 			 * @name				uploadRevision
-			 * @param {String}      matterSlug    Database slug, used as a unquie idenitfier for a matter.
-			 * @param {String}      itemSlug      Database slug, used as a unquie identifier for a checklist item.
-			 * @param {Object}      files         Details as provided by filerpicker.io
+			 * @param {String}      matterSlug    Database slug, used as a unique identifier for a matter.
+			 * @param {String}      itemSlug      Database slug, used as a unique identifier for a checklist item.
+			 * @param {Object}      files         Details as provided by filepicker.io
 			 *
 			 * @example
 			 * matterItemService.uploadRevision( 'myItemName', 'ItemCategoryName', {} );
@@ -258,7 +268,7 @@ angular.module('toolkit-gui')
 
 			/**
 			 * Upload a specific file into a checklist item revision
-			 * @param  {String} matterSlug Unique itentifier for a specific matter
+			 * @param  {String} matterSlug unique identifier for a specific matter
 			 * @param  {String} itemSlug   Unique identifier for a specific checklist item within the matter
 			 * @param  {Array} $files     Array of files (HTML5 files object)
 			 * @return {Promise}
@@ -297,12 +307,12 @@ angular.module('toolkit-gui')
 			},
 
 			/**
-			 * Reqests a revision update
+			 * Requests a revision update
 			 *
 			 * @name				updateRevision
-			 * @param {String}      matterSlug    Database slug, used as a unquie idenitfier for a matter.
-			 * @param {String}      itemSlug      Database slug, used as a unquie identifier for a checklist item.
-			 * @param {Object}      files         Details as provided by filerpicker.io
+			 * @param {String}      matterSlug    Database slug, used as a unique identifier for a matter.
+			 * @param {String}      itemSlug      Database slug, used as a unique identifier for a checklist item.
+			 * @param {Object}      files         Details as provided by filepicker.io
 			 *
 			 * @example
 			 * matterItemService.updateRevision( 'myItemName', 'ItemCategoryName', {} );
@@ -339,8 +349,8 @@ angular.module('toolkit-gui')
 			 * Reqests the API to delete a specific revision.
 			 *
 			 * @name				deleteRevision
-			 * @param {String}      matterSlug    Database slug, used as a unquie idenitfier for a matter.
-			 * @param {String}      itemSlug      Database slug, used as a unquie identifier for a checklist item.
+			 * @param {String}      matterSlug    Database slug, used as a unique identifier for a matter.
+			 * @param {String}      itemSlug      Database slug, used as a unique identifier for a checklist item.
 			 * @param {Object}      revisionItem  Revision object
 			 *
 			 * @example
@@ -372,9 +382,9 @@ angular.module('toolkit-gui')
             /**
 			 * Requests the API to send a revision request to given participant.
 			 *
-			 * @name				deleteRevision
-			 * @param {String}      matterSlug    Database slug, used as a unquie idenitfier for a matter.
-			 * @param {String}      itemSlug      Database slug, used as a unquie identifier for a checklist item.
+			 * @name				requestRevision
+			 * @param {String}      matterSlug    Database slug, used as a unique identifier for a matter.
+			 * @param {String}      itemSlug      Database slug, used as a unique identifier for a checklist item.
 			 * @param {Object}      participant   Dictionary consisting of email, message, username
 			 *
 			 * @example
@@ -403,14 +413,52 @@ angular.module('toolkit-gui')
 				return deferred.promise;
 			},
 
+             /**
+			 * Requests the API to send a reminder to the responsible participant to upload the requested document.
+			 *
+			 * @name				remindRevisionRequest
+			 * @param {String}      matterSlug    Database slug, used as a unique identifier for a matter.
+			 * @param {String}      itemSlug      Database slug, used as a unique identifier for a checklist item.
+			 *
+			 * @example
+			 * matterItemService.remindRevisionRequest( 'myMatterName', 'myItemName' );
+			 *
+			 * @public
+			 * @method				remindRevisionRequest
+			 * @memberof			matterItemService
+			 *
+			 * @return {Promise}
+			 */
+            'remindRevisionRequest': function ( matterSlug, itemSlug ) {
+				var deferred = $q.defer();
+
+				var api = matterItemResource();
+
+				api.remind({'matterSlug': matterSlug, 'itemSlug': itemSlug }, {},
+					function success(){
+						deferred.resolve();
+					},
+					function error(err) {
+						deferred.reject( err );
+					}
+				);
+
+				return deferred.promise;
+			},
+
+            'deleteRevisionRequest': function ( matterSlug, itemSlug ) {
+                //not implemented
+                return null;
+            },
+
             /**
 			/**
 			 * Load a revision from URL
 			 *
 			 * @name				loadRevisionByURL
-			 * @param {String}      matterSlug    Database slug, used as a unquie idenitfier for a matter.
-			 * @param {String}      itemSlug      Database slug, used as a unquie identifier for a checklist item.
-			 * @param {String}      revisionSlug  Database slug, used as a unquie identifier for a revision.
+			 * @param {String}      matterSlug    Database slug, used as a unique identifier for a matter.
+			 * @param {String}      itemSlug      Database slug, used as a unique identifier for a checklist item.
+			 * @param {String}      revisionSlug  Database slug, used as a unique identifier for a revision.
 			 *
 			 * @example
 			 * matterItemService.loadRevisionByURL( 'myMatterName', 'myItemName', 'v1' );
@@ -429,6 +477,109 @@ angular.module('toolkit-gui')
 				api.get({'matterSlug': matterSlug, 'itemSlug': itemSlug, 'version':revisionSlug  },
 					function success(revision){
 						deferred.resolve(revision);
+					},
+					function error(err) {
+						deferred.reject( err );
+					}
+				);
+
+				return deferred.promise;
+			},
+
+			/**
+			 * Requests the API to send a revision review request to given participant
+			 *
+			 * @name				requestRevisionReview
+			 * @param {String}      matterSlug    Database slug, used as a unique identifier for a matter.
+			 * @param {String}      itemSlug      Database slug, used as a unique identifier for a checklist item.
+			 * @param {String}      participant   User object.
+			 *
+			 * @example
+			 * matterItemService.loadRevisionByURL( 'myMatterName', 'myItemName', {} );
+			 *
+			 * @public
+			 * @method				requestRevisionReview
+			 * @memberof			matterItemService
+			 *
+			 * @return {Promise}    Updated item object as provided by API
+			 */
+			'requestRevisionReview': function ( matterSlug, itemSlug, participant ) {
+				var deferred = $q.defer();
+
+				var api = reviewerItemResource();
+                console.log(participant);
+
+				api.request({'matterSlug': matterSlug, 'itemSlug': itemSlug }, {'username': participant.username},
+					function success(response){
+						deferred.resolve(response);
+					},
+					function error(err) {
+						deferred.reject( err );
+					}
+				);
+
+				return deferred.promise;
+			},
+
+
+            /**
+			 * Requests the API to send a reminder to all reviewer who have not reviewed the current revision yet.
+			 *
+			 * @name				remindRevisionReview
+			 * @param {String}      matterSlug    Database slug, used as a unique identifier for a matter.
+			 * @param {String}      itemSlug      Database slug, used as a unique identifier for a checklist item.
+			 *
+			 * @example
+			 * matterItemService.remindRevisionReview( 'myMatterName', 'myItemName' );
+			 *
+			 * @public
+			 * @method				remindRevisionReview
+			 * @memberof			matterItemService
+			 *
+			 * @return {Promise}
+			 */
+            'remindRevisionReview': function ( matterSlug, itemSlug ) {
+				var deferred = $q.defer();
+
+				var api = reviewerItemResource();
+
+				api.remind({'matterSlug': matterSlug, 'itemSlug': itemSlug }, {},
+					function success(){
+						deferred.resolve();
+					},
+					function error(err) {
+						deferred.reject( err );
+					}
+				);
+
+				return deferred.promise;
+			},
+
+            /**
+			 * Delete the review request for a specific user.
+			 *
+			 * @name				deleteRevisionReview
+			 * @param {String}      matterSlug    Database slug, used as a unique identifier for a matter.
+			 * @param {String}      itemSlug      Database slug, used as a unique identifier for a checklist item.
+			 * @param {String}      participant   User object.
+			 *
+			 * @example
+			 * matterItemService.deleteRevisionReview( 'myMatterName', 'myItemName', {} );
+			 *
+			 * @public
+			 * @method				deleteRevisionReview
+			 * @memberof			matterItemService
+			 *
+			 * @return {Promise}
+			 */
+			'deleteRevisionReviewRequest': function ( matterSlug, itemSlug, participant ) {
+				var deferred = $q.defer();
+
+				var api = reviewerItemResource();
+
+				api.delete({'matterSlug': matterSlug, 'itemSlug': itemSlug, 'username': participant.username },
+					function success(){
+						deferred.resolve();
 					},
 					function error(err) {
 						deferred.reject( err );

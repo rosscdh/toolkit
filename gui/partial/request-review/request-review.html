@@ -1,6 +1,6 @@
 <div class="modal-content">
 	<div class="modal-header">
-		<h4 class="modal-title" id="myModalLabel">Request file for <span ng-bind="checklistItem.name"></span></h4>
+		<h4 class="modal-title" id="myModalLabel">Request review for <span ng-bind="revision.name"></span></h4>
 	</div>
 	<form name="requestForm" ng-submit="request()">
 	<div class="modal-body">
@@ -14,7 +14,7 @@
 							<span class="second-icon fui-radio-checked"></span>
 						</span>
 						<input type="radio" value="{{person.username}}" ng-model="data.request.person" name="participants">
-						<font ng-bind="person.first_name"></font> <font ng-bind="person.last_name"></font>
+						<label ng-bind="person | fullname"></label>
 					</label>
 				</li>
 				<li>
@@ -35,7 +35,7 @@
 	</div>
 	<div class="modal-footer">
 		<button class="btn btn-default" ng-click="cancel()">Cancel</button>
-		<button class="btn btn-primary" type="submit" ng-disabled="invalid()">Add matter participants</button>
+		<button class="btn btn-primary" type="submit" ng-disabled="invalid()">Request review</button>
 	</div>
 	</form>
 </div>
