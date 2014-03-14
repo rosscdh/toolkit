@@ -49,8 +49,45 @@ angular.module('toolkit-gui')
 		 * @type {Object}
 		 */
 		$scope.data = {
-			'invitee': { 'email': '', 'message': '' }
+			'invitee': { 'email': '', 'message': '', 'isNew': false }
 		};
+
+
+        /**
+		 * Checks if a user exists with the entered mailaddress and activates the input
+         * fields for first and last name if not.
+		 *
+		 * @name				checkIfUserExists
+		 *
+		 * @private
+		 * @method				checkIfUserExists
+		 * @memberof			ParticipantInviteCtrl
+		 */
+        $scope.checkIfUserExists = function () {
+            if ($scope.data.invitee.email != null && $scope.data.invitee.email.length>0) {
+                $scope.data.validationError = false;
+
+                participantService.getByEmail( $scope.data.invitee.email ).then(
+                    function success(participant) {
+                        $scope.data.invitee.isNew = false;
+                        $scope.data.invitee.participant = participant;
+
+                        jQuery("#addParticipant").removeAttr('disabled');
+                    },
+                    function error() {
+                        $scope.data.invitee.isNew = true;
+                        $scope.data.invitee.participant = null;
+
+                        jQuery("#addParticipant").removeAttr('disabled');
+                    }
+                );
+            } else {
+                $scope.data.validationError = true;
+                $scope.data.invitee.isNew = false;
+                $scope.data.invitee.participant = null;
+                jQuery("#addParticipant").attr('disabled','');
+            }
+        }
 
 		/**
 		 * Initiates request to API to invite a person or an already registered user
