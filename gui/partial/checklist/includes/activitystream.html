@@ -1,11 +1,6 @@
 <h4><span class="fui-chat"></span> Activity stream</h4>
 <ul class="list-unstyled">
-    <li class="message me" ng-repeat="activity in data.activitystream">
-        <div class="media">
-            <a class="user-icon" href="#"><span class="fui-user"></span></a>
-            <div class="media-body">
-                <div class="msg-body">{{ activity.event }}</div>
-            </div>
-        </div>
+    <li class="action" ng-repeat="activity in data.activitystream">
+        <span class="fui-document"></span> {{ activity.event }}
     </li>
 </ul>

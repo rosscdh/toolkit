@@ -60,7 +60,8 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
         but return the Revision object as self.object
         """
         if self.request.method in ['POST']:
-            self.revision = Revision(uploaded_by=self.request.user, item=self.item)
+
+            self.revision = Revision(uploaded_by=self.request.user, item=self.item) if self.request.user.is_authenticated() else None
 
         else:
 

@@ -16,10 +16,14 @@ angular.module('toolkit-gui').filter('fullname', function () {
 });
 
 angular.module('toolkit-gui').filter('initials', function () {
-    return function (participant) {
+    return function (participant, showBracket) {
         if (participant != null) {
                  if (participant.initials != null && participant.initials.length>0) {
-                     return '(' + participant.initials + ')';
+                     if (showBracket === true) {
+                        return '(' + participant.initials + ')';
+                     } else {
+                        return participant.initials;
+                     }
                  } else {
                      return '';
                  }

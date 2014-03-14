@@ -67,7 +67,7 @@ angular.module('toolkit-gui')
 					//set matter in the services
 					matterService.selectMatter(singleMatter);
 					$scope.initialiseMatter( singleMatter );
-					$scope.initializeActivityStream( singleMatter );
+					$scope.initializeActivityMatterStream( singleMatter );
 				},
 				function error(err){
 					toaster.pop('error', "Error!", "Unable to load matter");
@@ -157,6 +157,8 @@ angular.module('toolkit-gui')
 			$scope.data.selectedItem = item;
 			$scope.data.selectedCategory = category;
 
+            $scope.initializeActivityItemStream();
+
 			//Reset controls
 			$scope.data.showEditItemDescriptionForm = false;
 			$scope.data.showEditItemTitleForm = false;
@@ -216,6 +218,7 @@ angular.module('toolkit-gui')
 									$scope.data.selectedCategory.items.splice(index,1);
 								}
 								$scope.data.selectedItem = null;
+                                $scope.initializeActivityMatterStream();
 							},
 							function error(err){
 								toaster.pop('error', "Error!", "Unable to delete item");
@@ -849,7 +852,7 @@ angular.module('toolkit-gui')
 
             matterItemService.deleteRevisionReviewRequest(matterSlug, item.slug, participant).then(
                 function success(){
-                    var index = jQuery.inArray( participant.url, item.latest_revision.reviewers );
+                    var index = jQuery.inArray( participant_url, item.latest_revision.reviewers );
                     if( index>=0 ) {
                         // Remove reviewer from list in RAM array
                         item.latest_revision.reviewers.splice(index,1);
@@ -999,22 +1002,52 @@ angular.module('toolkit-gui')
          *
          */
 
-        $scope.initializeActivityStream = function() {
+
+         /**
+		 * Reads the matter activity stream from API.
+		 * @memberof			ChecklistCtrl
+		 * @private
+		 * @type {Object}
+		 */
+        $scope.initializeActivityMatterStream = function() {
             var matterSlug = $scope.data.slug;
 
-            activityService.list(matterSlug).then(
+            activityService.matterstream(matterSlug).then(
 				 function success(result){
                     $scope.data.activitystream = result;
 				 },
 				 function error(err){
-					toaster.pop('error', "Error!", "Unable to read activity stream");
+					toaster.pop('error', "Error!", "Unable to read activity matter stream");
 				 }
 			);
 
-            //reload activity stream every 30seconds
+            /*
+            //reload activity stream every 60seconds
             $timeout(function (){
                 $scope.initializeActivityStream();
-            }, 1000 * 30);
+            }, 1000 * 60);*/
+        };
+
+
+        /**
+		 * Reads the item activity stream from API.
+		 * @memberof			ChecklistCtrl
+		 * @private
+		 * @type {Object}
+		 */
+        $scope.initializeActivityItemStream = function() {
+            $scope.data.activitystream = [];
+            var matterSlug = $scope.data.slug;
+            var itemSlug = $scope.data.selectedItem.slug;
+
+            activityService.itemstream(matterSlug, itemSlug).then(
+				 function success(result){
+                    $scope.data.activitystream = result;
+				 },
+				 function error(err){
+					toaster.pop('error', "Error!", "Unable to read activity item stream");
+				 }
+			);
         };
 
 
