@@ -99,6 +99,43 @@ angular.module('toolkit-gui')
 			$modalInstance.dismiss('cancel');
 		};
 
+
+        /**
+		 * Checks if a user exists with the entered mailaddress and activates the input
+         * fields for first and last name if not.
+		 *
+		 * @name				checkIfUserExists
+		 *
+		 * @private
+		 * @method				checkIfUserExists
+		 * @memberof			ParticipantInviteCtrl
+		 */
+        $scope.checkIfUserExists = function () {
+            if ($scope.data.request.email != null && $scope.data.request.email.length>0) {
+                $scope.data.validationError = false;
+
+                participantService.getByEmail( $scope.data.request.email ).then(
+                    function success(participant) {
+                        $scope.data.request.isNew = false;
+                        $scope.data.request.participant = participant;
+
+                        jQuery("#requestParticipant").removeAttr('disabled');
+                    },
+                    function error() {
+                        $scope.data.request.isNew = true;
+                        $scope.data.request.participant = null;
+
+                        jQuery("#requestParticipant").removeAttr('disabled');
+                    }
+                );
+            } else {
+                $scope.data.validationError = true;
+                $scope.data.request.isNew = false;
+                $scope.data.request.participant = null;
+                jQuery("#requestParticipant").attr('disabled','');
+            }
+        }
+
 		/**
 		 * Initiates request to API to request a revision
 		 *

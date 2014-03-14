@@ -122,6 +122,35 @@ angular.module('toolkit-gui').factory('participantService', [
             },
 
              /**
+			 * Calls the API with the given participant email address and receives a user object.
+			 *
+			 * @name				getByEmail
+			 *
+			 * @example
+		 	 * participantService.getByEmail( mySParticipantMailaddress );
+			 *
+			 * @public
+			 * @method				getByEmail
+			 * @memberof			participantService
+		 	 */
+            'getByEmail': function(email) {
+                var deferred = $q.defer();
+
+				var api = userAPI();
+
+				api.get({'email': email},
+					function success( response ) {
+						deferred.resolve( response );
+					},
+					function error( err ) {
+						deferred.reject( err );
+					}
+				);
+
+				return deferred.promise;
+            },
+
+             /**
 			 * Requests the API to invite a user with the given email-address.
              * If the user doesnt exist yet, he will be created.
 			 *
