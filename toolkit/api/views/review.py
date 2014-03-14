@@ -118,10 +118,10 @@ class ItemRevisionReviewersView(generics.ListAPIView,
             self.get_queryset_provider().add(user)
             self.item.send_invite_emails(from_user=request.user, to=[user], note=note)
 
-            send_activity_log.send(self.item, **{
+            send_activity_log.send(user, **{
                 'actor': request.user,
-                'verb': u'added a reviewer',
-                'action_object': user,
+                'verb': u'added %s as reviewer' % user,
+                'action_object': self.item,
                 'target': self.matter
             })
 
@@ -223,10 +223,10 @@ class ItemRevisionReviewerView(generics.RetrieveAPIView,
             #
             self.revision.reviewers.remove(user)
 
-            send_activity_log.send(self.item, **{
+            send_activity_log.send(user, **{
                 'actor': request.user,
-                'verb': u'removed as reviewer',
-                'action_object': user,
+                'verb': u'removed %s as reviewer' % user,
+                'action_object': self.item,
                 'target': self.matter
             })
 
