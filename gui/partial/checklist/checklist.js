@@ -951,7 +951,7 @@ angular.module('toolkit-gui')
         //TODO discuss if there is any better datepicker to use
         $scope.$watch('data.dateduepickerdate', function(newValue, oldValue) {
               //only save is date due picker is visible
-              if($scope.data.showDateDuePicker==true){
+              if($scope.data.showDateDuePicker===true){
                   //convert picked date to string
                   var newdatestr = jQuery.datepicker.formatDate('yy-mm-ddT00:00:00', $scope.data.dateduepickerdate);
                   $scope.data.selectedItem.date_due = newdatestr;
