@@ -45,16 +45,16 @@ class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
             return reverse('review:review_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)})
         return None
 
-    @property
-    def crocodoc(self):
+    # @property
+    # def crocodoc(self):
 
-        if self.file_exists_locally is False:
-            self.download_if_not_exists()
+    #     if self.file_exists_locally is False:
+    #         self.download_if_not_exists()
 
-        crocodoc, is_new = CrocodocDocument.objects.get_or_create(object_id=self.document.pk,
-                                                                  content_object_type=ContentType.objects.get_for_model(self.document),
-                                                                  object_attachment_fieldname='executed_file')
-        return crocodoc
+    #     crocodoc, is_new = CrocodocDocument.objects.get_or_create(object_id=self.document.pk,
+    #                                                               content_object_type=ContentType.objects.get_for_model(self.document),
+    #                                                               object_attachment_fieldname='executed_file')
+    #     return crocodoc
 
     @property
     def file_exists_locally(self):
