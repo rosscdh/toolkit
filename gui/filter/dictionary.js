@@ -15,3 +15,18 @@ angular.module('toolkit-gui').filter('valueforkey', function () {
         }
     };
 });
+
+angular.module('toolkit-gui').filter('setValueAsArrayIndex', function () {
+    return function (dict) {
+        if (dict != null) {
+            var result = [];
+            jQuery.each(dict, function( key, value ) {
+               result[value] = key;
+            });
+            return result;
+        } else {
+            return '';
+        }
+    };
+});
+
