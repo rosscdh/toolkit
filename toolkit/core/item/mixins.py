@@ -31,7 +31,7 @@ class RequestDocumentUploadMixin(object):
 
 
 class LatestRevisionReminderEmailsMixin(object):
-    def send_invite_emails(self, from_user, to):
+    def send_invite_emails(self, from_user, to, **kwargs):
         """
         Send the initial email to invite
         but use the standard subject; which is an [ACTION REQUIRED]
@@ -40,9 +40,9 @@ class LatestRevisionReminderEmailsMixin(object):
         #
         # Becase we are yield users need to call next on this to make it action
         #
-        yield self.send_review_emails(from_user=from_user, subject=ReviewerReminderEmail.subject, recipients=to)
+        return [next(self.send_review_emails(from_user=from_user, subject=ReviewerReminderEmail.subject, recipients=to, **kwargs))]
 
-    def send_reminder_emails(self, from_user):
+    def send_reminder_emails(self, from_user, **kwargs):
         """
         Send the initial email to invite
         but use the standard subject; which is a [REMINDER]
@@ -50,9 +50,9 @@ class LatestRevisionReminderEmailsMixin(object):
         #
         # Becase we are yield users need to call next on this to make it action
         #
-        yield self.send_review_emails(from_user=from_user, subject='[REMINDER] Please review this document')
+        return [next(self.send_review_emails(from_user=from_user, subject='[REMINDER] Please review this document', **kwargs))]
 
-    def send_review_emails(self, from_user, subject, recipients=[]):
+    def send_review_emails(self, from_user, subject, recipients=[], **kwargs):
         #
         # @TODO filter by those reviewers that have not yet reviewed the doc
         #
@@ -79,7 +79,8 @@ class LatestRevisionReminderEmailsMixin(object):
                 mailer.process(subject=subject,
                                item=self,
                                from_name=from_user.get_full_name(),
-                               action_url=ABSOLUTE_BASE_URL(action_url))
+                               action_url=ABSOLUTE_BASE_URL(action_url),
+                               **kwargs)
 
                 yield u
 
