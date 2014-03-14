@@ -50,7 +50,7 @@
                                 </a>
                             {% endif %}
 
-                            <a href="{% url 'matter:detail' matter_slug=m.slug %}" title="{{ m.name }}" class="content">
+                            <a href="{% url 'matter:detail' matter_slug=m.slug %}#/checklist" title="{{ m.name }}" class="content">
                                 <div class="title">
                                     {% if user.profile.is_lawyer %}
                                         <h6>{{ m.client.name }}</h6>
