@@ -25,9 +25,19 @@
 					</label>
 				</li>
 			</ul>
-			<div class="form-group" ng-show="data.request.person==''">
-				<input type="email" name="email" class="form-control form-control-full-width input-sm" ng-model="data.request.email" placeholder="email@gmail.com" ng-required="data.request.person==''" />
+
+            <div class="form-group" ng-show="data.request.person==''"
+                 ng-class="{'has-success': data.request.participant, 'has-warning': data.request.isNew, 'has-error': data.validationError }">
+				<input type="email" id="requestEmail" class="form-control form-control-full-width input-sm" ng-model="data.request.email"
+                       placeholder="your_email@gmail.com" required ng-blur="checkIfUserExists()"/>
+                 <label class="control-label" for="requestEmail" ng-show="data.request.participant">User {{ data.request.participant | fullname }} found</label>
+                 <label class="control-label" for="requestEmail" ng-show="data.request.isNew">User does not exist yet</label>
 			</div>
+            <div class="form-group form-inline">
+                <input type="text" class="form-control input-sm" ng-model="data.request.firstname" placeholder="First name" ng-show="data.request.isNew" />
+                <input type="text" class="form-control input-sm" ng-model="data.request.lastname" placeholder="Last name" ng-show="data.request.isNew" />
+            </div>
+
 			<div class="form-group">
 				<textarea class="form-control form-control-full-width" ng-model="data.request.message" placeholder="Add an optional message"></textarea>
 			</div>
