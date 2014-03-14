@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.core import mail
 from django.conf import settings
 from django.core.files import File
 from django.test import LiveServerTestCase
@@ -6,7 +7,9 @@ from django.core.urlresolvers import reverse
 from django.core.validators import URLValidator
 from django.core.files.storage import FileSystemStorage
 
+from toolkit.casper.workflow_case import PyQueryMixin
 from toolkit.casper.prettify import mock_http_requests
+from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 
 from . import BaseEndpointTest
 
@@ -18,7 +21,7 @@ import json
 import urllib
 
 
-class RevisionReviewsTest(BaseEndpointTest):
+class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
     """
     /matters/:matter_slug/items/:item_slug/revision/reviewers/ (GET,POST)
         [lawyer,customer] to list, create reviewers
@@ -75,6 +78,18 @@ class RevisionReviewsTest(BaseEndpointTest):
         self.assertEqual(json_data['count'], 1)
         self.assertEqual(json_data['results'][0]['name'], participant.get_full_name())
 
+        outbox = mail.outbox
+        self.assertEqual(len(outbox), 1)
+
+        email = outbox[0]
+        self.assertEqual(email.subject, '[ACTION REQUIRED] Invitation to review a document')
+
+        pq = self.pq(email.body)
+
+        review_document = self.item.latest_revision.reviewdocument_set.filter(reviewers__in=[participant]).first()
+        expected_action_url = ABSOLUTE_BASE_URL(review_document.get_absolute_url(user=participant))
+
+        self.assertEqual(pq('a')[0].attrib.get('href'), expected_action_url)
 
     def test_lawyer_patch(self):
         self.client.login(username=self.lawyer.username, password=self.password)
