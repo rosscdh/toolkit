@@ -25,6 +25,7 @@ module.exports = function (grunt) {
     /**
     * Constants for the Gruntfile so we can easily change the path for our environments.
     */
+    DJANGO_STATIC_BASE: '/static/',
     DJANGO_STATIC_DEV_PATH: '/static/ng/',
     DJANGO_DEV_API: 'http://localhost:8000',
 
@@ -48,6 +49,7 @@ module.exports = function (grunt) {
             dest : 'index.html',
             options : {
                 context : {
+                    staticPathBase : '<%= DJANGO_STATIC_BASE %>',
                     staticPath : '<%= DJANGO_STATIC_DEV_PATH %>',
                     apiBaseUrl : '<%= DJANGO_DEV_API %>'
                 }
@@ -58,6 +60,7 @@ module.exports = function (grunt) {
             dest : 'index.html',
             options : {
                 context : {
+                    staticPathBase : '<%= DJANGO_STATIC_BASE %>',
                     staticPath : '',
                     apiBaseUrl : '<%= DJANGO_PRODUCTION_API %>'
                 }
@@ -68,6 +71,7 @@ module.exports = function (grunt) {
             dest : 'index.html',
             options : {
                 context : {
+                    staticPathBase : '<%= DJANGO_STATIC_BASE %>',
                     staticPath : '',
                     apiBaseUrl : '<%= DJANGO_DEV_API %>'
                 }
