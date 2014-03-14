@@ -18,13 +18,30 @@ angular.module('toolkit-gui')
 		 * @name				activityResource
 		 *
 		 * @private
-		 * @method				activityResource
+		 * @method				activityMatterResource
 		 * @memberof			activityService
 		 *
 		 * @return {Function}   $resource
 		 */
-		function activityResource() {
+		function activityMatterResource() {
 			return $resource( API_BASE_URL + 'matters/:matterSlug/activity', {}, {
+				'list': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'}}
+			});
+		}
+
+        /**
+		 * Returns a key/value object containing $resource methods to access matter API end-points
+		 *
+		 * @name				activityResource
+		 *
+		 * @private
+		 * @method				activityItemResource
+		 * @memberof			activityService
+		 *
+		 * @return {Function}   $resource
+		 */
+		function activityItemResource() {
+			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/activity', {}, {
 				'list': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'}}
 			});
 		}
@@ -32,7 +49,7 @@ angular.module('toolkit-gui')
 		return {
 
 			/**
-			 * Requests a list of activity items from the API
+			 * Requests a list of activity items for the matter from the API
 			 *
 			 * @name				list
 			 *
@@ -45,8 +62,8 @@ angular.module('toolkit-gui')
 			 *
 			 * @return {Promise}    Array of matters
 		 	 */
-			'list': function(matterSlug) {
-				var api = activityResource();
+			'matterstream': function(matterSlug) {
+				var api = activityMatterResource();
 				var deferred = $q.defer();
 
 				api.list({'matterSlug': matterSlug},
@@ -59,7 +76,38 @@ angular.module('toolkit-gui')
 				);
 
 				return deferred.promise;
+			},
+
+            /**
+			 * Requests a list of activity items for a checklist item from the API
+			 *
+			 * @name				list
+			 *
+			 * @example
+		 	 * activityService.list( mySelectedMatter );
+			 *
+			 * @public
+			 * @method				list
+			 * @memberof			matterService
+			 *
+			 * @return {Promise}    Array of matters
+		 	 */
+			'itemstream': function(matterSlug, itemSlug) {
+				var api = activityItemResource();
+				var deferred = $q.defer();
+
+				api.list({'matterSlug': matterSlug, 'itemSlug': itemSlug},
+					function success( result ) {
+						deferred.resolve( result.results );
+					},
+					function error( err ) {
+						deferred.reject( err );
+					}
+				);
+
+				return deferred.promise;
 			}
+
 
 
 		};
