@@ -3,6 +3,8 @@
 Matters are workspaces; and are composted of items, which may be a todo item
 or a document item
 """
+from django.core.urlresolvers import reverse
+
 from rest_framework import serializers
 
 from toolkit.apps.workspace.models import Workspace
@@ -111,3 +113,13 @@ class LiteMatterSerializer(MatterSerializer):
     class Meta(MatterSerializer.Meta):
         fields = ('url', 'name', 'slug', 'matter_code', 'client',
                   'lawyer', 'participants', 'date_created', 'date_modified')
+
+
+class SimpleMatterSerializer(MatterSerializer):
+    django_url = serializers.SerializerMethodField('get_django_url')
+
+    class Meta(MatterSerializer.Meta):
+        fields = ('django_url', 'name',)
+
+    def get_django_url(self, obj):
+        return '%s#/checklist' % obj.get_absolute_url()

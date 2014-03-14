@@ -62,7 +62,7 @@ class Workspace(IsDeletedMixin, ClosingGroupsMixin, CategoriesMixin, models.Mode
             return None
 
     def get_absolute_url(self):
-        return reverse('workspace:view', kwargs={'slug': self.slug})
+        return reverse('matter:detail', kwargs={'matter_slug': self.slug})
 
     def available_tools(self):
         return Tool.objects.exclude(pk__in=[t.pk for t in self.tools.all()])
