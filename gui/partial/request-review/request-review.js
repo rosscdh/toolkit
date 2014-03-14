@@ -100,7 +100,7 @@ angular.module('toolkit-gui')
 		};
 
 		/**
-		 * Initiates request to API to request a revision
+		 * Initiates request to invite and receive the user.
 		 *
 		 * @name				request
 		 * 
@@ -116,8 +116,15 @@ angular.module('toolkit-gui')
 
             if (email != null && email.length > 0) {
                 participantService.invite($scope.matter.slug, {'email':email}).then(
-                    function success(participant){
-                        $modalInstance.close( { 'participant': participant, 'message': message } );
+                    function success(response){
+                        participantService.getByURL(response.url).then(
+                            function success(participant){
+                                $modalInstance.close( { 'participant': participant, 'message': message } );
+                            },
+                            function error(err){
+                                toaster.pop('error', "Error!", "Unable to receive participant");
+                            }
+                        );
                     },
                     function error(err){
                         toaster.pop('error', "Error!", "Unable to invite participant");
@@ -129,7 +136,7 @@ angular.module('toolkit-gui')
                         $modalInstance.close( { 'participant': participant, 'message': message } );
                     },
                     function error(err){
-                        toaster.pop('error', "Error!", "Unable to invite participant");
+                        toaster.pop('error', "Error!", "Unable to receive participant");
                     }
                 );
             }

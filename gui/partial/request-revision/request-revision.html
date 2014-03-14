@@ -14,7 +14,7 @@
 							<span class="second-icon fui-radio-checked"></span>
 						</span>
 						<input type="radio" value="{{person.username}}" ng-model="data.request.person" name="participants">
-						<font ng-bind="person.first_name"></font> <font ng-bind="person.last_name"></font>
+						<label ng-bind="person | fullname"></label>
 					</label>
 				</li>
 				<li>
@@ -35,7 +35,7 @@
 	</div>
 	<div class="modal-footer">
 		<button class="btn btn-default" ng-click="cancel()">Cancel</button>
-		<button class="btn btn-primary" type="submit" ng-disabled="invalid()">Add matter participants</button>
+		<button class="btn btn-primary" type="submit" ng-disabled="invalid()">Request revision</button>
 	</div>
 	</form>
 </div>
