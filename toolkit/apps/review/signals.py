@@ -70,6 +70,7 @@ def on_reviewer_add(sender, instance, action, **kwargs):
     """
     when a reviewer is added from the m2m then authorise them
     for access
+    only reviewers get action events
     """
     if action in ['post_add']:
         _add_as_authorised(instance=instance, pk_set=kwargs.get('pk_set'))
@@ -79,6 +80,7 @@ def on_reviewer_add(sender, instance, action, **kwargs):
 def on_reviewer_remove(sender, instance, action, **kwargs):
     """
     when a reviewer is removed from the m2m then deauthorise them
+    only reviewers get action events
     """
     if action in ['post_remove']:
         _remove_as_authorised(instance=instance, pk_set=kwargs.get('pk_set'))

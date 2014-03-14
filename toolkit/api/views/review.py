@@ -13,6 +13,7 @@ from rest_framework import exceptions
 from rest_framework.response import Response
 from rest_framework import status as http_status
 
+from toolkit.core.signals import send_activity_log
 from toolkit.core.attachment.models import Revision
 
 from toolkit.apps.review.models import ReviewDocument
@@ -68,17 +69,17 @@ class ItemRevisionReviewersView(generics.ListAPIView,
     def get_queryset_provider(self):
         return self.revision.reviewers
 
-    def process_event_purpose_object(self, user):
-        # perform ReviewDocument get or create
-        #
-        # @BUSINESSRULE NB: this will work as long as we have review.ASSOCIATION_STRATEGIES.single as default
-        #
-        review_doc, is_new = ReviewDocument.objects.get_or_create(document=self.revision,
-                                                                  reviewers__in=[user])
-        # add the user to the reviewers if not there alreadt
-        review_doc.reviewers.add(user) if user not in review_doc.reviewers.all() else None
+    # def process_event_purpose_object(self, user):
+    #     # perform ReviewDocument get or create
+    #     #
+    #     # @BUSINESSRULE NB: this will work as long as we have review.ASSOCIATION_STRATEGIES.single as default
+    #     #
+    #     review_doc, is_new = ReviewDocument.objects.get_or_create(document=self.revision,
+    #                                                               reviewers__in=[user])
+    #     # add the user to the reviewers if not there alreadt
+    #     review_doc.reviewers.add(user) if user not in review_doc.reviewers.all() else None
 
-        logger.info("Added %s to the ReviewDocument %s is_new: %s for revision: %s" % (user, review_doc, is_new, self.revision))
+    #     logger.info("Added %s to the ReviewDocument %s is_new: %s for revision: %s" % (user, review_doc, is_new, self.revision))
 
     def create(self, request, **kwargs):
         """
@@ -89,6 +90,7 @@ class ItemRevisionReviewersView(generics.ListAPIView,
         """
         username = request.DATA.get('username')
         email = request.DATA.get('email')
+
         if username is None and email is None:
             raise exceptions.APIException('You must provide a username or email')
 
@@ -116,8 +118,15 @@ class ItemRevisionReviewersView(generics.ListAPIView,
             self.get_queryset_provider().add(user)
             self.item.send_invite_emails(from_user=request.user, to=[user], note=note)
 
+            send_activity_log.send(self.item, **{
+                'actor': request.user,
+                'verb': u'added a reviewer',
+                'action_object': user,
+                'target': self.matter
+            })
+
         # add the user to the purpose of this endpoint object review||signature
-        self.process_event_purpose_object(user=user)
+        #self.process_event_purpose_object(user=user)
 
         # we have the user at this point
         serializer = self.get_serializer(user)
@@ -213,6 +222,14 @@ class ItemRevisionReviewerView(generics.RetrieveAPIView,
             # reviewdocument object too
             #
             self.revision.reviewers.remove(user)
+
+            send_activity_log.send(self.item, **{
+                'actor': request.user,
+                'verb': u'removed as reviewer',
+                'action_object': user,
+                'target': self.matter
+            })
+
         else:
             status = http_status.HTTP_404_NOT_FOUND
 
