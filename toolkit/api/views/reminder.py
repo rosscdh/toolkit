@@ -38,7 +38,8 @@ class BaseReminderMixin(SpecificAttributeMixin, ItemCurrentRevisionView):
 
         serializer = self.get_serializer_class()
 
-        for user in self.item.send_reminder_emails(from_user=self.request.user):
+        # use next becauase we yeild as a generator for these calls
+        for user in next(self.item.send_reminder_emails(from_user=self.request.user)):
             #
             # We expect a set of User objects here
             #
