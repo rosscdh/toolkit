@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.core import mail
-from django.test import TestCase
 from django.core.urlresolvers import reverse
 
 from model_mommy import mommy
@@ -9,7 +8,7 @@ from toolkit.casper.workflow_case import BaseProjectCaseMixin
 from toolkit.apps.workspace.models import Tool
 from toolkit.apps.me.forms import ConfirmAccountForm
 from toolkit.apps.workspace.views import ToolObjectPreviewView
-from django.views.generic import DetailView
+from toolkit.apps.matter.views import MatterListView
 
 
 class BaseCustomer(BaseProjectCaseMixin):
@@ -92,8 +91,8 @@ class CustomerInviteLoginTest(BaseCustomer):
         formsubmit_resp = self.submit_confirm_account_form(resp=self.resp)
 
         # is on the right view
-        self.assertEqual(type(formsubmit_resp.context_data.get('view')), DetailView)
-        self.assertEqual(formsubmit_resp.context_data['view'].object, self.workspace)
+        self.assertEqual(type(formsubmit_resp.context_data.get('view')), MatterListView)
+        self.assertTrue(self.workspace in formsubmit_resp.context_data['workspace_list'])
         
         # has the sent welcome message key set
         self.assertTrue('sent_welcome_email' in self.user.profile.data)

@@ -40,7 +40,7 @@ class LawyerCreateWorkspaceTest(BaseScenarios, PyQueryMixin, TestCase):
             'name': 'Test Workspace'
         }, follow=True)
 
-        redirect = reverse('workspace:view', kwargs={'slug': 'test-workspace'})
+        redirect = reverse('matter:detail', kwargs={'matter_slug': 'test-workspace'})
 
         actual_response = {
             'redirect': True,
