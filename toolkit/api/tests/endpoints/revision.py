@@ -180,12 +180,20 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         this tests expects that the revision.HyperlinkedAutoDownloadFileField is working
         @NOTE: could NOT get httpretty working together with mock.patch for S3BotoStorage :(
         """
+        # normally there is no logo-white.png from filepicker io it sends name seperately
+        # but for our tests we need to fake this out
         expected_image_url = 'http://localhost:8081/static/images/logo-white.png'
+        expected_file_name = 'logo-black.png'
 
         self.client.login(username=self.lawyer.username, password=self.password)
 
+        #
+        # Filepicker IO sends us a url with no filename and or suffix that we use
+        # but they do send us the name of the file that was uploaded so lets use that
+        #
         data = {
             'executed_file': expected_image_url,
+            'name': expected_file_name
         }
         #
         # @BUSINESSRULE if you are sending a url of a file that needs to be download
@@ -194,18 +202,18 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         #
         resp = self.client.patch(self.endpoint, json.dumps(data), content_type='application/json')
         resp_json = json.loads(resp.content)
-        #import pdb;pdb.set_trace()
+        
         self.assertEqual(resp.status_code, 201)  # ok created
 
         self.assertEqual(resp_json.get('slug'), 'v1')
-        self.assertEqual(resp_json.get('executed_file'), 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-1-%s-logo-white.png' % self.lawyer.username)
+        self.assertEqual(resp_json.get('executed_file'), 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-1-%s-logo-black.png' % self.lawyer.username)
         self.assertEqual(self.item.revision_set.all().count(), 1)
 
         # refresh
         self.item = Item.objects.get(pk=self.item.pk)
         revision = self.item.revision_set.all().first()
-        self.assertEqual(revision.executed_file.name, 'executed_files/v1-1-%s-logo-white.png' % self.lawyer.username)
-        self.assertEqual(revision.executed_file.url, 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-1-%s-logo-white.png' % self.lawyer.username)
+        self.assertEqual(revision.executed_file.name, 'executed_files/v1-1-%s-logo-black.png' % self.lawyer.username)
+        self.assertEqual(revision.executed_file.url, 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-1-%s-logo-black.png' % self.lawyer.username)
 
     @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_post_with_URL_executed_file(self):

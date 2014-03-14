@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 from django.core.files import File
 from django.core.validators import URLValidator
+from django.core.files.storage import default_storage
 from django.core.files.temp import NamedTemporaryFile
 
 # urlparse compat import (Required because it changed in python 3.x)
@@ -15,7 +16,7 @@ import logging
 logger = logging.getLogger('django.request')
 
 
-def _download_file(url, obj, obj_fieldname='executed_file', filename=None):
+def _download_file(url, obj, obj_fieldname='executed_file', filename=None, update_obj=True):
     """
     Task to download a file form a url and save it to a model field
     """
@@ -23,7 +24,7 @@ def _download_file(url, obj, obj_fieldname='executed_file', filename=None):
     if url not in [None, '']:
 
         # Validate the url
-        URLValidator(field.url)
+        URLValidator(url)
 
         if filename is None:
             filename = urlparse.urlparse(url).path
@@ -42,6 +43,11 @@ def _download_file(url, obj, obj_fieldname='executed_file', filename=None):
         img_temp.write(urllib2.urlopen(url).read())
         img_temp.flush()
 
-        # save the downloaded file to the specified model fieldname
-        getattr(obj, obj_fieldname).save(filename, File(img_temp))
-        obj.save(update_fields=[obj_fieldname])
+        #
+        # SAVE THE FILE LOCALLY
+        #
+        # use the upload_to function to name and place the file appropriately
+        filename = obj._meta.get_field(obj_fieldname).upload_to(instance=obj, filename=filename)
+        file_object = File(img_temp)
+        # return both the filename and the file_object for saving to the model
+        return (default_storage.save(filename, file_object), file_object,)

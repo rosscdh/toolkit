@@ -1,7 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django.core.files import File
 from django.core.urlresolvers import reverse
-from django.core.files.temp import NamedTemporaryFile
 
 from rest_framework import serializers
 
@@ -28,6 +27,7 @@ class HyperlinkedAutoDownloadFileField(serializers.URLField):
             field = getattr(obj, field_name)
 
             try:
+
                 if field.name in [None, '']:
                     raise Exception('File has no name')
 
@@ -39,21 +39,27 @@ class HyperlinkedAutoDownloadFileField(serializers.URLField):
                 # that allows us to name the file (as filepicker sends the name and url seperately)
                 request = self.context.get('request', {})
 
-                url = request.get('executed_file')
-                filename = request.get('name')
+                url = request.DATA.get('executed_file')
+                original_filename = request.DATA.get('name')
 
-                _download_file(url=url, filename=filename, obj=obj, obj_fieldname=field_name)
+                #
+                # NB! we pass this into download which then brings the filedown and names it in the precribed
+                # upload_to manner
+                #
+                file_name, file_object = _download_file(url=url, filename=original_filename, obj=obj, obj_fieldname=field_name)
 
-                # set to blank so we dont get Suspicious operation on urls
-                field.file = File(NamedTemporaryFile())
-                setattr(obj, field_name, field)
+                field = getattr(obj, field_name)
+
+                # NB! we reuse the original_filename!
+                # this is to prevent filenames that repeat the original name twice
+                field.save(original_filename, file_object)
+                # update the object
+                obj.save(update_fields=[field_name])
+
                 return super(HyperlinkedAutoDownloadFileField, self).field_to_native(obj, field_name)
 
             except Exception as e:
-                #
-                # is probably a normal file at this point but jsut continue to be safe
-                #
-                logger.info('HyperlinkedAutoDownloadFileField field.name is not a url: %s %s' % (field, e))
+                logger.debug('File serialized without a value')
         #
         # NB this must return None!
         # else it will raise attribute has no file associated with it
@@ -68,6 +74,12 @@ class FileFieldAsUrlField(serializers.FileField):
     otherwise if url not present just behave normally
     """
     def to_native(self, value):
+        if hasattr(value, 'url') is True:
+            #
+            # Just download the object, the rest gets handled naturally
+            #
+            _download_file(url=value.url, filename=value.name, obj=value.instance)
+
         return getattr(value, 'url', super(FileFieldAsUrlField, self).to_native(value=value))
 
 
@@ -111,7 +123,6 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
         if 'context' in kwargs and 'request' in kwargs['context']:
 
             request = kwargs['context'].get('request')
-
             #
             # set the executed_file field to be a seriallizer.FileField and behave like one of those
             #
