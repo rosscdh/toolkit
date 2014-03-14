@@ -6,9 +6,11 @@ from django.core.urlresolvers import reverse
 from django.core.validators import URLValidator
 from django.core.files.storage import FileSystemStorage
 
+from toolkit.casper.prettify import mock_http_requests
+
 from . import BaseEndpointTest
 
-from toolkit.casper.prettify import mock_http_requests
+
 from model_mommy import mommy
 
 import os
@@ -160,6 +162,7 @@ class RevisionReviewerTest(BaseEndpointTest, LiveServerTestCase):
     def test_endpoint_name(self):
         self.assertEqual(self.endpoint, '/api/v1/matters/%s/items/%s/revision/reviewer/%s' % (self.matter.slug, self.item.slug, self.participant.username))
 
+    @mock_http_requests
     def test_lawyer_get(self):
         self.client.login(username=self.lawyer.username, password=self.password)
 
