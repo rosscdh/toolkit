@@ -38,7 +38,6 @@ angular.module('toolkit-gui')
 		 * @private
 		 * @type {Object}
 		 */
-		
 		var routeParams = smartRoutes.params();
 		$scope.data = {
 			'slug': routeParams.matterSlug,
@@ -58,11 +57,11 @@ angular.module('toolkit-gui')
 
 
 		if( $scope.data.slug && $scope.data.slug!=='' && $scope.data.matterCalled==null) {
-            $scope.data.matterCalled = true;
+			$scope.data.matterCalled = true;
 
-            matterService.get( $scope.data.slug ).then(
+			matterService.get( $scope.data.slug ).then(
 				function success( singleMatter ){
-                    $scope.data.matter = singleMatter;
+					$scope.data.matter = singleMatter;
 
 					//set matter in the services
 					matterService.selectMatter(singleMatter);
@@ -157,14 +156,14 @@ angular.module('toolkit-gui')
 			$scope.data.selectedItem = item;
 			$scope.data.selectedCategory = category;
 
-            $scope.initializeActivityItemStream();
+			$scope.initializeActivityItemStream();
 
 			//Reset controls
 			$scope.data.showEditItemDescriptionForm = false;
 			$scope.data.showEditItemTitleForm = false;
-            $scope.data.showPreviousRevisions = false;
+			$scope.data.showPreviousRevisions = false;
 
-            console.log(item);
+			console.log(item);
 		};
 
 		/**
@@ -218,7 +217,7 @@ angular.module('toolkit-gui')
 									$scope.data.selectedCategory.items.splice(index,1);
 								}
 								$scope.data.selectedItem = null;
-                                $scope.initializeActivityMatterStream();
+								$scope.initializeActivityMatterStream();
 							},
 							function error(err){
 								toaster.pop('error', "Error!", "Unable to delete item");
@@ -277,42 +276,42 @@ angular.module('toolkit-gui')
 
 		/**
 		 * Receives the user object from the API by the given URL and returns his full name if existing or
-         * the email address. When showOnlyInitials is set, then it just returns the initials of the user.
+		 * the email address. When showOnlyInitials is set, then it just returns the initials of the user.
 		 *
 		 * @name 				getParticipantByUrl
 		 *
-         * @param  {String}  API url of the participant
-         * @param  {Boolean} If set to true, just return the initials of the user
-         *
+		 * @param  {String}  API url of the participant
+		 * @param  {Boolean} If set to true, just return the initials of the user
+		 *
 		 * @private
 		 * @method				getParticipantByUrl
 		 * @memberof			ChecklistCtrl
 		 */
-        $scope.getParticipantByUrl = function (participanturl){
-             if ($scope.data.loadedParticipants == null) {
-                 $scope.data.loadedParticipants = {};
-             }
+		$scope.getParticipantByUrl = function (participanturl){
+			 if ($scope.data.loadedParticipants == null) {
+				 $scope.data.loadedParticipants = {};
+			 }
 
-             //only load user from api, if not already loaded
-             if (participanturl != null && $scope.data.loadedParticipants[participanturl] == null) {
-                 $scope.data.loadedParticipants[participanturl] = {};
+			 //only load user from api, if not already loaded
+			 if (participanturl != null && $scope.data.loadedParticipants[participanturl] == null) {
+				 $scope.data.loadedParticipants[participanturl] = {};
 
-                 participantService.getByURL(participanturl).then(
-                     function success(participant){
-                         //store user in dict with url as key
-                         $scope.data.loadedParticipants[participanturl] = participant;
-                         return participant;
-                     },
-                     function error(err){
-                         return '';
-                     }
-                 );
-             } else if (participanturl != null && $scope.data.loadedParticipants[participanturl] != null){
-                 return $scope.data.loadedParticipants[participanturl];
-             } else {
-                 return '';
-             }
-        };
+				 participantService.getByURL(participanturl).then(
+					 function success(participant){
+						 //store user in dict with url as key
+						 $scope.data.loadedParticipants[participanturl] = participant;
+						 return participant;
+					 },
+					 function error(err){
+						 return '';
+					 }
+				 );
+			 } else if (participanturl != null && $scope.data.loadedParticipants[participanturl] != null){
+				 return $scope.data.loadedParticipants[participanturl];
+			 } else {
+				 return '';
+			 }
+		};
 		/*** End item handling */
 
 		/*
@@ -451,20 +450,20 @@ angular.module('toolkit-gui')
 		$scope.processUpload = function( files, item ) {
 			var matterSlug = $scope.data.slug;
 			var itemSlug = item.slug;
-            $scope.data.uploading = true;
+			$scope.data.uploading = true;
 
 			matterItemService.uploadRevision( matterSlug, itemSlug, files ).then(
 				function success( revision ) {
 					revision.uploaded_by = matterService.data().selected.current_user;
 					item.latest_revision = revision;
 
-                    $scope.data.uploading = false;
-                    //Reset previous revisions
-                    item.previousRevisions = null;
-                    $scope.data.showPreviousRevisions = false;
+					$scope.data.uploading = false;
+					//Reset previous revisions
+					item.previousRevisions = null;
+					$scope.data.showPreviousRevisions = false;
 				},
 				function error(err) {
-                    $scope.data.uploading = false;
+					$scope.data.uploading = false;
 					toaster.pop('error', "Error!", "Unable to upload revision");
 				}
 			);
@@ -574,7 +573,7 @@ angular.module('toolkit-gui')
 			}
 		};
 
-        /**
+		/**
 		 * Request API to get all previous revisions of the item
 		 *
 		 * @name 				loadPreviousRevisions
@@ -583,44 +582,46 @@ angular.module('toolkit-gui')
 		 * @method				loadPreviousRevisions
 		 * @memberof			ChecklistCtrl
 		 */
-         $scope.loadPreviousRevisions = function () {
-            var matterSlug = $scope.data.slug;
+		 $scope.loadPreviousRevisions = function () {
+			var matterSlug = $scope.data.slug;
 			var item = $scope.data.selectedItem;
 
-            function SortDescendingByCreationDate(a, b){
-                var aDate = moment(a.date_created, "YYYY-MM-DDTHH:mm:ss.SSSZ");
-                var bDate = moment(b.date_created, "YYYY-MM-DDTHH:mm:ss.SSSZ");
-                return (aDate < bDate) ? 1 : -1;
-            }
+			function SortDescendingByCreationDate(a, b){
+				var aDate = moment(a.date_created, "YYYY-MM-DDTHH:mm:ss.SSSZ");
+				var bDate = moment(b.date_created, "YYYY-MM-DDTHH:mm:ss.SSSZ");
+				return (aDate < bDate) ? 1 : -1;
+			}
 
-            if (item && item.previousRevisions) {
-                //show the revisions from the local storage
-            }
-            else if (item && item.latest_revision && item.latest_revision.revisions) {
-                if (item.previousRevisions == null) {
-                    item.previousRevisions = [];
-                }
+			if (item && item.previousRevisions) {
+				//show the revisions from the local storage
+			}
+			else if (item && item.latest_revision && item.latest_revision.revisions) {
+				if (item.previousRevisions == null) {
+					item.previousRevisions = [];
+				}
 
-                jQuery.each( item.latest_revision.revisions, function( index, revurl ){
-                    var revslug = revurl.substring(revurl.lastIndexOf('/')+1, revurl.length);
+				jQuery.each( item.latest_revision.revisions, function( index, revurl ){
+					var revslug = revurl.substring(revurl.lastIndexOf('/')+1, revurl.length);
 
 					matterItemService.loadRevision(matterSlug, item.slug, revslug).then(
-                        function success(revision){
-                            //store revisisions locally
-                            item.previousRevisions.unshift(revision);
-                            //Sort array
-                            item.previousRevisions.sort(SortDescendingByCreationDate);
-                        },
-                        function error(err){
-                            toaster.pop('error', "Error!", "Unable to load previous revision");
-                        }
-                    );
+						function success(revision){
+							//store revisisions locally
+							item.previousRevisions.unshift(revision);
+							//Sort array
+							item.previousRevisions.sort(SortDescendingByCreationDate);
+						},
+						function error(err){
+							if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to load previous revision") {
+								toaster.pop('error', "Error!", "Unable to load previous revision");
+							}
+						}
+					);
 				});
 			}
-            $scope.data.showPreviousRevisions = true;
+			$scope.data.showPreviousRevisions = true;
 		};
 
-        /**
+		/**
 		 * Initiate the process of requesting revisions from existing participants or new participants
 		 *
 		 * @param {Object} checklistItem checklist item to perform action upon
@@ -630,7 +631,7 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
 		$scope.requestRevision = function( item ) {
-            var matterSlug = $scope.data.slug;
+			var matterSlug = $scope.data.slug;
 
 			var modalInstance = $modal.open({
 				'templateUrl': '/static/ng/partial/request-revision/request-revision.html',
@@ -653,20 +654,22 @@ angular.module('toolkit-gui')
 
 			modalInstance.result.then(
 				function ok(result) {
-                    var requestdata = {
-                        'responsible_party': result.participant.url,
-                        'note': result.message
-                    };
+					var requestdata = {
+						'responsible_party': result.participant.url,
+						'note': result.message
+					};
 
-                    matterItemService.requestRevision(matterSlug, item.slug, requestdata).then(
+					matterItemService.requestRevision(matterSlug, item.slug, requestdata).then(
 							function success(response){
-                                item.status = response.status;
-                                item.responsible_party = response.responsible_party;
+								item.status = response.status;
+								item.responsible_party = response.responsible_party;
 							},
 							function error(err){
-								toaster.pop('error', "Error!", "Unable to request a revision.");
+								if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to request a revision.") {
+									toaster.pop('error', "Error!", "Unable to request a revision.");
+								}
 							}
-                    );
+					);
 				},
 				function cancel() {
 					//
@@ -675,52 +678,56 @@ angular.module('toolkit-gui')
 		};
 
 
-        /**
-        * Remind the responsible user to upload a revision document.
-        *
-        * @param {Object} The item with the current revision
-        *
-        * @private
-        * @method		    remindRevisionRequest
-        * @memberof			ChecklistCtrl
-        */
-        $scope.remindRevisionRequest = function( item ) {
-            var matterSlug = $scope.data.slug;
+		/**
+		* Remind the responsible user to upload a revision document.
+		*
+		* @param {Object} The item with the current revision
+		*
+		* @private
+		* @method		    remindRevisionRequest
+		* @memberof			ChecklistCtrl
+		*/
+		$scope.remindRevisionRequest = function( item ) {
+			var matterSlug = $scope.data.slug;
 
-            matterItemService.remindRevisionRequest(matterSlug, item.slug).then(
-                    function success(){
-                    },
-                    function error(err){
-                        toaster.pop('error', "Error!", "Unable to remind the participant.");
-                    }
-            );
-        };
-
-
-        /**
-        * Delete the revision request for the item
-        *
-        * @param {Object} The item with the current revision
-        *
-        * @private
-        * @method		    deleteRevisionRequest
-        * @memberof			ChecklistCtrl
-        */
-        $scope.deleteRevisionRequest = function( item ) {
-            var matterSlug = $scope.data.slug;
-
-            matterItemService.deleteRevisionRequest(matterSlug, item.slug).then(
-                    function success(response){
-                        item.status = response.status;
-                    },
-                    function error(err){
-                        toaster.pop('error', "Error!", "Unable to remind the participant.");
-                    }
-            );
-        };
+			matterItemService.remindRevisionRequest(matterSlug, item.slug).then(
+					function success(){
+					},
+					function error(err){
+						if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to remind the participant.") {
+							toaster.pop('error', "Error!", "Unable to remind the participant.");
+						}
+					}
+			);
+		};
 
 
-        /**
+		/**
+		* Delete the revision request for the item
+		*
+		* @param {Object} The item with the current revision
+		*
+		* @private
+		* @method		    deleteRevisionRequest
+		* @memberof			ChecklistCtrl
+		*/
+		$scope.deleteRevisionRequest = function( item ) {
+			var matterSlug = $scope.data.slug;
+
+			matterItemService.deleteRevisionRequest(matterSlug, item.slug).then(
+					function success(response){
+						item.status = response.status;
+					},
+					function error(err){
+						if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to remind the participant.") {
+							toaster.pop('error', "Error!", "Unable to remind the participant.");
+						}
+					}
+			);
+		};
+
+
+		/**
 		 * Initiates the view of a document as modal window.
 		 *
 		 * @param {Object} revision object to view
@@ -730,14 +737,14 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
 		$scope.showRevisionDocument = function( revision ) {
-            var matterSlug = $scope.data.slug;
+			var matterSlug = $scope.data.slug;
 			var item = $scope.data.selectedItem;
 
 			var modalInstance = $modal.open({
 				'templateUrl': '/static/ng/partial/view-document/view-document.html',
 				'controller': 'ViewDocumentCtrl',
 				'resolve': {
-                    'matter': function () {
+					'matter': function () {
 						return $scope.data.matter;
 					},
 					'checklistItem': function () {
@@ -759,7 +766,7 @@ angular.module('toolkit-gui')
 			);
 		};
 
-        /**
+		/**
 		 * Initiate the process of requesting reviews from existing participants or new participants
 		 *
 		 * @param {Object} Revision  object to perform action upon
@@ -769,7 +776,7 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
 		$scope.requestReview = function( revision ) {
-            var matterSlug = $scope.data.slug;
+			var matterSlug = $scope.data.slug;
 			var item = $scope.data.selectedItem;
 
 			var modalInstance = $modal.open({
@@ -793,20 +800,22 @@ angular.module('toolkit-gui')
 
 			modalInstance.result.then(
 				function ok(result) {
-                    var requestdata = {
-                        'responsible_party': result.participant.url,
-                        'note': result.message
-                    };
-                    console.log(result);
+					var requestdata = {
+						'responsible_party': result.participant.url,
+						'note': result.message
+					};
+					console.log(result);
 
-                    matterItemService.requestRevisionReview(matterSlug, item.slug, result.participant).then(
+					matterItemService.requestRevisionReview(matterSlug, item.slug, result.participant).then(
 							function success(response){
-                                revision.reviewers.push(response.url);
+								revision.reviewers.push(response.url);
 							},
 							function error(err){
-								toaster.pop('error', "Error!", "Unable to request a revision.");
+								if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to request a revision.") {
+									toaster.pop('error', "Error!", "Unable to request a revision.");
+								}
 							}
-                    );
+					);
 				},
 				function cancel() {
 					//
@@ -815,55 +824,59 @@ angular.module('toolkit-gui')
 		};
 
 
-        /**
-        * Remind all review users who haven´t reviewed yet.
-        *
-        * @param {Object} The item with the current revision
-        *
-        * @private
-        * @method		    remindRevisionReview
-        * @memberof			ChecklistCtrl
-        */
-        $scope.remindRevisionReview = function( item ) {
-            var matterSlug = $scope.data.slug;
+		/**
+		* Remind all review users who haven´t reviewed yet.
+		*
+		* @param {Object} The item with the current revision
+		*
+		* @private
+		* @method		    remindRevisionReview
+		* @memberof			ChecklistCtrl
+		*/
+		$scope.remindRevisionReview = function( item ) {
+			var matterSlug = $scope.data.slug;
 
-            matterItemService.remindRevisionReview(matterSlug, item.slug).then(
-                    function success(){
-                    },
-                    function error(err){
-                        toaster.pop('error', "Error!", "Unable to remind the participant.");
-                    }
-            );
-        };
+			matterItemService.remindRevisionReview(matterSlug, item.slug).then(
+					function success(){
+					},
+					function error(err){
+						if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to remind the participant.") {
+							toaster.pop('error', "Error!", "Unable to remind the participant.");
+						}
+					}
+			);
+		};
 
-        /**
-        * Delete the review request for a specific user
-        *
-        * @param {Object} The item with the current revision
-        * @param {Object} The reviewer whos review request should be deleted
-        *
-        * @private
-        * @method		    deleteRevisionReview
-        * @memberof			ChecklistCtrl
-        */
-        $scope.deleteRevisionReviewRequest = function( item, participant_url ) {
-            var matterSlug = $scope.data.slug;
-            var participant = $scope.getParticipantByUrl(participant_url);
+		/**
+		* Delete the review request for a specific user
+		*
+		* @param {Object} The item with the current revision
+		* @param {Object} The reviewer whos review request should be deleted
+		*
+		* @private
+		* @method		    deleteRevisionReview
+		* @memberof			ChecklistCtrl
+		*/
+		$scope.deleteRevisionReviewRequest = function( item, participant_url ) {
+			var matterSlug = $scope.data.slug;
+			var participant = $scope.getParticipantByUrl(participant_url);
 
-            matterItemService.deleteRevisionReviewRequest(matterSlug, item.slug, participant).then(
-                function success(){
-                    var index = jQuery.inArray( participant_url, item.latest_revision.reviewers );
-                    if( index>=0 ) {
-                        // Remove reviewer from list in RAM array
-                        item.latest_revision.reviewers.splice(index,1);
-                    }
-                },
-                function error(err){
-                    toaster.pop('error', "Error!", "Unable to delete the revision review request.");
-                }
-            );
-        };
-        /* End revision handling */
+			matterItemService.deleteRevisionReviewRequest(matterSlug, item.slug, participant).then(
+				function success(){
+					var index = jQuery.inArray( participant_url, item.latest_revision.reviewers );
+					if( index>=0 ) {
+						// Remove reviewer from list in RAM array
+						item.latest_revision.reviewers.splice(index,1);
+					}
+				},
+				function error(err){
+					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to delete the revision review request.") {
+						toaster.pop('error', "Error!", "Unable to delete the revision review request.");
+					}
+				}
+			);
+		};
+		/* End revision handling */
 
 
 		/**
@@ -881,7 +894,7 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
 		function recalculateCategories( evt, ui ) {
-            var matterSlug = $scope.data.slug;
+			var matterSlug = $scope.data.slug;
 			var cats = $scope.data.categories;
 			var categoryName, items = [], item, i;
 			var APIUpdate = {
@@ -922,13 +935,17 @@ angular.module('toolkit-gui')
 								// do nothing
 							},
 							function error(err){
-								toaster.pop('error', "Error!", "Unable to update the order of items, please reload the page");
+								if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to update the order of items, please reload the page.") {
+									toaster.pop('error', "Error!", "Unable to update the order of items, please reload the page.");
+								}
 							}
 					);
 					}
 				 },
 				 function error(err){
-					toaster.pop('error', "Error!", "Unable to update the order of items, please reload the page");
+				 	if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to update the order of items, please reload the page.") {
+						toaster.pop('error', "Error!", "Unable to update the order of items, please reload the page.");
+					}
 				 }
 			);
 		}
@@ -936,8 +953,8 @@ angular.module('toolkit-gui')
 
 		/**
 		 * Broadcasts the event with the given name to the scope. The focus directive is listening to this broadcast.
-         * Timeout is required, because the UI element has to visible to receive the focus. The rendering process
-         * takes a few milliseconds.
+		 * Timeout is required, because the UI element has to visible to receive the focus. The rendering process
+		 * takes a few milliseconds.
 		 *
 		 * @name 				focus
 		 * 
@@ -951,17 +968,17 @@ angular.module('toolkit-gui')
 			}, 300);
 		};
 
-        //TODO discuss if there is any better datepicker to use
-        $scope.$watch('data.dateduepickerdate', function(newValue, oldValue) {
-              //only save is date due picker is visible
-              if($scope.data.showDateDuePicker===true){
-                  //convert picked date to string
-                  var newdatestr = jQuery.datepicker.formatDate('yy-mm-ddT00:00:00', $scope.data.dateduepickerdate);
-                  $scope.data.selectedItem.date_due = newdatestr;
-                  $scope.saveSelectedItem();
-                  $scope.data.showDateDuePicker=false;
-              }
-        });
+		//TODO discuss if there is any better datepicker to use
+		$scope.$watch('data.dateduepickerdate', function(newValue, oldValue) {
+			  //only save is date due picker is visible
+			  if($scope.data.showDateDuePicker===true){
+				  //convert picked date to string
+				  var newdatestr = jQuery.datepicker.formatDate('yy-mm-ddT00:00:00', $scope.data.dateduepickerdate);
+				  $scope.data.selectedItem.date_due = newdatestr;
+				  $scope.saveSelectedItem();
+				  $scope.data.showDateDuePicker=false;
+			  }
+		});
 
 		/**
 		 * UI.sortable options for checklist items
@@ -991,64 +1008,68 @@ angular.module('toolkit-gui')
 		};
 
 
-        /**
-         *       _        _   _       _ _               _                              _                     _ _ _
-         *      / \   ___| |_(_)_   _(_) |_ _   _   ___| |_ _ __ ___  __ _ _ __ ___   | |__   __ _ _ __   __| | (_)_ __   __ _
-         *     / _ \ / __| __| \ \ / / | __| | | | / __| __| '__/ _ \/ _` | '_ ` _ \  | '_ \ / _` | '_ \ / _` | | | '_ \ / _` |
-         *    / ___ \ (__| |_| |\ V /| | |_| |_| | \__ \ |_| | |  __/ (_| | | | | | | | | | | (_| | | | | (_| | | | | | | (_| |
-         *   /_/   \_\___|\__|_| \_/ |_|\__|\__, | |___/\__|_|  \___|\__,_|_| |_| |_| |_| |_|\__,_|_| |_|\__,_|_|_|_| |_|\__, |
-         *                                  |___/                                                                        |___/
+		/**
+		 *       _        _   _       _ _               _                              _                     _ _ _
+		 *      / \   ___| |_(_)_   _(_) |_ _   _   ___| |_ _ __ ___  __ _ _ __ ___   | |__   __ _ _ __   __| | (_)_ __   __ _
+		 *     / _ \ / __| __| \ \ / / | __| | | | / __| __| '__/ _ \/ _` | '_ ` _ \  | '_ \ / _` | '_ \ / _` | | | '_ \ / _` |
+		 *    / ___ \ (__| |_| |\ V /| | |_| |_| | \__ \ |_| | |  __/ (_| | | | | | | | | | | (_| | | | | (_| | | | | | | (_| |
+		 *   /_/   \_\___|\__|_| \_/ |_|\__|\__, | |___/\__|_|  \___|\__,_|_| |_| |_| |_| |_|\__,_|_| |_|\__,_|_|_|_| |_|\__, |
+		 *                                  |___/                                                                        |___/
 		 *
-         *
-         */
+		 *
+		 */
 
 
-         /**
+		 /**
 		 * Reads the matter activity stream from API.
 		 * @memberof			ChecklistCtrl
 		 * @private
 		 * @type {Object}
 		 */
-        $scope.initializeActivityMatterStream = function() {
-            var matterSlug = $scope.data.slug;
+		$scope.initializeActivityMatterStream = function() {
+			var matterSlug = $scope.data.slug;
 
-            activityService.matterstream(matterSlug).then(
+			activityService.matterstream(matterSlug).then(
 				 function success(result){
-                    $scope.data.activitystream = result;
+					$scope.data.activitystream = result;
 				 },
 				 function error(err){
-					toaster.pop('error', "Error!", "Unable to read activity matter stream");
+				 	if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to read activity matter stream.") {
+						toaster.pop('error', "Error!", "Unable to read activity matter stream.");
+					}
 				 }
 			);
 
-            /*
-            //reload activity stream every 60seconds
-            $timeout(function (){
-                $scope.initializeActivityStream();
-            }, 1000 * 60);*/
-        };
+			/*
+			//reload activity stream every 60seconds
+			$timeout(function (){
+				$scope.initializeActivityStream();
+			}, 1000 * 60);*/
+		};
 
 
-        /**
+		/**
 		 * Reads the item activity stream from API.
 		 * @memberof			ChecklistCtrl
 		 * @private
 		 * @type {Object}
 		 */
-        $scope.initializeActivityItemStream = function() {
-            $scope.data.activitystream = [];
-            var matterSlug = $scope.data.slug;
-            var itemSlug = $scope.data.selectedItem.slug;
+		$scope.initializeActivityItemStream = function() {
+			$scope.data.activitystream = [];
+			var matterSlug = $scope.data.slug;
+			var itemSlug = $scope.data.selectedItem.slug;
 
-            activityService.itemstream(matterSlug, itemSlug).then(
+			activityService.itemstream(matterSlug, itemSlug).then(
 				 function success(result){
-                    $scope.data.activitystream = result;
+					$scope.data.activitystream = result;
 				 },
 				 function error(err){
-					toaster.pop('error', "Error!", "Unable to read activity item stream");
+				 	if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to read activity item stream.") {
+						toaster.pop('error', "Error!", "Unable to read activity item stream.");
+					}
 				 }
 			);
-        };
+		};
 
 
 }]);
