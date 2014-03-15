@@ -87,7 +87,7 @@ angular.module('toolkit-gui')
                 $scope.data.invitee.participant = null;
                 jQuery("#addParticipant").attr('disabled','');
             }
-        }
+        };
 
 		/**
 		 * Initiates request to API to invite a person or an already registered user
