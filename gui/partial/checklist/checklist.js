@@ -607,9 +607,11 @@ angular.module('toolkit-gui')
 							item.previousRevisions.sort(SortDescendingByCreationDate);
 						},
 						function error(err){
+
 							if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to load previous revision") {
 								toaster.pop('error', "Error!", "Unable to load previous revision");
 							}
+
 						}
 					);
 				});
@@ -650,8 +652,25 @@ angular.module('toolkit-gui')
 
 			modalInstance.result.then(
 				function ok(result) {
+<<<<<<< HEAD
 					item.status = result.status;
 					item.responsible_party = result.responsible_party;
+=======
+					var requestdata = {
+						'responsible_party': result.participant.url,
+						'note': result.message
+					};
+
+					matterItemService.requestRevision(matterSlug, item.slug, requestdata).then(
+							function success(response){
+								item.status = response.status;
+								item.responsible_party = response.responsible_party;
+							},
+							function error(err){
+								toaster.pop('error', "Error!", "Unable to request a revision.");
+							}
+					);
+>>>>>>> Dropdown date control styling and behaviour
 				},
 				function cancel() {
 					//
@@ -676,9 +695,13 @@ angular.module('toolkit-gui')
 					function success(){
 					},
 					function error(err){
+<<<<<<< HEAD
 						if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to remind the participant.") {
 							toaster.pop('error', "Error!", "Unable to remind the participant.");
 						}
+=======
+						toaster.pop('error', "Error!", "Unable to remind the participant.");
+>>>>>>> Dropdown date control styling and behaviour
 					}
 			);
 		};
@@ -701,9 +724,13 @@ angular.module('toolkit-gui')
 						item.status = response.status;
 					},
 					function error(err){
+<<<<<<< HEAD
 						if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to remind the participant.") {
 							toaster.pop('error', "Error!", "Unable to remind the participant.");
 						}
+=======
+						toaster.pop('error', "Error!", "Unable to remind the participant.");
+>>>>>>> Dropdown date control styling and behaviour
 					}
 			);
 		};
@@ -782,7 +809,17 @@ angular.module('toolkit-gui')
 
 			modalInstance.result.then(
 				function ok(result) {
+<<<<<<< HEAD
 					matterItemService.requestRevisionReview(matterSlug, item.slug, result).then(
+=======
+					var requestdata = {
+						'responsible_party': result.participant.url,
+						'note': result.message
+					};
+					console.log(result);
+
+					matterItemService.requestRevisionReview(matterSlug, item.slug, result.participant).then(
+>>>>>>> Dropdown date control styling and behaviour
 							function success(response){
 								revision.reviewers.push(response.url);
 							},
@@ -816,9 +853,13 @@ angular.module('toolkit-gui')
 					function success(){
 					},
 					function error(err){
+<<<<<<< HEAD
 						if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to remind the participant.") {
 							toaster.pop('error', "Error!", "Unable to remind the participant.");
 						}
+=======
+						toaster.pop('error', "Error!", "Unable to remind the participant.");
+>>>>>>> Dropdown date control styling and behaviour
 					}
 			);
 		};
@@ -846,9 +887,13 @@ angular.module('toolkit-gui')
 					}
 				},
 				function error(err){
+<<<<<<< HEAD
 					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to delete the revision review request.") {
 						toaster.pop('error', "Error!", "Unable to delete the revision review request.");
 					}
+=======
+					toaster.pop('error', "Error!", "Unable to delete the revision review request.");
+>>>>>>> Dropdown date control styling and behaviour
 				}
 			);
 		};
@@ -983,6 +1028,34 @@ angular.module('toolkit-gui')
 			'delay': 50
 		};
 
+		/**
+		 * Default date control options
+		 *
+		 * @memberof			ChecklistCtrl
+		 * @private
+		 * 
+		 * @type {Object}
+		 */
+		$scope.dateOptions = {
+			'year-format': "'yy'",
+			'starting-day': 1
+		};
+
+		/**
+		 * Toggle due date value between default (today) and null
+		 *
+		 * @memberof			ChecklistCtrl
+		 * @private
+		 * 
+		 * @param  {Object} item Item which to apply default date
+		 */
+		$scope.toggleDueDateCalendar = function(item) {
+		 	if(!item.date_due) {
+		 		item.date_due = new Date();
+		 	} else {
+		 		item.date_due = null;
+		 	}
+		};
 
 		/**
 		 *       _        _   _       _ _               _                              _                     _ _ _
