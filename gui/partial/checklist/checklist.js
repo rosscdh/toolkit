@@ -917,7 +917,7 @@ angular.module('toolkit-gui')
 				 function success(){
 					//if category changed for an item, save that
 					if (itemToUpdate != null){
-						matterItemService.update(itemToUpdate).then(
+						matterItemService.update(itemToUpdate.slug, itemToUpdate).then(
 							function success(){
 								// do nothing
 							},

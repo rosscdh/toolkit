@@ -134,7 +134,7 @@ angular.module('toolkit-gui')
                 $scope.data.request.participant = null;
                 jQuery("#requestParticipant").attr('disabled','');
             }
-        }
+        };
 
 		/**
 		 * Initiates request to API to request a revision
