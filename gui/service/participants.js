@@ -109,7 +109,7 @@ angular.module('toolkit-gui').factory('participantService', [
 
 				var api = userAPI();
 
-				api.get({'username': username},
+				api.get({'search': username},
 					function success( response ) {
 						deferred.resolve( response );
 					},
@@ -138,7 +138,7 @@ angular.module('toolkit-gui').factory('participantService', [
 
 				var api = userAPI();
 
-				api.get({'email': email},
+				api.get({'search': email},
 					function success( response ) {
 						deferred.resolve( response );
 					},
