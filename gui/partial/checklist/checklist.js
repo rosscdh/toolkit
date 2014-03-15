@@ -991,7 +991,7 @@ angular.module('toolkit-gui')
 			'connectWith': ".group",
 			'axis': 'y',
 			'distance': 15,
-			'delay': 100
+			'delay': 50
 		};
 
 		/**
@@ -1004,7 +1004,7 @@ angular.module('toolkit-gui')
 			'stop':  recalculateCategories, /* Fires once the drag and drop event has finished */
 			'axis': 'y',
 			'distance': 15,
-			'delay': 100
+			'delay': 50
 		};
 
 
