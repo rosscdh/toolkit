@@ -42,3 +42,32 @@ tr.item-heading.file-drag-over td:nth-child(2):before {
 		width: 250px;
 	}
 }
+
+.animation.ng-enter,
+.animation.ng-leave{
+  .transition(300ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all);
+  overflow: hidden;
+  display: block;
+}
+
+.animation.ng-enter {
+  max-height:0;
+  opacity: 0;
+}
+
+.animation.ng-leave {
+  max-height:0em;
+  opacity: 0;
+  display: none;
+  td { display: none; }
+}
+
+.animation.ng-enter.ng-enter-active {
+  max-height:0.5em;
+  opacity: 1;
+}
+
+.animation.ng-leave.ng-leave-active {
+  max-height:0;
+  opacity: 0;
+}
