@@ -38,7 +38,6 @@ angular.module('toolkit-gui')
 		 * @private
 		 * @type {Object}
 		 */
-		window.toaster = toaster;
 		var routeParams = smartRoutes.params();
 		$scope.data = {
 			'slug': routeParams.matterSlug,
