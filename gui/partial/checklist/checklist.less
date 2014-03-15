@@ -15,8 +15,53 @@ tr .dropable-area {
 	display: none;
 }
 
+.show-on-drag {
+	.transition(all 0.3s ease-out);
+	max-height: 0;
+	width:100%;
+	/*background-color: #c5cbce;*/
+	overflow: hidden;
+	margin: 0 0;
+	color: rgba(0,0,0,0);
+	text-align: center;
+	span {
+		font-size: 40px;
+		color: #d9dcde;
+	}
+}
+
+.border-on-dragover {
+	.transition(all 0.3s ease-out);
+	border-color: rgba(0,0,0,0);
+}
+
+div.dragover {
+	.show-on-drag {
+		max-height: 15em;
+		border: 1px dashed #c5cbce;
+		padding: 3em;
+		margin: 1em 0;
+		color: #acb4b9;
+	}
+	.border-on-dragover {
+		border: 1px dashed #c5cbce;
+		padding-top: 3em;
+		padding-bottom: 3em;
+	}
+}
+
+.show-on-drag.dragover {
+	max-height: 15em;
+	border: 1px dashed #d9dcde;
+	padding: 3em;
+	text-align: center;
+	margin: 1em 0;
+	color: #acb4b9;
+	font-weight: bold;
+}
+
 tr.item-heading.file-drag-over {
-	background-color: rgba(0,0,0,0.15) !important;
+	background-color: rgba(0,0,0,0.05) !important;
 }
 
 tr.item-heading.file-drag-over td:nth-child(2):before {
