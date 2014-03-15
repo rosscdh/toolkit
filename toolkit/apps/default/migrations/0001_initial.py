@@ -8,13 +8,18 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding index on 'User', fields ['username']
-        db.create_index(u'auth_user', ['username'])
+        # Adding model 'UserProfile'
+        db.create_table(u'default_userprofile', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('user', self.gf('django.db.models.fields.related.OneToOneField')(related_name='profile', unique=True, to=orm['auth.User'])),
+            ('data', self.gf('jsonfield.fields.JSONField')(default={'user_class': 'customer'})),
+        ))
+        db.send_create_signal(u'default', ['UserProfile'])
 
 
     def backwards(self, orm):
-        # Removing index on 'User', fields ['username']
-        db.delete_index(u'auth_user', ['username'])
+        # Deleting model 'UserProfile'
+        db.delete_table(u'default_userprofile')
 
 
     models = {
@@ -53,7 +58,13 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
+        },
+        u'default.userprofile': {
+            'Meta': {'object_name': 'UserProfile'},
+            'data': ('jsonfield.fields.JSONField', [], {'default': "{'user_class': 'customer'}"}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'user': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'profile'", 'unique': 'True', 'to': u"orm['auth.User']"})
         }
     }
 
-    complete_apps = ['auth']
+    complete_apps = ['default']
