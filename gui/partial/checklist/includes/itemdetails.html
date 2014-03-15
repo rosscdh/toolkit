@@ -53,7 +53,7 @@
         <div class="btn-group">
             <a href="javascript:;" class="btn btn-sm btn-silver btn-embossed dropdown-toggle" data-toggle="dropdown">Options</a>
             <ul class="dropdown-menu dropdown-small dropdown-inverse" >
-                <li><a href="javascript:;" ng-click="data.showDateDuePicker=!data.showDateDuePicker;saveSelectedItem();data.showItemDetailsOptions=!data.showItemDetailsOptions;">
+                <li><a href="javascript:;" ng-click="toggleDueDateCalendar( data.selectedItem );saveSelectedItem();data.showItemDetailsOptions=!data.showItemDetailsOptions;">
                     <span class="fui-calendar"></span> Set due date</a>
                 </li>
                 <li><a href="#" data-toggle="modal" data-target="#attachWorkflowModal"><span class="fui-calendar"></span> Add workflow</a></li>
@@ -62,21 +62,27 @@
                 </li>
             </ul>
         </div>
-
+        <!--
         <a href="javascript:;" id="datedue" class="btn btn-sm btn-silver btn-embossed" ng-show="data.selectedItem.date_due"
            ng-click="data.showDateDuePicker=!data.showDateDuePicker">
             <span class="fui-calendar"></span>{{ data.selectedItem.date_due | date:'dd MMMM' }}
         </a>
+        //-->
+        <span class="calendar-group" ng-show="data.showDateDueInput||data.selectedItem.date_due" ng-click="data.showDateDuePicker=true">
+            <input type="text" id="dateduepicker-input" datepicker-popup="dd-MMMM" ng-model="data.selectedItem.date_due" datepicker-options="dateOptions" is-open="data.showDateDuePicker" class="btn-embossed btn-sm btn-silver" />
+            <label class="fui-calendar" for="dateduepicker-input"></label>
+        </span>
         <a href="javascript:;" ng-click="data.selectedItem.is_complete=!data.selectedItem.is_complete;saveSelectedItem();"
            class="btn btn-sm btn-embossed pull-right" ng-class="{ 'btn-success': !data.selectedItem.is_complete, 'btn-default': data.selectedItem.is_complete}">
             <span class="fui-checkbox-checked"></span> <span ng-hide="data.selectedItem.is_complete">Close item</span><span ng-show="data.selectedItem.is_complete">Reopen item</span>
         </a>
-
+        <!--
         <div id="dateduepicker-container" ng-show="data.showDateDuePicker">
           <div class="well well-sm">
               <datepicker ng-model="data.dateduepickerdate"></datepicker>
           </div>
         </div>
+        //-->
     </div>
     <!-- End option toolbar -->
 
