@@ -800,13 +800,7 @@ angular.module('toolkit-gui')
 
 			modalInstance.result.then(
 				function ok(result) {
-					var requestdata = {
-						'responsible_party': result.participant.url,
-						'note': result.message
-					};
-					console.log(result);
-
-					matterItemService.requestRevisionReview(matterSlug, item.slug, result.participant).then(
+					matterItemService.requestRevisionReview(matterSlug, item.slug, result).then(
 							function success(response){
 								revision.reviewers.push(response.url);
 							},

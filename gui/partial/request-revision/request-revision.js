@@ -115,17 +115,17 @@ angular.module('toolkit-gui')
                 $scope.data.validationError = false;
 
                 participantService.getByEmail( $scope.data.request.email ).then(
-                    function success(participant) {
-                        $scope.data.request.isNew = false;
-                        $scope.data.request.participant = participant;
-
-                        jQuery("#requestParticipant").removeAttr('disabled');
+                    function success(response) {
+                        if (response.count===1){
+                            $scope.data.request.isNew = false;
+                            $scope.data.request.participant = response.results[0];
+                        } else {
+                            $scope.data.request.isNew = true;
+                            $scope.data.request.participant = null;
+                        }
                     },
                     function error() {
-                        $scope.data.request.isNew = true;
-                        $scope.data.request.participant = null;
-
-                        jQuery("#requestParticipant").removeAttr('disabled');
+                        toaster.pop('error', "Error!", "Unable to load participant");
                     }
                 );
             } else {
@@ -152,7 +152,7 @@ angular.module('toolkit-gui')
 			var person = $scope.data.request.person&&$scope.data.request.person!==''?$scope.data.request.person:null;
 
             if (email != null && email.length > 0) {
-                participantService.invite($scope.matter.slug, {'email':email}).then(
+                participantService.invite($scope.matter.slug, $scope.data.request).then(
                     function success(participant){
                         $modalInstance.close( { 'participant': participant, 'message': message } );
                     },
