@@ -68,17 +68,21 @@ angular.module('toolkit-gui')
                 $scope.data.validationError = false;
 
                 participantService.getByEmail( $scope.data.invitee.email ).then(
-                    function success(participant) {
-                        $scope.data.invitee.isNew = false;
-                        $scope.data.invitee.participant = participant;
+                    function success(response) {
+                        if (response.count===1){
+                            $scope.data.invitee.isNew = false;
+                            $scope.data.invitee.participant = response.results[0];
 
-                        jQuery("#addParticipant").removeAttr('disabled');
+                            jQuery("#addParticipant").removeAttr('disabled');
+                        } else {
+                            $scope.data.invitee.isNew = true;
+                            $scope.data.invitee.participant = null;
+
+                            jQuery("#addParticipant").removeAttr('disabled');
+                        }
                     },
                     function error() {
-                        $scope.data.invitee.isNew = true;
-                        $scope.data.invitee.participant = null;
-
-                        jQuery("#addParticipant").removeAttr('disabled');
+                        toaster.pop('error', "Error!", "Unable to load participant");
                     }
                 );
             } else {

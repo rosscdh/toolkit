@@ -28,21 +28,21 @@ angular.module('toolkit-gui')
 		 * In scope variable containing a list of participants within this matter. This is passed through from the originating controller.
 		 * This object is cloned, and therefore changes to this object will not be refected in thr originating object.
 		 * 
-		 * @memberof RequestrevisionCtrl
+		 * @memberof RequestreviewCtrl
 		 * @type {Array}
 		 * @private
 		 */
 		$scope.participants = angular.copy(participants);
 		/**
 		 * In scope variable containing details about the current user. This is passed through from the originating controller.
-		 * @memberof RequestrevisionCtrl
+		 * @memberof RequestreviewCtrl
 		 * @type {Object}
 		 * @private
 		 */
 		$scope.currentUser = currentUser;
 		/**
 		 * In scope variable containing details about the matter. This is passed through from the originating controller.
-		 * @memberof RequestrevisionCtrl
+		 * @memberof RequestreviewCtrl
 		 * @type {Object}
 		 * @private
 		 */
@@ -50,7 +50,7 @@ angular.module('toolkit-gui')
 
 		/**
 		 * In scope variable containing details about the specific checklist item, with which to make the request
-		 * @memberof RequestrevisionCtrl
+		 * @memberof RequestreviewCtrl
 		 * @type {Object}
 		 * @private
 		 */
@@ -58,7 +58,7 @@ angular.module('toolkit-gui')
 
 		/**
 		 * Scope based data for this controller
-		 * @memberof			RequestrevisionCtrl
+		 * @memberof			RequestreviewCtrl
 		 * @private
 		 * @type {Object}
 		 */
@@ -79,7 +79,7 @@ angular.module('toolkit-gui')
 		 * 
 		 * @private
 		 * @method				ok
-		 * @memberof			RequestrevisionCtrl
+		 * @memberof			RequestreviewCtrl
 		 */
 		$scope.ok = function () {
 			$modalInstance.close( $scope.participants );
@@ -93,11 +93,47 @@ angular.module('toolkit-gui')
 		 * 
 		 * @private
 		 * @method				cancel
-		 * @memberof			RequestrevisionCtrl
+		 * @memberof			RequestreviewCtrl
 		 */
 		$scope.cancel = function () {
 			$modalInstance.dismiss('cancel');
 		};
+
+          /**
+		 * Checks if a user exists with the entered mailaddress and activates the input
+         * fields for first and last name if not.
+		 *
+		 * @name				checkIfUserExists
+		 *
+		 * @private
+		 * @method				checkIfUserExists
+		 * @memberof			ParticipantInviteCtrl
+		 */
+        $scope.checkIfUserExists = function () {
+            if ($scope.data.request.email != null && $scope.data.request.email.length>0) {
+                $scope.data.validationError = false;
+
+                participantService.getByEmail( $scope.data.request.email ).then(
+                    function success(response) {
+                        if (response.count===1){
+                            $scope.data.request.isNew = false;
+                            $scope.data.request.participant = response.results[0];
+                        } else {
+                            $scope.data.request.isNew = true;
+                            $scope.data.request.participant = null;
+                        }
+                    },
+                    function error() {
+                        toaster.pop('error', "Error!", "Unable to load participant");
+                    }
+                );
+            } else {
+                $scope.data.validationError = true;
+                $scope.data.request.isNew = false;
+                $scope.data.request.participant = null;
+                jQuery("#requestParticipant").attr('disabled','');
+            }
+        };
 
 		/**
 		 * Initiates request to invite and receive the user.
@@ -107,15 +143,22 @@ angular.module('toolkit-gui')
 		 * @param  {Object} person	User object
 		 * @private
 		 * @method				request
-		 * @memberof			RequestrevisionCtrl
+		 * @memberof			RequestreviewCtrl
 		 */
 		$scope.request = function() {
-			var email = $scope.data.request.email;
-			var message = $scope.data.request.message;
 			var person = $scope.data.request.person&&$scope.data.request.person!==''?$scope.data.request.person:null;
 
+            var result = { 'email': $scope.data.request.email,
+                           'username': person,
+                           'first_name': $scope.data.request.first_name,
+                           'last_name': $scope.data.request.last_name,
+                           'message': $scope.data.request.message };
+
+            $modalInstance.close( result );
+
+            /**
             if (email != null && email.length > 0) {
-                participantService.invite($scope.matter.slug, {'email':email}).then(
+                participantService.invite($scope.matter.slug, $scope.data.request).then(
                     function success(response){
                         participantService.getByURL(response.url).then(
                             function success(participant){
@@ -139,7 +182,7 @@ angular.module('toolkit-gui')
                         toaster.pop('error', "Error!", "Unable to receive participant");
                     }
                 );
-            }
+            }*/
 		};
 
 		/**
@@ -150,7 +193,7 @@ angular.module('toolkit-gui')
 		 * 
 		 * @private
 		 * @method				invalid
-		 * @memberof			RequestrevisionCtrl
+		 * @memberof			RequestreviewCtrl
 		 */
 		$scope.invalid = function() {
 			return !$scope.data.request.person&&!$scope.data.request.email;

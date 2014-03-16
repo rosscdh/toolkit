@@ -503,13 +503,12 @@ angular.module('toolkit-gui')
 			 *
 			 * @return {Promise}    Updated item object as provided by API
 			 */
-			'requestRevisionReview': function ( matterSlug, itemSlug, participant ) {
+			'requestRevisionReview': function ( matterSlug, itemSlug, reviewer ) {
 				var deferred = $q.defer();
 
 				var api = reviewerItemResource();
-                console.log(participant);
 
-				api.request({'matterSlug': matterSlug, 'itemSlug': itemSlug }, {'username': participant.username},
+				api.request({'matterSlug': matterSlug, 'itemSlug': itemSlug }, reviewer,
 					function success(response){
 						deferred.resolve(response);
 					},
