@@ -37,7 +37,7 @@ html,body, div.full
 				}
 			}
 			span {
-				margin-right:7px;
+				margin-right:3px;
 				font-size:14px;
 			}
 			img.user { 
@@ -68,6 +68,7 @@ html,body, div.full
 	a.navbar-brand{
 		font-size:13px;
 		padding:12px 18px 11px 18px;
+		border-bottom:none;
 		max-width: 240px;
 		  white-space: nowrap;
 		  overflow: hidden;
@@ -408,7 +409,7 @@ html,body, div.full
 					min-height:40px;
 					h4 {
 						line-height:16px;
-						font-weight: normal;
+						font-weight: bold;
 						margin:-3px 0px 5px 0px;
 						overflow:hidden;
 						white-space:nowrap;
@@ -582,7 +583,7 @@ html,body, div.full
 		}
 	}
 	div.chat {
-		background-color:lighten(@silver, 3%);
+		background-color:@silver;
 		border-left: 1px solid lighten(@silver, 1%);
 		h4 {
 			padding-top:13px;
