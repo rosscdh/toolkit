@@ -43,9 +43,4 @@ angular.module('toolkit-gui').run(function($rootScope) {
 			this.$apply(fn);
 		}
 	};
-
-    //$rootScope.API_BASE_URL = "http://localhost:8002/api/v1/";
-    // @TODO levels to discuss
-    //$rootScope.STATUS_LEVEL = {'OK':0,'WARNING':1,'ERROR':2};
-
 });
