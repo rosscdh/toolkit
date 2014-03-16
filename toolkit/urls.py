@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
-from toolkit.static import static
 from django.conf.urls import patterns, include, url
+
+from toolkit.static import static
 
 from django.contrib import admin
 admin.autodiscover()
@@ -39,7 +40,7 @@ urlpatterns = patterns('',
     url(r'^', include('toolkit.apps.default.urls', namespace='public')),
 )
 
-if settings.DEBUG:
+if settings.DEBUG is True or settings.TEST_PREPROD:
     # Add the MEDIA_URL to the dev environment
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
