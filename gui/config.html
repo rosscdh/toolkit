@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{% verbatim %}<!DOCTYPE html>
 <html ng-app="toolkit-gui">
 <head>
   <title></title>
@@ -85,7 +85,7 @@
     <div class="navbar-header">
 <div class="logo-mark">
       <a href="/"> 
-          <img src="<!-- @echo staticPathBase -->images/logo-white-icon.png">
+          <img src="<!-- @echo staticBase -->images/logo-white-icon.png">
         </a>
         </div>
       <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-collapse-03"></button>
@@ -157,8 +157,8 @@
   <div ng-view class="full">
   <span id="landmine"></span>
   <script language="javascript" data-remove="exclude">
-    angular.module('toolkit-gui').constant('API_BASE_URL', '<!-- @echo apiBaseUrl -->/api/v1/');
+    angular.module('toolkit-gui').constant('API_BASE_URL', '<!-- @echo apiBaseUrl -->');
     angular.module('toolkit-gui').constant('STATUS_LEVEL', {'OK':0,'WARNING':1,'ERROR':2} );
   </script>
 </body>
-</html>
+</html>{% endverbatim %}
