@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.dispatch import Signal, receiver
 from django.template.defaultfilters import slugify
-from django.db.models.signals import pre_save, post_save
+from django.db.models.signals import pre_save, post_save, m2m_changed
 
 from .models import Workspace, Tool
 
@@ -151,7 +151,6 @@ def ensure_workspace_has_83b_by_default(sender, **kwargs):
 
     if eightythreeb not in workspace.tools.all():
         workspace.tools.add(eightythreeb)
-
 
 
 @receiver(pre_save, sender=Tool, dispatch_uid='workspace.ensure_tool_slug')
