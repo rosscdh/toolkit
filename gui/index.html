@@ -10,7 +10,6 @@
 
 </head>
 <body>{% verbatim %}
-
   <!-- Livereload script for development only (stripped during dist build) -->
   <script src="http://localhost:35729/livereload.js" data-build="exclude"></script>
 
@@ -157,7 +156,7 @@
   <div ng-view="" class="full">
   <span id="landmine"></span>
   <script language="javascript" data-remove="exclude">
-    angular.module('toolkit-gui').constant('API_BASE_URL', 'http://localhost:8000/api/v1/');
+    angular.module('toolkit-gui').constant('API_BASE_URL', '/api/v1/');
     angular.module('toolkit-gui').constant('STATUS_LEVEL', {'OK':0,'WARNING':1,'ERROR':2} );
   </script>
 </div>{% endverbatim %}</body>
