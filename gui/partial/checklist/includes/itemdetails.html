@@ -4,6 +4,7 @@
                 ng-hide="data.showEditItemTitleForm">
             <span ng-bind="data.selectedItem.name"></span>
         </a>
+        <span ng-show="data.showEditItemTitleForm" class="title-save">Press Enter to Save</span>
         <input class="form-control input-sm" ng-show="data.showEditItemTitleForm" type="search"
                ng-model="data.editItemTitle" ng-enter="data.selectedItem.name=data.editItemTitle;saveSelectedItem();data.showEditItemTitleForm=false"
                ng-blur="data.showEditItemTitleForm=false" focus-on="eventEditItemTitle">
@@ -65,7 +66,7 @@
 
         <a href="javascript:;" id="datedue" class="btn btn-sm btn-silver btn-embossed" ng-show="data.selectedItem.date_due"
            ng-click="data.showDateDuePicker=!data.showDateDuePicker">
-            <span class="fui-calendar"></span>{{ data.selectedItem.date_due | date:'dd MMMM' }}
+            <span class="fui-calendar"></span> {{ data.selectedItem.date_due | date:'dd MMMM' }}
         </a>
         <a href="javascript:;" ng-click="data.selectedItem.is_complete=!data.selectedItem.is_complete;saveSelectedItem();"
            class="btn btn-sm btn-embossed pull-right" ng-class="{ 'btn-success': !data.selectedItem.is_complete, 'btn-default': data.selectedItem.is_complete}">
