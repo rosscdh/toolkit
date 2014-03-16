@@ -9,10 +9,10 @@ html,body, div.full
 // Varibles for document status
 @doc-status-0:		@brand-warning;     // Draft
 @doc-status-1:		@pumpkin;			// Discussion
-@doc-status-2:		@green-sea;			// Final
+@doc-status-2:		@peter-river;			// Final
 @doc-status-3:		@emerland;			// Executed
 @doc-status-4:		@midnight-blue;		// Filed
-@doc-status-5:		@peter-river;		// Custom A
+@doc-status-5:		darken(@pomegranate, 30%);		// Custom A
 @doc-status-6:		@amethyst;			// Custom B
 @doc-status-7:		@concrete;			// Custom C
 @doc-status-8:		@alizarin;			// Custom D
@@ -49,10 +49,13 @@ html,body, div.full
 			}
 			span.user {
 				font-weight:normal;
-				color:#f3f3f3;
-				border:1px solid #555;
-				padding:5px;
+				color:#bbb;
+				border:none;
+				background-color:#3a3a3a;
+				padding:8px;
 				font-size:12px;
+				border-radius: 40px;
+
 			}
 		}
 		.navbar-form .form-control {
@@ -110,7 +113,7 @@ html,body, div.full
 	}
 
 	// Item status
-	.status-0 span { color:@doc-status-0; }
+/*	.status-0 span { color:@doc-status-0; }
 	.status-1 span { color:@doc-status-1; }
 	.status-2 span { color:@doc-status-2; }
 	.status-3 span { color:@doc-status-3; }
@@ -119,7 +122,7 @@ html,body, div.full
 	.status-6 span { color:@doc-status-6; }
 	.status-7 span { color:@doc-status-7; }
 	.status-8 span { color:@doc-status-8; }
-	.status-9 span { color:@doc-status-9; }
+	.status-9 span { color:@doc-status-9; }*/
 	
 
 	table.checklist {
@@ -258,7 +261,7 @@ html,body, div.full
 			a {
 				text-decoration:underline;
 			}
-			button {
+/*			button {
 				&.doc-status-0 { background-color:@doc-status-0; }
 				&.doc-status-1 { background-color:@doc-status-1; }
 				&.doc-status-2 { background-color:@doc-status-2; }
@@ -269,7 +272,7 @@ html,body, div.full
 				&.doc-status-7 { background-color:@doc-status-7; }
 				&.doc-status-8 { background-color:@doc-status-8; }
 				&.doc-status-9 { background-color:@doc-status-9; }
-			}
+			}*/
 		}
 		td.add-new {
 			text-align:right;
@@ -305,7 +308,8 @@ html,body, div.full
 			opacity:0.5;
 		}
 		a.link {
-			color:darken(@silver, 40%);
+			color:darken(@silver, 10%);
+			font-size:12px;
 			&:hover {
 				text-decoration:underline;
 			}
@@ -337,7 +341,12 @@ html,body, div.full
 			margin-bottom:0px;
 			margin:0px -15px 0px -15px;
 			padding: 23px 15px 16px 15px;
-
+			a {
+				color:#222;
+				&:hover {
+					text-decoration:underline;
+				}
+			}
 			// Make buttons inside the item header small.
 			.btn-silver {
 				color:darken(@silver, 35%);
@@ -404,33 +413,96 @@ html,body, div.full
 
 		ul.revisions {
 			margin-top:10px;
-			li.toggle-previous {
-				padding-left: 0px;
-			}
+			padding-top:10px;
 			li {
-				padding:3px 0px 15px 25px;
+				padding:3px 0px 15px 0px;
+				&.toggle-previous {
+					padding-left: 0px;
+				}
 				.doc-wrap {
-					&:first-child {
-						opacity:1;
-					}
 					background-color:white;
 					padding:9px 10px 0px 10px;
-					position:relative;
-					font-size:13px;
-					opacity:0.6;
-					span.version {
-						position:absolute;
-						left:-24px;
-						top:0px;
-						height:100%;
-						padding:6px 4px 4px 5px;
-						font-size:12px;
-						line-height:25px;
-						border:none;
-						background-color:lighten(@silver, 1%);
-						color:lighten(@silver, 40%);
-						vertical-align:middle;
+					h4 {
+						line-height:16px;
+						font-weight: normal;
+						margin:-3px 0px 0px 0px;
+						overflow:hidden;
+						white-space:nowrap;
+						 a {
+							font-size:13px;
+							color: darken(@silver, 35%);
+							margin-bottom:4px;
+							span.fui-document {
+								display:block;
+								float:left;
+								margin:5px 3px 0px 0px;
+								font-size:13px;
+								opacity:0.75;
+								background-color: white;
+								&.status-0 {color:@doc-status-0;}
+								&.status-1 {color:@doc-status-1;}
+								&.status-2 {color:@doc-status-2;}
+								&.status-3 {color:@doc-status-3;}
+								&.status-4 {color:@doc-status-4;}
+								&.status-5 {color:@doc-status-5;}
+								&.status-6 {color:@doc-status-6;}
+								&.status-7 {color:@doc-status-7;}
+								&.status-8 {color:@doc-status-8;}
+								&.status-9 {color:@doc-status-9;}
+							}
+						}
 					}
+					.desc {
+						color:darken(@silver, 20%);
+						font-weight:normal;
+						margin:0px 0px 8px 0px;
+						p {
+							font-size:12px;
+						}
+					}
+					.item-description {
+						margin-bottom:10px;
+					}					
+					.tools {
+						background-color:@doc-status-0;
+						padding:1px 3px 2px 4px;
+						margin-right:-10px;
+						margin-left:-10px;
+						a.btn-link {
+							color:white;
+							font-size:11px;
+						}
+						ul.dropdown-menu {
+							li {
+								a {
+									padding:6px 8px 6px;
+								}
+								padding:0px 0px 0px 0px;
+								font-size:12px;
+							}
+						}
+					}
+
+					.status-0 {background-color:@doc-status-0;}
+					.status-1 {background-color:@doc-status-1}
+					.status-2 {background-color:@doc-status-2}
+					.status-3 {background-color:@doc-status-3;}
+					.status-4 {background-color:@doc-status-4;}
+					.status-5 {background-color:@doc-status-5;}
+					.status-6 {background-color:@doc-status-6;}
+					.status-7 {background-color:@doc-status-7;}
+					.status-8 {background-color:@doc-status-8;}
+					.status-9 {background-color:@doc-status-9;}
+					 span.icon {
+						display:block;
+						float:left;
+						width:17px;
+						height:17px;
+						border-radius:10px;
+						margin:0px 5px 0px -3px;
+					}
+
+					/* the close button on the revision */
 					.close {
 						font-size:15px;
 						display:none;
@@ -444,32 +516,6 @@ html,body, div.full
 						color:lighten(@gray, 20%);
 						text-align:right;
 						margin-bottom:3px
-					}
-					h4 {
-						font-size:14px;
-						line-height:16px;
-						display:inline;
-						margin-bottom:0px;
-						color: darken(@silver, 10%);
-					}
-				}
-				.tools {
-					border-top:1px solid #F3f3f3;
-					background-color:#f7f7f7;
-					padding:4px 3px 3px 8px;
-					margin-right:-10px;
-					margin-left:-10px;
-					.btn-link {
-						color:#666;
-					}
-					ul.dropdown-menu {
-						li {
-							a {
-								padding:6px 8px 6px;
-							}
-							padding:0px 0px 0px 0px;
-							font-size:12px;
-						}
 					}
 				}
 				.review {
@@ -488,7 +534,7 @@ html,body, div.full
 						background-color:lighten(@orange, 15%);
 					}
 					ul {
-						padding-top:10px;
+					
 						li {
 							margin-bottom:5px;
 							margin-top:5px;
@@ -517,44 +563,6 @@ html,body, div.full
 							}
 						}
 					}
-				}
-				.doc-wrap {
-					.btn {
-						&.status-0 {background-color:@doc-status-0;};
-						&.status-1 {background-color:@doc-status-1;};
-						&.status-2 {background-color:@doc-status-2;};
-						&.status-3 {background-color:@doc-status-3;};
-						&.status-4 {background-color:@doc-status-4;};
-						&.status-5 {background-color:@doc-status-5;};
-						&.status-6 {background-color:@doc-status-6;};
-						&.status-7 {background-color:@doc-status-7;};
-						&.status-8 {background-color:@doc-status-8;};
-						&.status-9 {background-color:@doc-status-9;};
-					}
-
-					border-left-color:@brand-warning;
-					span.version {
-						color:white;
-						background-color:@doc-status-0;
-						.status-1 {background-color:@doc-status-1;};
-						.status-2 {background-color:@doc-status-2;};
-						.status-3 {background-color:@doc-status-3;};
-						.status-4 {background-color:@doc-status-4;};
-						.status-5 {background-color:@doc-status-5;};
-						.status-6 {background-color:@doc-status-6;};
-						.status-7 {background-color:@doc-status-7;};
-						.status-8 {background-color:@doc-status-8;};
-						.status-9 {background-color:@doc-status-9;};
-					}
-					h4 a {
-						color: darken(@silver, 35%);
-					}
-				}
-				.desc {
-					color:darken(@silver, 20%);
-					font-weight:normal;
-					margin-top:0px;
-					font-size:12px;
 				}
 			}
 			li.header {
@@ -598,7 +606,6 @@ html,body, div.full
 							 float:left;
 							 padding-right:5px;
 							 color: white;
-
 						}
 					.media-body {
 						.msg-body {
@@ -644,6 +651,7 @@ html,body, div.full
 					padding:3px 6px;
 					color:lighten(@silver, 23%);
 					font-size:12px;	
+					margin-bottom:10px;
 				}
 			}
 		}
