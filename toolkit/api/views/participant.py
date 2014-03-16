@@ -42,7 +42,7 @@ class MatterParticipant(generics.CreateAPIView,
     lookup_url_kwarg = 'matter_slug'
 
     def validate_data(self, data):
-        if all(k in data.keys() for k in ["email"]) is False:
+        if all(k in data.keys() for k in ['email', 'first_name', 'last_name', 'message']) is False:
             raise exceptions.ParseError('request.DATA must be: {"email": "username@example.com"}')
 
         email_validator = EmailField()
@@ -51,8 +51,14 @@ class MatterParticipant(generics.CreateAPIView,
 
     def create(self, request, **kwargs):
         data = request.DATA.copy()
+
         self.validate_data(data=data)
+
         email = data.get('email')
+        first_name = data.get('first_name')
+        last_name = data.get('last_name')
+        message = data.get('message')
+        
 
         try:
             new_participant = User.objects.get(email=email)
@@ -61,12 +67,16 @@ class MatterParticipant(generics.CreateAPIView,
             # @BUSINESSRULE if an email does not exist then create them as
             # customer
             #
-            service = EnsureCustomerService(email=email, full_name=None)
+            service = EnsureCustomerService(email=email, full_name='%s %s' % (first_name, last_name))
             is_new, new_participant, profile = service.process()
 
         if new_participant not in self.matter.participants.all():
             self.matter.participants.add(new_participant)
-            PARTICIPANT_ADDED.send(sender=self, matter=self.matter, participant=new_participant, user=request.user)
+            PARTICIPANT_ADDED.send(sender=self,
+                                   matter=self.matter,
+                                   participant=new_participant,
+                                   user=request.user,
+                                   note=message)
 
         return Response(SimpleUserSerializer(new_participant, context={'request': self.request}).data, status=http_status.HTTP_202_ACCEPTED)
 
