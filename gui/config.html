@@ -1,4 +1,4 @@
-{% verbatim %}<!DOCTYPE html>
+<!DOCTYPE html>
 <html ng-app="toolkit-gui">
 <head>
   <title></title>
@@ -10,7 +10,7 @@
 
 </head>
 <body>
-
+  {% verbatim %}
   <!-- Livereload script for development only (stripped during dist build) -->
   <script src="http://localhost:35729/livereload.js" data-build="exclude"></script>
 
@@ -160,5 +160,6 @@
     angular.module('toolkit-gui').constant('API_BASE_URL', '<!-- @echo apiBaseUrl -->');
     angular.module('toolkit-gui').constant('STATUS_LEVEL', {'OK':0,'WARNING':1,'ERROR':2} );
   </script>
+  {% endverbatim %}
 </body>
-</html>{% endverbatim %}
+</html>
