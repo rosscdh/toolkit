@@ -105,7 +105,7 @@ class StartView(LogOutMixin, SaveNextUrlInSessionMixin, AuthenticateUserMixin, F
     form_class = SignInForm
 
     def get_success_url(self):
-        url = reverse('dash:default')
+        url = reverse('matter:list')
         tool_redirect_url = None
         if self.request.user.profile.is_customer is True:
             #
@@ -182,7 +182,7 @@ class SignUpView(LogOutMixin, AuthenticateUserMixin, FormView):
     form_class = SignUpForm
 
     def get_success_url(self):
-        return reverse('dash:default')
+        return reverse('matter:list')
 
     def form_valid(self, form):
         # user a valid form log them in
