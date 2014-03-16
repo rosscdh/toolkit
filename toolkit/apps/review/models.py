@@ -47,7 +47,7 @@ class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
     @property
     def file_exists_locally(self):
         """
-        Used to determin if we should download the file locally
+        Used to determine if we should download the file locally
         """
         try:
             return default_storage.exists(self.document.executed_file)
