@@ -29,7 +29,6 @@ class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
     """
     slug = UUIDField(auto=True, db_index=True)
     document = models.ForeignKey('attachment.Revision')
-    participants = models.ManyToManyField('auth.User', related_name='review_owners')
     reviewers = models.ManyToManyField('auth.User')
     data = JSONField(default={})
 
@@ -112,7 +111,6 @@ class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
                           action_url=ABSOLUTE_BASE_URL(path=self.get_absolute_url(user=u)))
 
 
-from .signals import (on_participant_add,
-                      on_participant_add,
+from .signals import (ensure_matter_participants_are_in_reviewdocument_participants,
                       on_reviewer_add,
                       on_reviewer_remove,)

@@ -156,7 +156,6 @@ class RevisionReviewerTest(BaseEndpointTest, LiveServerTestCase):
 
     @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def setUp(self):
-
         super(RevisionReviewerTest, self).setUp()
 
         # setup the items for testing
@@ -207,14 +206,14 @@ class RevisionReviewerTest(BaseEndpointTest, LiveServerTestCase):
         self.assertEqual(reviewer, self.participant)
 
         #
-        # Matter participants are always part of the participants set
+        # Matter participants are always part of the reviewdocument auth users set
         #
-        participants = reviewdocument.participants.all()
-        self.assertEqual(len(participants), 2)
-        self.assertTrue(self.lawyer in participants)
-        self.assertTrue(self.user in participants)
-        # our new participant is not part of the participants on a review
-        self.assertTrue(self.participant not in participants)
+        lawyer_auth = reviewdocument.get_user_auth(user=self.lawyer)
+        user_auth = reviewdocument.get_user_auth(user=self.user)
+        # now test them
+        self.assertTrue(lawyer_auth is not None)
+        self.assertTrue(user_auth is not None)
+        self.assertEqual(len(reviewdocument.auth), 3)
         #
         # Test the auth for the new reviewer
         #
@@ -278,7 +277,7 @@ class RevisionReviewerTest(BaseEndpointTest, LiveServerTestCase):
 
         self.assertEqual(len(self.revision.reviewers.all()), 0)
         self.assertEqual(len(self.revision.reviewdocument_set.all()), 1) # should be 1 because of the template one created for the participants
-        self.assertEqual(len(self.revision.reviewdocument_set.all().first().participants.all()), 2)
+        #self.assertEqual(len(self.revision.reviewdocument_set.all().first().participants.all()), 2)
         self.assertEqual(len(self.revision.reviewdocument_set.all().first().reviewers.all()), 0)
 
     def test_customer_get(self):
