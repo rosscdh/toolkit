@@ -30,13 +30,21 @@ class ItemRequestRevisionView(MatterItemView):
         self.note = data.pop('note', None) if data is not None else None
         self.requested_by = self.request.user
 
-        return super(ItemRequestRevisionView, self).get_serializer(instance=instance, data=data,
-                                                                   files=files, many=many, partial=partial)
+        return super(ItemRequestRevisionView, self).get_serializer(instance=instance,
+                                                                   data=data,
+                                                                   files=files,
+                                                                   many=many,
+                                                                   partial=partial)
 
     def responsible_party(self, obj):
-        service = EnsureCustomerService(username=username, full_name=None)
+        email = self.request.DATA.get('email')
+        first_name = self.request.DATA.get('first_name')
+        last_name = self.request.DATA.get('last_name')
+
+        service = EnsureCustomerService(email=email, full_name='%s %s' % (first_name, last_name))
         is_new, user, profile = service.process()
-        return is_new, user, profile
+
+        return user
 
     def pre_save(self, obj):
         obj.status = obj.ITEM_STATUS.awaiting_document
@@ -51,6 +59,6 @@ class ItemRequestRevisionView(MatterItemView):
             }
         })
 
-        #is_new, obj.responsible_party, profile = self.responsible_party(obj=obj)
+        obj.responsible_party = self.responsible_party(obj=obj)
 
         return super(ItemRequestRevisionView, self).pre_save(obj=obj)
