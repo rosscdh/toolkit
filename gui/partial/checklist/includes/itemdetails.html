@@ -92,7 +92,7 @@
 
     <ul class="revisions list-unstyled" ng-show="data.selectedItem.latest_revision">
         <!-- Begin current revision -->
-        <li class="header">Current Revision</li>
+        <li class="header">Current</li>
         <li class="current">
             <div class="doc-wrap">
                 <!-- <span class="version">{{ data.selectedItem.latest_revision.slug }}</span> -->
@@ -161,12 +161,12 @@
             </a>
         </li>
 
-        <li class="header previous-toggle" style="display: list-item;" ng-show="data.showPreviousRevisions">Previous Revisions</li>
+        <li class="header previous-toggle" style="display: list-item;" ng-show="data.showPreviousRevisions">Previous (Only visible to you)</li>
         <li class="previous-toggle" style="display: list-item;" ng-show="data.showPreviousRevisions" ng-repeat="rev in data.selectedItem.previousRevisions">
             <div class="doc-wrap">
-                <span class="version">{{ rev.slug }}</span>
-                <h4>{{ rev.name }}</h4>
-                <div class="sub">{{ rev.uploaded_by.name }}, {{ rev.date_created | timeago }}</div>
+
+                <h4><a href="{{ rev.executed_file }}" target="_blank"><span class="fui-document status-{{ rev.status }}"></span> {{ rev.name }}</a></h4>
+                <div class="desc">{{ rev.description }}</div>
             </div>
         </li>
     </ul>
