@@ -10,7 +10,7 @@ html,body, div.full
 @doc-status-0:		@brand-warning;     // Draft
 @doc-status-1:		@pumpkin;			// Discussion
 @doc-status-2:		@amethyst;			// Final
-@doc-status-3:		@emerland;			// Executed
+@doc-status-3:		lighten(@emerland, 10%);			// Executed
 @doc-status-4:		@midnight-blue;		// Filed
 @doc-status-5:		#222;		// Custom A
 @doc-status-6:		@amethyst;			// Custom B
@@ -148,10 +148,6 @@ html,body, div.full
 					.dropdown-menu {
 					}
 				} 
-			}
-			&:hover {
-				.btn-group {
-				}
 			}
 			&.category {
 				padding:13px 0px 0px 0px;
