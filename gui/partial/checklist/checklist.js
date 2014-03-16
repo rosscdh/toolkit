@@ -650,22 +650,8 @@ angular.module('toolkit-gui')
 
 			modalInstance.result.then(
 				function ok(result) {
-					var requestdata = {
-						'responsible_party': result.participant.url,
-						'note': result.message
-					};
-
-					matterItemService.requestRevision(matterSlug, item.slug, requestdata).then(
-							function success(response){
-								item.status = response.status;
-								item.responsible_party = response.responsible_party;
-							},
-							function error(err){
-								if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to request a revision.") {
-									toaster.pop('error', "Error!", "Unable to request a revision.");
-								}
-							}
-					);
+					item.status = result.status;
+					item.responsible_party = result.responsible_party;
 				},
 				function cancel() {
 					//

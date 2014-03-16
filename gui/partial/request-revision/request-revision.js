@@ -20,8 +20,9 @@ angular.module('toolkit-gui')
 	'matter',
 	'checklistItem',
 	'participantService',
+	'matterItemService',
 	'toaster',
-	function($scope, $modalInstance, participants, currentUser, matter, checklistItem, participantService, toaster){
+	function($scope, $modalInstance, participants, currentUser, matter, checklistItem, participantService, matterItemService, toaster){
 
 
 		/**
@@ -117,11 +118,11 @@ angular.module('toolkit-gui')
                 participantService.getByEmail( $scope.data.request.email ).then(
                     function success(response) {
                         if (response.count===1){
-                            $scope.data.request.isNew = false;
-                            $scope.data.request.participant = response.results[0];
+                            $scope.data.isNew = false;
+                            $scope.data.participant = response.results[0];
                         } else {
-                            $scope.data.request.isNew = true;
-                            $scope.data.request.participant = null;
+                            $scope.data.isNew = true;
+                            $scope.data.participant = null;
                         }
                     },
                     function error() {
@@ -130,9 +131,8 @@ angular.module('toolkit-gui')
                 );
             } else {
                 $scope.data.validationError = true;
-                $scope.data.request.isNew = false;
-                $scope.data.request.participant = null;
-                jQuery("#requestParticipant").attr('disabled','');
+                $scope.data.isNew = false;
+                $scope.data.participant = null;
             }
         };
 
@@ -149,27 +149,24 @@ angular.module('toolkit-gui')
 		$scope.request = function() {
 			var email = $scope.data.request.email;
 			var message = $scope.data.request.message;
-			var person = $scope.data.request.person&&$scope.data.request.person!==''?$scope.data.request.person:null;
+			var selectedPerson = $scope.data.selectedIndex!==''?$scope.participants[$scope.data.selectedIndex]:null;
 
-            if (email != null && email.length > 0) {
-                participantService.invite($scope.matter.slug, $scope.data.request).then(
-                    function success(participant){
-                        $modalInstance.close( { 'participant': participant, 'message': message } );
-                    },
-                    function error(err){
-                        toaster.pop('error', "Error!", "Unable to invite participant");
-                    }
-                );
-            } else {
-                participantService.getByUsername(person).then(
-                    function success(participant){
-                        $modalInstance.close( { 'participant': participant, 'message': message } );
-                    },
-                    function error(err){
-                        toaster.pop('error', "Error!", "Unable to invite participant");
-                    }
-                );
+            if (selectedPerson!=null){
+                $scope.data.request.email = selectedPerson.email;
+                $scope.data.request.first_name = selectedPerson.first_name;
+                $scope.data.request.last_name = selectedPerson.last_name;
             }
+
+            matterItemService.requestRevision($scope.matter.slug, $scope.checklistItem.slug, $scope.data.request).then(
+                function success(response){
+                    $modalInstance.close(response);
+                },
+                function error(err){
+                    if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to request a revision.") {
+                        toaster.pop('error', "Error!", "Unable to request a revision.");
+                    }
+                }
+            );
 		};
 
 		/**
@@ -183,7 +180,7 @@ angular.module('toolkit-gui')
 		 * @memberof			RequestrevisionCtrl
 		 */
 		$scope.invalid = function() {
-			return !$scope.data.request.person&&!$scope.data.request.email;
+			return !$scope.data.selectedIndex&&!$scope.data.request.email;
 		};
 	}
 ]);

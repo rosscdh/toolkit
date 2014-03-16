@@ -29,7 +29,7 @@
 				<textarea class="form-control form-control-full-width" ng-model="data.invitee.message" placeholder="Add an optional message"></textarea>
 			</div>
 			<div class="form-group">
-				<button class="btn btn-primary btn-wide btn-sm" id="addParticipant" disabled>Add participant</button>
+				<button class="btn btn-primary btn-wide btn-sm" id="addParticipant" ng-disabled="data.validationError">Add participant</button>
 			</div>
 		</form>
 	</div>

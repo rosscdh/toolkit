@@ -8,34 +8,34 @@
 		
 			<ul class="list-unstyled">
 				<li ng-repeat="person in participants">
-					<label class="radio" ng-class="{'checked':person.username===data.request.person}">
+					<label class="radio" ng-class="{'checked':$index==data.selectedIndex}">
 						<span class="icons">
 							<span class="first-icon fui-radio-unchecked"></span>
 							<span class="second-icon fui-radio-checked"></span>
 						</span>
-						<input type="radio" value="{{person.username}}" ng-model="data.request.person" name="participants">
+						<input type="radio" value="{{$index}}" ng-model="data.selectedIndex" name="participants">
 						<label ng-bind="person | fullname"></label>
 					</label>
 				</li>
 				<li>
-					<label class="radio" ng-class="{'checked':data.request.person==''}">
+					<label class="radio" ng-class="{'checked':data.selectedIndex==''}">
 						<span class="icons"><span class="first-icon fui-radio-unchecked"></span><span class="second-icon fui-radio-checked"></span></span>
-						<input type="radio" ng-model="data.request.person" name="participants" value="">
+						<input type="radio" ng-model="data.selectedIndex" name="participants" value="">
 						External party <span class="fui-lock" data-toggle="tooltip" title="" data-original-title="Requesting a file from a third party does not give them access to this matter."></span>
 					</label>
 				</li>
 			</ul>
 
-            <div class="form-group" ng-show="data.request.person==''"
-                 ng-class="{'has-success': data.request.participant, 'has-warning': data.request.isNew, 'has-error': data.validationError }">
+            <div class="form-group" ng-show="data.selectedIndex==''"
+                 ng-class="{'has-success': data.participant, 'has-warning': data.isNew, 'has-error': data.validationError }">
 				<input type="email" id="requestEmail" class="form-control form-control-full-width input-sm" ng-model="data.request.email"
-                       placeholder="your_email@gmail.com" required ng-blur="checkIfUserExists()"/>
-                 <label class="control-label" for="requestEmail" ng-show="data.request.participant">User {{ data.request.participant | fullname }} found</label>
-                 <label class="control-label" for="requestEmail" ng-show="data.request.isNew">User does not exist yet</label>
+                       placeholder="your_email@gmail.com" ng-blur="checkIfUserExists()"/>
+                 <label class="control-label" for="requestEmail" ng-show="data.participant">User {{ data.participant | fullname }} found</label>
+                 <label class="control-label" for="requestEmail" ng-show="data.isNew">User does not exist yet</label>
 			</div>
             <div class="form-group form-inline">
-                <input type="text" class="form-control input-sm" ng-model="data.request.first_name" placeholder="First name" ng-show="data.request.isNew" />
-                <input type="text" class="form-control input-sm" ng-model="data.request.last_name" placeholder="Last name" ng-show="data.request.isNew" />
+                <input type="text" class="form-control input-sm" ng-model="data.request.first_name" placeholder="First name" ng-show="data.isNew" />
+                <input type="text" class="form-control input-sm" ng-model="data.request.last_name" placeholder="Last name" ng-show="data.isNew" />
             </div>
 
 			<div class="form-group">
