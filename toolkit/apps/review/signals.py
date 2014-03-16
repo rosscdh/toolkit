@@ -62,6 +62,7 @@ def on_participant_remove(sender, instance, action, **kwargs):
 
 """
 Handle when a reviewer is added to the object
+reviewers are the 3rd party entity NOT participants
 """
 
 
