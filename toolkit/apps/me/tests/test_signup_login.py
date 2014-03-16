@@ -11,8 +11,8 @@ from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
 from toolkit.casper.workflow_case import BaseProjectCaseMixin
-from toolkit.apps.dash.views import DashView
-
+#from toolkit.apps.dash.views import DashView
+from toolkit.apps.matter.views import MatterListView
 
 class CustomerSignUpTest(BaseProjectCaseMixin):
     """
@@ -47,7 +47,7 @@ class CustomerSignUpTest(BaseProjectCaseMixin):
         self.assertEqual(form_resp.context['user'].username, 'mysillyusername')
         self.assertEqual(form_resp.context['user'].email, 'MySillyUserName@badlyformatedemailnonrfcdomain.com')
         # redirected to DashView
-        self.assertEqual(type(form_resp.context_data.get('view')), DashView)
+        self.assertEqual(type(form_resp.context_data.get('view')), MatterListView)
 
 
 class CustomerSignInTest(BaseProjectCaseMixin):
@@ -79,4 +79,4 @@ class CustomerSignInTest(BaseProjectCaseMixin):
         self.assertEqual(form_resp.context['user'].username, 'mysillyusername')
         self.assertEqual(form_resp.context['user'].email, 'MySillyUserName@badlyformatedemailnonrfcdomain.com')
         # redirected to DashView
-        self.assertEqual(type(form_resp.context_data.get('view')), DashView)
+        self.assertEqual(type(form_resp.context_data.get('view')), MatterListView)
