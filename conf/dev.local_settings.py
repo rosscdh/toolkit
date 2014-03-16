@@ -4,6 +4,7 @@ from settings import *
 
 SITE_ID = 1
 
+TEST_PREPROD = False  # set to true and DEBUG = False in order to test angular app
 PROJECT_ENVIRONMENT = 'dev'
 
 DEBUG = True
