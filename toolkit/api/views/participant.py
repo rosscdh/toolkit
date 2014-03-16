@@ -41,8 +41,8 @@ class MatterParticipant(generics.CreateAPIView,
     lookup_field = 'slug'
     lookup_url_kwarg = 'matter_slug'
 
-    def validate_data(self, data):
-        if all(k in data.keys() for k in ['email', 'first_name', 'last_name', 'message']) is False:
+    def validate_data(self, data, expected_keys=[]):
+        if all(k in data.keys() for k in expected_keys) is False:
             raise exceptions.ParseError('request.DATA must be: {"email": "username@example.com"}')
 
         email_validator = EmailField()
@@ -52,7 +52,7 @@ class MatterParticipant(generics.CreateAPIView,
     def create(self, request, **kwargs):
         data = request.DATA.copy()
 
-        self.validate_data(data=data)
+        self.validate_data(data=data, expected_keys=['email', 'first_name', 'last_name', 'message'])
 
         email = data.get('email')
         first_name = data.get('first_name')
@@ -83,7 +83,8 @@ class MatterParticipant(generics.CreateAPIView,
     def delete(self, request, **kwargs):
         # extract from url arg
         data = {"email": self.kwargs.get('email')}
-        self.validate_data(data=data)
+
+        self.validate_data(data=data, expected_keys=['email'])
         email = data.get('email')
 
         # will raise Does not exist if not found
