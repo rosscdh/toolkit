@@ -43,7 +43,7 @@ class MatterParticipant(generics.CreateAPIView,
 
     def validate_data(self, data, expected_keys=[]):
         if all(k in data.keys() for k in expected_keys) is False:
-            raise exceptions.ParseError('request.DATA must be: {"email": "username@example.com"}')
+            raise exceptions.ParseError('request.DATA must have the following keys: %s' % ', '.join(expected_keys))
 
         email_validator = EmailField()
         # will raise error if incorrect

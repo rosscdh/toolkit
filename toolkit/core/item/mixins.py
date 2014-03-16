@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from toolkit.apps.workspace.models import InviteKey
 from toolkit.apps.review.mailers import ReviewerReminderEmail
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 
@@ -31,7 +32,7 @@ class RequestDocumentUploadMixin(object):
 
 
 class LatestRevisionReminderEmailsMixin(object):
-    def send_invite_emails(self, from_user, to, **kwargs):
+    def send_invite_to_review_emails(self, from_user, to, **kwargs):
         """
         Send the initial email to invite
         but use the standard subject; which is an [ACTION REQUIRED]
@@ -40,7 +41,7 @@ class LatestRevisionReminderEmailsMixin(object):
         #
         # Becase we are yield users need to call next on this to make it action
         #
-        return [next(self.send_review_emails(from_user=from_user, subject=ReviewerReminderEmail.subject, recipients=to, **kwargs))]
+        return [email for email in self.send_review_emails(from_user=from_user, subject=ReviewerReminderEmail.subject, recipients=to, **kwargs)]
 
     def send_reminder_emails(self, from_user, **kwargs):
         """
@@ -50,7 +51,7 @@ class LatestRevisionReminderEmailsMixin(object):
         #
         # Becase we are yield users need to call next on this to make it action
         #
-        return [next(self.send_review_emails(from_user=from_user, subject='[REMINDER] Please review this document', **kwargs))]
+        return [email for email in self.send_review_emails(from_user=from_user, subject='[REMINDER] Please review this document', **kwargs)]
 
     def send_review_emails(self, from_user, subject, recipients=[], **kwargs):
         #
@@ -74,12 +75,23 @@ class LatestRevisionReminderEmailsMixin(object):
                 #
                 # if we have one
                 #
-                action_url = review_document.get_absolute_url(user=u)
+                next_url = review_document.get_absolute_url(user=u)
+                #
+                # Create the invite key (it may already exist)
+                #
+                invite, is_new = InviteKey.objects.get_or_create(matter=self.matter,
+                                                                 invited_user=u,
+                                                                 next=next_url)
+                invite.inviting_user = from_user
+                invite.save(update_fields=['inviting_user'])
+
+                # send the invite url
+                action_url = ABSOLUTE_BASE_URL(invite.get_absolute_url())
 
                 mailer.process(subject=subject,
                                item=self,
                                from_name=from_user.get_full_name(),
-                               action_url=ABSOLUTE_BASE_URL(action_url),
+                               action_url=action_url, # please understsand the diff between action_url and next_url
                                **kwargs)
 
                 yield u

@@ -19,36 +19,39 @@ class ReviewRevisionView(DetailView):
     def dispatch(self, request, *args, **kwargs):
         return super(ReviewRevisionView, self).dispatch(request=request, *args, **kwargs)
 
-    def can_read(self):
+    def authenticate(self):
         #
         # Log in using the review backend
         # 'toolkit.apps.review.auth_backends.ReviewDocumentBackend'
         #
         requested_authenticated_user = authenticate(username=self.kwargs.get('slug'), password=self.kwargs.get('auth_slug'))
 
-        if self.request.user.is_authenticated() is True:
+        #if self.request.user.is_authenticated() is True:
+        if requested_authenticated_user:
             #
             # if the request user is in the object.participants
             # it means they are owners and should be able to view this regardless
             #
             if self.request.user in self.matter.participants.all():
+                #
                 # we are an owner its all allowed
+                #
                 pass
             else:
                 #
                 # user is we are already logged in then check this guys mojo!
                 #
-                if requested_authenticated_user != self.request.user:
-                    raise PermissionDenied
+                if self.request.user.is_authenticated():
+                    if requested_authenticated_user != self.request.user:
+                        raise PermissionDenied
 
-                if user:
-                    login(self.request, user)
+                login(self.request, requested_authenticated_user)
 
     def get_object(self):
         obj = super(ReviewRevisionView, self).get_object()
         self.matter = obj.document.item.matter
 
-        self.can_read()
+        self.authenticate()
 
         return obj
 
