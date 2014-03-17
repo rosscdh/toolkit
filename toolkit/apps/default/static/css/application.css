@@ -719,7 +719,6 @@ body.gui {
   background-color: #f2f2f2;
 }
 body.gui .main-content {
-  margin-top: 0;
   padding: 0;
 }
 .container-fluid {
@@ -922,6 +921,7 @@ body.gui .main-content {
 #requests .requests-header {
   background-color: #ffffff;
   margin-bottom: 20px;
+  margin-top: -20px;
 }
 #requests .requests-header h3 {
   color: #545e64;
