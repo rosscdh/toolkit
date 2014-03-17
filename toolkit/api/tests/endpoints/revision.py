@@ -218,14 +218,14 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         self.assertEqual(resp.status_code, 201)  # ok created
 
         self.assertEqual(resp_json.get('slug'), 'v1')
-        self.assertEqual(resp_json.get('executed_file'), 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-1-%s-logo-black.png' % self.lawyer.username)
+        self.assertEqual(resp_json.get('executed_file'), 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-logo-black.png' % (self.item.pk, self.lawyer.username))
         self.assertEqual(self.item.revision_set.all().count(), 1)
 
         # refresh
         self.item = Item.objects.get(pk=self.item.pk)
         revision = self.item.revision_set.all().first()
-        self.assertEqual(revision.executed_file.name, 'executed_files/v1-1-%s-logo-black.png' % self.lawyer.username)
-        self.assertEqual(revision.executed_file.url, 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-1-%s-logo-black.png' % self.lawyer.username)
+        self.assertEqual(revision.executed_file.name, 'executed_files/v1-%s-%s-logo-black.png' % (self.item.pk, self.lawyer.username))
+        self.assertEqual(revision.executed_file.url, 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-logo-black.png' % (self.item.pk, self.lawyer.username))
 
     @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_post_with_URL_executed_file(self):
@@ -275,9 +275,9 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         self.assertEqual(resp.status_code, 201)  # created
         self.assertEqual(resp_json.get('slug'), 'v1')
         self.assertEqual(resp_json.get('name'), 'test-image.png')
-        self.assertEqual(resp_json.get('executed_file'), 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-1-%s-test-image.png' % self.lawyer.username)
+        self.assertEqual(resp_json.get('executed_file'), 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test-image.png' % (self.item.pk, self.lawyer.username))
         self.assertEqual(self.item.revision_set.all().count(), 1)
 
         revision = self.item.revision_set.all().first()
-        self.assertEqual(revision.executed_file.name, 'executed_files/v1-1-%s-test-image.png' % self.lawyer.username)
-        self.assertEqual(revision.executed_file.url, 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-1-%s-test-image.png' % self.lawyer.username)
+        self.assertEqual(revision.executed_file.name, 'executed_files/v1-%s-%s-test-image.png' % (self.item.pk, self.lawyer.username))
+        self.assertEqual(revision.executed_file.url, 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test-image.png' % (self.item.pk, self.lawyer.username))
