@@ -72,13 +72,9 @@ angular.module('toolkit-gui')
                         if (response.count===1){
                             $scope.data.invitee.isNew = false;
                             $scope.data.invitee.participant = response.results[0];
-
-                            jQuery("#addParticipant").removeAttr('disabled');
                         } else {
                             $scope.data.invitee.isNew = true;
                             $scope.data.invitee.participant = null;
-
-                            jQuery("#addParticipant").removeAttr('disabled');
                         }
                     },
                     function error() {
@@ -89,7 +85,6 @@ angular.module('toolkit-gui')
                 $scope.data.validationError = true;
                 $scope.data.invitee.isNew = false;
                 $scope.data.invitee.participant = null;
-                jQuery("#addParticipant").attr('disabled','');
             }
         };
 

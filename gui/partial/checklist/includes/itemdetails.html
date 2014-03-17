@@ -1,4 +1,4 @@
- <div ng-show="data.selectedItem">
+ <div ng-show="data.selectedItem" ng-file-drop="onFileDropped($files, data.selectedItem);">
     <h3>
         <a href="javascript:;" ng-click="data.editItemTitle=data.selectedItem.name;data.showEditItemTitleForm=!data.showEditItemTitleForm;focus('eventEditItemTitle')"
                 ng-hide="data.showEditItemTitleForm">
@@ -89,6 +89,12 @@
         <i class="fa fa-spinner fa-3x fa-spin"></i>
     </div>
 
+    <div class="drop-area show-on-drag" ng-file-drop="onFileDropped($files, data.selectedItem);"  ng-show="data.selectedItem.latest_revision">
+        <span class="fui-upload"></span>
+        <h4>Upload a revision</h4>
+        <p>To upload a new revision drop files here</p>
+    </div>
+
     <ul class="revisions list-unstyled" ng-show="data.selectedItem.latest_revision">
         <!-- Begin current revision -->
         <li class="header">Current Revision</li>
@@ -170,7 +176,7 @@
         </li>
     </ul>
 
-    <div class="item-help" ng-hide="data.selectedItem.latest_revision||data.uploading||data.selectedItem.status==1">
+    <div class="item-help border-on-dragover" ng-hide="data.selectedItem.latest_revision||data.uploading||data.selectedItem.status==1">
         <span class="fui-upload"></span>
         <h4>Upload a first revision</h4>
         Upload a first draft of this document. Move your mouse to the green upload bar at the top of this item to either upload a file or request one from another participant. You can also drag a document directly on a checklist item to add it as a revision.
@@ -181,5 +187,4 @@
         <h4>Waiting for a revision</h4>
         You have requested a revision from another user. Once they have supplied this revision you will be notified.
     </div>
-
 </div>
