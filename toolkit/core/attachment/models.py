@@ -102,5 +102,8 @@ class Revision(models.Model):
 
 post_save.connect(on_revision_post_save, sender=Revision)
 
-
-from .signals import (ensure_revision_slug,)
+from .signals import (ensure_revision_slug,
+                      set_item_is_requested_false,
+                      ensure_revision_reviewdocument_object,
+                      on_reviewer_add,
+                      on_reviewer_remove)
