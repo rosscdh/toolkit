@@ -4,6 +4,7 @@
                 ng-hide="data.showEditItemTitleForm">
             <span ng-bind="data.selectedItem.name"></span>
         </a>
+        <span ng-show="data.showEditItemTitleForm" class="title-save">Press Enter to Save</span>
         <input class="form-control input-sm" ng-show="data.showEditItemTitleForm" type="search"
                ng-model="data.editItemTitle" ng-enter="data.selectedItem.name=data.editItemTitle;saveSelectedItem();data.showEditItemTitleForm=false"
                ng-blur="data.showEditItemTitleForm=false" focus-on="eventEditItemTitle">
@@ -65,7 +66,7 @@
 
         <a href="javascript:;" id="datedue" class="btn btn-sm btn-silver btn-embossed" ng-show="data.selectedItem.date_due"
            ng-click="data.showDateDuePicker=!data.showDateDuePicker">
-            <span class="fui-calendar"></span>{{ data.selectedItem.date_due | date:'dd MMMM' }}
+            <span class="fui-calendar"></span> {{ data.selectedItem.date_due | date:'dd MMMM' }}
         </a>
         <a href="javascript:;" ng-click="data.selectedItem.is_complete=!data.selectedItem.is_complete;saveSelectedItem();"
            class="btn btn-sm btn-embossed pull-right" ng-class="{ 'btn-success': !data.selectedItem.is_complete, 'btn-default': data.selectedItem.is_complete}">
@@ -97,17 +98,17 @@
 
     <ul class="revisions list-unstyled" ng-show="data.selectedItem.latest_revision">
         <!-- Begin current revision -->
-        <li class="header">Current Revision</li>
+        <li class="header">Current</li>
         <li class="current">
             <div class="doc-wrap">
-                <span class="version">{{ data.selectedItem.latest_revision.slug }}</span>
-                <h4><a href="{{ data.selectedItem.latest_revision.executed_file }}" target="_blank">{{ data.selectedItem.latest_revision.name }}</a></h4>
+                <!-- <span class="version">{{ data.selectedItem.latest_revision.slug }}</span> -->
+                <h4><a href="{{ data.selectedItem.latest_revision.executed_file }}" target="_blank"><span class="fui-document status-{{ data.selectedItem.latest_revision.status }}"></span> {{ data.selectedItem.latest_revision.name }}</a></h4>
                 <span class="close" ng-click="deleteLatestRevision()">x</span>
                 <div class="desc" ng-hide="data.showEditRevisionDescriptionForm">
                      <a href="javascript:;" class="link"
                         ng-click="data.showEditRevisionDescriptionForm=!data.showEditRevisionDescriptionForm;data.editRevisionDescription=data.selectedItem.latest_revision.description;focus('eventEditLatestRevisionDescription')">
                         <div btf-markdown="data.selectedItem.latest_revision.description | newlines"></div>
-                        <span ng-hide="data.selectedItem.latest_revision.description">Enter revision description</span>
+                        <span ng-hide="data.selectedItem.latest_revision.description">Enter description</span>
                     </a>
                 </div>
                 <div class="item-description" ng-show="data.showEditRevisionDescriptionForm">
@@ -117,8 +118,7 @@
                     <a href="javascript:;" class="btn btn-inverse btn-xs item-description-cancel" ng-click="data.showEditRevisionDescriptionForm=false;">Cancel</a>
                     <a href="javascript:;" class="btn btn-link btn-xs pull-right" title="Markdown help" onclick="alert('Markdown help popup like trello');">Formatting Help</a>
                 </div>
-                <div class="sub">{{ data.selectedItem.latest_revision.uploaded_by.name }}, {{ data.selectedItem.latest_revision.date_created | timeago }}</div>
-                <div class="tools">
+                <div class="tools status-{{ data.selectedItem.latest_revision.status }}">
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="showRevisionDocument(data.selectedItem.latest_revision)">View</a>
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="requestReview(data.selectedItem.latest_revision)">Request Review</a>
                     <div class="btn-group pull-right">
@@ -129,9 +129,9 @@
                           <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu">
-                          <li class="status-{{ $index }}" ng-repeat="status in data.matter._meta.revision.status | setValueAsArrayIndex">
+                          <li class="" ng-repeat="status in data.matter._meta.revision.status | setValueAsArrayIndex">
                               <a href="javascript:;" ng-click="data.selectedItem.latest_revision.status=$index;saveLatestRevision();">
-                                  <span class="fui-checkbox-unchecked"></span> {{ status }}
+                                  <span class="icon status-{{ $index }}"></span> {{ status }}
                               </a>
                           </li>
                         </ul>
@@ -155,7 +155,8 @@
                         </li>
                     </ul>
                 </div>
-            </div>
+            </div>  
+            <div class="sub">{{ data.selectedItem.latest_revision.slug }} &middot; {{ data.selectedItem.latest_revision.uploaded_by.name }}, {{ data.selectedItem.latest_revision.date_created | timeago }}</div>
         </li>
         <!-- End current revision -->
 
@@ -166,12 +167,12 @@
             </a>
         </li>
 
-        <li class="header previous-toggle" style="display: list-item;" ng-show="data.showPreviousRevisions">Previous Revisions</li>
+        <li class="header previous-toggle" style="display: list-item;" ng-show="data.showPreviousRevisions">Previous (Only visible to you)</li>
         <li class="previous-toggle" style="display: list-item;" ng-show="data.showPreviousRevisions" ng-repeat="rev in data.selectedItem.previousRevisions">
             <div class="doc-wrap">
-                <span class="version">{{ rev.slug }}</span>
-                <h4>{{ rev.name }}</h4>
-                <div class="sub">{{ rev.uploaded_by.name }}, {{ rev.date_created | timeago }}</div>
+
+                <h4><a href="{{ rev.executed_file }}" target="_blank"><span class="fui-document status-{{ rev.status }}"></span> {{ rev.name }}</a></h4>
+                <div class="desc">{{ rev.description }}</div>
             </div>
         </li>
     </ul>
