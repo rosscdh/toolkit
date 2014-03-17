@@ -46,12 +46,12 @@ angular.module('toolkit-gui')
 		 * @return {Function}   $resource
 		 */
 		function matterItemResource() {
-			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/:action', {}, {
+			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/:document/:action', {}, {
 				'create': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'update': { 'method': 'PATCH', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
-				'requestdocument': { 'method': 'PATCH', 'params':{'action':'request_document'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
-				'remind': { 'method': 'POST', 'params':{'action':'remind'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
+				'requestdocument': { 'method': 'PATCH', 'params':{'document':'request_document'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
+				'remind': { 'method': 'POST', 'params':{'document':'request_document', 'action':'remind'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
 			});
 		}
 
@@ -446,9 +446,37 @@ angular.module('toolkit-gui')
 				return deferred.promise;
 			},
 
+             /**
+			 * Requests the API to delete the revision request.
+			 *
+			 * @name				deleteRevisionRequest
+			 * @param {String}      matterSlug    Database slug, used as a unique identifier for a matter.
+			 * @param {String}      itemSlug      Database slug, used as a unique identifier for a checklist item.
+			 *
+			 * @example
+			 * matterItemService.deleteRevisionRequest( 'myMatterName', 'myItemName' );
+			 *
+			 * @public
+			 * @method				deleteRevisionRequest
+			 * @memberof			matterItemService
+			 *
+			 * @return {Promise}
+			 */
             'deleteRevisionRequest': function ( matterSlug, itemSlug ) {
-                //not implemented
-                return null;
+                var deferred = $q.defer();
+
+                var api = matterItemResource();
+
+				api.update({'matterSlug': matterSlug, 'itemSlug': itemSlug }, {'is_requested':false, 'responsible_party':null},
+					function success(response){
+						deferred.resolve(response);
+					},
+					function error(err) {
+						deferred.reject( err );
+					}
+				);
+
+                return deferred.promise;
             },
 
             /**
