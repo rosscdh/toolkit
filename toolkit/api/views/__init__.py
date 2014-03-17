@@ -34,7 +34,8 @@ from .item import (ItemEndpoint,
                    MatterItemView,)
 
 from .reminder import (RemindReviewers,
-                       RemindSignatories)
+                       RemindSignatories,
+                       RemindRequestedRevisionInvitee)
 
 from .revision import RevisionEndpoint
 # from .workflow import WorkflowEndpoint

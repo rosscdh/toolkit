@@ -2,7 +2,7 @@
 from .endpoints.client import (ClientsTest,)
 from .endpoints.matter import (MattersTest, MatterDetailTest, MatterDetailProvidedDataTest)
 from .endpoints.review import (RevisionReviewsTest, RevisionReviewerTest,)
-from .endpoints.item_request import (ItemsRequestDocumentTest,)
+from .endpoints.item_request import *
 from .endpoints.item import (ItemsTest, ItemDetailTest, ItemDataTest)
 from .endpoints.sort import (MatterSortTest,)
 from .endpoints.participant import (MatterParticipantTest,)

@@ -46,7 +46,7 @@ class ItemRequestRevisionView(MatterItemView):
 
         return user
 
-    def pre_save(self, obj):
+    def pre_save(self, obj, **kwargs):
         obj.is_requested = True
         #
         # Cant use the generic note and requested_by setters due to atomic locks
@@ -62,4 +62,11 @@ class ItemRequestRevisionView(MatterItemView):
 
         obj.responsible_party = self.responsible_party(obj=obj)
 
-        return super(ItemRequestRevisionView, self).pre_save(obj=obj)
+        return super(ItemRequestRevisionView, self).pre_save(obj=obj, **kwargs)
+
+    def post_save(self, obj, **kwargs):
+        """
+        Send the email to the items responsible_party
+        """
+        self.object.send_document_requested_emails(from_user=self.request.user)
+        super(ItemRequestRevisionView, self).post_save(obj=obj, **kwargs)
