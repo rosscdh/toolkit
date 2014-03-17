@@ -4,6 +4,8 @@ from toolkit.apps.workspace.services import EnsureCustomerService
 from ..serializers import (MatterSerializer, SimpleUserSerializer)
 from .item import MatterItemView
 
+import datetime
+
 
 class ItemRequestRevisionView(MatterItemView):
     """
@@ -54,6 +56,7 @@ class ItemRequestRevisionView(MatterItemView):
             'request_document': {
                 'note': self.note,
                 'requested_by': SimpleUserSerializer(self.request.user, context={'request': self.request}).data,
+                'date_requested': datetime.datetime.utcnow()
             }
         })
 
