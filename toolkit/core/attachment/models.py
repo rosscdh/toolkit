@@ -14,11 +14,10 @@ import os
 
 BASE_REVISION_STATUS = get_namedtuple_choices('REVISION_STATUS', (
                                 (0, 'draft', 'Draft'),
-                                (1, 'requested', 'Requested'),
-                                (2, 'for_discussion', 'For Discussion'),
-                                (3, 'final', 'Final'),
-                                (4, 'executed', 'Executed'),
-                                (5, 'filed', 'Filed'),
+                                (1, 'for_discussion', 'For Discussion'),
+                                (2, 'final', 'Final'),
+                                (3, 'executed', 'Executed'),
+                                (4, 'filed', 'Filed'),
                             ))
 
 

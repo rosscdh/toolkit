@@ -6,6 +6,7 @@ from rest_framework import serializers
 
 from toolkit.core.item.models import Item
 from .revision import RevisionSerializer
+from .user import SimpleUserWithReviewUrlSerializer
 
 
 class ItemSerializer(serializers.HyperlinkedModelSerializer):
@@ -49,7 +50,7 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
         placeholder
         """
         if obj.latest_revision is not None:
-            return obj.latest_revision.reviewers.all()
+            return [SimpleUserWithReviewUrlSerializer(u, context=self.context).data for u in obj.latest_revision.reviewers.all()]
         return []
 
     def get_signatories(self, obj):
@@ -57,8 +58,8 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
         placeholder
         """
         if obj.latest_revision is not None:
-            return obj.latest_revision.signatories.all()
+            return [SimpleUserWithReviewUrlSerializer(u, context=self.context).data for u in obj.latest_revision.signatories.all()]
         return []
 
     def get_children(self, obj):
-        return [ItemSerializer(i).data for i in obj.item_set.all()]
+        return [ItemSerializer(i, context=self.context).data for i in obj.item_set.all()]

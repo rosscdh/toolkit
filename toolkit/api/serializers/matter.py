@@ -63,7 +63,7 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
         """
         tmp method will eventually be replaced by matter.items_set.all()
         """
-        return [ItemSerializer(i).data for i in obj.item_set.filter(parent=None)]
+        return [ItemSerializer(i, context=self.context).data for i in obj.item_set.filter(parent=None)]
 
     def get_comments(self, obj):
         """
@@ -92,7 +92,7 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_current_user(self, obj):
         user = obj.lawyer
-        return LiteUserSerializer(user).data
+        return LiteUserSerializer(user, context=self.context).data
 
     def get_current_user_todo(self, obj):
         """
