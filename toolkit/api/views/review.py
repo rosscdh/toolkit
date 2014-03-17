@@ -21,7 +21,7 @@ from toolkit.apps.review.models import ReviewDocument
 from toolkit.apps.workspace.models import Workspace
 from toolkit.apps.workspace.services import EnsureCustomerService
 
-from ..serializers import SimpleUserSerializer
+from ..serializers import SimpleUserWithReviewUrlSerializer, SimpleUserSerializer
 
 import logging
 logger = logging.getLogger('django.request')
@@ -33,7 +33,7 @@ class BaseReviewerSignatoryMixin(generics.GenericAPIView):
     and their required functionality
     """
     model = Revision  # to allow us to use get_object generically
-    serializer_class = SimpleUserSerializer  # as we are returning the revision and not the item
+    serializer_class = SimpleUserWithReviewUrlSerializer  # as we are returning the revision and not the item
     lookup_field = 'slug'
     lookup_url_kwarg = 'item_slug'
 
@@ -163,7 +163,7 @@ class ItemRevisionReviewerView(generics.RetrieveAPIView,
         [lawyer,customer] to view, delete reviewers
     """
     model = User  # to allow us to use get_object generically
-    serializer_class = SimpleUserSerializer  # as we are returning the revision and not the item
+    serializer_class = SimpleUserWithReviewUrlSerializer  # as we are returning the revision and not the item
     lookup_field = 'username'
     lookup_url_kwarg = 'username'
 

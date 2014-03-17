@@ -43,3 +43,27 @@ class LiteUserSerializer(UserSerializer):
 class SimpleUserSerializer(UserSerializer):
     class Meta(UserSerializer.Meta):
         fields = ('url', 'name', 'initials', 'user_class')
+
+
+class SimpleUserWithReviewUrlSerializer(SimpleUserSerializer):
+    """
+    User serilizer to provide a user object with the very important
+    user_review_url
+    """
+    user_review_url = serializers.SerializerMethodField('get_user_review_url')
+
+    class Meta(SimpleUserSerializer.Meta):
+        fields = SimpleUserSerializer.Meta.fields +('user_review_url',)
+
+    def get_user_review_url(self, obj):
+        """
+        Try to provide an initial reivew url from the base review_document obj
+        """
+        context = getattr(self, 'context', None)
+        request = context.get('request')
+
+        if request is not None:
+            initial_reviewdocument = obj.reviewdocument_set.all().first()
+            return initial_reviewdocument.get_absolute_url(user=request.user)
+
+        return None
