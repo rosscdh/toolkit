@@ -715,8 +715,11 @@ div.full {
 .breadcrumb-text {
   margin-bottom: 10px;
 }
-body.checklist {
+body.gui {
   background-color: #f2f2f2;
+}
+body.gui .main-content {
+  padding: 0;
 }
 .container-fluid {
   padding: 0 20px;
@@ -914,6 +917,60 @@ body.checklist {
   border-width: 2px;
   margin-top: 0px;
   padding-bottom: 11px;
+}
+#requests .requests-header {
+  background-color: #ffffff;
+  margin-bottom: 20px;
+}
+#requests .requests-header h3 {
+  color: #545e64;
+  font-size: 24px;
+  margin: 50px 0 30px 0;
+  vertical-align: center;
+}
+#requests .requests-header h3 span.circle {
+  background-color: #e74c3c;
+  border-radius: 40px;
+  color: white;
+  margin-right: 3px;
+  padding: 8px 15px;
+}
+#requests section {
+  margin-bottom: 50px;
+}
+#requests section h5 {
+  color: #666;
+  font-size: 19px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+#requests section p.lead {
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+#requests .request {
+  background-color: white;
+  border: 1px solid #e8ecec;
+  padding: 20px;
+}
+#requests .request .request-icon {
+  color: #6d8082;
+  float: left;
+  font-size: 45px;
+  margin-right: 16px;
+  margin-top: 4px;
+}
+#requests .request .request-title {
+  color: #2980b9;
+  font-size: 20px;
+  margin-bottom: 5px;
+  margin-top: 0;
+}
+#requests .request p {
+  color: #95a5a6;
+}
+#requests .request blockquote {
+  margin-bottom: 0;
 }
 .sidebar {
   padding-right: 30px;

@@ -5,8 +5,9 @@ Items are either todo items or document items
 from rest_framework import serializers
 
 from toolkit.core.item.models import Item
+
 from .revision import RevisionSerializer
-from .user import SimpleUserWithReviewUrlSerializer
+from .user import LiteUserSerializer, SimpleUserWithReviewUrlSerializer
 
 
 class ItemSerializer(serializers.HyperlinkedModelSerializer):
@@ -14,7 +15,7 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
 
     status = serializers.ChoiceField(required=False, choices=Item.ITEM_STATUS.get_choices())
 
-    responsible_party = serializers.HyperlinkedRelatedField(many=False, required=False, view_name='user-detail', lookup_field='username')
+    responsible_party = LiteUserSerializer(required=False)
 
     # must be read_only=True
     latest_revision = RevisionSerializer(source='latest_revision', read_only=True)
