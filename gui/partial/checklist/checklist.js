@@ -788,7 +788,7 @@ angular.module('toolkit-gui')
 
 			modalInstance.result.then(
 				function ok(result) {
-					revision.reviewers.push(result.url);
+					revision.reviewers.push(result);
 				},
 				function cancel() {
 					//
@@ -831,11 +831,11 @@ angular.module('toolkit-gui')
 		* @method		    deleteRevisionReview
 		* @memberof			ChecklistCtrl
 		*/
-		$scope.deleteRevisionReviewRequest = function( item, participant_url ) {
+		$scope.deleteRevisionReviewRequest = function( item, reviewer ) {
 			var matterSlug = $scope.data.slug;
-			var participant = $scope.getParticipantByUrl(participant_url);
+			//var participant = $scope.getParticipantByUrl(participant_url);
 
-			matterItemService.deleteRevisionReviewRequest(matterSlug, item.slug, participant).then(
+			matterItemService.deleteRevisionReviewRequest(matterSlug, item.slug, reviewer).then(
 				function success(){
 					var index = jQuery.inArray( participant_url, item.latest_revision.reviewers );
 					if( index>=0 ) {
