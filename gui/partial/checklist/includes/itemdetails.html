@@ -81,7 +81,7 @@
     </div>
     <!-- End option toolbar -->
 
-    <div class="waiting-revision text-center" ng-show="data.selectedItem.status==1">
+    <div class="waiting-revision text-center" ng-show="data.selectedItem.is_requested">
         <span class="fui-time"></span> Waiting for a revision from <span ng-bind="getParticipantByUrl(data.selectedItem.responsible_party) | fullname"></span>.
         <a href="javascript:;" ng-click="remindRevisionRequest(data.selectedItem)">Remind</a> <a class="close" href="javascript:;" ng-click="deleteRevisionRequest(data.selectedItem)">x</a>
     </div>
@@ -181,13 +181,13 @@
         </li>
     </ul>
 
-    <div class="item-help border-on-dragover" ng-hide="data.selectedItem.latest_revision||data.uploading||data.selectedItem.status==1">
+    <div class="item-help border-on-dragover" ng-hide="data.selectedItem.latest_revision||data.uploading||data.selectedItem.is_requested">
         <span class="fui-upload"></span>
         <h4>Upload a first revision</h4>
         Upload a first draft of this document. Move your mouse to the green upload bar at the top of this item to either upload a file or request one from another participant. You can also drag a document directly on a checklist item to add it as a revision.
     </div>
 
-    <div class="item-help" ng-show="data.selectedItem.status==1&&!data.selectedItem.latest_revision">
+    <div class="item-help" ng-show="data.selectedItem.is_requested&&!data.selectedItem.latest_revision">
         <span class="fui-time"></span>
         <h4>Waiting for a revision</h4>
         You have requested a revision from another user. Once they have supplied this revision you will be notified.
