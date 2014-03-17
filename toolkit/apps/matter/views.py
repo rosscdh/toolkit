@@ -64,7 +64,7 @@ class MatterCreateView(ModalView, AjaxModelFormView, CreateView):
         return kwargs
 
     def get_success_url(self):
-        return reverse('matter:detail', kwargs={'matter_slug': self.object.slug})
+        return self.object.get_absolute_url()
 
 
 class MatterUpdateView(ModalView, AjaxModelFormView, UpdateView):
