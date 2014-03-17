@@ -652,10 +652,9 @@ angular.module('toolkit-gui')
 
 			modalInstance.result.then(
 				function ok(result) {
-<<<<<<< HEAD
 					item.status = result.status;
 					item.responsible_party = result.responsible_party;
-=======
+
 					var requestdata = {
 						'responsible_party': result.participant.url,
 						'note': result.message
@@ -670,7 +669,6 @@ angular.module('toolkit-gui')
 								toaster.pop('error', "Error!", "Unable to request a revision.");
 							}
 					);
->>>>>>> Dropdown date control styling and behaviour
 				},
 				function cancel() {
 					//
@@ -695,13 +693,9 @@ angular.module('toolkit-gui')
 					function success(){
 					},
 					function error(err){
-<<<<<<< HEAD
 						if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to remind the participant.") {
 							toaster.pop('error', "Error!", "Unable to remind the participant.");
 						}
-=======
-						toaster.pop('error', "Error!", "Unable to remind the participant.");
->>>>>>> Dropdown date control styling and behaviour
 					}
 			);
 		};
@@ -724,13 +718,9 @@ angular.module('toolkit-gui')
 						item.status = response.status;
 					},
 					function error(err){
-<<<<<<< HEAD
 						if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to remind the participant.") {
 							toaster.pop('error', "Error!", "Unable to remind the participant.");
 						}
-=======
-						toaster.pop('error', "Error!", "Unable to remind the participant.");
->>>>>>> Dropdown date control styling and behaviour
 					}
 			);
 		};
@@ -809,9 +799,8 @@ angular.module('toolkit-gui')
 
 			modalInstance.result.then(
 				function ok(result) {
-<<<<<<< HEAD
 					matterItemService.requestRevisionReview(matterSlug, item.slug, result).then(
-=======
+
 					var requestdata = {
 						'responsible_party': result.participant.url,
 						'note': result.message
@@ -819,7 +808,7 @@ angular.module('toolkit-gui')
 					console.log(result);
 
 					matterItemService.requestRevisionReview(matterSlug, item.slug, result.participant).then(
->>>>>>> Dropdown date control styling and behaviour
+
 							function success(response){
 								revision.reviewers.push(response.url);
 							},
@@ -853,13 +842,9 @@ angular.module('toolkit-gui')
 					function success(){
 					},
 					function error(err){
-<<<<<<< HEAD
 						if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to remind the participant.") {
 							toaster.pop('error', "Error!", "Unable to remind the participant.");
 						}
-=======
-						toaster.pop('error', "Error!", "Unable to remind the participant.");
->>>>>>> Dropdown date control styling and behaviour
 					}
 			);
 		};
@@ -887,13 +872,9 @@ angular.module('toolkit-gui')
 					}
 				},
 				function error(err){
-<<<<<<< HEAD
 					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to delete the revision review request.") {
 						toaster.pop('error', "Error!", "Unable to delete the revision review request.");
 					}
-=======
-					toaster.pop('error', "Error!", "Unable to delete the revision review request.");
->>>>>>> Dropdown date control styling and behaviour
 				}
 			);
 		};
@@ -1042,6 +1023,20 @@ angular.module('toolkit-gui')
 		};
 
 		/**
+
+		 * Default date control options
+		 *
+		 * @memberof			ChecklistCtrl
+		 * @private
+		 * 
+		 * @type {Object}
+		 */
+		$scope.dateOptions = {
+			'year-format': "'yy'",
+			'starting-day': 1
+		};
+
+		/**
 		 * Toggle due date value between default (today) and null
 		 *
 		 * @memberof			ChecklistCtrl
@@ -1064,6 +1059,8 @@ angular.module('toolkit-gui')
 		 *    / ___ \ (__| |_| |\ V /| | |_| |_| | \__ \ |_| | |  __/ (_| | | | | | | | | | | (_| | | | | (_| | | | | | | (_| |
 		 *   /_/   \_\___|\__|_| \_/ |_|\__|\__, | |___/\__|_|  \___|\__,_|_| |_| |_| |_| |_|\__,_|_| |_|\__,_|_|_|_| |_|\__, |
 		 *                                  |___/                                                                        |___/
+		 *
+		 *
 		 *
 		 *
 		 */
