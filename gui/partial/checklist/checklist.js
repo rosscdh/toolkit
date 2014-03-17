@@ -607,9 +607,11 @@ angular.module('toolkit-gui')
 							item.previousRevisions.sort(SortDescendingByCreationDate);
 						},
 						function error(err){
+
 							if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to load previous revision") {
 								toaster.pop('error', "Error!", "Unable to load previous revision");
 							}
+
 						}
 					);
 				});
@@ -652,6 +654,21 @@ angular.module('toolkit-gui')
 				function ok(result) {
 					item.status = result.status;
 					item.responsible_party = result.responsible_party;
+
+					var requestdata = {
+						'responsible_party': result.participant.url,
+						'note': result.message
+					};
+
+					matterItemService.requestRevision(matterSlug, item.slug, requestdata).then(
+							function success(response){
+								item.status = response.status;
+								item.responsible_party = response.responsible_party;
+							},
+							function error(err){
+								toaster.pop('error', "Error!", "Unable to request a revision.");
+							}
+					);
 				},
 				function cancel() {
 					//
@@ -783,6 +800,15 @@ angular.module('toolkit-gui')
 			modalInstance.result.then(
 				function ok(result) {
 					matterItemService.requestRevisionReview(matterSlug, item.slug, result).then(
+
+					var requestdata = {
+						'responsible_party': result.participant.url,
+						'note': result.message
+					};
+					console.log(result);
+
+					matterItemService.requestRevisionReview(matterSlug, item.slug, result.participant).then(
+
 							function success(response){
 								revision.reviewers.push(response.url);
 							},
@@ -983,6 +1009,48 @@ angular.module('toolkit-gui')
 			'delay': 50
 		};
 
+		/**
+		 * Default date control options
+		 *
+		 * @memberof			ChecklistCtrl
+		 * @private
+		 * 
+		 * @type {Object}
+		 */
+		$scope.dateOptions = {
+			'year-format': "'yy'",
+			'starting-day': 1
+		};
+
+		/**
+
+		 * Default date control options
+		 *
+		 * @memberof			ChecklistCtrl
+		 * @private
+		 * 
+		 * @type {Object}
+		 */
+		$scope.dateOptions = {
+			'year-format': "'yy'",
+			'starting-day': 1
+		};
+
+		/**
+		 * Toggle due date value between default (today) and null
+		 *
+		 * @memberof			ChecklistCtrl
+		 * @private
+		 * 
+		 * @param  {Object} item Item which to apply default date
+		 */
+		$scope.toggleDueDateCalendar = function(item) {
+		 	if(!item.date_due) {
+		 		item.date_due = new Date();
+		 	} else {
+		 		item.date_due = null;
+		 	}
+		};
 
 		/**
 		 *       _        _   _       _ _               _                              _                     _ _ _
@@ -991,6 +1059,8 @@ angular.module('toolkit-gui')
 		 *    / ___ \ (__| |_| |\ V /| | |_| |_| | \__ \ |_| | |  __/ (_| | | | | | | | | | | (_| | | | | (_| | | | | | | (_| |
 		 *   /_/   \_\___|\__|_| \_/ |_|\__|\__, | |___/\__|_|  \___|\__,_|_| |_| |_| |_| |_|\__,_|_| |_|\__,_|_|_|_| |_|\__, |
 		 *                                  |___/                                                                        |___/
+		 *
+		 *
 		 *
 		 *
 		 */
