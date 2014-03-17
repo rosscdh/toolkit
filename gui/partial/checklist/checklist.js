@@ -774,6 +774,9 @@ angular.module('toolkit-gui')
 					'matter': function () {
 						return $scope.data.matter;
 					},
+                    'checklistItem': function () {
+						return item;
+					},
 					'revision': function () {
 						return revision;
 					}
@@ -782,16 +785,7 @@ angular.module('toolkit-gui')
 
 			modalInstance.result.then(
 				function ok(result) {
-					matterItemService.requestRevisionReview(matterSlug, item.slug, result).then(
-							function success(response){
-								revision.reviewers.push(response.url);
-							},
-							function error(err){
-								if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to request a revision.") {
-									toaster.pop('error', "Error!", "Unable to request a revision.");
-								}
-							}
-					);
+					revision.reviewers.push(result.url);
 				},
 				function cancel() {
 					//
@@ -814,6 +808,7 @@ angular.module('toolkit-gui')
 
 			matterItemService.remindRevisionReview(matterSlug, item.slug).then(
 					function success(){
+						toaster.pop('success', "Success!", "All reviewers have been successfully informed.");
 					},
 					function error(err){
 						if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to remind the participant.") {

@@ -7,7 +7,7 @@
 		<strong ng-show="participants.length>0">Existing members</strong>
 		
 			<ul class="list-unstyled">
-				<li ng-repeat="person in participants">
+				<li ng-repeat="person in participants" ng-hide="person.username==currentUser.username">
 					<label class="radio" ng-class="{'checked':$index==data.selectedIndex}">
 						<span class="icons">
 							<span class="first-icon fui-radio-unchecked"></span>

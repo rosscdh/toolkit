@@ -147,8 +147,6 @@ angular.module('toolkit-gui')
 		 * @memberof			RequestrevisionCtrl
 		 */
 		$scope.request = function() {
-			var email = $scope.data.request.email;
-			var message = $scope.data.request.message;
 			var selectedPerson = $scope.data.selectedIndex!==''?$scope.participants[$scope.data.selectedIndex]:null;
 
             if (selectedPerson!=null){
