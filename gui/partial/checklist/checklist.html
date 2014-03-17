@@ -3,7 +3,6 @@
 		<div class="row full">
 			<div class="col-sm-5 checklist-col full">
 				<!-- add new category //-->
-				<a href="javascript:;" ng-click="data.showCategoryAddForm=!data.showCategoryAddForm;focus('eventAddCategory')">New Category</a>
 				<table class="table checklist" ng-show="data.showCategoryAddForm">
 					 <tr class="add-new-controls warning">
 							<td colspan="2">
@@ -22,9 +21,10 @@
 				<!-- checklist //-->
 				<table class="table checklist" ng-repeat="cat in data.categories">
 					<thead>
-						 <tr>
+						 <tr ng-class="{'category-uncategorized': !cat.name}">
 							<th colspan="1" class="col-sm-6 category">
 								<span ng-bind="cat.name" ng-hide="data.showEditCategoryForm==$index"></span>
+								<span ng-hide="data.showEditCategoryForm==$index||cat.name">UNCATEGORIZED</span>
 								<input class="form-control input-sm" ng-show="data.showEditCategoryForm==$index" type="search"
 									   ng-model="data.newCategoryName" ng-enter="editCategory(cat)" ng-blur="data.showEditCategoryForm=false" focus-on="eventEditCategorytitle-{{$index}}">
 							</th>
@@ -36,6 +36,7 @@
 											<li><a href="javascript:;" id="add-new" ng-click="showAddItemForm($index);">New Item</a></li>
 											<li><a href="javascript:;" ng-click="data.newCategoryName=cat.name;showEditCategoryForm($index);" ng-hide="!cat.name">Edit Category</a></li>
 											<li><a href="javascript:;" ng-click="deleteCategory(cat);" ng-hide="!cat.name">Delete Category</a></li>
+											<li><a href="javascript:;" ng-click="data.showCategoryAddForm=!data.showCategoryAddForm;focus('eventAddCategory');" ng-show="!cat.name">Add Category</a></li>
 										</ul>
 								</div>
 							</th>
@@ -95,7 +96,7 @@
 
 					<!-- begin item details //-->
 					<!-- @TODO Make the URL dynamic -->
-					<div class="col-sm-7" ng-include="'/static/ng/partial/checklist/includes/itemdetails.html'"></div>
+					<div class="col-sm-7 full" ng-include="'/static/ng/partial/checklist/includes/itemdetails.html'"></div>
 					<!-- end item details //-->
 
 					<!-- chat //-->
