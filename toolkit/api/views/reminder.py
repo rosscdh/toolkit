@@ -38,13 +38,16 @@ class BaseReminderMixin(SpecificAttributeMixin, ItemCurrentRevisionView):
 
         serializer = self.get_serializer_class()
 
-        for user in self.item.send_reminder_emails(from_user=self.request.user):
+        for user in self.send_reminders():
             #
             # We expect a set of User objects here
             #
             sent_to['results'].append(serializer(user, context={'request': self.request}).data)
 
         return Response(sent_to, status=http_status.HTTP_202_ACCEPTED)
+
+    def send_reminders(self):
+        raise NotImplementedError
 
     def update(self, request, **kwargs):
         raise exceptions.MethodNotAllowed(method=self.request.method)
@@ -60,6 +63,9 @@ class RemindReviewers(BaseReminderMixin):
     """
     Send reminder emails to reviewers
     """
+
+    def send_reminders(self):
+        return self.item.send_review_reminder_emails(from_user=self.request.user)
 
     def can_read(self, user):
         return user.profile.user_class in ['lawyer']
@@ -80,6 +86,7 @@ class RemindSignatories(BaseReminderMixin):
     """
     Send reminder emails to signatories
     """
+    specific_attribute = 'signatories.all()'
 
     def can_read(self, user):
         return user.profile.user_class in ['lawyer']
@@ -94,3 +101,30 @@ class RemindSignatories(BaseReminderMixin):
 rulez_registry.register("can_read", RemindSignatories)
 rulez_registry.register("can_edit", RemindSignatories)
 rulez_registry.register("can_delete", RemindSignatories)
+
+
+class RemindRequestedRevisionInvitee(BaseReminderMixin):
+    """
+    Reminders for requested document invitees
+    """
+    specific_attribute = 'responsible_party'
+
+    def send_reminders(self):
+        return [self.item.send_document_requested_emails(from_user=self.request.user, subject='[REMINDER] Please provide a document')]
+
+    def get_object(self):
+        return self.item
+
+    def can_read(self, user):
+        return user.profile.user_class in ['lawyer']
+
+    def can_edit(self, user):
+        return user.profile.is_lawyer
+
+    def can_delete(self, user):
+        return user.profile.is_lawyer
+
+
+rulez_registry.register("can_read", RemindRequestedRevisionInvitee)
+rulez_registry.register("can_edit", RemindRequestedRevisionInvitee)
+rulez_registry.register("can_delete", RemindRequestedRevisionInvitee)
