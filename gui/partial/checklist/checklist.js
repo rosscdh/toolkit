@@ -837,7 +837,7 @@ angular.module('toolkit-gui')
 
 			matterItemService.deleteRevisionReviewRequest(matterSlug, item.slug, reviewer).then(
 				function success(){
-					var index = jQuery.inArray( participant_url, item.latest_revision.reviewers );
+					var index = jQuery.inArray( reviewer.url, item.latest_revision.reviewers );
 					if( index>=0 ) {
 						// Remove reviewer from list in RAM array
 						item.latest_revision.reviewers.splice(index,1);
