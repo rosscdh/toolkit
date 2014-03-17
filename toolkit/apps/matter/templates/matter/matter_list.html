@@ -1,32 +1,6 @@
-{% extends LAYOUT %}
+{% extends 'gui.html' %}
 
 {% load url from future %}{% load user_tags widont %}
-
-{% block body_class %}checklist{% endblock %}
-
-{% block navbar %}
-    <div class="navbar navbar-inverse checklist-nav">
-        <div class="navbar-header">
-            <a href="/" class="navbar-brand"><img src="{{ STATIC_URL }}images/logo-white.png" height="21" alt="LawPal"></a>
-        </div>
-
-        <div class="navbar-collapse collapse navbar-collapse-01">
-            <ul class="nav navbar-nav navbar-right">
-                <li class="divider"></li>
-                <li><a href="#" class="intercom">Help</a></li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.get_full_name }}<b class="caret"></b></a>
-                    <ul>
-                        <li><a href="{% url 'me:settings' %}">Account</a></li>
-                        <li><a href="{% url 'public:logout' %}">Sign out</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-    </div>
-{% endblock %}
-
-{% block breadcrumbs %}{% endblock %}
 
 {% block body %}
     <div id="matter-list" class="content col-lg-12">

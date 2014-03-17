@@ -5,5 +5,5 @@ from .views import RequestListView
 
 
 urlpatterns = patterns('',
-    url(r'^$', login_required(RequestListView.as_view())),
+    url(r'^$', login_required(RequestListView.as_view()), name='list'),
 )

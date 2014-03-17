@@ -2,6 +2,7 @@
 from django.conf import settings
 
 from toolkit.apps.workspace.models import Workspace
+from toolkit.core.item.models import Item
 
 
 def EXPOSED_GLOBALS(request):
@@ -28,6 +29,12 @@ def LAYOUT(request):
 
     return {
         'LAYOUT': u'%s.html' % profile.user_class if profile else 'base.html'
+    }
+
+
+def REQUESTS_COUNT(request):
+    return {
+        'REQUESTS_COUNT': Item.objects.mine(request.user).count()
     }
 
 
