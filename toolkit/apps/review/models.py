@@ -35,8 +35,8 @@ class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
     objects = ReviewDocumentManager()
 
     class Meta:
-        # @BUSINESS RULE always return the oldest to newest
-        ordering = ('id',)
+        # @BUSINESS RULE always return the newest to oldest
+        ordering = ('-id',)
 
     def get_absolute_url(self, user):
         auth_key = self.get_user_auth(user=user)
