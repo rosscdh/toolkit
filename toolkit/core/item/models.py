@@ -17,9 +17,8 @@ from rulez import registry as rulez_registry
 
 BASE_ITEM_STATUS = get_namedtuple_choices('ITEM_STATUS', (
                                 (0, 'new', 'New'),
-                                (1, 'awaiting_document', 'Awaiting Document'),
-                                (2, 'final', 'Final'),
-                                (3, 'executed', 'Executed'),
+                                (1, 'final', 'Final'),
+                                (2, 'executed', 'Executed'),
                             ))
 
 
@@ -52,6 +51,8 @@ class Item(IsDeletedMixin, RequestDocumentUploadMixin,
     is_final = models.BooleanField(default=False, db_index=True)
     # this item is complete and signed off on
     is_complete = models.BooleanField(default=False, db_index=True)
+    # when requesting a revision from someone
+    is_requested = models.BooleanField(default=False, db_index=True)
 
     data = JSONField(default={})
 
