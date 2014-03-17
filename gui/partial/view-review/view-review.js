@@ -15,8 +15,8 @@ angular.module('toolkit-gui')
 	'matter',
 	'checklistItem',
 	'revision',
-	'review_url',
-	function($scope, $modalInstance, toaster, matterItemService, matter, checklistItem, revision, review_url ){
+	'reviewer',
+	function($scope, $modalInstance, toaster, matterItemService, matter, checklistItem, revision, reviewer ){
 
 		/**
 		 * WIP
@@ -75,7 +75,7 @@ angular.module('toolkit-gui')
 		 * @type {Object}
 		 * @private
 		 */
-		$scope.user_review_url = review_url;
+		$scope.reviewer = reviewer;
 
 	}
 ]);

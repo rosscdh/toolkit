@@ -148,7 +148,8 @@
                     <ul class="list-unstyled">
                         <li ng-repeat="rev in data.selectedItem.latest_revision.reviewers">
                             <a class="close" href="javascript:;" ng-click="deleteRevisionReviewRequest(data.selectedItem, rev)">x</a>
-                            <span class="fui-time"></span> {{ getParticipantByUrl(rev) | fullname }}
+                            <a href="javascript:;" ng-click="showReview(data.selectedItem.latest_revision, rev)"><span class="fui-time"></span></a>
+                            {{ rev.name }}
                         </li>
                         <!--<li class="complete">
                             <button class="btn btn-success btn-xs pull-right"><span class="fui-check"></span> View Response </button> Yael Citro
