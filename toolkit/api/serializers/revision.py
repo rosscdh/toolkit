@@ -93,7 +93,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
 
     item = serializers.HyperlinkedRelatedField(many=False, view_name='item-detail')
 
-    reviewers = SimpleUserWithReviewUrlSerializer(required=False)
+    reviewers = serializers.SerializerMethodField('get_reviewers')
     signatories = serializers.HyperlinkedRelatedField(many=True, view_name='user-detail', lookup_field='username')
 
     # "user" <— the currently logged in user.. "review_url" because the url is relative to the current user
@@ -141,6 +141,9 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
                         self.base_fields['executed_file'] = FileFieldAsUrlField(allow_empty_file=True, required=False)
 
         super(RevisionSerializer, self).__init__(*args, **kwargs)
+
+    def get_reviewers(self, obj):
+        return [SimpleUserWithReviewUrlSerializer(u, context={'request': self.context.get('request')}).data for u in obj.reviewers.all()]
 
     def get_user_review_url(self, obj):
         """

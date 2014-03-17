@@ -246,7 +246,7 @@ class MatterDetailProvidedDataTest(BaseEndpointTest):
 
         latest_revision = items[0].get('latest_revision')
         self.assertEqual(type(latest_revision), dict)
-        self.assertEqual(latest_revision.get('url'), '/api/v1/revisions/%d' % self.revision.pk)
+        self.assertEqual(latest_revision.get('url'), 'http://testserver/api/v1/revisions/%d' % self.revision.pk)
 
     def test_endpoint_data_lawyer(self):
         self.client.login(username=self.lawyer.username, password=self.password)

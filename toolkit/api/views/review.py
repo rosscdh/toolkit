@@ -199,16 +199,7 @@ class ItemRevisionReviewerView(generics.RetrieveAPIView,
             #
             status = http_status.HTTP_406_NOT_ACCEPTABLE
 
-        for reviewdocument in reviewdocument_set:
-            auth_url = reviewdocument.get_absolute_url(user=user)
-
-            data.update({
-                'auth_url': auth_url
-            })
-
-            #headers = self.get_success_headers(serializer.data)
-            status = http_status.HTTP_200_OK
-            break
+        status = http_status.HTTP_200_OK
 
         return Response(data, status=status)
 
