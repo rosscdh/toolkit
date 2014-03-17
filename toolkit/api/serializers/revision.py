@@ -7,7 +7,8 @@ from rest_framework import serializers
 from toolkit.core.attachment.tasks import _download_file
 from toolkit.core.attachment.models import Revision
 
-from .user import SimpleUserSerializer
+from .user import (SimpleUserSerializer,
+                   SimpleUserWithReviewUrlSerializer)
 
 import logging
 logger = logging.getLogger('django.request')
@@ -82,28 +83,7 @@ class FileFieldAsUrlField(serializers.FileField):
         return getattr(value, 'url', super(FileFieldAsUrlField, self).to_native(value=value))
 
 
-class SimpleUserWithReviewUrlSerializer(SimpleUserSerializer):
-    """
-    User serilizer to provide a user object with the very important
-    user_review_url
-    """
-    user_review_url = serializers.SerializerMethodField('get_user_review_url')
 
-    class Meta(SimpleUserSerializer.Meta):
-        fields = SimpleUserSerializer.Meta.fields +('user_review_url',)
-
-    def get_user_review_url(self, obj):
-        """
-        Try to provide an initial reivew url from the base review_document obj
-        """
-        context = getattr(self, 'context', None)
-        request = context.get('request')
-
-        if request is not None:
-            initial_reviewdocument = obj.reviewdocument_set.all().first()
-            return initial_reviewdocument.get_absolute_url(user=request.user)
-
-        return None
 
 
 class RevisionSerializer(serializers.HyperlinkedModelSerializer):
@@ -113,7 +93,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
 
     item = serializers.HyperlinkedRelatedField(many=False, view_name='item-detail')
 
-    reviewers = SimpleUserWithReviewUrlSerializer(required=False)#serializers.HyperlinkedRelatedField(many=True, view_name='user-detail', lookup_field='username')
+    reviewers = SimpleUserWithReviewUrlSerializer(required=False)
     signatories = serializers.HyperlinkedRelatedField(many=True, view_name='user-detail', lookup_field='username')
 
     # "user" <— the currently logged in user.. "review_url" because the url is relative to the current user
