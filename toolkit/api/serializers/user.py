@@ -42,7 +42,7 @@ class LiteUserSerializer(UserSerializer):
 
 class SimpleUserSerializer(UserSerializer):
     class Meta(UserSerializer.Meta):
-        fields = ('url', 'name', 'initials', 'user_class')
+        fields = ('url', 'username', 'name', 'initials', 'user_class')
 
 
 class SimpleUserWithReviewUrlSerializer(SimpleUserSerializer):
