@@ -727,6 +727,7 @@ angular.module('toolkit-gui')
 			var modalInstance = $modal.open({
 				'templateUrl': '/static/ng/partial/view-document/view-document.html',
 				'controller': 'ViewDocumentCtrl',
+                'windowClass': 'modal-full',
 				'resolve': {
 					'matter': function () {
 						return $scope.data.matter;
@@ -787,7 +788,7 @@ angular.module('toolkit-gui')
 
 			modalInstance.result.then(
 				function ok(result) {
-					revision.reviewers.push(result.url);
+					revision.reviewers.push(result);
 				},
 				function cancel() {
 					//
@@ -830,11 +831,11 @@ angular.module('toolkit-gui')
 		* @method		    deleteRevisionReview
 		* @memberof			ChecklistCtrl
 		*/
-		$scope.deleteRevisionReviewRequest = function( item, participant_url ) {
+		$scope.deleteRevisionReviewRequest = function( item, reviewer ) {
 			var matterSlug = $scope.data.slug;
-			var participant = $scope.getParticipantByUrl(participant_url);
+			//var participant = $scope.getParticipantByUrl(participant_url);
 
-			matterItemService.deleteRevisionReviewRequest(matterSlug, item.slug, participant).then(
+			matterItemService.deleteRevisionReviewRequest(matterSlug, item.slug, reviewer).then(
 				function success(){
 					var index = jQuery.inArray( participant_url, item.latest_revision.reviewers );
 					if( index>=0 ) {
@@ -846,6 +847,50 @@ angular.module('toolkit-gui')
 					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to delete the revision review request.") {
 						toaster.pop('error', "Error!", "Unable to delete the revision review request.");
 					}
+				}
+			);
+		};
+
+        /**
+		 * Initiates the view of a review as modal window.
+		 *
+		 * @param {Object} revision object to view
+		 * @param {Object} review object to view
+		 *
+		 * @private
+		 * @method				showReview
+		 * @memberof			ChecklistCtrl
+		 */
+		$scope.showReview = function( revision, reviewer ) {
+			var matterSlug = $scope.data.slug;
+			var item = $scope.data.selectedItem;
+
+			var modalInstance = $modal.open({
+				'templateUrl': '/static/ng/partial/view-review/view-review.html',
+				'controller': 'ViewReviewCtrl',
+                'windowClass': 'modal-full',
+				'resolve': {
+					'matter': function () {
+						return $scope.data.matter;
+					},
+					'checklistItem': function () {
+						return $scope.data.selectedItem;
+					},
+					'revision': function () {
+						return revision;
+					},
+                    'reviewer': function () {
+						return reviewer;
+					}
+				}
+			});
+
+			modalInstance.result.then(
+				function ok(result) {
+					//
+				},
+				function cancel() {
+					//
 				}
 			);
 		};
