@@ -102,7 +102,7 @@
         <li class="current">
             <div class="doc-wrap">
                 <!-- <span class="version">{{ data.selectedItem.latest_revision.slug }}</span> -->
-                <h4><a href="javascript:;" ng-click="showRevisionDocument(data.selectedItem.latest_revision)" target="_blank"><span class="fui-document status-{{ data.selectedItem.latest_revision.status }}"></span> {{ data.selectedItem.latest_revision.name }}</a></h4>
+                <h4><a href="javascript:;" ng-click="showRevisionDocument(data.selectedItem.latest_revision)"><span class="fui-document status-{{ data.selectedItem.latest_revision.status }}"></span> {{ data.selectedItem.latest_revision.name }}</a></h4>
                 <span class="close" ng-click="deleteLatestRevision()">x</span>
                 <div class="desc" ng-hide="data.showEditRevisionDescriptionForm">
                      <a href="javascript:;" class="link"
@@ -148,7 +148,8 @@
                     <ul class="list-unstyled">
                         <li ng-repeat="rev in data.selectedItem.latest_revision.reviewers">
                             <a class="close" href="javascript:;" ng-click="deleteRevisionReviewRequest(data.selectedItem, rev)">x</a>
-                            <span class="fui-time"></span> {{ getParticipantByUrl(rev) | fullname }}
+                            <a href="javascript:;" ng-click="showReview(data.selectedItem.latest_revision, rev)"><span class="fui-time"></span></a>
+                            {{ rev.name }}
                         </li>
                         <!--<li class="complete">
                             <button class="btn btn-success btn-xs pull-right"><span class="fui-check"></span> View Response </button> Yael Citro

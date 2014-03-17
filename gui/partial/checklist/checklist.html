@@ -26,14 +26,13 @@
 								<span ng-bind="cat.name" ng-hide="data.showEditCategoryForm==$index"></span>
 								<span ng-hide="data.showEditCategoryForm==$index||cat.name">UNCATEGORIZED</span>
 								<input class="form-control input-sm" ng-show="data.showEditCategoryForm==$index" type="search"
-									   ng-model="data.newCategoryName" ng-enter="editCategory(cat)" ng-blur="data.showEditCategoryForm=false" focus-on="eventEditCategorytitle-{{$index}}">
+									   ng-model="data.newCategoryName" ng-enter="editCategory(cat)" ng-blur="data.showEditCategoryForm=null" focus-on="eventEditCategorytitle-{{$index}}">
 							</th>
 							<th class="category-controls">
-								<!-- TODO : make these buttons appear when the tbody appears-->
 								<div class="btn-group pull-right">
 										<button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown"><span class="fui-triangle-down"></span></button>
 										<ul class="dropdown-menu dropdown-inverse dropdown-small">
-											<li><a href="javascript:;" id="add-new" ng-click="showAddItemForm($index);">New Item</a></li>
+											<li><a href="javascript:;" ng-click="showAddItemForm($index);">New Item</a></li>
 											<li><a href="javascript:;" ng-click="data.newCategoryName=cat.name;showEditCategoryForm($index);" ng-hide="!cat.name">Edit Category</a></li>
 											<li><a href="javascript:;" ng-click="deleteCategory(cat);" ng-hide="!cat.name">Delete Category</a></li>
 											<li><a href="javascript:;" ng-click="data.showCategoryAddForm=!data.showCategoryAddForm;focus('eventAddCategory');" ng-show="!cat.name">Add Category</a></li>
@@ -72,7 +71,7 @@
 
 			                <td class="status text-right">
 			                	<span ng-hide="item.is_complete">
-	                                <button disabled="" class="btn btn-xs doc-status-{{ item.latest_revision.status }}" ng-show="item.latest_revision">
+	                                <button disabled="" class="btn btn-xs doc-status-{{ item.latest_revision.status }}" ng-show="item.latest_revision&&!item.is_requested">
 	                                   {{ data.matter._meta.revision.status | valueforkey:item.latest_revision.status }}
 	                                </button>
 				                	<button class="btn btn-xs {{ item.date_due | duestatus }}" ng-show="item.date_due" disabled>
