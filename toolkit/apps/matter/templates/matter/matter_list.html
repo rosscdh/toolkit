@@ -70,6 +70,10 @@
                             </a>
                         </div>
                     </article>
+                {% empty %}
+                    <div class="col-md-12 text-center">
+                        <p class="lead text-muted">You currently have no matters.</p>
+                    </div>
                 {% endfor %}
             </div>
         </section>
