@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.http import Http404
 from django.views.generic import DetailView
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth import authenticate, login, logout
@@ -16,8 +17,24 @@ class ReviewRevisionView(DetailView):
     queryset = ReviewDocument.objects.prefetch_related().all()
     template_name = 'review/review.html'
 
-    def dispatch(self, request, *args, **kwargs):
-        return super(ReviewRevisionView, self).dispatch(request=request, *args, **kwargs)
+
+    @property
+    def is_current(self):
+        """
+        Test that this revision is still the latest revision
+        if not then redirect elsewhere
+        """
+        return self.object.document.item.latest_revision == self.object.document
+
+    @property
+    def user_is_matter_participant(self):
+        return self.request.user in self.matter.participants.all()
+
+    def get_template_names(self):
+        if self.is_current is False and self.user_is_matter_participant is False:
+            return ['review/review-nolongercurrent.html']
+        else:
+            return ['review/review.html']
 
     def authenticate(self):
         #

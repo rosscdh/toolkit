@@ -92,7 +92,9 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
     reviewers = serializers.HyperlinkedRelatedField(many=True, view_name='user-detail', lookup_field='username')
     signatories = serializers.HyperlinkedRelatedField(many=True, view_name='user-detail', lookup_field='username')
 
+    # "user" <— the currently logged in user.. "review_url" because the url is relative to the current user
     user_review_url = serializers.SerializerMethodField('get_user_review_url')
+
     revisions = serializers.SerializerMethodField('get_revisions')
 
     uploaded_by = SimpleUserSerializer()
