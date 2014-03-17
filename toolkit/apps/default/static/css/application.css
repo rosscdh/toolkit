@@ -719,6 +719,7 @@ body.gui {
   background-color: #f2f2f2;
 }
 body.gui .main-content {
+  margin-top: 0;
   padding: 0;
 }
 .container-fluid {
