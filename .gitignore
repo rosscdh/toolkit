@@ -1,5 +1,6 @@
 *.diff
-gui/dist/
+gui/dist/*
+gui/bower_components/*
 setup.cfg
 .sonar
 hellosign
