@@ -22,24 +22,29 @@ def ensure_revision_slug(sender, instance, **kwargs):
     Signal to handle creating the revision slug
     """
     #
-    # Dont perform this action if we are manually updating the slug
+    # @BUSINESSRULE Only update the slug if it is a new revision
     #
-    # only do this if we have no specific fields to update
-    # but not if we do have updated_fields and the slug is being set
-    if kwargs['update_fields'] is None or 'slug' not in kwargs['update_fields']:
+    if instance.pk is None:  # causes infinite loop
         #
-        # if the slug somehow gets set as somethign weird like a normal slug
-        # then take it back and make it a vXXX number
+        # Dont perform this action if we are manually updating the slug
         #
-        if instance.slug in [None, ''] or instance.slug[0:1] != 'v':
-            revision_id = int(instance.get_revision_id())
-            final_slug = instance.get_revision_label(version=revision_id)
+        # only do this if we have no specific fields to update
+        # but not if we do have updated_fields and the slug is being set
+        if kwargs['update_fields'] is None or 'slug' not in kwargs['update_fields']:
+            #
+            # if the slug somehow gets set as somethign weird like a normal slug
+            # then take it back and make it a vXXX number
+            #
+            if instance.slug in [None, ''] or instance.slug[0:1] != 'v':
 
-            while _model_slug_exists(model=Revision, queryset=Revision.objects.filter(item=instance.item), slug=final_slug):
-                logger.info('Revision.slug %s exists, trying to create another' % final_slug)
-                final_slug = instance.get_revision_label(version=(revision_id + 1))
+                revision_id = int(instance.get_revision_id())
+                final_slug = instance.get_revision_label(version=revision_id)
 
-            instance.slug = final_slug
+                while _model_slug_exists(model=Revision, queryset=Revision.objects.filter(item=instance.item), slug=final_slug):
+                    logger.info('Revision.slug %s exists, trying to create another' % final_slug)
+                    final_slug = instance.get_revision_label(version=(revision_id + 1))
+
+                instance.slug = final_slug
 
 
 @receiver(post_save, sender=Revision, dispatch_uid='revision.ensure_revision_reviewdocument_object')
