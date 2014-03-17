@@ -91,12 +91,7 @@ class Revision(models.Model):
         Used in the signal to generate the attachment slug
         and revision_label
         """
-        version = 1 # default is 1
-        for c, r in enumerate(self.revisions):
-            version = c + 1
-            if r.pk == self.pk:
-                break
-        return version
+        return self.revisions.count() + 1 # default is 1
 
     def next(self):
         return self.revisions.filter(pk__gt=self.pk).first()
