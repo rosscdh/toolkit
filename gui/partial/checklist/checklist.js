@@ -850,6 +850,50 @@ angular.module('toolkit-gui')
 				}
 			);
 		};
+
+        /**
+		 * Initiates the view of a review as modal window.
+		 *
+		 * @param {Object} revision object to view
+		 * @param {Object} review object to view
+		 *
+		 * @private
+		 * @method				showReview
+		 * @memberof			ChecklistCtrl
+		 */
+		$scope.showReview = function( revision, reviewer ) {
+			var matterSlug = $scope.data.slug;
+			var item = $scope.data.selectedItem;
+
+			var modalInstance = $modal.open({
+				'templateUrl': '/static/ng/partial/view-review/view-review.html',
+				'controller': 'ViewReviewCtrl',
+                'windowClass': 'modal-full',
+				'resolve': {
+					'matter': function () {
+						return $scope.data.matter;
+					},
+					'checklistItem': function () {
+						return $scope.data.selectedItem;
+					},
+					'revision': function () {
+						return revision;
+					},
+                    'reviewer': function () {
+						return reviewer;
+					}
+				}
+			});
+
+			modalInstance.result.then(
+				function ok(result) {
+					//
+				},
+				function cancel() {
+					//
+				}
+			);
+		};
 		/* End revision handling */
 
 
