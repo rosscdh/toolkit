@@ -70,8 +70,7 @@ class HyperlinkedAutoDownloadFileField(serializers.URLField):
 
 class FileFieldAsUrlField(serializers.FileField):
     """
-    Acts like a normal FileField but to_native will return the url if it exists
-    otherwise if url not present just behave normally
+    Acts like a normal FileField but to_native will download the file
     """
     def to_native(self, value):
         if hasattr(value, 'url') is True:

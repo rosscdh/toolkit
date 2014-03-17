@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
+from django.core.urlresolvers import reverse
+
 from toolkit.apps.workspace.models import InviteKey
 from toolkit.apps.review.mailers import ReviewerReminderEmail
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
+
+from .mailers import RequestedDocumentReminderEmail
 
 
 class RequestDocumentUploadMixin(object):
@@ -31,6 +35,49 @@ class RequestDocumentUploadMixin(object):
         self.data['request_document'] = request_document
 
 
+class RequestedDocumentReminderEmailsMixin(object):
+    def send_document_requested_emails(self, from_user, subject=None, **kwargs):
+        #
+        # @BUSINESSRULE this email only gets sent when is_requested is True
+        #
+        if self.is_requested is True:
+            #
+            # the responsible_party is the one to upload the document
+            #
+            user = self.responsible_party
+
+            if user:
+
+                #
+                # if we have one
+                #
+                next_url = reverse('matter:requests', kwargs={'matter_slug': self.matter.slug})
+
+                #
+                # Create the invite key (it may already exist)
+                #
+                invite, is_new = InviteKey.objects.get_or_create(matter=self.matter,
+                                                                 invited_user=user,
+                                                                 next=next_url)
+                invite.inviting_user = from_user
+                invite.save(update_fields=['inviting_user'])
+
+                # send the invite url
+                action_url = ABSOLUTE_BASE_URL(invite.get_absolute_url())
+
+                if subject is not None:
+                    #
+                    # Add the subject if its provided
+                    #
+                    kwargs.update({'subject': subject})
+
+                mailer = RequestedDocumentReminderEmail(recipients=((user.get_full_name(), user.email,),))
+                mailer.process(item=self,
+                               from_name=from_user.get_full_name(),
+                               action_url=action_url, # please understsand the diff between action_url and next_url
+                               **kwargs)
+
+
 class LatestRevisionReminderEmailsMixin(object):
     def send_invite_to_review_emails(self, from_user, to, **kwargs):
         """
@@ -43,7 +90,7 @@ class LatestRevisionReminderEmailsMixin(object):
         #
         return [email for email in self.send_review_emails(from_user=from_user, subject=ReviewerReminderEmail.subject, recipients=to, **kwargs)]
 
-    def send_reminder_emails(self, from_user, **kwargs):
+    def send_review_reminder_emails(self, from_user, **kwargs):
         """
         Send the initial email to invite
         but use the standard subject; which is a [REMINDER]
