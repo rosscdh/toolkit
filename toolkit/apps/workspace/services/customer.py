@@ -21,6 +21,7 @@ class EnsureCustomerService(object):
     def process(self):
         if self.email is None:
             logger.error('Email is None, cant create user')
+            self.is_new, self.user, self.profile = (None, None, None)
         else:
             self.is_new, self.user, self.profile = self.get_user(email=self.email)
         return self.is_new, self.user, self.profile
@@ -46,12 +47,12 @@ class EnsureCustomerService(object):
             profile.save(update_fields=['data'])
 
         # setup the name of the user
+        update_fields = []
         # and set it if they exist but have no name
         if self.full_name is not None:
             logger.info('Full Name was provided')
             # extract the first and last name
             names = self.full_name.split(' ')
-            update_fields = []
 
             if user.first_name in [None, '']:
                 user.first_name = names[0]
@@ -59,11 +60,15 @@ class EnsureCustomerService(object):
                 logger.info('Updating first_name')
 
             if user.last_name in [None, '']:
+                #
+                # Try to account for multi barreled names like Crawford d'Heureuse
+                #
                 user.last_name = ' '.join(names[1:])
                 update_fields.append('last_name')
                 logger.info('Updating last_name')
 
-            # save the user model
-            user.save(update_fields=update_fields)
+            # save the user model if we have updates
+            if update_fields:
+                user.save(update_fields=update_fields)
 
         return is_new, user, profile

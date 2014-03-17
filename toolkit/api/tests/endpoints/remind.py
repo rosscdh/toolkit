@@ -2,6 +2,7 @@
 from django.core import mail
 from django.core.urlresolvers import reverse
 
+from toolkit.apps.workspace.models import InviteKey
 from toolkit.casper.workflow_case import PyQueryMixin
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 
@@ -59,10 +60,14 @@ class RemindReviewersTest(PyQueryMixin, BaseEndpointTest):
 
         pq = self.pq(email.body)
 
+        invite_key = InviteKey.objects.get(matter=self.matter, invited_user=self.reviewer)
         review_document = self.item.latest_revision.reviewdocument_set.filter(reviewers__in=[self.reviewer]).first()
-        expected_action_url = ABSOLUTE_BASE_URL(review_document.get_absolute_url(user=self.reviewer))
+
+        expected_invite_next_url = review_document.get_absolute_url(user=self.reviewer)
+        expected_action_url = ABSOLUTE_BASE_URL(invite_key.get_absolute_url())
 
         self.assertEqual(pq('a')[0].attrib.get('href'), expected_action_url)
+        self.assertEqual(invite_key.next, expected_invite_next_url)
 
 
     def test_lawyer_patch(self):

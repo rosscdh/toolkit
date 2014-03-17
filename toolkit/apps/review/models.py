@@ -29,7 +29,6 @@ class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
     """
     slug = UUIDField(auto=True, db_index=True)
     document = models.ForeignKey('attachment.Revision')
-    participants = models.ManyToManyField('auth.User', related_name='review_owners')
     reviewers = models.ManyToManyField('auth.User')
     data = JSONField(default={})
 
@@ -45,21 +44,10 @@ class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
             return reverse('review:review_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)})
         return None
 
-    # @property
-    # def crocodoc(self):
-
-    #     if self.file_exists_locally is False:
-    #         self.download_if_not_exists()
-
-    #     crocodoc, is_new = CrocodocDocument.objects.get_or_create(object_id=self.document.pk,
-    #                                                               content_object_type=ContentType.objects.get_for_model(self.document),
-    #                                                               object_attachment_fieldname='executed_file')
-    #     return crocodoc
-
     @property
     def file_exists_locally(self):
         """
-        Used to determin if we should download the file locally
+        Used to determine if we should download the file locally
         """
         try:
             return default_storage.exists(self.document.executed_file)
@@ -112,7 +100,6 @@ class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
                           action_url=ABSOLUTE_BASE_URL(path=self.get_absolute_url(user=u)))
 
 
-from .signals import (on_participant_add,
-                      on_participant_add,
+from .signals import (ensure_matter_participants_are_in_reviewdocument_participants,
                       on_reviewer_add,
                       on_reviewer_remove,)

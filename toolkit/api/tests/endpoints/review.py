@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 from django.core.validators import URLValidator
 from django.core.files.storage import FileSystemStorage
 
+from toolkit.apps.workspace.models import InviteKey
 from toolkit.casper.workflow_case import PyQueryMixin
 from toolkit.casper.prettify import mock_http_requests
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
@@ -87,9 +88,14 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
         pq = self.pq(email.body)
 
         review_document = self.item.latest_revision.reviewdocument_set.filter(reviewers__in=[participant]).first()
-        expected_action_url = ABSOLUTE_BASE_URL(review_document.get_absolute_url(user=participant))
+
+        invite_key = InviteKey.objects.get(matter=self.matter, invited_user=participant)
+
+        expected_action_url = ABSOLUTE_BASE_URL(invite_key.get_absolute_url())
+        expected_invite_next_url = review_document.get_absolute_url(user=participant)
 
         self.assertEqual(pq('a')[0].attrib.get('href'), expected_action_url)
+        self.assertEqual(invite_key.next, expected_invite_next_url)
 
     def test_lawyer_patch(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -150,7 +156,6 @@ class RevisionReviewerTest(BaseEndpointTest, LiveServerTestCase):
 
     @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def setUp(self):
-
         super(RevisionReviewerTest, self).setUp()
 
         # setup the items for testing
@@ -201,14 +206,14 @@ class RevisionReviewerTest(BaseEndpointTest, LiveServerTestCase):
         self.assertEqual(reviewer, self.participant)
 
         #
-        # Matter participants are always part of the participants set
+        # Matter participants are always part of the reviewdocument auth users set
         #
-        participants = reviewdocument.participants.all()
-        self.assertEqual(len(participants), 2)
-        self.assertTrue(self.lawyer in participants)
-        self.assertTrue(self.user in participants)
-        # our new participant is not part of the participants on a review
-        self.assertTrue(self.participant not in participants)
+        lawyer_auth = reviewdocument.get_user_auth(user=self.lawyer)
+        user_auth = reviewdocument.get_user_auth(user=self.user)
+        # now test them
+        self.assertTrue(lawyer_auth is not None)
+        self.assertTrue(user_auth is not None)
+        self.assertEqual(len(reviewdocument.auth), 3)
         #
         # Test the auth for the new reviewer
         #
@@ -272,7 +277,7 @@ class RevisionReviewerTest(BaseEndpointTest, LiveServerTestCase):
 
         self.assertEqual(len(self.revision.reviewers.all()), 0)
         self.assertEqual(len(self.revision.reviewdocument_set.all()), 1) # should be 1 because of the template one created for the participants
-        self.assertEqual(len(self.revision.reviewdocument_set.all().first().participants.all()), 2)
+        #self.assertEqual(len(self.revision.reviewdocument_set.all().first().participants.all()), 2)
         self.assertEqual(len(self.revision.reviewdocument_set.all().first().reviewers.all()), 0)
 
     def test_customer_get(self):
