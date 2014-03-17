@@ -31,8 +31,8 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
                   'name', 'description', 'matter',
                   'parent', 'children', 'closing_group', 'category',
                   'latest_revision',
-                  'is_final', 'is_complete', 'date_due',
-                  'date_created', 'date_modified',)
+                  'is_final', 'is_complete', 'is_requested',
+                  'date_due', 'date_created', 'date_modified',)
 
         exclude = ('data',)
 
