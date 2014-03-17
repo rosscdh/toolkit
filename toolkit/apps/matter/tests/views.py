@@ -79,9 +79,14 @@ class MatterCreateViewTest(BaseScenarios, TestCase):
         }
         response = self.client.post(url, post_data, follow=True)
 
+        #
+        # assume the post worked
+        #
+        matter = Workspace.objects.get(slug='incorporation-financing')
+
         actual_response = {
             'redirect': True,
-            'url': reverse('matter:detail', kwargs={'matter_slug': 'incorporation-financing'})
+            'url': matter.get_absolute_url()
         }
 
         self.assertEqual(response.status_code, 200)

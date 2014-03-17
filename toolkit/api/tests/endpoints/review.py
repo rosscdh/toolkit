@@ -78,6 +78,7 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
         json_data = json.loads(resp.content)
         self.assertEqual(json_data['count'], 1)
         self.assertEqual(json_data['results'][0]['name'], participant.get_full_name())
+        self.assertTrue('user_review_url' in json_data['results'][0].keys())
 
         outbox = mail.outbox
         self.assertEqual(len(outbox), 1)
