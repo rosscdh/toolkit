@@ -37,7 +37,7 @@ class BaseDataProvider(BaseScenarios):
         #
         self.base_review_document = self.revision.reviewdocument_set.all().first()
 
-        self.review_document = self.revision.reviewdocument_set.all().last()
+        self.review_document = self.revision.reviewdocument_set.all().first()
 
         self.BASE_EXPECTED_AUTH_USERS = self.review_document.auth
 
@@ -55,6 +55,7 @@ Model Tests
 """
 class ReviewDocumentModelTest(BaseDataProvider, TestCase):
     def test_get_absolute_url(self):
+        import pdb;pdb.set_trace()
         self.assertEqual(self.review_document.get_absolute_url(user=self.reviewer), '/review/{uuid}/{auth_key}/'.format(uuid=self.exected_uuid,
                                                                                                                         auth_key=urllib.quote(self.expected_auth_key)))
 
