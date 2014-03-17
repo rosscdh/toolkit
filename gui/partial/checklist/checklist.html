@@ -72,13 +72,13 @@
 
 			                <td class="status text-right">
 			                	<span ng-hide="item.is_complete">
-	                                <button disabled="" class="btn btn-xs doc-status-{{ item.latest_revision.status }}" ng-show="item.latest_revision.status>0">
+	                                <button disabled="" class="btn btn-xs doc-status-{{ item.latest_revision.status }}" ng-show="item.latest_revision">
 	                                   {{ data.matter._meta.revision.status | valueforkey:item.latest_revision.status }}
 	                                </button>
 				                	<button class="btn btn-xs {{ item.date_due | duestatus }}" ng-show="item.date_due" disabled>
 	                                    {{ item.date_due | date:'dd MMM' }}
 	                                </button>
-	                                <button disabled="" class="btn btn-warning btn-xs" ng-show="item.status==1">
+	                                <button disabled="" class="btn btn-warning btn-xs" ng-show="item.is_requested">
 	                                    <span class="fui-time"></span> Awaiting Files <span ng-bind="getParticipantByUrl(item.responsible_party) | initials:true"></span>
 	                                </button>
                                 </span>
