@@ -24,7 +24,7 @@ def ensure_revision_slug(sender, instance, **kwargs):
     #
     # @BUSINESSRULE Only update the slug if it is a new revision
     #
-    if instance.pk is None:  # causes infinite loop
+    if instance.pk is None or instance.slug[0:1] != 'v':  # causes infinite loop if we already have an pk set
         #
         # Dont perform this action if we are manually updating the slug
         #

@@ -4,6 +4,8 @@ from toolkit.apps.workspace.services import EnsureCustomerService
 from ..serializers import (MatterSerializer, SimpleUserSerializer)
 from .item import MatterItemView
 
+import datetime
+
 
 class ItemRequestRevisionView(MatterItemView):
     """
@@ -14,7 +16,6 @@ class ItemRequestRevisionView(MatterItemView):
     """
     http_method_names = ('get', 'patch',)
 
-    requested_by = None
     note = None  # provided by requesting party and added to item.data json obj
 
 
@@ -28,7 +29,6 @@ class ItemRequestRevisionView(MatterItemView):
         # Save the note for later
         #
         self.note = data.pop('note', None) if data is not None else None
-        self.requested_by = self.request.user
 
         return super(ItemRequestRevisionView, self).get_serializer(instance=instance,
                                                                    data=data,
@@ -46,8 +46,8 @@ class ItemRequestRevisionView(MatterItemView):
 
         return user
 
-    def pre_save(self, obj):
-        obj.status = obj.ITEM_STATUS.awaiting_document
+    def pre_save(self, obj, **kwargs):
+        obj.is_requested = True
         #
         # Cant use the generic note and requested_by setters due to atomic locks
         # raises TransactionManagementError
@@ -55,10 +55,18 @@ class ItemRequestRevisionView(MatterItemView):
         obj.data.update({
             'request_document': {
                 'note': self.note,
-                'requested_by': SimpleUserSerializer(self.requested_by, context={'request': self.request}).data,
+                'requested_by': SimpleUserSerializer(self.request.user, context={'request': self.request}).data,
+                'date_requested': datetime.datetime.utcnow()
             }
         })
 
         obj.responsible_party = self.responsible_party(obj=obj)
 
-        return super(ItemRequestRevisionView, self).pre_save(obj=obj)
+        return super(ItemRequestRevisionView, self).pre_save(obj=obj, **kwargs)
+
+    def post_save(self, obj, **kwargs):
+        """
+        Send the email to the items responsible_party
+        """
+        self.object.send_document_requested_emails(from_user=self.request.user)
+        super(ItemRequestRevisionView, self).post_save(obj=obj, **kwargs)
