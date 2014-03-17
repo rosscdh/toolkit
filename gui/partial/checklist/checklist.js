@@ -727,6 +727,7 @@ angular.module('toolkit-gui')
 			var modalInstance = $modal.open({
 				'templateUrl': '/static/ng/partial/view-document/view-document.html',
 				'controller': 'ViewDocumentCtrl',
+                'windowClass': 'modal-full',
 				'resolve': {
 					'matter': function () {
 						return $scope.data.matter;
