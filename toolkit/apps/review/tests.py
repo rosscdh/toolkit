@@ -55,7 +55,6 @@ Model Tests
 """
 class ReviewDocumentModelTest(BaseDataProvider, TestCase):
     def test_get_absolute_url(self):
-        import pdb;pdb.set_trace()
         self.assertEqual(self.review_document.get_absolute_url(user=self.reviewer), '/review/{uuid}/{auth_key}/'.format(uuid=self.exected_uuid,
                                                                                                                         auth_key=urllib.quote(self.expected_auth_key)))
 

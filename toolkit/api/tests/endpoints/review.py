@@ -21,7 +21,7 @@ import mock
 import json
 import urllib
 
-EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'user_review_url', u'url', u'initials', u'user_class', u'name']
+EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review_url', u'url', u'initials', u'user_class', u'name']
 
 class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
     """
