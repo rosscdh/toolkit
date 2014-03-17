@@ -66,6 +66,11 @@ class ItemRevisionTest(BaseEndpointTest):
                               description='A test file',
                               item=self.item,
                               uploaded_by=self.lawyer)
+        #
+        # Add a reviewer so we can test the specific user_review_url
+        #
+        reviewer = mommy.make('auth.User')
+        revision.reviewers.add(reviewer)
 
         resp = self.client.get(self.endpoint)
         resp_json = json.loads(resp.content)
@@ -76,7 +81,7 @@ class ItemRevisionTest(BaseEndpointTest):
         self.assertEqual(resp_json.get('description'), 'A test file')
         # we have a user_review_url
         self.assertTrue(resp_json.get('user_review_url') is not None)
-        # it is the correct url for this specific user
+        # it is the correct url for this specific user to view object
         self.assertEqual(resp_json.get('user_review_url'), document_review.get_absolute_url(user=self.lawyer))
         # test date is present
         self.assertTrue(resp_json.get('date_created') is not None)
@@ -87,6 +92,13 @@ class ItemRevisionTest(BaseEndpointTest):
         expected_keys = SimpleUserSerializer(self.lawyer).data.keys()
         expected_keys.sort()
         self.assertEqual(provided_keys, expected_keys)
+
+        # Test the reviewers and the relative user_reivew_url (should be the current logged in users)
+        self.assertEqual(len(resp_json.get('reviewers')), 1)
+        reviewers = resp_json.get('reviewers')
+        self.assertTrue(reviewers[0].get('user_review_url') is not None)
+        # it is the correct url for this specific user to view object
+        self.assertEqual(reviewers[0].get('user_review_url'), revision.reviewdocument_set.all().first().get_absolute_url(user=self.lawyer))
 
 
     def test_revision_post_with_url(self):

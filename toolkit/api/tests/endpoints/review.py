@@ -21,6 +21,7 @@ import mock
 import json
 import urllib
 
+EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'user_review_url', u'url', u'auth_url', u'initials', u'user_class', u'name']
 
 class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
     """
@@ -78,7 +79,17 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
         json_data = json.loads(resp.content)
         self.assertEqual(json_data['count'], 1)
         self.assertEqual(json_data['results'][0]['name'], participant.get_full_name())
+        # user review url must be in it
         self.assertTrue('user_review_url' in json_data['results'][0].keys())
+
+        #
+        # we expect the currently logged in users url to be returned;
+        # as the view is relative to the user
+        #
+        expected_url = self.item.latest_revision.reviewdocument_set.all().first().get_absolute_url(user=self.lawyer)
+
+        self.assertEqual(json_data['results'][0]['user_review_url'], expected_url)
+
 
         outbox = mail.outbox
         self.assertEqual(len(outbox), 1)
@@ -192,7 +203,7 @@ class RevisionReviewerTest(BaseEndpointTest, LiveServerTestCase):
         self.assertEqual(resp.status_code, 200)
         json_data = json.loads(resp.content)
 
-        self.assertEqual(json_data.keys(), [u'url', u'auth_url', u'name', u'user_class', u'initials'])
+        self.assertEqual(json_data.keys(), EXPECTED_USER_SERIALIZER_FIELD_KEYS)
 
         self.assertEqual(len(self.revision.reviewers.all()), 1)
         self.assertEqual(len(self.revision.reviewdocument_set.all()), 2)
@@ -274,7 +285,7 @@ class RevisionReviewerTest(BaseEndpointTest, LiveServerTestCase):
 
         json_data = json.loads(resp.content)
 
-        self.assertEqual(json_data.keys(), [u'url', u'name', u'user_class', u'initials'])
+        self.assertEqual(json_data.keys(), EXPECTED_USER_SERIALIZER_FIELD_KEYS)
 
         self.assertEqual(len(self.revision.reviewers.all()), 0)
         self.assertEqual(len(self.revision.reviewdocument_set.all()), 1) # should be 1 because of the template one created for the participants
@@ -288,7 +299,7 @@ class RevisionReviewerTest(BaseEndpointTest, LiveServerTestCase):
 
         json_data = json.loads(resp.content)
 
-        self.assertEqual(json_data.keys(), [u'url', u'auth_url', u'name', u'user_class', u'initials'])
+        self.assertEqual(json_data.keys(), EXPECTED_USER_SERIALIZER_FIELD_KEYS)
 
     def test_customer_post(self):
         self.client.login(username=self.user.username, password=self.password)
