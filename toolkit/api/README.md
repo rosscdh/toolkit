@@ -127,6 +127,8 @@ POST
     standard item endpoint
     Allow the [lawyer,customer] user to list, and create an item
     object that requests that a user provide a document
+/matters/:matter_slug/items/:item_slug/request_document/remind (POST)
+    Send reminder emails to the responsible party
 
 /matters/:matter_slug/items/:item_slug/ (GET,PATCH,DELETE)
     Allow the [lawyer,customer] user to list, and update an existing item
