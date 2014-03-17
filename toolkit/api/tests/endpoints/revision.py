@@ -260,7 +260,6 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
             resp = self.client.post(self.endpoint, data, content_type=MULTIPART_CONTENT)
         resp_json = json.loads(resp.content)
 
-
         self.assertEqual(resp.status_code, 201)  # created
         self.assertEqual(resp_json.get('slug'), 'v1')
         self.assertEqual(resp_json.get('name'), 'test-image.png')
