@@ -62,7 +62,10 @@ class Workspace(IsDeletedMixin, ClosingGroupsMixin, CategoriesMixin, models.Mode
             return None
 
     def get_absolute_url(self):
-        return reverse('matter:detail', kwargs={'matter_slug': self.slug})
+        """
+        @BUSINESSRULE append checklist to the url
+        """
+        return '%s#/checklist' % reverse('matter:detail', kwargs={'matter_slug': self.slug})
 
     def available_tools(self):
         return Tool.objects.exclude(pk__in=[t.pk for t in self.tools.all()])
@@ -89,9 +92,11 @@ class InviteKey(models.Model):
     """
     key = UUIDField(auto=True, db_index=True)
     invited_user = models.ForeignKey('auth.User', related_name='invitations')
-    inviting_user = models.ForeignKey('auth.User', related_name='invitiations_made')
-    tool = models.ForeignKey('workspace.Tool', blank=True)
-    tool_object_id = models.IntegerField(blank=True)
+    # is null and blank to allow us to do 1 invitekey per user
+    inviting_user = models.ForeignKey('auth.User', blank=True, null=True, related_name='invitiations_made')
+    matter = models.ForeignKey('workspace.Workspace', blank=True, null=True)
+    tool = models.ForeignKey('workspace.Tool', blank=True, null=True)
+    tool_object_id = models.IntegerField(blank=True, null=True)
     next = models.CharField(max_length=255, blank=True)  # user will be redirected here on login
     data = JSONField(default={})  # for any extra data that needs to be stored
     has_been_used = models.BooleanField(default=False)

@@ -68,7 +68,7 @@ def on_reviewer_add(sender, instance, action, model, pk_set, **kwargs):
     """
     if action in ['post_add']:
         user_pk = next(iter(pk_set))  # get the first item in the set should only ever be 1 anyway
-        user = model.objects.get(pk=user_pk)
+        user = model.objects.get(pk=user_pk)  # get the user being invited
 
         #
         # Get the base review documnet; created to alow the participants to access

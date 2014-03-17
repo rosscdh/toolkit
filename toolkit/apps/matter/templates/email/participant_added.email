@@ -1,21 +1,17 @@
 {% extends 'email/base.email' %}
 
-{% block subject_line %}You have been invited to the {{ matter.name }} matter on LawPal{% endblock %}
+{% block subject_line %}You have been added to {{ matter.name }} on LawPal{% endblock %}
 
 {% block html_content %}
-    <p>{{ user.get_full_name }} invited you to a matter:</p>
-    {% if matter.description %}
-        <h2 style="margin-bottom: 0;"><strong>{{ matter.name }}</strong></h2>
-        <p style="margin-top: 5px;">Description of the matter</p>
-    {% else %}
-        <h2><strong>{{ matter.name }}</strong></h2>
-    {% endif %}
+    <h2><strong>{{ matter.name }}</strong></h2>
+{% if matter.description %}
+    <h2 style="margin-bottom: 0;"><strong>{{ matter.name }}</strong></h2>
+    <p style="margin-top: 5px;">Description of the matter</p>
+{% endif %}
 
-    {% if custom_message %}
-        <p>{{ custom_message }}</p>
-    {% else %}
-        <p>What's LawPal? It's the easiest way for clients and lawyers to interact. <a href="https://lawpal.com/" target="_blank">Learn more »</a></p>
-    {% endif %}
+    <p><b>Please go to:</b> <a href="{{ action_url }}">{{ action_url }}</a></p>
+
+{% if custom_message %}<p>{{ custom_message }}</p>{% endif %}
 
     <h2><a href="#" target="_blank">Accept this invitation to get started</a></h2>
 

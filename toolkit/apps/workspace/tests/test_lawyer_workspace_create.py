@@ -14,9 +14,6 @@ class LawyerCreateWorkspaceTest(BaseScenarios, PyQueryMixin, TestCase):
         super(LawyerCreateWorkspaceTest, self).setUp()
         self.basic_workspace()
 
-        # self.client.login(username=self.lawyer.username, password=self.password)
-
-
     def test_lawyer_create_workspace(self):
         """
         The lawyer should be able to create a workspace
@@ -40,17 +37,16 @@ class LawyerCreateWorkspaceTest(BaseScenarios, PyQueryMixin, TestCase):
             'name': 'Test Workspace'
         }, follow=True)
 
-        redirect = reverse('matter:detail', kwargs={'matter_slug': 'test-workspace'})
+        workspace = Workspace.objects.get(slug='test-workspace')
+        expected_redirect_url = workspace.get_absolute_url()
 
-        actual_response = {
+        expected_response = {
             'redirect': True,
-            'url': redirect
+            'url': expected_redirect_url
         }
 
-        self.assertEqual(resp.content, json.dumps(actual_response))
+        self.assertEqual(resp.content, json.dumps(expected_response))
 
         # was it created? with the appropriate slug?
-        workspace = Workspace.objects.get(slug='test-workspace')
-
         # the lawyer that created the worksapce is set as the lawyer
         self.assertEqual(workspace.lawyer, self.lawyer)

@@ -41,6 +41,7 @@ class BaseReviewerSignatoryMixin(generics.GenericAPIView):
         self.matter = get_object_or_404(Workspace, slug=kwargs.get('matter_slug'))
         self.item = get_object_or_404(self.matter.item_set.all(), slug=kwargs.get('item_slug'))
         self.revision = self.item.latest_revision
+
         super(BaseReviewerSignatoryMixin, self).initial(request, *args, **kwargs)
 
     def get_queryset_provider(self):
@@ -90,6 +91,7 @@ class ItemRevisionReviewersView(generics.ListAPIView,
         """
         username = request.DATA.get('username')
         email = request.DATA.get('email')
+        note = request.DATA.get('note')
 
         if username is None and email is None:
             raise exceptions.APIException('You must provide a username or email')
@@ -111,12 +113,14 @@ class ItemRevisionReviewersView(generics.ListAPIView,
                 user_service = EnsureCustomerService(email=email)
                 is_new, user, profile = user_service.process()
 
-        note = request.DATA.get('note')
-
         if user not in self.get_queryset():
             # add to the join if not there already
             self.get_queryset_provider().add(user)
-            self.item.send_invite_emails(from_user=request.user, to=[user], note=note)
+
+            #
+            # Send invite to review Email
+            #
+            self.item.send_invite_to_review_emails(from_user=request.user, to=[user], note=note)
 
             send_activity_log.send(user, **{
                 'actor': request.user,
