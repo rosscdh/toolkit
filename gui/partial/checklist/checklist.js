@@ -650,7 +650,7 @@ angular.module('toolkit-gui')
 
 			modalInstance.result.then(
 				function ok(result) {
-					item.status = result.status;
+					item.is_requested = result.is_requested;
 					item.responsible_party = result.responsible_party;
 				},
 				function cancel() {
@@ -674,6 +674,7 @@ angular.module('toolkit-gui')
 
 			matterItemService.remindRevisionRequest(matterSlug, item.slug).then(
 					function success(){
+                        toaster.pop('success', "Success!", "The user has been successfully informed.");
 					},
 					function error(err){
 						if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to remind the participant.") {
@@ -698,11 +699,12 @@ angular.module('toolkit-gui')
 
 			matterItemService.deleteRevisionRequest(matterSlug, item.slug).then(
 					function success(response){
-						item.status = response.status;
+						item.is_requested = response.is_requested;
+                        item.responsible_party = response.responsible_party;
 					},
 					function error(err){
-						if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to remind the participant.") {
-							toaster.pop('error', "Error!", "Unable to remind the participant.");
+						if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to delete the revision request.") {
+							toaster.pop('error', "Error!", "Unable to delete the revision request.");
 						}
 					}
 			);
