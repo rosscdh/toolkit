@@ -47,6 +47,16 @@ def ensure_revision_slug(sender, instance, **kwargs):
                 instance.slug = final_slug
 
 
+@receiver(post_save, sender=Revision, dispatch_uid='revision.set_item_is_requested_false')
+def set_item_is_requested_false(sender, instance, **kwargs):
+    """
+    @BUSINESSRULE When uploading a revision to an item
+    the event needs to set the item.is_requested = False
+    """
+    instance.item.is_requested = False
+    instance.item.save(update_fields=['is_requested'])
+
+
 @receiver(post_save, sender=Revision, dispatch_uid='revision.ensure_revision_reviewdocument_object')
 def ensure_revision_reviewdocument_object(sender, instance, **kwargs):
     """
