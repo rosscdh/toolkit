@@ -101,7 +101,7 @@
     <!-- End option toolbar -->
 
     <div class="waiting-revision text-center" ng-show="data.selectedItem.is_requested">
-        <span class="fui-time"></span> Waiting for a revision from <span ng-bind="getParticipantByUrl(data.selectedItem.responsible_party) | fullname"></span>.
+        <span class="fui-time"></span> Waiting for a revision from <span ng-bind="data.selectedItem.responsible_party | fullname"></span>.
         <a href="javascript:;" ng-click="remindRevisionRequest(data.selectedItem)">Remind</a> <a class="close" href="javascript:;" ng-click="deleteRevisionRequest(data.selectedItem)">x</a>
     </div>
 
