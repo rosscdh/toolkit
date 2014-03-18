@@ -192,14 +192,31 @@
         <li class="header previous-toggle" style="display: list-item;" ng-show="data.showPreviousRevisions">Previous (Only visible to you)</li>
         <li class="previous-toggle" style="display: list-item;" ng-show="data.showPreviousRevisions" ng-repeat="rev in data.selectedItem.previousRevisions">
             <div class="doc-wrap">
-
                 <h4>
                     <a href="javascript:;" class="" ng-click="showRevisionDocument(rev)">
                         <span class="fui-document status-{{ rev.status }}"></span> {{ rev.name }}
                     </a>
                 </h4>
                 <div class="desc">{{ rev.description }}</div>
+                <div class="tools status-{{ rev.status }}">
+                    <a href="javascript:;" class="btn btn-link btn-xs" ng-click="showRevisionDocument(rev)">View</a>
+                    <a href="{{ rev.executed_file }}" class="btn btn-link btn-xs" target="_blank">Download</a>
+                    <span class="pull-right sub" ng-bind="data.matter._meta.revision.status | valueforkey:rev.status"></span>
+                </div>
             </div>
+            <div class="review expired" ng-show="rev.reviewers.length>0">
+                Review expired
+                <div class="review-members">
+                    <ul class="list-unstyled">
+                        <li ng-repeat="reviewer in rev.reviewers">
+                            <a href="javascript:;" ng-click="showReview(rev, reviewer)"><span class="fui-time"></span></a>
+                            {{ reviewer.name }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="sub">{{ rev.slug }} &middot; {{ rev.uploaded_by.name }}, {{ rev.date_created | timeago }}</div>
+
         </li>
     </ul>
 
@@ -215,5 +232,17 @@
         <span class="fui-time"></span>
         <h4>Waiting for a revision</h4>
         You have requested a revision from another user. Once they have supplied this revision you will be notified.
+    </div>
+</div>
+
+<div ng-show="!data.selectedItem&&data.matter.items.length>0">
+     <div class="item-help">
+        <h4>Please select an item from the checklist</h4>
+    </div>
+</div>
+
+<div ng-show="!data.selectedItem&&data.matter.items.length==0">
+     <div class="item-help">
+        <h4>Please create your first checklist item</h4>
     </div>
 </div>
