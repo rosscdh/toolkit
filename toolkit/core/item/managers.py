@@ -1,10 +1,15 @@
 # -*- coding: UTF-8 -*-
 from toolkit.core.mixins import IsDeletedManager
 
+from .query import ItemQuerySet
+
 
 class ItemManager(IsDeletedManager):
-    """
-    Provide filters for the various item status
-    """
-    def awaiting_documents(self, **kwargs):
-        return super(ItemManager, self).get_query_set().filter(is_requested=True, **kwargs)
+    def mine(self, user, **kwargs):
+        return self.get_queryset().mine(user, **kwargs)
+
+    def requested(self, **kwargs):
+        return self.get_queryset().requested(**kwargs)
+
+    def get_queryset(self):
+        return ItemQuerySet(self.model, using=self._db).filter(is_deleted=False)
