@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 from toolkit.apps.workspace.services import EnsureCustomerService
 
-from ..serializers import (MatterSerializer, SimpleUserSerializer)
+from ..serializers import (SimpleUserSerializer)
 from .item import MatterItemView
 
 import datetime
@@ -14,16 +14,14 @@ class ItemRequestRevisionView(MatterItemView):
     must also have a status of:
     (1, 'awaiting_document', 'Awaiting Document'),
     """
-    #http_method_names = ('get', 'patch',)
-    allowed_methods = ('get', 'patch',)
+    http_method_names = ('get', 'patch',)
 
     note = None  # provided by requesting party and added to item.data json obj
-
 
     def get_serializer(self, instance, data=None,
                        files=None, many=False, partial=False):
         """
-        Remove the note from the data to be validated but use it again in 
+        Remove the note from the data to be validated but use it again in
         pre_save add it to the data
         """
         #
