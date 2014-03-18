@@ -44,3 +44,18 @@ DEBUG_TOOLBAR_CONFIG = {
 CROCDOC_API_KEY = 'pRzHhZS4jaGes193db28cwyu'
 
 AUTHY_API_KEY = 'e19afad3c1c207a03ef6a1dcb2adb0c3'
+
+
+#
+# Abridge Integration
+#
+
+ABRIDGE_ENABLED = True  # disabled by default
+
+ABRIDGE_PROJECT = 'lawpal-digest'
+
+ABRIDGE_API_URL = 'http://localhost:8001/'
+ABRIDGE_ACCESS_KEY_ID = ''
+ABRIDGE_SECRET_ACCESS_KEY = ''
+ABRIDGE_USERNAME = ''
+ABRIDGE_PASSWORD = ''

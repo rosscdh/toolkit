@@ -13,7 +13,6 @@ from rest_framework import exceptions
 from rest_framework.response import Response
 from rest_framework import status as http_status
 
-from toolkit.core.signals import send_activity_log
 from toolkit.core.attachment.models import Revision
 
 from toolkit.apps.review.models import ReviewDocument
@@ -24,6 +23,8 @@ from toolkit.apps.workspace.services import EnsureCustomerService
 from ..serializers import SimpleUserWithReviewUrlSerializer, SimpleUserSerializer
 
 import logging
+from toolkit.core.services import MatterActivityEventService
+
 logger = logging.getLogger('django.request')
 
 
@@ -122,12 +123,9 @@ class ItemRevisionReviewersView(generics.ListAPIView,
             #
             self.item.send_invite_to_review_emails(from_user=request.user, to=[user], note=note)
 
-            send_activity_log.send(user, **{
-                'actor': request.user,
-                'verb': u'added %s as reviewer' % user,
-                'action_object': self.item,
-                'target': self.matter
-            })
+            MatterActivityEventService(self.matter).added_user_as_reviewer(item=self.item,
+                                                                           adding_user=request.user,
+                                                                           added_user=user)
 
         # add the user to the purpose of this endpoint object review||signature
         #self.process_event_purpose_object(user=user)
@@ -218,12 +216,9 @@ class ItemRevisionReviewerView(generics.RetrieveAPIView,
             #
             self.revision.reviewers.remove(user)
 
-            send_activity_log.send(user, **{
-                'actor': request.user,
-                'verb': u'removed %s as reviewer' % user,
-                'action_object': self.item,
-                'target': self.matter
-            })
+            MatterActivityEventService(self.matter).removed_user_as_reviewer(item=self.item,
+                                                                             removing_user=request.user,
+                                                                             removed_user=user)
 
         else:
             status = http_status.HTTP_404_NOT_FOUND
