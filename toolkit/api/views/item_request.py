@@ -14,7 +14,8 @@ class ItemRequestRevisionView(MatterItemView):
     must also have a status of:
     (1, 'awaiting_document', 'Awaiting Document'),
     """
-    http_method_names = ('get', 'patch',)
+    #http_method_names = ('get', 'patch',)
+    allowed_methods = ('get', 'patch',)
 
     note = None  # provided by requesting party and added to item.data json obj
 
