@@ -61,14 +61,14 @@
             </ul>
         </div>
 
-        <div class="btn-group">
+        <div class="btn-group" ng-show="data.usdata.current.user_class!=='lawyer'">
             <a href="javascript:;" class="btn btn-sm btn-silver btn-embossed dropdown-toggle" data-toggle="dropdown">Options</a>
             <ul class="dropdown-menu dropdown-small dropdown-inverse" >
                 <li><a href="javascript:;" ng-click="data.showDateDuePicker=!data.showDateDuePicker;saveSelectedItem();data.showItemDetailsOptions=!data.showItemDetailsOptions;">
                     <span class="fui-calendar"></span> Set due date</a>
                 </li>
                 <!--<li><a href="#" data-toggle="modal" data-target="#attachWorkflowModal"><span class="fui-calendar"></span> Add workflow</a></li>-->
-                <li ng-show="data.usdata.current.user_class=='lawyer'"><a href="javascript:;" class="text-danger" ng-click="deleteItem();data.showItemDetailsOptions=!data.showItemDetailsOptions">
+                <li><a href="javascript:;" class="text-danger" ng-click="deleteItem();data.showItemDetailsOptions=!data.showItemDetailsOptions">
                     <span class="fui-trash text-danger"></span> Delete</a>
                 </li>
             </ul>
