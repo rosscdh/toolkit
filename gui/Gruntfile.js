@@ -221,18 +221,18 @@ module.exports = function (grunt) {
     concat: {
       main: {
         src: ['<%= dom_munger.data.appjs %>','<%= ngtemplates.main.dest %>'],
-        dest: '<%= PRODUCTION_PATH %>' + '/app.full.min.js'
+        dest: 'temp/app.full.js'
       }
     },
     ngmin: {
       main: {
         src:'temp/app.full.js',
-        dest: 'temp/app.full.js'
+        dest: 'temp/app.full.ngmin.js'
       }
     },
     uglify: {
       main: {
-        src: 'temp/app.full.js',
+        src: 'temp/app.full.ngmin.js',
         dest:'<%= PRODUCTION_PATH %>' + 'app.full.min.js'
       }
     },
@@ -299,7 +299,7 @@ module.exports = function (grunt) {
     grunt.option("API_SERVER", 'http://localhost:8001/');
 
     //djangoProd
-    grunt.task.run('preprocess:djangoProd','jshint','clean:before','less','dom_munger:readcss','dom_munger:readscripts','ngtemplates','replace:template_paths','cssmin','concat'/*,'ngmin','uglify'*/,'copy','dom_munger:removecss','dom_munger:addcss','dom_munger:removescripts','dom_munger:addscript');
+    grunt.task.run('preprocess:djangoProd','jshint','clean:before','less','dom_munger:readcss','dom_munger:readscripts','ngtemplates','replace:template_paths','cssmin','concat','ngmin','uglify','copy','dom_munger:removecss','dom_munger:addcss','dom_munger:removescripts','dom_munger:addscript');
 
     grunt.task.run('htmlmin'/*,'imagemin'*//*,'clean:after'*/);
   });
