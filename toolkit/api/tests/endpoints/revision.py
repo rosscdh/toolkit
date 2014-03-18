@@ -100,7 +100,6 @@ class ItemRevisionTest(BaseEndpointTest):
         # it is the correct url for this specific user to view object
         self.assertEqual(reviewers[0].get('user_review_url'), revision.reviewdocument_set.all().first().get_absolute_url(user=self.lawyer))
 
-
     def test_revision_post_with_url(self):
         self.client.login(username=self.lawyer.username, password=self.password)
 
