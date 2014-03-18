@@ -24,13 +24,13 @@ import mock
 import json
 import urllib
 
-EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review_url', u'url', u'initials', u'user_class', u'name']
-
 class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
     """
     /matters/:matter_slug/items/:item_slug/revision/reviewers/ (GET,POST)
         [lawyer,customer] to list, create reviewers
     """
+    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review_url', u'url', u'initials', u'user_class', u'name']
+
     @property
     def endpoint(self):
         return reverse('item_revision_reviewers', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug})
@@ -206,7 +206,7 @@ class RevisionReviewerTest(BaseEndpointTest, LiveServerTestCase):
         self.assertEqual(resp.status_code, 200)
         json_data = json.loads(resp.content)
 
-        self.assertTrue(all(key in EXPECTED_USER_SERIALIZER_FIELD_KEYS for key in json_data.keys()))
+        self.assertTrue(all(key in self.EXPECTED_USER_SERIALIZER_FIELD_KEYS for key in json_data.keys()))
 
         self.assertEqual(len(self.revision.reviewers.all()), 1)
         self.assertEqual(len(self.revision.reviewdocument_set.all()), 2)
@@ -288,7 +288,7 @@ class RevisionReviewerTest(BaseEndpointTest, LiveServerTestCase):
 
         json_data = json.loads(resp.content)
         keys = json_data.keys()
-        self.assertTrue(all(key in EXPECTED_USER_SERIALIZER_FIELD_KEYS for key in json_data.keys()))
+        self.assertTrue(all(key in self.EXPECTED_USER_SERIALIZER_FIELD_KEYS for key in json_data.keys()))
 
         self.assertEqual(len(self.revision.reviewers.all()), 0)
         self.assertEqual(len(self.revision.reviewdocument_set.all()), 1) # should be 1 because of the template one created for the participants
@@ -302,7 +302,7 @@ class RevisionReviewerTest(BaseEndpointTest, LiveServerTestCase):
 
         json_data = json.loads(resp.content)
 
-        self.assertTrue(all(key in EXPECTED_USER_SERIALIZER_FIELD_KEYS for key in json_data.keys()))
+        self.assertTrue(all(key in self.EXPECTED_USER_SERIALIZER_FIELD_KEYS for key in json_data.keys()))
 
     def test_customer_post(self):
         self.client.login(username=self.user.username, password=self.password)
@@ -337,6 +337,14 @@ class RevisionReviewerTest(BaseEndpointTest, LiveServerTestCase):
 
 
 class RevisionRequestedDocumentTest(BaseEndpointTest):
+    """
+    When you request a document from someone
+    item.is_requested = True
+    and
+    item.responsible_party must be a User
+    """
+    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'status', u'category', u'is_complete', u'closing_group', u'description', u'parent', u'date_modified', u'url', u'is_requested', u'children', u'matter', u'date_due', u'responsible_party', u'is_final', u'date_created', u'latest_revision', u'slug', u'name']
+
     @property
     def endpoint(self):
         return reverse('matter_item_request_doc', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug})
@@ -362,7 +370,7 @@ class RevisionRequestedDocumentTest(BaseEndpointTest):
 
         self.assertEqual(resp.status_code, 200)
         json_data = json.loads(resp.content)
-        self.assertTrue(all(key in [u'status', u'category', u'is_complete', u'closing_group', u'description', u'parent', u'date_modified', u'url', u'is_requested', u'children', u'matter', u'date_due', u'responsible_party', u'is_final', u'date_created', u'latest_revision', u'slug', u'name'] for key in json_data.keys()))
+        self.assertTrue(all(key in self.EXPECTED_USER_SERIALIZER_FIELD_KEYS for key in json_data.keys()))
 
     def test_lawyer_post(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -407,7 +415,7 @@ class RevisionRequestedDocumentTest(BaseEndpointTest):
         resp = self.client.get(self.endpoint)
         self.assertEqual(resp.status_code, 200)  # ok
         json_data = json.loads(resp.content)
-        self.assertTrue(all(key in [u'status', u'category', u'is_complete', u'closing_group', u'description', u'parent', u'date_modified', u'url', u'is_requested', u'children', u'matter', u'date_due', u'responsible_party', u'is_final', u'date_created', u'latest_revision', u'slug', u'name'] for key in json_data.keys()))
+        self.assertTrue(all(key in self.EXPECTED_USER_SERIALIZER_FIELD_KEYS for key in json_data.keys()))
 
     def test_customer_post(self):
         self.client.login(username=self.user.username, password=self.password)
