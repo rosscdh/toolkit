@@ -37,6 +37,22 @@ HELLOSIGN_CLIENT_ID = '9bc892af173754698e3fa30dedee3826'
 HELLOSIGN_CLIENT_SECRET = '8d770244b9971abfe789f5224552239d'
 
 
+
+#
+# Abridge Integration
+#
+
+ABRIDGE_ENABLED = True  # disabled by default
+
+ABRIDGE_PROJECT = 'lawpal-digest'
+
+ABRIDGE_API_URL = 'http://abridge.local.dev/'
+ABRIDGE_ACCESS_KEY_ID = 'empty'
+ABRIDGE_SECRET_ACCESS_KEY = 'still_empty'
+ABRIDGE_USERNAME = 'blah'
+ABRIDGE_PASSWORD = 'blah'
+
+
 # def AutoSlugFieldGenerator():
 #     hash_val = '{r}'.format(r=random.random())
 #     h = hashlib.sha1(hash_val)
