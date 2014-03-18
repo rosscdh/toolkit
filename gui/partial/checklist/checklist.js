@@ -1009,7 +1009,7 @@ angular.module('toolkit-gui')
 			'connectWith': ".group",
 			'axis': 'y',
 			'distance': 15,
-			'delay': 50
+			'delay': 10
 		};
 
 		/**
@@ -1019,10 +1019,15 @@ angular.module('toolkit-gui')
 		 * @type {Object}
 		 */
 		$scope.checklistCategorySortableOptions = {
+			'update': function( e,ui ) {
+				if( ui.item.scope().cat.name===null ) {
+					ui.item.sortable.cancel();
+				}
+			},
 			'stop':  recalculateCategories, /* Fires once the drag and drop event has finished */
 			'axis': 'y',
 			'distance': 15,
-			'delay': 50
+			'delay': 10
 		};
 
 
