@@ -78,7 +78,7 @@ angular.module('toolkit-gui')
                                 $scope.data.validationError = true;
                                 $scope.data.isParticipant = true;
                                 $scope.data.participant = null;
-                            } else if (lawyerObligatory==null && p.user_class == 'lawyer'){
+                            } else if (lawyerObligatory==null && p.user_class === 'lawyer'){
                                 $scope.data.isLawyer = true;
                                 $scope.data.validationError = true;
                                 $scope.data.participant = null;
