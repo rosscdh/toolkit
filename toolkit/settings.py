@@ -139,6 +139,9 @@ HELPER_APPS = (
     # activity-stream
     'actstream',
 
+    # integration for abridge; django-abridge
+    'abridge',
+
     # Api helpers
     #'corsheaders',  # not required yet
 

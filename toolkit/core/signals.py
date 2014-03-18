@@ -7,6 +7,7 @@ activity_stream objects
 from actstream import action
 from django.dispatch import receiver
 from django.dispatch.dispatcher import Signal
+from abridge.services import AbridgeService  # import the server
 
 
 """
@@ -15,7 +16,7 @@ Base Signal and listener used to funnel events
 
 
 # first four args as in django-activity-stream, plus custom stuff
-send_activity_log = Signal(providing_args=['actor', 'verb', 'action_object', 'target', 'ip'])
+send_activity_log = Signal(providing_args=['actor', 'verb', 'action_object', 'target', 'message', 'user', 'item'])
 
 
 @receiver(send_activity_log, dispatch_uid="core.on_activity_received")
@@ -36,6 +37,12 @@ def on_activity_received(sender, **kwargs):
         # send to django-activity-stream
         action.send(actor, **kwargs)
 
+        # send data to abridge
+        for user in target.participants.all():
+            s = AbridgeService(user=user)  # initialize and pass in the user
+            s.create_event(content_group=target.name,
+                           content='<div style="font-size:3.3em;">%s %s %s</div>' % (actor, verb, action_object))
+
 """
 Listen for events from various models
 """
@@ -46,12 +53,8 @@ def on_workspace_post_save(sender, instance, created, **kwargs):
         The owning lawyer is the only one who can create, modify or delete the workspace, so this is possible.
     """
     if created:
-        send_activity_log.send(sender, **{
-            'actor': instance.lawyer,
-            'verb': u'created',
-            'action_object': instance,
-            'target': instance
-        })
+        from toolkit.core.services import MatterActivityEventService
+        MatterActivityEventService(instance).created_matter(lawyer=instance.lawyer)
 
 
 def on_item_post_save(sender, instance, created, **kwargs):
@@ -59,19 +62,11 @@ def on_item_post_save(sender, instance, created, **kwargs):
         At this moment only the layer can edit items. So this is possible.
     """
     if created:
-        send_activity_log.send(sender, **{
-            'actor': instance.matter.lawyer,
-            'verb': u'created',
-            'action_object': instance,
-            'target': instance.matter
-        })
+        from toolkit.core.services import MatterActivityEventService
+        MatterActivityEventService(instance.matter).created_item(user=instance.matter.lawyer, item=instance)
 
 
-def on_revision_post_save(sender, instance, created, **kwargs):
-    if created:
-        send_activity_log.send(sender, **{
-            'actor': instance.uploaded_by,
-            'verb': u'created',
-            'action_object': instance,
-            'target': instance.item.matter
-        })
+# def on_revision_post_save(sender, instance, created, **kwargs):
+#     if created:
+#         activity_service = MatterActivityEventService(instance.item.matter)
+#         activity_service.created_revision(user=instance.uploaded_by, revision=instance)

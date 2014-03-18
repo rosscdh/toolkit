@@ -6,7 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import post_save
 
 from toolkit.core.mixins import IsDeletedMixin
-from toolkit.core.signals import send_activity_log, on_workspace_post_save
+from toolkit.core.signals import on_workspace_post_save
 
 from toolkit.utils import _class_importer
 
