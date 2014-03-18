@@ -35,6 +35,7 @@ env.timestamp = time.time()
 env.is_predeploy = False
 env.local_user = getpass.getuser()
 env.environment = 'local'
+env.virtualenv_path = '~/.virtualenvs/toolkit/'
 
 env.truthy = ['true','t','y','yes','1',1]
 env.falsy = ['false','f','n','no','0',0]
