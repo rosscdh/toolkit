@@ -967,6 +967,9 @@ body.gui .main-content {
   margin-bottom: 5px;
   margin-top: 0;
 }
+#requests .request .btn {
+  margin-top: 23px;
+}
 #requests .request p {
   color: #95a5a6;
 }
