@@ -57,6 +57,16 @@ def set_item_is_requested_false(sender, instance, **kwargs):
     instance.item.save(update_fields=['is_requested'])
 
 
+@receiver(pre_save, sender=Revision, dispatch_uid='revision.ensure_one_current_revision')
+def ensure_one_current_revision(sender, instance, **kwargs):
+    """
+    Signal to make sure we only have one current revision for an item.
+    """
+    if instance.is_current:
+        # Make sure we only have one current revision per item
+        instance.__class__.objects.filter(item=instance.item).update(is_current=False)
+
+
 @receiver(post_save, sender=Revision, dispatch_uid='revision.ensure_revision_reviewdocument_object')
 def ensure_revision_reviewdocument_object(sender, instance, **kwargs):
     """

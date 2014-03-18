@@ -101,6 +101,7 @@ class Revision(models.Model):
         return self.revisions.filter(pk__lt=self.pk).first()
 
 from .signals import (ensure_revision_slug,
+                      ensure_one_current_revision,
                       set_item_is_requested_false,
                       ensure_revision_reviewdocument_object,
                       on_reviewer_add,
