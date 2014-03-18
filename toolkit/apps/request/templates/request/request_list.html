@@ -1,0 +1,64 @@
+{% extends 'gui.html' %}
+
+{% load url from future %}
+
+{#% block body_class %}requests{% endblock %#}
+
+{% block body %}
+    <div id="requests" class="content">
+        <div class="requests-header clearfix">
+            <div class="container">
+                <div class="col-sm-8 col-sm-offset-2">
+                    <h3><span class="circle">{{ object_list.requested.count }}</span> Requests</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-8 col-sm-offset-2" role="main">
+                    <section id="requests-upload">
+                        {% if object_list.requested %}
+                            <h5>Documents to be uploaded</h5>
+                            <p class="lead">Please upload the following documents:</p>
+
+                            <div class="requested">
+                                {% for item in object_list.requested %}
+                                    <article class="request">
+                                        <div class="row">
+                                            <div class="col-xs-8">
+                                                <span class="fui-upload request-icon"></span>
+                                                <h6 class="request-title"><small>{{ item.matter.name }}</small></h6>
+                                                <h6 class="request-title">{{ item.name }}</h6>
+                                                <p>{{ item.requested_by.name }} requested you upload this document.</p>
+                                            </div>
+                                            <div class="col-xs-4">
+                                                <a href="#" class="btn btn-wide btn-info btn-embossed pull-right" data-remote="{% url 'matter_item_revision' matter_slug=item.matter.slug item_slug=item.slug %}" data-toggle="filepicker" style="margin-top: 23px;">Upload File</a>
+                                            </div>
+                                        </div>
+                                        {% if item.note %}
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <blockquote>{{ item.note }}</blockquote>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    </article>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="col-md-12 text-center">
+                                <h6 class="text-muted">You currently have no open requests.</h6>
+                            </div>
+                        {% endif %}
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript" src="//api.filepicker.io/v1/filepicker.js"></script>
+    <script src="{{ STATIC_URL }}js/filepicker.js"></script>
+{% endblock %}

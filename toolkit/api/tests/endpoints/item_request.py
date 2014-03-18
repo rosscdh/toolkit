@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 from django.core import mail
 from django.core.urlresolvers import reverse
+from django.test.client import RequestFactory
 
 from toolkit.core.item.models import Item
 
 from . import BaseEndpointTest
-from ...serializers import (ItemSerializer, UserSerializer,)
+from ...serializers import ItemSerializer
 
 
 from model_mommy import mommy
@@ -38,12 +39,11 @@ class ItemsRequestDocumentTest(BaseEndpointTest):
         resp = self.client.get(self.endpoint)
 
         self.assertEqual(resp.status_code, 200)
-
-        json_data = json.loads(resp.content)
-        self.assertEqual(json_data['name'], self.item.name)
-        # the user url is in the base
-        # urls are different bcause the serializer here has no request object
-        self.assertTrue(UserSerializer(self.user).data.get('url') in json_data['responsible_party'])
+        serializer = ItemSerializer(
+            self.item,
+            context={'request': RequestFactory().get(self.endpoint)}
+        )
+        self.assertEqual(serializer.data, resp.data)
 
     def test_lawyer_post(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -52,8 +52,6 @@ class ItemsRequestDocumentTest(BaseEndpointTest):
 
     def test_lawyer_patch(self):
         self.client.login(username=self.lawyer.username, password=self.password)
-
-        responsible_party_url = UserSerializer(self.user).data.get('url')
 
         data = {
             'email': 'new+user@lawpal.com',
@@ -67,8 +65,8 @@ class ItemsRequestDocumentTest(BaseEndpointTest):
         self.assertEqual(resp.status_code, 200)  # ok patch accepted
         json_data = json.loads(resp.content)
 
-        new_item = Item.objects.awaiting_documents(matter=self.matter, slug=json_data['slug']).first()
-        
+        new_item = Item.objects.requested(matter=self.matter, slug=json_data['slug']).first()
+
         self.assertEqual(json_data['name'], new_item.name)
 
         # we shoudl have this new item in the standard item objects
@@ -93,12 +91,11 @@ class ItemsRequestDocumentTest(BaseEndpointTest):
         resp = self.client.get(self.endpoint)
 
         self.assertEqual(resp.status_code, 200)
-
-        json_data = json.loads(resp.content)
-        self.assertEqual(json_data['name'], self.item.name)
-        # the user url is in the base
-        # urls are different bcause the serializer here has no request object
-        self.assertTrue(UserSerializer(self.user).data.get('url') in json_data['responsible_party'])
+        serializer = ItemSerializer(
+            self.item,
+            context={'request': RequestFactory().get(self.endpoint)}
+        )
+        self.assertEqual(serializer.data, resp.data)
 
     def test_customer_post(self):
         self.client.login(username=self.user.username, password=self.password)
