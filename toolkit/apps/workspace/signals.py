@@ -141,22 +141,22 @@ def ensure_workspace_matter_code(sender, **kwargs):
         workspace.matter_code = final_matter_code
 
 
-@receiver(post_save, sender=Workspace, dispatch_uid='workspace.ensure_workspace_has_83b_by_default')
-def ensure_workspace_has_83b_by_default(sender, **kwargs):
-    workspace = kwargs.get('instance')
-    created = kwargs.get('created', False)
+# @receiver(post_save, sender=Workspace, dispatch_uid='workspace.ensure_workspace_has_83b_by_default')
+# def ensure_workspace_has_83b_by_default(sender, **kwargs):
+#     workspace = kwargs.get('instance')
+#     created = kwargs.get('created', False)
 
-    # when we have a new one
-    eightythreeb = Tool.objects.get(slug='83b-election-letters')
+#     # when we have a new one
+#     eightythreeb = Tool.objects.get(slug='83b-election-letters')
 
-    if eightythreeb not in workspace.tools.all():
-        workspace.tools.add(eightythreeb)
+#     if eightythreeb not in workspace.tools.all():
+#         workspace.tools.add(eightythreeb)
 
 
 @receiver(pre_save, sender=Tool, dispatch_uid='workspace.ensure_tool_slug')
 def ensure_tool_slug(sender, **kwargs):
     """
-    signal to handle creating the workspace slug
+    signal to handle creating a new Tool
     """
     tool = kwargs.get('instance')
     created = kwargs.get('created', False)
