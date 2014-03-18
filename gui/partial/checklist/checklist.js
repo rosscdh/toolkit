@@ -30,8 +30,9 @@ angular.module('toolkit-gui')
 	'participantService',
 	'searchService',
 	'activityService',
+	'userService',
 	'$timeout',
-	function($scope, $rootScope, $routeParams, smartRoutes, ezConfirm, toaster, $modal, matterService, matterItemService, matterCategoryService, participantService, searchService, activityService, $timeout){
+	function($scope, $rootScope, $routeParams, smartRoutes, ezConfirm, toaster, $modal, matterService, matterItemService, matterCategoryService, participantService, searchService, activityService, userService, $timeout){
 		/**
 		 * Scope based data for the checklist controller
 		 * @memberof			ChecklistCtrl
@@ -48,7 +49,8 @@ angular.module('toolkit-gui')
 			'selectedCategory': null,
 			'categories': [],
 			'users': [],
-			'searchData': searchService.data()
+			'searchData': searchService.data(),
+			'usdata': userService.data()
 		};
 
 
@@ -63,6 +65,8 @@ angular.module('toolkit-gui')
 					matterService.selectMatter(singleMatter);
 					$scope.initialiseMatter( singleMatter );
 					$scope.initializeActivityMatterStream( singleMatter );
+
+					userService.setCurrent( singleMatter.current_user );
 				},
 				function error(err){
 					toaster.pop('error', "Error!", "Unable to load matter");
@@ -474,27 +478,31 @@ angular.module('toolkit-gui')
 			var matterSlug = $scope.data.slug;
 			var itemSlug = item.slug;
 
-			item.uploading = true;
+			var user = userService.data().current;
 
-			matterItemService.uploadRevisionFile( matterSlug, itemSlug, $files ).then(
-				function success( revision ) {
-					revision.uploaded_by = matterService.data().selected.current_user;
-					item.latest_revision = revision;
+			if( user.user_class === 'lawyer' ) {
+				item.uploading = true;
 
-					//Reset previous revisions
-					item.previousRevisions = null;
-					$scope.data.showPreviousRevisions = false;
-					item.uploadingPercent = 0;
-					item.uploading = false;
-				},
-				function error(err) {
-					toaster.pop('error', "Error!", "Unable to upload revision");
-					item.uploading = false;
-				},
-				function progress( num ) {
-					item.uploadingPercent = num;
-				}
-			);
+				matterItemService.uploadRevisionFile( matterSlug, itemSlug, $files ).then(
+					function success( revision ) {
+						revision.uploaded_by = matterService.data().selected.current_user;
+						item.latest_revision = revision;
+
+						//Reset previous revisions
+						item.previousRevisions = null;
+						$scope.data.showPreviousRevisions = false;
+						item.uploadingPercent = 0;
+						item.uploading = false;
+					},
+					function error(err) {
+						toaster.pop('error', "Error!", "Unable to upload revision");
+						item.uploading = false;
+					},
+					function progress( num ) {
+						item.uploadingPercent = num;
+					}
+				);
+			}
 		};
 
 		/**
