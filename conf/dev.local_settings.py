@@ -14,7 +14,7 @@ if TEST_PREPROD is True:
     STATICFILES_DIRS = (
         # These are the production files
         # not that static is in gui/dist/static *not to be confused with the django {{ STATIC_URL }}ng/ which will now point correctly
-        ("ng", os.path.join(SITE_ROOT, 'gui', 'dist', 'static', 'ng')),
+        ("ng", os.path.join(SITE_ROOT, 'gui', 'dist')),
     )
 
 INSTALLED_APPS = INSTALLED_APPS + (
