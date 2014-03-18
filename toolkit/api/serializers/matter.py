@@ -91,8 +91,8 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
         return []
 
     def get_current_user(self, obj):
-        user = obj.lawyer
-        return LiteUserSerializer(user, context=self.context).data
+        request = self.context.get('request')
+        return LiteUserSerializer(request.user, context={'request': request}).data
 
     def get_current_user_todo(self, obj):
         """
