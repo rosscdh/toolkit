@@ -150,6 +150,7 @@ module.exports = function (grunt) {
           {src: ['bower_components/jquery/**'], dest: '<%= PRODUCTION_PATH %>'},
           {src: ['bower_components/jquery-ui/**'], dest: '<%= PRODUCTION_PATH %>'},
           {src: ['bower_components/bootstrap/**'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['bower_components/font-awesome/**'], dest: '<%= PRODUCTION_PATH %>'},
           {src: ['bower_components/angular/**'], dest: '<%= PRODUCTION_PATH %>'}
           // {src: ['bower_components/select2/*.png','bower_components/select2/*.gif'], dest:'dist/css/',flatten:true,expand:true},
           // {src: ['bower_components/angular-mocks/angular-mocks.js'], dest: 'dist/'}
