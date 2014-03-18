@@ -29,9 +29,18 @@ tr .dropable-area {
 	}
 }
 
+.checklist-wrapper table.ui-drag-disabled tr.ui-drag-disabled {
+	cursor: no-drop;
+}
+
 .border-on-dragover {
 	.transition(all 0.3s ease-out);
 	border-color: rgba(0,0,0,0);
+}
+
+tr.showme {
+	display: table-row !important;
+	visibility: visible !important;
 }
 
 div.dragover {
