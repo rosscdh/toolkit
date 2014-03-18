@@ -15,7 +15,7 @@ from toolkit.casper.prettify import mock_http_requests
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 
 from . import BaseEndpointTest
-from ...serializers import SimpleUserSerializer
+from ...serializers import LiteUserSerializer
 
 from model_mommy import mommy
 
@@ -165,6 +165,8 @@ class RevisionReviewerTest(BaseEndpointTest, LiveServerTestCase):
     /matters/:matter_slug/items/:item_slug/revision/reviewer/:username (GET,DELETE)
         [lawyer,customer] to view, delete reviewers
     """
+    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review_url', u'url', u'initials', u'user_class', u'name']
+
     @property
     def endpoint(self):
         return reverse('item_revision_reviewer', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug, 'username': self.participant.username})
@@ -391,11 +393,11 @@ class RevisionRequestedDocumentTest(BaseEndpointTest):
         json_data = json.loads(resp.content)
 
         inviteduploader_user = User.objects.get(username='inviteduploader')
-        invited_uploader = SimpleUserSerializer(inviteduploader_user,
+        invited_uploader = LiteUserSerializer(inviteduploader_user,
                                                 context={'request': self.request_factory.get(self.endpoint)})  ## should exist as we jsut created him in the patch
 
         self.assertTrue(json_data.get('is_requested') is True)
-        self.assertEqual(json_data.get('responsible_party'), invited_uploader.data.get('url'))
+        self.assertEqual(json_data.get('responsible_party'), invited_uploader.data)
 
         #
         # now upload a document and ensure
