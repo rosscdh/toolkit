@@ -795,8 +795,11 @@ angular.module('toolkit-gui')
 			});
 
 			modalInstance.result.then(
-				function ok(result) {
-					revision.reviewers.push(result);
+				function ok(reviewer) {
+                    var results = jQuery.grep( revision.reviewers, function( rev ){ return rev.username===reviewer.username; } );
+                    if( results.length===0 ) {
+					    revision.reviewers.push(reviewer);
+					}
 				},
 				function cancel() {
 					//
