@@ -16,18 +16,31 @@
 						 </tr>
 				</table>
 
+				<!-- LAWYER checklist //-->
 				<!-- null category //-->
-				<table class="table checklist ui-drag-disabled" ng-repeat="cat in data.categories | filter: { 'name': null }" ng-include="'/static/ng/partial/checklist/includes/checklist-line-item.html'">
+				<table class="table checklist ui-drag-disabled" ng-repeat="cat in data.categories | filter: { 'name': null }" ng-include="'/static/ng/partial/checklist/includes/checklist-line-item.html'" ng-show="data.usdata.current.user_class=='lawyer'">
 				</table>
 				<!-- end: null category //-->
 
-				<div ui-sortable="checklistCategorySortableOptions" ng-model="data.categories">
+				<!-- checklist //-->
+				<div ui-sortable="checklistCategorySortableOptions" ng-model="data.categories" ng-show="data.usdata.current.user_class=='lawyer'">
+					<table class="table checklist" ng-repeat="cat in data.categories" ng-hide="cat.name===null" ng-include="'/static/ng/partial/checklist/includes/checklist-line-item.html'">
+					</table>
+				</div>
+				<!-- end checklist //-->
+				<!-- end: LAWYER checklist //-->
+
+				<!-- CUSTOMER checklist //-->
+				<!-- null category //-->
+				<table class="table checklist" ng-repeat="cat in data.categories | filter: { 'name': null }" ng-include="'/static/ng/partial/checklist/includes/checklist-line-item.html'" ng-show="data.usdata.current.user_class!=='lawyer'">
+				</table>
+				<!-- end: null category //-->
 
 				<!-- checklist //-->
-				<table class="table checklist" ng-repeat="cat in data.categories" ng-hide="cat.name===null" ng-include="'/static/ng/partial/checklist/includes/checklist-line-item.html'">
-				  </table>
-				  </div>
+				<table class="table checklist" ng-repeat="cat in data.categories" ng-hide="cat.name===null||data.usdata.current.user_class=='lawyer'" ng-include="'/static/ng/partial/checklist/includes/checklist-line-item.html'">
+				</table>
 				<!-- end checklist //-->
+				<!-- end: CUSTOMER checklist //-->
 			</div>
 			<div class="col-sm-7 item spa full">
 				<div class="row full">
