@@ -534,7 +534,7 @@ def build_angular_app():
     local('cd gui;grunt build -djangoProd')
 
     # collect static
-    assets()
+    local('python manage.py collectstatic --noinput')
 
     # move tmp/local_settings.py back
     if os.path.exists('/tmp/local_settings.py'):
