@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
 from functools import wraps
 
 import re
@@ -7,6 +8,9 @@ import httpretty
 
 import logging
 logger = logging.getLogger('django.test')
+
+
+ABRIDGE_API_URL = getattr(settings, 'ABRIDGE_API_URL', 'http://abridge.local.dev/')
 
 
 def mock_http_requests(view_func):
@@ -55,10 +59,10 @@ def mock_http_requests(view_func):
         #
         # Abridge
         #
-        httpretty.register_uri(httpretty.POST, re.compile("http://abridge.local.dev/(.+)"),
+        httpretty.register_uri(httpretty.POST, re.compile("%s(.+)" % ABRIDGE_API_URL),
                                body='{"success": true}',
                                status=200)
-        httpretty.register_uri(httpretty.GET, re.compile("http://abridge.local.dev/(.+)"),
+        httpretty.register_uri(httpretty.GET, re.compile("%s(.+)" % ABRIDGE_API_URL),
                                body='{"success": true}',
                                status=200)
         #
