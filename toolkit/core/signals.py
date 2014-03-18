@@ -69,8 +69,3 @@ def on_item_post_save(sender, instance, created, **kwargs):
         from toolkit.core.services import MatterActivityEventService
         MatterActivityEventService(instance.matter).created_item(user=instance.matter.lawyer, item=instance)
 
-
-# def on_revision_post_save(sender, instance, created, **kwargs):
-#     if created:
-#         activity_service = MatterActivityEventService(instance.item.matter)
-#         activity_service.created_revision(user=instance.uploaded_by, revision=instance)
