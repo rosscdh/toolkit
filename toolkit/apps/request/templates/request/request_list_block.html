@@ -1,0 +1,31 @@
+<section id="requests-{{ type }}">
+    {% if object_list %}
+        <h5>{{ title }}</h5>
+        <p class="lead">{{ description }}</p>
+
+        <div class="requested">
+            {% for item in object_list %}
+                <article class="request">
+                    <div class="row">
+                        <div class="col-xs-8">
+                            <span class="{{ icon }} request-icon"></span>
+                            <h6 class="request-title"><small>{{ item.matter.name }}</small></h6>
+                            <h6 class="request-title">{{ item.name }}</h6>
+                            <p>{{ item.requested_by.name }} {{ story }}</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <a href="#" class="btn btn-wide btn-info btn-embossed pull-right" data-item-slug="{{ item.slug }}" data-matter-slug="{{ item.matter.slug }}" {% if toggle %}data-toggle="{{ toggle }}"{% endif %}>{{ action_btn }}</a>
+                        </div>
+                    </div>
+                    {% if item.note %}
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <blockquote>{{ item.note }}</blockquote>
+                            </div>
+                        </div>
+                    {% endif %}
+                </article>
+            {% endfor %}
+        </div>
+    {% endif %}
+</section>
