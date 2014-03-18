@@ -6,21 +6,20 @@
 	<meta charset="utf-8">
 
   <!-- App LESS -->
-  <link href="<!-- @echo staticPath -->css/app.less" type="text/css" rel="stylesheet/less">
-
+  <link href="<!-- @echo staticBase -->ng/css/app.less" type="text/css" rel="stylesheet/less">
+  <script src="<!-- @echo staticBase -->ng/bower_components/jquery/jquery.js" data-remove="exclude"></script>
+  <script src="<!-- @echo staticBase -->ng/bower_components/jquery-ui/ui/jquery-ui.js" data-remove="exclude"></script>
+  <script src="<!-- @echo staticBase -->ng/bower_components/bootstrap/dist/js/bootstrap.js" data-remove="exclude"></script>
+  <script src="<!-- @echo staticBase -->ng/bower_components/angular/angular.js" data-remove="exclude"></script>
 </head>
 <body>
   <!-- Livereload script for development only (stripped during dist build) -->
   <script src="http://localhost:35729/livereload.js" data-build="exclude"></script>
 
   <!-- JS from Bower components -->
-  <script src="<!-- @echo staticPath -->bower_components/less.js/dist/less-1.5.0.js" data-build="exclude"></script>
-  <script src="<!-- @echo staticPath -->bower_components/jquery/jquery.js"></script>
-  <script src="<!-- @echo staticPath -->bower_components/jquery-ui/ui/jquery-ui.js"></script>
-  <script src="<!-- @echo staticPath -->bower_components/bootstrap/dist/js/bootstrap.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/underscore/underscore.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/moment/moment.js"></script>
-  <script src="<!-- @echo staticPath -->bower_components/angular/angular.js"></script>
+  <script src="<!-- @echo staticPath -->bower_components/less.js/dist/less-1.5.0.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/angular-route/angular-route.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/angular-animate/angular-animate.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/angular-resource/angular-resource.js"></script>
@@ -148,7 +147,7 @@
         <li class="divider"></li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-          {{ matter.selected.current_user | fullname }} <b class="caret"></b>
+          {% verbatim %}{{ matter.selected.current_user | fullname }}{% endverbatim %} <b class="caret"></b>
           </a>
           <ul class="dropdown-menu">
             <li><a href="/me/settings/">Account</a></li>

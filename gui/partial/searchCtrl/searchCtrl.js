@@ -10,8 +10,12 @@ angular.module('toolkit-gui').controller('SearchCtrl',[
 			'display': false
 		};
 
-		$scope.startSearch = function() {
-			searchService.filter( $scope.data.term );
+		$scope.startSearch = function( keyCode ) {
+			if( keyCode!==13 ) {
+				searchService.filter( $scope.data.term );
+			} else if( $scope.data.searchResults.results.length>0 ) {
+				$scope.selectItem( $scope.data.searchResults.results[0] );
+			}
 			$scope.data.display = true;
 		};
 
@@ -30,6 +34,10 @@ angular.module('toolkit-gui').controller('SearchCtrl',[
 
 		$scope.show = function() {
 			$scope.data.display = true;
+		};
+
+		$scope.keyPress = function( $event ) {
+			console.log( $event );
 		};
 	}
 ]);
