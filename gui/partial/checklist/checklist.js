@@ -921,6 +921,8 @@ angular.module('toolkit-gui')
 			};
 			var itemToUpdate = null;
 
+			$scope.data.dragging=false;
+
 			function getItemIDs( item ) {
 				return item.slug;
 			}
@@ -1006,10 +1008,11 @@ angular.module('toolkit-gui')
 		 */
 		$scope.checklistItemSortableOptions = {
 			'stop':  recalculateCategories, /* Fires once the drag and drop event has finished */
+			'start': function() { $scope.data.dragging=true; $scope.$apply();},
 			'connectWith': ".group",
 			'axis': 'y',
 			'distance': 15,
-			'delay': 50
+			'delay': 10
 		};
 
 		/**
@@ -1019,10 +1022,15 @@ angular.module('toolkit-gui')
 		 * @type {Object}
 		 */
 		$scope.checklistCategorySortableOptions = {
+			'update': function( e,ui ) {
+				if( ui.item.scope().cat.name===null ) {
+					ui.item.sortable.cancel();
+				}
+			},
 			'stop':  recalculateCategories, /* Fires once the drag and drop event has finished */
 			'axis': 'y',
 			'distance': 15,
-			'delay': 50
+			'delay': 10
 		};
 
 
