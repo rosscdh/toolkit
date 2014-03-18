@@ -50,7 +50,7 @@ AUTHY_API_KEY = 'e19afad3c1c207a03ef6a1dcb2adb0c3'
 # Abridge Integration
 #
 
-ABRIDGE_ENABLED = False if sys.argv[1] in ['syncdb', 'migrate', 'loaddata'] else True  # disable when we are syncing or migrating or loadingdata
+ABRIDGE_ENABLED = False if sys.argv[1] in ['syncdb', 'migrate', 'test', 'loaddata'] else True  # disable when we are syncing or migrating or loadingdata
 
 ABRIDGE_PROJECT = 'lawpal-digest'
 
