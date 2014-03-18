@@ -518,6 +518,30 @@ def run_tests():
 
 
 @task
+@runs_once
+def build_angular_app():
+    # move local_settings.py if present
+    if os.path.exists('toolkit/local_settings.py'):
+        local('mv toolkit/local_settings.py /tmp/local_settings.py')
+
+    # copy conf/production.local_settings.py
+    # has the very important ("ng", os.path.join(SITE_ROOT, 'gui', 'dist')),
+    # settings
+    local('cp conf/production.local_settings.py toolkit/local_settings.py')
+
+    # perform grunt build --djangoProd
+    local('cd gui;grunt build -djangoProd')
+
+    # collect static
+    assets()
+
+    # move tmp/local_settings.py back
+    if os.path.exists('/tmp/local_settings.py'):
+        local('mv /tmp/local_settings.py toolkit/local_settings.py')
+
+
+
+@task
 def conclude():
     newrelic_deploynote()
 
