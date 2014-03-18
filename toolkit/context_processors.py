@@ -34,7 +34,7 @@ def LAYOUT(request):
 
 def REQUESTS_COUNT(request):
     return {
-        'REQUESTS_COUNT': Item.objects.my_requests(request.user).count(),
+        'REQUESTS_COUNT': Item.objects.my_requests(request.user.pk).count(),
     }
 
 
