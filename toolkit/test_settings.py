@@ -42,7 +42,7 @@ HELLOSIGN_CLIENT_SECRET = '8d770244b9971abfe789f5224552239d'
 # Abridge Integration
 #
 
-ABRIDGE_ENABLED = True  # disabled by default
+ABRIDGE_ENABLED = False
 
 ABRIDGE_PROJECT = 'lawpal-digest'
 
