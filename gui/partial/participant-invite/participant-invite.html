@@ -1,6 +1,6 @@
 <div class="modal-content" xmlns="http://www.w3.org/1999/html">
 	<div class="modal-header">
-		<h4 class="modal-title" id="myModalLabel">Matter Participants</h4>
+		<h4 class="modal-title" id="myModalLabel"><span class="fui-user text-muted"></span> Matter Participants</h4>
 	</div>
 	<div class="modal-body">
         <div ng-hide="data.showAddLawyer||data.showAddParticipant">
@@ -33,42 +33,42 @@
 
 
 		<form class="form" ng-submit="invite()" ng-show="data.showAddLawyer">
-            <h5>Add New Lawyer</h5>
-			<div class="form-group" ng-class="{'has-success': data.participant, 'has-warning': data.isNew, 'has-error': data.validationError }">
-				<input type="email" id="inviteeEmail" class="form-control form-control-full-width input-sm" ng-model="data.invitee.email"
-                       placeholder="your_email@gmail.com" required ng-blur="checkIfUserExists(true)" autocomplete="off"/>
-                 <label class="control-label" for="inviteeEmail" ng-show="data.participant">Lawyer {{ data.participant | fullname }} found</label>
-                 <label class="control-label" for="inviteeEmail" ng-show="data.isNew">Lawyer must be registered.</label>
-                 <label class="control-label" for="inviteeEmail" ng-show="data.isParticipant">The entered mail address belongs to a participant.</label>
+            <h5>Add a Lawyer <a href="#" class="close" ng-click="data.showAddLawyer=false;">x</a></h5>
+            <p>Adding a lawyer to this matter will give them access to edit the checklist, download documents and assign tasks. </p>
+			<div  ng-class="{'has-success': data.participant, 'has-warning': data.isNew, 'has-error': data.validationError }">
+				<p class="bg-info" for="inviteeEmail" ng-show="data.participant">Lawyer {{ data.participant | fullname }} found. </p>
+                <p class="bg-danger" for="inviteeEmail" ng-show="data.isNew">Lawyer must be a registered LawPal user. Please ask them to signup at LawPal.com</p>
+                <p class="bg-danger" for="inviteeEmail" ng-show="data.isParticipant">This user is not registered as a lawyer on LawPal. Please contact support@lawpal.com. </p>
+				<input type="email" id="inviteeEmail" class="form-control form-control-full-width" ng-model="data.invitee.email" placeholder="rob.s@gmail.com" required ng-blur="checkIfUserExists(true)" autocomplete="off"/>
 			</div>
-			<div class="form-group">
+			<div >
 				<textarea class="form-control form-control-full-width" ng-model="data.invitee.message" placeholder="Add an optional message"></textarea>
 			</div>
-			<div class="form-group">
-				<button class="btn btn-primary btn-wide btn-sm" ng-disabled="data.validationError">Add lawyer</button>
-				<input type="button" class="btn btn-primary btn-wide btn-sm" ng-click="data.showAddLawyer=false;" value="Cancel" />
+			<div >
+				<button class="btn btn-success btn-wide btn-sm" ng-disabled="data.validationError">Add Lawyer</button>
 			</div>
 		</form>
 
         <form class="form" ng-submit="invite()" ng-show="data.showAddParticipant">
-            <h5>Add New Participant</h5>
-			<div class="form-group" ng-class="{'has-success': data.participant, 'has-warning': data.isNew, 'has-error': data.validationError }">
-				<input type="email" id="inviteeEmail" class="form-control form-control-full-width input-sm" ng-model="data.invitee.email"
+            <h5>Add a Client <a href="#" class="close" ng-click="data.showAddParticipant=false;">x</a></h5>
+            <p>Adding a client to this matter will give them access to view the checklist and the latest version of each document.</p>
+			<div ng-class="{'has-success': data.participant, 'has-warning': data.isNew, 'has-error': data.validationError }">
+    		    <p class="bg-info" for="inviteeEmail" ng-show="data.participant">{{ data.participant | fullname }} found.</p>
+                <p class="bg-info" for="inviteeEmail" ng-show="data.isNew">User does not exist yet. They will be invited to LawPal.</p>
+                <p class="bg-danger" for="inviteeEmail" ng-show="data.isLawyer">The entered mail address belongs to a lawyer. Lawyers can not currently be added to matters as clients.</p>
+
+				<input type="email" id="inviteeEmail" class="form-control form-control-full-width" ng-model="data.invitee.email"
                        placeholder="your_email@gmail.com" required ng-blur="checkIfUserExists()"/>
-                 <label class="control-label" for="inviteeEmail" ng-show="data.participant">User {{ data.participant | fullname }} found</label>
-                 <label class="control-label" for="inviteeEmail" ng-show="data.isNew">User does not exist yet</label>
-                 <label class="control-label" for="inviteeEmail" ng-show="data.isLawyer">The entered mail address belongs to a lawyer.</label>
-			</div>
-            <div class="form-group form-inline">
+        		</div>
+            <div class="">
                 <input type="text" class="form-control input-sm" ng-model="data.invitee.first_name" placeholder="First name" ng-show="data.isNew" />
                 <input type="text" class="form-control input-sm" ng-model="data.invitee.last_name" placeholder="Last name" ng-show="data.isNew" />
             </div>
-			<div class="form-group">
+			<div class="">
 				<textarea class="form-control form-control-full-width" ng-model="data.invitee.message" placeholder="Add an optional message"></textarea>
 			</div>
-			<div class="form-group">
-				<button class="btn btn-primary btn-wide btn-sm" ng-disabled="data.validationError">Add participant</button>
-                <input type="button" class="btn btn-primary btn-wide btn-sm" ng-click="data.showAddParticipant=false;" value="Cancel" />
+			<div >
+				<button class="btn btn-info btn-wide btn-sm" ng-disabled="data.validationError">Add a Client</button>
 			</div>
 		</form>
 	</div>
