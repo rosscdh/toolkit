@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+from abridge.services.abridge_service import AbridgeService
 from django.core.cache import cache
 from django.test import TestCase
 from django.dispatch import receiver
@@ -9,6 +10,7 @@ from actstream.models import action_object_stream, Action, model_stream
 import time
 
 from toolkit.casper import BaseScenarios
+from toolkit.casper.prettify import mock_http_requests
 from toolkit.core.attachment.models import Revision
 from toolkit.core.item.models import Item
 from toolkit.core.services import MatterActivityEventService
@@ -111,7 +113,7 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         self.assertEqual(stream[0].data['message'], u'Customer Test removed Customer Test as reviewer for Test Item #1')
 
         """
-        remove revision again
+        remove revision again and check if it worked
         """
         MatterActivityEventService(self.matter).deleted_revision(self.lawyer, item, revision1)
         stream = model_stream(Revision)
@@ -129,11 +131,3 @@ class ActivitySignalTest(BaseScenarios, TestCase):
 
         stream = Action.objects.target_by_customer_stream(workspace, self.lawyer)
         self.assertEqual(len(stream), 1)  # shall only find the newest entry, the 2 other ones are too old.
-
-    """
-        TODO:
-            test created_revision (via API)
-            test deleted_revision (via API)
-            test added_user_as_reviewer
-            test removed_user_as_reviewer
-    """

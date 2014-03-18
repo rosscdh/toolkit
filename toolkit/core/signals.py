@@ -21,14 +21,16 @@ send_activity_log = Signal(providing_args=['actor', 'verb', 'action_object', 'ta
 
 @receiver(send_activity_log, dispatch_uid="core.on_activity_received")
 def on_activity_received(sender, **kwargs):
-    # actor has to be popped, the rest has to remain in kwargs
+    # actor has to be popped, the rest has to remain in kwargs and is not used here, except message to use in abridge
+
     # Pops
     actor = kwargs.pop('actor', False)
-    signal = kwargs.pop('signal', None)
+    kwargs.pop('signal', None)
     # Gets
     verb = kwargs.get('verb', False)
     action_object = kwargs.get('action_object', False)
     target = kwargs.get('target', False)
+    message = kwargs.get('message', False)
 
     #
     # Test that we have the required arguments to send the action signal
@@ -40,8 +42,10 @@ def on_activity_received(sender, **kwargs):
         # send data to abridge
         for user in target.participants.all():
             s = AbridgeService(user=user)  # initialize and pass in the user
+            if not message:
+                message = '%s %s %s' % (actor, verb, action_object)
             s.create_event(content_group=target.name,
-                           content='<div style="font-size:3.3em;">%s %s %s</div>' % (actor, verb, action_object))
+                           content='<div style="font-size:3.3em;">%s</div>' % message)
 
 """
 Listen for events from various models

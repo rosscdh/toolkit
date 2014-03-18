@@ -59,10 +59,10 @@ def mock_http_requests(view_func):
         #
         # Abridge
         #
-        httpretty.register_uri(httpretty.POST, re.compile("%s(.+)" % ABRIDGE_API_URL),
+        httpretty.register_uri(httpretty.POST, re.compile("%s(.*)" % ABRIDGE_API_URL),
                                body='{"success": true}',
                                status=200)
-        httpretty.register_uri(httpretty.GET, re.compile("%s(.+)" % ABRIDGE_API_URL),
+        httpretty.register_uri(httpretty.GET, re.compile("%s(.*)" % ABRIDGE_API_URL),
                                body='{"success": true}',
                                status=200)
         #
