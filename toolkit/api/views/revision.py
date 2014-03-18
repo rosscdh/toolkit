@@ -6,8 +6,8 @@ from rulez import registry as rulez_registry
 
 from rest_framework import viewsets
 from rest_framework import generics
+from toolkit.core.services import MatterActivityEventService
 
-from toolkit.core.signals import send_activity_log
 from toolkit.core.attachment.models import Revision
 
 from .mixins import (MatterItemsQuerySetMixin,)
@@ -98,25 +98,18 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
                                                                    many=many,
                                                                    partial=partial)
 
-    def record_event(self, verb, action_object, **kwargs):
-        kwargs.update({
-            'actor': self.request.user,
-            'verb': verb,
-            'action_object': action_object,
-            'target': self.matter
-        })
-        send_activity_log.send(self.revision, **kwargs)
-
     def create(self, request, **kwargs):
         resp = super(ItemCurrentRevisionView, self).create(request=request, **kwargs)
-        self.record_event(verb='created a revision',
-                          action_object=self.item)
+        MatterActivityEventService(self.matter).created_revision(user=self.request.user,
+                                                                 item=self.item,
+                                                                 revision=self.revision)
         return resp
 
     def destroy(self, request, **kwargs):
         resp = super(ItemCurrentRevisionView, self).destroy(request=request, **kwargs)
-        self.record_event(verb='destroyed a revision',
-                          action_object=self.item)
+        MatterActivityEventService(self.matter).deleted_revision(user=self.request.user,
+                                                                 item=self.item,
+                                                                 revision=self.revision)
         return resp
 
     def pre_save(self, obj):

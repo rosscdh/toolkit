@@ -3,9 +3,6 @@ from actstream.managers import ActionManager, stream
 import datetime
 
 
-__author__ = 'Marius Burfey <marius.burfey@ambient-innovation.com> - 09.03.14'
-
-
 class ToolkitActionManager(ActionManager):
 
     @stream
