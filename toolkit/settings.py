@@ -98,6 +98,7 @@ PROJECT_APPS = (
     'toolkit.apps.dash',
     'toolkit.apps.matter',
     'toolkit.apps.me',
+    'toolkit.apps.request',
     # Main Workspace (matters)
     'toolkit.apps.workspace',
     # Core related apps
@@ -172,6 +173,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     'toolkit.context_processors.EXPOSED_GLOBALS',
     'toolkit.context_processors.LAYOUT',
+    'toolkit.context_processors.REQUESTS_COUNT',
     'toolkit.context_processors.WORKSPACES',
 )
 
@@ -229,6 +231,8 @@ AWS_HEADERS = {
     'Cache-Control': 'max-age=300',
     'x-amz-acl': 'public-read',
 }
+
+FILEPICKER_API_KEY = 'A4Ly2eCpkR72XZVBKwJ06z'
 
 HELLOSIGN_AUTHENTICATION = ("founders@lawpal.com", "test2007")
 HELLOSIGN_API_KEY = '0ea9011ce33b5de3b58af3b3f6d449f8f3f72e2ac06c14c6319439af39fe32f6'

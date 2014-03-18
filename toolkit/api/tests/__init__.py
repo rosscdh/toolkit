@@ -1,7 +1,11 @@
 # -*- coding: UTF-8 -*-
 from .endpoints.client import (ClientsTest,)
-from .endpoints.matter import (MattersTest, MatterDetailTest, MatterDetailProvidedDataTest)
-from .endpoints.review import (RevisionReviewsTest, RevisionReviewerTest,)
+from .endpoints.matter import (MattersTest,
+                               MatterDetailTest,
+                               MatterDetailProvidedDataTest)
+from .endpoints.review import (RevisionReviewsTest,
+                               RevisionReviewerTest,
+                               RevisionRequestedDocumentTest,)
 from .endpoints.item_request import *
 from .endpoints.item import (ItemsTest, ItemDetailTest, ItemDataTest)
 from .endpoints.sort import (MatterSortTest,)

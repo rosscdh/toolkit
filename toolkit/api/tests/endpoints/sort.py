@@ -75,7 +75,7 @@ class MatterSortTest(BaseEndpointTest):
 
         self.client.login(username=self.lawyer.username, password=self.password)
 
-        item_order = [i.get('slug') for i in self.matter.item_set.all().values('slug')]
+        item_order = [str(i.slug) for i in self.matter.item_set.all()]
         random.shuffle(item_order)
 
         data = {
