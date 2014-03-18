@@ -4,7 +4,6 @@
 
         $(document).on('click.filepicker.data-api', '[data-toggle=filepicker]', function() {
             var $elem = $(this);
-            endpoint = '/api/v1/matters/'+$elem.attr('data-matter-slug')+'/items/'+$elem.attr('data-item-slug')+'/revision';
 
             filepicker.pickAndStore({
                 'container': 'modal',
@@ -25,7 +24,7 @@
                         'X-CSRFToken': $('input[name=csrf_token]').val()
                     },
                     type: 'PATCH',
-                    url: endpoint,
+                    url: $elem.attr('data-remote'),
                     error: function(data) {
                         document.location.reload();
                     },

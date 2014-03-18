@@ -1,0 +1,33 @@
+{% load url from future %}
+
+<section id="requests-review">
+    {% if object_list %}
+        <h5>Documents requiring review</h5>
+        <p class="lead">Please read and review the following documents:</p>
+
+        <div class="requested">
+            {% for item in object_list %}
+                <article class="request">
+                    <div class="row">
+                        <div class="col-xs-8">
+                            <span class="fui-upload request-icon"></span>
+                            <h6 class="request-title"><small>{{ item.matter.name }}</small></h6>
+                            <h6 class="request-title">{{ item.name }}</h6>
+                            <p>{{ item.requested_by.name }} requested your feedback on this document.</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <a href="#" class="btn btn-wide btn-info btn-embossed pull-right">Review</a>
+                        </div>
+                    </div>
+                    {% if item.note %}
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <blockquote>{{ item.note }}</blockquote>
+                            </div>
+                        </div>
+                    {% endif %}
+                </article>
+            {% endfor %}
+        </div>
+    {% endif %}
+</section>
