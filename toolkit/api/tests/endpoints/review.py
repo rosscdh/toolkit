@@ -119,7 +119,6 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
         resp = self.client.delete(self.endpoint, {}, content_type='application/json')
         self.assertEqual(resp.status_code, 405)  # not allowed
 
-
     def test_customer_get(self):
         self.client.login(username=self.user.username, password=self.password)
         resp = self.client.get(self.endpoint)
