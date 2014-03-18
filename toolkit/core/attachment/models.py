@@ -97,9 +97,6 @@ class Revision(models.Model):
     def previous(self):
         return self.revisions.filter(pk__lt=self.pk).first()
 
-# removed because activities are now created in views. TODO: check if we get EVERYTHING via views
-# post_save.connect(on_revision_post_save, sender=Revision)
-
 from .signals import (ensure_revision_slug,
                       set_item_is_requested_false,
                       ensure_revision_reviewdocument_object,
