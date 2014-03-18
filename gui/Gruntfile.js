@@ -59,7 +59,7 @@ module.exports = function (grunt) {
             options : {
                 context : {
                     staticBase : '<%= DJANGO_STATIC_BASE_PATH %>',
-                    staticPath : '<%= APP_STATIC_PATH %>',
+                    staticPath : '',
                     apiBaseUrl : '/api/v1/'
                 }
             }
@@ -147,8 +147,11 @@ module.exports = function (grunt) {
           {src: ['img/**'], dest: '<%= PRODUCTION_PATH %>' + '<%= APP_STATIC_PATH %>'},
           {src: ['fonts/**'], dest: '<%= PRODUCTION_PATH %>' + '<%= APP_STATIC_PATH %>'},
           {src: ['partial/**'], dest: '<%= PRODUCTION_PATH %>' + '<%= APP_STATIC_PATH %>'},
-          {src: ['bower_components/angular-ui-utils/ui-utils-ieshiv.min.js'], dest: '<%= PRODUCTION_PATH %>' + '<%= APP_STATIC_PATH %>'},
-          {src: ['bower_components/font-awesome/fonts/**'], dest: '<%= PRODUCTION_PATH %>' + '<%= APP_STATIC_PATH %>',filter:'isFile',expand:true}
+          {src: ['partial/**'], dest: '<%= PRODUCTION_PATH %>' + '<%= APP_STATIC_PATH %>'},
+          {src: ['bower_components/jquery/**'], dest: '<%= PRODUCTION_PATH %>' + '<%= APP_STATIC_PATH %>'},
+          {src: ['bower_components/jquery-ui/**'], dest: '<%= PRODUCTION_PATH %>' + '<%= APP_STATIC_PATH %>'},
+          {src: ['bower_components/bootstrap/**'], dest: '<%= PRODUCTION_PATH %>' + '<%= APP_STATIC_PATH %>'},
+          {src: ['bower_components/angular/**'], dest: '<%= PRODUCTION_PATH %>' + '<%= APP_STATIC_PATH %>'}
           // {src: ['bower_components/select2/*.png','bower_components/select2/*.gif'], dest:'dist/css/',flatten:true,expand:true},
           // {src: ['bower_components/angular-mocks/angular-mocks.js'], dest: 'dist/'}
         ]
@@ -218,7 +221,7 @@ module.exports = function (grunt) {
     concat: {
       main: {
         src: ['<%= dom_munger.data.appjs %>','<%= ngtemplates.main.dest %>'],
-        dest: 'temp/app.full.js'
+        dest: '<%= PRODUCTION_PATH %>' + '/app.full.min.js'
       }
     },
     ngmin: {
@@ -296,9 +299,9 @@ module.exports = function (grunt) {
     grunt.option("API_SERVER", 'http://localhost:8001/');
 
     //djangoProd
-    grunt.task.run('preprocess:djangoProd','jshint','clean:before','less','dom_munger:readcss','dom_munger:readscripts','ngtemplates','replace:template_paths','cssmin','concat','ngmin','uglify','copy','dom_munger:removecss','dom_munger:addcss','dom_munger:removescripts','dom_munger:addscript');
+    grunt.task.run('preprocess:djangoProd','jshint','clean:before','less','dom_munger:readcss','dom_munger:readscripts','ngtemplates','replace:template_paths','cssmin','concat'/*,'ngmin','uglify'*/,'copy','dom_munger:removecss','dom_munger:addcss','dom_munger:removescripts','dom_munger:addscript');
 
-    grunt.task.run('htmlmin','imagemin','clean:after');
+    grunt.task.run('htmlmin'/*,'imagemin'*//*,'clean:after'*/);
   });
 
   grunt.event.on('watch', function(action, filepath) {
