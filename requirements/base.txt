@@ -68,3 +68,7 @@ raven # getsentry
 bunch
 crocodoc
 -e git+https://github.com/rosscdh/django-crocodoc.git#egg=django-crocodoc
+
+
+# abridge integration: django-abridge
+-e git+https://github.com/rosscdh/django-abridge.git#egg=django-abridge
