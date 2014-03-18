@@ -55,12 +55,16 @@ def crocodoc_webhook_event_recieved(sender, verb, document, target, attachment_n
     """
     user_pk, user_full_name = user_info
     # @TODO cehck this user still exists
-    user = User.objects.get(pk=user_pk)
+    try:
+        user = User.objects.get(pk=user_pk)
+    except User.DoesNotExist:
+        user = None
 
-    send_activity_log.send(user, **{
-        'actor': user,
-        'verb': verb,
-        'action_object': target.item,
-        'target': target.item.matter,
-        'message': verb
-    })
+    if hasattr(target, 'item') is True:
+        send_activity_log.send(user, **{
+            'actor': user,
+            'verb': verb,
+            'action_object': target.item,
+            'target': target.item.matter,
+            'message': verb
+        })
