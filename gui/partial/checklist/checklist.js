@@ -921,6 +921,8 @@ angular.module('toolkit-gui')
 			};
 			var itemToUpdate = null;
 
+			$scope.data.dragging=false;
+
 			function getItemIDs( item ) {
 				return item.slug;
 			}
@@ -1006,6 +1008,7 @@ angular.module('toolkit-gui')
 		 */
 		$scope.checklistItemSortableOptions = {
 			'stop':  recalculateCategories, /* Fires once the drag and drop event has finished */
+			'start': function() { $scope.data.dragging=true; $scope.$apply();},
 			'connectWith': ".group",
 			'axis': 'y',
 			'distance': 15,
