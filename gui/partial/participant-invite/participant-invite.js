@@ -49,7 +49,8 @@ angular.module('toolkit-gui')
 		 * @type {Object}
 		 */
 		$scope.data = {
-			'invitee': { 'email': '', 'message': '', 'isNew': false }
+			'invitee': { 'email': '', 'message': ''},
+            'isNew': false
 		};
 
 
@@ -63,18 +64,42 @@ angular.module('toolkit-gui')
 		 * @method				checkIfUserExists
 		 * @memberof			ParticipantInviteCtrl
 		 */
-        $scope.checkIfUserExists = function () {
+        $scope.checkIfUserExists = function (lawyerObligatory) {
             if ($scope.data.invitee.email != null && $scope.data.invitee.email.length>0) {
                 $scope.data.validationError = false;
 
                 participantService.getByEmail( $scope.data.invitee.email ).then(
                     function success(response) {
                         if (response.count===1){
-                            $scope.data.invitee.isNew = false;
-                            $scope.data.invitee.participant = response.results[0];
+                            var p = response.results[0];
+
+                            $scope.data.isNew = false;
+                            if (lawyerObligatory && p.user_class !== 'lawyer') {
+                                $scope.data.validationError = true;
+                                $scope.data.isParticipant = true;
+                                $scope.data.participant = null;
+                            } else if (lawyerObligatory==null && p.user_class == 'lawyer'){
+                                $scope.data.isLawyer = true;
+                                $scope.data.validationError = true;
+                                $scope.data.participant = null;
+                            } else {
+                                $scope.data.isParticipant = false;
+                                $scope.data.isLawyer = false;
+
+                                $scope.data.participant = p;
+                                $scope.data.invitee.first_name = p.first_name;
+                                $scope.data.invitee.last_name = p.last_name;
+                            }
+
                         } else {
-                            $scope.data.invitee.isNew = true;
-                            $scope.data.invitee.participant = null;
+                            $scope.data.isParticipant = false;
+                            $scope.data.isLawyer = false;
+                            $scope.data.isNew = true;
+                            $scope.data.participant = null;
+
+                            if(lawyerObligatory){
+                                $scope.data.validationError = true;
+                            }
                         }
                     },
                     function error() {
@@ -83,8 +108,8 @@ angular.module('toolkit-gui')
                 );
             } else {
                 $scope.data.validationError = true;
-                $scope.data.invitee.isNew = false;
-                $scope.data.invitee.participant = null;
+                $scope.data.isNew = false;
+                $scope.data.participant = null;
             }
         };
 
@@ -102,7 +127,20 @@ angular.module('toolkit-gui')
 				function success(response) {
                     participantService.getByURL(response.url).then(
                         function success(participant){
-                            $scope.participants.push(participant);
+                            var results = jQuery.grep( $scope.participants, function( p ){ return p.username===participant.username; } );
+                            if( results.length===0 ) {
+                                $scope.participants.push(participant);
+                            }
+
+                            //reset form
+                            $scope.data.invitee= {'email':'','first_name':'', 'last_name':'', 'message':''};
+                            $scope.data.isNew = false;
+                            $scope.data.isParticipant = false;
+                            $scope.data.isLawyer = false;
+                            $scope.data.participant = null;
+                            $scope.data.validationError = false;
+                            $scope.data.showAddLawyer=false;
+                            $scope.data.showAddParticipant=false;
                         },
                         function error(err){
                             toaster.pop('error', "Error!", "Unable to load participant");
