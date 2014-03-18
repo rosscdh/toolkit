@@ -47,7 +47,7 @@
             <span class="dropdown-arrow dropdown-arrow-inverse dropdown-small"></span>
             <ul class="dropdown-menu dropdown-inverse">
                 <li><a href="javascript:;" filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)">Upload File</a></li>
-                <li><a href="javascript:;" data-toggle="modal" data-target="#requestFileModal" ng-click="requestRevision(data.selectedItem)">Request Revision</a></li>
+                <li><a href="javascript:;" data-toggle="modal" data-target="#requestFileModal" ng-click="requestRevision(data.selectedItem)">Request File</a></li>
             </ul>
         </div>
 
@@ -184,8 +184,8 @@
 
     <div class="item-help border-on-dragover" ng-hide="data.selectedItem.latest_revision||data.uploading||data.selectedItem.is_requested">
         <span class="fui-upload"></span>
-        <h4>Upload a first revision</h4>
-        Upload a first draft of this document. Move your mouse to the green upload bar at the top of this item to either upload a file or request one from another participant. You can also drag a document directly on a checklist item to add it as a revision.
+        <h4>Upload a file</h4>
+        Upload a first draft of this document. Click Add File to upload one, drag one from your computer directly into this panel or request a file from someone else. You can also drag documents directly on the checklist item on the left.
     </div>
 
     <div class="item-help" ng-show="data.selectedItem.is_requested&&!data.selectedItem.latest_revision">

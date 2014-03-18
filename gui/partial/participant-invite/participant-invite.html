@@ -1,19 +1,35 @@
 <div class="modal-content">
 	<div class="modal-header">
 		<h4 class="modal-title" id="myModalLabel">Matter Participants</h4>
-		<div class="sub">A Matter Participant is a high level user who can see the checklist and the revisions that have been added. This should be <u>your client</u> and your <u>co-counsel</u> only.</div>
 	</div>
 	<div class="modal-body">
 		<h5 ng-show="participants.length>0">Existing Participants</h5>
-		<ul class="list-unstyled">
+		<ul class="list-unstyled participants">
 			<li ng-repeat="person in participants">
+                <span class="user" ng-bind="person | initials"></span>
                 <label ng-bind="person | fullname"></label>
 				<small ng-show="person.username==currentUser.username">(you)</small>
 				<a class="text-danger" ng-show="person.username!==currentUser.username" href="javascript:;" ng-click="revoke(person)"><small>Revoke access</small></a>
 			</li>
 		</ul>
+		<br />
+		<h5>Add New Participant</h5>
+		<div class="row">
+			<div class="col-sm-6">
+				<a href="#" class="btn btn-primary">Add a Lawyer</a>
+				<br />
+				<p class="note">Adding a lawyer to this matter will give them full access to modify the checklist, add files and manage the transaction.</p>
+			</div>
+			<div class="col-sm-6">
+				<a href="#" class="btn btn-info">Add a Client</a>
+				<br />
+				<p class="note">
+				Adding a client to the checklist will give them access to view and annotate documents and discuss checklist items. They can not modify the checklist structure or view previous revisions of documents.
+				</p>
+			</div>
+		</div>
 
-		<h5>Add a participant</h5>
+<!-- 
 		<form class="form" ng-submit="invite()">
 			<div class="form-group" ng-class="{'has-success': data.invitee.participant, 'has-warning': data.invitee.isNew, 'has-error': data.validationError }">
 				<input type="email" id="inviteeEmail" class="form-control form-control-full-width input-sm" ng-model="data.invitee.email"
@@ -31,7 +47,7 @@
 			<div class="form-group">
 				<button class="btn btn-primary btn-wide btn-sm" id="addParticipant" ng-disabled="data.validationError">Add participant</button>
 			</div>
-		</form>
+		</form> -->
 	</div>
 	<div class="modal-footer">
 		<!--<button class="btn btn-primary" ng-click="ok()">OK</button>//-->
