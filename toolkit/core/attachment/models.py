@@ -59,6 +59,9 @@ class Revision(models.Model):
     # these alternatives may be set as the "current" if the lawyer approves
     alternatives = models.ManyToManyField('attachment.Revision', null=True, blank=True, symmetrical=False, related_name="parent")
 
+    # True by default, so that on create of a new one, it's set as the current revision
+    is_current = models.BooleanField(default=True)
+
     data = JSONField(default={}, blank=True)
 
     date_created = models.DateTimeField(auto_now=False, auto_now_add=True, db_index=True)
