@@ -1,4 +1,4 @@
-describe('ViewDocumentCtrl', function() {
+describe('ViewReviewCtrl', function() {
 
 	beforeEach(module('toolkit-gui'));
 
@@ -6,7 +6,7 @@ describe('ViewDocumentCtrl', function() {
 
     beforeEach(inject(function($rootScope, $controller) {
       scope = $rootScope.$new();
-      ctrl = $controller('ViewDocumentCtrl', {$scope: scope});
+      ctrl = $controller('ViewReviewCtrl', {$scope: scope});
     }));	
 
 	it('should ...', inject(function() {

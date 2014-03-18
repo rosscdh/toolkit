@@ -107,8 +107,11 @@ html,body, div.full
 
 	table.checklist {
 		background-color:white;
-		margin-top:20px;
-		
+		margin-top:10px;
+		margin-bottom:13px;
+		tr.category-uncategorized th.category {
+			color:#ccc;
+		}
 		tr {
 			border-top:5px solid #f2f2f2;
 			cursor:pointer;
@@ -674,7 +677,37 @@ html,body, div.full
 	}
 }
 
-#closing {
+
+.modal-content {
+	ul.participants {
+		li {
+			margin:10px 0px;
+			.user {
+				font-weight:normal;
+				color:#aaa;
+				border:none;
+				background-color:#FFF;
+				padding:8px;
+				font-size:12px;
+				border-radius: 40px;				
+			}
+			label {
+				font-weight:normal;
+
+			}
+		}
+	}
+	p.note {
+		font-size:13px;
+		line-height:17px;
+		color:#888;
+		margin:10px 0px;
+	}
+}
+
+
+
+/* #closing {
 	background-color:lighten(@silver, 18%);
 	table {
 		width:80%;
@@ -740,6 +773,7 @@ html,body, div.full
 		}
 	}
 }
+*/
 
 @signature :	darken(@belize-hole, 15%);
 
