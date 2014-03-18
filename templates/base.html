@@ -135,6 +135,8 @@
         {% endif %}
     {% endblock %}
 
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
     <script type="text/javascript">
     // <![CDATA[
     var GLOBALS = { {% for key, value in GLOBALS.items %}"{{ key }}": "{{ value }}"{% if not forloop.last %},{% endif %}{% endfor %} };

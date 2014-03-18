@@ -16,5 +16,5 @@
     <h2><a href="#" target="_blank">Accept this invitation to get started</a></h2>
 
     <h4 style="margin-bottom: 0;"><b>Questions?</b></h4>
-    <p style="margin-top: 5px;">Contact Joe Bloggs at <a href="mailto:sogobloggs@gmail.com" target="_blank">sogobloggs@gmail.com</a>.</p>
+    <p style="margin-top: 5px;">Contact {{ user.get_full_name }} at <a href="mailto:{{ user.email }}" target="_blank">{{ user.email }}</a>.</p>
 {% endblock %}
