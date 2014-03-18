@@ -26,6 +26,6 @@
     "font-awesome": "~4.0",
     "angular-ui-sortable": "~0.12.1",
     "ez-confirm": "*",
-    "ng-file-upload": "~1.2.8"
+    "angular-file-upload": "https://github.com/leejsinclair/angular-file-upload.git#delay-remove-dragover"
   }
 }
