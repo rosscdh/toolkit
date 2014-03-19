@@ -14,6 +14,8 @@ angular.module('toolkit-gui')
  * @param  {Object} matterCategoryService A custom angular service designed to work with MATTER CATEGORY end-points
  * @param  {Object} participantService    A custom angular service designed to work with USER end-points
  * @param  {Object} activityService       A custom angular service designed to work with ACTIVITY end-points
+ * @param  {Object} userService           A custom angular service designed to work with USER end-points
+ * @param  {Object} commentService        A custom angular service designed to work with COMMENT end-points
  * @param  {Function} $timeout            An angular wrapper for setTimeout that allows angular to keep track of when to update views
  */
 .controller('ChecklistCtrl', [
@@ -31,8 +33,24 @@ angular.module('toolkit-gui')
 	'searchService',
 	'activityService',
 	'userService',
+    'commentService',
 	'$timeout',
-	function($scope, $rootScope, $routeParams, smartRoutes, ezConfirm, toaster, $modal, matterService, matterItemService, matterCategoryService, participantService, searchService, activityService, userService, $timeout){
+	function($scope,
+             $rootScope,
+             $routeParams,
+             smartRoutes,
+             ezConfirm,
+             toaster,
+             $modal,
+             matterService,
+             matterItemService,
+             matterCategoryService,
+             participantService,
+             searchService,
+             activityService,
+             userService,
+             commentService,
+             $timeout){
 		/**
 		 * Scope based data for the checklist controller
 		 * @memberof			ChecklistCtrl
@@ -1111,5 +1129,30 @@ angular.module('toolkit-gui')
 			);
 		};
 
+
+        /**
+         *     ____                                     _         _                     _ _ _
+         *    / ___|___  _ __ ___  _ __ ___   ___ _ __ | |_ ___  | |__   __ _ _ __   __| | (_)_ __   __ _
+         *   | |   / _ \| '_ ` _ \| '_ ` _ \ / _ \ '_ \| __/ __| | '_ \ / _` | '_ \ / _` | | | '_ \ / _` |
+         *   | |__| (_) | | | | | | | | | | |  __/ | | | |_\__ \ | | | | (_| | | | | (_| | | | | | | (_| |
+         *    \____\___/|_| |_| |_|_| |_| |_|\___|_| |_|\__|___/ |_| |_|\__,_|_| |_|\__,_|_|_|_| |_|\__, |
+         *                                                                                          |___/
+         */
+
+        $scope.newComment = function() {
+			var matterSlug = $scope.data.slug;
+			var itemSlug = $scope.data.selectedItem.slug;
+
+			commentService.create(matterSlug, itemSlug, $scope.data.newcomment).then(
+				 function success(result){
+					//$scope.data.itemcomments = result;
+				 },
+				 function error(err){
+				 	if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to create item comment.") {
+						toaster.pop('error', "Error!", "Unable to create item comment.");
+					}
+				 }
+			);
+		};
 
 }]);
