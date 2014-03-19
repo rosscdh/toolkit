@@ -23,7 +23,7 @@ from toolkit.apps.workspace.services import EnsureCustomerService
 from ..serializers import SimpleUserWithReviewUrlSerializer, SimpleUserSerializer
 
 import logging
-from toolkit.core.services import MatterActivityEventService
+from toolkit.core.services.matter_activity import MatterActivityEventService
 
 logger = logging.getLogger('django.request')
 
