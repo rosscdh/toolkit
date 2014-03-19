@@ -3,6 +3,8 @@ from django.dispatch import Signal, receiver
 from django.template.defaultfilters import slugify
 from django.db.models.signals import pre_save, post_save, m2m_changed
 
+from . import _model_slug_exists
+
 from .models import Workspace, Tool
 
 import uuid
@@ -84,17 +86,6 @@ def _update_marker(marker_name, next_status, actor_name, instance, **kwargs):
 #
 # End Marker Signals
 #
-
-
-def _model_slug_exists(model, queryset=None, **kwargs):
-    #
-    # allow override of queryset
-    #
-    queryset = model.objects if queryset is None else queryset
-    try:
-        return queryset.get(**kwargs)
-    except model.DoesNotExist:
-        return None
 
 
 @receiver(pre_save, sender=Workspace, dispatch_uid='workspace.ensure_workspace_slug')

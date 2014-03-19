@@ -8,6 +8,9 @@ from django.conf import settings
 from actstream import action
 from django.dispatch import receiver
 from django.dispatch.dispatcher import Signal
+
+#from .services import LawPalAbridgeService  # import the server
+
 import logging
 import requests
 

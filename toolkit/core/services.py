@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from toolkit.api.serializers import ItemSerializer
 from toolkit.api.serializers.user import LiteUserSerializer
-from toolkit.core.signals import send_activity_log
+from .signals import send_activity_log
 
 from abridge.services import AbridgeService
 
