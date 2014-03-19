@@ -1,6 +1,7 @@
 *.diff
 gui/dist/*
 gui/bower_components/*
+toolkit/production_settings\.py # ignoring the test productions
 setup.cfg
 .sonar
 hellosign
