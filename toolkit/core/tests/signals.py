@@ -10,8 +10,9 @@ from actstream.models import action_object_stream, model_stream
 from toolkit.casper import BaseScenarios
 from toolkit.core.attachment.models import Revision
 from toolkit.core.item.models import Item
-from toolkit.core.services import MatterActivityEventService
-from toolkit.core.signals import send_activity_log
+
+from toolkit.core.services.matter_activity import MatterActivityEventService
+from toolkit.core.signals.activity_listener import send_activity_log
 
 cache_key = 'activity_stream_signal_received_keys'
 
@@ -42,7 +43,7 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         cache_obj = cache.get(cache_key)
         self.assertItemsEqual(cache_obj.keys(), ['sender', 'signal', 'actor', 'verb', 'action_object', 'target', 'item',
                                                  'user', 'message'])
-        self.assertItemsEqual(cache_obj.values(), ["<class 'toolkit.core.services.MatterActivityEventService'>",
+        self.assertItemsEqual(cache_obj.values(), ["<class 'toolkit.core.services.matter_activity.MatterActivityEventService'>",
                                                    "<class 'django.dispatch.dispatcher.Signal'>",
                                                    "<class 'django.contrib.auth.models.User'>",
                                                    u'created',
@@ -120,15 +121,15 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         self.assertEqual(stream[0].data['message'], u'Lawyer Test destroyed a revision for Test Item #1')
 
     def test_customer_stream(self):
-        #from actstream.models import Action
+        from actstream.models import Action
         # just for testing during development, only works because of hard set starting time in target_by_customer_stream
         workspace = mommy.make('workspace.Workspace', name='Action Created by Signal Workspace', lawyer=self.lawyer)
         mommy.make('item.Item', name='Test Item #1', matter=workspace)
         time.sleep(2)
         mommy.make('item.Item', name='Test Item #2', matter=workspace)
 
-        # stream = Action.objects.target_by_customer_stream(workspace, self.lawyer)
-        # self.assertEqual(len(stream), 1)  # shall only find the newest entry, the 2 other ones are too old.
+        stream = Action.objects.target_by_customer_stream(workspace, self.lawyer)
+        self.assertEqual(len(stream), 1)  # shall only find the newest entry, the 2 other ones are too old.
 
     """
         TODO:
