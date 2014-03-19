@@ -939,6 +939,13 @@ body.gui .main-content {
   margin-top: 0px;
   padding-bottom: 11px;
 }
+.navbar.checklist-nav li.notifications a [class*="fui-"] {
+  color: #848484;
+}
+.navbar.checklist-nav li.notifications a.unread [class*="fui-"] {
+  color: #f2c81d;
+  text-shadow: 0px 0px 10px #232323;
+}
 #requests .requests-header {
   background-color: #ffffff;
   margin-bottom: 20px;
