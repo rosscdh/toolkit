@@ -30,8 +30,9 @@ angular.module('toolkit-gui')
 	'participantService',
 	'searchService',
 	'activityService',
+	'userService',
 	'$timeout',
-	function($scope, $rootScope, $routeParams, smartRoutes, ezConfirm, toaster, $modal, matterService, matterItemService, matterCategoryService, participantService, searchService, activityService, $timeout){
+	function($scope, $rootScope, $routeParams, smartRoutes, ezConfirm, toaster, $modal, matterService, matterItemService, matterCategoryService, participantService, searchService, activityService, userService, $timeout){
 		/**
 		 * Scope based data for the checklist controller
 		 * @memberof			ChecklistCtrl
@@ -48,7 +49,8 @@ angular.module('toolkit-gui')
 			'selectedCategory': null,
 			'categories': [],
 			'users': [],
-			'searchData': searchService.data()
+			'searchData': searchService.data(),
+			'usdata': userService.data()
 		};
 
 
@@ -63,6 +65,8 @@ angular.module('toolkit-gui')
 					matterService.selectMatter(singleMatter);
 					$scope.initialiseMatter( singleMatter );
 					$scope.initializeActivityMatterStream( singleMatter );
+
+					userService.setCurrent( singleMatter.current_user );
 				},
 				function error(err){
 					toaster.pop('error', "Error!", "Unable to load matter");
@@ -474,27 +478,31 @@ angular.module('toolkit-gui')
 			var matterSlug = $scope.data.slug;
 			var itemSlug = item.slug;
 
-			item.uploading = true;
+			var user = userService.data().current;
 
-			matterItemService.uploadRevisionFile( matterSlug, itemSlug, $files ).then(
-				function success( revision ) {
-					revision.uploaded_by = matterService.data().selected.current_user;
-					item.latest_revision = revision;
+			if( user.user_class === 'lawyer' ) {
+				item.uploading = true;
 
-					//Reset previous revisions
-					item.previousRevisions = null;
-					$scope.data.showPreviousRevisions = false;
-					item.uploadingPercent = 0;
-					item.uploading = false;
-				},
-				function error(err) {
-					toaster.pop('error', "Error!", "Unable to upload revision");
-					item.uploading = false;
-				},
-				function progress( num ) {
-					item.uploadingPercent = num;
-				}
-			);
+				matterItemService.uploadRevisionFile( matterSlug, itemSlug, $files ).then(
+					function success( revision ) {
+						revision.uploaded_by = matterService.data().selected.current_user;
+						item.latest_revision = revision;
+
+						//Reset previous revisions
+						item.previousRevisions = null;
+						$scope.data.showPreviousRevisions = false;
+						item.uploadingPercent = 0;
+						item.uploading = false;
+					},
+					function error(err) {
+						toaster.pop('error', "Error!", "Unable to upload revision");
+						item.uploading = false;
+					},
+					function progress( num ) {
+						item.uploadingPercent = num;
+					}
+				);
+			}
 		};
 
 		/**
@@ -787,8 +795,11 @@ angular.module('toolkit-gui')
 			});
 
 			modalInstance.result.then(
-				function ok(result) {
-					revision.reviewers.push(result);
+				function ok(reviewer) {
+                    var results = jQuery.grep( revision.reviewers, function( rev ){ return rev.username===reviewer.username; } );
+                    if( results.length===0 ) {
+					    revision.reviewers.push(reviewer);
+					}
 				},
 				function cancel() {
 					//
@@ -837,7 +848,7 @@ angular.module('toolkit-gui')
 
 			matterItemService.deleteRevisionReviewRequest(matterSlug, item.slug, reviewer).then(
 				function success(){
-					var index = jQuery.inArray( reviewer.url, item.latest_revision.reviewers );
+					var index = jQuery.inArray( reviewer, item.latest_revision.reviewers );
 					if( index>=0 ) {
 						// Remove reviewer from list in RAM array
 						item.latest_revision.reviewers.splice(index,1);
@@ -921,6 +932,8 @@ angular.module('toolkit-gui')
 			};
 			var itemToUpdate = null;
 
+			$scope.data.dragging=false;
+
 			function getItemIDs( item ) {
 				return item.slug;
 			}
@@ -933,6 +946,9 @@ angular.module('toolkit-gui')
 				if(cats[i].name != null) {
 					APIUpdate.categories.push(cats[i].name);
 				}
+
+				items = jQuery.grep( items, function(item){ return item; });
+
 				jQuery.merge(APIUpdate.items, jQuery.map( items, getItemIDs ));
 
 				// Update local data, setting category name
@@ -1006,10 +1022,11 @@ angular.module('toolkit-gui')
 		 */
 		$scope.checklistItemSortableOptions = {
 			'stop':  recalculateCategories, /* Fires once the drag and drop event has finished */
+			'start': function() { $scope.data.dragging=true; $scope.$apply();},
 			'connectWith': ".group",
 			'axis': 'y',
 			'distance': 15,
-			'delay': 50
+			'delay': 10
 		};
 
 		/**
@@ -1019,10 +1036,15 @@ angular.module('toolkit-gui')
 		 * @type {Object}
 		 */
 		$scope.checklistCategorySortableOptions = {
+			'update': function( e,ui ) {
+				if( ui.item.scope().cat.name===null ) {
+					ui.item.sortable.cancel();
+				}
+			},
 			'stop':  recalculateCategories, /* Fires once the drag and drop event has finished */
 			'axis': 'y',
 			'distance': 15,
-			'delay': 50
+			'delay': 10
 		};
 
 

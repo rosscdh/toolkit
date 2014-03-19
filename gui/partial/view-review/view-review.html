@@ -1,6 +1,11 @@
 <div class="modal-content">
 	<div class="modal-header">
-		<h4 class="modal-title">Review from {{ reviewer.name }} for {{ revision.name }}</h4>
+		<h4 class="modal-title">
+            Review from {{ reviewer.name }} for {{ revision.name }}
+            <span class="pull-right"><span class="fui-lock"></span> Visible to
+                <span ng-repeat="r in usersWithAccess" class="user">{{ r.initials }}</span>
+            </span>
+        </h4>
 	</div>
 	<div class="modal-body">
 		<iframe src="{{ reviewer.user_review_url }}" style="width: 100%; height: 500px;"></iframe>

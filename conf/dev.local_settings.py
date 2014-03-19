@@ -10,6 +10,12 @@ PROJECT_ENVIRONMENT = 'dev'
 DEBUG = True
 COMPRESSION_ENABLED = False
 
+if TEST_PREPROD is True:
+    STATICFILES_DIRS = (
+        # These are the production files
+        # not that static is in gui/dist/static *not to be confused with the django {{ STATIC_URL }}ng/ which will now point correctly
+        ("ng", os.path.join(SITE_ROOT, 'gui', 'dist')),
+    )
 
 INSTALLED_APPS = INSTALLED_APPS + (
     'debug_toolbar',
@@ -44,3 +50,18 @@ DEBUG_TOOLBAR_CONFIG = {
 CROCDOC_API_KEY = 'pRzHhZS4jaGes193db28cwyu'
 
 AUTHY_API_KEY = 'e19afad3c1c207a03ef6a1dcb2adb0c3'
+
+
+#
+# Abridge Integration
+#
+
+ABRIDGE_ENABLED = False if sys.argv[1] in ['syncdb', 'migrate', 'test', 'loaddata'] else True  # disable when we are syncing or migrating or loadingdata
+
+ABRIDGE_PROJECT = 'lawpal-digest'
+
+ABRIDGE_API_URL = 'http://localhost:8001/'
+ABRIDGE_ACCESS_KEY_ID = ''
+ABRIDGE_SECRET_ACCESS_KEY = ''
+ABRIDGE_USERNAME = ''
+ABRIDGE_PASSWORD = ''
