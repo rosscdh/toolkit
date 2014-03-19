@@ -1,0 +1,71 @@
+{% extends 'notification/base.html' %}{% load url from future %}{% load humanize %}
+
+{% block inbox %}
+{% csrf_token %}
+
+{% if object_list %}<button id="mark-all-as-read" data-url="{% url 'notification:inbox-mark-all-read' %}" class="btn btn-info btn-embossed">Mark all as read</button>{% endif %}
+
+{% for notice in object_list %}
+
+<ul class="list-unstyled">
+    <li>
+        <div name="#mark-as-read-{{ notice.pk }}">
+            {{ notice.message.message }} - {{ notice.message.date|naturaltime }}
+            <a href="javascript:;" data-url="{% url 'notification:inbox-read' pk=notice.pk %}" data-pk="{{ notice.pk }}" class="mark-as-read">Mark as read</a>
+        </div>
+    </li>
+</ul>
+{% endfor %}
+
+{% endblock %}
+
+
+{% block js %}
+{{ block.super }}
+<script>
+$(document).ready(function () {
+    'use strict';
+
+    $('a.mark-as-read').on("click", function() {
+        var self = $(this);
+        var data = self.data()
+
+        $.ajax({
+            "type": 'DELETE',
+            "url": data.url,
+            "dataType": 'json',
+            "contentType": 'application/json',
+            "beforeSend": function (jqXHR, settings) {
+                // Pull the token out of the DOM.
+                jqXHR.setRequestHeader('X-CSRFToken', $('input[name=csrfmiddlewaretoken]:first').val());
+            },
+            "success": function ( data ) {
+            }
+        });
+
+        return false; //this is critical to stop the click event which will trigger a normal file download!
+    });
+
+    $('button#mark-all-as-read').on("click", function() {
+        var self = $(this);
+        var data = self.data()
+
+        $.ajax({
+            "type": 'DELETE',
+            "url": data.url,
+            "dataType": 'json',
+            "contentType": 'application/json',
+            "beforeSend": function (jqXHR, settings) {
+                // Pull the token out of the DOM.
+                jqXHR.setRequestHeader('X-CSRFToken', $('input[name=csrfmiddlewaretoken]:first').val());
+            },
+            "complete": function ( data ) {
+            }
+        });
+
+        return false; //this is critical to stop the click event which will trigger a normal file download!
+    });
+
+});
+</script>
+{% endblock %}
