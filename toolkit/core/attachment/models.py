@@ -8,6 +8,8 @@ from toolkit.utils import get_namedtuple_choices
 
 from jsonfield import JSONField
 
+from .managers import RevisionManager
+
 import os
 
 BASE_REVISION_STATUS = get_namedtuple_choices('REVISION_STATUS', (
@@ -66,6 +68,8 @@ class Revision(models.Model):
 
     date_created = models.DateTimeField(auto_now=False, auto_now_add=True, db_index=True)
     date_modified = models.DateTimeField(auto_now=True, auto_now_add=True, db_index=True)
+
+    objects = RevisionManager()
 
     class Meta:
         # @BUSINESS RULE always return the oldest to newest

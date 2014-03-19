@@ -1,1 +1,2 @@
-from .signals import *  # noqa
+from .managers import *
+from .signals import *
