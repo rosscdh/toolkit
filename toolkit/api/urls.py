@@ -36,6 +36,7 @@ from .views import (ItemRevisionReviewersView,
 
 from .views import ItemEndpoint
 from .views import RevisionEndpoint
+from .views import ItemCommentEndpoint
 #from .views import WorkflowEndpoint
 
 router = routers.SimpleRouter(trailing_slash=False)
@@ -80,6 +81,7 @@ urlpatterns = router.urls + patterns('',
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/request_document/remind/?$', RemindRequestedRevisionInvitee.as_view(), name='revision_request_document_reminder'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/request_document/?$', MatterItemRequestRevisionView.as_view(), name='matter_item_request_doc'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/activity/?$', ItemActivityEndpoint.as_view(), name='item_activity'),
+    url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/comment/?$', ItemCommentEndpoint.as_view(), name='item_comment'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/?$', MatterItemView.as_view(), name='matter_item'),
     #
     # Revisions

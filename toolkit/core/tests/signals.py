@@ -42,13 +42,14 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         # in setUp the workspace was created which should have reached on_activity_received above:
         cache_obj = cache.get(cache_key)
         self.assertItemsEqual(cache_obj.keys(), ['sender', 'signal', 'actor', 'verb', 'action_object', 'target', 'item',
-                                                 'user', 'message'])
+                                                 'user', 'message', 'comment'])
         self.assertItemsEqual(cache_obj.values(), ["<class 'toolkit.core.services.matter_activity.MatterActivityEventService'>",
                                                    "<class 'django.dispatch.dispatcher.Signal'>",
                                                    "<class 'django.contrib.auth.models.User'>",
                                                    u'created',
                                                    "<class 'toolkit.apps.workspace.models.Workspace'>",
                                                    "<class 'toolkit.apps.workspace.models.Workspace'>",
+                                                   "<type 'NoneType'>",
                                                    "<type 'NoneType'>",
                                                    "<type 'NoneType'>",
                                                    "<type 'NoneType'>"])
@@ -120,6 +121,14 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         self.assertEqual(stream[0].actor, self.lawyer)
         self.assertEqual(stream[0].data['message'], u'Lawyer Test destroyed a revision for Test Item #1')
 
+    def test_add_comment(self):
+        item = mommy.make('item.Item', name='Test Item #1', matter=self.matter)
+        comment_text = u'Sleep with one eye open'
+        MatterActivityEventService(self.matter).add_comment(self.lawyer, item, comment_text)
+        stream = model_stream(Item)
+        self.assertEqual(len(stream), 2)  # create item, and add comment -> 2
+        self.assertEqual(stream[0].data['comment'], comment_text)
+
     def test_customer_stream(self):
         from actstream.models import Action
         # just for testing during development, only works because of hard set starting time in target_by_customer_stream
@@ -130,11 +139,3 @@ class ActivitySignalTest(BaseScenarios, TestCase):
 
         stream = Action.objects.target_by_customer_stream(workspace, self.lawyer)
         self.assertEqual(len(stream), 1)  # shall only find the newest entry, the 2 other ones are too old.
-
-    """
-        TODO:
-            test created_revision (via API)
-            test deleted_revision (via API)
-            test added_user_as_reviewer
-            test removed_user_as_reviewer
-    """
