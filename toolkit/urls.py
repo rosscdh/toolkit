@@ -27,7 +27,7 @@ urlpatterns = patterns('',
     url(r'^workspace/', include('toolkit.apps.workspace.urls', namespace='workspace')),
 
     # apps
-    #url(r'^83b/', include('toolkit.apsp.eightythreeb.urls', namespace='eightythreeb')),
+    url(r'^83b/', include('toolkit.apps.eightythreeb.urls', namespace='eightythreeb')),
     url(r'^engagement-letters/', include('toolkit.apps.engageletter.urls', namespace='engageletter')),
 
     # reviews

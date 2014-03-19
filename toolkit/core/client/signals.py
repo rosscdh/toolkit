@@ -3,7 +3,7 @@ from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 from django.db.models.signals import pre_save
 
-from toolkit.apps.workspace.signals import _model_slug_exists
+from toolkit.apps.workspace import _model_slug_exists
 
 from .models import Client
 
