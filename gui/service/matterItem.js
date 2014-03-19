@@ -174,7 +174,7 @@ angular.module('toolkit-gui')
 
 				var api = matterItemResource();
 
-				 var updateFields = {
+				var updateFields = {
 					'slug': matterItem.slug,
 					'status': matterItem.status,
 					'name': matterItem.name,
