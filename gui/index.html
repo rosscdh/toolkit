@@ -35,6 +35,7 @@
   <script src="/static/ng/bower_components/ez-confirm/dist/ez-confirm-tpl.js"></script>
   <script src="/static/ng/bower_components/ng-file-upload/angular-file-upload-shim.min.js"></script> 
   <script src="/static/ng/bower_components/ng-file-upload/angular-file-upload.js"></script>
+  <script src="/static/ng/bower_components/raven-js/dist/raven.min.js"></script>
 
   <script type="text/javascript" src="//api.filepicker.io/v1/filepicker.js"></script>
 
@@ -45,6 +46,7 @@
   <script src="/static/ng/controllers/mock.js"></script>
 
   <!-- Service JS -->
+  <script src="/static/ng/service/base.js"></script>
   <script src="/static/ng/service/user.js"></script>
   <script src="/static/ng/service/matter.js"></script>
   <script src="/static/ng/service/matterItem.js"></script>
@@ -166,6 +168,7 @@
   <script language="javascript" data-remove="exclude">
     angular.module('toolkit-gui').constant('API_BASE_URL', '/api/v1/');
     angular.module('toolkit-gui').constant('STATUS_LEVEL', {'OK':0,'WARNING':1,'ERROR':2} );
+    angular.module('toolkit-gui').constant('SENTRY_PUBLIC_DSN', 'http://5584db708b75400fb439d4592c29fc9a@sentry.ambient-innovation.com/24' );
   </script>
 </div>{% endverbatim %}</body>
 </html>
