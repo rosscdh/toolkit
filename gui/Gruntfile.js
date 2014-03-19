@@ -59,7 +59,7 @@ module.exports = function (grunt) {
             options : {
                 context : {
                     staticBase : '<%= DJANGO_STATIC_BASE_PATH %>',
-                    staticPath : '<%= APP_STATIC_PATH %>',
+                    staticPath : '',
                     apiBaseUrl : '/api/v1/'
                 }
             }
@@ -136,7 +136,7 @@ module.exports = function (grunt) {
         overwrite: true,                 // overwrite matched source files
         replacements: [{
           from: 'partial/',
-          to: '/static/ng/partial/'
+          to: '<%= PRODUCTION_PATH %>' + 'partial/'
         }]
       }
     },
@@ -144,11 +144,14 @@ module.exports = function (grunt) {
       main: {
         files: [
           {src: ['index.html'], dest: '<%= PRODUCTION_PATH %>'},
-          {src: ['img/**'], dest: '<%= PRODUCTION_PATH %>' + '<%= APP_STATIC_PATH %>'},
-          {src: ['fonts/**'], dest: '<%= PRODUCTION_PATH %>' + '<%= APP_STATIC_PATH %>'},
-          {src: ['partial/**'], dest: '<%= PRODUCTION_PATH %>' + '<%= APP_STATIC_PATH %>'},
-          {src: ['bower_components/angular-ui-utils/ui-utils-ieshiv.min.js'], dest: '<%= PRODUCTION_PATH %>' + '<%= APP_STATIC_PATH %>'},
-          {src: ['bower_components/font-awesome/fonts/**'], dest: '<%= PRODUCTION_PATH %>' + '<%= APP_STATIC_PATH %>',filter:'isFile',expand:true}
+          {src: ['img/**'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['fonts/**'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['partial/**'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['bower_components/jquery/**'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['bower_components/jquery-ui/**'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['bower_components/bootstrap/**'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['bower_components/font-awesome/**'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['bower_components/angular/**'], dest: '<%= PRODUCTION_PATH %>'}
           // {src: ['bower_components/select2/*.png','bower_components/select2/*.gif'], dest:'dist/css/',flatten:true,expand:true},
           // {src: ['bower_components/angular-mocks/angular-mocks.js'], dest: 'dist/'}
         ]
@@ -212,7 +215,7 @@ module.exports = function (grunt) {
     cssmin: {
       main: {
         src:['temp/app.css','<%= dom_munger.data.appcss %>'],
-        dest:'<%= PRODUCTION_PATH %>' + '<%= APP_STATIC_PATH %>' + 'css/app.full.min.css'
+        dest:'<%= PRODUCTION_PATH %>' + 'css/app.full.min.css'
       }
     },
     concat: {
@@ -224,12 +227,12 @@ module.exports = function (grunt) {
     ngmin: {
       main: {
         src:'temp/app.full.js',
-        dest: 'temp/app.full.js'
+        dest: 'temp/app.full.ngmin.js'
       }
     },
     uglify: {
       main: {
-        src: 'temp/app.full.js',
+        src: 'temp/app.full.ngmin.js',
         dest:'<%= PRODUCTION_PATH %>' + 'app.full.min.js'
       }
     },
@@ -255,7 +258,7 @@ module.exports = function (grunt) {
         files: [{
           expand: true, cwd:'<%= PRODUCTION_PATH %>' + 'static/',
           src:['**/{*.png,*.jpg}'],
-          dest: '<%= PRODUCTION_PATH %>' + '<%= APP_STATIC_PATH %>'
+          dest: '<%= PRODUCTION_PATH %>'
         }]
       }
     },
@@ -292,13 +295,11 @@ module.exports = function (grunt) {
 
     console.log('>> target', target);
 
-    grunt.option("APP_STATIC_PATH", '/static/ng/');
-    grunt.option("API_SERVER", 'http://localhost:8001/');
 
     //djangoProd
     grunt.task.run('preprocess:djangoProd','jshint','clean:before','less','dom_munger:readcss','dom_munger:readscripts','ngtemplates','replace:template_paths','cssmin','concat','ngmin','uglify','copy','dom_munger:removecss','dom_munger:addcss','dom_munger:removescripts','dom_munger:addscript');
 
-    grunt.task.run('htmlmin','imagemin','clean:after');
+    grunt.task.run('htmlmin'/*,'imagemin'*//*,'clean:after'*/);
   });
 
   grunt.event.on('watch', function(action, filepath) {

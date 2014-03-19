@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
+from django.contrib.auth.models import User
 from django.dispatch import Signal, receiver
-from django.db.models.signals import m2m_changed
 
-from toolkit.apps.workspace.models import (Workspace,
-                                           InviteKey,)
+import dj_crocodoc.signals as crocodoc_signals
+
+from toolkit.apps.workspace.models import InviteKey
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
-
+from toolkit.core.signals import send_activity_log
 from .mailers import ParticipantAddedEmail
 
 
@@ -39,3 +40,31 @@ def participant_added(sender, matter, participant, user, note, **kwargs):
                    # so we force them to enter passwords etc
                    action_url=ABSOLUTE_BASE_URL(invite.get_absolute_url()))
 
+
+
+@receiver(crocodoc_signals.crocodoc_comment_create)
+@receiver(crocodoc_signals.crocodoc_comment_delete)
+@receiver(crocodoc_signals.crocodoc_annotation_highlight)
+@receiver(crocodoc_signals.crocodoc_annotation_strikeout)
+@receiver(crocodoc_signals.crocodoc_annotation_textbox)
+@receiver(crocodoc_signals.crocodoc_annotation_drawing)
+# @receiver(crocodoc_signals.crocodoc_annotation_point)  # dont record this event because its pretty useless and comes by default when they comment
+def crocodoc_webhook_event_recieved(sender, verb, document, target, attachment_name, user_info, crocodoc_event, **kwargs):
+    """
+    signal to handle any of the crocdoc signals
+    """
+    user_pk, user_full_name = user_info
+    # @TODO cehck this user still exists
+    try:
+        user = User.objects.get(pk=user_pk)
+    except User.DoesNotExist:
+        user = None
+
+    if hasattr(target, 'item') is True:
+        send_activity_log.send(user, **{
+            'actor': user,
+            'verb': verb,
+            'action_object': target.item,
+            'target': target.item.matter,
+            'message': verb
+        })

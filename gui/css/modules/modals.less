@@ -30,6 +30,15 @@
   .background-clip(border-box);
   .box-shadow(@modal-content-box-shadow);
   
+  h5 {
+    font-size:15px;
+    border-bottom:1px solid lighten(@silver, 12%);
+    line-height: 28px;
+  }
+  li {
+
+  }
+
   @media (max-width: 767px) {
   	& {
   		width: auto;
@@ -47,8 +56,8 @@
   .modal-header {
     padding: 10px 19px 9px 14px;
     border-bottom: 1px solid @modal-content-border-color;
-    background-color:@belize-hole;
-    color:white;
+    background-color:white;
+    color:darken(@gray,40%);
     .modal-title {
       margin: 0;
       font-size: ceil(@component-font-size-base * 1.10); // ~24px
@@ -83,11 +92,6 @@
   border-bottom: 1px solid @modal-content-border-color;
   background-color:white;
   color:darken(@gray,40%);
-  .sub {
-    font-size:13px;
-    color:@gray;
-    margin-top:5px;
-  }
 }
 
  // Close icon

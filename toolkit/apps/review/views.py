@@ -88,7 +88,7 @@ class ReviewRevisionView(DetailView):
                 "id": self.request.user.pk
             }, 
             "sidebar": 'auto',
-            "editable": True, # allow comments
+            "editable": self.is_current, # allow comments only if the item is current
             "admin": False, # noone should be able to delete other comments
             "downloadable": True, # everyone should be able to download a copy
             "copyprotected": False, # should not have copyprotection

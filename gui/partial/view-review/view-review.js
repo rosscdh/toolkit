@@ -77,5 +77,32 @@ angular.module('toolkit-gui')
 		 */
 		$scope.reviewer = reviewer;
 
+
+        $scope.initUserWithAccess = function(){
+            var reviewers = $scope.revision.reviewers;
+            var participants = matter.participants;
+            var usersWithAccess = [];
+
+            if ($scope.item.latest_revision.slug === $scope.revision.slug){
+                jQuery.each( participants, function( index, p ){
+                    var results = jQuery.grep( reviewers, function( r ){ return r.username===p.username; });
+                    if(results.length===0){
+                        usersWithAccess.push(p);
+                    }
+                });
+
+                $scope.usersWithAccess = jQuery.merge(usersWithAccess, reviewers);
+            } else {
+                jQuery.each( participants, function( index, p ){
+                    if(p.user_class === 'lawyer'){
+                        usersWithAccess.push(p);
+                    }
+                });
+                $scope.usersWithAccess = usersWithAccess;
+            }
+        };
+
+        $scope.initUserWithAccess();
+
 	}
 ]);

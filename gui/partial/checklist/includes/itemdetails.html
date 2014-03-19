@@ -1,5 +1,5 @@
  <div ng-show="data.selectedItem" ng-file-drop="onFileDropped($files, data.selectedItem);">
-    <h3>
+    <h3 ng-show="data.usdata.current.user_class=='lawyer'">
         <a href="javascript:;" ng-click="data.editItemTitle=data.selectedItem.name;data.showEditItemTitleForm=!data.showEditItemTitleForm;focus('eventEditItemTitle')"
                 ng-hide="data.showEditItemTitleForm">
             <span ng-bind="data.selectedItem.name"></span>
@@ -35,9 +35,19 @@
         </div>
     </h3>
 
+    <h3 ng-show="data.usdata.current.user_class!=='lawyer'">
+        <span ng-bind="data.selectedItem.name"></span>
+
+        <div class="item-description-toggle" ng-hide="data.showEditItemDescriptionForm">
+            <small class="text-muted">
+                <div btf-markdown="data.selectedItem.description | newlines"></div>
+            </small>
+        </div>
+    </h3>
+
     <!-- Begin option toolbar -->
     <div class="add-new">
-        <div class="btn-group">
+        <div class="btn-group" ng-show="data.usdata.current.user_class=='lawyer'">
             <button class="btn btn-sm btn-info btn-embossed btn-add" filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)"><span class="fui-upload"></span>
                 Add File
             </button>
@@ -47,11 +57,11 @@
             <span class="dropdown-arrow dropdown-arrow-inverse dropdown-small"></span>
             <ul class="dropdown-menu dropdown-inverse">
                 <li><a href="javascript:;" filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)">Upload File</a></li>
-                <li><a href="javascript:;" data-toggle="modal" data-target="#requestFileModal" ng-click="requestRevision(data.selectedItem)">Request Revision</a></li>
+                <li><a href="javascript:;" data-toggle="modal" data-target="#requestFileModal" ng-click="requestRevision(data.selectedItem)">Request File</a></li>
             </ul>
         </div>
 
-        <div class="btn-group">
+        <div class="btn-group" ng-show="data.usdata.current.user_class!=='lawyer'">
             <a href="javascript:;" class="btn btn-sm btn-silver btn-embossed dropdown-toggle" data-toggle="dropdown">Options</a>
             <ul class="dropdown-menu dropdown-small dropdown-inverse" >
                 <li><a href="javascript:;" ng-click="data.showDateDuePicker=!data.showDateDuePicker;saveSelectedItem();data.showItemDetailsOptions=!data.showItemDetailsOptions;">
@@ -69,9 +79,18 @@
             <span class="fui-calendar"></span> {{ data.selectedItem.date_due | date:'dd MMMM' }}
         </a>
         <a href="javascript:;" ng-click="data.selectedItem.is_complete=!data.selectedItem.is_complete;saveSelectedItem();"
-           class="btn btn-sm btn-embossed pull-right" ng-class="{ 'btn-success': !data.selectedItem.is_complete, 'btn-default': data.selectedItem.is_complete}">
+           class="btn btn-sm btn-embossed pull-right" ng-class="{ 'btn-success': !data.selectedItem.is_complete, 'btn-default': data.selectedItem.is_complete}"
+           ng-show="data.usdata.current.user_class=='lawyer'"
+        >
             <span class="fui-checkbox-checked"></span> <span ng-hide="data.selectedItem.is_complete">Close item</span><span ng-show="data.selectedItem.is_complete">Reopen item</span>
         </a>
+
+        <a ng-show="data.usdata.current.user_class!=='lawyer'"
+           class="btn btn-sm btn-embossed pull-right" ng-class="{ 'btn-success': !data.selectedItem.is_complete, 'btn-default': data.selectedItem.is_complete}">
+            <span class="fui-checkbox"></span> <span ng-hide="data.selectedItem.is_complete">Open</span><span ng-show="data.selectedItem.is_complete">Closed</span>
+        </a>
+
+        
 
         <div id="dateduepicker-container" ng-show="data.showDateDuePicker">
           <div class="well well-sm">
@@ -82,7 +101,7 @@
     <!-- End option toolbar -->
 
     <div class="waiting-revision text-center" ng-show="data.selectedItem.is_requested">
-        <span class="fui-time"></span> Waiting for a revision from <span ng-bind="getParticipantByUrl(data.selectedItem.responsible_party) | fullname"></span>.
+        <span class="fui-time"></span> Waiting for a revision from <span ng-bind="data.selectedItem.responsible_party | fullname"></span>.
         <a href="javascript:;" ng-click="remindRevisionRequest(data.selectedItem)">Remind</a> <a class="close" href="javascript:;" ng-click="deleteRevisionRequest(data.selectedItem)">x</a>
     </div>
 
@@ -90,10 +109,12 @@
         <i class="fa fa-spinner fa-3x fa-spin"></i>
     </div>
 
-    <div class="drop-area show-on-drag" ng-file-drop="onFileDropped($files, data.selectedItem);"  ng-show="data.selectedItem.latest_revision">
-        <span class="fui-upload"></span>
-        <h4>Upload a revision</h4>
-        <p>To upload a new revision drop files here</p>
+    <div ng-show="data.usdata.current.user_class=='lawyer'">
+        <div class="drop-area show-on-drag" ng-file-drop="onFileDropped($files, data.selectedItem);"  ng-show="data.selectedItem.latest_revision">
+            <span class="fui-upload"></span>
+            <h4>Upload a revision</h4>
+            <p>To upload a new revision drop files here</p>
+        </div>
     </div>
 
     <ul class="revisions list-unstyled" ng-show="data.selectedItem.latest_revision">
@@ -104,7 +125,7 @@
                 <!-- <span class="version">{{ data.selectedItem.latest_revision.slug }}</span> -->
                 <h4><a href="javascript:;" ng-click="showRevisionDocument(data.selectedItem.latest_revision)"><span class="fui-document status-{{ data.selectedItem.latest_revision.status }}"></span> {{ data.selectedItem.latest_revision.name }}</a></h4>
                 <span class="close" ng-click="deleteLatestRevision()">x</span>
-                <div class="desc" ng-hide="data.showEditRevisionDescriptionForm">
+                <div class="desc" ng-hide="data.showEditRevisionDescriptionForm||data.usdata.current.user_class!=='lawyer'">
                      <a href="javascript:;" class="link"
                         ng-click="data.showEditRevisionDescriptionForm=!data.showEditRevisionDescriptionForm;data.editRevisionDescription=data.selectedItem.latest_revision.description;focus('eventEditLatestRevisionDescription')">
                         <div btf-markdown="data.selectedItem.latest_revision.description | newlines"></div>
@@ -125,10 +146,10 @@
                         <button type="button" class="btn btn-default btn-xs status-{{ data.selectedItem.latest_revision.status }}" data-toggle="dropdown">
                           {{ data.matter._meta.revision.status | valueforkey:data.selectedItem.latest_revision.status }}
                         </button>
-                        <button class="btn btn-default btn-xs status-{{ data.selectedItem.latest_revision.status }}" data-toggle="dropdown">
-                          <span class="caret"></span>
+                        <button class="btn btn-default btn-xs status-{{ data.selectedItem.latest_revision.status }}" data-toggle="dropdown" ng-show="data.usdata.current.user_class=='lawyer'">
+                          <span class="caret" ></span>
                         </button>
-                        <ul class="dropdown-menu">
+                        <ul class="dropdown-menu" ng-show="data.usdata.current.user_class=='lawyer'">
                           <li class="" ng-repeat="status in data.matter._meta.revision.status | setValueAsArrayIndex">
                               <a href="javascript:;" ng-click="data.selectedItem.latest_revision.status=$index;saveLatestRevision();">
                                   <span class="icon status-{{ $index }}"></span> {{ status }}
@@ -171,26 +192,57 @@
         <li class="header previous-toggle" style="display: list-item;" ng-show="data.showPreviousRevisions">Previous (Only visible to you)</li>
         <li class="previous-toggle" style="display: list-item;" ng-show="data.showPreviousRevisions" ng-repeat="rev in data.selectedItem.previousRevisions">
             <div class="doc-wrap">
-
                 <h4>
                     <a href="javascript:;" class="" ng-click="showRevisionDocument(rev)">
                         <span class="fui-document status-{{ rev.status }}"></span> {{ rev.name }}
                     </a>
                 </h4>
                 <div class="desc">{{ rev.description }}</div>
+                <div class="tools status-{{ rev.status }}">
+                    <a href="javascript:;" class="btn btn-link btn-xs" ng-click="showRevisionDocument(rev)">View</a>
+                    <a href="{{ rev.executed_file }}" class="btn btn-link btn-xs" target="_blank">Download</a>
+                    <span class="pull-right sub" ng-bind="data.matter._meta.revision.status | valueforkey:rev.status"></span>
+                </div>
             </div>
+            <div class="review expired" ng-show="rev.reviewers.length>0">
+                Review expired
+                <div class="review-members">
+                    <ul class="list-unstyled">
+                        <li ng-repeat="reviewer in rev.reviewers">
+                            <a href="javascript:;" ng-click="showReview(rev, reviewer)"><span class="fui-time"></span></a>
+                            {{ reviewer.name }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="sub">{{ rev.slug }} &middot; {{ rev.uploaded_by.name }}, {{ rev.date_created | timeago }}</div>
+
         </li>
     </ul>
 
-    <div class="item-help border-on-dragover" ng-hide="data.selectedItem.latest_revision||data.uploading||data.selectedItem.is_requested">
-        <span class="fui-upload"></span>
-        <h4>Upload a first revision</h4>
-        Upload a first draft of this document. Move your mouse to the green upload bar at the top of this item to either upload a file or request one from another participant. You can also drag a document directly on a checklist item to add it as a revision.
+    <div ng-show="data.usdata.current.user_class=='lawyer'">
+        <div class="item-help border-on-dragover" ng-hide="data.selectedItem.latest_revision||data.uploading||data.selectedItem.is_requested">
+            <span class="fui-upload"></span>
+            <h4>Upload a first revision</h4>
+            Upload a first draft of this document. Move your mouse to the green upload bar at the top of this item to either upload a file or request one from another participant. You can also drag a document directly on a checklist item to add it as a revision.
+        </div>
     </div>
 
     <div class="item-help" ng-show="data.selectedItem.is_requested&&!data.selectedItem.latest_revision">
         <span class="fui-time"></span>
         <h4>Waiting for a revision</h4>
         You have requested a revision from another user. Once they have supplied this revision you will be notified.
+    </div>
+</div>
+
+<div ng-show="!data.selectedItem&&data.matter.items.length>0">
+     <div class="item-help">
+        <h4>Please select an item from the checklist</h4>
+    </div>
+</div>
+
+<div ng-show="!data.selectedItem&&data.matter.items.length==0">
+     <div class="item-help">
+        <h4>Please create your first checklist item</h4>
     </div>
 </div>

@@ -29,16 +29,11 @@ class LawPalAbridgeService(object):
                                       content=content)
 
 
-
-
 class MatterActivityEventService(object):
-    """
-    Service to capture and send activity stream events in a holistic way
-    """
     def __init__(self, matter, **kwargs):
         self.matter = matter
 
-    def create_activity(self, actor, verb, action_object, **kwargs):
+    def _create_activity(self, actor, verb, action_object, **kwargs):
         activity_kwargs = {
             'actor': actor,
             'verb': verb,
@@ -71,5 +66,5 @@ class MatterActivityEventService(object):
 
     def removed_user_as_reviewer(self, item, removing_user, removed_user):
         message = u'%s removed %s as reviewer for %s' % (removing_user, removed_user, item)
-        self.create_activity(actor=removing_user, verb=u'edited', action_object=item, message=message,
+        self._create_activity(actor=removing_user, verb=u'edited', action_object=item, message=message,
                              user=removed_user)
