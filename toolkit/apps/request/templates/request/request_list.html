@@ -1,6 +1,6 @@
 {% extends 'gui.html' %}
 
-{% load url from future %}{% load request_tags %}
+{% load request_tags %}
 
 {% block body %}
     <div id="requests" class="content">
@@ -16,9 +16,9 @@
             <div class="row">
                 <div class="col-sm-8 col-sm-offset-2" role="main">
                     {% if object_list %}
-                        {% requests_upload_section object_list request.user %}
-                        {% requests_review_section object_list request.user %}
-                        {% requests_signing_section object_list request.user %}
+                        {% request_uploads_section object_list request.user %}
+                        {% request_reviews_section object_list request.user %}
+                        {% request_signings_section object_list request.user %}
                     {% else %}
                         <div class="col-md-12 text-center">
                             <h6 class="text-muted">You currently have no open requests.</h6>
