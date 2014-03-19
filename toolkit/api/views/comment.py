@@ -19,8 +19,8 @@ class ItemCommentEndpoint(MatterItemsQuerySetMixin, generics.CreateAPIView):
     lookup_url_kwarg = 'item_slug'
 
     def create(self, request, **kwargs):
-        comment = request.DATA.get('comment', False)
-        if comment and comment != '':
+        comment = request.DATA.get('comment', '')
+        if comment.strip() not in [None, '']:
             MatterActivityEventService(self.matter).add_comment(user=request.user, item=self.get_object(),
                                                                 comment=comment)
             return Response(status=http_status.HTTP_201_CREATED)
