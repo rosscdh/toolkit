@@ -3,19 +3,29 @@
 {% block inbox %}
 {% csrf_token %}
 
-{% if object_list %}<button id="mark-all-as-read" data-url="{% url 'notification:inbox-mark-all-read' %}" class="btn btn-info btn-embossed">Mark all as read</button>{% endif %}
+<div class="row">
+    <div class="col-sm-6 col-sm-offset-2">
+        <h4>Notifications</h4>
+         {% if object_list %}<button id="mark-all-as-read" data-url="{% url 'notification:inbox-mark-all-read' %}" class="btn btn-embossed btn-link pull-right">Mark all as read</button>{% endif %}
 
-{% for notice in object_list %}
+        {% for notice in object_list %}
+        <table class="table">
+            <tr>
+                <td name="#mark-as-read-{{ notice.pk }} lead">
+                    {{ notice.message.message }}
+                    <a href="javascript:;" data-url="{% url 'notification:inbox-read' pk=notice.pk %}" data-pk="{{ notice.pk }}" class="mark-as-read pull-right"  data-toggle="tooltip" data-placement="right" title="Mark as read"> 
+                        <span class="fui-check text-info"></span>
+                    </a>
+                    <span class="text-muted"><small>{{ notice.message.date|naturaltime }}</small></span>  
+                </td>
+            </tr>
+        </table>
+        {% endfor %}   
 
-<ul class="list-unstyled">
-    <li>
-        <div name="#mark-as-read-{{ notice.pk }}">
-            {{ notice.message.message }} - {{ notice.message.date|naturaltime }}
-            <a href="javascript:;" data-url="{% url 'notification:inbox-read' pk=notice.pk %}" data-pk="{{ notice.pk }}" class="mark-as-read">Mark as read</a>
-        </div>
-    </li>
-</ul>
-{% endfor %}
+    </div>
+</div>
+
+
 
 {% endblock %}
 
