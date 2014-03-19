@@ -169,13 +169,19 @@
                     <ul class="list-unstyled">
                         <li ng-repeat="rev in data.selectedItem.latest_revision.reviewers">
                             <a class="close" href="javascript:;" ng-click="deleteRevisionReviewRequest(data.selectedItem, rev)" tooltip-html-unsafe="Cancel this review request">x</a>
-                            <a href="javascript:;" ng-click="showReview(data.selectedItem.latest_revision, rev)" class="pull-right btn btn-xs btn-warning">Invite Sent</a>
-                            <span class="pull-right text-muted">Last Viewed</span>
-                            {{ rev.name }}
+                            <!-- If date last viewed is null -->
+                            <!-- <a href="javascript:;" ng-click="showReview(data.selectedItem.latest_revision, rev)" class="pull-right btn btn-xs btn-warning">Invite Sent</a> -->
+
+                            <!-- If date last viewed is not null -->
+<!--                             <a href="javascript:;" class="pull-right btn-link btn-xs" disabled>Last viewed 12h ago</a>
+ --> 
+                            <!-- If review complete -->
+                            <a href="javascript:;" ng-click="showReview(data.selectedItem.latest_revision, rev)" class="pull-right btn btn-xs btn-success">Review Complete</a>
+
+
+                            <a href="javascript:;" ng-click="showReview(data.selectedItem.latest_revision, rev)" >{{ rev.name }}</a>
+
                         </li>
-                        <!--<li class="complete">
-                            <button class="btn btn-success btn-xs pull-right"><span class="fui-check"></span> View Response </button> Yael Citro
-                        </li>-->
                     </ul>
                 </div>
             </div>  
