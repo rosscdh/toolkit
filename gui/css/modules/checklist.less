@@ -381,12 +381,12 @@ html,body, div.full
 		}
 		.waiting-revision {
 			text-align:center;
-			background-color:@brand-warning;
+			background-color:lighten(@brand-warning, 15%);
 			margin-left:-15px;
 			margin-right:-15px;
 			padding:10px;
 			color:lighten(@brand-warning, 55%);
-			border-top:2px solid darken(@brand-warning, 3%);
+			border-top:2px solid @brand-warning;
 			font-size:14px;
 			.close {
 				color:white;
@@ -395,6 +395,15 @@ html,body, div.full
 			}
 			a {
 				color:lighten(@brand-warning, 55%);
+			}
+			.user {
+				font-weight:normal;
+				color:#FFF;
+				border:none;
+				background-color:@brand-warning;
+				padding:8px;
+				font-size:12px;
+				border-radius: 40px;
 			}
 		}
 
@@ -519,10 +528,10 @@ html,body, div.full
 				}
 				.review {
 					padding:9px 3px 9px 8px;
-					color:white;
-					font-size:12px;
-					font-weight:bold;
-					background-color:lighten(@brand-success, 15%);
+					color:darken(@silver, 25%);
+					font-size:15px;
+					font-weight:normal;
+					background-color:white;
 					.btn {
 						margin-top:-3px;
 					}
@@ -530,7 +539,7 @@ html,body, div.full
 						color:white;
 					}
 					&.in-progress {
-						background-color:lighten(@orange, 15%);
+						background-color:lighten(@silver, 18%);
 					}
 					ul {
 					
