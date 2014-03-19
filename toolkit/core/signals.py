@@ -8,6 +8,7 @@ from actstream import action
 from django.dispatch import receiver
 from django.dispatch.dispatcher import Signal
 from abridge.services import AbridgeService  # import the server
+import requests
 
 
 """
@@ -41,11 +42,15 @@ def on_activity_received(sender, **kwargs):
 
         # send data to abridge
         for user in target.participants.all():
-            s = AbridgeService(user=user)  # initialize and pass in the user
-            if not message:
-                message = '%s %s %s' % (actor, verb, action_object)
-            s.create_event(content_group=target.name,
-                           content='<div style="font-size:3.3em;">%s</div>' % message)
+            try:
+                s = AbridgeService(user=user)  # initialize and pass in the user
+                if not message:
+                    message = '%s %s %s' % (actor, verb, action_object)
+                s.create_event(content_group=target.name,
+                               content='<div style="font-size:3.3em;">%s</div>' % message)
+            except requests.exceptions.ConnectionError, e:
+                # AbridgeService is not running.
+                pass
 
 """
 Listen for events from various models
