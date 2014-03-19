@@ -30,7 +30,7 @@ def _abridge_send(actor, target, message=None):
     """
     Send activity data to abridge
     """
-    for user in target.participants.exclude(user=actor).all():
+    for user in target.participants.exclude(id=actor.pk).all():
         #
         # Categorically turn it off by default
         #
@@ -55,13 +55,23 @@ def _notifications_send(actor, target, message):
         stored_messages.STORED_SUCCESS,
         stored_messages.STORED_WARNING,
         stored_messages.STORED_ERROR
+    update the user.profile.has_notifications
     """
     if message:
-        stored_messages.add_message_for(users=target.participants.exclude(user=actor).all(),
+        query_set = target.participants.exclude(id=actor.pk)
+        stored_messages.add_message_for(users=query_set.all(),
                                         level=stored_messages.STORED_INFO, 
                                         message=message,
                                         extra_tags='',
                                         fail_silently=False)
+        #
+        # @TODO move into manager?
+        #
+        for u in query_set.all():
+            profile = u.profile
+            profile.has_notifications = True
+            profile.save(update_fields=['has_notifications'])
+
 
 
 @receiver(send_activity_log, dispatch_uid="core.on_activity_received")
