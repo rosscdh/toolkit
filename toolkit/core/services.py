@@ -3,8 +3,38 @@ from toolkit.api.serializers import ItemSerializer
 from toolkit.api.serializers.user import LiteUserSerializer
 from toolkit.core.signals import send_activity_log
 
+from abridge.services import AbridgeService
+
+
+class LawPalAbridgeService(object):
+    """
+    Wrapper for wrapping the abridge service
+    allows us to disable it in testing and based on settings
+    """
+    ABRIDGE_ENABLED = False
+    service = None
+
+    def __init__(self, user, ABRIDGE_ENABLED=False, **kwargs):
+        self.ABRIDGE_ENABLED = ABRIDGE_ENABLED
+
+        assert user.__class__.__name == 'User', 'user must be a auth.User object'
+
+        self.service = None  # reset to None by default
+        if self.ABRIDGE_ENABLED:  # check if enabled
+            self.service = AbridgeService(user=user)
+
+    def create_event(self, content_group, content, **kwargs):
+        if self.service is not None and self.ABRIDGE_ENABLED is True:
+            self.service.create_event(content_group=content_group,
+                                      content=content)
+
+
+
 
 class MatterActivityEventService(object):
+    """
+    Service to capture and send activity stream events in a holistic way
+    """
     def __init__(self, matter, **kwargs):
         self.matter = matter
 
