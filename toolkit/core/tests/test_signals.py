@@ -131,11 +131,3 @@ class ActivitySignalTest(BaseScenarios, TestCase):
 
         stream = Action.objects.target_by_customer_stream(workspace, self.lawyer)
         self.assertEqual(len(stream), 1)  # shall only find the newest entry, the 2 other ones are too old.
-
-    """
-        TODO:
-            test created_revision (via API)
-            test deleted_revision (via API)
-            test added_user_as_reviewer
-            test removed_user_as_reviewer
-    """
