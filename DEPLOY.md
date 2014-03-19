@@ -24,6 +24,12 @@ __Item__
 1. pip install django-uuidfield --upgrade : were using hyphenate=True
 2. pip install -r requirements/base.txt : added crocodoc modules
 
+[review-requests]
+
+1. ./manage.py migrate attachment 0001 --fake
+2. ./manage.py migrate attachment 0002
+3. ./manage.py migrate review 0001 --fake
+4. ./manage.py migrate review 0002
 
 [activity stream]
 

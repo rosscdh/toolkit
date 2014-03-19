@@ -30,6 +30,8 @@ class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
     slug = UUIDField(auto=True, db_index=True)
     document = models.ForeignKey('attachment.Revision')
     reviewers = models.ManyToManyField('auth.User')
+    is_complete = models.BooleanField(default=False)
+    date_last_viewed = models.DateTimeField(blank=True, null=True)
     data = JSONField(default={})
 
     objects = ReviewDocumentManager()
@@ -73,7 +75,7 @@ class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
             #
             file_object = b._open(file_name)
             return default_storage.save(file_name, file_object)
-        
+
 
     def send_invite_email(self, from_user, users=[]):
         """
