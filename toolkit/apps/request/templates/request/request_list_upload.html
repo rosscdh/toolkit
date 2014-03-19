@@ -16,7 +16,7 @@
                             <p>{{ item.requested_by.name }} requested you upload this document.</p>
                         </div>
                         <div class="col-xs-4">
-                            <a href="#" class="btn btn-wide btn-info btn-embossed pull-right" data-remote="{% url 'matter_item_revision' matter_slug=item.matter.slug item_slug=item.slug %}" data-toggle="filepicker">Upload File</a>
+                            <a href="#" class="btn btn-wide btn-info btn-embossed request-btn" data-remote="{% url 'matter_item_revision' matter_slug=item.matter.slug item_slug=item.slug %}" data-toggle="filepicker">Upload File</a>
                         </div>
                     </div>
                     {% if item.note %}
