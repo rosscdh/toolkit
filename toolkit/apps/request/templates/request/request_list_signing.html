@@ -1,4 +1,4 @@
-{% load url from future %}
+{% load request_tags %}
 
 <section id="requests-signing">
     {% if object_list %}
@@ -7,30 +7,7 @@
 
         <div class="requested">
             {% for item in object_list %}
-                <article class="request">
-                    <div class="row">
-                        <div class="col-xs-8">
-                            <span class="fui-upload request-icon"></span>
-                            <h6 class="request-title"><small>{{ item.matter.name }}</small></h6>
-                            <h6 class="request-title">{{ item.name }}</h6>
-                            <p>{{ item.requested_by.name }} requested your signature on this document.</p>
-                        </div>
-                        <div class="col-xs-4">
-                            {% if False %}
-                                <p class="request-status"><span class="fui-check-inverted"></span> Reviewed and Signed</p>
-                            {% else %}
-                                <a href="#" class="btn btn-wide btn-info btn-embossed request-btn">Review and Sign</a>
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% if item.note %}
-                        <div class="row">
-                            <div class="col-xs-12">
-                                <blockquote>{{ item.note }}</blockquote>
-                            </div>
-                        </div>
-                    {% endif %}
-                </article>
+                {% request_signing_item item user %}
             {% endfor %}
         </div>
     {% endif %}

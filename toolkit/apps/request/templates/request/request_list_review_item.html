@@ -1,0 +1,24 @@
+<article class="request">
+    <div class="row">
+        <div class="col-xs-8">
+            <span class="fui-upload request-icon"></span>
+            <h6 class="request-title"><small>{{ item.matter.name }}</small></h6>
+            <h6 class="request-title">{{ item.name }}</h6>
+            <p>{{ item.requested_by.name }} requested your feedback on this document.</p>
+        </div>
+        <div class="col-xs-4">
+            {% if review.is_complete %}
+                <p class="request-status"><span class="fui-check-inverted"></span> Review Completed</p>
+            {% else %}
+                <a href="#" class="btn btn-wide btn-info btn-embossed request-btn">Review</a>
+            {% endif %}
+        </div>
+    </div>
+    {% if item.message %}
+        <div class="row">
+            <div class="col-xs-12">
+                <blockquote>{{ item.message }}</blockquote>
+            </div>
+        </div>
+    {% endif %}
+</article>
