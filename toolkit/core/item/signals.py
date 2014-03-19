@@ -2,16 +2,10 @@
 """
 Item signals to handle various events that take place on save
 """
-from django.dispatch import receiver
-from django.db.models.signals import pre_save
-
-from .models import Item
-
 import logging
 logger = logging.getLogger('django.request')
 
 
-@receiver(pre_save, sender=Item, dispatch_uid='item.post_save.category')
 def on_item_save_category(sender, instance, **kwargs):
     """
     Update and modify matter categories when item is changes
@@ -48,7 +42,6 @@ def on_item_save_category(sender, instance, **kwargs):
     logger.debug('Recieved item.pre_save:category event: %s' % sender)
 
 
-@receiver(pre_save, sender=Item, dispatch_uid='item.post_save.closing_group')
 def on_item_save_closing_group(sender, instance, **kwargs):
     """
     Update and modify matter closing_group when item is changes

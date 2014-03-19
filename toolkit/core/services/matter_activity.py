@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
+from ..signals.activity_listener import send_activity_log
+
 from toolkit.api.serializers import ItemSerializer
 from toolkit.api.serializers.user import LiteUserSerializer
-from toolkit.core.signals import send_activity_log
 
 
 class MatterActivityEventService(object):
+    """
+    Service to handle events relating to the mater
+    """
     def __init__(self, matter, **kwargs):
         self.matter = matter
 
