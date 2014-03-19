@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
+
 from django.http import Http404
 from django.views.generic import DetailView
 from django.core.exceptions import PermissionDenied
@@ -17,6 +19,15 @@ class ReviewRevisionView(DetailView):
     queryset = ReviewDocument.objects.prefetch_related().all()
     template_name = 'review/review.html'
 
+    def get(self, request, *args, **kwargs):
+        response = super(ReviewRevisionView, self).get(request, *args, **kwargs)
+
+        # update the last viewed
+        if request.user in self.object.reviewers.all():
+            self.object.date_last_viewed = datetime.now()
+            self.object.save(update_fields=['date_last_viewed'])
+
+        return response
 
     @property
     def is_current(self):
@@ -84,9 +95,9 @@ class ReviewRevisionView(DetailView):
         # and session automatically updated
         # https://crocodoc.com/docs/api/ for more info
         CROCDOC_PARAMS = {
-                "user": { "name": self.request.user.get_full_name(), 
+                "user": { "name": self.request.user.get_full_name(),
                 "id": self.request.user.pk
-            }, 
+            },
             "sidebar": 'auto',
             "editable": self.is_current, # allow comments only if the item is current
             "admin": False, # noone should be able to delete other comments
