@@ -18,7 +18,7 @@ class MatterProductionSettingsTest(unittest.TestCase):
     in production the STATICFILES_DIRS need to point at gui/dist/static
     """
     expected_static_namespace = 'ng'
-    expected_prod_relative_absolute_path = os.path.join(settings.SITE_ROOT, 'gui', 'dist', 'static')
+    expected_prod_relative_absolute_path = os.path.join(settings.SITE_ROOT, 'gui', 'dist')
     expected_dev_relative_absolute_path = os.path.join(settings.SITE_ROOT, 'gui')
 
     def test_production_static_path(self):
@@ -26,4 +26,3 @@ class MatterProductionSettingsTest(unittest.TestCase):
 
     def test_dev_static_path(self):
         self.assertEqual(settings.STATICFILES_DIRS, ((self.expected_static_namespace, self.expected_dev_relative_absolute_path),))
-    #def test_static_path(self): pass

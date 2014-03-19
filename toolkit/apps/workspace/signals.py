@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.dispatch import Signal, receiver
 from django.template.defaultfilters import slugify
-from django.db.models.signals import pre_save, post_save, m2m_changed
 
 from . import _model_slug_exists
-
-from .models import Workspace, Tool
 
 import uuid
 import logging
@@ -87,8 +84,6 @@ def _update_marker(marker_name, next_status, actor_name, instance, **kwargs):
 # End Marker Signals
 #
 
-
-@receiver(pre_save, sender=Workspace, dispatch_uid='workspace.ensure_workspace_slug')
 def ensure_workspace_slug(sender, **kwargs):
     """
     signal to handle creating the workspace slug
@@ -99,7 +94,7 @@ def ensure_workspace_slug(sender, **kwargs):
 
         final_slug = slugify(workspace.name)
 
-        while _model_slug_exists(model=Workspace, slug=final_slug):
+        while _model_slug_exists(model=workspace.__class__.objects.model, slug=final_slug):
             logger.info('Workspace %s exists, trying to create another' % final_slug)
 
             slug = '%s-%s' % (final_slug, uuid.uuid4().get_hex()[:4])
@@ -109,54 +104,39 @@ def ensure_workspace_slug(sender, **kwargs):
         workspace.slug = final_slug
 
 
-@receiver(pre_save, sender=Workspace, dispatch_uid='workspace.ensure_workspace_matter_code')
-def ensure_workspace_matter_code(sender, **kwargs):
+def ensure_workspace_matter_code(sender, instance, **kwargs):
     """
     signal to handle creating the workspace matter_code
+    instance = workspace
     """
-    workspace = kwargs.get('instance')
 
-    if workspace.matter_code in [None, '']:
+    if instance.matter_code in [None, '']:
 
         # the current number of matters this lawyer has
-        count = workspace.lawyer.workspace_set.all().count() if workspace.lawyer is not None else 1
-        workspace_name = slugify(workspace.name)
+        count = instance.lawyer.workspace_set.all().count() if instance.lawyer is not None else 1
+        workspace_name = slugify(instance.name)
 
         final_matter_code = "{0:05d}-{1}".format(count, workspace_name)
 
-        while _model_slug_exists(model=Workspace, matter_code=final_matter_code):
+        while _model_slug_exists(model=instance.__class__.objects.model, matter_code=final_matter_code):
             logger.info('Workspace %s exists, trying to create another' % final_matter_code)
             count = count + 1
             final_matter_code = "{0:05d}-{1}".format(count, workspace_name)
 
-        workspace.matter_code = final_matter_code
+        instance.matter_code = final_matter_code
 
 
-# @receiver(post_save, sender=Workspace, dispatch_uid='workspace.ensure_workspace_has_83b_by_default')
-# def ensure_workspace_has_83b_by_default(sender, **kwargs):
-#     workspace = kwargs.get('instance')
-#     created = kwargs.get('created', False)
-
-#     # when we have a new one
-#     eightythreeb = Tool.objects.get(slug='83b-election-letters')
-
-#     if eightythreeb not in workspace.tools.all():
-#         workspace.tools.add(eightythreeb)
-
-
-@receiver(pre_save, sender=Tool, dispatch_uid='workspace.ensure_tool_slug')
 def ensure_tool_slug(sender, **kwargs):
     """
     signal to handle creating a new Tool
     """
     tool = kwargs.get('instance')
-    created = kwargs.get('created', False)
 
     if tool.slug in [None, '']:
 
         final_slug = slugify(tool.name)
 
-        while _model_slug_exists(model=Tool, slug=final_slug):
+        while _model_slug_exists(model=tool.__class__.objects.model.model, slug=final_slug):
             logger.info('Tool %s exists, trying to create another' % final_slug)
 
             slug = '%s-%s' % (final_slug, uuid.uuid4().get_hex()[:4])

@@ -6,7 +6,7 @@ from rulez import registry as rulez_registry
 
 from rest_framework import viewsets
 from rest_framework import generics
-from toolkit.core.services import MatterActivityEventService
+from toolkit.core.services.matter_activity import MatterActivityEventService
 
 from toolkit.core.attachment.models import Revision
 
