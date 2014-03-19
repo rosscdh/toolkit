@@ -61,7 +61,7 @@
             </ul>
         </div>
 
-        <div class="btn-group" ng-show="data.usdata.current.user_class!=='lawyer'">
+        <div class="btn-group" ng-show="data.usdata.current.user_class=='lawyer'">
             <a href="javascript:;" class="btn btn-sm btn-silver btn-embossed dropdown-toggle" data-toggle="dropdown">Options</a>
             <ul class="dropdown-menu dropdown-small dropdown-inverse" >
                 <li><a href="javascript:;" ng-click="data.showDateDuePicker=!data.showDateDuePicker;saveSelectedItem();data.showItemDetailsOptions=!data.showItemDetailsOptions;">
@@ -74,10 +74,14 @@
             </ul>
         </div>
 
-        <a href="javascript:;" id="datedue" class="btn btn-sm btn-silver btn-embossed" ng-show="data.selectedItem.date_due"
+        <a href="javascript:;" id="datedue" class="btn btn-sm btn-silver btn-embossed" ng-show="data.selectedItem.date_due&&data.usdata.current.user_class=='lawyer'"
            ng-click="data.showDateDuePicker=!data.showDateDuePicker">
             <span class="fui-calendar"></span> {{ data.selectedItem.date_due | date:'dd MMMM' }}
         </a>
+        <span ng-show="data.selectedItem.date_due&&data.usdata.current.user_class!=='lawyer'">
+            <span class="fui-calendar"></span> {{ data.selectedItem.date_due | date:'dd MMMM' }}
+        </span>
+
         <a href="javascript:;" ng-click="data.selectedItem.is_complete=!data.selectedItem.is_complete;saveSelectedItem();"
            class="btn btn-sm btn-embossed pull-right" ng-class="{ 'btn-success': !data.selectedItem.is_complete, 'btn-default': data.selectedItem.is_complete}"
            ng-show="data.usdata.current.user_class=='lawyer'"
@@ -100,9 +104,15 @@
     </div>
     <!-- End option toolbar -->
 
-    <div class="waiting-revision text-center" ng-show="data.selectedItem.is_requested">
+    <div class="waiting-revision text-center" ng-show="data.selectedItem.is_requested&&data.selectedItem.responsible_party.username!=data.usdata.current.username">
         <span class="fui-time"></span> Waiting for a revision from <span ng-bind="data.selectedItem.responsible_party | fullname"></span>.
         <a href="javascript:;" ng-click="remindRevisionRequest(data.selectedItem)">Remind</a> <a class="close" href="javascript:;" ng-click="deleteRevisionRequest(data.selectedItem)">x</a>
+    </div>
+
+    <div class="waiting-revision text-center" ng-show="data.selectedItem.is_requested&&data.selectedItem.responsible_party.username==data.usdata.current.username">
+        <p>Please upload this document.</p>
+        <p ng-show="data.selectedItem.responsible_party.message"><span class="user">AB</span> Please add this ASAP.</p>
+        <a href="javascript:;" filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)" class="btn btn-warning btn-embossed">Upload Document</a>
     </div>
 
     <div class="item-help" ng-show="data.uploading">
@@ -182,7 +192,7 @@
         </li>
         <!-- End current revision -->
 
-        <li class="toggle-previous text-center" ng-show="data.selectedItem.latest_revision.revisions.length>0&&!data.showPreviousRevisions">
+        <li class="toggle-previous text-center" ng-show="data.selectedItem.latest_revision.revisions.length>0&&!data.showPreviousRevisions&&data.usdata.current.user_class=='lawyer'">
             <a class="btn btn-sm btn-silver" href="javascript:;" ng-click="loadPreviousRevisions()">
                 <span ng-show="data.selectedItem.latest_revision.revisions.length==1">Show Previous Revision</span>
                 <span ng-show="data.selectedItem.latest_revision.revisions.length>1">Show {{ data.selectedItem.latest_revision.revisions.length }} Previous Revisions</span>
@@ -231,8 +241,9 @@
     <div class="item-help" ng-show="data.selectedItem.is_requested&&!data.selectedItem.latest_revision">
         <span class="fui-time"></span>
         <h4>Waiting for a revision</h4>
-        You have requested a revision from another user. Once they have supplied this revision you will be notified.
+        <span ng-show="data.selectedItem.responsible_party.username!=data.usdata.current.username">You have requested a revision from another user. Once they have supplied this revision you will be notified.</span>
     </div>
+
 </div>
 
 <div ng-show="!data.selectedItem&&data.matter.items.length>0">
