@@ -32,12 +32,6 @@ def LAYOUT(request):
     }
 
 
-def REQUESTS_COUNT(request):
-    return {
-        'REQUESTS_COUNT': Item.objects.my_requests(request.user.pk).count(),
-    }
-
-
 def WORKSPACES(request):
     return {
         'WORKSPACES': Workspace.objects.mine(request.user)
