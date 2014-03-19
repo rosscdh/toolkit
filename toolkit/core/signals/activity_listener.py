@@ -26,11 +26,11 @@ send_activity_log = Signal(providing_args=['actor', 'verb', 'action_object', 'ta
                                            'comment'])
 
 
-def _abridge_send(target, message=None):
+def _abridge_send(actor, target, message=None):
     """
     Send activity data to abridge
     """
-    for user in target.participants.all():
+    for user in target.participants.exclude(user=actor).all():
         #
         # Categorically turn it off by default
         #
@@ -46,7 +46,7 @@ def _abridge_send(target, message=None):
             logger.critical('Abridge Service is not running because: %s' % e)
 
 
-def _notifications_send(target, message):
+def _notifications_send(actor, target, message):
     """
     Send persistent messages (notifications) for this user
     github notifications style
@@ -57,7 +57,7 @@ def _notifications_send(target, message):
         stored_messages.STORED_ERROR
     """
     if message:
-        stored_messages.add_message_for(users=target.participants.all(),
+        stored_messages.add_message_for(users=target.participants.exclude(user=actor).all(),
                                         level=stored_messages.STORED_INFO, 
                                         message=message,
                                         extra_tags='',
@@ -87,6 +87,6 @@ def on_activity_received(sender, **kwargs):
         # send to django-activity-stream
         action.send(actor, **kwargs)
         # send the notifications to the participants
-        _notifications_send(target=target, message=message)
+        _notifications_send(actor=actor, target=target, message=message)
         # send to abridge service
-        _abridge_send(target=target, message=message)
+        _abridge_send(actor=actor, target=target, message=message)
