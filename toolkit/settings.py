@@ -99,6 +99,7 @@ PROJECT_APPS = (
     'toolkit.apps.matter',
     'toolkit.apps.me',
     'toolkit.apps.request',
+    'toolkit.apps.notification',
     # Main Workspace (matters)
     'toolkit.apps.workspace',
     # Core related apps
@@ -146,6 +147,9 @@ HELPER_APPS = (
     # Api helpers
     #'corsheaders',  # not required yet
 
+    # notifications
+    'stored_messages',
+
     # db migrations
     'south',
     # jenkins
@@ -183,6 +187,15 @@ ROOT_URLCONF = 'toolkit.urls'
 
 WSGI_APPLICATION = 'toolkit.wsgi.application'
 
+# for notifications as well as standard messages
+#
+# NOTE! this is an antiparttern DO NOT follow the stored_messages docs
+# our usecase is to show normal django messages as per normal
+# but specifically manually store the inbox messages thus we dont set the
+# django.MESSAGE_STORAGE but rather leave it to the django default
+# we manually need to mark them as read in this case
+#
+#MESSAGE_STORAGE = 'stored_messages.storage.PersistentStorage'
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases

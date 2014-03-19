@@ -72,3 +72,7 @@ crocodoc
 
 # abridge integration: django-abridge
 -e git+https://github.com/rosscdh/django-abridge.git#egg=django-abridge
+
+
+# notfications
+django-stored-messages
