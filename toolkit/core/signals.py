@@ -8,12 +8,9 @@ from django.conf import settings
 from actstream import action
 from django.dispatch import receiver
 from django.dispatch.dispatcher import Signal
-
-from core.services import LawPalAbridgeService  # import the server
-from abridge.services import AbridgeService  # import the server
-
-
 import logging
+import requests
+
 logger = logging.getLogger('django.request')
 
 """
@@ -51,7 +48,7 @@ def on_activity_received(sender, **kwargs):
             # Categorically turn it off by default
             #
             try:
-
+                from toolkit.core.services import LawPalAbridgeService
                 s = LawPalAbridgeService(user=user,
                                          ABRIDGE_ENABLED=getattr(settings, 'ABRIDGE_ENABLED', False))  # initialize and pass in the user
 
@@ -61,7 +58,7 @@ def on_activity_received(sender, **kwargs):
                 s.create_event(content_group=target.name,
                                content='<div style="font-size:3.3em;">%s</div>' % message)
 
-            except e:
+            except requests.exceptions.ConnectionError, e:
                 # AbridgeService is not running.
                 logger.critical('Abridge Service is not running because: %s' % e)
 
@@ -87,9 +84,3 @@ def on_item_post_save(sender, instance, created, **kwargs):
     if created:
         from toolkit.core.services import MatterActivityEventService
         MatterActivityEventService(instance.matter).created_item(user=instance.matter.lawyer, item=instance)
-
-
-# def on_revision_post_save(sender, instance, created, **kwargs):
-#     if created:
-#         activity_service = MatterActivityEventService(instance.item.matter)
-#         activity_service.created_revision(user=instance.uploaded_by, revision=instance)
