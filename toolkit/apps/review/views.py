@@ -24,7 +24,7 @@ class ReviewRevisionView(DetailView):
 
         # update the last viewed
         if request.user in self.object.reviewers.all():
-            self.object.date_last_viewed = datetime.now()
+            self.object.date_last_viewed = datetime.utcnow()
             self.object.save(update_fields=['date_last_viewed'])
 
         return response
