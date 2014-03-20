@@ -23,16 +23,16 @@
                         'Content-Type' : 'application/json',
                         'X-CSRFToken': $('input[name=csrf_token]').val()
                     },
-                    type: 'PATCH',
+                    type: 'POST',
                     url: $elem.attr('data-remote'),
                     error: function(data) {
-                        document.location.reload();
+                        //document.location.reload();
                     },
                     success: function(data) {
                         document.location.reload();
                     },
                     complete: function() {
-                        document.location.reload();
+                        //document.location.reload();
                     }
                 });
             });

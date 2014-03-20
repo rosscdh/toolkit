@@ -130,10 +130,15 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
         super(ItemCurrentRevisionView, self).pre_save(obj=obj)
 
     def can_read(self, user):
-        return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
+        """
+        the lawyer the customer as well as the latest_revision reviewers can read
+        """
+        return (user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all() \
+            or user in self.item.latest_revision.reviewers.all())
 
     def can_edit(self, user):
-        return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
+        return (user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all() \
+            or user in self.item.latest_revision.reviewers.all())
 
     def can_delete(self, user):
         return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
