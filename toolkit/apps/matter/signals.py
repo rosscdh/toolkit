@@ -43,12 +43,12 @@ def participant_added(sender, matter, participant, user, note, **kwargs):
 
 
 @receiver(crocodoc_signals.crocodoc_comment_create)
-@receiver(crocodoc_signals.crocodoc_comment_delete)
-@receiver(crocodoc_signals.crocodoc_annotation_highlight)
-@receiver(crocodoc_signals.crocodoc_annotation_strikeout)
+#@receiver(crocodoc_signals.crocodoc_comment_delete)
+#@receiver(crocodoc_signals.crocodoc_annotation_highlight)
+#@receiver(crocodoc_signals.crocodoc_annotation_strikeout)
 @receiver(crocodoc_signals.crocodoc_annotation_textbox)
-@receiver(crocodoc_signals.crocodoc_annotation_drawing)
-# @receiver(crocodoc_signals.crocodoc_annotation_point)  # dont record this event because its pretty useless and comes by default when they comment
+#@receiver(crocodoc_signals.crocodoc_annotation_drawing)
+## @receiver(crocodoc_signals.crocodoc_annotation_point)  # dont record this event because its pretty useless and comes by default when they comment
 def crocodoc_webhook_event_recieved(sender, verb, document, target, attachment_name, user_info, crocodoc_event, **kwargs):
     """
     signal to handle any of the crocdoc signals
@@ -57,14 +57,19 @@ def crocodoc_webhook_event_recieved(sender, verb, document, target, attachment_n
     # @TODO cehck this user still exists
     try:
         user = User.objects.get(pk=user_pk)
-    except User.DoesNotExist:
-        user = None
 
-    if hasattr(target, 'item') is True:
-        send_activity_log.send(user, **{
-            'actor': user,
-            'verb': verb,
-            'action_object': target.item,
-            'target': target.item.matter,
-            'message': verb
-        })
+    except User.DoesNotExist:
+        pass
+
+    else:
+        # continue on we have a user
+        matter = target.item.matter
+        #matter.actions.add_revision_comment(user=user, document, verb)
+        # if hasattr(target, 'item') is True:
+        #     send_activity_log.send(user, **{
+        #         'actor': user,
+        #         'verb': verb,
+        #         'action_object': target.item,
+        #         'target': target.item.matter,
+        #         'message': verb
+        #     })

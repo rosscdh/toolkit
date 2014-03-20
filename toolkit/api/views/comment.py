@@ -13,6 +13,7 @@ from rulez import registry as rulez_registry
 
 from toolkit.api.serializers import ItemActivitySerializer
 from toolkit.api.views.mixins import MatterItemsQuerySetMixin
+
 from toolkit.core.services.matter_activity import MatterActivityEventService
 
 
