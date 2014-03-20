@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.utils.translation import ugettext as _
-
 from actstream.models import Action
 from rest_framework import serializers
 from toolkit.api.serializers.user import LiteUserSerializer
