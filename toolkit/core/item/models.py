@@ -118,7 +118,7 @@ class Item(IsDeletedMixin, RequestDocumentUploadMixin,
         super(Item, self).save(*args, **kwargs)
 
         if do_recalculate:
-            self.matter.reset_percentage_completed()
+            self.matter.update_percent_complete()
 
     def can_read(self, user):
         return user in self.matter.participants.all()
