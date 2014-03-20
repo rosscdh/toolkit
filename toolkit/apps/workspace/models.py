@@ -75,12 +75,17 @@ class Workspace(IsDeletedMixin, ClosingGroupsMixin, CategoriesMixin, models.Mode
     def available_tools(self):
         return Tool.objects.exclude(pk__in=[t.pk for t in self.tools.all()])
 
-    def get_percentage_finished(self):
+    def reset_percentage_completed(self):
         all_items_count = self.item_set.count()
+        value = 0
         if all_items_count > 0:
             value = float(self.item_set.filter(is_complete=True).count()) / float(all_items_count)
-            return round(value * 100, 0)
-        return 0
+            value = round(value * 100, 0)
+        self.data['percentage_completed'] = value
+        self.save(update_fields=['data'])
+
+    def get_percentage_finished(self):
+        return self.data.get('percentage_completed', 0)
 
     def can_read(self, user):
         return user in self.participants.all()

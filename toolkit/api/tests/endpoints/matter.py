@@ -107,7 +107,7 @@ class MattersTest(BaseEndpointTest):
         self.assertEqual(json_data['results'][0]['percentage_finished'], 0)
 
     def test_percentage_finished_one(self):
-        # create unfinished item:
+        # build 100 % case
         mommy.make('item.Item', name='Test Item #1', matter=self.workspace, is_complete=True)
         mommy.make('item.Item', name='Test Item #2', matter=self.workspace, is_complete=True)
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -119,10 +119,11 @@ class MattersTest(BaseEndpointTest):
         self.assertEqual(json_data['results'][0]['percentage_finished'], 100)
 
     def test_percentage_finished_two_thirds(self):
-        # create unfinished item:
+        # build a 2/3 setup with a deleted object
         mommy.make('item.Item', name='Test Item #1', matter=self.workspace, is_complete=True)
         mommy.make('item.Item', name='Test Item #2', matter=self.workspace, is_complete=True)
         mommy.make('item.Item', name='Test Item #3', matter=self.workspace)
+        mommy.make('item.Item', name='Test Item #4', matter=self.workspace, is_deleted=True)
         self.client.login(username=self.lawyer.username, password=self.password)
         resp = self.client.get(self.endpoint)
 
@@ -131,14 +132,31 @@ class MattersTest(BaseEndpointTest):
         json_data = json.loads(resp.content)
         self.assertEqual(json_data['results'][0]['percentage_finished'], 67)
 
+    def test_percentage_finished_deleted(self):
+        # check if newly deleted item gets calculated correctly
+        mommy.make('item.Item', name='Test Item #1', matter=self.workspace, is_complete=True)
+        item = mommy.make('item.Item', name='Test Item #1', matter=self.workspace)
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        resp = self.client.get(self.endpoint)
+        self.assertEqual(resp.status_code, 200)
+        json_data = json.loads(resp.content)
+        self.assertEqual(json_data['results'][0]['percentage_finished'], 50)
+
+        item.delete()
+
+        resp = self.client.get(self.endpoint)
+        self.assertEqual(resp.status_code, 200)
+        json_data = json.loads(resp.content)
+        self.assertEqual(json_data['results'][0]['percentage_finished'], 100)
+
     def test_percentage_finished_no_items(self):
-        # create unfinished item:
+        # test what happens when matter has no items
         self.client.login(username=self.lawyer.username, password=self.password)
         resp = self.client.get(self.endpoint)
-
         self.assertEqual(resp.status_code, 200)
-
         json_data = json.loads(resp.content)
+
         self.assertEqual(json_data['results'][0]['percentage_finished'], 0)
 
 
