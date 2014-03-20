@@ -7,6 +7,7 @@ setup.cfg
 .sonar
 hellosign
 hello_sign
+actstream
 *_valid.html
 *_invalid.html
 \.coverage
