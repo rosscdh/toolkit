@@ -144,10 +144,14 @@
           </div>
         </div>
       </form>
+      {% verbatim %}
       <ul class="nav navbar-nav navbar-right">
+        <li class="notifications"><a href="/notifications/" ng-class="matter.selected.current_user.has_notifications ? &apos;unread&apos; : &apos;&apos;"><span ng-class="matter.selected.current_user.has_notifications ? &apos;fui-radio-checked animated pulse&apos; : &apos;fui-radio-unchecked&apos;"></span></a></li>
         <li class="divider"></li>
         <li class="dropdown">
+          {{ matter.selected.current_user.has_notifications }}
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+          {{ matter.selected.current_user | fullname }} <b class="caret"></b>
           </a>
           <ul class="dropdown-menu">
             <li><a href="/me/settings/">Account</a></li>
@@ -156,6 +160,7 @@
           </ul>
         </li>
       </ul>
+      {% endverbatim %}
       <!-- /nav -->
     </div>
     <!--/.navbar-collapse -->
@@ -167,5 +172,5 @@
     angular.module('toolkit-gui').constant('API_BASE_URL', '/api/v1/');
     angular.module('toolkit-gui').constant('STATUS_LEVEL', {'OK':0,'WARNING':1,'ERROR':2} );
   </script>
-</div>{% endverbatim %}</body>
+</div></body>
 </html>
