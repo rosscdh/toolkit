@@ -23,7 +23,6 @@ class MatterProductionSettingsTest(unittest.TestCase):
     expected_dev_relative_absolute_path = os.path.join(settings.SITE_ROOT, 'gui', 'dist')
 
     def test_production_static_path(self):
-        import pdb;pdb.set_trace()
         self.assertEqual(production_settings.STATICFILES_DIRS, ((self.expected_static_namespace, self.expected_prod_relative_absolute_path),))
 
     def test_dev_static_path(self):
