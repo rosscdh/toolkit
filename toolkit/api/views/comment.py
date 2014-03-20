@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django.core.exceptions import PermissionDenied
-from actstream.models import Action, model_stream
+from actstream.models import Action, action_object_stream
 from rest_framework import generics
 from rest_framework import status as http_status
 from rest_framework.response import Response
@@ -43,13 +43,14 @@ class ItemCommentEndpoint(MatterItemsQuerySetMixin,
         except Exception, e:
             pass
 
+        result = False
         if object:
-            stream = model_stream(object)[:1][0]
-            import pdb;pdb.set_trace()
-        # allowed = model_stream(Item)[:1][0].actor == user or user.profile.is_lawyer
-        # this returns the correct result
-        allowed = True
-        return allowed
+            result = action_object_stream(object)[:1][0].actor == user or user.profile.is_lawyer
+
+        # import pdb;pdb.set_trace()
+        # this is set correct but ONLY if the Item.can_delete also returns True
+        # WHY? I don't delete an Item but only an Action, do I?
+        return result
 
 rulez_registry.register("can_edit", ItemCommentEndpoint)
 rulez_registry.register("can_delete", ItemCommentEndpoint)
