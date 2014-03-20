@@ -124,7 +124,7 @@ class ActivitySignalTest(BaseScenarios, TestCase):
     def test_add_comment(self):
         item = mommy.make('item.Item', name='Test Item #1', matter=self.matter)
         comment_text = u'Sleep with one eye open'
-        MatterActivityEventService(self.matter).add_comment(self.lawyer, item, comment_text)
+        MatterActivityEventService(self.matter).add_item_comment(self.lawyer, item, comment_text)
         stream = model_stream(Item)
         self.assertEqual(len(stream), 2)  # create item, and add comment -> 2
         self.assertEqual(stream[0].data['comment'], comment_text)
