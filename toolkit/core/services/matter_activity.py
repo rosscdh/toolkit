@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from django.template.defaultfilters import slugify
+
 from ..signals.activity_listener import send_activity_log
 
 from toolkit.api.serializers import ItemSerializer
@@ -18,6 +20,7 @@ class MatterActivityEventService(object):
         activity_kwargs = {
             'actor': actor,
             'verb': verb,
+            'verb_slug': slugify(verb), # used to help identify the item and perhaps css class
             'action_object': action_object,
             'target': self.matter,
             'message': kwargs.get('message', None),
