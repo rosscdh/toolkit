@@ -15,10 +15,11 @@ class MatterProductionSettingsTest(unittest.TestCase):
     production; we hook up to the dist version of the angular app and not the
     dev. So we use the minified files and compiled production version of the app
     production {{ STATIC_URL }}ng/* is the path that should be used
-    in production the STATICFILES_DIRS need to point at gui/dist/static
+    in production the STATICFILES_DIRS need to point at gui/dist so that all the files are copied into 
+    our django static
     """
     expected_static_namespace = 'ng'
-    expected_prod_relative_absolute_path = os.path.join(settings.SITE_ROOT, 'gui', 'dist')
+    expected_prod_relative_absolute_path = os.path.join(settings.SITE_ROOT, 'gui')
     expected_dev_relative_absolute_path = os.path.join(settings.SITE_ROOT, 'gui')
 
     def test_production_static_path(self):
