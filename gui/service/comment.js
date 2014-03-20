@@ -31,36 +31,6 @@ angular.module('toolkit-gui')
 
 		return {
 
-			/**
-			 * Requests a list of comments for the item from the API
-			 *
-			 * @name				list
-			 *
-			 * @example
-		 	 * commentService.list( mySelectedMatter, myItem );
-			 *
-			 * @public
-			 * @method				list
-			 * @memberof			commentService
-			 *
-			 * @return {Promise}    Array of items
-             * NOT USED AND NOT WORKING YET
-		 	 */
-			'list': function(matterSlug, itemSlug) {
-				var api = commentResource();
-				var deferred = $q.defer();
-
-				api.list({'matterSlug': matterSlug, 'itemSlug': itemSlug},
-					function success( result ) {
-						deferred.resolve( result.results );
-					},
-					function error( err ) {
-						deferred.reject( err );
-					}
-				);
-
-				return deferred.promise;
-			},
 
             /**
 			 * Creates a new comment
