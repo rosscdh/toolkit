@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 from django.views.generic import DetailView
 from django.core.exceptions import PermissionDenied
+from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
 
 from dj_crocodoc.services import CrocoDocConnectService
@@ -123,3 +124,19 @@ class ReviewRevisionView(DetailView):
         })
 
         return kwargs
+
+
+class ApproveRevisionView(DetailView):
+    queryset = ReviewDocument.objects.prefetch_related().all()
+
+    def approve(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        self.object.complete()
+        return HttpResponseRedirect(success_url)
+
+    def post(self, request, *args, **kwargs):
+        return self.approve(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return reverse('request:list')

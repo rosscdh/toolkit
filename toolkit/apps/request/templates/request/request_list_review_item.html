@@ -1,3 +1,5 @@
+{% load url from future %}{% load user_tags %}
+
 <article class="request">
     <div class="row">
         <div class="col-xs-8">
@@ -8,9 +10,9 @@
         </div>
         <div class="col-xs-4">
             {% if review.is_complete %}
-                <p class="request-status"><span class="fui-check-inverted"></span> Review Completed</p>
+                <p class="request-status"><span class="fui-check-inverted"></span> Approved</p>
             {% else %}
-                <a href="#" class="btn btn-wide btn-info btn-embossed request-btn">Review</a>
+                <a href="#" class="btn btn-wide btn-info btn-embossed request-btn" data-toggle="modal" data-target="#request-review-{{ review.pk }}">Review</a>
             {% endif %}
         </div>
     </div>
@@ -22,3 +24,27 @@
         </div>
     {% endif %}
 </article>
+
+<div class="modal modal-full" id="request-review-{{ review.pk }}">
+    <div class="modal-dialog">
+        <form method="POST" action="{{ approve_url}}" class="modal-content">
+            {% csrf_token %}
+            <div class="modal-header">
+                <button type="button" class="close fui-cross" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Review from {{ review.reviewers.first }} for {{ item.name }}</h4>
+            </div>
+
+            <div class="modal-body">
+            </div>
+
+            <div class="modal-footer">
+                <div class="pull-left">
+                    <div class="padlock"><span class="fui-lock" title=""></span> Visible to:</div>
+                    {% for p in review.participants %}{% avatar p %}{% endfor %}
+                </div>
+                <input type="button" name="cancel" value="Cancel" class="btn btn-default" data-dismiss="modal">
+                <input type="submit" name="submit" value="Yes, I approve this" class="btn btn-primary btn-lg btn-wide" id="submit-id-submit">
+            </div>
+        </div>
+    </div>
+</div>
