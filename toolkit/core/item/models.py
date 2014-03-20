@@ -94,6 +94,27 @@ class Item(IsDeletedMixin, RequestDocumentUploadMixin,
     def signatories(self):
         return self.data.get('signatories', [])
 
+    def save(self, *args, **kwargs):
+        """
+            reset percentage completed of the matter only if item is newly created or
+                                                          if item.is_complete changed
+                                                          if item.is_deleted
+        """
+        do_recalculate = True
+        try:
+            # get the current
+            previous_instance = Item.objects.get(pk=self.pk)
+            if previous_instance.is_complete == self.is_complete and not self.is_deleted:
+                do_recalculate = False
+
+        except Item.DoesNotExist:
+            pass
+
+        super(Item, self).save(*args, **kwargs)
+
+        if do_recalculate:
+            self.matter.reset_percentage_completed()
+
     def can_read(self, user):
         return user in self.matter.participants.all()
 
