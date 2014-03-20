@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html ng-app="toolkit-gui">
+<head>
+  <title></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta charset="utf-8">
+
+  <!-- App LESS -->
+  <link href="/static/ng/css/app.less" type="text/css" rel="stylesheet/less">
+  <script src="/static/ng/bower_components/jquery/jquery.js" data-remove="exclude"></script>
+  <script src="/static/ng/bower_components/jquery-ui/ui/jquery-ui.js" data-remove="exclude"></script>
+  <script src="/static/ng/bower_components/bootstrap/dist/js/bootstrap.js" data-remove="exclude"></script>
+  <script src="/static/ng/bower_components/angular/angular.js" data-remove="exclude"></script>
+</head>
+<body>{% verbatim %}
+  <!-- Livereload script for development only (stripped during dist build) -->
+  <script src="http://localhost:35729/livereload.js" data-build="exclude"></script>
+
+  <!-- JS from Bower components -->
+  <script src="/static/ng/bower_components/underscore/underscore.js"></script>
+  <script src="/static/ng/bower_components/moment/moment.js"></script>
+  <script src="/static/ng/bower_components/less.js/dist/less-1.5.0.js"></script>
+  <script src="/static/ng/bower_components/angular-route/angular-route.js"></script>
+  <script src="/static/ng/bower_components/angular-animate/angular-animate.js"></script>
+  <script src="/static/ng/bower_components/angular-resource/angular-resource.js"></script>
+  <script src="/static/ng/bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+  <script src="/static/ng/bower_components/angular-ui-utils/ui-utils.js"></script>
+  <script src="/static/ng/bower_components/angular-ui-sortable/sortable.js"></script>
+  <script src="/static/ng/bower_components/angular-elastic/elastic.js"></script>
+  <script src="/static/ng/bower_components/angular-markdown-directive/markdown.js"></script>
+  <script src="/static/ng/bower_components/angular-sanitize/angular-sanitize.js"></script>
+  <script src="/static/ng/bower_components/showdown/compressed/showdown.js"></script>
+  <script src="/static/ng/bower_components/AngularJS-Toaster/toaster.js"></script>
+  <script src="/static/ng/bower_components/ez-confirm/dist/ez-confirm.min.js"></script>
+  <script src="/static/ng/bower_components/ez-confirm/dist/ez-confirm-tpl.js"></script>
+  <script src="/static/ng/bower_components/ng-file-upload/angular-file-upload-shim.min.js"></script> 
+  <script src="/static/ng/bower_components/ng-file-upload/angular-file-upload.js"></script>
+  <script src="/static/ng/bower_components/respond/dest/respond.src.js"></script>
+
+  <script type="text/javascript" src="//api.filepicker.io/v1/filepicker.js"></script>
+
+  <!-- Main App JS -->
+  <script src="/static/ng/js/setup.js"></script>
+
+    <!-- To remove later //-->
+  <script src="/static/ng/controllers/mock.js"></script>
+
+  <!-- Service JS -->
+  <script src="/static/ng/service/user.js"></script>
+  <script src="/static/ng/service/matter.js"></script>
+  <script src="/static/ng/service/matterItem.js"></script>
+  <script src="/static/ng/service/mattercategory.js"></script>
+  <script src="/static/ng/service/participants.js"></script>
+  <script src="/static/ng/service/smartRoutes.js"></script>
+  <script src="/static/ng/service/search.js"></script>
+  <script src="/static/ng/service/activity.js"></script>
+  <script src="/static/ng/service/comment.js"></script>
+  <!-- Add New Service JS Above -->
+
+  <!-- Directive JS -->
+  <script src="/static/ng/directive/form.js"></script>
+  <script src="/static/ng/directive/filepicker.js"></script>
+  <!-- Add New Directive JS Above -->
+
+  <!-- Filter JS -->
+  <script src="/static/ng/filter/string.js"></script>
+  <script src="/static/ng/filter/datetime.js"></script>
+  <script src="/static/ng/filter/dictionary.js"></script>
+  <script src="/static/ng/filter/participant.js"></script>
+  <!-- Add New Filter JS Above -->
+
+  <!-- Partial JS -->
+  <script src="/static/ng/partial/home/home.js"></script>
+  <script src="/static/ng/partial/checklist/checklist.js"></script>
+  <script src="/static/ng/partial/closing/closing.js"></script>
+  <script src="/static/ng/partial/navigation/navigation.js"></script>
+  <script src="/static/ng/partial/participant-invite/participant-invite.js"></script>
+  <script src="/static/ng/partial/request-revision/request-revision.js"></script>
+  <script src="/static/ng/partial/request-review/request-review.js"></script>
+  <script src="/static/ng/partial/view-document/view-document.js"></script>
+  <script src="/static/ng/partial/view-review/view-review.js"></script>
+  <script src="/static/ng/partial/searchCtrl/searchCtrl.js"></script>
+  <!-- Add New Partial JS Above -->
+
+  <div class="navbar navbar-inverse checklist-nav" ng-controller="NavigationCtrl">
+    <div class="navbar-header">
+        <div class="logo-mark">
+            <a href="/">
+              <img src="/static/images/logo-white-icon.png">
+            </a>
+        </div>
+        <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-collapse-03"></button>
+
+        <ul class="nav navbar-nav" ng-show="matter.selected">
+            <li class="dropdown">
+              <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" ng-bind="matter.selected.name"></a>
+              <ul class="dropdown-menu" ng-show="matter.selected._meta.matter.others.length&gt;0">
+                <li ng-repeat="m in matter.selected._meta.matter.others" ng-show="m.name!=matter.selected.name"><a href="{{ m.django_url  }}">{{ m.name }}</a></li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="navbar-collapse collapse navbar-collapse-03">
+      <ul class="nav navbar-nav" ng-show="matter.selected">
+        <li id="checklist-nav" ng-class="{&apos;active&apos;: isActive(&apos;/checklist&apos;)}">
+          <a href="#/checklist">Checklist</a>
+        </li>
+        <!-- Hide for now - discussed 2014-03-14
+        <li id="closing-nav" ng-class="{'active': isActive('/closing')}">
+          <a ng-href="#/closing">Closing</a>
+        </li>-->
+         
+        <li class="checklist-members">
+          <a href="javascript:;" ng-click="invite()">
+            <span class="fui-user"></span> 
+            <span class="user" ng-repeat="user in matter.selected.participants" ng-bind="user | initials"></span>
+          </a>
+        </li>
+        <!-- Hide for now - discussed 2014-03-14
+        <li class="">
+          <a href="#fakelink">
+            <span class="fui-chat"></span>
+            <span class="navbar-new animated">1</span>
+          </a>
+        </li>-->
+      </ul>
+      <!-- /nav -->
+      <form class="navbar-form navbar-left" ng-show="matter.selected" ng-controller="SearchCtrl" ng-submit="startSearch()">
+        <div class="form-group">
+          <div class="input-group input-group-sm">
+            <input class="form-control" id="navbarInput-02" type="search" placeholder="Search" ng-model="data.term" ng-keyup="startSearch()" ng-blur="hide()" xng-focus="show()" autocomplete="off" onmouseup="this.select()">
+            <span class="input-group-btn">
+              <button type="submit" class="btn"><span class="fui-search"></span></button>
+            </span>            
+          </div>
+        </div>
+        <div class="search-container">
+          <div ng-class="{&apos;show-results-container&apos;: data.display}">
+            <ul class="search-results list-unstyled">
+              <li class="result-item reveal-animation" ng-repeat="result in data.searchResults.results">
+                <a href="javascript:;" ng-bind="result.name" ng-click="selectItem(result)"></a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </form>
+      {% verbatim %}
+      <ul class="nav navbar-nav navbar-right">
+        <li class="notifications"><a href="/notifications/" ng-class="matter.selected.current_user.has_notifications ? &apos;unread&apos; : &apos;&apos;"><span ng-class="matter.selected.current_user.has_notifications ? &apos;fui-radio-checked animated pulse&apos; : &apos;fui-radio-unchecked&apos;"></span></a></li>
+        <li class="divider"></li>
+        <li class="dropdown">
+          {{ matter.selected.current_user.has_notifications }}
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+          {{ matter.selected.current_user | fullname }} <b class="caret"></b>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="/me/settings/">Account</a></li>
+            
+            <li><a href="/end/">Sign out</a></li>
+          </ul>
+        </li>
+      </ul>
+      {% endverbatim %}
+      <!-- /nav -->
+    </div>
+    <!--/.navbar-collapse -->
+  </div>
+
+  <div ng-view="" class="full">
+  <span id="landmine"></span>
+  <script language="javascript" data-remove="exclude">
+    angular.module('toolkit-gui').constant('API_BASE_URL', '/api/v1/');
+    angular.module('toolkit-gui').constant('STATUS_LEVEL', {'OK':0,'WARNING':1,'ERROR':2} );
+  </script>
+</div></body>
+</html>
