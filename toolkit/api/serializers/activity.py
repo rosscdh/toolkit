@@ -8,15 +8,14 @@ from .user import SimpleUserSerializer
 
 
 class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
-    #actor = SimpleUserSerializer('actor')
     event = serializers.SerializerMethodField('get_event')
-    timesince = serializers.SerializerMethodField('get_timesince')
-    actor = LiteUserSerializer('actor')
+    #timesince = serializers.SerializerMethodField('get_timesince')
+    #actor = LiteUserSerializer('actor')
 
     class Meta:
         model = Action
         lookup_field = 'id'
-        fields = ('id', 'actor', 'event', 'data', 'timestamp', 'timesince')
+        fields = ('id', 'event')
 
     def get_timesince(self, obj):
         return obj.timesince()
@@ -27,18 +26,20 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
         """
         ctx = {
             'actor': obj.actor,
+            'actor_pk': obj.actor.pk,
             'verb': obj.verb,
             'action_object': obj.action_object,
-            'target': obj.target,
+            'action_object_pk': obj.action_object.slug,
+            'action_object_url': obj.action_object.get_absolute_url(),
+            'timestamp': obj.timestamp
+            #'target': obj.target,
+            #'target_pk': obj.target.slug,
         }
-        if obj.target:
-            if obj.action_object:
-                return _('%(actor)s %(verb)s %(action_object)s') % ctx
-            #return _('%(actor)s %(verb)s %(target)s') % ctx
-        #if obj.action_object:
-        #    return _('%(actor)s %(verb)s %(action_object)s') % ctx
-        #return _('%(actor)s %(verb)s') % ctx
-        return None
+
+        if obj.__class__.__name__ in ['Item']:
+            return _('<span data-uid="%(actor_pk)d">%(actor)s</span> %(verb)s <a href="%(action_object_url)s">%(action_object)s</a> <span data-date="%(timestamp)s"></span>') % ctx
+
+        return _('<span data-uid="%(actor_pk)d">%(actor)s</span> %(verb)s <a href="%(action_object_url)s">%(action_object)s</a> <span data-date="%(timestamp)s"></span>') % ctx
 
 
 class ItemActivitySerializer(MatterActivitySerializer):
@@ -53,8 +54,9 @@ class ItemActivitySerializer(MatterActivitySerializer):
             'action_object': obj.action_object,
             'action_object_pk': obj.action_object.slug,
             'action_object_url': obj.action_object.get_absolute_url(),
+            'timestamp': obj.timestamp
             #'target': obj.target,
             #'target_pk': obj.target.slug,
         }
 
-        return _('<span data-uid="%(actor_pk)d">%(actor)s</span> %(verb)s <a href="%(action_object_url)s">%(action_object)s</a>') % ctx
+        return _('<span data-uid="%(actor_pk)d">%(actor)s</span> %(verb)s <a href="%(action_object_url)s">%(action_object)s</a> <span data-date="%(timestamp)s"></span>') % ctx
