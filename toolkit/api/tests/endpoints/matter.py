@@ -96,6 +96,16 @@ class MattersTest(BaseEndpointTest):
         resp = self.client.delete(self.endpoint, {}, content_type='application/json')
         self.assertEqual(resp.status_code, 401)  # denied
 
+
+class MatterPercentageTest(BaseEndpointTest):
+    """
+        belongs to MattersTest and just tests if progress is calculated correctly
+    """
+    endpoint = reverse('workspace-list')
+
+    def test_endpoint_name(self):
+        self.assertEqual(self.endpoint, '/api/v1/matters')
+
     def test_percentage_finished_zero(self):
         # create unfinished item:
         mommy.make('item.Item', name='Test Item #1', matter=self.workspace)
