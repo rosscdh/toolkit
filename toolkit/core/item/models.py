@@ -99,6 +99,11 @@ class Item(IsDeletedMixin, RequestDocumentUploadMixin,
             reset percentage completed of the matter only if item is newly created or
                                                           if item.is_complete changed
                                                           if item.is_deleted
+
+            This is done here and not in a signal because the percentage has to get calculated with the NEW
+            is_complete-value which is not yet available present in the matters' .reset_percentage()-function when
+            using pre_save.
+            It is only available after the saving.
         """
         do_recalculate = True
         try:
