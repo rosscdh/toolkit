@@ -21,6 +21,7 @@
     "angular-bootstrap": "~0.9",
     "angular-markdown-directive": "latest",
     "angular-elastic": "latest",
+    "angular-ui-router": "latest",
     "moment": "~2.5",
     "less.js": "~1.5",
     "font-awesome": "~4.0",

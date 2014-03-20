@@ -12,7 +12,7 @@
   <script src="/static/ng/bower_components/bootstrap/dist/js/bootstrap.js" data-remove="exclude"></script>
   <script src="/static/ng/bower_components/angular/angular.js" data-remove="exclude"></script>
 </head>
-<body>{% verbatim %}
+<body>
   <!-- Livereload script for development only (stripped during dist build) -->
   <script src="http://localhost:35729/livereload.js" data-build="exclude"></script>
 
@@ -37,7 +37,8 @@
   <script src="/static/ng/bower_components/ng-file-upload/angular-file-upload.js"></script>
   <script src="/static/ng/bower_components/angular-ui-router/release/angular-ui-router.js"></script>
   <script src="/static/ng/bower_components/respond/dest/respond.src.js"></script>
-
+  <script src="/static/ng/bower_components/raven-js/dist/raven.min.js"></script>
+  <script src="/static/ng/bower_components/respond/dest/respond.src.js"></script>
   <script type="text/javascript" src="//api.filepicker.io/v1/filepicker.js"></script>
 
   <!-- Main App JS -->
@@ -47,6 +48,7 @@
   <script src="/static/ng/controllers/mock.js"></script>
 
   <!-- Service JS -->
+  <script src="/static/ng/service/base.js"></script>
   <script src="/static/ng/service/user.js"></script>
   <script src="/static/ng/service/matter.js"></script>
   <script src="/static/ng/service/matterItem.js"></script>
@@ -95,7 +97,7 @@
         <ul class="nav navbar-nav" ng-show="matter.selected">
             <li class="dropdown">
               <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" ng-bind="matter.selected.name"></a>
-              <ul class="dropdown-menu" ng-show="matter.selected._meta.matter.others.length&gt;0">
+              <ul class="dropdown-menu" ng-show="matter.selected._meta.matter.others.length>0">
                 <li ng-repeat="m in matter.selected._meta.matter.others" ng-show="m.name!=matter.selected.name"><a href="{{ m.django_url  }}">{{ m.name }}</a></li>
               </ul>
             </li>
@@ -104,7 +106,7 @@
 
     <div class="navbar-collapse collapse navbar-collapse-03">
       <ul class="nav navbar-nav" ng-show="matter.selected">
-        <li id="checklist-nav" ng-class="{&apos;active&apos;: isActive(&apos;/checklist&apos;)}">
+        <li id="checklist-nav" ng-class="{'active': isActive('/checklist')}">
           <a href="#/checklist">Checklist</a>
         </li>
         <!-- Hide for now - discussed 2014-03-14
@@ -137,7 +139,7 @@
           </div>
         </div>
         <div class="search-container">
-          <div ng-class="{&apos;show-results-container&apos;: data.display}">
+          <div ng-class="{'show-results-container': data.display}">
             <ul class="search-results list-unstyled">
               <li class="result-item reveal-animation" ng-repeat="result in data.searchResults.results">
                 <a href="javascript:;" ng-bind="result.name" ng-click="selectItem(result)"></a>
@@ -150,7 +152,7 @@
         <li class="divider"></li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-          {{ matter.selected.current_user | fullname }} <b class="caret"></b>
+          {% verbatim %}{{ matter.selected.current_user | fullname }}{% endverbatim %}<b class="caret"></b>
           </a>
           <ul class="dropdown-menu">
             <li><a href="/me/settings/">Account</a></li>
@@ -164,11 +166,13 @@
     <!--/.navbar-collapse -->
   </div>
 
-  <div ui-view="" class="full">
+  <div ui-view class="full">
   <span id="landmine"></span>
   <script language="javascript" data-remove="exclude">
     angular.module('toolkit-gui').constant('API_BASE_URL', '/api/v1/');
     angular.module('toolkit-gui').constant('STATUS_LEVEL', {'OK':0,'WARNING':1,'ERROR':2} );
+    angular.module('toolkit-gui').constant('DEBUG_MODE', true);
+    angular.module('toolkit-gui').constant('SENTRY_PUBLIC_DSN', 'http://5584db708b75400fb439d4592c29fc9a@sentry.ambient-innovation.com/24' );
   </script>
-</div>{% endverbatim %}</body>
+</body>
 </html>
