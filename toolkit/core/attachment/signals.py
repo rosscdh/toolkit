@@ -101,24 +101,15 @@ def on_reviewer_add(sender, instance, action, model, pk_set, **kwargs):
         #
         reviewdocument = instance.reviewdocument_set.all().first()
 
-        if REVIEWER_DOCUMENT_ASSOCIATION_STRATEGY == ASSOCIATION_STRATEGIES.single:
-            #
-            # 1 ReviewDocument per reviewer
-            # in this case we should immediately delete the review document
-            #
-            reviewdocument.pk = None  # set to null this is adjango stategy to copy the model
-            reviewdocument.slug = None  # set to non so it gets regenerated
-            reviewdocument.save()  # save it so we get a new pk so we can add reviewrs
-            reviewdocument.reviewers.add(user)  # add the reviewer
-            reviewdocument.recompile_auth_keys()  # update teh auth keys to match the new slug
-
-        if REVIEWER_DOCUMENT_ASSOCIATION_STRATEGY == ASSOCIATION_STRATEGIES.multi:
-            #
-            # Multiple reviewers per reviewer document
-            # just add the user to reviewres if they dont exist
-
-            #
-            reviewdocument.reviewers.add(user) if user not in reviewdocument.reviewers.all() else None
+        #
+        # 1 ReviewDocument per reviewer
+        # in this case we should immediately delete the review document
+        #
+        reviewdocument.pk = None  # set to null this is adjango stategy to copy the model
+        reviewdocument.slug = None  # set to non so it gets regenerated
+        reviewdocument.save()  # save it so we get a new pk so we can add reviewrs
+        reviewdocument.reviewers.add(user)  # add the reviewer
+        reviewdocument.recompile_auth_keys()  # update teh auth keys to match the new slug
 
 
 @receiver(m2m_changed, sender=Revision.reviewers.through, dispatch_uid='revision.on_reviewer_remove')
@@ -133,22 +124,13 @@ def on_reviewer_remove(sender, instance, action, model, pk_set, **kwargs):
         reviewdocuments = ReviewDocument.objects.filter(document=instance,
                                                         reviewers__in=[user])
 
-        if REVIEWER_DOCUMENT_ASSOCIATION_STRATEGY == ASSOCIATION_STRATEGIES.single:
-            #
-            # 1 ReviewDocument per reviewer
-            # in this case we should immediately delete the review document
-            #
-            for reviewdocument in reviewdocuments:
-                # delete the reviewdoc
-                reviewdocument.delete()
-
-        elif REVIEWER_DOCUMENT_ASSOCIATION_STRATEGY == ASSOCIATION_STRATEGIES.multi:
-            #
-            # Multiple reviewers per reviewer document only remove them as reviewers
-            # but leave the document object alone!
-            #
-            for reviewdocument in reviewdocuments:
-                reviewdocument.reviewers.remove(user) if user in reviewdocument.reviewers.all() else None
+        #
+        # 1 ReviewDocument per reviewer
+        # in this case we should immediately delete the review document
+        #
+        for reviewdocument in reviewdocuments:
+            # delete the reviewdoc
+            reviewdocument.delete()
 
 
 @receiver(post_save, sender=Revision, dispatch_uid='revision.set_item_is_requested_false')
