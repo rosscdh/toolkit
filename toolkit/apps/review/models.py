@@ -52,6 +52,11 @@ class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
             return reverse('review:approve_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)})
         return None
 
+    def complete(self):
+        self.is_complete = True
+        self.save(update_fields=['is_complete'])
+    complete.alters_data = True
+
     @property
     def file_exists_locally(self):
         """
