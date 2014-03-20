@@ -1,0 +1,125 @@
+tr.item-heading {
+	-webkit-transition: all 0.3s ease-out;
+	-moz-transition: all 0.3s ease-out;
+	-ms-transition: all 0.3s ease-out;
+	-o-transition: all 0.3s ease-out;
+	transition: all 0.3s ease-out;
+}
+
+tr .dropable-area {
+	width: 200%;
+	height:0;
+	position: absolute;
+	top:0;
+	left:0;
+	display: none;
+}
+
+.show-on-drag {
+	.transition(all 0.3s ease-out);
+	max-height: 0;
+	width:100%;
+	overflow: hidden;
+	margin: 0 0;
+	color: rgba(0,0,0,0);
+	text-align: center;
+	span {
+		font-size: 40px;
+		color: #d9dcde;
+	}
+}
+
+.checklist-wrapper table.ui-drag-disabled tr.ui-drag-disabled {
+	cursor: no-drop;
+}
+
+.border-on-dragover {
+	.transition(all 0.3s ease-out);
+	border-color: rgba(0,0,0,0);
+}
+
+tr.showme {
+	display: table-row !important;
+	visibility: visible !important;
+}
+
+div.dragover {
+	.show-on-drag {
+		max-height: 15em;
+		border: 1px dashed #c5cbce;
+		padding: 3em;
+		margin: 1em 0;
+		color: #acb4b9;
+	}
+	.border-on-dragover {
+		border: 1px dashed #c5cbce;
+		padding-top: 3em;
+		padding-bottom: 3em;
+	}
+}
+
+.show-on-drag.dragover {
+	max-height: 15em;
+	border: 1px dashed #d9dcde;
+	padding: 3em;
+	text-align: center;
+	margin: 1em 0;
+	color: #acb4b9;
+}
+
+tr.item-heading.file-drag-over {
+	background-color: rgba(0,0,0,0.05) !important;
+}
+
+tr.item-heading.file-drag-over td:nth-child(2):before {
+	content: "Drop files here";
+	float:left;
+	opacity:0.5;
+	padding: 0.25em;
+}
+
+.upload-bar {
+	bottom: 0;
+	height: 34px;
+	left: 0;
+	position: absolute;
+	width: 100%;
+
+	.progress {
+		border-radius: 0;
+		float: left;
+		height: 24px;
+		margin: 0 10px 10px 0;
+		padding: 0;
+		width: 250px;
+	}
+}
+
+.animation.ng-enter,
+.animation.ng-leave{
+  .transition(300ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all);
+  overflow: hidden;
+  display: block;
+}
+
+.animation.ng-enter {
+  max-height:0;
+  opacity: 0;
+}
+
+.animation.ng-leave {
+  max-height:0em;
+  opacity: 0;
+  display: none;
+  td { display: none; }
+}
+
+.animation.ng-enter.ng-enter-active {
+  max-height:0.5em;
+  opacity: 1;
+}
+
+.animation.ng-leave.ng-leave-active {
+  max-height:0;
+  opacity: 0;
+}
