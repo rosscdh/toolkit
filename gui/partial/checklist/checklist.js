@@ -1139,13 +1139,14 @@ angular.module('toolkit-gui')
          *                                                                                          |___/
          */
 
-        $scope.newComment = function() {
+        $scope.submitComment = function() {
 			var matterSlug = $scope.data.slug;
 			var itemSlug = $scope.data.selectedItem.slug;
 
 			commentService.create(matterSlug, itemSlug, $scope.data.newcomment).then(
-				 function success(result){
-					//$scope.data.itemcomments = result;
+				 function success(){
+                    $scope.data.newcomment="";
+					$scope.initializeActivityItemStream();
 				 },
 				 function error(err){
 				 	if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to create item comment.") {
