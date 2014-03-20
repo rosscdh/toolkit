@@ -7,6 +7,8 @@
 
 <p>{{ from_name }} has asked you to provide them with a document relating to: {{ item.name }}.</p>
 
+<p>{{ from_name }} added a message for you: "{{ item.message }}"</p>
+
 <p>You can provide the document at <a href="{{ action_url }}">{{ action_url }}</a></p>
 
 <p>Please go to there upload the requested document.</p>
