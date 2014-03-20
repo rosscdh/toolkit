@@ -1,7 +1,8 @@
 angular.module('toolkit-gui').controller('HomeCtrl', [
 	'$scope',
 	'matterService',
-	function( $scope, matterService ){
+    '$log',
+	function( $scope, matterService, $log){
 
 		$scope.data = {
 			'matters': matterService.data()
@@ -13,10 +14,10 @@ angular.module('toolkit-gui').controller('HomeCtrl', [
 
 		matterService.list().then(
 			function success( result ) {
-				console.log( result );
+				$log.debug( result );
 			},
 			function error(err) {
-				console.error(err);
+				$log.debug(err);
 			}
 		);
 	}
