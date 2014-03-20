@@ -283,7 +283,7 @@ module.exports = function (grunt) {
     }
   });
 
-  grunt.registerTask('django', ['preprocess:django','dom_munger:readscripts','dom_munger:addverbatim', 'jshint', 'watch']);
+  grunt.registerTask('django', ['preprocess:django','dom_munger:readscripts', 'jshint', 'watch']);
   grunt.registerTask('server', ['preprocess:gruntserver','dom_munger:readscripts','jshint','connect', 'watch']);
   grunt.registerTask('makedoc', ['jsdoc']);
   grunt.registerTask('validate', ['jshint']);

@@ -36,6 +36,7 @@ angular.module('toolkit-gui')
 	'userService',
 	'commentService',
 	'$timeout',
+    '$log',
 	function($scope,
 			 $rootScope,
 			 $routeParams,
@@ -52,7 +53,8 @@ angular.module('toolkit-gui')
 			 activityService,
 			 userService,
 			 commentService,
-			 $timeout){
+			 $timeout,
+			 $log){
 		/**
 		 * Scope based data for the checklist controller
 		 * @memberof			ChecklistCtrl
@@ -190,6 +192,8 @@ angular.module('toolkit-gui')
 			$scope.data.showEditItemDescriptionForm = false;
 			$scope.data.showEditItemTitleForm = false;
 			$scope.data.showPreviousRevisions = false;
+
+			$log.debug(item);
 		};
 
 		/**
