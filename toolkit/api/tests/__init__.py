@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 from .endpoints.client import (ClientsTest,)
 from .endpoints.matter import (MattersTest,
+                               MatterPercentageTest,
                                MatterDetailTest,
                                MatterDetailProvidedDataTest)
 from .endpoints.review import (RevisionReviewsTest,
