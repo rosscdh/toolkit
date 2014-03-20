@@ -5,15 +5,10 @@ from rest_framework import serializers
 from toolkit.api.serializers.user import LiteUserSerializer
 
 
-class ActorObjectRelatedField(serializers.RelatedField):
-    def to_native(self, value):
-        return LiteUserSerializer(value).data
-
-
 class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
     event = serializers.SerializerMethodField('get_event')
     timesince = serializers.SerializerMethodField('get_timesince')
-    actor = ActorObjectRelatedField()
+    actor = LiteUserSerializer('actor')
 
     class Meta:
         model = Action
