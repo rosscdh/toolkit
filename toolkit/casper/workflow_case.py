@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.test import LiveServerTestCase
 from django.core.files.storage import FileSystemStorage
-from django.test.client import Client
 
 from model_mommy import mommy
 from pyquery import PyQuery as pq
@@ -46,9 +44,10 @@ class BaseScenarios(object):
         lawyer_profile.data['user_class'] = 'lawyer'
         lawyer_profile.save(update_fields=['data'])
 
+        self.workspace_client = mommy.make('client.Client', name='Test Client Name', lawyer=self.lawyer)
         # have to set worksace as well as matter
         # @TODO remove tests using workspace and use matter instead
-        self.workspace = self.matter = mommy.make('workspace.Workspace', name='Lawpal (test)', lawyer=self.lawyer)
+        self.workspace = self.matter = mommy.make('workspace.Workspace', name='Lawpal (test)', lawyer=self.lawyer, client=self.workspace_client)
 
         # Add all the toolks to the workspace
         for tool in Tool.objects.all():
@@ -74,9 +73,7 @@ class BaseProjectCaseMixin(BaseScenarios, BaseCasperJs):
     """
     Base mixin for a Setup to be used in lawyer/customer/project analysis
     https://github.com/dobarkod/django-casper/
+    @TODO no longer really required.. simply extend base scenarios
     """
-    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
-    def setUp(self):
-        super(BaseProjectCaseMixin, self).setUp()
-        self.client = Client()
+    pass
 
