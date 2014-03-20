@@ -23,9 +23,6 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
     def get_timesince(self, obj):
         return obj.timesince()
 
-    def get_actor(self, obj):
-        pass
-
     def get_event(self, obj):
         """
         Matter level actions should show minimalinformation about an event
