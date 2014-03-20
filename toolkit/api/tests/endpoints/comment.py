@@ -91,7 +91,6 @@ class CommentTest(BaseEndpointTest):
         }
         resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
 
-
         # load activities and get id to delete
         resp = self.client.get(reverse('item_activity', kwargs={'matter_slug': self.matter.slug,
                                                                 'item_slug': self.item.slug}))
@@ -136,7 +135,7 @@ class CommentTest(BaseEndpointTest):
                                                                   'id': id}),
                                   json.dumps({}),
                                   content_type='application/json')
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_post(self):
         data = {
