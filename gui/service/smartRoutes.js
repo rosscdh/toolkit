@@ -1,18 +1,27 @@
 angular.module('toolkit-gui').factory('smartRoutes', [ '$routeParams', function($routeParams) {
 
 	var paths = [
-		{ 'pattern': '/matters/:matterSlug', 'match': /^\/matters/i }
+		{ 'pattern': '/matters/:matterSlug', 'match': new RegExp('/matters', 'i') },
+		{ 'pattern': '/matters/:matterSlug', 'match': new RegExp('matters/', 'i') }
 	];
 
 	function parseUrl( url ) {
+		var path = '';
 		var a = document.createElement('a');
 		a.href = url;
-		return a;
+
+		path = a.pathname;
+
+		/* IE fix */
+		if( path[0]!=='/' ) {
+			path = '/' + path;
+		}
+		return path;
 	}
 
 	var smartRoutes = {
 		'params': function() {
-			var urlPath = parseUrl(window.location).pathname;
+			var urlPath = parseUrl(window.location);
 			var pathEls = [];
 			var urlPathEls = [];
 			var matchingPath = jQuery.grep( paths, function( path ) {

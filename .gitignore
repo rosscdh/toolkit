@@ -1,6 +1,7 @@
 *.diff
-gui/dist/*
+gui/index.html  # ignore the generated dev index.html
 gui/bower_components/*
+gui/temp/*
 toolkit/production_settings\.py # ignoring the test productions
 setup.cfg
 .sonar
