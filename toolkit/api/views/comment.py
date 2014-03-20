@@ -1,17 +1,19 @@
 # -*- coding: UTF-8 -*-
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
-from actstream.models import Action, action_object_stream
+
+from actstream.models import Action
+
 from rest_framework import generics
 from rest_framework import status as http_status
 from rest_framework.response import Response
+from rest_framework import permissions
+
+from rulez import registry as rulez_registry
+
 from toolkit.api.serializers import ItemActivitySerializer
 from toolkit.api.views.mixins import MatterItemsQuerySetMixin
-from rulez import registry as rulez_registry
-from toolkit.core.item.models import Item
 from toolkit.core.services.matter_activity import MatterActivityEventService
-from rest_framework import permissions
 
 
 class ItemCommentEndpoint(MatterItemsQuerySetMixin,
