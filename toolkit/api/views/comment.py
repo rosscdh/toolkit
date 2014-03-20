@@ -34,10 +34,10 @@ class ItemCommentEndpoint(MatterItemsQuerySetMixin,
         return user.profile.user_class in ['lawyer', 'customer']
 
     def can_delete(self, user):
-        bla = model_stream(Item)[:1][0].actor == user or user.profile.is_lawyer
-        import pdb
-        pdb.set_trace()
-        return bla
+        allowed = model_stream(Item)[:1][0].actor == user or user.profile.is_lawyer
+        # this returns the correct result
+        import pdb;pdb.set_trace()
+        return allowed
 
 rulez_registry.register("can_edit", ItemCommentEndpoint)
 rulez_registry.register("can_delete", ItemCommentEndpoint)

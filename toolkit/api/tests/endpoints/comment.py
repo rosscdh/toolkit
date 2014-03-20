@@ -64,12 +64,13 @@ class CommentTest(BaseEndpointTest):
                                                                 'item_slug': self.item.slug}))
         self.assertEqual(resp.status_code, 200)
         json_data = json.loads(resp.content)
-        id = json_data['results'][0].id
+        id = json_data['results'][0]['id']
 
-        import pdb;pdb.set_trace()
-        
-        resp = self.client.delete(self.endpoint, json.dumps({}), content_type='application/json')
-
+        resp = self.client.delete(reverse('item_comment', kwargs={'matter_slug': self.matter.slug,
+                                                                  'item_slug': self.item.slug,
+                                                                  'id': id}),
+                                  json.dumps({}),
+                                  content_type='application/json')
         self.assertEqual(resp.status_code, 204)
 
     def test_customer_post(self):
@@ -83,21 +84,59 @@ class CommentTest(BaseEndpointTest):
         self.assertEqual(resp.status_code, 201)  # created
 
     def test_customer_delete(self):
-        # create comment and delete afterwards
+        # create comment
         self.client.login(username=self.user.username, password=self.password)
         data = {
             "comment": "The rain in spain, falls mainly on a monkey."
         }
         resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
-        self.assertEqual(resp.status_code, 201)  # created
 
+
+        # load activities and get id to delete
+        resp = self.client.get(reverse('item_activity', kwargs={'matter_slug': self.matter.slug,
+                                                                'item_slug': self.item.slug}))
+        self.assertEqual(resp.status_code, 200)
+        json_data = json.loads(resp.content)
+        id = json_data['results'][0]['id']
+
+        # delete
+        resp = self.client.delete(reverse('item_comment', kwargs={'matter_slug': self.matter.slug,
+                                                                  'item_slug': self.item.slug,
+                                                                  'id': id}),
+                                  json.dumps({}),
+                                  content_type='application/json')
+        self.assertEqual(resp.status_code, 204)
+
+    def test_customer_delete_forbidden(self):
+        # create comment
+        self.client.login(username=self.user.username, password=self.password)
+        data = {
+            "comment": "The rain in spain, falls mainly on a monkey."
+        }
+        resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
+
+
+        # load activities and get id to delete
+        resp = self.client.get(reverse('item_activity', kwargs={'matter_slug': self.matter.slug,
+                                                                'item_slug': self.item.slug}))
+        self.assertEqual(resp.status_code, 200)
+        json_data = json.loads(resp.content)
+        id = json_data['results'][0]['id']
+
+        # change user and create new comment
         self.client.login(username=self.lawyer.username, password=self.password)
         resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
 
+        # change user again
         self.client.login(username=self.user.username, password=self.password)
-        resp = self.client.delete(self.endpoint, json.dumps({}), content_type='application/json')
 
-        self.assertEqual(resp.status_code, 204)
+        # delete (should fail because in between another comment was created)
+        resp = self.client.delete(reverse('item_comment', kwargs={'matter_slug': self.matter.slug,
+                                                                  'item_slug': self.item.slug,
+                                                                  'id': id}),
+                                  json.dumps({}),
+                                  content_type='application/json')
+        self.assertEqual(resp.status_code, 401)  # denied
 
     def test_anon_post(self):
         data = {
