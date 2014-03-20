@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+from django.core.exceptions import PermissionDenied
 from actstream.models import Action, model_stream
 from rest_framework import generics
 from rest_framework import status as http_status
@@ -34,9 +35,20 @@ class ItemCommentEndpoint(MatterItemsQuerySetMixin,
         return user.profile.user_class in ['lawyer', 'customer']
 
     def can_delete(self, user):
-        allowed = model_stream(Item)[:1][0].actor == user or user.profile.is_lawyer
+        # lawyer can delete at any time
+        # customer can ONLY delete if it is the newest comment
+        object = None
+        try:
+            object = self.get_object()
+        except Exception, e:
+            pass
+
+        if object:
+            stream = model_stream(object)[:1][0]
+            import pdb;pdb.set_trace()
+        # allowed = model_stream(Item)[:1][0].actor == user or user.profile.is_lawyer
         # this returns the correct result
-        import pdb;pdb.set_trace()
+        allowed = True
         return allowed
 
 rulez_registry.register("can_edit", ItemCommentEndpoint)
