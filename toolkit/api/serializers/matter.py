@@ -36,6 +36,8 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
     current_user_todo = serializers.SerializerMethodField('get_current_user_todo')
     current_user = serializers.SerializerMethodField('get_current_user')
 
+    percentage_finished = serializers.SerializerMethodField('get_percentage_finished')
+
     class Meta:
         model = Workspace
         fields = ('url', 'name', 'slug', 'matter_code',
@@ -43,7 +45,8 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
                   'closing_groups', 'categories',
                   'items', 'comments', 'activity',
                   'current_user', 'current_user_todo',
-                  'date_created', 'date_modified',)
+                  'date_created', 'date_modified',
+                  'percentage_finished')
 
     def get_closing_groups(self, obj):
         """
@@ -105,6 +108,9 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
         #return [todo.copy() for i in xrange(0,5)]
         return []
 
+    def get_percentage_finished(self, obj):
+        return obj.get_percentage_finished
+
 
 class LiteMatterSerializer(MatterSerializer):
     """
@@ -112,7 +118,8 @@ class LiteMatterSerializer(MatterSerializer):
     """
     class Meta(MatterSerializer.Meta):
         fields = ('url', 'name', 'slug', 'matter_code', 'client',
-                  'lawyer', 'participants', 'date_created', 'date_modified')
+                  'lawyer', 'participants', 'date_created', 'date_modified',
+                  'percentage_finished')
 
 
 class SimpleMatterSerializer(MatterSerializer):
