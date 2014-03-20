@@ -4,8 +4,11 @@ from actstream.models import Action
 from rest_framework import serializers
 from toolkit.api.serializers.user import LiteUserSerializer
 
+from .user import SimpleUserSerializer
+
 
 class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
+    #actor = SimpleUserSerializer('actor')
     event = serializers.SerializerMethodField('get_event')
     timesince = serializers.SerializerMethodField('get_timesince')
     actor = LiteUserSerializer('actor')
@@ -30,11 +33,12 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
         }
         if obj.target:
             if obj.action_object:
-                return _('%(actor)s %(verb)s %(action_object)s on %(target)s') % ctx
-            return _('%(actor)s %(verb)s %(target)s') % ctx
-        if obj.action_object:
-            return _('%(actor)s %(verb)s %(action_object)s') % ctx
-        return _('%(actor)s %(verb)s') % ctx
+                return _('%(actor)s %(verb)s %(action_object)s') % ctx
+            #return _('%(actor)s %(verb)s %(target)s') % ctx
+        #if obj.action_object:
+        #    return _('%(actor)s %(verb)s %(action_object)s') % ctx
+        #return _('%(actor)s %(verb)s') % ctx
+        return None
 
 
 class ItemActivitySerializer(MatterActivitySerializer):
@@ -44,14 +48,13 @@ class ItemActivitySerializer(MatterActivitySerializer):
         """
         ctx = {
             'actor': obj.actor,
+            'actor_pk': obj.actor.pk,
             'verb': obj.verb,
             'action_object': obj.action_object,
-            'target': obj.target,
+            'action_object_pk': obj.action_object.slug,
+            'action_object_url': obj.action_object.get_absolute_url(),
+            #'target': obj.target,
+            #'target_pk': obj.target.slug,
         }
-        if obj.target:
-            if obj.action_object:
-                return _('%(actor)s %(verb)s %(action_object)s on %(target)s') % ctx
-            return _('%(actor)s %(verb)s %(target)s') % ctx
-        if obj.action_object:
-            return _('%(actor)s %(verb)s %(action_object)s') % ctx
-        return _('%(actor)s %(verb)s') % ctx
+
+        return _('<span data-uid="%(actor_pk)d">%(actor)s</span> %(verb)s <a href="%(action_object_url)s">%(action_object)s</a>') % ctx
