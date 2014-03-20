@@ -50,8 +50,10 @@ class RequestedDocumentReminderEmailsMixin(object):
 
                 #
                 # if we have one
+                # @BUSINESSRULE ALWAYS redirect the invitee to the requests page
+                # and not the specific object
                 #
-                next_url = reverse('matter:requests', kwargs={'matter_slug': self.matter.slug})
+                next_url = reverse('request:list')
 
                 #
                 # Create the invite key (it may already exist)
@@ -121,8 +123,10 @@ class LatestRevisionReminderEmailsMixin(object):
             if review_document:
                 #
                 # if we have one
+                # @BUSINESSRULE ALWAYS redirect the invitee to the requests page
+                # and not the specific object
                 #
-                next_url = review_document.get_absolute_url(user=u)
+                next_url = reverse('request:list')
                 #
                 # Create the invite key (it may already exist)
                 #
