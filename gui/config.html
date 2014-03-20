@@ -35,6 +35,8 @@
   <script src="<!-- @echo staticPath -->bower_components/ez-confirm/dist/ez-confirm-tpl.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/ng-file-upload/angular-file-upload-shim.min.js"></script> 
   <script src="<!-- @echo staticPath -->bower_components/ng-file-upload/angular-file-upload.js"></script>
+  <script src="<!-- @echo staticPath -->ng/bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+  <script src="<!-- @echo staticPath -->bower_components/respond/dest/respond.src.js"></script>
 
   <script type="text/javascript" src="//api.filepicker.io/v1/filepicker.js"></script>
 
@@ -162,7 +164,7 @@
     <!--/.navbar-collapse -->
   </div>
 
-  <div ng-view class="full">
+  <div ui-view class="full">
   <span id="landmine"></span>
   <script language="javascript" data-remove="exclude">
     angular.module('toolkit-gui').constant('API_BASE_URL', '<!-- @echo apiBaseUrl -->');
