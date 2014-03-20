@@ -149,7 +149,7 @@
         <li class="divider"></li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-          {{ matter.selected.current_user | fullname }}<b class="caret"></b>
+          {% verbatim %}{{ matter.selected.current_user | fullname }}{% endverbatim %}<b class="caret"></b>
           </a>
           <ul class="dropdown-menu">
             <li><a href="/me/settings/">Account</a></li>
@@ -168,6 +168,7 @@
   <script language="javascript" data-remove="exclude">
     angular.module('toolkit-gui').constant('API_BASE_URL', '<!-- @echo apiBaseUrl -->');
     angular.module('toolkit-gui').constant('STATUS_LEVEL', {'OK':0,'WARNING':1,'ERROR':2} );
+    angular.module('toolkit-gui').constant('DEBUG_MODE', true);
     angular.module('toolkit-gui').constant('SENTRY_PUBLIC_DSN', 'http://5584db708b75400fb439d4592c29fc9a@sentry.ambient-innovation.com/24' );
   </script>
 </body>

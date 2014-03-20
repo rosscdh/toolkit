@@ -1,22 +1,6 @@
-angular.module('toolkit-gui')
-// override the default exceptionHandler
-.factory('$exceptionHandler', ['$window', '$log', 'SENTRY_PUBLIC_DSN', function ($window,   $log, SENTRY_PUBLIC_DSN) {
-    if ($window.Raven) {
-        console.log('Using the RavenJS exception handler.');
-        $window.Raven.config(SENTRY_PUBLIC_DSN).install();
 
-        return function (exception, cause) {
-            $log.error.apply($log, arguments);
-            $window.Raven.captureException(exception);
-        };
-    } else {
-        console.log('Using the default logging exception handler.');
-        return function (exception, cause) {
-            $log.error.apply($log, arguments);
-        };
-    }
-  }
-])
+
+angular.module('toolkit-gui')
 // register the interceptor as a service
 .factory('myHttpInterceptor', ['$q', '$exceptionHandler', function ($q, $exceptionHandler) {
     return {

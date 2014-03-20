@@ -32,7 +32,8 @@ angular.module('toolkit-gui')
 	'activityService',
 	'userService',
 	'$timeout',
-	function($scope, $rootScope, $routeParams, smartRoutes, ezConfirm, toaster, $modal, matterService, matterItemService, matterCategoryService, participantService, searchService, activityService, userService, $timeout){
+    '$log',
+	function($scope, $rootScope, $routeParams, smartRoutes, ezConfirm, toaster, $modal, matterService, matterItemService, matterCategoryService, participantService, searchService, activityService, userService, $timeout, $log){
 		/**
 		 * Scope based data for the checklist controller
 		 * @memberof			ChecklistCtrl
@@ -163,7 +164,7 @@ angular.module('toolkit-gui')
 			$scope.data.showEditItemTitleForm = false;
 			$scope.data.showPreviousRevisions = false;
 
-			console.log(item);
+			$log.debug(item);
 		};
 
 		/**

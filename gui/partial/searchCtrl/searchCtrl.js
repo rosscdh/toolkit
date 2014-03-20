@@ -3,7 +3,8 @@ angular.module('toolkit-gui').controller('SearchCtrl',[
 	'searchService',
 	'$rootScope',
 	'$timeout',
-	function($scope, searchService, $rootScope, $timeout){
+    '$log',
+	function($scope, searchService, $rootScope, $timeout, $log){
 		$scope.data = {
 			'searchResults': searchService.data(),
 			'term': '',
@@ -37,7 +38,7 @@ angular.module('toolkit-gui').controller('SearchCtrl',[
 		};
 
 		$scope.keyPress = function( $event ) {
-			console.log( $event );
+			$log.debug( $event );
 		};
 	}
 ]);
