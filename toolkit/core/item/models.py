@@ -3,7 +3,8 @@ from django.db import models
 from django.db.models.signals import pre_save, post_save
 
 from toolkit.core.signals.activity import (on_item_post_save,)
-from .signals import (on_item_save_category, on_item_save_closing_group)
+from .signals import (on_item_save_category,
+                      on_item_save_closing_group)
 
 from toolkit.core.mixins import IsDeletedMixin
 
@@ -108,6 +109,7 @@ Connect signals
 pre_save.connect(on_item_save_category, sender=Item, dispatch_uid='item.post_save.category')
 pre_save.connect(on_item_save_closing_group, sender=Item, dispatch_uid='item.post_save.closing_group')
 post_save.connect(on_item_post_save, sender=Item, dispatch_uid='item.post_save.category')
+
 
 rulez_registry.register("can_read", Item)
 rulez_registry.register("can_edit", Item)
