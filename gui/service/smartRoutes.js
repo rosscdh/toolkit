@@ -1,4 +1,4 @@
-angular.module('toolkit-gui').factory('smartRoutes', [ '$routeParams', function($routeParams) {
+angular.module('toolkit-gui').factory('smartRoutes', [ '$routeParams', '$state', function($routeParams, $state) {
 
 	var paths = [
 		{ 'pattern': '/matters/:matterSlug', 'match': new RegExp('/matters', 'i') },
@@ -38,6 +38,11 @@ angular.module('toolkit-gui').factory('smartRoutes', [ '$routeParams', function(
 					}
 				}
 			}
+
+			for(var key in $state.params) {
+				$routeParams[key] = $state.params[key];
+			}
+
 			return $routeParams;
 		}
 	};

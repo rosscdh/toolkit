@@ -530,15 +530,23 @@ def build_angular_app():
     # settings
     local('cp conf/production.local_settings.py toolkit/local_settings.py')
 
+    # move tmp/local_settings.py back
+    if os.path.exists('/tmp/local_settings.py'):
+        local('rm toolkit/local_settings.py')  # remove the production version local_settings so noone loses their mind
+        local('mv /tmp/local_settings.py toolkit/local_settings.py')
+    else:
+        if env.environment_class == 'local':
+            # copy the default dev localsettings
+            import pdb;pdb.set_trace()
+            local('cp conf/dev.local_settings.py toolkit/local_settings.py')
+
+
     # perform grunt build --djangoProd
     local('cd gui;grunt build -djangoProd')
 
     # collect static
-    local('python manage.py collectstatic --noinput')
-
-    # move tmp/local_settings.py back
-    if os.path.exists('/tmp/local_settings.py'):
-        local('mv /tmp/local_settings.py toolkit/local_settings.py')
+    if env.environment_class == 'local':
+        local('python manage.py collectstatic --noinput')
 
 
 

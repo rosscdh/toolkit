@@ -4,10 +4,10 @@ from settings import *
 
 SITE_ID = 1
 
-TEST_PREPROD = False  # set to true and DEBUG = False in order to test angular app
 PROJECT_ENVIRONMENT = 'dev'
 
 DEBUG = True
+TEST_PREPROD = False  # set to true and DEBUG = False in order to test angular app
 COMPRESSION_ENABLED = False
 
 if TEST_PREPROD is True:

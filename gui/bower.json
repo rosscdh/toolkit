@@ -21,11 +21,13 @@
     "angular-bootstrap": "~0.9",
     "angular-markdown-directive": "latest",
     "angular-elastic": "latest",
+    "angular-ui-router": "latest",
     "moment": "~2.5",
     "less.js": "~1.5",
     "font-awesome": "~4.0",
     "angular-ui-sortable": "~0.12.1",
     "ez-confirm": "*",
-    "respond": "~1.4.2"
+    "respond": "~1.4.2",
+    "raven-js":"~1.1"
   }
 }

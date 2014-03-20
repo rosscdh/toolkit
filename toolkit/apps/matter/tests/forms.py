@@ -53,5 +53,5 @@ class MatterFormTest(BaseScenarios, TestCase):
         form = MatterForm(user=self.lawyer)
         self.assertEqual(
             form.fields['client_name'].widget.attrs['data-source'],
-            json.dumps(list(['Acme Inc', 'Bar Inc', 'Foo Inc']))
+            json.dumps(list(["Test Client Name", 'Acme Inc', 'Bar Inc', 'Foo Inc']))
         )
