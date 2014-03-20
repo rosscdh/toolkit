@@ -2,6 +2,7 @@
 from datetime import datetime
 
 from django.http import Http404, HttpResponseRedirect
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
@@ -129,11 +130,51 @@ class ReviewRevisionView(DetailView):
 class ApproveRevisionView(DetailView):
     queryset = ReviewDocument.objects.prefetch_related().all()
 
+    def get_object(self):
+        obj = super(ApproveRevisionView, self).get_object()
+        self.matter = obj.document.item.matter
+
+        self.authenticate()
+
+        return obj
+
     def approve(self, request, *args, **kwargs):
         self.object = self.get_object()
         success_url = self.get_success_url()
         self.object.complete()
         return HttpResponseRedirect(success_url)
+
+    def authenticate(self):
+        #
+        # Log in using the review backend
+        # 'toolkit.apps.review.auth_backends.ReviewDocumentBackend'
+        #
+        requested_authenticated_user = authenticate(username=self.kwargs.get('slug'), password=self.kwargs.get('auth_slug'))
+
+        #if self.request.user.is_authenticated() is True:
+        if requested_authenticated_user:
+            #
+            # if the request user is in the object.participants
+            # it means they are owners and should be able to view this regardless
+            #
+            if self.request.user in self.matter.participants.all():
+                #
+                # we are an owner its all allowed
+                #
+                pass
+            else:
+                #
+                # user is we are already logged in then check this guys mojo!
+                #
+                if self.request.user.is_authenticated():
+                    if requested_authenticated_user != self.request.user:
+                        raise PermissionDenied
+
+                login(self.request, requested_authenticated_user)
+
+    @csrf_exempt
+    def dispatch(self, request, *args, **kwargs):
+        return super(ApproveRevisionView, self).dispatch(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         return self.approve(request, *args, **kwargs)

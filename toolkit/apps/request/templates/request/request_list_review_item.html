@@ -27,8 +27,7 @@
 
 <div class="modal modal-full" id="request-review-{{ review.pk }}">
     <div class="modal-dialog">
-        <form method="POST" action="{{ approve_url}}" class="modal-content">
-            {% csrf_token %}
+        <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close fui-cross" data-dismiss="modal" aria-hidden="true"></button>
                 <h4 class="modal-title">Review from {{ review.reviewers.first }} for {{ item.name }}</h4>
@@ -38,14 +37,14 @@
                 <iframe src="{{ review_url }}" style="width: 100%; height: 500px;"></iframe>
             </div>
 
-            <div class="modal-footer">
+            <form method="POST" action="{{ approve_url }}" class="modal-footer">
                 <div class="pull-left">
                     <div class="padlock"><span class="fui-lock" title=""></span> Visible to:</div>
                     {% for p in review.participants %}{% avatar p %}{% endfor %}
                 </div>
                 <input type="button" name="cancel" value="Cancel" class="btn btn-default" data-dismiss="modal">
                 <input type="submit" name="submit" value="Yes, I approve this" class="btn btn-primary btn-lg btn-wide" id="submit-id-submit">
-            </div>
+            </form>
         </div>
     </div>
 </div>
