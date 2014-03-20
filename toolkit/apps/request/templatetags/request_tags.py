@@ -19,9 +19,10 @@ def request_review_item(item, user):
     review = item.latest_revision.reviewdocument_set.filter(reviewers=user).first()
 
     return {
+        'approve_url': review.get_approval_url(user),
         'item': item,
         'review': review,
-        'review_url': None,
+        'review_url': review.get_absolute_url(user),
         'user': user
     }
 

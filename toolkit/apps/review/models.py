@@ -46,6 +46,12 @@ class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
             return reverse('review:review_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)})
         return None
 
+    def get_approval_url(self, user):
+        auth_key = self.get_user_auth(user=user)
+        if auth_key is not None:
+            return reverse('review:approve_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)})
+        return None
+
     @property
     def file_exists_locally(self):
         """
@@ -56,6 +62,14 @@ class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
         except Exception as e:
             logger.critical('Crocodoc file does not exist locally: %s raised exception %s' % (self.document.executed_file, e))
         return False
+
+    @property
+    def matter(self):
+        return self.document.item.matter
+
+    @property
+    def participants(self):
+        return set(self.reviewers.all() | self.matter.participants.all())
 
     def download_if_not_exists(self):
         """
