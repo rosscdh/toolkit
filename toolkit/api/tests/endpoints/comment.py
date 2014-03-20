@@ -12,7 +12,7 @@ import json
 
 class CommentTest(BaseEndpointTest):
     """
-    /comment/ (POST)
+    /comment/ (POST, DELETE)
         create comments
 
     (GET not needed, because comments are saved as actions)
@@ -51,6 +51,27 @@ class CommentTest(BaseEndpointTest):
 
         self.assertEqual(resp.status_code, 201)  # created
 
+    def test_lawyer_delete(self):
+        # create comment and delete afterwards
+        self.client.login(username=self.lawyer.username, password=self.password)
+        data = {
+            "comment": "The rain in spain, falls mainly on a monkey."
+        }
+        self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
+
+        # load activities to get id
+        resp = self.client.get(reverse('item_activity', kwargs={'matter_slug': self.matter.slug,
+                                                                'item_slug': self.item.slug}))
+        self.assertEqual(resp.status_code, 200)
+        json_data = json.loads(resp.content)
+        id = json_data['results'][0].id
+
+        import pdb;pdb.set_trace()
+        
+        resp = self.client.delete(self.endpoint, json.dumps({}), content_type='application/json')
+
+        self.assertEqual(resp.status_code, 204)
+
     def test_customer_post(self):
         self.client.login(username=self.user.username, password=self.password)
 
@@ -60,6 +81,23 @@ class CommentTest(BaseEndpointTest):
         resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
 
         self.assertEqual(resp.status_code, 201)  # created
+
+    def test_customer_delete(self):
+        # create comment and delete afterwards
+        self.client.login(username=self.user.username, password=self.password)
+        data = {
+            "comment": "The rain in spain, falls mainly on a monkey."
+        }
+        resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
+        self.assertEqual(resp.status_code, 201)  # created
+
+        self.client.login(username=self.lawyer.username, password=self.password)
+        resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
+
+        self.client.login(username=self.user.username, password=self.password)
+        resp = self.client.delete(self.endpoint, json.dumps({}), content_type='application/json')
+
+        self.assertEqual(resp.status_code, 204)
 
     def test_anon_post(self):
         data = {
