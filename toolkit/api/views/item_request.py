@@ -16,7 +16,7 @@ class ItemRequestRevisionView(MatterItemView):
     """
     http_method_names = ('get', 'patch',)
 
-    note = None  # provided by requesting party and added to item.data json obj
+    message = None  # provided by requesting party and added to item.data json obj
 
     def get_serializer(self, instance, data=None,
                        files=None, many=False, partial=False):
@@ -27,7 +27,7 @@ class ItemRequestRevisionView(MatterItemView):
         #
         # Save the note for later
         #
-        self.note = data.pop('note', None) if data is not None else None
+        self.message = data.pop('message', None) if data is not None else None
 
         return super(ItemRequestRevisionView, self).get_serializer(instance=instance,
                                                                    data=data,
@@ -53,7 +53,7 @@ class ItemRequestRevisionView(MatterItemView):
         #
         obj.data.update({
             'request_document': {
-                'note': self.note,
+                'message': self.message,
                 'requested_by': SimpleUserSerializer(self.request.user, context={'request': self.request}).data,
                 'date_requested': datetime.datetime.utcnow()
             }
