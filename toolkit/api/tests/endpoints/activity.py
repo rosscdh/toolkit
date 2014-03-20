@@ -35,7 +35,10 @@ class MatterActivityEndpointTest(BaseEndpointTest):
         self.assertEqual(len(events), 2)  # create matter, create item. create revision is NO activity here.
         self.assertGreater(len(events[0]['event']), 10)  # just to see if event-text contains information. username is not fix.
         #self.assertEqual(events[0]['event'], u'%s created 1 %s on %s' % (self.lawyer, self.item.slug, self.matter,))
-        self.assertListEqual(events[0].keys(), [u'timestamp', u'timesince', u'data', u'id', u'event'])
+        self.assertItemsEqual(events[0].keys(), [u'timestamp', u'timesince', u'data', u'id', u'actor', u'event'])
+
+        # check if actor was added correctly
+        self.assertEqual(events[0]['actor']['name'], u'Lawyer Test')
 
 
 class ItemActivityEndpointTest(BaseEndpointTest):
@@ -66,4 +69,5 @@ class ItemActivityEndpointTest(BaseEndpointTest):
         self.assertGreater(len(events[0]['event']), 10)  # just to see if event-text contains information. username is not fix.
         self.assertItemsEqual(events[0].keys(), [u'timestamp', u'timesince', u'data', u'id', u'actor', u'event'])
 
+        # check if actor was added correctly
         self.assertEqual(events[0]['actor']['name'], u'Lawyer Test')
