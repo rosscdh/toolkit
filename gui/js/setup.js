@@ -5,6 +5,7 @@ angular.module('toolkit-gui', [
     'ez.confirm',
     'toaster',
     'ngRoute',
+    'ui.router',
     'ngAnimate',
     'ngResource',
     'btford.markdown',
@@ -12,17 +13,37 @@ angular.module('toolkit-gui', [
     'angularFileUpload'
 ]);
 
-angular.module('toolkit-gui').config(function($routeProvider) {
-
+angular.module('toolkit-gui').config(function($stateProvider, $urlRouterProvider) {
+    /*
     $routeProvider.
     when('/',{templateUrl: '/static/ng/partial/home/home.html'}).
 	when('/checklist',{'templateUrl': '/static/ng/partial/checklist/checklist.html', 'controller': 'ChecklistCtrl'}).
+    when('/checklist/:itemSlug',{'templateUrl': '/static/ng/partial/checklist/checklist.html', 'controller': 'ChecklistCtrl'}).
 	when('/closing',{templateUrl: '/static/ng/partial/closing/closing.html'}).
 	when('/closing',{templateUrl: '/static/ng/partial/closing/closing.html'}).
 	when('/invite',{templateUrl: '/static/ng/partial/participant-invite/participant-invite.html'}).
 	when('/attachment/:id',{templateUrl: '/static/ng/partial/view-document/view-document.html'}).
 
     otherwise({redirectTo:'/'});
+    */
+   
+   $stateProvider
+    .state('checklist', {
+      'url': "/checklist",
+      'controller': 'ChecklistCtrl',
+      'templateUrl': '/static/ng/partial/checklist/checklist.html'
+    })
+    .state('checklist.item', {
+      'url': "/:itemSlug",
+      'templateUrl': '/static/ng/partial/checklist/includes/itemdetails.html',
+      'controller': function($scope) {}
+    });
+    /*
+    $routeSegmentProvider.within('checklist').segment('itemInfo', {
+    'templateUrl': '/static/ng/partial/checklist/includes/itemdetails.html'});
+    */
+   
+    $urlRouterProvider.otherwise('/checklist'); 
 });
 
 
@@ -87,5 +108,4 @@ angular.module('toolkit-gui').run(function($rootScope) {
 			this.$apply(fn);
 		}
 	};
-
 });

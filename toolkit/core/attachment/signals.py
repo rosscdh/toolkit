@@ -141,3 +141,15 @@ def on_reviewer_remove(sender, instance, action, model, pk_set, **kwargs):
                 reviewdocument.reviewers.remove(user) if user in reviewdocument.reviewers.all() else None
 
 
+@receiver(post_save, sender=Revision, dispatch_uid='revision.set_item_is_requested_false')
+def on_upload_set_item_is_requested_false(sender, instance, **kwargs):
+    """
+    @BUSINESSRULE when a document is uploaded and item.is_requested = True
+    and its uploaded by the item.responsible_party then mark it as is_requested = False
+    """
+    if instance.item.is_requested is True:
+        if instance.uploaded_by == item.instance.responsible_party:
+            item = instance.item
+            item.is_requested = False
+            item.save(update_fields=['is_requested'])
+            # @TODO issue activity here?

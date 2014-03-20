@@ -20,7 +20,8 @@ Base Signal and listener used to funnel events
 
 
 # first four args as in django-activity-stream, plus custom stuff
-send_activity_log = Signal(providing_args=['actor', 'verb', 'action_object', 'target', 'message', 'user', 'item'])
+send_activity_log = Signal(providing_args=['actor', 'verb', 'action_object', 'target', 'message', 'user', 'item',
+                                           'comment'])
 
 
 @receiver(send_activity_log, dispatch_uid="core.on_activity_received")
