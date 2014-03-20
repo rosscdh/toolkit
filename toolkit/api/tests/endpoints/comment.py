@@ -3,6 +3,10 @@ from actstream.models import Action
 from django.core.urlresolvers import reverse
 
 from . import BaseEndpointTest
+<<<<<<< HEAD
+=======
+from ...serializers import ClientSerializer, ItemActivitySerializer
+>>>>>>> Conflicts:
 
 from model_mommy import mommy
 
