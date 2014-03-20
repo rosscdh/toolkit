@@ -96,6 +96,50 @@ class MattersTest(BaseEndpointTest):
         resp = self.client.delete(self.endpoint, {}, content_type='application/json')
         self.assertEqual(resp.status_code, 401)  # denied
 
+    def test_percentage_finished_zero(self):
+        # create unfinished item:
+        mommy.make('item.Item', name='Test Item #1', matter=self.workspace)
+        self.client.login(username=self.lawyer.username, password=self.password)
+        resp = self.client.get(self.endpoint)
+
+        self.assertEqual(resp.status_code, 200)
+        json_data = json.loads(resp.content)
+        self.assertEqual(json_data['results'][0]['percentage_finished'], 0)
+
+    def test_percentage_finished_one(self):
+        # create unfinished item:
+        mommy.make('item.Item', name='Test Item #1', matter=self.workspace, is_complete=True)
+        mommy.make('item.Item', name='Test Item #2', matter=self.workspace, is_complete=True)
+        self.client.login(username=self.lawyer.username, password=self.password)
+        resp = self.client.get(self.endpoint)
+
+        self.assertEqual(resp.status_code, 200)
+
+        json_data = json.loads(resp.content)
+        self.assertEqual(json_data['results'][0]['percentage_finished'], 100)
+
+    def test_percentage_finished_two_thirds(self):
+        # create unfinished item:
+        mommy.make('item.Item', name='Test Item #1', matter=self.workspace, is_complete=True)
+        mommy.make('item.Item', name='Test Item #2', matter=self.workspace, is_complete=True)
+        mommy.make('item.Item', name='Test Item #3', matter=self.workspace)
+        self.client.login(username=self.lawyer.username, password=self.password)
+        resp = self.client.get(self.endpoint)
+
+        self.assertEqual(resp.status_code, 200)
+
+        json_data = json.loads(resp.content)
+        self.assertEqual(json_data['results'][0]['percentage_finished'], 67)
+
+    def test_percentage_finished_no_items(self):
+        # create unfinished item:
+        self.client.login(username=self.lawyer.username, password=self.password)
+        resp = self.client.get(self.endpoint)
+
+        self.assertEqual(resp.status_code, 200)
+
+        json_data = json.loads(resp.content)
+        self.assertEqual(json_data['results'][0]['percentage_finished'], 0)
 
 
 class MatterDetailTest(BaseEndpointTest):
