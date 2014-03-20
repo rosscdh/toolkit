@@ -1155,4 +1155,33 @@ angular.module('toolkit-gui')
 			);
 		};
 
+		/**
+		 * Default date control options
+		 *
+		 * @memberof			ChecklistCtrl
+		 * @private
+		 * 
+		 * @type {Object}
+		 */
+		$scope.dateOptions = {
+			'year-format': "'yy'",
+			'starting-day': 1
+		};
+
+		/**
+		 * Toggle due date value between default (today) and null
+		 *
+		 * @memberof			ChecklistCtrl
+		 * @private
+		 * 
+		 * @param  {Object} item Item which to apply default date
+		 */
+		$scope.toggleDueDateCalendar = function(item) {
+		 	if(!item.date_due) {
+		 		item.date_due = new Date();
+		 	} else {
+		 		item.date_due = null;
+		 	}
+		};
+
 }]);
