@@ -371,7 +371,8 @@ BLEACH_STRIP_TAGS = True
 ACTSTREAM_SETTINGS = {
     'MODELS': ('auth.User', 'workspace.Workspace', 'item.Item', 'attachment.Revision'),
     'MANAGER': 'toolkit.core.managers.ToolkitActionManager',
-    'FETCH_RELATIONS': True,
+    'FETCH_RELATIONS': False,
+    'USE_FOLLOWING': False,
     'USE_PREFETCH': True,
     'USE_JSONFIELD': True,
 }

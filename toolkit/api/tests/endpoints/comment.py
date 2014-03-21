@@ -3,7 +3,6 @@ from actstream.models import Action
 from django.core.urlresolvers import reverse
 
 from . import BaseEndpointTest
-from ...serializers import ClientSerializer, ItemActivitySerializer
 
 from model_mommy import mommy
 
@@ -52,23 +51,18 @@ class CommentTest(BaseEndpointTest):
         self.assertEqual(resp.status_code, 201)  # created
 
     def test_lawyer_delete(self):
-        # create comment and delete afterwards
         self.client.login(username=self.lawyer.username, password=self.password)
-        data = {
-            "comment": "The rain in spain, falls mainly on a monkey."
-        }
-        self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
 
-        # load activities to get id
-        resp = self.client.get(reverse('item_activity', kwargs={'matter_slug': self.matter.slug,
-                                                                'item_slug': self.item.slug}))
-        self.assertEqual(resp.status_code, 200)
-        json_data = json.loads(resp.content)
-        id = json_data['results'][0]['id']
+        comment1 = mommy.make('actstream.Action',
+                              actor=self.user,
+                              verb=u'commented',
+                              action_object=self.item,
+                              target=self.matter,
+                              data={'comment': u'I"m a test comment #1'})
 
         resp = self.client.delete(reverse('item_comment', kwargs={'matter_slug': self.matter.slug,
                                                                   'item_slug': self.item.slug,
-                                                                  'id': id}),
+                                                                  'id': comment1.id}),
                                   json.dumps({}),
                                   content_type='application/json')
         self.assertEqual(resp.status_code, 204)
@@ -84,58 +78,75 @@ class CommentTest(BaseEndpointTest):
         self.assertEqual(resp.status_code, 201)  # created
 
     def test_customer_delete(self):
-        # create comment
         self.client.login(username=self.user.username, password=self.password)
-        data = {
-            "comment": "The rain in spain, falls mainly on a monkey."
-        }
-        resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
 
-        # load activities and get id to delete
-        resp = self.client.get(reverse('item_activity', kwargs={'matter_slug': self.matter.slug,
-                                                                'item_slug': self.item.slug}))
-        self.assertEqual(resp.status_code, 200)
-        json_data = json.loads(resp.content)
-        id = json_data['results'][0]['id']
+        comment1 = mommy.make('actstream.Action',
+                              actor=self.user,
+                              verb=u'commented',
+                              action_object=self.item,
+                              target=self.matter,
+                              data={'comment': u'I"m a test comment #1'})
+        comment2 = mommy.make('actstream.Action',
+                              actor=self.user,
+                              verb=u'commented',
+                              action_object=self.item,
+                              target=self.matter,
+                              data={'comment': u'I"m a test comment #2'})
 
         # delete
         resp = self.client.delete(reverse('item_comment', kwargs={'matter_slug': self.matter.slug,
                                                                   'item_slug': self.item.slug,
-                                                                  'id': id}),
+                                                                  'id': comment2.id}),
                                   json.dumps({}),
                                   content_type='application/json')
-        # self.assertEqual(resp.status_code, 204)
+        self.assertEqual(resp.status_code, 204)
+
+        # delete
+        resp = self.client.delete(reverse('item_comment', kwargs={'matter_slug': self.matter.slug,
+                                                                  'item_slug': self.item.slug,
+                                                                  'id': comment1.id}),
+                                  json.dumps({}),
+                                  content_type='application/json')
+        self.assertEqual(resp.status_code, 204)
+
+        result = Action.objects.deleted()
+        self.assertEqual(len(result), 2)
 
     def test_customer_delete_forbidden(self):
         # create comment
         self.client.login(username=self.user.username, password=self.password)
-        data = {
-            "comment": "The rain in spain, falls mainly on a monkey."
-        }
-        resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
 
+        comment1 = mommy.make('actstream.Action',
+                              actor=self.user,
+                              verb=u'commented',
+                              action_object=self.item,
+                              target=self.matter,
+                              data={'comment': u'I"m a test comment #1'})
+        comment2 = mommy.make('actstream.Action',
+                              actor=self.user,
+                              verb=u'commented',
+                              action_object=self.item,
+                              target=self.matter,
+                              data={'comment': u'I"m a test comment #2'})
 
-        # load activities and get id to delete
-        resp = self.client.get(reverse('item_activity', kwargs={'matter_slug': self.matter.slug,
-                                                                'item_slug': self.item.slug}))
-        self.assertEqual(resp.status_code, 200)
-        json_data = json.loads(resp.content)
-        id = json_data['results'][0]['id']
-
-        # change user and create new comment
-        self.client.login(username=self.lawyer.username, password=self.password)
-        resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
-
-        # change user again
-        self.client.login(username=self.user.username, password=self.password)
-
-        # delete (should fail because in between another comment was created)
+        # delete
         resp = self.client.delete(reverse('item_comment', kwargs={'matter_slug': self.matter.slug,
                                                                   'item_slug': self.item.slug,
-                                                                  'id': id}),
+                                                                  'id': comment1.id}),
                                   json.dumps({}),
                                   content_type='application/json')
-        self.assertEqual(resp.status_code, 403)  # forbidden
+        self.assertEqual(resp.status_code, 403)
+
+        # delete
+        resp = self.client.delete(reverse('item_comment', kwargs={'matter_slug': self.matter.slug,
+                                                                  'item_slug': self.item.slug,
+                                                                  'id': comment2.id}),
+                                  json.dumps({}),
+                                  content_type='application/json')
+        self.assertEqual(resp.status_code, 204)
+
+        result = Action.objects.deleted()
+        self.assertEqual(len(result), 1)
 
     def test_anon_post(self):
         data = {
