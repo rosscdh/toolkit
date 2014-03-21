@@ -26,10 +26,8 @@ __Item__
 
 [review-requests]
 
-1. ./manage.py migrate attachment 0001 --fake
-2. ./manage.py migrate attachment 0002
-3. ./manage.py migrate review 0001 --fake
-4. ./manage.py migrate review 0002
+1. syncdb will add attachment app
+2. syncdb will add review app
 
 [activity stream]
 

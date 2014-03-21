@@ -3,7 +3,9 @@ angular.module('toolkit-gui').controller('SearchCtrl',[
 	'searchService',
 	'$rootScope',
 	'$timeout',
-	function($scope, searchService, $rootScope, $timeout){
+	'$state',
+    '$log',
+	function($scope, searchService, $rootScope, $timeout, $state, $log){
 		$scope.data = {
 			'searchResults': searchService.data(),
 			'term': '',
@@ -22,6 +24,8 @@ angular.module('toolkit-gui').controller('SearchCtrl',[
 		$scope.selectItem = function( item ) {
 			$rootScope.$broadcast('itemSelected', item);
 			$scope.hide();
+
+			$state.transitionTo('checklist.item', { 'itemSlug': item.slug });
 		};
 
 		$scope.hide = function() {
@@ -37,7 +41,7 @@ angular.module('toolkit-gui').controller('SearchCtrl',[
 		};
 
 		$scope.keyPress = function( $event ) {
-			console.log( $event );
+			$log.debug( $event );
 		};
 	}
 ]);
