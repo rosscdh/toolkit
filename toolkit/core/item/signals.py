@@ -73,3 +73,27 @@ def on_item_save_closing_group(sender, instance, **kwargs):
     matter.save(update_fields=['data'])  # save the updated data where categories are stored
 
     logger.debug('Recieved item.pre_save:closing_group event: %s' % sender)
+
+
+def on_item_save_changed_status(sender, instance, **kwargs):
+    """
+    Update and modify matter closing_group when item is changes
+    """
+    matter = instance.matter
+
+    try:
+        # get the current
+        previous_instance = sender.objects.get(pk=instance.pk)
+
+    except sender.DoesNotExist:
+        #
+        # Do nothing as the previous object does not exist
+        #
+        pass
+
+    if previous_instance.status != instance.status:
+        matter.actions.item_change_status(user=matter.lawyer,  # WHO is allowed to change status?
+                                          item=instance,
+                                          previous_status=previous_instance.status)
+
+    logger.debug('Recieved item.pre_save:changed_status event: %s' % sender)
