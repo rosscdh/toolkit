@@ -42,7 +42,7 @@ class ItemCommentEndpoint(MatterItemsQuerySetMixin,
     def create(self, request, **kwargs):
         comment = request.DATA.get('comment', '')
         if comment.strip() not in [None, '']:
-            self.matter.actions.add_comment(user=request.user, item=self.item,
+            self.matter.actions.add_item_comment(user=request.user, item=self.item,
                                                                 comment=comment)
             return Response(status=http_status.HTTP_201_CREATED)
         else:
