@@ -75,7 +75,7 @@ def on_item_save_closing_group(sender, instance, **kwargs):
     logger.debug('Recieved item.pre_save:closing_group event: %s' % sender)
 
 
-def on_item_save_changed_status(sender, instance, **kwargs):
+def on_item_save_changed_content(sender, instance, **kwargs):
     """
     Update and modify matter closing_group when item is changes
     """
@@ -96,4 +96,9 @@ def on_item_save_changed_status(sender, instance, **kwargs):
                                           item=instance,
                                           previous_status=previous_instance.status)
 
-    logger.debug('Recieved item.pre_save:changed_status event: %s' % sender)
+    if previous_instance.name != instance.name:
+        matter.actions.item_rename(user=matter.lawyer,  # WHO is allowed?
+                                   item=instance,
+                                   previous_name=previous_instance.name)
+
+    logger.debug('Recieved item.pre_save:changed_content event: %s' % sender)
