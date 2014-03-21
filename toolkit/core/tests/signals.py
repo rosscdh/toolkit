@@ -11,7 +11,6 @@ from toolkit.casper import BaseScenarios
 from toolkit.core.attachment.models import Revision
 from toolkit.core.item.models import Item
 
-from toolkit.core.services.matter_activity import MatterActivityEventService
 from toolkit.core.signals.activity_listener import send_activity_log
 
 cache_key = 'activity_stream_signal_received_keys'
@@ -41,6 +40,7 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         """
         # in setUp the workspace was created which should have reached on_activity_received above:
         cache_obj = cache.get(cache_key)
+
         self.assertItemsEqual(cache_obj.keys(), ['sender', 'signal', 'actor', 'verb', 'verb_slug', 'action_object', 'target', 'item',
                                                  'user', 'message', 'comment'])
         self.assertItemsEqual(cache_obj.values(), ["<class 'toolkit.core.services.matter_activity.MatterActivityEventService'>",
@@ -125,7 +125,9 @@ class ActivitySignalTest(BaseScenarios, TestCase):
     def test_add_comment(self):
         item = mommy.make('item.Item', name='Test Item #1', matter=self.matter)
         comment_text = u'Sleep with one eye open'
+
         self.matter.actions.add_item_comment(self.lawyer, item, comment_text)
+
         stream = model_stream(Item)
         self.assertEqual(len(stream), 2)  # create item, and add comment -> 2
         self.assertEqual(stream[0].data['comment'], comment_text)
