@@ -70,14 +70,20 @@ class ItemActivitySerializer(MatterActivitySerializer):
             'actor_pk': obj.actor.pk,
             'verb': obj.verb,
             'action_object': obj.action_object,
-            'action_object_pk': obj.action_object.slug,
-            'action_object_url': obj.action_object.get_absolute_url(),
-            'timestamp': obj.timestamp
+            'action_object_pk': obj.action_object.slug if obj.action_object else None,
+            'action_object_url': obj.action_object.get_absolute_url() if obj.action_object and hasattr(obj.action_object, 'get_absolute_url') else None,
+            'timestamp': obj.timestamp,
+            'timesince': obj.timesince(),
             #'target': obj.target,
             #'target_pk': obj.target.slug,
         }
 
         override_message = obj.data.get('message', None)
+
+        comment = obj.data.get('comment', None)
+
+        if comment is not None:
+            return _get_comment_display(ctx, comment)
 
         # if override_message is not None:
         #     return override_message
