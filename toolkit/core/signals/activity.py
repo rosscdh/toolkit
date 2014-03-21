@@ -17,7 +17,8 @@ def on_workspace_post_save(sender, instance, created, **kwargs):
         The owning lawyer is the only one who can create, modify or delete the workspace, so this is possible.
     """
     if created:
-        instance.actions.created_matter(lawyer=instance.lawyer)
+        matter = instance
+        matter.actions.created_matter(lawyer=matter.lawyer)
 
 
 def on_item_post_save(sender, instance, created, **kwargs):
@@ -25,4 +26,5 @@ def on_item_post_save(sender, instance, created, **kwargs):
         At this moment only the layer can edit items. So this is possible.
     """
     if created:
-        instance.actions.created_item(user=instance.matter.lawyer, item=instance)
+        matter = instance.matter
+        matter.actions.created_item(user=matter.lawyer, item=instance)
