@@ -142,7 +142,11 @@
           <div ng-class="{'show-results-container': data.display}">
             <ul class="search-results list-unstyled">
               <li class="result-item reveal-animation" ng-repeat="result in data.searchResults.results">
-                <a href="javascript:;" ng-bind="result.name" ng-click="selectItem(result)"></a>
+                <a href="javascript:;" ng-click="selectItem(result)">
+                    <p ng-bind="result.name"></p>
+                    <p ng-show="result.description"><small ng-bind="result.description"></small></p>
+                    <p ng-show="result.latest_revision"><small ng-bind="result.latest_revision.name"></small> <small ng-bind="result.latest_revision.slug"></small></p>
+                </a>
               </li>
             </ul>
           </div>
