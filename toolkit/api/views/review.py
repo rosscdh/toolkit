@@ -20,10 +20,9 @@ from toolkit.apps.review.models import ReviewDocument
 from toolkit.apps.workspace.models import Workspace
 from toolkit.apps.workspace.services import EnsureCustomerService
 
-from ..serializers import SimpleUserWithReviewUrlSerializer, SimpleUserSerializer
+from ..serializers import SimpleUserWithReviewUrlSerializer
 
 import logging
-from toolkit.core.services.matter_activity import MatterActivityEventService
 
 logger = logging.getLogger('django.request')
 
@@ -123,7 +122,7 @@ class ItemRevisionReviewersView(generics.ListAPIView,
             #
             self.item.send_invite_to_review_emails(from_user=request.user, to=[user], note=note)
 
-            MatterActivityEventService(self.matter).added_user_as_reviewer(item=self.item,
+            self.matter.actions.added_user_as_reviewer(item=self.item,
                                                                            adding_user=request.user,
                                                                            added_user=user)
 
@@ -216,9 +215,9 @@ class ItemRevisionReviewerView(generics.RetrieveAPIView,
             #
             self.revision.reviewers.remove(user)
 
-            MatterActivityEventService(self.matter).removed_user_as_reviewer(item=self.item,
-                                                                             removing_user=request.user,
-                                                                             removed_user=user)
+            self.matter.actions.removed_user_as_reviewer(item=self.item,
+                                                         removing_user=request.user,
+                                                         removed_user=user)
 
         else:
             status = http_status.HTTP_404_NOT_FOUND

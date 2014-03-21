@@ -14,8 +14,6 @@ from rest_framework import permissions
 from toolkit.api.serializers import ItemActivitySerializer
 from toolkit.api.views.mixins import MatterItemsQuerySetMixin
 
-from toolkit.core.services.matter_activity import MatterActivityEventService
-
 
 class ItemCommentEndpoint(MatterItemsQuerySetMixin,
                           generics.CreateAPIView,
@@ -44,7 +42,7 @@ class ItemCommentEndpoint(MatterItemsQuerySetMixin,
     def create(self, request, **kwargs):
         comment = request.DATA.get('comment', '')
         if comment.strip() not in [None, '']:
-            MatterActivityEventService(self.matter).add_comment(user=request.user, item=self.item,
+            self.matter.actions.add_comment(user=request.user, item=self.item,
                                                                 comment=comment)
             return Response(status=http_status.HTTP_201_CREATED)
         else:
