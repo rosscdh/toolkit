@@ -14,6 +14,8 @@ class UserProfile(models.Model):
     CUSTOMER = 'customer'
     LAWYER = 'lawyer'
 
+    has_notifications = models.BooleanField(default=False)
+
     user = models.OneToOneField('auth.User',
                                 unique=True,
                                 related_name='profile')

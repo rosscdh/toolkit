@@ -20,10 +20,9 @@ INSTALLED_APPS = INSTALLED_APPS + (
     'casper',
     'colortools',
     # Lawpal modules
-    'toolkit.core.tests',
-    # Lawpal modules
+    #'toolkit.core.tests',
     'hello_sign.tests',
-    #'dj_crocodoc.tests',
+    'dj_crocodoc.tests',
 )
 
 SOUTH_TESTS_MIGRATE = False

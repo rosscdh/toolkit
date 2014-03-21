@@ -17,6 +17,8 @@ urlpatterns = patterns('',
 
     url(r'^dash/', include('toolkit.apps.dash.urls', namespace='dash')),
 
+    url(r'^notifications/', include('toolkit.apps.notification.urls', namespace='notification')),
+
     url(r'^matters/', include('toolkit.apps.matter.urls', namespace='matter')),
     url(r'^requests/', include('toolkit.apps.request.urls', namespace='request')),
 

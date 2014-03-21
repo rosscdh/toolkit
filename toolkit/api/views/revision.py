@@ -9,7 +9,6 @@ from rest_framework import generics
 from rest_framework import status
 from rest_framework.response import Response
 
-from toolkit.core.services.matter_activity import MatterActivityEventService
 from toolkit.core.attachment.models import Revision
 
 from .mixins import (MatterItemsQuerySetMixin,)
@@ -122,9 +121,9 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
             #
             # Custom signal event
             #
-            MatterActivityEventService(self.matter).created_revision(user=self.request.user,
-                                                                     item=self.item,
-                                                                     revision=self.revision)
+            self.matter.actions.created_revision(user=self.request.user,
+                                                 item=self.item,
+                                                 revision=self.revision)
 
             return Response(serializer.data, status=status.HTTP_201_CREATED,
                             headers=headers)
@@ -133,9 +132,9 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
 
     def destroy(self, request, **kwargs):
         resp = super(ItemCurrentRevisionView, self).destroy(request=request, **kwargs)
-        MatterActivityEventService(self.matter).deleted_revision(user=self.request.user,
-                                                                 item=self.item,
-                                                                 revision=self.revision)
+        self.matter.actions.deleted_revision(user=self.request.user,
+                                             item=self.item,
+                                             revision=self.revision)
         return resp
 
     def pre_save(self, obj):
