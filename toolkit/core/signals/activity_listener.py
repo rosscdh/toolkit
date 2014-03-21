@@ -105,14 +105,30 @@ def on_activity_received(sender, **kwargs):
     # Test that we have the required arguments to send the action signal
     #
     if actor and verb and action_object and target:
+        send_to_actstream = False
+        send_to_abridge = False
+        send_to_notification = False
+
+        # TODO: set rules, which activities go to which endpoints (actstream, abridge, notification)
+        if action_object.__class__.__name__ == 'Item' and verb == u'created':
+            send_to_actstream = True
+
+        if action_object.__class__.__name__ == 'Item' and verb == u'changed the status':
+            send_to_actstream = True
+            send_to_abridge = True
+            send_to_notification = True
+
         # catch if we dont have it installed
         if action is None:
             logger.critical('actstream is not installed')
-        else:
+        elif send_to_actstream:
             # send to django-activity-stream
             action.send(actor, **kwargs)
 
-        # send the notifications to the participants
-        _notifications_send(actor=actor, target=target, message=message)
-        # send to abridge service
-        _abridge_send(actor=actor, target=target, message=message)
+        if send_to_notification:
+            # send the notifications to the participants
+            _notifications_send(actor=actor, target=target, message=message)
+
+        if send_to_abridge:
+            # send to abridge service
+            _abridge_send(actor=actor, target=target, message=message)
