@@ -9,6 +9,7 @@ SITE_ID = 2
 SECRET_KEY = 'i6=)1=4in#zyp&amp;g)^9nqodjgjru134)@2)^$ox5w7ac*uhml!uy-5'
 
 DEBUG = False
+TEST_PREPROD = False  # MUST be false in production
 TEMPLATE_DEBUG = DEBUG
 
 TEMPLATE_LOADERS = (

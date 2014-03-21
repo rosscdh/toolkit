@@ -15,6 +15,7 @@ pip install djangorestframework==2.3.13  ## to have access to the is_success fro
 2. ./manage.py migrate workspace 0002  # workspace matter_numer
 3. ./manage.py migrate workspace 0003  # workspace description
 3. ./manage.py migrate workspace 0004  # workspace add matter key to Invite model
+3. ./manage.py migrate workspace 0005  # ensure workspace.data is a {}
 
 __Item__
 1. syncdb will add item app
