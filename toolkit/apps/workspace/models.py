@@ -55,9 +55,12 @@ class Workspace(IsDeletedMixin, ClosingGroupsMixin, CategoriesMixin, models.Mode
     class Meta:
         ordering = ['name', '-pk']
 
-    # def __init__(self, *args, **kwargs):
-    #     self._actions = MatterActivityEventService(self)
-    #     super(Workspace, self).__init__(*args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        #
+        # Initialize the actions property
+        #
+        self._actions = MatterActivityEventService(self)
+        super(Workspace, self).__init__(*args, **kwargs)
 
     def __unicode__(self):
         return '%s' % self.name
