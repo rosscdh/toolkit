@@ -10,7 +10,8 @@ angular.module('toolkit-gui')
 	'$q',
 	'$resource',
 	'API_BASE_URL',
-	function( $q, $resource, API_BASE_URL ) {
+    '$log',
+	function( $q, $resource, API_BASE_URL, $log ) {
 
 		/**
 		 * Returns a key/value object containing $resource methods to access comment API end-points
@@ -24,8 +25,9 @@ angular.module('toolkit-gui')
 		 * @return {Function}   $resource
 		 */
 		function commentResource() {
-			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/comment', {}, {
-				'create': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'}}
+			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/comment/:id', {}, {
+				'create': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'}},
+				'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'}}
 			});
 		}
 
@@ -51,6 +53,37 @@ angular.module('toolkit-gui')
 				var deferred = $q.defer();
 
 				api.create({'matterSlug': matterSlug, 'itemSlug': itemSlug}, {'comment': comment},
+					function success() {
+						deferred.resolve();
+					},
+					function error( err ) {
+						deferred.reject( err );
+					}
+				);
+
+				return deferred.promise;
+			},
+
+            /**
+			 * Deletes the given comment
+			 *
+			 * @name				delete
+			 *
+			 * @example
+		 	 * commentService.delete( mySelectedMatter, myItem, myComment );
+			 *
+			 * @public
+			 * @method				delete
+			 * @memberof			commentService
+			 *
+			 * @return {Promise}
+		 	 */
+			'delete': function(matterSlug, itemSlug, comment) {
+				var api = commentResource();
+				var deferred = $q.defer();
+                $log.debug(comment);
+
+				api.delete({'matterSlug': matterSlug, 'itemSlug': itemSlug, 'id':comment.id},
 					function success() {
 						deferred.resolve();
 					},

@@ -81,7 +81,8 @@
         </a>
         //-->
         <span class="calendar-group" ng-show="data.showDateDueInput||data.selectedItem.date_due" ng-click="data.showDateDuePicker=true">
-            <input type="text" id="dateduepicker-input" datepicker-popup="dd-MMMM" ng-model="data.selectedItem.date_due" datepicker-options="dateOptions" is-open="data.showDateDuePicker" class="btn-embossed btn-sm btn-silver" />
+            <input type="text" id="dateduepicker-input" datepicker-popup="dd-MMMM" ng-model="data.dueDatePickerDate"
+                   datepicker-options="dateOptions" is-open="data.showDateDuePicker" class="btn-embossed btn-sm btn-silver" />
             <label class="fui-calendar" for="dateduepicker-input"></label>
         </span>
 
