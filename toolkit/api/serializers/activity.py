@@ -2,20 +2,20 @@
 from django.utils.translation import ugettext as _
 from actstream.models import Action
 from rest_framework import serializers
-from toolkit.api.serializers.user import LiteUserSerializer
 
-from .user import SimpleUserSerializer
+from toolkit.api.serializers.user import LiteUserSerializer
 
 
 class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
     event = serializers.SerializerMethodField('get_event')
-    #timesince = serializers.SerializerMethodField('get_timesince')
-    #actor = LiteUserSerializer('actor')
+
+    timesince = serializers.SerializerMethodField('get_timesince')
+    actor = LiteUserSerializer('actor')
 
     class Meta:
         model = Action
         lookup_field = 'id'
-        fields = ('id', 'event')
+        fields = ('id', 'actor', 'event', 'data', 'timestamp', 'timesince')
 
     def get_timesince(self, obj):
         return obj.timesince()

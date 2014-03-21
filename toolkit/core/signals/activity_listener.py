@@ -73,7 +73,6 @@ def _notifications_send(actor, target, message):
             profile.save(update_fields=['has_notifications'])
 
 
-
 @receiver(send_activity_log, dispatch_uid="core.on_activity_received")
 def on_activity_received(sender, **kwargs):
     # actor has to be popped, the rest has to remain in kwargs and is not used here, except message to use in abridge
