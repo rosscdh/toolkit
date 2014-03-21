@@ -1,4 +1,4 @@
-angular.module('toolkit-gui').factory('searchService', ['matterService',function(matterService) {
+angular.module('toolkit-gui').factory('searchService', ['matterService', '$log', function(matterService, $log) {
 
 	var data = {
 		'term': null,
@@ -18,6 +18,7 @@ angular.module('toolkit-gui').factory('searchService', ['matterService',function
 				});
 			}
 
+            $log.debug(results);
 			data.results = results;
 		},
 		'data': function() {
