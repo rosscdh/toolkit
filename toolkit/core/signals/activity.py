@@ -21,6 +21,11 @@ def on_workspace_post_save(sender, instance, created, **kwargs):
         matter.actions.created_matter(lawyer=matter.lawyer)
 
 
+def on_workspace_pre_save(sender, instance, created, **kwargs):
+    pass
+    # TODO check for new participants and send signal
+
+
 def on_item_post_save(sender, instance, created, **kwargs):
     """
         At this moment only the layer can edit items. So this is possible.
