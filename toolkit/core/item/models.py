@@ -80,7 +80,7 @@ class Item(IsDeletedMixin, RequestDocumentUploadMixin,
 
     @property
     def latest_revision(self):
-        return self.revision_set.current().get()
+        return self.revision_set.current().first()
 
     def participants(self):
         return self.data.get('participants', [])
