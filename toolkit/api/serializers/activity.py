@@ -1,10 +1,18 @@
 # -*- coding: utf-8 -*-
 from django.utils.translation import ugettext as _
+from django.template import loader
+
 from actstream.models import Action
 from rest_framework import serializers
 
 from toolkit.api.serializers.user import LiteUserSerializer
 
+
+def _get_comment_display(ctx, comment):
+    template = loader.get_template('activity/comment.html')  # allow override of template_name
+    context = loader.Context(ctx)
+    # render the template with passed in context
+    return template.render(context)
 
 class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
     event = serializers.SerializerMethodField('get_event')
@@ -30,16 +38,21 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
             'verb': obj.verb,
             'action_object': obj.action_object,
             'action_object_pk': obj.action_object.slug if obj.action_object else None,
-            'action_object_url': obj.action_object.get_absolute_url() if obj.action_object else None,
-            'timestamp': obj.timestamp
+            'action_object_url': obj.action_object.get_absolute_url() if obj.action_object and hasattr(obj.action_object, 'get_absolute_url') else None,
+            'timestamp': obj.timestamp,
+            'timesince': obj.timesince(),
             #'target': obj.target,
             #'target_pk': obj.target.slug,
         }
 
         override_message = obj.data.get('message', None)
+        comment = obj.data.get('comment', None)
 
-        if override_message is not None:
-            return override_message
+        if comment is not None:
+            return _get_comment_display(ctx, comment)
+
+        # if override_message is not None:
+        #     return override_message
 
         if obj.action_object.__class__.__name__ in ['Item']:
             return _('<span data-uid="%(actor_pk)d">%(actor)s</span> %(verb)s <a href="%(action_object_url)s">%(action_object)s</a> <span data-date="%(timestamp)s"></span>') % ctx
@@ -66,7 +79,7 @@ class ItemActivitySerializer(MatterActivitySerializer):
 
         override_message = obj.data.get('message', None)
 
-        if override_message is not None:
-            return override_message
+        # if override_message is not None:
+        #     return override_message
 
         return _('<span data-uid="%(actor_pk)d">%(actor)s</span> %(verb)s <a href="%(action_object_url)s">%(action_object)s</a> <span data-date="%(timestamp)s"></span>') % ctx
