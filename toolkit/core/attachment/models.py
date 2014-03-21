@@ -8,6 +8,8 @@ from toolkit.utils import get_namedtuple_choices
 
 from jsonfield import JSONField
 
+from .managers import RevisionManager
+
 import os
 
 BASE_REVISION_STATUS = get_namedtuple_choices('REVISION_STATUS', (
@@ -59,10 +61,15 @@ class Revision(models.Model):
     # these alternatives may be set as the "current" if the lawyer approves
     alternatives = models.ManyToManyField('attachment.Revision', null=True, blank=True, symmetrical=False, related_name="parent")
 
+    # True by default, so that on create of a new one, it's set as the current revision
+    is_current = models.BooleanField(default=True)
+
     data = JSONField(default={}, blank=True)
 
     date_created = models.DateTimeField(auto_now=False, auto_now_add=True, db_index=True)
     date_modified = models.DateTimeField(auto_now=True, auto_now_add=True, db_index=True)
+
+    objects = RevisionManager()
 
     class Meta:
         # @BUSINESS RULE always return the oldest to newest
@@ -98,6 +105,7 @@ class Revision(models.Model):
         return self.revisions.filter(pk__lt=self.pk).first()
 
 from .signals import (ensure_revision_slug,
+                      ensure_one_current_revision,
                       set_item_is_requested_false,
                       ensure_revision_reviewdocument_object,
                       on_reviewer_add,

@@ -265,6 +265,12 @@ body.gui {
   line-height: 1.226; // 18px
 }
 
+.padlock {
+  float: left;
+  line-height: 40px;
+  margin-right: 10px;
+}
+
 // Document Icons
 
 .icon-pdf {
@@ -402,6 +408,17 @@ body.gui {
       font-size: 20px;
       margin-bottom: 5px;
       margin-top: 0;
+    }
+
+    .request-btn {
+      float: right;
+      margin-top: 23px;
+    }
+
+    .request-status {
+      color: @brand-success;
+      float: right;
+      margin-top: 30px;
     }
 
     p {
@@ -778,12 +795,12 @@ body.gui {
 // -------------------------
 
 .avatar {
-  background-color: @clouds;
+  background-color: lighten(@wet-asphalt, 40%);
   display: inline-block;
   position: relative;
 
   .initials {
-    color: #444;
+    color: white;
     display: block;
     font-size: 14px;
     font-weight: bold;

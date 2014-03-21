@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
-from django.http import Http404
+from datetime import datetime
+
+from django.http import Http404, HttpResponseRedirect
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView
 from django.core.exceptions import PermissionDenied
+from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
+from django.utils import timezone
 
 from dj_crocodoc.services import CrocoDocConnectService
 
@@ -17,6 +22,15 @@ class ReviewRevisionView(DetailView):
     queryset = ReviewDocument.objects.prefetch_related().all()
     template_name = 'review/review.html'
 
+    def get(self, request, *args, **kwargs):
+        response = super(ReviewRevisionView, self).get(request, *args, **kwargs)
+
+        # update the last viewed
+        if request.user in self.object.reviewers.all():
+            self.object.date_last_viewed = timezone.now()
+            self.object.save(update_fields=['date_last_viewed'])
+
+        return response
 
     @property
     def is_current(self):
@@ -84,9 +98,9 @@ class ReviewRevisionView(DetailView):
         # and session automatically updated
         # https://crocodoc.com/docs/api/ for more info
         CROCDOC_PARAMS = {
-                "user": { "name": self.request.user.get_full_name(), 
+                "user": { "name": self.request.user.get_full_name(),
                 "id": self.request.user.pk
-            }, 
+            },
             "sidebar": 'auto',
             "editable": self.is_current, # allow comments only if the item is current
             "admin": False, # noone should be able to delete other comments
@@ -112,3 +126,59 @@ class ReviewRevisionView(DetailView):
         })
 
         return kwargs
+
+
+class ApproveRevisionView(DetailView):
+    queryset = ReviewDocument.objects.prefetch_related().all()
+
+    def get_object(self):
+        obj = super(ApproveRevisionView, self).get_object()
+        self.matter = obj.document.item.matter
+
+        self.authenticate()
+
+        return obj
+
+    def approve(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        self.object.complete()
+        return HttpResponseRedirect(success_url)
+
+    def authenticate(self):
+        #
+        # Log in using the review backend
+        # 'toolkit.apps.review.auth_backends.ReviewDocumentBackend'
+        #
+        requested_authenticated_user = authenticate(username=self.kwargs.get('slug'), password=self.kwargs.get('auth_slug'))
+
+        #if self.request.user.is_authenticated() is True:
+        if requested_authenticated_user:
+            #
+            # if the request user is in the object.participants
+            # it means they are owners and should be able to view this regardless
+            #
+            if self.request.user in self.matter.participants.all():
+                #
+                # we are an owner its all allowed
+                #
+                pass
+            else:
+                #
+                # user is we are already logged in then check this guys mojo!
+                #
+                if self.request.user.is_authenticated():
+                    if requested_authenticated_user != self.request.user:
+                        raise PermissionDenied
+
+                login(self.request, requested_authenticated_user)
+
+    @csrf_exempt
+    def dispatch(self, request, *args, **kwargs):
+        return super(ApproveRevisionView, self).dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.approve(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return reverse('request:list')

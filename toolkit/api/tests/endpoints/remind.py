@@ -43,7 +43,7 @@ class RemindReviewersTest(PyQueryMixin, BaseEndpointTest):
         self.client.login(username=self.lawyer.username, password=self.password)
 
         resp = self.client.post(self.endpoint, {}, content_type='application/json')
- 
+
         self.assertEqual(resp.status_code, 202)  # accepted
         json_data = json.loads(resp.content)
 
@@ -63,11 +63,10 @@ class RemindReviewersTest(PyQueryMixin, BaseEndpointTest):
         invite_key = InviteKey.objects.get(matter=self.matter, invited_user=self.reviewer)
         review_document = self.item.latest_revision.reviewdocument_set.filter(reviewers__in=[self.reviewer]).first()
 
-        expected_invite_next_url = review_document.get_absolute_url(user=self.reviewer)
         expected_action_url = ABSOLUTE_BASE_URL(invite_key.get_absolute_url())
 
         self.assertEqual(pq('a')[0].attrib.get('href'), expected_action_url)
-        self.assertEqual(invite_key.next, expected_invite_next_url)
+        self.assertEqual(invite_key.next, reverse('request:list'))
 
 
     def test_lawyer_patch(self):

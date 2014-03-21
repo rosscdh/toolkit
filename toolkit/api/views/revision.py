@@ -6,8 +6,10 @@ from rulez import registry as rulez_registry
 
 from rest_framework import viewsets
 from rest_framework import generics
-from toolkit.core.services.matter_activity import MatterActivityEventService
+from rest_framework import status
+from rest_framework.response import Response
 
+from toolkit.core.services.matter_activity import MatterActivityEventService
 from toolkit.core.attachment.models import Revision
 
 from .mixins import (MatterItemsQuerySetMixin,)
@@ -98,12 +100,36 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
                                                                    many=many,
                                                                    partial=partial)
 
-    def create(self, request, **kwargs):
-        resp = super(ItemCurrentRevisionView, self).create(request=request, **kwargs)
-        MatterActivityEventService(self.matter).created_revision(user=self.request.user,
-                                                                 item=self.item,
-                                                                 revision=self.revision)
-        return resp
+    def create(self, request, *args, **kwargs):
+        #
+        # NB! this is the important line
+        # we always have a revision object! normally you dont you just pass in data and files
+        # but this is a specialized case where we also always have a self.revision
+        # so we have to clone the base class method except for the following lines
+        #
+        self.revision.pk = None  # ensure that we are CREATING a new one based on the existing one
+        self.revision.is_current = True
+        serializer = self.get_serializer(self.revision, data=request.DATA, files=request.FILES)
+        ##
+        # End import
+        ##
+
+        if serializer.is_valid():
+            self.pre_save(serializer.object)
+            self.object = serializer.save(force_insert=True)
+            self.post_save(self.object, created=True)
+            headers = self.get_success_headers(serializer.data)
+            #
+            # Custom signal event
+            #
+            MatterActivityEventService(self.matter).created_revision(user=self.request.user,
+                                                                     item=self.item,
+                                                                     revision=self.revision)
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED,
+                            headers=headers)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, **kwargs):
         resp = super(ItemCurrentRevisionView, self).destroy(request=request, **kwargs)
@@ -130,10 +156,15 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
         super(ItemCurrentRevisionView, self).pre_save(obj=obj)
 
     def can_read(self, user):
-        return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
+        """
+        the lawyer the customer as well as the latest_revision reviewers can read
+        """
+        return (user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all() \
+            or user in self.item.latest_revision.reviewers.all())
 
     def can_edit(self, user):
-        return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
+        return (user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all() \
+            or user in self.item.latest_revision.reviewers.all())
 
     def can_delete(self, user):
         return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant

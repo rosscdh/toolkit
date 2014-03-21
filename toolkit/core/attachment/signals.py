@@ -57,6 +57,16 @@ def set_item_is_requested_false(sender, instance, **kwargs):
     instance.item.save(update_fields=['is_requested'])
 
 
+@receiver(pre_save, sender=Revision, dispatch_uid='revision.ensure_one_current_revision')
+def ensure_one_current_revision(sender, instance, **kwargs):
+    """
+    Signal to make sure we only have one current revision for an item.
+    """
+    if instance.is_current:
+        # Make sure we only have one current revision per item
+        instance.__class__.objects.filter(item=instance.item).exclude(pk=instance.pk).update(is_current=False)
+
+
 @receiver(post_save, sender=Revision, dispatch_uid='revision.ensure_revision_reviewdocument_object')
 def ensure_revision_reviewdocument_object(sender, instance, **kwargs):
     """
@@ -69,8 +79,6 @@ def ensure_revision_reviewdocument_object(sender, instance, **kwargs):
             # Detected that no ReviewDocument is preset
             #
             review = ReviewDocument.objects.create(document=instance)
-            # set the review participants to be the same as the matter.participants
-            review.participants = instance.item.matter.participants.all()
             # now add the revew object to the instance reivewdocument_set
             instance.reviewdocument_set.add(review)
 
@@ -91,24 +99,15 @@ def on_reviewer_add(sender, instance, action, model, pk_set, **kwargs):
         #
         reviewdocument = instance.reviewdocument_set.all().first()
 
-        if REVIEWER_DOCUMENT_ASSOCIATION_STRATEGY == ASSOCIATION_STRATEGIES.single:
-            #
-            # 1 ReviewDocument per reviewer
-            # in this case we should immediately delete the review document
-            #
-            reviewdocument.pk = None  # set to null this is adjango stategy to copy the model
-            reviewdocument.slug = None  # set to non so it gets regenerated
-            reviewdocument.save()  # save it so we get a new pk so we can add reviewrs
-            reviewdocument.reviewers.add(user)  # add the reviewer
-            reviewdocument.recompile_auth_keys()  # update teh auth keys to match the new slug
-
-        if REVIEWER_DOCUMENT_ASSOCIATION_STRATEGY == ASSOCIATION_STRATEGIES.multi:
-            #
-            # Multiple reviewers per reviewer document
-            # just add the user to reviewres if they dont exist
-
-            #
-            reviewdocument.reviewers.add(user) if user not in reviewdocument.reviewers.all() else None
+        #
+        # 1 ReviewDocument per reviewer
+        # in this case we should immediately delete the review document
+        #
+        reviewdocument.pk = None  # set to null this is adjango stategy to copy the model
+        reviewdocument.slug = None  # set to non so it gets regenerated
+        reviewdocument.save()  # save it so we get a new pk so we can add reviewrs
+        reviewdocument.reviewers.add(user)  # add the reviewer
+        reviewdocument.recompile_auth_keys()  # update teh auth keys to match the new slug
 
 
 @receiver(m2m_changed, sender=Revision.reviewers.through, dispatch_uid='revision.on_reviewer_remove')
@@ -123,22 +122,13 @@ def on_reviewer_remove(sender, instance, action, model, pk_set, **kwargs):
         reviewdocuments = ReviewDocument.objects.filter(document=instance,
                                                         reviewers__in=[user])
 
-        if REVIEWER_DOCUMENT_ASSOCIATION_STRATEGY == ASSOCIATION_STRATEGIES.single:
-            #
-            # 1 ReviewDocument per reviewer
-            # in this case we should immediately delete the review document
-            #
-            for reviewdocument in reviewdocuments:
-                # delete the reviewdoc
-                reviewdocument.delete()
-
-        elif REVIEWER_DOCUMENT_ASSOCIATION_STRATEGY == ASSOCIATION_STRATEGIES.multi:
-            #
-            # Multiple reviewers per reviewer document only remove them as reviewers
-            # but leave the document object alone!
-            #
-            for reviewdocument in reviewdocuments:
-                reviewdocument.reviewers.remove(user) if user in reviewdocument.reviewers.all() else None
+        #
+        # 1 ReviewDocument per reviewer
+        # in this case we should immediately delete the review document
+        #
+        for reviewdocument in reviewdocuments:
+            # delete the reviewdoc
+            reviewdocument.delete()
 
 
 @receiver(post_save, sender=Revision, dispatch_uid='revision.set_item_is_requested_false')

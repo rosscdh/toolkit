@@ -1,0 +1,14 @@
+{% load request_tags %}
+
+<section id="requests-review">
+    {% if object_list %}
+        <h5>Documents requiring review</h5>
+        <p class="lead">Please read and review the following documents:</p>
+
+        <div class="requested">
+            {% for item in object_list %}
+                {% request_review_item item user %}
+            {% endfor %}
+        </div>
+    {% endif %}
+</section>

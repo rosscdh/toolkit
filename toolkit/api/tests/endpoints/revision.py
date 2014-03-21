@@ -213,7 +213,7 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         #
         resp = self.client.patch(self.endpoint, json.dumps(data), content_type='application/json')
         resp_json = json.loads(resp.content)
-        
+
         self.assertEqual(resp.status_code, 201)  # ok created
 
         self.assertEqual(resp_json.get('slug'), 'v1')
