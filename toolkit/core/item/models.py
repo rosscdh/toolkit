@@ -101,9 +101,6 @@ class Item(IsDeletedMixin, RequestDocumentUploadMixin,
         return user in self.matter.participants.all()
 
     def can_delete(self, user):
-        # for testing only!
-        # to delete a comment via ItemCommentEndpoint this seems to be required.
-        return True
         return user.profile.is_lawyer and user in self.matter.participants.all()
 
 """
