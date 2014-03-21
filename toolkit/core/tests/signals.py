@@ -41,15 +41,23 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         # in setUp the workspace was created which should have reached on_activity_received above:
         cache_obj = cache.get(cache_key)
 
-        self.assertItemsEqual(cache_obj.keys(), ['sender', 'signal', 'actor', 'verb', 'verb_slug', 'action_object', 'target', 'item',
-                                                 'user', 'message', 'comment'])
+        self.assertItemsEqual(cache_obj.keys(), ['sender', 'signal', 'actor', 'verb', 'verb_slug', 'action_object',
+                                                 'target', 'item', 'user', 'message', 'comment', 'previous_name',
+                                                 'current_status', 'previous_status', 'filename', 'date_created',
+                                                 'version'])
         self.assertItemsEqual(cache_obj.values(), ["<class 'toolkit.core.services.matter_activity.MatterActivityEventService'>",
                                                    "<class 'django.dispatch.dispatcher.Signal'>",
                                                    "<class 'django.contrib.auth.models.User'>",
+                                                   u'workspace-created',
                                                    u'created',
-                                                   "<class 'django.utils.safestring.SafeText'>",
                                                    "<class 'toolkit.apps.workspace.models.Workspace'>",
                                                    "<class 'toolkit.apps.workspace.models.Workspace'>",
+                                                   "<type 'NoneType'>",
+                                                   "<type 'NoneType'>",
+                                                   "<type 'NoneType'>",
+                                                   "<type 'NoneType'>",
+                                                   "<type 'NoneType'>",
+                                                   "<type 'NoneType'>",
                                                    "<type 'NoneType'>",
                                                    "<type 'NoneType'>",
                                                    "<type 'NoneType'>",

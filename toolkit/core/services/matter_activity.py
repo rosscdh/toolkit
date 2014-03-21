@@ -5,6 +5,9 @@ from ..signals.activity_listener import send_activity_log
 
 import datetime
 
+import logging
+logger = logging.getLogger('django.request')
+
 
 class MatterActivityEventService(object):
     """
@@ -13,6 +16,11 @@ class MatterActivityEventService(object):
     def __init__(self, matter, **kwargs):
         self.matter = matter
 
+    def get_verb_slug(self, action_object, verb):
+        verb_slug = slugify(action_object.__class__.__name__) + '-' + slugify(verb)
+        logger.debug('possible verb_slug: "%s"' % verb_slug)
+        return verb_slug
+
     def _create_activity(self, actor, verb, action_object, **kwargs):
         from toolkit.api.serializers import ItemSerializer  # must be imported due to cyclic with this class being imported in Workspace.models
         from toolkit.api.serializers.user import LiteUserSerializer  # must be imported due to cyclic with this class being imported in Workspace.models
@@ -20,7 +28,7 @@ class MatterActivityEventService(object):
         activity_kwargs = {
             'actor': actor,
             'verb': verb,
-            'verb_slug': slugify(verb), # used to help identify the item and perhaps css class
+            'verb_slug': self.get_verb_slug(action_object, verb),  # used to help identify the item and perhaps css class'verb_slug': slugify(verb)
             'action_object': action_object,
             'target': self.matter,
             'message': kwargs.get('message', None),

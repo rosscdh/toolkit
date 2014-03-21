@@ -390,6 +390,19 @@ ACTSTREAM_SETTINGS = {
     'USE_FOLLOWING': False,  # VERY importand; will break our system if this changes to True
 }
 
+LAWPAL_ACTIVITY = {
+    "abridge": {
+        "whitelist": ['revision-created', ]
+    },
+    "notifications": {
+        "whitelist": ['revision-created', ]
+    },
+    "activity": {
+        "whitelist": ['item-created', 'item-edited', 'item-commented', 'revision-created', 'revision-deleted',
+                      'workspace-created']  # create so many activities to keep tests running for now
+    },
+}
+
 try:
     LOCAL_SETTINGS
 except NameError:
