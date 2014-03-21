@@ -19,7 +19,7 @@ def static(prefix, view='django.views.static.serve', **kwargs):
 
     """
     # No-op if not in debug mode or an non-local prefix
-    if prefix and '://' in prefix:
+    if not settings.DEBUG and settings.TEST_PREPROD is False or (prefix and '://' in prefix):
         return []
     elif not prefix:
         raise ImproperlyConfigured("Empty static prefix not permitted")
