@@ -5,8 +5,15 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import permissions
 
-from stored_messages.models import (Inbox, MessageArchive,)
-from stored_messages.serializers import InboxSerializer
+import logging
+logger = logging.getLogger('django.request')
+
+try:
+    from stored_messages.models import (Inbox, MessageArchive,)
+    from stored_messages.serializers import InboxSerializer
+except ImportError:
+    logger.critical('stored_messages is not installed')
+    raise Exception('stored_messages is not installed')
 
 
 class InboxNotificationsView(ListView):

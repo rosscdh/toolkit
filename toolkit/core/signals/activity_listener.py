@@ -5,11 +5,18 @@ activity_stream objects
 @TODO turn the signal handlers into its own module
 """
 from django.conf import settings
-from actstream import action
 from django.dispatch import receiver
 from django.dispatch.dispatcher import Signal
 
-import stored_messages
+try:
+    from actstream import action
+except ImportError:
+    action = None
+
+try:
+    import stored_messages
+except ImportError:
+    stored_messages = None
 
 from toolkit.core.services.lawpal_abridge import LawPalAbridgeService
 
@@ -57,6 +64,11 @@ def _notifications_send(actor, target, message):
         stored_messages.STORED_ERROR
     update the user.profile.has_notifications
     """
+    # catch when we have no stored message
+    if stored_messages is None:
+        logger.critical('django-stored-messages is not installed')
+        return None
+
     if message:
         query_set = target.participants.exclude(id=actor.pk)
         stored_messages.add_message_for(users=query_set.all(),
@@ -93,8 +105,13 @@ def on_activity_received(sender, **kwargs):
     # Test that we have the required arguments to send the action signal
     #
     if actor and verb and action_object and target:
-        # send to django-activity-stream
-        action.send(actor, **kwargs)
+        # catch if we dont have it installed
+        if action is None:
+            logger.critical('actstream is not installed')
+        else:
+            # send to django-activity-stream
+            action.send(actor, **kwargs)
+
         # send the notifications to the participants
         _notifications_send(actor=actor, target=target, message=message)
         # send to abridge service

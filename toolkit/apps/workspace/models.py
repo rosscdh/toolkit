@@ -12,6 +12,7 @@ from .signals import (ensure_workspace_slug,
 
 from toolkit.core.mixins import IsDeletedMixin
 from toolkit.core.signals.activity import (on_workspace_post_save,)
+from toolkit.core.services.matter_activity import MatterActivityEventService  # cyclic
 
 from toolkit.utils import _class_importer
 
@@ -54,10 +55,9 @@ class Workspace(IsDeletedMixin, ClosingGroupsMixin, CategoriesMixin, models.Mode
     class Meta:
         ordering = ['name', '-pk']
 
-    def __init__(self, *args, **kwargs):
-        from toolkit.core.services.matter_activity import MatterActivityEventService  # cyclic
-        self._actions = MatterActivityEventService(self)
-        super(Workspace, self).__init__(*args, **kwargs)
+    # def __init__(self, *args, **kwargs):
+    #     self._actions = MatterActivityEventService(self)
+    #     super(Workspace, self).__init__(*args, **kwargs)
 
     def __unicode__(self):
         return '%s' % self.name
