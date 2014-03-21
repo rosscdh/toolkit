@@ -30,7 +30,8 @@ Base Signal and listener used to funnel events
 
 # first four args as in django-activity-stream, plus custom stuff
 send_activity_log = Signal(providing_args=['actor', 'verb', 'action_object', 'target', 'message', 'user', 'item',
-                                           'comment'])
+                                           'comment', 'previous_name', 'current_status', 'previous_status', 'filename',
+                                           'date_created', 'version'])
 
 
 def _abridge_send(actor, target, message=None):
@@ -114,6 +115,16 @@ def on_activity_received(sender, **kwargs):
             send_to_actstream = True
 
         if action_object.__class__.__name__ == 'Item' and verb == u'changed the status':
+            send_to_actstream = True
+            send_to_abridge = True
+            send_to_notification = True
+
+        if action_object.__class__.__name__ == 'Item' and verb == u'renamed':
+            send_to_actstream = True
+            send_to_abridge = True
+            send_to_notification = True
+
+        if action_object.__class__.__name__ == 'Revision' and verb == u'created':
             send_to_actstream = True
             send_to_abridge = True
             send_to_notification = True

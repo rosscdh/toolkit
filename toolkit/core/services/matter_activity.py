@@ -27,6 +27,12 @@ class MatterActivityEventService(object):
             'user': None if not kwargs.get('user', None) else LiteUserSerializer(kwargs.get('user')).data,
             'item': None if not kwargs.get('item', None) else ItemSerializer(kwargs.get('item')).data,
             'comment': kwargs.get('comment', None),
+            'previous_name': kwargs.get('previous_name', None),
+            'current_status': kwargs.get('previous_name', None),
+            'previous_status': kwargs.get('previous_status', None),
+            'filename': kwargs.get('filename', None),
+            'date_created': kwargs.get('date_created', None),
+            'version': kwargs.get('version', None),
         }
         # @BUSINESSRULE
         # merge our specific extra kwargs passed in
