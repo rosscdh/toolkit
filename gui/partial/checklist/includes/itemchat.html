@@ -10,7 +10,7 @@
             </div>
         </div>
 
-        <span ng-hide="activity.data.comment">{{ activity.event }}</span>
+        <span ng-hide="activity.data.comment" ng-bind-html="activity.event"></span>
     </li>
 </ul>
 <div class="new-message" ng-show="data.selectedItem">
