@@ -1,32 +1,42 @@
-{% extends 'notification/base.html' %}{% load url from future %}{% load humanize %}
+{% extends 'notification/base.html' %}
 
-{% block inbox %}
-{% csrf_token %}
+{% load url from future %}{% load humanize %}
 
-<div class="row">
-    <div class="col-sm-6 col-sm-offset-2">
-        <h4>Notifications</h4>
-         {% if object_list %}<button id="mark-all-as-read" data-url="{% url 'notification:inbox-mark-all-read' %}" class="btn btn-embossed btn-link pull-right">Mark all as read</button>{% endif %}
+{#% block body_class %}requests{% endblock %#}
 
-        {% for notice in object_list %}
-        <table class="table">
-            <tr>
-                <td name="#mark-as-read-{{ notice.pk }} lead">
-                    {{ notice.message.message }}
-                    <a href="javascript:;" data-url="{% url 'notification:inbox-read' pk=notice.pk %}" data-pk="{{ notice.pk }}" class="mark-as-read pull-right"  data-toggle="tooltip" data-placement="right" title="Mark as read"> 
-                        <span class="fui-check text-info"></span>
-                    </a>
-                    <span class="text-muted"><small>{{ notice.message.date|naturaltime }}</small></span>  
-                </td>
-            </tr>
-        </table>
-        {% endfor %}   
+{% block body %}
+    <div id="notifications" class="content">
+        <div class="content-header notifications-header clearfix">
+            <div class="container">
+                <div class="col-sm-6 col-sm-offset-2">
+                    <h3><span class="circle">{{ object_list.count }}</span> Notifications</h3>
+                </div>
+            </div>
+        </div>
 
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-6 col-sm-offset-2" role="main">
+                    {% csrf_token %}
+                    {% if object_list %}<button id="mark-all-as-read" data-url="{% url 'notification:inbox-mark-all-read' %}" class="btn btn-embossed btn-link pull-right">Mark all as read</button>{% endif %}
+
+                    {% for notice in object_list %}
+                        <table class="table">
+                            <tr>
+                                <td name="#mark-as-read-{{ notice.pk }} lead">
+                                    {{ notice.message.message }}
+                                    <a href="javascript:;" data-url="{% url 'notification:inbox-read' pk=notice.pk %}" data-pk="{{ notice.pk }}" class="mark-as-read pull-right"  data-toggle="tooltip" data-placement="right" title="Mark as read">
+                                        <span class="fui-check text-info"></span>
+                                    </a>
+                                    <span class="text-muted"><small>{{ notice.message.date|naturaltime }}</small></span>
+                                </td>
+                            </tr>
+                        </table>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
     </div>
-</div>
-
-
-
 {% endblock %}
 
 
