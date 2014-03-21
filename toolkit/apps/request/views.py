@@ -7,4 +7,4 @@ class RequestListView(ListView):
     template_name = 'request/request_list.html'
 
     def get_queryset(self):
-        return Item.objects.mine(self.request.user)
+        return Item.objects.my_requests(self.request.user)

@@ -3,6 +3,8 @@
         filepicker.setKey(window.GLOBALS['FILEPICKER_API_KEY']);
 
         $(document).on('click.filepicker.data-api', '[data-toggle=filepicker]', function() {
+            var $elem = $(this);
+
             filepicker.pickAndStore({
                 'container': 'modal',
                 'services': ['BOX','COMPUTER','DROPBOX','EVERNOTE','FTP','GITHUB','GOOGLE_DRIVE','SKYDRIVE','WEBDAV']
@@ -21,16 +23,16 @@
                         'Content-Type' : 'application/json',
                         'X-CSRFToken': $('input[name=csrf_token]').val()
                     },
-                    type: 'PATCH',
-                    url: $(this).attr('data-remote'),
+                    type: 'POST',
+                    url: $elem.attr('data-remote'),
                     error: function(data) {
-                        document.location.reload();
+                        //document.location.reload();
                     },
                     success: function(data) {
                         document.location.reload();
                     },
                     complete: function() {
-                        document.location.reload();
+                        //document.location.reload();
                     }
                 });
             });

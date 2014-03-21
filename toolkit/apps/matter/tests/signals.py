@@ -30,4 +30,3 @@ class ParticipantAddedTest(BaseScenarios, TestCase):
         self.assertEqual(email.to, ['test+participant@lawpal.com'])
         self.assertEqual(email.from_email, u'Lawyer Test (via LawPal) support@lawpal.com')
         self.assertEqual(email.extra_headers, {'Reply-To': self.lawyer.email})
-

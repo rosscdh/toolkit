@@ -10,17 +10,6 @@ class ReviewDocumentManager(IsDeletedManager):
     def deleted(self):
         return super(ReviewDocumentManager, self).get_query_set().filter(is_deleted=True)
 
-    def my_as_participant(self, user, **kwargs):
-        """
-        Show my ReviewDocuments where I am an owner (participant)
-        This is useful for seeing a list of review requests on my matter
-        pass in matter=matter to filter by matters
-        """
-        if not user.is_authenticated():
-            return self.get_query_set().none()
-
-        return self.get_query_set().filter(participants__in=[user], **kwargs)
-
     def my_as_reviewer(self, user, **kwargs):
         """
         Where I am a reviewer

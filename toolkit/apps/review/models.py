@@ -30,6 +30,8 @@ class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
     slug = UUIDField(auto=True, db_index=True)
     document = models.ForeignKey('attachment.Revision')
     reviewers = models.ManyToManyField('auth.User')
+    is_complete = models.BooleanField(default=False)
+    date_last_viewed = models.DateTimeField(blank=True, null=True)
     data = JSONField(default={})
 
     objects = ReviewDocumentManager()
@@ -44,6 +46,17 @@ class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
             return reverse('review:review_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)})
         return None
 
+    def get_approval_url(self, user):
+        auth_key = self.get_user_auth(user=user)
+        if auth_key is not None:
+            return reverse('review:approve_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)})
+        return None
+
+    def complete(self):
+        self.is_complete = True
+        self.save(update_fields=['is_complete'])
+    complete.alters_data = True
+
     @property
     def file_exists_locally(self):
         """
@@ -54,6 +67,14 @@ class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
         except Exception as e:
             logger.critical('Crocodoc file does not exist locally: %s raised exception %s' % (self.document.executed_file, e))
         return False
+
+    @property
+    def matter(self):
+        return self.document.item.matter
+
+    @property
+    def participants(self):
+        return set(self.reviewers.all() | self.matter.participants.all())
 
     def download_if_not_exists(self):
         """
@@ -73,7 +94,7 @@ class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
             #
             file_object = b._open(file_name)
             return default_storage.save(file_name, file_object)
-        
+
 
     def send_invite_email(self, from_user, users=[]):
         """

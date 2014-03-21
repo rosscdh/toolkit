@@ -878,6 +878,11 @@ body.gui .main-content {
   font-size: 13px;
   line-height: 1.226;
 }
+.padlock {
+  float: left;
+  line-height: 40px;
+  margin-right: 10px;
+}
 .icon-pdf {
   color: #e74b3c;
 }
@@ -982,6 +987,15 @@ body.gui .main-content {
   font-size: 20px;
   margin-bottom: 5px;
   margin-top: 0;
+}
+#requests .request .request-btn {
+  float: right;
+  margin-top: 23px;
+}
+#requests .request .request-status {
+  color: #2ecc71;
+  float: right;
+  margin-top: 30px;
 }
 #requests .request p {
   color: #95a5a6;
@@ -1296,12 +1310,12 @@ body.gui .main-content {
   margin-top: 20px;
 }
 .avatar {
-  background-color: #ecf0f1;
+  background-color: #98afc6;
   display: inline-block;
   position: relative;
 }
 .avatar .initials {
-  color: #444;
+  color: white;
   display: block;
   font-size: 14px;
   font-weight: bold;

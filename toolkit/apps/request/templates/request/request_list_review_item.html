@@ -1,0 +1,50 @@
+{% load url from future %}{% load user_tags %}
+
+<article class="request">
+    <div class="row">
+        <div class="col-xs-8">
+            <span class="fui-upload request-icon"></span>
+            <h6 class="request-title"><small>{{ item.matter.name }}</small></h6>
+            <h6 class="request-title">{{ item.name }}</h6>
+            <p>{{ item.requested_by.name }} requested your feedback on this document.</p>
+        </div>
+        <div class="col-xs-4">
+            {% if review.is_complete %}
+                <p class="request-status"><span class="fui-check-inverted"></span> Approved</p>
+            {% else %}
+                <a href="#" class="btn btn-wide btn-info btn-embossed request-btn" data-toggle="modal" data-target="#request-review-{{ review.pk }}">Review</a>
+            {% endif %}
+        </div>
+    </div>
+    {% if item.message %}
+        <div class="row">
+            <div class="col-xs-12">
+                <blockquote>{{ item.message }}</blockquote>
+            </div>
+        </div>
+    {% endif %}
+</article>
+
+<div class="modal modal-full" id="request-review-{{ review.pk }}">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close fui-cross" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Review from {{ review.reviewers.first }} for {{ item.name }}</h4>
+            </div>
+
+            <div class="modal-body">
+                <iframe src="{{ review_url }}" style="width: 100%; height: 500px;"></iframe>
+            </div>
+
+            <form method="POST" action="{{ approve_url }}" class="modal-footer">
+                <div class="pull-left">
+                    <div class="padlock"><span class="fui-lock" title=""></span> Visible to:</div>
+                    {% for p in review.participants %}{% avatar p %}{% endfor %}
+                </div>
+                <input type="button" name="cancel" value="Cancel" class="btn btn-default" data-dismiss="modal">
+                <input type="submit" name="submit" value="Yes, I approve this" class="btn btn-primary btn-lg btn-wide" id="submit-id-submit">
+            </form>
+        </div>
+    </div>
+</div>

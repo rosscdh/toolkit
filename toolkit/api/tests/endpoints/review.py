@@ -107,10 +107,9 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
         invite_key = InviteKey.objects.get(matter=self.matter, invited_user=participant)
 
         expected_action_url = ABSOLUTE_BASE_URL(invite_key.get_absolute_url())
-        expected_invite_next_url = review_document.get_absolute_url(user=participant)
 
         self.assertEqual(pq('a')[0].attrib.get('href'), expected_action_url)
-        self.assertEqual(invite_key.next, expected_invite_next_url)
+        self.assertEqual(invite_key.next, reverse('request:list'))
 
     def test_lawyer_patch(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -261,10 +260,10 @@ class RevisionReviewerTest(BaseEndpointTest, LiveServerTestCase):
             # is a valid url for crocodoc
             self.assertTrue(validate_url(context_data.get('crocodoc_view_url')) is None)
             self.assertTrue('https://crocodoc.com/view/' in context_data.get('crocodoc_view_url'))
-            expected_crocodoc_params = {'admin': False, 
+            expected_crocodoc_params = {'admin': False,
                                         'demo': False,
                                         'editable': True,
-                                        'downloadable': True, 
+                                        'downloadable': True,
                                         'user': {'name': u.get_full_name(), 'id': u.pk},
                                         'copyprotected': False,
                                         'sidebar': 'auto'}
@@ -388,7 +387,7 @@ class RevisionRequestedDocumentTest(BaseEndpointTest):
         }
         resp = self.client.patch(self.endpoint, json.dumps(data), content_type='application/json')
         self.assertEqual(resp.status_code, 200)  # method not allowed
-        
+
         json_data = json.loads(resp.content)
 
         inviteduploader_user = User.objects.get(username='inviteduploader')

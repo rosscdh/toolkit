@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
+
 from django.core import mail
+from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.test import TestCase
+# from django.utils import timezone
 
+from toolkit.casper.prettify import mock_http_requests
 from toolkit.casper.workflow_case import BaseScenarios
 
 from .models import ReviewDocument
@@ -10,6 +15,7 @@ from .models import ReviewDocument
 from uuidfield.fields import StringUUID
 from model_mommy import mommy
 
+import mock
 import os
 import urllib
 
@@ -151,6 +157,7 @@ class ReviewerSendEmailTest(BaseDataProvider, TestCase):
 
         self.assertEqual(len(mail.outbox), 0)  # no email was sent
 
+
 """
 View tests
 1. logs current user out (if session is present)
@@ -158,3 +165,37 @@ View tests
 3. if the user is not lawyer or a participant then they can only see their own commments annotation etc
 3a. this is done using the crocodoc_service.view_url(filter=id,id,id)
 """
+class ReviewRevisionViewTest(BaseDataProvider, TestCase):
+    def setUp(self):
+        super(ReviewRevisionViewTest, self).setUp()
+        # add the reviewer for this test
+        self.review_document.reviewers.add(self.reviewer)
+
+    @mock_http_requests
+    def test_reviewer_viewing_revision_updates_last_viewed(self):
+        with mock.patch('django.utils.timezone.now', return_value=datetime(1970, 1, 1, 0, 0, 0)):
+            self.client.login(username=self.reviewer.username, password=self.password)
+
+            self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed, None)
+
+            resp = self.client.get(self.review_document.get_absolute_url(self.reviewer), follow=True)
+
+            self.assertEqual(resp.status_code, 200)
+
+            self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.year, 1970)
+            self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.month, 1)
+            self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.day, 1)
+            self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.hour, 0)
+            self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.minute, 0)
+            self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.second, 0)
+
+    @mock_http_requests
+    def test_lawyer_viewing_revision_updates_nothing(self):
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed, None)
+
+        resp = self.client.get(self.review_document.get_absolute_url(self.lawyer), follow=True)
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed, None)
