@@ -11,11 +11,12 @@ class MatterActivityEventService(object):
     Service to handle events relating to the mater
     """
     def __init__(self, matter, **kwargs):
-        from toolkit.api.serializers import ItemSerializer  # must be imported due to cyclic with this class being imported in Workspace.models
-        from toolkit.api.serializers.user import LiteUserSerializer  # must be imported due to cyclic with this class being imported in Workspace.models
         self.matter = matter
 
     def _create_activity(self, actor, verb, action_object, **kwargs):
+        from toolkit.api.serializers import ItemSerializer  # must be imported due to cyclic with this class being imported in Workspace.models
+        from toolkit.api.serializers.user import LiteUserSerializer  # must be imported due to cyclic with this class being imported in Workspace.models
+
         activity_kwargs = {
             'actor': actor,
             'verb': verb,
