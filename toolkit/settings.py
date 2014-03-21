@@ -378,14 +378,16 @@ BLEACH_STRIP_COMMENTS = True
 BLEACH_STRIP_TAGS = True
 
 
-# activity stream
+#
+# ACTIVITY STREAM
+#
 ACTSTREAM_SETTINGS = {
     'MODELS': ('auth.User', 'workspace.Workspace', 'item.Item', 'attachment.Revision'),
     'MANAGER': 'toolkit.core.managers.ToolkitActionManager',
-    'FETCH_RELATIONS': False,
-    'USE_FOLLOWING': False,
+    'FETCH_RELATIONS': True,
     'USE_PREFETCH': True,
     'USE_JSONFIELD': True,
+    'USE_FOLLOWING': False,  # VERY importand; will break our system if this changes to True
 }
 
 try:

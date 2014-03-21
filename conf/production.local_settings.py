@@ -79,3 +79,22 @@ CACHES = {
         'LOCATION': '/tmp/glynt.production.cache',
     }
 }
+
+SPLUNKSTORM_ENDPOINT = 'logs2.splunkstorm.com'
+SPLUNKSTORM_PORT = 20824
+
+CROCDOC_API_KEY = '27FXmeRJ3StkMZGxi46UTwWH'
+
+AUTHY_API_KEY = 'e19afad3c1c207a03ef6a1dcb2adb0c3'
+
+#
+# Abridge mailout service
+#
+ABRIDGE_ENABLED = True  # disabled by default
+ABRIDGE_API_URL = 'https://abridge.lawpal.com/'
+ABRIDGE_PROJECT = 'lawpal-digest'
+
+ABRIDGE_ACCESS_KEY_ID = 'e4b38a5758caf486e21c'
+ABRIDGE_SECRET_ACCESS_KEY = '2a2c7c6104c80855a12d53bd846e117fbf81f41c'
+ABRIDGE_USERNAME = 'lawpal-production'
+ABRIDGE_PASSWORD = 'production123'
