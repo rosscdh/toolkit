@@ -79,8 +79,6 @@ def ensure_revision_reviewdocument_object(sender, instance, **kwargs):
             # Detected that no ReviewDocument is preset
             #
             review = ReviewDocument.objects.create(document=instance)
-            # set the review participants to be the same as the matter.participants
-            review.participants = instance.item.matter.participants.all()
             # now add the revew object to the instance reivewdocument_set
             instance.reviewdocument_set.add(review)
 

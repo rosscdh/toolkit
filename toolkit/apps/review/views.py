@@ -7,6 +7,7 @@ from django.views.generic import DetailView
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
+from django.utils import timezone
 
 from dj_crocodoc.services import CrocoDocConnectService
 
@@ -26,7 +27,7 @@ class ReviewRevisionView(DetailView):
 
         # update the last viewed
         if request.user in self.object.reviewers.all():
-            self.object.date_last_viewed = datetime.utcnow()
+            self.object.date_last_viewed = timezone.now()
             self.object.save(update_fields=['date_last_viewed'])
 
         return response
