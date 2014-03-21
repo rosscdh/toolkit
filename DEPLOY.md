@@ -31,7 +31,7 @@ __Item__
 
 [activity stream]
 
-1. ./manage migrate actstream
+1. ./manage.py migrate actstream
 
 
 1. Ensure crocdoc url webhook in production is set
