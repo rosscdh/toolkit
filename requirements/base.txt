@@ -54,8 +54,13 @@ python-dateutil
 
 python-memcached
 
+# Activity stream
 pytz
 -e git+https://github.com:lawpal/django-activity-stream.git@lawpal#egg=django-activity-stream
+
+# Notfications
+django-stored-messages
+
 
 -e git+https://github.com/GoodCloud/django-ajax-uploader.git#egg=django-ajax-uploader
 
@@ -72,7 +77,3 @@ crocodoc
 
 # abridge integration: django-abridge
 -e git+https://github.com/rosscdh/django-abridge.git#egg=django-abridge
-
-
-# notfications
-django-stored-messages
