@@ -29,8 +29,8 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
             'actor_pk': obj.actor.pk,
             'verb': obj.verb,
             'action_object': obj.action_object,
-            'action_object_pk': obj.action_object.slug,
-            'action_object_url': obj.action_object.get_absolute_url(),
+            'action_object_pk': obj.action_object.slug if obj.action_object else None,
+            'action_object_url': obj.action_object.get_absolute_url() if obj.action_object else None,
             'timestamp': obj.timestamp
             #'target': obj.target,
             #'target_pk': obj.target.slug,

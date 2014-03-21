@@ -42,18 +42,20 @@ def participant_added(sender, matter, participant, user, note, **kwargs):
 
 
 @receiver(crocodoc_signals.crocodoc_comment_create)
-#@receiver(crocodoc_signals.crocodoc_comment_delete)
+@receiver(crocodoc_signals.crocodoc_comment_delete)
 #@receiver(crocodoc_signals.crocodoc_annotation_highlight)
 #@receiver(crocodoc_signals.crocodoc_annotation_strikeout)
 @receiver(crocodoc_signals.crocodoc_annotation_textbox)
 #@receiver(crocodoc_signals.crocodoc_annotation_drawing)
 ## @receiver(crocodoc_signals.crocodoc_annotation_point)  # dont record this event because its pretty useless and comes by default when they comment
-def crocodoc_webhook_event_recieved(sender, verb, document, target, attachment_name, user_info, crocodoc_event, **kwargs):
+def crocodoc_webhook_event_recieved(sender, verb, document, target, attachment_name, user_info, crocodoc_event, content=None, **kwargs):
     """
     signal to handle any of the crocdoc signals
     """
+    matter = None
+
     user_pk, user_full_name = user_info
-    # @TODO cehck this user still exists
+
     try:
         user = User.objects.get(pk=user_pk)
 
@@ -62,13 +64,21 @@ def crocodoc_webhook_event_recieved(sender, verb, document, target, attachment_n
 
     else:
         # continue on we have a user
-        matter = target.item.matter
-        #matter.actions.add_revision_comment(user=user, document, verb)
-        # if hasattr(target, 'item') is True:
-        #     send_activity_log.send(user, **{
-        #         'actor': user,
-        #         'verb': verb,
-        #         'action_object': target.item,
-        #         'target': target.item.matter,
-        #         'message': verb
-        #     })
+        #
+        # are we looking at something that is a matter
+        #
+        if target.__class__.__name__ == 'Workspace':
+            matter = target
+        #
+        # are we looking at something that has an item
+        #
+        if hasattr(target, 'item'):
+            matter = target.item.matter
+
+        if matter is not None:
+
+            if crocodoc_event in ['annotation.create', 'comment.create']:
+                matter.actions.add_revision_comment(user=user, revision=document.source_object, comment=content)
+
+            if crocodoc_event in ['annotation.delete', 'comment.delete']:
+                matter.actions.delete_revision_comment(user=user, revision=document.source_object)

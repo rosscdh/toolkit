@@ -80,6 +80,10 @@ class MatterActivityEventService(object):
         message = '%s commented on %s' % (user, item)
         self._create_activity(actor=user, verb=u'commented', action_object=item, message=message, comment=comment)
 
+    def delete_item_comment(self, user, item):
+        message = '%s deleted a comment on %s' % (user, item)
+        self._create_activity(actor=user, verb=u'deleted comment', action_object=item, message=message)
+
     #
     # Revisions
     #
@@ -110,6 +114,10 @@ class MatterActivityEventService(object):
     def add_revision_comment(self, user, revision, comment):
         message = '%s commented on %s' % (user, revision)
         self._create_activity(actor=user, verb=u'commented', action_object=revision.item, message=message, comment=comment)
+
+    def delete_revision_comment(self, user, revision):
+        message = '%s deleted a comment on %s' % (user, revision)
+        self._create_activity(actor=user, verb=u'deleted comment', action_object=revision.item, message=message)
 
     #
     # Review requests
