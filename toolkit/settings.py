@@ -140,15 +140,14 @@ HELPER_APPS = (
 
     # activity-stream
     'actstream',
+    # notifications
+    'stored_messages',
 
     # integration for abridge; django-abridge
     'abridge',
 
     # Api helpers
     #'corsheaders',  # not required yet
-
-    # notifications
-    'stored_messages',
 
     # db migrations
     'south',

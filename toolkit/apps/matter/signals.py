@@ -6,7 +6,6 @@ import dj_crocodoc.signals as crocodoc_signals
 
 from toolkit.apps.workspace.models import InviteKey
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
-from toolkit.core.signals.activity_listener import send_activity_log
 from .mailers import ParticipantAddedEmail
 
 
