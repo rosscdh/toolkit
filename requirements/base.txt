@@ -55,7 +55,7 @@ python-dateutil
 python-memcached
 
 pytz
--e git+https://github.com/lawpal/django-activity-stream.git#egg=django-activity-stream
+-e git+https://github.com:lawpal/django-activity-stream.git@lawpal#egg=django-activity-stream
 
 -e git+https://github.com/GoodCloud/django-ajax-uploader.git#egg=django-ajax-uploader
 
