@@ -1,6 +1,12 @@
 Deployment actions by branch
 ----------------------------
 
+
+
+
+--------------------------------------------------------------------------------
+** DEPLOYED 21 March 2014 - base deploy (rosscdh)
+--------------------------------------------------------------------------------
 [master]
 
 pip install djangorestframework==2.3.13  ## to have access to the is_success from status
