@@ -95,7 +95,11 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_current_user(self, obj):
         request = self.context.get('request')
-        return LiteUserSerializer(request.user, context={'request': request}).data
+        current_user = LiteUserSerializer(request.user, context={'request': request}).data
+        current_user.update({
+            'has_notifications': request.user.profile.has_notifications
+        })
+        return current_user
 
     def get_current_user_todo(self, obj):
         """

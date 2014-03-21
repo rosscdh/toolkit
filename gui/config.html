@@ -148,12 +148,15 @@
           </div>
         </div>
       </form>
+      {% verbatim %}
       <ul class="nav navbar-nav navbar-right">
         <li><a href="/requests/">Requests</a></li>
+        <li class="notifications"><a href="/notifications/" ng-class="matter.selected.current_user.has_notifications ? 'unread' : ''"><span ng-class="matter.selected.current_user.has_notifications ? 'fui-radio-checked animated pulse' : 'fui-radio-unchecked'"></span></a></li>
         <li class="divider"></li>
         <li class="dropdown">
+          {{ matter.selected.current_user.has_notifications }}
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-          {% verbatim %}{{ matter.selected.current_user | fullname }}{% endverbatim %}<b class="caret"></b>
+          {{ matter.selected.current_user | fullname }} <b class="caret"></b>
           </a>
           <ul class="dropdown-menu">
             <li><a href="/me/settings/">Account</a></li>
@@ -162,6 +165,7 @@
           </ul>
         </li>
       </ul>
+      {% endverbatim %}
       <!-- /nav -->
     </div>
     <!--/.navbar-collapse -->

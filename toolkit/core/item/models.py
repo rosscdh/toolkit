@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from django.core.urlresolvers import reverse
 from django.db.models.signals import pre_save, post_save
 
 from toolkit.core.signals.activity import (on_item_post_save,)
@@ -73,6 +74,9 @@ class Item(IsDeletedMixin, RequestDocumentUploadMixin,
 
     def __unicode__(self):
         return u'%s' % self.name
+
+    def get_absolute_url(self):
+        return '{url}#/checklist/{item_slug}'.format(url=reverse('matter:detail', kwargs={'matter_slug': self.matter.slug}), item_slug=self.slug)
 
     @property
     def display_status(self):

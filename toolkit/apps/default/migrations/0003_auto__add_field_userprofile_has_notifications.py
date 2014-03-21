@@ -1,18 +1,22 @@
 # -*- coding: utf-8 -*-
 from south.utils import datetime_utils as datetime
 from south.db import db
-from south.v2 import DataMigration
+from south.v2 import SchemaMigration
 from django.db import models
 
-class Migration(DataMigration):
+
+class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        db.create_index(u'auth_user', ['email'])
-        db.create_index(u'auth_user', ['username'])
+        # Adding field 'UserProfile.has_notifications'
+        db.add_column(u'default_userprofile', 'has_notifications',
+                      self.gf('django.db.models.fields.BooleanField')(default=False),
+                      keep_default=False)
+
 
     def backwards(self, orm):
-        db.delete_index(u'auth_user', ['email'])
-        db.delete_index(u'auth_user', ['username'])
+        # Deleting field 'UserProfile.has_notifications'
+        db.delete_column(u'default_userprofile', 'has_notifications')
 
 
     models = {
@@ -55,11 +59,10 @@ class Migration(DataMigration):
         u'default.userprofile': {
             'Meta': {'object_name': 'UserProfile'},
             'data': ('jsonfield.fields.JSONField', [], {'default': "{'user_class': 'customer'}"}),
+            'has_notifications': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'user': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'profile'", 'unique': 'True', 'to': u"orm['auth.User']"})
         }
     }
 
     complete_apps = ['default']
-    symmetrical = False
-

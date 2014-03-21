@@ -11,7 +11,6 @@ from toolkit.casper import BaseScenarios
 from toolkit.core.attachment.models import Revision
 from toolkit.core.item.models import Item
 
-from toolkit.core.services.matter_activity import MatterActivityEventService
 from toolkit.core.signals.activity_listener import send_activity_log
 
 cache_key = 'activity_stream_signal_received_keys'
@@ -41,12 +40,14 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         """
         # in setUp the workspace was created which should have reached on_activity_received above:
         cache_obj = cache.get(cache_key)
-        self.assertItemsEqual(cache_obj.keys(), ['sender', 'signal', 'actor', 'verb', 'action_object', 'target', 'item',
+
+        self.assertItemsEqual(cache_obj.keys(), ['sender', 'signal', 'actor', 'verb', 'verb_slug', 'action_object', 'target', 'item',
                                                  'user', 'message', 'comment'])
         self.assertItemsEqual(cache_obj.values(), ["<class 'toolkit.core.services.matter_activity.MatterActivityEventService'>",
                                                    "<class 'django.dispatch.dispatcher.Signal'>",
                                                    "<class 'django.contrib.auth.models.User'>",
                                                    u'created',
+                                                   "<class 'django.utils.safestring.SafeText'>",
                                                    "<class 'toolkit.apps.workspace.models.Workspace'>",
                                                    "<class 'toolkit.apps.workspace.models.Workspace'>",
                                                    "<type 'NoneType'>",
@@ -82,9 +83,9 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         """
         item = mommy.make('item.Item', name='Test Item #1', matter=self.workspace)
         revision1 = mommy.make('attachment.Revision', name='Test Revision #1', item=item, uploaded_by=self.user)
-        MatterActivityEventService(self.matter).created_revision(user=self.user,
-                                                                 item=item,
-                                                                 revision=revision1)
+        self.matter.actions.created_revision(user=self.user,
+                                             item=item,
+                                             revision=revision1)
         stream = model_stream(Revision)
         self.assertEqual(len(stream), 1)
         self.assertEqual(stream[0].action_object, revision1)
@@ -94,7 +95,7 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         add a user as reviewer and check if it worked
         """
         reviewer = mommy.make('auth.User', username='test-reviewer', first_name='Customer', last_name='Test', email='testreviewer@lawpal.com')
-        MatterActivityEventService(self.matter).added_user_as_reviewer(item, self.lawyer, reviewer)
+        self.matter.actions.added_user_as_reviewer(item, self.lawyer, reviewer)
         stream = model_stream(Item)
         self.assertEqual(len(stream), 2)  # first one was the creation
         self.assertEqual(stream[0].action_object, item)
@@ -104,7 +105,7 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         """
         delete user as reviewer and check if it worked
         """
-        MatterActivityEventService(self.matter).removed_user_as_reviewer(item, self.user, reviewer)
+        self.matter.actions.removed_user_as_reviewer(item, self.user, reviewer)
         stream = model_stream(Item)
         self.assertEqual(len(stream), 3)
         self.assertEqual(stream[0].action_object, item)
@@ -114,7 +115,7 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         """
         remove revision again and check if it worked
         """
-        MatterActivityEventService(self.matter).deleted_revision(self.lawyer, item, revision1)
+        self.matter.actions.deleted_revision(self.lawyer, item, revision1)
         stream = model_stream(Revision)
         self.assertEqual(len(stream), 2)
         self.assertEqual(stream[0].action_object, revision1)
@@ -124,7 +125,9 @@ class ActivitySignalTest(BaseScenarios, TestCase):
     def test_add_comment(self):
         item = mommy.make('item.Item', name='Test Item #1', matter=self.matter)
         comment_text = u'Sleep with one eye open'
-        MatterActivityEventService(self.matter).add_comment(self.lawyer, item, comment_text)
+
+        self.matter.actions.add_item_comment(self.lawyer, item, comment_text)
+
         stream = model_stream(Item)
         self.assertEqual(len(stream), 2)  # create item, and add comment -> 2
         self.assertEqual(stream[0].data['comment'], comment_text)

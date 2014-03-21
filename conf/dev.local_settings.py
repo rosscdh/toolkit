@@ -51,6 +51,17 @@ CROCDOC_API_KEY = 'pRzHhZS4jaGes193db28cwyu'
 
 AUTHY_API_KEY = 'e19afad3c1c207a03ef6a1dcb2adb0c3'
 
+#
+# ACTIVITY STREAM
+#
+ACTSTREAM_SETTINGS = {
+    'MODELS': ('auth.User', 'workspace.Workspace', 'item.Item', 'attachment.Revision'),
+    'MANAGER': 'toolkit.core.managers.ToolkitActionManager',
+    'FETCH_RELATIONS': True,
+    'USE_PREFETCH': True,
+    'USE_JSONFIELD': True,
+    'USE_FOLLOWING': False,  # VERY importand; will break our system if this changes to True
+}
 
 #
 # Abridge Integration

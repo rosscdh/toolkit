@@ -9,9 +9,10 @@ from .signals import (ensure_workspace_slug,
                       ensure_workspace_matter_code,
                       # tool
                       ensure_tool_slug)
-from toolkit.core.signals.activity import (on_workspace_post_save,)
 
 from toolkit.core.mixins import IsDeletedMixin
+from toolkit.core.signals.activity import (on_workspace_post_save,)
+from toolkit.core.services.matter_activity import MatterActivityEventService  # cyclic
 
 from toolkit.utils import _class_importer
 
@@ -49,11 +50,24 @@ class Workspace(IsDeletedMixin, ClosingGroupsMixin, CategoriesMixin, models.Mode
 
     objects = WorkspaceManager()
 
+    _actions = None  # private variable for MatterActivityEventService 
+
     class Meta:
         ordering = ['name', '-pk']
 
+    def __init__(self, *args, **kwargs):
+        #
+        # Initialize the actions property
+        #
+        self._actions = MatterActivityEventService(self)
+        super(Workspace, self).__init__(*args, **kwargs)
+
     def __unicode__(self):
         return '%s' % self.name
+
+    @property
+    def actions(self):
+        return self._actions
 
     @property
     def get_lawyer(self):
