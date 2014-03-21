@@ -34,3 +34,8 @@ __Item__
 [activity stream]
 
 1. ./manage migrate actstream
+
+
+1. Ensure crocdoc url webhook in production is set
+2. ensure crocodoc account is paid for
+3. ensure hellosign account is paid for and keys are for right account
