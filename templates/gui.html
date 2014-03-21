@@ -12,7 +12,6 @@
         <div class="navbar-collapse collapse navbar-collapse-01">
             <ul class="nav navbar-nav navbar-right">
                 <li class="divider"></li>
-                <li><a href="#" class="intercom">Help</a></li>
                 <li class="notifications"><a href="{% url 'notification:default' %}" class="{% if user.profile.has_notifications %}unread{% endif %}"><span class="fui-radio-{% if user.profile.has_notifications %}checked animated pulse{% else %}unchecked{% endif %}"></span></a></li>
                 <li><a href="{% url 'request:list' %}">Requests {% if REQUESTS_COUNT %}<span class="label label-important">{{ REQUESTS_COUNT }}</span>{% endif %}</a></li>
                 <li><a href="#" class="intercom">Help</a></li>
