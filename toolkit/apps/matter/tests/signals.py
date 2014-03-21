@@ -25,9 +25,8 @@ class ParticipantAddedTest(BaseScenarios, TestCase):
 
         # Test parts of the email
         email = mail.outbox[0]
-        self.assertEqual(email.subject, u'You have been added to Lawpal (test) on LawPal')
+        self.assertEqual(email.subject, u'Lawyer Test added you to Lawpal (test) for Test Client Name')
         self.assertEqual(len(email.to), 1)
         self.assertEqual(email.to, ['test+participant@lawpal.com'])
         self.assertEqual(email.from_email, u'Lawyer Test (via LawPal) support@lawpal.com')
         self.assertEqual(email.extra_headers, {'Reply-To': self.lawyer.email})
-
