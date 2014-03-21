@@ -8,7 +8,7 @@
                 <div class="msg-body" ng-bind-html="activity.data.comment | newlines"></div>
                 <div class="msg-meta">
                     {{ activity.actor | fullname }}, {{ activity.timestamp | date:'dd MMMM' }}
-                    <span ng-show="activity.data.comment!=null"><a href="javascript:;" ng-click="deleteComment(activity)">Delete</a></span>
+                    <span ng-show="deleteCommentIsEnabled(activity)"><a href="javascript:;" ng-click="deleteComment(activity)">Delete</a></span>
                 </div>
             </div>
         </div>

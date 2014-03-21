@@ -1190,6 +1190,14 @@ angular.module('toolkit-gui')
 		 *    \____\___/|_| |_| |_|_| |_| |_|\___|_| |_|\__|___/ |_| |_|\__,_|_| |_|\__,_|_|_|_| |_|\__, |
 		 *                                                                                          |___/
 		 */
+
+        /**
+		 * Creates a new comment
+         *
+		 * @memberof			ChecklistCtrl
+		 * @private
+		 * @type {Object}
+		 */
         $scope.submitComment = function() {
 			var matterSlug = $scope.data.slug;
 			var itemSlug = $scope.data.selectedItem.slug;
@@ -1207,6 +1215,13 @@ angular.module('toolkit-gui')
 			);
 		};
 
+        /**
+		 * Deletes the given activity stream item
+         *
+		 * @memberof			ChecklistCtrl
+		 * @private
+		 * @type {Object}
+		 */
         $scope.deleteComment = function(comment) {
 			var matterSlug = $scope.data.slug;
 			var itemSlug = $scope.data.selectedItem.slug;
@@ -1222,6 +1237,33 @@ angular.module('toolkit-gui')
 				 }
 			);
 		};
+
+
+        /**
+		 * Checks if the current user may delete the given comment item
+         *
+		 * @memberof			ChecklistCtrl
+		 * @private
+		 * @type {Object}
+		 */
+        $scope.deleteCommentIsEnabled = function(activity){
+            if (activity.data.comment) {
+                //if user is lawyer, he might delete all comments
+                if($scope.data.usdata.current.user_class==='lawyer'){
+                    return true;
+                } else if ($scope.data.selectedItem!=null) {
+                    var comments = jQuery.grep( $scope.data.activitystream, function( item ){ return item.comment!==null; } );
+                    var index = jQuery.inArray( activity, comments );
+
+                    //if the user is a client, then he might only delete his own comments if there is no newer comment
+                    if(activity.actor.username === $scope.data.usdata.current.username && index===0) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        };
 
 
         /* END COMMENT HANDLING */
