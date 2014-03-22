@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404
 
 from rulez import registry as rulez_registry
 
+from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework import exceptions
 from rest_framework.response import Response
@@ -21,10 +22,34 @@ from toolkit.apps.workspace.models import Workspace
 from toolkit.apps.workspace.services import EnsureCustomerService
 
 from ..serializers import SimpleUserWithReviewUrlSerializer
+from ..serializers import ReviewSerializer
 
 import logging
 
 logger = logging.getLogger('django.request')
+
+
+class ReviewEndpoint(viewsets.ModelViewSet):
+    """
+    Primary Matter ViewSet
+    """
+    model = ReviewDocument
+    serializer_class = ReviewSerializer
+    lookup_field = 'pk'
+
+    def can_read(self, user):
+        return user.profile.user_class in ['lawyer',]
+
+    def can_edit(self, user):
+        return user.profile.is_lawyer
+
+    def can_delete(self, user):
+        return user.profile.is_lawyer
+
+
+rulez_registry.register("can_read", ReviewEndpoint)
+rulez_registry.register("can_edit", ReviewEndpoint)
+rulez_registry.register("can_delete", ReviewEndpoint)
 
 
 class BaseReviewerSignatoryMixin(generics.GenericAPIView):
