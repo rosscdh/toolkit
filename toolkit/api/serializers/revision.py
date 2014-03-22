@@ -1,5 +1,4 @@
 # -*- coding: UTF-8 -*-
-from django.core.files import File
 from django.core.urlresolvers import reverse
 
 from rest_framework import serializers
@@ -7,8 +6,8 @@ from rest_framework import serializers
 from toolkit.core.attachment.tasks import _download_file
 from toolkit.core.attachment.models import Revision
 
-from .user import (SimpleUserSerializer,
-                   SimpleUserWithReviewUrlSerializer)
+from .user import SimpleUserSerializer, SimpleUserWithReviewUrlSerializer
+#from .review import ReviewSerializer
 
 import logging
 logger = logging.getLogger('django.request')
@@ -60,7 +59,7 @@ class HyperlinkedAutoDownloadFileField(serializers.URLField):
                 return super(HyperlinkedAutoDownloadFileField, self).field_to_native(obj, field_name)
 
             except Exception as e:
-                logger.debug('File serialized without a value')
+                logger.debug('File serialized without a value: %s' % e)
         #
         # NB this must return None!
         # else it will raise attribute has no file associated with it
@@ -81,9 +80,6 @@ class FileFieldAsUrlField(serializers.FileField):
             _download_file(url=value.url, filename=value.name, obj=value.instance)
 
         return getattr(value, 'url', super(FileFieldAsUrlField, self).to_native(value=value))
-
-
-
 
 
 class RevisionSerializer(serializers.HyperlinkedModelSerializer):
@@ -143,7 +139,10 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
         super(RevisionSerializer, self).__init__(*args, **kwargs)
 
     def get_reviewers(self, obj):
-        return [SimpleUserWithReviewUrlSerializer(u, context={'request': self.context.get('request')}).data for u in obj.reviewers.all()]
+        return [SimpleUserWithReviewUrlSerializer(u, context=self.context).data for u in obj.reviewers.all()]
+
+    # def get_reviewers(self, obj):
+    #     return [SimpleUserWithReviewUrlSerializer(u, context=self.context).data for u in obj.reviewers.all()]
 
     def get_user_review_url(self, obj):
         """
