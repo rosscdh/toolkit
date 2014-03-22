@@ -3,7 +3,6 @@ from rest_framework import serializers
 
 from toolkit.apps.review.models import ReviewDocument
 from .user import SimpleUserWithReviewUrlSerializer
-from .item import ItemSerializer
 
 
 class ReviewSerializer(serializers.HyperlinkedModelSerializer):
@@ -18,7 +17,8 @@ class ReviewSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'document', 'item', 'reviewer', 'is_complete', 'date_last_viewed')
 
     def get_item(self, obj):
-        return ItemSerializer(obj.document.item, context=self.context).data.get('url')
+        from .item import LiteItemSerializer
+        return LiteItemSerializer(obj.document.item, context=self.context).data.get('url')
 
     def get_reviewer(self, obj):
         reviewer = obj.reviewer
