@@ -189,6 +189,7 @@ angular.module('toolkit-gui')
 			$scope.initializeActivityItemStream();
 
 			//Reset controls
+            $scope.data.dueDatePickerDate = $scope.data.selectedItem.date_due;
 			$scope.data.showEditItemDescriptionForm = false;
 			$scope.data.showEditItemTitleForm = false;
 			$scope.data.showPreviousRevisions = false;
@@ -1032,17 +1033,56 @@ angular.module('toolkit-gui')
 			}, 300);
 		};
 
-		//TODO discuss if there is any better datepicker to use
-		$scope.$watch('data.dateduepickerdate', function(newValue, oldValue) {
-			  //only save is date due picker is visible
-			  if($scope.data.showDateDuePicker===true){
-				  //convert picked date to string
-				  var newdatestr = jQuery.datepicker.formatDate('yy-mm-ddT00:00:00', $scope.data.dateduepickerdate);
-				  $scope.data.selectedItem.date_due = newdatestr;
-				  $scope.saveSelectedItem();
-				  $scope.data.showDateDuePicker=false;
-			  }
+
+        /**
+		 * Listens for date changes in the datepicker and stores it in the item
+		 *
+		 * @memberof			ChecklistCtrl
+		 * @private
+		 *
+		 * @param  newValue,oldValue of the datepicker
+		 */
+		$scope.$watch('data.dueDatePickerDate', function(newValue, oldValue) {
+            if (newValue instanceof Date) {
+                newValue = jQuery.datepicker.formatDate('yy-mm-ddT00:00:00', newValue);
+            }
+            $log.debug(newValue);
+
+            if ($scope.data.selectedItem && newValue!==$scope.data.selectedItem.date_due) {
+                $scope.data.selectedItem.date_due = newValue;
+                $scope.saveSelectedItem();
+            }
 		});
+
+        /**
+		 * Default date control options
+		 *
+		 * @memberof			ChecklistCtrl
+		 * @private
+		 *
+		 * @type {Object}
+		 */
+		$scope.dateOptions = {
+			'year-format': "'yy'",
+			'starting-day': 1
+		};
+
+		/**
+		 * Toggle due date value between default (today) and null
+		 *
+		 * @memberof			ChecklistCtrl
+		 * @private
+		 *
+		 * @param  {Object} item Item which to apply default date
+		 */
+		$scope.toggleDueDateCalendar = function(item) {
+			if(!item.date_due) {
+				$scope.data.dueDatePickerDate = new Date();
+			} else {
+				$scope.data.dueDatePickerDate = null;
+			}
+		};
+
 
 		/**
 		 * UI.sortable options for checklist items
@@ -1150,6 +1190,14 @@ angular.module('toolkit-gui')
 		 *    \____\___/|_| |_| |_|_| |_| |_|\___|_| |_|\__|___/ |_| |_|\__,_|_| |_|\__,_|_|_|_| |_|\__, |
 		 *                                                                                          |___/
 		 */
+
+        /**
+		 * Creates a new comment
+         *
+		 * @memberof			ChecklistCtrl
+		 * @private
+		 * @type {Object}
+		 */
         $scope.submitComment = function() {
 			var matterSlug = $scope.data.slug;
 			var itemSlug = $scope.data.selectedItem.slug;
@@ -1167,32 +1215,56 @@ angular.module('toolkit-gui')
 			);
 		};
 
-		/**
-		 * Default date control options
-		 *
+        /**
+		 * Deletes the given activity stream item
+         *
 		 * @memberof			ChecklistCtrl
 		 * @private
-		 * 
 		 * @type {Object}
 		 */
-		$scope.dateOptions = {
-			'year-format': "'yy'",
-			'starting-day': 1
+        $scope.deleteComment = function(comment) {
+			var matterSlug = $scope.data.slug;
+			var itemSlug = $scope.data.selectedItem.slug;
+
+			commentService.delete(matterSlug, itemSlug, comment).then(
+				 function success(){
+					$scope.initializeActivityItemStream();
+				 },
+				 function error(err){
+					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to delete item comment.") {
+						toaster.pop('error', "Error!", "Unable to delete item comment.");
+					}
+				 }
+			);
 		};
 
-		/**
-		 * Toggle due date value between default (today) and null
-		 *
+
+        /**
+		 * Checks if the current user may delete the given comment item
+         *
 		 * @memberof			ChecklistCtrl
 		 * @private
-		 * 
-		 * @param  {Object} item Item which to apply default date
+		 * @type {Object}
 		 */
-		$scope.toggleDueDateCalendar = function(item) {
-			if(!item.date_due) {
-				item.date_due = new Date();
-			} else {
-				item.date_due = null;
-			}
-		};
+        $scope.deleteCommentIsEnabled = function(activity){
+            if (activity.data.comment) {
+                //if user is lawyer, he might delete all comments
+                if($scope.data.usdata.current.user_class==='lawyer'){
+                    return true;
+                } else if ($scope.data.selectedItem!=null) {
+                    var comments = jQuery.grep( $scope.data.activitystream, function( item ){ return item.comment!==null; } );
+                    var index = jQuery.inArray( activity, comments );
+
+                    //if the user is a client, then he might only delete his own comments if there is no newer comment
+                    if(activity.actor.username === $scope.data.usdata.current.username && index===0) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        };
+
+
+        /* END COMMENT HANDLING */
 }]);
