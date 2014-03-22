@@ -17,6 +17,7 @@ from storages.backends.s3boto import S3BotoStorage
 
 from uuidfield import UUIDField
 from jsonfield import JSONField
+from datetime import datetime
 
 import logging
 logger = logging.getLogger('django.request')
@@ -52,10 +53,22 @@ class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
             return reverse('review:approve_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)})
         return None
 
-    def complete(self):
-        self.is_complete = True
+    def complete(self, is_complete=True):
+        self.is_complete = is_complete
         self.save(update_fields=['is_complete'])
     complete.alters_data = True
+
+    @property
+    def reviewer_has_viewed(self):
+        return self.date_last_viewed is not None
+
+    @reviewer_has_viewed.setter
+    def reviewer_has_viewed(self, value):
+        if value == True:
+            self.object.date_last_viewed = datetime.datetime.utcnow()
+        else:
+            self.object.date_last_viewed = None
+        self.object.save(update_fields=['date_last_viewed'])
 
     @property
     def file_exists_locally(self):
