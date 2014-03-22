@@ -95,10 +95,18 @@ class ItemRevisionTest(BaseEndpointTest):
 
         # Test the reviewers and the relative user_reivew_url (should be the current logged in users)
         self.assertEqual(len(resp_json.get('reviewers')), 1)
+
+        # Test the reviewers section
         reviewers = resp_json.get('reviewers')
-        self.assertTrue(reviewers[0].get('user_review_url') is not None)
+
+        # should only have 1 reviewer, ever
+        self.assertEqual(len(reviewers), 1)
+        # get that person
+        reviewer = reviewers[0].get('reviewer')
+        # test their url
+        self.assertTrue(reviewer.get('user_review_url') is not None)
         # it is the correct url for this specific user to view object
-        self.assertEqual(reviewers[0].get('user_review_url'), revision.reviewdocument_set.all().first().get_absolute_url(user=self.lawyer))
+        self.assertEqual(reviewer.get('user_review_url'), revision.reviewdocument_set.all().first().get_absolute_url(user=self.lawyer))
 
     def test_revision_post_with_url(self):
         self.client.login(username=self.lawyer.username, password=self.password)
