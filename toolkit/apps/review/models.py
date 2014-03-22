@@ -2,7 +2,8 @@
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.core.files.storage import default_storage
-from django.contrib.contenttypes.models import ContentType
+
+from rulez import registry as rulez_registry
 
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 
@@ -12,7 +13,6 @@ from .mixins import UserAuthMixin
 from .managers import ReviewDocumentManager
 from .mailers import ReviewerReminderEmail
 
-from dj_crocodoc.models import CrocodocDocument
 from storages.backends.s3boto import S3BotoStorage
 
 from uuidfield import UUIDField
@@ -131,6 +131,18 @@ class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
                           from_name=from_user.get_full_name(),
                           action_url=ABSOLUTE_BASE_URL(path=self.get_absolute_url(user=u)))
 
+    def can_read(self, user):
+        return user in self.reviewers.all()
+
+    def can_edit(self, user):
+        return user in self.reviewers.all()
+
+    def can_delete(self, user):
+        return user in self.participants.all()
+
+rulez_registry.register("can_read", ReviewDocument)
+rulez_registry.register("can_edit", ReviewDocument)
+rulez_registry.register("can_delete", ReviewDocument)
 
 from .signals import (ensure_matter_participants_are_in_reviewdocument_participants,
                       on_reviewer_add,
