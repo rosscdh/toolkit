@@ -132,13 +132,13 @@ class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
                           action_url=ABSOLUTE_BASE_URL(path=self.get_absolute_url(user=u)))
 
     def can_read(self, user):
-        return user in self.reviewers.all()
+        return user in self.participants
 
     def can_edit(self, user):
-        return user in self.reviewers.all()
+        return user in self.participants
 
     def can_delete(self, user):
-        return user in self.participants.all()
+        return user in self.participants
 
 rulez_registry.register("can_read", ReviewDocument)
 rulez_registry.register("can_edit", ReviewDocument)
