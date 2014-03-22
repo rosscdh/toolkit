@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
-
 from django.http import Http404, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView
@@ -21,16 +19,6 @@ class ReviewRevisionView(DetailView):
     """
     queryset = ReviewDocument.objects.prefetch_related().all()
     template_name = 'review/review.html'
-
-    def get(self, request, *args, **kwargs):
-        response = super(ReviewRevisionView, self).get(request, *args, **kwargs)
-
-        # update the last viewed
-        if request.user in self.object.reviewers.all():
-            self.object.date_last_viewed = timezone.now()
-            self.object.save(update_fields=['date_last_viewed'])
-
-        return response
 
     @property
     def is_current(self):
@@ -57,7 +45,6 @@ class ReviewRevisionView(DetailView):
         #
         requested_authenticated_user = authenticate(username=self.kwargs.get('slug'), password=self.kwargs.get('auth_slug'))
 
-        #if self.request.user.is_authenticated() is True:
         if requested_authenticated_user:
             #
             # if the request user is in the object.participants
@@ -77,6 +64,7 @@ class ReviewRevisionView(DetailView):
                         raise PermissionDenied
 
                 login(self.request, requested_authenticated_user)
+                self.object.reviewer_has_viewed = True  # only for the reviewer, we dont do this for when participants view
 
     def get_object(self):
         obj = super(ReviewRevisionView, self).get_object()
@@ -128,6 +116,9 @@ class ReviewRevisionView(DetailView):
         return kwargs
 
 
+#
+# @TODO refactor this to use user_passes_test decorator and ensure that the user is in the reviewers set
+#
 class ApproveRevisionView(DetailView):
     queryset = ReviewDocument.objects.prefetch_related().all()
 
