@@ -2,7 +2,7 @@
 from rest_framework import serializers
 
 from toolkit.apps.review.models import ReviewDocument
-from .user import SimpleUserSerializer
+from .user import SimpleUserWithReviewUrlSerializer
 from .item import ItemSerializer
 
 
@@ -23,5 +23,5 @@ class ReviewSerializer(serializers.HyperlinkedModelSerializer):
     def get_reviewer(self, obj):
         reviewer = obj.reviewer
         if reviewer is not None:
-            return SimpleUserSerializer(reviewer, context=self.context).data
+            return SimpleUserWithReviewUrlSerializer(reviewer, context=self.context).data
         return None
