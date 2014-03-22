@@ -6,8 +6,8 @@ from rest_framework import serializers
 from toolkit.core.attachment.tasks import _download_file
 from toolkit.core.attachment.models import Revision
 
-from .user import SimpleUserSerializer, SimpleUserWithReviewUrlSerializer
-#from .review import ReviewSerializer
+from .user import SimpleUserSerializer#, SimpleUserWithReviewUrlSerializer
+from .review import ReviewSerializer
 
 import logging
 logger = logging.getLogger('django.request')
@@ -139,10 +139,13 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
         super(RevisionSerializer, self).__init__(*args, **kwargs)
 
     def get_reviewers(self, obj):
-        return [SimpleUserWithReviewUrlSerializer(u, context=self.context).data for u in obj.reviewers.all()]
-
-    # def get_reviewers(self, obj):
-    #     return [SimpleUserWithReviewUrlSerializer(u, context=self.context).data for u in obj.reviewers.all()]
+        reviewers = []
+        #return [SimpleUserWithReviewUrlSerializer(u, context=self.context).data for u in obj.reviewers.all()]
+        for u in obj.reviewers.all():
+            reviewdoc = obj.reviewdocument_set.filter(reviewers__in=[u]).first()
+            if reviewdoc is not None:
+                reviewers.append(ReviewSerializer(reviewdoc, context={'request': self.context.get('request')}).data)
+        return reviewers
 
     def get_user_review_url(self, obj):
         """
