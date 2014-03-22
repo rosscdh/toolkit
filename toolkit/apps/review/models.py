@@ -76,6 +76,17 @@ class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
     def participants(self):
         return set(self.reviewers.all() | self.matter.participants.all())
 
+    @property
+    def reviewer(self):
+        """
+        return the reviewer: the person in self.reviewers that is not in self.participants
+        """
+        try:
+            return set(self.reviewers.all()).difference(self.matter.participants.all()).pop()
+        except:
+            logger.error('no reviewer found for ReviewDocument: %s' % self)
+            return None
+
     def download_if_not_exists(self):
         """
         Its necessary to download the file from s3 locally as we have restrictive s3
