@@ -38,4 +38,4 @@ composer.lock
 /log/*.log
 /MANIFEST
 /build
-/dist
+
