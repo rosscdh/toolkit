@@ -123,8 +123,8 @@ class ItemRevisionReviewersView(generics.ListAPIView,
             self.item.send_invite_to_review_emails(from_user=request.user, to=[user], note=note)
 
             self.matter.actions.added_user_as_reviewer(item=self.item,
-                                                                           adding_user=request.user,
-                                                                           added_user=user)
+                                                       adding_user=request.user,
+                                                       added_user=user)
 
         # add the user to the purpose of this endpoint object review||signature
         #self.process_event_purpose_object(user=user)
@@ -195,6 +195,12 @@ class ItemRevisionReviewerView(generics.RetrieveAPIView,
             # Should never have more than 1
             #
             status = http_status.HTTP_406_NOT_ACCEPTABLE
+
+        # create event
+        self.revision.item.matter.actions.user_viewed_revision(item=self.revision.item,
+                                                               user=user,
+                                                               revision=self.revision)
+        # TODO: check if this was the last user to review the document. if so: user_revision_review_complete()
 
         status = http_status.HTTP_200_OK
 

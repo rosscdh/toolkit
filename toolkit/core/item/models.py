@@ -28,7 +28,8 @@ BASE_ITEM_STATUS = get_namedtuple_choices('ITEM_STATUS', (
                             ))
 
 
-class Item(IsDeletedMixin, RequestDocumentUploadMixin,
+class Item(IsDeletedMixin,
+           RequestDocumentUploadMixin,
            RequestedDocumentReminderEmailsMixin,
            LatestRevisionReminderEmailsMixin,
            models.Model):

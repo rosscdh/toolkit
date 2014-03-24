@@ -65,7 +65,18 @@ class ItemRequestRevisionView(MatterItemView):
 
     def post_save(self, obj, **kwargs):
         """
-        Send the email to the items responsible_party
+        Send the email to the items responsible_party (including creation of events)
         """
         self.object.send_document_requested_emails(from_user=self.request.user)
+
+        # if is_requested is True the activity has to be created (similar to send_document_requested_emails())
+        if self.is_requested is True:
+            user = self.responsible_party
+            if user:
+                self.matter.actions.request_user_upload_revision(item=self,
+                                                                 adding_user=self.request.user,
+                                                                 added_user=user)
+
+        # can I get the information if a new revision has been
+
         super(ItemRequestRevisionView, self).post_save(obj=obj, **kwargs)
