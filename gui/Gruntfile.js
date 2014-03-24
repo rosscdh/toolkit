@@ -164,6 +164,12 @@ module.exports = function (grunt) {
         },
         src:'index.html'
       },
+      testscripts: {
+        options: {
+          read:{selector:'script[data-build!="exclude"]',attribute:'src',writeto:'appjs'}
+        },
+        src:'test.html'
+      },
       readcss: {
         options: {
           read:{selector:'link[rel="stylesheet"]',attribute:'href',writeto:'appcss'}
@@ -288,7 +294,7 @@ module.exports = function (grunt) {
   grunt.registerTask('server', ['preprocess:gruntserver','dom_munger:readscripts','jshint','connect', 'watch']);
   grunt.registerTask('makedoc', ['jsdoc']);
   grunt.registerTask('validate', ['jshint']);
-  grunt.registerTask('test',['dom_munger:readscripts','jasmine']);
+  grunt.registerTask('test',['dom_munger:testscripts','jasmine']);
 
 
   grunt.registerTask('build', 'Deploys the app in the dist folder. Target django as option.', function(n) {
