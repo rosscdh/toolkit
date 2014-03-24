@@ -267,10 +267,10 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         data = {
             'executed_file': expected_image_url,
         }
-        resp = self.client.patch(self.endpoint, json.dumps(data), content_type='application/json')
+        resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
         resp_json = json.loads(resp.content)
 
-        self.assertEqual(resp.status_code, 200)  # updated but actually a new one was created
+        self.assertEqual(resp.status_code, 201)  # 201 created
         self.assertEqual(resp_json.get('slug'), 'v2')
 
     @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
