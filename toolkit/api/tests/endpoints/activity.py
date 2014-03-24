@@ -71,3 +71,25 @@ class ItemActivityEndpointTest(BaseEndpointTest):
 
         # check if actor was added correctly
         self.assertEqual(events[0]['actor']['name'], u'Lawyer Test')
+
+    def test_comments_in_activitystream(self):
+        # create comment and see if *special* template is used
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        mommy.make('actstream.Action',
+                              actor=self.user,
+                              verb=u'commented',
+                              action_object=self.item,
+                              target=self.matter,
+                              data={'comment': u'I"m a test comment #1'})
+
+        resp = self.client.get(self.endpoint)
+        self.assertEqual(resp.status_code, 200)
+        json_data = json.loads(resp.content)
+        events = json_data['results']
+
+        self.assertEqual(len(events), 2)
+
+        event = events[0]['event']
+        self.assertEqual(event[:15], 'I am a comment.')
+
