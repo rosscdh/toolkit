@@ -947,7 +947,7 @@ angular.module('toolkit-gui')
                 var completed = 0;
 
                 jQuery.each( reviews, function( index, r ){
-                    if (r.is_complete==true){
+                    if (r.is_complete===true){
                         completed += 1;
                     }
 				});
