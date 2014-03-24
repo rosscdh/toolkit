@@ -38,10 +38,11 @@ ABRIDGE_WHITELIST = settings.LAWPAL_ACTIVITY.get('abridge', {}).get('whitelist',
 NOTIFICATIONS_WHITELIST = settings.LAWPAL_ACTIVITY.get('notifications', {}).get('whitelist', [])
 
 
-def _activity_send(verb_slug, actor, **kwargs):
+def _activity_send(actor, **kwargs):
     """
     Send activity to django-activity-stream
     """
+    verb_slug = kwargs.get('verb_slug', False)
     if verb_slug in ACTIVITY_WHITELIST:
         action.send(actor, **kwargs)
 
@@ -126,7 +127,7 @@ def on_activity_received(sender, **kwargs):
             logger.critical('actstream is not installed')
         else:
             # send to django-activity-stream
-            _activity_send(verb_slug=verb_slug, actor=actor, **kwargs)
+            _activity_send(actor=actor, **kwargs)
 
         # send the notifications to the participants
         _notifications_send(verb_slug=verb_slug, actor=actor, target=target, message=message)

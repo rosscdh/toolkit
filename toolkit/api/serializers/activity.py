@@ -1,9 +1,17 @@
 # -*- coding: utf-8 -*-
 from django.utils.translation import ugettext as _
+from django.template import loader
 from actstream.models import Action
 from rest_framework import serializers
 
 from toolkit.api.serializers.user import LiteUserSerializer
+
+
+def _get_comment_display(ctx, comment):
+    template = loader.get_template('activity/comment.html')  # allow override of template_name
+    context = loader.Context(ctx)
+    # render the template with passed in context
+    return template.render(context)
 
 
 class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
@@ -63,6 +71,10 @@ class ItemActivitySerializer(MatterActivitySerializer):
             #'target': obj.target,
             #'target_pk': obj.target.slug,
         }
+        comment = obj.data.get('comment', None)
+
+        if comment is not None:
+            return _get_comment_display(ctx, comment)
 
         override_message = obj.data.get('message', None)
 
