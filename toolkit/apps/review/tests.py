@@ -12,8 +12,20 @@ from .models import ReviewDocument
 from model_mommy import mommy
 
 import os
+import mock
 import urllib
 import datetime
+
+
+"""
+Patched class for testing datetime
+"""
+
+
+class PatchedDateTime(datetime.datetime):
+    @staticmethod
+    def utcnow():
+        return datetime.datetime(1970, 1, 1, 0, 0, 0, 113903)
 
 
 class BaseDataProvider(BaseScenarios):
@@ -169,20 +181,12 @@ class ReviewRevisionViewTest(BaseDataProvider, TestCase):
 
     @mock_http_requests
     def test_reviewer_viewing_revision_updates_last_viewed(self):
-        """
-        Patched class for testing datetime
-        """
-        class patched_datetime(datetime.datetime):
-            @classmethod
-            def utcnow(cls):
-                return datetime.datetime(1970, 1, 1, 0, 0, 0, 113903)
-        datetime.datetime = patched_datetime
-
         self.client.login(username=self.reviewer.username, password=self.password)
 
         self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed, None)
 
-        resp = self.client.get(self.review_document.get_absolute_url(self.reviewer), follow=True)
+        with mock.patch('datetime.datetime', PatchedDateTime):
+            resp = self.client.get(self.review_document.get_absolute_url(self.reviewer), follow=True)
 
         self.assertEqual(resp.status_code, 200)
 
