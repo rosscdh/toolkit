@@ -2,6 +2,7 @@
 from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test.client import RequestFactory
+from actstream.models import action_object_stream
 
 from toolkit.core.item.models import Item
 
@@ -78,6 +79,11 @@ class ItemsRequestDocumentTest(BaseEndpointTest):
         email = outbox[0]
         self.assertEqual(email.subject, u'[ACTION REQUIRED] Request to provide a document')
         self.assertEqual(email.recipients(), [u'new+user@lawpal.com'])
+
+
+        # this should have created a new revision upload invite
+        stream = action_object_stream(self.item)
+        self.assertEqual(stream[0].data['message'], u'Lawyer Test requested Bob Da hoon provide a document on Test Item No. 1')
 
 
     def test_lawyer_delete(self):

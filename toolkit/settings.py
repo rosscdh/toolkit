@@ -400,7 +400,10 @@ LAWPAL_ACTIVITY = {
                       'revision-comment-deleted']
     },
     "activity": {
-        "whitelist": ['item-created', 'item-edited', 'item-commented', 'revision-created', 'revision-deleted',
+        "whitelist": ['item-created', 'item-edited', 'item-commented', 'item-changed-the-status', 'item-renamed',
+                      'item-provide-a-document',
+                      'revision-created', 'revision-deleted',
+                      'itemrequestrevisionview-provide-a-document',  # needed?
                       'workspace-created']  # create so many activities to keep tests running for now
     },
 }

@@ -84,6 +84,32 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         self.assertEqual(stream_item.action_object, item)
         self.assertEqual(stream_item.actor, self.lawyer)
 
+    def test_item_renamed(self):
+        item = mommy.make('item.Item', name='Test Item #1', matter=self.workspace)
+        item.name = 'New Name'
+        item.save()
+        stream = action_object_stream(item)
+        self.assertEqual(len(stream), 2)
+        stream_item = stream[0]
+        self.assertEqual(stream_item.verb, 'renamed')
+        self.assertEqual(stream_item.target, self.workspace)
+        self.assertEqual(stream_item.action_object, item)
+        self.assertEqual(stream_item.actor, self.lawyer)
+        self.assertEqual(stream_item.data['message'], u'Lawyer Test renamed item from Test Item #1 to New Name')
+
+    def test_item_status_changed(self):
+        item = mommy.make('item.Item', name='Test Item #1', matter=self.workspace)
+        item.status = 2
+        item.save()
+        stream = action_object_stream(item)
+        self.assertEqual(len(stream), 2)
+        stream_item = stream[0]
+        self.assertEqual(stream_item.verb, 'changed the status')
+        self.assertEqual(stream_item.target, self.workspace)
+        self.assertEqual(stream_item.action_object, item)
+        self.assertEqual(stream_item.actor, self.lawyer)
+        self.assertEqual(stream_item.data['message'], u'Lawyer Test changed the status of Test Item #1 from New to Executed')
+
     def test_revision_signals(self):
         """
         first create a revision and call the service which would be called from the api in reality.
