@@ -599,12 +599,12 @@ angular.module('toolkit-gui')
 			 *
 			 * @return {Promise}
 			 */
-			'deleteRevisionReviewRequest': function ( matterSlug, itemSlug, participant ) {
+			'deleteRevisionReviewRequest': function ( matterSlug, itemSlug, review ) {
 				var deferred = $q.defer();
 
 				var api = reviewerItemResource();
 
-				api.delete({'matterSlug': matterSlug, 'itemSlug': itemSlug, 'username': participant.username },
+				api.delete({'matterSlug': matterSlug, 'itemSlug': itemSlug, 'username': review.reviewer.username },
 					function success(){
 						deferred.resolve();
 					},
