@@ -77,6 +77,7 @@ angular.module('toolkit-gui')
 		 * @private
 		 */
 		$scope.review = review;
+        $log.debug(review);
 
         $scope.initUserWithAccess = function(){
             var reviews = $scope.revision.reviewers;
