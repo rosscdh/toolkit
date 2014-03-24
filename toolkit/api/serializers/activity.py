@@ -9,6 +9,7 @@ from toolkit.api.serializers.user import LiteUserSerializer
 
 def _get_comment_display(ctx, comment):
     template = loader.get_template('activity/comment.html')  # allow override of template_name
+    ctx['comment'] = comment
     context = loader.Context(ctx)
     # render the template with passed in context
     return template.render(context)
@@ -67,7 +68,8 @@ class ItemActivitySerializer(MatterActivitySerializer):
             'action_object': obj.action_object,
             'action_object_pk': obj.action_object.slug,
             'action_object_url': obj.action_object.get_absolute_url(),
-            'timestamp': obj.timestamp
+            'timestamp': obj.timestamp,
+            'timesince': obj.timesince(),
             #'target': obj.target,
             #'target_pk': obj.target.slug,
         }

@@ -91,5 +91,6 @@ class ItemActivityEndpointTest(BaseEndpointTest):
         self.assertEqual(len(events), 2)
 
         event = events[0]['event']
-        self.assertEqual(event[:15], 'I am a comment.')
+        self.assertEqual(event[:18], '<div class="media"')
 
+        import pdb;pdb.set_trace()
