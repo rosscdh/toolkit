@@ -77,6 +77,4 @@ class ItemRequestRevisionView(MatterItemView):
                                                                  adding_user=self.request.user,
                                                                  added_user=user)
 
-        # can I get the information if a new revision has been
-
         super(ItemRequestRevisionView, self).post_save(obj=obj, **kwargs)
