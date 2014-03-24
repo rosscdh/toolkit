@@ -12,8 +12,8 @@ class EnsureOneCurrentRevisionTest(BaseScenarios, TestCase):
         super(EnsureOneCurrentRevisionTest, self).setUp()
         self.basic_workspace()
 
-        self.item1 = mommy.make('item.Item')
-        self.item2 = mommy.make('item.Item')
+        self.item1 = mommy.make('item.Item', matter=self.matter)
+        self.item2 = mommy.make('item.Item', matter=self.matter)
 
     def test_is_current_updates(self):
         """There should only be one current revision for an item"""
