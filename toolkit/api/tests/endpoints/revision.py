@@ -212,7 +212,7 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         # ie. filepicker.io then the CONTENT_TYPE must be application/json and
         # the field "executed_file": "http://example.com/myfile.pdf"
         #
-        resp = self.client.patch(self.endpoint, json.dumps(data), content_type='application/json')
+        resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
         resp_json = json.loads(resp.content)
 
         self.assertEqual(resp.status_code, 201)  # ok created
