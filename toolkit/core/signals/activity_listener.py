@@ -33,28 +33,41 @@ send_activity_log = Signal(providing_args=['actor', 'verb', 'action_object', 'ta
                                            'comment', 'previous_name', 'current_status', 'previous_status', 'filename',
                                            'date_created', 'version'])
 
+ACTIVITY_WHITELIST = settings.LAWPAL_ACTIVITY.get('activity', {}).get('whitelist', [])
+ABRIDGE_WHITELIST = settings.LAWPAL_ACTIVITY.get('abridge', {}).get('whitelist', [])
+NOTIFICATIONS_WHITELIST = settings.LAWPAL_ACTIVITY.get('notifications', {}).get('whitelist', [])
 
-def _abridge_send(actor, target, message=None):
+
+def _activity_send(verb_slug, actor, **kwargs):
+    """
+    Send activity to django-activity-stream
+    """
+    if verb_slug in ACTIVITY_WHITELIST:
+        action.send(actor, **kwargs)
+
+
+def _abridge_send(verb_slug, actor, target, message=None):
     """
     Send activity data to abridge
     """
-    for user in target.participants.exclude(id=actor.pk).all():
-        #
-        # Categorically turn it off by default
-        #
-        try:
-            s = LawPalAbridgeService(user=user,
-                                     ABRIDGE_ENABLED=getattr(settings, 'ABRIDGE_ENABLED', False))  # initialize and pass in the user
-            if message:
-                s.create_event(content_group=target.name,
-                               content='<div style="font-size:3.3em;">%s</div>' % message)
+    if verb_slug in ABRIDGE_WHITELIST:
+        for user in target.participants.exclude(id=actor.pk).all():
+            #
+            # Categorically turn it off by default
+            #
+            try:
+                s = LawPalAbridgeService(user=user,
+                                         ABRIDGE_ENABLED=getattr(settings, 'ABRIDGE_ENABLED', False))  # initialize and pass in the user
+                if message:
+                    s.create_event(content_group=target.name,
+                                   content='<div style="font-size:3.3em;">%s</div>' % message)
 
-        except Exception as e:
-            # AbridgeService is not running.
-            logger.critical('Abridge Service is not running because: %s' % e)
+            except Exception as e:
+                # AbridgeService is not running.
+                logger.critical('Abridge Service is not running because: %s' % e)
 
 
-def _notifications_send(actor, target, message):
+def _notifications_send(verb_slug, actor, target, message):
     """
     Send persistent messages (notifications) for this user
     github notifications style
@@ -65,25 +78,26 @@ def _notifications_send(actor, target, message):
         stored_messages.STORED_ERROR
     update the user.profile.has_notifications
     """
-    # catch when we have no stored message
-    if stored_messages is None:
-        logger.critical('django-stored-messages is not installed')
-        return None
+    if verb_slug in NOTIFICATIONS_WHITELIST:
+        # catch when we have no stored message
+        if stored_messages is None:
+            logger.critical('django-stored-messages is not installed')
+            return None
 
-    if message:
-        query_set = target.participants.exclude(id=actor.pk)
-        stored_messages.add_message_for(users=query_set.all(),
-                                        level=stored_messages.STORED_INFO, 
-                                        message=message,
-                                        extra_tags='',
-                                        fail_silently=False)
-        #
-        # @TODO move into manager?
-        #
-        for u in query_set.all():
-            profile = u.profile
-            profile.has_notifications = True
-            profile.save(update_fields=['has_notifications'])
+        if message:
+            query_set = target.participants.exclude(id=actor.pk)
+            stored_messages.add_message_for(users=query_set.all(),
+                                            level=stored_messages.STORED_INFO,
+                                            message=message,
+                                            extra_tags='',
+                                            fail_silently=False)
+            #
+            # @TODO move into manager?
+            #
+            for u in query_set.all():
+                profile = u.profile
+                profile.has_notifications = True
+                profile.save(update_fields=['has_notifications'])
 
 
 @receiver(send_activity_log, dispatch_uid="core.on_activity_received")
@@ -98,6 +112,7 @@ def on_activity_received(sender, **kwargs):
     action_object = kwargs.get('action_object', False)
     target = kwargs.get('target', False)
     message = kwargs.get('message', False)
+    verb_slug = kwargs.get('verb_slug', False)
 
     if not message:
         message = '%s %s %s' % (actor, verb, action_object)
@@ -105,18 +120,15 @@ def on_activity_received(sender, **kwargs):
     #
     # Test that we have the required arguments to send the action signal
     #
-    if actor and verb and action_object and target:
+    if actor and verb and action_object and target and verb_slug:
         # catch if we don't have it installed
         if action is None:
             logger.critical('actstream is not installed')
-        elif kwargs.get('verb_slug', False) in settings.LAWPAL_ACTIVITY.get('activity').get('whitelist'):
+        else:
             # send to django-activity-stream
-            action.send(actor, **kwargs)
+            _activity_send(verb_slug=verb_slug, actor=actor, **kwargs)
 
-        if kwargs.get('verb_slug', False) in settings.LAWPAL_ACTIVITY.get('notifications').get('whitelist'):
-            # send the notifications to the participants
-            _notifications_send(actor=actor, target=target, message=message)
-
-        if kwargs.get('verb_slug', False) in settings.LAWPAL_ACTIVITY.get('abridge').get('whitelist'):
-            # send to abridge service
-            _abridge_send(actor=actor, target=target, message=message)
+        # send the notifications to the participants
+        _notifications_send(verb_slug=verb_slug, actor=actor, target=target, message=message)
+        # send to abridge service
+        _abridge_send(verb_slug=verb_slug, actor=actor, target=target, message=message)
