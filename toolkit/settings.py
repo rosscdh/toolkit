@@ -392,10 +392,12 @@ ACTSTREAM_SETTINGS = {
 
 LAWPAL_ACTIVITY = {
     "abridge": {
-        "whitelist": ['revision-created', 'item-comment-created', 'item-comment-deleted', 'revision-comment-created', 'revision-comment-deleted']
+        "whitelist": ['revision-created', 'item-comment-created', 'item-comment-deleted', 'revision-comment-created',
+                      'revision-comment-deleted']
     },
     "notifications": {
-        "whitelist": ['revision-created', 'item-comment-created', 'item-comment-deleted', 'revision-comment-created', 'revision-comment-deleted']
+        "whitelist": ['revision-created', 'item-comment-created', 'item-comment-deleted', 'revision-comment-created',
+                      'revision-comment-deleted']
     },
     "activity": {
         "whitelist": ['item-created', 'item-edited', 'item-commented', 'revision-created', 'revision-deleted',
