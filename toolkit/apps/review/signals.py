@@ -12,8 +12,8 @@ def _add_as_authorised(instance, pk_set):
 
 
 def _remove_as_authorised(instance, pk_set):
-        user = User.objects.filter(pk__in=pk_set).first()
-        instance.deauthorise_user_to_review(user=user)
+    user = User.objects.filter(pk__in=pk_set).first()
+    instance.deauthorise_user_to_review(user=user)
 
 """
 When new ReviewDocument are created automatically the matter.participants are
@@ -44,8 +44,8 @@ def ensure_matter_participants_are_in_reviewdocument_participants(sender, instan
     # get current set of authorised_user_pks
     # adn ensure there are no excessive (older, users that were in the matter but are now not) ones in there
     #
-    for pk in   instance.auth.values():
-        if pk not in authorised_user_pks:
+    for pk in instance.auth.keys():
+        if int(pk) not in authorised_user_pks:
             _remove_as_authorised(instance=instance, pk_set=[pk])
 
 

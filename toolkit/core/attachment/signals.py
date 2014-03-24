@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db import transaction
 from django.dispatch import receiver
-from django.db.models.signals import pre_save, post_save, m2m_changed
+from django.db.models.signals import pre_save, post_save, post_delete, m2m_changed
 
 from toolkit.apps.workspace import _model_slug_exists
 
@@ -81,6 +81,18 @@ def ensure_revision_reviewdocument_object(sender, instance, **kwargs):
             review = ReviewDocument.objects.create(document=instance)
             # now add the revew object to the instance reivewdocument_set
             instance.reviewdocument_set.add(review)
+
+
+@receiver(post_delete, sender=Revision, dispatch_uid='revision.set_previous_revision_is_current_on_delete')
+def set_previous_revision_is_current_on_delete(sender, instance, **kwargs):
+    """
+    @BUSINESSRULE When a lawyer deletes the current revision, then we need to make the previous item in the set
+    is_current = True
+    """
+    previous_revision = instance.__class__.objects.filter(item=instance.item).last()
+    if previous_revision:
+        previous_revision.is_current = True
+        previous_revision.save(update_fields=['is_current'])
 
 
 @receiver(m2m_changed, sender=Revision.reviewers.through, dispatch_uid='revision.on_reviewer_add')
