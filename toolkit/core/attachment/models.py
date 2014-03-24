@@ -107,6 +107,7 @@ class Revision(models.Model):
 from .signals import (ensure_revision_slug,
                       ensure_one_current_revision,
                       set_item_is_requested_false,
+                      set_previous_revision_is_current_on_delete,
                       ensure_revision_reviewdocument_object,
                       on_reviewer_add,
                       on_reviewer_remove,
