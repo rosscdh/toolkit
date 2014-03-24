@@ -74,12 +74,12 @@ class MatterActivityEventService(object):
         self._create_activity(actor=user, verb=u'created', action_object=item)
 
     def item_rename(self, user, item, previous_name):
-        message = u'%s renamed item from %s to %s' % (user, item, previous_name, item.name)
+        message = u'%s renamed item from %s to %s' % (user, previous_name, item.name)
         self._create_activity(actor=user, verb=u'renamed', action_object=item, item=item, message=message, previous_name=previous_name)
 
     def item_change_status(self, user, item, previous_status):
         current_status = item.display_status
-        message = u'%s changed the status item from %s to %s' % (user, item, previous_status, current_status)
+        message = u'%s changed the status of %s from %s to %s' % (user, item, previous_status, current_status)
         self._create_activity(actor=user, verb=u'changed the status', action_object=item, item=item, message=message, current_status=current_status, previous_status=previous_status)
 
     def item_close(self, user, item):

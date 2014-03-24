@@ -3,6 +3,7 @@ from django.test import LiveServerTestCase
 from django.core.urlresolvers import reverse
 from django.core.files.storage import FileSystemStorage
 from django.test.client import MULTIPART_CONTENT
+from actstream.models import target_stream
 
 from toolkit.core.item.models import Item
 
@@ -274,7 +275,7 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         self.assertEqual(resp_json.get('slug'), 'v2')
 
     @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
-    def test_patch_with_FILE_executed_file(self):
+    def test_post_with_FILE_executed_file(self):
         """
         ensure we can upload an actual file to the endpoint
         """
@@ -305,3 +306,17 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         revision = self.item.revision_set.all().first()
         self.assertEqual(revision.executed_file.name, 'executed_files/v1-%s-%s-test-image.png' % (self.item.pk, self.lawyer.username))
         self.assertEqual(revision.executed_file.url, 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test-image.png' % (self.item.pk, self.lawyer.username))
+
+
+    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
+    def test_post_with_URL_executed_file_and_stream(self):
+        self.test_post_with_URL_executed_file()
+        stream = target_stream(self.matter)
+        self.assertEqual(stream[0].data['message'], u'Lawyer Test created a revision for Test Item with Revision')
+
+
+    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
+    def test_post_with_FILE_executed_file_and_stream(self):
+        self.test_post_with_FILE_executed_file()
+        stream = target_stream(self.matter)
+        self.assertEqual(stream[0].data['message'], u'Lawyer Test created a revision for Test Item with Revision')
