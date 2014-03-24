@@ -71,13 +71,12 @@ angular.module('toolkit-gui')
 		$scope.revision = revision;
 
         /**
-		 * In scope variable containing details about the specific revision
+		 * In scope variable containing details about the specific review
 		 * @memberof ViewReviewCtrl
 		 * @type {Object}
 		 * @private
 		 */
 		$scope.review = review;
-
 
         $scope.initUserWithAccess = function(){
             var reviews = $scope.revision.reviewers;
@@ -106,6 +105,19 @@ angular.module('toolkit-gui')
                 });
                 $scope.usersWithAccess = usersWithAccess;
             }
+        };
+
+        $scope.saveReview = function(){
+            matterItemService.updateRevisionReview(review).then(
+                function success(){
+                    // do nothing
+                },
+                function error(err){
+                    if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to update the review.") {
+                        toaster.pop('error', "Error!", "Unable to update the review.");
+                    }
+                }
+            );
         };
 
         $scope.initUserWithAccess();
