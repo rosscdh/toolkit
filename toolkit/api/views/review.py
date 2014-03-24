@@ -115,6 +115,8 @@ class ItemRevisionReviewersView(generics.ListAPIView,
         3. if not make them one
         """
         username = request.DATA.get('username')
+        first_name = request.DATA.get('first_name')
+        last_name = request.DATA.get('last_name')
         email = request.DATA.get('email')
         note = request.DATA.get('note')
 
@@ -135,7 +137,7 @@ class ItemRevisionReviewersView(generics.ListAPIView,
 
             else:
                 # we have a new user here
-                user_service = EnsureCustomerService(email=email)
+                user_service = EnsureCustomerService(email=email, full_name='%s %s' % (first_name, last_name))
                 is_new, user, profile = user_service.process()
 
         if user not in self.get_queryset():
@@ -148,8 +150,8 @@ class ItemRevisionReviewersView(generics.ListAPIView,
             self.item.send_invite_to_review_emails(from_user=request.user, to=[user], note=note)
 
             self.matter.actions.added_user_as_reviewer(item=self.item,
-                                                                           adding_user=request.user,
-                                                                           added_user=user)
+                                                       adding_user=request.user,
+                                                       added_user=user)
 
         # add the user to the purpose of this endpoint object review||signature
         #self.process_event_purpose_object(user=user)

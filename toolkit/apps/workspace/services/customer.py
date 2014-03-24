@@ -48,6 +48,7 @@ class EnsureCustomerService(object):
 
         # setup the name of the user
         update_fields = []
+
         # and set it if they exist but have no name
         if self.full_name is not None:
             logger.info('Full Name was provided')
