@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
-
 from django.core import mail
-from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.test import TestCase
 # from django.utils import timezone
@@ -12,12 +9,11 @@ from toolkit.casper.workflow_case import BaseScenarios
 
 from .models import ReviewDocument
 
-from uuidfield.fields import StringUUID
 from model_mommy import mommy
 
-import mock
 import os
 import urllib
+import datetime
 
 
 class BaseDataProvider(BaseScenarios):
@@ -77,7 +73,7 @@ class ReviewDocumentModelTest(BaseDataProvider, TestCase):
         """
         self.review_document.reviewers.add(self.reviewer)  # add the user
         key = self.review_document.make_user_auth_key(user=self.reviewer)
-        self.assertEqual(self.review_document.get_auth(key=key), self.reviewer.pk)
+        self.assertEqual(self.review_document.get_auth(auth_key=key), self.reviewer.pk)
 
     def test_get_auth_invalid(self):
         """
@@ -86,7 +82,7 @@ class ReviewDocumentModelTest(BaseDataProvider, TestCase):
         non_authed_user = mommy.make('auth.User', username='Unauthorised Person', email='unauthorised@example.com')
 
         key = self.review_document.make_user_auth_key(user=non_authed_user)
-        self.assertEqual(self.review_document.get_auth(key=key), None)
+        self.assertEqual(self.review_document.get_auth(auth_key=key), None)
 
 class ReviewerAuthorisationTest(BaseDataProvider, TestCase):
     def test_authorise_user(self):
@@ -101,7 +97,7 @@ class ReviewerAuthorisationTest(BaseDataProvider, TestCase):
 
         # add the reviewer and we should then get an auth setup
         self.review_document.reviewers.add(self.reviewer)
-        EXPECTED_AUTH_USERS.update({self.expected_auth_key: self.reviewer.pk})
+        EXPECTED_AUTH_USERS.update({str(self.reviewer.pk): self.expected_auth_key})
         self.assertEqual(self.review_document.auth, EXPECTED_AUTH_USERS)  # has auth
 
     def test_deauthorise_user(self):
@@ -109,7 +105,7 @@ class ReviewerAuthorisationTest(BaseDataProvider, TestCase):
         self.review_document.reviewers.add(self.reviewer)
 
         EXPECTED_AUTH_USERS = self.BASE_EXPECTED_AUTH_USERS.copy()
-        EXPECTED_AUTH_USERS.update({self.expected_auth_key: self.reviewer.pk})
+        EXPECTED_AUTH_USERS.update({str(self.reviewer.pk): self.expected_auth_key})
         self.assertEqual(self.review_document.auth, EXPECTED_AUTH_USERS)  # has auth
 
         # now we remove them
@@ -173,21 +169,29 @@ class ReviewRevisionViewTest(BaseDataProvider, TestCase):
 
     @mock_http_requests
     def test_reviewer_viewing_revision_updates_last_viewed(self):
-        with mock.patch('django.utils.timezone.now', return_value=datetime(1970, 1, 1, 0, 0, 0)):
-            self.client.login(username=self.reviewer.username, password=self.password)
+        """
+        Patched class for testing datetime
+        """
+        class patched_datetime(datetime.datetime):
+            @classmethod
+            def utcnow(cls):
+                return datetime.datetime(1970, 1, 1, 0, 0, 0, 113903)
+        datetime.datetime = patched_datetime
 
-            self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed, None)
+        self.client.login(username=self.reviewer.username, password=self.password)
 
-            resp = self.client.get(self.review_document.get_absolute_url(self.reviewer), follow=True)
+        self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed, None)
 
-            self.assertEqual(resp.status_code, 200)
+        resp = self.client.get(self.review_document.get_absolute_url(self.reviewer), follow=True)
 
-            self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.year, 1970)
-            self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.month, 1)
-            self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.day, 1)
-            self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.hour, 0)
-            self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.minute, 0)
-            self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.second, 0)
+        self.assertEqual(resp.status_code, 200)
+
+        self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.year, 1970)
+        self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.month, 1)
+        self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.day, 1)
+        self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.hour, 0)
+        self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.minute, 0)
+        self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.second, 0)
 
     @mock_http_requests
     def test_lawyer_viewing_revision_updates_nothing(self):
