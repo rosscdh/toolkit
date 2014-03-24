@@ -25,7 +25,8 @@
         "it": true,
         "expect": true,
         "filepicker": true,
-        "TimeSpan": true
+        "TimeSpan": true,
+        "jasmine": true
     },
     "-W083": false,
     "-W099": false

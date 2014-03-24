@@ -264,10 +264,11 @@ module.exports = function (grunt) {
     },
     jasmine: {
       unit: {
-        src: ['<%= dom_munger.data.appjs %>','bower_components/angular-mocks/angular-mocks.js'],
+        src: ['<%= dom_munger.data.appjs %>','js/constant-mocks.js','bower_components/angular-mocks/angular-mocks.js'],
         options: {
           keepRunner: true,
-          specs: ['js/**/*-spec.js','partial/**/*-spec.js','service/**/*-spec.js','filter/**/*-spec.js','directive/**/*-spec.js']
+          specs: ['partial/**/*-spec.js'],
+          x: ['js/**/*-spec.js','partial/**/*-spec.js','service/**/*-spec.js','filter/**/*-spec.js','directive/**/*-spec.js']
         }
       }
     },
