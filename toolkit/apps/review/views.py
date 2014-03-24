@@ -40,12 +40,8 @@ def _authenticate(request, obj, matter, **kwargs):
             # We are indeed the reviewer and are reviewing the document
             #
             login(request, requested_authenticated_user)
-            #
-            # Only update this property if its not already true
-            #
-            if obj.reviewer_has_viewed is False:
-                # only for the reviewer, we dont do this for when participants view
-                obj.reviewer_has_viewed = True
+            # only for the reviewer, we dont do this for when participants view
+            obj.reviewer_has_viewed = True
 
 
 class ReviewRevisionView(DetailView):
