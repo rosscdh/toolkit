@@ -829,10 +829,9 @@ angular.module('toolkit-gui')
 			});
 
 			modalInstance.result.then(
-				function ok(reviewer) {
-					var results = jQuery.grep( revision.reviewers, function( rev ){ return rev.reviewer.username===reviewer.username; } );
+				function ok(review) {
+					var results = jQuery.grep( revision.reviewers, function( rev ){ return rev.reviewer.username===review.reviewer.username; } );
 					if( results.length===0 ) {
-                        var review = {'is_complete':false, 'reviewer': reviewer};
 						revision.reviewers.push(review);
 					}
 				},
