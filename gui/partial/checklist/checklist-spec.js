@@ -30,6 +30,12 @@ describe('ChecklistCtrl', function() {
 		matterService.get.andReturn(matterDefer.promise);
 	});
 
+	// Ceheck objects
+	it('should have usdata', function () {
+		expect(scope.data instanceof Object).toBe(true);
+		expect(scope.data.usdata instanceof Object).toBe(true);
+	});
+
 	it('should evaluate smart routes', inject(function() {
 		expect(1).toEqual(1);
 		expect(scope.data.slug).toEqual('test-matter');
