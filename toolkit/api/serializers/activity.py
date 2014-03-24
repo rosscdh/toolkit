@@ -10,6 +10,7 @@ from toolkit.api.serializers.user import LiteUserSerializer
 
 def _get_comment_display(ctx, comment):
     template = loader.get_template('activity/comment.html')  # allow override of template_name
+    ctx['comment'] = comment
     context = loader.Context(ctx)
     # render the template with passed in context
     return template.render(context)
