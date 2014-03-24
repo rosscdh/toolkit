@@ -8,10 +8,11 @@ from django.db.models.signals import pre_save, post_save
 from .signals import (ensure_workspace_slug,
                       ensure_workspace_matter_code,
                       # tool
-                      ensure_tool_slug)
+                      ensure_tool_slug,
+                      on_workspace_post_save,
+                      on_workspace_pre_save)
 
 from toolkit.core.mixins import IsDeletedMixin
-from toolkit.core.signals.activity import (on_workspace_post_save, on_workspace_pre_save)
 from toolkit.core.services.matter_activity import MatterActivityEventService  # cyclic
 
 from toolkit.utils import _class_importer
@@ -115,7 +116,7 @@ Connect signals
 """
 pre_save.connect(ensure_workspace_slug, sender=Workspace, dispatch_uid='workspace.pre_save.ensure_workspace_slug')
 pre_save.connect(ensure_workspace_matter_code, sender=Workspace, dispatch_uid='workspace.pre_save.ensure_workspace_matter_code')
-pre_save.connect(on_workspace_pre_save, sender=Workspace, dispatch_uid='workspace.pre_save.ensure_workspace_matter_code')
+pre_save.connect(on_workspace_pre_save, sender=Workspace, dispatch_uid='workspace.pre_save.on_workspace_pre_save')
 post_save.connect(on_workspace_post_save, sender=Workspace, dispatch_uid='workspace.post_save.on_workspace_post_save')
 
 rulez_registry.register("can_read", Workspace)

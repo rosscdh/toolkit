@@ -43,7 +43,7 @@ def _activity_send(actor, **kwargs):
     Send activity to django-activity-stream
     """
     verb_slug = kwargs.get('verb_slug', False)
-    # import pdb;pdb.set_trace()
+    import pdb;pdb.set_trace()
     if verb_slug in ACTIVITY_WHITELIST:
         action.send(actor, **kwargs)
 

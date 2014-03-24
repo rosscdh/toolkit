@@ -3,10 +3,10 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.db.models.signals import pre_save, post_save
 
-from toolkit.core.signals.activity import (on_item_post_save,)
 from .signals import (on_item_save_category,
                       on_item_save_closing_group,
-                      on_item_save_changed_content)
+                      on_item_save_changed_content,
+                      on_item_post_save)
 
 from toolkit.core.mixins import IsDeletedMixin
 

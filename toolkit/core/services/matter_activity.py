@@ -57,14 +57,14 @@ class MatterActivityEventService(object):
     def created_matter(self, lawyer):
         self._create_activity(actor=lawyer, verb=u'created', action_object=self.matter)
 
-    def added_matter_participant(self, item, adding_user, added_user):
-        message = u'%s added %s as a participant of %s' % (adding_user, added_user, item.matter)
-        self._create_activity(actor=adding_user, verb=u'added participant', action_object=item.matter, message=message,
+    def added_matter_participant(self, matter, adding_user, added_user):
+        message = u'%s added %s as a participant of %s' % (adding_user, added_user, matter)
+        self._create_activity(actor=adding_user, verb=u'added participant', action_object=matter, message=message,
                               user=added_user)
 
-    def removed_matter_participant(self, item, removing_user, removed_user):
-        message = u'%s removed %s as a participant of %s' % (removing_user, removed_user, item.matter)
-        self._create_activity(actor=removing_user, verb=u'edited', action_object=item.matter, message=message,
+    def removed_matter_participant(self, matter, removing_user, removed_user):
+        message = u'%s removed %s as a participant of %s' % (removing_user, removed_user, matter)
+        self._create_activity(actor=removing_user, verb=u'removed participant', action_object=matter, message=message,
                               user=removed_user)
     #
     # Item focused events
@@ -150,15 +150,18 @@ class MatterActivityEventService(object):
     def user_viewed_revision(self, item, user, revision):
         message = u'%s viewed revision %s (%s) for %s' % (user, revision.name, revision.slug, item)
         self._create_activity(actor=user, verb=u'viewed revision', action_object=item, message=message,
-                              revision=revision, filename=revision.name, version=revision.slug, date_created=datetime.datetime.utcnow())
+                              revision=revision, filename=revision.name, version=revision.slug,
+                              date_created=datetime.datetime.utcnow())
 
     def user_commented_on_revision(self, item, user, revision, comment):
         message = u'%s commented on %s (%s) for %s' % (user, revision.name, revision.slug, item)
         self._create_activity(actor=user, verb=u'commented on revision', action_object=item, message=message,
-                              revision=revision, filename=revision.name, version=revision.slug, date_created=datetime.datetime.utcnow(),
+                              revision=revision, filename=revision.name, version=revision.slug,
+                              date_created=datetime.datetime.utcnow(),
                               comment=comment)
 
     def user_revision_review_complete(self, item, user, revision):
         message = u'%s completed their review of %s (%s) for %s' % (user, revision.name, revision.slug, item)
         self._create_activity(actor=user, verb=u'completed review', action_object=item, message=message,
-                              revision=revision, filename=revision.name, version=revision.slug, date_created=datetime.datetime.utcnow())
+                              revision=revision, filename=revision.name, version=revision.slug,
+                              date_created=datetime.datetime.utcnow())

@@ -103,3 +103,12 @@ def on_item_save_changed_content(sender, instance, **kwargs):
                                        previous_name=previous_instance.name)
 
     logger.debug('Recieved item.pre_save:changed_content event: %s' % sender)
+
+
+def on_item_post_save(sender, instance, created, **kwargs):
+    """
+        At this moment only the layer can edit items. So this is possible.
+    """
+    if created:
+        matter = instance.matter
+        matter.actions.created_item(user=matter.lawyer, item=instance)

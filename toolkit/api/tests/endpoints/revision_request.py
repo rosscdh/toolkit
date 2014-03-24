@@ -80,7 +80,6 @@ class ItemsRequestDocumentTest(BaseEndpointTest):
         self.assertEqual(email.subject, u'[ACTION REQUIRED] Request to provide a document')
         self.assertEqual(email.recipients(), [u'new+user@lawpal.com'])
 
-
         # this should have created a new revision upload invite
         stream = action_object_stream(self.item)
         self.assertEqual(stream[0].data['message'], u'Lawyer Test requested Bob Da hoon provide a document on Test Item No. 1')
