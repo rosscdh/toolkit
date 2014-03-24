@@ -9,13 +9,13 @@ class UserAuthMixin(object):
     """
     On the addition of a reviewer create a new auth object
     that consists of {
-        ":random_slug_for_url": reviewer.pk
+        "reviewer.pk": ":random_slug_for_url"
     }
     this is then used in the auth_backends.ReviewDocumentBackend
 
     On the removal of a reviewer remove the auth object
     that consists of {
-        ":random_slug_for_url": reviewer.pk
+        "reviewer.pk": ":random_slug_for_url"
     }
     this is then used in the auth_backends.ReviewDocumentBackend
     """
@@ -28,22 +28,27 @@ class UserAuthMixin(object):
     def auth(self, value):
         if type(value) in [dict]:
             self.data['auth'] = value
+        else:
+            raise Exception('.auth must be a dict')
 
-    def get_auth(self, key):
+    def get_auth(self, auth_key):
         """
         Provide the User.pk based on an auth_slug key passed in
         """
-        if key in self.auth.keys():
-            return self.auth.get(key)
+        if auth_key in self.auth.values(): ## .values is the list of auth_keys
+            for user_pk, present_auth_key in self.auth.iteritems():
+                if auth_key == present_auth_key:
+                    return int(user_pk)  # Msut return int
         return None
 
     def get_user_auth(self, user):
         """
         Provide the auth key for the user
         """
-        if user.pk in self.auth.values():
+        user_pk = str(user.pk)
+        if user_pk in self.auth.keys():
             try:
-                return [auth for auth, pk in self.auth.iteritems() if pk == user.pk][0]
+                return [auth for key_pk, auth in self.auth.iteritems() if key_pk == user_pk][0]
             except IndexError:
                 pass
         return None
@@ -54,7 +59,7 @@ class UserAuthMixin(object):
         keys for all of the participants
         @DANGER @BUSINESSRULE this will change all auth urls issued
         """
-        for user_pk in self.auth.values():
+        for user_pk in self.auth.keys():
             user = User.objects.get(pk=user_pk)
             self.authorise_user_to_review(user=user)
 
@@ -70,11 +75,12 @@ class UserAuthMixin(object):
         @BUSINESSRULE make sure the user only gets one key per review
         """
         auth = self.auth
-        if user and user.pk not in auth.values():
+
+        if user and str(user.pk) not in auth.keys():
             # generate a key
             key = self.make_user_auth_key(user=user)
             # set the auth
-            auth.update({key: user.pk})
+            auth.update({str(user.pk): key})
             # update the model
             self.auth = auth
             self.save(update_fields=['data'])
@@ -82,11 +88,11 @@ class UserAuthMixin(object):
     def deauthorise_user_to_review(self, user):
         auth = self.auth
 
-        if user and user.pk in auth.values():
+        if user and str(user.pk) in auth.keys():
 
-            for key, value in auth.iteritems():
-                if value == user.pk:
-                    del auth[key]
+            for user_pk, key in auth.iteritems():
+                if int(user_pk) == int(user.pk):
+                    del auth[user_pk]
                     break
             self.auth = auth
             self.save(update_fields=['data'])

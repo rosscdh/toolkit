@@ -12,9 +12,10 @@ from ...serializers import ItemSerializer, UserSerializer, SimpleUserSerializer
 
 from model_mommy import mommy
 
-import mock
 import os
+import mock
 import json
+import urllib
 
 TEST_IMAGE_PATH = os.path.join(os.path.dirname(__file__), 'data', 'test-image.png')
 
@@ -76,7 +77,10 @@ class ItemRevisionTest(BaseEndpointTest):
         resp = self.client.get(self.endpoint)
         resp_json = json.loads(resp.content)
 
-        document_review = revision.reviewdocument_set.all().first()
+        # should be the last object in the set as the default one created for the reviewers
+        document_review = revision.reviewdocument_set.all().last()
+        # first in this case because there are only 2 in our tests case
+        invited_reviewer_document_review = revision.reviewdocument_set.all().first()
 
         self.assertEqual(resp_json.get('name'), 'filename.txt')
         self.assertEqual(resp_json.get('description'), 'A test file')
@@ -96,10 +100,31 @@ class ItemRevisionTest(BaseEndpointTest):
 
         # Test the reviewers and the relative user_reivew_url (should be the current logged in users)
         self.assertEqual(len(resp_json.get('reviewers')), 1)
+
+        # Test the reviewers section
         reviewers = resp_json.get('reviewers')
-        self.assertTrue(reviewers[0].get('user_review_url') is not None)
-        # it is the correct url for this specific user to view object
-        self.assertEqual(reviewers[0].get('user_review_url'), revision.reviewdocument_set.all().first().get_absolute_url(user=self.lawyer))
+
+        # should only have 1 reviewer, ever
+        self.assertEqual(len(reviewers), 1)
+        # get that person
+        resp_reviewer = reviewers[0].get('reviewer')
+        # test their url
+        self.assertTrue(resp_reviewer.get('user_review_url') is not None)
+        # it is the correct url for this specific user to view object in this case the lawyer is looking at this review
+        # not this is a head trip, but the viewing user should only EVER see THEIR url to that document
+        self.assertEqual(resp_reviewer.get('user_review_url'), invited_reviewer_document_review.get_absolute_url(user=self.lawyer))
+
+        # ensure that the user_review_url is never the actual reviewers url that gets sent out
+        for rd in revision.reviewdocument_set.all():
+            self.assertTrue(resp_reviewer.get('user_review_url') != rd.get_user_auth(user=reviewer))
+
+        # ensure that the reviewer user does have a url in the appropriate object
+        self.assertTrue(invited_reviewer_document_review.get_absolute_url(user=reviewer) is not None)
+        # must be a string as we store the pk in as a string
+        self.assertTrue(str(reviewer.pk) in invited_reviewer_document_review.auth.keys())
+        # test that the url for the reviewer is correct
+        self.assertEqual(invited_reviewer_document_review.get_absolute_url(user=reviewer), '/review/%s/%s/' % (invited_reviewer_document_review.slug,
+                                                                                                               urllib.quote(invited_reviewer_document_review.get_user_auth(user=reviewer))))
 
     def test_revision_post_with_url(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -243,10 +268,10 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         data = {
             'executed_file': expected_image_url,
         }
-        resp = self.client.patch(self.endpoint, json.dumps(data), content_type='application/json')
+        resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
         resp_json = json.loads(resp.content)
 
-        self.assertEqual(resp.status_code, 200)  # updated but actually a new one was created
+        self.assertEqual(resp.status_code, 201)  # 201 created
         self.assertEqual(resp_json.get('slug'), 'v2')
 
     @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)

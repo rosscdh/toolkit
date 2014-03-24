@@ -26,4 +26,9 @@ class MatterProductionSettingsTest(unittest.TestCase):
         self.assertEqual(production_settings.STATICFILES_DIRS, ((self.expected_static_namespace, self.expected_prod_relative_absolute_path),))
 
     def test_dev_static_path(self):
+        #
+        # Ensure that you have 
+        # DEBUG = True and 
+        # TEST_PREPROD = False
+        #
         self.assertEqual(settings.STATICFILES_DIRS, ((self.expected_static_namespace, self.expected_dev_relative_absolute_path),))

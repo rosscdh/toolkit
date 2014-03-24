@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html ng-app="toolkit-gui">
 <head>
-  <title></title>
+  <title>{{ matter }}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta charset="utf-8">
 
@@ -142,7 +142,11 @@
           <div ng-class="{'show-results-container': data.display}">
             <ul class="search-results list-unstyled">
               <li class="result-item reveal-animation" ng-repeat="result in data.searchResults.results">
-                <a href="javascript:;" ng-bind="result.name" ng-click="selectItem(result)"></a>
+                <a href="javascript:;" ng-click="selectItem(result)">
+                    <p ng-bind="result.name"></p>
+                    <p ng-show="result.description"><small ng-bind="result.description"></small></p>
+                    <p ng-show="result.latest_revision"><small ng-bind="result.latest_revision.name"></small> <small ng-bind="result.latest_revision.slug"></small></p>
+                </a>
               </li>
             </ul>
           </div>
@@ -176,8 +180,8 @@
   <script language="javascript" data-remove="exclude">
     angular.module('toolkit-gui').constant('API_BASE_URL', '<!-- @echo apiBaseUrl -->');
     angular.module('toolkit-gui').constant('STATUS_LEVEL', {'OK':0,'WARNING':1,'ERROR':2} );
-    angular.module('toolkit-gui').constant('DEBUG_MODE', true);
-    angular.module('toolkit-gui').constant('SENTRY_PUBLIC_DSN', 'http://5584db708b75400fb439d4592c29fc9a@sentry.ambient-innovation.com/24' );
+    angular.module('toolkit-gui').constant('DEBUG_MODE', <!-- @echo DEBUG_MODE -->);
+    angular.module('toolkit-gui').constant('SENTRY_PUBLIC_DSN', '<!-- @echo SENTRY_PUBLIC_DSN -->' );
   </script>
 </body>
 </html>

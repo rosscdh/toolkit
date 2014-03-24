@@ -1,6 +1,12 @@
 Deployment actions by branch
 ----------------------------
 
+
+
+
+--------------------------------------------------------------------------------
+** DEPLOYED 21 March 2014 - base deploy (rosscdh)
+--------------------------------------------------------------------------------
 [master]
 
 pip install djangorestframework==2.3.13  ## to have access to the is_success from status
@@ -15,9 +21,11 @@ pip install djangorestframework==2.3.13  ## to have access to the is_success fro
 2. ./manage.py migrate workspace 0002  # workspace matter_numer
 3. ./manage.py migrate workspace 0003  # workspace description
 3. ./manage.py migrate workspace 0004  # workspace add matter key to Invite model
+3. ./manage.py migrate workspace 0005  # ensure workspace.data is a {}
+3. ./manage.py migrate workspace 0006  # matter_code max_length was 50 should be at least 128
 
 __Item__
-1. ./manage.py migrate item # does not exist in live yet
+1. syncdb will add item app
 
 [review-app]
 
@@ -26,14 +34,12 @@ __Item__
 
 [review-requests]
 
-1. ./manage.py migrate attachment 0001 --fake
-2. ./manage.py migrate attachment 0002
-3. ./manage.py migrate review 0001 --fake
-4. ./manage.py migrate review 0002
+1. syncdb will add attachment app
+2. syncdb will add review app
 
 [activity stream]
 
-1. ./manage migrate actstream
+1. ./manage.py migrate actstream
 
 
 1. Ensure crocdoc url webhook in production is set

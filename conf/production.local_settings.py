@@ -9,6 +9,7 @@ SITE_ID = 2
 SECRET_KEY = 'i6=)1=4in#zyp&amp;g)^9nqodjgjru134)@2)^$ox5w7ac*uhml!uy-5'
 
 DEBUG = False
+TEST_PREPROD = False  # MUST be false in production
 TEMPLATE_DEBUG = DEBUG
 
 TEMPLATE_LOADERS = (
@@ -83,7 +84,7 @@ CACHES = {
 SPLUNKSTORM_ENDPOINT = 'logs2.splunkstorm.com'
 SPLUNKSTORM_PORT = 20824
 
-CROCDOC_API_KEY = '27FXmeRJ3StkMZGxi46UTwWH'
+CROCDOC_API_KEY = 'pRzHhZS4jaGes193db28cwyu'
 
 AUTHY_API_KEY = 'e19afad3c1c207a03ef6a1dcb2adb0c3'
 

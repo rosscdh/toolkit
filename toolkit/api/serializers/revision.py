@@ -1,5 +1,4 @@
 # -*- coding: UTF-8 -*-
-from django.core.files import File
 from django.core.urlresolvers import reverse
 
 from rest_framework import serializers
@@ -7,8 +6,8 @@ from rest_framework import serializers
 from toolkit.core.attachment.tasks import _download_file
 from toolkit.core.attachment.models import Revision
 
-from .user import (SimpleUserSerializer,
-                   SimpleUserWithReviewUrlSerializer)
+from .user import SimpleUserSerializer
+from .review import ReviewSerializer
 
 import logging
 logger = logging.getLogger('django.request')
@@ -60,7 +59,7 @@ class HyperlinkedAutoDownloadFileField(serializers.URLField):
                 return super(HyperlinkedAutoDownloadFileField, self).field_to_native(obj, field_name)
 
             except Exception as e:
-                logger.debug('File serialized without a value')
+                logger.debug('File serialized without a value: %s' % e)
         #
         # NB this must return None!
         # else it will raise attribute has no file associated with it
@@ -81,9 +80,6 @@ class FileFieldAsUrlField(serializers.FileField):
             _download_file(url=value.url, filename=value.name, obj=value.instance)
 
         return getattr(value, 'url', super(FileFieldAsUrlField, self).to_native(value=value))
-
-
-
 
 
 class RevisionSerializer(serializers.HyperlinkedModelSerializer):
@@ -143,25 +139,41 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
         super(RevisionSerializer, self).__init__(*args, **kwargs)
 
     def get_reviewers(self, obj):
-        return [SimpleUserWithReviewUrlSerializer(u, context={'request': self.context.get('request')}).data for u in obj.reviewers.all()]
+        reviewers = []
+        #return [SimpleUserWithReviewUrlSerializer(u, context=self.context).data for u in obj.reviewers.all()]
+        for u in obj.reviewers.all():
+            reviewdoc = obj.reviewdocument_set.filter(reviewers__in=[u]).first()
+            if reviewdoc is not None:
+                reviewers.append(ReviewSerializer(reviewdoc, context={'request': self.context.get('request')}).data)
+        return reviewers
 
     def get_user_review_url(self, obj):
         """
         Try to provide an initial reivew url from the base review_document obj
+        for the currently logged in user
         """
         context = getattr(self, 'context', None)
         request = context.get('request')
+        review_document = context.get('review_document', None)
 
         if request is not None:
-            initial_reviewdocument = obj.reviewdocument_set.all().first()
-            return initial_reviewdocument.get_absolute_url(user=request.user)
+            #
+            # if we have a review_document present in the context
+            #
+            if review_document is None:
+                # we have none, then try find the reviewdocument object that has all the matter participants in it
+                #
+                # The bast one will have 0 reviewers! and be the last in the set (because it was added first)
+                #
+                review_document = obj.reviewdocument_set.all().last()
+
+            return review_document.get_absolute_url(user=request.user) if review_document is not None else None
 
         return None
 
     def get_revisions(self, obj):
         return [reverse('matter_item_specific_revision', kwargs={
-                'matter_slug': obj.item.matter.slug,
-                'item_slug': obj.item.slug,
-                'version': c + 1
-        }) for c, revision in enumerate(obj.revisions) if revision.pk != obj.pk]
-        #}) for c, revision in enumerate(obj.revisions)]
+                    'matter_slug': obj.item.matter.slug,
+                    'item_slug': obj.item.slug,
+                    'version': c + 1
+                }) for c, revision in enumerate(obj.revisions) if revision.pk != obj.pk]

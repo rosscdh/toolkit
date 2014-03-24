@@ -1,17 +1,47 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
-
-from django.http import Http404, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.contrib.auth import authenticate, login, logout
-from django.utils import timezone
+from django.contrib.auth import authenticate, login
 
 from dj_crocodoc.services import CrocoDocConnectService
 
 from .models import ReviewDocument
+
+
+def _authenticate(request, obj, matter, **kwargs):
+    #
+    # Log in using the review backend
+    # 'toolkit.apps.review.auth_backends.ReviewDocumentBackend'
+    #
+    requested_authenticated_user = authenticate(username=kwargs.get('slug'), password=kwargs.get('auth_slug'))
+
+    if requested_authenticated_user:
+        #
+        # if the request user is in the object.participants
+        # it means they are owners and should be able to view this regardless
+        #
+        if request.user in matter.participants.all():
+            #
+            # we are an owner its all allowed
+            #
+            pass
+        else:
+            #
+            # user is we are already logged in then check this guys mojo!
+            #
+            if request.user.is_authenticated():
+                if requested_authenticated_user != request.user:
+                    raise PermissionDenied
+
+            #
+            # We are indeed the reviewer and are reviewing the document
+            #
+            login(request, requested_authenticated_user)
+            # only for the reviewer, we dont do this for when participants view
+            obj.reviewer_has_viewed = True
 
 
 class ReviewRevisionView(DetailView):
@@ -21,16 +51,6 @@ class ReviewRevisionView(DetailView):
     """
     queryset = ReviewDocument.objects.prefetch_related().all()
     template_name = 'review/review.html'
-
-    def get(self, request, *args, **kwargs):
-        response = super(ReviewRevisionView, self).get(request, *args, **kwargs)
-
-        # update the last viewed
-        if request.user in self.object.reviewers.all():
-            self.object.date_last_viewed = timezone.now()
-            self.object.save(update_fields=['date_last_viewed'])
-
-        return response
 
     @property
     def is_current(self):
@@ -50,41 +70,13 @@ class ReviewRevisionView(DetailView):
         else:
             return ['review/review.html']
 
-    def authenticate(self):
-        #
-        # Log in using the review backend
-        # 'toolkit.apps.review.auth_backends.ReviewDocumentBackend'
-        #
-        requested_authenticated_user = authenticate(username=self.kwargs.get('slug'), password=self.kwargs.get('auth_slug'))
-
-        #if self.request.user.is_authenticated() is True:
-        if requested_authenticated_user:
-            #
-            # if the request user is in the object.participants
-            # it means they are owners and should be able to view this regardless
-            #
-            if self.request.user in self.matter.participants.all():
-                #
-                # we are an owner its all allowed
-                #
-                pass
-            else:
-                #
-                # user is we are already logged in then check this guys mojo!
-                #
-                if self.request.user.is_authenticated():
-                    if requested_authenticated_user != self.request.user:
-                        raise PermissionDenied
-
-                login(self.request, requested_authenticated_user)
-
     def get_object(self):
-        obj = super(ReviewRevisionView, self).get_object()
-        self.matter = obj.document.item.matter
+        self.object = super(ReviewRevisionView, self).get_object()
+        self.matter = self.object.document.item.matter
 
-        self.authenticate()
+        _authenticate(request=self.request, obj=self.object, matter=self.matter, **self.kwargs)
 
-        return obj
+        return self.object
 
     def get_context_data(self, **kwargs):
         kwargs = super(ReviewRevisionView, self).get_context_data(**kwargs)
@@ -128,50 +120,25 @@ class ReviewRevisionView(DetailView):
         return kwargs
 
 
+#
+# @TODO refactor this to use user_passes_test decorator and ensure that the user is in the reviewers set
+#
 class ApproveRevisionView(DetailView):
     queryset = ReviewDocument.objects.prefetch_related().all()
 
     def get_object(self):
-        obj = super(ApproveRevisionView, self).get_object()
-        self.matter = obj.document.item.matter
+        self.object = super(ApproveRevisionView, self).get_object()
+        self.matter = self.object.document.item.matter
 
-        self.authenticate()
+        _authenticate(request=self.request, obj=self.object, matter=self.matter, **self.kwargs)
 
-        return obj
+        return self.object
 
     def approve(self, request, *args, **kwargs):
         self.object = self.get_object()
         success_url = self.get_success_url()
         self.object.complete()
         return HttpResponseRedirect(success_url)
-
-    def authenticate(self):
-        #
-        # Log in using the review backend
-        # 'toolkit.apps.review.auth_backends.ReviewDocumentBackend'
-        #
-        requested_authenticated_user = authenticate(username=self.kwargs.get('slug'), password=self.kwargs.get('auth_slug'))
-
-        #if self.request.user.is_authenticated() is True:
-        if requested_authenticated_user:
-            #
-            # if the request user is in the object.participants
-            # it means they are owners and should be able to view this regardless
-            #
-            if self.request.user in self.matter.participants.all():
-                #
-                # we are an owner its all allowed
-                #
-                pass
-            else:
-                #
-                # user is we are already logged in then check this guys mojo!
-                #
-                if self.request.user.is_authenticated():
-                    if requested_authenticated_user != self.request.user:
-                        raise PermissionDenied
-
-                login(self.request, requested_authenticated_user)
 
     @csrf_exempt
     def dispatch(self, request, *args, **kwargs):

@@ -37,6 +37,7 @@ from .views import (ItemRevisionReviewersView,
 from .views import ItemEndpoint
 from .views import RevisionEndpoint
 from .views import ItemCommentEndpoint
+from .views import ReviewEndpoint
 #from .views import WorkflowEndpoint
 
 router = routers.SimpleRouter(trailing_slash=False)
@@ -51,6 +52,7 @@ router.register(r'activity', ActivityEndpoint)
 router.register(r'clients', ClientEndpoint)
 router.register(r'items', ItemEndpoint)
 router.register(r'revisions', RevisionEndpoint)
+router.register(r'reviews', ReviewEndpoint)
 
 
 """

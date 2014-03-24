@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404
 
 from rulez import registry as rulez_registry
 
+from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework import exceptions
 from rest_framework.response import Response
@@ -21,10 +22,34 @@ from toolkit.apps.workspace.models import Workspace
 from toolkit.apps.workspace.services import EnsureCustomerService
 
 from ..serializers import SimpleUserWithReviewUrlSerializer
+from ..serializers import ReviewSerializer
 
 import logging
 
 logger = logging.getLogger('django.request')
+
+
+class ReviewEndpoint(viewsets.ModelViewSet):
+    """
+    Primary Matter ViewSet
+    """
+    model = ReviewDocument
+    serializer_class = ReviewSerializer
+    lookup_field = 'pk'
+
+    def can_read(self, user):
+        return user.profile.user_class in ['lawyer',]
+
+    def can_edit(self, user):
+        return user.profile.is_lawyer
+
+    def can_delete(self, user):
+        return user.profile.is_lawyer
+
+
+rulez_registry.register("can_read", ReviewEndpoint)
+rulez_registry.register("can_edit", ReviewEndpoint)
+rulez_registry.register("can_delete", ReviewEndpoint)
 
 
 class BaseReviewerSignatoryMixin(generics.GenericAPIView):
@@ -70,18 +95,6 @@ class ItemRevisionReviewersView(generics.ListAPIView,
     def get_queryset_provider(self):
         return self.revision.reviewers
 
-    # def process_event_purpose_object(self, user):
-    #     # perform ReviewDocument get or create
-    #     #
-    #     # @BUSINESSRULE NB: this will work as long as we have review.ASSOCIATION_STRATEGIES.single as default
-    #     #
-    #     review_doc, is_new = ReviewDocument.objects.get_or_create(document=self.revision,
-    #                                                               reviewers__in=[user])
-    #     # add the user to the reviewers if not there alreadt
-    #     review_doc.reviewers.add(user) if user not in review_doc.reviewers.all() else None
-
-    #     logger.info("Added %s to the ReviewDocument %s is_new: %s for revision: %s" % (user, review_doc, is_new, self.revision))
-
     def create(self, request, **kwargs):
         """
         we already have the matter item and revision we just need to
@@ -90,6 +103,8 @@ class ItemRevisionReviewersView(generics.ListAPIView,
         3. if not make them one
         """
         username = request.DATA.get('username')
+        first_name = request.DATA.get('first_name')
+        last_name = request.DATA.get('last_name')
         email = request.DATA.get('email')
         note = request.DATA.get('note')
 
@@ -110,7 +125,7 @@ class ItemRevisionReviewersView(generics.ListAPIView,
 
             else:
                 # we have a new user here
-                user_service = EnsureCustomerService(email=email)
+                user_service = EnsureCustomerService(email=email, full_name='%s %s' % (first_name, last_name))
                 is_new, user, profile = user_service.process()
 
         if user not in self.get_queryset():

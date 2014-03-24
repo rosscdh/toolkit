@@ -123,6 +123,7 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
             #
             # Custom signal event
             #
+            import pdb;pdb.set_trace()
             self.matter.actions.created_revision(user=self.request.user,
                                                  item=self.item,
                                                  revision=self.revision)

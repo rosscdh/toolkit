@@ -64,3 +64,8 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_children(self, obj):
         return [ItemSerializer(i, context=self.context).data for i in obj.item_set.all()]
+
+
+class LiteItemSerializer(ItemSerializer):
+    class Meta(ItemSerializer.Meta):
+        fields = ('url', 'slug', 'name',)

@@ -34,7 +34,7 @@ class Workspace(IsDeletedMixin, ClosingGroupsMixin, CategoriesMixin, models.Mode
     description = models.CharField(max_length=255, null=True, blank=True)
 
     slug = models.SlugField(blank=True)
-    matter_code = models.SlugField(null=True, blank=True)
+    matter_code = models.SlugField(max_length=128, null=True, blank=True)
 
     lawyer = models.ForeignKey('auth.User', null=True, related_name='lawyer_workspace')  # Lawyer that created this workspace
     client = models.ForeignKey('client.Client', null=True, blank=True)
