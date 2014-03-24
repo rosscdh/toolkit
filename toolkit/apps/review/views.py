@@ -67,12 +67,12 @@ class ReviewRevisionView(DetailView):
                 self.object.reviewer_has_viewed = True  # only for the reviewer, we dont do this for when participants view
 
     def get_object(self):
-        obj = super(ReviewRevisionView, self).get_object()
-        self.matter = obj.document.item.matter
+        self.object = super(ReviewRevisionView, self).get_object()
+        self.matter = self.object.document.item.matter
 
         self.authenticate()
 
-        return obj
+        return self.object
 
     def get_context_data(self, **kwargs):
         kwargs = super(ReviewRevisionView, self).get_context_data(**kwargs)
