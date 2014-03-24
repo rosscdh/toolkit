@@ -16,7 +16,7 @@ angular.module('toolkit-gui').directive("filepicker", function($location){
 			scope.pickFiles = function () {
 				var picker_options = {
 					'container': 'modal',
-					'services': ['BOX','COMPUTER','DROPBOX','EVERNOTE','FTP','GITHUB','GOOGLE_DRIVE','SKYDRIVE','WEBDAV']
+					'services': ['BOX','COMPUTER','DROPBOX','EVERNOTE','FTP','GITHUB','GOOGLE_DRIVE','SKYDRIVE','WEBDAV'],
 				};
 
 				if(attrs.multiple === 'true'){
@@ -25,6 +25,10 @@ angular.module('toolkit-gui').directive("filepicker", function($location){
 
 				if(attrs.apikey) {
 					filepicker.setKey(attrs.apikey);
+				}
+
+				if(attrs.extensions) {
+					picker_options.extensions = attrs.extensions.toUpperCase().split(',');
 				}
 
 				var path = attrs.path ? attrs.path : '/uploads/';
