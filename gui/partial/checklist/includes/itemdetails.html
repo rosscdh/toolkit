@@ -186,10 +186,10 @@
                     <ul class="list-unstyled">
                         <li ng-repeat="rev in data.selectedItem.latest_revision.reviewers" ng-class="{'complete': rev.is_complete==true }">
                             <a class="close" href="javascript:;" ng-click="deleteRevisionReviewRequest(data.selectedItem, rev)"
-                               ng-show="rev.is_complete==false">x</a>
+                               ng-hide="rev.is_complete">x</a>
                             <a href="javascript:;" ng-click="showReview(data.selectedItem.latest_revision, rev)">
-                                <span class="fui-time" ng-show="rev.is_complete==false"></span>
-                                <button class="btn btn-success btn-xs pull-right" ng-show="rev.is_complete==true">
+                                <span class="fui-time" ng-hide="rev.is_complete"></span>
+                                <button class="btn btn-success btn-xs pull-right" ng-show="rev.is_complete">
                                     <span class="fui-check"></span> View Response
                                 </button>
                             </a>
