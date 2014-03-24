@@ -70,7 +70,7 @@ class SimpleUserWithReviewUrlSerializer(SimpleUserSerializer):
             if review_document is None:
                 # we have none, then try find the reviewdocument object where the current user is a reviewer
                 # @TODO this does not look right? what is obj?
-                review_document = obj.reviewdocument_set.filter(reviewer__in=[obj]).first()
+                review_document = obj.reviewdocument_set.filter(reviewers__in=[obj]).first()
 
             return review_document.get_absolute_url(user=request.user) if review_document is not None else None
 
