@@ -97,7 +97,13 @@ class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
         return the reviewer: the person in self.reviewers that is not in self.participants
         """
         try:
-            return set(self.reviewers.all()).difference(self.matter.participants.all()).pop()
+            # combine reviewers and participants
+            # this is necessary as a participant may be a reviewer by request
+            reviewers = set(self.reviewers.all())
+            participants = set(self.matter.participants.all())
+            combined = reviewers.union(participants)
+            # get the common reviewer
+            return reviewers.intersection(combined).pop()
         except:
             logger.error('no reviewer found for ReviewDocument: %s' % self)
             return None
