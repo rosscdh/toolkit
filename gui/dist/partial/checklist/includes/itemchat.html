@@ -6,11 +6,14 @@
             <a class="user-icon" href="#"><span class="fui-user"></span></a>
             <div class="media-body">
                 <div class="msg-body" ng-bind-html="activity.data.comment | newlines"></div>
-                <div class="msg-meta">{{ activity.actor | fullname }}, {{ activity.timestamp | date:'dd MMMM' }}</div>
+                <div class="msg-meta">
+                    {{ activity.actor | fullname }}, {{ activity.timestamp | date:'dd MMMM' }}
+                    <span ng-show="deleteCommentIsEnabled(activity)"><a href="javascript:;" ng-click="deleteComment(activity)">Delete</a></span>
+                </div>
             </div>
         </div>
 
-        <span ng-hide="activity.data.comment">{{ activity.event }}</span>
+        <span ng-hide="activity.data.comment" ng-bind-html="activity.event"></span>
     </li>
 </ul>
 <div class="new-message" ng-show="data.selectedItem">
