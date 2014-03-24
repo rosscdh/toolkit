@@ -95,18 +95,6 @@ class ItemRevisionReviewersView(generics.ListAPIView,
     def get_queryset_provider(self):
         return self.revision.reviewers
 
-    # def process_event_purpose_object(self, user):
-    #     # perform ReviewDocument get or create
-    #     #
-    #     # @BUSINESSRULE NB: this will work as long as we have review.ASSOCIATION_STRATEGIES.single as default
-    #     #
-    #     review_doc, is_new = ReviewDocument.objects.get_or_create(document=self.revision,
-    #                                                               reviewers__in=[user])
-    #     # add the user to the reviewers if not there alreadt
-    #     review_doc.reviewers.add(user) if user not in review_doc.reviewers.all() else None
-
-    #     logger.info("Added %s to the ReviewDocument %s is_new: %s for revision: %s" % (user, review_doc, is_new, self.revision))
-
     def create(self, request, **kwargs):
         """
         we already have the matter item and revision we just need to

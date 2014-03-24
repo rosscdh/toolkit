@@ -6,7 +6,7 @@ from rest_framework import serializers
 from toolkit.core.attachment.tasks import _download_file
 from toolkit.core.attachment.models import Revision
 
-from .user import SimpleUserSerializer#, SimpleUserWithReviewUrlSerializer
+from .user import SimpleUserSerializer
 from .review import ReviewSerializer
 
 import logging
@@ -150,20 +150,30 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
     def get_user_review_url(self, obj):
         """
         Try to provide an initial reivew url from the base review_document obj
+        for the currently logged in user
         """
         context = getattr(self, 'context', None)
         request = context.get('request')
+        review_document = context.get('review_document', None)
 
         if request is not None:
-            initial_reviewdocument = obj.reviewdocument_set.all().first()
-            return initial_reviewdocument.get_absolute_url(user=request.user)
+            #
+            # if we have a review_document present in the context
+            #
+            if review_document is None:
+                # we have none, then try find the reviewdocument object that has all the matter participants in it
+                #
+                # The bast one will have 0 reviewers! and be the last in the set (because it was added first)
+                #
+                review_document = obj.reviewdocument_set.all().last()
+
+            return review_document.get_absolute_url(user=request.user) if review_document is not None else None
 
         return None
 
     def get_revisions(self, obj):
         return [reverse('matter_item_specific_revision', kwargs={
-                'matter_slug': obj.item.matter.slug,
-                'item_slug': obj.item.slug,
-                'version': c + 1
-        }) for c, revision in enumerate(obj.revisions) if revision.pk != obj.pk]
-        #}) for c, revision in enumerate(obj.revisions)]
+                    'matter_slug': obj.item.matter.slug,
+                    'item_slug': obj.item.slug,
+                    'version': c + 1
+                }) for c, revision in enumerate(obj.revisions) if revision.pk != obj.pk]
