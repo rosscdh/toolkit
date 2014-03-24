@@ -65,7 +65,7 @@ class ItemRequestRevisionView(MatterItemView):
 
     def post_save(self, obj, **kwargs):
         """
-        Send the email to the items responsible_party (including creation of events)
+        Send the email to the items responsible_party
         """
         self.object.send_document_requested_emails(from_user=self.request.user)
 

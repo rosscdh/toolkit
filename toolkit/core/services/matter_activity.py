@@ -139,12 +139,12 @@ class MatterActivityEventService(object):
     #
     def added_user_as_reviewer(self, item, adding_user, added_user):
         message = u'%s added %s as reviewer for %s' % (adding_user, added_user, item)
-        self._create_activity(actor=adding_user, verb=u'edited', action_object=item, message=message,
+        self._create_activity(actor=adding_user, verb=u'added reviewer', action_object=item, message=message,
                               user=added_user)
 
     def removed_user_as_reviewer(self, item, removing_user, removed_user):
         message = u'%s removed %s as reviewer for %s' % (removing_user, removed_user, item)
-        self._create_activity(actor=removing_user, verb=u'edited', action_object=item, message=message,
+        self._create_activity(actor=removing_user, verb=u'removed reviewer', action_object=item, message=message,
                               user=removed_user)
 
     def user_viewed_revision(self, item, user, revision):

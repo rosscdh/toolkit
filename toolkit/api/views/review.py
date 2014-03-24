@@ -137,6 +137,9 @@ class ItemRevisionReviewersView(generics.ListAPIView,
             #
             self.item.send_invite_to_review_emails(from_user=request.user, to=[user], note=note)
 
+            #
+            # add activity
+            #
             self.matter.actions.added_user_as_reviewer(item=self.item,
                                                        adding_user=request.user,
                                                        added_user=user)

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from actstream.models import target_stream
 from django.core import mail
 from django.conf import settings
 from django.core.files import File
@@ -110,6 +111,10 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
 
         self.assertEqual(pq('a')[0].attrib.get('href'), expected_action_url)
         self.assertEqual(invite_key.next, reverse('request:list'))
+
+        # test if activity shows in stream
+        stream = target_stream(self.matter)
+        self.assertEqual(stream[0].data['message'], u'Lawyer Test added Participant Number 1 as reviewer for Test Item with Revision')
 
     def test_lawyer_patch(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -408,7 +413,6 @@ class RevisionRequestedDocumentTest(BaseEndpointTest):
 
         # now the item should be is_requested = False
         self.assertEqual(self.item.is_requested, False)
-
 
     def test_customer_get(self):
         self.client.login(username=self.user.username, password=self.password)
