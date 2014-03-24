@@ -47,15 +47,28 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
         self.assertEqual(self.endpoint, '/api/v1/matters/%s/items/%s/revision/reviewers' % (self.matter.slug, self.item.slug))
 
     def test_lawyer_get_no_participants(self):
+        """
+        We shoudl get a reviewdocument but with None reviewers (only the participants, can view this reviewdocument object)
+        """
         self.client.login(username=self.lawyer.username, password=self.password)
 
         resp = self.client.get(self.endpoint)
         self.assertEqual(resp.status_code, 200)
 
         json_data = json.loads(resp.content)
-        self.assertEqual(json_data['count'], 0)
+
+        self.assertEqual(json_data['count'], 1)
+
+        self.assertEqual(json_data['results'][0]['reviewer'], None)
+        self.assertEqual(json_data['results'][0]['is_complete'], False)
 
     def test_lawyer_post(self):
+        """
+        This is a bit of an anti pattern
+        we POST a username into the endpoint
+        and the system will create an account as well as assign them as a reviewer
+        to the item revision
+        """
         self.client.login(username=self.lawyer.username, password=self.password)
 
         participant = mommy.make('auth.User', first_name='Participant', last_name='Number 1', email='participant+1@lawpal.com')
@@ -68,7 +81,8 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
         self.assertEqual(resp.status_code, 201)  # created
 
         json_data = json.loads(resp.content)
-        self.assertEqual(json_data['name'], participant.get_full_name())
+
+        self.assertEqual(json_data['reviewer']['name'], participant.get_full_name())
         # test they are in the items reviewer set
         self.assertTrue(participant in self.item.latest_revision.reviewers.all())
 
@@ -80,10 +94,14 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
         self.assertEqual(resp.status_code, 200)
 
         json_data = json.loads(resp.content)
-        self.assertEqual(json_data['count'], 1)
-        self.assertEqual(json_data['results'][0]['name'], participant.get_full_name())
+        self.assertEqual(json_data['count'], 2)
+
+        self.assertEqual(json_data['results'][0]['reviewer']['name'], participant.get_full_name())
+        # we have no reviewers and the last object in the set should be the oldest
+        self.assertEqual(json_data['results'][1]['reviewer'], None)
+
         # user review url must be in it
-        self.assertTrue('user_review_url' in json_data['results'][0].keys())
+        self.assertTrue('user_review_url' in json_data['results'][0]['reviewer'].keys())
 
         #
         # we expect the currently logged in users url to be returned;
@@ -91,7 +109,7 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
         #
         expected_url = self.item.latest_revision.reviewdocument_set.all().first().get_absolute_url(user=self.lawyer)
 
-        self.assertEqual(json_data['results'][0]['user_review_url'], expected_url)
+        self.assertEqual(json_data['results'][0]['reviewer']['user_review_url'], expected_url)
 
 
         outbox = mail.outbox
