@@ -113,8 +113,6 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
         # End import
         ##
 
-        import pdb;pdb.set_trace()
-
         if serializer.is_valid():
             self.pre_save(serializer.object)
             self.object = serializer.save(force_insert=True)
@@ -123,7 +121,6 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
             #
             # Custom signal event
             #
-            import pdb;pdb.set_trace()
             self.matter.actions.created_revision(user=self.request.user,
                                                  item=self.item,
                                                  revision=self.revision)

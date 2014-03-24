@@ -104,7 +104,8 @@ class MatterActivityEventService(object):
 
     def created_revision(self, user, item, revision):
         message = u'%s created a revision for %s' % (user, item)
-        self._create_activity(actor=user, verb=u'created', action_object=revision, item=item, message=message, filename=revision.name, date_created=revision.date_created)
+        self._create_activity(actor=user, verb=u'created', action_object=revision, item=item, message=message,
+                              filename=revision.name, date_created=revision.date_created)
 
     def deleted_revision(self, user, item, revision):
         message = u'%s destroyed a revision for %s' % (user, item)
