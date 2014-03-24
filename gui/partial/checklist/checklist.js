@@ -582,7 +582,7 @@ angular.module('toolkit-gui')
 							function success(){
 								//Set latest prev Revision as current if existing
 								if(item.latest_revision.revisions != null && item.latest_revision.revisions.length>0){
-									var revurl = item.latest_revision.revisions[0];
+									var revurl = item.latest_revision.revisions[item.latest_revision.revisions.length-1];
                                     var revslug = revurl.substring(revurl.lastIndexOf('/')+1, revurl.length);
 
 									//First revision in array is the latest one

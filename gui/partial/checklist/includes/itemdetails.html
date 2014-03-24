@@ -228,8 +228,13 @@
                 Review expired
                 <div class="review-members">
                     <ul class="list-unstyled">
-                        <li ng-repeat="review in rev.reviewers">
-                            <a href="javascript:;" ng-click="showReview(rev, review)"><span class="fui-time"></span></a>
+                        <li ng-repeat="review in rev.reviewers" ng-class="{'complete': review.is_complete==true }">
+                             <a href="javascript:;" ng-click="showReview(rev, review)">
+                                <span class="fui-time" ng-hide="review.is_complete"></span>
+                                <button class="btn btn-success btn-xs pull-right" ng-show="review.is_complete">
+                                    <span class="fui-check"></span> View Response
+                                </button>
+                            </a>
                             {{ review.reviewer.name }}
                         </li>
                     </ul>
