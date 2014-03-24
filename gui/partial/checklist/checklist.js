@@ -582,8 +582,11 @@ angular.module('toolkit-gui')
 							function success(){
 								//Set latest prev Revision as current if existing
 								if(item.latest_revision.revisions != null && item.latest_revision.revisions.length>0){
+									var revurl = item.latest_revision.revisions[0];
+                                    var revslug = revurl.substring(revurl.lastIndexOf('/')+1, revurl.length);
+
 									//First revision in array is the latest one
-									matterItemService.loadRevision(matterSlug, item.slug, item.latest_revision[0]).then(
+									matterItemService.loadRevision(matterSlug, item.slug, revslug).then(
 										function success(revision){
 											item.latest_revision = revision;
 										},
@@ -827,9 +830,10 @@ angular.module('toolkit-gui')
 
 			modalInstance.result.then(
 				function ok(reviewer) {
-					var results = jQuery.grep( revision.reviewers, function( rev ){ return rev.username===reviewer.username; } );
+					var results = jQuery.grep( revision.reviewers, function( rev ){ return rev.reviewer.username===reviewer.username; } );
 					if( results.length===0 ) {
-						revision.reviewers.push(reviewer);
+                        var review = {'is_complete':false, 'reviewer': reviewer};
+						revision.reviewers.push(review);
 					}
 				},
 				function cancel() {
@@ -873,13 +877,13 @@ angular.module('toolkit-gui')
 		* @method		    deleteRevisionReview
 		* @memberof			ChecklistCtrl
 		*/
-		$scope.deleteRevisionReviewRequest = function( item, reviewer ) {
+		$scope.deleteRevisionReviewRequest = function( item, review ) {
 			var matterSlug = $scope.data.slug;
 			//var participant = $scope.getParticipantByUrl(participant_url);
 
-			matterItemService.deleteRevisionReviewRequest(matterSlug, item.slug, reviewer).then(
+			matterItemService.deleteRevisionReviewRequest(matterSlug, item.slug, review).then(
 				function success(){
-					var index = jQuery.inArray( reviewer, item.latest_revision.reviewers );
+					var index = jQuery.inArray( review, item.latest_revision.reviewers );
 					if( index>=0 ) {
 						// Remove reviewer from list in RAM array
 						item.latest_revision.reviewers.splice(index,1);
@@ -903,7 +907,7 @@ angular.module('toolkit-gui')
 		 * @method				showReview
 		 * @memberof			ChecklistCtrl
 		 */
-		$scope.showReview = function( revision, reviewer ) {
+		$scope.showReview = function( revision, review ) {
 			var matterSlug = $scope.data.slug;
 			var item = $scope.data.selectedItem;
 
@@ -921,8 +925,8 @@ angular.module('toolkit-gui')
 					'revision': function () {
 						return revision;
 					},
-					'reviewer': function () {
-						return reviewer;
+					'review': function () {
+						return review;
 					}
 				}
 			});
@@ -936,6 +940,23 @@ angular.module('toolkit-gui')
 				}
 			);
 		};
+
+        $scope.getReviewPercentageComplete = function( item) {
+            if(item && item.latest_revision && item.latest_revision.reviewers.length>0) {
+                var reviews = item.latest_revision.reviewers;
+                var completed = 0;
+
+                jQuery.each( reviews, function( index, r ){
+                    if (r.is_complete===true){
+                        completed += 1;
+                    }
+				});
+                return parseInt(completed / reviews.length * 100);
+
+            } else {
+                return 0;
+            }
+        };
 		/* End revision handling */
 
 
