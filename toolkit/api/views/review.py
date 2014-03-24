@@ -211,6 +211,12 @@ class ItemRevisionReviewerView(generics.RetrieveAPIView,
             #
             status = http_status.HTTP_406_NOT_ACCEPTABLE
 
+        # create event
+        self.revision.item.matter.actions.user_viewed_revision(item=self.revision.item,
+                                                               user=user,
+                                                               revision=self.revision)
+        # TODO: check if this was the last user to review the document. if so: user_revision_review_complete()
+
         status = http_status.HTTP_200_OK
 
         return Response(data, status=status)

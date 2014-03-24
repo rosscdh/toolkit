@@ -150,7 +150,7 @@ def on_upload_set_item_is_requested_false(sender, instance, **kwargs):
     and its uploaded by the item.responsible_party then mark it as is_requested = False
     """
     if instance.item.is_requested is True:
-        if instance.uploaded_by == item.instance.responsible_party:
+        if instance.uploaded_by == instance.item.responsible_party:
             item = instance.item
             item.is_requested = False
             item.save(update_fields=['is_requested'])

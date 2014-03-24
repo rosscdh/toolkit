@@ -79,6 +79,8 @@ class RequestedDocumentReminderEmailsMixin(object):
                                action_url=action_url, # please understsand the diff between action_url and next_url
                                **kwargs)
 
+                self.matter.actions.request_user_upload_revision(item=self, adding_user=from_user, added_user=user)
+
 
 class LatestRevisionReminderEmailsMixin(object):
     def send_invite_to_review_emails(self, from_user, to, **kwargs):

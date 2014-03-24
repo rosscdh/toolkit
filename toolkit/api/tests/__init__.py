@@ -7,7 +7,7 @@ from .endpoints.matter import (MattersTest,
 from .endpoints.review import (RevisionReviewsTest,
                                RevisionReviewerTest,
                                RevisionRequestedDocumentTest,)
-from .endpoints.item_request import *
+from .endpoints.revision_request import *
 from .endpoints.item import (ItemsTest, ItemDetailTest, ItemDataTest)
 from .endpoints.sort import (MatterSortTest,)
 from .endpoints.participant import (MatterParticipantTest,)
