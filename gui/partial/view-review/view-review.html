@@ -17,7 +17,7 @@
             <span ng-hide="review.is_complete">Mark completed</span>
             <span ng-show="review.is_complete">Mark incomplete</span>
         </button>
-        <span style="float: left" ng-show="review.date_last_viewed" ng-bind="{{ review.date_last_viewed | timeago }}"></span>
+        <span style="float: left" ng-show="review.date_last_viewed" ng-bind="review.date_last_viewed | timeago"></span>
 		<button class="btn btn-primary" ng-click="ok()">OK</button>
 		<button class="btn btn-warning" ng-click="cancel()">Cancel</button>
 	</div>
