@@ -61,9 +61,17 @@ class SimpleUserWithReviewUrlSerializer(SimpleUserSerializer):
         """
         context = getattr(self, 'context', None)
         request = context.get('request')
+        review_document = context.get('review_document', None)
 
         if request is not None:
-            initial_reviewdocument = obj.reviewdocument_set.all().first()
-            return initial_reviewdocument.get_absolute_url(user=request.user)
+            #
+            # if we have a review_document present in the context
+            #
+            if review_document is None:
+                # we have none, then try find the reviewdocument object where the current user is a reviewer
+                # @TODO this does not look right? what is obj?
+                review_document = obj.reviewdocument_set.filter(reviewers__in=[obj]).first()
+
+            return review_document.get_absolute_url(user=request.user) if review_document is not None else None
 
         return None
