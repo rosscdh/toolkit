@@ -58,7 +58,7 @@ class BaseReviewerSignatoryMixin(generics.GenericAPIView):
     and their required functionality
     """
     model = Revision  # to allow us to use get_object generically
-    serializer_class = SimpleUserWithReviewUrlSerializer  # as we are returning the revision and not the item
+    serializer_class = ReviewSerializer  # as we are returning the revision and not the item
     lookup_field = 'slug'
     lookup_url_kwarg = 'item_slug'
 
@@ -93,7 +93,7 @@ class ItemRevisionReviewersView(generics.ListAPIView,
         [lawyer,customer] to list, create reviewers
     """
     def get_queryset_provider(self):
-        return self.revision.reviewers
+        return self.revision.reviewdocument_set
 
     def create(self, request, **kwargs):
         """
@@ -130,7 +130,8 @@ class ItemRevisionReviewersView(generics.ListAPIView,
 
         if user not in self.get_queryset():
             # add to the join if not there already
-            self.get_queryset_provider().add(user)
+            # add the user to the purpose of this endpoint object review||signature
+            self.revision.reviewers.add(user)
 
             #
             # Send invite to review Email
@@ -144,11 +145,10 @@ class ItemRevisionReviewersView(generics.ListAPIView,
                                                        adding_user=request.user,
                                                        added_user=user)
 
-        # add the user to the purpose of this endpoint object review||signature
-        #self.process_event_purpose_object(user=user)
-
+        review_document = self.item.latest_revision.reviewdocument_set.filter(reviewers__in=[user]).first()
         # we have the user at this point
-        serializer = self.get_serializer(user)
+        serializer = self.get_serializer(review_document)
+
         headers = self.get_success_headers(serializer.data)
 
         return Response(serializer.data, status=http_status.HTTP_201_CREATED, headers=headers)
