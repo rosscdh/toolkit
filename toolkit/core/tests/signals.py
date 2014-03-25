@@ -147,17 +147,17 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         self.assertEqual(len(stream), 2)  # first one was the creation
         self.assertEqual(stream[0].action_object, item)
         self.assertEqual(stream[0].actor, self.lawyer)
-        self.assertEqual(stream[0].data['message'], u'Lawyer Test added Customer Test as reviewer for Test Item #1')
+        self.assertEqual(stream[0].data['message'], u'Lawyer Test invited Customer Test as reviewer for Test Item #1')
 
         """
         delete user as reviewer and check if it worked
         """
-        self.matter.actions.removed_user_as_reviewer(item, self.user, reviewer)
+        self.matter.actions.cancel_user_upload_revision_request(item, self.user, reviewer)
         stream = model_stream(Item)
         self.assertEqual(len(stream), 3)
         self.assertEqual(stream[0].action_object, item)
         self.assertEqual(stream[0].actor, self.user)
-        self.assertEqual(stream[0].data['message'], u'Customer Test removed Customer Test as reviewer for Test Item #1')
+        self.assertEqual(stream[0].data['message'], u'Customer Test canceled their request for Customer Test to provide a document on Test Item #1')
 
         """
         remove revision again and check if it worked
