@@ -113,7 +113,7 @@
 
     <div class="waiting-revision text-center" ng-show="data.selectedItem.is_requested&&data.selectedItem.responsible_party.username!=data.usdata.current.username">
         <span class="fui-time"></span> Waiting for a document from <span ng-bind="data.selectedItem.responsible_party | fullname"></span>.
-        <!-- <a href="javascript:;" ng-click="remindRevisionRequest(data.selectedItem)">Remind</a> <a class="close" href="javascript:;" ng-click="deleteRevisionRequest(data.selectedItem)">x</a> -->
+        <a href="javascript:;" ng-click="remindRevisionRequest(data.selectedItem)">Remind</a> <a class="close" href="javascript:;" ng-click="deleteRevisionRequest(data.selectedItem)">x</a>
     </div>
 
     <div class="waiting-revision text-center" ng-show="data.selectedItem.is_requested&&data.selectedItem.responsible_party.username==data.usdata.current.username">
