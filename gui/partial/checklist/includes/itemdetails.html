@@ -184,16 +184,16 @@
                 </a>
                 <div class="review-members">
                     <ul class="list-unstyled">
-                        <li ng-repeat="rev in data.selectedItem.latest_revision.reviewers" ng-class="{'complete': rev.is_complete==true }">
+                        <li ng-repeat="rev in data.selectedItem.latest_revision.reviewers" ng-class="{'complete': rev.is_complete==true }" class="{'complete': rev.is_complete==true }">
                             <a class="close" href="javascript:;" ng-click="deleteRevisionReviewRequest(data.selectedItem, rev)"
                                ng-hide="rev.is_complete">x</a>
-                            <a href="javascript:;" ng-click="showReview(data.selectedItem.latest_revision, rev)">
-                                <span class="fui-time" ng-hide="rev.is_complete"></span>
-                                <button class="btn btn-success btn-xs pull-right" ng-show="rev.is_complete">
-                                    <span class="fui-check"></span> View Response
+                            <a href="javascript:;" ng-click="showReview(data.selectedItem.latest_revision, rev)" class="pull-right">
+                                <button class="btn btn-warning btn-xs" ng-hide="rev.is_complete"><span class="fui-time"></span> In progress</button> 
+                                <button class="btn btn-success btn-xs" ng-show="rev.is_complete">
+                                    <span class="fui-check"></span> Complete
                                 </button>
                             </a>
-                            {{ rev.reviewer.name }}
+                           <a href="javascript:;" ng-click="showReview(data.selectedItem.latest_revision, rev)">{{ rev.reviewer.name }}</a>
                         </li>
                     </ul>
                 </div>

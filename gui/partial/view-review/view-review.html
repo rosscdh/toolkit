@@ -3,12 +3,14 @@
 		<h4 class="modal-title">
             Review from {{ review.reviewer.name }} for {{ revision.name }}
             <span class="pull-right"><span class="fui-lock"></span> Visible to
-                <span ng-repeat="r in usersWithAccess" class="user">{{ r.initials }}</span>
+                <div class="avatar img-circle" ng-repeat="r in usersWithAccess">
+                    <span class="initials" title="Test Customer">{{ r.initials }}</span>
+                </div>
             </span>
         </h4>
 	</div>
 	<div class="modal-body">
-		<iframe src="{{ review.reviewer.user_review_url }}" style="width: 100%; height: 500px;"></iframe>
+		<iframe src="{{ review.reviewer.user_review_url }}" style="width: 100%"></iframe>
 	</div>
 	<div class="modal-footer">
         <button class="btn" ng-click="review.is_complete=!review.is_complete;saveReview()" style="float: left;"
