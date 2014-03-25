@@ -396,7 +396,9 @@ LAWPAL_ACTIVITY = {
                       'revision-comment-deleted']
     },
     "notifications": {
-        "whitelist": ['revision-created', 'item-comment-created', 'item-comment-deleted', 'revision-comment-created',
+        "whitelist": [#'workspace-added-participant',
+                      'item-commented',
+                      'revision-created', 'item-comment-created', 'item-comment-deleted', 'revision-comment-created',
                       'revision-comment-deleted']
     },
     "activity": {

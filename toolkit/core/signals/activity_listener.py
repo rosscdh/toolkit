@@ -80,6 +80,7 @@ def _notifications_send(verb_slug, actor, target, message):
         stored_messages.STORED_ERROR
     update the user.profile.has_notifications
     """
+    #import pdb;pdb.set_trace()
     if verb_slug in NOTIFICATIONS_WHITELIST:
         # catch when we have no stored message
         if stored_messages is None:
