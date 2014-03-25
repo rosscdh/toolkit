@@ -27,6 +27,10 @@ angular.module('toolkit-gui').directive("filepicker", function($location){
 					filepicker.setKey(attrs.apikey);
 				}
 
+				if(attrs.extensions) {
+					picker_options.extensions = attrs.extensions.toUpperCase().split(',');
+				}
+
 				var path = attrs.path ? attrs.path : '/uploads/';
 
 				var store_options = {
