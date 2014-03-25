@@ -120,7 +120,7 @@ class EngagementLetter(StatusMixin, HTMLMixin, HelloSignModelMixin, WorkspaceToo
 
     def hs_document(self):
         """
-        Return the document to be senf for signing
+        Return the document to be sent for signing
         Ties in with HelloSignModelMixin method
         """
         doc_service = PDFKitService(html=self.html())

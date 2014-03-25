@@ -79,6 +79,7 @@ def ensure_revision_reviewdocument_object(sender, instance, **kwargs):
             # now add the revew object to the instance reivewdocument_set
             instance.reviewdocument_set.add(review_document)
 
+
 @receiver(post_save, sender=Revision, dispatch_uid='revision.ensure_revision_signdocument_object')
 def ensure_revision_signdocument_object(sender, instance, **kwargs):
     """
@@ -123,6 +124,9 @@ def on_upload_set_item_is_requested_false(sender, instance, **kwargs):
 
 """
 Reviewers
+reviewdocuments have 1 object per reviewer this is to ensure a unique auth url for each reviewer
+and to ensure there is a sandbox view where only the matter participants and the invited reviewer
+can talk
 """
 
 
@@ -162,8 +166,7 @@ def on_reviewer_remove(sender, instance, action, model, pk_set, **kwargs):
         user_pk = next(iter(pk_set))  # get the first item in the set should only ever be 1 anyway
         user = model.objects.get(pk=user_pk)
 
-        reviewdocuments = ReviewDocument.objects.filter(document=instance,
-                                                        reviewers__in=[user])
+        reviewdocuments = instance.reviewdocument_set.filter(reviewers__in=[user])
 
         #
         # 1 ReviewDocument per reviewer
@@ -176,6 +179,7 @@ def on_reviewer_remove(sender, instance, action, model, pk_set, **kwargs):
 
 """
 Signers
+Unlike reviewrs, signdocuments have only 1 object per set of signature invitees
 """
 
 
@@ -196,14 +200,9 @@ def on_signatory_add(sender, instance, action, model, pk_set, **kwargs):
         signdocument = instance.signdocument_set.all().first()
 
         #
-        # 1 SignDocument per signatory
-        # in this case we should immediately delete the review document
+        # 1 SignDocument for the entire set of invitees
         #
-        signdocument.pk = None  # set to null: this is a django stategy to copy the model
-        signdocument.slug = None  # set to non so it gets regenerated
-        signdocument.save()  # save it so we get a new pk so we can add reviewrs
-        signdocument.signers.add(user)  # add the signatory
-        signdocument.recompile_auth_keys()  # update teh auth keys to match the new slug
+        signdocument.signers.add(user)  # allow the user to have access
 
 
 @receiver(m2m_changed, sender=Revision.signers.through, dispatch_uid='revision.on_signatory_remove')
@@ -215,8 +214,7 @@ def on_signatory_remove(sender, instance, action, model, pk_set, **kwargs):
         user_pk = next(iter(pk_set))  # get the first item in the set should only ever be 1 anyway
         user = model.objects.get(pk=user_pk)
 
-        signdocuments = ReviewDocument.objects.filter(document=instance,
-                                                        signers__in=[user])
+        signdocuments = instance.signdocument_set.filter(signers__in=[user])
 
         #
         # 1 SignDocument per signatory
@@ -224,4 +222,4 @@ def on_signatory_remove(sender, instance, action, model, pk_set, **kwargs):
         #
         for signdocument in signdocuments:
             # delete the reviewdoc
-            signdocument.delete()
+            signdocument.signers.remove(user)

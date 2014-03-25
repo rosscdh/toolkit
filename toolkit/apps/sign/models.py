@@ -5,6 +5,8 @@ from django.core.files.storage import default_storage
 
 from rulez import registry as rulez_registry
 
+from hello_sign.mixins import ModelContentTypeMixin, HelloSignModelMixin
+
 from toolkit.core.mixins import IsDeletedMixin
 
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
@@ -23,7 +25,7 @@ import datetime
 logger = logging.getLogger('django.request')
 
 
-class SignDocument(IsDeletedMixin, UserAuthMixin, models.Model):
+class SignDocument(IsDeletedMixin, UserAuthMixin, HelloSignModelMixin, ModelContentTypeMixin, models.Model):
     """
     An object to represent a url that allows multiple signers to view
     a document using a service like crocodoc
@@ -133,6 +135,20 @@ class SignDocument(IsDeletedMixin, UserAuthMixin, models.Model):
             file_object = b._open(file_name)
             return default_storage.save(file_name, file_object)
 
+
+    def hs_document_title(self):
+        """
+        Method to set the document title, displayed in the HelloSign Interface
+        """
+        return self.__unicode__()
+
+    def hs_document(self):
+        """
+        Return the document to be sent for signing
+        Ties in with HelloSignModelMixin method
+        """
+        import pdb;pdb.set_trace()
+        return self.document.executed_file
 
     def send_invite_email(self, from_user, users=[]):
         """

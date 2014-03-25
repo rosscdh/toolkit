@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+"""
+Signers
+Unlike reviewdocuments, signdocuments have only 1 object per set of signature invitees
+this object is created in the signal above "ensure_revision_signdocument_object" and they are
+authorized to view the object via the toolkit.apps.sign.signals
+"""
 from django.core import mail
 from django.conf import settings
 from django.test import TestCase
