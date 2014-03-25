@@ -27,7 +27,7 @@ class AccountSettingsForm(forms.ModelForm):
             'required': "First name can't be blank."
         },
         label='',
-        widget=forms.TextInput(attrs={'placeholder': 'First name', 'size': 19})
+        widget=forms.TextInput(attrs={'placeholder': 'First name', 'size': 15})
     )
 
     last_name = forms.CharField(
@@ -43,7 +43,7 @@ class AccountSettingsForm(forms.ModelForm):
             'invalid': "Email is invalid.",
             'required': "Email can't be blank."
         },
-        widget=forms.EmailInput(attrs={'placeholder': 'example@lawpal.com', 'size': 50})
+        widget=forms.EmailInput(attrs={'placeholder': 'example@lawpal.com', 'size': 44})
     )
 
     class Meta:
@@ -62,7 +62,7 @@ class AccountSettingsForm(forms.ModelForm):
             Fieldset(
                 '',
                 Div(
-                    HTML('<label>Full name*</label>'),
+                    HTML('<label>Full name<span class="asteriskField">*</span></label>'),
                     Div(
                         Field('first_name', css_class='input-hg'),
                         Field('last_name', css_class='input-hg'),
