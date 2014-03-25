@@ -105,7 +105,6 @@ def on_item_save_changed_content(sender, instance, **kwargs):
                                        previous_name=previous_instance.name)
 
         if previous_instance.is_requested != instance.is_requested and instance.is_requested is False:
-            # import pdb;pdb.set_trace()
             matter.actions.cancel_user_upload_revision_request(item=instance,
                                                                removing_user=User.objects.get(username=previous_instance.requested_by['username']),
                                                                removed_user=previous_instance.responsible_party)  # is requested_by the user who should have uploaded the file?

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.test import LiveServerTestCase
 from django.core.urlresolvers import reverse
 from django.core.files.storage import FileSystemStorage
@@ -333,6 +334,17 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         self.assertEqual(revision.executed_file.name, 'executed_files/v1-%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
         self.assertEqual(revision.executed_file.url, 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
 
+    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
+    def test_requested_revision_upload(self):
+        """
+        what should happen here:
+        - create an invitation
+        - login as invited user
+        - upload a file
+        - check in stream if toolkit/api/views/revision.py line 130 worked
+        """
+        # @TODO ross
+        self.skipTest('todo for ross')
 
 class InvalidFileTypeAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerTestCase):
     """

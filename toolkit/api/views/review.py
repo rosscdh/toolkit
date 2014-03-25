@@ -223,7 +223,10 @@ class ItemRevisionReviewerView(generics.RetrieveAPIView,
         self.revision.item.matter.actions.user_viewed_revision(item=self.revision.item,
                                                                user=user,
                                                                revision=self.revision)
-        # TODO: check if this was the last user to review the document. if so: user_revision_review_complete()
+        
+
+        # TODO: check if this was the last user to review the document.
+        # if so: user_revision_review_complete()
 
 
 
