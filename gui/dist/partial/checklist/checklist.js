@@ -1055,6 +1055,41 @@ angular.module('toolkit-gui')
 
 
         /**
+		 * Receives the event, that the authentication failed and opens the modal to re-login.
+		 *
+		 * @private
+		 * @memberof			ChecklistCtrl
+		 */
+        $rootScope.$on('authenticationRequired', function(e, isRequired) {
+            if(isRequired===true && $scope.data.authenticationModalOpened!==true) {
+                $log.debug("opening authentication modal");
+                $scope.data.authenticationModalOpened = true;
+                var matter = $scope.data.matter;
+
+                var modalInstance = $modal.open({
+                    'templateUrl': '/static/ng/partial/authentication-required/authentication-required.html',
+                    'controller': 'AuthenticationRequiredCtrl',
+                    'backdrop': 'static',
+                    'resolve': {
+                        'currentUser': function () {
+                            return null;//matter.current_user;
+                        },
+                        'matter': function () {
+                            return matter;
+                        }
+                    }
+                });
+
+                modalInstance.result.then(
+                    function ok(result) {
+                        $scope.data.authenticationModalOpened = false;
+                    }
+			    );
+            }
+        });
+
+
+        /**
 		 * Listens for date changes in the datepicker and stores it in the item
 		 *
 		 * @memberof			ChecklistCtrl
