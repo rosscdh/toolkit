@@ -49,12 +49,6 @@ class SignDocument(IsDeletedMixin, UserAuthMixin, HelloSignModelMixin, ModelCont
             return reverse('sign:sign_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)})
         return None
 
-    def get_approval_url(self, user):
-        auth_key = self.get_user_auth(user=user)
-        if auth_key is not None:
-            return reverse('sign:approve_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)})
-        return None
-
     def complete(self, is_complete=True):
         self.is_complete = is_complete
         self.save(update_fields=['is_complete'])
