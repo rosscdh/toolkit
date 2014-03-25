@@ -15,6 +15,11 @@ except ImportError:
     logger.critical('stored_messages is not installed')
     raise Exception('stored_messages is not installed')
 
+def _set_has_notifications(user, count):
+    if count < 1:
+        profile = user.profile
+        profile.has_notifications = False
+        profile.save(update_fields=['has_notifications'])
 
 class InboxNotificationsView(ListView):
     model = Inbox
@@ -59,6 +64,8 @@ class InboxViewSet(generics.DestroyAPIView):
         inbox_m = self.get_object()
         inbox_m.delete()
 
+        _set_has_notifications(user=request.user, count=self.get_queryset().count())
+
         return Response({'status': 'message marked as read'})
 
 
@@ -72,4 +79,7 @@ class MarkAllAsReadEndpoint(generics.DestroyAPIView):
         Mark the message as read (i.e. delete from inbox)
         """
         Inbox.objects.filter(user=request.user).delete()
-        return Response({'status': 'message marked as read'})
+
+        _set_has_notifications(user=request.user, count=0)
+
+        return Response({'status': 'all messages marked as read'})
