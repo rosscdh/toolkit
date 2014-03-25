@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
 from django.test import LiveServerTestCase
 from django.core.urlresolvers import reverse
 from django.core.files.storage import FileSystemStorage
@@ -17,7 +18,10 @@ import mock
 import json
 import urllib
 
-TEST_IMAGE_PATH = os.path.join(os.path.dirname(__file__), 'data', 'test-image.png')
+# Images are NOT valid filetypes to upload
+TEST_INVALID_UPLOAD_IMAGE_PATH = os.path.join(os.path.dirname(__file__), 'data', 'test-image.png')
+# Pdfs ARE valid filetypes
+TEST_PDF_PATH = os.path.join(settings.SITE_ROOT, 'toolkit', 'casper', 'test.pdf')
 
 
 class ItemRevisionTest(BaseEndpointTest):
@@ -197,6 +201,8 @@ class ItemSubRevision3Test(ItemSubRevision2Test):
 
 
 class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerTestCase):
+    FILE_TO_TEST_UPLOAD_WITH = TEST_PDF_PATH
+
     @property
     def endpoint(self):
         return reverse('matter_item_revision', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug})
@@ -219,8 +225,8 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         """
         # normally there is no logo-white.png from filepicker io it sends name seperately
         # but for our tests we need to fake this out
-        expected_image_url = 'http://localhost:8081/static/images/logo-white.png'
-        expected_file_name = 'logo-black.png'
+        expected_image_url = 'http://localhost:8081/static/test.pdf'
+        expected_file_name = 'test-pirates-ahoy.pdf'  # test renaming
 
         self.client.login(username=self.lawyer.username, password=self.password)
 
@@ -243,14 +249,14 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         self.assertEqual(resp.status_code, 201)  # ok created
 
         self.assertEqual(resp_json.get('slug'), 'v1')
-        self.assertEqual(resp_json.get('executed_file'), 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-logo-black.png' % (self.item.pk, self.lawyer.username))
+        self.assertEqual(resp_json.get('executed_file'), 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test-pirates-ahoy.pdf' % (self.item.pk, self.lawyer.username))
         self.assertEqual(self.item.revision_set.all().count(), 1)
 
         # refresh
         self.item = Item.objects.get(pk=self.item.pk)
         revision = self.item.revision_set.all().first()
-        self.assertEqual(revision.executed_file.name, 'executed_files/v1-%s-%s-logo-black.png' % (self.item.pk, self.lawyer.username))
-        self.assertEqual(revision.executed_file.url, 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-logo-black.png' % (self.item.pk, self.lawyer.username))
+        self.assertEqual(revision.executed_file.name, 'executed_files/v1-%s-%s-test-pirates-ahoy.pdf' % (self.item.pk, self.lawyer.username))
+        self.assertEqual(revision.executed_file.url, 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test-pirates-ahoy.pdf' % (self.item.pk, self.lawyer.username))
 
     @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_post_with_URL_executed_file(self):
@@ -261,7 +267,7 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         """
         mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
 
-        expected_image_url = 'http://localhost:8081/static/images/logo-white.png'
+        expected_image_url = 'http://localhost:8081/static/test.pdf'
 
         self.client.login(username=self.lawyer.username, password=self.password)
 
@@ -281,7 +287,7 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         """
         self.client.login(username=self.lawyer.username, password=self.password)
 
-        with open(TEST_IMAGE_PATH) as file_being_posted:
+        with open(self.FILE_TO_TEST_UPLOAD_WITH) as file_being_posted:
             data = {
                 'executed_file': file_being_posted,
             }
@@ -299,13 +305,14 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
 
         self.assertEqual(resp.status_code, 201)  # created
         self.assertEqual(resp_json.get('slug'), 'v1')
-        self.assertEqual(resp_json.get('name'), 'test-image.png')
-        self.assertEqual(resp_json.get('executed_file'), 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test-image.png' % (self.item.pk, self.lawyer.username))
+        self.assertEqual(resp_json.get('name'), 'test.pdf')
+        self.assertEqual(resp_json.get('executed_file'), 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
         self.assertEqual(self.item.revision_set.all().count(), 1)
 
         revision = self.item.revision_set.all().first()
-        self.assertEqual(revision.executed_file.name, 'executed_files/v1-%s-%s-test-image.png' % (self.item.pk, self.lawyer.username))
-        self.assertEqual(revision.executed_file.url, 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test-image.png' % (self.item.pk, self.lawyer.username))
+
+        self.assertEqual(revision.executed_file.name, 'executed_files/v1-%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
+        self.assertEqual(revision.executed_file.url, 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
 
 
     @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
@@ -320,3 +327,86 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         self.test_post_with_FILE_executed_file()
         stream = target_stream(self.matter)
         self.assertEqual(stream[0].data['message'], u'Lawyer Test created a revision for Test Item with Revision')
+
+        revision = self.item.revision_set.all().first()
+
+        self.assertEqual(revision.executed_file.name, 'executed_files/v1-%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
+        self.assertEqual(revision.executed_file.url, 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
+
+
+class InvalidFileTypeAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerTestCase):
+    """
+    Test invalid file uploads
+    """
+    FILE_TO_TEST_UPLOAD_WITH = TEST_INVALID_UPLOAD_IMAGE_PATH
+
+    @property
+    def endpoint(self):
+        return reverse('matter_item_revision', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug})
+
+    def setUp(self):
+        super(InvalidFileTypeAsUrlOrMultipartDataTest, self).setUp()
+        # setup the items for testing
+        self.item = mommy.make('item.Item', matter=self.matter, name='Test Item with Revision', category=None)
+
+    def test_endpoint_name(self):
+        self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/items/%s/revision' % self.item.slug)
+
+    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
+    def test_patch_with_URL_executed_file(self):
+        # normally there is no logo-white.png from filepicker io it sends name seperately
+        # but for our tests we need to fake this out
+        expected_image_url = 'http://localhost:8081/static/images/logo-white.png'
+        expected_file_name = 'logo-white.png'
+
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        #
+        # Filepicker IO sends us a url with no filename and or suffix that we use
+        # but they do send us the name of the file that was uploaded so lets use that
+        #
+        data = {
+            'executed_file': expected_image_url,
+            'name': expected_file_name
+        }
+        #
+        # @BUSINESSRULE if you are sending a url of a file that needs to be download
+        # ie. filepicker.io then the CONTENT_TYPE must be application/json and
+        # the field "executed_file": "http://example.com/myfile.pdf"
+        #
+        resp = self.client.patch(self.endpoint, json.dumps(data), content_type='application/json')
+        resp_json = json.loads(resp.content)
+
+        self.assertEqual(resp.status_code, 400)  # error
+        self.assertEqual(resp_json.get('executed_file'), [u"Invalid filetype, is: .png should be in: ['.pdf', '.docx', '.doc', '.ppt', '.pptx', '.xls', '.xlsx']"])  # error
+
+    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
+    def test_post_with_URL_executed_file(self):
+        mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
+
+        expected_image_url = 'http://localhost:8081/static/images/logo-white.png'
+
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        data = {
+            'executed_file': expected_image_url,
+        }
+        resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
+        resp_json = json.loads(resp.content)
+
+        self.assertEqual(resp.status_code, 400)  # invalid
+
+    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
+    def test_post_with_FILE_executed_file(self):
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        with open(self.FILE_TO_TEST_UPLOAD_WITH) as file_being_posted:
+            data = {
+                'executed_file': file_being_posted,
+            }
+            self.assertEqual(self.item.revision_set.all().count(), 0)
+            resp = self.client.post(self.endpoint, data, content_type=MULTIPART_CONTENT)
+
+        resp_json = json.loads(resp.content)
+
+        self.assertEqual(resp.status_code, 400)  # invalid
