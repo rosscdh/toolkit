@@ -11,8 +11,9 @@ angular.module('toolkit-gui')
 	'$resource',
 	'$rootScope',
 	'$upload',
+	'matterService',
 	'API_BASE_URL',
-	function( $q, $resource, $rootScope, $upload, API_BASE_URL) {
+	function( $q, $resource, $rootScope, $upload, matterService, API_BASE_URL) {
 		/**
 		 * TBC: this variable will contain the JWT token required to make authenticated requests
 		 * @memberof matterItemService
@@ -45,12 +46,12 @@ angular.module('toolkit-gui')
 		 * @return {Function}   $resource
 		 */
 		function matterItemResource() {
-			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/:action', {}, {
+			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/:document/:action', {}, {
 				'create': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'update': { 'method': 'PATCH', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
-				'requestdocument': { 'method': 'PATCH', 'params':{'action':'request_document'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
-				'remind': { 'method': 'POST', 'params':{'action':'remind'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
+				'requestdocument': { 'method': 'PATCH', 'params':{'document':'request_document'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
+				'remind': { 'method': 'POST', 'params':{'document':'request_document', 'action':'remind'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
 			});
 		}
 
@@ -76,10 +77,10 @@ angular.module('toolkit-gui')
 
 
 		function reviewerItemResource() {
-			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/revision/reviewers/:username:action', {}, {
-				'request': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
-				'remind': { 'method': 'POST', 'params': {'action':'remind'}, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
-				'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
+			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/revision/:type/:username:action', {}, {
+				'request': { 'method': 'POST', 'params' : { 'type': 'reviewers' }, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
+                'remind': { 'method': 'POST', 'params': { 'type': 'reviewers', 'action':'remind'}, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
+				'delete': { 'method': 'DELETE', 'params' : { 'type': 'reviewer' }, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
 			});
 		}
 
@@ -141,6 +142,7 @@ angular.module('toolkit-gui')
 				api.create({'matterSlug': matterSlug }, matterItem,
 					function success(item){
 						deferred.resolve(item);
+						matterService.insertItem( item ); /* keep search results up to date */
 					},
 					function error(err) {
 						deferred.reject( err );
@@ -172,7 +174,7 @@ angular.module('toolkit-gui')
 
 				var api = matterItemResource();
 
-				 var updateFields = {
+				var updateFields = {
 					'slug': matterItem.slug,
 					'status': matterItem.status,
 					'name': matterItem.name,
@@ -310,7 +312,7 @@ angular.module('toolkit-gui')
 			 * @name				updateRevision
 			 * @param {String}      matterSlug    Database slug, used as a unique identifier for a matter.
 			 * @param {String}      itemSlug      Database slug, used as a unique identifier for a checklist item.
-			 * @param {Object}      files         Details as provided by filepicker.io
+			 * @param {Object}      revision      The revision object to update
 			 *
 			 * @example
 			 * matterItemService.updateRevision( 'myItemName', 'ItemCategoryName', {} );
@@ -344,7 +346,7 @@ angular.module('toolkit-gui')
 			},
 
 			/**
-			 * Reqests the API to delete a specific revision.
+			 * Requests the API to delete a specific revision.
 			 *
 			 * @name				deleteRevision
 			 * @param {String}      matterSlug    Database slug, used as a unique identifier for a matter.
@@ -444,9 +446,37 @@ angular.module('toolkit-gui')
 				return deferred.promise;
 			},
 
+             /**
+			 * Requests the API to delete the revision request.
+			 *
+			 * @name				deleteRevisionRequest
+			 * @param {String}      matterSlug    Database slug, used as a unique identifier for a matter.
+			 * @param {String}      itemSlug      Database slug, used as a unique identifier for a checklist item.
+			 *
+			 * @example
+			 * matterItemService.deleteRevisionRequest( 'myMatterName', 'myItemName' );
+			 *
+			 * @public
+			 * @method				deleteRevisionRequest
+			 * @memberof			matterItemService
+			 *
+			 * @return {Promise}
+			 */
             'deleteRevisionRequest': function ( matterSlug, itemSlug ) {
-                //not implemented
-                return null;
+                var deferred = $q.defer();
+
+                var api = matterItemResource();
+
+				api.update({'matterSlug': matterSlug, 'itemSlug': itemSlug }, {'is_requested':false, 'responsible_party':null},
+					function success(response){
+						deferred.resolve(response);
+					},
+					function error(err) {
+						deferred.reject( err );
+					}
+				);
+
+                return deferred.promise;
             },
 
             /**
@@ -501,13 +531,12 @@ angular.module('toolkit-gui')
 			 *
 			 * @return {Promise}    Updated item object as provided by API
 			 */
-			'requestRevisionReview': function ( matterSlug, itemSlug, participant ) {
+			'requestRevisionReview': function ( matterSlug, itemSlug, reviewer ) {
 				var deferred = $q.defer();
 
 				var api = reviewerItemResource();
-                console.log(participant);
 
-				api.request({'matterSlug': matterSlug, 'itemSlug': itemSlug }, {'username': participant.username},
+				api.request({'matterSlug': matterSlug, 'itemSlug': itemSlug }, reviewer,
 					function success(response){
 						deferred.resolve(response);
 					},
@@ -570,14 +599,53 @@ angular.module('toolkit-gui')
 			 *
 			 * @return {Promise}
 			 */
-			'deleteRevisionReviewRequest': function ( matterSlug, itemSlug, participant ) {
+			'deleteRevisionReviewRequest': function ( matterSlug, itemSlug, review ) {
 				var deferred = $q.defer();
 
 				var api = reviewerItemResource();
 
-				api.delete({'matterSlug': matterSlug, 'itemSlug': itemSlug, 'username': participant.username },
+				api.delete({'matterSlug': matterSlug, 'itemSlug': itemSlug, 'username': review.reviewer.username },
 					function success(){
 						deferred.resolve();
+					},
+					function error(err) {
+						deferred.reject( err );
+					}
+				);
+
+				return deferred.promise;
+			},
+
+            /**
+			 * Requests a review update
+			 *
+			 * @name				updateRevisionReview
+			 * @param {Object}      review        The review object to update
+			 *
+			 * @example
+			 * matterItemService.updateRevisionReview( {} );
+			 *
+			 * @public
+			 * @method				updateRevisionReview
+			 * @memberof			matterItemService
+			 *
+			 * @return {Promise}    Updated item object as provided by API
+			 */
+			'updateRevisionReview': function ( review ) {
+				var deferred = $q.defer();
+
+				var api = $resource(review.url, {}, {
+				    'update': { 'method': 'PATCH', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
+			    });
+
+
+				var updateFields = {
+					'is_complete': review.is_complete
+				};
+
+				api.update({}, updateFields,
+					function success(item){
+						deferred.resolve(item);
 					},
 					function error(err) {
 						deferred.reject( err );

@@ -72,17 +72,28 @@ class MatterParticipantTest(BaseEndpointTest):
         #
         # Add the new Lawyer (Signal gets called)
         #
-        data = {'email': self.lawyer_to_add.email}
+        data = {
+            'email': self.lawyer_to_add.email,
+            'first_name': 'Bob',
+            'last_name': 'Crockett',
+            'message': 'Bob you are being added here please do something',
+        }
 
         self.signal_called = False
         resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
+
         self.assertEqual(resp.status_code, 202)  # accepted
         self.assertTrue(self.signal_called)
 
         #
         # Try to re-add the lawyer (Signal doesn't get called)
         #
-        data = {'email': self.lawyer_to_add.email}
+        data = {
+            'email': self.lawyer_to_add.email,
+            'first_name': 'Bob',
+            'last_name': 'Crockett',
+            'message': 'Bob you are being added here please do something',
+        }
 
         self.signal_called = False
         resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
@@ -98,7 +109,12 @@ class MatterParticipantTest(BaseEndpointTest):
         #
         # Add the New User (Signal gets called)
         #
-        data = {'email': self.user_to_add.email}
+        data = {
+            'email': self.user_to_add.email,
+            'first_name': 'Gorila',
+            'last_name': 'Boots',
+            'message': 'Boots you are being added here please do something',
+        }
 
         self.signal_called = False
         resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
@@ -120,7 +136,12 @@ class MatterParticipantTest(BaseEndpointTest):
         #
         # Add the New Lawyer
         #
-        data = {'email': 'test+monkey@lawyer.com'}
+        data = {
+            'email': 'test+monkey@lawyer.com',
+            'first_name': 'Test',
+            'last_name': 'Monkey',
+            'message': 'Test Monkey you are being added here please do something',
+        }
 
         resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
         self.assertEqual(resp.status_code, 202)  # accepted
@@ -128,11 +149,11 @@ class MatterParticipantTest(BaseEndpointTest):
         new_user = User.objects.get(email=data.get('email'))
 
         self.assertTrue(new_user) # exists
-        self.assertEqual(new_user.first_name, '')
-        self.assertEqual(new_user.last_name, '')
+        self.assertEqual(new_user.first_name, 'Test')
+        self.assertEqual(new_user.last_name, 'Monkey')
         self.assertTrue(new_user.profile.is_customer)
         # we patch the get_full_name object to return email if first_name and last_name are nothing
-        self.assertEqual(new_user.get_full_name(), 'test+monkey@lawyer.com')
+        self.assertEqual(new_user.get_full_name(), 'Test Monkey')
 
     def test_lawyer_patch(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -205,4 +226,4 @@ class MatterParticipantTest(BaseEndpointTest):
     def test_anon_cant(self):
         for event in ['get', 'post', 'patch', 'delete']:
             resp = getattr(self.client, event)(self.endpoint, {}, content_type='application/json')
-            self.assertEqual(resp.status_code, 401)  # denied
+            self.assertEqual(resp.status_code, 403)  # forbidden

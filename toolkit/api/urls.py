@@ -14,12 +14,14 @@ from .views import (MatterEndpoint,
                     MatterParticipant,)
 
 from .views import (ActivityEndpoint,
-                    MatterActivityEndpoint)
+                    MatterActivityEndpoint,
+                    ItemActivityEndpoint)
 
 from .views import (MatterItemsView,
                     MatterItemView,
 
                     MatterItemRequestRevisionView,
+                    RemindRequestedRevisionInvitee,
 
                     MatterItemCurrentRevisionView,
                     MatterItemSpecificReversionView,)
@@ -34,6 +36,8 @@ from .views import (ItemRevisionReviewersView,
 
 from .views import ItemEndpoint
 from .views import RevisionEndpoint
+from .views import ItemCommentEndpoint
+from .views import ReviewEndpoint
 #from .views import WorkflowEndpoint
 
 router = routers.SimpleRouter(trailing_slash=False)
@@ -48,7 +52,7 @@ router.register(r'activity', ActivityEndpoint)
 router.register(r'clients', ClientEndpoint)
 router.register(r'items', ItemEndpoint)
 router.register(r'revisions', RevisionEndpoint)
-
+router.register(r'reviews', ReviewEndpoint)
 
 """
 Generics
@@ -75,7 +79,11 @@ urlpatterns = router.urls + patterns('',
     # Matter Items
     #
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/?$', MatterItemsView.as_view(), name='matter_items'),
+    url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/request_document/remind/?$', RemindRequestedRevisionInvitee.as_view(), name='revision_request_document_reminder'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/request_document/?$', MatterItemRequestRevisionView.as_view(), name='matter_item_request_doc'),
+    url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/activity/?$', ItemActivityEndpoint.as_view(), name='item_activity'),
+    url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/comment/(?P<id>\d+)/?$', ItemCommentEndpoint.as_view(), name='item_comment'),
+    url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/comment/?$', ItemCommentEndpoint.as_view(), name='item_comment'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/?$', MatterItemView.as_view(), name='matter_item'),
     #
     # Revisions

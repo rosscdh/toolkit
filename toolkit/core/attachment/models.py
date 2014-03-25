@@ -1,31 +1,42 @@
 # -*- coding: utf-8 -*-
 from django.db import models
-from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
 
 from storages.backends.s3boto import S3BotoStorage
-from toolkit.core.signals import on_revision_post_save
 
 from toolkit.utils import get_namedtuple_choices
 
 from jsonfield import JSONField
 
+from .managers import RevisionManager
+
 import os
 
 BASE_REVISION_STATUS = get_namedtuple_choices('REVISION_STATUS', (
                                 (0, 'draft', 'Draft'),
-                                (1, 'requested', 'Requested'),
-                                (2, 'for_discussion', 'For Discussion'),
-                                (3, 'final', 'Final'),
-                                (4, 'executed', 'Executed'),
-                                (5, 'filed', 'Filed'),
+                                (1, 'for_discussion', 'For Discussion'),
+                                (2, 'final', 'Final'),
+                                (3, 'executed', 'Executed'),
+                                (4, 'filed', 'Filed'),
                             ))
 
 
 def _upload_file(instance, filename):
-    filename = os.path.split(filename)[-1]
-    filename_no_ext, ext = os.path.splitext(filename)
-    return 'executed_files/%s-%d-%s-%s%s' % (instance.slug, instance.item.pk, instance.uploaded_by.username, slugify(filename_no_ext), ext)
+    full_file_name = None
+
+    split_file_name = os.path.split(filename)[-1]
+    filename_no_ext, ext = os.path.splitext(split_file_name)
+
+    identifier = '%s-%d-%s' % (instance.slug, instance.item.pk, instance.uploaded_by.username)
+    full_file_name = '%s-%s%s' % (identifier, slugify(filename_no_ext), ext)
+
+    if identifier in slugify(filename):
+        #
+        # If we already have this filename as part of the recombined filename
+        #
+        full_file_name = filename
+
+    return 'executed_files/%s' % full_file_name
 
 
 class Revision(models.Model):
@@ -50,17 +61,22 @@ class Revision(models.Model):
     # these alternatives may be set as the "current" if the lawyer approves
     alternatives = models.ManyToManyField('attachment.Revision', null=True, blank=True, symmetrical=False, related_name="parent")
 
+    # True by default, so that on create of a new one, it's set as the current revision
+    is_current = models.BooleanField(default=True)
+
     data = JSONField(default={}, blank=True)
 
     date_created = models.DateTimeField(auto_now=False, auto_now_add=True, db_index=True)
     date_modified = models.DateTimeField(auto_now=True, auto_now_add=True, db_index=True)
+
+    objects = RevisionManager()
 
     class Meta:
         # @BUSINESS RULE always return the oldest to newest
         ordering = ('id',)
 
     def __unicode__(self):
-        return '%s %s' % (self.pk, self.slug)
+        return 'Revision %s' % (self.slug)
 
     @property
     def revisions(self):
@@ -80,12 +96,7 @@ class Revision(models.Model):
         Used in the signal to generate the attachment slug
         and revision_label
         """
-        version = 1 # default is 1
-        for c, r in enumerate(self.revisions):
-            version = c + 1
-            if r.pk == self.pk:
-                break
-        return version
+        return self.revisions.count() + 1 # default is 1
 
     def next(self):
         return self.revisions.filter(pk__gt=self.pk).first()
@@ -93,8 +104,11 @@ class Revision(models.Model):
     def previous(self):
         return self.revisions.filter(pk__lt=self.pk).first()
 
-
-post_save.connect(on_revision_post_save, sender=Revision)
-
-
-from .signals import (ensure_revision_slug,)
+from .signals import (ensure_revision_slug,
+                      ensure_one_current_revision,
+                      set_item_is_requested_false,
+                      set_previous_revision_is_current_on_delete,
+                      ensure_revision_reviewdocument_object,
+                      on_reviewer_add,
+                      on_reviewer_remove,
+                      on_upload_set_item_is_requested_false)

@@ -24,7 +24,7 @@ class CreateWorkspaceView(ModalView, AjaxModelFormView, CreateView):
         # ensure that only lawyers can create
         if request.user.profile.is_lawyer is False:
             messages.error(request, 'Sorry, you must be an Attorney to access this')
-            return HttpResponseRedirect(reverse('dash:default'))
+            return HttpResponseRedirect(reverse('matter:list'))
 
         return super(CreateWorkspaceView, self).dispatch(request, *args, **kwargs)
 

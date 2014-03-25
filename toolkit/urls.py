@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
-from django.conf.urls.static import static
 from django.conf.urls import patterns, include, url
-from django.contrib.auth.decorators import login_required
-from django.views.generic import TemplateView
+
+from toolkit.static import static
 
 from django.contrib import admin
 admin.autodiscover()
@@ -18,7 +17,10 @@ urlpatterns = patterns('',
 
     url(r'^dash/', include('toolkit.apps.dash.urls', namespace='dash')),
 
+    url(r'^notifications/', include('toolkit.apps.notification.urls', namespace='notification')),
+
     url(r'^matters/', include('toolkit.apps.matter.urls', namespace='matter')),
+    url(r'^requests/', include('toolkit.apps.request.urls', namespace='request')),
 
     url(r'^me/pasword/', include('password_reset.urls')),
     url(r'^me/', include('toolkit.apps.me.urls', namespace='me')),
@@ -41,6 +43,7 @@ urlpatterns = patterns('',
     url(r'^', include('toolkit.apps.default.urls', namespace='public')),
 )
 
-if settings.DEBUG:
+if settings.DEBUG is True or settings.TEST_PREPROD is True:
     # Add the MEDIA_URL to the dev environment
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

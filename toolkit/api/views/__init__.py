@@ -3,14 +3,17 @@ from .user import UserEndpoint
 
 from .account import AccountEndpoint
 
-from .activity import ActivityEndpoint, MatterActivityEndpoint
+from .activity import (ActivityEndpoint,
+                       MatterActivityEndpoint,
+                       ItemActivityEndpoint)
 
 from .client import ClientEndpoint
 
 from .matter import (MatterEndpoint,
                      ClosingGroupView as MatterClosingGroupView,)
 
-from .review import (ItemRevisionReviewersView,
+from .review import (ReviewEndpoint,
+                     ItemRevisionReviewersView,
                      ItemRevisionReviewerView,)
 
 from .sign import   (ItemRevisionSignatoriesView,
@@ -32,7 +35,10 @@ from .item import (ItemEndpoint,
                    MatterItemView,)
 
 from .reminder import (RemindReviewers,
-                       RemindSignatories)
+                       RemindSignatories,
+                       RemindRequestedRevisionInvitee)
 
 from .revision import RevisionEndpoint
 # from .workflow import WorkflowEndpoint
+
+from .comment import ItemCommentEndpoint

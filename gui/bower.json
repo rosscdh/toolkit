@@ -10,7 +10,7 @@
   "dependencies": {
     "jquery": "~2.0",
     "underscore": "~1.5",
-    "bootstrap": "~3.0",
+    "bootstrap": "3.1.1",
     "angular": "~1.2",
     "angular-route": "~1.2",
     "angular-animate": "~1.2",
@@ -21,11 +21,12 @@
     "angular-bootstrap": "~0.9",
     "angular-markdown-directive": "latest",
     "angular-elastic": "latest",
+    "angular-ui-router": "latest",
     "moment": "~2.5",
     "less.js": "~1.5",
     "font-awesome": "~4.0",
     "angular-ui-sortable": "~0.12.1",
     "ez-confirm": "*",
-    "ng-file-upload": "~1.2.8"
+    "raven-js":"~1.1"
   }
 }

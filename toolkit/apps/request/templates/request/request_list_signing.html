@@ -1,0 +1,14 @@
+{% load request_tags %}
+
+<section id="requests-signing">
+    {% if object_list %}
+        <h5>Documents to be signed</h5>
+        <p class="lead">Please read, review and sign the following documents:</p>
+
+        <div class="requested">
+            {% for item in object_list %}
+                {% request_signing_item item user %}
+            {% endfor %}
+        </div>
+    {% endif %}
+</section>

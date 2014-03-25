@@ -20,10 +20,9 @@ INSTALLED_APPS = INSTALLED_APPS + (
     'casper',
     'colortools',
     # Lawpal modules
-    'toolkit.core.tests',
-    # Lawpal modules
+    #'toolkit.core.tests',
     'hello_sign.tests',
-    #'dj_crocodoc.tests',
+    'dj_crocodoc.tests',
 )
 
 SOUTH_TESTS_MIGRATE = False
@@ -35,6 +34,27 @@ PASSWORD_HASHERS = (
 
 HELLOSIGN_CLIENT_ID = '9bc892af173754698e3fa30dedee3826'
 HELLOSIGN_CLIENT_SECRET = '8d770244b9971abfe789f5224552239d'
+
+#
+# Abridge Integration
+#
+
+ABRIDGE_ENABLED = False  # Disabled in testing
+
+
+#
+# Abridge Integration
+#
+
+ABRIDGE_ENABLED = False
+
+ABRIDGE_PROJECT = 'lawpal-digest'
+
+ABRIDGE_API_URL = 'http://abridge.local.dev/'
+ABRIDGE_ACCESS_KEY_ID = 'empty'
+ABRIDGE_SECRET_ACCESS_KEY = 'still_empty'
+ABRIDGE_USERNAME = 'blah'
+ABRIDGE_PASSWORD = 'blah'
 
 
 # def AutoSlugFieldGenerator():

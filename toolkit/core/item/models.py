@@ -1,14 +1,20 @@
 # -*- coding: utf-8 -*-
 from django.db import models
-from django.db.models.signals import post_save
+from django.core.urlresolvers import reverse
+from django.db.models.signals import pre_save, post_save
 
-from toolkit.core.signals import on_item_post_save
+from toolkit.core.signals.activity import (on_item_post_save,)
+from .signals import (on_item_save_category,
+                      on_item_save_closing_group)
+
 from toolkit.core.mixins import IsDeletedMixin
 
 from toolkit.utils import get_namedtuple_choices
 
 from .managers import ItemManager
-from .mixins import RequestDocumentUploadMixin
+from .mixins import (RequestDocumentUploadMixin,
+                     RequestedDocumentReminderEmailsMixin,
+                     LatestRevisionReminderEmailsMixin,)
 
 from jsonfield import JSONField
 from uuidfield import UUIDField
@@ -16,13 +22,15 @@ from rulez import registry as rulez_registry
 
 BASE_ITEM_STATUS = get_namedtuple_choices('ITEM_STATUS', (
                                 (0, 'new', 'New'),
-                                (1, 'awaiting_document', 'Awaiting Document'),
-                                (2, 'final', 'Final'),
-                                (3, 'executed', 'Executed'),
+                                (1, 'final', 'Final'),
+                                (2, 'executed', 'Executed'),
                             ))
 
 
-class Item(IsDeletedMixin, RequestDocumentUploadMixin, models.Model):
+class Item(IsDeletedMixin, RequestDocumentUploadMixin,
+           RequestedDocumentReminderEmailsMixin,
+           LatestRevisionReminderEmailsMixin,
+           models.Model):
     """
     Matter.item
     """
@@ -49,6 +57,8 @@ class Item(IsDeletedMixin, RequestDocumentUploadMixin, models.Model):
     is_final = models.BooleanField(default=False, db_index=True)
     # this item is complete and signed off on
     is_complete = models.BooleanField(default=False, db_index=True)
+    # when requesting a revision from someone
+    is_requested = models.BooleanField(default=False, db_index=True)
 
     data = JSONField(default={})
 
@@ -65,16 +75,16 @@ class Item(IsDeletedMixin, RequestDocumentUploadMixin, models.Model):
     def __unicode__(self):
         return u'%s' % self.name
 
+    def get_absolute_url(self):
+        return '{url}#/checklist/{item_slug}'.format(url=reverse('matter:detail', kwargs={'matter_slug': self.matter.slug}), item_slug=self.slug)
+
     @property
     def display_status(self):
         return self.ITEM_STATUS.get_desc_by_value(self.status)
 
     @property
     def latest_revision(self):
-        """
-        @BUSINESSRULE always return the latest revision
-        """
-        return self.revision_set.all().last()
+        return self.revision_set.current().first()
 
     def participants(self):
         return self.data.get('participants', [])
@@ -85,6 +95,32 @@ class Item(IsDeletedMixin, RequestDocumentUploadMixin, models.Model):
     def signatories(self):
         return self.data.get('signatories', [])
 
+    def save(self, *args, **kwargs):
+        """
+            reset percentage completed of the matter only if item is newly created or
+                                                          if item.is_complete changed
+                                                          if item.is_deleted
+
+            This is done here and not in a signal because the percentage has to get calculated with the NEW
+            is_complete-value which is not yet available present in the matters' .reset_percentage()-function when
+            using pre_save.
+            It is only available after the saving.
+        """
+        do_recalculate = True
+        try:
+            # get the current
+            previous_instance = Item.objects.get(pk=self.pk)
+            if previous_instance.is_complete == self.is_complete and not self.is_deleted:
+                do_recalculate = False
+
+        except Item.DoesNotExist:
+            pass
+
+        super(Item, self).save(*args, **kwargs)
+
+        if do_recalculate:
+            self.matter.update_percent_complete()
+
     def can_read(self, user):
         return user in self.matter.participants.all()
 
@@ -94,13 +130,14 @@ class Item(IsDeletedMixin, RequestDocumentUploadMixin, models.Model):
     def can_delete(self, user):
         return user.profile.is_lawyer and user in self.matter.participants.all()
 
-post_save.connect(on_item_post_save, sender=Item)
+"""
+Connect signals
+"""
+pre_save.connect(on_item_save_category, sender=Item, dispatch_uid='item.post_save.category')
+pre_save.connect(on_item_save_closing_group, sender=Item, dispatch_uid='item.post_save.closing_group')
+post_save.connect(on_item_post_save, sender=Item, dispatch_uid='item.post_save.category')
+
 
 rulez_registry.register("can_read", Item)
 rulez_registry.register("can_edit", Item)
 rulez_registry.register("can_delete", Item)
-
-"""
-Signals
-"""
-from .signals import (on_item_save_category, on_item_save_closing_group,)

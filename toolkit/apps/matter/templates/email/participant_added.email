@@ -1,24 +1,29 @@
 {% extends 'email/base.email' %}
 
-{% block subject_line %}You have been invited to the {{ matter.name }} matter on LawPal{% endblock %}
+{% block subject_line %}{{ user.get_full_name }} added you to {{ matter.name }} for {{matter.client.name}}{% endblock %}
 
 {% block html_content %}
-    <p>{{ user.get_full_name }} invited you to a matter:</p>
-    {% if matter.description %}
-        <h2 style="margin-bottom: 0;"><strong>{{ matter.name }}</strong></h2>
-        <p style="margin-top: 5px;">Description of the matter</p>
-    {% else %}
-        <h2><strong>{{ matter.name }}</strong></h2>
-    {% endif %}
+	<h1 style="font-size:20px;margin:16px 0;color:#333;text-align:center"> You've been added! </h1>
+	<p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica;color:#333;text-align:center"> {{ user.get_full_name }} invites you to join the project: </p>
+	<div style="background-color:#f1f1f1;padding:22px 30px;text-align:center;">
+		<a href="#" style="font-size:26px;text-decoration:none;color:#222;line-height:33px;margin-bottom:20px">{{ matter.name }} ({{matter.client.name}})</a>
+		<table border="0" cellpadding="0" cellspacing="0" style="background-color:#2ecc71; border-radius:5px;margin-top:16px;" align="center">
+		    <tr>
+		        <td align="center" valign="middle" style="color:#FFFFFF; font-family:Helvetica, Arial, sans-serif; font-size:16px; font-weight:bold; letter-spacing:-.5px; line-height:150%; padding-top:15px; padding-right:40px; padding-bottom:15px; padding-left:40px;">
+		            <a href="{{ action_url }}" target="_blank" style="color:#FFFFFF; text-decoration:none;">Accept Invite</a>
+		        </td>
+		    </tr>
 
-    {% if custom_message %}
-        <p>{{ custom_message }}</p>
-    {% else %}
-        <p>What's LawPal? It's the easiest way for clients and lawyers to interact. <a href="https://lawpal.com/" target="_blank">Learn more »</a></p>
-    {% endif %}
-
-    <h2><a href="#" target="_blank">Accept this invitation to get started</a></h2>
-
-    <h4 style="margin-bottom: 0;"><b>Questions?</b></h4>
-    <p style="margin-top: 5px;">Contact Joe Bloggs at <a href="mailto:sogobloggs@gmail.com" target="_blank">sogobloggs@gmail.com</a>.</p>
+		</table>		
+		{% if message %}
+			<br />
+			<br />
+			<div style="text-align:left;color:#888;font-size:15px;line-height:19px;padding:20px 30px 10px 30px;border-top:1px solid #ddd">
+				<strong>Message from {{ user.get_full_name }}</strong>: <br />
+			    {{ message }}
+	    	</div>
+	    {% endif %}
+	</div>
+    <p style="margin-top: 25px;margin-bottom:25px;color:#bbb">Questions? Please contact {{ user.get_full_name }} at <a href="mailto:{{ user.email }}" target="_blank" style="color:#bbb">{{ user.email }}</a>. <br />
+    LawPal is the best way for lawyers to stay on top of every project. </p>
 {% endblock %}

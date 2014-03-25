@@ -82,20 +82,92 @@ class MattersTest(BaseEndpointTest):
 
     def test_anon_get(self):
         resp = self.client.get(self.endpoint)
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_post(self):
         resp = self.client.post(self.endpoint, {}, content_type='application/json')
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_patch(self):
         resp = self.client.patch(self.endpoint, {}, content_type='application/json')
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_delete(self):
         resp = self.client.delete(self.endpoint, {}, content_type='application/json')
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
+
+class MatterPercentageTest(BaseEndpointTest):
+    """
+        belongs to MattersTest and just tests if progress is calculated correctly
+    """
+    endpoint = reverse('workspace-list')
+
+    def test_endpoint_name(self):
+        self.assertEqual(self.endpoint, '/api/v1/matters')
+
+    def test_percent_complete_zero(self):
+        # create unfinished item:
+        mommy.make('item.Item', name='Test Item #1', matter=self.workspace)
+        self.client.login(username=self.lawyer.username, password=self.password)
+        resp = self.client.get(self.endpoint)
+
+        self.assertEqual(resp.status_code, 200)
+        json_data = json.loads(resp.content)
+        self.assertEqual(json_data['results'][0]['percent_complete'], u'0%')
+
+    def test_percent_complete_one(self):
+        # build 100 % case
+        mommy.make('item.Item', name='Test Item #1', matter=self.workspace, is_complete=True)
+        mommy.make('item.Item', name='Test Item #2', matter=self.workspace, is_complete=True)
+        self.client.login(username=self.lawyer.username, password=self.password)
+        resp = self.client.get(self.endpoint)
+
+        self.assertEqual(resp.status_code, 200)
+
+        json_data = json.loads(resp.content)
+        self.assertEqual(json_data['results'][0]['percent_complete'], u'100%')
+
+    def test_percent_complete_two_thirds(self):
+        # build a 2/3 setup with a deleted object
+        mommy.make('item.Item', name='Test Item #1', matter=self.workspace, is_complete=True)
+        mommy.make('item.Item', name='Test Item #2', matter=self.workspace, is_complete=True)
+        mommy.make('item.Item', name='Test Item #3', matter=self.workspace)
+        mommy.make('item.Item', name='Test Item #4', matter=self.workspace, is_deleted=True)
+        self.client.login(username=self.lawyer.username, password=self.password)
+        resp = self.client.get(self.endpoint)
+
+        self.assertEqual(resp.status_code, 200)
+
+        json_data = json.loads(resp.content)
+        self.assertEqual(json_data['results'][0]['percent_complete'], u'67%')
+
+    def test_percent_complete_deleted(self):
+        # check if newly deleted item gets calculated correctly
+        mommy.make('item.Item', name='Test Item #1', matter=self.workspace, is_complete=True)
+        item = mommy.make('item.Item', name='Test Item #1', matter=self.workspace)
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        resp = self.client.get(self.endpoint)
+        self.assertEqual(resp.status_code, 200)
+        json_data = json.loads(resp.content)
+        self.assertEqual(json_data['results'][0]['percent_complete'], u'50%')
+
+        item.delete()
+
+        resp = self.client.get(self.endpoint)
+        self.assertEqual(resp.status_code, 200)
+        json_data = json.loads(resp.content)
+        self.assertEqual(json_data['results'][0]['percent_complete'], u'100%')
+
+    def test_percent_complete_no_items(self):
+        # test what happens when matter has no items
+        self.client.login(username=self.lawyer.username, password=self.password)
+        resp = self.client.get(self.endpoint)
+        self.assertEqual(resp.status_code, 200)
+        json_data = json.loads(resp.content)
+
+        self.assertEqual(json_data['results'][0]['percent_complete'], u'0%')
 
 
 class MatterDetailTest(BaseEndpointTest):
@@ -180,19 +252,19 @@ class MatterDetailTest(BaseEndpointTest):
 
     def test_anon_get(self):
         resp = self.client.get(self.endpoint)
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_post(self):
         resp = self.client.post(self.endpoint, {})
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_patch(self):
         resp = self.client.patch(self.endpoint, {}, content_type='application/json')
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_delete(self):
         resp = self.client.delete(self.endpoint, {}, content_type='application/json')
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
 
 class MatterDetailProvidedDataTest(BaseEndpointTest):
@@ -212,7 +284,6 @@ class MatterDetailProvidedDataTest(BaseEndpointTest):
         self.assertEqual(self.endpoint, '/api/v1/matters/%s' % self.matter.slug)
 
     def confirm_meta(self, data):
-        #import pdb;pdb.set_trace()
         self.assertTrue('_meta' in data)
 
         _meta = data['_meta']
@@ -237,7 +308,12 @@ class MatterDetailProvidedDataTest(BaseEndpointTest):
         """
         self.assertEqual(type(participants), list)
         # must have full url
-        self.assertEqual(participants[0].get('url'), 'http://testserver/api/v1/users/%s' % self.user.username)
+        self.assertTrue(all(u.get('url') == 'http://testserver/api/v1/users/%s' % u.get('username') for u in participants))
+
+        participant_urls = [u.get('url') for u in participants]
+        self.assertTrue('http://testserver/api/v1/users/%s' % self.user.username in participant_urls)
+        self.assertTrue('http://testserver/api/v1/users/%s' % self.lawyer.username in participant_urls)
+
 
     def confirm_item_latest_revision(self, items):
         """
@@ -247,7 +323,7 @@ class MatterDetailProvidedDataTest(BaseEndpointTest):
 
         latest_revision = items[0].get('latest_revision')
         self.assertEqual(type(latest_revision), dict)
-        self.assertEqual(latest_revision.get('url'), '/api/v1/revisions/%d' % self.revision.pk)
+        self.assertEqual(latest_revision.get('url'), 'http://testserver/api/v1/revisions/%d' % self.revision.pk)
 
     def test_endpoint_data_lawyer(self):
         self.client.login(username=self.lawyer.username, password=self.password)

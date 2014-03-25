@@ -98,6 +98,8 @@ PROJECT_APPS = (
     'toolkit.apps.dash',
     'toolkit.apps.matter',
     'toolkit.apps.me',
+    'toolkit.apps.request',
+    'toolkit.apps.notification',
     # Main Workspace (matters)
     'toolkit.apps.workspace',
     # Core related apps
@@ -139,6 +141,11 @@ HELPER_APPS = (
 
     # activity-stream
     'actstream',
+    # notifications
+    'stored_messages',
+
+    # integration for abridge; django-abridge
+    'abridge',
 
     # Api helpers
     #'corsheaders',  # not required yet
@@ -180,6 +187,15 @@ ROOT_URLCONF = 'toolkit.urls'
 
 WSGI_APPLICATION = 'toolkit.wsgi.application'
 
+# for notifications as well as standard messages
+#
+# NOTE! this is an antiparttern DO NOT follow the stored_messages docs
+# our usecase is to show normal django messages as per normal
+# but specifically manually store the inbox messages thus we dont set the
+# django.MESSAGE_STORAGE but rather leave it to the django default
+# we manually need to mark them as read in this case
+#
+#MESSAGE_STORAGE = 'stored_messages.storage.PersistentStorage'
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
@@ -231,6 +247,8 @@ AWS_HEADERS = {
     'x-amz-acl': 'public-read',
 }
 
+FILEPICKER_API_KEY = 'A4Ly2eCpkR72XZVBKwJ06z'
+
 HELLOSIGN_AUTHENTICATION = ("founders@lawpal.com", "test2007")
 HELLOSIGN_API_KEY = '0ea9011ce33b5de3b58af3b3f6d449f8f3f72e2ac06c14c6319439af39fe32f6'
 HELLOSIGN_CLIENT_ID = '9bc892af173754698e3fa30dedee3826'
@@ -253,10 +271,11 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         #'rest_framework.authentication.TokenAuthentication',
         #'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-        'rest_framework.authentication.BasicAuthentication', # Here Temporarily for dev
+        #'rest_framework.authentication.BasicAuthentication', # Here Temporarily for dev
         'rest_framework.authentication.SessionAuthentication',
     ),
     'DEFAULT_FILTER_BACKENDS': (
+        'rest_framework.filters.SearchFilter',
     ),
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
@@ -360,13 +379,16 @@ BLEACH_STRIP_COMMENTS = True
 BLEACH_STRIP_TAGS = True
 
 
-# activity stream
+#
+# ACTIVITY STREAM
+#
 ACTSTREAM_SETTINGS = {
     'MODELS': ('auth.User', 'workspace.Workspace', 'item.Item', 'attachment.Revision'),
     'MANAGER': 'toolkit.core.managers.ToolkitActionManager',
     'FETCH_RELATIONS': True,
     'USE_PREFETCH': True,
     'USE_JSONFIELD': True,
+    'USE_FOLLOWING': False,  # VERY importand; will break our system if this changes to True
 }
 
 try:

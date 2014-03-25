@@ -715,8 +715,11 @@ div.full {
 .breadcrumb-text {
   margin-bottom: 10px;
 }
-body.checklist {
+body.gui {
   background-color: #f2f2f2;
+}
+body.gui .main-content {
+  padding: 0;
 }
 .container-fluid {
   padding: 0 20px;
@@ -729,6 +732,28 @@ body.checklist {
 }
 .content .lead {
   font-size: 22px;
+}
+.content-header {
+  background-color: #ffffff;
+  margin-bottom: 20px;
+  margin-top: -20px;
+}
+.content-header h3 {
+  color: #545e64;
+  font-size: 24px;
+  margin: 50px 0 30px 0;
+  vertical-align: center;
+}
+.content-header h3 span.circle {
+  background-color: #e74c3c;
+  border-radius: 40px;
+  color: white;
+  margin-right: 3px;
+  padding: 8px 15px;
+}
+.content-header-btn {
+  float: right;
+  margin-top: 45px;
 }
 .help-block {
   font-size: 14px;
@@ -805,15 +830,19 @@ body.checklist {
 .matter .card .content .title h6 {
   margin: 0 0 3px;
 }
+.matter .card .content .title h5 {
+  color: #2c3e50;
+}
 .matter .card .content .title h6 {
   font-size: 14px;
+  color: #95a5a6;
 }
 .matter .card .content .title p {
   font-size: 16px;
   margin-bottom: 5px;
 }
 .matter .card .content .meta {
-  margin-bottom: 10px;
+  margin-bottom: 0px;
 }
 .matter .card .content .meta p {
   color: grey;
@@ -822,12 +851,24 @@ body.checklist {
   line-height: 40px;
   margin-bottom: 5px;
 }
+.matter .card .content .meta p.done {
+  color: #2ecc71;
+  font-style: normal;
+  font-weight: bold;
+}
 .matter .card .edit {
   color: #95a5a6;
   display: block;
   position: absolute;
   right: 5px;
   top: 5px;
+}
+.matter .card .progress {
+  margin-bottom: 0px;
+  border-radius: 0px;
+}
+.matter .card .progress .progress-bar {
+  border-radius: 0px;
 }
 .navbar {
   margin-bottom: 0;
@@ -858,6 +899,11 @@ body.checklist {
 .popover-content {
   font-size: 13px;
   line-height: 1.226;
+}
+.padlock {
+  float: left;
+  line-height: 40px;
+  margin-right: 10px;
 }
 .icon-pdf {
   color: #e74b3c;
@@ -914,6 +960,76 @@ body.checklist {
   border-width: 2px;
   margin-top: 0px;
   padding-bottom: 11px;
+}
+.navbar.checklist-nav li.notifications a [class*="fui-"] {
+  color: #848484;
+}
+.navbar.checklist-nav li.notifications a.unread [class*="fui-"] {
+  color: #f2c81d;
+  text-shadow: 0px 0px 10px #232323;
+}
+#notifications .notification {
+  background-color: white;
+  border: 1px solid #e8ecec;
+  padding: 20px;
+}
+#notifications .notification .avatar {
+  margin-top: 8px;
+}
+#notifications .notification .notification-btn {
+  font-size: 20px;
+  margin-top: 8px;
+  text-align: right;
+}
+#notifications .notification p {
+  color: #95a5a6;
+  margin-bottom: 0;
+}
+#requests section {
+  margin-bottom: 50px;
+}
+#requests section h5 {
+  color: #666;
+  font-size: 19px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+#requests section p.lead {
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+#requests .request {
+  background-color: white;
+  border: 1px solid #e8ecec;
+  padding: 20px;
+}
+#requests .request .request-icon {
+  color: #6d8082;
+  float: left;
+  font-size: 45px;
+  margin-right: 16px;
+  margin-top: 4px;
+}
+#requests .request .request-title {
+  color: #2980b9;
+  font-size: 20px;
+  margin-bottom: 5px;
+  margin-top: 0;
+}
+#requests .request .request-btn {
+  float: right;
+  margin-top: 23px;
+}
+#requests .request .request-status {
+  color: #2ecc71;
+  float: right;
+  margin-top: 30px;
+}
+#requests .request p {
+  color: #95a5a6;
+}
+#requests .request blockquote {
+  margin-bottom: 0;
 }
 .sidebar {
   padding-right: 30px;
@@ -1222,12 +1338,12 @@ body.checklist {
   margin-top: 20px;
 }
 .avatar {
-  background-color: #ecf0f1;
+  background-color: #98afc6;
   display: inline-block;
   position: relative;
 }
 .avatar .initials {
-  color: #444;
+  color: white;
   display: block;
   font-size: 14px;
   font-weight: bold;

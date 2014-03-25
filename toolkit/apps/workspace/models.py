@@ -3,10 +3,16 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.db.models.loading import get_model
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models.signals import post_save
+from django.db.models.signals import pre_save, post_save
+
+from .signals import (ensure_workspace_slug,
+                      ensure_workspace_matter_code,
+                      # tool
+                      ensure_tool_slug)
 
 from toolkit.core.mixins import IsDeletedMixin
-from toolkit.core.signals import send_activity_log, on_workspace_post_save
+from toolkit.core.signals.activity import (on_workspace_post_save,)
+from toolkit.core.services.matter_activity import MatterActivityEventService  # cyclic
 
 from toolkit.utils import _class_importer
 
@@ -28,7 +34,7 @@ class Workspace(IsDeletedMixin, ClosingGroupsMixin, CategoriesMixin, models.Mode
     description = models.CharField(max_length=255, null=True, blank=True)
 
     slug = models.SlugField(blank=True)
-    matter_code = models.SlugField(null=True, blank=True)
+    matter_code = models.SlugField(max_length=128, null=True, blank=True)
 
     lawyer = models.ForeignKey('auth.User', null=True, related_name='lawyer_workspace')  # Lawyer that created this workspace
     client = models.ForeignKey('client.Client', null=True, blank=True)
@@ -44,11 +50,24 @@ class Workspace(IsDeletedMixin, ClosingGroupsMixin, CategoriesMixin, models.Mode
 
     objects = WorkspaceManager()
 
+    _actions = None  # private variable for MatterActivityEventService 
+
     class Meta:
         ordering = ['name', '-pk']
 
+    def __init__(self, *args, **kwargs):
+        #
+        # Initialize the actions property
+        #
+        self._actions = MatterActivityEventService(self)
+        super(Workspace, self).__init__(*args, **kwargs)
+
     def __unicode__(self):
         return '%s' % self.name
+
+    @property
+    def actions(self):
+        return self._actions
 
     @property
     def get_lawyer(self):
@@ -62,10 +81,25 @@ class Workspace(IsDeletedMixin, ClosingGroupsMixin, CategoriesMixin, models.Mode
             return None
 
     def get_absolute_url(self):
-        return reverse('workspace:view', kwargs={'slug': self.slug})
+        """
+        @BUSINESSRULE append checklist to the url
+        """
+        return '%s#/checklist' % reverse('matter:detail', kwargs={'matter_slug': self.slug})
 
     def available_tools(self):
         return Tool.objects.exclude(pk__in=[t.pk for t in self.tools.all()])
+
+    def update_percent_complete(self):
+        all_items_count = self.item_set.count()
+        value = 0
+        if all_items_count > 0:
+            value = float(self.item_set.filter(is_complete=True).count()) / float(all_items_count)
+            value = round(value * 100, 0)
+        self.data['percent_complete'] = "{0:.0f}%".format(value)
+        self.save(update_fields=['data'])
+
+    def get_percent_complete(self):
+        return self.data.get('percent_complete', "{0:.0f}%".format(0))
 
     def can_read(self, user):
         return user in self.participants.all()
@@ -76,7 +110,12 @@ class Workspace(IsDeletedMixin, ClosingGroupsMixin, CategoriesMixin, models.Mode
     def can_delete(self, user):
         return user.profile.is_lawyer and (user == self.lawyer or user in self.participants.all())
 
-post_save.connect(on_workspace_post_save, sender=Workspace)
+"""
+Connect signals
+"""
+pre_save.connect(ensure_workspace_slug, sender=Workspace, dispatch_uid='workspace.pre_save.ensure_workspace_slug')
+pre_save.connect(ensure_workspace_matter_code, sender=Workspace, dispatch_uid='workspace.pre_save.ensure_workspace_matter_code')
+post_save.connect(on_workspace_post_save, sender=Workspace, dispatch_uid='workspace.post_save.on_workspace_post_save')
 
 rulez_registry.register("can_read", Workspace)
 rulez_registry.register("can_edit", Workspace)
@@ -89,9 +128,11 @@ class InviteKey(models.Model):
     """
     key = UUIDField(auto=True, db_index=True)
     invited_user = models.ForeignKey('auth.User', related_name='invitations')
-    inviting_user = models.ForeignKey('auth.User', related_name='invitiations_made')
-    tool = models.ForeignKey('workspace.Tool', blank=True)
-    tool_object_id = models.IntegerField(blank=True)
+    # is null and blank to allow us to do 1 invitekey per user
+    inviting_user = models.ForeignKey('auth.User', blank=True, null=True, related_name='invitiations_made')
+    matter = models.ForeignKey('workspace.Workspace', blank=True, null=True)
+    tool = models.ForeignKey('workspace.Tool', blank=True, null=True)
+    tool_object_id = models.IntegerField(blank=True, null=True)
     next = models.CharField(max_length=255, blank=True)  # user will be redirected here on login
     data = JSONField(default={})  # for any extra data that needs to be stored
     has_been_used = models.BooleanField(default=False)
@@ -175,9 +216,6 @@ class Tool(models.Model):
         return self.data.get('icon', 'images/icons/mail.svg')
 
 """
-Import workspace signals
+Connect Signals
 """
-from .signals import (ensure_workspace_slug,
-                      ensure_workspace_matter_code,
-                      ensure_workspace_has_83b_by_default,
-                      ensure_tool_slug)
+pre_save.connect(ensure_tool_slug, sender=Tool, dispatch_uid='workspace.ensure_tool_slug')

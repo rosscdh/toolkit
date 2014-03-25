@@ -1,11 +1,47 @@
 # -*- coding: utf-8 -*-
+from django.http import HttpResponseRedirect
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView
 from django.core.exceptions import PermissionDenied
-from django.contrib.auth import authenticate, login, logout
+from django.core.urlresolvers import reverse
+from django.contrib.auth import authenticate, login
 
 from dj_crocodoc.services import CrocoDocConnectService
 
 from .models import ReviewDocument
+
+
+def _authenticate(request, obj, matter, **kwargs):
+    #
+    # Log in using the review backend
+    # 'toolkit.apps.review.auth_backends.ReviewDocumentBackend'
+    #
+    requested_authenticated_user = authenticate(username=kwargs.get('slug'), password=kwargs.get('auth_slug'))
+
+    if requested_authenticated_user:
+        #
+        # if the request user is in the object.participants
+        # it means they are owners and should be able to view this regardless
+        #
+        if request.user in matter.participants.all():
+            #
+            # we are an owner its all allowed
+            #
+            pass
+        else:
+            #
+            # user is we are already logged in then check this guys mojo!
+            #
+            if request.user.is_authenticated():
+                if requested_authenticated_user != request.user:
+                    raise PermissionDenied
+
+            #
+            # We are indeed the reviewer and are reviewing the document
+            #
+            login(request, requested_authenticated_user)
+            # only for the reviewer, we dont do this for when participants view
+            obj.reviewer_has_viewed = True
 
 
 class ReviewRevisionView(DetailView):
@@ -16,45 +52,33 @@ class ReviewRevisionView(DetailView):
     queryset = ReviewDocument.objects.prefetch_related().all()
     template_name = 'review/review.html'
 
-    def dispatch(self, request, *args, **kwargs):
-        #
-        # Log in using the review backend
-        # 'toolkit.apps.review.auth_backends.ReviewDocumentBackend'
-        #
-        user = authenticate(username=kwargs.get('slug'), password=kwargs.get('auth_slug'))
-
-        if request.user.is_authenticated() is True:
-            #
-            # user is we are already logged in then check this guys mojo!
-            #
-            if request.user != user:
-                raise PermissionDenied
-
-        if user:
-            login(request, user)
-
-        return super(ReviewRevisionView, self).dispatch(request=request, *args, **kwargs)
-
-    def get_filter_ids(self):
+    @property
+    def user_is_matter_participant(self):
         """
-        If the user is in the participants they can see everything
-        if they are just an invitee then they can only see their own comments
+        Test the current user is part of the high level matter.participants who
+        can view any and al previous revisions
         """
-        user = self.request.user
-        matter = self.object.document.item.matter
-        if user in matter.participants.all():
-            return None
+        return self.request.user in self.matter.participants.all()
+
+    def get_template_names(self):
+        if self.object.is_current is False and self.user_is_matter_participant is False:
+            return ['review/review-nolongercurrent.html']
         else:
-            return ','.join([str(user.pk), str(user.pk)])
+            return ['review/review.html']
+
+    def get_object(self):
+        self.object = super(ReviewRevisionView, self).get_object()
+        self.matter = self.object.document.item.matter
+
+        #
+        # Perform authentication of the user here
+        #
+        _authenticate(request=self.request, obj=self.object, matter=self.matter, **self.kwargs)
+
+        return self.object
 
     def get_context_data(self, **kwargs):
         kwargs = super(ReviewRevisionView, self).get_context_data(**kwargs)
-        
-        # test the file is present locally
-        if self.object.file_exists_locally is False:
-            # its not so download it locally so we can send the file to crocodoc
-            # and not deal with s3 permissions
-            self.object.download_if_not_exists()
 
         crocodoc = CrocoDocConnectService(document_object=self.object.document,
                                           app_label='attachment',
@@ -65,11 +89,11 @@ class ReviewRevisionView(DetailView):
         # and session automatically updated
         # https://crocodoc.com/docs/api/ for more info
         CROCDOC_PARAMS = {
-                "user": { "name": self.request.user.get_full_name(), 
+                "user": { "name": self.request.user.get_full_name(),
                 "id": self.request.user.pk
-            }, 
+            },
             "sidebar": 'auto',
-            "editable": True, # allow comments
+            "editable": self.object.is_current, # allow comments only if the item is current
             "admin": False, # noone should be able to delete other comments
             "downloadable": True, # everyone should be able to download a copy
             "copyprotected": False, # should not have copyprotection
@@ -93,3 +117,34 @@ class ReviewRevisionView(DetailView):
         })
 
         return kwargs
+
+
+#
+# @TODO refactor this to use user_passes_test decorator and ensure that the user is in the reviewers set
+#
+class ApproveRevisionView(DetailView):
+    queryset = ReviewDocument.objects.prefetch_related().all()
+
+    def get_object(self):
+        self.object = super(ApproveRevisionView, self).get_object()
+        self.matter = self.object.document.item.matter
+
+        _authenticate(request=self.request, obj=self.object, matter=self.matter, **self.kwargs)
+
+        return self.object
+
+    def approve(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        self.object.complete()
+        return HttpResponseRedirect(success_url)
+
+    @csrf_exempt
+    def dispatch(self, request, *args, **kwargs):
+        return super(ApproveRevisionView, self).dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.approve(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return reverse('request:list')

@@ -6,55 +6,56 @@ from rest_framework import exceptions
 from rest_framework.response import Response
 from rest_framework import status as http_status
 
+from rulez import registry as rulez_registry
+
 from toolkit.core.item.mailers import SignatoryReminderEmail
 from toolkit.apps.review.mailers import ReviewerReminderEmail
 
-from ..serializers import UserSerializer
-
+from ..serializers import SimpleUserSerializer
+from .mixins import SpecificAttributeMixin
 from .revision import ItemCurrentRevisionView
 
 import logging
 logger = logging.getLogger('django.request')
 
 
-class BaseReminderMixin(ItemCurrentRevisionView):
+class BaseReminderMixin(SpecificAttributeMixin, ItemCurrentRevisionView):
     """
     Mixin to ensure that inherited mthods are not implemented at this level
     necessary as we require the ItemCurrentRevisionView.get_object to provide us
     with the matter object
     """
-    serializer_class = UserSerializer  # return a set of users that were reminded
-    mailer = None
+    serializer_class = SimpleUserSerializer  # return a set of users that were reminded
+    specific_attribute = 'reviewers.all()'
+    allowed_methods = ('create',)
 
-    def post(self, request, **kwargs):
-        self.get_object()
+    def create(self, request, **kwargs):
 
         sent_to = {
-            'detail': 'Sent %s to these users' % self.mailer.name,
+            'detail': 'Sent reminder email to the following users',
             'results': []
         }
 
-        for u in self.get_revision_object_set_queryset().all():
-            try:
-                m = self.mailer(recipients=((u.get_full_name(), u.email,)))
-                m.process(subject=self.subject,
-                          item=self.item,
-                          from_name=self.request.user.get_full_name(),
-                          action_url='http://lawpal.com/etc/')
+        serializer = self.get_serializer_class()
 
-                sent_to['results'].append(UserSerializer(u).data)
+        for user in self.send_reminders():
+            #
+            # We expect a set of User objects here
+            #
+            sent_to['results'].append(serializer(user, context={'request': self.request}).data)
 
-            except Exception as e:
-                logger.critical('Could not send "%s" reminder email: %s' % (self.mailer, e))
         return Response(sent_to, status=http_status.HTTP_202_ACCEPTED)
 
-    def update(self, **kwargs):
+    def send_reminders(self):
+        raise NotImplementedError
+
+    def update(self, request, **kwargs):
         raise exceptions.MethodNotAllowed(method=self.request.method)
 
-    def delete(self, **kwargs):
+    def delete(self, request, **kwargs):
         raise exceptions.MethodNotAllowed(method=self.request.method)
 
-    def retrieve(self, **kwargs):
+    def retrieve(self, request, **kwargs):
         raise exceptions.MethodNotAllowed(method=self.request.method)
 
 
@@ -62,19 +63,68 @@ class RemindReviewers(BaseReminderMixin):
     """
     Send reminder emails to reviewers
     """
-    mailer = ReviewerReminderEmail
-    subject = '[ACTION REQUIRED] Reminder to review'
 
-    def get_revision_object_set_queryset(self):
-        return self.revision.reviewers
+    def send_reminders(self):
+        return self.item.send_review_reminder_emails(from_user=self.request.user)
+
+    def can_read(self, user):
+        return user.profile.user_class in ['lawyer']
+
+    def can_edit(self, user):
+        return user.profile.is_lawyer
+
+    def can_delete(self, user):
+        return user.profile.is_lawyer
+
+
+rulez_registry.register("can_read", RemindReviewers)
+rulez_registry.register("can_edit", RemindReviewers)
+rulez_registry.register("can_delete", RemindReviewers)
 
 
 class RemindSignatories(BaseReminderMixin):
     """
     Send reminder emails to signatories
     """
-    mailer = SignatoryReminderEmail
-    subject = '[ACTION REQUIRED] Reminder to sign'
+    specific_attribute = 'signatories.all()'
 
-    def get_revision_object_set_queryset(self):
-        return self.revision.signatories
+    def can_read(self, user):
+        return user.profile.user_class in ['lawyer']
+
+    def can_edit(self, user):
+        return user.profile.is_lawyer
+
+    def can_delete(self, user):
+        return user.profile.is_lawyer
+
+
+rulez_registry.register("can_read", RemindSignatories)
+rulez_registry.register("can_edit", RemindSignatories)
+rulez_registry.register("can_delete", RemindSignatories)
+
+
+class RemindRequestedRevisionInvitee(BaseReminderMixin):
+    """
+    Reminders for requested document invitees
+    """
+    specific_attribute = 'responsible_party'
+
+    def send_reminders(self):
+        return [self.item.send_document_requested_emails(from_user=self.request.user, subject='[REMINDER] Please provide a document')]
+
+    def get_object(self):
+        return self.item
+
+    def can_read(self, user):
+        return user.profile.user_class in ['lawyer']
+
+    def can_edit(self, user):
+        return user.profile.is_lawyer
+
+    def can_delete(self, user):
+        return user.profile.is_lawyer
+
+
+rulez_registry.register("can_read", RemindRequestedRevisionInvitee)
+rulez_registry.register("can_edit", RemindRequestedRevisionInvitee)
+rulez_registry.register("can_delete", RemindRequestedRevisionInvitee)

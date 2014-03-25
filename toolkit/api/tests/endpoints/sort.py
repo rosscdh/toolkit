@@ -75,7 +75,7 @@ class MatterSortTest(BaseEndpointTest):
 
         self.client.login(username=self.lawyer.username, password=self.password)
 
-        item_order = [i.get('slug') for i in self.matter.item_set.all().values('slug')]
+        item_order = [str(i.slug) for i in self.matter.item_set.all()]
         random.shuffle(item_order)
 
         data = {
@@ -128,4 +128,4 @@ class MatterSortTest(BaseEndpointTest):
     def test_anon_cant(self):
         for event in ['get', 'post', 'patch', 'delete']:
             resp = getattr(self.client, event)(self.endpoint, {}, content_type='application/json')
-            self.assertEqual(resp.status_code, 401)  # denied
+            self.assertEqual(resp.status_code, 403)  # forbidden

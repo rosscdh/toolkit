@@ -1,0 +1,104 @@
+{% extends 'notification/base.html' %}
+
+{% load url from future %}{% load humanize %}
+
+{% block body %}
+    <div id="notifications" class="content">
+        <div class="content-header notifications-header clearfix">
+            <div class="container">
+                <div class="col-sm-8 col-sm-offset-2">
+                    {% if object_list.count > 0 %}
+                        <div class="content-header-btn">
+                            <a href="javascript:;" id="mark-all-as-read" data-url="{% url 'notification:inbox-mark-all-read' %}" class="btn btn-default btn-wide"><span class="fui-check-inverted"></span>&nbsp;&nbsp;Mark everything as read</a>
+                        </div>
+                    {% endif %}
+                    <h3>{% if object_list.count > 0 %}<span class="circle">{{ object_list.count }}</span> {% endif %}Notifications</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-8 col-sm-offset-2" role="main">
+                    {% for notice in object_list %}
+                        <article class="notification">
+                            <div class="row">
+                                <div class="col-xs-1">
+                                    {#% avatar notice.user %#}
+                                    <div class="avatar img-circle"><span class="initials" title="Joe Bloggs">JB</span></div>
+                                </div>
+                                <div class="col-xs-10">
+                                    <p class="lead">{{ notice.message }}</p>
+                                    <p class="small">{{ notice.message.date|naturaltime }} — in <a href="#">Incorporation &amp; Seed Financing</a> — for <a href="#">Acme Inc</a>.</p>
+                                </div>
+                                <div class="col-xs-1">
+                                    <a href="javascript:;" data-pk="{{ notice.pk }}" data-url="{% url 'notification:inbox-read' pk=notice.pk %}" class="btn btn-sm notification-btn mark-as-read" data-toggle="tooltip" data-placement="top" title="Mark as read">
+                                        <span class="fui-check text-info"></span>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+                    {% empty %}
+                        <div class="col-md-12 text-center">
+                            <h6 class="text-muted">You currently have no open requests.</h6>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+<script>
+$(document).ready(function () {
+    'use strict';
+
+    $('a.mark-as-read').on('click', function(e) {
+        var $this = $(this);
+        var data = $this.data();
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        $.ajax({
+            "type": 'DELETE',
+            "url": data.url,
+            "dataType": 'json',
+            "contentType": 'application/json',
+            "beforeSend": function (jqXHR, settings) {
+                // Pull the token out of the DOM.
+                jqXHR.setRequestHeader('X-CSRFToken', $('input[name=csrf_token]:first').val());
+            },
+            "success": function (data) {
+                document.location.reload();
+            }
+        });
+    });
+
+    $('#mark-all-as-read').on('click', function(e) {
+        var $this = $(this);
+        var data = $this.data();
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        $.ajax({
+            "type": 'DELETE',
+            "url": data.url,
+            "dataType": 'json',
+            "contentType": 'application/json',
+            "beforeSend": function (jqXHR, settings) {
+                // Pull the token out of the DOM.
+                jqXHR.setRequestHeader('X-CSRFToken', $('input[name=csrf_token]:first').val());
+            },
+            "complete": function (data) {
+                document.location.reload();
+            }
+        });
+    });
+
+});
+</script>
+{% endblock %}

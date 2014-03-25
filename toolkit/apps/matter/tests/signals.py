@@ -5,7 +5,7 @@ from model_mommy import mommy
 
 from toolkit.casper.workflow_case import BaseScenarios
 
-from ..signals import participant_added
+from toolkit.apps.matter import signals
 
 
 class ParticipantAddedTest(BaseScenarios, TestCase):
@@ -20,14 +20,13 @@ class ParticipantAddedTest(BaseScenarios, TestCase):
         self.assertEqual(0, len(mail.outbox))
 
         # Check the email was sent
-        participant_added(self, self.matter, participant, self.lawyer)
+        signals.participant_added(self, self.matter, participant, self.lawyer, 'A note goes here')
         self.assertEqual(len(mail.outbox), 1)
 
         # Test parts of the email
         email = mail.outbox[0]
-        self.assertEqual(email.subject, 'You have been invited to the Lawpal (test) matter on LawPal')
+        self.assertEqual(email.subject, u'Lawyer Test added you to Lawpal (test) for Test Client Name')
         self.assertEqual(len(email.to), 1)
         self.assertEqual(email.to, ['test+participant@lawpal.com'])
         self.assertEqual(email.from_email, u'Lawyer Test (via LawPal) support@lawpal.com')
         self.assertEqual(email.extra_headers, {'Reply-To': self.lawyer.email})
-

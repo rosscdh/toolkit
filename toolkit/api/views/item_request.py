@@ -1,8 +1,10 @@
 # -*- coding: UTF-8 -*-
 from toolkit.apps.workspace.services import EnsureCustomerService
 
-from ..serializers import (MatterSerializer, SimpleUserSerializer)
+from ..serializers import (SimpleUserSerializer)
 from .item import MatterItemView
+
+import datetime
 
 
 class ItemRequestRevisionView(MatterItemView):
@@ -14,43 +16,56 @@ class ItemRequestRevisionView(MatterItemView):
     """
     http_method_names = ('get', 'patch',)
 
-    requested_by = None
-    note = None  # provided by requesting party and added to item.data json obj
-
+    message = None  # provided by requesting party and added to item.data json obj
 
     def get_serializer(self, instance, data=None,
                        files=None, many=False, partial=False):
         """
-        Remove the note from the data to be validated but use it again in 
+        Remove the note from the data to be validated but use it again in
         pre_save add it to the data
         """
         #
         # Save the note for later
         #
-        self.note = data.pop('note', None) if data is not None else None
-        self.requested_by = self.request.user
+        self.message = data.pop('message', None) if data is not None else None
 
-        return super(ItemRequestRevisionView, self).get_serializer(instance=instance, data=data,
-                                                                   files=files, many=many, partial=partial)
+        return super(ItemRequestRevisionView, self).get_serializer(instance=instance,
+                                                                   data=data,
+                                                                   files=files,
+                                                                   many=many,
+                                                                   partial=partial)
 
     def responsible_party(self, obj):
-        service = EnsureCustomerService(username=username, full_name=None)
-        is_new, user, profile = service.process()
-        return is_new, user, profile
+        email = self.request.DATA.get('email')
+        first_name = self.request.DATA.get('first_name')
+        last_name = self.request.DATA.get('last_name')
 
-    def pre_save(self, obj):
-        obj.status = obj.ITEM_STATUS.awaiting_document
+        service = EnsureCustomerService(email=email, full_name='%s %s' % (first_name, last_name))
+        is_new, user, profile = service.process()
+
+        return user
+
+    def pre_save(self, obj, **kwargs):
+        obj.is_requested = True
         #
         # Cant use the generic note and requested_by setters due to atomic locks
         # raises TransactionManagementError
         #
         obj.data.update({
             'request_document': {
-                'note': self.note,
-                'requested_by': SimpleUserSerializer(self.requested_by, context={'request': self.request}).data,
+                'message': self.message,
+                'requested_by': SimpleUserSerializer(self.request.user, context={'request': self.request}).data,
+                'date_requested': datetime.datetime.utcnow()
             }
         })
 
-        #is_new, obj.responsible_party, profile = self.responsible_party(obj=obj)
+        obj.responsible_party = self.responsible_party(obj=obj)
 
-        return super(ItemRequestRevisionView, self).pre_save(obj=obj)
+        return super(ItemRequestRevisionView, self).pre_save(obj=obj, **kwargs)
+
+    def post_save(self, obj, **kwargs):
+        """
+        Send the email to the items responsible_party
+        """
+        self.object.send_document_requested_emails(from_user=self.request.user)
+        super(ItemRequestRevisionView, self).post_save(obj=obj, **kwargs)

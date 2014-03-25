@@ -6,6 +6,8 @@ from rulez import registry as rulez_registry
 
 from rest_framework import viewsets
 from rest_framework import generics
+from rest_framework import status
+from rest_framework.response import Response
 
 from toolkit.core.attachment.models import Revision
 
@@ -60,7 +62,8 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
         but return the Revision object as self.object
         """
         if self.request.method in ['POST']:
-            self.revision = Revision(uploaded_by=self.request.user, item=self.item)
+
+            self.revision = Revision(uploaded_by=self.request.user, item=self.item) if self.request.user.is_authenticated() else None
 
         else:
 
@@ -82,8 +85,13 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
                        files=None, many=False, partial=False):
         # pop it
         if data is not None:
-            data['item'] = ItemSerializer(self.item).data.get('url')
-            data['uploaded_by'] = UserSerializer(self.request.user).data.get('url')
+            item_serializer_data = ItemSerializer(self.item, context={'request': self.request}).data
+            user_serializer_data = UserSerializer(self.request.user, context={'request': self.request}).data
+
+            data.update({
+                'item': item_serializer_data.get('url'),
+                'uploaded_by': user_serializer_data.get('url'),
+            })
 
         return super(ItemCurrentRevisionView, self).get_serializer(instance=instance,
                                                                    data=data,
@@ -91,19 +99,68 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
                                                                    many=many,
                                                                    partial=partial)
 
+    def create(self, request, *args, **kwargs):
+        #
+        # NB! this is the important line
+        # we always have a revision object! normally you dont you just pass in data and files
+        # but this is a specialized case where we also always have a self.revision
+        # so we have to clone the base class method except for the following lines
+        #
+        self.revision.pk = None  # ensure that we are CREATING a new one based on the existing one
+        self.revision.is_current = True
+        serializer = self.get_serializer(self.revision, data=request.DATA, files=request.FILES)
+
+        if serializer.is_valid():
+            self.pre_save(serializer.object)
+            self.object = serializer.save(force_insert=True)
+            self.post_save(self.object, created=True)
+            headers = self.get_success_headers(serializer.data)
+            #
+            # Custom signal event
+            #
+            self.matter.actions.created_revision(user=self.request.user,
+                                                 item=self.item,
+                                                 revision=self.revision)
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED,
+                            headers=headers)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, **kwargs):
+        resp = super(ItemCurrentRevisionView, self).destroy(request=request, **kwargs)
+        self.matter.actions.deleted_revision(user=self.request.user,
+                                             item=self.item,
+                                             revision=self.revision)
+        return resp
+
     def pre_save(self, obj):
         """
         @BUSINESSRULE Enforce the revision.uploaded_by and revision.item
         """
         obj.item = self.item
         obj.uploaded_by = self.request.user
+
+        if obj.name is None:
+            executed_file = self.request.FILES.get('executed_file')
+            if executed_file is not None:
+                #
+                # Set the object name to the filename if no obj.name exists
+                #
+                obj.name = executed_file.name
+
         super(ItemCurrentRevisionView, self).pre_save(obj=obj)
 
     def can_read(self, user):
-        return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
+        """
+        the lawyer the customer as well as the latest_revision reviewers can read
+        """
+        return (user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all() \
+            or user in self.item.latest_revision.reviewers.all())
 
     def can_edit(self, user):
-        return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
+        return (user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all() \
+            or user in self.item.latest_revision.reviewers.all())
 
     def can_delete(self, user):
         return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant

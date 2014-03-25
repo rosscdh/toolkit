@@ -3,6 +3,8 @@
 Matters are workspaces; and are composted of items, which may be a todo item
 or a document item
 """
+from django.core.urlresolvers import reverse
+
 from rest_framework import serializers
 
 from toolkit.apps.workspace.models import Workspace
@@ -34,6 +36,8 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
     current_user_todo = serializers.SerializerMethodField('get_current_user_todo')
     current_user = serializers.SerializerMethodField('get_current_user')
 
+    percent_complete = serializers.SerializerMethodField('get_percent_complete')
+
     class Meta:
         model = Workspace
         fields = ('url', 'name', 'slug', 'matter_code',
@@ -41,7 +45,8 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
                   'closing_groups', 'categories',
                   'items', 'comments', 'activity',
                   'current_user', 'current_user_todo',
-                  'date_created', 'date_modified',)
+                  'date_created', 'date_modified',
+                  'percent_complete')
 
     def get_closing_groups(self, obj):
         """
@@ -61,7 +66,7 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
         """
         tmp method will eventually be replaced by matter.items_set.all()
         """
-        return [ItemSerializer(i).data for i in obj.item_set.filter(parent=None)]
+        return [ItemSerializer(i, context=self.context).data for i in obj.item_set.filter(parent=None)]
 
     def get_comments(self, obj):
         """
@@ -89,8 +94,12 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
         return []
 
     def get_current_user(self, obj):
-        user = obj.lawyer
-        return LiteUserSerializer(user).data
+        request = self.context.get('request')
+        current_user = LiteUserSerializer(request.user, context={'request': request}).data
+        current_user.update({
+            'has_notifications': request.user.profile.has_notifications
+        })
+        return current_user
 
     def get_current_user_todo(self, obj):
         """
@@ -103,6 +112,9 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
         #return [todo.copy() for i in xrange(0,5)]
         return []
 
+    def get_percent_complete(self, obj):
+        return obj.get_percent_complete
+
 
 class LiteMatterSerializer(MatterSerializer):
     """
@@ -110,4 +122,15 @@ class LiteMatterSerializer(MatterSerializer):
     """
     class Meta(MatterSerializer.Meta):
         fields = ('url', 'name', 'slug', 'matter_code', 'client',
-                  'lawyer', 'participants', 'date_created', 'date_modified')
+                  'lawyer', 'participants', 'date_created', 'date_modified',
+                  'percent_complete')
+
+
+class SimpleMatterSerializer(MatterSerializer):
+    django_url = serializers.SerializerMethodField('get_django_url')
+
+    class Meta(MatterSerializer.Meta):
+        fields = ('django_url', 'name',)
+
+    def get_django_url(self, obj):
+        return '%s#/checklist' % obj.get_absolute_url()

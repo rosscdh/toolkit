@@ -31,8 +31,12 @@
 // Content
 // -------------------------
 
-body.checklist {
+body.gui {
   background-color: #f2f2f2;
+
+  .main-content {
+    padding: 0;
+  }
 }
 
 
@@ -52,6 +56,32 @@ body.checklist {
 
 .content .lead {
     font-size:22px;
+}
+
+.content-header {
+  background-color: lighten(@silver, 27%);
+  margin-bottom: 20px;
+  margin-top: -20px;
+
+  h3 {
+    color: darken(@silver, 40%);
+    font-size: 24px;
+    margin: 50px 0 30px 0;
+    vertical-align: center;
+
+    span.circle {
+      background-color: @brand-danger;
+      border-radius: 40px;
+      color: white;
+      margin-right: 3px;
+      padding: 8px 15px;
+    }
+  }
+}
+
+.content-header-btn {
+  float: right;
+  margin-top: 45px;
 }
 
 
@@ -157,9 +187,12 @@ body.checklist {
       h5, h6 {
         margin: 0 0 3px;
       }
-
+      h5 {
+        color:@midnight-blue;
+      }
       h6 {
         font-size: 14px;
+        color:@concrete;
       }
 
       p {
@@ -169,7 +202,7 @@ body.checklist {
     }
 
     .meta {
-      margin-bottom: 10px;
+      margin-bottom: 0px;
 
       p {
         color: grey;
@@ -177,6 +210,11 @@ body.checklist {
         font-style: italic;
         line-height: 40px;
         margin-bottom: 5px;
+        &.done {
+          color:@brand-success;
+          font-style: normal;
+          font-weight: bold;
+        }
       }
     }
   }
@@ -187,6 +225,13 @@ body.checklist {
     position: absolute;
     right: 5px;
     top: 5px;
+  }
+  .progress {
+    margin-bottom:0px;
+    border-radius:0px;
+    .progress-bar {
+      border-radius:0px;
+    }
   }
 }
 
@@ -244,6 +289,12 @@ body.checklist {
 .popover-content {
   font-size: ceil(@component-font-size-base * 0.913); // ~14px
   line-height: 1.226; // 18px
+}
+
+.padlock {
+  float: left;
+  line-height: 40px;
+  margin-right: 10px;
 }
 
 // Document Icons
@@ -322,6 +373,114 @@ body.checklist {
     padding-bottom: 11px;
   }
 }
+
+
+// Notfications
+// -------------------------
+
+.navbar.checklist-nav li.notifications a{
+    [class*="fui-"] {
+      color: lighten(@brand-primary, 25%);
+    }
+
+
+  &.unread {
+    [class*="fui-"] {
+      color: lighten(@brand-warning, 3%);
+      text-shadow:0px 0px 10px #232323;
+    }
+  }
+}
+
+
+// Notifications
+// -------------------------
+
+#notifications {
+  .notification {
+    background-color: white;
+    border: 1px solid #e8ecec;
+    padding: 20px;
+
+    .avatar {
+      margin-top: 8px;
+    }
+
+    .notification-btn {
+        font-size: 20px;
+        margin-top: 8px;
+        text-align: right;
+    }
+
+    p {
+      color: @gray;
+      margin-bottom: 0;
+    }
+  }
+}
+
+
+// Requests
+// -------------------------
+
+#requests {
+  section {
+    margin-bottom: 50px;
+
+    h5 {
+      color: #666;
+      font-size: 19px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    p.lead {
+      font-size: 15px;
+      margin-bottom: 10px;
+    }
+  }
+
+  .request {
+    background-color: white;
+    border: 1px solid #e8ecec;
+    padding: 20px;
+
+    .request-icon {
+      color: #6d8082;
+      float: left;
+      font-size: 45px;
+      margin-right: 16px;
+      margin-top: 4px;
+    }
+
+    .request-title {
+      color: #2980b9;
+      font-size: 20px;
+      margin-bottom: 5px;
+      margin-top: 0;
+    }
+
+    .request-btn {
+      float: right;
+      margin-top: 23px;
+    }
+
+    .request-status {
+      color: @brand-success;
+      float: right;
+      margin-top: 30px;
+    }
+
+    p {
+      color: @gray;
+    }
+
+    blockquote {
+      margin-bottom: 0;
+    }
+  }
+}
+
 
 // Sidebar
 // -------------------------
@@ -686,12 +845,12 @@ body.checklist {
 // -------------------------
 
 .avatar {
-  background-color: @clouds;
+  background-color: lighten(@wet-asphalt, 40%);
   display: inline-block;
   position: relative;
 
   .initials {
-    color: #444;
+    color: white;
     display: block;
     font-size: 14px;
     font-weight: bold;

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
-from collections import namedtuple
+from collections import namedtuple, OrderedDict
 from django.contrib.sites.models import Site
 
 
@@ -58,7 +58,7 @@ def get_namedtuple_choices(name, choices_tuple):
             return zip(tuple(self), self._choices)
 
         def get_choices_dict(self):
-            choices = {}
+            choices = OrderedDict()
             for v, k in self.get_choices():
                 choices[k] = v
             return choices

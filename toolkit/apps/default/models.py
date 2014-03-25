@@ -14,6 +14,8 @@ class UserProfile(models.Model):
     CUSTOMER = 'customer'
     LAWYER = 'lawyer'
 
+    has_notifications = models.BooleanField(default=False)
+
     user = models.OneToOneField('auth.User',
                                 unique=True,
                                 related_name='profile')
@@ -79,6 +81,18 @@ def _get_or_create_user_profile(user):
 # used to trigger profile creation by accidental refernce. Rather use the _create_user_profile def above
 User.profile = property(lambda u: _get_or_create_user_profile(user=u)[0])
 
+
+"""
+Overide the user __unicode__ method to actually return somethign useful.
+
+"""
+def custom__unicode__(self, **kwargs):
+    name = '%s %s' % (self.first_name, self.last_name)
+    if name.strip() in ['', None]:
+        name = self.email
+    return name
+
+User.add_to_class('__unicode__', custom__unicode__)
 
 """
 Overide the user get_full_name method to actually return somethign useful if

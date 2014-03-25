@@ -35,6 +35,7 @@ env.timestamp = time.time()
 env.is_predeploy = False
 env.local_user = getpass.getuser()
 env.environment = 'local'
+env.virtualenv_path = '~/.virtualenvs/toolkit/'
 
 env.truthy = ['true','t','y','yes','1',1]
 env.falsy = ['false','f','n','no','0',0]
@@ -515,6 +516,38 @@ def run_tests():
         result = local('python manage.py test')
         if result not in ['', 1, True]:
             error(colored('You may not proceed as the tests are not passing', 'orange'))
+
+
+@task
+@runs_once
+def build_angular_app():
+    # move local_settings.py if present
+    if os.path.exists('toolkit/local_settings.py'):
+        local('mv toolkit/local_settings.py /tmp/local_settings.py')
+
+    # copy conf/production.local_settings.py
+    # has the very important ("ng", os.path.join(SITE_ROOT, 'gui', 'dist')),
+    # settings
+    local('cp conf/production.local_settings.py toolkit/local_settings.py')
+
+    # move tmp/local_settings.py back
+    if os.path.exists('/tmp/local_settings.py'):
+        local('rm toolkit/local_settings.py')  # remove the production version local_settings so noone loses their mind
+        local('mv /tmp/local_settings.py toolkit/local_settings.py')
+    else:
+        if env.environment_class == 'local':
+            # copy the default dev localsettings
+            import pdb;pdb.set_trace()
+            local('cp conf/dev.local_settings.py toolkit/local_settings.py')
+
+
+    # perform grunt build --djangoProd
+    local('cd gui;grunt build -djangoProd')
+
+    # collect static
+    if env.environment_class == 'local':
+        local('python manage.py collectstatic --noinput')
+
 
 
 @task

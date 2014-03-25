@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 from actstream.managers import ActionManager, stream
 import datetime
+from toolkit.core.mixins import IsDeletedManager
 
 
-__author__ = 'Marius Burfey <marius.burfey@ambient-innovation.com> - 09.03.14'
-
-
-class ToolkitActionManager(ActionManager):
+class ToolkitActionManager(IsDeletedManager, ActionManager):
 
     @stream
     def target_by_customer_stream(self, object, customer, **kwargs):

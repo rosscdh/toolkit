@@ -50,3 +50,27 @@ Should be >= phantomjs: 1.9.0
 __UBUNTU__
 
 1. ```sudo apt-get install libxml2-dev libxslt1-dev```
+
+
+GUI Production Mode
+-------------------
+
+Enabling these settings will allow you to build commit and test the production
+version of the gui application.
+
+
+__toolkit.local_settings.py__
+
+```
+DEBUG = False
+TEST_PREPROD = True
+
+if TEST_PREPROD is True:
+    STATICFILES_DIRS = (
+        # These are the production files
+        # not that static is in gui/dist/static *not to be confused with the django {{ STATIC_URL }}ng/ which will now point correctly
+        ("ng", os.path.join(SITE_ROOT, 'gui', 'dist')),
+```
+
+1. fab build_angular_app
+

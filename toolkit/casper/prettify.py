@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
 from functools import wraps
 
 import re
@@ -7,6 +8,9 @@ import httpretty
 
 import logging
 logger = logging.getLogger('django.test')
+
+
+ABRIDGE_API_URL = getattr(settings, 'ABRIDGE_API_URL', 'http://abridge.local.dev/')
 
 
 def mock_http_requests(view_func):
@@ -28,7 +32,7 @@ def mock_http_requests(view_func):
         # Crocdoc
         #
         httpretty.register_uri(httpretty.POST, "https://crocodoc.com/api/v2/session/create",
-                       body='{"session": i_12345-123_123_123-12345_123}',
+                       body='{"session": "i_12345-123_123_123-12345_123"}',
                        status=200)
         httpretty.register_uri(httpretty.GET, "https://crocodoc.com/api/v2/document/status",
                        body='{"success": true}',
@@ -37,7 +41,7 @@ def mock_http_requests(view_func):
                        body='{"success": true, "uuid": "123-test-123-uuid"}',
                        status=200)
         httpretty.register_uri(httpretty.POST, "https://crocodoc.com/api/v2/document/delete",
-                       body='{"token": "pRzHhZS4jaGes193db28cwyu", "uuid": "123-test-123-uuid"}',
+                       body='{"token": "aHzHhSK4jaGes193db28vwjw", "uuid": "123-test-123-uuid"}',
                        status=200)
         httpretty.register_uri(httpretty.GET, re.compile("https://crocodoc.com/view/(.*)"),
                        body='This is a document',
@@ -55,10 +59,10 @@ def mock_http_requests(view_func):
         #
         # Abridge
         #
-        httpretty.register_uri(httpretty.POST, re.compile("http://abridge.local.dev/(.+)"),
+        httpretty.register_uri(httpretty.POST, re.compile("%s(.*)" % ABRIDGE_API_URL),
                                body='{"success": true}',
                                status=200)
-        httpretty.register_uri(httpretty.GET, re.compile("http://abridge.local.dev/(.+)"),
+        httpretty.register_uri(httpretty.GET, re.compile("%s(.*)" % ABRIDGE_API_URL),
                                body='{"success": true}',
                                status=200)
         #

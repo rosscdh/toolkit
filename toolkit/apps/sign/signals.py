@@ -6,26 +6,6 @@ from django.db.models.signals import m2m_changed, post_save
 from .models import SignDocument
 
 
-"""
-When new SignDocument are created automatically the matter.participants are
-added as signdocument.participants and given auth keys
-This allows them to enter into conversation with each document
-"""
-
-
-@receiver(post_save, sender=SignDocument, dispatch_uid='sign.ensure_matter_participants_are_in_signdocument_participants')
-def ensure_matter_participants_are_in_signdocument_participants(sender, instance, **kwargs):
-    """
-    When the object is saved we always need to ensure that the matter.participants
-    are party to the signs
-    """
-    matter = instance.document.item.matter
-    for u in matter.participants.all():
-        if u not in instance.participants.all():
-            # add them
-            instance.participants.add(u)
-
-
 def _add_as_authorised(instance, pk_set):
     user = User.objects.filter(pk__in=pk_set).first()
     instance.authorise_user_to_sign(user=user)
@@ -37,27 +17,36 @@ def _remove_as_authorised(instance, pk_set):
 
 
 """
-Handle when a matter.participant is added to the object
+When new SignDocument are created automatically the matter.participants are
+added as signdocument.participants and given auth keys
+This allows them to enter into conversation with each document
 """
 
 
-@receiver(m2m_changed, sender=SignDocument.participants.through, dispatch_uid='signdocument.on_participant_add')
-def on_participant_add(sender, instance, action, **kwargs):
+@receiver(post_save, sender=SignDocument, dispatch_uid='sign.ensure_matter_participants_are_in_signdocument_participants')
+def ensure_matter_participants_are_in_signdocument_participants(sender, instance, **kwargs):
     """
-    when a signer is added from the m2m then authorise them
-    for access
+    When the object is saved we always need to ensure that the matter.participants
+    are party to the reviews
     """
-    if action in ['post_add']:
-        _add_as_authorised(instance=instance, pk_set=kwargs.get('pk_set'))
+    matter = instance.document.item.matter
+    # used to check for deletions
+    authorised_user_pks = [u.pk for u in instance.signers.all()]  # current reviewers
 
+    for u in matter.participants.all():
+        authorised_user_pks.append(u.pk) # these guys are in by default
 
-@receiver(m2m_changed, sender=SignDocument.participants.through, dispatch_uid='signdocument.on_participant_remove')
-def on_participant_remove(sender, instance, action, **kwargs):
-    """
-    when a signer is removed from the m2m then deauthorise them
-    """
-    if action in ['post_remove']:
-        _remove_as_authorised(instance=instance, pk_set=kwargs.get('pk_set'))
+        if instance.get_user_auth(user=u) is None:
+            # add them
+            _add_as_authorised(instance=instance, pk_set=[u.pk])
+    #
+    # Cleanup after onesself
+    # get current set of authorised_user_pks
+    # adn ensure there are no excessive (older, users that were in the matter but are now not) ones in there
+    #
+    for pk in instance.auth.keys():
+        if int(pk) not in authorised_user_pks:
+            _remove_as_authorised(instance=instance, pk_set=[pk])
 
 
 """

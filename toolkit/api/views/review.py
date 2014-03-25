@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404
 
 from rulez import registry as rulez_registry
 
+from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework import exceptions
 from rest_framework.response import Response
@@ -20,10 +21,35 @@ from toolkit.apps.review.models import ReviewDocument
 from toolkit.apps.workspace.models import Workspace
 from toolkit.apps.workspace.services import EnsureCustomerService
 
-from ..serializers import SimpleUserSerializer
+from ..serializers import SimpleUserWithReviewUrlSerializer
+from ..serializers import ReviewSerializer
 
 import logging
+
 logger = logging.getLogger('django.request')
+
+
+class ReviewEndpoint(viewsets.ModelViewSet):
+    """
+    Primary Matter ViewSet
+    """
+    model = ReviewDocument
+    serializer_class = ReviewSerializer
+    lookup_field = 'pk'
+
+    def can_read(self, user):
+        return user.profile.user_class in ['lawyer',]
+
+    def can_edit(self, user):
+        return user.profile.is_lawyer
+
+    def can_delete(self, user):
+        return user.profile.is_lawyer
+
+
+rulez_registry.register("can_read", ReviewEndpoint)
+rulez_registry.register("can_edit", ReviewEndpoint)
+rulez_registry.register("can_delete", ReviewEndpoint)
 
 
 class BaseReviewerSignatoryMixin(generics.GenericAPIView):
@@ -32,7 +58,7 @@ class BaseReviewerSignatoryMixin(generics.GenericAPIView):
     and their required functionality
     """
     model = Revision  # to allow us to use get_object generically
-    serializer_class = SimpleUserSerializer  # as we are returning the revision and not the item
+    serializer_class = ReviewSerializer  # as we are returning the revision and not the item
     lookup_field = 'slug'
     lookup_url_kwarg = 'item_slug'
 
@@ -40,6 +66,7 @@ class BaseReviewerSignatoryMixin(generics.GenericAPIView):
         self.matter = get_object_or_404(Workspace, slug=kwargs.get('matter_slug'))
         self.item = get_object_or_404(self.matter.item_set.all(), slug=kwargs.get('item_slug'))
         self.revision = self.item.latest_revision
+
         super(BaseReviewerSignatoryMixin, self).initial(request, *args, **kwargs)
 
     def get_queryset_provider(self):
@@ -66,19 +93,7 @@ class ItemRevisionReviewersView(generics.ListAPIView,
         [lawyer,customer] to list, create reviewers
     """
     def get_queryset_provider(self):
-        return self.revision.reviewers
-
-    def process_event_purpose_object(self, user):
-        # perform ReviewDocument get or create
-        #
-        # @BUSINESSRULE NB: this will work as long as we have review.REVIEWER_ASSOCIATION_STRATEGIES.single as default
-        #
-        review_doc, is_new = ReviewDocument.objects.get_or_create(document=self.revision,
-                                                                  reviewers__in=[user])
-        # add the user to the reviewers if not there alreadt
-        review_doc.reviewers.add(user) if user not in review_doc.reviewers.all() else None
-
-        logger.info("Added %s to the ReviewDocument %s is_new: %s for revision: %s" % (user, review_doc, is_new, self.revision))
+        return self.revision.reviewdocument_set
 
     def create(self, request, **kwargs):
         """
@@ -88,7 +103,11 @@ class ItemRevisionReviewersView(generics.ListAPIView,
         3. if not make them one
         """
         username = request.DATA.get('username')
+        first_name = request.DATA.get('first_name')
+        last_name = request.DATA.get('last_name')
         email = request.DATA.get('email')
+        note = request.DATA.get('note')
+
         if username is None and email is None:
             raise exceptions.APIException('You must provide a username or email')
 
@@ -106,19 +125,27 @@ class ItemRevisionReviewersView(generics.ListAPIView,
 
             else:
                 # we have a new user here
-                user_service = EnsureCustomerService(email=email)
+                user_service = EnsureCustomerService(email=email, full_name='%s %s' % (first_name, last_name))
                 is_new, user, profile = user_service.process()
 
-        note = request.DATA.get('note')
+        if user not in self.get_queryset():
+            # add to the join if not there already
+            # add the user to the purpose of this endpoint object review||signature
+            self.revision.reviewers.add(user)
 
-        # add to the join if not there already
-        self.get_queryset_provider().add(user) if user not in self.get_queryset() else None
+            #
+            # Send invite to review Email
+            #
+            self.item.send_invite_to_review_emails(from_user=request.user, to=[user], note=note)
 
-        # add the user to the purpose of this endpoint object review||signature
-        self.process_event_purpose_object(user=user)
+            self.matter.actions.added_user_as_reviewer(item=self.item,
+                                                       adding_user=request.user,
+                                                       added_user=user)
 
+        review_document = self.item.latest_revision.reviewdocument_set.filter(reviewers__in=[user]).first()
         # we have the user at this point
-        serializer = self.get_serializer(user)
+        serializer = self.get_serializer(review_document)
+
         headers = self.get_success_headers(serializer.data)
 
         return Response(serializer.data, status=http_status.HTTP_201_CREATED, headers=headers)
@@ -148,7 +175,7 @@ class ItemRevisionReviewerView(generics.RetrieveAPIView,
         [lawyer,customer] to view, delete reviewers
     """
     model = User  # to allow us to use get_object generically
-    serializer_class = SimpleUserSerializer  # as we are returning the revision and not the item
+    serializer_class = SimpleUserWithReviewUrlSerializer  # as we are returning the revision and not the item
     lookup_field = 'username'
     lookup_url_kwarg = 'username'
 
@@ -184,16 +211,7 @@ class ItemRevisionReviewerView(generics.RetrieveAPIView,
             #
             status = http_status.HTTP_406_NOT_ACCEPTABLE
 
-        for reviewdocument in reviewdocument_set:
-            auth_url = reviewdocument.get_absolute_url(user=user)
-
-            data.update({
-                'auth_url': auth_url
-            })
-
-            #headers = self.get_success_headers(serializer.data)
-            status = http_status.HTTP_200_OK
-            break
+        status = http_status.HTTP_200_OK
 
         return Response(data, status=status)
 
@@ -211,6 +229,11 @@ class ItemRevisionReviewerView(generics.RetrieveAPIView,
             # reviewdocument object too
             #
             self.revision.reviewers.remove(user)
+
+            self.matter.actions.removed_user_as_reviewer(item=self.item,
+                                                         removing_user=request.user,
+                                                         removed_user=user)
+
         else:
             status = http_status.HTTP_404_NOT_FOUND
 

@@ -46,12 +46,10 @@ class MatterFormTest(BaseScenarios, TestCase):
         self.assertEqual(m.participants.all()[0], self.lawyer)
 
     def test_client_name_data_source(self):
+        Client.objects.all().delete()
         Client.objects.create(name='Acme Inc', lawyer=self.lawyer)
         Client.objects.create(name='Bar Inc', lawyer=self.lawyer)
         Client.objects.create(name='Foo Inc', lawyer=self.lawyer)
 
         form = MatterForm(user=self.lawyer)
-        self.assertEqual(
-            form.fields['client_name'].widget.attrs['data-source'],
-            json.dumps(list(['Acme Inc', 'Bar Inc', 'Foo Inc']))
-        )
+        self.assertItemsEqual(form.fields['client_name'].widget.attrs['data-source'], json.dumps(list(['Acme Inc', 'Bar Inc', 'Foo Inc'])))

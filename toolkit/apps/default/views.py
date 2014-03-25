@@ -92,11 +92,7 @@ class HomePageView(TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated():
-            try:
-                workspace = Workspace.objects.mine(user=request.user).first()
-                return HttpResponseRedirect(workspace.get_absolute_url())
-            except:
-                return HttpResponseRedirect(reverse('dash:default'))
+            return HttpResponseRedirect(reverse('matter:list'))
         else:
             return super(HomePageView, self).dispatch(request, *args, **kwargs)
 
@@ -109,7 +105,7 @@ class StartView(LogOutMixin, SaveNextUrlInSessionMixin, AuthenticateUserMixin, F
     form_class = SignInForm
 
     def get_success_url(self):
-        url = reverse('dash:default')
+        url = reverse('matter:list')
         tool_redirect_url = None
         if self.request.user.profile.is_customer is True:
             #
@@ -186,7 +182,7 @@ class SignUpView(LogOutMixin, AuthenticateUserMixin, FormView):
     form_class = SignUpForm
 
     def get_success_url(self):
-        return reverse('dash:default')
+        return reverse('matter:list')
 
     def form_valid(self, form):
         # user a valid form log them in

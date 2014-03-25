@@ -1,14 +1,17 @@
 *.diff
-gui/dist/
+gui/index.html  # ignore the generated dev index.html
+gui/temp/*
+toolkit/production_settings\.py # ignoring the test productions
 setup.cfg
 .sonar
 hellosign
 hello_sign
+actstream
 *_valid.html
 *_invalid.html
 \.coverage
 test_steps.json
-toolkit/production_settings\.py # placed here temporarily for testing
+toolkit/production_settings\.py # placed here for the test process (as we test production settings from this file)
 *.pyc
 *.sqlite3
 *.swp
@@ -34,4 +37,3 @@ composer.lock
 /log/*.log
 /MANIFEST
 /build
-/dist
