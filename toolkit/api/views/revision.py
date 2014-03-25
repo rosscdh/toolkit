@@ -16,6 +16,7 @@ from .mixins import (MatterItemsQuerySetMixin,)
 from ..serializers import RevisionSerializer
 from ..serializers import ItemSerializer
 from ..serializers import UserSerializer
+from toolkit.core.item.models import Item
 
 
 class RevisionEndpoint(viewsets.ModelViewSet):
@@ -124,6 +125,13 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
             self.matter.actions.created_revision(user=self.request.user,
                                                  item=self.item,
                                                  revision=self.revision)
+
+            # see if there is a previous request for this revision
+            # TODO: check if this works! absolutely not sure!
+            if self.item.requested_by is not None:
+                self.matter.actions.user_uploaded_revision(user=self.request.user,
+                                                           item=self.item,
+                                                           revision=self.revision)
 
             return Response(serializer.data, status=status.HTTP_201_CREATED,
                             headers=headers)

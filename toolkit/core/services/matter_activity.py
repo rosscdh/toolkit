@@ -47,7 +47,6 @@ class MatterActivityEventService(object):
         # with the base activity_kwargs, force the passed in kwargs
         # tobe overriden as they are the foundation of the messaging system
         kwargs.update(activity_kwargs)
-
         send_activity_log.send(self, **kwargs)
 
     #
@@ -70,19 +69,19 @@ class MatterActivityEventService(object):
     # Item focused events
     #
 
-    def created_item(self, user, item):
+    def item_created(self, user, item):
         self._create_activity(actor=user, verb=u'created', action_object=item)
 
     def item_rename(self, user, item, previous_name):
         message = u'%s renamed item from %s to %s' % (user, previous_name, item.name)
         self._create_activity(actor=user, verb=u'renamed', action_object=item, item=item, message=message, previous_name=previous_name)
 
-    def item_change_status(self, user, item, previous_status):
+    def item_changed_status(self, user, item, previous_status):
         current_status = item.display_status
         message = u'%s changed the status of %s from %s to %s' % (user, item, previous_status, current_status)
         self._create_activity(actor=user, verb=u'changed the status', action_object=item, item=item, message=message, current_status=current_status, previous_status=previous_status)
 
-    def item_close(self, user, item):
+    def item_closed(self, user, item):
         message = u'%s closed %s' % (user, item)
         self._create_activity(actor=user, verb=u'closed', action_object=item, item=item, message=message)
 
@@ -118,10 +117,10 @@ class MatterActivityEventService(object):
 
     def cancel_user_upload_revision_request(self, item, removing_user, removed_user):
         message = u'%s canceled their request for %s to provide a document on %s' % (removing_user, removed_user, item)
-        self._create_activity(actor=removing_user, verb=u'canceled their request for a document', action_object=item, message=message,
-                              user=removed_user)
+        self._create_activity(actor=removing_user, verb=u'canceled their request for a document', action_object=item,
+                              message=message, user=removed_user)
 
-    def user_uploaded_revision(self, item, user, revision):
+    def user_uploaded_revision(self, user, item, revision):
         message = u'%s uploaded a document named %s for %s' % (user, revision.name, item)
         self._create_activity(actor=user, verb=u'uploaded a document', action_object=item, message=message,
                               revision=revision, filename=revision.name, date_created=revision.date_created)
@@ -137,15 +136,23 @@ class MatterActivityEventService(object):
     #
     # Review requests
     #
-    def added_user_as_reviewer(self, item, adding_user, added_user):
-        message = u'%s added %s as reviewer for %s' % (adding_user, added_user, item)
-        self._create_activity(actor=adding_user, verb=u'added reviewer', action_object=item, message=message,
-                              user=added_user)
 
-    def removed_user_as_reviewer(self, item, removing_user, removed_user):
-        message = u'%s removed %s as reviewer for %s' % (removing_user, removed_user, item)
-        self._create_activity(actor=removing_user, verb=u'removed reviewer', action_object=item, message=message,
-                              user=removed_user)
+    def invite_user_as_reviewer(self, item, inviting_user, invited_user):
+        message = u'%s invited %s as reviewer for %s' % (inviting_user, invited_user, item)
+        self._create_activity(actor=inviting_user, verb=u'invited reviewer', action_object=item, message=message,
+                              user=invited_user)
+
+    # instead of this we now use the newly created invite_user_as_reviewer
+    # def added_user_as_reviewer(self, item, adding_user, added_user):
+    #     message = u'%s added %s as reviewer for %s' % (adding_user, added_user, item)
+    #     self._create_activity(actor=adding_user, verb=u'added reviewer', action_object=item, message=message,
+    #                           user=added_user)
+    #
+    # instead of this we now use cancel_user_upload_revision_request() above
+    # def removed_user_as_reviewer(self, item, removing_user, removed_user):
+    #     message = u'%s removed %s as reviewer for %s' % (removing_user, removed_user, item)
+    #     self._create_activity(actor=removing_user, verb=u'removed reviewer', action_object=item, message=message,
+    #                           user=removed_user)
 
     def user_viewed_revision(self, item, user, revision):
         message = u'%s viewed revision %s (%s) for %s' % (user, revision.name, revision.slug, item)

@@ -3,6 +3,8 @@
 Item signals to handle various events that take place on save
 """
 import logging
+from django.contrib.auth.models import User
+
 logger = logging.getLogger('django.request')
 
 
@@ -93,14 +95,26 @@ def on_item_save_changed_content(sender, instance, **kwargs):
 
     if previous_instance:
         if previous_instance.status != instance.status:
-            matter.actions.item_change_status(user=matter.lawyer,  # WHO is allowed to change status?
-                                              item=instance,
-                                              previous_status=previous_instance.get_status_display())
+            matter.actions.item_changed_status(user=matter.lawyer,  # WHO is allowed to change status?
+                                               item=instance,
+                                               previous_status=previous_instance.get_status_display())
 
         if previous_instance.name != instance.name:
             matter.actions.item_rename(user=matter.lawyer,  # WHO is allowed?
                                        item=instance,
                                        previous_name=previous_instance.name)
+
+        if previous_instance.is_requested != instance.is_requested and instance.is_requested is False:
+            # import pdb;pdb.set_trace()
+            matter.actions.cancel_user_upload_revision_request(item=instance,
+                                                               removing_user=User.objects.get(username=previous_instance.requested_by['username']),
+                                                               removed_user=previous_instance.responsible_party)  # is requested_by the user who should have uploaded the file?
+
+        if previous_instance.is_complete != instance.is_complete:
+            if instance.is_complete is True:
+                matter.actions.item_closed(user=matter.lawyer, item=instance)
+            else:
+                matter.actions.item_reopened(user=matter.lawyer, item=instance)
 
     logger.debug('Recieved item.pre_save:changed_content event: %s' % sender)
 
@@ -111,4 +125,4 @@ def on_item_post_save(sender, instance, created, **kwargs):
     """
     if created:
         matter = instance.matter
-        matter.actions.created_item(user=matter.lawyer, item=instance)
+        matter.actions.item_created(user=matter.lawyer, item=instance)

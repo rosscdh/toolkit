@@ -403,9 +403,9 @@ LAWPAL_ACTIVITY = {
     },
     "activity": {
         "whitelist": ['item-created', 'item-edited', 'item-commented', 'item-changed-the-status', 'item-renamed',
-                      'item-provide-a-document', 'item-added-reviewer', 'item-removed-reviewer',
+                      'item-provide-a-document', 'item-invited-reviewer', 'item-canceled-their-request-for-a-document',
                       'revision-created', 'revision-deleted',
-                      # 'itemrequestrevisionview-provide-a-document',
+                      'itemrequestrevisionview-provide-a-document',
                       'workspace-created', 'workspace-added-participant', 'workspace-removed-participant']  # create so many activities to keep tests running for now
     },
 }
