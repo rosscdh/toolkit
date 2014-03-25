@@ -73,6 +73,14 @@ class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
         self.save(update_fields=['date_last_viewed'])
 
     @property
+    def is_current(self):
+        """
+        Test that this revision is still the latest revision
+        if not then redirect elsewhere
+        """
+        return self.document.item.latest_revision == self.document
+
+    @property
     def file_exists_locally(self):
         """
         Used to determine if we should download the file locally

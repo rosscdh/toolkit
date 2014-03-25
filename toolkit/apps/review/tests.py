@@ -2,7 +2,7 @@
 from django.core import mail
 from django.conf import settings
 from django.test import TestCase
-# from django.utils import timezone
+from django.core.urlresolvers import reverse
 
 from toolkit.casper.prettify import mock_http_requests
 from toolkit.casper.workflow_case import BaseScenarios
@@ -13,6 +13,7 @@ from model_mommy import mommy
 
 import os
 import mock
+import json
 import urllib
 import datetime
 
@@ -34,6 +35,9 @@ class BaseDataProvider(BaseScenarios):
         self.basic_workspace()
 
         self.invalid_reviewer = mommy.make('auth.User', username='invalid_reviewer', email='invalid_reviewer@lawpal.com')
+        self.invalid_reviewer.set_password(self.password)
+        self.invalid_reviewer.save()
+
         self.reviewer = mommy.make('auth.User', username='invited_reviewer', email='invited_reviewer@lawpal.com')
 
         self.item = mommy.make('item.Item', matter=self.matter, name='Test Item No. 1', category="A")
@@ -67,6 +71,8 @@ Model Tests
 3. auth add
 4. auth get
 """
+
+
 class ReviewDocumentModelTest(BaseDataProvider, TestCase):
     def test_get_absolute_url(self):
         self.assertEqual(self.review_document.get_absolute_url(user=self.reviewer), '/review/{uuid}/{auth_key}/'.format(uuid=self.exected_uuid,
@@ -95,6 +101,7 @@ class ReviewDocumentModelTest(BaseDataProvider, TestCase):
 
         key = self.review_document.make_user_auth_key(user=non_authed_user)
         self.assertEqual(self.review_document.get_auth(auth_key=key), None)
+
 
 class ReviewerAuthorisationTest(BaseDataProvider, TestCase):
     def test_authorise_user(self):
@@ -168,7 +175,7 @@ class ReviewerSendEmailTest(BaseDataProvider, TestCase):
 
 """
 View tests
-1. logs current user out (if session is present)
+1. if user is logged in, check they are a participant or the expected user according to the auth_key
 2. logs user in based on url :auth_slug matching with a currently authorized reviewer
 3. if the user is not lawyer or a participant then they can only see their own commments annotation etc
 3a. this is done using the crocodoc_service.view_url(filter=id,id,id)
@@ -180,16 +187,17 @@ class ReviewRevisionViewTest(BaseDataProvider, TestCase):
         self.review_document.reviewers.add(self.reviewer)
 
     @mock_http_requests
-    def test_reviewer_viewing_revision_updates_last_viewed(self):
-        self.client.login(username=self.reviewer.username, password=self.password)
-
+    def test_anonymous_is_logged_in_as_expected_reviewer(self):
         self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed, None)
 
         with mock.patch('datetime.datetime', PatchedDateTime):
             resp = self.client.get(self.review_document.get_absolute_url(self.reviewer), follow=True)
 
         self.assertEqual(resp.status_code, 200)
-
+        self.assertEqual(resp.context['user'], self.reviewer)
+        #
+        # And date updated
+        #
         self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.year, 1970)
         self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.month, 1)
         self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.day, 1)
@@ -198,12 +206,52 @@ class ReviewRevisionViewTest(BaseDataProvider, TestCase):
         self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.second, 0)
 
     @mock_http_requests
+    def test_logged_in_invalid_user(self):
+        """
+        if we are logged in as someone with no connection to the review or matter then it should
+        throw a 403 foridden
+        """
+        self.client.login(username=self.invalid_reviewer.username, password=self.password)
+
+        resp = self.client.get(self.review_document.get_absolute_url(self.reviewer), follow=True)
+
+        self.assertEqual(resp.status_code, 403)  # forbidden
+
+    @mock_http_requests
+    def test_reviewer_viewing_revision_updates_last_viewed(self):
+        self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed, None)
+
+        with mock.patch('datetime.datetime', PatchedDateTime):
+            resp = self.client.get(self.review_document.get_absolute_url(self.reviewer), follow=True)
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.context['user'], self.reviewer)
+
+        self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.year, 1970)
+        self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.month, 1)
+        self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.day, 1)
+        self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.hour, 0)
+        self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.minute, 0)
+        self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.second, 0)
+
+        #
+        # Test the api endpoint returns the expected date_last_viewed
+        #
+        self.client.login(username=self.lawyer.username, password=self.password)
+        resp = self.client.get(reverse('reviewdocument-detail', kwargs={'pk': self.review_document.pk}))
+        self.assertEqual(resp.status_code, 200)
+
+        json_resp = json.loads(resp.content)
+        self.assertEqual(json_resp.get('date_last_viewed'), u'1970-01-01T00:00:00.113Z')
+
+    @mock_http_requests
     def test_lawyer_viewing_revision_updates_nothing(self):
         self.client.login(username=self.lawyer.username, password=self.password)
 
         self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed, None)
 
         resp = self.client.get(self.review_document.get_absolute_url(self.lawyer), follow=True)
+        self.assertEqual(resp.context['user'], self.lawyer)
 
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed, None)
