@@ -273,7 +273,7 @@ module.exports = function (grunt) {
         src: ['<%= dom_munger.data.appjs %>','js/constant-mocks.js','bower_components/angular-mocks/angular-mocks.js'],
         options: {
           keepRunner: true,
-          specs: ['partial/**/*-spec.js'],
+          specs: ['partial/**/*-spec.js', 'service/**/*-spec.js'],
           x: ['js/**/*-spec.js','partial/**/*-spec.js','service/**/*-spec.js','filter/**/*-spec.js','directive/**/*-spec.js']
         }
       }

@@ -107,9 +107,6 @@ angular.module('toolkit-gui')
 
 				return deferred.promise;
 			}
-
-
-
 		};
 	}]
 );
