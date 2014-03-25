@@ -31,7 +31,7 @@
                       ng-model="data.editItemDescription" focus-on="eventEditItemDescription"></textarea>
             <a href="javascript:;" class="btn btn-primary btn-xs" ng-click="data.selectedItem.description=data.editItemDescription;saveSelectedItem();data.showEditItemDescriptionForm=false;">Save description</a>
             <a href="javascript:;" class="btn btn-inverse btn-xs item-description-cancel" ng-click="data.showEditItemDescriptionForm=false;">Cancel</a>
-            <a href="javascript:;" class="btn btn-link btn-xs pull-right" title="Markdown help" onclick="alert('Markdown help popup like trello');">Formatting Help</a>
+            <a href="javascript:;" class="btn btn-link btn-xs pull-right" title="Markdown help" onclick="alert('LawPal supports markdown.');">Formatting Help</a>
         </div>
     </h3>
 
@@ -91,7 +91,7 @@
         </span>
 
         <a href="javascript:;" ng-click="data.selectedItem.is_complete=!data.selectedItem.is_complete;saveSelectedItem();"
-           class="btn btn-sm btn-embossed pull-right" ng-class="{ 'btn-success': !data.selectedItem.is_complete, 'btn-default': data.selectedItem.is_complete}"
+           class="btn btn-sm pull-right" ng-class="{ 'btn-success': !data.selectedItem.is_complete, 'btn-default': data.selectedItem.is_complete}"
            ng-show="data.usdata.current.user_class=='lawyer'"
         >
             <span class="fui-checkbox-checked"></span> <span ng-hide="data.selectedItem.is_complete">Close item</span><span ng-show="data.selectedItem.is_complete">Reopen item</span>
@@ -112,8 +112,8 @@
     <!-- End option toolbar -->
 
     <div class="waiting-revision text-center" ng-show="data.selectedItem.is_requested&&data.selectedItem.responsible_party.username!=data.usdata.current.username">
-        <span class="fui-time"></span> Waiting for a revision from <span ng-bind="data.selectedItem.responsible_party | fullname"></span>.
-        <a href="javascript:;" ng-click="remindRevisionRequest(data.selectedItem)">Remind</a> <a class="close" href="javascript:;" ng-click="deleteRevisionRequest(data.selectedItem)">x</a>
+        <span class="fui-time"></span> Waiting for a document from <span ng-bind="data.selectedItem.responsible_party | fullname"></span>.
+        <!-- <a href="javascript:;" ng-click="remindRevisionRequest(data.selectedItem)">Remind</a> <a class="close" href="javascript:;" ng-click="deleteRevisionRequest(data.selectedItem)">x</a> -->
     </div>
 
     <div class="waiting-revision text-center" ng-show="data.selectedItem.is_requested&&data.selectedItem.responsible_party.username==data.usdata.current.username">
@@ -129,8 +129,8 @@
     <div ng-show="data.usdata.current.user_class=='lawyer'">
         <div class="drop-area show-on-drag" ng-file-drop="onFileDropped($files, data.selectedItem);"  ng-show="data.selectedItem.latest_revision">
             <span class="fui-upload"></span>
-            <h4>Upload a revision</h4>
-            <p>To upload a new revision drop files here</p>
+            <h4>Upload a document</h4>
+            <p>To upload a new document drop file here</p>
         </div>
     </div>
 
@@ -248,15 +248,15 @@
     <div ng-show="data.usdata.current.user_class=='lawyer'">
         <div class="item-help border-on-dragover" ng-hide="data.selectedItem.latest_revision||data.uploading||data.selectedItem.is_requested">
             <span class="fui-upload"></span>
-            <h4>Upload a first revision</h4>
-            Upload a first draft of this document. Move your mouse to the green upload bar at the top of this item to either upload a file or request one from another participant. You can also drag a document directly on a checklist item to add it as a revision.
+            <h4>Upload a document</h4>
+            Upload the first document to this item or request one. You can also drag a document directly onto a checklist item.
         </div>
     </div>
 
     <div class="item-help" ng-show="data.selectedItem.is_requested&&!data.selectedItem.latest_revision">
         <span class="fui-time"></span>
-        <h4>Waiting for a revision</h4>
-        <span ng-show="data.selectedItem.responsible_party.username!=data.usdata.current.username">You have requested a revision from another user. Once they have supplied this revision you will be notified.</span>
+        <h4>Waiting for a document</h4>
+        <span ng-show="data.selectedItem.responsible_party.username!=data.usdata.current.username">You have requested a document from another user. Once they have supplied this revision you will be notified.</span>
     </div>
 
 </div>
@@ -269,6 +269,7 @@
 
 <div ng-show="!data.selectedItem&&data.matter.items.length==0">
      <div class="item-help">
-        <h4>Please create your first checklist item</h4>
+        <h4 class="lead">Please create your first checklist item</h4>
+        <p>Create your checklist and then invite you client to this project by clicking on the <span class="fui-user"></span> icon at the top of the page.</p>
     </div>
 </div>
