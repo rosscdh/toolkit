@@ -112,7 +112,7 @@
     <!-- End option toolbar -->
 
     <div class="waiting-revision text-center" ng-show="data.selectedItem.is_requested&&data.selectedItem.responsible_party.username!=data.usdata.current.username">
-        <span class="fui-time"></span> Waiting for a revision from <span ng-bind="data.selectedItem.responsible_party | fullname"></span>.
+        <span class="fui-time"></span> Waiting for the document from <span ng-bind="data.selectedItem.responsible_party | fullname"></span>.
         <a href="javascript:;" ng-click="remindRevisionRequest(data.selectedItem)">Remind</a> <a class="close" href="javascript:;" ng-click="deleteRevisionRequest(data.selectedItem)">x</a>
     </div>
 
@@ -186,7 +186,7 @@
                     <ul class="list-unstyled">
                         <li ng-repeat="rev in data.selectedItem.latest_revision.reviewers">
                             <a class="close" href="javascript:;" ng-click="deleteRevisionReviewRequest(data.selectedItem, rev)">x</a>
-                            <a href="javascript:;" ng-click="showReview(data.selectedItem.latest_revision, rev)"><span class="fui-time"></span></a>
+                            <a href="javascript:;" ng-click="showReview(data.selectedItem.latest_revision, rev)">In Progress<span class="fui-time"></span></a>
                             {{ rev.name }}
                         </li>
                         <!--<li class="complete">
