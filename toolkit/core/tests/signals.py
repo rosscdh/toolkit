@@ -142,7 +142,7 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         add a user as reviewer and check if it worked
         """
         reviewer = mommy.make('auth.User', username='test-reviewer', first_name='Customer', last_name='Test', email='testreviewer@lawpal.com')
-        self.matter.actions.added_user_as_reviewer(item, self.lawyer, reviewer)
+        self.matter.actions.invite_user_as_reviewer(item, self.lawyer, reviewer)
         stream = model_stream(Item)
         self.assertEqual(len(stream), 2)  # first one was the creation
         self.assertEqual(stream[0].action_object, item)

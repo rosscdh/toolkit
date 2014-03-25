@@ -132,7 +132,7 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
 
         # test if activity shows in stream
         stream = target_stream(self.matter)
-        self.assertEqual(stream[0].data['message'], u'Lawyer Test added Participant Number 1 as reviewer for Test Item with Revision')
+        self.assertEqual(stream[0].data['message'], u'Lawyer Test invited Participant Number 1 as reviewer for Test Item with Revision')
 
     def test_lawyer_patch(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -424,7 +424,8 @@ class RevisionRequestedDocumentTest(BaseEndpointTest):
         # now upload a document and ensure
         # from the responsible_party above and ensure that is_requested is False
         #
-        new_revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=inviteduploader_user)
+        new_revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item,
+                                  uploaded_by=inviteduploader_user)
 
         # refresh
         self.item = self.item.__class__.objects.get(pk=self.item.pk)

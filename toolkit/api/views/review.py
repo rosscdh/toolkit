@@ -141,9 +141,9 @@ class ItemRevisionReviewersView(generics.ListAPIView,
             #
             # add activity
             #
-            self.matter.actions.added_user_as_reviewer(item=self.item,
-                                                       adding_user=request.user,
-                                                       added_user=user)
+            self.matter.actions.invite_user_as_reviewer(item=self.item,
+                                                        inviting_user=request.user,
+                                                        invited_user=user)
 
         review_document = self.item.latest_revision.reviewdocument_set.filter(reviewers__in=[user]).first()
         # we have the user at this point
@@ -214,11 +214,19 @@ class ItemRevisionReviewerView(generics.RetrieveAPIView,
             #
             status = http_status.HTTP_406_NOT_ACCEPTABLE
 
+
+
+        # TODO: MOVE
+        # After move we don't have the user any more!
+
         # create event
         self.revision.item.matter.actions.user_viewed_revision(item=self.revision.item,
                                                                user=user,
                                                                revision=self.revision)
         # TODO: check if this was the last user to review the document. if so: user_revision_review_complete()
+
+
+
 
         status = http_status.HTTP_200_OK
 
@@ -239,10 +247,9 @@ class ItemRevisionReviewerView(generics.RetrieveAPIView,
             #
             self.revision.reviewers.remove(user)
 
-            self.matter.actions.removed_user_as_reviewer(item=self.item,
-                                                         removing_user=request.user,
-                                                         removed_user=user)
-
+            self.matter.actions.cancel_user_upload_revision_request(item=self.item,
+                                                                    removing_user=request.user,
+                                                                    removed_user=user)
         else:
             status = http_status.HTTP_404_NOT_FOUND
 
