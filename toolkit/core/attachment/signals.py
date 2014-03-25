@@ -101,7 +101,7 @@ def on_reviewer_add(sender, instance, action, model, pk_set, **kwargs):
     when a reviewer is added from the m2m then authorise them
     for access
     """
-    if action in ['post_add']:
+    if action in ['post_add'] and pk_set:
         user_pk = next(iter(pk_set))  # get the first item in the set should only ever be 1 anyway
         user = model.objects.get(pk=user_pk)  # get the user being invited
 

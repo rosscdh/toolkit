@@ -117,7 +117,7 @@ angular.module('toolkit-gui')
 		 *
 		 * @private
 		 * @method				checkIfUserExists
-		 * @memberof			ParticipantInviteCtrl
+		 * @memberof			RequestreviewCtrl
 		 */
         $scope.checkIfUserExists = function () {
             if ($scope.data.request.email != null && $scope.data.request.email.length>0) {
@@ -142,6 +142,20 @@ angular.module('toolkit-gui')
                 $scope.data.isNew = false;
                 $scope.data.participant = null;
             }
+        };
+
+        /**
+		 * Checks if a the given participant is already a reviewer of the document.
+		 *
+		 * @name				participantIsReviewer
+		 *
+		 * @private
+		 * @method				participantIsReviewer
+		 * @memberof			RequestreviewCtrl
+		 */
+        $scope.participantIsReviewer = function (p) {
+            var users = jQuery.grep( revision.reviewers, function( review ){ return review.reviewer.username===p.username; } );
+            return (users.length>0);
         };
 
 		/**
