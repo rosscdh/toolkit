@@ -79,6 +79,11 @@ body.gui {
   }
 }
 
+.content-header-btn {
+  float: right;
+  margin-top: 45px;
+}
+
 
 // Forms
 // -------------------------
@@ -383,6 +388,33 @@ body.gui {
     [class*="fui-"] {
       color: lighten(@brand-warning, 3%);
       text-shadow:0px 0px 10px #232323;
+    }
+  }
+}
+
+
+// Notifications
+// -------------------------
+
+#notifications {
+  .notification {
+    background-color: white;
+    border: 1px solid #e8ecec;
+    padding: 20px;
+
+    .avatar {
+      margin-top: 8px;
+    }
+
+    .notification-btn {
+        font-size: 20px;
+        margin-top: 8px;
+        text-align: right;
+    }
+
+    p {
+      color: @gray;
+      margin-bottom: 0;
     }
   }
 }
