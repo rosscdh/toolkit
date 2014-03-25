@@ -42,6 +42,7 @@ def participant_added(sender, matter, participant, user, note, **kwargs):
 
 
 @receiver(crocodoc_signals.crocodoc_comment_create)
+@receiver(crocodoc_signals.crocodoc_comment_update)  # reply to
 @receiver(crocodoc_signals.crocodoc_comment_delete)
 #@receiver(crocodoc_signals.crocodoc_annotation_highlight)
 #@receiver(crocodoc_signals.crocodoc_annotation_strikeout)
@@ -77,7 +78,7 @@ def crocodoc_webhook_event_recieved(sender, verb, document, target, attachment_n
 
         if matter is not None:
 
-            if crocodoc_event in ['annotation.create', 'comment.create']:
+            if crocodoc_event in ['annotation.create', 'comment.create', 'comment.update']:
                 matter.actions.add_revision_comment(user=user, revision=document.source_object, comment=content)
 
             if crocodoc_event in ['annotation.delete', 'comment.delete']:

@@ -390,6 +390,24 @@ ACTSTREAM_SETTINGS = {
     'USE_FOLLOWING': False,  # VERY importand; will break our system if this changes to True
 }
 
+LAWPAL_ACTIVITY = {
+    "abridge": {
+        "whitelist": ['revision-created', 'item-comment-created', 'item-comment-deleted', 'revision-comment-created',
+                      'revision-comment-deleted']
+    },
+    "notifications": {
+        "whitelist": ['revision-created', 'item-comment-created', 'item-comment-deleted', 'revision-comment-created',
+                      'revision-comment-deleted']
+    },
+    "activity": {
+        "whitelist": ['item-created', 'item-edited', 'item-commented', 'item-changed-the-status', 'item-renamed',
+                      'item-provide-a-document', 'item-added-reviewer', 'item-removed-reviewer',
+                      'revision-created', 'revision-deleted',
+                      # 'itemrequestrevisionview-provide-a-document',
+                      'workspace-created', 'workspace-added-participant', 'workspace-removed-participant']  # create so many activities to keep tests running for now
+    },
+}
+
 try:
     LOCAL_SETTINGS
 except NameError:
