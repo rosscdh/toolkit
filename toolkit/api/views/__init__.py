@@ -16,7 +16,8 @@ from .review import (ReviewEndpoint,
                      ItemRevisionReviewersView,
                      ItemRevisionReviewerView,)
 
-from .sign import   (ItemRevisionSignatoriesView,
+from .sign import   (SignatureEndpoint,
+                     ItemRevisionSignatoriesView,
                      ItemRevisionSignatoryView,)
 
 from .sort import (MatterSortView,)

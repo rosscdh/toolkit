@@ -1,7 +1,35 @@
 # -*- coding: UTF-8 -*-
-from rest_framework import generics
+from rest_framework import viewsets
 
+from rulez import registry as rulez_registry
+
+from toolkit.apps.sign.models import SignDocument
+
+from ..serializers import SignatureSerializer
 from .review import BaseReviewerSignatoryMixin
+
+
+class SignatureEndpoint(viewsets.ModelViewSet):
+    """
+    Primary Matter ViewSet
+    """
+    model = SignDocument
+    serializer_class = SignatureSerializer
+    lookup_field = 'pk'
+
+    def can_read(self, user):
+        return user.profile.user_class in ['lawyer', ]
+
+    def can_edit(self, user):
+        return user.profile.is_lawyer
+
+    def can_delete(self, user):
+        return user.profile.is_lawyer
+
+
+rulez_registry.register("can_read", SignatureEndpoint)
+rulez_registry.register("can_edit", SignatureEndpoint)
+rulez_registry.register("can_delete", SignatureEndpoint)
 
 
 class ItemRevisionSignatoriesView(BaseReviewerSignatoryMixin):

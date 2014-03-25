@@ -37,7 +37,7 @@ def _authenticate(request, obj, matter, **kwargs):
             #
             login(request, requested_authenticated_user)
             # only for the reviewer, we dont do this for when participants view
-            obj.reviewer_has_viewed = True
+            obj.signer_has_viewed = True
 
 
 class SignRevisionView(DetailView):

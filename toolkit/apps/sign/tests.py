@@ -75,7 +75,7 @@ Model Tests
 
 class SignDocumentModelTest(BaseDataProvider, TestCase):
     def test_get_absolute_url(self):
-        self.assertEqual(self.sign_document.get_absolute_url(user=self.signer), '/review/{uuid}/{auth_key}/'.format(uuid=self.exected_uuid,
+        self.assertEqual(self.sign_document.get_absolute_url(user=self.signer), '/sign/{uuid}/{auth_key}/'.format(uuid=self.exected_uuid,
                                                                                                                     auth_key=urllib.quote(self.expected_auth_key)))
 
     def test_auth_get(self):
@@ -95,7 +95,7 @@ class SignDocumentModelTest(BaseDataProvider, TestCase):
 
     def test_get_auth_invalid(self):
         """
-        test that the get_auth method returns None when the user is not a reviewer
+        test that the get_auth method returns None when the user is not a signer
         """
         non_authed_user = mommy.make('auth.User', username='Unauthorised Person', email='unauthorised@example.com')
 
@@ -114,13 +114,13 @@ class SignerAuthorisationTest(BaseDataProvider, TestCase):
         self.assertEqual(self.sign_document.signers.all().count(), 0)
         self.assertEqual(self.sign_document.auth, self.BASE_EXPECTED_AUTH_USERS)  # no auths
 
-        # add the reviewer and we should then get an auth setup
+        # add the signer and we should then get an auth setup
         self.sign_document.signers.add(self.signer)
         EXPECTED_AUTH_USERS.update({str(self.signer.pk): self.expected_auth_key})
         self.assertEqual(self.sign_document.auth, EXPECTED_AUTH_USERS)  # has auth
 
     def test_deauthorise_user(self):
-        # add the reviewer and we should then get an auth setup
+        # add the signer and we should then get an auth setup
         self.sign_document.signers.add(self.signer)
 
         EXPECTED_AUTH_USERS = self.BASE_EXPECTED_AUTH_USERS.copy()
@@ -135,10 +135,10 @@ class SignerAuthorisationTest(BaseDataProvider, TestCase):
 class SignerSendEmailTest(BaseDataProvider, TestCase):
     def setUp(self):
         super(SignerSendEmailTest, self).setUp()
-        # add the reviewer for this test
+        # add the signer for this test
         self.sign_document.signers.add(self.signer)
 
-    def test_email_send_to_all_reviewers(self):
+    def test_email_send_to_all_signers(self):
         self.sign_document.send_invite_email(from_user=self.lawyer)
 
         self.assertEqual(len(mail.outbox), 1)
@@ -150,7 +150,7 @@ class SignerSendEmailTest(BaseDataProvider, TestCase):
         #
         self.assertTrue(self.sign_document.get_absolute_url(user=self.signer) in email.body)
 
-    def test_email_send_to_valid_reviewer(self):
+    def test_email_send_to_valid_signer(self):
         self.sign_document.send_invite_email(from_user=self.lawyer, users=[self.signer])
 
         self.assertEqual(len(mail.outbox), 1)
@@ -166,7 +166,7 @@ class SignerSendEmailTest(BaseDataProvider, TestCase):
     def test_email_send_to_invalid_signer(self):
         """
         in order to send a reminder email to a user they MUST be an authorised
-        reviewer and cant be some random user from anywhere
+        signer and cant be some random user from anywhere
         """
         self.sign_document.send_invite_email(from_user=self.lawyer, users=[self.invalid_signer])
 
@@ -176,18 +176,18 @@ class SignerSendEmailTest(BaseDataProvider, TestCase):
 """
 View tests
 1. if user is logged in, check they are a participant or the expected user according to the auth_key
-2. logs user in based on url :auth_slug matching with a currently authorized reviewer
+2. logs user in based on url :auth_slug matching with a currently authorized signer
 3. if the user is not lawyer or a participant then they can only see their own commments annotation etc
 3a. this is done using the crocodoc_service.view_url(filter=id,id,id)
 """
 class ReviewHellosignViewTest(BaseDataProvider, TestCase):
     def setUp(self):
         super(ReviewHellosignViewTest, self).setUp()
-        # add the reviewer for this test
+        # add the signer for this test
         self.sign_document.signers.add(self.signer)
 
     @mock_http_requests
-    def test_anonymous_is_logged_in_as_expected_reviewer(self):
+    def test_anonymous_is_logged_in_as_expected_signer(self):
         self.assertEqual(SignDocument.objects.get(pk=self.sign_document.pk).date_last_viewed, None)
 
         with mock.patch('datetime.datetime', PatchedDateTime):
@@ -218,7 +218,7 @@ class ReviewHellosignViewTest(BaseDataProvider, TestCase):
         self.assertEqual(resp.status_code, 403)  # forbidden
 
     @mock_http_requests
-    def test_reviewer_viewing_revision_updates_last_viewed(self):
+    def test_signer_viewing_revision_updates_last_viewed(self):
         self.assertEqual(SignDocument.objects.get(pk=self.sign_document.pk).date_last_viewed, None)
 
         with mock.patch('datetime.datetime', PatchedDateTime):
@@ -238,7 +238,7 @@ class ReviewHellosignViewTest(BaseDataProvider, TestCase):
         # Test the api endpoint returns the expected date_last_viewed
         #
         self.client.login(username=self.lawyer.username, password=self.password)
-        resp = self.client.get(reverse('reviewdocument-detail', kwargs={'pk': self.sign_document.pk}))
+        resp = self.client.get(reverse('signdocument-detail', kwargs={'pk': self.sign_document.pk}))
         self.assertEqual(resp.status_code, 200)
 
         json_resp = json.loads(resp.content)

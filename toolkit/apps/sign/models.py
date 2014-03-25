@@ -19,6 +19,7 @@ from uuidfield import UUIDField
 from jsonfield import JSONField
 
 import logging
+import datetime
 logger = logging.getLogger('django.request')
 
 
@@ -58,11 +59,11 @@ class SignDocument(IsDeletedMixin, UserAuthMixin, models.Model):
     complete.alters_data = True
 
     @property
-    def reviewer_has_viewed(self):
+    def signer_has_viewed(self):
         return self.date_last_viewed is not None
 
-    @reviewer_has_viewed.setter
-    def reviewer_has_viewed(self, value):
+    @signer_has_viewed.setter
+    def signer_has_viewed(self, value):
         if value == True:
             self.date_last_viewed = datetime.datetime.utcnow()
         else:
@@ -97,7 +98,7 @@ class SignDocument(IsDeletedMixin, UserAuthMixin, models.Model):
         return set(self.signers.all() | self.matter.participants.all())
 
     @property
-    def reviewer(self):
+    def signer(self):
         """
         return the reviewer: the person in self.signers that is not in self.participants
         """

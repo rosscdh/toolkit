@@ -19,10 +19,11 @@ class SignDocumentBackend(object):
     def authenticate(self, username=None, password=None):
         # Check the username/password and return a User.
         user = None
+
         try:
 
             sign = SignDocument.objects.get(slug=username)
-            pk = sign.get_auth(key=password)
+            pk = sign.get_auth(auth_key=password)
             if pk is None:
                 logger.error('SignDocument not found for: %s %s' % (sign, password,))
                 raise ObjectDoesNotExist
