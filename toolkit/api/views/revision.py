@@ -109,9 +109,6 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
         self.revision.pk = None  # ensure that we are CREATING a new one based on the existing one
         self.revision.is_current = True
         serializer = self.get_serializer(self.revision, data=request.DATA, files=request.FILES)
-        ##
-        # End import
-        ##
 
         if serializer.is_valid():
             self.pre_save(serializer.object)

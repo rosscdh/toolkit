@@ -53,6 +53,16 @@ class LimitedExtensionMixin(object):
             value = getattr(value, 'name', value)  # handle in InMemoryUploadedFiles being passed in
 
             filename, ext = os.path.splitext(value)
+
+            if ext in [None, '']:
+                #
+                # ok so we have no extension; thats weird it must be a filepickerio upload
+                # try to extract it from the request.DATA
+                #
+                request = self.context.get('request', {})
+                original_filename = request.DATA.get('name')
+                filename, ext = os.path.splitext(original_filename)
+
             ext = ext.lower()
 
             if ext not in self.ext_whitelist:
