@@ -48,8 +48,6 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         self.assertItemsEqual(cache_obj.values(), ["<class 'toolkit.core.services.matter_activity.MatterActivityEventService'>",
                                                    "<class 'django.dispatch.dispatcher.Signal'>",
                                                    "<class 'django.contrib.auth.models.User'>",
-                                                   u'workspace-created',
-                                                   u'created',
                                                    "<class 'toolkit.apps.workspace.models.Workspace'>",
                                                    "<class 'toolkit.apps.workspace.models.Workspace'>",
                                                    "<type 'NoneType'>",
@@ -60,8 +58,10 @@ class ActivitySignalTest(BaseScenarios, TestCase):
                                                    "<type 'NoneType'>",
                                                    "<type 'NoneType'>",
                                                    "<type 'NoneType'>",
-                                                   "<type 'NoneType'>",
-                                                   "<type 'NoneType'>"])
+                                                   u'workspace-added-participant',
+                                                   u'added participant',
+                                                   "<class 'rest_framework.serializers.SortedDictWithMetadata'>",
+                                                   u'Lawyer Test added Lawyer Test as a participant of Lawpal (test)'])
         cache.delete(cache_key)
 
     def test_stream_item_created_manually(self):

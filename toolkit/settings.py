@@ -404,7 +404,7 @@ LAWPAL_ACTIVITY = {
                       'item-provide-a-document', 'item-added-reviewer', 'item-removed-reviewer',
                       'revision-created', 'revision-deleted',
                       # 'itemrequestrevisionview-provide-a-document',
-                      'workspace-created']  # create so many activities to keep tests running for now
+                      'workspace-created', 'workspace-added-participant', 'workspace-removed-participant']  # create so many activities to keep tests running for now
     },
 }
 

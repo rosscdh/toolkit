@@ -11,15 +11,6 @@ class WorkspaceSignalTest(BaseScenarios, TestCase):
         self.basic_workspace()
 
     def test_add_participants(self):
-        new_user = mommy.make('auth.User', first_name='Customer', last_name='Test 2', email='test+customer+2@lawpal.com')
-
-
-
-        self.matter.participants.add(new_user)
-        self.matter.save()
-        # does not call pre_save
-
-
-
         stream = action_object_stream(self.matter)
-        import pdb;pdb.set_trace()
+        self.assertEqual(stream[0].data['message'], u'Lawyer Test added Lawyer Test as a participant of Lawpal (test)')
+        self.assertEqual(stream[1].data['message'], u'Lawyer Test added Customer Test as a participant of Lawpal (test)')
