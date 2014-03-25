@@ -29,7 +29,7 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
     /matters/:matter_slug/items/:item_slug/revision/reviewers/ (GET,POST)
         [lawyer,customer] to list, create reviewers
     """
-    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review_url', u'url', u'initials', u'user_class', u'name']
+    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review_url', u'url', u'initials', u'user_class', u'name', u'request_document_meta',]
 
     @property
     def endpoint(self):
@@ -161,19 +161,19 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
 
     def test_anon_get(self):
         resp = self.client.get(self.endpoint)
-        self.assertEqual(resp.status_code, 401)  # unauthorized
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_post(self):
         resp = self.client.post(self.endpoint, {}, content_type='application/json')
-        self.assertEqual(resp.status_code, 401)  # unauthorized
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_patch(self):
         resp = self.client.patch(self.endpoint, {})
-        self.assertEqual(resp.status_code, 401)  # unauthorized
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_delete(self):
         resp = self.client.delete(self.endpoint, {})
-        self.assertEqual(resp.status_code, 401)  # unauthorized
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
 
 class RevisionReviewerTest(BaseEndpointTest, LiveServerTestCase):
@@ -181,7 +181,7 @@ class RevisionReviewerTest(BaseEndpointTest, LiveServerTestCase):
     /matters/:matter_slug/items/:item_slug/revision/reviewer/:username (GET,DELETE)
         [lawyer,customer] to view, delete reviewers
     """
-    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review_url', u'url', u'initials', u'user_class', u'name']
+    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review_url', u'url', u'initials', u'user_class', u'name', u'request_document_meta',]
 
     @property
     def endpoint(self):
@@ -224,7 +224,7 @@ class RevisionReviewerTest(BaseEndpointTest, LiveServerTestCase):
         self.assertEqual(resp.status_code, 200)
         json_data = json.loads(resp.content)
 
-        self.assertTrue(all(key in self.EXPECTED_USER_SERIALIZER_FIELD_KEYS for key in json_data.keys()))
+        self.assertItemsEqual(self.EXPECTED_USER_SERIALIZER_FIELD_KEYS, json_data.keys())
 
         self.assertEqual(len(self.revision.reviewers.all()), 1)
         self.assertEqual(len(self.revision.reviewdocument_set.all()), 2)
@@ -306,7 +306,7 @@ class RevisionReviewerTest(BaseEndpointTest, LiveServerTestCase):
 
         json_data = json.loads(resp.content)
         keys = json_data.keys()
-        self.assertTrue(all(key in self.EXPECTED_USER_SERIALIZER_FIELD_KEYS for key in json_data.keys()))
+        self.assertItemsEqual(self.EXPECTED_USER_SERIALIZER_FIELD_KEYS, json_data.keys())
 
         self.assertEqual(len(self.revision.reviewers.all()), 0)
         self.assertEqual(len(self.revision.reviewdocument_set.all()), 1) # should be 1 because of the template one created for the participants
@@ -320,7 +320,7 @@ class RevisionReviewerTest(BaseEndpointTest, LiveServerTestCase):
 
         json_data = json.loads(resp.content)
 
-        self.assertTrue(all(key in self.EXPECTED_USER_SERIALIZER_FIELD_KEYS for key in json_data.keys()))
+        self.assertItemsEqual(self.EXPECTED_USER_SERIALIZER_FIELD_KEYS, json_data.keys())
 
     def test_customer_post(self):
         self.client.login(username=self.user.username, password=self.password)
@@ -339,19 +339,19 @@ class RevisionReviewerTest(BaseEndpointTest, LiveServerTestCase):
 
     def test_anon_get(self):
         resp = self.client.get(self.endpoint)
-        self.assertEqual(resp.status_code, 401)  # unauthorized
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_post(self):
         resp = self.client.post(self.endpoint, {}, content_type='application/json')
-        self.assertEqual(resp.status_code, 401)  # unauthorized
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_patch(self):
         resp = self.client.patch(self.endpoint, {})
-        self.assertEqual(resp.status_code, 401)  # unauthorized
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_delete(self):
         resp = self.client.delete(self.endpoint, {})
-        self.assertEqual(resp.status_code, 401)  # unauthorized
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
 
 class RevisionRequestedDocumentTest(BaseEndpointTest):
@@ -361,7 +361,7 @@ class RevisionRequestedDocumentTest(BaseEndpointTest):
     and
     item.responsible_party must be a User
     """
-    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'status', u'category', u'is_complete', u'closing_group', u'description', u'parent', u'date_modified', u'url', u'is_requested', u'children', u'matter', u'date_due', u'responsible_party', u'is_final', u'date_created', u'latest_revision', u'slug', u'name']
+    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'status', u'category', u'is_complete', u'closing_group', u'description', u'parent', u'date_modified', u'url', u'is_requested', u'children', u'matter', u'date_due', u'responsible_party', u'is_final', u'date_created', u'latest_revision', u'request_document_meta', u'slug', u'name']
 
     @property
     def endpoint(self):
@@ -388,7 +388,8 @@ class RevisionRequestedDocumentTest(BaseEndpointTest):
 
         self.assertEqual(resp.status_code, 200)
         json_data = json.loads(resp.content)
-        self.assertTrue(all(key in self.EXPECTED_USER_SERIALIZER_FIELD_KEYS for key in json_data.keys()))
+
+        self.assertItemsEqual(self.EXPECTED_USER_SERIALIZER_FIELD_KEYS, json_data.keys())
 
     def test_lawyer_post(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -433,7 +434,8 @@ class RevisionRequestedDocumentTest(BaseEndpointTest):
         resp = self.client.get(self.endpoint)
         self.assertEqual(resp.status_code, 200)  # ok
         json_data = json.loads(resp.content)
-        self.assertTrue(all(key in self.EXPECTED_USER_SERIALIZER_FIELD_KEYS for key in json_data.keys()))
+
+        self.assertItemsEqual(self.EXPECTED_USER_SERIALIZER_FIELD_KEYS, json_data.keys())
 
     def test_customer_post(self):
         self.client.login(username=self.user.username, password=self.password)
@@ -452,16 +454,16 @@ class RevisionRequestedDocumentTest(BaseEndpointTest):
 
     def test_anon_get(self):
         resp = self.client.get(self.endpoint)
-        self.assertEqual(resp.status_code, 401)  # unauthorized
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_post(self):
         resp = self.client.post(self.endpoint, {}, content_type='application/json')
-        self.assertEqual(resp.status_code, 401)  # unauthorized
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_patch(self):
         resp = self.client.patch(self.endpoint, {})
-        self.assertEqual(resp.status_code, 401)  # unauthorized
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_delete(self):
         resp = self.client.delete(self.endpoint, {})
-        self.assertEqual(resp.status_code, 401)  # unauthorized
+        self.assertEqual(resp.status_code, 403)  # forbidden
