@@ -54,7 +54,6 @@ router.register(r'items', ItemEndpoint)
 router.register(r'revisions', RevisionEndpoint)
 router.register(r'reviews', ReviewEndpoint)
 
-
 """
 Generics
 """
