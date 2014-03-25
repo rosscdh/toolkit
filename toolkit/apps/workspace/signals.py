@@ -166,24 +166,3 @@ def on_workspace_m2m_changed(sender, instance, action, pk_set, **kwargs):
         for pk in pk_set:
             instance.actions.removed_matter_participant(matter=instance, removing_user=instance.lawyer,
                                                         removed_user=User.objects.get(pk=pk))  # assumption: only the creating lawyer can edit participants
-
-    # try:
-    #     # get the current
-    #     previous_instance = sender.objects.get(pk=instance.pk)
-    #
-    # except sender.DoesNotExist:
-    #     #
-    #     # Do nothing as the previous object does not exist
-    #     #
-    #     previous_instance = None
-    #
-    #
-    # if previous_instance:
-    #     for participant in previous_instance.participants.all():
-    #         if participant not in instance.participants.all():
-    #             instance.actions.removed_matter_participant(matter=instance, removing_user=instance.lawyer,
-    #                                                         removed_user=participant)  # assumption: only the creating lawyer can edit participants
-    #     for participant in instance.participants.all():
-    #         if participant not in previous_instance.participants.all():
-    #             instance.actions.added_matter_participant(matter=instance, adding_user=instance.lawyer,
-    #                                                       added_user=participant)  # assumption: only the creating lawyer can edit participants
