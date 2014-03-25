@@ -48,7 +48,7 @@
     <!-- Begin option toolbar -->
     <div class="add-new">
         <div class="btn-group" ng-show="data.usdata.current.user_class=='lawyer'">
-            <button class="btn btn-sm btn-info btn-embossed btn-add" filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)"><span class="fui-upload"></span>
+            <button class="btn btn-sm btn-info btn-embossed btn-add" filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)" extensions=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx"><span class="fui-upload"></span>
                 Add File
             </button>
             <button class="btn btn-info btn-sm btn-embossed dropdown-toggle" data-toggle="dropdown">
@@ -56,7 +56,7 @@
             </button>
             <span class="dropdown-arrow dropdown-arrow-inverse dropdown-small"></span>
             <ul class="dropdown-menu dropdown-inverse">
-                <li><a href="javascript:;" filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)">Upload File</a></li>
+                <li><a href="javascript:;" filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)" extensions=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx">Upload File</a></li>
                 <li><a href="javascript:;" data-toggle="modal" data-target="#requestFileModal" ng-click="requestRevision(data.selectedItem)">Request File</a></li>
             </ul>
         </div>
@@ -112,7 +112,7 @@
     <!-- End option toolbar -->
 
     <div class="waiting-revision text-center" ng-show="data.selectedItem.is_requested&&data.selectedItem.responsible_party.username!=data.usdata.current.username">
-        <span class="fui-time"></span> Waiting for the document from <span ng-bind="data.selectedItem.responsible_party | fullname"></span>.
+        <span class="fui-time"></span> Waiting for a revision from <span ng-bind="data.selectedItem.responsible_party | fullname"></span>.
         <a href="javascript:;" ng-click="remindRevisionRequest(data.selectedItem)">Remind</a> <a class="close" href="javascript:;" ng-click="deleteRevisionRequest(data.selectedItem)">x</a>
     </div>
 
@@ -184,14 +184,17 @@
                 </a>
                 <div class="review-members">
                     <ul class="list-unstyled">
-                        <li ng-repeat="rev in data.selectedItem.latest_revision.reviewers">
-                            <a class="close" href="javascript:;" ng-click="deleteRevisionReviewRequest(data.selectedItem, rev)">x</a>
-                            <a href="javascript:;" ng-click="showReview(data.selectedItem.latest_revision, rev)">In Progress<span class="fui-time"></span></a>
-                            {{ rev.name }}
+                        <li ng-repeat="rev in data.selectedItem.latest_revision.reviewers" ng-class="{'complete': rev.is_complete==true }" class="{'complete': rev.is_complete==true }">
+                            <a class="close" href="javascript:;" ng-click="deleteRevisionReviewRequest(data.selectedItem, rev)"
+                               ng-hide="rev.is_complete">x</a>
+                            <a href="javascript:;" ng-click="showReview(data.selectedItem.latest_revision, rev)" class="pull-right">
+                                <button class="btn btn-warning btn-xs" ng-hide="rev.is_complete"><span class="fui-time"></span> In progress</button> 
+                                <button class="btn btn-success btn-xs" ng-show="rev.is_complete">
+                                    <span class="fui-check"></span> Complete
+                                </button>
+                            </a>
+                           <a href="javascript:;" ng-click="showReview(data.selectedItem.latest_revision, rev)">{{ rev.reviewer.name }}</a>
                         </li>
-                        <!--<li class="complete">
-                            <button class="btn btn-success btn-xs pull-right"><span class="fui-check"></span> View Response </button> Yael Citro
-                        </li>-->
                     </ul>
                 </div>
             </div>  
@@ -225,9 +228,14 @@
                 Review expired
                 <div class="review-members">
                     <ul class="list-unstyled">
-                        <li ng-repeat="reviewer in rev.reviewers">
-                            <a href="javascript:;" ng-click="showReview(rev, reviewer)"><span class="fui-time"></span></a>
-                            {{ reviewer.name }}
+                        <li ng-repeat="review in rev.reviewers" ng-class="{'complete': review.is_complete==true }">
+                             <a href="javascript:;" ng-click="showReview(rev, review)">
+                                <span class="fui-time" ng-hide="review.is_complete"></span>
+                                <button class="btn btn-success btn-xs pull-right" ng-show="review.is_complete">
+                                    <span class="fui-check"></span> View Response
+                                </button>
+                            </a>
+                            {{ review.reviewer.name }}
                         </li>
                     </ul>
                 </div>
