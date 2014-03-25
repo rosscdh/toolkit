@@ -4,7 +4,7 @@ from django.core.exceptions import PermissionDenied
 from django.contrib.auth import authenticate, login
 
 
-from .models import ReviewDocument
+from .models import SignDocument
 
 
 def _authenticate(request, obj, matter, **kwargs):
@@ -45,7 +45,7 @@ class SignRevisionView(DetailView):
     View to allow an authenticated user to view a crocodoc url that is connected
     to a core.attachment revision
     """
-    queryset = ReviewDocument.objects.prefetch_related().all()
+    queryset = SignDocument.objects.prefetch_related().all()
     template_name = 'review/review.html'
 
     @property
