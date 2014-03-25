@@ -3,11 +3,13 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.core.files.storage import default_storage
 
-from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
+from rulez import registry as rulez_registry
 
 from toolkit.core.mixins import IsDeletedMixin
 
+from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 from toolkit.apps.review.mixins import UserAuthMixin
+
 from .managers import SignDocumentManager
 from .mailers import SignerReminderEmail
 
@@ -27,7 +29,7 @@ class SignDocument(IsDeletedMixin, UserAuthMixin, models.Model):
     """
     slug = UUIDField(auto=True, db_index=True)
     document = models.ForeignKey('attachment.Revision')
-    reviewers = models.ManyToManyField('auth.User')
+    signers = models.ManyToManyField('auth.User')
     is_complete = models.BooleanField(default=False)
     date_last_viewed = models.DateTimeField(blank=True, null=True)
     data = JSONField(default={})
@@ -92,21 +94,21 @@ class SignDocument(IsDeletedMixin, UserAuthMixin, models.Model):
 
     @property
     def participants(self):
-        return set(self.reviewers.all() | self.matter.participants.all())
+        return set(self.signers.all() | self.matter.participants.all())
 
     @property
     def reviewer(self):
         """
-        return the reviewer: the person in self.reviewers that is not in self.participants
+        return the reviewer: the person in self.signers that is not in self.participants
         """
         try:
-            # combine reviewers and participants
+            # combine signers and participants
             # this is necessary as a participant may be a reviewer by request
-            reviewers = set(self.reviewers.all())
+            signers = set(self.signers.all())
             participants = set(self.matter.participants.all())
-            combined = reviewers.union(participants)
+            combined = signers.union(participants)
             # get the common reviewer
-            return reviewers.intersection(combined).pop()
+            return signers.intersection(combined).pop()
         except:
             logger.error('no reviewer found for ReviewDocument: %s' % self)
             return None
@@ -133,14 +135,14 @@ class SignDocument(IsDeletedMixin, UserAuthMixin, models.Model):
 
     def send_invite_email(self, from_user, users=[]):
         """
-        @BUSINESSRULE requested users must be in the reviewers object
+        @BUSINESSRULE requested users must be in the signers object
         """
         if type(users) not in [list]:
             raise Exception('users must be of type list: users=[<User>]')
 
-        for u in self.reviewers.all():
+        for u in self.signers.all():
             #
-            # @BUSINESSRULE if no users passed in then send to all of the reviewers
+            # @BUSINESSRULE if no users passed in then send to all of the signers
             #
             if users == [] or u in users:
                 #
@@ -169,6 +171,6 @@ rulez_registry.register("can_edit", SignDocument)
 rulez_registry.register("can_delete", SignDocument)
 
 
-from .signals import (ensure_matter_participants_are_in_signdocument_participants
+from .signals import (ensure_matter_participants_are_in_signdocument_participants,
                       on_signer_add,
                       on_signer_remove,)

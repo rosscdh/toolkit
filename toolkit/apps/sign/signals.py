@@ -31,7 +31,7 @@ def ensure_matter_participants_are_in_signdocument_participants(sender, instance
     """
     matter = instance.document.item.matter
     # used to check for deletions
-    authorised_user_pks = [u.pk for u in instance.signers.all()]  # current reviewers
+    authorised_user_pks = [u.pk for u in instance.signers.all()]  # current signers
 
     for u in matter.participants.all():
         authorised_user_pks.append(u.pk) # these guys are in by default
@@ -54,7 +54,7 @@ Handle when a signer is added to the object
 """
 
 
-@receiver(m2m_changed, sender=SignDocument.signatories.through, dispatch_uid='signdocument.on_signer_add')
+@receiver(m2m_changed, sender=SignDocument.signers.through, dispatch_uid='signdocument.on_signer_add')
 def on_signer_add(sender, instance, action, **kwargs):
     """
     when a signer is added from the m2m then authorise them
@@ -64,7 +64,7 @@ def on_signer_add(sender, instance, action, **kwargs):
         _add_as_authorised(instance=instance, pk_set=kwargs.get('pk_set'))
 
 
-@receiver(m2m_changed, sender=SignDocument.signatories.through, dispatch_uid='signdocument.on_signer_remove')
+@receiver(m2m_changed, sender=SignDocument.signers.through, dispatch_uid='signdocument.on_signer_remove')
 def on_signer_remove(sender, instance, action, **kwargs):
     """
     when a signer is removed from the m2m then deauthorise them

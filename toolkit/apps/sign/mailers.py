@@ -9,4 +9,4 @@ class SignerReminderEmail(BaseMailerService):
     """
     name = 'Signer Reminder Email'
     subject = '[ACTION REQUIRED] Invitation to sign a document'
-    email_template = 'signer_reminder'
+    email_template = 'sign_reminder'
