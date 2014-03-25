@@ -22,6 +22,7 @@ class ReviewSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_reviewer(self, obj):
         reviewer = obj.reviewer
+
         if reviewer is not None:
             context = self.context.copy()
             context.update({
