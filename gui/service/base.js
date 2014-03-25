@@ -2,24 +2,28 @@
 
 angular.module('toolkit-gui')
 // register the interceptor as a service
-.factory('myHttpInterceptor', ['$q', '$exceptionHandler', function ($q, $exceptionHandler) {
-    return {
-        'responseError': function (rejection) {
-            $exceptionHandler("API " + rejection.config.method + " call to URL " + rejection.config.url + " failed with status " + rejection.status);
+    .factory('myHttpInterceptor', ['$q', '$exceptionHandler', '$rootScope', '$log', function ($q, $exceptionHandler, $rootScope, $log) {
+        return {
+            'response': function (response) {
+                return response || $q.when(response);
+            },
 
-            // to make it work: https://rahul.ag/angular-interceptor-401
-            /*var status = response.status;
-            if (status == 401) {
-                //AuthFactory.clearUser();
-                window.location = "/";
-                return;
-            }*/
+            'responseError': function (rejection) {
+                $exceptionHandler("API " + rejection.config.method + " call to URL " + rejection.config.url + " failed with status " + rejection.status);
 
-            return $q.reject(rejection);
-        }
-    };
-}])
-.config(['$httpProvider', function($httpProvider) {
-    $httpProvider.interceptors.push('myHttpInterceptor');
-}]);
+                var status = rejection.status;
+                if (status === 403) {
+                    $log.debug("Authentication failed");
+                    $rootScope.$broadcast('authenticationRequired', true);
+
+                    return;
+                }
+
+                return $q.reject(rejection);
+            }
+        };
+    }])
+    .config(['$httpProvider', function ($httpProvider) {
+        $httpProvider.interceptors.push('myHttpInterceptor');
+    }]);
 

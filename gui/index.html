@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html ng-app="toolkit-gui">
 <head>
-  <title></title>
+  <title>{{ matter }}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta charset="utf-8">
 
@@ -39,7 +39,7 @@
   <script src="bower_components/respond/dest/respond.src.js"></script>
   <script src="bower_components/raven-js/dist/raven.min.js"></script>
   <script src="bower_components/respond/dest/respond.src.js"></script>
-  <script type="text/javascript" src="//api.filepicker.io/v1/filepicker.js"></script>
+  <script type="text/javascript" src="//api.filepicker.io/v1/filepicker.js" data-remove="exclude"></script>
 
   <!-- Main App JS -->
   <script src="js/setup.js"></script>
@@ -83,6 +83,7 @@
   <script src="partial/view-document/view-document.js"></script>
   <script src="partial/view-review/view-review.js"></script>
   <script src="partial/searchCtrl/searchCtrl.js"></script>
+  <script src="partial/authentication-required/authentication-required.js"></script>
   <!-- Add New Partial JS Above -->
 
   <div class="navbar navbar-inverse checklist-nav" ng-controller="NavigationCtrl">
@@ -94,13 +95,18 @@
         </div>
         <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-collapse-03"></button>
 
-        <ul class="nav navbar-nav" ng-show="matter.selected">
+        <ul class="nav navbar-nav" ng-show="matter.selected&&matter.selected._meta.matter.others.length>1">
             <li class="dropdown">
               <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" ng-bind="matter.selected.name"></a>
-              <ul class="dropdown-menu" ng-show="matter.selected._meta.matter.others.length>0">
-                <li ng-repeat="m in matter.selected._meta.matter.others" ng-show="m.name!=matter.selected.name"><a href="{{ m.django_url  }}">{{ m.name }}</a></li>
+              <ul class="dropdown-menu">
+                <li ng-repeat="m in matter.selected._meta.matter.others" ng-show="m.name!=matter.selected.name">
+                    {% verbatim %}<a href="{{ m.django_url  }}">{{ m.name }}</a>{% endverbatim %}
+                </li>
               </ul>
             </li>
+        </ul>
+        <ul class="nav navbar-nav" ng-show="matter.selected&&matter.selected._meta.matter.others.length<=1">
+            <li><a href="javascript:;" ng-bind="matter.selected.name">Requests</a></li>
         </ul>
     </div>
 
@@ -180,8 +186,8 @@
   <script language="javascript" data-remove="exclude">
     angular.module('toolkit-gui').constant('API_BASE_URL', '/api/v1/');
     angular.module('toolkit-gui').constant('STATUS_LEVEL', {'OK':0,'WARNING':1,'ERROR':2} );
-    angular.module('toolkit-gui').constant('DEBUG_MODE', true);
-    angular.module('toolkit-gui').constant('SENTRY_PUBLIC_DSN', 'http://5584db708b75400fb439d4592c29fc9a@sentry.ambient-innovation.com/24' );
+    angular.module('toolkit-gui').constant('DEBUG_MODE', false);
+    angular.module('toolkit-gui').constant('SENTRY_PUBLIC_DSN', 'https://b5a6429d03e2418cbe71cd5a4c9faca6@app.getsentry.com/6287' );
   </script>
 </body>
 </html>

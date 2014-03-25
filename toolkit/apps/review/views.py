@@ -53,19 +53,15 @@ class ReviewRevisionView(DetailView):
     template_name = 'review/review.html'
 
     @property
-    def is_current(self):
-        """
-        Test that this revision is still the latest revision
-        if not then redirect elsewhere
-        """
-        return self.object.document.item.latest_revision == self.object.document
-
-    @property
     def user_is_matter_participant(self):
+        """
+        Test the current user is part of the high level matter.participants who
+        can view any and al previous revisions
+        """
         return self.request.user in self.matter.participants.all()
 
     def get_template_names(self):
-        if self.is_current is False and self.user_is_matter_participant is False:
+        if self.object.is_current is False and self.user_is_matter_participant is False:
             return ['review/review-nolongercurrent.html']
         else:
             return ['review/review.html']
@@ -74,6 +70,9 @@ class ReviewRevisionView(DetailView):
         self.object = super(ReviewRevisionView, self).get_object()
         self.matter = self.object.document.item.matter
 
+        #
+        # Perform authentication of the user here
+        #
         _authenticate(request=self.request, obj=self.object, matter=self.matter, **self.kwargs)
 
         return self.object
@@ -94,7 +93,7 @@ class ReviewRevisionView(DetailView):
                 "id": self.request.user.pk
             },
             "sidebar": 'auto',
-            "editable": self.is_current, # allow comments only if the item is current
+            "editable": self.object.is_current, # allow comments only if the item is current
             "admin": False, # noone should be able to delete other comments
             "downloadable": True, # everyone should be able to download a copy
             "copyprotected": False, # should not have copyprotection

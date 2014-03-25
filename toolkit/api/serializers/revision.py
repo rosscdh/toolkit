@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 
 from rest_framework import serializers
@@ -6,14 +7,64 @@ from rest_framework import serializers
 from toolkit.core.attachment.tasks import _download_file
 from toolkit.core.attachment.models import Revision
 
-from .user import SimpleUserSerializer#, SimpleUserWithReviewUrlSerializer
+from .user import SimpleUserSerializer
 from .review import ReviewSerializer
 
+import os
 import logging
 logger = logging.getLogger('django.request')
 
 
-class HyperlinkedAutoDownloadFileField(serializers.URLField):
+class FileHasNoNameException(Exception):
+    """
+    Custom exception for handling files with no name specifically
+    """
+    pass
+
+
+class LimitedExtensionMixin(object):
+    """
+    Same as forms.FileField, but you can specify a file extension whitelist.
+
+    >>> from django.core.files.uploadedfile import SimpleUploadedFile
+    >>>
+    >>> t = ExtFileField(ext_whitelist=(".pdf", ".txt"))
+    >>>
+    >>> t.clean(SimpleUploadedFile('filename.pdf', 'Some File Content'))
+    >>> t.clean(SimpleUploadedFile('filename.txt', 'Some File Content'))
+    >>>
+    >>> t.clean(SimpleUploadedFile('filename.exe', 'Some File Content'))
+    Traceback (most recent call last):
+    ...
+    ValidationError: [u'Not allowed filetype!']
+    """
+    ext_whitelist = ('.pdf', '.docx', '.doc', '.ppt', '.pptx', '.xls', '.xlsx')
+
+    def __init__(self, *args, **kwargs):
+        ext_whitelist = kwargs.pop("ext_whitelist", self.ext_whitelist)
+
+        self.ext_whitelist = [i.lower() for i in ext_whitelist]
+
+        super(LimitedExtensionMixin, self).__init__(*args, **kwargs)
+
+    def validate_filename(self, value):
+        if value is not None:
+
+            value = getattr(value, 'name', value)  # handle in InMemoryUploadedFiles being passed in
+
+            filename, ext = os.path.splitext(value)
+            ext = ext.lower()
+
+            if ext not in self.ext_whitelist:
+                raise ValidationError("Invalid filetype, is: %s should be in: %s" % (ext, self.ext_whitelist))
+
+    def from_native(self, value):
+        value = super(LimitedExtensionMixin, self).from_native(value)
+        self.validate_filename(value=value)
+        return value
+
+
+class HyperlinkedAutoDownloadFileField(LimitedExtensionMixin, serializers.URLField):
     """
     Autodownload a file specified by a url
     but also return just the url and not the FileObject on to_native unless it
@@ -29,7 +80,7 @@ class HyperlinkedAutoDownloadFileField(serializers.URLField):
             try:
 
                 if field.name in [None, '']:
-                    raise Exception('File has no name')
+                    raise FileHasNoNameException('File has no name')
 
                 #
                 # Start download if the file does not exist
@@ -38,8 +89,8 @@ class HyperlinkedAutoDownloadFileField(serializers.URLField):
                 # important as we then access the "name" attribute in teh serializer
                 # that allows us to name the file (as filepicker sends the name and url seperately)
                 request = self.context.get('request', {})
-
                 url = request.DATA.get('executed_file')
+
                 original_filename = request.DATA.get('name')
 
                 #
@@ -68,12 +119,20 @@ class HyperlinkedAutoDownloadFileField(serializers.URLField):
         return None
 
 
-class FileFieldAsUrlField(serializers.FileField):
+class FileFieldAsUrlField(LimitedExtensionMixin, serializers.FileField):
     """
     Acts like a normal FileField but to_native will download the file
     """
+    def from_native(self, value):
+        self.validate_filename(value=value.name)
+        return super(FileFieldAsUrlField, self).from_native(value=value)
+
     def to_native(self, value):
         if hasattr(value, 'url') is True:
+            #
+            # Validate its of the right type
+            #
+            self.validate_filename(value=value.name)
             #
             # Just download the object, the rest gets handled naturally
             #
@@ -150,20 +209,30 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
     def get_user_review_url(self, obj):
         """
         Try to provide an initial reivew url from the base review_document obj
+        for the currently logged in user
         """
         context = getattr(self, 'context', None)
         request = context.get('request')
+        review_document = context.get('review_document', None)
 
         if request is not None:
-            initial_reviewdocument = obj.reviewdocument_set.all().first()
-            return initial_reviewdocument.get_absolute_url(user=request.user)
+            #
+            # if we have a review_document present in the context
+            #
+            if review_document is None:
+                # we have none, then try find the reviewdocument object that has all the matter participants in it
+                #
+                # The bast one will have 0 reviewers! and be the last in the set (because it was added first)
+                #
+                review_document = obj.reviewdocument_set.all().last()
+
+            return review_document.get_absolute_url(user=request.user) if review_document is not None else None
 
         return None
 
     def get_revisions(self, obj):
         return [reverse('matter_item_specific_revision', kwargs={
-                'matter_slug': obj.item.matter.slug,
-                'item_slug': obj.item.slug,
-                'version': c + 1
-        }) for c, revision in enumerate(obj.revisions) if revision.pk != obj.pk]
-        #}) for c, revision in enumerate(obj.revisions)]
+                    'matter_slug': obj.item.matter.slug,
+                    'item_slug': obj.item.slug,
+                    'version': c + 1
+                }) for c, revision in enumerate(obj.revisions) if revision.pk != obj.pk]

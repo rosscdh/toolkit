@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
 from django.test import LiveServerTestCase
 from django.core.urlresolvers import reverse
 from django.core.files.storage import FileSystemStorage
@@ -11,11 +12,15 @@ from ...serializers import ItemSerializer, UserSerializer, SimpleUserSerializer
 
 from model_mommy import mommy
 
-import mock
 import os
+import mock
 import json
+import urllib
 
-TEST_IMAGE_PATH = os.path.join(os.path.dirname(__file__), 'data', 'test-image.png')
+# Images are NOT valid filetypes to upload
+TEST_INVALID_UPLOAD_IMAGE_PATH = os.path.join(os.path.dirname(__file__), 'data', 'test-image.png')
+# Pdfs ARE valid filetypes
+TEST_PDF_PATH = os.path.join(settings.SITE_ROOT, 'toolkit', 'casper', 'test.pdf')
 
 
 class ItemRevisionTest(BaseEndpointTest):
@@ -75,7 +80,10 @@ class ItemRevisionTest(BaseEndpointTest):
         resp = self.client.get(self.endpoint)
         resp_json = json.loads(resp.content)
 
-        document_review = revision.reviewdocument_set.all().first()
+        # should be the last object in the set as the default one created for the reviewers
+        document_review = revision.reviewdocument_set.all().last()
+        # first in this case because there are only 2 in our tests case
+        invited_reviewer_document_review = revision.reviewdocument_set.all().first()
 
         self.assertEqual(resp_json.get('name'), 'filename.txt')
         self.assertEqual(resp_json.get('description'), 'A test file')
@@ -102,11 +110,24 @@ class ItemRevisionTest(BaseEndpointTest):
         # should only have 1 reviewer, ever
         self.assertEqual(len(reviewers), 1)
         # get that person
-        reviewer = reviewers[0].get('reviewer')
+        resp_reviewer = reviewers[0].get('reviewer')
         # test their url
-        self.assertTrue(reviewer.get('user_review_url') is not None)
-        # it is the correct url for this specific user to view object
-        self.assertEqual(reviewer.get('user_review_url'), revision.reviewdocument_set.all().first().get_absolute_url(user=self.lawyer))
+        self.assertTrue(resp_reviewer.get('user_review_url') is not None)
+        # it is the correct url for this specific user to view object in this case the lawyer is looking at this review
+        # not this is a head trip, but the viewing user should only EVER see THEIR url to that document
+        self.assertEqual(resp_reviewer.get('user_review_url'), invited_reviewer_document_review.get_absolute_url(user=self.lawyer))
+
+        # ensure that the user_review_url is never the actual reviewers url that gets sent out
+        for rd in revision.reviewdocument_set.all():
+            self.assertTrue(resp_reviewer.get('user_review_url') != rd.get_user_auth(user=reviewer))
+
+        # ensure that the reviewer user does have a url in the appropriate object
+        self.assertTrue(invited_reviewer_document_review.get_absolute_url(user=reviewer) is not None)
+        # must be a string as we store the pk in as a string
+        self.assertTrue(str(reviewer.pk) in invited_reviewer_document_review.auth.keys())
+        # test that the url for the reviewer is correct
+        self.assertEqual(invited_reviewer_document_review.get_absolute_url(user=reviewer), '/review/%s/%s/' % (invited_reviewer_document_review.slug,
+                                                                                                               urllib.quote(invited_reviewer_document_review.get_user_auth(user=reviewer))))
 
     def test_revision_post_with_url(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -179,6 +200,8 @@ class ItemSubRevision3Test(ItemSubRevision2Test):
 
 
 class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerTestCase):
+    FILE_TO_TEST_UPLOAD_WITH = TEST_PDF_PATH
+
     @property
     def endpoint(self):
         return reverse('matter_item_revision', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug})
@@ -201,8 +224,8 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         """
         # normally there is no logo-white.png from filepicker io it sends name seperately
         # but for our tests we need to fake this out
-        expected_image_url = 'http://localhost:8081/static/images/logo-white.png'
-        expected_file_name = 'logo-black.png'
+        expected_image_url = 'http://localhost:8081/static/test.pdf'
+        expected_file_name = 'test-pirates-ahoy.pdf'  # test renaming
 
         self.client.login(username=self.lawyer.username, password=self.password)
 
@@ -225,14 +248,14 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         self.assertEqual(resp.status_code, 201)  # ok created
 
         self.assertEqual(resp_json.get('slug'), 'v1')
-        self.assertEqual(resp_json.get('executed_file'), 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-logo-black.png' % (self.item.pk, self.lawyer.username))
+        self.assertEqual(resp_json.get('executed_file'), 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test-pirates-ahoy.pdf' % (self.item.pk, self.lawyer.username))
         self.assertEqual(self.item.revision_set.all().count(), 1)
 
         # refresh
         self.item = Item.objects.get(pk=self.item.pk)
         revision = self.item.revision_set.all().first()
-        self.assertEqual(revision.executed_file.name, 'executed_files/v1-%s-%s-logo-black.png' % (self.item.pk, self.lawyer.username))
-        self.assertEqual(revision.executed_file.url, 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-logo-black.png' % (self.item.pk, self.lawyer.username))
+        self.assertEqual(revision.executed_file.name, 'executed_files/v1-%s-%s-test-pirates-ahoy.pdf' % (self.item.pk, self.lawyer.username))
+        self.assertEqual(revision.executed_file.url, 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test-pirates-ahoy.pdf' % (self.item.pk, self.lawyer.username))
 
     @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_post_with_URL_executed_file(self):
@@ -243,27 +266,27 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         """
         mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
 
-        expected_image_url = 'http://localhost:8081/static/images/logo-white.png'
+        expected_image_url = 'http://localhost:8081/static/test.pdf'
 
         self.client.login(username=self.lawyer.username, password=self.password)
 
         data = {
             'executed_file': expected_image_url,
         }
-        resp = self.client.patch(self.endpoint, json.dumps(data), content_type='application/json')
+        resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
         resp_json = json.loads(resp.content)
 
-        self.assertEqual(resp.status_code, 200)  # updated but actually a new one was created
+        self.assertEqual(resp.status_code, 201)  # 201 created
         self.assertEqual(resp_json.get('slug'), 'v2')
 
     @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
-    def test_patch_with_FILE_executed_file(self):
+    def test_post_with_FILE_executed_file(self):
         """
         ensure we can upload an actual file to the endpoint
         """
         self.client.login(username=self.lawyer.username, password=self.password)
 
-        with open(TEST_IMAGE_PATH) as file_being_posted:
+        with open(self.FILE_TO_TEST_UPLOAD_WITH) as file_being_posted:
             data = {
                 'executed_file': file_being_posted,
             }
@@ -281,10 +304,88 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
 
         self.assertEqual(resp.status_code, 201)  # created
         self.assertEqual(resp_json.get('slug'), 'v1')
-        self.assertEqual(resp_json.get('name'), 'test-image.png')
-        self.assertEqual(resp_json.get('executed_file'), 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test-image.png' % (self.item.pk, self.lawyer.username))
+        self.assertEqual(resp_json.get('name'), 'test.pdf')
+        self.assertEqual(resp_json.get('executed_file'), 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
         self.assertEqual(self.item.revision_set.all().count(), 1)
 
         revision = self.item.revision_set.all().first()
-        self.assertEqual(revision.executed_file.name, 'executed_files/v1-%s-%s-test-image.png' % (self.item.pk, self.lawyer.username))
-        self.assertEqual(revision.executed_file.url, 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test-image.png' % (self.item.pk, self.lawyer.username))
+        self.assertEqual(revision.executed_file.name, 'executed_files/v1-%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
+        self.assertEqual(revision.executed_file.url, 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
+
+
+class InvalidFileTypeAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerTestCase):
+    """
+    Test invalid file uploads
+    """
+    FILE_TO_TEST_UPLOAD_WITH = TEST_INVALID_UPLOAD_IMAGE_PATH
+
+    @property
+    def endpoint(self):
+        return reverse('matter_item_revision', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug})
+
+    def setUp(self):
+        super(InvalidFileTypeAsUrlOrMultipartDataTest, self).setUp()
+        # setup the items for testing
+        self.item = mommy.make('item.Item', matter=self.matter, name='Test Item with Revision', category=None)
+
+    def test_endpoint_name(self):
+        self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/items/%s/revision' % self.item.slug)
+
+    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
+    def test_patch_with_URL_executed_file(self):
+        # normally there is no logo-white.png from filepicker io it sends name seperately
+        # but for our tests we need to fake this out
+        expected_image_url = 'http://localhost:8081/static/images/logo-white.png'
+        expected_file_name = 'logo-white.png'
+
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        #
+        # Filepicker IO sends us a url with no filename and or suffix that we use
+        # but they do send us the name of the file that was uploaded so lets use that
+        #
+        data = {
+            'executed_file': expected_image_url,
+            'name': expected_file_name
+        }
+        #
+        # @BUSINESSRULE if you are sending a url of a file that needs to be download
+        # ie. filepicker.io then the CONTENT_TYPE must be application/json and
+        # the field "executed_file": "http://example.com/myfile.pdf"
+        #
+        resp = self.client.patch(self.endpoint, json.dumps(data), content_type='application/json')
+        resp_json = json.loads(resp.content)
+
+        self.assertEqual(resp.status_code, 400)  # error
+        self.assertEqual(resp_json.get('executed_file'), [u"Invalid filetype, is: .png should be in: ['.pdf', '.docx', '.doc', '.ppt', '.pptx', '.xls', '.xlsx']"])  # error
+
+    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
+    def test_post_with_URL_executed_file(self):
+        mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
+
+        expected_image_url = 'http://localhost:8081/static/images/logo-white.png'
+
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        data = {
+            'executed_file': expected_image_url,
+        }
+        resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
+        resp_json = json.loads(resp.content)
+
+        self.assertEqual(resp.status_code, 400)  # invalid
+
+    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
+    def test_post_with_FILE_executed_file(self):
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        with open(self.FILE_TO_TEST_UPLOAD_WITH) as file_being_posted:
+            data = {
+                'executed_file': file_being_posted,
+            }
+            self.assertEqual(self.item.revision_set.all().count(), 0)
+            resp = self.client.post(self.endpoint, data, content_type=MULTIPART_CONTENT)
+
+        resp_json = json.loads(resp.content)
+
+        self.assertEqual(resp.status_code, 400)  # invalid

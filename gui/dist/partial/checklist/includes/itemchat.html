@@ -1,4 +1,4 @@
-<h4><span class="fui-chat"></span> Discuss</h4>
+<h4>Discuss</h4>
 <ul class="list-unstyled">
     <li ng-repeat="activity in data.activitystream"
         ng-class="{'action': activity.data.comment==null, 'message me': activity.data.comment!=null&&activity.actor.username==data.usdata.current.username, 'message other': activity.data.comment!=null&&activity.actor.username!=data.usdata.current.username }">

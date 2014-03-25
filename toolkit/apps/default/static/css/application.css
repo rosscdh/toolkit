@@ -751,6 +751,10 @@ body.gui .main-content {
   margin-right: 3px;
   padding: 8px 15px;
 }
+.content-header-btn {
+  float: right;
+  margin-top: 45px;
+}
 .help-block {
   font-size: 14px;
 }
@@ -963,6 +967,23 @@ body.gui .main-content {
 .navbar.checklist-nav li.notifications a.unread [class*="fui-"] {
   color: #f2c81d;
   text-shadow: 0px 0px 10px #232323;
+}
+#notifications .notification {
+  background-color: white;
+  border: 1px solid #e8ecec;
+  padding: 20px;
+}
+#notifications .notification .avatar {
+  margin-top: 8px;
+}
+#notifications .notification .notification-btn {
+  font-size: 20px;
+  margin-top: 8px;
+  text-align: right;
+}
+#notifications .notification p {
+  color: #95a5a6;
+  margin-bottom: 0;
 }
 #requests section {
   margin-bottom: 50px;

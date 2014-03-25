@@ -49,7 +49,9 @@ module.exports = function (grunt) {
                 context : {
                     staticBase : '<%= DJANGO_STATIC_BASE_PATH %>',
                     staticPath : '<%= APP_STATIC_PATH %>',
-                    apiBaseUrl : '/api/v1/'
+                    apiBaseUrl : '/api/v1/',
+                    DEBUG_MODE : true,
+                    SENTRY_PUBLIC_DSN : 'http://5584db708b75400fb439d4592c29fc9a@sentry.ambient-innovation.com/24'
                 }
             }
         },
@@ -60,7 +62,9 @@ module.exports = function (grunt) {
                 context : {
                     staticBase : '<%= DJANGO_STATIC_BASE_PATH %>',
                     staticPath : '',
-                    apiBaseUrl : '/api/v1/'
+                    apiBaseUrl : '/api/v1/',
+                    DEBUG_MODE : false,
+                    SENTRY_PUBLIC_DSN : 'https://b5a6429d03e2418cbe71cd5a4c9faca6@app.getsentry.com/6287'
                 }
             }
         },
@@ -71,7 +75,9 @@ module.exports = function (grunt) {
                 context : {
                     staticBase : '',
                     staticPath : '/static/',
-                    apiBaseUrl : '/api/v1/'
+                    apiBaseUrl : '/api/v1/',
+                    DEBUG_MODE : true,
+                    SENTRY_PUBLIC_DSN : ''
                 }
             }
         }

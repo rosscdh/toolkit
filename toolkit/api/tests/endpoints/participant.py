@@ -226,4 +226,4 @@ class MatterParticipantTest(BaseEndpointTest):
     def test_anon_cant(self):
         for event in ['get', 'post', 'patch', 'delete']:
             resp = getattr(self.client, event)(self.endpoint, {}, content_type='application/json')
-            self.assertEqual(resp.status_code, 401)  # denied
+            self.assertEqual(resp.status_code, 403)  # forbidden
