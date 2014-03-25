@@ -5,14 +5,9 @@ from django.db.models.signals import pre_save, post_save, post_delete, m2m_chang
 
 from toolkit.apps.workspace import _model_slug_exists
 
-from toolkit.apps.review import (REVIEWER_ASSOCIATION_STRATEGIES,
-                                 REVIEWER_DOCUMENT_ASSOCIATION_STRATEGY,)
-
-from toolkit.apps.sign import (SIGNER_ASSOCIATION_STRATEGIES,
-                               SIGNER_DOCUMENT_ASSOCIATION_STRATEGY,)
-
 from .models import Revision
 from toolkit.apps.review.models import ReviewDocument
+from toolkit.apps.sign.models import SignDocument
 
 import logging
 logger = logging.getLogger('django.request')
@@ -72,7 +67,7 @@ def ensure_one_current_revision(sender, instance, **kwargs):
 @receiver(post_save, sender=Revision, dispatch_uid='revision.ensure_revision_reviewdocument_object')
 def ensure_revision_reviewdocument_object(sender, instance, **kwargs):
     """
-    signal to handle creating the DocumentReview object for each Revision Object
+    signal to handle creating the ReviewDocument object for each Revision Object
     which has the matter.participants as the ReviewDocument.participants
     """
     if instance.reviewdocument_set.all().count() == 0:
@@ -80,9 +75,24 @@ def ensure_revision_reviewdocument_object(sender, instance, **kwargs):
             #
             # Detected that no ReviewDocument is preset
             #
-            review = ReviewDocument.objects.create(document=instance)
+            review_document = ReviewDocument.objects.create(document=instance)
             # now add the revew object to the instance reivewdocument_set
-            instance.reviewdocument_set.add(review)
+            instance.reviewdocument_set.add(review_document)
+
+@receiver(post_save, sender=Revision, dispatch_uid='revision.ensure_revision_signdocument_object')
+def ensure_revision_signdocument_object(sender, instance, **kwargs):
+    """
+    signal to handle creating the SignDocument object for each Revision Object
+    which has the matter.participants as the ReviewDocument.participants
+    """
+    if instance.signdocument_set.all().count() == 0:
+        with transaction.atomic():
+            #
+            # Detected that no ReviewDocument is preset
+            #
+            sign_document = SignDocument.objects.create(document=instance)
+            # now add the revew object to the instance reivewdocument_set
+            instance.signdocument_set.add(sign_document)
 
 
 @receiver(post_delete, sender=Revision, dispatch_uid='revision.set_previous_revision_is_current_on_delete')
@@ -104,7 +114,7 @@ def on_upload_set_item_is_requested_false(sender, instance, **kwargs):
     and its uploaded by the item.responsible_party then mark it as is_requested = False
     """
     if instance.item.is_requested is True:
-        if instance.uploaded_by == item.instance.responsible_party:
+        if instance.uploaded_by == instance.item.responsible_party:
             item = instance.item
             item.is_requested = False
             item.save(update_fields=['is_requested'])
@@ -122,7 +132,7 @@ def on_reviewer_add(sender, instance, action, model, pk_set, **kwargs):
     when a reviewer is added from the m2m then authorise them
     for access
     """
-    if action in ['post_add']:
+    if action in ['post_add'] and pk_set:
         user_pk = next(iter(pk_set))  # get the first item in the set should only ever be 1 anyway
         user = model.objects.get(pk=user_pk)  # get the user being invited
 
@@ -148,7 +158,7 @@ def on_reviewer_remove(sender, instance, action, model, pk_set, **kwargs):
     """
     when a reviewer is removed from the m2m then deauthorise them
     """
-    if action in ['pre_remove']:
+    if action in ['pre_remove'] and pk_set:
         user_pk = next(iter(pk_set))  # get the first item in the set should only ever be 1 anyway
         user = model.objects.get(pk=user_pk)
 
@@ -169,13 +179,13 @@ Signers
 """
 
 
-@receiver(m2m_changed, sender=Revision.signatories.through, dispatch_uid='revision.on_signatory_add')
+@receiver(m2m_changed, sender=Revision.signers.through, dispatch_uid='revision.on_signatory_add')
 def on_signatory_add(sender, instance, action, model, pk_set, **kwargs):
     """
     when a signatory is added from the m2m then authorise them
     for access
     """
-    if action in ['post_add']:
+    if action in ['post_add'] and pk_set:
         user_pk = next(iter(pk_set))  # get the first item in the set should only ever be 1 anyway
         user = model.objects.get(pk=user_pk)
 
@@ -189,23 +199,24 @@ def on_signatory_add(sender, instance, action, model, pk_set, **kwargs):
         # 1 SignDocument per signatory
         # in this case we should immediately delete the review document
         #
-        signdocument.pk = None  # set to null this is adjango stategy to copy the model
+        signdocument.pk = None  # set to null: this is a django stategy to copy the model
         signdocument.slug = None  # set to non so it gets regenerated
         signdocument.save()  # save it so we get a new pk so we can add reviewrs
-        signdocument.signatorys.add(user)  # add the signatory
+        signdocument.signers.add(user)  # add the signatory
         signdocument.recompile_auth_keys()  # update teh auth keys to match the new slug
 
-@receiver(m2m_changed, sender=Revision.signatories.through, dispatch_uid='revision.on_signatory_remove')
+
+@receiver(m2m_changed, sender=Revision.signers.through, dispatch_uid='revision.on_signatory_remove')
 def on_signatory_remove(sender, instance, action, model, pk_set, **kwargs):
     """
     when a signatory is removed from the m2m then deauthorise them
     """
-    if action in ['pre_remove']:
+    if action in ['pre_remove'] and pk_set:
         user_pk = next(iter(pk_set))  # get the first item in the set should only ever be 1 anyway
         user = model.objects.get(pk=user_pk)
 
         signdocuments = ReviewDocument.objects.filter(document=instance,
-                                                        signatories__in=[user])
+                                                        signers__in=[user])
 
         #
         # 1 SignDocument per signatory

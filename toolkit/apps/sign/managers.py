@@ -29,4 +29,4 @@ class SignDocumentManager(IsDeletedManager):
         if not user.is_authenticated():
             return self.get_query_set().none()
 
-        return self.get_query_set().filter(signatories__in=[user], **kwargs)
+        return self.get_query_set().filter(signers__in=[user], **kwargs)

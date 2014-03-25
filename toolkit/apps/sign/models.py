@@ -24,7 +24,7 @@ logger = logging.getLogger('django.request')
 
 class SignDocument(IsDeletedMixin, UserAuthMixin, models.Model):
     """
-    An object to represent a url that allows multiple signatories to view
+    An object to represent a url that allows multiple signers to view
     a document using a service like crocodoc
     """
     slug = UUIDField(auto=True, db_index=True)
@@ -43,7 +43,7 @@ class SignDocument(IsDeletedMixin, UserAuthMixin, models.Model):
     def get_absolute_url(self, user):
         auth_key = self.get_user_auth(user=user)
         if auth_key is not None:
-            return reverse('review:review_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)})
+            return reverse('sign:sign_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)})
         return None
 
     def get_approval_url(self, user):

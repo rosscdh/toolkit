@@ -92,8 +92,8 @@ class Item(IsDeletedMixin, RequestDocumentUploadMixin,
     def reviewers(self):
         return self.data.get('reviewers', [])
 
-    def signatories(self):
-        return self.data.get('signatories', [])
+    def signers(self):
+        return self.data.get('signers', [])
 
     def save(self, *args, **kwargs):
         """

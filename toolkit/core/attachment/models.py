@@ -55,7 +55,7 @@ class Revision(models.Model):
     uploaded_by = models.ForeignKey('auth.User')
 
     reviewers = models.ManyToManyField('auth.User', related_name='revision_reviewers', blank=True, null=True)
-    signatories = models.ManyToManyField('auth.User', related_name='revision_signatories', blank=True, null=True)
+    signers = models.ManyToManyField('auth.User', related_name='revision_signers', blank=True, null=True)
 
     # allow reviewers to upload alternatives to the current
     # these alternatives may be set as the "current" if the lawyer approves

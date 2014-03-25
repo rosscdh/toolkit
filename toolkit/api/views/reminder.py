@@ -84,9 +84,9 @@ rulez_registry.register("can_delete", RemindReviewers)
 
 class RemindSignatories(BaseReminderMixin):
     """
-    Send reminder emails to signatories
+    Send reminder emails to signers
     """
-    specific_attribute = 'signatories.all()'
+    specific_attribute = 'signers.all()'
 
     def can_read(self, user):
         return user.profile.user_class in ['lawyer']

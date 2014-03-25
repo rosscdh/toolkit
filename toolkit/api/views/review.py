@@ -54,7 +54,7 @@ rulez_registry.register("can_delete", ReviewEndpoint)
 
 class BaseReviewerSignatoryMixin(generics.GenericAPIView):
     """
-    Provides the object to access .signatories or .reviewers
+    Provides the object to access .signers or .reviewers
     and their required functionality
     """
     model = Revision  # to allow us to use get_object generically

@@ -91,13 +91,13 @@ urlpatterns = router.urls + patterns('',
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/?$', MatterItemCurrentRevisionView.as_view(), name='matter_item_revision'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/v(?P<version>[\d]+)/?$', MatterItemSpecificReversionView.as_view(), name='matter_item_specific_revision'),
     #
-    # Revision reviewers and signatories
+    # Revision reviewers and signers
     #
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/reviewers/?$', ItemRevisionReviewersView.as_view(), name='item_revision_reviewers'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/reviewer/(?P<username>[\w\W\-\_]+)/?$', ItemRevisionReviewerView.as_view(), name='item_revision_reviewer'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/reviewers/remind/?$', RemindReviewers.as_view(), name='item_revision_remind_reviewers'),
 
-    url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/signatories/?$', ItemRevisionSignatoriesView.as_view(), name='item_revision_signatories'),
+    url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/signers/?$', ItemRevisionSignatoriesView.as_view(), name='item_revision_signers'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/signatory/(?P<username>[\w\W\-\_]+)/?$', ItemRevisionSignatoryView.as_view(), name='item_revision_signatory'),
-    url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/signatories/remind/?$', RemindSignatories.as_view(), name='item_revision_remind_signatories'),
+    url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/signers/remind/?$', RemindSignatories.as_view(), name='item_revision_remind_signers'),
 )

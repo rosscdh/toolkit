@@ -61,7 +61,7 @@ class UserAuthMixin(object):
         """
         for user_pk in self.auth.keys():
             user = User.objects.get(pk=user_pk)
-            self.authorise_user_to_review(user=user)
+            self.authorise_user_access(user=user)
 
     def make_user_auth_key(self, user):
         """
@@ -70,7 +70,7 @@ class UserAuthMixin(object):
         hasher = hashlib.sha1('%s-%s' % (str(self.slug), user.email))
         return base64.urlsafe_b64encode(hasher.digest()[0:10])
 
-    def authorise_user_to_review(self, user):
+    def authorise_user_access(self, user):
         """
         @BUSINESSRULE make sure the user only gets one key per review
         """
@@ -85,7 +85,7 @@ class UserAuthMixin(object):
             self.auth = auth
             self.save(update_fields=['data'])
 
-    def deauthorise_user_to_review(self, user):
+    def deauthorise_user_access(self, user):
         auth = self.auth
 
         if user and str(user.pk) in auth.keys():

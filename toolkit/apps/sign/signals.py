@@ -8,12 +8,12 @@ from .models import SignDocument
 
 def _add_as_authorised(instance, pk_set):
     user = User.objects.filter(pk__in=pk_set).first()
-    instance.authorise_user_to_sign(user=user)
+    instance.authorise_user_access(user=user)
 
 
 def _remove_as_authorised(instance, pk_set):
         user = User.objects.filter(pk__in=pk_set).first()
-        instance.deauthorise_user_to_sign(user=user)
+        instance.deauthorise_user_access(user=user)
 
 
 """
