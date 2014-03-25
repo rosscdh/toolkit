@@ -7,7 +7,7 @@
 		<p>Requesting a review from a LawPal user or External party will ask them read the document, add annotations and tell you when they are done.</p>
 		<strong ng-show="participants.length>0">Existing members</strong>
 			<ul class="list-unstyled">
-                <li ng-repeat="person in participants" ng-hide="person.username==currentUser.username">
+                <li ng-repeat="person in participants" ng-hide="person.username==currentUser.username||participantIsReviewer(person)">
 					<label class="radio" ng-class="{'checked':$index==data.selectedIndex}">
 						<span class="icons">
 							<span class="first-icon fui-radio-unchecked"></span>

@@ -132,7 +132,7 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
     def test_second_lawyer_post(self):
         """
         This is the second post call to create a request to the reviewer.
-        The system will return the already existing reviewer and wont send a new mail.
+        The system will return the already existing reviewer and send a new mail.
         """
         self.client.login(username=self.lawyer.username, password=self.password)
 
@@ -176,9 +176,22 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
 
         self.assertEqual(json_data['results'][0]['reviewer']['user_review_url'], expected_url)
 
-        #no new mail will be send
         outbox = mail.outbox
-        self.assertEqual(len(outbox), 0)
+        self.assertEqual(len(outbox), 1)
+
+        email = outbox[0]
+        self.assertEqual(email.subject, '[ACTION REQUIRED] Invitation to review a document')
+
+        pq = self.pq(email.body)
+
+        review_document = self.item.latest_revision.reviewdocument_set.filter(reviewers__in=[participant]).first()
+
+        invite_key = InviteKey.objects.get(matter=self.matter, invited_user=participant)
+
+        expected_action_url = ABSOLUTE_BASE_URL(invite_key.get_absolute_url())
+
+        self.assertEqual(pq('a')[0].attrib.get('href'), expected_action_url)
+        self.assertEqual(invite_key.next, reverse('request:list'))
 
     def test_lawyer_patch(self):
         self.client.login(username=self.lawyer.username, password=self.password)
