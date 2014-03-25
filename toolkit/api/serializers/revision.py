@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+from django import forms
 from django.core.urlresolvers import reverse
 
 from rest_framework import serializers
@@ -9,11 +10,46 @@ from toolkit.core.attachment.models import Revision
 from .user import SimpleUserSerializer
 from .review import ReviewSerializer
 
+import os
 import logging
 logger = logging.getLogger('django.request')
 
 
-class HyperlinkedAutoDownloadFileField(serializers.URLField):
+class ExtFileField(forms.FileField):
+    """
+    Same as forms.FileField, but you can specify a file extension whitelist.
+
+    >>> from django.core.files.uploadedfile import SimpleUploadedFile
+    >>>
+    >>> t = ExtFileField(ext_whitelist=(".pdf", ".txt"))
+    >>>
+    >>> t.clean(SimpleUploadedFile('filename.pdf', 'Some File Content'))
+    >>> t.clean(SimpleUploadedFile('filename.txt', 'Some File Content'))
+    >>>
+    >>> t.clean(SimpleUploadedFile('filename.exe', 'Some File Content'))
+    Traceback (most recent call last):
+    ...
+    ValidationError: [u'Not allowed filetype!']
+    """
+    ext_whitelist = ('.pdf', '.docx', '.doc', '.ppt', '.pptx', '.xls', '.xlsx')
+
+    def __init__(self, *args, **kwargs):
+        ext_whitelist = kwargs.pop("ext_whitelist", self.ext_whitelist)
+
+        self.ext_whitelist = [i.lower() for i in ext_whitelist]
+
+        super(ExtFileField, self).__init__(*args, **kwargs)
+
+    def clean(self, *args, **kwargs):
+        data = super(ExtFileField, self).clean(*args, **kwargs)
+        filename = data.name
+        ext = os.path.splitext(filename)[1]
+        ext = ext.lower()
+        if ext not in self.ext_whitelist:
+            raise forms.ValidationError("Not allowed filetype!")
+
+
+class HyperlinkedAutoDownloadFileField(ExtFileField, serializers.URLField):
     """
     Autodownload a file specified by a url
     but also return just the url and not the FileObject on to_native unless it
@@ -68,7 +104,8 @@ class HyperlinkedAutoDownloadFileField(serializers.URLField):
         return None
 
 
-class FileFieldAsUrlField(serializers.FileField):
+
+class FileFieldAsUrlField(ExtFileField, serializers.FileField):
     """
     Acts like a normal FileField but to_native will download the file
     """
