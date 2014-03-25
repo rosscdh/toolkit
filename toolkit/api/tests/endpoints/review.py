@@ -129,6 +129,57 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
         self.assertEqual(pq('a')[0].attrib.get('href'), expected_action_url)
         self.assertEqual(invite_key.next, reverse('request:list'))
 
+    def test_second_lawyer_post(self):
+        """
+        This is the second post call to create a request to the reviewer.
+        The system will return the already existing reviewer and wont send a new mail.
+        """
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        participant = mommy.make('auth.User', first_name='Participant', last_name='Number 1', email='participant+1@lawpal.com')
+
+        data = {
+            "username": participant.username
+        }
+        resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
+
+        self.assertEqual(resp.status_code, 201)  # created
+
+        json_data = json.loads(resp.content)
+
+        self.assertEqual(json_data['reviewer']['name'], participant.get_full_name())
+        # test they are in the items reviewer set
+        self.assertTrue(participant in self.item.latest_revision.reviewers.all())
+
+        #
+        # Test they show in the GET
+        #
+        resp = self.client.get(self.endpoint)
+
+        self.assertEqual(resp.status_code, 200)
+
+        json_data = json.loads(resp.content)
+        self.assertEqual(json_data['count'], 2)
+
+        self.assertEqual(json_data['results'][0]['reviewer']['name'], participant.get_full_name())
+        # we have no reviewers and the last object in the set should be the oldest
+        self.assertEqual(json_data['results'][1]['reviewer'], None)
+
+        # user review url must be in it
+        self.assertTrue('user_review_url' in json_data['results'][0]['reviewer'].keys())
+
+        #
+        # we expect the currently logged in users url to be returned;
+        # as the view is relative to the user
+        #
+        expected_url = self.item.latest_revision.reviewdocument_set.all().first().get_absolute_url(user=self.lawyer)
+
+        self.assertEqual(json_data['results'][0]['reviewer']['user_review_url'], expected_url)
+
+        #no new mail will be send
+        outbox = mail.outbox
+        self.assertEqual(len(outbox), 0)
+
     def test_lawyer_patch(self):
         self.client.login(username=self.lawyer.username, password=self.password)
         resp = self.client.patch(self.endpoint, {}, content_type='application/json')
