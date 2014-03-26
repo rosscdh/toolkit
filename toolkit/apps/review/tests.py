@@ -3,7 +3,8 @@ from django.core import mail
 from django.conf import settings
 from django.test import TestCase
 from django.core.urlresolvers import reverse
-
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from toolkit.casper.prettify import mock_http_requests
 from toolkit.casper.workflow_case import BaseScenarios
 
@@ -42,9 +43,11 @@ class BaseDataProvider(BaseScenarios):
 
         self.item = mommy.make('item.Item', matter=self.matter, name='Test Item No. 1', category="A")
 
+        default_storage.save('executed_files/test.pdf', ContentFile(os.path.join(settings.SITE_ROOT, 'toolkit', 'casper', 'test.pdf')))
+
         self.revision = mommy.make('attachment.Revision',
                                    item=self.item,
-                                   executed_file=os.path.join(settings.SITE_ROOT, 'toolkit', 'casper', 'test.pdf'),
+                                   executed_file='executed_files/test.pdf',
                                    uploaded_by=self.lawyer)
 
         # there should always be 1 reviewdocument that the matter.participants can review together alone
