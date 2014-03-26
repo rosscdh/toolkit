@@ -195,7 +195,7 @@ class ItemRevisionReviewerView(generics.RetrieveAPIView,
         # Find ReviewDocumets where this user is the reviewer
         # Should only ever be one per user
         #
-        user_reviewdocument_set = self.revision.reviewdocument_set.filter(reviewers__in=[user]).first()
+        user_reviewdocument_set = self.revision.reviewdocument_set.filter(reviewers__in=[user])
 
         if len(user_reviewdocument_set) == 0:
             #
