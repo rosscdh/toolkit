@@ -87,16 +87,6 @@ class RedirectToNextMixin(object):
         return HttpResponseRedirect(next) if next is not None else next
 
 
-class HomePageView(TemplateView):
-    template_name = 'public/home.html'
-
-    def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated():
-            return HttpResponseRedirect(reverse('matter:list'))
-        else:
-            return super(HomePageView, self).dispatch(request, *args, **kwargs)
-
-
 class StartView(LogOutMixin, SaveNextUrlInSessionMixin, AuthenticateUserMixin, FormView):
     """
     sign in view
@@ -127,6 +117,17 @@ class StartView(LogOutMixin, SaveNextUrlInSessionMixin, AuthenticateUserMixin, F
             return self.form_invalid(form=form)
 
         return super(StartView, self).form_valid(form)
+
+
+class HomePageView(StartView):
+    # now inherits from startview
+    #template_name = 'public/home.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated():
+            return HttpResponseRedirect(reverse('matter:list'))
+        else:
+            return super(HomePageView, self).dispatch(request, *args, **kwargs)
 
 
 class InviteKeySignInView(StartView):
