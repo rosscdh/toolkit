@@ -94,7 +94,7 @@ class HomePageView(TemplateView):
         if request.user.is_authenticated():
             return HttpResponseRedirect(reverse('matter:list'))
         else:
-            return super(HomePageView, self).dispatch(request, *args, **kwargs)
+            return HttpResponseRedirect(reverse('public:signin'))
 
 
 class StartView(LogOutMixin, SaveNextUrlInSessionMixin, AuthenticateUserMixin, FormView):
