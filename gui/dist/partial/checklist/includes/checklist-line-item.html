@@ -76,7 +76,7 @@
 	<tr class="hidden"><td colspan="2" class="text-muted">Drag item into this emtpy category</td></tr>
 </tbody>
 <tbody ng-show="cat.items.length==0" ng-show="data.usdata.current.user_class=='lawyer'">
-	<tr ng-show="cat.items.length==0&&data.showAddForm!=$index&&!data.dragging"><td colspan="2" ng-click="data.showAddForm=$index"><strong>Add new item</strong></td></tr>
+	<tr ng-show="cat.items.length==0&&data.showAddForm!=$index&&!data.dragging"><td colspan="2" ng-click="showAddItemForm($index);"><strong>Add new item</strong></td></tr>
 </tbody>
 <!-- end LAWYER checklist //-->
 
@@ -102,9 +102,13 @@
 				<button disabled="" class="btn btn-warning btn-xs" ng-show="item.is_requested">
 					<span class="fui-time"></span> Awaiting Files <span ng-bind="item.responsible_party | initials:true"></span>
 				</button>
-                <button disabled="" class="btn btn-warning btn-xs" ng-show="!item.is_requested&&item.latest_revision.reviewers.length>0">
+                <button disabled="" class="btn btn-warning btn-xs" ng-show="!item.is_requested&&item.latest_revision.reviewers.length>0&&getReviewPercentageComplete(item)==0">
 					<span class="fui-time"></span> Review in progress
 				</button>
+                <button disabled="" class="btn btn-warning btn-xs"
+                        ng-show="!item.is_requested&&item.latest_revision.reviewers.length>0&&getReviewPercentageComplete(item)>0&&getReviewPercentageComplete(item)<100">
+                    <span class="fui-user"></span> Review {{ getReviewPercentageComplete(item) }}%
+                </button>
 			</span>
 			<span class="fui-check-inverted" ng-show="item.is_complete"></span>
 		</td>
