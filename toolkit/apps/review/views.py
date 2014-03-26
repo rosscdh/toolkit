@@ -69,7 +69,6 @@ class ReviewRevisionView(DetailView):
     def get_object(self):
         self.object = super(ReviewRevisionView, self).get_object()
         self.matter = self.object.document.item.matter
-
         #
         # Perform authentication of the user here
         #
@@ -83,7 +82,18 @@ class ReviewRevisionView(DetailView):
         crocodoc = CrocoDocConnectService(document_object=self.object.document,
                                           app_label='attachment',
                                           field_name='executed_file',
-                                          upload_immediately=True)
+                                          upload_immediately=False)
+        #
+        # ok this is a brand new file, we now need to ensure its available lcoally
+        # and then if/when it is upload it to crocdoc
+        #
+        if crocodoc.is_new is True:
+            #
+            # Ensure we have a local copy of this file so it can be sent
+            #
+            if self.object.ensure_file():
+                # so we have a file, now lets upload it
+                crocodoc.generate()
 
         # @TODO this should ideally be set in the service on init
         # and session automatically updated
