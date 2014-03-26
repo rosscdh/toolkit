@@ -83,7 +83,6 @@ class UserAuthMixin(object):
             auth.update({str(user.pk): key})
             # update the model
             self.auth = auth
-            self.save(update_fields=['data'])
 
     def deauthorise_user_to_review(self, user):
         auth = self.auth
