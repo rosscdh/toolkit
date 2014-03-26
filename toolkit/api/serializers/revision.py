@@ -163,6 +163,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
 
     # "user" <— the currently logged in user.. "review_url" because the url is relative to the current user
     user_review_url = serializers.SerializerMethodField('get_user_review_url')
+    user_download_url = serializers.SerializerMethodField('get_user_download_url')
 
     revisions = serializers.SerializerMethodField('get_revisions')
 
@@ -178,7 +179,8 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
                   'status', 
                   'item', 'uploaded_by', 
                   'reviewers', 'signatories',
-                  'revisions', 'user_review_url',
+                  'revisions',
+                  'user_review_url', 'user_download_url',
                   'date_created',)
 
     def __init__(self, *args, **kwargs):
@@ -237,6 +239,30 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
                 review_document = obj.reviewdocument_set.all().last()
 
             return review_document.get_absolute_url(user=request.user) if review_document is not None else None
+
+        return None
+
+    def get_user_download_url(self, obj):
+        """
+        Try to provide the download url for the users revision
+        for the currently logged in user
+        """
+        context = getattr(self, 'context', None)
+        request = context.get('request')
+        review_document = context.get('review_document', None)
+
+        if request is not None:
+            #
+            # if we have a review_document present in the context
+            #
+            if review_document is None:
+                # we have none, then try find the reviewdocument object that has all the matter participants in it
+                #
+                # The bast one will have 0 reviewers! and be the last in the set (because it was added first)
+                #
+                review_document = obj.reviewdocument_set.all().last()
+
+            return review_document.get_download_url(user=request.user) if review_document is not None else None
 
         return None
 

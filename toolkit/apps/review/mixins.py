@@ -138,6 +138,11 @@ class FileExistsLocallyMixin(object):
             logger.error('Crocodoc file does not exist locally: %s raised exception %s' % (self.document.executed_file, e))
         return False
 
+    def read_local_file(self):
+        if self.file_exists_locally is True:
+            return default_storage.open(self.document.executed_file).read()
+        return False
+
     def download_file(self, file_name):
         """
         Its necessary to download the file from s3 locally as we have restrictive s3
