@@ -76,7 +76,7 @@
 	<tr class="hidden"><td colspan="2" class="text-muted">Drag item into this emtpy category</td></tr>
 </tbody>
 <tbody ng-show="cat.items.length==0" ng-show="data.usdata.current.user_class=='lawyer'">
-	<tr ng-show="cat.items.length==0&&data.showAddForm!=$index&&!data.dragging"><td colspan="2" ng-click="data.showAddForm=$index"><strong>Add new item</strong></td></tr>
+	<tr ng-show="cat.items.length==0&&data.showAddForm!=$index&&!data.dragging"><td colspan="2" ng-click="showAddItemForm($index);"><strong>Add new item</strong></td></tr>
 </tbody>
 <!-- end LAWYER checklist //-->
 
