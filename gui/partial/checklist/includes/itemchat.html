@@ -10,7 +10,7 @@
 <ul class="list-unstyled">
     <li ng-repeat="activity in data.activitystream"
         ng-class="{'action': activity.data.comment==null, 'message me': activity.data.comment!=null&&activity.actor.username==data.usdata.current.username, 'message other': activity.data.comment!=null&&activity.actor.username!=data.usdata.current.username }">
-        <div class="media" ng-show="activity.data.comment">
+        <div class="media" ng-show="activity.data.comment&&data.selectedItem">
             <a class="user-icon" href="#" tooltip="{{ activity.actor | fullname }},{{ activity.timestamp | timeago }}"  tooltip-placement="right">{{ activity.actor | initials }}</a>
             <div class="media-body">
                 <div class="msg-body" ng-bind-html="activity.data.comment | newlines"></div>

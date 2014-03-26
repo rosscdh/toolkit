@@ -1,6 +1,9 @@
 Deployment actions by branch
 ----------------------------
 
+[review-app]
+
+1. pip install -e git+https://github.com/rosscdh/django-crocodoc.git#egg=django-crocodoc --upgrade - new .generate() on service
 
 
 

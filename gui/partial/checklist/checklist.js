@@ -368,7 +368,8 @@ angular.module('toolkit-gui')
 			if ($scope.data.newCatName) {
 				matterCategoryService.create(matterSlug, $scope.data.newCatName).then(
 					function success(){
-						$scope.data.categories.unshift({'name': $scope.data.newCatName, 'items': []});
+                        //IMPORTANT: Insert at pos 1, because pos 0 is for the null category
+                        $scope.data.categories.splice(1, 0, {'name': $scope.data.newCatName, 'items': []});
 						$scope.data.newCatName = '';
 					},
 					function error(err){
