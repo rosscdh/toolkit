@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 from django.core.urlresolvers import reverse
-from django.core.files.storage import default_storage
 
 from rulez import registry as rulez_registry
 
@@ -9,23 +8,20 @@ from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 
 from toolkit.core.mixins import IsDeletedMixin
 
-from .mixins import UserAuthMixin
+from .mixins import UserAuthMixin, FileExistsLocallyMixin
 from .managers import ReviewDocumentManager
 from .mailers import ReviewerReminderEmail
-
-from storages.backends.s3boto import S3BotoStorage
 
 from uuidfield import UUIDField
 from jsonfield import JSONField
 
 import datetime
 
-
 import logging
 logger = logging.getLogger('django.request')
 
 
-class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
+class ReviewDocument(IsDeletedMixin, FileExistsLocallyMixin, UserAuthMixin, models.Model):
     """
     An object to represent a url that allows multiple reviewers to view
     a document using a service like crocodoc
@@ -48,6 +44,9 @@ class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
         if auth_key is not None:
             return reverse('review:review_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)})
         return None
+
+    def get_download_url(self, user):
+        return reverse('review:download_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)})
 
     def get_approval_url(self, user):
         auth_key = self.get_user_auth(user=user)
@@ -81,17 +80,6 @@ class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
         return self.document.item.latest_revision == self.document
 
     @property
-    def file_exists_locally(self):
-        """
-        Used to determine if we should download the file locally
-        """
-        try:
-            return default_storage.exists(self.document.executed_file)
-        except Exception as e:
-            logger.critical('Crocodoc file does not exist locally: %s raised exception %s' % (self.document.executed_file, e))
-        return False
-
-    @property
     def matter(self):
         return self.document.item.matter
 
@@ -115,26 +103,6 @@ class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
         except:
             logger.error('no reviewer found for ReviewDocument: %s' % self)
             return None
-
-    def download_if_not_exists(self):
-        """
-        Its necessary to download the file from s3 locally as we have restrictive s3
-        permissions (adds time but necessary for security)
-        """
-        file_name = self.document.executed_file.name
-
-        b = S3BotoStorage()
-
-        if b.exists(file_name) is False:
-            raise Exception('File does not exist on s3: %s' % file_name)
-
-        else:
-            #
-            # download from s3 and save the file locally
-            #
-            file_object = b._open(file_name)
-            return default_storage.save(file_name, file_object)
-
 
     def send_invite_email(self, from_user, users=[]):
         """

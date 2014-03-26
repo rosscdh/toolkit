@@ -100,6 +100,10 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
                                                                    partial=partial)
 
     def create(self, request, *args, **kwargs):
+        """
+        Have had to copy directly the method from the base class
+        because of the need to modify the data
+        """
         #
         # NB! this is the important line
         # we always have a revision object! normally you dont you just pass in data and files

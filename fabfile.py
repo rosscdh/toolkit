@@ -1,20 +1,16 @@
 from __future__ import with_statement
 from fabric.api import *
 from fabric.utils import error
-from fabric.contrib.console import confirm
 from fabric.context_managers import settings
 from fabric.contrib import files
 
 from git import *
 
 import os
-import json
 import getpass
-import datetime
 import time
 import requests
 from termcolor import colored
-from pprint import pprint
 
 debug = True
 
@@ -37,8 +33,9 @@ env.local_user = getpass.getuser()
 env.environment = 'local'
 env.virtualenv_path = '~/.virtualenvs/toolkit/'
 
-env.truthy = ['true','t','y','yes','1',1]
-env.falsy = ['false','f','n','no','0',0]
+env.truthy = ['true', 't', 'y', 'yes', '1', 1]
+env.falsy = ['false', 'f', 'n', 'no', '0', 0]
+
 
 @task
 def prod_db():
