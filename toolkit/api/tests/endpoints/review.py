@@ -24,6 +24,7 @@ import mock
 import json
 import urllib
 
+
 class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
     """
     /matters/:matter_slug/items/:item_slug/revision/reviewers/ (GET,POST)
@@ -71,6 +72,9 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
         """
         self.client.login(username=self.lawyer.username, password=self.password)
 
+        # expect 1 review document at this point
+        self.assertEqual(self.revision.reviewdocument_set.all().count(), 1)
+
         participant = mommy.make('auth.User', first_name='Participant', last_name='Number 1', email='participant+1@lawpal.com')
 
         data = {
@@ -81,6 +85,13 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
         self.assertEqual(resp.status_code, 201)  # created
 
         json_data = json.loads(resp.content)
+
+        # expect 2 review documents at this point
+        self.assertEqual(self.revision.reviewdocument_set.all().count(), 2)
+        # expect the newly created review doc to be available to the reviewer
+        self.assertEqual(participant.reviewdocument_set.all().count(), 1)
+        ## test the order by is workng order by newest first
+        self.assertEqual(participant.reviewdocument_set.first(), self.revision.reviewdocument_set.first())
 
         self.assertEqual(json_data['reviewer']['name'], participant.get_full_name())
         # test they are in the items reviewer set
