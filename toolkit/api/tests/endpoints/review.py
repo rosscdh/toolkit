@@ -22,8 +22,8 @@ from model_mommy import mommy
 import os
 import mock
 import json
+import random
 import urllib
-
 
 class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
     """
@@ -65,10 +65,6 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
 
     def test_lawyer_post(self):
         """
-        This is a bit of an anti pattern
-        we POST a username into the endpoint
-        and the system will create an account as well as assign them as a reviewer
-        to the item revision
         """
         self.client.login(username=self.lawyer.username, password=self.password)
 
@@ -144,6 +140,7 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
         """
         This is the second post call to create a request to the reviewer.
         The system will return the already existing reviewer and send a new mail.
+        NB. The email sent is slightly different note: subject
         """
         self.client.login(username=self.lawyer.username, password=self.password)
 
@@ -251,7 +248,94 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
         self.assertEqual(resp.status_code, 403)  # forbidden
 
 
-class RevisionReviewerTest(BaseEndpointTest, LiveServerTestCase):
+class ReviewObjectIncrementWithNewReviewerTest(BaseEndpointTest):
+    """
+    When we add a reviewer to a document(revision) then they should each get
+    their own reviewdocument object so that they are sandboxed (see review app tests)
+    """
+    @property
+    def endpoint(self):
+        return reverse('item_revision_reviewers', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug})
+
+    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
+    def setUp(self):
+        super(ReviewObjectIncrementWithNewReviewerTest, self).setUp()
+
+        # setup the items for testing
+        self.item = mommy.make('item.Item', matter=self.matter, name='Test Revision reviewer reviewobject_set count', category=None)
+        self.revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
+
+    def test_endpoint_name(self):
+        self.assertEqual(self.endpoint, '/api/v1/matters/%s/items/%s/revision/reviewers' % (self.matter.slug, self.item.slug))
+
+    def add_reviewer(self, data=None):
+        if data is None:
+            rand_num = random.random()
+            data = {
+                'email': 'invited-reviewer-%s@lawpal.com' % rand_num,
+                'first_name': '%s' % rand_num,
+                'last_name': 'Invited Reviewer',
+                'message': 'Please provide me with a document monkeyboy!',
+            }
+        # msut be logged in in order for this to work
+        return self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
+
+    def test_new_reviewer_add_count_increment(self):
+        """
+        there should be 1 reviewdocument per reviewer
+        """
+        initial_exected_num_reviews = 1
+        expected_number_of_reviewdocuments = 5
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        self.assertEqual(self.revision.reviewdocument_set.all().count(), initial_exected_num_reviews) # we should only have 1 at this point for the participants
+
+        for i in range(1, expected_number_of_reviewdocuments):
+            resp = self.add_reviewer()
+            self.assertEqual(resp.status_code, 201)
+
+            json_resp = json.loads(resp.content)
+
+            username = json_resp.get('reviewer').get('username')
+            reviewer = User.objects.get(username=username)
+
+            # the revision has 2 reviewers now
+            self.assertEqual(self.revision.reviewdocument_set.all().count(), initial_exected_num_reviews + i)
+            # but the reviewer only has 1
+            self.assertEqual(reviewer.reviewdocument_set.all().count(), 1) # has only 1
+
+    def test_reviewer_already_a_reviewer_add_count_no_increment(self):
+        """
+        a reviewer can have only 1 reviewdocument per document(revision)
+        """
+        initial_exected_num_reviews = 1
+        exected_total_num_reviews = 2
+        number_of_add_attempts = 5
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        self.assertEqual(self.revision.reviewdocument_set.all().count(), initial_exected_num_reviews) # we should only have 1 at this point for the participants
+
+        for i in range(1, number_of_add_attempts):
+            resp = self.add_reviewer(data={
+                'email': 'single-invited-reviewer@lawpal.com',
+                'first_name': 'Single',
+                'last_name': 'Invited Reviewer',
+                'message': 'There should only be 1 created in total for this person',
+            })
+            self.assertEqual(resp.status_code, 201)
+
+            json_resp = json.loads(resp.content)
+
+            username = json_resp.get('reviewer').get('username')
+            reviewer = User.objects.get(username=username)
+
+            # the revision has 2 reviewers now
+            self.assertEqual(self.revision.reviewdocument_set.all().count(), exected_total_num_reviews)
+            # but the reviewer only has 1
+            self.assertEqual(reviewer.reviewdocument_set.all().count(), 1) # has only 1
+
+
+class RevisionReviewerTest(BaseEndpointTest):
     """
     /matters/:matter_slug/items/:item_slug/revision/reviewer/:username (GET,DELETE)
         [lawyer,customer] to view, delete reviewers
