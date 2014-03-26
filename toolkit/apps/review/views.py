@@ -4,7 +4,6 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login
 from django.core.exceptions import PermissionDenied
 from django.views.decorators.csrf import csrf_exempt
-from django.core.files.storage import default_storage
 from django.http import HttpResponse, HttpResponseRedirect
 
 from dj_crocodoc.services import CrocoDocConnectService
@@ -102,21 +101,22 @@ class ReviewRevisionView(DetailView):
         # and session automatically updated
         # https://crocodoc.com/docs/api/ for more info
         CROCDOC_PARAMS = {
-                "user": { "name": self.request.user.get_full_name(),
-                "id": self.request.user.pk
-            },
-            "sidebar": 'auto',
-            "editable": self.object.is_current, # allow comments only if the item is current
-            "admin": False, # noone should be able to delete other comments
-            "downloadable": True, # everyone should be able to download a copy
-            "copyprotected": False, # should not have copyprotection
-            "demo": False,
-            #
-            # We create a ReviewDocument object for each and every reviewer
-            # for the matter.participants there is 1 ReviewDocument object
-            # that they all can see
-            #
-            #"filter": self.get_filter_ids() # must be a comma seperated list
+                "user": {
+                    "name": self.request.user.get_full_name(),
+                    "id": self.request.user.pk
+                },
+                "sidebar": 'auto',
+                "editable": self.object.is_current, # allow comments only if the item is current
+                "admin": False, # noone should be able to delete other comments
+                "downloadable": True, # everyone should be able to download a copy
+                "copyprotected": False, # should not have copyprotection
+                "demo": False,
+                #
+                # We create a ReviewDocument object for each and every reviewer
+                # for the matter.participants there is 1 ReviewDocument object
+                # that they all can see
+                #
+                #"filter": self.get_filter_ids() # must be a comma seperated list
         }
         #
         # Set out session key based on params above
@@ -142,12 +142,26 @@ class DownloadRevision(ReviewRevisionView):
         self.object.ensure_file()
 
     def render_to_response(self, context, **response_kwargs):
+        #
+        # Use our localised filename so the user has info about which version
+        # etc that it came from
+        #
         file_name = self.object.document.executed_file.name
 
         split_file_name = os.path.split(file_name)[-1]
         filename_no_ext, ext = os.path.splitext(split_file_name)
 
-        resp = HttpResponse(self.object.read_local_file(), content_type='application/{ext}'.format(ext=ext))
+        try:
+            #
+            # Try read it from teh local file first
+            #
+            resp = HttpResponse(self.object.read_local_file(), content_type='application/{ext}'.format(ext=ext))
+        except:
+            #
+            # If we dont have it locally then read it from s3
+            #
+            resp = HttpResponse(self.object.document.executed_file.read(), content_type='application/{ext}'.format(ext=ext))
+
         resp['Content-Disposition'] = 'attachment; filename="{file_name}{ext}"'.format(file_name=filename_no_ext, ext=ext)
 
         return resp
