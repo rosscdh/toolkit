@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
-from django.http import HttpResponseRedirect
-from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView
-from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login
+from django.core.exceptions import PermissionDenied
+from django.views.decorators.csrf import csrf_exempt
+from django.core.files.storage import default_storage
+from django.http import HttpResponse, HttpResponseRedirect
 
 from dj_crocodoc.services import CrocoDocConnectService
 
 from .models import ReviewDocument
+
+import os
 
 
 def _authenticate(request, obj, matter, **kwargs):
@@ -128,6 +131,26 @@ class ReviewRevisionView(DetailView):
 
         return kwargs
 
+
+class DownloadRevision(ReviewRevisionView):
+    """
+    Class to allow a matter.participant to download a copy of the file
+    without exposing the s3 url to anyone
+    """
+    def get_context_data(self, **kwargs):
+        # REMEMBER not to call super here as we dont want crocdoc near this
+        self.object.ensure_file()
+
+    def render_to_response(self, context, **response_kwargs):
+        file_name = self.object.document.executed_file.name
+
+        split_file_name = os.path.split(file_name)[-1]
+        filename_no_ext, ext = os.path.splitext(split_file_name)
+
+        resp = HttpResponse(self.object.read_local_file(), content_type='application/{ext}'.format(ext=ext))
+        resp['Content-Disposition'] = 'attachment; filename="{file_name}{ext}"'.format(file_name=filename_no_ext, ext=ext)
+
+        return resp
 
 #
 # @TODO refactor this to use user_passes_test decorator and ensure that the user is in the reviewers set
