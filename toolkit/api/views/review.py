@@ -141,7 +141,7 @@ class ItemRevisionReviewersView(generics.ListAPIView,
                                                        adding_user=request.user,
                                                        added_user=user)
 
-        review_document = self.item.latest_revision.reviewdocument_set.filter(reviewers__in=[user]).first()
+        review_document = self.revision.reviewdocument_set.filter(reviewers__in=[user]).first()
         # we have the user at this point
         serializer = self.get_serializer(review_document)
 
