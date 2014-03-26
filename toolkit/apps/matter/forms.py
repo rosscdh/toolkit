@@ -34,8 +34,8 @@ class MatterForm(ModalForm, forms.ModelForm):
     )
 
     matter_code = forms.CharField(
-        help_text='',
-        label='Matter code (optional)',
+        help_text='Matter code is optional.',
+        label='Matter code',
         required=False,
         widget=forms.TextInput(attrs={'placeholder': '00001-matter-name', 'size': '40'})
     )
