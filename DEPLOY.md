@@ -1,6 +1,10 @@
 Deployment actions by branch
 ----------------------------
 
+--------------------------------------------------------------------------------
+** DEPLOYED 27 March 2014 - chicago (early morn) (rosscdh)
+--------------------------------------------------------------------------------
+
 [review-app]
 
 1. pip install -e git+https://github.com/rosscdh/django-crocodoc.git#egg=django-crocodoc --upgrade - new .generate() on service
