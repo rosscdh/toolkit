@@ -57,6 +57,10 @@ class UserProfile(models.Model):
         return self.user_class == self.CUSTOMER
 
     @property
+    def account_type(self):
+        return 'Free'
+
+    @property
     def type(self):
         return 'Attorney' if self.is_lawyer else 'Client'
 

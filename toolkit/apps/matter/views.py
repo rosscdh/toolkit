@@ -2,12 +2,16 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.views.generic import CreateView, DeleteView, ListView, TemplateView, UpdateView
 
+from mixpanel import Mixpanel
+
 from toolkit.api.serializers import LiteMatterSerializer
 from toolkit.apps.workspace.models import Workspace
 from toolkit.mixins import AjaxFormView, AjaxModelFormView, ModalView
 
 from .forms import MatterForm
 
+
+MIXPANEL_API_TOKEN = getattr(settings, 'MIXPANEL_API_TOKEN', None)
 
 class MatterListView(ListView):
     serializer_class = LiteMatterSerializer
@@ -62,6 +66,24 @@ class MatterCreateView(ModalView, AjaxModelFormView, CreateView):
         kwargs = super(MatterCreateView, self).get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
+
+    def form_valid(self, form):
+        resp = super(MatterCreateView, self).form_valid(form)
+
+        if MIXPANEL_API_TOKEN:
+            mp = Mixpanel(MIXPANEL_API_TOKEN)
+
+            mp.track(self.request.user.email, 'Matter Created', {
+                'Account Type': self.request.user.profile.account_type,
+                'Client': self.object.client.name,
+                'Firm': self.request.user.profile.firm_name,
+                'User Type': self.request.user.profile.type,
+                'Via': 'web',
+            })
+
+            mp.people_increment(self.request.user.email, {'Matters Created': 1})
+
+        return resp
 
     def get_success_url(self):
         return self.object.get_absolute_url()
