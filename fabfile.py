@@ -591,7 +591,7 @@ def deploy(is_predeploy='False',full='False',db='False',search='False'):
 
     run_tests()
     diff()
-    #newrelic_note()
+    newrelic_note()
     git_set_tag()
 
     prepare_deploy()
@@ -604,5 +604,4 @@ def deploy(is_predeploy='False',full='False',db='False',search='False'):
     relink()
     assets()
     clean_start()
-    #conclude()
-
+    conclude()
