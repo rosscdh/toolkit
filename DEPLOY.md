@@ -7,7 +7,7 @@ Deployment actions by branch
 
 [review-app]
 
-1. pip install -e git+https://github.com/rosscdh/django-crocodoc.git#egg=django-crocodoc --upgrade - new .generate() on service
+1. pip install -e git+https://github.com/rosscdh/django-crocodoc.git#egg=django-crocodoc --upgrade #new .generate() on service
 2.  ./manage.py migrate dj_crocodoc 0001 --fake # initial
 3.  ./manage.py migrate dj_crocodoc 0002 # added reviewer field
 
