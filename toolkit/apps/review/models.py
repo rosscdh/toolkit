@@ -100,8 +100,8 @@ class ReviewDocument(IsDeletedMixin, FileExistsLocallyMixin, UserAuthMixin, mode
             combined = reviewers.union(participants)
             # get the common reviewer
             return reviewers.intersection(combined).pop()
-        except:
-            logger.error('no reviewer found for ReviewDocument: %s' % self)
+        except Exception as e:
+            logger.error('no reviewer found for ReviewDocument: %s, %s' % (self, e))
             return None
 
     def send_invite_email(self, from_user, users=[]):
