@@ -164,7 +164,7 @@ angular.module('toolkit-gui')
 		 * @memberof			RequestreviewCtrl
 		 */
 		$scope.request = function() {
-            for (key in $scope.data.selectedUsers) {
+            for (var key in $scope.data.selectedUsers) {
                 $scope.data.request.signer.push($scope.data.selectedUsers[key]);
             }
             $log.debug($scope.data.request);
