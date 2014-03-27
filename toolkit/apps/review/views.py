@@ -84,7 +84,9 @@ class ReviewRevisionView(DetailView):
         crocodoc = CrocoDocConnectService(document_object=self.object.document,
                                           app_label='attachment',
                                           field_name='executed_file',
-                                          upload_immediately=True)
+                                          upload_immediately=True,
+                                          # important for sandboxing the view to ths reviewer
+                                          reviewer=self.object.reviewer)
         #
         # ok this is a brand new file, we now need to ensure its available lcoally
         # and then if/when it is upload it to crocdoc
