@@ -28,6 +28,9 @@ project = '/var/apps/toolkit/toolkit/toolkit/'
 workspace = os.path.dirname(project)
 sys.path.append(workspace)
 
+import newrelic.agent
+newrelic.agent.initialize('/var/apps/toolkit/toolkit/toolkit/newrelic.ini')
 
 from django.core.handlers.wsgi import WSGIHandler
 application = WSGIHandler()
+application = newrelic.agent.wsgi_application()(application)
