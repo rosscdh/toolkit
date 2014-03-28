@@ -4,9 +4,7 @@ from .endpoints.matter import (MattersTest,
                                MatterPercentageTest,
                                MatterDetailTest,
                                MatterDetailProvidedDataTest)
-from .endpoints.review import (RevisionReviewsTest,
-                               RevisionReviewerTest,
-                               RevisionRequestedDocumentTest,)
+from .endpoints.review import *
 from .endpoints.item_request import *
 from .endpoints.item import (ItemsTest, ItemDetailTest, ItemDataTest)
 from .endpoints.sort import (MatterSortTest,)

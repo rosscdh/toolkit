@@ -7,6 +7,16 @@ Deployment actions by branch
 2. ./manage.py migrate attachment  # signatories to signers
 
 
+--------------------------------------------------------------------------------
+** DEPLOYED 27 March 2014 - chicago (early morn) (rosscdh)
+--------------------------------------------------------------------------------
+
+[review-app]
+
+1. pip install -e git+https://github.com/rosscdh/django-crocodoc.git#egg=django-crocodoc --upgrade #new .generate() on service
+2.  ./manage.py migrate dj_crocodoc 0001 --fake # initial
+3.  ./manage.py migrate dj_crocodoc 0002 # added reviewer field
+
 
 --------------------------------------------------------------------------------
 ** DEPLOYED 21 March 2014 - base deploy (rosscdh)

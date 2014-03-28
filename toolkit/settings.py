@@ -304,7 +304,7 @@ JS_DATE_FORMAT = 'MM d, yy'
 SHORT_DATE_FORMAT = 'm/d/Y'
 JS_SHORT_DATE_FORMAT = 'mm/dd/yy'
 
-SPLUNKSTORM_ENDPOINT = 'logs2.splunkstorm.com'
+SPLUNKSTORM_ENDPOINT = 'tcp.pjg2-3xz4.data.splunkstorm.com'
 SPLUNKSTORM_PORT = 20824
 
 LOGGING = {

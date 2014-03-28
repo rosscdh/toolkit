@@ -5,6 +5,7 @@ from django.db.models.signals import pre_save, post_save, post_delete, m2m_chang
 
 from toolkit.apps.workspace import _model_slug_exists
 
+
 from .models import Revision
 from toolkit.apps.review.models import ReviewDocument
 from toolkit.apps.sign.models import SignDocument
@@ -130,6 +131,18 @@ can talk
 """
 
 
+@receiver(post_delete, sender=Revision, dispatch_uid='revision.set_previous_revision_is_current_on_delete')
+def set_previous_revision_is_current_on_delete(sender, instance, **kwargs):
+    """
+    @BUSINESSRULE When a lawyer deletes the current revision, then we need to make the previous item in the set
+    is_current = True
+    """
+    previous_revision = instance.__class__.objects.filter(item=instance.item).last()
+    if previous_revision:
+        previous_revision.is_current = True
+        previous_revision.save(update_fields=['is_current'])
+
+
 @receiver(m2m_changed, sender=Revision.reviewers.through, dispatch_uid='revision.on_reviewer_add')
 def on_reviewer_add(sender, instance, action, model, pk_set, **kwargs):
     """
@@ -155,6 +168,7 @@ def on_reviewer_add(sender, instance, action, model, pk_set, **kwargs):
         reviewdocument.save()  # save it so we get a new pk so we can add reviewrs
         reviewdocument.reviewers.add(user)  # add the reviewer
         reviewdocument.recompile_auth_keys()  # update teh auth keys to match the new slug
+        reviewdocument.save(update_fields=['data'])
 
 
 @receiver(m2m_changed, sender=Revision.reviewers.through, dispatch_uid='revision.on_reviewer_remove')
@@ -176,12 +190,10 @@ def on_reviewer_remove(sender, instance, action, model, pk_set, **kwargs):
             # delete the reviewdoc
             reviewdocument.delete()
 
-
 """
 Signers
 Unlike reviewrs, signdocuments have only 1 object per set of signature invitees
 """
-
 
 @receiver(m2m_changed, sender=Revision.signers.through, dispatch_uid='revision.on_signatory_add')
 def on_signatory_add(sender, instance, action, model, pk_set, **kwargs):
@@ -193,33 +205,15 @@ def on_signatory_add(sender, instance, action, model, pk_set, **kwargs):
         user_pk = next(iter(pk_set))  # get the first item in the set should only ever be 1 anyway
         user = model.objects.get(pk=user_pk)
 
-        #
-        # Get the base review documnet; created to alow the participants to access
-        # and discuss a documnet
-        #
-        signdocument = instance.signdocument_set.all().first()
-
-        #
-        # 1 SignDocument for the entire set of invitees
-        #
-        signdocument.signers.add(user)  # allow the user to have access
-
-
-@receiver(m2m_changed, sender=Revision.signers.through, dispatch_uid='revision.on_signatory_remove')
-def on_signatory_remove(sender, instance, action, model, pk_set, **kwargs):
+@receiver(post_save, sender=Revision, dispatch_uid='revision.set_item_is_requested_false')
+def on_upload_set_item_is_requested_false(sender, instance, **kwargs):
     """
-    when a signatory is removed from the m2m then deauthorise them
+    @BUSINESSRULE when a document is uploaded and item.is_requested = True
+    and its uploaded by the item.responsible_party then mark it as is_requested = False
     """
-    if action in ['pre_remove'] and pk_set:
-        user_pk = next(iter(pk_set))  # get the first item in the set should only ever be 1 anyway
-        user = model.objects.get(pk=user_pk)
-
-        signdocuments = instance.signdocument_set.filter(signers__in=[user])
-
-        #
-        # 1 SignDocument per signatory
-        # in this case we should immediately delete the review document
-        #
-        for signdocument in signdocuments:
-            # delete the reviewdoc
-            signdocument.signers.remove(user)
+    if instance.item.is_requested is True:
+        if instance.uploaded_by == item.instance.responsible_party:
+            item = instance.item
+            item.is_requested = False
+            item.save(update_fields=['is_requested'])
+            # @TODO issue activity here?
