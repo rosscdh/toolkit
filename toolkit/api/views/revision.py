@@ -164,7 +164,8 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
 
     def can_edit(self, user):
         return (user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all() \
-            or user in self.item.latest_revision.reviewers.all())
+            or (self.item.latest_revision is not None and user in self.item.latest_revision.reviewers.all())
+            or user == self.item.responsible_party)
 
     def can_delete(self, user):
         return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
