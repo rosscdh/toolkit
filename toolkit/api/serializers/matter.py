@@ -133,4 +133,4 @@ class SimpleMatterSerializer(MatterSerializer):
         fields = ('django_url', 'name',)
 
     def get_django_url(self, obj):
-        return '%s#/checklist' % obj.get_absolute_url()
+        return '%s' % obj.get_absolute_url()
