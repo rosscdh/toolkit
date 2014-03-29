@@ -15,6 +15,10 @@ from ..serializers import ItemSerializer
 
 class ItemEndpoint(viewsets.ModelViewSet):
     """
+    This endpoint is not actually "used". item objects are accessed via
+    the api/v1/matters/:matter_slug/items/:item_slug endpoint
+    this class is only present to provide rest_framework with the machinary it
+    requires to generate hypermedia urls (in this case they are not used)
     """
     model = Item
     lookup_field = 'slug'
@@ -24,14 +28,22 @@ class ItemEndpoint(viewsets.ModelViewSet):
         return {'request': self.request}
 
     def can_read(self, user):
-        return user.profile.user_class in ['lawyer', 'customer'] and user in self.object.participants.all()
+        self.object = self.get_object_or_none()
+        if self.object is not None:
+            return user.profile.user_class in ['lawyer', 'customer'] and user in self.object.participants()
+        return False
 
     def can_edit(self, user):
-        return user.profile.is_lawyer and user in self.object.matter.participants.all()  # allow any lawyer who is a participant
+        self.object = self.get_object_or_none()
+        if self.object is not None:
+            return user.profile.is_lawyer and user in self.object.matter.participants.all()  # allow any lawyer who is a participant
+        return False
 
     def can_delete(self, user):
-        return user.profile.is_lawyer and user in self.object.matter.participants.all()  # allow any lawyer who is a participant
-
+        self.object = self.get_object_or_none()
+        if self.object is not None:
+            return user.profile.is_lawyer and user in self.object.matter.participants.all()  # allow any lawyer who is a participant
+        return False
 
 rulez_registry.register("can_read", ItemEndpoint)
 rulez_registry.register("can_edit", ItemEndpoint)
