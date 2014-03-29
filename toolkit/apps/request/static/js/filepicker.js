@@ -2,6 +2,22 @@
     $(function() {
         filepicker.setKey(window.GLOBALS['FILEPICKER_API_KEY']);
 
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie != '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
         $(document).on('click.filepicker.data-api', '[data-toggle=filepicker]', function() {
             var $elem = $(this);
 
@@ -21,7 +37,7 @@
                     headers: {
                         'Accept' : 'application/json',
                         'Content-Type' : 'application/json',
-                        'X-CSRFToken': $('input[name=csrf_token]').val()
+                        'X-CSRFToken': getCookie('csrftoken')
                     },
                     type: 'POST',
                     url: $elem.attr('data-remote'),
