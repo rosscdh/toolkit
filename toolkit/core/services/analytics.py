@@ -7,11 +7,16 @@ MIXPANEL_SETTINGS = getattr(settings, 'MIXPANEL_SETTINGS', {
 })
 
 class MixpanelOnLawpal(object):
+    token = None
+    service = None
     def __init__(self, *args, **kwargs):
-        self.service = Mixpanel(MIXPANEL_SETTINGS.get('token', kwargs.get('token', None)))
+        self.token = MIXPANEL_SETTINGS.get('token', kwargs.get('token', None))
+        if self.token is not None:
+            self.service = Mixpanel(self.token)
 
     def event(self, key, distinct_id, **kwargs):
-        self.service.track(distinct_id=distinct_id, event_name=key, properties=kwargs)
+        if self.service is not None:
+            self.service.track(distinct_id=distinct_id, event_name=key, properties=kwargs)
 
 
 class AtticusFinch(MixpanelOnLawpal):
