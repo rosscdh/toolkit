@@ -109,7 +109,6 @@ ABRIDGE_SECRET_ACCESS_KEY = '2a2c7c6104c80855a12d53bd846e117fbf81f41c'
 ABRIDGE_USERNAME = 'lawpal-production'
 ABRIDGE_PASSWORD = 'production123'
 
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -172,3 +171,5 @@ LOGGING = {
         }
     }
 }
+
+MIXPANEL_API_TOKEN = 'd106735764d5eaf64af0f24f95a4c59c'

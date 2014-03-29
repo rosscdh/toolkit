@@ -2,8 +2,11 @@
 from actstream.models import Action
 from rest_framework import viewsets
 
+from django.conf import settings
+
 from rulez import registry as rulez_registry
 
+from mixpanel import Mixpanel
 from rest_framework import generics
 
 from toolkit.core.item.models import Item
@@ -11,6 +14,9 @@ from toolkit.core.item.models import Item
 from .mixins import (MatterItemsQuerySetMixin,)
 
 from ..serializers import ItemSerializer
+
+
+MIXPANEL_API_TOKEN = getattr(settings, 'MIXPANEL_API_TOKEN', None)
 
 
 class ItemEndpoint(viewsets.ModelViewSet):
@@ -69,6 +75,22 @@ class MatterItemsView(MatterItemsQuerySetMixin,
     def pre_save(self, obj):
         obj.matter = self.matter  # set in MatterItemsQuerySetMixin
         return super(MatterItemsView, self).pre_save(obj=obj)
+
+    def post_save(self, obj, created=False):
+        if created:
+            # send event off to Mixpanel
+            if MIXPANEL_API_TOKEN:
+                mp = Mixpanel(MIXPANEL_API_TOKEN)
+
+                mp.track(self.request.user.email, 'Item Created', {
+                    'Account Type': self.request.user.profile.account_type,
+                    'Client': obj.matter.client.name,
+                    'Firm': self.request.user.profile.firm_name,
+                    'User Type': self.request.user.profile.type,
+                    'Via': 'web',
+                })
+
+                mp.people_increment(self.request.user.email, {'Items Created': 1})
 
     def can_read(self, user):
         return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()

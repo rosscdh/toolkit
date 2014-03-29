@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -10,8 +11,13 @@ from .forms import SignUpForm, SignInForm
 from toolkit.apps.workspace.forms import InviteKeyForm
 from toolkit.apps.workspace.models import Workspace, InviteKey
 
+from mixpanel import Mixpanel
+
 import logging
 LOGGER = logging.getLogger('django.request')
+
+
+MIXPANEL_API_TOKEN = getattr(settings, 'MIXPANEL_API_TOKEN', None)
 
 
 def handler500(request, *args, **kwargs):
@@ -188,8 +194,32 @@ class SignUpView(LogOutMixin, AuthenticateUserMixin, FormView):
     def form_valid(self, form):
         # user a valid form log them in
 
-        form.save()  # save the user
+        user = form.save()  # save the user
         self.authenticate(form=form)  # log them in
+
+        # send event off to Mixpanel
+        if MIXPANEL_API_TOKEN:
+            mp = Mixpanel(MIXPANEL_API_TOKEN)
+
+            mp.people_set(user.email, {
+                '$created': user.date_joined.strftime("%Y-%m-%dT%H:%M:%S"),
+                '$first_name': user.first_name,
+                '$last_name': user.last_name,
+                '$email': user.email,
+                'Account Type': user.profile.account_type,
+                'Type': user.profile.type,
+            })
+
+            if user.profile.is_lawyer:
+                mp.people_set(user.email, {
+                    'Firm': user.profile.firm_name
+                })
+
+            mp.track(user.email, 'Account Created', {
+                'Account Type': user.profile.account_type,
+                'User Type': user.profile.type,
+                'Via': 'web',
+            })
 
         return super(SignUpView, self).form_valid(form)
 
