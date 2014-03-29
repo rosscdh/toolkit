@@ -56,6 +56,12 @@ ABRIDGE_SECRET_ACCESS_KEY = 'still_empty'
 ABRIDGE_USERNAME = 'blah'
 ABRIDGE_PASSWORD = 'blah'
 
+#
+# set the mixpanel token to None so that we dont send events in testing
+#
+MIXPANEL_SETTINGS = {
+    'token': None,
+}
 
 # def AutoSlugFieldGenerator():
 #     hash_val = '{r}'.format(r=random.random())
