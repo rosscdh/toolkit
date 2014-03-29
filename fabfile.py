@@ -111,7 +111,7 @@ def virtualenv(cmd, **kwargs):
 
 @task
 def pip_install():
-    virtualenv('pip install django-email-obfuscator')
+    virtualenv('pip install django-sslify')
 
 @task
 def cron():
@@ -285,14 +285,23 @@ def syncdb():
         virtualenv('python %s%s/manage.py syncdb' % (env.remote_project_path, env.project))
 
 @task
-def clean_versions():
+def clean_versions(delete=False, except_latest=3):
     current_version = get_sha1()
+
     versions_path = '%sversions' % env.remote_project_path
-    cmd = 'cd %s; ls %s/ | grep -v %s | xargs rm -R' % (versions_path, versions_path ,current_version,)
-    if env.environment_class is 'webfaction':
-        virtualenv(cmd)
-    else:
-        virtualenv(cmd)
+    #
+    # cd into the path so we can use xargs
+    # tail the list except the lastest N
+    # exclude the known current version
+    #
+    cmd = "cd {path};ls -t1 {path} | tail -n+{except_latest} | grep -v '{current_version}'".format(path=versions_path, except_latest=except_latest, current_version=current_version)
+    #
+    # optionally delete them
+    #
+    if delete in env.truthy:
+        cmd = cmd + ' | xargs rm -Rf'
+
+    virtualenv(cmd)
 
 # ------ RESTARTERS ------#
 @task
