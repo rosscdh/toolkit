@@ -39,6 +39,11 @@ STATICFILES_DIRS = (
     ("ng", os.path.join(SITE_ROOT, 'gui', 'dist')),
 )
 
+MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (
+    'sslify.middleware.SSLifyMiddleware',  # enable ssl everywhere
+)
+
+
 MEDIA_URL = '/m/'
 STATIC_URL = '/s/'
 
