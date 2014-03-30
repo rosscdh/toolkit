@@ -25,7 +25,6 @@ from ..serializers import SimpleUserWithReviewUrlSerializer
 from ..serializers import ReviewSerializer
 
 import logging
-
 logger = logging.getLogger('django.request')
 
 
@@ -146,6 +145,7 @@ class ItemRevisionReviewersView(generics.ListAPIView,
                                                         invited_user=user)
 
         review_document = self.item.latest_revision.reviewdocument_set.filter(reviewers__in=[user]).first()
+
         # we have the user at this point
         serializer = self.get_serializer(review_document)
 
@@ -197,22 +197,24 @@ class ItemRevisionReviewerView(generics.RetrieveAPIView,
 
         #
         # Find ReviewDocumets where this user is the reviewer
-        # Should only ever be one
+        # Should only ever be one per user
         #
-        reviewdocument_set = ReviewDocument.objects.filter(document=self.revision,
-                                                           reviewers__in=[user])
-        if len(reviewdocument_set) == 0:
+        user_reviewdocument_set = self.revision.reviewdocument_set.filter(reviewers__in=[user])
+
+        if len(user_reviewdocument_set) == 0:
             #
             # must not be 0 as we have the users username thus they should be
             # part of the reviewers at this stage
             #
+            logger.critical('A revision %s for a user %s has more than 0 reviewdocument they should have only 1 per revision' % (self.revision, user))
             raise Http404
 
-        if len(reviewdocument_set) > 1:
+        if len(user_reviewdocument_set) > 1:
             #
             # Should never have more than 1
             #
             status = http_status.HTTP_406_NOT_ACCEPTABLE
+            logger.critical('A revision %s for a user %s has more than 1 reviewdocument they should only have 1 per revision' % (self.revision, user))
 
 
 

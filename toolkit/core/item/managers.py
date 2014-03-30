@@ -9,9 +9,6 @@ from .query import ItemQuerySet
 
 
 class ItemManager(IsDeletedManager):
-    def mine(self, user, **kwargs):
-        return self.get_queryset().mine(user, **kwargs)
-
     def requested(self, **kwargs):
         return self.get_queryset().requested(**kwargs)
 
@@ -28,4 +25,4 @@ class ItemManager(IsDeletedManager):
         # signing requests
         queries += [models.Q(revision__is_current=True) & models.Q(revision__signatories__in=[user])]
 
-        return self.get_queryset().filter(reduce(operator.or_, queries))
+        return self.get_queryset().filter(reduce(operator.or_, queries)).distinct()

@@ -150,7 +150,7 @@ class InviteKey(models.Model):
         try:
             tool_instance = self.tool.model.objects.get(pk=self.tool_object_id)
             return tool_instance.get_absolute_url()
-        except ObjectDoesNotExist:
+        except:
             return None
 
     def get_invite_login_url(self, request=None):

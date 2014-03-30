@@ -1,7 +1,28 @@
 Deployment actions by branch
 ----------------------------
 
+--------------------------------------------------------------------------------
+** DEPLOYED 29 March 2014
+--------------------------------------------------------------------------------
 
+1. pip install mixpanel-py - using mixpanel for analytics
+
+--------------------------------------------------------------------------------
+** DEPLOYED 29 March 2014
+--------------------------------------------------------------------------------
+
+1. update pip install -e git+https://github.com/rosscdh/django-hello_sign.git#egg=django-hello_sign - changed the url namespace
+
+
+--------------------------------------------------------------------------------
+** DEPLOYED 27 March 2014 - chicago (early morn) (rosscdh)
+--------------------------------------------------------------------------------
+
+[review-app]
+
+1. pip install -e git+https://github.com/rosscdh/django-crocodoc.git#egg=django-crocodoc --upgrade #new .generate() on service
+2.  ./manage.py migrate dj_crocodoc 0001 --fake # initial
+3.  ./manage.py migrate dj_crocodoc 0002 # added reviewer field
 
 
 --------------------------------------------------------------------------------

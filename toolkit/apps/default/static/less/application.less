@@ -60,6 +60,7 @@ body.gui {
 
 .content-header {
   background-color: lighten(@silver, 27%);
+  border-bottom: 1px solid lighten(@silver, 12%);
   margin-bottom: 20px;
   margin-top: -20px;
 
@@ -77,6 +78,11 @@ body.gui {
       padding: 8px 15px;
     }
   }
+}
+
+.content-header-btn {
+  float: right;
+  margin-top: 45px;
 }
 
 
@@ -383,6 +389,33 @@ body.gui {
     [class*="fui-"] {
       color: lighten(@brand-warning, 3%);
       text-shadow:0px 0px 10px #232323;
+    }
+  }
+}
+
+
+// Notifications
+// -------------------------
+
+#notifications {
+  .notification {
+    background-color: white;
+    border: 1px solid #e8ecec;
+    padding: 20px;
+
+    .avatar {
+      margin-top: 8px;
+    }
+
+    .notification-btn {
+        font-size: 20px;
+        margin-top: 8px;
+        text-align: right;
+    }
+
+    p {
+      color: @gray;
+      margin-bottom: 0;
     }
   }
 }

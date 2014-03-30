@@ -4,6 +4,9 @@ from django.conf import settings
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
+
 from toolkit.casper.prettify import mock_http_requests
 from toolkit.casper.workflow_case import BaseScenarios
 
@@ -42,13 +45,18 @@ class BaseDataProvider(BaseScenarios):
 
         self.item = mommy.make('item.Item', matter=self.matter, name='Test Item No. 1', category="A")
 
+        default_storage.save('executed_files/test.pdf', ContentFile(os.path.join(settings.SITE_ROOT, 'toolkit', 'casper', 'test.pdf')))
+
         self.revision = mommy.make('attachment.Revision',
                                    item=self.item,
-                                   executed_file=os.path.join(settings.SITE_ROOT, 'toolkit', 'casper', 'test.pdf'),
+                                   executed_file='executed_files/test.pdf',
                                    uploaded_by=self.lawyer)
 
+        # there should always be 1 reviewdocument that the matter.participants can review together alone
+        self.assertEqual(self.revision.reviewdocument_set.all().count(), 1)
+        # when I add another reviewer they should get their own reviewdocument to talk about with the matter.participants
         self.revision.reviewers.add(self.reviewer)
-
+        self.assertEqual(self.revision.reviewdocument_set.all().count(), 2)
         #
         # Matter.participants automatically get an auth so that they can individual view the object
         # the 2 below are based on the matter.participants that are included as part of BaseScenarios
@@ -103,11 +111,43 @@ class ReviewDocumentModelTest(BaseDataProvider, TestCase):
         self.assertEqual(self.review_document.get_auth(auth_key=key), None)
 
 
+class ReviewerAddToMatterRevisionTest(BaseDataProvider, TestCase):
+    """
+    When adding a new reviewer to a matter.revision; there should be a ReviewDocument
+    per reviewer; this ensures a sandboxed view of the document where the reviewer
+    and only the matter.participants can interact with each other
+    """
+    def test_reviewer_already_a_reviewer_add_count_no_increment(self):
+        self.assertEqual(self.revision.reviewdocument_set.all().count(), 2)
+        self.revision.reviewers.add(self.reviewer)
+        # the revision has 2 reviewers now
+        self.assertEqual(self.revision.reviewdocument_set.all().count(), 2)
+        # but the reviewer only has 1
+        self.assertEqual(self.reviewer.reviewdocument_set.all().count(), 1) # has only 1
+
+    def test_new_reviewer_add_count_increment(self):
+        self.assertEqual(self.revision.reviewdocument_set.all().count(), 2)
+
+        new_reviewer_monkey = mommy.make('auth.User', username='new_reviewer_monkey', email='new_reviewer_monkey@lawpal.com')
+        self.revision.reviewers.add(new_reviewer_monkey)
+        self.assertEqual(self.revision.reviewdocument_set.all().count(), 3)
+        self.assertEqual(new_reviewer_monkey.reviewdocument_set.all().count(), 1)
+
+        reviewdocument = new_reviewer_monkey.reviewdocument_set.all().first()
+
+        auth_key = reviewdocument.get_user_auth(user=new_reviewer_monkey)
+        self.assertTrue(auth_key is not None)
+
+        auth_url = reviewdocument.get_absolute_url(user=new_reviewer_monkey)
+        self.assertEqual(auth_url, '/review/%s/%s/' % (reviewdocument.slug, urllib.quote(auth_key)))
+
+
+
 class ReviewerAuthorisationTest(BaseDataProvider, TestCase):
     def test_authorise_user(self):
         EXPECTED_AUTH_USERS = self.BASE_EXPECTED_AUTH_USERS.copy()
         #
-        # remove the current guy jsut for this test
+        # remove the current reviewer just for this test
         #
         self.review_document.reviewers.remove(self.reviewer)
 
@@ -188,7 +228,7 @@ class ReviewRevisionViewTest(BaseDataProvider, TestCase):
 
     @mock_http_requests
     def test_anonymous_is_logged_in_as_expected_reviewer(self):
-        self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed, None)
+        self.assertEqual(self.review_document.date_last_viewed, None)
 
         with mock.patch('datetime.datetime', PatchedDateTime):
             resp = self.client.get(self.review_document.get_absolute_url(self.reviewer), follow=True)
@@ -198,12 +238,13 @@ class ReviewRevisionViewTest(BaseDataProvider, TestCase):
         #
         # And date updated
         #
-        self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.year, 1970)
-        self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.month, 1)
-        self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.day, 1)
-        self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.hour, 0)
-        self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.minute, 0)
-        self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.second, 0)
+        self.review_document = self.review_document.__class__.objects.get(pk=self.review_document.pk)  # refresh
+        self.assertEqual(self.review_document.date_last_viewed.year, 1970)
+        self.assertEqual(self.review_document.date_last_viewed.month, 1)
+        self.assertEqual(self.review_document.date_last_viewed.day, 1)
+        self.assertEqual(self.review_document.date_last_viewed.hour, 0)
+        self.assertEqual(self.review_document.date_last_viewed.minute, 0)
+        self.assertEqual(self.review_document.date_last_viewed.second, 0)
 
     @mock_http_requests
     def test_logged_in_invalid_user(self):
@@ -219,7 +260,7 @@ class ReviewRevisionViewTest(BaseDataProvider, TestCase):
 
     @mock_http_requests
     def test_reviewer_viewing_revision_updates_last_viewed(self):
-        self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed, None)
+        self.assertEqual(self.review_document.date_last_viewed, None)
 
         with mock.patch('datetime.datetime', PatchedDateTime):
             resp = self.client.get(self.review_document.get_absolute_url(self.reviewer), follow=True)
@@ -227,12 +268,23 @@ class ReviewRevisionViewTest(BaseDataProvider, TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.context['user'], self.reviewer)
 
-        self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.year, 1970)
-        self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.month, 1)
-        self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.day, 1)
-        self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.hour, 0)
-        self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.minute, 0)
-        self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed.second, 0)
+        self.review_document = self.review_document.__class__.objects.get(pk=self.review_document.pk)  # refresh
+        self.assertEqual(self.review_document.date_last_viewed.year, 1970)
+        self.assertEqual(self.review_document.date_last_viewed.month, 1)
+        self.assertEqual(self.review_document.date_last_viewed.day, 1)
+        self.assertEqual(self.review_document.date_last_viewed.hour, 0)
+        self.assertEqual(self.review_document.date_last_viewed.minute, 0)
+        self.assertEqual(self.review_document.date_last_viewed.second, 0)
+
+        #
+        # Test the api endpoint returns the expected date_last_viewed
+        #
+        self.client.login(username=self.lawyer.username, password=self.password)
+        resp = self.client.get(reverse('reviewdocument-detail', kwargs={'pk': self.review_document.pk}))
+        self.assertEqual(resp.status_code, 200)
+
+        json_resp = json.loads(resp.content)
+        self.assertEqual(json_resp.get('date_last_viewed'), u'1970-01-01T00:00:00.113Z')
 
         #
         # Test the api endpoint returns the expected date_last_viewed
@@ -246,9 +298,9 @@ class ReviewRevisionViewTest(BaseDataProvider, TestCase):
 
     @mock_http_requests
     def test_lawyer_viewing_revision_updates_nothing(self):
-        self.client.login(username=self.lawyer.username, password=self.password)
+        self.assertEqual(self.review_document.date_last_viewed, None)
 
-        self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed, None)
+        self.client.login(username=self.lawyer.username, password=self.password)
 
         resp = self.client.get(self.review_document.get_absolute_url(self.lawyer), follow=True)
         self.assertEqual(resp.context['user'], self.lawyer)

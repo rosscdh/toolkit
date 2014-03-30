@@ -8,8 +8,12 @@ from ..services import MatterCloneService
 class MatterCloneTest(TestCase):
     def setUp(self):
         self.subject = MatterCloneService
+
+        self.lawyer = mommy.make('auth.User', username='test-lawyer', first_name='Lawyer', last_name='Test', email='test+lawyer@lawpal.com')
+
         # matter to clone
-        self.source = mommy.make('workspace.Workspace', name='Source Matter to be copied')
+        self.source = mommy.make('workspace.Workspace', name='Source Matter to be copied', lawyer=self.lawyer)
+
         # items to clone
         mommy.make('item.Item', matter=self.source, name='Test Item from Source No.1', category=None)
         mommy.make('item.Item', matter=self.source, name='Test Item from Source No.2', category=None)
@@ -17,7 +21,7 @@ class MatterCloneTest(TestCase):
     def test_clone_service(self):
         self.assertEqual(self.source.item_set.all().count(), 2)
 
-        target = mommy.make('workspace.Workspace', name='Target Matter to get items')
+        target = mommy.make('workspace.Workspace', name='Target Matter to get items', lawyer=self.lawyer)
         self.assertEqual(target.item_set.all().count(), 0)
 
         service = self.subject(source_matter=self.source,

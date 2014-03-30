@@ -83,6 +83,7 @@
   <script src="partial/view-document/view-document.js"></script>
   <script src="partial/view-review/view-review.js"></script>
   <script src="partial/searchCtrl/searchCtrl.js"></script>
+  <script src="partial/authentication-required/authentication-required.js"></script>
   <!-- Add New Partial JS Above -->
 
   <div class="navbar navbar-inverse checklist-nav" ng-controller="NavigationCtrl">
@@ -163,7 +164,6 @@
         <li class="notifications"><a href="/notifications/" ng-class="matter.selected.current_user.has_notifications ? 'unread' : ''"><span ng-class="matter.selected.current_user.has_notifications ? 'fui-radio-checked animated pulse' : 'fui-radio-unchecked'"></span></a></li>
         <li class="divider"></li>
         <li class="dropdown">
-          {{ matter.selected.current_user.has_notifications }}
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
           {{ matter.selected.current_user | fullname }} <b class="caret"></b>
           </a>

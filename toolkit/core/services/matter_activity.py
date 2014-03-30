@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.template.defaultfilters import slugify
 
+from .analytics import AtticusFinch
 from ..signals.activity_listener import send_activity_log
 
 import datetime
@@ -15,6 +16,7 @@ class MatterActivityEventService(object):
     """
     def __init__(self, matter, **kwargs):
         self.matter = matter
+        self.analytics = AtticusFinch()
 
     def get_verb_slug(self, action_object, verb):
         verb_slug = slugify(action_object.__class__.__name__) + '-' + slugify(verb)
@@ -52,25 +54,26 @@ class MatterActivityEventService(object):
     #
     # Matter
     #
-
     def created_matter(self, lawyer):
         self._create_activity(actor=lawyer, verb=u'created', action_object=self.matter)
+        self.analytics.event('matter.created', distinct_id=lawyer.pk, user=lawyer.get_full_name())
 
     def added_matter_participant(self, matter, adding_user, added_user):
         message = u'%s added %s as a participant of %s' % (adding_user, added_user, matter)
         self._create_activity(actor=adding_user, verb=u'added participant', action_object=matter, message=message,
                               user=added_user)
+        self.analytics.event('matter.participant.added', distinct_id=adding_user.pk, user=adding_user.get_full_name(), participant=added_user.get_full_name(), matter_pk=matter.pk)
 
     def removed_matter_participant(self, matter, removing_user, removed_user):
         message = u'%s removed %s as a participant of %s' % (removing_user, removed_user, matter)
-        self._create_activity(actor=removing_user, verb=u'removed participant', action_object=matter, message=message,
+        self._create_activity(actor=removing_user, verb=u'edited', action_object=matter, message=message,
                               user=removed_user)
     #
     # Item focused events
     #
-
     def item_created(self, user, item):
         self._create_activity(actor=user, verb=u'created', action_object=item)
+        self.analytics.event('item.created', distinct_id=user.pk, user=user.get_full_name())
 
     def item_rename(self, user, item, previous_name):
         message = u'%s renamed item from %s to %s' % (user, previous_name, item.name)

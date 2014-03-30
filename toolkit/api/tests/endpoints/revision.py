@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.test import LiveServerTestCase
 from django.core.urlresolvers import reverse
 from django.core.files.storage import FileSystemStorage
@@ -345,6 +344,10 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         """
         # @TODO ross
         self.skipTest('todo for ross')
+
+        self.assertEqual(revision.executed_file.name, 'executed_files/v1-%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
+        self.assertEqual(revision.executed_file.url, 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
+
 
 class InvalidFileTypeAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerTestCase):
     """

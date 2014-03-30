@@ -42,6 +42,7 @@ class AppTestRunner(NyanCatDiscoverRunner, DjangoTestSuiteRunner):
         #shutil.rmtree(settings.STATIC_ROOT)  # delete the static folder
 
         # Remove the prod settings which are only present so we can test them
-        os.remove(PROD_SETTINGS_DEST)
+        if os.path.exists(PROD_SETTINGS_DEST):
+            os.remove(PROD_SETTINGS_DEST)
 
         super(AppTestRunner, self).teardown_test_environment(**kwargs)

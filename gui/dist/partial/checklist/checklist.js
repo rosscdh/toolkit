@@ -368,7 +368,8 @@ angular.module('toolkit-gui')
 			if ($scope.data.newCatName) {
 				matterCategoryService.create(matterSlug, $scope.data.newCatName).then(
 					function success(){
-						$scope.data.categories.unshift({'name': $scope.data.newCatName, 'items': []});
+                        //IMPORTANT: Insert at pos 1, because pos 0 is for the null category
+                        $scope.data.categories.splice(1, 0, {'name': $scope.data.newCatName, 'items': []});
 						$scope.data.newCatName = '';
 					},
 					function error(err){
@@ -1052,6 +1053,41 @@ angular.module('toolkit-gui')
 			  $scope.$broadcast('focusOn', name);
 			}, 300);
 		};
+
+
+        /**
+		 * Receives the event, that the authentication failed and opens the modal to re-login.
+		 *
+		 * @private
+		 * @memberof			ChecklistCtrl
+		 */
+        $rootScope.$on('authenticationRequired', function(e, isRequired) {
+            if(isRequired===true && $scope.data.authenticationModalOpened!==true) {
+                $log.debug("opening authentication modal");
+                $scope.data.authenticationModalOpened = true;
+                var matter = $scope.data.matter;
+
+                var modalInstance = $modal.open({
+                    'templateUrl': '/static/ng/partial/authentication-required/authentication-required.html',
+                    'controller': 'AuthenticationRequiredCtrl',
+                    'backdrop': 'static',
+                    'resolve': {
+                        'currentUser': function () {
+                            return null;//matter.current_user;
+                        },
+                        'matter': function () {
+                            return matter;
+                        }
+                    }
+                });
+
+                modalInstance.result.then(
+                    function ok(result) {
+                        $scope.data.authenticationModalOpened = false;
+                    }
+			    );
+            }
+        });
 
 
         /**

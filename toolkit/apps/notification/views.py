@@ -65,7 +65,9 @@ class InboxViewSet(generics.DestroyAPIView):
         """
         inbox_m = self.get_object()
         inbox_m.delete()
+
         _set_has_notifications(user=request.user, count=self.get_queryset().count())
+
         return Response({'status': 'message marked as read'})
 
 
@@ -79,5 +81,6 @@ class MarkAllAsReadEndpoint(generics.DestroyAPIView):
         Mark the message as read (i.e. delete from inbox)
         """
         Inbox.objects.filter(user=request.user).delete()
+
         _set_has_notifications(user=request.user, count=0)
         return Response({'status': 'message marked as read'})

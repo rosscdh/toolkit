@@ -28,7 +28,13 @@ angular.module('toolkit-gui').directive("filepicker", function($location){
 				}
 
 				if(attrs.extensions) {
-					picker_options.extensions = attrs.extensions.toUpperCase().split(',');
+					/**
+					* Waiting on feedback from filepicker.io
+					* seems to error out.
+					* 1. had an error in our backedn
+					* 2. fp.io seems to have cached that response and now errors out all the time
+					*/
+					//picker_options.extensions = attrs.extensions.toUpperCase().split(',');
 				}
 
 				var path = attrs.path ? attrs.path : '/uploads/';

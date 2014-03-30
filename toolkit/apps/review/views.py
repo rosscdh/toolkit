@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
-from django.http import HttpResponseRedirect
-from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView
-from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login
+from django.core.exceptions import PermissionDenied
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse, HttpResponseRedirect
 
 from dj_crocodoc.services import CrocoDocConnectService
 
 from .models import ReviewDocument
+
+import os
 
 
 def _authenticate(request, obj, matter, **kwargs):
@@ -83,27 +85,41 @@ class ReviewRevisionView(DetailView):
         crocodoc = CrocoDocConnectService(document_object=self.object.document,
                                           app_label='attachment',
                                           field_name='executed_file',
-                                          upload_immediately=True)
+                                          upload_immediately=True,
+                                          # important for sandboxing the view to ths reviewer
+                                          reviewer=self.object.reviewer)
+        #
+        # ok this is a brand new file, we now need to ensure its available lcoally
+        # and then if/when it is upload it to crocdoc
+        #
+        # if crocodoc.is_new is True:
+        #     #
+        #     # Ensure we have a local copy of this file so it can be sent
+        #     #
+        #     if self.object.ensure_file():
+        #         # so we have a file, now lets upload it
+        #         crocodoc.generate()
 
         # @TODO this should ideally be set in the service on init
         # and session automatically updated
         # https://crocodoc.com/docs/api/ for more info
         CROCDOC_PARAMS = {
-                "user": { "name": self.request.user.get_full_name(),
-                "id": self.request.user.pk
-            },
-            "sidebar": 'auto',
-            "editable": self.object.is_current, # allow comments only if the item is current
-            "admin": False, # noone should be able to delete other comments
-            "downloadable": True, # everyone should be able to download a copy
-            "copyprotected": False, # should not have copyprotection
-            "demo": False,
-            #
-            # We create a ReviewDocument object for each and every reviewer
-            # for the matter.participants there is 1 ReviewDocument object
-            # that they all can see
-            #
-            #"filter": self.get_filter_ids() # must be a comma seperated list
+                "user": {
+                    "name": self.request.user.get_full_name(),
+                    "id": self.request.user.pk
+                },
+                "sidebar": 'auto',
+                "editable": self.object.is_current, # allow comments only if the item is current
+                "admin": False, # noone should be able to delete other comments
+                "downloadable": True, # everyone should be able to download a copy
+                "copyprotected": False, # should not have copyprotection
+                "demo": False,
+                #
+                # We create a ReviewDocument object for each and every reviewer
+                # for the matter.participants there is 1 ReviewDocument object
+                # that they all can see
+                #
+                #"filter": self.get_filter_ids() # must be a comma seperated list
         }
         #
         # Set out session key based on params above
@@ -118,6 +134,40 @@ class ReviewRevisionView(DetailView):
 
         return kwargs
 
+
+class DownloadRevision(ReviewRevisionView):
+    """
+    Class to allow a matter.participant to download a copy of the file
+    without exposing the s3 url to anyone
+    """
+    def get_context_data(self, **kwargs):
+        # REMEMBER not to call super here as we dont want crocdoc near this
+        self.object.ensure_file()
+
+    def render_to_response(self, context, **response_kwargs):
+        #
+        # Use our localised filename so the user has info about which version
+        # etc that it came from
+        #
+        file_name = self.object.document.executed_file.name
+
+        split_file_name = os.path.split(file_name)[-1]
+        filename_no_ext, ext = os.path.splitext(split_file_name)
+
+        try:
+            #
+            # Try read it from teh local file first
+            #
+            resp = HttpResponse(self.object.read_local_file(), content_type='application/{ext}'.format(ext=ext))
+        except:
+            #
+            # If we dont have it locally then read it from s3
+            #
+            resp = HttpResponse(self.object.document.executed_file.read(), content_type='application/{ext}'.format(ext=ext))
+
+        resp['Content-Disposition'] = 'attachment; filename="{file_name}{ext}"'.format(file_name=filename_no_ext, ext=ext)
+
+        return resp
 
 #
 # @TODO refactor this to use user_passes_test decorator and ensure that the user is in the reviewers set

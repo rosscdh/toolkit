@@ -1,20 +1,16 @@
 from __future__ import with_statement
 from fabric.api import *
 from fabric.utils import error
-from fabric.contrib.console import confirm
 from fabric.context_managers import settings
 from fabric.contrib import files
 
 from git import *
 
 import os
-import json
 import getpass
-import datetime
 import time
 import requests
 from termcolor import colored
-from pprint import pprint
 
 debug = True
 
@@ -37,8 +33,9 @@ env.local_user = getpass.getuser()
 env.environment = 'local'
 env.virtualenv_path = '~/.virtualenvs/toolkit/'
 
-env.truthy = ['true','t','y','yes','1',1]
-env.falsy = ['false','f','n','no','0',0]
+env.truthy = ['true', 't', 'y', 'yes', '1', 1]
+env.falsy = ['false', 'f', 'n', 'no', '0', 0]
+
 
 @task
 def prod_db():
@@ -114,7 +111,7 @@ def virtualenv(cmd, **kwargs):
 
 @task
 def pip_install():
-    virtualenv('pip install django-email-obfuscator')
+    virtualenv('pip install django-sslify')
 
 @task
 def cron():
@@ -288,14 +285,23 @@ def syncdb():
         virtualenv('python %s%s/manage.py syncdb' % (env.remote_project_path, env.project))
 
 @task
-def clean_versions():
+def clean_versions(delete=False, except_latest=3):
     current_version = get_sha1()
+
     versions_path = '%sversions' % env.remote_project_path
-    cmd = 'cd %s; ls %s/ | grep -v %s | xargs rm -R' % (versions_path, versions_path ,current_version,)
-    if env.environment_class is 'webfaction':
-        virtualenv(cmd)
-    else:
-        virtualenv(cmd)
+    #
+    # cd into the path so we can use xargs
+    # tail the list except the lastest N
+    # exclude the known current version
+    #
+    cmd = "cd {path};ls -t1 {path} | tail -n+{except_latest} | grep -v '{current_version}'".format(path=versions_path, except_latest=except_latest, current_version=current_version)
+    #
+    # optionally delete them
+    #
+    if delete in env.truthy:
+        cmd = cmd + ' | xargs rm -Rf'
+
+    virtualenv(cmd)
 
 # ------ RESTARTERS ------#
 @task
@@ -423,7 +429,7 @@ def update_env_conf():
         with cd(project_path):
             virtualenv('cp %s/conf/%s.local_settings.py %s/%s/local_settings.py' % (full_version_path, env.environment, full_version_path, env.project))
             virtualenv('cp %s/conf/%s.wsgi.py %s/%s/wsgi.py' % (full_version_path, env.environment, full_version_path, env.project))
-            #virtualenv('cp %s/conf/%s.newrelic.ini %s/%s/newrelic.ini' % (full_version_path, env.environment, full_version_path, env.project))
+            virtualenv('cp %s/conf/%s.newrelic.ini %s/%s/newrelic.ini' % (full_version_path, env.environment, full_version_path, env.project))
 
 @task
 def unzip_archive():
@@ -594,7 +600,7 @@ def deploy(is_predeploy='False',full='False',db='False',search='False'):
 
     run_tests()
     diff()
-    #newrelic_note()
+    newrelic_note()
     git_set_tag()
 
     prepare_deploy()
@@ -607,5 +613,4 @@ def deploy(is_predeploy='False',full='False',db='False',search='False'):
     relink()
     assets()
     clean_start()
-    #conclude()
-
+    conclude()

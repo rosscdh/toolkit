@@ -2,36 +2,46 @@
 
 {% load url from future %}{% load humanize %}
 
-{#% block body_class %}requests{% endblock %#}
-
 {% block body %}
     <div id="notifications" class="content">
         <div class="content-header notifications-header clearfix">
             <div class="container">
-                <div class="col-sm-6 col-sm-offset-2">
-                    <h3><span class="circle">{{ object_list.count }}</span> Notifications</h3>
+                <div class="col-sm-8 col-sm-offset-2">
+                    {% if object_list.count > 0 %}
+                        <div class="content-header-btn">
+                            <a href="javascript:;" id="mark-all-as-read" data-url="{% url 'notification:inbox-mark-all-read' %}" class="btn btn-default btn-wide"><span class="fui-check-inverted"></span>&nbsp;&nbsp;Mark everything as read</a>
+                        </div>
+                    {% endif %}
+                    <h3>{% if object_list.count > 0 %}<span class="circle">{{ object_list.count }}</span> {% endif %}Notifications</h3>
                 </div>
             </div>
         </div>
 
         <div class="container">
             <div class="row">
-                <div class="col-sm-6 col-sm-offset-2" role="main">
-                    {% csrf_token %}
-                    {% if object_list %}<button id="mark-all-as-read" data-url="{% url 'notification:inbox-mark-all-read' %}" class="btn btn-embossed btn-link pull-right">Mark all as read</button>{% endif %}
-
+                <div class="col-sm-8 col-sm-offset-2" role="main">
                     {% for notice in object_list %}
-                        <table class="table">
-                            <tr>
-                                <td name="#mark-as-read-{{ notice.pk }} lead">
-                                    {{ notice.message.message }}
-                                    <a href="javascript:;" data-url="{% url 'notification:inbox-read' pk=notice.pk %}" data-pk="{{ notice.pk }}" class="mark-as-read pull-right"  data-toggle="tooltip" data-placement="right" title="Mark as read">
+                        <article class="notification">
+                            <div class="row">
+                                <div class="col-xs-1">
+                                    {#% avatar notice.user %#}
+                                    <div class="avatar img-circle"><span class="initials" title="Joe Bloggs">JB</span></div>
+                                </div>
+                                <div class="col-xs-10">
+                                    <p class="lead">{{ notice.message }}</p>
+                                    <p class="small">{{ notice.message.date|naturaltime }} — in <a href="#">Incorporation &amp; Seed Financing</a> — for <a href="#">Acme Inc</a>.</p>
+                                </div>
+                                <div class="col-xs-1">
+                                    <a href="javascript:;" data-pk="{{ notice.pk }}" data-url="{% url 'notification:inbox-read' pk=notice.pk %}" class="btn btn-sm notification-btn mark-as-read" data-toggle="tooltip" data-placement="top" title="Mark as read">
                                         <span class="fui-check text-info"></span>
                                     </a>
-                                    <span class="text-muted"><small>{{ notice.message.date|naturaltime }}</small></span>
-                                </td>
-                            </tr>
-                        </table>
+                                </div>
+                            </div>
+                        </article>
+                    {% empty %}
+                        <div class="col-md-12 text-center">
+                            <h6 class="text-muted">You currently have no notifications.</h6>
+                        </div>
                     {% endfor %}
                 </div>
             </div>
@@ -39,16 +49,18 @@
     </div>
 {% endblock %}
 
-
 {% block js %}
 {{ block.super }}
 <script>
 $(document).ready(function () {
     'use strict';
 
-    $('a.mark-as-read').on("click", function() {
-        var self = $(this);
-        var data = self.data()
+    $('a.mark-as-read').on('click', function(e) {
+        var $this = $(this);
+        var data = $this.data();
+
+        e.preventDefault();
+        e.stopPropagation();
 
         $.ajax({
             "type": 'DELETE',
@@ -57,18 +69,20 @@ $(document).ready(function () {
             "contentType": 'application/json',
             "beforeSend": function (jqXHR, settings) {
                 // Pull the token out of the DOM.
-                jqXHR.setRequestHeader('X-CSRFToken', $('input[name=csrfmiddlewaretoken]:first').val());
+                jqXHR.setRequestHeader('X-CSRFToken', $('input[name=csrf_token]:first').val());
             },
-            "success": function ( data ) {
+            "success": function (data) {
+                document.location.reload();
             }
         });
-
-        return false; //this is critical to stop the click event which will trigger a normal file download!
     });
 
-    $('button#mark-all-as-read').on("click", function() {
-        var self = $(this);
-        var data = self.data()
+    $('#mark-all-as-read').on('click', function(e) {
+        var $this = $(this);
+        var data = $this.data();
+
+        e.preventDefault();
+        e.stopPropagation();
 
         $.ajax({
             "type": 'DELETE',
@@ -77,13 +91,12 @@ $(document).ready(function () {
             "contentType": 'application/json',
             "beforeSend": function (jqXHR, settings) {
                 // Pull the token out of the DOM.
-                jqXHR.setRequestHeader('X-CSRFToken', $('input[name=csrfmiddlewaretoken]:first').val());
+                jqXHR.setRequestHeader('X-CSRFToken', $('input[name=csrf_token]:first').val());
             },
-            "complete": function ( data ) {
+            "complete": function (data) {
+                document.location.reload();
             }
         });
-
-        return false; //this is critical to stop the click event which will trigger a normal file download!
     });
 
 });

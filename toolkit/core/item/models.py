@@ -81,6 +81,10 @@ class Item(IsDeletedMixin,
         return '{url}#/checklist/{item_slug}'.format(url=reverse('matter:detail', kwargs={'matter_slug': self.matter.slug}), item_slug=self.slug)
 
     @property
+    def client(self):
+        return self.matter.client
+
+    @property
     def display_status(self):
         return self.ITEM_STATUS.get_desc_by_value(self.status)
 
