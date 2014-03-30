@@ -111,6 +111,7 @@ PROJECT_APPS = (
     # Lawpal Modules
     'hello_sign',
     'dj_crocodoc',
+    'dj_authy',
 )
 
 HELPER_APPS = (
@@ -166,6 +167,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # 'corsheaders.middleware.CorsMiddleware',  # not required yet
     'toolkit.apps.me.middleware.EnsureUserHasPasswordMiddleware',
+    'dj_authy.middleware.AuthyMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (

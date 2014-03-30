@@ -113,6 +113,10 @@ MIXPANEL_SETTINGS = {
     'token': 'd7c53d3f0559022a42a74e99950b6934',
 }
 
+AUTHY_SETTINGS = {
+    'API_KEY': '',
+}
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
