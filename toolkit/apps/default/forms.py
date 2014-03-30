@@ -152,7 +152,7 @@ class SignUpForm(forms.Form):
 
         analytics = AtticusFinch()
         analytics.people_set(user=user)
-        analytics.event('lawyer.signup', distinct_id=user.pk, **{
+        analytics.event('user.signup', distinct_id=user.pk, **{
             'firm_name': self.cleaned_data.get('firm_name'),
             'first_name': self.cleaned_data.get('first_name'),
             'last_name': self.cleaned_data.get('last_name'),
