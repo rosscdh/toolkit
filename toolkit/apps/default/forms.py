@@ -9,6 +9,7 @@ from crispy_forms.helper import FormHelper, Layout
 from crispy_forms.layout import ButtonHolder, Div, Field, Fieldset, HTML, Submit
 
 from . import _get_unique_username
+from toolkit.core.services.analytics import AtticusFinch
 
 import logging
 LOGGER = logging.getLogger('django.request')
@@ -148,6 +149,13 @@ class SignUpForm(forms.Form):
         profile.data['firm_name'] = self.cleaned_data.get('firm_name')
         profile.data['user_class'] = profile.LAWYER
         profile.save(update_fields=['data'])
+
+        AtticusFinch().event('lawyer.signup', distinct_id=user.pk, **{
+            'firm_name': self.cleaned_data.get('firm_name'),
+            'first_name': self.cleaned_data.get('first_name'),
+            'last_name': self.cleaned_data.get('last_name'),
+            'email': self.cleaned_data.get('email'),
+        })
 
         return user
 
