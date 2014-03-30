@@ -50,7 +50,7 @@ class MatterActivityEventService(object):
         self._create_activity(actor=adding_user, verb=u'added participant', action_object=matter, message=message,
                               user=added_user)
 
-        self.analytics.event('matter.participant.added', distinct_id=matter.pk, user=adding_user.get_full_name(), participant=added_user.get_full_name(), matter_pk=matter.pk)
+        self.analytics.event('matter.participant.added', distinct_id=adding_user.pk, user=adding_user.get_full_name(), participant=added_user.get_full_name(), matter_pk=matter.pk)
 
     def removed_matter_participant(self, matter, removing_user, removed_user):
         message = u'%s removed %s as a participant of %s' % (removing_user, removed_user, matter)
