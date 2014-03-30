@@ -10,7 +10,7 @@ class MixpanelOnLawpal(object):
     token = None
     service = None
     def __init__(self, *args, **kwargs):
-        self.token = MIXPANEL_SETTINGS.get('token', kwargs.get('token', None))
+        self.token = kwargs.get('token', MIXPANEL_SETTINGS.get('token', None))
         if self.token is not None:
             self.service = Mixpanel(self.token)
 
