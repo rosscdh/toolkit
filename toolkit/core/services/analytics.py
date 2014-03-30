@@ -18,6 +18,23 @@ class MixpanelOnLawpal(object):
         if self.service is not None:
             self.service.track(distinct_id=distinct_id, event_name=key, properties=kwargs)
 
+    def people_set(self, user):
+        if self.service is not None:
+            profile = user.profile
+
+            data = {
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'email': user.email,
+                'user_class': profile.user_class,
+            }
+
+            if profile.is_lawyer:
+                data.update({
+                    'firm_name': profile.firm_name
+                })
+
+            self.service.people_set(user.pk, data)
 
 class AtticusFinch(MixpanelOnLawpal):
     """
