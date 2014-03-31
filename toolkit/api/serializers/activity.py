@@ -10,9 +10,11 @@ from toolkit.api.serializers.user import LiteUserSerializer
 
 def _get_comment_display(ctx, comment):
     template = loader.get_template('activity/comment.html')  # allow override of template_name
+    ctx['comment'] = comment
     context = loader.Context(ctx)
     # render the template with passed in context
     return template.render(context)
+
 
 class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
     event = serializers.SerializerMethodField('get_event')
@@ -77,6 +79,10 @@ class ItemActivitySerializer(MatterActivitySerializer):
             #'target': obj.target,
             #'target_pk': obj.target.slug,
         }
+        comment = obj.data.get('comment', None)
+
+        if comment is not None:
+            return _get_comment_display(ctx, comment)
 
         override_message = obj.data.get('message', None)
 

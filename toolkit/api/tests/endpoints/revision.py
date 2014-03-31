@@ -4,6 +4,7 @@ from django.test import LiveServerTestCase
 from django.core.urlresolvers import reverse
 from django.core.files.storage import FileSystemStorage
 from django.test.client import MULTIPART_CONTENT
+from actstream.models import target_stream
 
 from toolkit.core.item.models import Item
 
@@ -242,7 +243,7 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         # ie. filepicker.io then the CONTENT_TYPE must be application/json and
         # the field "executed_file": "http://example.com/myfile.pdf"
         #
-        resp = self.client.patch(self.endpoint, json.dumps(data), content_type='application/json')
+        resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
         resp_json = json.loads(resp.content)
 
         self.assertEqual(resp.status_code, 201)  # ok created
@@ -309,6 +310,41 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         self.assertEqual(self.item.revision_set.all().count(), 1)
 
         revision = self.item.revision_set.all().first()
+
+        self.assertEqual(revision.executed_file.name, 'executed_files/v1-%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
+        self.assertEqual(revision.executed_file.url, 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
+
+
+    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
+    def test_post_with_URL_executed_file_and_stream(self):
+        self.test_post_with_URL_executed_file()
+        stream = target_stream(self.matter)
+        self.assertEqual(stream[0].data['message'], u'Lawyer Test created a revision for Test Item with Revision')
+
+
+    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
+    def test_post_with_FILE_executed_file_and_stream(self):
+        self.test_post_with_FILE_executed_file()
+        stream = target_stream(self.matter)
+        self.assertEqual(stream[0].data['message'], u'Lawyer Test created a revision for Test Item with Revision')
+
+        revision = self.item.revision_set.all().first()
+
+        self.assertEqual(revision.executed_file.name, 'executed_files/v1-%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
+        self.assertEqual(revision.executed_file.url, 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
+
+    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
+    def test_requested_revision_upload(self):
+        """
+        what should happen here:
+        - create an invitation
+        - login as invited user
+        - upload a file
+        - check in stream if toolkit/api/views/revision.py line 130 worked
+        """
+        # @TODO ross
+        self.skipTest('todo for ross')
+
         self.assertEqual(revision.executed_file.name, 'executed_files/v1-%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
         self.assertEqual(revision.executed_file.url, 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
 

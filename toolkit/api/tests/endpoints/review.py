@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
+from actstream.models import target_stream
 from django.core import mail
 from django.conf import settings
 from django.core.files import File
-from django.test import LiveServerTestCase
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test.client import RequestFactory
@@ -24,6 +24,7 @@ import mock
 import json
 import random
 import urllib
+
 
 class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
     """
@@ -65,6 +66,10 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
 
     def test_lawyer_post(self):
         """
+        This is a bit of an anti pattern
+        we POST a username into the endpoint
+        and the system will create an account as well as assign them as a reviewer
+        to the item revision
         """
         self.client.login(username=self.lawyer.username, password=self.password)
 
@@ -118,6 +123,139 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
 
         self.assertEqual(json_data['results'][0]['reviewer']['user_review_url'], expected_url)
 
+        outbox = mail.outbox
+        self.assertEqual(len(outbox), 1)
+
+        email = outbox[0]
+        self.assertEqual(email.subject, '[ACTION REQUIRED] Invitation to review a document')
+
+        pq = self.pq(email.body)
+
+        review_document = self.item.latest_revision.reviewdocument_set.filter(reviewers__in=[participant]).first()
+
+        invite_key = InviteKey.objects.get(matter=self.matter, invited_user=participant)
+
+        expected_action_url = ABSOLUTE_BASE_URL(invite_key.get_absolute_url())
+
+        self.assertEqual(pq('a')[0].attrib.get('href'), expected_action_url)
+        self.assertEqual(invite_key.next, reverse('request:list'))
+
+        # test if activity shows in stream
+        stream = target_stream(self.matter)
+        self.assertEqual(stream[0].data['message'], u'Lawyer Test invited Participant Number 1 as reviewer for Test Item with Revision')
+
+    def test_second_lawyer_post(self):
+        """
+        This is the second post call to create a request to the reviewer.
+        The system will return the already existing reviewer and send a new mail.
+        NB. The email sent is slightly different note: subject
+        """
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        participant = mommy.make('auth.User', first_name='Participant', last_name='Number 1', email='participant+1@lawpal.com')
+
+        data = {
+            "username": participant.username
+        }
+        resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
+
+        self.assertEqual(resp.status_code, 201)  # created
+
+        json_data = json.loads(resp.content)
+
+        self.assertEqual(json_data['reviewer']['name'], participant.get_full_name())
+        # test they are in the items reviewer set
+        self.assertTrue(participant in self.item.latest_revision.reviewers.all())
+
+        #
+        # Test they show in the GET
+        #
+        resp = self.client.get(self.endpoint)
+
+        self.assertEqual(resp.status_code, 200)
+
+        json_data = json.loads(resp.content)
+        self.assertEqual(json_data['count'], 2)
+
+        self.assertEqual(json_data['results'][0]['reviewer']['name'], participant.get_full_name())
+        # we have no reviewers and the last object in the set should be the oldest
+        self.assertEqual(json_data['results'][1]['reviewer'], None)
+
+        # user review url must be in it
+        self.assertTrue('user_review_url' in json_data['results'][0]['reviewer'].keys())
+
+        #
+        # we expect the currently logged in users url to be returned;
+        # as the view is relative to the user
+        #
+        expected_url = self.item.latest_revision.reviewdocument_set.all().first().get_absolute_url(user=self.lawyer)
+
+        self.assertEqual(json_data['results'][0]['reviewer']['user_review_url'], expected_url)
+
+        outbox = mail.outbox
+        self.assertEqual(len(outbox), 1)
+
+        email = outbox[0]
+        self.assertEqual(email.subject, '[ACTION REQUIRED] Invitation to review a document')
+
+        pq = self.pq(email.body)
+
+        review_document = self.item.latest_revision.reviewdocument_set.filter(reviewers__in=[participant]).first()
+
+        invite_key = InviteKey.objects.get(matter=self.matter, invited_user=participant)
+
+        expected_action_url = ABSOLUTE_BASE_URL(invite_key.get_absolute_url())
+
+        self.assertEqual(pq('a')[0].attrib.get('href'), expected_action_url)
+        self.assertEqual(invite_key.next, reverse('request:list'))
+
+    def test_second_lawyer_post(self):
+        """
+        This is the second post call to create a request to the reviewer.
+        The system will return the already existing reviewer and send a new mail.
+        NB. The email sent is slightly different note: subject
+        """
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        participant = mommy.make('auth.User', first_name='Participant', last_name='Number 1', email='participant+1@lawpal.com')
+
+        data = {
+            "username": participant.username
+        }
+        resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
+
+        self.assertEqual(resp.status_code, 201)  # created
+
+        json_data = json.loads(resp.content)
+
+        self.assertEqual(json_data['reviewer']['name'], participant.get_full_name())
+        # test they are in the items reviewer set
+        self.assertTrue(participant in self.item.latest_revision.reviewers.all())
+
+        #
+        # Test they show in the GET
+        #
+        resp = self.client.get(self.endpoint)
+
+        self.assertEqual(resp.status_code, 200)
+
+        json_data = json.loads(resp.content)
+        self.assertEqual(json_data['count'], 2)
+
+        self.assertEqual(json_data['results'][0]['reviewer']['name'], participant.get_full_name())
+        # we have no reviewers and the last object in the set should be the oldest
+        self.assertEqual(json_data['results'][1]['reviewer'], None)
+
+        # user review url must be in it
+        self.assertTrue('user_review_url' in json_data['results'][0]['reviewer'].keys())
+
+        #
+        # we expect the currently logged in users url to be returned;
+        # as the view is relative to the user
+        #
+        expected_url = self.item.latest_revision.reviewdocument_set.all().first().get_absolute_url(user=self.lawyer)
+
+        self.assertEqual(json_data['results'][0]['reviewer']['user_review_url'], expected_url)
 
         outbox = mail.outbox
         self.assertEqual(len(outbox), 1)
@@ -247,6 +385,84 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
         resp = self.client.delete(self.endpoint, {})
         self.assertEqual(resp.status_code, 403)  # forbidden
 
+
+class ReviewObjectIncrementWithNewReviewerTest(BaseEndpointTest):
+    """
+    When we add a reviewer to a document(revision) then they should each get
+    their own reviewdocument object so that they are sandboxed (see review app tests)
+    """
+    @property
+    def endpoint(self):
+        return reverse('item_revision_reviewers', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug})
+
+    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
+    def setUp(self):
+        super(ReviewObjectIncrementWithNewReviewerTest, self).setUp()
+
+        # setup the items for testing
+        self.item = mommy.make('item.Item', matter=self.matter, name='Test Revision reviewer reviewobject_set count', category=None)
+        self.revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
+
+    def test_endpoint_name(self):
+        self.assertEqual(self.endpoint, '/api/v1/matters/%s/items/%s/revision/reviewers' % (self.matter.slug, self.item.slug))
+
+    def add_reviewer(self, data=None):
+        if data is None:
+            rand_num = random.random()
+            data = {
+                'email': 'invited-reviewer-%s@lawpal.com' % rand_num,
+                'first_name': '%s' % rand_num,
+                'last_name': 'Invited Reviewer',
+                'message': 'Please provide me with a document monkeyboy!',
+            }
+        # msut be logged in in order for this to work
+        return self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
+
+    def test_new_reviewer_add_count_increment(self):
+        """
+        there should be 1 reviewdocument per reviewer
+        """
+        initial_exected_num_reviews = 1
+        expected_number_of_reviewdocuments = 5
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        self.assertEqual(self.revision.reviewdocument_set.all().count(), initial_exected_num_reviews) # we should only have 1 at this point for the participants
+
+        for i in range(1, expected_number_of_reviewdocuments):
+            resp = self.add_reviewer()
+            self.assertEqual(resp.status_code, 201)
+
+            json_resp = json.loads(resp.content)
+
+            username = json_resp.get('reviewer').get('username')
+            reviewer = User.objects.get(username=username)
+
+            # the revision has 2 reviewers now
+            self.assertEqual(self.revision.reviewdocument_set.all().count(), initial_exected_num_reviews + i)
+            # but the reviewer only has 1
+            self.assertEqual(reviewer.reviewdocument_set.all().count(), 1) # has only 1
+
+    def test_reviewer_already_a_reviewer_add_count_no_increment(self):
+        """
+        a reviewer can have only 1 reviewdocument per document(revision)
+        """
+        initial_exected_num_reviews = 1
+        exected_total_num_reviews = 2
+        number_of_add_attempts = 5
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        self.assertEqual(self.revision.reviewdocument_set.all().count(), initial_exected_num_reviews) # we should only have 1 at this point for the participants
+
+        for i in range(1, number_of_add_attempts):
+            resp = self.add_reviewer(data={
+                'email': 'single-invited-reviewer@lawpal.com',
+                'first_name': 'Single',
+                'last_name': 'Invited Reviewer',
+                'message': 'There should only be 1 created in total for this person',
+            })
+            self.assertEqual(resp.status_code, 201)
+
+            json_resp = json.loads(resp.content)
 
 class ReviewObjectIncrementWithNewReviewerTest(BaseEndpointTest):
     """
@@ -570,7 +786,7 @@ class RevisionRequestedDocumentTest(BaseEndpointTest):
 
         inviteduploader_user = User.objects.get(username='inviteduploader')
         invited_uploader = LiteUserSerializer(inviteduploader_user,
-                                                context={'request': self.request_factory.get(self.endpoint)})  ## should exist as we jsut created him in the patch
+                                              context={'request': self.request_factory.get(self.endpoint)})  ## should exist as we jsut created him in the patch
 
         self.assertTrue(json_data.get('is_requested') is True)
         self.assertEqual(json_data.get('responsible_party'), invited_uploader.data)
@@ -579,14 +795,14 @@ class RevisionRequestedDocumentTest(BaseEndpointTest):
         # now upload a document and ensure
         # from the responsible_party above and ensure that is_requested is False
         #
-        new_revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=inviteduploader_user)
+        new_revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item,
+                                  uploaded_by=inviteduploader_user)
 
         # refresh
         self.item = self.item.__class__.objects.get(pk=self.item.pk)
 
         # now the item should be is_requested = False
         self.assertEqual(self.item.is_requested, False)
-
 
     def test_customer_get(self):
         self.client.login(username=self.user.username, password=self.password)
