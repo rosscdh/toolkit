@@ -1434,3 +1434,81 @@ body.gui .main-content {
   padding: 10px;
   border-radius: 5px 5px 0px 0px;
 }
+body.entry-pages {
+  background-color: #444444;
+}
+body.entry-pages .logo-wrap img {
+  margin: 80px 0px 25px;
+  opacity: 0.40;
+}
+body.entry-pages .signup-wrap {
+  background-color: #ececec;
+  box-shadow: 7px 7px 0 #2b2b2b;
+  margin-top: 70px;
+}
+body.entry-pages h4 {
+  color: #474747;
+  font-weight: 500;
+  font-size: 18px;
+  opacity: 0.9;
+  background-color: white;
+  margin: 10px -24px 20px -24px;
+  padding: 18px 25px 15px 25px;
+  border-bottom: 1px solid #e7e7e7;
+}
+body.entry-pages h5 {
+  color: #c0c5cb;
+  font-weight: 300;
+  margin: 0px 0px 30px 0px;
+  font-size: 13px;
+}
+body.entry-pages label {
+  font-weight: 300;
+}
+body.entry-pages label a {
+  color: inherit;
+  text-decoration: underline;
+}
+body.entry-pages .btn.btn-primary {
+  font-weight: normal;
+  font-size: 16px;
+  background-color: #2ecc71;
+}
+body.entry-pages .signup-wrap {
+  padding: 0px 25px 30px;
+}
+body.entry-pages .signup-wrap p.lead {
+  margin-bottom: 0px;
+}
+body.entry-pages .signup-wrap input {
+  width: 100%;
+  border: 0px;
+}
+body.entry-pages .form-name .form-group {
+  width: 50%;
+  float: left;
+}
+body.entry-pages .form-name .form-group:first-child {
+  padding-right: 10px;
+}
+body.entry-pages .form-name .form-group .form-control {
+  margin-bottom: 0px;
+}
+body.entry-pages .links {
+  margin: 20px 0px;
+  font-size: 13px;
+  color: #8b8b8b;
+}
+body.entry-pages .links a {
+  color: #8b8b8b;
+}
+body.entry-pages .navbar-inverse .navbar-brand,
+body.entry-pages .navbar-inverse .nav li a {
+  border-right: 0px;
+  border-left: 0px;
+  border-bottom: 0px;
+  border-left: 0px!important;
+}
+body.entry-pages input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px white inset;
+}

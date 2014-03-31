@@ -949,3 +949,86 @@ body.gui {
     border-radius: 5px 5px 0px 0px;
   }
 }
+
+// Signup
+// -------------------------
+body.entry-pages {
+  background-color:mix(@brand-primary, black, 100%);
+  .logo-wrap {
+    img {
+      margin:80px 0px 25px;
+      opacity:0.40;
+    }
+  }
+  .signup-wrap {
+    background-color:mix(white, @brand-primary, 90%);
+    box-shadow: 7px 7px 0 darken(@brand-primary, 10%);
+    margin-top:70px;
+  }
+  h4 {
+    color:lighten(@brand-primary, 1%);
+    font-weight:500;
+    font-size:18px;
+    opacity:0.9;
+    background-color:white;
+    margin:10px -24px 20px -24px;
+    padding:18px 25px 15px 25px;
+    border-bottom:1px solid mix(white, @brand-primary, 87%);
+  }
+  h5 {
+      color:mix(@midnight-blue, white, 30%);
+      font-weight:300;
+      margin:0px 0px 30px 0px;
+      font-size:13px;
+  }
+  label {
+    font-weight:300;
+    a {
+      color:inherit;
+      text-decoration:underline;
+    }
+  }
+  .btn.btn-primary {
+    font-weight:normal;
+    font-size:16px;
+    background-color:@brand-success;
+  }
+  .signup-wrap {
+    padding:0px 25px 30px;
+    p.lead {
+      margin-bottom:0px;
+    }
+    input {
+      width:100%;
+      border:0px;
+    }
+  }
+  .form-name .form-group {
+    width:50%;
+    float:left;
+    &:first-child {
+      padding-right:10px;
+    }
+    .form-control {
+      margin-bottom:0px;
+    }
+  }
+  .links {
+    margin: 20px 0px;
+    font-size:13px;
+    color:lighten(@brand-primary, 28%);
+    a {
+      color:lighten(@brand-primary, 28%);
+    }
+  }
+  .navbar-inverse .navbar-brand, .navbar-inverse .nav  li  a {
+    border-right:0px;
+    border-left:0px;
+    border-bottom:0px;
+    border-left:0px!important;        
+  }
+  input:-webkit-autofill {
+      -webkit-box-shadow: 0 0 0px 1000px white inset;
+  }
+}
+

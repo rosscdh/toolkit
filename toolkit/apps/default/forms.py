@@ -25,7 +25,7 @@ class SignUpForm(forms.Form):
             'required': "Firm name can't be blank."
         },
         label='',
-        widget=forms.TextInput(attrs={'placeholder': 'Firm name', 'size': 46})
+        widget=forms.TextInput(attrs={'placeholder': 'Firm name'})
     )
     first_name = forms.CharField(
         error_messages={
@@ -47,7 +47,7 @@ class SignUpForm(forms.Form):
             'required': "Email can't be blank."
         },
         label='',
-        widget=forms.EmailInput(attrs={'placeholder': 'Email address', 'size': 46})
+        widget=forms.EmailInput(attrs={'placeholder': 'Email address', 'autocomplete':'off'})
     )
     password = forms.CharField(
         error_messages={
@@ -61,7 +61,7 @@ class SignUpForm(forms.Form):
             'required': "Confirm password can't be blank."
         },
         label='',
-        widget=forms.PasswordInput(attrs={'placeholder': 'Password confirmation'})
+        widget=forms.PasswordInput(attrs={'placeholder': 'Password again'})
     )
     t_and_c = forms.BooleanField(
         error_messages={
@@ -83,22 +83,20 @@ class SignUpForm(forms.Form):
             HTML('{% include "partials/form-errors.html" with form=form %}'),
             Fieldset(
                 '',
-                Field('firm_name', css_class='input-hg'),
+                Field('firm_name'),
                 Div(
-                    Field('first_name', css_class='input-hg'),
-                    Field('last_name', css_class='input-hg'),
-                    css_class='form-inline'
+                    Field('first_name', css_class=''),
+                    Field('last_name', css_class=''),
+                    css_class='form-name clearfix'
                 ),
-                Field('email', css_class='input-hg'),
-                Div(
-                    Field('password', css_class='input-hg'),
-                    Field('password_confirm', css_class='input-hg'),
-                    css_class='form-inline'
-                ),
+
+                Field('email'),
+                Field('password'),
+                Field('password_confirm'),
                 Field('t_and_c', template='public/bootstrap3/t_and_c.html'),
             ),
             ButtonHolder(
-                Submit('submit', 'Create my account', css_class='btn btn-primary btn-lg')
+                Submit('submit', 'Create Account')
             )
         )
 
