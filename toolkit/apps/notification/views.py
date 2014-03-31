@@ -83,4 +83,5 @@ class MarkAllAsReadEndpoint(generics.DestroyAPIView):
         Inbox.objects.filter(user=request.user).delete()
 
         _set_has_notifications(user=request.user, count=0)
-        return Response({'status': 'message marked as read'})
+
+        return Response({'status': 'all messages marked as read'})

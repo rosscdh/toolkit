@@ -65,6 +65,8 @@ class MatterActivityEventService(object):
         self.analytics.event('matter.participant.added', distinct_id=adding_user.pk, user=adding_user.get_full_name(),
                              participant=added_user.get_full_name(), matter_pk=matter.pk)
 
+        self.analytics.event('matter.participant.added', distinct_id=adding_user.pk, user=adding_user.get_full_name(), participant=added_user.get_full_name(), matter_pk=matter.pk)
+
     def removed_matter_participant(self, matter, removing_user, removed_user):
         message = u'%s removed %s as a participant of %s' % (removing_user, removed_user, matter)
         self._create_activity(actor=removing_user, verb=u'edited', action_object=matter, message=message,
@@ -162,12 +164,6 @@ class MatterActivityEventService(object):
     #     message = u'%s removed %s as reviewer for %s' % (removing_user, removed_user, item)
     #     self._create_activity(actor=removing_user, verb=u'removed reviewer', action_object=item, message=message,
     #                           user=removed_user)
-
-    def user_viewed_revision(self, item, user, revision):
-        message = u'%s viewed revision %s (%s) for %s' % (user, revision.name, revision.slug, item)
-        self._create_activity(actor=user, verb=u'viewed revision', action_object=item, message=message,
-                              revision=revision, filename=revision.name, version=revision.slug,
-                              date_created=datetime.datetime.utcnow())
 
     def user_viewed_revision(self, item, user, revision):
         message = u'%s viewed revision %s (%s) for %s' % (user, revision.name, revision.slug, item)

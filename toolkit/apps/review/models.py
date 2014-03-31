@@ -81,7 +81,6 @@ class ReviewDocument(IsDeletedMixin, FileExistsLocallyMixin, UserAuthMixin, mode
         """
         return self.document.item.latest_revision == self.document
 
-
     @property
     def matter(self):
         return self.document.item.matter

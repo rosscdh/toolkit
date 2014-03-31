@@ -71,7 +71,6 @@ class ReviewRevisionView(DetailView):
     def get_object(self):
         self.object = super(ReviewRevisionView, self).get_object()
         self.matter = self.object.document.item.matter
-
         #
         # Perform authentication of the user here
         #

@@ -144,7 +144,7 @@ class ItemRevisionReviewersView(generics.ListAPIView,
                                                         inviting_user=request.user,
                                                         invited_user=user)
 
-        review_document = self.item.latest_revision.reviewdocument_set.filter(reviewers__in=[user]).first()
+        review_document = self.revision.reviewdocument_set.filter(reviewers__in=[user]).first()
 
         # we have the user at this point
         serializer = self.get_serializer(review_document)
@@ -216,8 +216,6 @@ class ItemRevisionReviewerView(generics.RetrieveAPIView,
             status = http_status.HTTP_406_NOT_ACCEPTABLE
             logger.critical('A revision %s for a user %s has more than 1 reviewdocument they should only have 1 per revision' % (self.revision, user))
 
-
-
         # TODO: MOVE
         # After move we don't have the user any more!
 
@@ -229,10 +227,6 @@ class ItemRevisionReviewerView(generics.RetrieveAPIView,
 
         # TODO: check if this was the last user to review the document.
         # if so: user_revision_review_complete()
-
-
-
-
         status = http_status.HTTP_200_OK
 
         return Response(data, status=status)
