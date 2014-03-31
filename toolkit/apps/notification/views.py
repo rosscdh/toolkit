@@ -21,6 +21,13 @@ def _set_has_notifications(user, count):
         profile.has_notifications = False
         profile.save(update_fields=['has_notifications'])
 
+def _set_has_notifications(user, count):
+    if count < 1:
+        profile = user.profile
+        profile.has_notifications = False
+        profile.save(update_fields=['has_notifications'])
+
+
 class InboxNotificationsView(ListView):
     model = Inbox
     template_name = 'notification/notification_list.html'

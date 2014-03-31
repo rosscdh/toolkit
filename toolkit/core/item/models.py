@@ -3,9 +3,10 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.db.models.signals import pre_save, post_save
 
-from toolkit.core.signals.activity import (on_item_post_save,)
 from .signals import (on_item_save_category,
-                      on_item_save_closing_group)
+                      on_item_save_closing_group,
+                      on_item_save_changed_content,
+                      on_item_post_save)
 
 from toolkit.core.mixins import IsDeletedMixin
 
@@ -27,7 +28,8 @@ BASE_ITEM_STATUS = get_namedtuple_choices('ITEM_STATUS', (
                             ))
 
 
-class Item(IsDeletedMixin, RequestDocumentUploadMixin,
+class Item(IsDeletedMixin,
+           RequestDocumentUploadMixin,
            RequestedDocumentReminderEmailsMixin,
            LatestRevisionReminderEmailsMixin,
            models.Model):
@@ -139,6 +141,7 @@ Connect signals
 """
 pre_save.connect(on_item_save_category, sender=Item, dispatch_uid='item.post_save.category')
 pre_save.connect(on_item_save_closing_group, sender=Item, dispatch_uid='item.post_save.closing_group')
+pre_save.connect(on_item_save_changed_content, sender=Item, dispatch_uid='item.post_save.changed_content')
 post_save.connect(on_item_post_save, sender=Item, dispatch_uid='item.post_save.category')
 
 

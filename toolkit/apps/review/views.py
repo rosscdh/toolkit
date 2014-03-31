@@ -185,6 +185,10 @@ class ApproveRevisionView(DetailView):
     def approve(self, request, *args, **kwargs):
         self.object = self.get_object()
         success_url = self.get_success_url()
+
+        self.matter.actions.user_revision_review_complete(item=self.object.document.item, user=request.user,
+                                                          revision=self.object.document)
+
         self.object.complete()
         return HttpResponseRedirect(success_url)
 
