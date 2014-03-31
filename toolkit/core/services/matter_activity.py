@@ -52,8 +52,8 @@ class MatterActivityEventService(object):
         verb_slug = slugify(action_object.__class__.__name__) + '-' + slugify(verb)
         logger.critical('possible verb_slug: "%s"' % verb_slug)
 
-        with open('/tmp/verb_slugs.log', 'a') as f:
-            f.write(verb_slug + '\r\n')
+        # with open('/tmp/verb_slugs.log', 'a') as f:
+        #     f.write(verb_slug + '\r\n')
 
         return verb_slug
 
