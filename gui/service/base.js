@@ -2,10 +2,22 @@
 
 angular.module('toolkit-gui')
 // register the interceptor as a service
-    .factory('myHttpInterceptor', ['$q', '$exceptionHandler', '$rootScope', '$log', function ($q, $exceptionHandler, $rootScope, $log) {
+    .factory('myHttpInterceptor', ['$q', '$exceptionHandler', '$rootScope', '$log', function ($q, $exceptionHandler, $rootScope, $log, $location) {
         return {
-            'response': function (response) {
-                return response || $q.when(response);
+
+            'request': function(config) {
+                var timestamp = new Date().getTime();
+
+                var contenttype = config.headers["Content-Type"];
+                if(contenttype === "application/json"){
+                    if(config.url.indexOf('?') < 0) {
+                        config.url += '?t=' + timestamp;
+                    } else {
+                        config.url += '&t=' + timestamp;
+                    }
+                }
+
+                return config || $q.when(config);
             },
 
             'responseError': function (rejection) {
