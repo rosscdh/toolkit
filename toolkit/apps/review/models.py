@@ -57,13 +57,6 @@ class ReviewDocument(IsDeletedMixin, FileExistsLocallyMixin, UserAuthMixin, mode
     def complete(self, is_complete=True):
         self.is_complete = is_complete
         self.save(update_fields=['is_complete'])
-        if is_complete is True:
-            # review_complete -> 10
-
-            # does NOT work here, we need user
-
-            #self.matter.actions.user_revision_review_complete(item, user, revision)
-            pass
 
     complete.alters_data = True
 

@@ -130,11 +130,13 @@ class MatterActivityEventService(object):
 
     def add_revision_comment(self, user, revision, comment):
         message = '%s commented on %s' % (user, revision)
-        self._create_activity(actor=user, verb=u'commented', action_object=revision.item, message=message, comment=comment)
+        self._create_activity(actor=user, verb=u'added revision comment', action_object=revision, message=message,
+                              comment=comment, item=revision.item)
 
     def delete_revision_comment(self, user, revision):
         message = '%s deleted a comment on %s' % (user, revision)
-        self._create_activity(actor=user, verb=u'deleted comment', action_object=revision.item, message=message)
+        self._create_activity(actor=user, verb=u'deleted revision comment', action_object=revision, message=message,
+                              item=revision.item)
 
     #
     # Review requests
@@ -156,6 +158,12 @@ class MatterActivityEventService(object):
     #     message = u'%s removed %s as reviewer for %s' % (removing_user, removed_user, item)
     #     self._create_activity(actor=removing_user, verb=u'removed reviewer', action_object=item, message=message,
     #                           user=removed_user)
+
+    def user_viewed_revision(self, item, user, revision):
+        message = u'%s viewed revision %s (%s) for %s' % (user, revision.name, revision.slug, item)
+        self._create_activity(actor=user, verb=u'viewed revision', action_object=item, message=message,
+                              revision=revision, filename=revision.name, version=revision.slug,
+                              date_created=datetime.datetime.utcnow())
 
     def user_viewed_revision(self, item, user, revision):
         message = u'%s viewed revision %s (%s) for %s' % (user, revision.name, revision.slug, item)
