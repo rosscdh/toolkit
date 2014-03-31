@@ -13,6 +13,36 @@ logger = logging.getLogger('django.request')
 class MatterActivityEventService(object):
     """
     Service to handle events relating to the mater
+
+    Known Verb Slugs
+    ----------
+
+    ### Matters ###
+
+    workspace-added-participant
+    workspace-created
+    workspace-edited
+
+
+    ### Items ###
+
+    item-canceled-their-request-for-a-document
+    item-changed-the-status
+    item-closed
+    item-commented
+    item-created
+    item-invited-reviewer
+    item-provide-a-document
+    item-renamed
+    item-reopened
+    item-viewed-revision
+
+
+    ### Revisions ###
+
+    revision-created
+    revision-deleted
+
     """
     def __init__(self, matter, **kwargs):
         self.matter = matter
@@ -20,7 +50,11 @@ class MatterActivityEventService(object):
 
     def get_verb_slug(self, action_object, verb):
         verb_slug = slugify(action_object.__class__.__name__) + '-' + slugify(verb)
-        logger.debug('possible verb_slug: "%s"' % verb_slug)
+        logger.critical('possible verb_slug: "%s"' % verb_slug)
+
+        with open('/tmp/verb_slugs.log', 'a') as f:
+            f.write(verb_slug + '\r\n')
+
         return verb_slug
 
     def _create_activity(self, actor, verb, action_object, **kwargs):
