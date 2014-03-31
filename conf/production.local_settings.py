@@ -113,6 +113,11 @@ MIXPANEL_SETTINGS = {
     'token': 'd7c53d3f0559022a42a74e99950b6934',
 }
 
+AUTHY_SETTINGS = {
+    'API_KEY': 'e19afad3c1c207a03ef6a1dcb2adb0c3',
+    #'API_URL': 'http://sandbox-api.authy.com'
+}
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

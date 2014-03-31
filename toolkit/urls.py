@@ -24,6 +24,7 @@ urlpatterns = patterns('',
 
     url(r'^me/pasword/', include('password_reset.urls')),
     url(r'^me/', include('toolkit.apps.me.urls', namespace='me')),
+    url(r'^me/authy/', include('dj_authy.urls', namespace='authy')),
 
     # primary workspace
     url(r'^workspace/', include('toolkit.apps.workspace.urls', namespace='workspace')),

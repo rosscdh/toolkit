@@ -81,3 +81,8 @@ ABRIDGE_PASSWORD = ''
 MIXPANEL_SETTINGS = {
     'token': '92deaf40d5aa77e00bf8f764002950ab',
 }
+
+
+AUTHY_SETTINGS = {
+    'API_KEY': '',
+}

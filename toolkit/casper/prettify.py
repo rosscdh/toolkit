@@ -23,6 +23,18 @@ def mock_http_requests(view_func):
         from toolkit.apps.eightythreeb.tests.usps_trackfield_response import TRACK_RESPONSE_XML_BODY
         from toolkit.apps.workspace.tests.data import HELLOSIGN_200_RESPONSE
         #
+        # Authy
+        #
+        httpretty.register_uri(httpretty.POST, "https://api.authy.com/protected/json/users/new",
+                               body='',
+                               status=200)
+        httpretty.register_uri(httpretty.GET, re.compile(r"https://api.authy.com/protected/json/sms/(\d+)"),
+                               body='',
+                               status=200)
+        httpretty.register_uri(httpretty.GET, re.compile(r"https://api.authy.com/protected/json/verify/(.*)/(.*)"),
+                               body='',
+                               status=200)
+        #
         # HelloSign
         #
         httpretty.register_uri(httpretty.POST, re.compile(r"^https://api.hellosign.com/v3/(.*)$"),
