@@ -253,3 +253,21 @@ class ItemDataTest(BaseEndpointTest):
         self.assertEqual(len(stream), 2)  # shall only find the newest entry, the 2 other ones are too old.
 
         self.assertEqual(stream[0].data['message'], 'Lawyer Test renamed item from Item Data Test No. 1 to New Name')
+
+    def test_item_reopened_signal(self):
+        self.client.login(username=self.lawyer.username, password=self.password)
+        resp = self.client.patch(self.endpoint, json.dumps({'is_complete': 'true'}), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+
+        stream = model_stream(Item)
+        self.assertEqual(len(stream), 2)  # shall only find the newest entry, the 2 other ones are too old.
+
+        self.assertEqual(stream[0].data['message'], 'Lawyer Test closed Item Data Test No. 1')
+
+        resp = self.client.patch(self.endpoint, json.dumps({'is_complete': 'false'}), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+
+        stream = model_stream(Item)
+        self.assertEqual(len(stream), 3)  # shall only find the newest entry, the 2 other ones are too old.
+
+        self.assertEqual(stream[0].data['message'], 'Lawyer Test reopened Item Data Test No. 1')

@@ -62,7 +62,8 @@ class MatterActivityEventService(object):
         message = u'%s added %s as a participant of %s' % (adding_user, added_user, matter)
         self._create_activity(actor=adding_user, verb=u'added participant', action_object=matter, message=message,
                               user=added_user)
-        self.analytics.event('matter.participant.added', distinct_id=adding_user.pk, user=adding_user.get_full_name(), participant=added_user.get_full_name(), matter_pk=matter.pk)
+        self.analytics.event('matter.participant.added', distinct_id=adding_user.pk, user=adding_user.get_full_name(),
+                             participant=added_user.get_full_name(), matter_pk=matter.pk)
 
     def removed_matter_participant(self, matter, removing_user, removed_user):
         message = u'%s removed %s as a participant of %s' % (removing_user, removed_user, matter)
@@ -77,12 +78,14 @@ class MatterActivityEventService(object):
 
     def item_rename(self, user, item, previous_name):
         message = u'%s renamed item from %s to %s' % (user, previous_name, item.name)
-        self._create_activity(actor=user, verb=u'renamed', action_object=item, item=item, message=message, previous_name=previous_name)
+        self._create_activity(actor=user, verb=u'renamed', action_object=item, item=item, message=message,
+                              previous_name=previous_name)
 
     def item_changed_status(self, user, item, previous_status):
         current_status = item.display_status
         message = u'%s changed the status of %s from %s to %s' % (user, item, previous_status, current_status)
-        self._create_activity(actor=user, verb=u'changed the status', action_object=item, item=item, message=message, current_status=current_status, previous_status=previous_status)
+        self._create_activity(actor=user, verb=u'changed the status', action_object=item, item=item, message=message,
+                              current_status=current_status, previous_status=previous_status)
 
     def item_closed(self, user, item):
         message = u'%s closed %s' % (user, item)
@@ -111,7 +114,8 @@ class MatterActivityEventService(object):
 
     def deleted_revision(self, user, item, revision):
         message = u'%s destroyed a revision for %s' % (user, item)
-        self._create_activity(actor=user, verb=u'deleted', action_object=revision, item=item, message=message, filename=revision.name, date_created=revision.date_created)
+        self._create_activity(actor=user, verb=u'deleted', action_object=revision, item=item, message=message,
+                              filename=revision.name, date_created=revision.date_created)
 
     def request_user_upload_revision(self, item, adding_user, added_user):
         message = u'%s requested %s provide a document on %s' % (adding_user, added_user, item)

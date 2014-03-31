@@ -3,7 +3,6 @@ from actstream.models import target_stream
 from django.core import mail
 from django.conf import settings
 from django.core.files import File
-from django.test import LiveServerTestCase
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test.client import RequestFactory
@@ -25,6 +24,7 @@ import mock
 import json
 import random
 import urllib
+
 
 class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
     """
@@ -579,7 +579,7 @@ class RevisionRequestedDocumentTest(BaseEndpointTest):
 
         inviteduploader_user = User.objects.get(username='inviteduploader')
         invited_uploader = LiteUserSerializer(inviteduploader_user,
-                                                context={'request': self.request_factory.get(self.endpoint)})  ## should exist as we jsut created him in the patch
+                                              context={'request': self.request_factory.get(self.endpoint)})  ## should exist as we jsut created him in the patch
 
         self.assertTrue(json_data.get('is_requested') is True)
         self.assertEqual(json_data.get('responsible_party'), invited_uploader.data)
