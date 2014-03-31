@@ -531,7 +531,10 @@ angular.module('toolkit-gui')
 						item.uploading = false;
 					},
 					function progress( num ) {
-						item.uploadingPercent = num;
+						setTimeout(function(){
+							item.uploadingPercent = num;
+							$scope.$apply();
+						},10);
 					}
 				);
 			}

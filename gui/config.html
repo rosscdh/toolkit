@@ -11,6 +11,15 @@
   <script src="<!-- @echo staticBase -->ng/bower_components/jquery-ui/ui/jquery-ui.js" data-remove="exclude"></script>
   <script src="<!-- @echo staticBase -->ng/bower_components/bootstrap/dist/js/bootstrap.js" data-remove="exclude"></script>
   <script src="<!-- @echo staticBase -->ng/bower_components/angular/angular.js" data-remove="exclude"></script>
+  <script language="javascript" data-remove="exclude">
+    /* File upload fallback for IE browsers */
+    FileAPI = {
+        //only one of jsPath or jsUrl.
+        'jsPath': '<!-- @echo staticBase -->ng/bower_components/FileAPI/',
+        //only one of staticPath or flashUrl.
+        'staticPath': '<!-- @echo staticBase -->ng/bower_components/FileAPI/'
+    }
+  </script>
 </head>
 <body>
   <!-- Livereload script for development only (stripped during dist build) -->
