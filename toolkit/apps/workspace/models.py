@@ -2,7 +2,6 @@
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.db.models.loading import get_model
-from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import pre_save, post_save, m2m_changed
 
 from .signals import (ensure_workspace_slug,
