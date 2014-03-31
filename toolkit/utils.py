@@ -59,7 +59,7 @@ def get_namedtuple_choices(name, choices_tuple):
 
         def get_choices_dict(self):
             choices = OrderedDict()
-            for k, v in self.get_choices():  # TODO: ross, please confirm or deny this change. seems like key and value were inverted. for v, k in XXX sounded wrong and returned strange order to API.
+            for k, v in self.get_choices():
                 choices[k] = v
             return choices
 
