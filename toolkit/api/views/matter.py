@@ -1,6 +1,4 @@
 # -*- coding: UTF-8 -*-
-import json
-
 from rulez import registry as rulez_registry
 
 from rest_framework import viewsets
@@ -39,21 +37,18 @@ class MatterEndpoint(viewsets.ModelViewSet):
         # without this special case the following error shows up in tests:
         # ImproperlyConfigured: Expected view MatterEndpoint to be called with a URL keyword argument named "slug". Fix your URL conf, or set the `.lookup_field` attribute on the view correctly.
 
-        # if self.action in ('list', 'create'):
-        #     revision_status_labels = Revision.REVISION_STATUS.get_choices_dict()
-        # else:
-        #     revision_status_labels = self.get_object().status_labels
-        #
-        # revision_status_labels = self.get_object().status_labels
+        if self.action in ('list', 'create'):
+            revision_status_labels = Revision.REVISION_STATUS.get_choices_dict()
+        else:
+            revision_status_labels = self.get_object().status_labels
 
         return {
             'matter': {
                 'status': None,
             },
-            'item': {
-                'default_status': Revision.REVISION_STATUS.get_choices_dict(),
-                'custom_status': self.get_object().status_labels}
-            }
+            'item': {'status': Item.ITEM_STATUS.get_choices_dict()},
+            'revision': {'status': revision_status_labels},
+        }
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -144,8 +139,10 @@ class RevisionLabelView(generics.DestroyAPIView,
                         generics.CreateAPIView,
                         MatterMixin,):
     """
-    /matters/:matter_slug/revision_label (POST)
-        [lawyer] can assign an item to a closing group
+    /matters/:matter_slug/revision_label (POST,DELETE)
+        [lawyer] can assign an item to a labels
+
+    view/create/delete a specific labels
     """
     model = Workspace
     serializer_class = MatterSerializer
@@ -162,7 +159,17 @@ class RevisionLabelView(generics.DestroyAPIView,
         obj.save(update_fields=['data'])
         return Response(status=http_status.HTTP_201_CREATED)
 
+    def delete(self, request, **kwargs):
+        obj = self.get_object()
+        obj.status_labels = dict()
+        obj.save(update_fields=['data'])
+        return Response(status=http_status.HTTP_204_NO_CONTENT)
+
     def can_edit(self, user):
         return user.profile.is_lawyer
 
+    def can_delete(self, user):
+        return user.profile.is_lawyer
+
 rulez_registry.register("can_edit", RevisionLabelView)
+rulez_registry.register("can_delete", RevisionLabelView)

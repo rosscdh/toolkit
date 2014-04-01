@@ -368,33 +368,47 @@ class MatterRevisionLabelTest(BaseEndpointTest):
         resp = self.client.get(self.endpoint_for_get)
         resp_data = json.loads(resp.content)
 
-        status_labels = resp_data['_meta']['item']['default_status']
-        self.assertDictEqual(status_labels, {'0': u'Draft',
-                                             '1': u'For Discussion',
-                                             '2': u'Final',
-                                             '3': u'Executed',
-                                             '4': u'Filed'})
-        custom_labels = resp_data['_meta']['item']['custom_status']
-        self.assertDictEqual(custom_labels, {})
+        status_labels = resp_data['_meta']['revision']['status']
+        self.assertDictEqual(status_labels,
+                             {'0': 'Draft', '1': 'For Discussion', '2': 'Final', '3': 'Executed', '4': 'Filed'})
 
     def test_labels_post(self):
         self.client.login(username=self.lawyer.username, password=self.password)
 
-        data = {'status_labels': {'0': u'',
-                                  '1': u'custom For Discussion',
-                                  '2': u'custom Final',
-                                  '3': u'custom Executed',
-                                  '4': u'custom Filed'}}
-
-        resp = self.client.post(self.endpoint, data=json.dumps(data), content_type='application/json')
+        data = {'status_labels': {
+            '0': 'Draftt', '1': 'For Discussionn', '2': 'Finall', '3': 'Executedd', '4': 'Filedd'}}
+        resp = self.client.post(self.endpoint,
+                                data=json.dumps(data), content_type='application/json')
         self.assertEqual(201, resp.status_code)
 
         resp = self.client.get(self.endpoint_for_get)
         resp_data = json.loads(resp.content)
 
-        status_labels = resp_data['_meta']['item']['custom_status']
-        self.assertDictEqual(status_labels, {'0': u'',
-                                             '1': u'custom For Discussion',
-                                             '2': u'custom Final',
-                                             '3': u'custom Executed',
-                                             '4': u'custom Filed'})
+        status_labels = resp_data['_meta']['revision']['status']
+        self.assertDictEqual(status_labels,
+                             {'0': 'Draftt', '1': 'For Discussionn', '2': 'Finall', '3': 'Executedd', '4': 'Filedd'})
+
+    def test_labels_delete(self):
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        data = {'status_labels': {
+            '0': 'Draftt', '1': 'For Discussionn', '2': 'Finall', '3': 'Executedd', '4': 'Filedd'}}
+        resp = self.client.post(self.endpoint,
+                                data=json.dumps(data), content_type='application/json')
+        self.assertEqual(201, resp.status_code)
+
+        resp = self.client.get(self.endpoint_for_get)
+        resp_data = json.loads(resp.content)
+
+        status_labels = resp_data['_meta']['revision']['status']
+        self.assertDictEqual(status_labels,
+                             {'0': 'Draftt', '1': 'For Discussionn', '2': 'Finall', '3': 'Executedd', '4': 'Filedd'})
+
+        self.client.delete(self.endpoint)
+
+        resp = self.client.get(self.endpoint_for_get)
+        resp_data = json.loads(resp.content)
+
+        status_labels = resp_data['_meta']['revision']['status']
+        self.assertDictEqual(status_labels,
+                             {'0': 'Draft', '1': 'For Discussion', '2': 'Final', '3': 'Executed', '4': 'Filed'})
