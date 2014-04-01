@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from collections import OrderedDict
+
+from toolkit.apps.workspace.mixins.categories import InvalidCategoryValue
+
 from toolkit.core.attachment.models import Revision
 
 
@@ -9,14 +12,25 @@ class RevisionLabelMixin(object):
     """
     @property
     def status_labels(self):
-        return self.data.get('status_labels', OrderedDict())
+        """
+        Get the set of status labels
+        """
+        result = self.data.get('status_labels', False)
+
+        if result in (False, {}):
+            return Revision.REVISION_STATUS.get_choices_dict()
+        return result
 
     @status_labels.setter
     def status_labels(self, value):
+        """
+        Set the status names as a dict
+        """
         if type(value) != dict:
-            raise Exception('status labels must be of type dict')
+            raise InvalidCategoryValue
 
         choices = OrderedDict()
         for k in sorted(value.keys()):
-            choices[k] = value[k]
+            choices[str(k)] = value[k]
+
         self.data['status_labels'] = choices
