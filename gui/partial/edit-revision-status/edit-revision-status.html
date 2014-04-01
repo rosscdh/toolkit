@@ -1,0 +1,21 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel">Edit revision status</h4>
+    </div>
+    <form name="requestForm" ng-submit="request()">
+        <div class="modal-body">
+            <p>Here the description.</p>
+            <strong ng-show="participants.length>0">Revision status</strong>
+            <ul class="list-unstyled">
+                <li ng-repeat="obj in statuslist">
+                   <span class="icon status-{{ obj.key }}"></span>
+                   <input class="form-control input-sm" id="input-status-{{obj.key}}" ng-model="obj.value" required />
+                </li>
+            </ul>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-default" ng-click="cancel()">Cancel</button>
+            <button class="btn btn-primary" type="submit" ng-disabled="invalid()">Save</button>
+        </div>
+    </form>
+</div>
