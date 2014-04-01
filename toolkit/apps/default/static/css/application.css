@@ -871,6 +871,66 @@ body.gui .main-content {
 .matter .card .progress .progress-bar {
   border-radius: 0px;
 }
+.welcome-block ul#tourTab {
+  border-bottom: 0px;
+  width: 90%;
+  margin: 0 auto;
+}
+.welcome-block li {
+  width: 25%;
+  border: 0px!important;
+  border-radius: 0px;
+  margin-bottom: 0px;
+  float: left!important;
+}
+.welcome-block li span {
+  font-size: 30px;
+  display: block;
+}
+.welcome-block li a {
+  padding-bottom: 5px;
+  font-size: 13px;
+  border-width: 0px!important;
+}
+.welcome-block li a:hover {
+  color: #2472a4;
+}
+.welcome-block li.active {
+  border-width: 0px;
+}
+.welcome-block li.active a {
+  background-color: #2472a4;
+  color: white;
+  border-width: 0px;
+  padding-bottom: 10px;
+}
+.welcome-block li.active a:hover {
+  border-width: 0px;
+  background-color: #2472a4;
+  color: white;
+}
+.welcome-block .tab-content {
+  border: none;
+  border-radius: 0px;
+  margin-bottom: 20px;
+  padding: 0px 20px 5px;
+  position: relative;
+  z-index: auto;
+}
+.welcome-block .tab-content img {
+  max-width: 100%;
+}
+.welcome-block .tab-content .note {
+  background-color: #2472a4;
+  width: 100%;
+  margin: 0 auto 15px auto;
+  color: #e9f1f6;
+  padding: 20px;
+  border-radius: 4px;
+  font-size: 13px;
+  text-align: left;
+  text-rendering: optimizeLegibility;
+}
 .navbar {
   margin-bottom: 0;
 }

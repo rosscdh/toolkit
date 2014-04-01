@@ -234,6 +234,78 @@ body.gui {
       border-radius:0px;
     }
   }
+
+}
+
+// Welcome Block
+// -------------------------
+
+@tour-bg : darken(@belize-hole, 5%);
+
+.welcome-block {
+  ul#tourTab {
+    border-bottom:0px;
+    width:90%;
+    margin:0 auto;
+  }
+  li {
+    width:25%;
+    border:0px!important;
+    border-radius: 0px;
+    margin-bottom:0px;
+    float:left!important;
+    span {
+      font-size:30px;
+      display: block;
+    }
+    a {
+      padding-bottom:5px;
+      font-size:13px;
+      border-width:0px!important;
+      &:hover {
+        color: @tour-bg;
+      }
+    }
+    &.active {
+      border-width:0px;
+      a {
+        background-color:  @tour-bg;
+        color:white;
+        border-width:0px;
+        padding-bottom:10px;
+        &:hover {
+          border-width:0px;
+          background-color:darken( @tour-bg, 0%);
+          color:white;
+        }
+      }
+    }
+
+  }
+
+ 
+  .tab-content {
+    border: none;
+    border-radius: 0px;
+    margin-bottom: 20px;
+    padding: 0px 20px 5px;
+    position: relative;
+    z-index: auto;
+    img {
+        max-width: 100%;
+    }
+    .note {
+      background-color:@tour-bg;
+      width:100%;
+      margin: 0 auto 15px auto;
+      color:mix(white, @tour-bg, 90%);
+      padding:20px;
+      border-radius: 4px;
+      font-size:13px;
+      text-align: left;
+      text-rendering:optimizeLegibility;
+    }
+  }
 }
 
 
