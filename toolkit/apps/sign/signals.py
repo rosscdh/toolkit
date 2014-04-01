@@ -3,6 +3,8 @@ from django.dispatch import receiver
 from django.contrib.auth.models import User
 from django.db.models.signals import m2m_changed, post_save
 
+from hello_sign.signals import hellosign_webhook_event_recieved
+
 from .models import SignDocument
 
 
@@ -74,3 +76,29 @@ def on_signer_remove(sender, instance, action, pk_set, **kwargs):
     """
     if action in ['post_remove']:
         _remove_as_authorised(instance=instance, pk_set=pk_set)
+
+
+"""
+HelloSign webhook
+"""
+
+@receiver(hellosign_webhook_event_recieved)
+def on_hellosign_webhook_event_recieved(sender, hellosign_log,
+                                        signature_request_id,
+                                        hellosign_request,
+                                        event_type,
+                                        data,
+                                        **kwargs):
+    #
+    # Head the signal
+    #
+    signature_doc = hellosign_request.source_object
+
+    if signature_doc.__class__.name in ['SignDocument']:
+        logging.info('Recieved event: %s for request: %s' % (event_type, hellosign_request,))
+
+        if hellosign_log.event_type == 'signature_request_all_signed':
+            import pdb;pdb.set_trace()
+
+        elif hellosign_log.event_type == 'signature_request_signed':
+            import pdb;pdb.set_trace()
