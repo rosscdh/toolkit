@@ -162,17 +162,25 @@
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="showRevisionDocument(data.selectedItem.latest_revision)">View</a>  <a href="{{ data.selectedItem.latest_revision.user_download_url }}" class="btn btn-link btn-xs" target="_blank">Download</a>
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="requestReview(data.selectedItem.latest_revision)">Request Review</a>
 <!--                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="requestSigning(data.selectedItem.latest_revision)">Request Signing</a> -->
+
                     <div class="btn-group pull-right">
                         <button type="button" class="btn btn-default btn-xs status-{{ data.selectedItem.latest_revision.status }}" data-toggle="dropdown">
                           {{ data.matter._meta.revision.status[data.selectedItem.latest_revision.status] }}
                         </button>
-                        <button class="btn btn-default btn-xs status-{{ data.selectedItem.latest_revision.status }}" data-toggle="dropdown" ng-show="data.usdata.current.user_class=='lawyer'">
+                        <button class="btn btn-default btn-xs status-{{ data.selectedItem.latest_revision.status }}"
+                                data-toggle="dropdown" ng-show="data.usdata.current.user_class=='lawyer'">
                           <span class="caret" ></span>
                         </button>
-                        <ul class="dropdown-menu" ng-show="data.usdata.current.user_class=='lawyer'">
+                        <ul class="dropdown-menu" ng-show="data.usdata.current.user_class=='lawyer'" >
                           <li class="" ng-repeat="status in data.matter._meta.revision.status">
-                              <a href="javascript:;" ng-click="data.selectedItem.latest_revision.status=$index;saveLatestRevision();">
+                              <a href="javascript:;" ng-click="data.showRevisionStatusDropdown=false;data.selectedItem.latest_revision.status=$index;saveLatestRevision();"
+                                 ng-hide="data.showEditRevisionTitles">
                                   <span class="icon status-{{ $index }}"></span> {{ status }}
+                              </a>
+                          </li>
+                          <li>
+                              <a href="javascript:;" ng-click="editRevisionStatusTitles()">
+                                  <span class="icon"></span> Change status titles...
                               </a>
                           </li>
                         </ul>
