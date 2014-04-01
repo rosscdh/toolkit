@@ -82,18 +82,18 @@ class ItemsRequestDocumentTest(BaseEndpointTest):
 
         # this should have created a new revision upload invite
         stream = action_object_stream(self.item)
-        self.assertEqual(stream[0].data['message'], u'Lawyer Test requested Bob Da hoon provide a document on Test Item No. 1')
+        self.assertEqual(stream[0].data['message'],
+                         u'Lawyer Test requested Bob Da hoon provide a document on Test Item No. 1')
 
         # now we patch again to remove the revision_request and see if the activity is created
         data = {
             'is_requested': False,
             'responsible_party': None
         }
-        resp = self.client.patch(self.endpoint, json.dumps(data), content_type='application/json')
+        self.client.patch(self.endpoint, json.dumps(data), content_type='application/json')
         stream = target_stream(self.matter)
-        import pdb;pdb.set_trace()
-
-
+        self.assertEqual(stream[0].data['message'],
+                         u'Lawyer Test canceled their request for Bob Da hoon to provide a document on Test Item No. 1')
 
     def test_lawyer_delete(self):
         self.client.login(username=self.lawyer.username, password=self.password)
