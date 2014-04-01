@@ -123,8 +123,6 @@ class MatterActivityEventService(object):
         self.analytics.event('matter.participant.added', distinct_id=adding_user.pk, user=adding_user.get_full_name(),
                              participant=added_user.get_full_name(), matter_pk=matter.pk)
 
-        self.analytics.event('matter.participant.added', distinct_id=adding_user.pk, user=adding_user.get_full_name(), participant=added_user.get_full_name(), matter_pk=matter.pk)
-
     def removed_matter_participant(self, matter, removing_user, removed_user):
         message = u'%s removed %s as a participant of %s' % (removing_user, removed_user, matter)
         self._create_activity(actor=removing_user, verb=u'edited', action_object=matter, message=message,
@@ -172,6 +170,8 @@ class MatterActivityEventService(object):
         self._create_activity(actor=user, verb=u'created', action_object=revision, item=item, message=message,
                               filename=revision.name, date_created=revision.date_created)
 
+        self.analytics.event('revision.create', distinct_id=user.pk, user=user.get_full_name(), matter_pk=revision.item.matter.pk)
+
     def deleted_revision(self, user, item, revision):
         message = u'%s destroyed a revision for %s' % (user, item)
         self._create_activity(actor=user, verb=u'deleted', action_object=revision, item=item, message=message,
@@ -181,6 +181,8 @@ class MatterActivityEventService(object):
         message = u'%s requested %s provide a document on %s' % (adding_user, added_user, item)
         self._create_activity(actor=adding_user, verb=u'provide a document', action_object=item, message=message,
                               user=added_user)
+        self.analytics.event('revision.upload.request', distinct_id=adding_user.pk, requestor=adding_user.get_full_name(),
+                             requestee=added_user.get_full_name(), matter_pk=item.matter.pk)
 
     def cancel_user_upload_revision_request(self, item, removing_user, removed_user):
         message = u'%s canceled their request for %s to provide a document on %s' % (removing_user, removed_user, item)
@@ -191,11 +193,13 @@ class MatterActivityEventService(object):
         message = u'%s uploaded a document named %s for %s' % (user, revision.name, item)
         self._create_activity(actor=user, verb=u'uploaded a document', action_object=item, message=message,
                               revision=revision, filename=revision.name, date_created=revision.date_created)
+        self.analytics.event('revision.upload.provided', distinct_id=user.pk, matter_pk=item.matter.pk)
 
     def add_revision_comment(self, user, revision, comment):
         message = '%s commented on %s' % (user, revision)
         self._create_activity(actor=user, verb=u'added revision comment', action_object=revision, message=message,
                               comment=comment, item=revision.item)
+        self.analytics.event('revision.comment.added', distinct_id=user.pk, matter_pk=revision.item.matter.pk, item_pk=revision.item.pk)
 
     def delete_revision_comment(self, user, revision):
         message = '%s deleted a comment on %s' % (user, revision)
@@ -210,6 +214,7 @@ class MatterActivityEventService(object):
         message = u'%s invited %s as reviewer for %s' % (inviting_user, invited_user, item)
         self._create_activity(actor=inviting_user, verb=u'invited reviewer', action_object=item, message=message,
                               user=invited_user)
+        self.analytics.event('review.request.sent', distinct_id=inviting_user.pk, invited=invited_user.get_full_name(), matter_pk=item.matter.pk, item_pk=item.pk)
 
     # instead of this we now use the newly created invite_user_as_reviewer
     # def added_user_as_reviewer(self, item, adding_user, added_user):
@@ -228,6 +233,7 @@ class MatterActivityEventService(object):
         self._create_activity(actor=user, verb=u'viewed revision', action_object=item, message=message,
                               revision=revision, filename=revision.name, version=revision.slug,
                               date_created=datetime.datetime.utcnow())
+        self.analytics.event('review.request.viewed', distinct_id=user.pk, matter_pk=item.matter.pk, item_pk=item.pk, revision_pk=revision.pk)
 
     def user_commented_on_revision(self, item, user, revision, comment):
         message = u'%s commented on %s (%s) for %s' % (user, revision.name, revision.slug, item)
@@ -235,9 +241,11 @@ class MatterActivityEventService(object):
                               revision=revision, filename=revision.name, version=revision.slug,
                               date_created=datetime.datetime.utcnow(),
                               comment=comment)
+        self.analytics.event('review.request.comment.added', distinct_id=user.pk, matter_pk=item.matter.pk, item_pk=item.pk, revision_pk=revision.pk)
 
     def user_revision_review_complete(self, item, user, revision):
         message = u'%s completed their review of %s (%s) for %s' % (user, revision.name, revision.slug, item)
         self._create_activity(actor=user, verb=u'completed review', action_object=item, message=message,
                               revision=revision, filename=revision.name, version=revision.slug,
                               date_created=datetime.datetime.utcnow())
+        self.analytics.event('review.request.completed', distinct_id=user.pk, matter_pk=item.matter.pk, item_pk=item.pk, revision_pk=revision.pk)
