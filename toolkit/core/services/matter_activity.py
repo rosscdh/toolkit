@@ -32,14 +32,16 @@ class MatterActivityEventService(object):
     item-canceled-their-request-for-a-document
     item-changed-the-status
     item-closed
+
     item-comment-created
     item-comment-deleted
     item-commented
     item-created
-    item-deleted-revision-comment
     item-edited
+    item-deleted-revision-comment
     item-invited-reviewer
     item-provide-a-document
+
     item-renamed
     item-reopened
     item-reopened

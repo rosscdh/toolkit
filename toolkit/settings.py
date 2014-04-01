@@ -407,9 +407,11 @@ LAWPAL_ACTIVITY = {
         "whitelist": [
                       'item-reopened', 'item-closed',
                       'item-commented', 'item-comment-created', 'item-comment-deleted',
-                      'item-provide-a-document',
                       'item-invited-reviewer',
+                      'item-provide-a-document',
+
                       'item-invited-signer',
+
                       'revision-created', 'revision-comment-created', 'item-added-revision-comment', 
                       'revision-added-revision-comment',
                       'workspace-added-participant', 'workspace-removed-participant'
