@@ -14,6 +14,10 @@ class MixpanelOnLawpal(object):
         if self.token is not None:
             self.service = Mixpanel(self.token)
 
+    def alias(self, alias_id, original, **kwargs):
+        if self.service is not None:
+            self.service.alias(alias_id=alias_id, original=original, meta=kwargs)
+
     def event(self, key, distinct_id, **kwargs):
         if self.service is not None:
             self.service.track(distinct_id=distinct_id, event_name=key, properties=kwargs)
