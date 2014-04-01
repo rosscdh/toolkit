@@ -76,11 +76,40 @@ html,body, div.full
 
 	}
 	.logo-mark {
-		float:left;
+		float:left;	
 		border-right:1px solid darken(@brand-primary, 5%);
 		padding:13px 12px 15px 17px;
 		img {
 			width:30px;
+		}
+	}
+	.matter-name {
+		max-width: 270px;
+		overflow-x:hidden;
+		text-overflow:ellipsis;
+		white-space:nowrap;
+		margin-bottom:-10px;
+	}
+	.nav.navbar-matters .dropdown-menu{
+		margin-top:0px!important;
+		width:350px!important;
+		border-bottom:2px solid @turquoise;
+		border-radius: 0px 0px 0px 0px;
+		li {
+			border-radius: 0px 0px 0px 0px;
+			text-overflow: ellipsis;
+			width:350px!important;
+			overflow:hidden;
+			white-space: nowrap;
+			overflow: hidden;
+
+		}
+		a {
+			border-radius: 0px 0px 0px 0px;
+			font-size: 12px;
+			padding:4px 0px 4px 4px;
+			text-overflow: ellipsis;
+			width:350px!important;
 		}
 	}
 }

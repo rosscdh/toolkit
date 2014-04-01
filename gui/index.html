@@ -95,18 +95,18 @@
         </div>
         <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-collapse-03"></button>
 
-        <ul class="nav navbar-nav" ng-show="matter.selected&&matter.selected._meta.matter.others.length>1">
+        <ul class="nav navbar-nav navbar-matters" ng-show="matter.selected&&matter.selected._meta.matter.others.length>1" >
             <li class="dropdown">
-              <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" ng-bind="matter.selected.name"></a>
+              <a href="javascript:;" class="dropdown-toggle matter-name" data-toggle="dropdown" ng-bind="matter.selected.name"></a>
               <ul class="dropdown-menu">
-                <li ng-repeat="m in matter.selected._meta.matter.others" ng-show="m.name!=matter.selected.name">
-                    {% verbatim %}<a href="{{ m.django_url  }}">{{ m.name }}</a>{% endverbatim %}
+                <li ng-repeat="m in matter.selected._meta.matter.others">
+                    {% verbatim %}<a href="{{ m.django_url }}">{{ m.name }}{{m.client.name}}</a>{% endverbatim %}
                 </li>
               </ul>
             </li>
         </ul>
         <ul class="nav navbar-nav" ng-show="matter.selected&&matter.selected._meta.matter.others.length<=1">
-            <li><a href="javascript:;" ng-bind="matter.selected.name">Requests</a></li>
+            <li><a href="javascript:;" ng-bind="matter.selected.name" class="matter-name"></a></li>
         </ul>
     </div>
 
@@ -121,7 +121,7 @@
         </li>-->
          
         <li class="checklist-members">
-          <a href="javascript:;" ng-click="invite()">
+          <a href="javascript:;" ng-click="invite()" tooltip="Manage Project Team" tooltip-placement="bottom">
             <span class="fui-user"></span> 
             <span class="user" ng-repeat="user in matter.selected.participants" ng-bind="user | initials"></span>
           </a>
