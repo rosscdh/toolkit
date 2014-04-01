@@ -39,6 +39,11 @@ STATICFILES_DIRS = (
     ("ng", os.path.join(SITE_ROOT, 'gui', 'dist')),
 )
 
+MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (
+    'sslify.middleware.SSLifyMiddleware',  # enable ssl everywhere
+)
+
+
 MEDIA_URL = '/m/'
 STATIC_URL = '/s/'
 
@@ -46,6 +51,12 @@ STATIC_ROOT = '/var/apps/toolkit/static/'
 MEDIA_ROOT = '/var/apps/toolkit/media/'
 
 ALLOWED_HOSTS = ['*']
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.sendgrid.net'
@@ -97,6 +108,11 @@ ABRIDGE_ACCESS_KEY_ID = 'e4b38a5758caf486e21c'
 ABRIDGE_SECRET_ACCESS_KEY = '2a2c7c6104c80855a12d53bd846e117fbf81f41c'
 ABRIDGE_USERNAME = 'lawpal-production'
 ABRIDGE_PASSWORD = 'production123'
+
+
+MIXPANEL_SETTINGS = {
+    'token': 'd7c53d3f0559022a42a74e99950b6934',
+}
 
 
 LOGGING = {

@@ -46,7 +46,7 @@ class SignRevisionView(DetailView):
     to a core.attachment revision
     """
     queryset = SignDocument.objects.prefetch_related().all()
-    template_name = 'review/review.html'
+    template_name = 'sign/sign.html'
 
     @property
     def user_is_matter_participant(self):

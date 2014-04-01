@@ -229,8 +229,8 @@ AUTHENTICATION_BACKENDS = (
     'toolkit.auth_backends.EmailBackend',
     'django.contrib.auth.backends.ModelBackend',
     'toolkit.auth_backends.SecretKeyBackend',
-    'toolkit.apps.review.auth_backends.ReviewDocumentBackend',  # allow users to log in via review invite urls
-    'toolkit.apps.sign.auth_backends.SignDocumentBackend',  # allow users to log in via signature invite urls
+    'toolkit.apps.review.auth_backends.ReviewDocumentBackend',  # allow users to log in via review urls
+    'toolkit.apps.sign.auth_backends.SignDocumentBackend',      # allow users to log in via sign urls
 )
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -390,6 +390,26 @@ ACTSTREAM_SETTINGS = {
     'USE_PREFETCH': True,
     'USE_JSONFIELD': True,
     'USE_FOLLOWING': False,  # VERY importand; will break our system if this changes to True
+}
+
+LAWPAL_ACTIVITY = {
+    "abridge": {
+        "whitelist": ['item-comment-created', 'item-comment-deleted',
+                      'revision-created', 'revision-comment-created', 'revision-comment-deleted']
+    },
+    "notifications": {
+        "whitelist": [#'workspace-added-participant',
+                      'item-commented', 'item-comment-created', 'item-comment-deleted',  # sure about the last two slugs?
+                      'revision-created', 'revision-comment-created', 'revision-comment-deleted']
+    },
+    "activity": {
+        "whitelist": ['item-created', 'item-edited', 'item-commented', 'item-changed-the-status', 'item-renamed',
+                      'item-provide-a-document', 'item-invited-reviewer', 'item-canceled-their-request-for-a-document',
+                      'item-closed', 'item-reopened', 'item-added-revision-comment', 'item-deleted-revision-comment',
+                      'revision-created', 'revision-deleted',
+                      'itemrequestrevisionview-provide-a-document',
+                      'workspace-created', 'workspace-added-participant', 'workspace-removed-participant']  # create so many activities to keep tests running for now
+    },
 }
 
 try:

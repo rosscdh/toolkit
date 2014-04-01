@@ -41,6 +41,7 @@ class AuthenticateUserMixin(object):
     def login(self, user=None):
         if user is not None:
             LOGGER.info('user is authenticated: %s' % user)
+
             if user.is_active:
                 LOGGER.info('user is active: %s' % user)
                 login(self.request, user)

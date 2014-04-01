@@ -9,9 +9,6 @@ from .query import ItemQuerySet
 
 
 class ItemManager(IsDeletedManager):
-    def mine(self, user, **kwargs):
-        return self.get_queryset().mine(user, **kwargs)
-
     def requested(self, **kwargs):
         return self.get_queryset().requested(**kwargs)
 

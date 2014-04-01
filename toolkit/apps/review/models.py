@@ -41,7 +41,7 @@ class ReviewDocument(IsDeletedMixin, FileExistsLocallyMixin, UserAuthMixin, mode
     def get_absolute_url(self, user):
         auth_key = self.get_user_auth(user=user)
         if auth_key is not None:
-            return reverse('review:review_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)})
+            return reverse('review:review_document', kwargs={'slug': self.slug, 'auth_slug': auth_key})
         return None
 
     def get_download_url(self, user):

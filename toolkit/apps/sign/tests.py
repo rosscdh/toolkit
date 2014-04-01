@@ -13,8 +13,6 @@ from django.core.urlresolvers import reverse
 from toolkit.casper.prettify import mock_http_requests
 from toolkit.casper.workflow_case import BaseScenarios
 
-from .models import SignDocument
-
 from model_mommy import mommy
 
 import os
@@ -54,13 +52,11 @@ class BaseDataProvider(BaseScenarios):
                                    uploaded_by=self.lawyer)
 
         self.revision.signers.add(self.signer)
-
+        #import pdb;pdb.set_trace()
         #
         # Matter.participants automatically get an auth so that they can individual view the object
         # the 2 below are based on the matter.participants that are included as part of BaseScenarios
         #
-        self.base_review_document = self.revision.signdocument_set.all().first()
-
         self.sign_document = self.revision.signdocument_set.all().first()
 
         self.BASE_EXPECTED_AUTH_USERS = self.sign_document.auth
@@ -68,6 +64,8 @@ class BaseDataProvider(BaseScenarios):
         # this is the test subject
         self.exected_uuid = self.sign_document.slug
         self.expected_auth_key = self.sign_document.get_user_auth(user=self.signer)
+
+        self.assertTrue(self.sign_document.get_absolute_url(user=self.signer) is not None)
 
 
 """
@@ -82,7 +80,7 @@ Model Tests
 class SignDocumentModelTest(BaseDataProvider, TestCase):
     def test_get_absolute_url(self):
         self.assertEqual(self.sign_document.get_absolute_url(user=self.signer), '/sign/{uuid}/{auth_key}/'.format(uuid=self.exected_uuid,
-                                                                                                                    auth_key=urllib.quote(self.expected_auth_key)))
+                                                                                                                  auth_key=urllib.quote(self.expected_auth_key)))
 
     def test_auth_get(self):
         self.assertEqual(self.sign_document.auth, self.BASE_EXPECTED_AUTH_USERS)
@@ -194,22 +192,24 @@ class ReviewHellosignViewTest(BaseDataProvider, TestCase):
 
     @mock_http_requests
     def test_anonymous_is_logged_in_as_expected_signer(self):
-        self.assertEqual(SignDocument.objects.get(pk=self.sign_document.pk).date_last_viewed, None)
+        self.assertEqual(self.sign_document.date_last_viewed, None)
 
         with mock.patch('datetime.datetime', PatchedDateTime):
-            resp = self.client.get(self.sign_document.get_absolute_url(self.signer), follow=True)
+            resp = self.client.get(self.sign_document.get_absolute_url(user=self.signer), follow=True)
 
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.context['user'], self.signer)
+
+        self.sign_document = self.sign_document.__class__.objects.get(pk=self.sign_document.pk) ## refresh
         #
         # And date updated
         #
-        self.assertEqual(SignDocument.objects.get(pk=self.sign_document.pk).date_last_viewed.year, 1970)
-        self.assertEqual(SignDocument.objects.get(pk=self.sign_document.pk).date_last_viewed.month, 1)
-        self.assertEqual(SignDocument.objects.get(pk=self.sign_document.pk).date_last_viewed.day, 1)
-        self.assertEqual(SignDocument.objects.get(pk=self.sign_document.pk).date_last_viewed.hour, 0)
-        self.assertEqual(SignDocument.objects.get(pk=self.sign_document.pk).date_last_viewed.minute, 0)
-        self.assertEqual(SignDocument.objects.get(pk=self.sign_document.pk).date_last_viewed.second, 0)
+        self.assertEqual(self.sign_document.date_last_viewed.year, 1970)
+        self.assertEqual(self.sign_document.date_last_viewed.month, 1)
+        self.assertEqual(self.sign_document.date_last_viewed.day, 1)
+        self.assertEqual(self.sign_document.date_last_viewed.hour, 0)
+        self.assertEqual(self.sign_document.date_last_viewed.minute, 0)
+        self.assertEqual(self.sign_document.date_last_viewed.second, 0)
 
     @mock_http_requests
     def test_logged_in_invalid_user(self):
@@ -225,7 +225,7 @@ class ReviewHellosignViewTest(BaseDataProvider, TestCase):
 
     @mock_http_requests
     def test_signer_viewing_revision_updates_last_viewed(self):
-        self.assertEqual(SignDocument.objects.get(pk=self.sign_document.pk).date_last_viewed, None)
+        self.assertEqual(self.sign_document.date_last_viewed, None)
 
         with mock.patch('datetime.datetime', PatchedDateTime):
             resp = self.client.get(self.sign_document.get_absolute_url(self.signer), follow=True)
@@ -233,12 +233,14 @@ class ReviewHellosignViewTest(BaseDataProvider, TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.context['user'], self.signer)
 
-        self.assertEqual(SignDocument.objects.get(pk=self.sign_document.pk).date_last_viewed.year, 1970)
-        self.assertEqual(SignDocument.objects.get(pk=self.sign_document.pk).date_last_viewed.month, 1)
-        self.assertEqual(SignDocument.objects.get(pk=self.sign_document.pk).date_last_viewed.day, 1)
-        self.assertEqual(SignDocument.objects.get(pk=self.sign_document.pk).date_last_viewed.hour, 0)
-        self.assertEqual(SignDocument.objects.get(pk=self.sign_document.pk).date_last_viewed.minute, 0)
-        self.assertEqual(SignDocument.objects.get(pk=self.sign_document.pk).date_last_viewed.second, 0)
+        self.sign_document = self.sign_document.__class__.objects.get(pk=self.sign_document.pk) ## refresh
+
+        self.assertEqual(self.sign_document.date_last_viewed.year, 1970)
+        self.assertEqual(self.sign_document.date_last_viewed.month, 1)
+        self.assertEqual(self.sign_document.date_last_viewed.day, 1)
+        self.assertEqual(self.sign_document.date_last_viewed.hour, 0)
+        self.assertEqual(self.sign_document.date_last_viewed.minute, 0)
+        self.assertEqual(self.sign_document.date_last_viewed.second, 0)
 
         #
         # Test the api endpoint returns the expected date_last_viewed
@@ -254,10 +256,13 @@ class ReviewHellosignViewTest(BaseDataProvider, TestCase):
     def test_lawyer_viewing_revision_updates_nothing(self):
         self.client.login(username=self.lawyer.username, password=self.password)
 
-        self.assertEqual(SignDocument.objects.get(pk=self.sign_document.pk).date_last_viewed, None)
+        self.assertEqual(self.sign_document.date_last_viewed, None)
 
         resp = self.client.get(self.sign_document.get_absolute_url(self.lawyer), follow=True)
-        self.assertEqual(resp.context['user'], self.lawyer)
 
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(SignDocument.objects.get(pk=self.sign_document.pk).date_last_viewed, None)
+        self.assertEqual(resp.context['user'], self.lawyer)
+
+        self.sign_document = self.sign_document.__class__.objects.get(pk=self.sign_document.pk) ## refresh
+
+        self.assertEqual(self.sign_document.date_last_viewed, None)

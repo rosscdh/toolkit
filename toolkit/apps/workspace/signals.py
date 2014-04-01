@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.contrib.auth.models import User
 from django.dispatch import Signal, receiver
 from django.template.defaultfilters import slugify
 
@@ -144,3 +145,24 @@ def ensure_tool_slug(sender, **kwargs):
             final_slug = slugify(slug)
 
         tool.slug = final_slug
+
+
+# signals for activities:
+def on_workspace_post_save(sender, instance, created, **kwargs):
+    """
+        The owning lawyer is the only one who can create, modify or delete the workspace, so this is possible.
+    """
+    if created:
+        matter = instance
+        matter.actions.created_matter(lawyer=matter.lawyer)
+
+
+def on_workspace_m2m_changed(sender, instance, action, pk_set, **kwargs):
+    if action == 'pre_add':
+        for pk in pk_set:
+            instance.actions.added_matter_participant(matter=instance, adding_user=instance.lawyer,
+                                                      added_user=User.objects.get(pk=pk))  # assumption: only the creating lawyer can edit participants
+    if action == 'pre_remove':
+        for pk in pk_set:
+            instance.actions.removed_matter_participant(matter=instance, removing_user=instance.lawyer,
+                                                        removed_user=User.objects.get(pk=pk))  # assumption: only the creating lawyer can edit participants

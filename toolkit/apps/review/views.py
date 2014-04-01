@@ -5,8 +5,7 @@ from django.views.generic import DetailView
 from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login
 from django.core.exceptions import PermissionDenied
-from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 
 from dj_crocodoc.services import CrocoDocConnectService
 
@@ -130,7 +129,7 @@ class ReviewRevisionView(DetailView):
         kwargs.update({
             'crocodoc': crocodoc.obj.crocodoc_service,
             'crocodoc_view_url': crocodoc.obj.crocodoc_service.view_url(**CROCDOC_PARAMS),  # this is where the view params must be sent in order to show toolbar etc
-            'CROCDOC_PARAMS': CROCDOC_PARAMS, # for testing the values
+            'CROCDOC_PARAMS': CROCDOC_PARAMS,  # for testing the values
         })
 
         return kwargs
@@ -169,6 +168,7 @@ class DownloadRevision(ReviewRevisionView):
         resp['Content-Disposition'] = 'attachment; filename="{file_name}{ext}"'.format(file_name=filename_no_ext, ext=ext)
 
         return resp
+
 #
 # @TODO refactor this to use user_passes_test decorator and ensure that the user is in the reviewers set
 #
@@ -186,6 +186,10 @@ class ApproveRevisionView(DetailView):
     def approve(self, request, *args, **kwargs):
         self.object = self.get_object()
         success_url = self.get_success_url()
+
+        self.matter.actions.user_revision_review_complete(item=self.object.document.item, user=request.user,
+                                                          revision=self.object.document)
+
         self.object.complete()
         return HttpResponseRedirect(success_url)
 

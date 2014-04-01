@@ -143,6 +143,18 @@ def set_previous_revision_is_current_on_delete(sender, instance, **kwargs):
         previous_revision.save(update_fields=['is_current'])
 
 
+@receiver(post_delete, sender=Revision, dispatch_uid='revision.set_previous_revision_is_current_on_delete')
+def set_previous_revision_is_current_on_delete(sender, instance, **kwargs):
+    """
+    @BUSINESSRULE When a lawyer deletes the current revision, then we need to make the previous item in the set
+    is_current = True
+    """
+    previous_revision = instance.__class__.objects.filter(item=instance.item).last()
+    if previous_revision:
+        previous_revision.is_current = True
+        previous_revision.save(update_fields=['is_current'])
+
+
 @receiver(m2m_changed, sender=Revision.reviewers.through, dispatch_uid='revision.on_reviewer_add')
 def on_reviewer_add(sender, instance, action, model, pk_set, **kwargs):
     """
@@ -195,6 +207,7 @@ Signers
 Unlike reviewrs, signdocuments have only 1 object per set of signature invitees
 """
 
+
 @receiver(m2m_changed, sender=Revision.signers.through, dispatch_uid='revision.on_signatory_add')
 def on_signatory_add(sender, instance, action, model, pk_set, **kwargs):
     """
@@ -204,6 +217,17 @@ def on_signatory_add(sender, instance, action, model, pk_set, **kwargs):
     if action in ['post_add'] and pk_set:
         user_pk = next(iter(pk_set))  # get the first item in the set should only ever be 1 anyway
         user = model.objects.get(pk=user_pk)
+        #
+        # Get the base sign documnet; created to alow the participants to access
+        # and sign a documnet
+        #
+        signdocument = instance.signdocument_set.all().first()
+
+        #
+        # 1 signing document for this document; as we only sign the final document
+        #
+        signdocument.signers.add(user)  # add the reviewer
+
 
 @receiver(post_save, sender=Revision, dispatch_uid='revision.set_item_is_requested_false')
 def on_upload_set_item_is_requested_false(sender, instance, **kwargs):
@@ -212,7 +236,7 @@ def on_upload_set_item_is_requested_false(sender, instance, **kwargs):
     and its uploaded by the item.responsible_party then mark it as is_requested = False
     """
     if instance.item.is_requested is True:
-        if instance.uploaded_by == item.instance.responsible_party:
+        if instance.uploaded_by == instance.item.responsible_party:
             item = instance.item
             item.is_requested = False
             item.save(update_fields=['is_requested'])

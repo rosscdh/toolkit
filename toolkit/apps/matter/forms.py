@@ -84,13 +84,13 @@ class MatterForm(ModalForm, forms.ModelForm):
         })
 
     def save(self, commit=True):
-        matter = super(MatterForm, self).save(commit=commit)
+        matter = super(MatterForm, self).save(commit=False)
 
         # add client/lawyer to the matter
         matter.client, is_new = self.user.clients.get_or_create(name=self.cleaned_data['client_name'])
         matter.lawyer = self.user
 
-        matter.save(update_fields=['client', 'lawyer'])
+        matter.save()
 
         # add user as participant
         matter.participants.add(self.user)

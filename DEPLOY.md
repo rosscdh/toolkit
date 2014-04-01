@@ -6,6 +6,18 @@ Deployment actions by branch
 1. ./manage.py migrate attachment 0001 --fake  # intial
 2. ./manage.py migrate attachment  # signatories to signers
 
+--------------------------------------------------------------------------------
+** DEPLOYED 29 March 2014
+--------------------------------------------------------------------------------
+
+1. pip install mixpanel-py - using mixpanel for analytics
+
+--------------------------------------------------------------------------------
+** DEPLOYED 29 March 2014
+--------------------------------------------------------------------------------
+
+1. update pip install -e git+https://github.com/rosscdh/django-hello_sign.git#egg=django-hello_sign - changed the url namespace
+
 
 --------------------------------------------------------------------------------
 ** DEPLOYED 27 March 2014 - chicago (early morn) (rosscdh)

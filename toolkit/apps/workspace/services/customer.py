@@ -4,6 +4,7 @@ Generic Customer services
 """
 from django.contrib.auth.models import User
 
+from toolkit.core.services.analytics import AtticusFinch
 from toolkit.apps.default import _get_unique_username
 
 from . import logger
@@ -17,6 +18,7 @@ class EnsureCustomerService(object):
         self.email = email
         self.full_name = full_name
         self.is_new, self.user, self.profile = (None, None, None)
+        self.analytics = AtticusFinch()
 
     def process(self):
         if self.email is None:
@@ -37,6 +39,9 @@ class EnsureCustomerService(object):
             user = User.objects.create(username=username,
                                        email=email,
                                        **kwargs)
+
+            self.analytics.people_set(user=user)
+
             is_new = True
 
         profile = user.profile

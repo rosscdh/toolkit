@@ -25,7 +25,6 @@ from ..serializers import SimpleUserWithReviewUrlSerializer
 from ..serializers import ReviewSerializer
 
 import logging
-
 logger = logging.getLogger('django.request')
 
 
@@ -138,9 +137,12 @@ class ItemRevisionReviewersView(generics.ListAPIView,
             #
             self.item.send_invite_to_review_emails(from_user=request.user, to=[user], note=note)
 
-            self.matter.actions.added_user_as_reviewer(item=self.item,
-                                                       adding_user=request.user,
-                                                       added_user=user)
+            #
+            # add activity
+            #
+            self.matter.actions.invite_user_as_reviewer(item=self.item,
+                                                        inviting_user=request.user,
+                                                        invited_user=user)
 
         review_document = self.revision.reviewdocument_set.filter(reviewers__in=[user]).first()
 
@@ -214,6 +216,17 @@ class ItemRevisionReviewerView(generics.RetrieveAPIView,
             status = http_status.HTTP_406_NOT_ACCEPTABLE
             logger.critical('A revision %s for a user %s has more than 1 reviewdocument they should only have 1 per revision' % (self.revision, user))
 
+        # TODO: MOVE
+        # After move we don't have the user any more!
+
+        # create event
+        self.revision.item.matter.actions.user_viewed_revision(item=self.revision.item,
+                                                               user=user,
+                                                               revision=self.revision)
+        
+
+        # TODO: check if this was the last user to review the document.
+        # if so: user_revision_review_complete()
         status = http_status.HTTP_200_OK
 
         return Response(data, status=status)
@@ -233,10 +246,9 @@ class ItemRevisionReviewerView(generics.RetrieveAPIView,
             #
             self.revision.reviewers.remove(user)
 
-            self.matter.actions.removed_user_as_reviewer(item=self.item,
-                                                         removing_user=request.user,
-                                                         removed_user=user)
-
+            self.matter.actions.cancel_user_upload_revision_request(item=self.item,
+                                                                    removing_user=request.user,
+                                                                    removed_user=user)
         else:
             status = http_status.HTTP_404_NOT_FOUND
 

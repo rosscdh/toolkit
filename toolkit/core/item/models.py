@@ -3,9 +3,10 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.db.models.signals import pre_save, post_save
 
-from toolkit.core.signals.activity import (on_item_post_save,)
 from .signals import (on_item_save_category,
-                      on_item_save_closing_group)
+                      on_item_save_closing_group,
+                      on_item_save_changed_content,
+                      on_item_post_save)
 
 from toolkit.core.mixins import IsDeletedMixin
 
@@ -27,7 +28,9 @@ BASE_ITEM_STATUS = get_namedtuple_choices('ITEM_STATUS', (
                             ))
 
 
-class Item(IsDeletedMixin, RequestDocumentUploadMixin,
+
+class Item(IsDeletedMixin,
+           RequestDocumentUploadMixin,
            RequestedDocumentReminderEmailsMixin,
            LatestRevisionReminderEmailsMixin,
            models.Model):
@@ -151,6 +154,32 @@ class Item(IsDeletedMixin, RequestDocumentUploadMixin,
         if do_recalculate:
             self.matter.update_percent_complete()
 
+    def save(self, *args, **kwargs):
+        """
+            reset percentage completed of the matter only if item is newly created or
+                                                          if item.is_complete changed
+                                                          if item.is_deleted
+
+            This is done here and not in a signal because the percentage has to get calculated with the NEW
+            is_complete-value which is not yet available present in the matters' .reset_percentage()-function when
+            using pre_save.
+            It is only available after the saving.
+        """
+        do_recalculate = True
+        try:
+            # get the current
+            previous_instance = Item.objects.get(pk=self.pk)
+            if previous_instance.is_complete == self.is_complete and not self.is_deleted:
+                do_recalculate = False
+
+        except Item.DoesNotExist:
+            pass
+
+        super(Item, self).save(*args, **kwargs)
+
+        if do_recalculate:
+            self.matter.update_percent_complete()
+
     def can_read(self, user):
         return user in self.matter.participants.all()
 
@@ -165,6 +194,7 @@ Connect signals
 """
 pre_save.connect(on_item_save_category, sender=Item, dispatch_uid='item.post_save.category')
 pre_save.connect(on_item_save_closing_group, sender=Item, dispatch_uid='item.post_save.closing_group')
+pre_save.connect(on_item_save_changed_content, sender=Item, dispatch_uid='item.post_save.changed_content')
 post_save.connect(on_item_post_save, sender=Item, dispatch_uid='item.post_save.category')
 
 

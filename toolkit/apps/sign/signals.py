@@ -7,14 +7,17 @@ from .models import SignDocument
 
 
 def _add_as_authorised(instance, pk_set):
-    user = User.objects.filter(pk__in=pk_set).first()
-    instance.authorise_user_access(user=user)
+    if pk_set:
+        user = User.objects.filter(pk__in=pk_set).first()
+        instance.authorise_user_access(user=user)
+        instance.save(update_fields=['data'])
 
 
 def _remove_as_authorised(instance, pk_set):
+    if pk_set:
         user = User.objects.filter(pk__in=pk_set).first()
         instance.deauthorise_user_access(user=user)
-
+        instance.save(update_fields=['data'])
 
 """
 When new SignDocument are created automatically the matter.participants are
@@ -55,19 +58,19 @@ Handle when a signer is added to the object
 
 
 @receiver(m2m_changed, sender=SignDocument.signers.through, dispatch_uid='signdocument.on_signer_add')
-def on_signer_add(sender, instance, action, **kwargs):
+def on_signer_add(sender, instance, action, pk_set, **kwargs):
     """
     when a signer is added from the m2m then authorise them
     for access
     """
     if action in ['post_add']:
-        _add_as_authorised(instance=instance, pk_set=kwargs.get('pk_set'))
+        _add_as_authorised(instance=instance, pk_set=pk_set)
 
 
 @receiver(m2m_changed, sender=SignDocument.signers.through, dispatch_uid='signdocument.on_signer_remove')
-def on_signer_remove(sender, instance, action, **kwargs):
+def on_signer_remove(sender, instance, action, pk_set, **kwargs):
     """
     when a signer is removed from the m2m then deauthorise them
     """
     if action in ['post_remove']:
-        _remove_as_authorised(instance=instance, pk_set=kwargs.get('pk_set'))
+        _remove_as_authorised(instance=instance, pk_set=pk_set)

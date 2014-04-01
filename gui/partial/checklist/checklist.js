@@ -368,7 +368,8 @@ angular.module('toolkit-gui')
 			if ($scope.data.newCatName) {
 				matterCategoryService.create(matterSlug, $scope.data.newCatName).then(
 					function success(){
-						$scope.data.categories.unshift({'name': $scope.data.newCatName, 'items': []});
+                        //IMPORTANT: Insert at pos 1, because pos 0 is for the null category
+                        $scope.data.categories.splice(1, 0, {'name': $scope.data.newCatName, 'items': []});
 						$scope.data.newCatName = '';
 					},
 					function error(err){
@@ -840,52 +841,6 @@ angular.module('toolkit-gui')
 				}
 			);
 		};
-
-        /**
-		 * Initiate the process of requesting signing from existing participants or new participants
-		 *
-		 * @param {Object} Revision object to perform action upon
-		 *
-		 * @private
-		 * @method				requestSigning
-		 * @memberof			ChecklistCtrl
-		 */
-		$scope.requestSigning = function( revision ) {
-			var matterSlug = $scope.data.slug;
-			var item = $scope.data.selectedItem;
-
-			var modalInstance = $modal.open({
-				'templateUrl': '/static/ng/partial/request-signing/request-signing.html',
-				'controller': 'RequestsigningCtrl',
-				'resolve': {
-					'participants': function () {
-						return $scope.data.matter.participants;
-					},
-					'currentUser': function () {
-						return $scope.data.matter.current_user;
-					},
-					'matter': function () {
-						return $scope.data.matter;
-					},
-					'checklistItem': function () {
-						return item;
-					},
-					'revision': function () {
-						return revision;
-					}
-				}
-			});
-
-			modalInstance.result.then(
-				function ok(review) {
-
-				},
-				function cancel() {
-					//
-				}
-			);
-		};
-
 
 
 		/**
