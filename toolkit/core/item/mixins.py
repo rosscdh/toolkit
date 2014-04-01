@@ -13,14 +13,13 @@ class RequestDocumentUploadMixin(object):
     Mixin to allow Item to act in requesting an upload from a user
     """
     @property
-    def message(self):
+    def request_document_message(self):
         return self.data.get('request_document', {}).get('message', None)
 
-    @message.setter
-    def message(self, value):
+    @request_document_message.setter
+    def request_document_message(self, value):
         request_document = self.data.get('request_document', {})
         request_document.update({'message': value})
-
         self.data['request_document'] = request_document
 
     @property

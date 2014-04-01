@@ -79,6 +79,8 @@ class ItemsRequestDocumentTest(BaseEndpointTest):
         email = outbox[0]
         self.assertEqual(email.subject, u'[ACTION REQUIRED] Request to provide a document')
         self.assertEqual(email.recipients(), [u'new+user@lawpal.com'])
+        # test the custom message is present
+        self.assertTrue(data.get('message') in email.body)
 
         # this should have created a new revision upload invite
         stream = action_object_stream(self.item)
