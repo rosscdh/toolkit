@@ -288,11 +288,11 @@ class ReviewObjectIncrementWithNewSignerTest(BaseEndpointTest):
         """
         there should be 1 signdocument per signer
         """
-        initial_exected_num_reviews = 1
+        exected_num_signatures = 1
         expected_number_of_signdocuments = 5
         self.client.login(username=self.lawyer.username, password=self.password)
 
-        self.assertEqual(self.revision.signdocument_set.all().count(), initial_exected_num_reviews) # we should only have 1 at this point for the participants
+        self.assertEqual(self.revision.signdocument_set.all().count(), exected_num_signatures) # we should only have 1 at this point for the participants
 
         for i in range(1, expected_number_of_signdocuments):
             resp = self.add_signer()
@@ -304,7 +304,7 @@ class ReviewObjectIncrementWithNewSignerTest(BaseEndpointTest):
             signer = User.objects.get(username=username)
 
             # the revision has 2 signers now
-            self.assertEqual(self.revision.signdocument_set.all().count(), initial_exected_num_reviews + i)
+            self.assertEqual(self.revision.signdocument_set.all().count(), exected_num_signatures + i)
             # but the signer only has 1
             self.assertEqual(signer.signdocument_set.all().count(), 1) # has only 1
 
@@ -312,12 +312,12 @@ class ReviewObjectIncrementWithNewSignerTest(BaseEndpointTest):
         """
         a signer can have only 1 signdocument per document(revision)
         """
-        initial_exected_num_reviews = 1
-        exected_total_num_reviews = 2
+        exected_num_signatures = 1
+        exected_total_num_signatures = 2
         number_of_add_attempts = 5
         self.client.login(username=self.lawyer.username, password=self.password)
 
-        self.assertEqual(self.revision.signdocument_set.all().count(), initial_exected_num_reviews) # we should only have 1 at this point for the participants
+        self.assertEqual(self.revision.signdocument_set.all().count(), exected_num_signatures) # we should only have 1 at this point for the participants
 
         for i in range(1, number_of_add_attempts):
             resp = self.add_signer(data={
@@ -367,11 +367,11 @@ class ReviewObjectIncrementWithNewSignerTest(BaseEndpointTest):
         """
         there should be 1 signdocument per signer
         """
-        initial_exected_num_reviews = 1
+        exected_num_signatures = 1
         expected_number_of_signdocuments = 5
         self.client.login(username=self.lawyer.username, password=self.password)
 
-        self.assertEqual(self.revision.signdocument_set.all().count(), initial_exected_num_reviews) # we should only have 1 at this point for the participants
+        self.assertEqual(self.revision.signdocument_set.all().count(), exected_num_signatures) # we should only have 1 at this point for the participants
 
         for i in range(1, expected_number_of_signdocuments):
             resp = self.add_signer()
@@ -383,7 +383,7 @@ class ReviewObjectIncrementWithNewSignerTest(BaseEndpointTest):
             signer = User.objects.get(username=username)
 
             # the revision has 2 signers now
-            self.assertEqual(self.revision.signdocument_set.all().count(), initial_exected_num_reviews + i)
+            self.assertEqual(self.revision.signdocument_set.all().count(), exected_num_signatures)
             # but the signer only has 1
             self.assertEqual(signer.signdocument_set.all().count(), 1) # has only 1
 
@@ -391,12 +391,12 @@ class ReviewObjectIncrementWithNewSignerTest(BaseEndpointTest):
         """
         a signer can have only 1 signdocument per document(revision)
         """
-        initial_exected_num_reviews = 1
-        exected_total_num_reviews = 2
+        exected_num_signatures = 1
+        exected_total_num_signatures = 1
         number_of_add_attempts = 5
         self.client.login(username=self.lawyer.username, password=self.password)
 
-        self.assertEqual(self.revision.signdocument_set.all().count(), initial_exected_num_reviews) # we should only have 1 at this point for the participants
+        self.assertEqual(self.revision.signdocument_set.all().count(), exected_num_signatures) # we should only have 1 at this point for the participants
 
         for i in range(1, number_of_add_attempts):
             resp = self.add_signer(data={
@@ -413,7 +413,7 @@ class ReviewObjectIncrementWithNewSignerTest(BaseEndpointTest):
             signer = User.objects.get(username=username)
 
             # the revision has 2 signers now
-            self.assertEqual(self.revision.signdocument_set.all().count(), exected_total_num_reviews)
+            self.assertEqual(self.revision.signdocument_set.all().count(), exected_total_num_signatures)
             # but the signer only has 1
             self.assertEqual(signer.signdocument_set.all().count(), 1) # has only 1
 
@@ -469,7 +469,7 @@ class RevisionReviewerTest(BaseEndpointTest):
         self.assertItemsEqual(self.EXPECTED_USER_SERIALIZER_FIELD_KEYS, json_data.keys())
 
         self.assertEqual(len(self.revision.signers.all()), 1)
-        self.assertEqual(len(self.revision.signdocument_set.all()), 2)
+        self.assertEqual(len(self.revision.signdocument_set.all()), 1)
 
         signdocument = self.revision.signdocument_set.all().first()  # get the most recent
         #
@@ -493,14 +493,14 @@ class RevisionReviewerTest(BaseEndpointTest):
         # Test the auth for the new signer
         #
         url = urllib.unquote_plus(signdocument.get_absolute_url(user=self.participant))
-        self.assertEqual(url, '/review/%s/%s/' % (signdocument.slug, signdocument.make_user_auth_key(user=self.participant)))
+        self.assertEqual(url, '/sign/%s/%s/' % (signdocument.slug, signdocument.make_user_auth_key(user=self.participant)))
         #
         # Test the auth urls for the matter.participants
         # test that they cant log in when logged in already (as the lawyer above)
         #
         for u in self.matter.participants.all():
             url = urllib.unquote_plus(signdocument.get_absolute_url(user=u))
-            self.assertEqual(url, '/review/%s/%s/' % (signdocument.slug, signdocument.get_user_auth(user=u)))
+            self.assertEqual(url, '/sign/%s/%s/' % (signdocument.slug, signdocument.get_user_auth(user=u)))
             # Test that permission is denied when logged in as a user that is not the auth_token user
             resp = self.client.get(url)
             self.assertTrue(resp.status_code, 403) # denied
@@ -516,19 +516,19 @@ class RevisionReviewerTest(BaseEndpointTest):
             self.assertTrue(resp.status_code, 200) # ok logged in
 
             context_data = resp.context_data
-            self.assertEqual(context_data.keys(), ['crocodoc_view_url', 'signdocument', u'object', 'CROCDOC_PARAMS', 'crocodoc', u'view'])
+            self.assertEqual(context_data.keys(), [u'object', 'signdocument', 'hellosign_view_url', u'view'])
             # is a valid url for crocodoc
-            self.assertTrue(validate_url(context_data.get('crocodoc_view_url')) is None)
-            self.assertTrue('https://crocodoc.com/view/' in context_data.get('crocodoc_view_url'))
-            expected_crocodoc_params = {'admin': False,
-                                        'demo': False,
-                                        'editable': True,
-                                        'downloadable': True,
-                                        'user': {'name': u.get_full_name(), 'id': u.pk},
-                                        'copyprotected': False,
-                                        'sidebar': 'auto'}
+            self.assertTrue(validate_url(context_data.get('hellosign_view_url')) is None)
+            self.assertTrue('https://crocodoc.com/view/' in context_data.get('hellosign_view_url'))
+            # expected_crocodoc_params = {'admin': False,
+            #                             'demo': False,
+            #                             'editable': True,
+            #                             'downloadable': True,
+            #                             'user': {'name': u.get_full_name(), 'id': u.pk},
+            #                             'copyprotected': False,
+            #                             'sidebar': 'auto'}
 
-            self.assertEqual(context_data.get('CROCDOC_PARAMS'), expected_crocodoc_params)
+            # self.assertEqual(context_data.get('CROCDOC_PARAMS'), expected_crocodoc_params)
 
     def test_lawyer_post(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -552,8 +552,7 @@ class RevisionReviewerTest(BaseEndpointTest):
 
         self.assertEqual(len(self.revision.signers.all()), 0)
         self.assertEqual(len(self.revision.signdocument_set.all()), 1) # should be 1 because of the template one created for the participants
-        #self.assertEqual(len(self.revision.signdocument_set.all().first().participants.all()), 2)
-        self.assertEqual(len(self.revision.signdocument_set.all().first().signers.all()), 0)
+        self.assertEqual(len(self.revision.signdocument_set.all().first().signers.all()), 1)
 
     def test_customer_get(self):
         self.client.login(username=self.user.username, password=self.password)

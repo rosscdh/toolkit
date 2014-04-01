@@ -173,7 +173,7 @@ class SignDocument(IsDeletedMixin,
                           action_url=ABSOLUTE_BASE_URL(path=self.get_absolute_url(user=u)))
 
     def can_read(self, user):
-        return user in list(chain(self.signers.all(), self.document.item.matter.participants.all()))
+        return user in set(self.signers.all() | self.document.item.matter.participants.all())
 
     def can_edit(self, user):
         return user in self.document.item.matter.participants.all()
