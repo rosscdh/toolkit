@@ -76,6 +76,10 @@ class ReviewRevisionView(DetailView):
         #
         _authenticate(request=self.request, obj=self.object, matter=self.matter, **self.kwargs)
 
+        self.object.document.item.matter.actions.user_viewed_revision(item=self.object.document.item,
+                                                                      user=self.request.user,
+                                                                      revision=self.object.document)
+
         return self.object
 
     def get_context_data(self, **kwargs):
@@ -152,6 +156,10 @@ class DownloadRevision(ReviewRevisionView):
 
         split_file_name = os.path.split(file_name)[-1]
         filename_no_ext, ext = os.path.splitext(split_file_name)
+
+        self.object.document.item.matter.actions.user_downloaded_revision(item=self.object.document.item,
+                                                                          user=self.request.user,
+                                                                          revision=self.object.document)
 
         try:
             #

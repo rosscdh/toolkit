@@ -229,10 +229,16 @@ class MatterActivityEventService(object):
                               revision=revision, filename=revision.name, version=revision.slug,
                               date_created=datetime.datetime.utcnow())
 
+    def user_downloaded_revision(self, item, user, revision):
+        message = u'%s downloaded revision %s (%s) for %s' % (user, revision.name, revision.slug, item)
+        self._create_activity(actor=user, verb=u'viewed revision', action_object=revision, message=message,
+                              item=item, filename=revision.name, version=revision.slug,
+                              date_created=datetime.datetime.utcnow())
+
     def user_commented_on_revision(self, item, user, revision, comment):
         message = u'%s commented on %s (%s) for %s' % (user, revision.name, revision.slug, item)
-        self._create_activity(actor=user, verb=u'commented on revision', action_object=item, message=message,
-                              revision=revision, filename=revision.name, version=revision.slug,
+        self._create_activity(actor=user, verb=u'commented on revision', action_object=revision, message=message,
+                              item=item, filename=revision.name, version=revision.slug,
                               date_created=datetime.datetime.utcnow(),
                               comment=comment)
 
