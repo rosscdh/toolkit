@@ -10,7 +10,7 @@ class MixpanelOnLawpal(object):
     token = None
     service = None
     def __init__(self, *args, **kwargs):
-        self.token = MIXPANEL_SETTINGS.get('token', kwargs.get('token', None))
+        self.token = kwargs.get('token', MIXPANEL_SETTINGS.get('token', None))
         if self.token is not None:
             self.service = Mixpanel(self.token)
 
@@ -18,6 +18,23 @@ class MixpanelOnLawpal(object):
         if self.service is not None:
             self.service.track(distinct_id=distinct_id, event_name=key, properties=kwargs)
 
+    def people_set(self, user):
+        if self.service is not None:
+            profile = user.profile
+
+            data = {
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'email': user.email,
+                'user_class': profile.user_class,
+            }
+
+            if profile.is_lawyer:
+                data.update({
+                    'firm_name': profile.firm_name
+                })
+
+            self.service.people_set(user.pk, data)
 
 class AtticusFinch(MixpanelOnLawpal):
     """

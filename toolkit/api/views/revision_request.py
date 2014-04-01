@@ -68,4 +68,13 @@ class ItemRequestRevisionView(MatterItemView):
         Send the email to the items responsible_party
         """
         self.object.send_document_requested_emails(from_user=self.request.user)
+
+        # if is_requested is True the activity has to be created (similar to send_document_requested_emails())
+        if self.object.is_requested is True:
+            user = self.object.responsible_party
+            if user:
+                self.matter.actions.request_user_upload_revision(item=self.object,
+                                                                 adding_user=self.request.user,
+                                                                 added_user=user)
+
         super(ItemRequestRevisionView, self).post_save(obj=obj, **kwargs)

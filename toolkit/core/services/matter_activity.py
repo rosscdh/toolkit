@@ -6,14 +6,80 @@ from ..signals.activity_listener import send_activity_log
 
 import datetime
 
+import logging
+logger = logging.getLogger('django.request')
+
 
 class MatterActivityEventService(object):
     """
     Service to handle events relating to the mater
+
+    Known Verb Slugs
+    ----------
+
+    Matters
+    =======
+
+    workspace-added-participant
+    workspace-added-participant 
+    workspace-created
+    workspace-created 
+    workspace-edited
+    workspace-removed-participant
+
+    Items
+    =======
+
+    item-added-revision-comment 
+    item-canceled-their-request-for-a-document
+    item-changed-the-status
+    item-changed-the-status 
+    item-closed
+    item-closed 
+    item-comment-created
+    item-comment-created 
+    item-comment-deleted
+    item-commented
+    item-commented 
+    item-created
+    item-created 
+    item-deleted-revision-comment
+    item-edited 
+    item-invited-reviewer
+    item-invited-reviewer 
+    item-provide-a-document
+    item-provide-a-document 
+    item-renamed
+    item-reopened
+    item-reopened 
+    item-viewed-revision
+    itemrequestrevisionview-provide-a-document
+
+    Revisions
+    =======
+
+    revision-comment-created
+    revision-comment-created 
+    revision-comment-deleted
+    revision-created
+    revision-created 
+    revision-deleted
+
+
+
     """
     def __init__(self, matter, **kwargs):
         self.matter = matter
         self.analytics = AtticusFinch()
+
+    def get_verb_slug(self, action_object, verb):
+        verb_slug = slugify(action_object.__class__.__name__) + '-' + slugify(verb)
+        logger.critical('possible verb_slug: "%s"' % verb_slug)
+
+        # with open('/tmp/verb_slugs.log', 'a') as f:
+        #     f.write(verb_slug + '\r\n')
+
+        return verb_slug
 
     def _create_activity(self, actor, verb, action_object, **kwargs):
         from toolkit.api.serializers import ItemSerializer  # must be imported due to cyclic with this class being imported in Workspace.models
@@ -22,20 +88,25 @@ class MatterActivityEventService(object):
         activity_kwargs = {
             'actor': actor,
             'verb': verb,
-            'verb_slug': slugify(verb), # used to help identify the item and perhaps css class
+            'verb_slug': self.get_verb_slug(action_object, verb),  # used to help identify the item and perhaps css class'verb_slug': slugify(verb)
             'action_object': action_object,
             'target': self.matter,
             'message': kwargs.get('message', None),
             'user': None if not kwargs.get('user', None) else LiteUserSerializer(kwargs.get('user')).data,
             'item': None if not kwargs.get('item', None) else ItemSerializer(kwargs.get('item')).data,
             'comment': kwargs.get('comment', None),
+            'previous_name': kwargs.get('previous_name', None),
+            'current_status': kwargs.get('previous_name', None),
+            'previous_status': kwargs.get('previous_status', None),
+            'filename': kwargs.get('filename', None),
+            'date_created': kwargs.get('date_created', None),
+            'version': kwargs.get('version', None),
         }
         # @BUSINESSRULE
         # merge our specific extra kwargs passed in
         # with the base activity_kwargs, force the passed in kwargs
         # tobe overriden as they are the foundation of the messaging system
         kwargs.update(activity_kwargs)
-
         send_activity_log.send(self, **kwargs)
 
     #
@@ -49,8 +120,8 @@ class MatterActivityEventService(object):
         message = u'%s added %s as a participant of %s' % (adding_user, added_user, matter)
         self._create_activity(actor=adding_user, verb=u'added participant', action_object=matter, message=message,
                               user=added_user)
-
-        self.analytics.event('matter.participant.added', distinct_id=matter.pk, user=adding_user.get_full_name(), participant=added_user.get_full_name(), matter_pk=matter.pk)
+        self.analytics.event('matter.participant.added', distinct_id=adding_user.pk, user=adding_user.get_full_name(),
+                             participant=added_user.get_full_name(), matter_pk=matter.pk)
 
     def removed_matter_participant(self, matter, removing_user, removed_user):
         message = u'%s removed %s as a participant of %s' % (removing_user, removed_user, matter)
@@ -59,21 +130,22 @@ class MatterActivityEventService(object):
     #
     # Item focused events
     #
-
-    def created_item(self, user, item):
+    def item_created(self, user, item):
         self._create_activity(actor=user, verb=u'created', action_object=item)
         self.analytics.event('item.created', distinct_id=user.pk, user=user.get_full_name())
 
     def item_rename(self, user, item, previous_name):
-        message = u'%s renamed item from %s to %s' % (user, item, previous_name, item.name)
-        self._create_activity(actor=user, verb=u'renamed', action_object=item, item=item, message=message, previous_name=previous_name)
+        message = u'%s renamed item from %s to %s' % (user, previous_name, item.name)
+        self._create_activity(actor=user, verb=u'renamed', action_object=item, item=item, message=message,
+                              previous_name=previous_name)
 
-    def item_change_status(self, user, item, previous_status):
+    def item_changed_status(self, user, item, previous_status):
         current_status = item.display_status
-        message = u'%s changed the status item from %s to %s' % (user, item, previous_status, current_status)
-        self._create_activity(actor=user, verb=u'changed the status', action_object=item, item=item, message=message, current_status=current_status, previous_status=previous_status)
+        message = u'%s changed the status of %s from %s to %s' % (user, item, previous_status, current_status)
+        self._create_activity(actor=user, verb=u'changed the status', action_object=item, item=item, message=message,
+                              current_status=current_status, previous_status=previous_status)
 
-    def item_close(self, user, item):
+    def item_closed(self, user, item):
         message = u'%s closed %s' % (user, item)
         self._create_activity(actor=user, verb=u'closed', action_object=item, item=item, message=message)
 
@@ -95,60 +167,91 @@ class MatterActivityEventService(object):
 
     def created_revision(self, user, item, revision):
         message = u'%s created a revision for %s' % (user, item)
-        self._create_activity(actor=user, verb=u'created', action_object=revision, item=item, message=message, filename=revision.name, date_created=revision.date_created)
+        self._create_activity(actor=user, verb=u'created', action_object=revision, item=item, message=message,
+                              filename=revision.name, date_created=revision.date_created)
+
+        self.analytics.event('revision.create', distinct_id=user.pk, user=user.get_full_name(), matter_pk=revision.item.matter.pk)
 
     def deleted_revision(self, user, item, revision):
         message = u'%s destroyed a revision for %s' % (user, item)
-        self._create_activity(actor=user, verb=u'deleted', action_object=revision, item=item, message=message, filename=revision.name, date_created=revision.date_created)
+        self._create_activity(actor=user, verb=u'deleted', action_object=revision, item=item, message=message,
+                              filename=revision.name, date_created=revision.date_created)
 
     def request_user_upload_revision(self, item, adding_user, added_user):
         message = u'%s requested %s provide a document on %s' % (adding_user, added_user, item)
         self._create_activity(actor=adding_user, verb=u'provide a document', action_object=item, message=message,
                               user=added_user)
+        self.analytics.event('revision.upload.request', distinct_id=adding_user.pk, requestor=adding_user.get_full_name(),
+                             requestee=added_user.get_full_name(), matter_pk=item.matter.pk)
 
     def cancel_user_upload_revision_request(self, item, removing_user, removed_user):
         message = u'%s canceled their request for %s to provide a document on %s' % (removing_user, removed_user, item)
-        self._create_activity(actor=removing_user, verb=u'canceled their request for a document', action_object=item, message=message,
-                              user=removed_user)
+        self._create_activity(actor=removing_user, verb=u'canceled their request for a document', action_object=item,
+                              message=message, user=removed_user)
 
-    def user_uploaded_revision(self, item, user, revision):
+    def user_uploaded_revision(self, user, item, revision):
         message = u'%s uploaded a document named %s for %s' % (user, revision.name, item)
         self._create_activity(actor=user, verb=u'uploaded a document', action_object=item, message=message,
                               revision=revision, filename=revision.name, date_created=revision.date_created)
+        self.analytics.event('revision.upload.provided', distinct_id=user.pk, matter_pk=item.matter.pk)
 
     def add_revision_comment(self, user, revision, comment):
         message = '%s commented on %s' % (user, revision)
-        self._create_activity(actor=user, verb=u'commented', action_object=revision.item, message=message, comment=comment)
+        self._create_activity(actor=user, verb=u'added revision comment', action_object=revision, message=message,
+                              comment=comment, item=revision.item)
+        self.analytics.event('revision.comment.added', distinct_id=user.pk, matter_pk=revision.item.matter.pk, item_pk=revision.item.pk)
 
     def delete_revision_comment(self, user, revision):
         message = '%s deleted a comment on %s' % (user, revision)
-        self._create_activity(actor=user, verb=u'deleted comment', action_object=revision.item, message=message)
+        self._create_activity(actor=user, verb=u'deleted revision comment', action_object=revision, message=message,
+                              item=revision.item)
 
     #
     # Review requests
     #
-    def added_user_as_reviewer(self, item, adding_user, added_user):
-        message = u'%s added %s as reviewer for %s' % (adding_user, added_user, item)
-        self._create_activity(actor=adding_user, verb=u'edited', action_object=item, message=message,
-                              user=added_user)
 
-    def removed_user_as_reviewer(self, item, removing_user, removed_user):
-        message = u'%s removed %s as reviewer for %s' % (removing_user, removed_user, item)
-        self._create_activity(actor=removing_user, verb=u'edited', action_object=item, message=message,
-                              user=removed_user)
+    def invite_user_as_reviewer(self, item, inviting_user, invited_user):
+        message = u'%s invited %s as reviewer for %s' % (inviting_user, invited_user, item)
+        self._create_activity(actor=inviting_user, verb=u'invited reviewer', action_object=item, message=message,
+                              user=invited_user)
+        self.analytics.event('review.request.sent', distinct_id=inviting_user.pk, invited=invited_user.get_full_name(), matter_pk=item.matter.pk, item_pk=item.pk)
+
+    # instead of this we now use the newly created invite_user_as_reviewer
+    # def added_user_as_reviewer(self, item, adding_user, added_user):
+    #     message = u'%s added %s as reviewer for %s' % (adding_user, added_user, item)
+    #     self._create_activity(actor=adding_user, verb=u'added reviewer', action_object=item, message=message,
+    #                           user=added_user)
+    #
+    # instead of this we now use cancel_user_upload_revision_request() above
+    # def removed_user_as_reviewer(self, item, removing_user, removed_user):
+    #     message = u'%s removed %s as reviewer for %s' % (removing_user, removed_user, item)
+    #     self._create_activity(actor=removing_user, verb=u'removed reviewer', action_object=item, message=message,
+    #                           user=removed_user)
 
     def user_viewed_revision(self, item, user, revision):
         message = u'%s viewed revision %s (%s) for %s' % (user, revision.name, revision.slug, item)
         self._create_activity(actor=user, verb=u'viewed revision', action_object=item, message=message,
-                              revision=revision, filename=revision.name, version=revision.slug, date_created=datetime.datetime.utcnow())
+                              revision=revision, filename=revision.name, version=revision.slug,
+                              date_created=datetime.datetime.utcnow())
+        self.analytics.event('review.request.viewed', distinct_id=user.pk, matter_pk=item.matter.pk, item_pk=item.pk, revision_pk=revision.pk)
+
+    def user_downloaded_revision(self, item, user, revision):
+        message = u'%s downloaded revision %s (%s) for %s' % (user, revision.name, revision.slug, item)
+        self._create_activity(actor=user, verb=u'viewed revision', action_object=revision, message=message,
+                              item=item, filename=revision.name, version=revision.slug,
+                              date_created=datetime.datetime.utcnow())
 
     def user_commented_on_revision(self, item, user, revision, comment):
         message = u'%s commented on %s (%s) for %s' % (user, revision.name, revision.slug, item)
-        self._create_activity(actor=user, verb=u'commented on revision', action_object=item, message=message,
-                              revision=revision, filename=revision.name, version=revision.slug, date_created=datetime.datetime.utcnow(),
+        self._create_activity(actor=user, verb=u'commented on revision', action_object=revision, message=message,
+                              item=item, filename=revision.name, version=revision.slug,
+                              date_created=datetime.datetime.utcnow(),
                               comment=comment)
+        self.analytics.event('review.request.comment.added', distinct_id=user.pk, matter_pk=item.matter.pk, item_pk=item.pk, revision_pk=revision.pk)
 
     def user_revision_review_complete(self, item, user, revision):
         message = u'%s completed their review of %s (%s) for %s' % (user, revision.name, revision.slug, item)
         self._create_activity(actor=user, verb=u'completed review', action_object=item, message=message,
-                              revision=revision, filename=revision.name, version=revision.slug, date_created=datetime.datetime.utcnow())
+                              revision=revision, filename=revision.name, version=revision.slug,
+                              date_created=datetime.datetime.utcnow())
+        self.analytics.event('review.request.completed', distinct_id=user.pk, matter_pk=item.matter.pk, item_pk=item.pk, revision_pk=revision.pk)
