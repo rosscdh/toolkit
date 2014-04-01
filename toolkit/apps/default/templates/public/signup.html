@@ -27,7 +27,7 @@
     </div>
     <br />
     <br />
-    
+
     <script>
     window.olark||(function(c){var f=window,d=document,l=f.location.protocol=="https:"?"https:":"http:",z=c.name,r="load";var nt=function(){
     f[z]=function(){
@@ -48,6 +48,17 @@
     olark.identify('6244-448-10-1282');
     </script>
 {% endblock %}
+
 {% block body %}
 {% endblock %}
 
+{% block js %}
+    {{ block.super }}
+
+    <script type="text/javascript">
+        $form = $('#signup-form');
+        $form.on('submit', function(e) {
+            $form.find('#id_mpid').val(mixpanel.get_distinct_id());
+        });
+    </script>
+{% endblock %}
