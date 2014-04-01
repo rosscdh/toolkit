@@ -11,6 +11,15 @@
   <script src="<!-- @echo staticBase -->ng/bower_components/jquery-ui/ui/jquery-ui.js" data-remove="exclude"></script>
   <script src="<!-- @echo staticBase -->ng/bower_components/bootstrap/dist/js/bootstrap.js" data-remove="exclude"></script>
   <script src="<!-- @echo staticBase -->ng/bower_components/angular/angular.js" data-remove="exclude"></script>
+  <script language="javascript" data-remove="exclude">
+    /* File upload fallback for IE browsers */
+    FileAPI = {
+        //only one of jsPath or jsUrl.
+        'jsPath': '<!-- @echo staticBase -->ng/bower_components/FileAPI/',
+        //only one of staticPath or flashUrl.
+        'staticPath': '<!-- @echo staticBase -->ng/bower_components/FileAPI/'
+    }
+  </script>
 </head>
 <body>
   <!-- Livereload script for development only (stripped during dist build) -->
@@ -95,18 +104,18 @@
         </div>
         <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-collapse-03"></button>
 
-        <ul class="nav navbar-nav navbar-matters" ng-show="matter.selected&&matter.selected._meta.matter.others.length>1" >
+        <ul class="nav navbar-nav navbar-matters" ng-show="matter.selected&&data.matterlist.length>1">
             <li class="dropdown">
-              <a href="javascript:;" class="dropdown-toggle matter-name" data-toggle="dropdown" ng-bind="matter.selected.name"></a>
+              <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" ng-bind="matter.selected.name"></a>
               <ul class="dropdown-menu">
-                <li ng-repeat="m in matter.selected._meta.matter.others">
-                    {% verbatim %}<a href="{{ m.django_url }}">{{ m.name }}{{m.client.name}}</a>{% endverbatim %}
+                <li ng-repeat="m in data.matterlist" ng-show="m.name!=matter.selected.name">
+                    {% verbatim %}<a href="/matters/{{ m.slug  }}">{{ m.name }}</a>{% endverbatim %}
                 </li>
               </ul>
             </li>
         </ul>
-        <ul class="nav navbar-nav" ng-show="matter.selected&&matter.selected._meta.matter.others.length<=1">
-            <li><a href="javascript:;" ng-bind="matter.selected.name" class="matter-name"></a></li>
+        <ul class="nav navbar-nav" ng-show="matter.selected&&data.matterlist.length<=1">
+            <li><a href="javascript:;" ng-bind="matter.selected.name"></a></li>
         </ul>
     </div>
 
@@ -121,7 +130,7 @@
         </li>-->
          
         <li class="checklist-members">
-          <a href="javascript:;" ng-click="invite()" tooltip="Manage Project Team" tooltip-placement="bottom">
+          <a href="javascript:;" ng-click="invite()">
             <span class="fui-user"></span> 
             <span class="user" ng-repeat="user in matter.selected.participants" ng-bind="user | initials"></span>
           </a>

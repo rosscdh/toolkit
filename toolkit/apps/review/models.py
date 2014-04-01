@@ -57,6 +57,7 @@ class ReviewDocument(IsDeletedMixin, FileExistsLocallyMixin, UserAuthMixin, mode
     def complete(self, is_complete=True):
         self.is_complete = is_complete
         self.save(update_fields=['is_complete'])
+
     complete.alters_data = True
 
     @property
@@ -67,6 +68,7 @@ class ReviewDocument(IsDeletedMixin, FileExistsLocallyMixin, UserAuthMixin, mode
     def reviewer_has_viewed(self, value):
         if value == True:
             self.date_last_viewed = datetime.datetime.utcnow()
+            # user has viewed -> 10
         else:
             self.date_last_viewed = None
         self.save(update_fields=['date_last_viewed'])

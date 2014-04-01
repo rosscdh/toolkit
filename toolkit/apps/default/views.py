@@ -7,8 +7,6 @@ from django.views.generic import TemplateView, RedirectView, FormView
 
 from .forms import SignUpForm, SignInForm
 
-from toolkit.core.services.analytics import AtticusFinch
-
 from toolkit.apps.workspace.forms import InviteKeyForm
 from toolkit.apps.workspace.models import Workspace, InviteKey
 
@@ -193,13 +191,6 @@ class SignUpView(LogOutMixin, AuthenticateUserMixin, FormView):
 
         form.save()  # save the user
         self.authenticate(form=form)  # log them in
-
-        AtticusFinch().event('user.signup', {
-            'firm_name': form.cleaned_data.get('firm_name'),
-            'first_name':form.cleaned_data.get('first_name'),
-            'last_name':form.cleaned_data.get('last_name'),
-            'email':form.cleaned_data.get('email'),
-        })
 
         return super(SignUpView, self).form_valid(form)
 
