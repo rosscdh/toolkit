@@ -104,7 +104,7 @@ def on_item_save_changed_content(sender, instance, **kwargs):
                                        item=instance,
                                        previous_name=previous_instance.name)
 
-        if previous_instance.is_requested != instance.is_requested and instance.is_requested is False:
+        if previous_instance.responsible_party != instance.responsible_party and instance.responsible_party is None:
             matter.actions.cancel_user_upload_revision_request(item=instance,
                                                                removing_user=matter.lawyer,
                                                                removed_user=previous_instance.responsible_party)
