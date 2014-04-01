@@ -14,9 +14,9 @@ class RevisionLabelMixin(object):
         """
         Get the set of closing groups
         """
-        result = self.data.get('status_labels', False)
+        result = self.data.get('status_labels', {})
 
-        if result in (False, {}):
+        if result == {}:
             return Revision.REVISION_STATUS.get_choices_dict()
         return result
 
