@@ -182,7 +182,7 @@ class SignInForm(forms.Form):
                 Field('password', css_class='input-hg'),
             ),
             ButtonHolder(
-                Submit('submit', 'Sign in', css_class='btn btn-primary btn-lg')
+                Submit('submit', 'Secure Sign In', css_class='btn btn-primary btn-lg')
             )
         )
         super(SignInForm, self).__init__(*args, **kwargs)
