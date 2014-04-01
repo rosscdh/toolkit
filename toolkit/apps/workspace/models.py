@@ -22,10 +22,10 @@ from uuidfield import UUIDField
 from jsonfield import JSONField
 
 from .managers import WorkspaceManager
-from .mixins import ClosingGroupsMixin, CategoriesMixin
+from .mixins import ClosingGroupsMixin, CategoriesMixin, RevisionLabelMixin
 
 
-class Workspace(IsDeletedMixin, ClosingGroupsMixin, CategoriesMixin, models.Model):
+class Workspace(IsDeletedMixin, ClosingGroupsMixin, CategoriesMixin, RevisionLabelMixin, models.Model):
     """
     Workspaces are areas that allow multiple tools
     to be associated with a group of users
