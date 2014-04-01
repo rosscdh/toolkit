@@ -7,16 +7,16 @@ html,body, div.full
 }
 
 // Varibles for document status
-@doc-status-0:		@brand-warning;     // Draft
-@doc-status-1:		@pumpkin;			// Discussion
-@doc-status-2:		@amethyst;			// Final
-@doc-status-3:		lighten(@emerland, 10%);			// Executed
-@doc-status-4:		@midnight-blue;		// Filed
-@doc-status-5:		#222;		// Custom A
-@doc-status-6:		@amethyst;			// Custom B
-@doc-status-7:		@concrete;			// Custom C
-@doc-status-8:		@alizarin;			// Custom D
-@doc-status-9:		@concrete;			// Custom E
+@doc-status-0:		lighten(@brand-warning, 10%);     // Draft
+@doc-status-1:		lighten(@pumpkin, 10%);			// Discussion
+@doc-status-2:		lighten(@amethyst, 10%);			// Final
+@doc-status-3:		lighten(@emerland, 20%);			// Executed
+@doc-status-4:		lighten(@midnight-blue, 10%);		// Filed
+@doc-status-5:		lighten(#222, 10%);		// Custom A
+@doc-status-6:		lighten(@amethyst, 10%);			// Custom B
+@doc-status-7:		lighten(@concrete, 10%);			// Custom C
+@doc-status-8:		lighten(@alizarin, 10%);			// Custom D
+@doc-status-9:		lighten(@concrete, 10%);			// Custom E
  
 
 /* Navbar - this is the top of sthe matter  */
@@ -446,7 +446,6 @@ html,body, div.full
 				.doc-wrap {
 					background-color:darken(white, 2%);
 					padding:9px 10px 0px 10px;
-					position:relative;
 					min-height:40px;
 					h4 {
 						line-height:16px;
@@ -495,7 +494,7 @@ html,body, div.full
 						padding:1px 3px 2px 4px;
 						margin-right:-10px;
 						margin-left:-10px;
-						opacity:0.75;
+						opacity:1;
 						a.btn-link {
 							color:white;
 							font-size:11px;
@@ -507,6 +506,8 @@ html,body, div.full
 							}
 						}
 						ul.dropdown-menu {
+							opacity:1;
+							border:2px solid white;
 							li {
 								a {
 									padding:6px 8px 6px;
