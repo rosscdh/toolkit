@@ -25,7 +25,11 @@ import datetime
 logger = logging.getLogger('django.request')
 
 
-class SignDocument(IsDeletedMixin, UserAuthMixin, HelloSignModelMixin, ModelContentTypeMixin, models.Model):
+class SignDocument(IsDeletedMixin,
+                   UserAuthMixin,
+                   HelloSignModelMixin,
+                   ModelContentTypeMixin,
+                   models.Model):
     """
     An object to represent a url that allows multiple signers to view
     a document using a service like crocodoc
