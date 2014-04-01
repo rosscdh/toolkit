@@ -148,6 +148,12 @@ class SignDocument(IsDeletedMixin,
         """
         return self.document.executed_file
 
+    def hs_signers(self):
+        """
+        Return a list of invitees to sign
+        """
+        return [{'name': u.get_full_name(), 'email': u.email} for u in [self.signers.all()]]
+
     def send_invite_email(self, from_user, users=[]):
         """
         @BUSINESSRULE requested users must be in the signers object
