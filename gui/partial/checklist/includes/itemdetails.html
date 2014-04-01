@@ -170,9 +170,10 @@
                                 data-toggle="dropdown" ng-show="data.usdata.current.user_class=='lawyer'">
                           <span class="caret" ></span>
                         </button>
-                        <ul class="dropdown-menu" ng-show="data.usdata.current.user_class=='lawyer'">
+                        <ul class="dropdown-menu" ng-show="data.usdata.current.user_class=='lawyer'" >
                           <li class="" ng-repeat="status in data.matter._meta.revision.status">
-                              <a href="javascript:;" ng-click="data.selectedItem.latest_revision.status=$index;saveLatestRevision();">
+                              <a href="javascript:;" ng-click="data.showRevisionStatusDropdown=false;data.selectedItem.latest_revision.status=$index;saveLatestRevision();"
+                                 ng-hide="data.showEditRevisionTitles">
                                   <span class="icon status-{{ $index }}"></span> {{ status }}
                               </a>
                           </li>
