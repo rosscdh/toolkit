@@ -13,6 +13,60 @@ logger = logging.getLogger('django.request')
 class MatterActivityEventService(object):
     """
     Service to handle events relating to the mater
+
+    Known Verb Slugs
+    ----------
+
+    Matters
+    =======
+
+    workspace-added-participant
+    workspace-added-participant 
+    workspace-created
+    workspace-created 
+    workspace-edited
+    workspace-removed-participant
+
+    Items
+    =======
+
+    item-added-revision-comment 
+    item-canceled-their-request-for-a-document
+    item-changed-the-status
+    item-changed-the-status 
+    item-closed
+    item-closed 
+    item-comment-created
+    item-comment-created 
+    item-comment-deleted
+    item-commented
+    item-commented 
+    item-created
+    item-created 
+    item-deleted-revision-comment
+    item-edited 
+    item-invited-reviewer
+    item-invited-reviewer 
+    item-provide-a-document
+    item-provide-a-document 
+    item-renamed
+    item-reopened
+    item-reopened 
+    item-viewed-revision
+    itemrequestrevisionview-provide-a-document
+
+    Revisions
+    =======
+
+    revision-comment-created
+    revision-comment-created 
+    revision-comment-deleted
+    revision-created
+    revision-created 
+    revision-deleted
+
+
+
     """
     def __init__(self, matter, **kwargs):
         self.matter = matter
@@ -20,7 +74,11 @@ class MatterActivityEventService(object):
 
     def get_verb_slug(self, action_object, verb):
         verb_slug = slugify(action_object.__class__.__name__) + '-' + slugify(verb)
-        logger.debug('possible verb_slug: "%s"' % verb_slug)
+        logger.critical('possible verb_slug: "%s"' % verb_slug)
+
+        # with open('/tmp/verb_slugs.log', 'a') as f:
+        #     f.write(verb_slug + '\r\n')
+
         return verb_slug
 
     def _create_activity(self, actor, verb, action_object, **kwargs):
@@ -177,10 +235,16 @@ class MatterActivityEventService(object):
                               date_created=datetime.datetime.utcnow())
         self.analytics.event('review.request.viewed', distinct_id=user.pk, matter_pk=item.matter.pk, item_pk=item.pk, revision_pk=revision.pk)
 
+    def user_downloaded_revision(self, item, user, revision):
+        message = u'%s downloaded revision %s (%s) for %s' % (user, revision.name, revision.slug, item)
+        self._create_activity(actor=user, verb=u'viewed revision', action_object=revision, message=message,
+                              item=item, filename=revision.name, version=revision.slug,
+                              date_created=datetime.datetime.utcnow())
+
     def user_commented_on_revision(self, item, user, revision, comment):
         message = u'%s commented on %s (%s) for %s' % (user, revision.name, revision.slug, item)
-        self._create_activity(actor=user, verb=u'commented on revision', action_object=item, message=message,
-                              revision=revision, filename=revision.name, version=revision.slug,
+        self._create_activity(actor=user, verb=u'commented on revision', action_object=revision, message=message,
+                              item=item, filename=revision.name, version=revision.slug,
                               date_created=datetime.datetime.utcnow(),
                               comment=comment)
         self.analytics.event('review.request.comment.added', distinct_id=user.pk, matter_pk=item.matter.pk, item_pk=item.pk, revision_pk=revision.pk)

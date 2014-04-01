@@ -127,8 +127,11 @@ class ItemRevisionTest(BaseEndpointTest):
         # must be a string as we store the pk in as a string
         self.assertTrue(str(reviewer.pk) in invited_reviewer_document_review.auth.keys())
         # test that the url for the reviewer is correct
-        self.assertEqual(invited_reviewer_document_review.get_absolute_url(user=reviewer), '/review/%s/%s/' % (invited_reviewer_document_review.slug,
-                                                                                                               urllib.quote(invited_reviewer_document_review.get_user_auth(user=reviewer))))
+        self.assertEqual(invited_reviewer_document_review.get_absolute_url(user=reviewer),
+                         '/review/%s/%s/' % (
+                             invited_reviewer_document_review.slug,
+                             urllib.quote(invited_reviewer_document_review.get_user_auth(user=reviewer))
+                         ))
 
     def test_revision_post_with_url(self):
         self.client.login(username=self.lawyer.username, password=self.password)
