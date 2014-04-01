@@ -85,10 +85,16 @@ class ReviewRevisionView(DetailView):
     def get_context_data(self, **kwargs):
         kwargs = super(ReviewRevisionView, self).get_context_data(**kwargs)
 
+        if self.object.reviewer is None:
+            #
+            # @BUG seems that the reviewer for some reason has not been assigned
+            #
+            self.object.save()  # calling save causes the system to reevaluate the reviewers
+
         crocodoc = CrocoDocConnectService(document_object=self.object.document,
                                           app_label='attachment',
                                           field_name='executed_file',
-                                          upload_immediately=True,
+                                          upload_immediately=False,
                                           # important for sandboxing the view to ths reviewer
                                           reviewer=self.object.reviewer)
         #
@@ -96,12 +102,12 @@ class ReviewRevisionView(DetailView):
         # and then if/when it is upload it to crocdoc
         #
         # if crocodoc.is_new is True:
-        #     #
-        #     # Ensure we have a local copy of this file so it can be sent
-        #     #
-        #     if self.object.ensure_file():
-        #         # so we have a file, now lets upload it
-        #         crocodoc.generate()
+        #
+        # Ensure we have a local copy of this file so it can be sent
+        #
+        if self.object.ensure_file():
+            # so we have a file, now lets upload it
+            crocodoc.generate()
 
         # @TODO this should ideally be set in the service on init
         # and session automatically updated
