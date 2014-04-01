@@ -148,38 +148,14 @@ class SignDocument(IsDeletedMixin,
         import pdb;pdb.set_trace()
         return self.document.executed_file
 
-    def send_invite_email(self, from_user, users=[]):
-        """
-        @BUSINESSRULE requested users must be in the signers object
-        """
-        if type(users) not in [list]:
-            raise Exception('users must be of type list: users=[<User>]')
-
-        for u in self.signers.all():
-            #
-            # @BUSINESSRULE if no users passed in then send to all of the signers
-            #
-            if users == [] or u in users:
-                #
-                # send email
-                #
-                logger.info('Sending ReviewDocument invite email to: %s' % u)
-
-                m = SignerReminderEmail(recipients=((u.get_full_name(), u.email,),))
-                m.process(subject=m.subject,
-                          item=self.document.item,
-                          document=self.document,
-                          from_name=from_user.get_full_name(),
-                          action_url=ABSOLUTE_BASE_URL(path=self.get_absolute_url(user=u)))
-
     def can_read(self, user):
-        return user in self.participants
+        return user in self.signers.all()
 
     def can_edit(self, user):
-        return user in self.participants
+        return user in self.document.item.matter.participants()
 
     def can_delete(self, user):
-        return user in self.participants
+        return user in self.document.item.matter.participants()
 
 rulez_registry.register("can_read", SignDocument)
 rulez_registry.register("can_edit", SignDocument)

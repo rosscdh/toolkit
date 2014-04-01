@@ -405,6 +405,7 @@ LAWPAL_ACTIVITY = {
     "activity": {
         "whitelist": ['item-created', 'item-edited', 'item-commented', 'item-changed-the-status', 'item-renamed',
                       'item-provide-a-document', 'item-invited-reviewer', 'item-canceled-their-request-for-a-document',
+                      'item-invited-signer',
                       'item-closed', 'item-reopened', 'item-added-revision-comment', 'item-deleted-revision-comment',
                       'revision-created', 'revision-deleted',
                       'itemrequestrevisionview-provide-a-document',

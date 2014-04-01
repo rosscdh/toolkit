@@ -37,7 +37,7 @@ class ReviewEndpoint(viewsets.ModelViewSet):
     lookup_field = 'pk'
 
     def can_read(self, user):
-        return user.profile.user_class in ['lawyer',]
+        return user.profile.user_class in ['lawyer', ]
 
     def can_edit(self, user):
         return user.profile.is_lawyer
@@ -206,7 +206,7 @@ class ItemRevisionReviewerView(generics.RetrieveAPIView,
             # must not be 0 as we have the users username thus they should be
             # part of the reviewers at this stage
             #
-            logger.critical('A revision %s for a user %s has more than 0 reviewdocument they should have only 1 per revision' % (self.revision, user))
+            logger.critical('A revision %s for a user %s has more than 0 reviewdocument they should have 1 per revision' % (self.revision, user))
             raise Http404
 
         if len(user_reviewdocument_set) > 1:

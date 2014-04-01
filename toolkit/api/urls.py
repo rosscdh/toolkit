@@ -30,8 +30,8 @@ from .views import (ItemRevisionReviewersView,
                     ItemRevisionReviewerView,
                     RemindReviewers,
 
-                    ItemRevisionSignatoriesView,
-                    ItemRevisionSignatoryView,
+                    ItemRevisionSignersView,
+                    ItemRevisionSignerView,
                     RemindSignatories)
 
 from .views import ItemEndpoint
@@ -99,7 +99,7 @@ urlpatterns = router.urls + patterns('',
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/reviewer/(?P<username>[\w\W\-\_]+)/?$', ItemRevisionReviewerView.as_view(), name='item_revision_reviewer'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/reviewers/remind/?$', RemindReviewers.as_view(), name='item_revision_remind_reviewers'),
 
-    url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/signers/?$', ItemRevisionSignatoriesView.as_view(), name='item_revision_signers'),
-    url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/signatory/(?P<username>[\w\W\-\_]+)/?$', ItemRevisionSignatoryView.as_view(), name='item_revision_signatory'),
+    url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/signers/?$', ItemRevisionSignersView.as_view(), name='item_revision_signers'),
+    url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/signer/(?P<username>[\w\W\-\_]+)/?$', ItemRevisionSignerView.as_view(), name='item_revision_signer'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/signers/remind/?$', RemindSignatories.as_view(), name='item_revision_remind_signers'),
 )
