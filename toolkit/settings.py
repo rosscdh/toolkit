@@ -392,13 +392,26 @@ ACTSTREAM_SETTINGS = {
 
 LAWPAL_ACTIVITY = {
     "abridge": {
-        "whitelist": ['item-comment-created', 'item-comment-deleted',
-                      'revision-created', 'revision-comment-created', 'revision-comment-deleted']
+        "whitelist": [
+                      # 'item-reopened', 'item-closed',
+                      # 'item-commented', 'item-comment-created', 'item-comment-deleted',
+                      # 'item-invited-reviewer',
+                      # 'item-provide-a-document',
+                      # 'revision-created', 'revision-comment-created', 'item-added-revision-comment', 
+                      # 'revision-added-revision-comment',
+                      # 'workspace-added-participant', 'workspace-removed-participant'
+                      ]
     },
     "notifications": {
-        "whitelist": [#'workspace-added-participant',
-                      'item-commented', 'item-comment-created', 'item-comment-deleted',  # sure about the last two slugs?
-                      'revision-created', 'revision-comment-created', 'revision-comment-deleted']
+        "whitelist": [
+                      'item-reopened', 'item-closed',
+                      'item-commented', 'item-comment-created', 'item-comment-deleted',
+                      'item-invited-reviewer',
+                      'item-provide-a-document',
+                      'revision-created', 'revision-comment-created', 'item-added-revision-comment', 
+                      'revision-added-revision-comment',
+                      'workspace-added-participant', 'workspace-removed-participant'
+                      ]
     },
     "activity": {
         "whitelist": ['item-created', 'item-edited', 'item-commented', 'item-changed-the-status', 'item-renamed',
