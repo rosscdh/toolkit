@@ -15,11 +15,13 @@ except ImportError:
     logger.critical('stored_messages is not installed')
     raise Exception('stored_messages is not installed')
 
+
 def _set_has_notifications(user, count):
     if count < 1:
         profile = user.profile
         profile.has_notifications = False
         profile.save(update_fields=['has_notifications'])
+
 
 class InboxNotificationsView(ListView):
     model = Inbox

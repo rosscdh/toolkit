@@ -6,6 +6,7 @@ Deployment actions by branch
 1. ./manage.py migrate attachment 0001 --fake  # intial
 2. ./manage.py migrate attachment  # signatories to signers
 
+
 --------------------------------------------------------------------------------
 ** DEPLOYED 29 March 2014
 --------------------------------------------------------------------------------

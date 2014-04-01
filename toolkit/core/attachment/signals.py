@@ -93,6 +93,7 @@ def ensure_revision_signdocument_object(sender, instance, **kwargs):
             # Detected that no ReviewDocument is preset
             #
             sign_document = SignDocument.objects.create(document=instance)
+
             # now add the revew object to the instance reivewdocument_set
             instance.signdocument_set.add(sign_document)
 
@@ -123,36 +124,13 @@ def on_upload_set_item_is_requested_false(sender, instance, **kwargs):
             # @TODO issue activity here?
 
 
+
 """
 Reviewers
 reviewdocuments have 1 object per reviewer this is to ensure a unique auth url for each reviewer
 and to ensure there is a sandbox view where only the matter participants and the invited reviewer
 can talk
 """
-
-
-@receiver(post_delete, sender=Revision, dispatch_uid='revision.set_previous_revision_is_current_on_delete')
-def set_previous_revision_is_current_on_delete(sender, instance, **kwargs):
-    """
-    @BUSINESSRULE When a lawyer deletes the current revision, then we need to make the previous item in the set
-    is_current = True
-    """
-    previous_revision = instance.__class__.objects.filter(item=instance.item).last()
-    if previous_revision:
-        previous_revision.is_current = True
-        previous_revision.save(update_fields=['is_current'])
-
-
-@receiver(post_delete, sender=Revision, dispatch_uid='revision.set_previous_revision_is_current_on_delete')
-def set_previous_revision_is_current_on_delete(sender, instance, **kwargs):
-    """
-    @BUSINESSRULE When a lawyer deletes the current revision, then we need to make the previous item in the set
-    is_current = True
-    """
-    previous_revision = instance.__class__.objects.filter(item=instance.item).last()
-    if previous_revision:
-        previous_revision.is_current = True
-        previous_revision.save(update_fields=['is_current'])
 
 
 @receiver(m2m_changed, sender=Revision.reviewers.through, dispatch_uid='revision.on_reviewer_add')
@@ -227,17 +205,3 @@ def on_signatory_add(sender, instance, action, model, pk_set, **kwargs):
         # 1 signing document for this document; as we only sign the final document
         #
         signdocument.signers.add(user)  # add the reviewer
-
-
-@receiver(post_save, sender=Revision, dispatch_uid='revision.set_item_is_requested_false')
-def on_upload_set_item_is_requested_false(sender, instance, **kwargs):
-    """
-    @BUSINESSRULE when a document is uploaded and item.is_requested = True
-    and its uploaded by the item.responsible_party then mark it as is_requested = False
-    """
-    if instance.item.is_requested is True:
-        if instance.uploaded_by == instance.item.responsible_party:
-            item = instance.item
-            item.is_requested = False
-            item.save(update_fields=['is_requested'])
-            # @TODO issue activity here?

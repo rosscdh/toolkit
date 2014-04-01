@@ -247,6 +247,7 @@ class ReviewHellosignViewTest(BaseDataProvider, TestCase):
         #
         self.client.login(username=self.lawyer.username, password=self.password)
         resp = self.client.get(reverse('signdocument-detail', kwargs={'pk': self.sign_document.pk}))
+
         self.assertEqual(resp.status_code, 200)
 
         json_resp = json.loads(resp.content)

@@ -94,7 +94,7 @@ def on_hellosign_webhook_event_recieved(sender, hellosign_log,
     #
     signature_doc = hellosign_request.source_object
 
-    if signature_doc.__class__.name in ['SignDocument']:
+    if signature_doc.__class__.__name__ in ['SignDocument']:
         logging.info('Recieved event: %s for request: %s' % (event_type, hellosign_request,))
 
         if hellosign_log.event_type == 'signature_request_all_signed':

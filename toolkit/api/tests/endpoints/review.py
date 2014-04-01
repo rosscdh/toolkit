@@ -209,6 +209,38 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
         self.assertEqual(pq('a')[0].attrib.get('href'), expected_action_url)
         self.assertEqual(invite_key.next, reverse('request:list'))
 
+        # user review url must be in it
+        self.assertTrue('user_review_url' in json_data['results'][0]['reviewer'].keys())
+
+        #
+        # we expect the currently logged in users url to be returned;
+        # as the view is relative to the user
+        #
+        expected_url = self.item.latest_revision.reviewdocument_set.all().first().get_absolute_url(user=self.lawyer)
+
+        self.assertEqual(json_data['results'][0]['reviewer']['user_review_url'], expected_url)
+
+        outbox = mail.outbox
+        self.assertEqual(len(outbox), 1)
+
+        email = outbox[0]
+        self.assertEqual(email.subject, '[ACTION REQUIRED] Invitation to review a document')
+
+        pq = self.pq(email.body)
+
+        review_document = self.item.latest_revision.reviewdocument_set.filter(reviewers__in=[participant]).first()
+
+        invite_key = InviteKey.objects.get(matter=self.matter, invited_user=participant)
+
+        expected_action_url = ABSOLUTE_BASE_URL(invite_key.get_absolute_url())
+
+        self.assertEqual(pq('a')[0].attrib.get('href'), expected_action_url)
+        self.assertEqual(invite_key.next, reverse('request:list'))
+
+        # test if activity shows in stream
+        stream = target_stream(self.matter)
+        self.assertEqual(stream[0].data['message'], u'Lawyer Test invited Participant Number 1 as reviewer for Test Item with Revision')
+
 
 class ReviewObjectIncrementWithNewReviewerTest(BaseEndpointTest):
     """
@@ -287,6 +319,7 @@ class ReviewObjectIncrementWithNewReviewerTest(BaseEndpointTest):
             self.assertEqual(resp.status_code, 201)
 
             json_resp = json.loads(resp.content)
+
 
 class ReviewObjectIncrementWithNewReviewerTest(BaseEndpointTest):
     """
