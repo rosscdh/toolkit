@@ -20,10 +20,8 @@ class MatterActivityEventService(object):
     Matters
     =======
 
-    workspace-added-participant
     workspace-added-participant 
     workspace-created
-    workspace-created 
     workspace-edited
     workspace-removed-participant
 
@@ -33,21 +31,14 @@ class MatterActivityEventService(object):
     item-added-revision-comment 
     item-canceled-their-request-for-a-document
     item-changed-the-status
-    item-changed-the-status 
     item-closed
-    item-closed 
-    item-comment-created
     item-comment-created 
     item-comment-deleted
-    item-commented
     item-commented 
     item-created
-    item-created 
     item-deleted-revision-comment
     item-edited 
-    item-invited-reviewer
     item-invited-reviewer 
-    item-provide-a-document
     item-provide-a-document 
     item-renamed
     item-reopened
@@ -58,11 +49,9 @@ class MatterActivityEventService(object):
     Revisions
     =======
 
-    revision-comment-created
     revision-comment-created 
     revision-comment-deleted
     revision-created
-    revision-created 
     revision-deleted
 
 
