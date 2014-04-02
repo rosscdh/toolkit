@@ -10,6 +10,7 @@
                 <li ng-repeat="obj in statuslist">
                    <span class="icon status-{{ obj.key }}"></span>
                    <input class="form-control input-sm" id="input-status-{{obj.key}}" ng-model="obj.value" />
+                   <a href="javascript:;" ng-click="resetDefault(obj.key)"><small>Reset</small></a>
                 </li>
             </ul>
         </div>
