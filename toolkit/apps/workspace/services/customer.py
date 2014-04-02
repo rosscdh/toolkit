@@ -40,8 +40,6 @@ class EnsureCustomerService(object):
                                        email=email,
                                        **kwargs)
 
-            self.analytics.people_set(user=user)
-
             is_new = True
 
         profile = user.profile
