@@ -9,14 +9,7 @@ class RevisionLabelMixin(object):
     """
     @property
     def status_labels(self):
-        choices = self.data.get('status_labels', {})
-
-        if choices == {}:
-            defaults = Revision.REVISION_STATUS.get_choices_dict()
-            for k, v in defaults.items():
-                choices[k] = {'is_active': True, 'label': v}
-        # import pdb;pdb.set_trace()
-        return choices
+        return self.data.get('status_labels', OrderedDict())
 
     @status_labels.setter
     def status_labels(self, value):
@@ -26,5 +19,4 @@ class RevisionLabelMixin(object):
         choices = OrderedDict()
         for k in sorted(value.keys()):
             choices[k] = value[k]
-
         self.data['status_labels'] = choices

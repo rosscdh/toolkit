@@ -44,15 +44,16 @@ class MatterEndpoint(viewsets.ModelViewSet):
         # else:
         #     revision_status_labels = self.get_object().status_labels
         #
-        revision_status_labels = self.get_object().status_labels
+        # revision_status_labels = self.get_object().status_labels
 
         return {
             'matter': {
                 'status': None,
             },
-            'item': {'status': Item.ITEM_STATUS.get_choices_dict()},
-            'revision': {'status': revision_status_labels},
-        }
+            'item': {
+                'default_status': Revision.REVISION_STATUS.get_choices_dict(),
+                'custom_status': self.get_object().status_labels}
+            }
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -143,10 +144,8 @@ class RevisionLabelView(generics.DestroyAPIView,
                         generics.CreateAPIView,
                         MatterMixin,):
     """
-    /matters/:matter_slug/revision_label (POST,DELETE)
+    /matters/:matter_slug/revision_label (POST)
         [lawyer] can assign an item to a closing group
-
-    view/create/delete a specific closing_group
     """
     model = Workspace
     serializer_class = MatterSerializer
@@ -159,39 +158,11 @@ class RevisionLabelView(generics.DestroyAPIView,
         obj = self.get_object()
         status_labels = request.DATA.get('status_labels')
 
-        status_ids = [int(entry[0]) for entry in status_labels.items()]
-        ids_in_use = Revision.objects.filter(status__in=status_ids).values('pk', 'status')
-
-        # ids_in_use = []
-        # for entry in status_labels.items():
-        #     label_id = int(entry[0])
-        #     revisions = Revision.objects.filter(status=label_id)
-        #     if revisions.count() > 0:
-        #         ids_in_use.append(label_id)
-
-        if not ids_in_use:
-            obj.status_labels = status_labels
-            obj.save(update_fields=['data'])
-            return Response(status=http_status.HTTP_201_CREATED)
-        else:
-            #
-            # update the individual items in the matter.data.status_labels construct here
-            # dont touch those that are in ids_in_use
-            # and then save them... but STILL throw the error being specific about which you could not update
-            #
-            return Response({'ids_in_use': ids_in_use}, status=http_status.HTTP_406_NOT_ACCEPTABLE)
-
-    def delete(self, request, **kwargs):
-        obj = self.get_object()
-        obj.status_labels = dict()
+        obj.status_labels = status_labels
         obj.save(update_fields=['data'])
-        return Response(status=http_status.HTTP_204_NO_CONTENT)
+        return Response(status=http_status.HTTP_201_CREATED)
 
     def can_edit(self, user):
         return user.profile.is_lawyer
 
-    def can_delete(self, user):
-        return user.profile.is_lawyer
-
 rulez_registry.register("can_edit", RevisionLabelView)
-rulez_registry.register("can_delete", RevisionLabelView)
