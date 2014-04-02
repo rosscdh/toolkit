@@ -57,12 +57,12 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
             return [SimpleUserWithReviewUrlSerializer(u, context=self.context).data for u in obj.latest_revision.reviewers.all()]
         return []
 
-    def get_signatories(self, obj):
+    def get_signers(self, obj):
         """
         placeholder
         """
         if obj.latest_revision is not None:
-            return [SimpleUserWithReviewUrlSerializer(u, context=self.context).data for u in obj.latest_revision.signatories.all()]
+            return [SimpleUserWithReviewUrlSerializer(u, context=self.context).data for u in obj.latest_revision.signers.all()]
         return []
 
     def get_children(self, obj):
