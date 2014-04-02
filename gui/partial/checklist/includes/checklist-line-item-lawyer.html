@@ -2,7 +2,7 @@
 	<li 
 		ng-repeat="item in cat.items"
 		ng-click="selectItem(item, cat)"
-		ng-class="{ 'item-closed': item.is_complete, 'item-open': !item.is_complete, 'selected': item.slug===data.selectedItem.slug, 'tr-min-height':item.placeholder, 'tr-min-show': data.dragging }"
+		ng-class="{ 'item-closed': item.is_complete, 'item-open': !item.is_complete, 'selected': item.slug===data.selectedItem.slug}"
 		ng-file-drop="onFileDropped($files, item, this);selectItem(item, cat);"
 		ng-file-drag-over-class="file-drag-over"
 		ui-sref="checklist.item({ 'itemSlug': item.slug })"

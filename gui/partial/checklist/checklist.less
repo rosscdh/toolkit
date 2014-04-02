@@ -215,8 +215,26 @@ tr.item-heading.file-drag-over td:nth-child(2):before {
 /* UL/LI based checklist */
 ul.checklist-items {
 	min-height: 1em;
+	margin: 0.25em 0 0.25em 0;
 	li {
 		background-color: #FFF;
 		padding: 0.25em;
+		margin: 0 0 0.25em 0;
+		&.ui-sortable-placeholder {
+			border: 1px solid rgba(255,255,255,0.5);
+			background-color: rgba(255,255,255,0.15);
+			background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAHklEQVQIW2NkQAWSjEh8SSD7OUwAzAFJggTgHJAAAEkuAx5OdRJCAAAAAElFTkSuQmCC');
+			visibility: visible !important;
+			&:after {
+				content: 'Drop item here';
+				opacity: 0.6;
+				font-size: 0.85em;
+				padding: 0.12em;
+				text-align: center;
+			}
+		}
+		&.ui-sortable-placeholder {
+			opacity: 0.8;
+		}
 	}
 }
