@@ -60,7 +60,7 @@ def get_namedtuple_choices(name, choices_tuple):
         def get_choices_dict(self):
             choices = OrderedDict()
             for k, v in self.get_choices():
-                choices[str(k)] = v
+                choices[k] = v
             return choices
 
         def get_all(self):
