@@ -10,6 +10,8 @@ from .forms import SignUpForm, SignInForm
 from toolkit.apps.workspace.forms import InviteKeyForm
 from toolkit.apps.workspace.models import Workspace, InviteKey
 
+from toolkit.core.services.analytics import AtticusFinch
+
 import logging
 LOGGER = logging.getLogger('django.request')
 
@@ -116,6 +118,9 @@ class StartView(LogOutMixin, SaveNextUrlInSessionMixin, AuthenticateUserMixin, F
 
         except UserNotFoundException, UserInactiveException:
             return self.form_invalid(form=form)
+
+        analytics = AtticusFinch()
+        analytics.event('user.login', user=self.request.user)
 
         return super(StartView, self).form_valid(form)
 
