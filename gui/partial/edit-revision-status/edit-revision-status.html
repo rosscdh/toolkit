@@ -9,11 +9,13 @@
             <ul class="list-unstyled">
                 <li ng-repeat="obj in statuslist">
                    <span class="icon status-{{ obj.key }}"></span>
-                   <input class="form-control input-sm" id="input-status-{{obj.key}}" ng-model="obj.value" required />
+                   <input class="form-control input-sm" id="input-status-{{obj.key}}" ng-model="obj.value" />
                 </li>
             </ul>
         </div>
         <div class="modal-footer">
+            <input type="button" class="btn btn-default" ng-click="resetDefault()" style="float: left;" value="Reset to default"/>
+
             <button class="btn btn-default" ng-click="cancel()">Cancel</button>
             <button class="btn btn-primary" type="submit" ng-disabled="invalid()">Save</button>
         </div>
