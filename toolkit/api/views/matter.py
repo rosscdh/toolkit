@@ -159,10 +159,11 @@ class RevisionLabelView(generics.DestroyAPIView,
 
         ids_in_use = []
         for entry in status_labels.items():
-            label_id = int(entry[0])
-            revisions = Revision.objects.filter(status=label_id)
-            if revisions.count() > 0:
-                ids_in_use.append(label_id)
+            if entry[1]['is_active'] is False:  # this is only interesting if a label shall be disabled
+                label_id = int(entry[0])
+                revisions = Revision.objects.filter(status=label_id)
+                if revisions.count() > 0:
+                    ids_in_use.append(label_id)
 
         if not ids_in_use:
             obj.status_labels = status_labels
