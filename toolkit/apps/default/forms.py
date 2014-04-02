@@ -75,6 +75,7 @@ class SignUpForm(forms.Form):
 
     mpid = forms.CharField(
         label='',
+        required=False,
         widget=forms.HiddenInput()
     )
 
@@ -155,8 +156,11 @@ class SignUpForm(forms.Form):
         profile.data['user_class'] = profile.LAWYER
         profile.save(update_fields=['data'])
 
+        mpid = self.cleaned_data.get('mpid', None)
+
         analytics = AtticusFinch()
-        analytics.alias(user.pk, self.cleaned_data.get('mpid'))
+        if mpid is not None:
+            analytics.alias(user.pk, mpid)
         analytics.event('user.signup', user=user)
 
         return user
