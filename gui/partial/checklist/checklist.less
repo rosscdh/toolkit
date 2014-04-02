@@ -196,3 +196,27 @@ tr.item-heading.file-drag-over td:nth-child(2):before {
 	.fuimap;
 	&:before { content: "\e02d"; }
 }
+
+.checklist-wrapper table.checklist tr.tr-min-height, .checklist-wrapper table.checklist tr.tr-min-height td {
+	background:transparent !important;
+	height:1px;
+	border: 0 solid transparent;
+	padding:0 !important;
+	margin:0;
+}
+
+.checklist-wrapper table.checklist tr.tr-min-show, .checklist-wrapper table.checklist tr.tr-min-show td
+{
+	margin:10px 0 !important;
+	height:10px !important;
+	border-top: 10px solid transparent;
+}
+
+/* UL/LI based checklist */
+ul.checklist-items {
+	min-height: 1em;
+	li {
+		background-color: #FFF;
+		padding: 0.25em;
+	}
+}
