@@ -3,6 +3,7 @@ Deployment actions by branch
 
 [sign-app]
 
+1. ./manage.py syncdb
 1. ./manage.py migrate attachment 0001 --fake  # intial
 2. ./manage.py migrate attachment  # signatories to signers
 3. update the hellosign callback url on hellosign
