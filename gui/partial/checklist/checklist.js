@@ -1004,7 +1004,7 @@ angular.module('toolkit-gui')
 					APIUpdate.categories.push(cats[i].name);
 				}
 
-				items = jQuery.grep( items, function(item){ return !item.placeholder; });
+				items = jQuery.grep( items, function(item){ return item; });
 
 				jQuery.merge(APIUpdate.items, jQuery.map( items, getItemIDs ));
 
