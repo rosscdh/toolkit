@@ -81,12 +81,12 @@ CACHES = {
     },
     'session_cache': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1:11211',
+        'LOCATION': 'prod-lawpal.gckbla.0001.usw1.cache.amazonaws.com:6379',
         'TIMEOUT': 3600
     },
     'fallback': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': '/tmp/glynt.production.cache',
+        'LOCATION': '/tmp/toolkit.production.cache',
     }
 }
 

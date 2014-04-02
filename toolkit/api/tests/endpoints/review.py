@@ -688,6 +688,10 @@ class RevisionReviewerTest(BaseEndpointTest):
         #self.assertEqual(len(self.revision.reviewdocument_set.all().first().participants.all()), 2)
         self.assertEqual(len(self.revision.reviewdocument_set.all().first().reviewers.all()), 0)
 
+        stream = target_stream(self.matter)
+        self.assertEqual(stream[0].data['message'],
+                         u'Lawyer Test canceled their request for Participant Number 1 to provide a document on Test Item with Revision')
+
     def test_customer_get(self):
         self.client.login(username=self.user.username, password=self.password)
         resp = self.client.get(self.endpoint)

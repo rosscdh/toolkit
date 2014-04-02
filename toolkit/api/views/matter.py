@@ -18,7 +18,7 @@ from .mixins import (MatterMixin,
 
 from rest_framework import status as http_status
 
-from ..serializers import (MatterSerializer, SimpleMatterSerializer)
+from ..serializers import MatterSerializer
 from ..serializers.matter import LiteMatterSerializer
 
 import logging
@@ -46,7 +46,6 @@ class MatterEndpoint(viewsets.ModelViewSet):
         return {
             'matter': {
                 'status': None,
-                'others': [SimpleMatterSerializer(matter, context={'request': self.request}).data for matter in Workspace.objects.mine(user=self.request.user)]
             },
             'item': {'status': Item.ITEM_STATUS.get_choices_dict()},
             'revision': {'status': revision_status_labels},
