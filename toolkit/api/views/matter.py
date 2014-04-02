@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+import json
 
 from rulez import registry as rulez_registry
 
@@ -38,10 +39,12 @@ class MatterEndpoint(viewsets.ModelViewSet):
         # without this special case the following error shows up in tests:
         # ImproperlyConfigured: Expected view MatterEndpoint to be called with a URL keyword argument named "slug". Fix your URL conf, or set the `.lookup_field` attribute on the view correctly.
 
-        if self.action in ('list', 'create'):
-            revision_status_labels = Revision.REVISION_STATUS.get_choices_dict()
-        else:
-            revision_status_labels = self.get_object().status_labels
+        # if self.action in ('list', 'create'):
+        #     revision_status_labels = Revision.REVISION_STATUS.get_choices_dict()
+        # else:
+        #     revision_status_labels = self.get_object().status_labels
+        #
+        revision_status_labels = self.get_object().status_labels
 
         return {
             'matter': {
@@ -157,9 +160,19 @@ class RevisionLabelView(generics.DestroyAPIView,
         obj = self.get_object()
         status_labels = request.DATA.get('status_labels')
 
-        obj.status_labels = status_labels
-        obj.save(update_fields=['data'])
-        return Response(status=http_status.HTTP_201_CREATED)
+        ids_in_use = []
+        for entry in status_labels.items():
+            label_id = int(entry[0])
+            revisions = Revision.objects.filter(status=label_id)
+            if revisions.count() > 0:
+                ids_in_use.append(label_id)
+
+        if not ids_in_use:
+            obj.status_labels = status_labels
+            obj.save(update_fields=['data'])
+            return Response(status=http_status.HTTP_201_CREATED)
+        else:
+            return Response({'ids_in_use': ids_in_use}, status=http_status.HTTP_406_NOT_ACCEPTABLE)
 
     def delete(self, request, **kwargs):
         obj = self.get_object()
