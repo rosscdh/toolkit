@@ -1,7 +1,12 @@
 Deployment actions by branch
 ----------------------------
 
-[sign-app]
+--------------------------------------------------------------------------------
+** DEPLOYED 2 April 2014
+--------------------------------------------------------------------------------
+
+[sign-app] - Phase 1, done because the sign-app branch was very old and getting difficult to keep up to date with master
+note that when the sign app is completed we need to hook up the urls and things
 
 1. ./manage.py syncdb
 1. ./manage.py migrate attachment 0001 --fake  # intial
