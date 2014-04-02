@@ -2,9 +2,11 @@
 from django.conf import settings
 from mixpanel import Mixpanel
 
+
 MIXPANEL_SETTINGS = getattr(settings, 'MIXPANEL_SETTINGS', {
     'token': None,
 })
+
 
 class MixpanelOnLawpal(object):
     token = None
@@ -14,31 +16,24 @@ class MixpanelOnLawpal(object):
         if self.token is not None:
             self.service = Mixpanel(self.token)
 
-    def alias(self, alias_id, original, **kwargs):
+    def alias(self, alias_id, original, meta={}):
         if self.service is not None:
-            self.service.alias(alias_id=alias_id, original=original, meta=kwargs)
+            self.service.alias(alias_id=alias_id, original=original, meta=meta)
 
-    def event(self, key, distinct_id, **kwargs):
+    def event(self, key, user, distinct_id=None, properties={}):
         if self.service is not None:
-            self.service.track(distinct_id=distinct_id, event_name=key, properties=kwargs)
+            if distinct_id is None:
+                distinct_id = user.pk
 
-    def people_set(self, user):
-        if self.service is not None:
-            profile = user.profile
-
-            data = {
-                'first_name': user.first_name,
-                'last_name': user.last_name,
-                'email': user.email,
-                'user_class': profile.user_class,
+            all_properties = {
+                'Account Type': user.profile.account_type,
+                'User Type': user.profile.type,
+                'Via': 'web'
             }
+            all_properties.update(properties)
 
-            if profile.is_lawyer:
-                data.update({
-                    'firm_name': profile.firm_name
-                })
+            self.service.track(distinct_id=distinct_id, event_name=key, properties=all_properties)
 
-            self.service.people_set(user.pk, data)
 
 class AtticusFinch(MixpanelOnLawpal):
     """
