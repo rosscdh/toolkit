@@ -391,6 +391,10 @@ ACTSTREAM_SETTINGS = {
     'USE_FOLLOWING': False,  # VERY importand; will break our system if this changes to True
 }
 
+#
+# Any change to the LAWPAL_ACTIVITY elements below needs to affect the
+# test_notices.py 
+#
 LAWPAL_ACTIVITY = {
     "abridge": {
         "whitelist": [
