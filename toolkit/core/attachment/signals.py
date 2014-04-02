@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db import transaction
 from django.dispatch import receiver
+from django.db import IntegrityError
 from django.db.models.signals import pre_save, post_save, post_delete, m2m_changed
 
 from toolkit.apps.workspace import _model_slug_exists
@@ -72,14 +73,17 @@ def ensure_revision_reviewdocument_object(sender, instance, **kwargs):
     which has the matter.participants as the ReviewDocument.participants
     """
     if instance.reviewdocument_set.all().count() == 0:
-        with transaction.atomic():
-            #
-            # Detected that no ReviewDocument is preset
-            #
-            review_document = ReviewDocument.objects.create(document=instance)
+        try:
+            with transaction.atomic():
+                #
+                # Detected that no ReviewDocument is preset
+                #
+                review_document = ReviewDocument.objects.create(document=instance)
 
-            # now add the revew object to the instance reivewdocument_set
-            instance.reviewdocument_set.add(review_document)
+                # now add the revew object to the instance reivewdocument_set
+                instance.reviewdocument_set.add(review_document)
+        except IntegrityError as e:
+            logger.critical('transaction.atomic() integrity error: %s' % e)
 
 
 @receiver(post_save, sender=Revision, dispatch_uid='revision.ensure_revision_signdocument_object')
@@ -89,14 +93,17 @@ def ensure_revision_signdocument_object(sender, instance, **kwargs):
     which has the matter.participants as the ReviewDocument.participants
     """
     if instance.signdocument_set.all().count() == 0:
-        with transaction.atomic():
-            #
-            # Detected that no ReviewDocument is preset
-            #
-            sign_document = SignDocument.objects.create(document=instance)
+        try:
+            with transaction.atomic():
+                #
+                # Detected that no ReviewDocument is preset
+                #
+                sign_document = SignDocument.objects.create(document=instance)
 
-            # now add the revew object to the instance reivewdocument_set
-            instance.signdocument_set.add(sign_document)
+                # now add the revew object to the instance reivewdocument_set
+                instance.signdocument_set.add(sign_document)
+        except IntegrityError as e:
+            logger.critical('transaction.atomic() integrity error: %s' % e)
 
 
 """
