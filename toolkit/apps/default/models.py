@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.db import models
-from django.db import transaction
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 
@@ -78,8 +77,7 @@ def _get_or_create_user_profile(user):
     # set the profile
     # This is what triggers the whole cleint profile creation process in pipeline.py:ensure_user_setup
     try:
-        with transaction.atomic():
-            profile, is_new = UserProfile.objects.get_or_create(user=user)  # added like this so django noobs can see the result of get_or_create
+        profile, is_new = UserProfile.objects.get_or_create(user=user)  # added like this so django noobs can see the result of get_or_create
         return (profile, is_new,)
     except IntegrityError as e:
         logger.critical('transaction.atomic() integrity error: %s' % e)
