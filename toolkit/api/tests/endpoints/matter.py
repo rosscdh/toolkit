@@ -369,46 +369,88 @@ class MatterRevisionLabelTest(BaseEndpointTest):
         resp_data = json.loads(resp.content)
 
         status_labels = resp_data['_meta']['revision']['status']
-        self.assertDictEqual(status_labels,
-                             {'0': 'Draft', '1': 'For Discussion', '2': 'Final', '3': 'Executed', '4': 'Filed'})
+        self.assertDictEqual(status_labels, {'0': {u'is_active': True, u'label': u'Draft'},
+                                             '1': {u'is_active': True, u'label': u'For Discussion'},
+                                             '2': {u'is_active': True, u'label': u'Final'},
+                                             '3': {u'is_active': True, u'label': u'Executed'},
+                                             '4': {u'is_active': True, u'label': u'Filed'}})
 
     def test_labels_post(self):
         self.client.login(username=self.lawyer.username, password=self.password)
 
-        data = {'status_labels': {
-            '0': 'Draftt', '1': 'For Discussionn', '2': 'Finall', '3': 'Executedd', '4': 'Filedd'}}
-        resp = self.client.post(self.endpoint,
-                                data=json.dumps(data), content_type='application/json')
+        data = {'status_labels': {'0': {u'is_active': True, u'label': u'_Draft'},
+                                  '1': {u'is_active': True, u'label': u'_For Discussion'},
+                                  '2': {u'is_active': True, u'label': u'_Final'},
+                                  '3': {u'is_active': False, u'label': u'_Executed'},
+                                  '4': {u'is_active': True, u'label': u'_Filed'}}}
+
+        resp = self.client.post(self.endpoint, data=json.dumps(data), content_type='application/json')
         self.assertEqual(201, resp.status_code)
 
         resp = self.client.get(self.endpoint_for_get)
         resp_data = json.loads(resp.content)
 
         status_labels = resp_data['_meta']['revision']['status']
-        self.assertDictEqual(status_labels,
-                             {'0': 'Draftt', '1': 'For Discussionn', '2': 'Finall', '3': 'Executedd', '4': 'Filedd'})
+        self.assertDictEqual(status_labels, {'0': {u'is_active': True, u'label': u'_Draft'},
+                                             '1': {u'is_active': True, u'label': u'_For Discussion'},
+                                             '2': {u'is_active': True, u'label': u'_Final'},
+                                             '3': {u'is_active': False, u'label': u'_Executed'},
+                                             '4': {u'is_active': True, u'label': u'_Filed'}})
 
-    def test_labels_delete(self):
+    def test_labels_remove(self):
         self.client.login(username=self.lawyer.username, password=self.password)
 
-        data = {'status_labels': {
-            '0': 'Draftt', '1': 'For Discussionn', '2': 'Finall', '3': 'Executedd', '4': 'Filedd'}}
-        resp = self.client.post(self.endpoint,
-                                data=json.dumps(data), content_type='application/json')
+        data = {'status_labels': {'0': {u'is_active': True, u'label': u'_Draft'},
+                                  '1': {u'is_active': True, u'label': u'_For Discussion'},
+                                  '2': {u'is_active': True, u'label': u'_Final'},
+                                  '3': {u'is_active': True, u'label': u'_Executed'},
+                                  '4': {u'is_active': True, u'label': u'_Filed'}}}
+
+        resp = self.client.post(self.endpoint, data=json.dumps(data), content_type='application/json')
         self.assertEqual(201, resp.status_code)
 
+        item1 = mommy.make('item.Item', matter=self.matter)
+        revision = mommy.make('attachment.Revision', status=0, item=item1)
+
+        data = {'status_labels': {'0': {u'is_active': False, u'label': u'_Draft'},
+                                  '1': {u'is_active': True, u'label': u'_For Discussion'},
+                                  '2': {u'is_active': True, u'label': u'_Final'},
+                                  '3': {u'is_active': True, u'label': u'_Executed'},
+                                  '4': {u'is_active': True, u'label': u'_Filed'}}}
+
+        resp = self.client.post(self.endpoint, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(406, resp.status_code)  # should return 406 because label 0 is in use & cannot be set inactive
+
+        resp_data = json.loads(resp.content)
+        self.assertEqual(resp_data['ids_in_use'], [0])
+
         resp = self.client.get(self.endpoint_for_get)
         resp_data = json.loads(resp.content)
 
         status_labels = resp_data['_meta']['revision']['status']
-        self.assertDictEqual(status_labels,
-                             {'0': 'Draftt', '1': 'For Discussionn', '2': 'Finall', '3': 'Executedd', '4': 'Filedd'})
+        self.assertDictEqual(status_labels['0'], {u'is_active': True, u'label': u'_Draft'})
 
-        self.client.delete(self.endpoint)
-
-        resp = self.client.get(self.endpoint_for_get)
-        resp_data = json.loads(resp.content)
-
-        status_labels = resp_data['_meta']['revision']['status']
-        self.assertDictEqual(status_labels,
-                             {'0': 'Draft', '1': 'For Discussion', '2': 'Final', '3': 'Executed', '4': 'Filed'})
+    # def test_labels_delete(self):
+    #     self.client.login(username=self.lawyer.username, password=self.password)
+    #
+    #     data = {'status_labels': {
+    #         '0': 'Draftt', '1': 'For Discussionn', '2': 'Finall', '3': 'Executedd', '4': 'Filedd'}}
+    #     resp = self.client.post(self.endpoint,
+    #                             data=json.dumps(data), content_type='application/json')
+    #     self.assertEqual(201, resp.status_code)
+    #
+    #     resp = self.client.get(self.endpoint_for_get)
+    #     resp_data = json.loads(resp.content)
+    #
+    #     status_labels = resp_data['_meta']['revision']['status']
+    #     self.assertDictEqual(status_labels,
+    #                          {'0': 'Draftt', '1': 'For Discussionn', '2': 'Finall', '3': 'Executedd', '4': 'Filedd'})
+    #
+    #     self.client.delete(self.endpoint)
+    #
+    #     resp = self.client.get(self.endpoint_for_get)
+    #     resp_data = json.loads(resp.content)
+    #
+    #     status_labels = resp_data['_meta']['revision']['status']
+    #     self.assertDictEqual(status_labels,
+    #                          {'0': 'Draft', '1': 'For Discussion', '2': 'Final', '3': 'Executed', '4': 'Filed'})
