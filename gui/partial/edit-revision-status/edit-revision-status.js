@@ -15,11 +15,12 @@ angular.module('toolkit-gui')
 	'$modalInstance',
 	'currentUser',
 	'matter',
-	'statusdict',
+	'customstatusdict',
+	'defaultstatusdict',
 	'matterService',
 	'toaster',
 	'$log',
-	function($scope, $modalInstance, currentUser, matter, statusdict, matterService, toaster, $log){
+	function($scope, $modalInstance, currentUser, matter, customstatusdict, defaultstatusdict, matterService, toaster, $log){
 
 		/**
 		 * In scope variable containing details about the current user. This is passed through from the originating controller.
@@ -43,11 +44,22 @@ angular.module('toolkit-gui')
 		 * @type {Object}
 		 * @private
 		 */
-        $scope.statusdict = statusdict;
+        $scope.customstatusdict = customstatusdict;
         $scope.statuslist = [];
-        jQuery.each( $scope.statusdict, function( key, value ) {
+        jQuery.each( $scope.customstatusdict, function( key, value ) {
           $scope.statuslist.push({'key':key, 'value': value});
         });
+
+
+        $scope.defaultstatusdict = defaultstatusdict;
+
+        $scope.resetDefault = function () {
+          $scope.statuslist = [];
+          jQuery.each( $scope.defaultstatusdict, function( key, value ) {
+                $scope.statuslist.push({'key':key, 'value': value});
+          });
+        };
+
 
 		/**
 		 * Close dialog on afirmative user initiated event (.e.g. click's OK button).
@@ -76,14 +88,14 @@ angular.module('toolkit-gui')
 		 */
 		$scope.request = function() {
             jQuery.each( $scope.statuslist, function( index, obj ) {
-                $scope.statusdict[obj.key] = obj.value;
+                $scope.customstatusdict[obj.key] = obj.value;
             });
-            var postdata = {'status_labels': $scope.statusdict};
+            var postdata = {'status_labels': $scope.customstatusdict};
             $log.debug(postdata);
 
             matterService.saveRevisionStatus($scope.matter.slug, postdata).then(
                     function success(){
-                        $modalInstance.close(  $scope.statusdict );
+                        $modalInstance.close(  $scope.customstatusdict );
                     },
                     function error(err){
                         if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to save the status.") {
