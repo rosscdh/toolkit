@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 from collections import OrderedDict
-
-from toolkit.apps.workspace.mixins.categories import InvalidCategoryValue
 from toolkit.core.attachment.models import Revision
 
 
@@ -11,25 +9,22 @@ class RevisionLabelMixin(object):
     """
     @property
     def status_labels(self):
-        """
-        Get the set of closing groups
-        """
-        result = self.data.get('status_labels', {})
+        choices = self.data.get('status_labels', {})
 
-        if result == {}:
-            return Revision.REVISION_STATUS.get_choices_dict()
-        return result
+        if choices == {}:
+            defaults = Revision.REVISION_STATUS.get_choices_dict()
+            for k, v in defaults.items():
+                choices[k] = {'is_active': True, 'label': v}
+        # import pdb;pdb.set_trace()
+        return choices
 
     @status_labels.setter
     def status_labels(self, value):
-        """
-        Set the status names as a dict
-        """
         if type(value) != dict:
-            raise InvalidCategoryValue
+            raise Exception('status labels must be of type dict')
 
         choices = OrderedDict()
         for k in sorted(value.keys()):
-            choices[str(k)] = value[k]
+            choices[k] = value[k]
 
         self.data['status_labels'] = choices
