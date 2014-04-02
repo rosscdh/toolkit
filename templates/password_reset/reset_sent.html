@@ -5,5 +5,5 @@
 
 {% block content %}
 	{% blocktrans with ago=timestamp|timesince %}<p>An email was sent to <strong>{{ email }}</strong>.</p><p>Use the link in the sent email to set a new password.</p>{% endblocktrans %}
-    <a href="{% url 'public:signin' %}">Sign In</a>
+    <a href="{% url 'public:signin' %}" class="btn btn-success">Sign In</a>
 {% endblock %}

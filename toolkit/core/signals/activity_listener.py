@@ -80,20 +80,35 @@ def _notifications_send(verb_slug, actor, target, message):
         stored_messages.STORED_ERROR
     update the user.profile.has_notifications
     """
-    #import pdb;pdb.set_trace()
     if verb_slug in NOTIFICATIONS_WHITELIST:
+
         # catch when we have no stored message
         if stored_messages is None:
             logger.critical('django-stored-messages is not installed')
             return None
 
         if message:
+            from toolkit.api.serializers.user import LiteUserSerializer
+            from toolkit.api.serializers.matter import LiteMatterSerializer
+
             query_set = target.participants.exclude(id=actor.pk)
+
+            actor = LiteUserSerializer(actor, context={'request': None}).data
+
+            target_class_name = target.__class__.__name__
+
+            if target_class_name == 'Workspace':
+                target = LiteMatterSerializer(target, context={'request': None}).data
+            else:
+                raise Exception('Unknown target_class_name: %s' % target_class_name)
+
             stored_messages.add_message_for(users=query_set.all(),
                                             level=stored_messages.STORED_INFO,
                                             message=message,
                                             extra_tags='',
-                                            fail_silently=False)
+                                            fail_silently=False,
+                                            actor=actor,
+                                            target=target)
             #
             # @TODO move into manager?
             #
@@ -106,8 +121,6 @@ def _notifications_send(verb_slug, actor, target, message):
 @receiver(send_activity_log, dispatch_uid="core.on_activity_received")
 def on_activity_received(sender, **kwargs):
     # actor has to be popped, the rest has to remain in kwargs and is not used here, except message to use in abridge
-
-    # Pops
     actor = kwargs.pop('actor', False)
     kwargs.pop('signal', None)
     # Gets

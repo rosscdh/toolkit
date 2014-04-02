@@ -24,12 +24,11 @@
                         <article class="notification">
                             <div class="row">
                                 <div class="col-xs-1">
-                                    {#% avatar notice.user %#}
-                                    <div class="avatar img-circle"><span class="initials" title="Joe Bloggs">JB</span></div>
+                                    <div class="avatar img-circle"><span class="initials" title="{{ notice.message.data.actor.name }}">{{ notice.message.data.actor.initials }}</span></div>
                                 </div>
                                 <div class="col-xs-10">
                                     <p class="lead">{{ notice.message }}</p>
-                                    <p class="small">{{ notice.message.date|naturaltime }} — in <a href="#">Incorporation &amp; Seed Financing</a> — for <a href="#">Acme Inc</a>.</p>
+                                    <p class="small">{{ notice.message.date|naturaltime }} — in <a href="{{ notice.message.data.target.base_url }}">{{ notice.message.data.target.name }}</a> for {{ notice.message.data.target.client.name }}.</p>
                                 </div>
                                 <div class="col-xs-1">
                                     <a href="javascript:;" data-pk="{{ notice.pk }}" data-url="{% url 'notification:inbox-read' pk=notice.pk %}" class="btn btn-sm notification-btn mark-as-read" data-toggle="tooltip" data-placement="top" title="Mark as read">
