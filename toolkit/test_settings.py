@@ -16,6 +16,8 @@ TEST_RUNNER = 'toolkit.test_runner.AppTestRunner'
 
 PROJECT_ENVIRONMENT = 'test'
 
+ATOMIC_REQUESTS = True
+
 INSTALLED_APPS = INSTALLED_APPS + (
     'casper',
     'colortools',

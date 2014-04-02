@@ -7,13 +7,16 @@ from .models import ReviewDocument
 
 
 def _add_as_authorised(instance, pk_set):
-    user = User.objects.filter(pk__in=pk_set).first()
-    instance.authorise_user_to_review(user=user)
-
+    if pk_set:
+        user = User.objects.filter(pk__in=pk_set).first()
+        instance.authorise_user_access(user=user)
+        instance.save(update_fields=['data'])
 
 def _remove_as_authorised(instance, pk_set):
-    user = User.objects.filter(pk__in=pk_set).first()
-    instance.deauthorise_user_to_review(user=user)
+    if pk_set:
+        user = User.objects.filter(pk__in=pk_set).first()
+        instance.deauthorise_user_access(user=user)
+        instance.save(update_fields=['data'])
 
 """
 When new ReviewDocument are created automatically the matter.participants are
@@ -56,21 +59,21 @@ reviewers are the 3rd party entity NOT participants
 
 
 @receiver(m2m_changed, sender=ReviewDocument.reviewers.through, dispatch_uid='reviewdocument.on_reviewer_add')
-def on_reviewer_add(sender, instance, action, **kwargs):
+def on_reviewer_add(sender, instance, action, pk_set, **kwargs):
     """
     when a reviewer is added from the m2m then authorise them
     for access
     only reviewers get action events
     """
     if action in ['post_add']:
-        _add_as_authorised(instance=instance, pk_set=kwargs.get('pk_set'))
+        _add_as_authorised(instance=instance, pk_set=pk_set)
 
 
 @receiver(m2m_changed, sender=ReviewDocument.reviewers.through, dispatch_uid='reviewdocument.on_reviewer_remove')
-def on_reviewer_remove(sender, instance, action, **kwargs):
+def on_reviewer_remove(sender, instance, action, pk_set, **kwargs):
     """
     when a reviewer is removed from the m2m then deauthorise them
     only reviewers get action events
     """
     if action in ['post_remove']:
-        _remove_as_authorised(instance=instance, pk_set=kwargs.get('pk_set'))
+        _remove_as_authorised(instance=instance, pk_set=pk_set)
