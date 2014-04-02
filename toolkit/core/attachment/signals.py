@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
 from django.db import transaction
 from django.dispatch import receiver
+from django.db import IntegrityError
 from django.db.models.signals import pre_save, post_save, post_delete, m2m_changed
 
 from toolkit.apps.workspace import _model_slug_exists
 
-from toolkit.apps.review import (ASSOCIATION_STRATEGIES,
-                                 REVIEWER_DOCUMENT_ASSOCIATION_STRATEGY,)
 
 from .models import Revision
 from toolkit.apps.review.models import ReviewDocument
+from toolkit.apps.sign.models import SignDocument
 
-import uuid
 import logging
 logger = logging.getLogger('django.request')
 
@@ -70,17 +69,49 @@ def ensure_one_current_revision(sender, instance, **kwargs):
 @receiver(post_save, sender=Revision, dispatch_uid='revision.ensure_revision_reviewdocument_object')
 def ensure_revision_reviewdocument_object(sender, instance, **kwargs):
     """
-    signal to handle creating the DocumentReview object for each Revision Object
+    signal to handle creating the ReviewDocument object for each Revision Object
     which has the matter.participants as the ReviewDocument.participants
     """
     if instance.reviewdocument_set.all().count() == 0:
-        with transaction.atomic():
-            #
-            # Detected that no ReviewDocument is preset
-            #
-            review = ReviewDocument.objects.create(document=instance)
-            # now add the revew object to the instance reivewdocument_set
-            instance.reviewdocument_set.add(review)
+        try:
+            with transaction.atomic():
+                #
+                # Detected that no ReviewDocument is preset
+                #
+                review_document = ReviewDocument.objects.create(document=instance)
+
+                # now add the revew object to the instance reivewdocument_set
+                instance.reviewdocument_set.add(review_document)
+        except IntegrityError as e:
+            logger.critical('transaction.atomic() integrity error: %s' % e)
+
+
+@receiver(post_save, sender=Revision, dispatch_uid='revision.ensure_revision_signdocument_object')
+def ensure_revision_signdocument_object(sender, instance, **kwargs):
+    """
+    signal to handle creating the SignDocument object for each Revision Object
+    which has the matter.participants as the ReviewDocument.participants
+    """
+    if instance.signdocument_set.all().count() == 0:
+        try:
+            with transaction.atomic():
+                #
+                # Detected that no ReviewDocument is preset
+                #
+                sign_document = SignDocument.objects.create(document=instance)
+
+                # now add the revew object to the instance reivewdocument_set
+                instance.signdocument_set.add(sign_document)
+        except IntegrityError as e:
+            logger.critical('transaction.atomic() integrity error: %s' % e)
+
+
+"""
+Reviewers
+reviewdocuments have 1 object per reviewer this is to ensure a unique auth url for each reviewer
+and to ensure there is a sandbox view where only the matter participants and the invited reviewer
+can talk
+"""
 
 
 @receiver(post_delete, sender=Revision, dispatch_uid='revision.set_previous_revision_is_current_on_delete')
@@ -119,7 +150,7 @@ def on_reviewer_add(sender, instance, action, model, pk_set, **kwargs):
         reviewdocument.slug = None  # set to non so it gets regenerated
         reviewdocument.save()  # save it so we get a new pk so we can add reviewrs
         reviewdocument.reviewers.add(user)  # add the reviewer
-        reviewdocument.recompile_auth_keys()  # update teh auth keys to match the new slug
+        reviewdocument.recompile_auth_keys()  # update the auth keys to match the new slug
         reviewdocument.save(update_fields=['data'])
 
 
@@ -128,12 +159,11 @@ def on_reviewer_remove(sender, instance, action, model, pk_set, **kwargs):
     """
     when a reviewer is removed from the m2m then deauthorise them
     """
-    if action in ['pre_remove']:
+    if action in ['pre_remove'] and pk_set:
         user_pk = next(iter(pk_set))  # get the first item in the set should only ever be 1 anyway
         user = model.objects.get(pk=user_pk)
 
-        reviewdocuments = ReviewDocument.objects.filter(document=instance,
-                                                        reviewers__in=[user])
+        reviewdocuments = instance.reviewdocument_set.filter(reviewers__in=[user])
 
         #
         # 1 ReviewDocument per reviewer
@@ -156,3 +186,29 @@ def on_upload_set_item_is_requested_false(sender, instance, **kwargs):
             item.is_requested = False
             item.save(update_fields=['is_requested'])
             # @TODO issue activity here?
+
+"""
+Signers
+Unlike reviewrs, signdocuments have only 1 object per set of signature invitees
+"""
+
+
+@receiver(m2m_changed, sender=Revision.signers.through, dispatch_uid='revision.on_signatory_add')
+def on_signatory_add(sender, instance, action, model, pk_set, **kwargs):
+    """
+    when a signatory is added from the m2m then authorise them
+    for access
+    """
+    if action in ['post_add'] and pk_set:
+        user_pk = next(iter(pk_set))  # get the first item in the set should only ever be 1 anyway
+        user = model.objects.get(pk=user_pk)
+        #
+        # Get the base sign documnet; created to alow the participants to access
+        # and sign a documnet
+        #
+        signdocument = instance.signdocument_set.all().first()
+
+        #
+        # 1 signing document for this document; as we only sign the final document
+        #
+        signdocument.signers.add(user)  # add the reviewer

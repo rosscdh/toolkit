@@ -73,9 +73,16 @@ class SignUpForm(forms.Form):
         required=True
     )
 
+    mpid = forms.CharField(
+        label='',
+        required=False,
+        widget=forms.HiddenInput()
+    )
+
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         self.helper.attrs = {
+            'id': 'signup-form',
             'parsley-validate': ''
         }
         self.helper.form_show_errors = False
@@ -95,6 +102,7 @@ class SignUpForm(forms.Form):
                 Field('password'),
                 Field('password_confirm'),
                 Field('t_and_c', template='public/bootstrap3/t_and_c.html'),
+                Field('mpid'),
             ),
             ButtonHolder(
                 Submit('submit', 'Create Account')
@@ -148,14 +156,12 @@ class SignUpForm(forms.Form):
         profile.data['user_class'] = profile.LAWYER
         profile.save(update_fields=['data'])
 
+        mpid = self.cleaned_data.get('mpid', None)
+
         analytics = AtticusFinch()
-        analytics.people_set(user=user)
-        analytics.event('user.signup', distinct_id=user.pk, **{
-            'firm_name': self.cleaned_data.get('firm_name'),
-            'first_name': self.cleaned_data.get('first_name'),
-            'last_name': self.cleaned_data.get('last_name'),
-            'email': self.cleaned_data.get('email'),
-        })
+        if mpid is not None:
+            analytics.alias(user.pk, mpid)
+        analytics.event('user.signup', user=user)
 
         return user
 

@@ -104,6 +104,7 @@ PROJECT_APPS = (
     'toolkit.apps.workspace',
     # Core related apps
     'toolkit.apps.review',
+    'toolkit.apps.sign',
     # Routine Apps
     'toolkit.apps.eightythreeb',
     'toolkit.apps.engageletter',
@@ -406,8 +407,9 @@ LAWPAL_ACTIVITY = {
         "whitelist": [
                       'item-reopened', 'item-closed',
                       'item-commented', 'item-comment-created', 'item-comment-deleted',
-                      'item-invited-reviewer',
                       'item-provide-a-document',
+                      'item-invited-reviewer',
+                      'item-invited-signer',
                       'revision-created', 'revision-comment-created', 'item-added-revision-comment', 
                       'revision-added-revision-comment',
                       'workspace-added-participant', 'workspace-removed-participant'
@@ -418,6 +420,7 @@ LAWPAL_ACTIVITY = {
                       'item-provide-a-document', 'item-invited-reviewer', 'item-canceled-their-request-for-a-document',
                       'item-closed', 'item-reopened', 'item-added-revision-comment', 'item-deleted-revision-comment',
                       'revision-created', 'revision-deleted',
+                      'item-invited-signer',
                       'itemrequestrevisionview-provide-a-document',
                       'workspace-created', 'workspace-added-participant', 'workspace-removed-participant']  # create so many activities to keep tests running for now
     },
