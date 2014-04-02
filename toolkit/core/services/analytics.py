@@ -26,9 +26,10 @@ class MixpanelOnLawpal(object):
                 distinct_id = user.pk
 
             all_properties = {
-                'Account Type': user.profile.account_type,
-                'User Type': user.profile.type,
-                'Via': 'web'
+                'account_type': user.profile.account_type,
+                'user': user.get_full_name(),
+                'user_type': user.profile.type,
+                'via': 'web'
             }
             all_properties.update(properties)
 
