@@ -17,29 +17,39 @@
 
 				<!-- LAWYER checklist //-->
 				<!-- null category //-->
+				<!--
 				<table class="table checklist ui-drag-disabled" ng-repeat="cat in data.categories | filter: { 'name': null }" ng-include="'/static/ng/partial/checklist/includes/checklist-line-item.html'" ng-show="data.usdata.current.user_class=='lawyer'">
 				</table>
+				//-->
 				<!-- end: null category //-->
 
+				<span ng-if="data.usdata.current.user_class=='lawyer'">
+					<div ui-sortable="checklistCategorySortableOptions" ng-model="data.categories">
+						<div ng-repeat="cat in data.categories">
+							<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-header.html'"></span>
+							<!-- Checklist //-->
+							<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-lawyer.html'"></span>
+						</div>
+					</div>
+				</span>
+
+				<span ng-if="data.usdata.current.user_class=='customer'">
+					<div ng-repeat="cat in data.categories">
+						<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-header.html'"></span>
+						<!-- Checklist //-->
+						<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-customer.html'"></span>
+					</div>
+				</span>
+
 				<!-- checklist //-->
+				<!--
 				<div ui-sortable="checklistCategorySortableOptions" ng-model="data.categories" ng-show="data.usdata.current.user_class=='lawyer'">
 					<table class="table checklist" ng-repeat="cat in data.categories" ng-hide="cat.name===null" ng-include="'/static/ng/partial/checklist/includes/checklist-line-item.html'">
 					</table>
 				</div>
+				//-->
 				<!-- end checklist //-->
 				<!-- end: LAWYER checklist //-->
-
-				<!-- CUSTOMER checklist //-->
-				<!-- null category //-->
-				<table class="table checklist" ng-repeat="cat in data.categories | filter: { 'name': null }" ng-include="'/static/ng/partial/checklist/includes/checklist-line-item.html'" ng-show="data.usdata.current.user_class!=='lawyer'">
-				</table>
-				<!-- end: null category //-->
-
-				<!-- checklist //-->
-				<table class="table checklist" ng-repeat="cat in data.categories" ng-hide="cat.name===null||data.usdata.current.user_class=='lawyer'" ng-include="'/static/ng/partial/checklist/includes/checklist-line-item.html'">
-				</table>
-				<!-- end checklist //-->
-				<!-- end: CUSTOMER checklist //-->
 			</div>
 			<div class="col-sm-7 item spa full">
 				<div class="row full">
