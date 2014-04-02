@@ -133,14 +133,14 @@ html,body, div.full
 		margin-top:-4px;
 		margin-bottom:-5px;
 	}
-	table.checklist {
+	.checklist {
 		background-color:white;
 		margin-top:10px;
 		margin-bottom:13px;
-		tr.category-uncategorized th.category {
+		.category-uncategorized th.category {
 			color:#ccc;
 		}
-		tr {
+		.row {
 			border-top:5px solid #f2f2f2;
 			cursor:pointer;
 			&.item-closed {
@@ -173,7 +173,7 @@ html,body, div.full
 				}
 			}
 		}
-		th {
+		.row-header {
 			background-color:#f2f2f2;
 			&.category-controls {
 				.btn-group {
@@ -196,7 +196,7 @@ html,body, div.full
 				padding-top:20px;
 			}
 		}
-		tr td {
+		.row li {
 			padding:8px 9px;
 			border-top:none;
 			border-bottom:none;
@@ -254,7 +254,7 @@ html,body, div.full
 				}
 			}
 		}
-		td.status {
+		.status {
 			padding-top:5px;
 			padding-bottom:0px;
 			text-align:right;
@@ -284,7 +284,7 @@ html,body, div.full
 				&.doc-status-9 { border-color:@doc-status-9;color:@doc-status-9;}
 			}
 		}
-		td.add-new {
+		.add-new {
 			text-align:right;
 			padding:4px 0px 4px 0px;
 			font-size:13px;
@@ -297,7 +297,7 @@ html,body, div.full
 				font-size:11px;
 			}
 		}
-		tr.add-new-controls {
+		.add-new-controls {
 			.input-group {
 				width:100%;
 			}
