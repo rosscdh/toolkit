@@ -37,7 +37,10 @@ urlpatterns = patterns('',
     url(r'^crocodoc/', include('dj_crocodoc.urls')),
 
     # signing events
-    url(r'^sign/', include('hello_sign.urls', namespace='hellosign')),
+    url(r'^sign/', include('toolkit.apps.sign.urls', namespace='sign')),
+    # HelloSign
+    url(r'^hellosign/', include('hello_sign.urls', namespace='hellosign')),
+    # DocuSign - Coming Soon
 
     # home default terminator
     url(r'^', include('toolkit.apps.default.urls', namespace='public')),

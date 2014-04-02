@@ -54,8 +54,6 @@ class MatterActivityEventService(object):
     revision-created
     revision-deleted
 
-
-
     """
     def __init__(self, matter, **kwargs):
         self.matter = matter
@@ -63,7 +61,7 @@ class MatterActivityEventService(object):
 
     def get_verb_slug(self, action_object, verb):
         verb_slug = slugify(action_object.__class__.__name__) + '-' + slugify(verb)
-        logger.critical('possible verb_slug: "%s"' % verb_slug)
+        logger.debug('possible verb_slug: "%s"' % verb_slug)
 
         # with open('/tmp/verb_slugs.log', 'a') as f:
         #     f.write(verb_slug + '\r\n')
@@ -244,3 +242,19 @@ class MatterActivityEventService(object):
                               revision=revision, filename=revision.name, version=revision.slug,
                               date_created=datetime.datetime.utcnow())
         self.analytics.event('review.request.completed', distinct_id=user.pk, matter_pk=item.matter.pk, item_pk=item.pk, revision_pk=revision.pk)
+
+    #
+    # Signing
+    #
+    def invite_user_as_signer(self, item, inviting_user, invited_user):
+        message = u'%s invited %s as signer for %s' % (inviting_user, invited_user, item)
+        self._create_activity(actor=inviting_user, verb=u'invited signer', action_object=item, message=message,
+                              user=invited_user)
+        self.analytics.event('review.signature.request.sent', distinct_id=inviting_user.pk, invited=invited_user.get_full_name(), matter_pk=item.matter.pk, item_pk=item.pk)
+
+    def user_viewed_signature_request(self, item, user, revision):
+        message = u'%s viewed revision %s (%s) for %s' % (user, revision.name, revision.slug, item)
+        self._create_activity(actor=user, verb=u'viewed revision', action_object=item, message=message,
+                              revision=revision, filename=revision.name, version=revision.slug,
+                              date_created=datetime.datetime.utcnow())
+        self.analytics.event('review.request.viewed', distinct_id=user.pk, matter_pk=item.matter.pk, item_pk=item.pk, revision_pk=revision.pk)

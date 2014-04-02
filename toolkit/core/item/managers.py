@@ -23,6 +23,6 @@ class ItemManager(IsDeletedManager):
         # review requests
         queries += [models.Q(revision__is_current=True) & models.Q(revision__reviewers__in=[user])]
         # signing requests
-        queries += [models.Q(revision__is_current=True) & models.Q(revision__signatories__in=[user])]
+        queries += [models.Q(revision__is_current=True) & models.Q(revision__signers__in=[user])]
 
-        return self.get_queryset().filter(reduce(operator.or_, queries)).distinct()
+        return self.get_queryset().filter(reduce(operator.or_, queries))
