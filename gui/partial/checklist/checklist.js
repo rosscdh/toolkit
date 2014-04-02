@@ -969,6 +969,7 @@ angular.module('toolkit-gui')
             var modalInstance = $modal.open({
                 'templateUrl': '/static/ng/partial/edit-revision-status/edit-revision-status.html',
                 'controller': 'EditRevisionStatusCtrl',
+                'backdrop': 'static',
                 'resolve': {
                     'currentUser': function () {
                         return matter.current_user;
@@ -976,15 +977,18 @@ angular.module('toolkit-gui')
                     'matter': function () {
                         return matter;
                     },
-                    'statusdict': function () {
-                        return $scope.data.matter._meta.revision.status;
+                    'customstatusdict': function () {
+                        return $scope.data.matter._meta.item.custom_status;
+                    },
+                    'defaultstatusdict': function () {
+                        return $scope.data.matter._meta.item.default_status;
                     }
                 }
             });
 
             modalInstance.result.then(
                 function ok(result) {
-                    $scope.data.matter._meta.revision.status = result;
+                    $scope.data.matter._meta.item.status = result;
                 }
             );
         };
