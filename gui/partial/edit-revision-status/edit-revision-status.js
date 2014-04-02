@@ -53,11 +53,15 @@ angular.module('toolkit-gui')
 
         $scope.defaultstatusdict = defaultstatusdict;
 
-        $scope.resetDefault = function () {
-          $scope.statuslist = [];
-          jQuery.each( $scope.defaultstatusdict, function( key, value ) {
-                $scope.statuslist.push({'key':key, 'value': value});
-          });
+        $scope.resetDefault = function (key) {
+            if (!key){
+                $scope.statuslist = [];
+                jQuery.each( $scope.defaultstatusdict, function( key, value ) {
+                        $scope.statuslist.push({'key':key, 'value': value});
+                });
+            } else {
+                $scope.statuslist[key].value = $scope.defaultstatusdict[key];
+            }
         };
 
 
