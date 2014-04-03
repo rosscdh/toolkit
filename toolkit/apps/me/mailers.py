@@ -20,7 +20,7 @@ class ValidateEmailMailer(BaseMailerService):
     """
     m = ValidateEmailMailer(
             recipients=(('Alex', 'alex@lawpal.com')))
-    m.process()
+    m.process(user=user_send_validation_email_to)
     """
     email_template = 'validate_email'
 
