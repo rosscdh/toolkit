@@ -20,7 +20,7 @@ class MatterActivityEventService(object):
     Matters
     =======
 
-    workspace-added-participant 
+    workspace-added-participant
     workspace-created
     workspace-edited
     workspace-removed-participant
@@ -28,28 +28,28 @@ class MatterActivityEventService(object):
     Items
     =======
 
-    item-added-revision-comment 
+    item-added-revision-comment
     item-canceled-their-request-for-a-document
     item-changed-the-status
     item-closed
-    item-comment-created 
+    item-comment-created
     item-comment-deleted
-    item-commented 
+    item-commented
     item-created
     item-deleted-revision-comment
-    item-edited 
-    item-invited-reviewer 
-    item-provide-a-document 
+    item-edited
+    item-invited-reviewer
+    item-provide-a-document
     item-renamed
     item-reopened
-    item-reopened 
+    item-reopened
     item-viewed-revision
     itemrequestrevisionview-provide-a-document
 
     Revisions
     =======
 
-    revision-comment-created 
+    revision-comment-created
     revision-comment-deleted
     revision-created
     revision-deleted
@@ -296,11 +296,20 @@ class MatterActivityEventService(object):
         message = u'%s invited %s as signer for %s' % (inviting_user, invited_user, item)
         self._create_activity(actor=inviting_user, verb=u'invited signer', action_object=item, message=message,
                               user=invited_user)
-        self.analytics.event('sign.request.sent', user=inviting_user, invited=invited_user.get_full_name(), matter_pk=item.matter.pk, item_pk=item.pk)
+        self.analytics.event('sign.request.sent', user=inviting_user, **{
+            'invited': invited_user.get_full_name(),
+            'invited_type': invited_user.profile.type,
+            'item_pk': item.pk,
+            'matter_pk': item.matter.pk
+        })
 
     def user_viewed_signature_request(self, item, user, revision):
         message = u'%s viewed signature request %s (%s) for %s' % (user, revision.name, revision.slug, item)
         self._create_activity(actor=user, verb=u'viewed revision', action_object=item, message=message,
                               revision=revision, filename=revision.name, version=revision.slug,
                               date_created=datetime.datetime.utcnow())
-        self.analytics.event('sign.request.viewed', user=user, matter_pk=item.matter.pk, item_pk=item.pk, revision_pk=revision.pk)
+        self.analytics.event('sign.request.viewed', user=user, **{
+            'item_pk': item.pk,
+            'matter_pk': item.matter.pk,
+            'revision_pk': revision.pk
+        })

@@ -811,6 +811,9 @@ body.gui .main-content {
 .form-section + .form-section {
   margin-top: 40px;
 }
+.matters .page-header {
+  padding-bottom: 20px!important;
+}
 .matter .card {
   background-color: #ffffff;
   border-right: 2px solid #dadada;
