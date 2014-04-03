@@ -148,6 +148,7 @@ def on_reviewer_add(sender, instance, action, model, pk_set, **kwargs):
         #
         reviewdocument.pk = None  # set to null this is adjango stategy to copy the model
         reviewdocument.slug = None  # set to non so it gets regenerated
+        reviewdocument.is_complete = False  # set to to is_complete = False as its new and cant be complete
         reviewdocument.save()  # save it so we get a new pk so we can add reviewrs
         reviewdocument.reviewers.add(user)  # add the reviewer
         reviewdocument.recompile_auth_keys()  # update the auth keys to match the new slug
