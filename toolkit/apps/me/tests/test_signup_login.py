@@ -22,7 +22,7 @@ class CustomerSignUpTest(BaseProjectCaseMixin):
         url = reverse('public:signup')
         resp = self.client.get(url)
 
-        self.assertEqual(resp.context_data.get('form').fields.keys(), ['username', 'firm_name', 'first_name', 'last_name', 'email', 'password', 'password_confirm', 't_and_c'])
+        self.assertEqual(resp.context_data.get('form').fields.keys(), ['username', 'firm_name', 'first_name', 'last_name', 'email', 'password', 'password_confirm', 't_and_c', 'mpid'])
 
         form_data = resp.context_data.get('form').initial
         form_data.update({
@@ -39,7 +39,7 @@ class CustomerSignUpTest(BaseProjectCaseMixin):
 
         form_resp = self.client.post(url, form_data, follow=True)
 
-        # is logged in 
+        # is logged in
         self.assertIn('_auth_user_id', self.client.session)
         self.assertEqual(form_resp.context['user'].is_authenticated(), True)
 

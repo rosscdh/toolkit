@@ -2,7 +2,7 @@
     var oldParsley = $.fn.parsley;
     $.fn.extend({
         parsley: function(options, fn) {
-            // Setup the default form listeners
+            /* Setup the default form listeners */
             this.defaultOptions = {
                 animate: false,
                 scrollDuration: 0,
@@ -21,13 +21,13 @@
                         var ulError    = '#' + hash;
                         var ulTemplate = $(ParsleyForm.options.errors.errorsWrapper).attr('id', hash).addClass('parsley-error-list');
 
-                        // remove any ajax errors
+                        /* remove any ajax errors */
                         $(ulError).remove();
 
                         if (isFormValid) {
                             $errorContainer.addClass('hide');
 
-                            // Handle remote AJAX requests
+                            /* Handle remote AJAX requests */
                             if ($form.data('remote')) {
                                 $.ajax({
                                     data: $form.serialize(),

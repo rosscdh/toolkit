@@ -105,6 +105,8 @@ def on_item_save_changed_content(sender, instance, **kwargs):
                                        previous_name=previous_instance.name)
 
         if previous_instance.responsible_party != instance.responsible_party and instance.responsible_party is None:
+        #sign-app merge# if previous_instance.is_requested != instance.is_requested and instance.is_requested is False:
+
             matter.actions.cancel_user_upload_revision_request(item=instance,
                                                                removing_user=matter.lawyer,
                                                                removed_user=previous_instance.responsible_party)
