@@ -20,7 +20,7 @@ class MixpanelOnLawpal(object):
         if self.service is not None:
             self.service.alias(alias_id=alias_id, original=original, meta=meta)
 
-    def event(self, key, user, distinct_id=None, properties={}):
+    def event(self, key, user, distinct_id=None, **kwargs):
         if self.service is not None:
             if distinct_id is None:
                 distinct_id = user.pk
@@ -31,9 +31,9 @@ class MixpanelOnLawpal(object):
                 'user_type': user.profile.type,
                 'via': 'web'
             }
-            all_properties.update(properties)
+            all_properties.update(kwargs)
 
-            self.service.track(distinct_id=distinct_id, event_name=key, properties=all_properties)
+            self.service.track(distinct_id=distinct_id, event_name=key, properties=kwargs)
 
 
 class AtticusFinch(MixpanelOnLawpal):
