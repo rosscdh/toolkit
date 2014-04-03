@@ -1,6 +1,12 @@
 Deployment actions by branch
 ----------------------------
 
+[email-validation] - apply a degree of email validation
+@TODO needs tests - this is a patch
+
+1. ./manage.py migrate default  # will apply the validated_email = True to existing users
+
+
 --------------------------------------------------------------------------------
 ** DEPLOYED 2 April 2014
 --------------------------------------------------------------------------------
