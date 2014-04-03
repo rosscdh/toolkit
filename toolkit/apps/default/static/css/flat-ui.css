@@ -1443,10 +1443,10 @@ fieldset[disabled] .btn-link-success:focus {
   font-size: 16px;
 }
 .navbar-inverse .navbar-brand {
-  border-bottom: 2px solid #3a3a3a;
-  border-right: 2px solid #3a3a3a;
+  border-bottom: 0px solid #3a3a3a;
+  border-right: 0px solid #3a3a3a;
   color: #ffffff;
-  padding: 10px 28px 11px 32px;
+  padding: 8px 28px 11px 32px;
 }
 .navbar-inverse .btn-navbar {
   color: #ffffff;
@@ -1476,11 +1476,27 @@ fieldset[disabled] .btn-link-success:focus {
 }
 .navbar-inverse .nav > li > a {
   font-size: 14px;
-  border-bottom: 2px solid #3a3a3a;
-  border-left: 2px solid #3a3a3a !important;
+  border-bottom: 0px solid #3a3a3a;
+  border-left: 0px solid #3a3a3a !important;
   color: #ffffff;
-  padding: 16px 20px 15px;
+  padding: 16px 20px 10px;
   line-height: 20px;
+  font-weight: 500;
+}
+.navbar-inverse .nav > li > a.unread span {
+  background-color: #f39c12;
+  color: #ffffff;
+  font-weight: bold;
+  padding: 4px 6px 4px 7px;
+  margin-top: -4px;
+  border-radius: 5px;
+}
+.navbar-inverse .nav > li > a.unread span .pe-7s-bell {
+  font-size: 16px;
+}
+.navbar-inverse .nav > li > a .pe-7s-bell {
+  font-size: 22px;
+  margin-right: -2px;
 }
 .navbar-inverse .nav.navbar-right .dropdown-menu {
   left: -100%;
@@ -1687,7 +1703,7 @@ fieldset[disabled] .btn-link-success:focus {
 @media (max-width: 768px) {
   .navbar.navbar-inverse .navbar-brand {
     border: none;
-    padding-top: 11px;
+    padding-top: 10px;
     padding-bottom: 13px;
   }
   .navbar.navbar-inverse .nav {
