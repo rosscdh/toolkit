@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render
+from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
@@ -198,8 +199,9 @@ class SignUpView(LogOutMixin, AuthenticateUserMixin, FormView):
         form.save()  # save the user
         self.authenticate(form=form)  # log them in
 
-        mailer = ValidateEmailMailer(((request.user.get_full_name(), request.user.email)))
-        mailer.process(user=request.user)
+        mailer = ValidateEmailMailer(((self.request.user.get_full_name(), self.request.user.email,),))
+        mailer.process(user=self.request.user)
+
         messages.info(self.request, 'Your account has been created. Please verify your email address. Check your email and click on the link that we\'ve sent you.')
 
         return super(SignUpView, self).form_valid(form)
