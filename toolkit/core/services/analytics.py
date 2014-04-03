@@ -16,9 +16,9 @@ class MixpanelOnLawpal(object):
         if self.token is not None:
             self.service = Mixpanel(self.token)
 
-    def alias(self, alias_id, original, meta={}):
+    def alias(self, alias_id, original, **kwargs):
         if self.service is not None:
-            self.service.alias(alias_id=alias_id, original=original, meta=meta)
+            self.service.alias(alias_id=alias_id, original=original, **kwargs)
 
     def event(self, key, user, distinct_id=None, **kwargs):
         if self.service is not None:
