@@ -54,7 +54,7 @@ class MatterForm(ModalForm, forms.ModelForm):
 
     template = forms.ModelChoiceField(
         help_text='',
-        label='Matter template',
+        label='Copy checklist items from',
         queryset=Workspace.objects.none(),
         required=False
     )
