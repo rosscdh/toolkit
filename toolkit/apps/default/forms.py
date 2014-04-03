@@ -158,10 +158,10 @@ class SignUpForm(forms.Form):
 
         mpid = self.cleaned_data.get('mpid', None)
 
-        # analytics = AtticusFinch()
-        # if mpid is not None:
-        #     analytics.alias(user.pk, mpid)
-        # analytics.event('user.signup', user=user)
+        analytics = AtticusFinch()
+        if mpid not in ['', None]:
+            analytics.alias(user.pk, mpid)
+        analytics.event('user.signup', user=user)
 
         return user
 
