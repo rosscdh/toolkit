@@ -4,10 +4,7 @@
 
 {% block prebody %}
 {% csrf_token %}
-<div id="hero">
-    <div class="container">
-        <!-- starts carousel -->
-        <div class="jumbotron">
+<!--     <div class="container">
             <div class="span12">
                 <h2><b>Email not yet validated</b></h2>
                 <p>Please validate your email address by clicking on the link in the email sent to: <em><b>{{ user.email }}</b></em></p>
@@ -16,7 +13,24 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body text-center">
+        <h2 class="lead"><span class="pe-7s-attention"></span> Please verify your email to continue</h2>
+        <p>
+          We're excited for your to create your first matter, but first, we need to verify your email address.
+          Check your email <span class="text-muted">({{ user.email }})</span> and click on the link that we've sent you. Once you're done, you can easily create your first matter.
+        </p>
+      </div>
+      <div class="modal-footer text-center">
+        <span id="send-notice"><a href="#" class="btn btn-warning btn-wide" id="send-email-validation-request">Resend Email</a></span>
+        <a href="#" class="btn btn-wide btn-default" data-dismiss="modal">Close</a>
+      </div>
+    </div>
+  </div>  
+
 {% endblock %}
 
 {% block js %}
@@ -24,7 +38,7 @@
 $(document).ready(function () {
     'use strict';
 
-    $('button#send-email-validation-request').on("click", function() {
+    $('a#send-email-validation-request').on("click", function() {
         var data = $(this).data();
 
         $.ajax({
@@ -38,8 +52,7 @@ $(document).ready(function () {
               jqXHR.setRequestHeader('X-CSRFToken', $('input[name=csrfmiddlewaretoken]:first').val());
           },
           "complete": function ( data ) {
-              //document.location.reload();
-              $('#send-notice').html('<b>Ok</b>, we\'ve resent that email')
+              $('#send-notice').html('<a href="#" class="btn btn-wide btn-success animated-slow fadeIn" disabled><span class="fui-check-inverted"></span> Email Resent</a>')
           }
         });
 
