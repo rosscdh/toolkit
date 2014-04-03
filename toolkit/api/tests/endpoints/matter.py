@@ -289,18 +289,22 @@ class MatterDetailProvidedDataTest(BaseEndpointTest):
         _meta = data['_meta']
         self.assertEqual(type(_meta), dict)
 
-        self.assertEqual(_meta.keys(), ['matter', 'item', 'revision'])
+        self.assertEqual(_meta.keys(), ['matter', 'item'])
 
         self.assertTrue('status' in _meta['matter'])
-        self.assertTrue('status' in _meta['item'])
-        self.assertTrue('status' in _meta['revision'])
+        self.assertTrue('custom_status' in _meta['item'])
+        self.assertTrue('default_status' in _meta['item'])
 
         self.assertEqual(_meta['matter']['status'], None) # for the moment
-        self.assertEqual(type(_meta['item']['status']), dict)
-        self.assertEqual(type(_meta['revision']['status']), dict)
+        self.assertEqual(type(_meta['item']['custom_status']), dict)
+        self.assertEqual(type(_meta['item']['default_status']), dict)
 
-        self.assertDictEqual(_meta['item'].get('status'), Item.ITEM_STATUS.get_choices_dict())
-        self.assertDictEqual(_meta['revision'].get('status'), Revision.REVISION_STATUS.get_choices_dict())
+        # json changes int to string so we need to transform the result back:
+        result = _meta['item'].get('default_status', {})
+        result_int = {}
+        for k in result.iterkeys():
+            result_int[int(k)] = result[k]
+        self.assertDictEqual(result_int, Revision.REVISION_STATUS.get_choices_dict())
 
     def confirm_participants(self, participants):
         """
