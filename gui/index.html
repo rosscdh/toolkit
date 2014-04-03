@@ -170,8 +170,8 @@
       </form>
       {% verbatim %}
       <ul class="nav navbar-nav navbar-right">
-        <li class="notifications"><a href="/notifications/" ng-class="matter.selected.current_user.has_notifications ? 'unread' : ''"><span ng-class="matter.selected.current_user.has_notifications ? 'fui-radio-checked animated pulse' : 'fui-radio-unchecked'"></span></a></li>
-        <li class="divider"></li>
+        <li class="notifications"><a href="/notifications/" ng-class="matter.selected.current_user.has_notifications ? 'unread' : ''"><!-- <span ng-class="matter.selected.current_user.has_notifications ? 'fui-radio-checked animated pulse' : 'fui-radio-unchecked'"></span> --><span class="pe-7s-bell"></span></a></li>
+
         <li><a href="/requests/">Requests</a></li>
         <li class="divider"></li>
         <li class="dropdown">
