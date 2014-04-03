@@ -91,7 +91,7 @@ def _get_or_create_user_profile(user):
     return (None, None,)
 
 # used to trigger profile creation by accidental refernce. Rather use the _create_user_profile def above
-User.add_to_class('profile', property(lambda u: _get_or_create_user_profile(user=u)[0]))
+User.profile = property(lambda u: _get_or_create_user_profile(user=u)[0])
 User.add_to_class('objects', CustomUserManager())
 
 """
