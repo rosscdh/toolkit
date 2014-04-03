@@ -1703,7 +1703,7 @@ fieldset[disabled] .btn-link-success:focus {
 @media (max-width: 768px) {
   .navbar.navbar-inverse .navbar-brand {
     border: none;
-    padding-top: 11px;
+    padding-top: 10px;
     padding-bottom: 13px;
   }
   .navbar.navbar-inverse .nav {
