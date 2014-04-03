@@ -150,6 +150,10 @@ HELPER_APPS = (
     # Api helpers
     #'corsheaders',  # not required yet
 
+    # celery and supervisord
+    'djsupervisor',
+    'djcelery',
+
     # db migrations
     'south',
     # jenkins
