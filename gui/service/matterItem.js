@@ -76,11 +76,40 @@ angular.module('toolkit-gui')
 		}
 
 
+         /**
+		 * Returns a key/value object containing $resource methods to access review API end-points
+		 *
+		 * @name				reviewerItemResource
+		 *
+		 * @private
+		 * @method				reviewerItemResource
+		 * @memberof			matterItemService
+		 *
+		 * @return {Function}   $resource
+		 */
 		function reviewerItemResource() {
 			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/revision/:type/:username:action', {}, {
 				'request': { 'method': 'POST', 'params' : { 'type': 'reviewers' }, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
                 'remind': { 'method': 'POST', 'params': { 'type': 'reviewers', 'action':'remind'}, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'delete': { 'method': 'DELETE', 'params' : { 'type': 'reviewer' }, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
+			});
+		}
+
+        /**
+		 * Returns a key/value object containing $resource methods to access signatory API end-points
+		 *
+		 * @name				signerItemResource
+		 *
+		 * @private
+		 * @method				signerItemResource
+		 * @memberof			matterItemService
+		 *
+		 * @return {Function}   $resource
+		 */
+		function signerItemResource() {
+			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/revision/:type/:username:action', {}, {
+				'request': { 'method': 'POST', 'params' : { 'type': 'signers' }, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
+				'delete': { 'method': 'DELETE', 'params' : { 'type': 'signer' }, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
 			});
 		}
 
@@ -607,6 +636,23 @@ angular.module('toolkit-gui')
 				api.delete({'matterSlug': matterSlug, 'itemSlug': itemSlug, 'username': review.reviewer.username },
 					function success(){
 						deferred.resolve();
+					},
+					function error(err) {
+						deferred.reject( err );
+					}
+				);
+
+				return deferred.promise;
+			},
+
+             'requestSigner': function ( matterSlug, itemSlug, signer ) {
+				var deferred = $q.defer();
+
+				var api = signerItemResource();
+
+				api.request({'matterSlug': matterSlug, 'itemSlug': itemSlug }, signer,
+					function success(response){
+						deferred.resolve(response);
 					},
 					function error(err) {
 						deferred.reject( err );
