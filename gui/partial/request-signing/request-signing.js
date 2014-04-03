@@ -118,20 +118,20 @@ angular.module('toolkit-gui')
 		 *
 		 * @private
 		 * @method				checkIfUserExists
-		 * @memberof			ParticipantInviteCtrl
+		 * @memberof			RequestreviewCtrl
 		 */
         $scope.checkIfUserExists = function () {
-            if ($scope.data.request.email != null && $scope.data.request.email.length>0) {
+            if ($scope.data.invitee.email != null && $scope.data.invitee.email.length>0) {
                 $scope.data.validationError = false;
 
                 participantService.getByEmail( $scope.data.request.email ).then(
                     function success(response) {
                         if (response.count===1){
                             $scope.data.isNew = false;
-                            $scope.data.participant = response.results[0];
+                            $scope.data.invitee = response.results[0];
                         } else {
                             $scope.data.isNew = true;
-                            $scope.data.participant = null;
+                            $scope.data.external = null;
                         }
                     },
                     function error() {
@@ -141,9 +141,38 @@ angular.module('toolkit-gui')
             } else {
                 $scope.data.validationError = true;
                 $scope.data.isNew = false;
-                $scope.data.participant = null;
+                $scope.data.invitee = null;
             }
         };
+
+
+        /**
+		 * Initiates request to API to invite a person or an already registered user
+		 *
+		 * @name				invite
+		 *
+		 * @private
+		 * @method				invite
+		 * @memberof			RequestreviewCtrl
+		 */
+		$scope.createUser = function () {
+			participantService.createUser( $scope.data.invitee ).then(
+				function success(response) {
+                    participantService.getByURL(response.url).then(
+                        function success(user){
+                            $scope.participants.push(user);
+                        },
+                        function error(err){
+                            toaster.pop('error', "Error!", "Unable to load participant");
+                        }
+                    );
+				},
+				function error() {
+					toaster.pop('error', "Error!", "Unable to create this person, please try again in a few moments");
+				}
+			);
+		};
+
 
         $scope.toggleUser = function (user) {
             if (!(user.username in $scope.data.selectedUsers)) {
