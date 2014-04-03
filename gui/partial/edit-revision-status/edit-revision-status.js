@@ -64,6 +64,36 @@ angular.module('toolkit-gui')
             }
         };
 
+        $scope.addStatus = function() {
+            var statuslabel = '';
+            var qtyStatus = $scope.statuslist.length;
+
+            if ($scope.defaultstatusdict[qtyStatus]) {
+                statuslabel = $scope.defaultstatusdict[qtyStatus];
+            }
+
+            $scope.statuslist.push({'key':qtyStatus, 'value': statuslabel});
+        };
+
+        $scope.removeStatus = function() {
+            var qtyStatus = $scope.statuslist.length;
+            var statusToRemove = qtyStatus-1;
+
+            var inUse = false;
+            jQuery.each( $scope.matter.items, function( index, item ) {
+                if (item.latest_revision && item.latest_revision.status === statusToRemove) {
+                    inUse = true;
+                    return;
+                }
+            });
+
+            if (inUse === true) {
+                toaster.pop('warning', "Warning!", "This status is in use and cannot be removed.");
+            } else {
+                $scope.statuslist.splice(statusToRemove,1);
+            }
+        };
+
 
 		/**
 		 * Close dialog on afirmative user initiated event (.e.g. click's OK button).
@@ -91,9 +121,11 @@ angular.module('toolkit-gui')
 		 * @memberof			EditRevisionStatusCtrl
 		 */
 		$scope.request = function() {
+            $scope.customstatusdict = {};
             jQuery.each( $scope.statuslist, function( index, obj ) {
                 $scope.customstatusdict[obj.key] = obj.value;
             });
+
             var postdata = {'status_labels': $scope.customstatusdict};
             $log.debug(postdata);
 

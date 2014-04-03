@@ -988,7 +988,7 @@ angular.module('toolkit-gui')
 
             modalInstance.result.then(
                 function ok(result) {
-                    $scope.data.matter._meta.item.status = result;
+                    $scope.data.matter._meta.item.custom_status = result;
                 }
             );
         };
