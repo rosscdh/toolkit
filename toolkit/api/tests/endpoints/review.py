@@ -327,6 +327,9 @@ class ReviewObjectIncrementWithNewReviewerTest(BaseEndpointTest):
             self.assertEqual(self.revision.reviewdocument_set.all().count(), exected_total_num_reviews)
             # but the reviewer only has 1
             self.assertEqual(reviewer.reviewdocument_set.all().count(), 1) # has only 1
+            # make sure when we copy the reviewdocument for the new invitee that it does not inherit the
+            # previous review_documents is_complete status
+            self.assertEqual(reviewer.reviewdocument_set.all().first().is_complete, False)
 
 
 class RevisionReviewerTest(BaseEndpointTest):
