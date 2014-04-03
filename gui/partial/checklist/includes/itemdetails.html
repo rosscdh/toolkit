@@ -263,9 +263,7 @@
         <h4>Waiting for a document</h4>
         <span ng-show="data.selectedItem.responsible_party.username!=data.usdata.current.username">You have requested a document from another user. Once they have supplied this revision you will be notified.</span>
     </div>
-
 </div>
-
 <div ng-show="!data.selectedItem&&data.matter.items.length>0">
      <div class="item-help">
         <p>Please select an item from the checklist</p>
@@ -274,7 +272,8 @@
 
 <div ng-show="!data.selectedItem&&data.matter.items.length==0">
      <div class="item-help">
-        <h4 class="lead">Please create your first checklist item</h4>
+        <span class="fui-arrow-left"></span>
+        <h4>Add your first checklist item</h4>
         <p>Create your checklist and then invite you client to this project by clicking on the <span class="fui-user"></span> icon at the top of the page.</p>
     </div>
 </div>
