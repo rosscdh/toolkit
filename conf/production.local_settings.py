@@ -30,6 +30,8 @@ DATABASES = {
     }
 }
 
+ATOMIC_REQUESTS = True  # for Database transactions
+
 USE_ETAGS = True
 
 # Additional locations of static files

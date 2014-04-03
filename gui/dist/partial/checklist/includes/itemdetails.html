@@ -161,6 +161,7 @@
                 <div class="tools status-{{ data.selectedItem.latest_revision.status }}">
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="showRevisionDocument(data.selectedItem.latest_revision)">View</a>  <a href="{{ data.selectedItem.latest_revision.user_download_url }}" class="btn btn-link btn-xs" target="_blank">Download</a>
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="requestReview(data.selectedItem.latest_revision)">Request Review</a>
+<!--                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="requestSigning(data.selectedItem.latest_revision)">Request Signing</a> -->
                     <div class="btn-group pull-right">
                         <button type="button" class="btn btn-default btn-xs status-{{ data.selectedItem.latest_revision.status }}" data-toggle="dropdown">
                           {{ data.matter._meta.revision.status | valueforkey:data.selectedItem.latest_revision.status }}
@@ -262,9 +263,7 @@
         <h4>Waiting for a document</h4>
         <span ng-show="data.selectedItem.responsible_party.username!=data.usdata.current.username">You have requested a document from another user. Once they have supplied this revision you will be notified.</span>
     </div>
-
 </div>
-
 <div ng-show="!data.selectedItem&&data.matter.items.length>0">
      <div class="item-help">
         <p>Please select an item from the checklist</p>
@@ -273,7 +272,8 @@
 
 <div ng-show="!data.selectedItem&&data.matter.items.length==0">
      <div class="item-help">
-        <h4 class="lead">Please create your first checklist item</h4>
+        <span class="fui-arrow-left"></span>
+        <h4>Add your first checklist item</h4>
         <p>Create your checklist and then invite you client to this project by clicking on the <span class="fui-user"></span> icon at the top of the page.</p>
     </div>
 </div>
