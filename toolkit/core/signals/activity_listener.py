@@ -127,7 +127,14 @@ def on_activity_received(sender, **kwargs):
     verb = kwargs.get('verb', False)
     action_object = kwargs.get('action_object', False)
     target = kwargs.get('target', False)
+
     message = kwargs.get('message', False)
+    #
+    # allow us to override the generic message passed in
+    #
+    if kwargs.get('override_message') not in [None, '']:
+        message = kwargs.get('override_message')
+
     verb_slug = kwargs.get('verb_slug', False)
 
     if not message:

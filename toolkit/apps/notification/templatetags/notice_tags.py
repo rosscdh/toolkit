@@ -19,4 +19,5 @@ def render_notice(notice):
         'base_url': message.get('target').get('base_url'),
         'target_name': message.get('target').get('name'),
         'client_name': message.get('target').get('client').get('name'),
+        'notice_message': notice.message
     }
