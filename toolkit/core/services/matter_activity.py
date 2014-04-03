@@ -101,7 +101,7 @@ class MatterActivityEventService(object):
     #
     def created_matter(self, lawyer):
         self._create_activity(actor=lawyer, verb=u'created', action_object=self.matter)
-        self.analytics.event('matter.created', user=lawyer, properties={
+        self.analytics.event('matter.created', user=lawyer, **{
             'firm_name': lawyer.profile.firm_name,
             'matter_pk': self.matter.pk
         })
@@ -112,13 +112,13 @@ class MatterActivityEventService(object):
                               user=added_user)
 
         if adding_user.pk is not added_user.pk:
-            self.analytics.event('matter.participant.added', user=adding_user, properties={
+            self.analytics.event('matter.participant.added', user=adding_user, **{
                 'matter_pk': matter.pk,
                 'participant': added_user.get_full_name(),
                 'participant_type': added_user.profile.type,
             })
 
-            self.analytics.event('matter.participant.invited', user=added_user, properties={
+            self.analytics.event('matter.participant.invited', user=added_user, **{
                 'invited_by': adding_user.get_full_name(),
                 'invited_by_type': adding_user.profile.type,
                 'matter_pk': matter.pk,
@@ -133,7 +133,7 @@ class MatterActivityEventService(object):
     #
     def item_created(self, user, item):
         self._create_activity(actor=user, verb=u'created', action_object=item)
-        self.analytics.event('item.created', user=user, properties={
+        self.analytics.event('item.created', user=user, **{
             'matter_pk': item.matter.pk
         })
 
@@ -173,7 +173,7 @@ class MatterActivityEventService(object):
         self._create_activity(actor=user, verb=u'created', action_object=revision, item=item, message=message,
                               filename=revision.name, date_created=revision.date_created)
 
-        self.analytics.event('revision.create', user=user, properties={
+        self.analytics.event('revision.create', user=user, **{
             'matter_pk': revision.item.matter.pk
         })
 
@@ -186,7 +186,7 @@ class MatterActivityEventService(object):
         message = u'%s requested %s provide a document on %s' % (adding_user, added_user, item)
         self._create_activity(actor=adding_user, verb=u'provide a document', action_object=item, message=message,
                               user=added_user)
-        self.analytics.event('revision.upload.request', user=adding_user, properties={
+        self.analytics.event('revision.upload.request', user=adding_user, **{
             'matter_pk': item.matter.pk,
             'requestee': added_user.get_full_name(),
             'requestee_type': added_user.profile.type,
@@ -203,7 +203,7 @@ class MatterActivityEventService(object):
         message = u'%s uploaded a document named %s for %s' % (user, revision.name, item)
         self._create_activity(actor=user, verb=u'uploaded a document', action_object=item, message=message,
                               revision=revision, filename=revision.name, date_created=revision.date_created)
-        self.analytics.event('revision.upload.provided', user=user, properties={
+        self.analytics.event('revision.upload.provided', user=user, **{
             'matter_pk': item.matter.pk
         })
 
@@ -212,7 +212,7 @@ class MatterActivityEventService(object):
         self._create_activity(actor=user, verb=u'added revision comment', action_object=revision, message=message,
                               comment=comment, item=revision.item)
         # self.analytics.event('revision.comment.added', distinct_id=user.pk, matter_pk=revision.item.matter.pk, item_pk=revision.item.pk)
-        self.analytics.event('revision.comment.added', user=user, properties={
+        self.analytics.event('revision.comment.added', user=user, **{
             'item_pk': revision.item.pk,
             'matter_pk': revision.item.matter.pk
         })
@@ -230,7 +230,7 @@ class MatterActivityEventService(object):
         message = u'%s invited %s as reviewer for %s' % (inviting_user, invited_user, item)
         self._create_activity(actor=inviting_user, verb=u'invited reviewer', action_object=item, message=message,
                               user=invited_user)
-        self.analytics.event('review.request.sent', user=inviting_user, properties={
+        self.analytics.event('review.request.sent', user=inviting_user, **{
             'invited': invited_user.get_full_name(),
             'invited_type': invited_user.profile.type,
             'item_pk': item.pk,
@@ -254,7 +254,7 @@ class MatterActivityEventService(object):
         self._create_activity(actor=user, verb=u'viewed revision', action_object=item, message=message,
                               revision=revision, filename=revision.name, version=revision.slug,
                               date_created=datetime.datetime.utcnow())
-        self.analytics.event('review.request.viewed', user=user, properties={
+        self.analytics.event('review.request.viewed', user=user, **{
             'item_pk': item.pk,
             'matter_pk': item.matter.pk,
             'revision_pk': revision.pk
@@ -272,7 +272,7 @@ class MatterActivityEventService(object):
                               item=item, filename=revision.name, version=revision.slug,
                               date_created=datetime.datetime.utcnow(),
                               comment=comment)
-        self.analytics.event('review.request.comment.added', user=user, properties={
+        self.analytics.event('review.request.comment.added', user=user, **{
             'item_pk': item.pk,
             'matter_pk': item.matter.pk,
             'revision_pk': revision.pk
@@ -283,7 +283,7 @@ class MatterActivityEventService(object):
         self._create_activity(actor=user, verb=u'completed review', action_object=item, message=message,
                               revision=revision, filename=revision.name, version=revision.slug,
                               date_created=datetime.datetime.utcnow())
-        self.analytics.event('review.request.completed', user=user, properties={
+        self.analytics.event('review.request.completed', user=user, **{
             'item_pk': item.pk,
             'matter_pk': item.matter.pk,
             'revision_pk': revision.pk
@@ -296,11 +296,11 @@ class MatterActivityEventService(object):
         message = u'%s invited %s as signer for %s' % (inviting_user, invited_user, item)
         self._create_activity(actor=inviting_user, verb=u'invited signer', action_object=item, message=message,
                               user=invited_user)
-        self.analytics.event('sign.request.sent', distinct_id=inviting_user.pk, invited=invited_user.get_full_name(), matter_pk=item.matter.pk, item_pk=item.pk)
+        self.analytics.event('sign.request.sent', user=inviting_user, invited=invited_user.get_full_name(), matter_pk=item.matter.pk, item_pk=item.pk)
 
     def user_viewed_signature_request(self, item, user, revision):
         message = u'%s viewed signature request %s (%s) for %s' % (user, revision.name, revision.slug, item)
         self._create_activity(actor=user, verb=u'viewed revision', action_object=item, message=message,
                               revision=revision, filename=revision.name, version=revision.slug,
                               date_created=datetime.datetime.utcnow())
-        self.analytics.event('sign.request.viewed', distinct_id=user.pk, matter_pk=item.matter.pk, item_pk=item.pk, revision_pk=revision.pk)
+        self.analytics.event('sign.request.viewed', user=user, matter_pk=item.matter.pk, item_pk=item.pk, revision_pk=revision.pk)

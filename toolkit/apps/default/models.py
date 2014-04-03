@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from django.db import models
-from django.contrib.auth.models import User
 from django.db import IntegrityError
+from django.contrib.auth.models import User
+
+from .managers import CustomUserManager
 
 from jsonfield import JSONField
 from sorl.thumbnail.images import ImageFile
@@ -88,8 +90,8 @@ def _get_or_create_user_profile(user):
     return (None, None,)
 
 # used to trigger profile creation by accidental refernce. Rather use the _create_user_profile def above
-User.profile = property(lambda u: _get_or_create_user_profile(user=u)[0])
-
+User.add_to_class('profile', property(lambda u: _get_or_create_user_profile(user=u)[0]))
+User.add_to_class('objects', CustomUserManager())
 
 """
 Overide the user __unicode__ method to actually return somethign useful.
