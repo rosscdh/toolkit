@@ -3,13 +3,14 @@ from django.db import models
 from django.db import IntegrityError
 from django.contrib.auth.models import User
 
+from .mixins import EmailIsValidatedMixin
 from .managers import CustomUserManager
 
 from jsonfield import JSONField
 from sorl.thumbnail.images import ImageFile
 
 
-class UserProfile(models.Model):
+class UserProfile(EmailIsValidatedMixin, models.Model):
     """
     Base User Profile, where we store all the interesting information about
     users
