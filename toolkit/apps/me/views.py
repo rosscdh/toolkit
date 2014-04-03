@@ -81,7 +81,7 @@ class SendEmailValidationRequest(BaseUpdateView):
         Jsut send it; if the user has already validated then we will catch that
         on the confirmation view
         """
-        mailer = ValidateEmailMailer(((request.user.get_full_name(), request.user.email)))
+        mailer = ValidateEmailMailer(((request.user.get_full_name(), request.user.email,),))
         mailer.process(user=request.user)
 
         content = {

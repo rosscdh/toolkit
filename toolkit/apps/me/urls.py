@@ -18,7 +18,7 @@ urlpatterns = patterns(
     '',
     url(r'^email_not_validated/$', login_required(TemplateView.as_view(template_name='me/email-validation-pending.html')), name='email-not-validated'),
     url(r'^email_not_validated/send/$', login_required(SendEmailValidationRequest.as_view()), name='send-email-validation-request'),
-    url(r'^email_confirmed/(?P<token>[\w:-]+)/$', ConfirmEmailValidationRequest.as_view(), name='confirm-email-address'),
+    url(r'^email_confirmed/(?P<token>.*)/$', ConfirmEmailValidationRequest.as_view(), name='confirm-email-address'),
     
     
     url(r'^settings/letterhead/$', login_required(LawyerLetterheadView.as_view()), name='letterhead'),

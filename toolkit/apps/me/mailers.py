@@ -19,7 +19,7 @@ class WelcomeEmail(BaseMailerService):
 class ValidateEmailMailer(BaseMailerService):
     """
     m = ValidateEmailMailer(
-            recipients=(('Alex', 'alex@lawpal.com')))
+            recipients=(('Alex', 'alex@lawpal.com'),),)
     m.process(user=user_send_validation_email_to)
     """
     email_template = 'validate_email'
@@ -33,4 +33,4 @@ class ValidateEmailMailer(BaseMailerService):
             'action_url': action_url
         })
 
-        super(ValidateEmailMailer, self).process(**kwargs)
+        return super(ValidateEmailMailer, self).process(**kwargs)
