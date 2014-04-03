@@ -52,6 +52,19 @@ __UBUNTU__
 1. ```sudo apt-get install libxml2-dev libxslt1-dev```
 
 
+GUI Development Mode
+--------------------
+
+To run the service in gui mode
+
+1. honcho start : will get everythign running (remember to be in the toolkit virtualenv) and have installed the requirements
+
+or
+
+1. ./manage.py runserver_plus --threaded
+2. cd gui;grunt django : will start the grunt in dev mode
+
+
 GUI Production Mode
 -------------------
 
