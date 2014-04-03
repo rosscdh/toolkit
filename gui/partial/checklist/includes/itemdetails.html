@@ -159,7 +159,8 @@
                     <a href="javascript:;" class="btn btn-link btn-xs pull-right" title="Markdown help" onclick="alert('Markdown help popup like trello');">Formatting Help</a>
                 </div>
                 <div class="tools status-{{ data.selectedItem.latest_revision.status }}">
-                    <a href="javascript:;" class="btn btn-link btn-xs" ng-click="showRevisionDocument(data.selectedItem.latest_revision)">View</a>  <a href="{{ data.selectedItem.latest_revision.user_download_url }}" class="btn btn-link btn-xs" target="_blank">Download</a>
+                    <a href="javascript:;" class="btn btn-link btn-xs" ng-click="showRevisionDocument(data.selectedItem.latest_revision)">View</a>
+                    <a href="{{ data.selectedItem.latest_revision.user_download_url }}" class="btn btn-link btn-xs" target="_blank">Download</a>
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="requestReview(data.selectedItem.latest_revision)">Request Review</a>
 <!--                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="requestSigning(data.selectedItem.latest_revision)">Request Signing</a> -->
                     <div class="btn-group pull-right">
@@ -225,7 +226,7 @@
                 <div class="desc">{{ rev.description }}</div>
                 <div class="tools status-{{ rev.status }}">
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="showRevisionDocument(rev)">View</a>
-                    <a href="{{ rev.executed_file }}" class="btn btn-link btn-xs" target="_blank">Download</a>
+                    <a href="{{ rev.user_download_url }}" class="btn btn-link btn-xs" target="_blank">Download</a>
                     <span class="pull-right sub" ng-bind="data.matter._meta.revision.status | valueforkey:rev.status"></span>
                 </div>
             </div>
