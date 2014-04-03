@@ -20,6 +20,8 @@ except ImportError:
 
 from toolkit.core.services.lawpal_abridge import LawPalAbridgeService
 
+from toolkit.apps.notification.tasks import youve_got_notifications
+
 import logging
 logger = logging.getLogger('django.request')
 
@@ -98,7 +100,14 @@ def _notifications_send(verb_slug, actor, target, message):
             target_class_name = target.__class__.__name__
 
             if target_class_name == 'Workspace':
+
+                #
+                #
+                #
+                youve_got_notifications(user_username=actor.get('username'), event=verb_slug, message='You have notifications')
+
                 target = LiteMatterSerializer(target, context={'request': None}).data
+
             else:
                 raise Exception('Unknown target_class_name: %s' % target_class_name)
 
@@ -109,6 +118,7 @@ def _notifications_send(verb_slug, actor, target, message):
                                             fail_silently=False,
                                             actor=actor,
                                             target=target)
+
             #
             # @TODO move into manager?
             #
