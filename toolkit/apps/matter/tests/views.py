@@ -58,8 +58,6 @@ class MatterDetailViewTest(TestCase):
             self.assertEqual(subject.get_template_names(), ['dist/index.html'])
 
 
-
-
 class MatterCreateViewTest(BaseScenarios, TestCase):
     def setUp(self):
         super(MatterCreateViewTest, self).setUp()
@@ -76,6 +74,36 @@ class MatterCreateViewTest(BaseScenarios, TestCase):
         post_data = {
             'client_name': 'Acme Inc',
             'name': 'Incorporation & Financing'
+        }
+        response = self.client.post(url, post_data, follow=True)
+
+        #
+        # assume the post worked
+        #
+        matter = Workspace.objects.get(slug='incorporation-financing')
+
+        actual_response = {
+            'redirect': True,
+            'url': matter.get_absolute_url()
+        }
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, json.dumps(actual_response))
+
+    def test_valid_form_with_matter_template(self):
+        template_matter = Workspace.objects.get(pk=1)
+
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        url = reverse('matter:create')
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        post_data = {
+            'client_name': 'Acme Inc',
+            'name': 'Incorporation & Financing',
+            'template': template_matter.pk,
         }
         response = self.client.post(url, post_data, follow=True)
 
