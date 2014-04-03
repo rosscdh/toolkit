@@ -29,18 +29,15 @@ class MatterEndpoint(viewsets.ModelViewSet):
     model = Workspace
     serializer_class = MatterSerializer
     lookup_field = 'slug'
-    renderer_classes = (_MetaJSONRendererMixin,)
+    renderer_classes = (_MetaJSONRendererMixin, )
 
     def get_meta(self):
-        # without this special case the following error shows up in tests:
-        # ImproperlyConfigured: Expected view MatterEndpoint to be called with a URL keyword argument named "slug". Fix your URL conf, or set the `.lookup_field` attribute on the view correctly.
-
-        # if self.action in ('list', 'create'):
-        #     revision_status_labels = Revision.REVISION_STATUS.get_choices_dict()
-        # else:
-        #     revision_status_labels = self.get_object().status_labels
-        #
-        # revision_status_labels = self.get_object().status_labels
+        # when you call the matter endpoint for listing or creating you don't have ONE object to call status_labels for
+        # so instead you send an empty default custom_status:
+        if self.action in ('create', 'list'):
+            custom_status = Workspace().status_labels
+        else:
+            custom_status = self.get_object().status_labels
 
         return {
             'matter': {
@@ -48,7 +45,7 @@ class MatterEndpoint(viewsets.ModelViewSet):
             },
             'item': {
                 'default_status': Revision.REVISION_STATUS.get_choices_dict(),
-                'custom_status': self.get_object().status_labels}
+                'custom_status': custom_status}
             }
 
     def get_serializer_class(self):
