@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.core.urlresolvers import reverse
 
-from toolkit.core.item.models import Item
 from toolkit.core.attachment.models import Revision
 from toolkit.apps.workspace.models import Workspace
 
@@ -355,6 +354,11 @@ class MatterDetailProvidedDataTest(BaseEndpointTest):
 
 
 class MatterRevisionLabelTest(BaseEndpointTest):
+    default_status_dictionary = {'0': u'Draft',
+                                 '1': u'For Discussion',
+                                 '2': u'Final',
+                                 '3': u'Executed',
+                                 '4': u'Filed'}
     @property
     def endpoint(self):
         return reverse('matter_revision_label', kwargs={'matter_slug': self.matter.slug})
@@ -373,13 +377,9 @@ class MatterRevisionLabelTest(BaseEndpointTest):
         resp_data = json.loads(resp.content)
 
         status_labels = resp_data['_meta']['item']['default_status']
-        self.assertDictEqual(status_labels, {'0': u'Draft',
-                                             '1': u'For Discussion',
-                                             '2': u'Final',
-                                             '3': u'Executed',
-                                             '4': u'Filed'})
+        self.assertDictEqual(status_labels, self.default_status_dictionary)
         custom_labels = resp_data['_meta']['item']['custom_status']
-        self.assertDictEqual(custom_labels, {})
+        self.assertDictEqual(custom_labels, self.default_status_dictionary)
 
     def test_labels_post(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -388,7 +388,8 @@ class MatterRevisionLabelTest(BaseEndpointTest):
                                   '1': u'custom For Discussion',
                                   '2': u'custom Final',
                                   '3': u'custom Executed',
-                                  '4': u'custom Filed'}}
+                                  '4': u'custom Filed',
+                                  '5': u'custom New Name'}}
 
         resp = self.client.post(self.endpoint, data=json.dumps(data), content_type='application/json')
         self.assertEqual(201, resp.status_code)
@@ -401,4 +402,15 @@ class MatterRevisionLabelTest(BaseEndpointTest):
                                              '1': u'custom For Discussion',
                                              '2': u'custom Final',
                                              '3': u'custom Executed',
-                                             '4': u'custom Filed'})
+                                             '4': u'custom Filed',
+                                             '5': u'custom New Name'})
+
+        # test patching a revision to the new label:
+        item = mommy.make('item.Item', matter=self.matter, name='Test Item with Revision', category=None)
+        data = {'status': '5'}
+        resp = self.client.patch(reverse('matter_item_revision',
+                                         kwargs={'matter_slug': self.matter.slug, 'item_slug': item.slug}),
+                                 data=json.dumps(data), content_type='application/json')
+        self.assertEqual(201, resp.status_code)
+        resp_data = json.loads(resp.content)
+        self.assertEqual(resp_data['status'], '5')
