@@ -49,7 +49,9 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
         return []
 
     def get_latest_revision(self, obj):
-        return RevisionSerializer(obj.latest_revision, context={'request': self.context.get('request')}).data
+        if obj.latest_revision is not None:
+            return RevisionSerializer(obj.latest_revision, context={'request': self.context.get('request')}).data
+        return None
 
     def get_reviewers(self, obj):
         """
