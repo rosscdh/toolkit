@@ -1,6 +1,8 @@
 from django.conf import settings
+
 from django.core.urlresolvers import reverse, reverse_lazy
-from django.views.generic import CreateView, DeleteView, ListView, TemplateView, UpdateView
+from django.http import HttpResponseRedirect
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, TemplateView, UpdateView
 
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
@@ -23,6 +25,7 @@ class MatterListView(ListView):
         context = super(MatterListView, self).get_context_data(**kwargs)
 
         context.update({
+            'can_archive': self.request.user.profile.is_lawyer,
             'can_create': self.request.user.profile.is_lawyer,
             'can_delete': self.request.user.profile.is_lawyer,
             'can_edit': self.request.user.profile.is_lawyer,
@@ -89,6 +92,24 @@ class MatterUpdateView(ModalView, AjaxModelFormView, UpdateView):
             'is_new': False
         })
         return kwargs
+
+    def get_success_url(self):
+        return reverse('matter:list')
+
+
+class MatterArchiveView(ModalView, DetailView):
+    model = Workspace
+    slug_url_kwarg = 'matter_slug'
+    template_name = 'matter/matter_confirm_archive.html'
+
+    def archive(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        self.object.archive()
+        return HttpResponseRedirect(success_url)
+
+    def post(self, request, *args, **kwargs):
+        return self.archive(request, *args, **kwargs)
 
     def get_success_url(self):
         return reverse('matter:list')

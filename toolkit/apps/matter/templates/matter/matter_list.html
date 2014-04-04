@@ -64,7 +64,7 @@
                                 Checklist
                             </a>
                          </li>
-                         <li class="">                                
+                         <li class="">
                             <a href="#requests" data-toggle="tab">
                                 <span class="pe-7s-check"></span>
                                 Client View
@@ -72,7 +72,7 @@
                          </li>
                          <li  class="">
                             <a href="#markup" data-toggle="tab">
-                                <span class="pe-7s-comment"></span> 
+                                <span class="pe-7s-comment"></span>
                                 Annotation
                             </a>
                           </li>
@@ -114,8 +114,14 @@
         {% if can_edit %}
             <div class="modal" id="matter-edit-{{ m.slug }}"></div>
         {% endif %}
-        {% if can_delete %}
-            <div class="modal" id="matter-delete-{{ m.slug }}"></div>
+        {% if m.is_archived %}
+            {% if can_delete %}
+                <div class="modal" id="matter-delete-{{ m.slug }}"></div>
+            {% endif %}
+        {% else %}
+            {% if can_archive %}
+                <div class="modal" id="matter-archive-{{ m.slug }}"></div>
+            {% endif %}
         {% endif %}
     {% endfor %}
 {% endblock %}

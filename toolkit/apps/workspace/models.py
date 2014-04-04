@@ -89,6 +89,11 @@ class Workspace(IsDeletedMixin,
         except IndexError:
             return None
 
+    def archive(self, is_archived=True):
+        self.is_archived = is_archived
+        self.save(update_fields=['is_archived'])
+    archive.alters_data = True
+
     def get_absolute_url(self):
         """
         @BUSINESSRULE append checklist to the url

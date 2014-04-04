@@ -77,12 +77,20 @@ class MatterForm(ModalForm, forms.ModelForm):
         )
 
         if self.instance.pk:
-            self.helper.inputs.insert(0, Button('delete', 'Delete', css_class='btn btn-danger pull-left', **{
-                'data-dismiss': 'modal',
-                'data-remote': reverse('matter:delete', kwargs={'matter_slug': self.instance.slug}),
-                'data-target': '#matter-delete-%s' % self.instance.slug,
-                'data-toggle': 'modal',
-            }))
+            if self.instance.is_archived:
+                self.helper.inputs.insert(0, Button('delete', 'Delete', css_class='btn btn-danger pull-left', **{
+                    'data-dismiss': 'modal',
+                    'data-remote': reverse('matter:delete', kwargs={'matter_slug': self.instance.slug}),
+                    'data-target': '#matter-delete-%s' % self.instance.slug,
+                    'data-toggle': 'modal',
+                }))
+            else:
+                self.helper.inputs.insert(0, Button('archive', 'Archive', css_class='btn btn-danger pull-left', **{
+                    'data-dismiss': 'modal',
+                    'data-remote': reverse('matter:archive', kwargs={'matter_slug': self.instance.slug}),
+                    'data-target': '#matter-archive-%s' % self.instance.slug,
+                    'data-toggle': 'modal',
+                }))
 
         if self.instance.client:
             self.initial['client_name'] = self.instance.client.name
