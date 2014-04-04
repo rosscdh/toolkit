@@ -56,9 +56,23 @@ def ensure_one_current_revision(sender, instance, **kwargs):
     """
     Signal to make sure we only have one current revision for an item.
     """
-    if instance.is_current:
+    if instance.is_current is True:
         # Make sure we only have one current revision per item
         instance.__class__.objects.filter(item=instance.item).exclude(pk=instance.pk).update(is_current=False)
+
+
+@receiver(post_save, sender=Revision, dispatch_uid='revision.ensure_revision_item_latest_revision_is_current')
+def ensure_revision_item_latest_revision_is_current(sender, instance, **kwargs):
+    """
+    Ensure that the is_current=True revision is set to the item.latest_revision
+    """
+    if instance.is_current is True:
+        #
+        # get the instances item and update it so that it is the latest_revision
+        #
+        item = instance.item
+        item.latest_revision = instance
+        item.save(update_fields=['latest_revision'])
 
 
 @receiver(post_save, sender=Revision, dispatch_uid='revision.ensure_revision_reviewdocument_object')
