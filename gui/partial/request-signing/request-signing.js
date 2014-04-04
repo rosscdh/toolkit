@@ -197,8 +197,13 @@ angular.module('toolkit-gui')
 		 * @memberof			RequestreviewCtrl
 		 */
 		$scope.request = function() {
+            $scope.data.request.signers = [];
             for (var key in $scope.data.selectedUsers) {
-                $scope.data.request.signers.push($scope.data.selectedUsers[key]);
+                var user = $scope.data.selectedUsers[key];
+                $scope.data.request.signers.push({'username': user.username,
+                                                     'email': user.email,
+                                                'first_name': user.first_name,
+                                                 'last_name': user.last_name});
             }
             $log.debug($scope.data.request);
             matterItemService.requestSigner($scope.matter.slug, $scope.checklistItem.slug, $scope.data.request).then(
