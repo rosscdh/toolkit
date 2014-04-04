@@ -10,6 +10,7 @@ from jsonfield import JSONField
 
 from .managers import RevisionManager
 
+import re
 import os
 
 BASE_REVISION_STATUS = get_namedtuple_choices('REVISION_STATUS', (
@@ -82,15 +83,26 @@ class Revision(models.Model):
     def revisions(self):
         return self.item.revision_set.all()
 
-    def get_revision_label(self, version=None):
-        label = 'v{version}'
+    def get_revision_label(self):
+        """
+        potential bug here.. if the uuid starts with a  v.
+        """
+        if self.pk in [None, ''] or self.slug in [None, '']:
+            #
+            # Does not have a version so increment
+            #
+            label = 'v{version}'  # append the v
+            next_version = int(self.get_next_revision_id())
+            return label.format(version=next_version)
 
-        if version is not None and type(version) is not int:
-            raise Exception('version must be an int')
+        if re.search(r'^v(\d+)$', self.slug):
+            #
+            # already has a Version
+            #
+            return self.slug
+        raise Exception('Unable to get_revision_label for revision: %s %s' % (self.pk, self.slug))
 
-        return label.format(version=self.get_revision_id() if version is None else version)
-
-    def get_revision_id(self):
+    def get_next_revision_id(self):
         """
         return the relative revision id for this revision
         Used in the signal to generate the attachment slug
