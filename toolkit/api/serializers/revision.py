@@ -154,7 +154,7 @@ class FileFieldAsUrlField(LimitedExtensionMixin, serializers.FileField):
 class RevisionSerializer(serializers.HyperlinkedModelSerializer):
     executed_file = HyperlinkedAutoDownloadFileField(required=False)
 
-    status = serializers.CharField()
+    status = serializers.IntegerField()
 
     item = serializers.HyperlinkedRelatedField(many=False, view_name='item-detail')
 
