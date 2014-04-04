@@ -11,13 +11,13 @@
                    <span class="icon status-{{ obj.key }}"></span>
                    <input class="form-control input-sm" id="input-status-{{obj.key}}" ng-model="obj.value" />
                    <a href="javascript:;" ng-click="resetDefault(obj.key)"><small>Reset</small></a>
+                   <a href="javascript:;" ng-click="removeStatus(obj.key, $index)" ng-show="statuslist.length>1"><span class="fui-trash text-danger"></span></a>
                 </li>
             </ul>
             <a href="javascript:;" ng-click="addStatus()" ng-show="statuslist.length<9"><small>Add new status</small></a>&nbsp;
-            <a href="javascript:;" ng-click="removeStatus()" ng-show="statuslist.length>1"><small>Remove status</small></a>
         </div>
         <div class="modal-footer">
-            <input type="button" class="btn btn-default" ng-click="resetDefault()" style="float: left;" value="Reset to default"/>
+            <!--<input type="button" class="btn btn-default" ng-click="resetDefault()" style="float: left;" value="Reset to default"/>-->
 
             <button class="btn btn-default" ng-click="cancel()">Cancel</button>
             <button class="btn btn-primary" type="submit" ng-disabled="invalid()">Save</button>
