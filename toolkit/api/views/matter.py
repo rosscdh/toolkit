@@ -43,6 +43,8 @@ class MatterEndpoint(viewsets.ModelViewSet):
             custom_status = Workspace().status_labels
         else:
             custom_status = self.get_object().status_labels
+        if not custom_status:
+            custom_status = Revision.REVISION_STATUS.get_choices_dict()
 
         return {
             'matter': {
