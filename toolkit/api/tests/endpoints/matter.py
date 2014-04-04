@@ -414,4 +414,4 @@ class MatterRevisionLabelTest(BaseEndpointTest):
                                  data=json.dumps(data), content_type='application/json')
         self.assertEqual(201, resp.status_code)
         resp_data = json.loads(resp.content)
-        self.assertEqual(resp_data['status'], '5')
+        self.assertEqual(resp_data['status'], 5)
