@@ -87,7 +87,7 @@ class Revision(models.Model):
         """
         potential bug here.. if the uuid starts with a  v.
         """
-        if self.pk in [None, ''] or self.slug in [None, '']:
+        if self.pk in [None, ''] or self.slug in [None, ''] or not re.search(r'^v(\d+)$', self.slug):
             #
             # Does not have a version so increment
             #
