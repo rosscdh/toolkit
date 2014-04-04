@@ -1,6 +1,14 @@
 Deployment actions by branch
 ----------------------------
 
+
+--------------------------------------------------------------------------------
+** DEPLOYED 4 April 2014 - fix a massive slowdown when larger matters were in
+use; such as https://app.lawpal.com/matters/lawpal-corporate-setup/#/checklist
+changed item.latest_revision from a property to an actual FKField reducing by a
+larger query
+--------------------------------------------------------------------------------
+
 [large-matter-optimisation]
 
 1. ./manage.py migrate item 0001 --fake
