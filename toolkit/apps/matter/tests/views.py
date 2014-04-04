@@ -91,7 +91,7 @@ class MatterCreateViewTest(BaseScenarios, TestCase):
         self.assertEqual(response.content, json.dumps(actual_response))
 
     def test_valid_form_with_matter_template(self):
-        template_matter = Workspace.objects.get(pk=1)
+        template_matter = self.matter
 
         self.client.login(username=self.lawyer.username, password=self.password)
 
