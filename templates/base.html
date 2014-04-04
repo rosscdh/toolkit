@@ -66,6 +66,7 @@
     {% endblock %}
 
     <div class="main-content container-fluid">
+        {% include 'partials/messages.html' %}
         {% block body %}
             <div class="row">
                 <div class="col-sm-3 sidebar">
@@ -111,8 +112,6 @@
                     {% endblock %}
                 </div>
                 <div class="col-sm-9 content">
-                    {% include 'partials/messages.html' %}
-
                     {% block content %}
                         <div class="page-header">
                             {% block header %}{% endblock %}

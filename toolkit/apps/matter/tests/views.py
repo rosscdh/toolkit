@@ -63,6 +63,25 @@ class MatterCreateViewTest(BaseScenarios, TestCase):
         super(MatterCreateViewTest, self).setUp()
         self.basic_workspace()
 
+    def test_user_email_invalidated_form(self):
+        """
+        Ensure that a user that has not yet validated their email address cannot
+        create a matter
+        """
+        profile = self.lawyer.profile
+        profile.validated_email = False
+        profile.save(update_fields=['data'])
+
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        url = reverse('matter:create')
+
+        response = self.client.get(url, follow=True)  # actually redirects 302
+        self.assertEqual(response.status_code, 200)
+        # test we see what we expect to see
+        self.assertTrue('<h2><b>Email not yet validated</b></h2>' in response.content)
+        self.assertTrue('<span id="send-notice"><button id="send-email-validation-request">Resend</button></span>' in response.content)
+
     def test_valid_form(self):
         self.client.login(username=self.lawyer.username, password=self.password)
 
