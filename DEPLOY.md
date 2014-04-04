@@ -1,6 +1,17 @@
 Deployment actions by branch
 ----------------------------
 
+[large-matter-optimisation]
+
+1. ./manage.py migrate item 0001 --fake
+2. ./manage.py migrate item 0002 # apply the latest_revision FK which optimises the lookups
+3. ./manage.py migrate item 0003 # convert all the existing data
+
+
+--------------------------------------------------------------------------------
+** DEPLOYED 4 April 2014
+--------------------------------------------------------------------------------
+
 [email-validation] - apply a degree of email validation
 @TODO needs tests - this is a patch
 
