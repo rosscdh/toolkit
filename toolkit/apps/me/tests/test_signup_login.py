@@ -64,7 +64,7 @@ class CustomerSignUpTest(BaseProjectCaseMixin):
         email = outbox[0]
         self.assertEqual(email.recipients(), [u'MySillyUserName@badlyformatedemailnonrfcdomain.com'])
         self.assertEqual(email.from_email, 'support@lawpal.com')
-        self.assertEqual(email.subject, 'Please validate your email address')
+        self.assertEqual(email.subject, 'Please confirm your email address')
         self.assertTrue(re.search(r'http://localhost:8000/me/email_confirmed/(?P<token>.*)/', email.body))
 
 
