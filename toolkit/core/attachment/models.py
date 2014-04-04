@@ -50,8 +50,6 @@ class Revision(models.Model):
 
     executed_file = models.FileField(upload_to=_upload_file, storage=S3BotoStorage(), null=True, blank=True)
 
-    status = models.IntegerField(choices=REVISION_STATUS.get_choices(), default=REVISION_STATUS.draft)
-
     item = models.ForeignKey('item.Item')
     uploaded_by = models.ForeignKey('auth.User')
 
@@ -78,6 +76,14 @@ class Revision(models.Model):
 
     def __unicode__(self):
         return 'Revision %s' % (self.slug)
+
+    @property
+    def status(self):
+        return self.data.get('status')
+
+    @status.setter
+    def status(self, value):
+        self.data['status'] = value
 
     @property
     def revisions(self):
