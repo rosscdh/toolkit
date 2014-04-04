@@ -76,8 +76,9 @@ angular.module('toolkit-gui')
 		 */
 		$scope.data = {
 			'selectedUsers': {},
+			'invitee': {},
 			'request': {
-				'signer': [],
+				'signers': [],
 				'message': null
 			}
 		};
@@ -156,7 +157,10 @@ angular.module('toolkit-gui')
 		 * @memberof			RequestreviewCtrl
 		 */
 		$scope.createUser = function () {
-			participantService.createUser( $scope.data.invitee ).then(
+            $scope.participants.push($scope.data.invitee);
+            $scope.data.showAddExternal=false;
+
+            /*participantService.createUser( $scope.data.invitee ).then(
 				function success(response) {
                     participantService.getByURL(response.url).then(
                         function success(user){
@@ -170,15 +174,15 @@ angular.module('toolkit-gui')
 				function error() {
 					toaster.pop('error', "Error!", "Unable to create this person, please try again in a few moments");
 				}
-			);
+			);*/
 		};
 
 
         $scope.toggleUser = function (user) {
-            if (!(user.username in $scope.data.selectedUsers)) {
-                $scope.data.selectedUsers[user.username] = user;
+            if (!(user.email in $scope.data.selectedUsers)) {
+                $scope.data.selectedUsers[user.email] = user;
             } else {
-                delete $scope.data.selectedUsers[user.username];
+                delete $scope.data.selectedUsers[user.email];
             }
         };
 
@@ -194,7 +198,7 @@ angular.module('toolkit-gui')
 		 */
 		$scope.request = function() {
             for (var key in $scope.data.selectedUsers) {
-                $scope.data.request.signer.push($scope.data.selectedUsers[key]);
+                $scope.data.request.signers.push($scope.data.selectedUsers[key]);
             }
             $log.debug($scope.data.request);
             matterItemService.requestSigner($scope.matter.slug, $scope.checklistItem.slug, $scope.data.request).then(

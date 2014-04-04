@@ -9,7 +9,7 @@
                 <strong ng-show="participants.length>0">Existing members</strong>
                 <ul class="list-unstyled">
                     <li ng-repeat="person in participants" ng-hide="person.username==currentUser.username">
-                        <label class="checkbox" ng-class="{'checked':data.selectedUsers[person.username]!=null}"
+                        <label class="checkbox" ng-class="{'checked':data.selectedUsers[person.email]!=null}"
                                ng-click="toggleUser(person)">
 						<span class="icons">
 							<span class="first-icon fui-checkbox-unchecked"></span>
