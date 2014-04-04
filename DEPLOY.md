@@ -1,6 +1,9 @@
 Deployment actions by branch
 ----------------------------
 
+[archived-matters]
+
+1. ./manage.py migrate workspace
 
 --------------------------------------------------------------------------------
 ** DEPLOYED 6 April 2014 - celery tasks are preset but not enabled

@@ -49,6 +49,8 @@ class Workspace(IsDeletedMixin,
 
     data = JSONField(default={})
 
+    is_archived = models.BooleanField(default=False)
+
     date_created = models.DateTimeField(auto_now=False, auto_now_add=True, db_index=True)
     date_modified = models.DateTimeField(auto_now=True, auto_now_add=True, db_index=True)
 
