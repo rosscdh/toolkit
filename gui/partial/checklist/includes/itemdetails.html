@@ -197,8 +197,11 @@
                                     <span class="fui-check"></span> Complete
                                 </button>
                             </a>
-                           <span ng-show="rev.date_last_viewed" ng-bind="rev.date_last_viewed | timeago"></span>
-                           <a href="javascript:;" ng-click="showReview(data.selectedItem.latest_revision, rev)">{{ rev.reviewer.name }}</a>
+
+                            <span ng-show="rev.date_last_viewed">
+                                <a href="javascript:;" ng-click="showReview(data.selectedItem.latest_revision, rev)">{{ rev.reviewer.initials }}</a> viewed <span ng-bind="rev.date_last_viewed | timeago"></span>
+                            </span>
+                            <a ng-hide="rev.date_last_viewed" href="javascript:;" ng-click="showReview(data.selectedItem.latest_revision, rev)">{{ rev.reviewer.name }}</a>
                         </li>
                     </ul>
                 </div>
