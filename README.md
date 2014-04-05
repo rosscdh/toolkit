@@ -87,3 +87,27 @@ if TEST_PREPROD is True:
 
 1. fab build_angular_app
 
+
+
+Celery Control
+--------------
+
+Will start with a worker name of __"worker.1"__ which can be overridden
+
+```
+fab :environment celery_start
+
+fab :environment celery_stop
+
+fab :environment celery_restart
+```
+
+__with customer worker name__
+
+```
+fab :environment celery_start:name='custom_name.1'
+
+fab :environment celery_stop:name='custom_name.1'
+
+fab :environment celery_restart:name='custom_name.1'
+```

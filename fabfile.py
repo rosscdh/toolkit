@@ -23,6 +23,7 @@ env.repo = Repo(env.local_project_path)
 
 env.environment_class = 'local'
 env.project = 'toolkit'
+env.celery_app_name = env.project
 
 env.dev_fixtures = 'dev-fixtures'
 env.fixtures = 'sites tools'
@@ -237,21 +238,55 @@ def diff_outgoing_with_current():
 
 @task
 @roles('worker')
-def celery_restart():
+def celery_restart(name='worker.1'):
     with settings(warn_only=True): # only warning as we will often have errors importing
-        sudo('supervisorctl restart %s' % env.celery_name )
+        cmd = "celery multi restart {name}@%h -A {app_name} --pidfile='/tmp/celery.{name}.pid'".format(name=name, app_name=env.celery_app_name)
+        if env.hosts:
+            run(cmd)
+        else:
+            local(cmd)
 
 @task
 @roles('worker')
-def celery_start(loglevel='info'):
+def celery_start(name='worker.1', loglevel='INFO', concurrency=5):
     with settings(warn_only=True): # only warning as we will often have errors importing
-        sudo('supervisorctl start %s' % env.celery_name )
+        #cmd = "celery worker --app=toolkit --loglevel={loglevel} --concurrency={concurrency} -n worker{name}.%h".format(name=name, loglevel=loglevel, concurrency=concurrency)
+        cmd = "celery multi start {name}@%h -A {app_name} --loglevel={loglevel} --pidfile='/tmp/celery.{name}.pid' --logfile='/tmp/celery.{name}.log' --concurrency={concurrency}".format(name=name, loglevel=loglevel, concurrency=concurrency, app_name=env.celery_app_name)
+        if env.hosts:
+            run(cmd)
+        else:
+            local(cmd)
 
 @task
 @roles('worker')
-def celery_stop():
+def celery_stop(name='worker.1'):
     with settings(warn_only=True): # only warning as we will often have errors importing
-        sudo('supervisorctl stop %s' % env.celery_name )
+        cmd = "celery multi stopwait {name}@%h -A {app_name} --pidfile='/tmp/celery.{name}.pid'".format(name=name, app_name=env.celery_app_name)
+        if env.hosts:
+            run(cmd)
+        else:
+            local(cmd)
+
+@task
+@roles('worker')
+def celery_cmd(cmd=None):
+    if cmd is not None:
+        with settings(warn_only=True): # only warning as we will often have errors importing
+            cmd = "celery {cmd} -A {app_name}".format(cmd=cmd, app_name=env.celery_app_name)
+            if env.hosts:
+                run(cmd)
+            else:
+                local(cmd)
+
+# @task
+# @roles('worker')
+# def celery_force_kill():
+#     with settings(warn_only=True): # only warning as we will often have errors importing
+#         cmd = "ps auxww | grep 'celery worker' | awk '{print $2}' | xargs kill -9"
+#         if env.hosts:
+#             run(cmd)
+#         else:
+#             local(cmd)
 
 @task
 @roles('worker')

@@ -83,4 +83,3 @@ mixpanel-py
 
 # celery management
 Celery
-django-celery

@@ -20,7 +20,7 @@ except ImportError:
 
 from toolkit.core.services.lawpal_abridge import LawPalAbridgeService
 
-from toolkit.apps.notification.tasks import youve_got_notifications
+#from toolkit.apps.notification.tasks import youve_got_notifications
 
 import logging
 logger = logging.getLogger('django.request')
@@ -102,9 +102,10 @@ def _notifications_send(verb_slug, actor, target, message):
             if target_class_name == 'Workspace':
 
                 #
+                # Pusher push to send notifiaction of new activity
+                # @TODO integrate and commit to gui
                 #
-                #
-                youve_got_notifications(user_username=actor.get('username'), event=verb_slug, message='You have notifications')
+                #youve_got_notifications(user_username=actor.get('username'), event=verb_slug, message='You have notifications')
 
                 target = LiteMatterSerializer(target, context={'request': None}).data
 
