@@ -101,9 +101,9 @@ def production():
 env.roledefs.update({
     'db': ['ec2-50-18-97-221.us-west-1.compute.amazonaws.com'], # the actual db host
     'db-actor': ['ec2-54-241-224-100.us-west-1.compute.amazonaws.com'], # database action host
-    'search': ['ec2-54-241-224-100.us-west-1.compute.amazonaws.com'], # elastic search action host
-    'web': ['ec2-184-169-191-190.us-west-1.compute.amazonaws.com', 'ec2-184-72-21-48.us-west-1.compute.amazonaws.com'],
-    'worker': ['ec2-54-241-224-100.us-west-1.compute.amazonaws.com'],
+    # 'search': ['ec2-54-241-224-100.us-west-1.compute.amazonaws.com'], # elastic search action host
+    # 'web': ['ec2-184-169-191-190.us-west-1.compute.amazonaws.com', 'ec2-184-72-21-48.us-west-1.compute.amazonaws.com'],
+    'worker': ['ec2-54-241-222-221.us-west-1.compute.amazonaws.com'],
 })
 
 
@@ -262,7 +262,8 @@ def celery_restart(name='worker.1'):
     with settings(warn_only=True): # only warning as we will often have errors importing
         cmd = "celery multi restart {name}@%h -A {app_name} --pidfile='/tmp/celery.{name}.pid'".format(name=name, app_name=env.celery_app_name)
         if env.hosts:
-            run(cmd)
+            #run(cmd)
+            virtualenv(cmd='cd %s%s;%s' % (env.remote_project_path, env.project, cmd))
         else:
             local(cmd)
 
@@ -273,7 +274,8 @@ def celery_start(name='worker.1', loglevel='INFO', concurrency=5):
         #cmd = "celery worker --app=toolkit --loglevel={loglevel} --concurrency={concurrency} -n worker{name}.%h".format(name=name, loglevel=loglevel, concurrency=concurrency)
         cmd = "celery multi start {name}@%h -A {app_name} --loglevel={loglevel} --pidfile='/tmp/celery.{name}.pid' --logfile='/tmp/celery.{name}.log' --concurrency={concurrency}".format(name=name, loglevel=loglevel, concurrency=concurrency, app_name=env.celery_app_name)
         if env.hosts:
-            run(cmd)
+            #run(cmd)
+            virtualenv(cmd='cd %s%s;%s' % (env.remote_project_path, env.project, cmd))
         else:
             local(cmd)
 
@@ -283,7 +285,8 @@ def celery_stop(name='worker.1'):
     with settings(warn_only=True): # only warning as we will often have errors importing
         cmd = "celery multi stopwait {name}@%h -A {app_name} --pidfile='/tmp/celery.{name}.pid'".format(name=name, app_name=env.celery_app_name)
         if env.hosts:
-            run(cmd)
+            #run(cmd)
+            virtualenv(cmd='cd %s%s;%s' % (env.remote_project_path, env.project, cmd))
         else:
             local(cmd)
 
