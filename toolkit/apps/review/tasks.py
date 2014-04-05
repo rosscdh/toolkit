@@ -8,8 +8,8 @@ import logging
 logger = logging.getLogger('django.request')
 
 
-@app.task(name='review.uploader.async_crocodoc_upload')
-def async_crocodoc_upload(user, revision):
+@app.task(name='review.uploader.crocodoc_upload_task')
+def crocodoc_upload_task(user, revision):
     """
     Async Celery task to start the upload of the file to crocodoc, as crocodoc is
     hell slow... and our users are impatient as they should be.
