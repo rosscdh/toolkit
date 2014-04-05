@@ -63,11 +63,12 @@ class MatterSortView(generics.UpdateAPIView,
                 # this will override the categories in the order specified
                 self.matter.categories = data.get('categories')
                 self.matter.save(update_fields=['data'])  # because categories is a derrived value from data
+                #
+                # @NOTE the data.items MUST be reverse to conform with the item.order_by('-sort_order') directive
+                #
+                for sort_order, slug in enumerate(reversed(data.get('items'))):
+                    self.matter.item_set.filter(slug=slug).update(sort_order=sort_order)  # item must exist by this point as we have its id from the rest call
 
-                for sort_order, slug in enumerate(data.get('items')):
-                    item = self.matter.item_set.get(slug=slug)  # item must exist by this point as we have its id from the rest call
-                    item.sort_order = sort_order
-                    item.save(update_fields=['sort_order'])
         except IntegrityError as e:
             logger.critical('transaction.atomic() integrity error: %s' % e)
 

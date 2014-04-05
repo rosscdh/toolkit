@@ -167,7 +167,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
 
     revisions = serializers.SerializerMethodField('get_revisions')
 
-    uploaded_by = SimpleUserSerializer()
+    uploaded_by = serializers.SerializerMethodField('get_uploaded_by')
 
     date_created = serializers.DateTimeField(read_only=True)
 
@@ -175,9 +175,10 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
         model = Revision
         fields = ('url', 'slug',
                   'name', 'description',
-                  'executed_file', 
-                  'status', 
-                  'item', 'uploaded_by', 
+                  'executed_file',
+                  'status',
+                  'item',
+                  'uploaded_by',
                   'reviewers', 'signers',
                   'revisions',
                   'user_review_url', 'user_download_url',
@@ -195,23 +196,27 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
         if 'context' in kwargs and 'request' in kwargs['context']:
 
             request = kwargs['context'].get('request')
-            #
-            # set the executed_file field to be a seriallizer.FileField and behave like one of those
-            #
-            if request.method in ['PATCH', 'POST']:
+            if request:
+                #
+                # set the executed_file field to be a seriallizer.FileField and behave like one of those
+                #
+                if request.method in ['PATCH', 'POST']:
 
-                # ensure the uploaded_by is just a simple hyplinkrelatedfield on update,create
-                self.base_fields['uploaded_by'] = serializers.HyperlinkedRelatedField(many=False, view_name='user-detail', lookup_field='username')
+                    # ensure the uploaded_by is just a simple hyplinkrelatedfield on update,create
+                    self.base_fields['uploaded_by'] = serializers.HyperlinkedRelatedField(many=False, view_name='user-detail', lookup_field='username')
 
-                if 'multipart/form-data;' in kwargs['context']['request'].content_type:
-                    if kwargs['context']['request'].FILES:
-                        self.base_fields['executed_file'] = FileFieldAsUrlField(allow_empty_file=True, required=False)
+                    if 'multipart/form-data;' in kwargs['context']['request'].content_type:
+                        if kwargs['context']['request'].FILES:
+                            self.base_fields['executed_file'] = FileFieldAsUrlField(allow_empty_file=True, required=False)
 
         super(RevisionSerializer, self).__init__(*args, **kwargs)
 
+    def get_uploaded_by(self, obj):
+        return SimpleUserSerializer(obj.uploaded_by, context={'request': self.context.get('request')}).data
+
     def get_reviewers(self, obj):
         reviewers = []
-        #return [SimpleUserWithReviewUrlSerializer(u, context=self.context).data for u in obj.reviewers.all()]
+
         for u in obj.reviewers.all():
             reviewdoc = obj.reviewdocument_set.filter(reviewers__in=[u]).first()
             if reviewdoc is not None:

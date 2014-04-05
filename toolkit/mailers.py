@@ -68,7 +68,6 @@ class BaseMailerService(object):
         return '%s (via LawPal) %s' % (name, site_email) if email != site_email else email
 
     def process(self, attachments=None, **kwargs):
-
         for r in self.recipients:
             context = {
                 'from': self.from_tuple.get('name'),
@@ -90,7 +89,7 @@ class BaseMailerService(object):
             template_prefix=self.base_email_template_location,
             from_email=context.get('from_email'),
             recipient_list=[context.get('to_email')],
-            bcc=['founders@lawpal.com'] if settings.PROJECT_ENVIRONMENT == 'prod' else [],  # only bcc us in on live mails
+            bcc=[],
             context=context,
             attachments=attachments,
             headers={'Reply-To': self.from_tuple.get('reply_to')})

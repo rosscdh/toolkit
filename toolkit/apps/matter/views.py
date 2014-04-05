@@ -1,10 +1,13 @@
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.views.generic import CreateView, DeleteView, ListView, TemplateView, UpdateView
+
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import user_passes_test
 
 from toolkit.api.serializers import LiteMatterSerializer
 from toolkit.apps.workspace.models import Workspace
-from toolkit.mixins import AjaxFormView, AjaxModelFormView, ModalView
+from toolkit.mixins import AjaxModelFormView, ModalView
 
 from .forms import MatterForm
 
@@ -35,7 +38,7 @@ class MatterListView(ListView):
         deserializing input, and for serializing output.
         """
         serializer_class = self.serializer_class
-        context = self.get_serializer_context()
+        self.get_serializer_context()
         return serializer_class(instance)
 
     def get_serializer_context(self):
@@ -57,6 +60,10 @@ class MatterDetailView(TemplateView):
 
 class MatterCreateView(ModalView, AjaxModelFormView, CreateView):
     form_class = MatterForm
+
+    @method_decorator(user_passes_test(lambda u: u.profile.validated_email is True, login_url=reverse_lazy('me:email-not-validated')))
+    def dispatch(self, *args, **kwargs):
+        return super(MatterCreateView, self).dispatch(*args, **kwargs)
 
     def get_form_kwargs(self):
         kwargs = super(MatterCreateView, self).get_form_kwargs()
