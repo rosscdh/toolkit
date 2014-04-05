@@ -1,6 +1,10 @@
 Deployment actions by branch
 ----------------------------
 
+[celery]
+
+2. manage.py migrate djcelery
+
 
 --------------------------------------------------------------------------------
 ** DEPLOYED 4 April 2014 - fix a massive slowdown when larger matters were in
