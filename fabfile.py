@@ -7,8 +7,9 @@ from fabric.contrib import files
 from git import *
 
 import os
-import getpass
+import sys
 import time
+import getpass
 import requests
 from termcolor import colored
 
@@ -510,7 +511,7 @@ def newrelic_deploynote():
 @runs_once
 def diff():
     diff = prompt(colored("View diff? [y,n]", 'magenta'), default="y")
-    if diff.lower() in ['y','yes', 1, '1']:
+    if diff.lower() in env.truthy:
         print(diff_outgoing_with_current())
 
 @task
@@ -518,7 +519,7 @@ def diff():
 @runs_once
 def run_tests():
     run_tests = prompt(colored("Run Tests? [y,n]", 'yellow'), default="y")
-    if run_tests.lower() in ['y','yes', 1, '1']:
+    if run_tests.lower() in env.truthy:
         result = local('python manage.py test')
         if result not in ['', 1, True]:
             error(colored('You may not proceed as the tests are not passing', 'orange'))
@@ -526,34 +527,39 @@ def run_tests():
 
 @task
 @runs_once
-def build_angular_app():
-    # move local_settings.py if present
-    if os.path.exists('toolkit/local_settings.py'):
-        local('mv toolkit/local_settings.py /tmp/local_settings.py')
+def build_gui():
+    if prompt(colored("Build GUI app? [y,n]", 'green'), default="y").lower() in env.truthy:
 
-    # copy conf/production.local_settings.py
-    # has the very important ("ng", os.path.join(SITE_ROOT, 'gui', 'dist')),
-    # settings
-    local('cp conf/production.local_settings.py toolkit/local_settings.py')
+        # move local_settings.py if present
+        if os.path.exists('toolkit/local_settings.py'):
+            local('mv toolkit/local_settings.py /tmp/local_settings.py')
 
-    # move tmp/local_settings.py back
-    if os.path.exists('/tmp/local_settings.py'):
-        local('rm toolkit/local_settings.py')  # remove the production version local_settings so noone loses their mind
-        local('mv /tmp/local_settings.py toolkit/local_settings.py')
-    else:
+        # copy conf/production.local_settings.py
+        # has the very important ("ng", os.path.join(SITE_ROOT, 'gui', 'dist')),
+        # settings
+        local('cp conf/production.local_settings.py toolkit/local_settings.py')
+
+        # move tmp/local_settings.py back
+        if os.path.exists('/tmp/local_settings.py'):
+            local('rm toolkit/local_settings.py')  # remove the production version local_settings so noone loses their mind
+            local('mv /tmp/local_settings.py toolkit/local_settings.py')
+        else:
+            if env.environment_class == 'local':
+                # copy the default dev localsettings
+                local('cp conf/dev.local_settings.py toolkit/local_settings.py')
+
+
+        # perform grunt build --djangoProd
+        for repeater in range(0,2):
+            # we have to build it twice because sometimes... it does not work *tadaaaah*
+            #
+            local('cd gui;grunt build -djangoProd')
+
+        # collect static
         if env.environment_class == 'local':
-            # copy the default dev localsettings
-            import pdb;pdb.set_trace()
-            local('cp conf/dev.local_settings.py toolkit/local_settings.py')
+            local('python manage.py collectstatic --noinput')
 
-
-    # perform grunt build --djangoProd
-    local('cd gui;grunt build -djangoProd')
-
-    # collect static
-    if env.environment_class == 'local':
-        local('python manage.py collectstatic --noinput')
-
+        sys.exit(colored("You must now run: git add gui;git commit -m'Updated production gui'", 'yellow'))
 
 
 @task
@@ -598,6 +604,7 @@ def deploy(is_predeploy='False',full='False',db='False',search='False'):
     db = db.lower() in env.truthy
     search = search.lower() in env.truthy
 
+    build_gui()
     run_tests()
     diff()
     newrelic_note()
