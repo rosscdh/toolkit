@@ -11,7 +11,7 @@ from rest_framework.response import Response
 
 from toolkit.core.attachment.models import Revision
 
-from toolkit.apps.review.tasks import async_crocodoc_upload
+from toolkit.apps.review.tasks import crocodoc_upload_task
 
 from .mixins import (MatterItemsQuerySetMixin,)
 
@@ -130,11 +130,11 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
             #
             # Asynchronous celery task to upload the file
             #
-            try:
-                async_crocodoc_upload.delay(user=self.request.user, revision=self.object)
-            except Exception as e:
-                logger.critical('Could not call crocodoc upload process asyncronously: %s' % e)
-                async_crocodoc_upload(user=self.request.user, revision=self.object)
+            # try:
+            #     crocodoc_upload_task.delay(user=self.request.user, revision=self.object)
+            # except Exception as e:
+            #     logger.critical('Could not call crocodoc upload process asyncronously: %s' % e)
+            crocodoc_upload_task(user=self.request.user, revision=self.object)
 
             #
             # Custom signal event
