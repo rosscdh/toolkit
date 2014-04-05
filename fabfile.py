@@ -19,7 +19,11 @@ env.local_project_path = os.path.dirname(os.path.realpath(__file__))
 # default to local override in env
 env.remote_project_path = env.local_project_path
 
-env.repo = Repo(env.local_project_path)
+try:
+    env.repo = Repo(env.local_project_path)
+except:
+    env.repo = None
+
 
 env.environment_class = 'local'
 env.project = 'toolkit'
