@@ -80,7 +80,9 @@ def production():
     env.user = 'ubuntu'
     env.application_user = 'app'
     # connect to the port-forwarded ssh
-    env.hosts = ['ec2-184-169-191-190.us-west-1.compute.amazonaws.com', 'ec2-184-72-21-48.us-west-1.compute.amazonaws.com'] if not env.hosts else env.hosts
+    env.hosts = ['ec2-184-169-191-190.us-west-1.compute.amazonaws.com',
+                 'ec2-184-72-21-48.us-west-1.compute.amazonaws.com',
+                 'ec2-54-241-222-221.us-west-1.compute.amazonaws.com',] if not env.hosts else env.hosts
     env.celery_name = 'celery-production' # taken from chef cookbook
 
     env.key_filename = '%s/../lawpal-chef/chef-machines.pem' % env.local_project_path
@@ -100,6 +102,20 @@ env.roledefs.update({
     'worker': ['ec2-54-241-224-100.us-west-1.compute.amazonaws.com'],
 })
 
+
+@task
+def chores():
+    sudo('aptitude --assume-yes install build-essential python-setuptools python-dev apache2-utils uwsgi-plugin-python libjpeg8 libjpeg62-dev libfreetype6 libfreetype6-dev easy_install nmap htop vim unzip')
+    sudo('aptitude --assume-yes install git-core mercurial subversion')
+    sudo('aptitude --assume-yes install libtidy-dev postgresql-client libpq-dev python-psycopg2')
+
+    # GEO
+    sudo('aptitude --assume-yes install libgeos-dev')
+
+    sudo('easy_install pip')
+    sudo('pip install virtualenv pillow')
+
+    #put('conf/.bash_profile', '~/.bash_profile')
 
 @task
 def virtualenv(cmd, **kwargs):
@@ -499,7 +515,7 @@ def requirements():
         env.SHA1_FILENAME = get_sha1()
     
     project_path = '%sversions/%s' % (env.remote_project_path, env.SHA1_FILENAME,)
-    requirements_path = '%s/requirements/dev.txt' % (project_path, )
+    requirements_path = '%s/requirements/%s.txt' % (project_path, env.environment, )
 
     virtualenv('pip install -r %s' % requirements_path )
 
@@ -642,8 +658,8 @@ def deploy(is_predeploy='False',full='False',db='False',search='False'):
     build_gui()
     run_tests()
     diff()
-    newrelic_note()
     git_set_tag()
+    newrelic_note()
 
     prepare_deploy()
     do_deploy()
