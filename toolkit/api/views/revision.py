@@ -131,7 +131,8 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
             #
             # Asynchronous celery task to upload the file
             #
-            run_task(crocodoc_upload_task, user=self.request.user, revision=self.object)
+            run_task(crocodoc_upload_task, fallback_enabled=False,
+                     user=self.request.user, revision=self.object)
 
             #
             # Custom signal event
