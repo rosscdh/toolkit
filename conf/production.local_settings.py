@@ -175,11 +175,6 @@ LOGGING = {
             'handlers': ['splunkstorm'],
             'level': 'DEBUG',
             'propagate': False,
-        },
-        'django.test': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
         }
     }
 }
