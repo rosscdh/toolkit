@@ -17,7 +17,8 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
 
     responsible_party = LiteUserSerializer(required=False)
 
-    latest_revision = serializers.SerializerMethodField('get_latest_revision')
+    #latest_revision = serializers.SerializerMethodField('get_latest_revision')
+    latest_revision = serializers.HyperlinkedRelatedField(many=False, required=True, view_name='revision-detail', lookup_field='pk')
 
     matter = serializers.HyperlinkedRelatedField(many=False, required=True, view_name='workspace-detail', lookup_field='slug')
 
