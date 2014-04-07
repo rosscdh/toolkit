@@ -126,4 +126,10 @@ def on_item_post_save(sender, instance, created, **kwargs):
     """
     if created:
         matter = instance.matter
+
+        if instance.sort_order in [None, '']:
+            instance.sort_order = matter.item_set.filter(category=instance.category).count() + 1 
+            instance.save(update_fields=['sort_order'])
+
         matter.actions.item_created(user=matter.lawyer, item=instance)
+

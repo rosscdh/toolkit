@@ -57,6 +57,8 @@ class Item(IsDeletedMixin,
     closing_group = models.CharField(max_length=128, null=True, blank=True, db_index=True)
     category = models.CharField(max_length=128, null=True, blank=True, db_index=True)
 
+    latest_revision = models.ForeignKey('attachment.Revision', null=True, blank=True, related_name='item_latest_revision')
+
     # if is final is true, then the latest_revision will be available for sending for signing
     is_final = models.BooleanField(default=False, db_index=True)
     # this item is complete and signed off on
@@ -74,7 +76,7 @@ class Item(IsDeletedMixin,
     objects = ItemManager()
 
     class Meta:
-        ordering = ('sort_order',)
+        ordering = ('-sort_order',)
 
     def __unicode__(self):
         return u'%s' % self.name
@@ -89,10 +91,6 @@ class Item(IsDeletedMixin,
     @property
     def display_status(self):
         return self.ITEM_STATUS.get_desc_by_value(self.status)
-
-    @property
-    def latest_revision(self):
-        return self.revision_set.current().first()
 
     def participants(self):
         return self.data.get('participants', [])

@@ -58,12 +58,29 @@ class MatterDetailViewTest(TestCase):
             self.assertEqual(subject.get_template_names(), ['dist/index.html'])
 
 
-
-
 class MatterCreateViewTest(BaseScenarios, TestCase):
     def setUp(self):
         super(MatterCreateViewTest, self).setUp()
         self.basic_workspace()
+
+    def test_user_email_invalidated_form(self):
+        """
+        Ensure that a user that has not yet validated their email address cannot
+        create a matter
+        """
+        profile = self.lawyer.profile
+        profile.validated_email = False
+        profile.save(update_fields=['data'])
+
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        url = reverse('matter:create')
+
+        response = self.client.get(url, follow=True)  # actually redirects 302
+        self.assertEqual(response.status_code, 200)
+        # test we see what we expect to see
+        self.assertTrue('<h2><b>Email not yet validated</b></h2>' in response.content)
+        self.assertTrue('<span id="send-notice"><button id="send-email-validation-request">Resend</button></span>' in response.content)
 
     def test_valid_form(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -76,6 +93,36 @@ class MatterCreateViewTest(BaseScenarios, TestCase):
         post_data = {
             'client_name': 'Acme Inc',
             'name': 'Incorporation & Financing'
+        }
+        response = self.client.post(url, post_data, follow=True)
+
+        #
+        # assume the post worked
+        #
+        matter = Workspace.objects.get(slug='incorporation-financing')
+
+        actual_response = {
+            'redirect': True,
+            'url': matter.get_absolute_url()
+        }
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, json.dumps(actual_response))
+
+    def test_valid_form_with_matter_template(self):
+        template_matter = self.matter
+
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        url = reverse('matter:create')
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        post_data = {
+            'client_name': 'Acme Inc',
+            'name': 'Incorporation & Financing',
+            'template': template_matter.pk,
         }
         response = self.client.post(url, post_data, follow=True)
 

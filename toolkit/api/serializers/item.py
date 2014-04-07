@@ -17,8 +17,7 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
 
     responsible_party = LiteUserSerializer(required=False)
 
-    # must be read_only=True
-    latest_revision = RevisionSerializer(source='latest_revision', read_only=True)
+    latest_revision = serializers.SerializerMethodField('get_latest_revision')
 
     matter = serializers.HyperlinkedRelatedField(many=False, required=True, view_name='workspace-detail', lookup_field='slug')
 
@@ -48,6 +47,11 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
         @TODO is this necessary for items?
         """
         return []
+
+    def get_latest_revision(self, obj):
+        if obj.latest_revision is not None:
+            return RevisionSerializer(obj.latest_revision, context={'request': self.context.get('request')}).data
+        return None
 
     def get_reviewers(self, obj):
         """
