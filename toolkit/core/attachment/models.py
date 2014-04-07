@@ -5,6 +5,7 @@ from django.template.defaultfilters import slugify
 from storages.backends.s3boto import S3BotoStorage
 
 from toolkit.utils import get_namedtuple_choices
+from toolkit.apps.workspace.models import Workspace
 
 from jsonfield import JSONField
 
@@ -70,12 +71,25 @@ class Revision(models.Model):
 
     objects = RevisionManager()
 
+
     class Meta:
         # @BUSINESS RULE always return the oldest to newest
         ordering = ('id',)
 
     def __unicode__(self):
         return 'Revision %s' % (self.slug)
+
+    @classmethod
+    def status_labels(cls):
+        status_labels = Workspace().status_labels
+        if status_labels:
+            return status_labels
+        else:
+            return cls.REVISION_STATUS.get_choices_dict()
+
+    @classmethod
+    def default_status(cls):
+        return cls.status_labels()[0]
 
     @property
     def status(self):

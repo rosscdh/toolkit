@@ -32,22 +32,13 @@ class MatterEndpoint(viewsets.ModelViewSet):
     renderer_classes = (_MetaJSONRendererMixin, )
 
     def get_meta(self):
-        # when you call the matter endpoint for listing or creating you don't have ONE object to call status_labels for
-        # so instead you send an empty default custom_status:
-        if self.action in ('create', 'list'):
-            custom_status = Workspace().status_labels
-        else:
-            custom_status = self.get_object().status_labels
-        if not custom_status:
-            custom_status = Revision.REVISION_STATUS.get_choices_dict()
-
         return {
             'matter': {
                 'status': None,
             },
             'item': {
                 'default_status': Revision.REVISION_STATUS.get_choices_dict(),
-                'custom_status': custom_status}
+                'custom_status': Revision.status_labels()}
             }
 
     def get_serializer_class(self):
