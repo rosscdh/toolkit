@@ -484,7 +484,10 @@ angular.module('toolkit-gui')
 			var itemSlug = item.slug;
 			$scope.data.uploading = true;
 
-			matterItemService.uploadRevision( matterSlug, itemSlug, files ).then(
+            var initwithstatus = Object.keys($scope.data.matter._meta.item.custom_status)[0];
+            $log.debug(initwithstatus);
+
+			matterItemService.uploadRevision( matterSlug, itemSlug, files, initwithstatus ).then(
 				function success( revision ) {
 					revision.uploaded_by = matterService.data().selected.current_user;
 					item.latest_revision = revision;

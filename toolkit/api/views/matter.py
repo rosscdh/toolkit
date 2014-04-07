@@ -1,7 +1,4 @@
 # -*- coding: UTF-8 -*-
-import json
-from django.core.exceptions import ImproperlyConfigured
-
 from rulez import registry as rulez_registry
 
 from rest_framework import viewsets
@@ -9,8 +6,6 @@ from rest_framework import generics
 
 from rest_framework.response import Response
 from toolkit.core.attachment.models import Revision
-
-from toolkit.core.item.models import Item
 
 from toolkit.apps.workspace.models import Workspace
 

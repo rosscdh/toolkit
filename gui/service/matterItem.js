@@ -246,7 +246,7 @@ angular.module('toolkit-gui')
 			 *
 			 * @return {Promise}    Updated item object as provided by API
 			 */
-			'uploadRevision': function( matterSlug, itemSlug, files ) {
+			'uploadRevision': function( matterSlug, itemSlug, files, status ) {
 				var deferred = $q.defer();
 
 				var api = revisionItemResource();
@@ -254,7 +254,7 @@ angular.module('toolkit-gui')
 				var fileurl = files[0].url;
 				var filename = files[0].filename;
 
-				api.create({'matterSlug': matterSlug, 'itemSlug': itemSlug }, { 'executed_file': fileurl, 'name': filename },
+				api.create({'matterSlug': matterSlug, 'itemSlug': itemSlug }, { 'executed_file': fileurl, 'name': filename, 'status':status },
 					function success(revision){
 						deferred.resolve(revision);
 					},

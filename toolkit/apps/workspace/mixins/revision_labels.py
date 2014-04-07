@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from collections import OrderedDict
-from toolkit.core.attachment.models import Revision
 
 
 class RevisionLabelMixin(object):
@@ -19,4 +18,5 @@ class RevisionLabelMixin(object):
         choices = OrderedDict()
         for k in sorted(value.keys()):
             choices[k] = value[k]
+
         self.data['status_labels'] = choices

@@ -53,6 +53,12 @@ angular.module('toolkit-gui')
 
         $scope.defaultstatusdict = defaultstatusdict;
 
+        /**
+		 * Reset status to default.
+		 * @memberof EditRevisionStatusCtrl
+		 * @type {Object}
+		 * @private
+		 */
         $scope.resetDefault = function (key) {
             if (!key){
                 $scope.statuslist = [];
@@ -60,28 +66,54 @@ angular.module('toolkit-gui')
                         $scope.statuslist.push({'key':key, 'value': value});
                 });
             } else {
-                $scope.statuslist[key].value = $scope.defaultstatusdict[key];
+                var results = jQuery.grep( $scope.statuslist, function( status ){ return parseInt(status.key)===parseInt(key); } );
+                $log.debug(results);
+                if( results.length===1 ) {
+                    results[0].value = $scope.defaultstatusdict[key];
+                }
             }
         };
 
+        /**
+		 * Add a new status.
+		 * @memberof EditRevisionStatusCtrl
+		 * @type {Object}
+		 * @private
+		 */
         $scope.addStatus = function() {
             var statuslabel = '';
-            var qtyStatus = $scope.statuslist.length;
+            var newkey;
 
-            if ($scope.defaultstatusdict[qtyStatus]) {
-                statuslabel = $scope.defaultstatusdict[qtyStatus];
+            //find first free statuscode
+            for (var i=0;i<9;i++){
+                var results = jQuery.grep( $scope.statuslist, function( status ){ return parseInt(status.key)===i; } );
+
+                if( results.length===0 ) {
+				    newkey=i;
+                    break;
+			    }
             }
 
-            $scope.statuslist.push({'key':qtyStatus, 'value': statuslabel});
+            if ($scope.defaultstatusdict[newkey]) {
+                statuslabel = $scope.defaultstatusdict[newkey];
+            }
+
+            $scope.statuslist.push({'key':newkey, 'value': statuslabel});
         };
 
-        $scope.removeStatus = function() {
+         /**
+		 * Deletes a status.
+		 * @memberof EditRevisionStatusCtrl
+		 * @type {Object}
+		 * @private
+		 */
+        $scope.removeStatus = function(key, index) {
             var qtyStatus = $scope.statuslist.length;
-            var statusToRemove = qtyStatus-1;
+            var statusToRemove = parseInt(key);
 
             var inUse = false;
             jQuery.each( $scope.matter.items, function( index, item ) {
-                if (item.latest_revision && item.latest_revision.status === statusToRemove) {
+                if (item.latest_revision && parseInt(item.latest_revision.status) === statusToRemove) {
                     inUse = true;
                     return;
                 }
@@ -90,7 +122,7 @@ angular.module('toolkit-gui')
             if (inUse === true) {
                 toaster.pop('warning', "Warning!", "This status is in use and cannot be removed.");
             } else {
-                $scope.statuslist.splice(statusToRemove,1);
+                $scope.statuslist.splice(index,1);
             }
         };
 

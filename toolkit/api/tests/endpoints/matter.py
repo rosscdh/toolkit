@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.core.urlresolvers import reverse
 
-from toolkit.core.item.models import Item
 from toolkit.core.attachment.models import Revision
 from toolkit.apps.workspace.models import Workspace
 
