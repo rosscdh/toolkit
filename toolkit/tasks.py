@@ -27,8 +27,9 @@ def run_task(task, fallback_enabled=True, **kwargs):
             logger.critical('Could not run task async: %s due to: %s' % (task, e))
     #
     # Run the task sync if specified
+    # if fallback is true and celery tasks is disabled still run the task
     #
-    if fallback_enabled is True:
+    if RUN_TASKS is True or fallback_enabled is True:
         logger.critical('Could not run task async: %s falling back to synchronously' % task)
         task(user=self.request.user, revision=self.object)
         return True
