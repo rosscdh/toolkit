@@ -52,10 +52,10 @@ class MatterParticipant(generics.CreateAPIView,
     def create(self, request, **kwargs):
         data = request.DATA.copy()
 
-        self.validate_data(data=data, expected_keys=['email', 'first_name', 'last_name', 'user_class', 'message'])
+        self.validate_data(data=data, expected_keys=['email', 'first_name', 'last_name', 'message'])
 
         email = data.get('email')
-        user_class = data.get('user_class')  # @TODO need to review
+        user_class = data.get('user_class', 'customer')  # @TODO need to review
         first_name = data.get('first_name')
         last_name = data.get('last_name')
         message = data.get('message')
