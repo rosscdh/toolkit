@@ -4,14 +4,13 @@
     </div>
     <form name="requestForm" ng-submit="request()">
         <div class="modal-body">
-            <p>Here the description.</p>
             <strong ng-show="participants.length>0">Revision status</strong>
             <ul class="list-unstyled">
                 <li ng-repeat="obj in statuslist">
                    <span class="icon status-{{ obj.key }}"></span>
                    <input class="form-control input-sm" id="input-status-{{obj.key}}" ng-model="obj.value" />
-                   <a href="javascript:;" ng-click="resetDefault(obj.key)"><small>Reset</small></a>
-                   <a href="javascript:;" ng-click="removeStatus(obj.key, $index)" ng-show="statuslist.length>1"><span class="fui-trash text-danger"></span></a>
+                   <a href="javascript:;" ng-click="resetDefault(obj.key)"><small class="text-muted">Reset</small></a>
+                   <a href="javascript:;" ng-click="removeStatus(obj.key, $index)" ng-show="statuslist.length>1"><span class="text-muted">Del</span></a>
                 </li>
             </ul>
             <a href="javascript:;" ng-click="addStatus()" ng-show="statuslist.length<9"><small>Add new status</small></a>&nbsp;
