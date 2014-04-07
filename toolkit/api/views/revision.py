@@ -11,12 +11,18 @@ from rest_framework.response import Response
 
 from toolkit.core.attachment.models import Revision
 
+from toolkit.tasks import run_task
+from toolkit.apps.review.tasks import crocodoc_upload_task
+
 from .mixins import (MatterItemsQuerySetMixin,)
 
 from ..serializers import RevisionSerializer
 from ..serializers import ItemSerializer
 from ..serializers import UserSerializer
-from toolkit.core.item.models import Item
+
+
+import logging
+logger = logging.getLogger('django.request')
 
 
 class RevisionEndpoint(viewsets.ModelViewSet):
@@ -123,11 +129,19 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
             headers = self.get_success_headers(serializer.data)
 
             #
+            # Asynchronous celery task to upload the file
+            #
+            run_task(crocodoc_upload_task, fallback_enabled=False,
+                     user=self.request.user, revision=self.object)
+
+            #
             # Custom signal event
             #
             self.matter.actions.created_revision(user=self.request.user,
                                                  item=self.item,
                                                  revision=self.revision)
+
+
 
             # see if there is a previous request for this revision
             # TODO: check if this works! absolutely not sure!
