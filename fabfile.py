@@ -19,10 +19,15 @@ env.local_project_path = os.path.dirname(os.path.realpath(__file__))
 # default to local override in env
 env.remote_project_path = env.local_project_path
 
-env.repo = Repo(env.local_project_path)
+try:
+    env.repo = Repo(env.local_project_path)
+except:
+    env.repo = None
+
 
 env.environment_class = 'local'
 env.project = 'toolkit'
+env.celery_app_name = env.project
 
 env.dev_fixtures = 'dev-fixtures'
 env.fixtures = 'sites tools'
@@ -79,7 +84,9 @@ def production():
     env.user = 'ubuntu'
     env.application_user = 'app'
     # connect to the port-forwarded ssh
-    env.hosts = ['ec2-184-169-191-190.us-west-1.compute.amazonaws.com', 'ec2-184-72-21-48.us-west-1.compute.amazonaws.com'] if not env.hosts else env.hosts
+    env.hosts = ['ec2-184-169-191-190.us-west-1.compute.amazonaws.com',
+                 'ec2-184-72-21-48.us-west-1.compute.amazonaws.com',
+                 'ec2-54-241-222-221.us-west-1.compute.amazonaws.com',] if not env.hosts else env.hosts
     env.celery_name = 'celery-production' # taken from chef cookbook
 
     env.key_filename = '%s/../lawpal-chef/chef-machines.pem' % env.local_project_path
@@ -94,11 +101,25 @@ def production():
 env.roledefs.update({
     'db': ['ec2-50-18-97-221.us-west-1.compute.amazonaws.com'], # the actual db host
     'db-actor': ['ec2-54-241-224-100.us-west-1.compute.amazonaws.com'], # database action host
-    'search': ['ec2-54-241-224-100.us-west-1.compute.amazonaws.com'], # elastic search action host
-    'web': ['ec2-184-169-191-190.us-west-1.compute.amazonaws.com', 'ec2-184-72-21-48.us-west-1.compute.amazonaws.com'],
-    'worker': ['ec2-54-241-224-100.us-west-1.compute.amazonaws.com'],
+    # 'search': ['ec2-54-241-224-100.us-west-1.compute.amazonaws.com'], # elastic search action host
+    # 'web': ['ec2-184-169-191-190.us-west-1.compute.amazonaws.com', 'ec2-184-72-21-48.us-west-1.compute.amazonaws.com'],
+    'worker': ['ec2-54-241-222-221.us-west-1.compute.amazonaws.com'],
 })
 
+
+@task
+def chores():
+    sudo('aptitude --assume-yes install build-essential python-setuptools python-dev apache2-utils uwsgi-plugin-python libjpeg8 libjpeg62-dev libfreetype6 libfreetype6-dev easy_install nmap htop vim unzip')
+    sudo('aptitude --assume-yes install git-core mercurial subversion')
+    sudo('aptitude --assume-yes install libtidy-dev postgresql-client libpq-dev python-psycopg2')
+
+    # GEO
+    sudo('aptitude --assume-yes install libgeos-dev')
+
+    sudo('easy_install pip')
+    sudo('pip install virtualenv pillow')
+
+    #put('conf/.bash_profile', '~/.bash_profile')
 
 @task
 def virtualenv(cmd, **kwargs):
@@ -237,21 +258,58 @@ def diff_outgoing_with_current():
 
 @task
 @roles('worker')
-def celery_restart():
+def celery_restart(name='worker.1'):
     with settings(warn_only=True): # only warning as we will often have errors importing
-        sudo('supervisorctl restart %s' % env.celery_name )
+        cmd = "celery multi restart {name}@%h -A {app_name} --pidfile='/tmp/celery.{name}.pid'".format(name=name, app_name=env.celery_app_name)
+        if env.hosts:
+            #run(cmd)
+            virtualenv(cmd='cd %s%s;%s' % (env.remote_project_path, env.project, cmd))
+        else:
+            local(cmd)
 
 @task
 @roles('worker')
-def celery_start(loglevel='info'):
+def celery_start(name='worker.1', loglevel='INFO', concurrency=5):
     with settings(warn_only=True): # only warning as we will often have errors importing
-        sudo('supervisorctl start %s' % env.celery_name )
+        #cmd = "celery worker --app=toolkit --loglevel={loglevel} --concurrency={concurrency} -n worker{name}.%h".format(name=name, loglevel=loglevel, concurrency=concurrency)
+        cmd = "celery multi start {name}@%h -A {app_name} --loglevel={loglevel} --pidfile='/tmp/celery.{name}.pid' --logfile='/tmp/celery.{name}.log' --concurrency={concurrency}".format(name=name, loglevel=loglevel, concurrency=concurrency, app_name=env.celery_app_name)
+        if env.hosts:
+            #run(cmd)
+            virtualenv(cmd='cd %s%s;%s' % (env.remote_project_path, env.project, cmd))
+        else:
+            local(cmd)
 
 @task
 @roles('worker')
-def celery_stop():
+def celery_stop(name='worker.1'):
     with settings(warn_only=True): # only warning as we will often have errors importing
-        sudo('supervisorctl stop %s' % env.celery_name )
+        cmd = "celery multi stopwait {name}@%h -A {app_name} --pidfile='/tmp/celery.{name}.pid'".format(name=name, app_name=env.celery_app_name)
+        if env.hosts:
+            #run(cmd)
+            virtualenv(cmd='cd %s%s;%s' % (env.remote_project_path, env.project, cmd))
+        else:
+            local(cmd)
+
+@task
+@roles('worker')
+def celery_cmd(cmd=None):
+    if cmd is not None:
+        with settings(warn_only=True): # only warning as we will often have errors importing
+            cmd = "celery {cmd} -A {app_name}".format(cmd=cmd, app_name=env.celery_app_name)
+            if env.hosts:
+                run(cmd)
+            else:
+                local(cmd)
+
+# @task
+# @roles('worker')
+# def celery_force_kill():
+#     with settings(warn_only=True): # only warning as we will often have errors importing
+#         cmd = "ps auxww | grep 'celery worker' | awk '{print $2}' | xargs kill -9"
+#         if env.hosts:
+#             run(cmd)
+#         else:
+#             local(cmd)
 
 @task
 @roles('worker')
@@ -464,7 +522,7 @@ def requirements():
         env.SHA1_FILENAME = get_sha1()
     
     project_path = '%sversions/%s' % (env.remote_project_path, env.SHA1_FILENAME,)
-    requirements_path = '%s/requirements/dev.txt' % (project_path, )
+    requirements_path = '%s/requirements/%s.txt' % (project_path, env.environment, )
 
     virtualenv('pip install -r %s' % requirements_path )
 
@@ -607,8 +665,8 @@ def deploy(is_predeploy='False',full='False',db='False',search='False'):
     build_gui()
     run_tests()
     diff()
-    newrelic_note()
     git_set_tag()
+    newrelic_note()
 
     prepare_deploy()
     do_deploy()

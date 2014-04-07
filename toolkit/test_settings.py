@@ -78,3 +78,8 @@ MIXPANEL_SETTINGS = {
 #     'autoslug.fields.AutoSlugField': AutoSlugFieldGenerator,
 #     'django_filepicker.models.FPFileField': FPFileFieldGenerator,
 # }
+
+
+CELERY_DEFAULT_QUEUE = 'lawpal-test'
+RUN_TASKS = False
+ENABLE_CELERY_TASKS = False

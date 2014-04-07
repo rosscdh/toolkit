@@ -117,6 +117,10 @@ MIXPANEL_SETTINGS = {
     'token': 'd7c53d3f0559022a42a74e99950b6934',
 }
 
+CELERY_DEFAULT_QUEUE = 'prod-toolkit'
+RUN_TASKS = False
+ENABLE_CELERY_TASKS = False
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -169,11 +173,6 @@ LOGGING = {
         },
         'django.request': {
             'handlers': ['splunkstorm'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'django.test': {
-            'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': False,
         }
