@@ -5,6 +5,7 @@ from django.template.defaultfilters import slugify
 from storages.backends.s3boto import S3BotoStorage
 
 from toolkit.utils import get_namedtuple_choices
+from toolkit.apps.workspace.models import Workspace
 
 from jsonfield import JSONField
 
@@ -50,8 +51,6 @@ class Revision(models.Model):
 
     executed_file = models.FileField(upload_to=_upload_file, storage=S3BotoStorage(), null=True, blank=True)
 
-    status = models.IntegerField(choices=REVISION_STATUS.get_choices(), default=REVISION_STATUS.draft)
-
     item = models.ForeignKey('item.Item')
     uploaded_by = models.ForeignKey('auth.User')
 
@@ -72,12 +71,37 @@ class Revision(models.Model):
 
     objects = RevisionManager()
 
+
     class Meta:
         # @BUSINESS RULE always return the oldest to newest
         ordering = ('id',)
 
     def __unicode__(self):
         return 'Revision %s' % (self.slug)
+
+    @classmethod
+    def status_labels(cls):
+        status_labels = Workspace().status_labels
+        if status_labels:
+            return status_labels
+        else:
+            return cls.REVISION_STATUS.get_choices_dict()
+
+    @classmethod
+    def default_status(cls):
+        return cls.status_labels()[cls.default_status_index()]
+
+    @classmethod
+    def default_status_index(cls):
+        return 0
+
+    @property
+    def status(self):
+        return self.data.get('status')
+
+    @status.setter
+    def status(self, value):
+        self.data['status'] = value
 
     @property
     def revisions(self):

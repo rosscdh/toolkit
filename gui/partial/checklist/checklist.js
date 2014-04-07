@@ -2,7 +2,7 @@ angular.module('toolkit-gui')
 /**
  * @class ChecklistCtrl
  * @classdesc 							Controller for retreiving and display checklists
- * 
+ *
  * @param  {Object} $scope                Contains the scope of this controller
  * @param  {Object} $rootScope            Rootscope variable
  * @param  {Object} $routeParams          Object that provides access to Angular route parameters
@@ -114,7 +114,7 @@ angular.module('toolkit-gui')
 			categories.push(
 				{ 'name': categoryName, 'items': items }
 			);
-			
+
 			if( matter && matter.categories ) {
 				// Allocate items to specific categories to make multiple arrays
 				jQuery.each( matter.categories, function( index, cat ) {
@@ -141,8 +141,8 @@ angular.module('toolkit-gui')
 		};
 
 		/***
-		 ___ _                     
-		|_ _| |_ ___ _ __ ___  ___ 
+		 ___ _
+		|_ _| |_ ___ _ __ ___  ___
 		 | || __/ _ \ '_ ` _ \/ __|
 		 | || ||  __/ | | | | \__ \
 		|___|\__\___|_| |_| |_|___/
@@ -151,7 +151,7 @@ angular.module('toolkit-gui')
 		 * Requests the checklist API to add a checklist item
 		 *
 		 * @name				submitNewItem
-		 * 
+		 *
 		 * @param  {Object} category	Category object contains category name (String)
 		 * @private
 		 * @method				submitNewItem
@@ -175,7 +175,7 @@ angular.module('toolkit-gui')
 
 		/**
 		 * Sets the currently selected item to the one passed through to this method
-		 * 
+		 *
 		 * @param  {Object}	item		Category object contains category name (String)
 		 * @param {Object}	category	object representing the category of the item to select
 		 * @private
@@ -265,7 +265,7 @@ angular.module('toolkit-gui')
 		 * @name 				showAddItemForm
 		 *
 		 * @param  {Number} index Index (starting at 0) of the group for which to display the add form
-		 * 
+		 *
 		 * @private
 		 * @method				showAddItemForm
 		 * @memberof			ChecklistCtrl
@@ -284,7 +284,7 @@ angular.module('toolkit-gui')
 		 * Executes a save of the selected item, using the in scope variable selectedItem
 		 *
 		 * @name 				saveSelectedItem
-		 * 
+		 *
 		 * @private
 		 * @method				saveSelectedItem
 		 * @memberof			ChecklistCtrl
@@ -346,18 +346,18 @@ angular.module('toolkit-gui')
 		/*** End item handling */
 
 		/*
-		  ____ ____  _   _ ____     ____      _                              
-		 / ___|  _ \| | | |  _ \   / ___|__ _| |_ ___  __ _  ___  _ __ _   _ 
+		  ____ ____  _   _ ____     ____      _
+		 / ___|  _ \| | | |  _ \   / ___|__ _| |_ ___  __ _  ___  _ __ _   _
 		| |   | |_) | | | | | | | | |   / _` | __/ _ \/ _` |/ _ \| '__| | | |
 		| |___|  _ <| |_| | |_| | | |__| (_| | ||  __/ (_| | (_) | |  | |_| |
 		 \____|_| \_\\___/|____/   \____\__,_|\__\___|\__, |\___/|_|   \__, |
-													  |___/            |___/ 
-		 */ 
+													  |___/            |___/
+		 */
 		/**
 		 * Return item due status
 		 *
 		 * @name 				submitNewCategory
-		 * 
+		 *
 		 * @private
 		 * @method				submitNewCategory
 		 * @memberof			ChecklistCtrl
@@ -386,7 +386,7 @@ angular.module('toolkit-gui')
 		 * @name 				deleteCategory
 		 *
 		 * @param {Object} cat Catgory object
-		 * 
+		 *
 		 * @private
 		 * @method				deleteCategory
 		 * @memberof			ChecklistCtrl
@@ -418,7 +418,7 @@ angular.module('toolkit-gui')
 		 * @name 				showEditCategoryForm
 		 *
 		 * @param {Object} cat Catgory object
-		 * 
+		 *
 		 * @private
 		 * @method				showEditCategoryForm
 		 * @memberof			ChecklistCtrl
@@ -439,7 +439,7 @@ angular.module('toolkit-gui')
 		 * @name 				editCategory
 		 *
 		 * @param {Object} cat Catgory object
-		 * 
+		 *
 		 * @private
 		 * @method				editCategory
 		 * @memberof			ChecklistCtrl
@@ -460,12 +460,12 @@ angular.module('toolkit-gui')
 		/* End CRUD Category */
 
 		/*
-		 ____            _     _             
-		|  _ \ _____   _(_)___(_) ___  _ __  
-		| |_) / _ \ \ / / / __| |/ _ \| '_ \ 
+		 ____            _     _
+		|  _ \ _____   _(_)___(_) ___  _ __
+		| |_) / _ \ \ / / / __| |/ _ \| '_ \
 		|  _ <  __/\ V /| \__ \ | (_) | | | |
 		|_| \_\___| \_/ |_|___/_|\___/|_| |_|
-											 
+
 		 */
 
 		/**
@@ -474,7 +474,7 @@ angular.module('toolkit-gui')
 		 * @name 				processUpload
 		 *
 		 * @param {Object} cat Catgory object
-		 * 
+		 *
 		 * @private
 		 * @method				processUpload
 		 * @memberof			ChecklistCtrl
@@ -484,7 +484,10 @@ angular.module('toolkit-gui')
 			var itemSlug = item.slug;
 			$scope.data.uploading = true;
 
-			matterItemService.uploadRevision( matterSlug, itemSlug, files ).then(
+            var initwithstatus = Object.keys($scope.data.matter._meta.item.custom_status)[0];
+            $log.debug(initwithstatus);
+
+			matterItemService.uploadRevision( matterSlug, itemSlug, files, initwithstatus ).then(
 				function success( revision ) {
 					revision.uploaded_by = matterService.data().selected.current_user;
 					item.latest_revision = revision;
@@ -545,7 +548,7 @@ angular.module('toolkit-gui')
 		 * Request API to create a new revision
 		 *
 		 * @name 				saveLatestRevision
-		 * 
+		 *
 		 * @private
 		 * @method				saveLatestRevision
 		 * @memberof			ChecklistCtrl
@@ -571,7 +574,7 @@ angular.module('toolkit-gui')
 		 * Request API to delete latest revision
 		 *
 		 * @name 				deleteLatestRevision
-		 * 
+		 *
 		 * @private
 		 * @method				deleteLatestRevision
 		 * @memberof			ChecklistCtrl
@@ -961,6 +964,37 @@ angular.module('toolkit-gui')
                 return 0;
             }
         };
+
+
+        $scope.editRevisionStatusTitles = function() {
+            var matter = $scope.data.matter;
+
+            var modalInstance = $modal.open({
+                'templateUrl': '/static/ng/partial/edit-revision-status/edit-revision-status.html',
+                'controller': 'EditRevisionStatusCtrl',
+                'backdrop': 'static',
+                'resolve': {
+                    'currentUser': function () {
+                        return matter.current_user;
+                    },
+                    'matter': function () {
+                        return matter;
+                    },
+                    'customstatusdict': function () {
+                        return $scope.data.matter._meta.item.custom_status;
+                    },
+                    'defaultstatusdict': function () {
+                        return $scope.data.matter._meta.item.default_status;
+                    }
+                }
+            });
+
+            modalInstance.result.then(
+                function ok(result) {
+                    $scope.data.matter._meta.item.custom_status = result;
+                }
+            );
+        };
 		/* End revision handling */
 
 
@@ -973,7 +1007,7 @@ angular.module('toolkit-gui')
 		 *
 		 * @param {Event} evt Event as passed through from jQuery-ui drag and drop
 		 * @param {DOM} ui DOM element
-		 * 
+		 *
 		 * @private
 		 * @method				recalculateCategories
 		 * @memberof			ChecklistCtrl
@@ -1047,7 +1081,7 @@ angular.module('toolkit-gui')
 		 * takes a few milliseconds.
 		 *
 		 * @name 				focus
-		 * 
+		 *
 		 * @private
 		 * @method				focus
 		 * @memberof			ChecklistCtrl

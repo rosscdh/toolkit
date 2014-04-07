@@ -1,14 +1,10 @@
 # -*- coding: UTF-8 -*-
-
 from rulez import registry as rulez_registry
 
 from rest_framework import viewsets
 from rest_framework import generics
 
 from rest_framework.response import Response
-
-from toolkit.core.item.models import Item
-
 from toolkit.core.attachment.models import Revision
 
 from toolkit.apps.workspace.models import Workspace
@@ -16,6 +12,8 @@ from toolkit.apps.workspace.models import Workspace
 from .mixins import (MatterMixin,
                      _MetaJSONRendererMixin,
                      SpecificAttributeMixin,)
+
+from rest_framework import status as http_status
 
 from ..serializers import MatterSerializer
 from ..serializers.matter import LiteMatterSerializer
@@ -31,16 +29,17 @@ class MatterEndpoint(viewsets.ModelViewSet):
     model = Workspace
     serializer_class = MatterSerializer
     lookup_field = 'slug'
-    renderer_classes = (_MetaJSONRendererMixin,)
+    renderer_classes = (_MetaJSONRendererMixin, )
 
     def get_meta(self):
         return {
             'matter': {
                 'status': None,
             },
-            'item': {'status': Item.ITEM_STATUS.get_choices_dict()},
-            'revision': {'status': Revision.REVISION_STATUS.get_choices_dict()},
-        }
+            'item': {
+                'default_status': Revision.REVISION_STATUS.get_choices_dict(),
+                'custom_status': Revision.status_labels()}
+            }
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -125,3 +124,31 @@ class ClosingGroupView(SpecificAttributeMixin,
             logger.info('Could not delete closing_group: %s due to: %s' % (closing_group, e,))
 
         return Response(closing_groups)
+
+
+class RevisionLabelView(generics.DestroyAPIView,
+                        generics.CreateAPIView,
+                        MatterMixin,):
+    """
+    /matters/:matter_slug/revision_label (POST)
+        [lawyer] can assign an item to a closing group
+    """
+    model = Workspace
+    serializer_class = MatterSerializer
+    lookup_field = 'slug'
+    lookup_url_kwarg = 'matter_slug'
+
+    specific_attribute = 'status_labels'
+
+    def create(self, request, **kwargs):
+        obj = self.get_object()
+        status_labels = request.DATA.get('status_labels')
+
+        obj.status_labels = status_labels
+        obj.save(update_fields=['data'])
+        return Response(status=http_status.HTTP_201_CREATED)
+
+    def can_edit(self, user):
+        return user.profile.is_lawyer
+
+rulez_registry.register("can_edit", RevisionLabelView)

@@ -1,4 +1,5 @@
 *.diff
+/gui/index.html  # ignore the generated dev index.html
 gui/temp/*
 toolkit/production_settings\.py # ignoring the test productions
 setup.cfg

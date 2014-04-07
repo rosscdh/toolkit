@@ -2,7 +2,6 @@
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.db.models.loading import get_model
-from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import pre_save, post_save, m2m_changed
 
 from .signals import (ensure_workspace_slug,
@@ -23,10 +22,10 @@ from uuidfield import UUIDField
 from jsonfield import JSONField
 
 from .managers import WorkspaceManager
-from .mixins import ClosingGroupsMixin, CategoriesMixin
+from .mixins import ClosingGroupsMixin, CategoriesMixin, RevisionLabelMixin
 
 
-class Workspace(IsDeletedMixin, ClosingGroupsMixin, CategoriesMixin, models.Model):
+class Workspace(IsDeletedMixin, ClosingGroupsMixin, CategoriesMixin, RevisionLabelMixin, models.Model):
     """
     Workspaces are areas that allow multiple tools
     to be associated with a group of users
