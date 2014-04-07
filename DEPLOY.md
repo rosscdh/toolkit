@@ -1,6 +1,11 @@
 Deployment actions by branch
 ----------------------------
 
+
+--------------------------------------------------------------------------------
+** DEPLOYED 6 April 2014 - celery tasks are preset but not enabled
+--------------------------------------------------------------------------------
+
 [celery]
 
 2. manage.py migrate djcelery
