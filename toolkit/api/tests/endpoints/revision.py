@@ -428,3 +428,20 @@ class InvalidFileTypeAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerTestCa
         resp_json = json.loads(resp.content)
 
         self.assertEqual(resp.status_code, 400)  # invalid
+
+
+class RevisionDeleteWithReviewersTest(BaseEndpointTest):
+    """
+    Bug in production 2014-04-07
+    """
+    def setUp(self):
+        super(RevisionDeleteWithReviewersTest, self).setUp()
+        self.item = mommy.make('item.Item', matter=self.matter, name='Test Item with Revision', category=None)
+        self.revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
+
+        self.reviewer = mommy.make('auth.User', username='New Person', email='username@example.com')
+        self.revision.reviewers.add(self.reviewer)
+
+    def test_delete_of_revision_not_blocked_by_reviwers(self):
+        self.skipTest('b')
+        self.revision.delete()

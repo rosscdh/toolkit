@@ -216,11 +216,12 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_reviewers(self, obj):
         reviewers = []
+        if getattr(obj, 'pk', None) is not None:  # it has not been deleted when pk is None
+            for u in obj.reviewers.all():
+                reviewdoc = obj.reviewdocument_set.filter(reviewers__in=[u]).first()
+                if reviewdoc is not None:
+                    reviewers.append(ReviewSerializer(reviewdoc, context={'request': self.context.get('request')}).data)
 
-        for u in obj.reviewers.all():
-            reviewdoc = obj.reviewdocument_set.filter(reviewers__in=[u]).first()
-            if reviewdoc is not None:
-                reviewers.append(ReviewSerializer(reviewdoc, context={'request': self.context.get('request')}).data)
         return reviewers
 
     def get_user_review_url(self, obj):
