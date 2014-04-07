@@ -1,13 +1,11 @@
 Deployment actions by branch
 ----------------------------
 
+
 [choices-names]
 
 1. ./manage.py migrate attachment  # removal of the status field 
 
---------------------------------------------------------------------------------
-** DEPLOYED 6 April 2014 - celery tasks are preset but not enabled
---------------------------------------------------------------------------------
 
 [celery]
 
