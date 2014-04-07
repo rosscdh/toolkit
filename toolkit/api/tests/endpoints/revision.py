@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
+from django.db.models import SET_NULL
 from django.test import LiveServerTestCase
 from django.core.urlresolvers import reverse
 from django.core.files.storage import FileSystemStorage
@@ -443,5 +444,15 @@ class RevisionDeleteWithReviewersTest(BaseEndpointTest):
         self.revision.reviewers.add(self.reviewer)
 
     def test_delete_of_revision_not_blocked_by_reviwers(self):
-        self.skipTest('b')
+        # import pdb;pdb.set_trace()
+        self.assertTrue(self.item.pk)
         self.revision.delete()
+        #
+        # If it throws an Item.DoesNotExist exception here
+        # then we have a problem becuause the field Item.latest_revision.on_delete should be on_delete=models.SET_NULL
+        #
+        self.item.__class__.objects.get(pk=self.item.pk)
+        # test that the field has on_delete set to models.SET_NULL
+        on_delete = getattr(self.item.__class__._meta.get_field_by_name('latest_revision')[0].rel, 'on_delete', None)
+        self.assertTrue(on_delete == SET_NULL)
+
