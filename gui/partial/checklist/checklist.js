@@ -163,7 +163,8 @@ angular.module('toolkit-gui')
 		   if ($scope.data.newItemName) {
 			 matterItemService.create(matterSlug, $scope.data.newItemName, category.name).then(
 				 function success(item){
-					category.items.unshift(item);
+					//category.items.unshift(item);
+					category.items.push(item);
 					$scope.data.newItemName = '';
 				 },
 				 function error(err){

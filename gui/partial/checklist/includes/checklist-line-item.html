@@ -18,23 +18,6 @@
 			</div>
 		</th>
 	 </tr>
-
-	 <tr class="add-new-controls warning" ng-show="data.showAddForm==$index">
-		<td colspan="2">
-			<div class="input-group">
-				<input class="form-control input-sm" id="appendedInputButton-03" type="search" placeholder="Enter item name and press enter"
-					   ng-model="data.newItemName" ng-enter="submitNewItem(cat)" ng-blur="data.showAddForm=null" focus-on="eventNewItem-{{$index}}">
-				<!--<div class="input-group-btn">
-					<button class="btn btn-link  dropdown-toggle input-sm" type="button" data-toggle="dropdown"><span class="fui-gear"></span></button>
-					<ul class="dropdown-menu dropdown-inverse dropdown-small">
-						<li><a href="#fakelink">Set closing group</a></li>
-						<li><a href="#fakelink">Set description</a></li>
-						<li><a href="#fakelink">Set due date</a></li>
-					</ul>
-			  </div>-->
-			</div>
-		</td>
-	</tr>
 </thead>
 
 <!-- LAWYER checklist items //-->
@@ -74,6 +57,23 @@
 	</tr>
 	<tr ng-class="{ 'showme': cat.items.length==0&&data.dragging}" class="hidden"><td colspan="2" class="text-muted">Drag item into this empty category</td></tr>
 	<tr class="hidden"><td colspan="2" class="text-muted">Drag item into this empty category</td></tr>
+
+    <tr class="add-new-controls warning" ng-show="data.showAddForm==$index">
+		<td colspan="2">
+			<div class="input-group">
+				<input class="form-control input-sm" id="appendedInputButton-03" type="search" placeholder="Enter item name and press enter"
+					   ng-model="data.newItemName" ng-enter="submitNewItem(cat)" ng-blur="data.showAddForm=null" focus-on="eventNewItem-{{$index}}">
+				<!--<div class="input-group-btn">
+					<button class="btn btn-link  dropdown-toggle input-sm" type="button" data-toggle="dropdown"><span class="fui-gear"></span></button>
+					<ul class="dropdown-menu dropdown-inverse dropdown-small">
+						<li><a href="#fakelink">Set closing group</a></li>
+						<li><a href="#fakelink">Set description</a></li>
+						<li><a href="#fakelink">Set due date</a></li>
+					</ul>
+			  </div>-->
+			</div>
+		</td>
+	</tr>
 </tbody>
 <tbody ng-show="cat.items.length==0" ng-show="data.usdata.current.user_class=='lawyer'">
 	<tr ng-show="cat.items.length==0&&data.showAddForm!=$index&&!data.dragging"><td colspan="2" ng-click="showAddItemForm($index);" class="text-center"><span class="btn btn-link btn-xs animated-slow flash" style="text-decoration:underline;">Add the first item</span></td></tr>
