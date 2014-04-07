@@ -89,7 +89,11 @@ class Revision(models.Model):
 
     @classmethod
     def default_status(cls):
-        return cls.status_labels()[0]
+        return cls.status_labels()[cls.default_status_index()]
+
+    @classmethod
+    def default_status_index(cls):
+        return 0
 
     @property
     def status(self):
