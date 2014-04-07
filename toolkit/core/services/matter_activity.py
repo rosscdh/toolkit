@@ -52,6 +52,7 @@ class MatterActivityEventService(object):
     =======
 
     revision-comment-created
+    revision-added-revision-comment     #crocodoc annotation
     revision-comment-deleted
     revision-created
     revision-deleted
