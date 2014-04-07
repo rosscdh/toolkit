@@ -12,6 +12,7 @@ handler500 = 'toolkit.apps.default.views.handler500'
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
 
+    url(r'^api/token-auth/', 'rest_framework_jwt.views.obtain_jwt_token'),
     url(r'^api/v1/', include('toolkit.api.urls')),
     url(r'^api/', include('toolkit.apps.api.urls', namespace='api')),
 
