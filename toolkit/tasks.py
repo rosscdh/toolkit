@@ -31,5 +31,5 @@ def run_task(task, fallback_enabled=True, **kwargs):
     #
     if RUN_TASKS is True or fallback_enabled is True:
         logger.critical('Could not run task async: %s falling back to synchronously' % task)
-        task(user=self.request.user, revision=self.object)
+        task(**kwargs)
         return True
