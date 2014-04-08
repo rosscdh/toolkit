@@ -67,12 +67,7 @@ class ItemActivityEndpointTest(BaseEndpointTest):
 
         events = json_data['results']
 
-        self.assertEqual(len(events), 1)
-        self.assertGreater(len(events[0]['event']), 10)  # just to see if event-text contains information. username is not fix.
-        self.assertItemsEqual(events[0].keys(), [u'timestamp', u'timesince', u'data', u'id', u'actor', u'event'])
-
-        # check if actor was added correctly
-        self.assertEqual(events[0]['actor']['name'], u'Lawyer Test')
+        self.assertEqual(len(events), 1)  # we should have 1, the create of the item
 
     def test_comments_in_activitystream(self):
         # create comment and see if *special* template is used
