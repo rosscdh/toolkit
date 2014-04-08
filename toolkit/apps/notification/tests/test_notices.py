@@ -105,6 +105,12 @@ class NotificationEventsListTest(BaseListViewTest):
         and make them part of the matter
         """
         matter_participant = mommy.make('auth.User', username='matter-participant', email='matterparticipant@lawpal.com')
+        matter_participant.set_password(self.password)
+        matter_participant.save()
+        matter_participant_profile = matter_participant.profile
+        matter_participant_profile.validated_email = True
+        matter_participant_profile.save(update_fields=['data'])
+
         self.matter.participants.add(matter_participant)
         self.matter.participants.remove(self.user)
         #self.matter.actions.removed_matter_participant(matter=self.matter, removing_user=self.lawyer, removed_user=self.user)

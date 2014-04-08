@@ -428,7 +428,8 @@ LAWPAL_ACTIVITY = {
                       'revision-created', 'revision-deleted',
                       'item-invited-signer',
                       'itemrequestrevisionview-provide-a-document',
-                      'workspace-created', 'workspace-added-participant', 'workspace-removed-participant']  # create so many activities to keep tests running for now
+                      'workspace-created', 'workspace-added-participant', 'workspace-removed-participant', 
+                      'revision-added-revision-comment']
     },
 }
 

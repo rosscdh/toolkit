@@ -158,10 +158,9 @@ def on_workspace_post_save(sender, instance, created, **kwargs):
 
 
 def on_workspace_m2m_changed(sender, instance, action, pk_set, **kwargs):
-    if action == 'pre_add':
-        for pk in pk_set:
-            instance.actions.added_matter_participant(matter=instance, adding_user=instance.lawyer,
-                                                      added_user=User.objects.get(pk=pk))  # assumption: only the creating lawyer can edit participants
+    """
+    pre_add case is handled in another signal: PARTICIPANT_ADDED
+    """
     if action == 'pre_remove':
         for pk in pk_set:
             instance.actions.removed_matter_participant(matter=instance, removing_user=instance.lawyer,
