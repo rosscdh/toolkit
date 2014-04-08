@@ -65,6 +65,16 @@ MIXPANEL_SETTINGS = {
     'token': None,
 }
 
+# activate everything to make sure all events are really called
+LAWPAL_ACTIVITY['activity']['whitelist'] = [
+    'item-created', 'item-edited', 'item-commented', 'item-changed-the-status', 'item-renamed',
+    'item-provide-a-document', 'item-invited-reviewer', 'item-canceled-their-request-for-a-document',
+    'item-closed', 'item-reopened', 'item-added-revision-comment', 'item-deleted-revision-comment',
+    'revision-created', 'revision-deleted',
+    'item-invited-signer',
+    'itemrequestrevisionview-provide-a-document',
+    'workspace-created', 'workspace-added-participant', 'workspace-removed-participant']
+
 # def AutoSlugFieldGenerator():
 #     hash_val = '{r}'.format(r=random.random())
 #     h = hashlib.sha1(hash_val)
