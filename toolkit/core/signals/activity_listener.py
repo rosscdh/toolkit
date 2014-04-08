@@ -111,7 +111,7 @@ def _notifications_send(verb_slug, actor, target, message):
             #
             # @TODO move into manager?
             #
-            for u in query_set.all():
+            for u in query_set.select_related('profile').exclude(profile__has_notifications=True):
                 profile = u.profile
                 profile.has_notifications = True
                 profile.save(update_fields=['has_notifications'])
