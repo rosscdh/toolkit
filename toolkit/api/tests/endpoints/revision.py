@@ -323,14 +323,16 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
     def test_post_with_URL_executed_file_and_stream(self):
         self.test_post_with_URL_executed_file()
         stream = target_stream(self.matter)
-        self.assertEqual(stream[0].data['message'], u'Lawyer Test created a revision for Test Item with Revision')
+        self.assertEqual(stream[0].data['override_message'],
+                         u'Lawyer Test added a file to Test Item with Revision')
 
 
     @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_post_with_FILE_executed_file_and_stream(self):
         self.test_post_with_FILE_executed_file()
         stream = target_stream(self.matter)
-        self.assertEqual(stream[0].data['message'], u'Lawyer Test created a revision for Test Item with Revision')
+        self.assertEqual(stream[0].data['override_message'],
+                         u'Lawyer Test added a file to Test Item with Revision')
 
         revision = self.item.revision_set.all().first()
 

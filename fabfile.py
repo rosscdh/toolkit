@@ -622,10 +622,7 @@ def build_gui():
 
 
         # perform grunt build --djangoProd
-        for repeater in range(0,2):
-            # we have to build it twice because sometimes... it does not work *tadaaaah*
-            #
-            local('cd gui;grunt build -djangoProd')
+        local('cd gui;grunt build -djangoProd')
 
         # collect static
         if env.environment_class == 'local':
