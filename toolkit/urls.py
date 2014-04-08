@@ -42,6 +42,9 @@ urlpatterns = patterns('',
     url(r'^hellosign/', include('hello_sign.urls', namespace='hellosign')),
     # DocuSign - Coming Soon
 
+    # Payments
+    url(r"^payments/", include("payments.urls")),
+
     # home default terminator
     url(r'^', include('toolkit.apps.default.urls', namespace='public')),
 )

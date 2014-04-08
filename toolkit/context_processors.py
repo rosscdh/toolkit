@@ -2,7 +2,6 @@
 from django.conf import settings
 
 from toolkit.apps.workspace.models import Workspace
-from toolkit.core.item.models import Item
 
 
 def EXPOSED_GLOBALS(request):
@@ -19,7 +18,8 @@ def EXPOSED_GLOBALS(request):
 
             'FILEPICKER_API_KEY': settings.FILEPICKER_API_KEY,
             'HELLOSIGN_CLIENT_ID': settings.HELLOSIGN_CLIENT_ID,
-            'MIXPANEL_API_TOKEN': settings.MIXPANEL_SETTINGS['token']
+            'MIXPANEL_API_TOKEN': settings.MIXPANEL_SETTINGS['token'],
+            'STRIPE_PUBLIC_KEY': settings.STRIPE_PUBLIC_KEY
         }
     }
 
