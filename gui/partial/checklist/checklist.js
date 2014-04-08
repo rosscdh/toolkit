@@ -72,7 +72,8 @@ angular.module('toolkit-gui')
 			'categories': [],
 			'users': [],
 			'searchData': searchService.data(),
-			'usdata': userService.data()
+			'usdata': userService.data(),
+            'streamType': 'matter'
 		};
 		//debugger;
 
@@ -87,7 +88,7 @@ angular.module('toolkit-gui')
 					//set matter in the services
 					matterService.selectMatter(singleMatter);
 					$scope.initialiseMatter( singleMatter );
-					$scope.initializeActivityMatterStream( singleMatter );
+					$scope.initializeActivityStream( singleMatter );
 
 					userService.setCurrent( singleMatter.current_user );
 				},
@@ -186,7 +187,8 @@ angular.module('toolkit-gui')
 			$scope.data.selectedItem = item;
 			$scope.data.selectedCategory = category;
 
-			$scope.initializeActivityItemStream();
+			$scope.activateActivityStream('item');
+			//$scope.initializeActivityStream();
 
 			//Reset controls
             $scope.data.dueDatePickerDate = $scope.data.selectedItem.date_due;
@@ -248,7 +250,7 @@ angular.module('toolkit-gui')
 									$scope.data.selectedCategory.items.splice(index,1);
 								}
 								$scope.data.selectedItem = null;
-								$scope.initializeActivityMatterStream();
+								$scope.initializeActivityStream();
 							},
 							function error(err){
 								toaster.pop('error', "Error!", "Unable to delete item");
@@ -1190,55 +1192,65 @@ angular.module('toolkit-gui')
 		 */
 
 
+         /**
+		 * Activates the activity stream for the given type
+         *
+		 * @memberof			ChecklistCtrl
+		 * @private
+		 * @type {Object}
+		 */
+        $scope.activateActivityStream = function(streamtype){
+            if(streamtype === 'item' && $scope.data.selectedItem!==null) {
+                $scope.data.streamType = 'item';
+            } else {
+                $scope.data.streamType = 'matter';
+            }
+
+            $scope.initializeActivityStream();
+        };
+
 		 /**
 		 * Reads the matter activity stream from API.
 		 * @memberof			ChecklistCtrl
 		 * @private
 		 * @type {Object}
 		 */
-		$scope.initializeActivityMatterStream = function() {
+		$scope.initializeActivityStream = function() {
 			var matterSlug = $scope.data.slug;
 
-			activityService.matterstream(matterSlug).then(
-				 function success(result){
-					$scope.data.activitystream = result;
-				 },
-				 function error(err){
-					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to read activity matter stream.") {
-						toaster.pop('error', "Error!", "Unable to read activity matter stream.");
-					}
-				 }
-			);
+            if ($scope.data.streamType==='matter' || $scope.data.selectedItem===null){
+                activityService.matterstream(matterSlug).then(
+                     function success(result){
+                        $scope.data.activitystream = result;
+                     },
+                     function error(err){
+                        if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to read activity matter stream.") {
+                            toaster.pop('error', "Error!", "Unable to read activity matter stream.");
+                        }
+                     }
+                );
+            } else {
+                var itemSlug = $scope.data.selectedItem.slug;
+
+                activityService.itemstream(matterSlug, itemSlug).then(
+                     function success(result){
+                        if($scope.data.selectedItem!==null) {
+                            $scope.data.activitystream = result;
+                        }
+                     },
+                     function error(err){
+                        if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to read activity item stream.") {
+                            toaster.pop('error', "Error!", "Unable to read activity item stream.");
+                        }
+                     }
+                );
+            }
 
 			/*
 			//reload activity stream every 60seconds
 			$timeout(function (){
 				$scope.initializeActivityStream();
 			}, 1000 * 60);*/
-		};
-
-
-		/**
-		 * Reads the item activity stream from API.
-		 * @memberof			ChecklistCtrl
-		 * @private
-		 * @type {Object}
-		 */
-		$scope.initializeActivityItemStream = function() {
-			$scope.data.activitystream = [];
-			var matterSlug = $scope.data.slug;
-			var itemSlug = $scope.data.selectedItem.slug;
-
-			activityService.itemstream(matterSlug, itemSlug).then(
-				 function success(result){
-					$scope.data.activitystream = result;
-				 },
-				 function error(err){
-					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to read activity item stream.") {
-						toaster.pop('error', "Error!", "Unable to read activity item stream.");
-					}
-				 }
-			);
 		};
 
 
@@ -1265,7 +1277,7 @@ angular.module('toolkit-gui')
 			commentService.create(matterSlug, itemSlug, $scope.data.newcomment).then(
 				 function success(){
                     $scope.data.newcomment="";
-					$scope.initializeActivityItemStream();
+					$scope.activateActivityStream('item');
 				 },
 				 function error(err){
 					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to create item comment.") {
@@ -1288,7 +1300,7 @@ angular.module('toolkit-gui')
 
 			commentService.delete(matterSlug, itemSlug, comment).then(
 				 function success(){
-					$scope.initializeActivityItemStream();
+					$scope.activateActivityStream('item');
 				 },
 				 function error(err){
 					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to delete item comment.") {
