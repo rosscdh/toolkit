@@ -2,11 +2,14 @@
 """
 Items are either todo items or document items
 """
+from django.core.urlresolvers import reverse
+
 from rest_framework import serializers
 
 from toolkit.core.item.models import Item
 
-from .revision import RevisionSerializer
+from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
+
 from .user import LiteUserSerializer, SimpleUserWithReviewUrlSerializer
 
 
@@ -49,8 +52,8 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
         return []
 
     def get_latest_revision(self, obj):
-        if getattr(obj.latest_revision, 'pk', None) is not None:
-            return RevisionSerializer(obj.latest_revision, context={'request': self.context.get('request')}).data
+        if obj.latest_revision is not None:
+            return ABSOLUTE_BASE_URL(reverse('matter_item_revision', kwargs={'matter_slug': obj.matter.slug, 'item_slug': obj.slug}))
         return None
 
     def get_reviewers(self, obj):

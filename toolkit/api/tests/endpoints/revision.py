@@ -129,7 +129,7 @@ class ItemRevisionTest(BaseEndpointTest):
         self.assertTrue(str(reviewer.pk) in invited_reviewer_document_review.auth.keys())
         # test that the url for the reviewer is correct
         self.assertEqual(invited_reviewer_document_review.get_absolute_url(user=reviewer),
-                         '/review/%s/%s/' % (
+                         'http://localhost:8000/review/%s/%s/' % (
                              invited_reviewer_document_review.slug,
                              urllib.quote(invited_reviewer_document_review.get_user_auth(user=reviewer))
                          ))

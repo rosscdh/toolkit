@@ -381,26 +381,31 @@ def supervisord_restart():
             sudo('supervisorctl restart uwsgi')
 
 @task
+@roles('web')
 def restart_lite():
     with settings(warn_only=True):
         sudo(env.light_restart)
 
 @task
+@roles('web')
 def stop_nginx():
     with settings(warn_only=True):
         sudo('service nginx stop')
 
 @task
+@roles('web')
 def start_nginx():
     with settings(warn_only=True):
         sudo('service nginx start')
 
 @task
+@roles('web')
 def restart_nginx():
     with settings(warn_only=True):
         sudo('service nginx restart')
 
 @task
+@roles('web')
 def restart_service(heavy_handed=False):
     with settings(warn_only=True):
         if env.environment_class not in ['celery']: # dont restart celery nginx services
@@ -458,7 +463,7 @@ def clean_start():
     clean_pyc()
     #clear_cache()
     clean_pyc()
-    #precompile_pyc()
+    precompile_pyc()
     start_service()
     clean_zip()
 
@@ -684,4 +689,5 @@ def deploy(is_predeploy='False',full='False',db='False',search='False'):
     relink()
     assets()
     clean_start()
+    celery_restart()
     conclude()
