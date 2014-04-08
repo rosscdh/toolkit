@@ -26,7 +26,7 @@ class BaseListViewTest(BaseScenarios, TestCase):
         super(BaseListViewTest, self).setUp()
         self.client = Client()
 
-    def assert_html_present(self, test_html, notice_pk, actor_name, actor_initials, message, date, base_url, target_name, client_name):
+    def assert_html_present(self, test_html, notice_pk, actor_name, actor_initials, message, date, base_url, target_name, client_name, notice_message):
         expected_html = _get_notice_html({
             'pk': notice_pk,
             'actor_name': actor_name,
@@ -36,10 +36,12 @@ class BaseListViewTest(BaseScenarios, TestCase):
             'base_url': base_url,
             'target_name': target_name,
             'client_name': client_name,
+            'notice_message': notice_message,
         })
         #
         # The actual test
         #
+
         self.assertTrue(expected_html in test_html)
 
     def get_inbox(self, user):
@@ -88,15 +90,23 @@ class NotificationEventsListTest(BaseListViewTest):
 
         test_html = self.get_html(for_user=self.user)
 
+        message = notice.message.data
+        actor = message.get('actor')
+        target = message.get('target')
+        client = message.get('client')
+
         self.assert_html_present(test_html=test_html,
                                  notice_pk=notice.pk,
-                                 actor_name=notice.message.data.get('actor').get('name'),
-                                 actor_initials=notice.message.data.get('actor').get('initials'),
+                                 actor_name=actor.get('name') if actor else None,
+                                 actor_initials=actor.get('initials') if actor else None,
                                  message=notice.message.message,
                                  date=notice.message.date,
-                                 base_url=notice.message.data.get('target').get('base_url'),
-                                 target_name=notice.message.data.get('target').get('name'),
-                                 client_name=notice.message.data.get('target').get('client').get('name'))
+                                 base_url=target.get('base_url') if target else None,
+                                 target_name=target.get('name') if target else None,
+                                 client_name=target.get('client').get('name') if client else None,
+                                 notice_message=notice.message)
+
+
 
 
     def test_removed_matter_participant(self):
@@ -125,13 +135,19 @@ class NotificationEventsListTest(BaseListViewTest):
 
         test_html = self.get_html(for_user=matter_participant)
 
+        message = notice.message.data
+        actor = message.get('actor')
+        target = message.get('target')
+        client = message.get('client')
+
         self.assert_html_present(test_html=test_html,
                                  notice_pk=notice.pk,
-                                 actor_name=notice.message.data.get('actor').get('name'),
-                                 actor_initials=notice.message.data.get('actor').get('initials'),
+                                 actor_name=actor.get('name') if actor else None,
+                                 actor_initials=actor.get('initials') if actor else None,
                                  message=notice.message.message,
                                  date=notice.message.date,
-                                 base_url=notice.message.data.get('target').get('base_url'),
-                                 target_name=notice.message.data.get('target').get('name'),
-                                 client_name=notice.message.data.get('target').get('client').get('name'))
+                                 base_url=target.get('base_url') if target else None,
+                                 target_name=target.get('name') if target else None,
+                                 client_name=target.get('client').get('name') if client else None,
+                                 notice_message=notice.message)
 
