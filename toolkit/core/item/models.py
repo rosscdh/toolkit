@@ -57,7 +57,7 @@ class Item(IsDeletedMixin,
     closing_group = models.CharField(max_length=128, null=True, blank=True, db_index=True)
     category = models.CharField(max_length=128, null=True, blank=True, db_index=True)
 
-    latest_revision = models.ForeignKey('attachment.Revision', null=True, blank=True, related_name='item_latest_revision')
+    latest_revision = models.ForeignKey('attachment.Revision', null=True, blank=True, related_name='item_latest_revision', on_delete=models.SET_NULL)
 
     # if is final is true, then the latest_revision will be available for sending for signing
     is_final = models.BooleanField(default=False, db_index=True)
@@ -76,7 +76,7 @@ class Item(IsDeletedMixin,
     objects = ItemManager()
 
     class Meta:
-        ordering = ('sort_order',)
+        ordering = ('-sort_order',)
 
     def __unicode__(self):
         return u'%s' % self.name

@@ -54,7 +54,7 @@ $(document).ready(function () {
                 jqXHR.setRequestHeader('X-CSRFToken', $('input[name=csrf_token]:first').val());
             },
             "success": function (data) {
-                document.location.reload();
+                $this.closest('article').hide()
             }
         });
     });

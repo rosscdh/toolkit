@@ -79,3 +79,7 @@ crocodoc
 
 # analytics
 mixpanel-py
+
+
+# celery management
+Celery
