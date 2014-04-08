@@ -1207,7 +1207,7 @@ angular.module('toolkit-gui')
             }
 
             $scope.initializeActivityStream();
-        }
+        };
 
 		 /**
 		 * Reads the matter activity stream from API.
