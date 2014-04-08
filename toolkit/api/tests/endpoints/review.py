@@ -409,14 +409,14 @@ class RevisionReviewerTest(BaseEndpointTest):
         # Test the auth for the new reviewer
         #
         url = urllib.unquote_plus(reviewdocument.get_absolute_url(user=self.participant))
-        self.assertEqual(url, '/review/%s/%s/' % (reviewdocument.slug, reviewdocument.make_user_auth_key(user=self.participant)))
+        self.assertEqual(url, ABSOLUTE_BASE_URL('/review/%s/%s/' % (reviewdocument.slug, reviewdocument.make_user_auth_key(user=self.participant))))
         #
         # Test the auth urls for the matter.participants
         # test that they cant log in when logged in already (as the lawyer above)
         #
         for u in self.matter.participants.all():
             url = urllib.unquote_plus(reviewdocument.get_absolute_url(user=u))
-            self.assertEqual(url, '/review/%s/%s/' % (reviewdocument.slug, reviewdocument.get_user_auth(user=u)))
+            self.assertEqual(url, ABSOLUTE_BASE_URL('/review/%s/%s/' % (reviewdocument.slug, reviewdocument.get_user_auth(user=u))))
             # Test that permission is denied when logged in as a user that is not the auth_token user
             resp = self.client.get(url)
             self.assertTrue(resp.status_code, 403) # denied

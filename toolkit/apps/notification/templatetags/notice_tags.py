@@ -10,6 +10,7 @@ logger = logging.getLogger('django.request')
 @register.inclusion_tag('notification/partials/notice.html', takes_context=False)
 def render_notice(notice):
     message = notice.message.data
+
     actor = message.get('actor')
     target = message.get('target')
     client = message.get('client')

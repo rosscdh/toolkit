@@ -41,7 +41,6 @@ class BaseListViewTest(BaseScenarios, TestCase):
         #
         # The actual test
         #
-
         self.assertTrue(expected_html in test_html)
 
     def get_inbox(self, user):
@@ -106,9 +105,6 @@ class NotificationEventsListTest(BaseListViewTest):
                                  client_name=target.get('client').get('name') if client else None,
                                  notice_message=notice.message)
 
-
-
-
     def test_removed_matter_participant(self):
         """
         when you remove a user, obviously they dont get a notification; so we need to create another user
@@ -150,4 +146,3 @@ class NotificationEventsListTest(BaseListViewTest):
                                  target_name=target.get('name') if target else None,
                                  client_name=target.get('client').get('name') if client else None,
                                  notice_message=notice.message)
-
