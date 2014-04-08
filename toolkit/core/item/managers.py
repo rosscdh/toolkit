@@ -10,7 +10,7 @@ from .query import ItemQuerySet
 
 class ItemManager(IsDeletedManager):
     def get_queryset(self):
-        return ItemQuerySet(self.model, using=self._db).prefetch_related().filter(is_deleted=False)
+        return ItemQuerySet(self.model, using=self._db).filter(is_deleted=False).select_related('latest_revision')
 
     def requested(self, **kwargs):
         return self.get_queryset().requested(**kwargs)
