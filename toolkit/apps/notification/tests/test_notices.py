@@ -113,7 +113,7 @@ class NotificationEventsListTest(BaseListViewTest):
         self.assertEqual(inbox.count(), 1)  # should get the notification about adding matter_participant to matter
 
         inbox = self.get_inbox(user=matter_participant)
-        import pdb;pdb.set_trace()
+
         self.assertEqual(inbox.count(), 1)
         notice = inbox.first()
 

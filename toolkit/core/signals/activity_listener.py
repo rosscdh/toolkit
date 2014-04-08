@@ -43,7 +43,6 @@ def _activity_send(actor, **kwargs):
     Send activity to django-activity-stream
     """
     verb_slug = kwargs.get('verb_slug', False)
-    # import pdb;pdb.set_trace()
     if verb_slug in ACTIVITY_WHITELIST:
         action.send(actor, **kwargs)
 
@@ -133,7 +132,15 @@ def on_activity_received(sender, **kwargs):
     # allow us to override the generic message passed in
     #
     if kwargs.get('override_message') not in [None, '']:
+        #
+        # @BUSINESSRULE must override the "message" key here
+        # but preserve original_message
+        #
+        kwargs['original_message'] = kwargs['message']  # preserve
+
         message = kwargs.get('override_message')
+        # override the message
+        kwargs['message'] = message
 
     verb_slug = kwargs.get('verb_slug', False)
 

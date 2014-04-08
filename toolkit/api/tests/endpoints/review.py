@@ -50,7 +50,7 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
 
     def test_lawyer_get_no_participants(self):
         """
-        We shoudl get a reviewdocument but with None reviewers (only the participants, can view this reviewdocument object)
+        We should get a reviewdocument but with None reviewers (only the participants, can view this reviewdocument object)
         """
         self.client.login(username=self.lawyer.username, password=self.password)
 

@@ -543,7 +543,6 @@ def build_angular_app():
     else:
         if env.environment_class == 'local':
             # copy the default dev localsettings
-            import pdb;pdb.set_trace()
             local('cp conf/dev.local_settings.py toolkit/local_settings.py')
 
 

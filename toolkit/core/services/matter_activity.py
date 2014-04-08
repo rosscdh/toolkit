@@ -64,6 +64,7 @@ class MatterActivityEventService(object):
     def get_verb_slug(self, action_object, verb):
         verb_slug = slugify(action_object.__class__.__name__) + '-' + slugify(verb)
         logger.debug('possible verb_slug: "%s"' % verb_slug)
+        #print(verb_slug)
 
         # with open('/tmp/verb_slugs.log', 'a') as f:
         #     f.write(verb_slug + '\r\n')
@@ -110,26 +111,20 @@ class MatterActivityEventService(object):
         })
 
     def added_matter_participant(self, matter, adding_user, added_user):
-        overide_message = u'%s added %s as a participant of %s' % (adding_user, added_user, matter)
-        self._create_activity(actor=adding_user, verb=u'added participant', action_object=matter, overide_message=overide_message,
-                              user=added_user)
+        if adding_user.pk != added_user.pk:
+            override_message = u'%s added %s as a participant of %s' % (adding_user, added_user, matter)
+            self._create_activity(actor=adding_user, verb=u'added participant', action_object=matter, override_message=override_message,
+                                  user=added_user)
 
-        if adding_user.pk is not added_user.pk:
             self.analytics.event('matter.participant.added', user=adding_user, **{
                 'matter_pk': matter.pk,
                 'participant': added_user.get_full_name(),
                 'participant_type': added_user.profile.type,
             })
 
-            self.analytics.event('matter.participant.invited', user=added_user, **{
-                'invited_by': adding_user.get_full_name(),
-                'invited_by_type': adding_user.profile.type,
-                'matter_pk': matter.pk,
-            })
-
     def removed_matter_participant(self, matter, removing_user, removed_user):
-        overide_message = u'%s removed %s as a participant of %s' % (removing_user, removed_user, matter)
-        self._create_activity(actor=removing_user, verb=u'edited', action_object=matter, overide_message=overide_message,
+        override_message = u'%s removed %s as a participant of %s' % (removing_user, removed_user, matter)
+        self._create_activity(actor=removing_user, verb=u'edited', action_object=matter, override_message=override_message,
                               user=removed_user)
     #
     # Item focused events
@@ -141,39 +136,39 @@ class MatterActivityEventService(object):
         })
 
     def item_rename(self, user, item, previous_name):
-        overide_message = u'%s renamed item from %s to %s' % (user, previous_name, item.name)
-        self._create_activity(actor=user, verb=u'renamed', action_object=item, item=item, overide_message=overide_message,
+        override_message = u'%s renamed item from %s to %s' % (user, previous_name, item.name)
+        self._create_activity(actor=user, verb=u'renamed', action_object=item, item=item, override_message=override_message,
                               previous_name=previous_name)
 
     def item_changed_status(self, user, item, previous_status):
         current_status = item.display_status
-        overide_message = u'%s changed the status of %s from %s to %s' % (user, item, previous_status, current_status)
-        self._create_activity(actor=user, verb=u'changed the status', action_object=item, item=item, overide_message=overide_message,
+        override_message = u'%s changed the status of %s from %s to %s' % (user, item, previous_status, current_status)
+        self._create_activity(actor=user, verb=u'changed the status', action_object=item, item=item, override_message=override_message,
                               current_status=current_status, previous_status=previous_status)
 
     def item_closed(self, user, item):
-        overide_message = u'%s closed %s' % (user, item)
-        self._create_activity(actor=user, verb=u'closed', action_object=item, item=item, overide_message=overide_message)
+        override_message = u'%s closed %s' % (user, item)
+        self._create_activity(actor=user, verb=u'closed', action_object=item, item=item, override_message=override_message)
 
     def item_reopened(self, user, item):
-        overide_message = u'%s reopened %s' % (user, item)
-        self._create_activity(actor=user, verb=u'reopened', action_object=item, item=item, overide_message=overide_message)
+        override_message = u'%s reopened %s' % (user, item)
+        self._create_activity(actor=user, verb=u'reopened', action_object=item, item=item, override_message=override_message)
 
     def add_item_comment(self, user, item, comment):
-        overide_message = '%s commented on %s' % (user, item)
-        self._create_activity(actor=user, verb=u'commented', action_object=item, overide_message=overide_message, comment=comment)
+        override_message = '%s commented on %s' % (user, item)
+        self._create_activity(actor=user, verb=u'commented', action_object=item, override_message=override_message, comment=comment)
 
     def delete_item_comment(self, user, item):
-        overide_message = '%s deleted a comment on %s' % (user, item)
-        self._create_activity(actor=user, verb=u'deleted comment', action_object=item, overide_message=overide_message)
+        override_message = '%s deleted a comment on %s' % (user, item)
+        self._create_activity(actor=user, verb=u'deleted comment', action_object=item, override_message=override_message)
 
     #
     # Revisions
     #
 
     def created_revision(self, user, item, revision):
-        overide_message = u'%s created a revision for %s' % (user, item)
-        self._create_activity(actor=user, verb=u'created', action_object=revision, item=item, overide_message=overide_message,
+        override_message = u'%s created a revision for %s' % (user, item)
+        self._create_activity(actor=user, verb=u'created', action_object=revision, item=item, override_message=override_message,
                               filename=revision.name, date_created=revision.date_created)
 
         self.analytics.event('revision.create', user=user, **{
@@ -181,13 +176,13 @@ class MatterActivityEventService(object):
         })
 
     def deleted_revision(self, user, item, revision):
-        overide_message = u'%s destroyed a revision for %s' % (user, item)
-        self._create_activity(actor=user, verb=u'deleted', action_object=revision, item=item, overide_message=overide_message,
+        override_message = u'%s destroyed a revision for %s' % (user, item)
+        self._create_activity(actor=user, verb=u'deleted', action_object=revision, item=item, override_message=override_message,
                               filename=revision.name, date_created=revision.date_created)
 
     def request_user_upload_revision(self, item, adding_user, added_user):
-        overide_message = u'%s requested %s provide a document on %s' % (adding_user, added_user, item)
-        self._create_activity(actor=adding_user, verb=u'provide a document', action_object=item, overide_message=overide_message,
+        override_message = u'%s requested %s provide a document on %s' % (adding_user, added_user, item)
+        self._create_activity(actor=adding_user, verb=u'provide a document', action_object=item, override_message=override_message,
                               user=added_user)
         self.analytics.event('revision.upload.request', user=adding_user, **{
             'matter_pk': item.matter.pk,
@@ -198,21 +193,21 @@ class MatterActivityEventService(object):
         })
 
     def cancel_user_upload_revision_request(self, item, removing_user, removed_user):
-        overide_message = u'%s canceled their request for %s to provide a document on %s' % (removing_user, removed_user, item)
+        override_message = u'%s canceled their request for %s to provide a document on %s' % (removing_user, removed_user, item)
         self._create_activity(actor=removing_user, verb=u'canceled their request for a document', action_object=item,
-                              overide_message=overide_message, user=removed_user)
+                              override_message=override_message, user=removed_user)
 
     def user_uploaded_revision(self, user, item, revision):
-        overide_message = u'%s uploaded a document named %s for %s' % (user, revision.name, item)
-        self._create_activity(actor=user, verb=u'uploaded a document', action_object=item, overide_message=overide_message,
+        override_message = u'%s uploaded a document named %s for %s' % (user, revision.name, item)
+        self._create_activity(actor=user, verb=u'uploaded a document', action_object=item, override_message=override_message,
                               revision=revision, filename=revision.name, date_created=revision.date_created)
         self.analytics.event('revision.upload.provided', user=user, **{
             'matter_pk': item.matter.pk
         })
 
     def add_revision_comment(self, user, revision, comment):
-        overide_message = '%s commented on %s' % (user, revision)
-        self._create_activity(actor=user, verb=u'added revision comment', action_object=revision, overide_message=overide_message,
+        override_message = '%s commented on %s' % (user, revision)
+        self._create_activity(actor=user, verb=u'added revision comment', action_object=revision, override_message=override_message,
                               comment=comment, item=revision.item)
         # self.analytics.event('revision.comment.added', distinct_id=user.pk, matter_pk=revision.item.matter.pk, item_pk=revision.item.pk)
         self.analytics.event('revision.comment.added', user=user, **{
@@ -221,8 +216,8 @@ class MatterActivityEventService(object):
         })
 
     def delete_revision_comment(self, user, revision):
-        overide_message = '%s deleted a comment on %s' % (user, revision)
-        self._create_activity(actor=user, verb=u'deleted revision comment', action_object=revision, overide_message=overide_message,
+        override_message = '%s deleted a comment on %s' % (user, revision)
+        self._create_activity(actor=user, verb=u'deleted revision comment', action_object=revision, override_message=override_message,
                               item=revision.item)
 
     #
@@ -230,31 +225,32 @@ class MatterActivityEventService(object):
     #
 
     def invite_user_as_reviewer(self, item, inviting_user, invited_user):
-        overide_message = u'%s invited %s as reviewer for %s' % (inviting_user, invited_user, item)
-        self._create_activity(actor=inviting_user, verb=u'invited reviewer', action_object=item, overide_message=overide_message,
-                              user=invited_user)
-        self.analytics.event('review.request.sent', user=inviting_user, **{
-            'invited': invited_user.get_full_name(),
-            'invited_type': invited_user.profile.type,
-            'item_pk': item.pk,
-            'matter_pk': item.matter.pk
-        })
+        if inviting_user.pk != invited_user:
+            override_message = u'%s invited %s as reviewer for %s' % (inviting_user, invited_user, item)
+            self._create_activity(actor=inviting_user, verb=u'invited reviewer', action_object=item, override_message=override_message,
+                                  user=invited_user)
+            self.analytics.event('review.request.sent', user=inviting_user, **{
+                'invited': invited_user.get_full_name(),
+                'invited_type': invited_user.profile.type,
+                'item_pk': item.pk,
+                'matter_pk': item.matter.pk
+            })
 
     # instead of this we now use the newly created invite_user_as_reviewer
     # def added_user_as_reviewer(self, item, adding_user, added_user):
-    #     overide_message = u'%s added %s as reviewer for %s' % (adding_user, added_user, item)
-    #     self._create_activity(actor=adding_user, verb=u'added reviewer', action_object=item, overide_message=overide_message,
+    #     override_message = u'%s added %s as reviewer for %s' % (adding_user, added_user, item)
+    #     self._create_activity(actor=adding_user, verb=u'added reviewer', action_object=item, override_message=override_message,
     #                           user=added_user)
     #
     # instead of this we now use cancel_user_upload_revision_request() above
     # def removed_user_as_reviewer(self, item, removing_user, removed_user):
-    #     overide_message = u'%s removed %s as reviewer for %s' % (removing_user, removed_user, item)
-    #     self._create_activity(actor=removing_user, verb=u'removed reviewer', action_object=item, overide_message=overide_message,
+    #     override_message = u'%s removed %s as reviewer for %s' % (removing_user, removed_user, item)
+    #     self._create_activity(actor=removing_user, verb=u'removed reviewer', action_object=item, override_message=override_message,
     #                           user=removed_user)
 
     def user_viewed_revision(self, item, user, revision):
-        overide_message = u'%s viewed revision %s (%s) for %s' % (user, revision.name, revision.slug, item)
-        self._create_activity(actor=user, verb=u'viewed revision', action_object=item, overide_message=overide_message,
+        override_message = u'%s viewed revision %s (%s) for %s' % (user, revision.name, revision.slug, item)
+        self._create_activity(actor=user, verb=u'viewed revision', action_object=item, override_message=override_message,
                               revision=revision, filename=revision.name, version=revision.slug,
                               date_created=datetime.datetime.utcnow())
         self.analytics.event('review.request.viewed', user=user, **{
@@ -264,14 +260,14 @@ class MatterActivityEventService(object):
         })
 
     def user_downloaded_revision(self, item, user, revision):
-        overide_message = u'%s downloaded revision %s (%s) for %s' % (user, revision.name, revision.slug, item)
-        self._create_activity(actor=user, verb=u'viewed revision', action_object=revision, overide_message=overide_message,
+        override_message = u'%s downloaded revision %s (%s) for %s' % (user, revision.name, revision.slug, item)
+        self._create_activity(actor=user, verb=u'viewed revision', action_object=revision, override_message=override_message,
                               item=item, filename=revision.name, version=revision.slug,
                               date_created=datetime.datetime.utcnow())
 
     def user_commented_on_revision(self, item, user, revision, comment):
-        overide_message = u'%s commented on %s (%s) for %s' % (user, revision.name, revision.slug, item)
-        self._create_activity(actor=user, verb=u'commented on revision', action_object=revision, overide_message=overide_message,
+        override_message = u'%s commented on %s (%s) for %s' % (user, revision.name, revision.slug, item)
+        self._create_activity(actor=user, verb=u'commented on revision', action_object=revision, override_message=override_message,
                               item=item, filename=revision.name, version=revision.slug,
                               date_created=datetime.datetime.utcnow(),
                               comment=comment)
@@ -282,8 +278,8 @@ class MatterActivityEventService(object):
         })
 
     def user_revision_review_complete(self, item, user, revision):
-        overide_message = u'%s completed their review of %s (%s) for %s' % (user, revision.name, revision.slug, item)
-        self._create_activity(actor=user, verb=u'completed review', action_object=item, overide_message=overide_message,
+        override_message = u'%s completed their review of %s (%s) for %s' % (user, revision.name, revision.slug, item)
+        self._create_activity(actor=user, verb=u'completed review', action_object=item, override_message=override_message,
                               revision=revision, filename=revision.name, version=revision.slug,
                               date_created=datetime.datetime.utcnow())
         self.analytics.event('review.request.completed', user=user, **{
