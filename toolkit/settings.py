@@ -127,6 +127,9 @@ HELPER_APPS = (
     # getsentry.com
     'raven.contrib.django.raven_compat',
 
+    # Payments
+    'payments',
+
     # api
     'rest_framework',
     'rest_framework.authtoken',
@@ -441,6 +444,22 @@ LAWPAL_ACTIVITY = {
                       'revision-added-revision-comment']
     },
 }
+
+
+#
+# Payments
+#
+PAYMENTS_PLANS = {
+    "early-bird-monthly": {
+        "stripe_plan_id": "early-bird-monthly",
+        "name": "Early Bird ($25/month)",
+        "description": "Our early bird plan",
+        "price": 25,
+        "currency": "usd",
+        "interval": "month"
+    }
+}
+
 
 try:
     LOCAL_SETTINGS
