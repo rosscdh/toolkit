@@ -446,7 +446,6 @@ class RevisionDeleteWithReviewersTest(BaseEndpointTest):
         self.revision.reviewers.add(self.reviewer)
 
     def test_delete_of_revision_not_blocked_by_reviwers(self):
-        # import pdb;pdb.set_trace()
         self.assertTrue(self.item.pk)
         self.revision.delete()
         #
