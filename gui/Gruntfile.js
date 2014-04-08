@@ -140,10 +140,17 @@ module.exports = function (grunt) {
       template_paths: {
         src: ['temp/templates.js'],
         overwrite: true,                 // overwrite matched source files
-        replacements: [{
+        replacements: [
+        /*
+          {
           from: 'partial/',
-          to: '<%= PRODUCTION_PATH %>' + 'partial/'
-        }]
+          to: '<%= APP_STATIC_PATH %>' + 'partial/'
+          },*/
+          {
+          from: '$templateCache.put(\'partial/',
+          to: '$templateCache.put(\'<%= APP_STATIC_PATH %>partial/'
+          }
+        ]
       }
     },
     copy: {
