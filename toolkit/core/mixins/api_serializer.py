@@ -9,7 +9,8 @@ class ApiSerializerMixin(object):
     _serializer = None
 
     def api_serializer(self, instance, context={'request': None}):
-        if type(self._serializer) in [str, unicode]:
+        if type(self.__class__._serializer) in [str, unicode]:
             # not imported yet
-            self._serializer = _class_importer(self._serializer)
-        return self._serializer(instance, context=context)
+            self.__class__._serializer = _class_importer(self.__class__._serializer)
+
+        return self.__class__._serializer(instance, context=context)
