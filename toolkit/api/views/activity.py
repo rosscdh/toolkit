@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.contrib.contenttypes.models import ContentType
 
@@ -12,6 +13,10 @@ from toolkit.api.serializers.activity import (MatterActivitySerializer,
                                               ItemActivitySerializer,)
 from toolkit.apps.workspace.models import Workspace
 from toolkit.core.item.models import Item
+from toolkit.core.attachment.models import Revision
+
+ITEM_CONTENT_TYPE = ContentType.objects.get_for_model(Item)
+REVISION_CONTENT_TYPE = ContentType.objects.get_for_model(Revision)
 
 
 class ActivityEndpoint(viewsets.ModelViewSet):
@@ -72,8 +77,8 @@ class ItemActivityEndpoint(MatterActivityEndpoint):
         return super(ItemActivityEndpoint, self).initialize_request(request, *args, **kwargs)
 
     def get_queryset(self):
-        return super(ItemActivityEndpoint, self).get_queryset().filter(action_object_content_type=ContentType.objects.get_for_model(self.item),
-                                                                       action_object_object_id=self.item.pk)
+        revision_ids = [i.get('pk') for i in self.item.revision_set.all().values('pk')]
+        return super(ItemActivityEndpoint, self).get_queryset().filter(Q(action_object_content_type=ITEM_CONTENT_TYPE, action_object_object_id=self.item.pk) | Q(action_object_content_type=REVISION_CONTENT_TYPE, action_object_object_id__in=revision_ids))
 
     def can_read(self, user):
         return user.profile.user_class in ['lawyer', 'customer']
