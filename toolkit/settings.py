@@ -391,6 +391,10 @@ ACTSTREAM_SETTINGS = {
     'USE_FOLLOWING': False,  # VERY importand; will break our system if this changes to True
 }
 
+#
+# Any change to the LAWPAL_ACTIVITY elements below needs to affect the
+# test_notices.py 
+#
 LAWPAL_ACTIVITY = {
     "abridge": {
         "whitelist": [
@@ -407,9 +411,11 @@ LAWPAL_ACTIVITY = {
         "whitelist": [
                       'item-reopened', 'item-closed',
                       'item-commented', 'item-comment-created', 'item-comment-deleted',
-                      'item-provide-a-document',
                       'item-invited-reviewer',
+                      'item-provide-a-document',
+
                       'item-invited-signer',
+
                       'revision-created', 'revision-comment-created', 'item-added-revision-comment', 
                       'revision-added-revision-comment',
                       'workspace-added-participant', 'workspace-removed-participant'
@@ -422,7 +428,8 @@ LAWPAL_ACTIVITY = {
                       'revision-created', 'revision-deleted',
                       'item-invited-signer',
                       'itemrequestrevisionview-provide-a-document',
-                      'workspace-created', 'workspace-added-participant', 'workspace-removed-participant']  # create so many activities to keep tests running for now
+                      'workspace-created', 'workspace-added-participant', 'workspace-removed-participant', 
+                      'revision-added-revision-comment']
     },
 }
 

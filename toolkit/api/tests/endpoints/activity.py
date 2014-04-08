@@ -31,10 +31,7 @@ class MatterActivityEndpointTest(BaseEndpointTest):
         json_data = json.loads(resp.content)
 
         events = json_data['results']
-
-        self.assertEqual(len(events), 4)  # create matter, create item. add 2 users.
-        self.assertGreater(len(events[0]['event']), 10)  # just to see if event-text contains information. username is not fix.
-        #self.assertEqual(events[0]['event'], u'%s created 1 %s on %s' % (self.lawyer, self.item.slug, self.matter,))
+        self.assertEqual(len(events), 2)  # create matter, create item.
         self.assertItemsEqual(events[0].keys(), [u'timestamp', u'timesince', u'data', u'id', u'actor', u'event'])
 
         # check if actor was added correctly
