@@ -206,7 +206,7 @@ module.exports = function (grunt) {
       },
       removecss: {
         options:{
-          remove:'link',
+          remove:'link[data-remove!="exclude"]',
           append:{selector:'head',html:'<link rel="stylesheet" href="' + '<%= DJANGO_PRODUCTION_ASSET_SERVER %><%= APP_STATIC_PATH %>' + 'css/app.full.min.css">'}
         },
         src:'<%= PRODUCTION_PATH %>' + 'index.html'
