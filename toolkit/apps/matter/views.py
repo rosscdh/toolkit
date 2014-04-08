@@ -19,7 +19,7 @@ class MatterListView(ListView):
     template_name = 'matter/matter_list.html'
 
     def get_queryset(self):
-        return Workspace.objects.mine(self.request.user)
+        return Workspace.objects.mine(self.request.user).filter(is_archived=False)
 
     def get_context_data(self, **kwargs):
         context = super(MatterListView, self).get_context_data(**kwargs)
@@ -48,6 +48,13 @@ class MatterListView(ListView):
         return {
             'request': self.request
         }
+
+
+class ArchivedMatterListView(MatterListView):
+    template_name = 'matter/matter_list_archived.html'
+
+    def get_queryset(self):
+        return Workspace.objects.mine(self.request.user).filter(is_archived=True)
 
 
 class MatterDetailView(TemplateView):
@@ -110,6 +117,24 @@ class MatterArchiveView(ModalView, DetailView):
 
     def post(self, request, *args, **kwargs):
         return self.archive(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return reverse('matter:list')
+
+
+class MatterUnarchiveView(ModalView, DetailView):
+    model = Workspace
+    slug_url_kwarg = 'matter_slug'
+    template_name = 'matter/matter_confirm_unarchive.html'
+
+    def unarchive(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        self.object.archive(is_archived=False)
+        return HttpResponseRedirect(success_url)
+
+    def post(self, request, *args, **kwargs):
+        return self.unarchive(request, *args, **kwargs)
 
     def get_success_url(self):
         return reverse('matter:list')
