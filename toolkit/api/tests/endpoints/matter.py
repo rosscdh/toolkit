@@ -317,7 +317,7 @@ class MatterDetailProvidedDataTest(BaseEndpointTest):
 
     def confirm_item_latest_revision(self, items):
         """
-        Test that the latest_revision is as it shoudl be
+        Test that the latest_revision is as it should be
         """
         self.assertEqual(type(items), list)
 

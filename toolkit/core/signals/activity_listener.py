@@ -45,7 +45,6 @@ def _activity_send(actor, **kwargs):
     Send activity to django-activity-stream
     """
     verb_slug = kwargs.get('verb_slug', False)
-    # import pdb;pdb.set_trace()
     if verb_slug in ACTIVITY_WHITELIST:
         action.send(actor, **kwargs)
 
@@ -123,7 +122,7 @@ def _notifications_send(verb_slug, actor, target, message):
             #
             # @TODO move into manager?
             #
-            for u in query_set.all():
+            for u in query_set.select_related('profile').exclude(profile__has_notifications=True):
                 profile = u.profile
                 profile.has_notifications = True
                 profile.save(update_fields=['has_notifications'])
@@ -138,7 +137,22 @@ def on_activity_received(sender, **kwargs):
     verb = kwargs.get('verb', False)
     action_object = kwargs.get('action_object', False)
     target = kwargs.get('target', False)
+
     message = kwargs.get('message', False)
+    #
+    # allow us to override the generic message passed in
+    #
+    if kwargs.get('override_message') not in [None, '']:
+        #
+        # @BUSINESSRULE must override the "message" key here
+        # but preserve original_message
+        #
+        kwargs['original_message'] = kwargs['message']  # preserve
+
+        message = kwargs.get('override_message')
+        # override the message
+        kwargs['message'] = message
+
     verb_slug = kwargs.get('verb_slug', False)
 
     if not message:
