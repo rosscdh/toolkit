@@ -49,7 +49,7 @@ def _activity_send(actor, **kwargs):
         action.send(actor, **kwargs)
 
 
-def _abridge_send(verb_slug, actor, target, message=None):
+def _abridge_send(verb_slug, actor, target, action_object, message=None):
     """
     Send activity data to abridge
     """
@@ -70,7 +70,7 @@ def _abridge_send(verb_slug, actor, target, message=None):
                 logger.critical('Abridge Service is not running because: %s' % e)
 
 
-def _notifications_send(verb_slug, actor, target, message):
+def _notifications_send(verb_slug, actor, target, action_object, message):
     """
     Send persistent messages (notifications) for this user
     github notifications style
@@ -89,24 +89,23 @@ def _notifications_send(verb_slug, actor, target, message):
             return None
 
         if message:
+
             from toolkit.api.serializers.user import LiteUserSerializer
-            from toolkit.api.serializers.matter import LiteMatterSerializer
+            # from toolkit.api.serializers.matter import LiteMatterSerializer
 
             query_set = target.participants.exclude(id=actor.pk)
 
+            # Because we cant mixn the ApiMixin class ot the django User Object
             actor = LiteUserSerializer(actor, context={'request': None}).data
+
+            action_object = None
+            if hasattr(action_object, 'api_serializer') is True:
+                action_object = action_object.api_serializer(action_object, context={'request': None}).data
 
             target_class_name = target.__class__.__name__
 
             if target_class_name == 'Workspace':
-
-                #
-                # Pusher push to send notifiaction of new activity
-                # @TODO integrate and commit to gui
-                #
-                #youve_got_notifications(user_username=actor.get('username'), event=verb_slug, message='You have notifications')
-
-                target = LiteMatterSerializer(target, context={'request': None}).data
+                target = target.api_serializer(target, context={'request': None}).data
 
             else:
                 raise Exception('Unknown target_class_name: %s' % target_class_name)
@@ -117,7 +116,8 @@ def _notifications_send(verb_slug, actor, target, message):
                                             extra_tags='',
                                             fail_silently=False,
                                             actor=actor,
-                                            target=target)
+                                            target=target,
+                                            action_object=action_object)
 
             #
             # @TODO move into manager?
@@ -170,6 +170,6 @@ def on_activity_received(sender, **kwargs):
             _activity_send(actor=actor, **kwargs)
 
         # send the notifications to the participants
-        _notifications_send(verb_slug=verb_slug, actor=actor, target=target, message=message)
+        _notifications_send(verb_slug=verb_slug, actor=actor, target=target, action_object=action_object, message=message)
         # send to abridge service
-        _abridge_send(verb_slug=verb_slug, actor=actor, target=target, message=message)
+        _abridge_send(verb_slug=verb_slug, actor=actor, target=target, action_object=action_object, message=message)

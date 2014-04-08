@@ -2,8 +2,10 @@
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.db.models.loading import get_model
-from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import pre_save, post_save, m2m_changed
+
+from toolkit.core.mixins import IsDeletedMixin, ApiSerializerMixin
+from toolkit.core.services.matter_activity import MatterActivityEventService  # cyclic
 
 from .signals import (ensure_workspace_slug,
                       ensure_workspace_matter_code,
@@ -11,9 +13,6 @@ from .signals import (ensure_workspace_slug,
                       ensure_tool_slug,
                       on_workspace_post_save,
                       on_workspace_m2m_changed)
-
-from toolkit.core.mixins import IsDeletedMixin
-from toolkit.core.services.matter_activity import MatterActivityEventService  # cyclic
 
 from toolkit.utils import _class_importer
 
@@ -26,7 +25,11 @@ from .managers import WorkspaceManager
 from .mixins import ClosingGroupsMixin, CategoriesMixin
 
 
-class Workspace(IsDeletedMixin, ClosingGroupsMixin, CategoriesMixin, models.Model):
+class Workspace(IsDeletedMixin,
+                ClosingGroupsMixin,
+                CategoriesMixin,
+                ApiSerializerMixin,
+                models.Model):
     """
     Workspaces are areas that allow multiple tools
     to be associated with a group of users
@@ -51,7 +54,8 @@ class Workspace(IsDeletedMixin, ClosingGroupsMixin, CategoriesMixin, models.Mode
 
     objects = WorkspaceManager()
 
-    _actions = None  # private variable for MatterActivityEventService 
+    _actions = None  # private variable for MatterActivityEventService
+    _serializer = 'toolkit.api.serializers.LiteMatterSerializer'
 
     class Meta:
         ordering = ['name', '-pk']
