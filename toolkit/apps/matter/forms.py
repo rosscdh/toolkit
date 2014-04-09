@@ -65,7 +65,7 @@ class MatterForm(ModalForm, forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
-        self.is_new = kwargs.pop('is_new', False)
+        self.is_new = kwargs.pop('is_new', True)
 
         super(MatterForm, self).__init__(*args, **kwargs)
 

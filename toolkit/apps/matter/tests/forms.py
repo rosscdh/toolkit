@@ -25,6 +25,20 @@ class MatterFormTest(BaseScenarios, TestCase):
         self.assertEqual(form.initial['client_name'], 'Acme Inc')
         self.assertEqual(form.initial['name'], 'Incorporation & Financing')
 
+    def test_field_on_new(self):
+        form = MatterForm(instance=self.matter, user=self.lawyer)
+
+        # defaults to is_new=True
+        self.assertItemsEqual(form.helper.layout.get_field_names(), [[[0], 'name'], [[1], 'client_name'], [[2], 'matter_code'], [[3, 0], 'template']])
+
+        # manual
+        form = MatterForm(instance=self.matter, user=self.lawyer, is_new=True)
+        self.assertItemsEqual(form.helper.layout.get_field_names(), [[[0], 'name'], [[1], 'client_name'], [[2], 'matter_code'], [[3, 0], 'template']])
+
+        form = MatterForm(instance=self.matter, user=self.lawyer, is_new=False)
+
+        self.assertItemsEqual(form.helper.layout.get_field_names(), [[[0], 'name'], [[1], 'client_name'], [[2], 'matter_code']])
+
     def test_success(self):
         data = {
             'client_name': 'Acme Inc',
