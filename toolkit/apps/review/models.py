@@ -123,7 +123,7 @@ class ReviewDocument(IsDeletedMixin, FileExistsLocallyMixin, UserAuthMixin, mode
                 #
                 logger.info('Sending ReviewDocument invite email to: %s' % u)
 
-                m = ReviewerReminderEmail(recipients=((u.get_full_name(), u.email,),))
+                m = ReviewerReminderEmail(recipients=((u.get_full_name(), u.email,),), from_tuple=(from_user.get_full_name(), from_user.email,))
                 m.process(subject=m.subject,
                           item=self.document.item,
                           document=self.document,
