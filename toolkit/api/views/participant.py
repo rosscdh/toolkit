@@ -55,18 +55,20 @@ class MatterParticipant(generics.CreateAPIView,
         self.validate_data(data=data, expected_keys=['email', 'first_name', 'last_name', 'message'])
 
         email = data.get('email')
+        user_class = data.get('user_class', 'customer')  # @TODO need to review
         first_name = data.get('first_name')
         last_name = data.get('last_name')
         message = data.get('message')
-        
 
         try:
             new_participant = User.objects.get(email=email)
+
         except User.DoesNotExist:
             #
             # @BUSINESSRULE if an email does not exist then create them as
             # customer
             #
+            # @TODO handle the lawyer userclass
             service = EnsureCustomerService(email=email, full_name='%s %s' % (first_name, last_name))
             is_new, new_participant, profile = service.process()
 

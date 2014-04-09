@@ -11,9 +11,9 @@
 					<button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown"><span class="fui-triangle-down"></span></button>
 					<ul class="dropdown-menu dropdown-inverse dropdown-small">
 						<li><a href="javascript:;" ng-click="showAddItemForm($index);">New Item</a></li>
+						<li><a href="javascript:;" ng-click="data.showCategoryAddForm=!data.showCategoryAddForm;focus('eventAddCategory');">Add Category</a></li>
 						<li><a href="javascript:;" ng-click="data.newCategoryName=cat.name;showEditCategoryForm($index);" ng-hide="!cat.name">Edit Category</a></li>
 						<li><a href="javascript:;" ng-click="deleteCategory(cat);" ng-hide="!cat.name">Delete Category</a></li>
-						<li><a href="javascript:;" ng-click="data.showCategoryAddForm=!data.showCategoryAddForm;focus('eventAddCategory');" ng-show="!cat.name">Add Category</a></li>
 					</ul>
 			</div>
 		</th>

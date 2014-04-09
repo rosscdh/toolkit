@@ -36,12 +36,7 @@ def ensure_revision_slug(sender, instance, **kwargs):
             #
             if instance.slug in [None, ''] or instance.slug[0:1] != 'v':
 
-                revision_id = int(instance.get_revision_id())
-                final_slug = instance.get_revision_label(version=revision_id)
-
-                while _model_slug_exists(model=Revision, queryset=Revision.objects.exclude(pk=instance.pk).filter(item=instance.item), slug=final_slug):
-                    logger.info('Revision.slug %s exists, trying to create another' % final_slug)
-                    final_slug = instance.get_revision_label(version=(revision_id + 1))
+                final_slug = instance.get_revision_label()
 
                 instance.slug = final_slug
 
@@ -61,9 +56,23 @@ def ensure_one_current_revision(sender, instance, **kwargs):
     """
     Signal to make sure we only have one current revision for an item.
     """
-    if instance.is_current:
+    if instance.is_current is True:
         # Make sure we only have one current revision per item
         instance.__class__.objects.filter(item=instance.item).exclude(pk=instance.pk).update(is_current=False)
+
+
+@receiver(post_save, sender=Revision, dispatch_uid='revision.ensure_revision_item_latest_revision_is_current')
+def ensure_revision_item_latest_revision_is_current(sender, instance, **kwargs):
+    """
+    Ensure that the is_current=True revision is set to the item.latest_revision
+    """
+    if instance.is_current is True:
+        #
+        # get the instances item and update it so that it is the latest_revision
+        #
+        item = instance.item
+        item.latest_revision = instance
+        item.save(update_fields=['latest_revision'])
 
 
 @receiver(post_save, sender=Revision, dispatch_uid='revision.ensure_revision_reviewdocument_object')
@@ -148,6 +157,7 @@ def on_reviewer_add(sender, instance, action, model, pk_set, **kwargs):
         #
         reviewdocument.pk = None  # set to null this is adjango stategy to copy the model
         reviewdocument.slug = None  # set to non so it gets regenerated
+        reviewdocument.is_complete = False  # set to to is_complete = False as its new and cant be complete
         reviewdocument.save()  # save it so we get a new pk so we can add reviewrs
         reviewdocument.reviewers.add(user)  # add the reviewer
         reviewdocument.recompile_auth_keys()  # update the auth keys to match the new slug

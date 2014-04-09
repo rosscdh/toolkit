@@ -36,11 +36,16 @@ class BaseScenarios(object):
         self.user.set_password(self.password)
         self.user.save()
 
+        user_profile = self.user.profile
+        user_profile.validated_email = True
+        user_profile.save(update_fields=['data'])
+
         self.lawyer = mommy.make('auth.User', username='test-lawyer', first_name='Lawyer', last_name='Test', email='test+lawyer@lawpal.com')
         self.lawyer.set_password(self.password)
         self.lawyer.save()
 
         lawyer_profile = self.lawyer.profile
+        lawyer_profile.validated_email = True
         lawyer_profile.data['user_class'] = 'lawyer'
         lawyer_profile.save(update_fields=['data'])
 

@@ -237,10 +237,10 @@ class CustomerSignAndSendMarkerTest(BaseTestMarker):
     def test_on_complete_is_present_and_works(self):
         """
         @BUSINESSRULE on_complete of customer_sign_and_send step
-        the lawyer shoudl recieve an email informing them of the readines for
+        the lawyer should recieve an email informing them of the readines for
         them to sign
         """
-        self.subject.on_complete()  # call the method shoudl nto throw NotImplemented error
+        self.subject.on_complete()  # call the method should nto throw NotImplemented error
 
         self.assertEqual(len(mail.outbox), 1)
         email = mail.outbox[0]

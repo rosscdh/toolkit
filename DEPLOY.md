@@ -1,6 +1,40 @@
 Deployment actions by branch
 ----------------------------
 
+
+--------------------------------------------------------------------------------
+** DEPLOYED 6 April 2014 - celery tasks are preset but not enabled
+--------------------------------------------------------------------------------
+
+[celery]
+
+2. manage.py migrate djcelery
+
+
+--------------------------------------------------------------------------------
+** DEPLOYED 4 April 2014 - fix a massive slowdown when larger matters were in
+use; such as https://app.lawpal.com/matters/lawpal-corporate-setup/#/checklist
+changed item.latest_revision from a property to an actual FKField reducing by a
+larger query
+--------------------------------------------------------------------------------
+
+[large-matter-optimisation]
+
+1. ./manage.py migrate item 0001 --fake
+2. ./manage.py migrate item 0002 # apply the latest_revision FK which optimises the lookups
+3. ./manage.py migrate item 0003 # convert all the existing data
+
+
+--------------------------------------------------------------------------------
+** DEPLOYED 4 April 2014
+--------------------------------------------------------------------------------
+
+[email-validation] - apply a degree of email validation
+@TODO needs tests - this is a patch
+
+1. ./manage.py migrate default  # will apply the validated_email = True to existing users
+
+
 --------------------------------------------------------------------------------
 ** DEPLOYED 2 April 2014
 --------------------------------------------------------------------------------

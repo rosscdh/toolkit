@@ -10,7 +10,7 @@
         </h4>
 	</div>
 	<div class="modal-body">
-		<iframe src="{{ review.reviewer.user_review_url }}" style="width: 100%"></iframe>
+        <iframe ng-src="{{ review.reviewer.user_review_url }}" style="width: 100%;"></iframe>
 	</div>
 	<div class="modal-footer">
         <button class="btn" ng-click="review.is_complete=!review.is_complete;saveReview()" style="float: left;"
@@ -20,7 +20,6 @@
             <span ng-show="review.is_complete">Mark incomplete</span>
         </button>
 
-		<button class="btn btn-primary" ng-click="ok()">OK</button>
-		<button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+		<button class="btn btn-primary" ng-click="ok()">Done</button>
 	</div>
 </div>

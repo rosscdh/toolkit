@@ -69,7 +69,7 @@ class ItemsRequestDocumentTest(BaseEndpointTest):
 
         self.assertEqual(json_data['name'], new_item.name)
 
-        # we shoudl have this new item in the standard item objects
+        # we should have this new item in the standard item objects
         self.assertTrue(new_item in Item.objects.filter(matter=self.matter))
 
         outbox = mail.outbox
