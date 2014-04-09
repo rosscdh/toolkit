@@ -50,7 +50,7 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
                   'comments', 'activity',
                   'current_user', 'current_user_todo',
                   'date_created', 'date_modified',
-                  'percent_complete')
+                  'percent_complete', 'is_archived')
 
     def get_closing_groups(self, obj):
         """
@@ -130,7 +130,7 @@ class LiteMatterSerializer(MatterSerializer):
     class Meta(MatterSerializer.Meta):
         fields = ('url', 'base_url', 'name', 'slug', 'matter_code', 'client',
                   'lawyer', 'participants', 'date_created', 'date_modified',
-                  'percent_complete')
+                  'percent_complete', 'is_archived')
 
 
 class SimpleMatterSerializer(MatterSerializer):

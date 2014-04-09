@@ -8,6 +8,7 @@
             <header class="page-header">
                 <h4>All Matters</h4>
                 <div class="pull-right">
+                    <a href="{% url 'matter:list_archived' %}" style="margin-right: 10px;">Show archived matters</a>
                     {% if can_create %}
                         <a href="{% url 'matter:create' %}" data-toggle="modal" data-target="#matter-create" class="btn btn-success btn-embossed"><i class="fui-plus"></i> New Matter</a>
                     {% endif %}
@@ -64,7 +65,7 @@
                                 Checklist
                             </a>
                          </li>
-                         <li class="">                                
+                         <li class="">
                             <a href="#requests" data-toggle="tab">
                                 <span class="pe-7s-check"></span>
                                 Client View
@@ -72,7 +73,7 @@
                          </li>
                          <li  class="">
                             <a href="#markup" data-toggle="tab">
-                                <span class="pe-7s-comment"></span> 
+                                <span class="pe-7s-comment"></span>
                                 Annotation
                             </a>
                           </li>
@@ -114,8 +115,8 @@
         {% if can_edit %}
             <div class="modal" id="matter-edit-{{ m.slug }}"></div>
         {% endif %}
-        {% if can_delete %}
-            <div class="modal" id="matter-delete-{{ m.slug }}"></div>
+        {% if can_archive %}
+            <div class="modal" id="matter-archive-{{ m.slug }}"></div>
         {% endif %}
     {% endfor %}
 {% endblock %}

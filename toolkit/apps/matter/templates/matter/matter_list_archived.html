@@ -1,0 +1,53 @@
+{% extends 'gui.html' %}
+
+{% load url from future %}{% load user_tags widont %}
+
+{% block body %}
+    <div id="matter-list" class="content col-lg-12">
+        <section class="matters cards">
+            <header class="page-header">
+                <h4>Archived Matters</h4>
+            </header>
+
+            <div class="row">
+                {% for m in object_list %}
+                    <article class="col-md-4 matter archived">
+                        <div class="card">
+                            {% if can_edit %}
+                                <a href="{% url 'matter:edit' matter_slug=m.slug %}" data-toggle="modal" data-target="#matter-edit-{{ m.slug }}" class="edit">
+                                    <span class="fui-gear"></span>
+                                </a>
+                            {% endif %}
+                            <a href="{% url 'matter:detail' matter_slug=m.slug %}#/checklist" title="{{ m.name }}" class="content">
+                                <div class="title">
+                                    {% if user.profile.is_lawyer %}
+                                        <h6>{{ m.client.name }}</h6>
+                                    {% else %}
+                                        <h6>{{ m.lawyer.name }}</h6>
+                                    {% endif %}
+                                    <h5>{{ m.name|widont|safe }}</h5>
+                                </div>
+                            </a>
+                        </div>
+                    </article>
+                {% empty %}
+                    Empty
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+{% endblock %}
+
+{% block modals %}
+    {% for m in object_list %}
+        {% if can_edit %}
+            <div class="modal" id="matter-edit-{{ m.slug }}"></div>
+        {% endif %}
+        {% if can_archive %}
+            <div class="modal" id="matter-unarchive-{{ m.slug }}"></div>
+        {% endif %}
+        {% if can_delete %}
+            <div class="modal" id="matter-delete-{{ m.slug }}"></div>
+        {% endif %}
+    {% endfor %}
+{% endblock %}
