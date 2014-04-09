@@ -5,8 +5,10 @@ from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
+
 from toolkit.casper.prettify import mock_http_requests
 from toolkit.casper.workflow_case import BaseScenarios
+from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 
 from .models import ReviewDocument
 
@@ -81,8 +83,8 @@ Model Tests
 
 class ReviewDocumentModelTest(BaseDataProvider, TestCase):
     def test_get_absolute_url(self):
-        self.assertEqual(self.review_document.get_absolute_url(user=self.reviewer), '/review/{uuid}/{auth_key}/'.format(uuid=self.exected_uuid,
-                                                                                                                        auth_key=urllib.quote(self.expected_auth_key)))
+        self.assertEqual(self.review_document.get_absolute_url(user=self.reviewer), ABSOLUTE_BASE_URL('/review/{uuid}/{auth_key}/'.format(uuid=self.exected_uuid,
+                                                                                                                        auth_key=urllib.quote(self.expected_auth_key))))
 
     def test_auth_get(self):
         self.assertEqual(self.review_document.auth, self.BASE_EXPECTED_AUTH_USERS)
@@ -137,7 +139,7 @@ class ReviewerAddToMatterRevisionTest(BaseDataProvider, TestCase):
         self.assertTrue(auth_key is not None)
 
         auth_url = reviewdocument.get_absolute_url(user=new_reviewer_monkey)
-        self.assertEqual(auth_url, '/review/%s/%s/' % (reviewdocument.slug, urllib.quote(auth_key)))
+        self.assertEqual(auth_url, ABSOLUTE_BASE_URL('/review/%s/%s/' % (reviewdocument.slug, urllib.quote(auth_key))))
 
 
 

@@ -42,9 +42,9 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         cache_obj = cache.get(cache_key)
 
         self.assertItemsEqual(cache_obj.keys(), ['sender', 'signal', 'actor', 'verb', 'verb_slug', 'action_object',
-                                                 'target', 'item', 'user', 'message', 'comment', 'previous_name',
-                                                 'current_status', 'previous_status', 'filename', 'date_created',
-                                                 'version'])
+                                                 'target', 'item', 'user', 'override_message', 'comment',
+                                                 'previous_name', 'current_status', 'previous_status', 'filename',
+                                                 'date_created', 'version', 'message'])
         self.assertItemsEqual(cache_obj.values(), ["<class 'toolkit.core.services.matter_activity.MatterActivityEventService'>",
                                                    "<class 'django.dispatch.dispatcher.Signal'>",
                                                    "<class 'django.contrib.auth.models.User'>",
@@ -58,10 +58,11 @@ class ActivitySignalTest(BaseScenarios, TestCase):
                                                    "<type 'NoneType'>",
                                                    "<type 'NoneType'>",
                                                    "<type 'NoneType'>",
-                                                   u'workspace-added-participant',
-                                                   u'added participant',
-                                                   "<class 'rest_framework.serializers.SortedDictWithMetadata'>",
-                                                   u'Lawyer Test added Lawyer Test as a participant of Lawpal (test)'])
+                                                   "<type 'NoneType'>",
+                                                   "<type 'NoneType'>",
+                                                   "<type 'NoneType'>",
+                                                   u'workspace-created',
+                                                   u'created'])
         cache.delete(cache_key)
 
     def test_stream_item_created_manually(self):
@@ -95,7 +96,8 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         self.assertEqual(stream_item.target, self.workspace)
         self.assertEqual(stream_item.action_object, item)
         self.assertEqual(stream_item.actor, self.lawyer)
-        self.assertEqual(stream_item.data['message'], u'Lawyer Test renamed item from Test Item #1 to New Name')
+        self.assertEqual(stream_item.data['override_message'],
+                         u'Lawyer Test renamed item from Test Item #1 to New Name')
 
     def test_item_status_changed(self):
         item = mommy.make('item.Item', name='Test Item #1', matter=self.workspace)
@@ -108,7 +110,8 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         self.assertEqual(stream_item.target, self.workspace)
         self.assertEqual(stream_item.action_object, item)
         self.assertEqual(stream_item.actor, self.lawyer)
-        self.assertEqual(stream_item.data['message'], u'Lawyer Test changed the status of Test Item #1 from New to Executed')
+        self.assertEqual(stream_item.data['override_message'],
+                         u'Lawyer Test changed the status of Test Item #1 from New to Executed')
 
     def test_revision_signals(self):
         """
@@ -134,7 +137,8 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         self.assertEqual(len(stream), 2)  # first one was the creation
         self.assertEqual(stream[0].action_object, item)
         self.assertEqual(stream[0].actor, self.lawyer)
-        self.assertEqual(stream[0].data['message'], u'Lawyer Test invited Customer Test as reviewer for Test Item #1')
+        self.assertEqual(stream[0].data['override_message'],
+                         u'Lawyer Test invited a reviewer to Test Item #1')
 
         """
         delete user as reviewer and check if it worked
@@ -144,7 +148,8 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         self.assertEqual(len(stream), 3)
         self.assertEqual(stream[0].action_object, item)
         self.assertEqual(stream[0].actor, self.user)
-        self.assertEqual(stream[0].data['message'], u'Customer Test canceled their request for Customer Test to provide a document on Test Item #1')
+        self.assertEqual(stream[0].data['override_message'],
+                         u'Customer Test canceled their request for Customer Test to provide a document on Test Item #1')
 
         """
         remove revision again and check if it worked
@@ -154,7 +159,7 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         self.assertEqual(len(stream), 2)
         self.assertEqual(stream[0].action_object, revision1)
         self.assertEqual(stream[0].actor, self.lawyer)
-        self.assertEqual(stream[0].data['message'], u'Lawyer Test destroyed a revision for Test Item #1')
+        self.assertEqual(stream[0].data['override_message'], u'Lawyer Test destroyed a revision for Test Item #1')
 
     def test_add_comment(self):
         item = mommy.make('item.Item', name='Test Item #1', matter=self.matter)

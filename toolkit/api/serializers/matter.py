@@ -46,7 +46,8 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'base_url', 'name', 'slug', 'matter_code',
                   'client', 'lawyer', 'participants',
                   'closing_groups', 'categories',
-                  'items', 'comments', 'activity',
+                  'items',
+                  'comments', 'activity',
                   'current_user', 'current_user_todo',
                   'date_created', 'date_modified',
                   'percent_complete')

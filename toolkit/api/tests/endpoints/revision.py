@@ -129,7 +129,7 @@ class ItemRevisionTest(BaseEndpointTest):
         self.assertTrue(str(reviewer.pk) in invited_reviewer_document_review.auth.keys())
         # test that the url for the reviewer is correct
         self.assertEqual(invited_reviewer_document_review.get_absolute_url(user=reviewer),
-                         '/review/%s/%s/' % (
+                         'http://localhost:8000/review/%s/%s/' % (
                              invited_reviewer_document_review.slug,
                              urllib.quote(invited_reviewer_document_review.get_user_auth(user=reviewer))
                          ))
@@ -323,14 +323,16 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
     def test_post_with_URL_executed_file_and_stream(self):
         self.test_post_with_URL_executed_file()
         stream = target_stream(self.matter)
-        self.assertEqual(stream[0].data['message'], u'Lawyer Test created a revision for Test Item with Revision')
+        self.assertEqual(stream[0].data['override_message'],
+                         u'Lawyer Test added a file to Test Item with Revision')
 
 
     @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_post_with_FILE_executed_file_and_stream(self):
         self.test_post_with_FILE_executed_file()
         stream = target_stream(self.matter)
-        self.assertEqual(stream[0].data['message'], u'Lawyer Test created a revision for Test Item with Revision')
+        self.assertEqual(stream[0].data['override_message'],
+                         u'Lawyer Test added a file to Test Item with Revision')
 
         revision = self.item.revision_set.all().first()
 
@@ -444,7 +446,6 @@ class RevisionDeleteWithReviewersTest(BaseEndpointTest):
         self.revision.reviewers.add(self.reviewer)
 
     def test_delete_of_revision_not_blocked_by_reviwers(self):
-        # import pdb;pdb.set_trace()
         self.assertTrue(self.item.pk)
         self.revision.delete()
         #
