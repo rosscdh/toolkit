@@ -10,6 +10,7 @@ from toolkit.core.item.models import Item
 
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 
+from .revision import SimpleRevisionSerializer
 from .user import LiteUserSerializer, SimpleUserWithReviewUrlSerializer
 
 
@@ -20,7 +21,8 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
 
     responsible_party = LiteUserSerializer(required=False)
 
-    latest_revision = serializers.SerializerMethodField('get_latest_revision')
+    latest_revision = SimpleRevisionSerializer(read_only=True)
+    #latest_revision = serializers.SerializerMethodField('get_latest_revision')
 
     matter = serializers.HyperlinkedRelatedField(many=False, required=True, view_name='workspace-detail', lookup_field='slug')
 
@@ -86,6 +88,15 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
                 'requested_by': None,
                 'date_requested': None
             })
+
+
+class SimpleItemSerializer(ItemSerializer):
+    class Meta(ItemSerializer.Meta):
+        fields = ('url', 'slug', 'name', 
+                  'status', 'category',
+                  'latest_revision',
+                  'is_final', 'is_complete', 'is_requested',
+                  'date_due',)
 
 
 class LiteItemSerializer(ItemSerializer):

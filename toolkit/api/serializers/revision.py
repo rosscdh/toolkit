@@ -284,3 +284,12 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
                     'item_slug': obj.item.slug,
                     'version': c + 1
                 })) for c, revision in enumerate(obj.revisions) if revision.pk != obj.pk]
+
+
+class SimpleRevisionSerializer(RevisionSerializer):
+    class Meta(RevisionSerializer.Meta):
+        fields = ('url', 'slug',
+                  'name',
+                  'status',
+                  'date_created',)
+
