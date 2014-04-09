@@ -185,7 +185,7 @@ class RevisionSignReminderEmailsMixin(object):
 
         for u in recipients_set:
 
-            mailer = SignerReminderEmail(recipients=((u.get_full_name(), u.email,),))
+            mailer = SignerReminderEmail(recipients=((u.get_full_name(), u.email,),), from_tuple=(from_user.get_full_name(), from_user.email,))
 
             #
             # Get the review document for this user
