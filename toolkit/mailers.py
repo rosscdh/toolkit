@@ -77,7 +77,9 @@ class BaseMailerService(object):
                 'subject': self.subject,
                 'message': self.message
             }
-            print context.get('from_email')
+
+            LOGGER.debug('Email going out from: %s' % context.get('from_email'))
+
             context.update(**kwargs)
 
             self.send_mail(context=context, attachments=attachments)
