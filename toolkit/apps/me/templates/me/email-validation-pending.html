@@ -1,0 +1,64 @@
+{% extends 'base-slim.html' %}
+
+{% block page_title %}404 Page does not exist{% endblock %}
+
+{% block prebody %}
+{% csrf_token %}
+<!--     <div class="container">
+            <div class="span12">
+                <h2><b>Email not yet validated</b></h2>
+                <p>Please validate your email address by clicking on the link in the email sent to: <em><b>{{ user.email }}</b></em></p>
+                <p>In order to proceed and for your security, you need to vaildate the email you used when you signed up.</p>
+                <span id="send-notice"><button id="send-email-validation-request">Resend</button></span>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body text-center">
+        <h2 class="lead"><span class="pe-7s-attention"></span> Please verify your email to continue</h2>
+        <p>
+          We're excited for you to create your first matter, but first, please verify your email address.
+          Check your email ({{ user.email }}) and click on the link that we've sent you to complete the process.
+        </p>
+      </div>
+      <div class="modal-footer text-center">
+        <span id="send-notice"><a href="#" class="btn btn-warning btn-wide" id="send-email-validation-request">Resend Email</a></span>
+        <a href="#" class="btn btn-wide btn-default" data-dismiss="modal">Close</a>
+      </div>
+    </div>
+  </div>  
+
+{% endblock %}
+
+{% block js %}
+<script>
+$(document).ready(function () {
+    'use strict';
+
+    $('a#send-email-validation-request').on("click", function() {
+        var data = $(this).data();
+
+        $.ajax({
+          "type": 'POST',
+          "url": '{% url "me:send-email-validation-request" %}',
+          "data": {},
+          "dataType": 'json',
+          "contentType": 'application/json',
+          "beforeSend": function (jqXHR, settings) {
+              // Pull the token out of the DOM.
+              jqXHR.setRequestHeader('X-CSRFToken', $('input[name=csrfmiddlewaretoken]:first').val());
+          },
+          "complete": function ( data ) {
+              $('#send-notice').html('<a href="#" class="btn btn-wide btn-success animated-slow fadeIn" disabled><span class="fui-check-inverted"></span> Email Resent</a>')
+          }
+        });
+
+        return false; //this is critical to stop the click event which will trigger a normal file download!
+    });
+
+});
+</script>
+{% endblock %}

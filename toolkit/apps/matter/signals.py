@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth.models import User
 from django.dispatch import Signal, receiver
+from django.db.models.signals import m2m_changed
 
 import dj_crocodoc.signals as crocodoc_signals
+
+from toolkit.apps.workspace.models import Workspace
 
 from toolkit.apps.workspace.models import InviteKey
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
@@ -41,6 +44,28 @@ def participant_added(sender, matter, participant, user, note, **kwargs):
 
     matter.actions.added_matter_participant(matter=matter, adding_user=user, added_user=participant)
 
+
+@receiver(m2m_changed, sender=Workspace.participants.through, dispatch_uid='matter.on_participant_added')
+def on_participant_added(sender, instance, action, model, pk_set, **kwargs):
+    """
+    When we add a participant; ensure that they are also participants on all of the existing items
+    @BUSINESSRULE
+    @DB
+    @VERYIMPORTANT
+    """
+    if action in ['post_add']:
+        # loop over matter items
+        # add user to the participants for that instance
+        matter = instance
+        for item in matter.item_set.all():
+            for revision in item.revision_set.all():
+                for reviewdocument in revision.reviewdocument_set.all():
+                    #
+                    ## issue a save which will cause the participants to be readded
+                    #
+                    # @TODO this is REALLY HEAVY
+                    #
+                    reviewdocument.save()
 
 
 @receiver(crocodoc_signals.crocodoc_comment_create)

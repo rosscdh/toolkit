@@ -159,8 +159,8 @@ class SignUpForm(forms.Form):
         mpid = self.cleaned_data.get('mpid', None)
 
         analytics = AtticusFinch()
-        if mpid is not None:
-            analytics.alias(user.pk, mpid)
+        if mpid not in ['', None]:
+            analytics.mixpanel_alias(user.pk, mpid)
         analytics.event('user.signup', user=user)
 
         return user

@@ -123,6 +123,12 @@ angular.module('toolkit-gui')
 		 * @memberof			ParticipantInviteCtrl
 		 */
 		$scope.invite = function () {
+            if($scope.data.showAddLawyer===true){
+                $scope.data.invitee.user_class="lawyer";
+            } else {
+                $scope.data.invitee.user_class="customer";
+            }
+
 			participantService.invite( matter.selected.slug, $scope.data.invitee ).then(
 				function success(response) {
                     participantService.getByURL(response.url).then(

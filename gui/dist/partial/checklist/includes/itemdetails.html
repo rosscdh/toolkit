@@ -136,14 +136,13 @@
         </div>
     </div>
 
-    <ul class="revisions list-unstyled" ng-show="data.selectedItem.latest_revision">
+    <ul class="revisions list-unstyled" ng-show="data.selectedItem.latest_revision.slug">
         <!-- Begin current revision -->
         <li class="header">Current</li>
         <li class="current">
             <div class="doc-wrap">
                 <!-- <span class="version">{{ data.selectedItem.latest_revision.slug }}</span> -->
                 <h4><a href="javascript:;" ng-click="showRevisionDocument(data.selectedItem.latest_revision)"><span class="fui-document status-{{ data.selectedItem.latest_revision.status }}"></span> {{ data.selectedItem.latest_revision.name }}</a></h4>
-                <span class="close" ng-click="deleteLatestRevision()">x</span>
                 <div class="desc" ng-hide="data.showEditRevisionDescriptionForm||data.usdata.current.user_class!=='lawyer'">
                      <a href="javascript:;" class="link"
                         ng-click="data.showEditRevisionDescriptionForm=!data.showEditRevisionDescriptionForm;data.editRevisionDescription=data.selectedItem.latest_revision.description;focus('eventEditLatestRevisionDescription')">
@@ -162,6 +161,7 @@
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="showRevisionDocument(data.selectedItem.latest_revision)">View</a>  <a href="{{ data.selectedItem.latest_revision.user_download_url }}" class="btn btn-link btn-xs" target="_blank">Download</a>
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="requestReview(data.selectedItem.latest_revision)">Request Review</a>
 <!--                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="requestSigning(data.selectedItem.latest_revision)">Request Signing</a> -->
+                    <a href="javascript:;" class="btn btn-link btn-xs" ng-click="deleteLatestRevision()">Delete</a>
                     <div class="btn-group pull-right">
                         <button type="button" class="btn btn-default btn-xs status-{{ data.selectedItem.latest_revision.status }}" data-toggle="dropdown">
                           {{ data.matter._meta.revision.status | valueforkey:data.selectedItem.latest_revision.status }}
@@ -197,8 +197,11 @@
                                     <span class="fui-check"></span> Complete
                                 </button>
                             </a>
-                           <span ng-show="rev.date_last_viewed" ng-bind="rev.date_last_viewed | timeago"></span>
-                           <a href="javascript:;" ng-click="showReview(data.selectedItem.latest_revision, rev)">{{ rev.reviewer.name }}</a>
+
+                            <span ng-show="rev.date_last_viewed">
+                                <a href="javascript:;" ng-click="showReview(data.selectedItem.latest_revision, rev)">{{ rev.reviewer.initials }}</a> viewed <span ng-bind="rev.date_last_viewed | timeago"></span>
+                            </span>
+                            <a ng-hide="rev.date_last_viewed" href="javascript:;" ng-click="showReview(data.selectedItem.latest_revision, rev)">{{ rev.reviewer.name }}</a>
                         </li>
                     </ul>
                 </div>

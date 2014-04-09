@@ -50,7 +50,7 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
 
     def test_lawyer_get_no_participants(self):
         """
-        We shoudl get a reviewdocument but with None reviewers (only the participants, can view this reviewdocument object)
+        We should get a reviewdocument but with None reviewers (only the participants, can view this reviewdocument object)
         """
         self.client.login(username=self.lawyer.username, password=self.password)
 
@@ -142,7 +142,8 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
 
         # test if activity shows in stream
         stream = target_stream(self.matter)
-        self.assertEqual(stream[0].data['message'], u'Lawyer Test invited Participant Number 1 as reviewer for Test Item with Revision')
+        self.assertEqual(stream[0].data['override_message'],
+                         u'Lawyer Test invited a reviewer to Test Item with Revision')
 
     def test_second_lawyer_post(self):
         """
@@ -239,7 +240,8 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
 
         # test if activity shows in stream
         stream = target_stream(self.matter)
-        self.assertEqual(stream[0].data['message'], u'Lawyer Test invited Participant Number 1 as reviewer for Test Item with Revision')
+        self.assertEqual(stream[0].data['override_message'],
+                         u'Lawyer Test invited a reviewer to Test Item with Revision')
 
 
 class ReviewObjectIncrementWithNewReviewerTest(BaseEndpointTest):
@@ -327,6 +329,9 @@ class ReviewObjectIncrementWithNewReviewerTest(BaseEndpointTest):
             self.assertEqual(self.revision.reviewdocument_set.all().count(), exected_total_num_reviews)
             # but the reviewer only has 1
             self.assertEqual(reviewer.reviewdocument_set.all().count(), 1) # has only 1
+            # make sure when we copy the reviewdocument for the new invitee that it does not inherit the
+            # previous review_documents is_complete status
+            self.assertEqual(reviewer.reviewdocument_set.all().first().is_complete, False)
 
 
 class RevisionReviewerTest(BaseEndpointTest):
@@ -404,14 +409,14 @@ class RevisionReviewerTest(BaseEndpointTest):
         # Test the auth for the new reviewer
         #
         url = urllib.unquote_plus(reviewdocument.get_absolute_url(user=self.participant))
-        self.assertEqual(url, '/review/%s/%s/' % (reviewdocument.slug, reviewdocument.make_user_auth_key(user=self.participant)))
+        self.assertEqual(url, ABSOLUTE_BASE_URL('/review/%s/%s/' % (reviewdocument.slug, reviewdocument.make_user_auth_key(user=self.participant))))
         #
         # Test the auth urls for the matter.participants
         # test that they cant log in when logged in already (as the lawyer above)
         #
         for u in self.matter.participants.all():
             url = urllib.unquote_plus(reviewdocument.get_absolute_url(user=u))
-            self.assertEqual(url, '/review/%s/%s/' % (reviewdocument.slug, reviewdocument.get_user_auth(user=u)))
+            self.assertEqual(url, ABSOLUTE_BASE_URL('/review/%s/%s/' % (reviewdocument.slug, reviewdocument.get_user_auth(user=u))))
             # Test that permission is denied when logged in as a user that is not the auth_token user
             resp = self.client.get(url)
             self.assertTrue(resp.status_code, 403) # denied

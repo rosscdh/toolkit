@@ -4,13 +4,15 @@ from django import forms
 from django.core.urlresolvers import reverse
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Button, Layout
+from crispy_forms.layout import Button, Field, Layout
 
 from parsley.decorators import parsleyfy
 
 from toolkit.apps.workspace.models import Workspace
 from toolkit.core.client.models import Client
 from toolkit.mixins import ModalForm
+
+from .services import MatterCloneService
 
 
 @parsleyfy
@@ -50,20 +52,28 @@ class MatterForm(ModalForm, forms.ModelForm):
         widget=forms.TextInput(attrs={'placeholder': 'Matter name', 'size': '40'})
     )
 
+    template = forms.ModelChoiceField(
+        help_text='',
+        label='Copy checklist items from',
+        queryset=Workspace.objects.none(),
+        required=False
+    )
+
     class Meta:
         fields = ['matter_code', 'name']
         model = Workspace
 
     def __init__(self, *args, **kwargs):
-        if 'user' in kwargs:
-            self.user = kwargs.pop('user')
+        self.user = kwargs.pop('user', None)
+        self.is_new = kwargs.pop('is_new', True)
 
         super(MatterForm, self).__init__(*args, **kwargs)
 
         self.helper.layout = Layout(
             'name',
             'client_name',
-            'matter_code'
+            'matter_code',
+            Field('template', css_class='select-block') if self.is_new is True else None
         )
 
         if self.instance.pk:
@@ -83,7 +93,12 @@ class MatterForm(ModalForm, forms.ModelForm):
             'data-source': data
         })
 
+        # Only show matters that I'm a participant in
+        self.fields['template'].queryset = Workspace.objects.mine(self.user)
+
     def save(self, commit=True):
+        created = True if self.instance.pk is None else False
+
         matter = super(MatterForm, self).save(commit=False)
 
         # add client/lawyer to the matter
@@ -94,6 +109,10 @@ class MatterForm(ModalForm, forms.ModelForm):
 
         # add user as participant
         matter.participants.add(self.user)
+
+        if created and self.cleaned_data['template'] is not None:
+            service = MatterCloneService(source_matter=self.cleaned_data['template'], target_matter=matter)
+            service.process()
 
         return matter
 
