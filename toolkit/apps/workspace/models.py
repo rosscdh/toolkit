@@ -59,6 +59,8 @@ class Workspace(IsDeletedMixin,
 
     class Meta:
         ordering = ['name', '-pk']
+        verbose_name = 'Matter'
+        verbose_name_plural = 'Matters'
 
     def __init__(self, *args, **kwargs):
         #
