@@ -812,7 +812,7 @@ body.gui .main-content {
   margin-top: 40px;
 }
 .matters .page-header {
-  padding-bottom: 20px!important;
+  padding-bottom: 20px !important;
 }
 .matter .card {
   background-color: #ffffff;
@@ -873,6 +873,13 @@ body.gui .main-content {
 }
 .matter .card .progress .progress-bar {
   border-radius: 0px;
+}
+.matter.archived .card .title {
+  height: auto;
+}
+.matter.archived .card .edit {
+  right: 10px;
+  top: 27px;
 }
 .welcome-block ul#tourTab {
   border-bottom: 0px;
