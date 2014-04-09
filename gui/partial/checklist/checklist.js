@@ -27,6 +27,7 @@ angular.module('toolkit-gui')
 	'ezConfirm',
 	'toaster',
 	'$modal',
+	'baseService',
 	'matterService',
 	'matterItemService',
 	'matterCategoryService',
@@ -45,6 +46,7 @@ angular.module('toolkit-gui')
 			 ezConfirm,
 			 toaster,
 			 $modal,
+			 baseService,
 			 matterService,
 			 matterItemService,
 			 matterCategoryService,
@@ -188,7 +190,7 @@ angular.module('toolkit-gui')
 			$scope.data.selectedCategory = category;
 
 			$scope.activateActivityStream('item');
-			//$scope.initializeActivityStream();
+            $scope.loadItemDetails(item);
 
 			//Reset controls
             $scope.data.dueDatePickerDate = $scope.data.selectedItem.date_due;
@@ -225,6 +227,19 @@ angular.module('toolkit-gui')
 				return null;
 			}
 		}
+
+        $scope.loadItemDetails = function(item){
+            if(typeof(item.latest_revision) === "string") {
+                baseService.loadObjectByUrl(item.latest_revision).then(
+                    function success(obj){
+                        item.latest_revision = obj;
+                    },
+                    function error(err){
+                        toaster.pop('error', "Error!", "Unable to load latest revision");
+                    }
+                );
+            }
+        };
 
 
 		/**
@@ -948,7 +963,7 @@ angular.module('toolkit-gui')
 		};
 
         $scope.getReviewPercentageComplete = function( item) {
-            if(item && item.latest_revision && item.latest_revision.reviewers.length>0) {
+            if(item && item.latest_revision && item.latest_revision.reviewers && item.latest_revision.reviewers.length>0) {
                 var reviews = item.latest_revision.reviewers;
                 var completed = 0;
 
