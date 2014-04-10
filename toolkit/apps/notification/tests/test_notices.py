@@ -26,7 +26,8 @@ class BaseListViewTest(BaseScenarios, TestCase):
         super(BaseListViewTest, self).setUp()
         self.client = Client()
 
-    def assert_html_present(self, test_html, notice_pk, actor_name, actor_initials, message, date, base_url, target_name, client_name, notice_message):
+    def assert_html_present(self, test_html, notice_pk, actor_name, actor_initials, message, date, base_url,
+                            target_name, client_name):
         expected_html = _get_notice_html({
             'pk': notice_pk,
             'actor_name': actor_name,
@@ -36,7 +37,6 @@ class BaseListViewTest(BaseScenarios, TestCase):
             'base_url': base_url,
             'target_name': target_name,
             'client_name': client_name,
-            'notice_message': notice_message,
         })
         #
         # The actual test
@@ -98,12 +98,11 @@ class NotificationEventsListTest(BaseListViewTest):
                                  notice_pk=notice.pk,
                                  actor_name=actor.get('name') if actor else None,
                                  actor_initials=actor.get('initials') if actor else None,
-                                 message=notice.message.message,
+                                 message=notice.message,
                                  date=notice.message.date,
                                  base_url=target.get('base_url') if target else None,
                                  target_name=target.get('name') if target else None,
-                                 client_name=target.get('client').get('name') if client else None,
-                                 notice_message=notice.message)
+                                 client_name=target.get('client').get('name') if client else None)
 
     def test_removed_matter_participant(self):
         """
@@ -140,9 +139,8 @@ class NotificationEventsListTest(BaseListViewTest):
                                  notice_pk=notice.pk,
                                  actor_name=actor.get('name') if actor else None,
                                  actor_initials=actor.get('initials') if actor else None,
-                                 message=notice.message.message,
+                                 message=notice.message,
                                  date=notice.message.date,
                                  base_url=target.get('base_url') if target else None,
                                  target_name=target.get('name') if target else None,
-                                 client_name=target.get('client').get('name') if client else None,
-                                 notice_message=notice.message)
+                                 client_name=target.get('client').get('name') if client else None)

@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
+from django.core.serializers.base import Serializer
 from django.utils.translation import ugettext as _
 from django.template import loader
 
 from actstream.models import Action
 from rest_framework import serializers
 
+from toolkit.api.serializers.item import LiteItemSerializer
 from toolkit.api.serializers.user import LiteUserSerializer
 
 
@@ -21,17 +23,22 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
 
     timesince = serializers.SerializerMethodField('get_timesince')
     actor = LiteUserSerializer('actor')
+    action_object = LiteItemSerializer('action_object')
+                        # TODO: change this to a generic one with URL. action_object can be Item/Revision/Matter/...
+                        # instead we could/should use the rendered event-html in the gui
 
     class Meta:
         model = Action
         lookup_field = 'id'
-        fields = ('id', 'actor', 'event', 'data', 'timestamp', 'timesince')
+        fields = ('id', 'actor', 'action_object', 'event', 'data', 'timestamp', 'timesince')
 
     def get_timesince(self, obj):
         return obj.timesince()
 
     def get_event(self, obj):
         """
+        THIS FUNCTION SEEMS NOT TO BE USED.
+
         Matter level actions should show minimalinformation about an event
         """
         ctx = {
