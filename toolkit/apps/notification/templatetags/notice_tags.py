@@ -25,5 +25,4 @@ def render_notice(notice):
             'base_url': target.get('base_url') if target else None,
             'target_name': target.get('name') if target else None,
             'client_name': target.get('client').get('name') if client else None,
-            'notice_message': notice.message
         }
