@@ -68,6 +68,7 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
         if verb_slug == 'revision-added-revision-comment':
             # crocodoc-template
             template = revision_comment_template
+            ctx.update({'action_object_url': "%s/%s" % (obj.data['item']['latest_revision'], obj.action_object.slug)})
 
         return _get_activity_display(ctx, template)
         #
