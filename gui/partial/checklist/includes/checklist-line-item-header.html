@@ -2,7 +2,7 @@
 	<div class="col-xs-8">
 		<h5
 			ng-bind="cat.name"
-			ng-hide="data.showEditCategoryForm==$index">
+			ng-hide="data.showEditCategoryForm==$index||!cat.name">
 		</h5>
 		<h5
 			ng-hide="data.showEditCategoryForm==$index||cat.name">UNCATEGORIZED
