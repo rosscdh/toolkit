@@ -71,17 +71,6 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
             ctx.update({'action_object_url': "%s/%s" % (obj.data['item']['latest_revision'], obj.action_object.slug)})
 
         return _get_activity_display(ctx, template)
-        #
-        # if comment is not None:
-        #     return _get_comment_display(ctx, comment)
-        #
-        # if override_message is not None:
-        #     return override_message % ctx
-        #
-        # if obj.action_object.__class__.__name__ in ['Item']:
-        #     return _('<span data-uid="%(actor_pk)d">%(actor)s</span> %(verb)s <a href="%(action_object_url)s">%(action_object)s</a> <span data-date="%(timestamp)s"></span>') % ctx
-        #
-        # return _('<span data-uid="%(actor_pk)d">%(actor)s</span> %(verb)s <a href="%(action_object_url)s">%(action_object)s</a> <span data-date="%(timestamp)s"></span>') % ctx
 
 
 class ItemActivitySerializer(MatterActivitySerializer):

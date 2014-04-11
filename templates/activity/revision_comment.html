@@ -3,6 +3,7 @@
     <a class="user-icon ng-scope ng-binding" tooltip-placement="left" tooltip="{{ actor }}, {{ timesince }} ago" href="#">{{ actor.get_initials }}</a>
     <div class="media-body">
         <a href="{{ action_object_url }}">{{ action_object }}</a>
+        <div>{{ actor }} commented on Revision {{ action_object.slug }}/{{ action_object.name }}</div>
         <div class="msg-body ng-binding" ng-bind-html="activity.data.comment | newlines">{{ data.comment }}</div>
         <div class="msg-meta ng-binding">{{ actor}}, {{ timesince }}</div>
     </div>
