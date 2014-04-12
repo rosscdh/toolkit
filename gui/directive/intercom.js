@@ -1,0 +1,38 @@
+/**
+ * https://github.com/gdi2290/angular-intercom/blob/master/example/index.html
+ * Directive for intercom
+ */
+angular.module('toolkit-gui').directive("intercom",['$cookieStore', 'Intercom', 'INTERCOM_API_KEY', '$window', '$log',
+    function ($cookieStore, Intercom, INTERCOM_API_KEY, $window, $log) {
+        return {
+        restrict: 'A',
+        scope: {
+            userId: '@',
+            userEmail: '@'
+        },
+        link: function (scope, element, attrs) {
+            scope.$watch('userId + userEmail', function (newVal, oldVal) {
+                var userId = $cookieStore.get("userId");
+                var accountId = $cookieStore.get("accountId");
+
+                if (accountId && userId) {
+                    $log.debug("intercom watcher got fired");
+                    var userEmail = $cookieStore.get("userEmail");
+                    var createdAt = $cookieStore.get("createdAt");
+                    var hash = $window.CryptoJS.HmacSHA256(accountId + '_' + userId, INTERCOM_API_KEY);
+
+                    Intercom.update({
+                        email: userEmail,
+                        user_id: accountId + '_' + userId,
+                        created_at: createdAt,
+                        app_id: INTERCOM_API_KEY,
+                        user_hash: hash.toString()
+                    });
+
+                } //  end if
+            }); // end watch
+
+
+        } // end link
+    }; // end return
+}]);

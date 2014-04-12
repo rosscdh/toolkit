@@ -37,6 +37,7 @@
   <script src="<!-- @echo staticPath -->bower_components/angular-ui-utils/ui-utils.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/angular-ui-sortable/sortable.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/angular-elastic/elastic.js"></script>
+  <script src="<!-- @echo staticPath -->bower_components/angular-cookies/angular-cookies.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/angular-markdown-directive/markdown.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/angular-sanitize/angular-sanitize.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/showdown/compressed/showdown.js"></script>
@@ -49,6 +50,8 @@
   <script src="<!-- @echo staticPath -->bower_components/respond/dest/respond.src.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/raven-js/dist/raven.min.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/respond/dest/respond.src.js"></script>
+  <script src="<!-- @echo staticPath -->bower_components/angular-intercom/angular-intercom.js"></script>
+  <script src="<!-- @echo staticPath -->bower_components/crypto-js/rollups/hmac-sha256.js"></script>
   <script type="text/javascript" src="//api.filepicker.io/v1/filepicker.js" data-remove="exclude"></script>
 
   <!-- Main App JS -->
@@ -73,6 +76,7 @@
   <!-- Directive JS -->
   <script src="<!-- @echo staticPath -->directive/form.js"></script>
   <script src="<!-- @echo staticPath -->directive/filepicker.js"></script>
+  <script src="<!-- @echo staticPath -->directive/intercom.js"></script>
   <!-- Add New Directive JS Above -->
 
   <!-- Filter JS -->
@@ -191,13 +195,14 @@
     <!--/.navbar-collapse -->
   </div>
 
-  <div ui-view class="full">
+  <div ui-view class="full"></div>
   <span id="landmine"></span>
   <script language="javascript" data-remove="exclude">
     angular.module('toolkit-gui').constant('API_BASE_URL', '<!-- @echo apiBaseUrl -->');
     angular.module('toolkit-gui').constant('STATUS_LEVEL', {'OK':0,'WARNING':1,'ERROR':2} );
     angular.module('toolkit-gui').constant('DEBUG_MODE', <!-- @echo DEBUG_MODE -->);
     angular.module('toolkit-gui').constant('SENTRY_PUBLIC_DSN', '<!-- @echo SENTRY_PUBLIC_DSN -->' );
+    angular.module('toolkit-gui').constant('INTERCOM_API_KEY', 'e0bccbe6fa8da1e35dd485501a4251c2c987dab5' );
   </script>
 </body>
 </html>
