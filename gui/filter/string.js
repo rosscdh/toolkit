@@ -16,3 +16,10 @@ angular.module('toolkit-gui').filter('newlines', function () {
         }
     };
 });
+
+
+angular.module('toolkit-gui').filter('unsafe', function($sce) {
+    return function(val) {
+        return $sce.trustAsHtml(val);
+    };
+});
