@@ -111,7 +111,7 @@ class Revision(ApiSerializerMixin, models.Model):
         Used in the signal to generate the attachment slug
         and revision_label
         """
-        return self.revisions.count() + 1 # default is 1
+        return self.revisions.exclude(pk=self.pk).count() + 1 # default is 1
 
     def next(self):
         return self.revisions.filter(pk__gt=self.pk).first()
