@@ -408,26 +408,31 @@ angular.module('toolkit-gui')
 		 * @method				deleteCategory
 		 * @memberof			ChecklistCtrl
 		 */
-		$scope.deleteCategory = function(cat) {
-			var matterSlug = $scope.data.slug;
+        $scope.deleteCategory = function (cat) {
+            var matterSlug = $scope.data.slug;
 
-			matterCategoryService.delete(matterSlug, cat).then(
-				function success(){
-					var index = jQuery.inArray( cat, $scope.data.categories );
-					if( index>=0 ) {
-						// Remove item from in RAM array
-						$scope.data.categories.splice(index,1);
-					}
+            ezConfirm.create('Delete Category', 'Please confirm you would like to delete this category?',
+                function yes() {
+                    // Confirmed- delete category
+                    matterCategoryService.delete(matterSlug, cat).then(
+                        function success() {
+                            var index = jQuery.inArray(cat, $scope.data.categories);
+                            if (index >= 0) {
+                                // Remove item from in RAM array
+                                $scope.data.categories.splice(index, 1);
+                            }
 
-					if (cat === $scope.data.selectedCategory){
-						$scope.data.selectedItem = null;
-					}
-				},
-				function error(err){
-					toaster.pop('error', "Error!", "Unable to delete category");
-				}
-			);
-		};
+                            if (cat === $scope.data.selectedCategory) {
+                                $scope.data.selectedItem = null;
+                            }
+                        },
+                        function error(err) {
+                            toaster.pop('error', "Error!", "Unable to delete category");
+                        }
+                    );
+                }
+            );
+        };
 
 		/**
 		 * Sets an index value used to display/hide edit category form
