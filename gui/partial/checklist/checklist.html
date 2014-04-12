@@ -57,7 +57,6 @@
 			</div>
 		</div>
 	</div>
-    <div intercom user-id="8" user-email="john.doe@example.com"></div>
 
     <div class="upload-bar" ng-repeat="cat in data.categories">
 		<div class="progress progress-striped active" ng-repeat="item in cat.items | filter: { uploading: true }">
@@ -65,5 +64,6 @@
 		</div>
 	</div>
 </div>
+<div intercom user-id="{{ data.usdata.current.id }}" user-email="{{ data.usdata.current.email }}"></div>
 <toaster-container toaster-options="{'position-class': 'toast-bottom-right'}"></toaster-container>
 <!--<input type="filepicker" data-fp-apikey="A4Ly2eCpkR72XZVBKwJ06z" data-fp-mimetypes="*/*" data-fp-container="modal" onchange="alert(event.fpfile.url)">//-->
