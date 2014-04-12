@@ -23,6 +23,8 @@ angular.module('toolkit-gui')
 	'$rootScope',
 	'$routeParams',
 	'$location',
+    '$sce',
+    '$route',
 	'smartRoutes',
 	'ezConfirm',
 	'toaster',
@@ -42,6 +44,8 @@ angular.module('toolkit-gui')
 			 $rootScope,
 			 $routeParams,
 			 $location,
+             $sce,
+             $route,
 			 smartRoutes,
 			 ezConfirm,
 			 toaster,
@@ -100,6 +104,27 @@ angular.module('toolkit-gui')
 				}
 			);
 		}
+
+
+        //TODO Params not getting updated!
+        $rootScope.$on("$locationChangeSuccess", function () {
+            $log.debug("location changed");
+
+            var itemSlug = smartRoutes.params().itemSlug;
+
+            if(itemSlug && (!$scope.data.selectedItem || itemSlug !== $scope.data.selectedItem.slug)){
+                $log.debug("Selecting item because of url change");
+
+                // find item
+                var matter = $scope.data.matter;
+                for (i = 0; i < matter.items.length; i++) {
+                    if (matter.items[i].slug === itemSlug) {
+                        $scope.selectItem(matter.items[i], matter.items[i].category);
+                    }
+                }
+            }
+        });
+
 
 		/**
 		 * Spilts the matter items into seperate arrays for the purpose of displaying seperate sortable lists, where items can be dragged

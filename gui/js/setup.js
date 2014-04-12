@@ -8,6 +8,7 @@ angular.module('toolkit-gui', [
     'ui.router',
     'ngAnimate',
     'ngResource',
+    'ngSanitize',
     'btford.markdown',
     'monospaced.elastic',
     'angularFileUpload'
