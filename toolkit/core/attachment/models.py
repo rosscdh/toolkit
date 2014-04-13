@@ -110,6 +110,7 @@ class Revision(ApiSerializerMixin, models.Model):
         return the relative revision id for this revision
         Used in the signal to generate the attachment slug
         and revision_label
+        NB! must exclude the self.pk otherwise the increment will be wrong +1
         """
         return self.revisions.exclude(pk=self.pk).count() + 1 # default is 1
 
