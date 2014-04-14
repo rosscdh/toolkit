@@ -106,8 +106,7 @@ angular.module('toolkit-gui')
 		}
 
 
-        //TODO Params not getting updated!
-        $rootScope.$on("$locationChangeSuccess", function () {
+        $rootScope.$on("$stateChangeSuccess", function () {
             $log.debug("location changed");
 
             var itemSlug = smartRoutes.params().itemSlug;
@@ -116,11 +115,11 @@ angular.module('toolkit-gui')
                 $log.debug("Selecting item because of url change");
 
                 // find item
-                var matter = $scope.data.matter;
-                for (i = 0; i < matter.items.length; i++) {
-                    if (matter.items[i].slug === itemSlug) {
-                        $scope.selectItem(matter.items[i], matter.items[i].category);
-                    }
+                var foundItems = jQuery.grep( $scope.data.matter.items, function( item ){ return item.slug===itemSlug; } );
+                if (foundItems.length > 0){
+                    $scope.selectItem(foundItems[0], foundItems[0].category);
+                } else {
+                    toaster.pop('warning', "Item does not exist anymore.");
                 }
             }
         });
@@ -289,7 +288,13 @@ angular.module('toolkit-gui')
 									// Remove item from in RAM array
 									$scope.data.selectedCategory.items.splice(index,1);
 								}
-								$scope.data.selectedItem = null;
+
+                                index = jQuery.inArray( $scope.data.selectedItem, $scope.data.matter.items );
+                                if( index>=0 ) {
+                                    $scope.data.matter.items.splice(index,1);
+                                }
+
+                                $scope.data.selectedItem = null;
 								$scope.initializeActivityStream();
 							},
 							function error(err){
