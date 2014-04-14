@@ -98,7 +98,7 @@ def _notifications_send(verb_slug, actor, target, action_object, message):
             # Because we cant mixn the ApiMixin class ot the django User Object
             actor = LiteUserSerializer(actor, context={'request': None}).data
 
-            action_object = None
+            # action_object = None
             if hasattr(action_object, 'api_serializer') is True:
                 action_object = action_object.api_serializer(action_object, context={'request': None}).data
 
@@ -170,6 +170,8 @@ def on_activity_received(sender, **kwargs):
             _activity_send(actor=actor, **kwargs)
 
         # send the notifications to the participants
-        _notifications_send(verb_slug=verb_slug, actor=actor, target=target, action_object=action_object, message=message)
+        _notifications_send(verb_slug=verb_slug, actor=actor, target=target, action_object=action_object,
+                            message=message)
+
         # send to abridge service
         _abridge_send(verb_slug=verb_slug, actor=actor, target=target, action_object=action_object, message=message)
