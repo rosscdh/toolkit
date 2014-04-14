@@ -1129,6 +1129,34 @@ body.gui .main-content {
   border-color: #e74c3c;
   background-color: #ffffff;
 }
+.plan {
+  background: white;
+  border: 2px solid #ececec;
+  border-radius: 6px;
+  padding: 14px;
+  position: relative;
+  text-align: center;
+}
+.plan .plan-image {
+  height: 100px;
+  margin: 31px 0 27px;
+  vertical-align: bottom;
+}
+.plan .plan-image.big-illustration {
+  height: 111px;
+  margin-top: 20px;
+  width: 112px;
+}
+.plan .plan-title {
+  margin: 0;
+}
+.plan .plan-price {
+  color: #2ecc71;
+}
+.plan p {
+  font-size: 15px;
+  margin-bottom: 33px;
+}
 .home .splash {
   background: url('/static/images/home-splash.jpg');
   height: 800px;
