@@ -4,7 +4,11 @@ Deployment actions by branch
 
 [choices-names]
 
-1. ./manage.py migrate attachment  # removal of the status field 
+1. git co master;./manage.py migrate attachment 0003 
+must first run this data migration to ensure we catch all the current
+item statuses
+
+2. ./manage.py migrate attachment 0004  # removal of the status field 
 
 
 [celery]
