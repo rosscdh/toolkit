@@ -199,7 +199,7 @@ mixpanel.init("{{ GLOBALS.MIXPANEL_API_TOKEN }}");
                 firm: "{{user.profile.firm_name}}",
                 {% endif %}
                 created_at: "{{ user.date_joined|date:"U" }}",
-                app_id: "ooqtbx99",
+                app_id: "{{ GLOBALS.INTERCOM_APP_ID }}",
                 user_hash: "{% intercom_user_hash user.email %}",
                 widget: {
                     activator: '.intercom',

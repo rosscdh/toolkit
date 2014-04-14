@@ -11,4 +11,4 @@ def intercom_user_hash(email):
     """
     Generate the user_hash to turn on secure mode for Intercom.
     """
-    return hmac.new(settings.INTERCOM_API_SECRET, email, digestmod=hashlib.sha256).hexdigest()
+    return hmac.new(settings.INTERCOM_APP_SECRET, email, digestmod=hashlib.sha256).hexdigest()
