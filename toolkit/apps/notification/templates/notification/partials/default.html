@@ -5,9 +5,11 @@
             <div class="avatar img-circle"><span class="initials" title="{{ message.data.actor.name }}">{{ actor_initials }}</span></div>
         </div>
         <div class="col-xs-10">
-            <p class="lead">{{ message }}</p>
-            <a href="{{ action_object.url }}">I AM AN API-ENDPOINT-LINK TO {{ action_object.name }} TO BE USED SOMEHOW</a>
-            <p class="small">{{ date|naturaltime }} — in <a href="{{ message.data.target.base_url }}">{{ target_name }}</a> for {{ client_name }}.</p>
+            {% block notice %}
+                <p class="lead">{{ message }}</p>
+                <a href="{{ action_object_url }}">I AM AN API-ENDPOINT-LINK TO {{ action_object_name }} TO BE USED SOMEHOW</a>
+                <p class="small">{{ date|naturaltime }} — in <a href="{{ message.data.target.base_url }}">{{ target_name }}</a> for {{ client_name }}.</p>
+            {% endblock %}
         </div>
         <div class="col-xs-1">
             <a href="javascript:;" data-pk="{{ pk }}" data-url="{% url 'notification:inbox-read' pk=pk %}" class="btn btn-sm notification-btn mark-as-read" data-toggle="tooltip" data-placement="top" title="Mark as read">

@@ -215,7 +215,10 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
         super(RevisionSerializer, self).__init__(*args, **kwargs)
 
     def get_custom_api_url(self, obj):
-        return ABSOLUTE_BASE_URL(reverse('matter_item_specific_revision', kwargs={'matter_slug': obj.item.matter.slug, 'item_slug': obj.item.slug, 'version': obj.slug.replace('v', '')}))
+        return ABSOLUTE_BASE_URL(reverse('matter_item_specific_revision',
+                                         kwargs={'matter_slug': obj.item.matter.slug,
+                                                 'item_slug': obj.item.slug,
+                                                 'version': obj.slug.replace('v', '')}))
 
     def get_uploaded_by(self, obj):
         return SimpleUserSerializer(obj.uploaded_by, context={'request': self.context.get('request')}).data
@@ -239,20 +242,26 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
         request = context.get('request')
         review_document = context.get('review_document', None)
 
-        if request is not None:
-            #
-            # if we have a review_document present in the context
-            #
-            if review_document is None:
-                # we have none, then try find the reviewdocument object that has all the matter participants in it
-                #
-                # The bast one will have 0 reviewers! and be the last in the set (because it was added first)
-                #
-                review_document = obj.reviewdocument_set.all().last()
 
-            return review_document.get_absolute_url(user=request.user) if review_document is not None else None
 
-        return None
+        return obj.get_user_review_url(user=request.user if request else None, review_document=review_document)
+
+
+
+        # if request is not None:
+        #     #
+        #     # if we have a review_document present in the context
+        #     #
+        #     if review_document is None:
+        #         # we have none, then try find the reviewdocument object that has all the matter participants in it
+        #         #
+        #         # The bast one will have 0 reviewers! and be the last in the set (because it was added first)
+        #         #
+        #         review_document = obj.reviewdocument_set.all().last()
+        #
+        #     return review_document.get_absolute_url(user=request.user) if review_document is not None else None
+        #
+        # return None
 
     def get_user_download_url(self, obj):
         """

@@ -86,6 +86,37 @@ class Revision(ApiSerializerMixin, models.Model):
     def revisions(self):
         return self.item.revision_set.all()
 
+    def get_user_review_url(self, user, review_document=None):
+        """
+        Try to provide an initial reivew url from the base review_document obj
+        for the currently logged in user
+        """
+        if user is not None:
+            if review_document is None:
+                review_document = self.reviewdocument_set.all().last()
+                # review_document = self.reviewdocument_set.filter(reviewers__in=[user.pk, ]).last()
+            return review_document.get_absolute_url(user=user, use_absolute=False) if review_document is not None else None
+        return None
+
+        # context = getattr(self, 'context', None)
+        # request = context.get('request')
+        # review_document = context.get('review_document', None)
+
+        # if request is not None:
+        #     #
+        #     # if we have a review_document present in the context
+        #     #
+        #     if review_document is None:
+        #         # we have none, then try find the reviewdocument object that has all the matter participants in it
+        #         #
+        #         # The bast one will have 0 reviewers! and be the last in the set (because it was added first)
+        #         #
+        #         review_document = obj.reviewdocument_set.all().last()
+        #
+        #     return review_document.get_absolute_url(user=request.user) if review_document is not None else None
+        #
+        # return None
+
     def get_revision_label(self):
         """
         potential bug here.. if the uuid starts with a  v.

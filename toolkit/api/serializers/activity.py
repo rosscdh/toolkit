@@ -6,6 +6,7 @@ from rest_framework import serializers
 
 from toolkit.api.serializers.item import LiteItemSerializer
 from toolkit.api.serializers.user import LiteUserSerializer
+from toolkit.core.item.models import Item
 
 from toolkit.core.services.matter_activity import get_verb_slug
 
@@ -74,10 +75,15 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
             # crocodoc-template
             template = revision_comment_template
 
-            from toolkit.api.serializers import RevisionSerializer
-            ctx.update({'action_object_url': RevisionSerializer(
-                obj.action_object, **{'context': {'request': self.request}}).data['user_review_url']})
-            # ctx.update({'action_object_url': "%s/%s" % (obj.data['item']['latest_revision'], obj.action_object.slug)})
+            # from toolkit.api.serializers import RevisionSerializer
+            # ctx.update({'action_object_url': RevisionSerializer(
+            #     obj.action_object, **{'context': {'request': self.request}}).data['user_review_url']})
+
+            item = Item.objects.get(slug=obj.action_object.item.slug)
+            review_document_link = item.get_user_review_url(user=self.request.user, version=obj.action_object.slug)
+
+            ctx.update({'action_object_url': "%s:%s" % (obj.action_object.item.get_absolute_url(),
+                                                        review_document_link)})
 
         return _get_activity_display(ctx, template)
 

@@ -39,10 +39,13 @@ class ReviewDocument(IsDeletedMixin, FileExistsLocallyMixin, UserAuthMixin, mode
         # @BUSINESS RULE always return the newest to oldest
         ordering = ('-id',)
 
-    def get_absolute_url(self, user):
+    def get_absolute_url(self, user, use_absolute=True):
         auth_key = self.get_user_auth(user=user)
         if auth_key is not None:
-            return ABSOLUTE_BASE_URL(reverse('review:review_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)}))
+            url = reverse('review:review_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)})
+            if use_absolute:
+                return ABSOLUTE_BASE_URL(url)
+            return url
         return None
 
     def get_download_url(self, user):
