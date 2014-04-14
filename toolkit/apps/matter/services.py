@@ -25,3 +25,6 @@ class MatterCloneService(object):
             item.slug = None  # slug must be unique too
             item.matter = self.target_matter  # set the matter to be the target matter
             item.save()  # save it out
+            # this clear must be called after the save as we dont want to clear the source
+            # items documents
+            item.revision_set.clear()  # clear the connected documents

@@ -15,8 +15,11 @@ class MatterCloneTest(TestCase):
         self.source = mommy.make('workspace.Workspace', name='Source Matter to be copied', lawyer=self.lawyer)
 
         # items to clone
-        mommy.make('item.Item', matter=self.source, name='Test Item from Source No.1', category=None)
-        mommy.make('item.Item', matter=self.source, name='Test Item from Source No.2', category=None)
+        self.item = mommy.make('item.Item', matter=self.source, name='Test Item from Source No.1', category=None)
+        mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
+
+        self.item2 = mommy.make('item.Item', matter=self.source, name='Test Item from Source No.2', category=None)
+        mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item2, uploaded_by=self.lawyer)
 
     def test_clone_service(self):
         self.assertEqual(self.source.item_set.all().count(), 2)
@@ -30,9 +33,13 @@ class MatterCloneTest(TestCase):
 
         # test we now have the items
         self.assertEqual(target.item_set.all().count(), 2)
+        #s till has their original documents
+        self.assertEqual(all(i.revision_set.all().count() == 1 for i in target.item_set.all()))
 
         # test that the slugs are all unique
         self.assertTrue(all(str(i.slug) not in self.source.item_set.all().values('slug') for i in target.item_set.all()))
 
         # test that the source also still has them
         self.assertEqual(self.source.item_set.all().count(), 2)
+        #s till has their original documents
+        self.assertEqual(self.item.revision_set.all().count(), 2)
