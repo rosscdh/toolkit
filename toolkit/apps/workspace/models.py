@@ -29,6 +29,7 @@ class Workspace(IsDeletedMixin,
                 ClosingGroupsMixin,
                 CategoriesMixin,
                 ApiSerializerMixin,
+                RevisionLabelMixin,
                 models.Model):
     """
     Workspaces are areas that allow multiple tools
