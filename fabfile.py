@@ -102,7 +102,8 @@ env.roledefs.update({
     'db': ['ec2-50-18-97-221.us-west-1.compute.amazonaws.com'], # the actual db host
     'db-actor': ['ec2-54-241-224-100.us-west-1.compute.amazonaws.com'], # database action host
     # 'search': ['ec2-54-241-224-100.us-west-1.compute.amazonaws.com'], # elastic search action host
-    # 'web': ['ec2-184-169-191-190.us-west-1.compute.amazonaws.com', 'ec2-184-72-21-48.us-west-1.compute.amazonaws.com'],
+    'web': ['ec2-184-169-191-190.us-west-1.compute.amazonaws.com',
+            'ec2-184-72-21-48.us-west-1.compute.amazonaws.com'],
     'worker': ['ec2-54-241-222-221.us-west-1.compute.amazonaws.com'],
 })
 
@@ -260,19 +261,22 @@ def diff_outgoing_with_current():
 @roles('worker')
 def celery_restart(name='worker.1'):
     with settings(warn_only=True): # only warning as we will often have errors importing
-        cmd = "celery multi restart {name}@%h -A {app_name} --pidfile='/tmp/celery.{name}.pid'".format(name=name, app_name=env.celery_app_name)
-        if env.hosts:
-            #run(cmd)
-            virtualenv(cmd='cd %s%s;%s' % (env.remote_project_path, env.project, cmd))
-        else:
-            local(cmd)
+        celery_stop()
+        celery_start()
+        # cmd = "celery multi restart {name}@%h -A {app_name}  --uid=app --pidfile='/var/run/celery/{name}.%n.pid'  --logfile='/var/log/celery/{name}.%n.log'".format(name=name, app_name=env.celery_app_name)
+        # if env.hosts:
+        #     #run(cmd)
+        #     virtualenv(cmd='cd %s%s;%s' % (env.remote_project_path, env.project, cmd))
+        # else:
+        #     local(cmd)
 
 @task
 @roles('worker')
 def celery_start(name='worker.1', loglevel='INFO', concurrency=5):
     with settings(warn_only=True): # only warning as we will often have errors importing
         #cmd = "celery worker --app=toolkit --loglevel={loglevel} --concurrency={concurrency} -n worker{name}.%h".format(name=name, loglevel=loglevel, concurrency=concurrency)
-        cmd = "celery multi start {name}@%h -A {app_name} --loglevel={loglevel} --pidfile='/tmp/celery.{name}.pid' --logfile='/tmp/celery.{name}.log' --concurrency={concurrency}".format(name=name, loglevel=loglevel, concurrency=concurrency, app_name=env.celery_app_name)
+        #cmd = "celery multi start {name}@%h -A {app_name} --loglevel={loglevel} --uid=app --pidfile='/var/run/celery/{name}.%n.pid' --logfile='/var/log/celery/{name}.%n.log' --concurrency={concurrency}".format(name=name, loglevel=loglevel, concurrency=concurrency, app_name=env.celery_app_name)
+        cmd = "celery worker -A {app_name} --loglevel={loglevel} --pidfile='/var/run/celery/{name}.%n.pid' --logfile='/var/log/celery/{name}.%n.log' --concurrency={concurrency} --detach".format(name=name, loglevel=loglevel, concurrency=concurrency, app_name=env.celery_app_name)
         if env.hosts:
             #run(cmd)
             virtualenv(cmd='cd %s%s;%s' % (env.remote_project_path, env.project, cmd))
@@ -283,7 +287,8 @@ def celery_start(name='worker.1', loglevel='INFO', concurrency=5):
 @roles('worker')
 def celery_stop(name='worker.1'):
     with settings(warn_only=True): # only warning as we will often have errors importing
-        cmd = "celery multi stopwait {name}@%h -A {app_name} --pidfile='/tmp/celery.{name}.pid'".format(name=name, app_name=env.celery_app_name)
+        #cmd = "celery multi stopwait {name}@%h -A {app_name} --uid=app --pidfile='/var/run/celery/{name}.%n.pid'".format(name=name, app_name=env.celery_app_name)
+        cmd = "ps aux | grep 'celery worker' | grep -v grep | awk '{print $2}' | xargs kill -9"
         if env.hosts:
             #run(cmd)
             virtualenv(cmd='cd %s%s;%s' % (env.remote_project_path, env.project, cmd))
@@ -301,11 +306,15 @@ def celery_cmd(cmd=None):
             else:
                 local(cmd)
 
+#
+#  ps aux | grep 'celery worker' | grep -v grep | awk '{print $2}' | xargs kill -9
+#
+
 # @task
 # @roles('worker')
 # def celery_force_kill():
 #     with settings(warn_only=True): # only warning as we will often have errors importing
-#         cmd = "ps auxww | grep 'celery worker' | awk '{print $2}' | xargs kill -9"
+#         cmd = "ps auxww | grep 'celery worker' |   | xargs kill -9"
 #         if env.hosts:
 #             run(cmd)
 #         else:
@@ -372,26 +381,31 @@ def supervisord_restart():
             sudo('supervisorctl restart uwsgi')
 
 @task
+@roles('web')
 def restart_lite():
     with settings(warn_only=True):
         sudo(env.light_restart)
 
 @task
+@roles('web')
 def stop_nginx():
     with settings(warn_only=True):
         sudo('service nginx stop')
 
 @task
+@roles('web')
 def start_nginx():
     with settings(warn_only=True):
         sudo('service nginx start')
 
 @task
+@roles('web')
 def restart_nginx():
     with settings(warn_only=True):
         sudo('service nginx restart')
 
 @task
+@roles('web')
 def restart_service(heavy_handed=False):
     with settings(warn_only=True):
         if env.environment_class not in ['celery']: # dont restart celery nginx services
@@ -449,7 +463,7 @@ def clean_start():
     clean_pyc()
     #clear_cache()
     clean_pyc()
-    #precompile_pyc()
+    precompile_pyc()
     start_service()
     clean_zip()
 
@@ -608,10 +622,7 @@ def build_gui():
 
 
         # perform grunt build --djangoProd
-        for repeater in range(0,2):
-            # we have to build it twice because sometimes... it does not work *tadaaaah*
-            #
-            local('cd gui;grunt build -djangoProd')
+        local('cd gui;grunt build -djangoProd')
 
         # collect static
         if env.environment_class == 'local':
@@ -678,4 +689,5 @@ def deploy(is_predeploy='False',full='False',db='False',search='False'):
     relink()
     assets()
     clean_start()
+    celery_restart()
     conclude()

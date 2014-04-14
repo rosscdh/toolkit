@@ -3,12 +3,13 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.db.models.signals import pre_save, post_save
 
+
 from .signals import (on_item_save_category,
                       on_item_save_closing_group,
                       on_item_save_changed_content,
                       on_item_post_save)
 
-from toolkit.core.mixins import IsDeletedMixin
+from toolkit.core.mixins import IsDeletedMixin, ApiSerializerMixin
 
 from toolkit.utils import get_namedtuple_choices
 
@@ -30,6 +31,7 @@ BASE_ITEM_STATUS = get_namedtuple_choices('ITEM_STATUS', (
 
 
 class Item(IsDeletedMixin,
+           ApiSerializerMixin,
            RequestDocumentUploadMixin,
            RequestedDocumentReminderEmailsMixin,
            RevisionReviewReminderEmailsMixin,
@@ -57,7 +59,7 @@ class Item(IsDeletedMixin,
     closing_group = models.CharField(max_length=128, null=True, blank=True, db_index=True)
     category = models.CharField(max_length=128, null=True, blank=True, db_index=True)
 
-    latest_revision = models.ForeignKey('attachment.Revision', null=True, blank=True, related_name='item_latest_revision')
+    latest_revision = models.ForeignKey('attachment.Revision', null=True, blank=True, related_name='item_latest_revision', on_delete=models.SET_NULL)
 
     # if is final is true, then the latest_revision will be available for sending for signing
     is_final = models.BooleanField(default=False, db_index=True)
@@ -74,6 +76,8 @@ class Item(IsDeletedMixin,
     date_modified = models.DateTimeField(auto_now=True, auto_now_add=True, db_index=True)
 
     objects = ItemManager()
+
+    _serializer = 'toolkit.api.serializers.ItemSerializer'
 
     class Meta:
         ordering = ('-sort_order',)

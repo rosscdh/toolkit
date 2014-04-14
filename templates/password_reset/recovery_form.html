@@ -6,11 +6,23 @@
 {% block title %}{% trans "Password recovery" %}{% endblock %}
 
 {% block content %}
-	<form method="post" action="{{ url }}" parsley-validate>
+	<form id="recover-password" method="post" action="{{ url }}" parsley-validate>
 		{% csrf_token %}
 		{% block form %}
             {% crispy form %}
         {% endblock %}
-		<p><input type="submit" value="{% trans "Recover my password" %}"  class="btn btn-primary"></p>
+		<p><input id="btn-recover-password"  type="submit" value="{% trans "Recover my password" %}"  class="btn btn-primary"></p>
 	</form>
+
+{% endblock %}
+
+{% block js %}
+<script>
+$(document).ready(function () {
+    'use strict';
+    $('#btn-recover-password').on('click', function(event) {
+        $('#recover-password').submit();
+    })
+});
+</script>
 {% endblock %}

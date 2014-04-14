@@ -2,11 +2,15 @@
 """
 Items are either todo items or document items
 """
+from django.core.urlresolvers import reverse
+
 from rest_framework import serializers
 
 from toolkit.core.item.models import Item
 
-from .revision import RevisionSerializer
+from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
+
+from .revision import SimpleRevisionSerializer
 from .user import LiteUserSerializer, SimpleUserWithReviewUrlSerializer
 
 
@@ -17,7 +21,8 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
 
     responsible_party = LiteUserSerializer(required=False)
 
-    latest_revision = serializers.SerializerMethodField('get_latest_revision')
+    latest_revision = SimpleRevisionSerializer(read_only=True)
+    #latest_revision = serializers.SerializerMethodField('get_latest_revision')
 
     matter = serializers.HyperlinkedRelatedField(many=False, required=True, view_name='workspace-detail', lookup_field='slug')
 
@@ -50,22 +55,23 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_latest_revision(self, obj):
         if obj.latest_revision is not None:
-            return RevisionSerializer(obj.latest_revision, context={'request': self.context.get('request')}).data
+            return ABSOLUTE_BASE_URL(reverse('matter_item_revision', kwargs={'matter_slug': obj.matter.slug, 'item_slug': obj.slug}))
         return None
 
     def get_reviewers(self, obj):
         """
         placeholder
         """
-        if obj.latest_revision is not None:
+        if getattr(obj.latest_revision, 'pk', None) is not None:
             return [SimpleUserWithReviewUrlSerializer(u, context=self.context).data for u in obj.latest_revision.reviewers.all()]
+
         return []
 
     def get_signers(self, obj):
         """
         placeholder
         """
-        if obj.latest_revision is not None:
+        if getattr(obj.latest_revision, 'pk', None) is not None:
             return [SimpleUserWithReviewUrlSerializer(u, context=self.context).data for u in obj.latest_revision.signers.all()]
         return []
 
@@ -82,6 +88,15 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
                 'requested_by': None,
                 'date_requested': None
             })
+
+
+class SimpleItemSerializer(ItemSerializer):
+    class Meta(ItemSerializer.Meta):
+        fields = ('url', 'slug', 'name', 
+                  'status', 'category',
+                  'latest_revision',
+                  'is_final', 'is_complete', 'is_requested',
+                  'date_due',)
 
 
 class LiteItemSerializer(ItemSerializer):

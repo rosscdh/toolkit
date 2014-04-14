@@ -73,7 +73,7 @@ class RequestedDocumentReminderEmailsMixin(object):
                     #
                     kwargs.update({'subject': subject})
 
-                mailer = RequestedDocumentReminderEmail(recipients=((user.get_full_name(), user.email,),))
+                mailer = RequestedDocumentReminderEmail(recipients=((user.get_full_name(), user.email,),), from_tuple=(from_user.get_full_name(), from_user.email,))
                 mailer.process(item=self,
                                from_name=from_user.get_full_name(),
                                action_url=action_url,  # please understsand the diff between action_url and next_url
@@ -113,7 +113,7 @@ class RevisionReviewReminderEmailsMixin(object):
 
         for u in recipients_set:
 
-            mailer = ReviewerReminderEmail(recipients=((u.get_full_name(), u.email,),))
+            mailer = ReviewerReminderEmail(recipients=((u.get_full_name(), u.email,),), from_tuple=(from_user.get_full_name(), from_user.email,))
 
             #
             # Get the review document for this user
@@ -185,7 +185,7 @@ class RevisionSignReminderEmailsMixin(object):
 
         for u in recipients_set:
 
-            mailer = SignerReminderEmail(recipients=((u.get_full_name(), u.email,),))
+            mailer = SignerReminderEmail(recipients=((u.get_full_name(), u.email,),), from_tuple=(from_user.get_full_name(), from_user.email,))
 
             #
             # Get the review document for this user
