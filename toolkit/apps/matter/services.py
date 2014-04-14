@@ -27,4 +27,5 @@ class MatterCloneService(object):
             item.save()  # save it out
             # this clear must be called after the save as we dont want to clear the source
             # items documents
-            item.revision_set.clear()  # clear the connected documents
+            if item.revision_set.all().count() > 0:
+                item.revision_set.clear()  # clear the connected documents
