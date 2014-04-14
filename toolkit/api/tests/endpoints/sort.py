@@ -71,7 +71,7 @@ class MatterSortTest(BaseEndpointTest):
 
         self.client.login(username=self.lawyer.username, password=self.password)
 
-        expected_item_order = [str(i.slug) for i in self.matter.item_set.all()]
+        expected_item_order = [str(i.get('slug')) for i in self.matter.item_set.all().values('slug')]
         # randomize the items
         random.shuffle(expected_item_order)
 
@@ -95,12 +95,12 @@ class MatterSortTest(BaseEndpointTest):
         #
         # Test all slugs are present
         #
-        self.assertItemsEqual(expected_item_order, [i.get('slug') for i in self.matter.item_set.all().values('slug')])
+        self.assertItemsEqual(expected_item_order, [str(i.get('slug')) for i in self.matter.item_set.all().values('slug')])
 
         # rely on the item.Meta.sort_order
         # the items should return from .all() in the same order as they are specified
         # Test the slugs are in the right order
-        self.assertTrue(all(i.get('slug') == expected_item_order[sort_index] for sort_index, i in enumerate(self.matter.item_set.all().values('slug'))))
+        self.assertTrue(all(str(i.get('slug')) == expected_item_order[sort_index] for sort_index, i in enumerate(self.matter.item_set.all().values('slug'))))
 
 
     def test_lawyer_patch_invalid(self):
