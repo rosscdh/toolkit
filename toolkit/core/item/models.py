@@ -80,7 +80,7 @@ class Item(IsDeletedMixin,
     _serializer = 'toolkit.api.serializers.ItemSerializer'
 
     class Meta:
-        ordering = ('-sort_order',)
+        ordering = ('sort_order',)
 
     def __unicode__(self):
         return u'%s' % self.name
