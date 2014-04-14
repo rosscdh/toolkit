@@ -98,7 +98,6 @@ def _notifications_send(verb_slug, actor, target, action_object, message):
             # Because we cant mixn the ApiMixin class ot the django User Object
             actor = LiteUserSerializer(actor, context={'request': None}).data
 
-            # action_object = None
             if hasattr(action_object, 'api_serializer') is True:
                 action_object = action_object.api_serializer(action_object, context={'request': None}).data
 

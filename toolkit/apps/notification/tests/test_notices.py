@@ -9,7 +9,7 @@ from stored_messages.models import Inbox
 
 from model_mommy import mommy
 
-NOTICE_TEMPLATE = loader.get_template('notification/partials/notice.html')  # allow override of template_name
+NOTICE_TEMPLATE = loader.get_template('notification/partials/default.html')  # allow override of template_name
 
 
 def _get_notice_html(ctx):
@@ -102,7 +102,7 @@ class NotificationEventsListTest(BaseListViewTest):
                                  date=notice.message.date,
                                  base_url=target.get('base_url') if target else None,
                                  target_name=target.get('name') if target else None,
-                                 client_name=target.get('client').get('name') if client else None)
+                                 client_name=client.get('name') if client else None)
 
     def test_removed_matter_participant(self):
         """
@@ -143,4 +143,4 @@ class NotificationEventsListTest(BaseListViewTest):
                                  date=notice.message.date,
                                  base_url=target.get('base_url') if target else None,
                                  target_name=target.get('name') if target else None,
-                                 client_name=target.get('client').get('name') if client else None)
+                                 client_name=client.get('name') if client else None)
