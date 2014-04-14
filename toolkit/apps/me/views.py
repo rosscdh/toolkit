@@ -189,3 +189,11 @@ class LawyerLetterheadView(UpdateView):
             'user': self.request.user
         })
         return kwargs
+
+
+class InvoicesView(TemplateView):
+    template_name = 'me/invoices.html'
+
+
+class PlansView(TemplateView):
+    template_name = 'me/plans.html'

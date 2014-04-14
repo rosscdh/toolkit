@@ -10,6 +10,9 @@ from .views import (ConfirmAccountView,
                     ConfirmEmailValidationRequest,
                     SendEmailValidationRequest,
 
+                    InvoicesView,
+                    PlansView,
+
                     AccountSettingsView,
                     LawyerLetterheadView)
 
@@ -19,8 +22,10 @@ urlpatterns = patterns(
     url(r'^email_not_validated/$', login_required(TemplateView.as_view(template_name='me/email-validation-pending.html')), name='email-not-validated'),
     url(r'^email_not_validated/send/$', login_required(SendEmailValidationRequest.as_view()), name='send-email-validation-request'),
     url(r'^email_confirmed/(?P<token>.*)/$', ConfirmEmailValidationRequest.as_view(), name='confirm-email-address'),
-    
-    
+
+    url(r'^invoices/$', login_required(InvoicesView.as_view()), name='invoices'),
+    url(r'^plans/$', login_required(PlansView.as_view()), name='plans'),
+
     url(r'^settings/letterhead/$', login_required(LawyerLetterheadView.as_view()), name='letterhead'),
     url(r'^settings/confirm/$', login_required(ConfirmAccountView.as_view()), name='confirm-account'),
     url(r'^settings/change-password/$', login_required(ChangePasswordView.as_view()), name='change-password'),
