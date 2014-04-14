@@ -1,6 +1,8 @@
 /**
  * https://github.com/gdi2290/angular-intercom/blob/master/example/index.html
  * Directive for intercom
+ * Just needed if the current user might change without a page reload
+ * NOT ACTIVATED AT THE MOMENT
  */
 angular.module('toolkit-gui').directive("intercom",['$cookieStore', 'Intercom', 'INTERCOM_APP_ID', '$window', '$log',
     function ($cookieStore, Intercom, INTERCOM_APP_ID, $window, $log) {
