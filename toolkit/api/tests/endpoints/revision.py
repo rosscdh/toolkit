@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
+from django.db.models import SET_NULL
 from django.test import LiveServerTestCase
 from django.core.urlresolvers import reverse
 from django.core.files.storage import FileSystemStorage
@@ -128,7 +129,7 @@ class ItemRevisionTest(BaseEndpointTest):
         self.assertTrue(str(reviewer.pk) in invited_reviewer_document_review.auth.keys())
         # test that the url for the reviewer is correct
         self.assertEqual(invited_reviewer_document_review.get_absolute_url(user=reviewer),
-                         '/review/%s/%s/' % (
+                         'http://localhost:8000/review/%s/%s/' % (
                              invited_reviewer_document_review.slug,
                              urllib.quote(invited_reviewer_document_review.get_user_auth(user=reviewer))
                          ))
@@ -322,14 +323,16 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
     def test_post_with_URL_executed_file_and_stream(self):
         self.test_post_with_URL_executed_file()
         stream = target_stream(self.matter)
-        self.assertEqual(stream[0].data['message'], u'Lawyer Test created a revision for Test Item with Revision')
+        self.assertEqual(stream[0].data['override_message'],
+                         u'Lawyer Test added a file to Test Item with Revision')
 
 
     @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_post_with_FILE_executed_file_and_stream(self):
         self.test_post_with_FILE_executed_file()
         stream = target_stream(self.matter)
-        self.assertEqual(stream[0].data['message'], u'Lawyer Test created a revision for Test Item with Revision')
+        self.assertEqual(stream[0].data['override_message'],
+                         u'Lawyer Test added a file to Test Item with Revision')
 
         revision = self.item.revision_set.all().first()
 
@@ -428,3 +431,29 @@ class InvalidFileTypeAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerTestCa
         resp_json = json.loads(resp.content)
 
         self.assertEqual(resp.status_code, 400)  # invalid
+
+
+class RevisionDeleteWithReviewersTest(BaseEndpointTest):
+    """
+    Bug in production 2014-04-07
+    """
+    def setUp(self):
+        super(RevisionDeleteWithReviewersTest, self).setUp()
+        self.item = mommy.make('item.Item', matter=self.matter, name='Test Item with Revision', category=None)
+        self.revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
+
+        self.reviewer = mommy.make('auth.User', username='New Person', email='username@example.com')
+        self.revision.reviewers.add(self.reviewer)
+
+    def test_delete_of_revision_not_blocked_by_reviwers(self):
+        self.assertTrue(self.item.pk)
+        self.revision.delete()
+        #
+        # If it throws an Item.DoesNotExist exception here
+        # then we have a problem becuause the field Item.latest_revision.on_delete should be on_delete=models.SET_NULL
+        #
+        self.item.__class__.objects.get(pk=self.item.pk)
+        # test that the field has on_delete set to models.SET_NULL
+        on_delete = getattr(self.item.__class__._meta.get_field_by_name('latest_revision')[0].rel, 'on_delete', None)
+        self.assertTrue(on_delete == SET_NULL)
+

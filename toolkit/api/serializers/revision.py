@@ -4,8 +4,9 @@ from django.core.urlresolvers import reverse
 
 from rest_framework import serializers
 
-from toolkit.core.attachment.tasks import _download_file
 from toolkit.core.attachment.models import Revision
+from toolkit.core.attachment.tasks import _download_file
+from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 
 from .user import SimpleUserSerializer
 from .review import ReviewSerializer
@@ -152,6 +153,8 @@ class FileFieldAsUrlField(LimitedExtensionMixin, serializers.FileField):
 
 
 class RevisionSerializer(serializers.HyperlinkedModelSerializer):
+    url = serializers.SerializerMethodField('get_custom_api_url')
+
     executed_file = HyperlinkedAutoDownloadFileField(required=False)
 
     status = serializers.IntegerField(required=False)
@@ -211,16 +214,20 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
 
         super(RevisionSerializer, self).__init__(*args, **kwargs)
 
+    def get_custom_api_url(self, obj):
+        return ABSOLUTE_BASE_URL(reverse('matter_item_specific_revision', kwargs={'matter_slug': obj.item.matter.slug, 'item_slug': obj.item.slug, 'version': obj.slug.replace('v', '')}))
+
     def get_uploaded_by(self, obj):
         return SimpleUserSerializer(obj.uploaded_by, context={'request': self.context.get('request')}).data
 
     def get_reviewers(self, obj):
         reviewers = []
+        if getattr(obj, 'pk', None) is not None:  # it has not been deleted when pk is None
+            for u in obj.reviewers.all():
+                reviewdoc = obj.reviewdocument_set.filter(reviewers__in=[u]).first()
+                if reviewdoc is not None:
+                    reviewers.append(ReviewSerializer(reviewdoc, context={'request': self.context.get('request')}).data)
 
-        for u in obj.reviewers.all():
-            reviewdoc = obj.reviewdocument_set.filter(reviewers__in=[u]).first()
-            if reviewdoc is not None:
-                reviewers.append(ReviewSerializer(reviewdoc, context={'request': self.context.get('request')}).data)
         return reviewers
 
     def get_user_review_url(self, obj):
@@ -272,8 +279,17 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
         return None
 
     def get_revisions(self, obj):
-        return [reverse('matter_item_specific_revision', kwargs={
+        return [ABSOLUTE_BASE_URL(reverse('matter_item_specific_revision', kwargs={
                     'matter_slug': obj.item.matter.slug,
                     'item_slug': obj.item.slug,
                     'version': c + 1
-                }) for c, revision in enumerate(obj.revisions) if revision.pk != obj.pk]
+                })) for c, revision in enumerate(obj.revisions) if revision.pk != obj.pk]
+
+
+class SimpleRevisionSerializer(RevisionSerializer):
+    class Meta(RevisionSerializer.Meta):
+        fields = ('url', 'slug',
+                  'name',
+                  'status',
+                  'date_created',)
+

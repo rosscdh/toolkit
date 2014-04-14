@@ -67,7 +67,10 @@ class MatterCreateView(ModalView, AjaxModelFormView, CreateView):
 
     def get_form_kwargs(self):
         kwargs = super(MatterCreateView, self).get_form_kwargs()
-        kwargs.update({'user': self.request.user})
+        kwargs.update({
+            'user': self.request.user,
+            'is_new': True
+        })
         return kwargs
 
     def get_success_url(self):
@@ -81,7 +84,10 @@ class MatterUpdateView(ModalView, AjaxModelFormView, UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super(MatterUpdateView, self).get_form_kwargs()
-        kwargs['user'] = self.request.user
+        kwargs.update({
+            'user': self.request.user,
+            'is_new': False
+        })
         return kwargs
 
     def get_success_url(self):

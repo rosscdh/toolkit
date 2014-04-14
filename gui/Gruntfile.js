@@ -140,10 +140,17 @@ module.exports = function (grunt) {
       template_paths: {
         src: ['temp/templates.js'],
         overwrite: true,                 // overwrite matched source files
-        replacements: [{
+        replacements: [
+        /*
+          {
           from: 'partial/',
-          to: '<%= PRODUCTION_PATH %>' + 'partial/'
-        }]
+          to: '<%= APP_STATIC_PATH %>' + 'partial/'
+          },*/
+          {
+          from: '$templateCache.put(\'partial/',
+          to: '$templateCache.put(\'<%= APP_STATIC_PATH %>partial/'
+          }
+        ]
       }
     },
     copy: {
@@ -206,7 +213,7 @@ module.exports = function (grunt) {
       },
       removecss: {
         options:{
-          remove:'link',
+          remove:'link[data-remove!="exclude"]',
           append:{selector:'head',html:'<link rel="stylesheet" href="' + '<%= DJANGO_PRODUCTION_ASSET_SERVER %><%= APP_STATIC_PATH %>' + 'css/app.full.min.css">'}
         },
         src:'<%= PRODUCTION_PATH %>' + 'index.html'

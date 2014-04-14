@@ -11,9 +11,9 @@
 					<button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown"><span class="fui-triangle-down"></span></button>
 					<ul class="dropdown-menu dropdown-inverse dropdown-small">
 						<li><a href="javascript:;" ng-click="showAddItemForm($index);">New Item</a></li>
+						<li><a href="javascript:;" ng-click="data.showCategoryAddForm=!data.showCategoryAddForm;focus('eventAddCategory');">Add Category</a></li>
 						<li><a href="javascript:;" ng-click="data.newCategoryName=cat.name;showEditCategoryForm($index);" ng-hide="!cat.name">Edit Category</a></li>
 						<li><a href="javascript:;" ng-click="deleteCategory(cat);" ng-hide="!cat.name">Delete Category</a></li>
-						<li><a href="javascript:;" ng-click="data.showCategoryAddForm=!data.showCategoryAddForm;focus('eventAddCategory');" ng-show="!cat.name">Add Category</a></li>
 					</ul>
 			</div>
 		</th>
@@ -76,7 +76,7 @@
 	<tr class="hidden"><td colspan="2" class="text-muted">Drag item into this empty category</td></tr>
 </tbody>
 <tbody ng-show="cat.items.length==0" ng-show="data.usdata.current.user_class=='lawyer'">
-	<tr ng-show="cat.items.length==0&&data.showAddForm!=$index&&!data.dragging"><td colspan="2" ng-click="showAddItemForm($index);" class="text-center"><span class="btn btn-link btn-xs animated-slow flash" style="text-decoration:underline;">Add the first item</span></td></tr>
+	<tr ng-show="cat.items.length==0&&data.showAddForm!=$index&&!data.dragging"><td colspan="2" ng-click="showAddItemForm($index);" class="text-center"><span class="btn btn-link btn-xs" style="text-decoration:underline;">Add the first item</span></td></tr>
 </tbody>
 <!-- end LAWYER checklist //-->
 

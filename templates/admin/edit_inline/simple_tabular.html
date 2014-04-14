@@ -1,0 +1,22 @@
+{% load i18n admin_static admin_modify %}{% load toolkit_tags %}
+<div class="inline-group" id="{{ inline_admin_formset.formset.prefix }}-group">
+  <div class="tabular inline-related {% if forloop.last %}last-related{% endif %}">
+      {{ inline_admin_formset.formset.management_form }}
+      <fieldset class="module">
+          <h2>{{ inline_admin_formset.opts.verbose_name_plural|capfirst }}</h2>
+          <table>
+              <tbody>
+              {% for inline_admin_form in inline_admin_formset %}
+                  {% if inline_admin_form.form.non_field_errors %}
+                      <tr><td colspan="{{ inline_admin_form|cell_count }}">{{ inline_admin_form.form.non_field_errors }}</td></tr>
+                  {% endif %}
+                  <tr class="form-row {% cycle "row1" "row2" %} {% if inline_admin_form.original or inline_admin_form.show_url %}has_original{% endif %}{% if forloop.last %} empty-form{% endif %}" id="{{ inline_admin_formset.formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
+                  <td class="original">
+                      <a href="{% admin_url_for inline_admin_form.form.instance %}">{{ inline_admin_form.form.instance }}</a>
+                  </td>
+              {% endfor %}
+              </tbody>
+          </table>
+      </fieldset>
+  </div>
+</div>

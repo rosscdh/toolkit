@@ -64,8 +64,8 @@ class MatterForm(ModalForm, forms.ModelForm):
         model = Workspace
 
     def __init__(self, *args, **kwargs):
-        if 'user' in kwargs:
-            self.user = kwargs.pop('user')
+        self.user = kwargs.pop('user', None)
+        self.is_new = kwargs.pop('is_new', True)
 
         super(MatterForm, self).__init__(*args, **kwargs)
 
@@ -73,7 +73,7 @@ class MatterForm(ModalForm, forms.ModelForm):
             'name',
             'client_name',
             'matter_code',
-            Field('template', css_class='select-block')
+            Field('template', css_class='select-block') if self.is_new is True else None
         )
 
         if self.instance.pk:
