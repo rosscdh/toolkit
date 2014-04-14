@@ -1,16 +1,12 @@
 # -*- coding: utf-8 -*-
 from django.core.urlresolvers import reverse
 
-from toolkit.apps.workspace.models import Workspace
-
 from . import BaseEndpointTest
-from ...serializers import ClientSerializer
 
 from model_mommy import mommy
 
 import json
 import random
-
 
 
 class MatterSortTest(BaseEndpointTest):
@@ -91,7 +87,7 @@ class MatterSortTest(BaseEndpointTest):
         self.assertEqual(json.loads(resp_json), {"items": expected_item_order, "categories": self.categories})
 
         # refresh
-        self.matter = Workspace.objects.get(pk=self.matter.pk)
+        self.matter = self.matter.__class__.objects.get(pk=self.matter.pk)
 
         # test categories are as we expect them
         self.assertEqual(self.matter.categories, [u'A', u'B', u'C'])
