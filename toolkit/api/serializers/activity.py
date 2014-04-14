@@ -7,9 +7,12 @@ from rest_framework import serializers
 from toolkit.api.serializers.item import LiteItemSerializer
 from toolkit.api.serializers.user import LiteUserSerializer
 
-default_template = loader.get_template('activity/default.html')  # allow override of template_name
-item_comment_template = loader.get_template('activity/item_comment.html')  # allow override of template_name
-revision_comment_template = loader.get_template('activity/revision_comment.html')  # allow override of template_name
+from toolkit.core.services.matter_activity import get_verb_slug
+
+
+default_template = loader.get_template('activity/default.html')
+item_comment_template = loader.get_template('activity/item_comment.html')
+revision_comment_template = loader.get_template('activity/revision_comment.html')
 
 
 def _get_activity_display(ctx, template):
@@ -35,10 +38,13 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
     def get_timesince(self, obj):
         return obj.timesince()
 
+    def __init__(self, *args, **kwargs):
+        if 'context' in kwargs and 'request' in kwargs['context']:
+            self.request = kwargs['context']['request']
+        super(MatterActivitySerializer, self).__init__(*args, **kwargs)
+
     def get_event(self, obj):
         """
-        THIS FUNCTION SEEMS NOT TO BE USED.
-
         Matter level actions should show minimalinformation about an event
         """
         ctx = {
@@ -57,8 +63,7 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
 
         # override_message = obj.data.get('override_message', None)
 
-        # TODO: move get_verb_slug out of MatterActivityEventService
-        verb_slug = obj.target.actions.get_verb_slug(obj.action_object, obj.verb)
+        verb_slug = get_verb_slug(obj.action_object, obj.verb)
         template = default_template
 
         if verb_slug == 'item-commented':
@@ -68,7 +73,11 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
         if verb_slug == 'revision-added-revision-comment':
             # crocodoc-template
             template = revision_comment_template
-            ctx.update({'action_object_url': "%s/%s" % (obj.data['item']['latest_revision'], obj.action_object.slug)})
+
+            from toolkit.api.serializers import RevisionSerializer
+            ctx.update({'action_object_url': RevisionSerializer(
+                obj.action_object, **{'context': {'request': self.request}}).data['user_review_url']})
+            # ctx.update({'action_object_url': "%s/%s" % (obj.data['item']['latest_revision'], obj.action_object.slug)})
 
         return _get_activity_display(ctx, template)
 
