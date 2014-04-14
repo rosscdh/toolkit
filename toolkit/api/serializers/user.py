@@ -32,7 +32,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         return obj.profile.user_class
 
     def get_intercom_user_hash(self, obj):
-        return _get_intercom_user_hash(user_identifier=obj.email)  # @TODO change this to user.pk
+        return _get_intercom_user_hash(user_identifier=obj.username)
 
 
 class LiteUserSerializer(UserSerializer):
