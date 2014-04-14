@@ -39,7 +39,7 @@ angular.module('toolkit-gui')
 	'$timeout',
     '$log',
     'Intercom',
-    'INTERCOM_API_KEY',
+    'INTERCOM_APP_ID',
 	function($scope,
 			 $rootScope,
 			 $routeParams,
@@ -60,7 +60,7 @@ angular.module('toolkit-gui')
 			 $timeout,
 			 $log,
              Intercom,
-             INTERCOM_API_KEY){
+             INTERCOM_APP_ID){
 		/**
 		 * Scope based data for the checklist controller
 		 * @memberof			ChecklistCtrl
@@ -155,12 +155,13 @@ angular.module('toolkit-gui')
             Intercom.boot({
                 email: currUser.email,
                 created_at: new Date().getTime(),
-                app_id: INTERCOM_API_KEY
+                app_id: INTERCOM_APP_ID,
+                user_hash: ''
             });
 
             //functional test
             Intercom.show();
-        }
+        };
 
 		/***
 		 ___ _                     
