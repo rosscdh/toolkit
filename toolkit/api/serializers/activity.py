@@ -80,7 +80,7 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
             #     obj.action_object, **{'context': {'request': self.request}}).data['user_review_url']})
 
             item = Item.objects.get(slug=obj.action_object.item.slug)
-            review_document_link = item.get_user_review_url(user=self.request.user, version=obj.action_object.slug)
+            review_document_link = item.get_user_review_url(user=self.request.user, version_slug=obj.action_object.slug)
 
             ctx.update({'action_object_url': "%s:%s" % (obj.action_object.item.get_absolute_url(),
                                                         review_document_link)})
