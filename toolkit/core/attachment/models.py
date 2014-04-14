@@ -11,6 +11,7 @@ from toolkit.apps.workspace.models import Workspace
 from jsonfield import JSONField
 
 from .managers import RevisionManager
+from .mixins import StatusLabelsMixin
 
 import re
 import os
@@ -42,7 +43,9 @@ def _upload_file(instance, filename):
     return 'executed_files/%s' % full_file_name
 
 
-class Revision(ApiSerializerMixin, models.Model):
+class Revision(ApiSerializerMixin,
+               StatusLabelsMixin,
+               models.Model):
     REVISION_STATUS = BASE_REVISION_STATUS
 
     name = models.CharField(max_length=255, null=True, blank=True)
@@ -70,6 +73,8 @@ class Revision(ApiSerializerMixin, models.Model):
     date_created = models.DateTimeField(auto_now=False, auto_now_add=True, db_index=True)
     date_modified = models.DateTimeField(auto_now=True, auto_now_add=True, db_index=True)
 
+    # status = models.IntegerField(choices=REVISION_STATUS.get_choices(), default=REVISION_STATUS.draft)
+
     objects = RevisionManager()
 
     _serializer = 'toolkit.api.serializers.RevisionSerializer'
@@ -80,30 +85,6 @@ class Revision(ApiSerializerMixin, models.Model):
 
     def __unicode__(self):
         return 'Revision %s' % (self.slug)
-
-    @classmethod
-    def status_labels(cls):
-        status_labels = Workspace().status_labels
-        if status_labels:
-            return status_labels
-        else:
-            return cls.REVISION_STATUS.get_choices_dict()
-
-    @classmethod
-    def default_status(cls):
-        return cls.status_labels()[cls.default_status_index()]
-
-    @classmethod
-    def default_status_index(cls):
-        return 0
-
-    @property
-    def status(self):
-        return self.data.get('status')
-
-    @status.setter
-    def status(self, value):
-        self.data['status'] = value
 
     @property
     def revisions(self):

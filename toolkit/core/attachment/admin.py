@@ -5,7 +5,7 @@ from .models import Revision
 
 
 class RevisionAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description', 'slug', 'status',)
+    list_display = ('name', 'description', 'slug', 'display_status',)
     search_fields = ('name', 'slug',)
 
 

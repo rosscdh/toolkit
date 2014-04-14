@@ -32,13 +32,15 @@ class MatterEndpoint(viewsets.ModelViewSet):
     renderer_classes = (_MetaJSONRendererMixin, )
 
     def get_meta(self):
+        default_status_labels = Revision.REVISION_STATUS.get_choices_dict()
         return {
             'matter': {
                 'status': None,
             },
             'item': {
-                'default_status': Revision.REVISION_STATUS.get_choices_dict(),
-                'custom_status': Revision.status_labels()}
+                    'default_status': default_status_labels,
+                    'custom_status': self.object.status_labels if hasattr(self, 'object') is True and self.object.status_labels else default_status_labels
+                }
             }
 
     def get_serializer_class(self):

@@ -18,7 +18,6 @@ class Migration(SchemaMigration):
                       self.gf('django.db.models.fields.IntegerField')(default=0),
                       keep_default=False)
 
-
     models = {
         u'attachment.revision': {
             'Meta': {'ordering': "('id',)", 'object_name': 'Revision'},

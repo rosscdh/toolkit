@@ -122,9 +122,10 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
         self.revision.is_current = True
 
         request_data = request.DATA.copy()
+
         request_data.update({
             # get default if none present
-            'status': request_data.get('status', self.model().default_status_index()),  # get the default status if its not presetn
+            'status': request_data.get('status', self.matter.default_status_index),  # get the default status if its not presetn
         })
 
         serializer = self.get_serializer(self.revision, data=request_data, files=request.FILES)
