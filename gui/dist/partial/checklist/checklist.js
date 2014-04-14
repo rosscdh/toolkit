@@ -123,6 +123,7 @@ angular.module('toolkit-gui')
 				jQuery.each( matter.categories, function( index, cat ) {
 					var categoryName = cat;
 					var items = jQuery.grep( matter.items, function( item ){ return item.category===categoryName; } );
+
 					categories.push( { 'name': categoryName, 'items': items } );
 				});
 
@@ -166,7 +167,8 @@ angular.module('toolkit-gui')
 		   if ($scope.data.newItemName) {
 			 matterItemService.create(matterSlug, $scope.data.newItemName, category.name).then(
 				 function success(item){
-					category.items.unshift(item);
+					/*category.items.unshift(item);*/
+					category.items.push(item);
 					$scope.data.newItemName = '';
 				 },
 				 function error(err){
@@ -1176,9 +1178,8 @@ angular.module('toolkit-gui')
 			'stop':  recalculateCategories, /* Fires once the drag and drop event has finished */
 			'start': function() { $scope.data.dragging=true; $scope.$apply();},
 			'connectWith': ".group",
-			'axis': 'y',
-			'distance': 15,
-			'delay': 10
+			'dropOnEmpty': true,
+			'axis': 'y'
 		};
 
 		/**
@@ -1195,8 +1196,7 @@ angular.module('toolkit-gui')
 			},
 			'stop':  recalculateCategories, /* Fires once the drag and drop event has finished */
 			'axis': 'y',
-			'distance': 15,
-			'delay': 10
+			'distance': 15
 		};
 
 
