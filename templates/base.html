@@ -187,20 +187,19 @@ mixpanel.init("{{ GLOBALS.MIXPANEL_API_TOKEN }}");
     <!-- Load page specific JS here =============================-->
     {% block js %}{% endblock  %}
 
-    {% if PROJECT_ENVIRONMENT == 'prod' %}
+    {% if PROJECT_ENVIRONMENT == 'dev' %}
         {% if user.is_authenticated %}
             <script id="IntercomSettingsScriptTag">
               window.intercomSettings = {
-                // TODO: The current logged in user's email address.
+                user_id: "{{user.username}}",
                 email: "{{user.email}}",
-                // TODO: The current logged in user's sign-up date as a Unix timestamp.
                 type: "{{user.profile.user_class}}",
                 {% if user.profile.firm_name %}
                 firm: "{{user.profile.firm_name}}",
                 {% endif %}
                 created_at: "{{ user.date_joined|date:"U" }}",
-                app_id: "ooqtbx99",
-                user_hash: "{% intercom_user_hash user.email %}",
+                app_id: "{{ GLOBALS.INTERCOM_APP_ID }}",
+                user_hash: "{% intercom_user_hash user.username %}",
                 widget: {
                     activator: '.intercom',
                     use_counter: true

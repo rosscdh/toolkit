@@ -38,6 +38,9 @@ angular.module('toolkit-gui')
 	'commentService',
 	'$timeout',
     '$log',
+    '$window',
+    'Intercom',
+    'INTERCOM_APP_ID',
 	function($scope,
 			 $rootScope,
 			 $routeParams,
@@ -56,7 +59,10 @@ angular.module('toolkit-gui')
 			 userService,
 			 commentService,
 			 $timeout,
-			 $log){
+			 $log,
+             $window,
+             Intercom,
+             INTERCOM_APP_ID){
 		/**
 		 * Scope based data for the checklist controller
 		 * @memberof			ChecklistCtrl
@@ -93,6 +99,8 @@ angular.module('toolkit-gui')
 					$scope.initializeActivityStream( singleMatter );
 
 					userService.setCurrent( singleMatter.current_user );
+
+                    $scope.initialiseIntercom(singleMatter.current_user);
 				},
 				function error(err){
 					toaster.pop('error', "Error!", "Unable to load matter");
@@ -143,6 +151,29 @@ angular.module('toolkit-gui')
 				toaster.pop('warning', "Unable to load matter details");
 			}
 		};
+
+
+        /**
+		 * Inits the intercom interface
+         *
+		 * @name	initialiseIntercom
+		 * @param  {Object} Current user object
+		 * @private
+		 * @memberof			ChecklistCtrl
+		 * @method			initialiseIntercom
+		 */
+        $scope.initialiseIntercom = function(currUser){
+            $log.debug(currUser);
+
+            Intercom.boot({
+                user_id: currUser.username,
+                created_at: new Date().getTime()/1000,
+                app_id: INTERCOM_APP_ID,
+                user_hash: currUser.intercom_user_hash
+            });
+
+            //Intercom.show();
+        };
 
 		/***
 		 ___ _                     
