@@ -13,7 +13,7 @@ def render_notice(notice):
 
     actor = message.get('actor')
     target = message.get('target')
-    client = message.get('client')
+    client = target.get('client')
 
     if message is not None:
         return {
@@ -24,5 +24,5 @@ def render_notice(notice):
             'date': notice.message.date,
             'base_url': target.get('base_url') if target else None,
             'target_name': target.get('name') if target else None,
-            'client_name': target.get('client').get('name') if client else None,
+            'client_name': client.get('name') if client else None,
         }
