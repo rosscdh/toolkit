@@ -12,6 +12,7 @@ def render_notice(notice):
     message = notice.message.data
 
     actor = message.get('actor')
+    action_object = message.get('action_object')
     target = message.get('target')
     client = target.get('client')
 
@@ -21,6 +22,7 @@ def render_notice(notice):
             'actor_name': actor.get('name') if actor else None,
             'actor_initials': actor.get('initials') if actor else None,
             'message': notice.message,
+            'action_object': action_object,
             'date': notice.message.date,
             'base_url': target.get('base_url') if target else None,
             'target_name': target.get('name') if target else None,

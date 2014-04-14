@@ -6,6 +6,7 @@
         </div>
         <div class="col-xs-10">
             <p class="lead">{{ message }}</p>
+            <a href="{{ action_object.url }}">I AM AN API-ENDPOINT-LINK TO {{ action_object.name }} TO BE USED SOMEHOW</a>
             <p class="small">{{ date|naturaltime }} — in <a href="{{ message.data.target.base_url }}">{{ target_name }}</a> for {{ client_name }}.</p>
         </div>
         <div class="col-xs-1">
