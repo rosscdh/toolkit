@@ -160,7 +160,7 @@ angular.module('toolkit-gui')
 
             //functional test
             Intercom.show();
-        }
+        };
 
 		/***
 		 ___ _                     
