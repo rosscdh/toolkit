@@ -34,7 +34,7 @@ class MatterCloneTest(TestCase):
         # test we now have the items
         self.assertEqual(target.item_set.all().count(), 2)
         #s till has their original documents
-        self.assertEqual(all(i.revision_set.all().count() == 1 for i in target.item_set.all()))
+        self.assertTrue(all(i.revision_set.all().count() == 1 for i in target.item_set.all()))
 
         # test that the slugs are all unique
         self.assertTrue(all(str(i.slug) not in self.source.item_set.all().values('slug') for i in target.item_set.all()))
