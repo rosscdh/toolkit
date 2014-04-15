@@ -42,7 +42,7 @@ def participant_added(sender, matter, participant, user, note, **kwargs):
                    # so we force them to enter passwords etc
                    action_url=ABSOLUTE_BASE_URL(invite.get_absolute_url()))
 
-    matter.actions.added_matter_participant(matter=matter, adding_user=user, added_user=participant)
+    matter.actions.added_matter_participant(adding_user=user, added_user=participant)
 
 
 @receiver(m2m_changed, sender=Workspace.participants.through, dispatch_uid='matter.on_participant_added')

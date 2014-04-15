@@ -147,7 +147,8 @@ class MatterForm(ModalForm, forms.ModelForm):
                 service = MatterCloneService(source_matter=self.cleaned_data['template'], target_matter=matter)
                 service.process()
 
-        return matter
+            return matter
+        return self.instance
 
     @property
     def action_url(self):

@@ -12,6 +12,9 @@ class Client(models.Model):
 
     objects = ClientManager()
 
+    def __unicode__(self):
+        return self.name
+
     def can_read(self, user):
         return self.lawyer == user
 
