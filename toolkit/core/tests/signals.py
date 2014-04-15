@@ -13,14 +13,19 @@ from toolkit.core.item.models import Item
 
 from toolkit.core.signals.activity_listener import send_activity_log
 
-cache_key = 'activity_stream_signal_received_keys'
-
+expected_cache_keys = {
+    'workspace-created': ["<type 'NoneType'>", u'workspace-created', "<type 'NoneType'>", "<class 'toolkit.core.services.matter_activity.MatterActivityEventService'>", "<class 'django.dispatch.dispatcher.Signal'>", "<type 'NoneType'>", "<class 'django.contrib.auth.models.User'>", "<type 'NoneType'>", "<type 'NoneType'>", u'created', "<type 'NoneType'>", "<type 'NoneType'>", "<class 'toolkit.apps.workspace.models.Workspace'>", "<type 'NoneType'>", "<type 'NoneType'>", "<type 'NoneType'>", "<type 'NoneType'>", "<class 'toolkit.apps.workspace.models.Workspace'>"],
+    'workspace-added-participant': ["<type 'NoneType'>", u'workspace-added-participant', u'Lawyer Test added Customer Test as a participant to Lawpal (test)', "<class 'toolkit.core.services.matter_activity.MatterActivityEventService'>", "<class 'django.dispatch.dispatcher.Signal'>", "<type 'NoneType'>", "<class 'django.contrib.auth.models.User'>", "<type 'NoneType'>", "<type 'NoneType'>", u'added participant', "<class 'rest_framework.serializers.SortedDictWithMetadata'>", "<type 'NoneType'>", "<class 'toolkit.apps.workspace.models.Workspace'>", "<type 'NoneType'>", "<type 'NoneType'>", "<type 'NoneType'>", "<type 'NoneType'>", "<class 'toolkit.apps.workspace.models.Workspace'>"],
+    'item-created': ["<type 'NoneType'>", u'item-created', "<type 'NoneType'>", "<class 'toolkit.core.services.matter_activity.MatterActivityEventService'>", "<class 'django.dispatch.dispatcher.Signal'>", "<type 'NoneType'>", "<class 'django.contrib.auth.models.User'>", "<type 'NoneType'>", "<type 'NoneType'>", u'created', "<type 'NoneType'>", "<type 'NoneType'>", "<class 'toolkit.core.item.models.Item'>", "<type 'NoneType'>", "<type 'NoneType'>", "<type 'NoneType'>", "<type 'NoneType'>", "<class 'toolkit.apps.workspace.models.Workspace'>"],
+    'item-commented': [u'Sleep with one eye open', u'item-commented', u'Lawyer Test commented on Test Item #1 "Sleep with one eye open"', "<class 'toolkit.core.services.matter_activity.MatterActivityEventService'>", "<class 'django.dispatch.dispatcher.Signal'>", "<type 'NoneType'>", "<class 'django.contrib.auth.models.User'>", "<type 'NoneType'>", "<type 'NoneType'>", u'commented', "<type 'NoneType'>", "<type 'NoneType'>", "<class 'toolkit.core.item.models.Item'>", "<type 'NoneType'>", "<type 'NoneType'>", "<type 'NoneType'>", "<type 'NoneType'>", "<class 'toolkit.apps.workspace.models.Workspace'>"],
+}
 
 @receiver(send_activity_log)
 def on_activity_received(**kwargs):
     """
     Test signal listener to handle the signal fired event
     """
+    cache_key = kwargs.get('verb_slug')
     for i in kwargs:
         if type(kwargs[i]) not in [str, unicode, ]:
             kwargs[i] = str(type(kwargs[i]))
@@ -38,32 +43,17 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         """
         Created by the self.basic_workspace() call
         """
-        # in setUp the workspace was created which should have reached on_activity_received above:
-        cache_obj = cache.get(cache_key)
+        for cache_key in expected_cache_keys.keys():
+            # in setUp the workspace was created which should have reached on_activity_received above:
+            cache_obj = cache.get(cache_key)
 
-        self.assertItemsEqual(cache_obj.keys(), ['sender', 'signal', 'actor', 'verb', 'verb_slug', 'action_object',
-                                                 'target', 'item', 'user', 'override_message', 'comment',
-                                                 'previous_name', 'current_status', 'previous_status', 'filename',
-                                                 'date_created', 'version', 'message'])
-        self.assertItemsEqual(cache_obj.values(), ["<class 'toolkit.core.services.matter_activity.MatterActivityEventService'>",
-                                                   "<class 'django.dispatch.dispatcher.Signal'>",
-                                                   "<class 'django.contrib.auth.models.User'>",
-                                                   "<class 'toolkit.apps.workspace.models.Workspace'>",
-                                                   "<class 'toolkit.apps.workspace.models.Workspace'>",
-                                                   "<type 'NoneType'>",
-                                                   "<type 'NoneType'>",
-                                                   "<type 'NoneType'>",
-                                                   "<type 'NoneType'>",
-                                                   "<type 'NoneType'>",
-                                                   "<type 'NoneType'>",
-                                                   "<type 'NoneType'>",
-                                                   "<type 'NoneType'>",
-                                                   "<type 'NoneType'>",
-                                                   "<type 'NoneType'>",
-                                                   "<type 'NoneType'>",
-                                                   u'workspace-created',
-                                                   u'created'])
-        cache.delete(cache_key)
+            self.assertItemsEqual(cache_obj.keys(), ['sender', 'signal', 'actor', 'verb', 'verb_slug', 'action_object',
+                                                     'target', 'item', 'user', 'override_message', 'comment',
+                                                     'previous_name', 'current_status', 'previous_status', 'filename',
+                                                     'date_created', 'version', 'message'])
+            #print '%s has these values: %s' % (cache_key, cache_obj.values())
+            self.assertItemsEqual(cache_obj.values(), expected_cache_keys[cache_key])
+            cache.delete(cache_key)
 
     def test_stream_item_created_manually(self):
         workspace = mommy.make('workspace.Workspace', name='Action Created by Signal Workspace', lawyer=self.lawyer)
