@@ -131,24 +131,22 @@ class MatterForm(ModalForm, forms.ModelForm):
     def save(self, commit=True):
         created = True if self.instance.pk is None else False
 
-        if self.user_can_modify is True:
-            matter = super(MatterForm, self).save(commit=False)
+        matter = super(MatterForm, self).save(commit=False)
 
-            # add client/lawyer to the matter
-            matter.client, is_new = self.user.clients.get_or_create(name=self.cleaned_data['client_name'])
-            matter.lawyer = self.user
+        # add client/lawyer to the matter
+        matter.client, is_new = self.user.clients.get_or_create(name=self.cleaned_data['client_name'])
+        matter.lawyer = self.user
 
-            matter.save()
+        matter.save()
 
-            # add user as participant
-            matter.participants.add(self.user)
+        # add user as participant
+        matter.participants.add(self.user)
 
-            if created and self.cleaned_data['template'] is not None:
-                service = MatterCloneService(source_matter=self.cleaned_data['template'], target_matter=matter)
-                service.process()
+        if created and self.cleaned_data['template'] is not None:
+            service = MatterCloneService(source_matter=self.cleaned_data['template'], target_matter=matter)
+            service.process()
 
-            return matter
-        return self.instance
+        return matter
 
     @property
     def action_url(self):
