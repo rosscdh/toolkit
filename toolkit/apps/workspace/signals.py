@@ -171,10 +171,16 @@ def on_workspace_m2m_changed(sender, instance, action, pk_set, **kwargs):
     """
     if action == 'post_add':
         for pk in pk_set:
-            instance.actions.added_matter_participant(adding_user=instance.lawyer,
-                                                      added_user=User.objects.get(pk=pk))  # assumption: only the creating lawyer can edit participants
+            adding_user = instance.lawyer
+            added_user = User.objects.get(pk=pk)
+            if adding_user != added_user:
+                instance.actions.added_matter_participant(adding_user=adding_user,
+                                                          added_user=added_user)  # assumption: only the creating lawyer can edit participants
 
     if action == 'pre_remove':
         for pk in pk_set:
-            instance.actions.removed_matter_participant(matter=instance, removing_user=instance.lawyer,
-                                                        removed_user=User.objects.get(pk=pk))  # assumption: only the creating lawyer can edit participants
+            removing_user = instance.lawyer
+            removed_user = User.objects.get(pk=pk)
+            if removing_user != removed_user:
+                instance.actions.removed_matter_participant(removing_user=removing_user,
+                                                            removed_user=removed_user)  # assumption: only the creating lawyer can edit participants
