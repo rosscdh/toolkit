@@ -22,8 +22,10 @@ class MatterActivityEventService(object):
 
     workspace-added-participant
     workspace-created
+    workspace-deleted
     workspace-edited
     workspace-removed-participant
+    workspace-stopped-participating
 
     Items
     =======
@@ -111,6 +113,16 @@ class MatterActivityEventService(object):
             'matter_pk': self.matter.pk
         })
 
+    def deleted_matter(self, lawyer):
+        override_message = u'%s deleted the %s matter' % (lawyer, self.matter)
+        self._create_activity(actor=lawyer, verb=u'deleted',
+                              action_object=self.matter,
+                              override_message=override_message)
+        self.analytics.event('matter.deleted', user=lawyer, **{
+            'firm_name': lawyer.profile.firm_name,
+            'matter_pk': self.matter.pk
+        })
+
     def added_matter_participant(self, matter, adding_user, added_user):
         if adding_user.pk != added_user.pk:
             override_message = u'%s added a participant to %s' % (adding_user, matter)
@@ -122,10 +134,15 @@ class MatterActivityEventService(object):
                 'participant_type': added_user.profile.type,
             })
 
-    def removed_matter_participant(self, matter, removing_user, removed_user):
-        override_message = u'%s removed %s as a participant of %s' % (removing_user, removed_user, matter)
-        self._create_activity(actor=removing_user, verb=u'removed participant', action_object=matter,
+    def removed_matter_participant(self, removing_user, removed_user, **kwargs):
+        override_message = u'%s removed %s as a participant of %s' % (removing_user, removed_user, self.matter)
+        self._create_activity(actor=removing_user, verb=u'removed participant', action_object=self.matter,
                               override_message=override_message, user=removed_user)
+
+    def user_stopped_participating(self, user):
+        override_message = u'%s stopped participating in %s' % (user, self.matter)
+        self._create_activity(actor=user, verb=u'stopped participating', action_object=self.matter,
+                              override_message=override_message, user=user)
 
     #
     # Item focused events
