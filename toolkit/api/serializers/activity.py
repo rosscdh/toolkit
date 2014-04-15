@@ -51,18 +51,15 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
         ctx = {
             'actor': obj.actor,
             'actor_pk': obj.actor.pk,
-            'verb': obj.verb,
+            # 'verb': obj.verb,
             'action_object': obj.action_object,
-            'action_object_pk': obj.action_object.slug if obj.action_object else None,
             'action_object_url': obj.action_object.get_absolute_url() if obj.action_object and hasattr(obj.action_object, 'get_absolute_url') else None,
             'timestamp': obj.timestamp,
             'timesince': obj.timesince(),
-            'data': obj.data,
+            # 'data': obj.data,
             #'target': obj.target,
             #'target_pk': obj.target.slug,
         }
-
-        # override_message = obj.data.get('override_message', None)
 
         verb_slug = get_verb_slug(obj.action_object, obj.verb)
         template = default_template
@@ -70,21 +67,25 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
         if verb_slug == 'item-commented':
             # comment-template
             template = item_comment_template
+            ctx.update({'comment': obj.data['comment']})
 
         if verb_slug == 'revision-added-revision-comment':
             # crocodoc-template
             template = revision_comment_template
+            ctx.update({'comment': obj.data['comment']})
+            ctx.update({'item': obj.data['item']})
 
-            # from toolkit.api.serializers import RevisionSerializer
-            # ctx.update({'action_object_url': RevisionSerializer(
-            #     obj.action_object, **{'context': {'request': self.request}}).data['user_review_url']})
-
-            item = Item.objects.get(slug=obj.action_object.item.slug)
+            item = Item.objects.get(slug=obj.data['item']['slug'])
             review_document_link = item.get_user_review_url(user=self.request.user, version_slug=obj.action_object.slug)
 
             ctx.update({'action_object_url': "%s:%s" % (obj.action_object.item.get_absolute_url(),
                                                         review_document_link)})
+            ctx.update({'revision_slug': "%s" % obj.action_object.slug})
 
+        message = obj.data.get('override_message', None)
+        if message is None:
+            message = "%s %s %s" % (obj.actor, obj.verb, obj.action_object)
+        ctx.update({'message': message})
         return _get_activity_display(ctx, template)
 
 
