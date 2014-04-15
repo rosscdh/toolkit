@@ -4,6 +4,8 @@ from model_mommy import mommy
 
 from ..services import MatterCloneService
 
+import datetime
+
 
 class MatterCloneTest(TestCase):
     def setUp(self):
@@ -38,8 +40,11 @@ class MatterCloneTest(TestCase):
 
         # test we now have the items
         self.assertEqual(target.item_set.all().count(), 2)
+
         # target items dont have any documents (revision)
         self.assertTrue(all(i.latest_revision is None for i in target.item_set.all()))
+
+        # target items dont have any documents
         self.assertTrue(all(i.revision_set.all().count() == 0 for i in target.item_set.all()))
         self.assertEqual(self.item.revision_set.model.objects.filter(item__in=target.item_set.all()).count(), 0)
 
@@ -52,3 +57,9 @@ class MatterCloneTest(TestCase):
         # source items still has their original documents
         self.assertEqual(self.item.revision_set.all().count(), 1)
         self.assertEqual(self.item2.revision_set.all().count(), 1)
+
+        # test the target matter has the cloned dict
+        self.assertTrue(type(target.data.get('cloned')), dict)
+        self.assertEqual(target.data.get('cloned').keys(), ['date_cloned', 'num_items'])
+        self.assertEqual(type(target.data.get('cloned').get('date_cloned')), datetime.datetime)
+        self.assertEqual(target.data.get('cloned').get('num_items'), 2)
