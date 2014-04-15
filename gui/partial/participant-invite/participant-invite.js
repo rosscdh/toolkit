@@ -19,7 +19,10 @@ angular.module('toolkit-gui')
 	'matter',
 	'participantService',
 	'toaster',
-	function($scope, $modalInstance, participants, currentUser, matter, participantService, toaster){
+	'$location',
+	'$log',
+	'$window',
+	function($scope, $modalInstance, participants, currentUser, matter, participantService, toaster, $location, $log, $window){
 		/**
 		 * In scope variable containing a list of participants within this matter. This is passed through from the originating controller.
 		 * @memberof ParticipantInviteCtrl
@@ -41,6 +44,7 @@ angular.module('toolkit-gui')
 		 * @private
 		 */
 		$scope.matter = matter;
+        $log.debug(matter);
 
 		/**
 		 * Scope based data for this controller
@@ -176,6 +180,10 @@ angular.module('toolkit-gui')
                     if( index>=0 ) {
                         // Remove user from in RAM array
                         $scope.participants.splice(index,1);
+                    }
+
+                    if(person.username===$scope.currentUser.username){
+                        $window.location = "/";
                     }
 				},
 				function error() {

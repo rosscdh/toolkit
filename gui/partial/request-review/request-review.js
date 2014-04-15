@@ -154,8 +154,8 @@ angular.module('toolkit-gui')
 		 * @memberof			RequestreviewCtrl
 		 */
         $scope.participantIsReviewer = function (p) {
-            var users = jQuery.grep( revision.reviewers, function( review ){ return review.reviewer.username===p.username; } );
-            return (users.length>0);
+            var users = jQuery.grep( $scope.revision.reviewers, function( review ){ return review.reviewer.username===p.username; } );
+            return (users && users.length>0);
         };
 
 		/**
