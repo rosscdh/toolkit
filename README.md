@@ -85,7 +85,7 @@ if TEST_PREPROD is True:
         ("ng", os.path.join(SITE_ROOT, 'gui', 'dist')),
 ```
 
-1. fab build_angular_app
+1. fab build_gui
 
 
 
