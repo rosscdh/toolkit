@@ -21,11 +21,9 @@ class MatterCloneService(object):
 
     def process(self):
         for item in self.source_matter.item_set.all():
+
             item.pk = None  # pk should be regenerated
             item.slug = None  # slug must be unique too
             item.matter = self.target_matter  # set the matter to be the target matter
+            item.latest_revision = None  # remove any connected revisions
             item.save()  # save it out
-            # this clear must be called after the save as we dont want to clear the source
-            # items documents
-            if item.revision_set.all().count() > 0:
-                item.revision_set.clear()  # clear the connected documents
