@@ -1,9 +1,6 @@
 <div class="media" ng-show="activity.data.comment">
-    <a class="user-icon ng-scope ng-binding" tooltip-placement="left" tooltip="{{ actor }}, {{ timesince }} ago" href="#">{{ actor.get_initials }}</a>
-    <div class="media-body">
-        <a href="{{ action_object_url }}">{{ action_object }}</a>
-        <div>{{ actor }} commented on {{ action_object.name }}</div>
-        <div class="msg-body ng-binding" ng-bind-html="activity.data.comment | newlines">{{ data.comment }}</div>
-        <div class="msg-meta ng-binding">{{ actor}}, {{ timesince }}</div>
-    </div>
+    {{ actor }} ({{ actor.get_initials }}) commented on Item {{ action_object.name }}: "{{ comment }}".
+    If you need additional information, just take a note.
+    <a href="{{ action_object_url }}">Link to {{ action_object.name }}</a>
+    {{ timesince }}
 </div>
