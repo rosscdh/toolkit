@@ -122,11 +122,13 @@ class NotificationEventsListTest(BaseListViewTest):
         #self.matter.actions.removed_matter_participant(matter=self.matter, removing_user=self.lawyer, removed_user=self.user)
 
         inbox = self.get_inbox(user=self.user)
-        self.assertEqual(inbox.count(), 1)  # should get the notification about adding matter_participant to matter
+
+        self.assertEqual(inbox.count(), 2)  # should get the notification about adding matter_participant to matter
+        self.assertTrue(all(i.__unicode__() in [u'[Customer Test] Lawyer Test added a participant to Lawpal (test)', u'[Customer Test] Lawyer Test removed Customer Test as a participant of Lawpal (test)'] for i in inbox))
 
         inbox = self.get_inbox(user=matter_participant)
 
-        self.assertEqual(inbox.count(), 1)
+        self.assertEqual(inbox.count(), 2)  # should get the notification about adding matter_participant to matter
         notice = inbox.first()
 
         test_html = self.get_html(for_user=matter_participant)
