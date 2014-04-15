@@ -92,7 +92,7 @@ angular.module('toolkit-gui')
 						return $scope.matter.selected.current_user;
 					},
 					matter: function () {
-						return $scope.matter;
+						return $scope.matter.selected;
 					}
 				}
 			});
