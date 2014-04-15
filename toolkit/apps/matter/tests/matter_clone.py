@@ -38,9 +38,10 @@ class MatterCloneTest(TestCase):
 
         # test we now have the items
         self.assertEqual(target.item_set.all().count(), 2)
-        # target items dont have any documents
-        import pdb;pdb.set_trace()
+        # target items dont have any documents (revision)
+        self.assertTrue(all(i.latest_revision is None for i in target.item_set.all()))
         self.assertTrue(all(i.revision_set.all().count() == 0 for i in target.item_set.all()))
+        self.assertEqual(self.item.revision_set.model.objects.filter(item__in=target.item_set.all()).count(), 0)
 
         # test that the slugs are all unique
         self.assertTrue(all(str(i.slug) not in self.source.item_set.all().values('slug') for i in target.item_set.all()))
