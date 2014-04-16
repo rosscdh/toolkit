@@ -69,8 +69,6 @@ class MatterForm(ModalForm, forms.ModelForm):
 
         super(MatterForm, self).__init__(*args, **kwargs)
 
-        self.helper.form_read_only = True
-
         self.helper.layout = Layout(
             'name',
             'client_name',
@@ -108,7 +106,7 @@ class MatterForm(ModalForm, forms.ModelForm):
 
     @property
     def user_can_modify(self):
-        return self.user == self.instance.lawyer
+        return (self.user == self.instance.lawyer or self.is_new is True)
 
     @property
     def delete_button(self):
