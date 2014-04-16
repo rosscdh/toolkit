@@ -27,6 +27,7 @@ class ReviewDocument(IsDeletedMixin, FileExistsLocallyMixin, UserAuthMixin, mode
     a document using a service like crocodoc
     """
     slug = UUIDField(auto=True, db_index=True)
+    crocodoc_uuid = UUIDField(null=True, blank=True)
     document = models.ForeignKey('attachment.Revision')
     reviewers = models.ManyToManyField('auth.User')
     is_complete = models.BooleanField(default=False)
