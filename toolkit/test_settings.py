@@ -24,7 +24,7 @@ INSTALLED_APPS = INSTALLED_APPS + (
     # Lawpal modules
     #'toolkit.core.tests',
     'hello_sign.tests',
-    # 'dj_crocodoc.tests',
+    'dj_crocodoc.tests',
 )
 
 SOUTH_TESTS_MIGRATE = False
