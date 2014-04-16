@@ -109,11 +109,13 @@ def crocodoc_webhook_event_recieved(sender, verb, document, target, attachment_n
             #     matter.actions.  # add review-copy-comment?
 
             if crocodoc_event in ['annotation.create', 'comment.create', 'comment.update']:
-                if user in document.source_object.item.participants() or user == matter.lawyer:
-                    import pdb;pdb.set_trace()
+                # user MUST be in document.source_object.primary_reviewdocument.reviewers
+                # otherwise he could not get to this point
+                if user == matter.lawyer:
+                    # if it's MY revision, create revision-comment-action
                     matter.actions.add_revision_comment(user=user, revision=document.source_object, comment=content)
                 else:
-                    import pdb;pdb.set_trace()
+                    # otherwise create review-session-comment
                     matter.actions.add_review_session_comment(user=user, revision=document.source_object,
                                                               comment=content)
 
