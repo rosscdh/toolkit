@@ -49,42 +49,33 @@ class MatterRemovalService(object):
     Service to delete the whole matter or to remove a participant from the matter
     """
     matter = None
-    current_user = None
+    removing_user = None
 
-    def __init__(self, matter, current_user):
+    def __init__(self, matter=None, removing_user=None):
         self.matter = matter
-        self.current_user = current_user
+        self.removing_user = removing_user
 
-    def deleteMatter(self):
-        if self.current_user == self.matter.lawyer:
+    def process(self, user_to_remove=None):
+        if self.removing_user == user_to_remove and self.removing_user == self.matter.lawyer:
             #
             # Only the primary lawyer can delete the matter
             #
             self.matter.delete()
-        else:
-            logger.error('User %s tried to delete a matter: %s but was not the lawyer' % (self.current_user, self.matter))
-            raise PermissionDenied('You are not a lawyer of this matter')
-
-    def removeParticipant(self, participant):
-        if participant in self.matter.participants.all():
+        elif user_to_remove in self.matter.participants.all():
             #
             # all participants can remove themselves; laywers can remove other participants but not the primary lawyer
             #
-            if participant == self.matter.lawyer:
-                logger.error('User %s tried to remove the primary lawyer in matter: %s' % (self.current_user, self.matter))
-                raise PermissionDenied('You are not able to remove the primary lawyer')
+            if self.removing_user.username == user_to_remove.username:
+                self.matter.participants.remove(user_to_remove)
+                self.matter.actions.user_stopped_participating(user=user_to_remove)
 
-            elif self.current_user.username == participant.username:
-                self.matter.participants.remove(participant)
-                self.matter.actions.user_stopped_participating(user=participant)
-
-            elif self.current_user.is_lawyer:
-                self.matter.participants.remove(participant)
-                self.matter.actions.removed_matter_participant(matter=self.matter, removing_user=self.current_user, removed_user=participant)
+            elif self.removing_user.profile.is_lawyer:
+                self.matter.participants.remove(user_to_remove)
+                self.matter.actions.removed_matter_participant(matter=self.matter, removing_user=self.removing_user, removed_user=user_to_remove)
 
             else:
-                logger.error('User %s tried to remove the participant: %s in the matter: %s but was not a lawyer' % (self.current_user, participant, self.matter))
+                logger.error('User %s tried to remove the participant: %s in the matter: %s but was not a lawyer' % (self.current_user, user_to_remove, self.matter))
                 raise PermissionDenied('You are not allowed to remove a participant of this matter')
         else:
-            logger.error('Participant %s is not a participant of the matter: %s' % (participant, self.matter))
-            raise PermissionDenied('This user is not a participant of this matter')
+            logger.error('User %s is not the primary lawyer of the matter : %s and/or the user to remove: %s is not in the matter' % (self.removing_user, self.matter, self.user_to_remove))
+            raise PermissionDenied('This user is not a participant of this matter and/or you are not the primary lawyer')

@@ -44,7 +44,6 @@ angular.module('toolkit-gui')
 		 * @private
 		 */
 		$scope.matter = matter;
-        $log.debug(matter);
 
 		/**
 		 * Scope based data for this controller
@@ -133,7 +132,7 @@ angular.module('toolkit-gui')
                 $scope.data.invitee.user_class="customer";
             }
 
-			participantService.invite( matter.selected.slug, $scope.data.invitee ).then(
+			participantService.invite( $scope.matter.slug, $scope.data.invitee ).then(
 				function success(response) {
                     participantService.getByURL(response.url).then(
                         function success(participant){
@@ -174,7 +173,7 @@ angular.module('toolkit-gui')
 		 * @memberof			ParticipantInviteCtrl
 		 */
 		$scope.revoke = function ( person ) {
-			participantService.revoke( matter.selected.slug, person ).then(
+			participantService.revoke( $scope.matter.slug, person ).then(
 				function success() {
 					var index = jQuery.inArray( person, $scope.participants );
                     if( index>=0 ) {
