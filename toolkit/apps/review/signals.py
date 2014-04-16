@@ -36,8 +36,8 @@ def set_item_review_in_progress(sender, instance, created, **kwargs):
 
 
 @receiver(post_save, sender=ReviewDocument, dispatch_uid='review.post_save.reset_item_review_in_progress_on_complete')
-def reset_item_review_in_progress_on_complete(sender, instance, created, **kwargs):
-    if 'is_complete' in kwargs.get('update_fields'):
+def reset_item_review_in_progress_on_complete(sender, instance, created, update_fields, **kwargs):
+    if update_fields and 'is_complete' in update_fields:
 
         if instance.document.reviewdocument_set.filter(is_complete=False).count() == 1:  # All of them are is_complete=True; the only 1 that cant have is_complete is the primary_review whcih is for the matter.participants
 
