@@ -123,17 +123,7 @@ class MatterDeleteView(ModalView, DeleteView):
         self.object = self.get_object()
         success_url = self.get_success_url()
 
-        service = MatterRemovalService(self.matter, request.user)
-
-        if request.user == self.object.lawyer:
-            #
-            # Only the lawyer can delete a matter
-            #
-            service.deleteMatter(request.user)
-        else:
-            #
-            # participants can remove themselves
-            #
-            service.removeParticipant(request.user)
+        service = MatterRemovalService(matter=self.matter, removing_user=request.user)
+        service.process(user_to_remove=request.user)
 
         return HttpResponseRedirect(success_url)

@@ -93,8 +93,8 @@ class MatterParticipant(generics.CreateAPIView,
         # will raise Does not exist if not found
         participant_to_remove = User.objects.get(email=email)
 
-        service = MatterRemovalService(self.matter, request.user)
-        service.removeParticipant(participant_to_remove)
+        service = MatterRemovalService(matter=self.matter, removing_user=request.user)
+        service.process(participant_to_remove)
 
         return Response(status=http_status.HTTP_202_ACCEPTED)
 
