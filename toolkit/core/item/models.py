@@ -80,7 +80,7 @@ class Item(IsDeletedMixin,
     _serializer = 'toolkit.api.serializers.ItemSerializer'
 
     class Meta:
-        ordering = ('-sort_order',)
+        ordering = ('sort_order',)
 
     def __unicode__(self):
         return u'%s' % self.name
@@ -104,84 +104,6 @@ class Item(IsDeletedMixin,
 
     def signers(self):
         return self.data.get('signers', [])
-
-    def save(self, *args, **kwargs):
-        """
-            reset percentage completed of the matter only if item is newly created or
-                                                          if item.is_complete changed
-                                                          if item.is_deleted
-
-            This is done here and not in a signal because the percentage has to get calculated with the NEW
-            is_complete-value which is not yet available present in the matters' .reset_percentage()-function when
-            using pre_save.
-            It is only available after the saving.
-        """
-        do_recalculate = True
-        try:
-            # get the current
-            previous_instance = Item.objects.get(pk=self.pk)
-            if previous_instance.is_complete == self.is_complete and not self.is_deleted:
-                do_recalculate = False
-
-        except Item.DoesNotExist:
-            pass
-
-        super(Item, self).save(*args, **kwargs)
-
-        if do_recalculate:
-            self.matter.update_percent_complete()
-
-    def save(self, *args, **kwargs):
-        """
-            reset percentage completed of the matter only if item is newly created or
-                                                          if item.is_complete changed
-                                                          if item.is_deleted
-
-            This is done here and not in a signal because the percentage has to get calculated with the NEW
-            is_complete-value which is not yet available present in the matters' .reset_percentage()-function when
-            using pre_save.
-            It is only available after the saving.
-        """
-        do_recalculate = True
-        try:
-            # get the current
-            previous_instance = Item.objects.get(pk=self.pk)
-            if previous_instance.is_complete == self.is_complete and not self.is_deleted:
-                do_recalculate = False
-
-        except Item.DoesNotExist:
-            pass
-
-        super(Item, self).save(*args, **kwargs)
-
-        if do_recalculate:
-            self.matter.update_percent_complete()
-
-    def save(self, *args, **kwargs):
-        """
-            reset percentage completed of the matter only if item is newly created or
-                                                          if item.is_complete changed
-                                                          if item.is_deleted
-
-            This is done here and not in a signal because the percentage has to get calculated with the NEW
-            is_complete-value which is not yet available present in the matters' .reset_percentage()-function when
-            using pre_save.
-            It is only available after the saving.
-        """
-        do_recalculate = True
-        try:
-            # get the current
-            previous_instance = Item.objects.get(pk=self.pk)
-            if previous_instance.is_complete == self.is_complete and not self.is_deleted:
-                do_recalculate = False
-
-        except Item.DoesNotExist:
-            pass
-
-        super(Item, self).save(*args, **kwargs)
-
-        if do_recalculate:
-            self.matter.update_percent_complete()
 
     def save(self, *args, **kwargs):
         """

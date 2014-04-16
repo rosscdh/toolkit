@@ -101,6 +101,9 @@ class MatterParticipant(generics.CreateAPIView,
         if participant_to_remove in self.matter.participants.all():
             self.matter.participants.remove(participant_to_remove)
 
+            self.matter.actions.removed_matter_participant(matter=self.matter, removing_user=request.user,
+                                                           removed_user=participant_to_remove)
+
         return Response(status=http_status.HTTP_202_ACCEPTED)
 
     def can_read(self, user):

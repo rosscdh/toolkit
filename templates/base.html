@@ -187,29 +187,30 @@ mixpanel.init("{{ GLOBALS.MIXPANEL_API_TOKEN }}");
     <!-- Load page specific JS here =============================-->
     {% block js %}{% endblock  %}
 
+    {% if user.is_authenticated %}
+        <script id="IntercomSettingsScriptTag">
+          window.intercomSettings = {
+            user_id: "{{user.username}}",
+            email: "{{user.email}}",
+            type: "{{user.profile.user_class}}",
+            {% if user.profile.firm_name %}
+            firm: "{{user.profile.firm_name}}",
+            {% endif %}
+            created_at: "{{ user.date_joined|date:"U" }}",
+            app_id: "{{ GLOBALS.INTERCOM_APP_ID }}",
+            user_hash: "{% intercom_user_hash user.username %}",
+            widget: {
+                activator: '.intercom',
+                use_counter: true
+            }
+          };
+        </script>
+        <script>(function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://static.intercomcdn.com/intercom.v1.js';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})()
+        </script>
+    {% endif %}
+
     {% if PROJECT_ENVIRONMENT == 'prod' %}
-        {% if user.is_authenticated %}
-            <script id="IntercomSettingsScriptTag">
-              window.intercomSettings = {
-                // TODO: The current logged in user's email address.
-                email: "{{user.email}}",
-                // TODO: The current logged in user's sign-up date as a Unix timestamp.
-                type: "{{user.profile.user_class}}",
-                {% if user.profile.firm_name %}
-                firm: "{{user.profile.firm_name}}",
-                {% endif %}
-                created_at: "{{ user.date_joined|date:"U" }}",
-                app_id: "ooqtbx99",
-                user_hash: "{% intercom_user_hash user.email %}",
-                widget: {
-                    activator: '.intercom',
-                    use_counter: true
-                }
-              };
-            </script>
-            <script>(function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://static.intercomcdn.com/intercom.v1.js';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})()
-            </script>
-        {% else %}
+        {% if not user.is_authenticated %}
             <!-- begin olark code -->
             <script data-cfasync="false" type='text/javascript'>/*<![CDATA[*/window.olark||(function(c){var f=window,d=document,l=f.location.protocol=="https:"?"https:":"http:",z=c.name,r="load";var nt=function(){
             f[z]=function(){
