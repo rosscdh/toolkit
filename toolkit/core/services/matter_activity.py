@@ -48,6 +48,7 @@ class MatterActivityEventService(object):
     item-reopened
     item-reopened
     item-viewed-revision
+    item-completed-review
     itemrequestrevisionview-provide-a-document
 
     Revisions
@@ -68,7 +69,7 @@ class MatterActivityEventService(object):
         verb_slug = slugify(action_object.__class__.__name__) + '-' + slugify(verb)
         logger.debug('possible verb_slug: "%s"' % verb_slug)
 
-        #print(verb_slug)
+        print(verb_slug)
         # with open('/tmp/verb_slugs.log', 'a') as f:
         #     f.write(verb_slug + '\r\n')
 
@@ -150,7 +151,7 @@ class MatterActivityEventService(object):
     def item_created(self, user, item):
         self._create_activity(actor=user, verb=u'created', action_object=item)
         self.analytics.event('item.created', user=user, **{
-            'matter_pk': item.matter.pk
+            'matter_pk': self.matter.pk
         })
 
     def item_rename(self, user, item, previous_name):
@@ -195,7 +196,7 @@ class MatterActivityEventService(object):
                               date_created=revision.date_created)
 
         self.analytics.event('revision.create', user=user, **{
-            'matter_pk': revision.item.matter.pk
+            'matter_pk': self.matter.pk
         })
 
     def deleted_revision(self, user, item, revision):
@@ -210,7 +211,7 @@ class MatterActivityEventService(object):
         self._create_activity(actor=adding_user, verb=u'provide a document', action_object=item,
                               override_message=override_message, user=added_user)
         self.analytics.event('revision.upload.request', user=adding_user, **{
-            'matter_pk': item.matter.pk,
+            'matter_pk': self.matter.pk,
             'requestee': added_user.get_full_name(),
             'requestee_type': added_user.profile.type,
             'requestor': added_user.get_full_name(),
@@ -227,7 +228,7 @@ class MatterActivityEventService(object):
         self._create_activity(actor=user, verb=u'uploaded a document', action_object=item, override_message=override_message,
                               revision=revision, filename=revision.name, date_created=revision.date_created)
         self.analytics.event('revision.upload.provided', user=user, **{
-            'matter_pk': item.matter.pk
+            'matter_pk': self.matter.pk
         })
 
     def add_revision_comment(self, user, revision, comment):
@@ -236,7 +237,7 @@ class MatterActivityEventService(object):
                               override_message=override_message, comment=comment, item=revision.item)
         self.analytics.event('revision.comment.added', user=user, **{
             'item_pk': revision.item.pk,
-            'matter_pk': revision.item.matter.pk
+            'matter_pk': self.matter.pk
         })
 
     def delete_revision_comment(self, user, revision):
@@ -258,7 +259,7 @@ class MatterActivityEventService(object):
                 'invited': invited_user.get_full_name(),
                 'invited_type': invited_user.profile.type,
                 'item_pk': item.pk,
-                'matter_pk': item.matter.pk
+                'matter_pk': self.matter.pk
             })
 
     # instead of this we now use the newly created invite_user_as_reviewer
@@ -280,7 +281,7 @@ class MatterActivityEventService(object):
                               date_created=datetime.datetime.utcnow())
         self.analytics.event('review.request.viewed', user=user, **{
             'item_pk': item.pk,
-            'matter_pk': item.matter.pk,
+            'matter_pk': self.matter.pk,
             'revision_pk': revision.pk
         })
 
@@ -297,7 +298,7 @@ class MatterActivityEventService(object):
                               version=revision.slug, date_created=datetime.datetime.utcnow(), comment=comment)
         self.analytics.event('review.request.comment.added', user=user, **{
             'item_pk': item.pk,
-            'matter_pk': item.matter.pk,
+            'matter_pk': self.matter.pk,
             'revision_pk': revision.pk
         })
 
@@ -308,7 +309,18 @@ class MatterActivityEventService(object):
                               version=revision.slug, date_created=datetime.datetime.utcnow())
         self.analytics.event('review.request.completed', user=user, **{
             'item_pk': item.pk,
-            'matter_pk': item.matter.pk,
+            'matter_pk': self.matter.pk,
+            'revision_pk': revision.pk
+        })
+
+    def all_revision_reviews_complete(self, item, revision):
+        override_message = u'All of the reviews of %s have been completed' % (item,)
+        self._create_activity(actor=user, verb=u'completed all reviews', action_object=item,
+                              override_message=override_message, revision=revision, filename=revision.name,
+                              version=revision.slug, date_created=datetime.datetime.utcnow())
+        self.analytics.event('review.all_requests.completed', user=self.matter.lawyer, **{
+            'item_pk': item.pk,
+            'matter_pk': self.matter.pk,
             'revision_pk': revision.pk
         })
 
@@ -323,7 +335,7 @@ class MatterActivityEventService(object):
             'invited': invited_user.get_full_name(),
             'invited_type': invited_user.profile.type,
             'item_pk': item.pk,
-            'matter_pk': item.matter.pk
+            'matter_pk': self.matter.pk
         })
 
     def user_viewed_signature_request(self, item, user, revision):
@@ -333,6 +345,6 @@ class MatterActivityEventService(object):
                               date_created=datetime.datetime.utcnow())
         self.analytics.event('sign.request.viewed', user=user, **{
             'item_pk': item.pk,
-            'matter_pk': item.matter.pk,
+            'matter_pk': self.matter.pk,
             'revision_pk': revision.pk
         })

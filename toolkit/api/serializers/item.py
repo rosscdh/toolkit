@@ -19,6 +19,8 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
 
     status = serializers.ChoiceField(required=False, choices=Item.ITEM_STATUS.get_choices())
 
+    review_in_progress = serializers.Field(source='review_in_progress')
+
     responsible_party = LiteUserSerializer(required=False)
 
     latest_revision = SimpleRevisionSerializer(read_only=True)
@@ -35,7 +37,8 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
         model = Item
         lookup_field = 'slug'
         fields = ('slug', 'url',
-                  'status', 'responsible_party',
+                  'status', 'review_in_progress',
+                  'responsible_party',
                   'name', 'description', 'matter',
                   'parent', 'children', 'closing_group', 'category',
                   'latest_revision',
@@ -93,7 +96,8 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
 class SimpleItemSerializer(ItemSerializer):
     class Meta(ItemSerializer.Meta):
         fields = ('url', 'slug', 'name', 
-                  'status', 'category',
+                  'status', 'review_in_progress',
+                  'category',
                   'latest_revision',
                   'is_final', 'is_complete', 'is_requested',
                   'date_due',)

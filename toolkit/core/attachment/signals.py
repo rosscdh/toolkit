@@ -2,7 +2,7 @@
 from django.db import transaction
 from django.dispatch import receiver
 from django.db import IntegrityError
-from django.db.models.signals import pre_save, post_save, post_delete, m2m_changed
+from django.db.models.signals import pre_save, post_save, pre_delete, post_delete, m2m_changed
 
 from toolkit.apps.workspace import _model_slug_exists
 
@@ -75,6 +75,18 @@ def ensure_revision_item_latest_revision_is_current(sender, instance, **kwargs):
         item.save(update_fields=['latest_revision'])
 
 
+@receiver(post_save, sender=Revision, dispatch_uid='revision.reset_item_review_in_progress')
+def reset_item_review_in_progress(sender, instance, created, **kwargs):
+    """
+    Ensure that the is_current=True revision is set to the item.latest_revision
+    """
+    if created is True:
+        #
+        # Set the review_in_progress to False
+        #
+        instance.item.reset_review_in_progress()
+
+
 @receiver(post_save, sender=Revision, dispatch_uid='revision.ensure_revision_reviewdocument_object')
 def ensure_revision_reviewdocument_object(sender, instance, **kwargs):
     """
@@ -121,6 +133,17 @@ reviewdocuments have 1 object per reviewer this is to ensure a unique auth url f
 and to ensure there is a sandbox view where only the matter participants and the invited reviewer
 can talk
 """
+
+
+@receiver(pre_delete, sender=Revision, dispatch_uid='revision.pre_delete.reset_item_review_in_progress')
+def reset_item_review_in_progress_on_delete(sender, instance, **kwargs):
+    """
+    On Delete of a revision we want to reset the review_in_progress setting for the item
+    """
+    if instance.is_current is True:  # only reset it if its the most recent document one
+        # i.e. we have only 1 (or less) reviewdocument then set the item review_in_progress to False
+        item = instance.item
+        item.reset_review_in_progress()
 
 
 @receiver(post_delete, sender=Revision, dispatch_uid='revision.set_previous_revision_is_current_on_delete')
