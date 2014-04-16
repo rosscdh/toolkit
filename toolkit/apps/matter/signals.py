@@ -105,6 +105,11 @@ def crocodoc_webhook_event_recieved(sender, verb, document, target, attachment_n
             matter = target.item.matter
 
         if matter is not None:
+
+            # TODO:
+            # check document.uuid against revision.primary_reviewdocument and decide which action to save
+
+            
             # review_document = document.source_object.reviewdocument_set.filter(reviewers__in=[user.pk, ])
             # if review_document.count() == 1:
             #     matter.actions.  # add review-copy-comment?
