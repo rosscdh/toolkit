@@ -150,6 +150,9 @@ class Revision(ApiSerializerMixin, models.Model):
     def previous(self):
         return self.revisions.filter(pk__lt=self.pk).first()
 
+    def primary_reviewdocument(self):
+        return self.reviewdocument_set
+
 from .signals import (ensure_revision_slug,
                       ensure_one_current_revision,
                       set_item_is_requested_false,
