@@ -1,5 +1,13 @@
 <div class="media" ng-show="activity.data.comment">
-    {{ actor }} ({{ actor.get_initials }}) annotated <strong>{{ revision_slug }}</strong> of <strong><a href="{{ action_object_url }}">{{ item.name }}</a></strong><br />
-     "{{ comment }}"<br />
+    {{ actor }} ({{ actor.get_initials }}) annotated on Revision {{ revision_slug }} ({{ item.name }}): "{{ comment }}". If you need additional information, just take a note.
+    <a href="{{ action_object_url }}">Link to {{ action_object.name }}</a>
+        {% block review_information %}{% endblock %}
     {{ timesince }}
 </div>
+
+
+
+{% comment %}
+The block review_information contains "(review copy) " or nothing and is used by review_session_comment.html just to
+add this information.
+{% endcomment %}

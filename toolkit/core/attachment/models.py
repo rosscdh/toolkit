@@ -61,7 +61,8 @@ class Revision(ApiSerializerMixin, models.Model):
 
     # allow reviewers to upload alternatives to the current
     # these alternatives may be set as the "current" if the lawyer approves
-    alternatives = models.ManyToManyField('attachment.Revision', null=True, blank=True, symmetrical=False, related_name="parent")
+    alternatives = models.ManyToManyField('attachment.Revision', null=True, blank=True, symmetrical=False,
+                                          related_name="parent")
 
     # True by default, so that on create of a new one, it's set as the current revision
     is_current = models.BooleanField(default=True)
@@ -88,13 +89,12 @@ class Revision(ApiSerializerMixin, models.Model):
 
     def get_user_review_url(self, user, review_document=None):
         """
-        Try to provide an initial reivew url from the base review_document obj
+        Try to provide an initial review url from the base review_document obj
         for the currently logged in user
         """
         if user is not None:
             if review_document is None:
                 review_document = self.reviewdocument_set.all().last()
-                # review_document = self.reviewdocument_set.filter(reviewers__in=[user.pk, ]).last()
             return review_document.get_absolute_url(user=user, use_absolute=False) if review_document is not None else None
         return None
 
@@ -142,13 +142,19 @@ class Revision(ApiSerializerMixin, models.Model):
         Used in the signal to generate the attachment slug
         and revision_label
         """
-        return self.revisions.count() + 1 # default is 1
+        return self.revisions.count() + 1  # default is 1
 
     def next(self):
         return self.revisions.filter(pk__gt=self.pk).first()
 
     def previous(self):
         return self.revisions.filter(pk__lt=self.pk).first()
+
+    @property
+    def primary_reviewdocument(self):
+        # is this *really* only the case for a NEW reviewdocument/revision?
+        return self.reviewdocument_set.filter(reviewers=None).last()
+
 
 from .signals import (ensure_revision_slug,
                       ensure_one_current_revision,

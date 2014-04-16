@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from dj_crocodoc.services import CrocoDocConnectService
 
+import logging
+logger = logging.getLogger('django.request')
+
 
 class CrocodocLoaderService(object):
     """
@@ -21,6 +24,21 @@ class CrocodocLoaderService(object):
                        upload_immediately=False,  # this is handled by the ensure_local_file method
                        # important for sandboxing the view to the specified reviewer
                        reviewer=self.reviewdocument.reviewer)
+
+        self.ensure_lawpal_uuid()  # record the uuid
+
+    def ensure_lawpal_uuid(self):
+        if self.service.is_new is True or self.reviewdocument.crocodoc_uuid in [None, '']:
+
+            if self.service.obj.uuid:
+                #
+                # Save the uuid field so we can do lookups
+                #
+                self.reviewdocument.crocodoc_uuid = self.service.obj.uuid
+                self.reviewdocument.save(update_fields=['crocodoc_uuid'])
+
+            else:
+                logger.error('Crocodoc Service did not provide a uuid for the reviewdocument: %s for revision: %s on item: %s' % (self.reviewdocument, self.reviewdocument.document, self.reviewdocument.document.item.slug))
 
     def ensure_reviewer(self):
         if self.reviewdocument.reviewer is None:
@@ -43,6 +61,8 @@ class CrocodocLoaderService(object):
         # if this is a brand new file, we now need to ensure its available lcoally
         # and then if/when it is upload it to crocdoc
         self.ensure_local_file()
+
+        
 
         # @TODO this should ideally be set in the service on init
         # and session automatically updated

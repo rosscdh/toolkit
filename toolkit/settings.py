@@ -418,6 +418,7 @@ LAWPAL_ACTIVITY = {
 
                       'revision-created', 'revision-comment-created', 'item-added-revision-comment', 
                       'revision-added-revision-comment',
+                      'revision-added-review-session-comment',
                       'workspace-added-participant', 'workspace-removed-participant'
                       ]
     },
@@ -428,7 +429,8 @@ LAWPAL_ACTIVITY = {
                       'revision-created', 'revision-deleted',
                       'item-invited-signer',
                       'itemrequestrevisionview-provide-a-document',
-                      'workspace-created', 'workspace-added-participant', 'workspace-removed-participant', 
+                      'workspace-created', 'workspace-added-participant', 'workspace-removed-participant',
+                      'revision-added-review-session-comment',
                       'revision-added-revision-comment']
     },
 }

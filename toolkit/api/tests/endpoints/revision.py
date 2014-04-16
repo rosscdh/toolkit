@@ -92,7 +92,8 @@ class ItemRevisionTest(BaseEndpointTest):
         # we have a user_review_url
         self.assertTrue(resp_json.get('user_review_url') is not None)
         # it is the correct url for this specific user to view object
-        self.assertEqual(resp_json.get('user_review_url'), document_review.get_absolute_url(user=self.lawyer))
+        self.assertEqual(resp_json.get('user_review_url'), document_review.get_absolute_url(user=self.lawyer,
+                                                                                            use_absolute=False))
         # test date is present
         self.assertTrue(resp_json.get('date_created') is not None)
         # test user is provided as a SimpleUserserializer
