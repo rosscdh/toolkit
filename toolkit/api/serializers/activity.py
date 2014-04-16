@@ -11,15 +11,12 @@ from toolkit.core.item.models import Item
 from toolkit.core.services.matter_activity import get_verb_slug
 
 
-default_template = loader.get_template('activity/default.html')
-item_comment_template = loader.get_template('activity/item_comment.html')
-revision_comment_template = loader.get_template('activity/revision_comment.html')
-
-
-def _get_activity_display(ctx, template):
-    context = loader.Context(ctx)
-    # render the template with passed in context
-    return template.render(context)
+ACTIVITY_TEMPLATES = {
+    'default': loader.get_template('activity/default.html'),
+    'item-commented': loader.get_template('activity/item_comment.html'),
+    'revision-added-review-session-comment': loader.get_template('activity/review_session_comment.html'),
+    'revision-added-revision-comment': loader.get_template('activity/revision_comment.html'),
+}
 
 
 class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
@@ -44,10 +41,18 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
             self.request = kwargs['context']['request']
         super(MatterActivitySerializer, self).__init__(*args, **kwargs)
 
-    def get_event(self, obj):
-        """
-        Matter level actions should show minimalinformation about an event
-        """
+    """
+    helper methods for get_event() which creates an html-representation of an Action
+    """
+    @staticmethod
+    def _get_template(verb_slug):
+        return ACTIVITY_TEMPLATES.get(verb_slug, ACTIVITY_TEMPLATES.get('default'))
+
+    def _get_context(self, obj, verb_slug):
+        message = obj.data.get('override_message', None)
+        if message is None:
+            message = "%s %s %s" % (obj.actor, obj.verb, obj.action_object)
+
         ctx = {
             'actor': obj.actor,
             'actor_pk': obj.actor.pk,
@@ -56,37 +61,39 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
             'action_object_url': obj.action_object.get_absolute_url() if obj.action_object and hasattr(obj.action_object, 'get_absolute_url') else None,
             'timestamp': obj.timestamp,
             'timesince': obj.timesince(),
+            'message': message,
+            'comment': obj.data.get('comment', None),
             # 'data': obj.data,
             #'target': obj.target,
             #'target_pk': obj.target.slug,
         }
 
-        verb_slug = get_verb_slug(obj.action_object, obj.verb)
-        template = default_template
+        if verb_slug in ['revision-added-review-session-comment', 'revision-added-revision-comment']:
+            # exception for revision-commens:
+            # add item, revision_slug and modify action_object_url to contain item AND revision
 
-        if verb_slug == 'item-commented':
-            # comment-template
-            template = item_comment_template
-            ctx.update({'comment': obj.data['comment']})
-
-        if verb_slug == 'revision-added-revision-comment':
-            # crocodoc-template
-            template = revision_comment_template
-            ctx.update({'comment': obj.data['comment']})
             ctx.update({'item': obj.data['item']})
 
-            item = Item.objects.get(slug=obj.data['item']['slug'])
+            item = Item.objects.get(slug=obj.data.get('item', {}).get('slug'))
             review_document_link = item.get_user_review_url(user=self.request.user, version_slug=obj.action_object.slug)
 
             ctx.update({'action_object_url': "%s:%s" % (obj.action_object.item.get_absolute_url(),
                                                         review_document_link)})
             ctx.update({'revision_slug': "%s" % obj.action_object.slug})
 
-        message = obj.data.get('override_message', None)
-        if message is None:
-            message = "%s %s %s" % (obj.actor, obj.verb, obj.action_object)
-        ctx.update({'message': message})
-        return _get_activity_display(ctx, template)
+        return ctx
+
+    def get_event(self, obj):
+        """
+        Matter level actions should show minimalinformation about an event
+        """
+        verb_slug = get_verb_slug(obj.action_object, obj.verb)
+
+        template = self._get_template(verb_slug)
+        context = loader.Context(self._get_context(obj, verb_slug))
+
+        # render the template with passed in context
+        return template.render(context)
 
 
 class ItemActivitySerializer(MatterActivitySerializer):

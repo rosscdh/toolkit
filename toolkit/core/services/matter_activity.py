@@ -64,6 +64,7 @@ class MatterActivityEventService(object):
 
     revision-comment-created
     revision-added-revision-comment     #crocodoc annotation
+    revision-added-review-session-comment     #crocodoc annotation for user NOT in revision.item.participants
     revision-comment-deleted
     revision-created
     revision-deleted
@@ -114,7 +115,7 @@ class MatterActivityEventService(object):
 
     def added_matter_participant(self, matter, adding_user, added_user):
         if adding_user.pk != added_user.pk:
-            override_message = u'%s added a participant to %s' % (adding_user, matter)
+            override_message = u'%s added a new member to %s' % (adding_user, matter)
             self._create_activity(actor=adding_user, verb=u'added participant', action_object=matter,
                                   override_message=override_message, user=added_user)
             self.analytics.event('matter.participant.added', user=adding_user, **{
@@ -144,7 +145,8 @@ class MatterActivityEventService(object):
 
     def item_changed_status(self, user, item, previous_status):
         current_status = item.display_status
-        override_message = u'%s changed the status of %s from %s to %s' % (user, item, previous_status, current_status)
+        override_message = u'%s set %s to %s' % (user, item, current_status)
+        # override_message = u'%s changed the status of %s from %s to %s' % (user, item, previous_status, current_status)
         self._create_activity(actor=user, verb=u'changed the status', action_object=item, item=item,
                               override_message=override_message, current_status=current_status,
                               previous_status=previous_status)
@@ -218,8 +220,17 @@ class MatterActivityEventService(object):
         })
 
     def add_revision_comment(self, user, revision, comment):
-        override_message = '%s commented on %s' % (user, revision)
+        override_message = '%s annotated %s in %s' % (user, revision.slug, revision.item)
         self._create_activity(actor=user, verb=u'added revision comment', action_object=revision,
+                              override_message=override_message, comment=comment, item=revision.item)
+        self.analytics.event('revision.comment.added', user=user, **{
+            'item_pk': revision.item.pk,
+            'matter_pk': revision.item.matter.pk
+        })
+
+    def add_review_session_comment(self, user, revision, comment):
+        override_message = '%s annotated %s (review comment) in %s' % (user, revision.slug, revision.item)
+        self._create_activity(actor=user, verb=u'added review-session comment', action_object=revision,
                               override_message=override_message, comment=comment, item=revision.item)
         self.analytics.event('revision.comment.added', user=user, **{
             'item_pk': revision.item.pk,
@@ -277,19 +288,20 @@ class MatterActivityEventService(object):
                               override_message=override_message, item=item, filename=revision.name,
                               version=revision.slug, date_created=datetime.datetime.utcnow())
 
-    def user_commented_on_revision(self, item, user, revision, comment):
-        override_message = u'%s commented on %s (%s) for %s' % (user, revision.name, revision.slug, item)
-        self._create_activity(actor=user, verb=u'commented on revision', action_object=revision,
-                              override_message=override_message, item=item, filename=revision.name,
-                              version=revision.slug, date_created=datetime.datetime.utcnow(), comment=comment)
-        self.analytics.event('review.request.comment.added', user=user, **{
-            'item_pk': item.pk,
-            'matter_pk': item.matter.pk,
-            'revision_pk': revision.pk
-        })
+    # add_revision_comment() above does EXACTLY the same
+    # def user_commented_on_revision(self, item, user, revision, comment):
+    #     override_message = u'%s commented on %s (%s) for %s' % (user, revision.name, revision.slug, item)
+    #     self._create_activity(actor=user, verb=u'commented on revision', action_object=revision,
+    #                           override_message=override_message, item=item, filename=revision.name,
+    #                           version=revision.slug, date_created=datetime.datetime.utcnow(), comment=comment)
+    #     self.analytics.event('review.request.comment.added', user=user, **{
+    #         'item_pk': item.pk,
+    #         'matter_pk': item.matter.pk,
+    #         'revision_pk': revision.pk
+    #     })
 
     def user_revision_review_complete(self, item, user, revision):
-        override_message = u'%s completed their review of %s (%s) for %s' % (user, revision.name, revision.slug, item)
+        override_message = u'%s completed their review of %s' % (user, revision.slug)
         self._create_activity(actor=user, verb=u'completed review', action_object=item,
                               override_message=override_message, revision=revision, filename=revision.name,
                               version=revision.slug, date_created=datetime.datetime.utcnow())
