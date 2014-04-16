@@ -11,10 +11,12 @@ from toolkit.core.item.models import Item
 from toolkit.core.services.matter_activity import get_verb_slug
 
 
-default_template = loader.get_template('activity/default.html')
-item_comment_template = loader.get_template('activity/item_comment.html')
-revision_comment_template = loader.get_template('activity/revision_comment.html')
-review_session_comment_template = loader.get_template('activity/review_session_comment.html')
+TemplateDict = {
+    'default': loader.get_template('activity/default.html'),
+    'item-commented': loader.get_template('activity/item_comment.html'),
+    'revision-added-review-session-comment': loader.get_template('activity/review_session_comment.html'),
+    'revision-added-revision-comment': loader.get_template('activity/revision_comment.html'),
+}
 
 
 def _get_activity_display(ctx, template):
@@ -49,6 +51,10 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
         """
         Matter level actions should show minimalinformation about an event
         """
+        message = obj.data.get('override_message', None)
+        if message is None:
+            message = "%s %s %s" % (obj.actor, obj.verb, obj.action_object)
+
         ctx = {
             'actor': obj.actor,
             'actor_pk': obj.actor.pk,
@@ -57,42 +63,29 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
             'action_object_url': obj.action_object.get_absolute_url() if obj.action_object and hasattr(obj.action_object, 'get_absolute_url') else None,
             'timestamp': obj.timestamp,
             'timesince': obj.timesince(),
+            'message': message,
+            'comment': obj.data.get('comment', None),
             # 'data': obj.data,
             #'target': obj.target,
             #'target_pk': obj.target.slug,
         }
 
         verb_slug = get_verb_slug(obj.action_object, obj.verb)
-        template = default_template
-
-        if verb_slug == 'item-commented':
-            # comment-template
-            template = item_comment_template
-            ctx.update({'comment': obj.data['comment']})
-
-        if verb_slug == 'revision-added-review-session-comment':
-            # crocodoc-template with "(review copy) "
-            template = review_session_comment_template
-
-        if verb_slug == 'revision-added-revision-comment':
-            # crocodoc-template
-            template = revision_comment_template
+        template = TemplateDict.get(verb_slug, TemplateDict.get('default'))
 
         if verb_slug in ['revision-added-review-session-comment', 'revision-added-revision-comment']:
-            ctx.update({'comment': obj.data['comment']})
+            # exception for revision-commens:
+            # add item, revision_slug and modify action_object_url to contain item AND revision
+
             ctx.update({'item': obj.data['item']})
 
-            item = Item.objects.get(slug=obj.data['item']['slug'])
+            item = Item.objects.get(slug=obj.data.get('item', {}).get('slug'))
             review_document_link = item.get_user_review_url(user=self.request.user, version_slug=obj.action_object.slug)
 
             ctx.update({'action_object_url': "%s:%s" % (obj.action_object.item.get_absolute_url(),
                                                         review_document_link)})
             ctx.update({'revision_slug': "%s" % obj.action_object.slug})
 
-        message = obj.data.get('override_message', None)
-        if message is None:
-            message = "%s %s %s" % (obj.actor, obj.verb, obj.action_object)
-        ctx.update({'message': message})
         return _get_activity_display(ctx, template)
 
 
