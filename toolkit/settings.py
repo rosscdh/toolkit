@@ -360,11 +360,6 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': False,
-        },
-        'django.test': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
         }
     }
 }
@@ -418,6 +413,7 @@ LAWPAL_ACTIVITY = {
                       'item-provide-a-document',
                       'item-invited-signer',
                       'item-completed-review',
+                      'item-completed-all-reviews',
 
                       'revision-created', 'revision-comment-created', 'item-added-revision-comment', 
                       'revision-added-revision-comment',
@@ -431,6 +427,7 @@ LAWPAL_ACTIVITY = {
                       'item-provide-a-document', 'item-invited-reviewer', 'item-canceled-their-request-for-a-document',
                       'item-closed', 'item-reopened', 'item-added-revision-comment', 'item-deleted-revision-comment',
                       'item-completed-review',
+                      'item-completed-all-reviews',
 
                       'revision-created', 'revision-deleted',
 

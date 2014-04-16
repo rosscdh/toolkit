@@ -49,6 +49,8 @@ class MatterActivityEventService(object):
     item-reopened
     item-viewed-revision
     item-completed-review
+    item-completed-all-reviews
+
     itemrequestrevisionview-provide-a-document
 
     Revisions
@@ -69,7 +71,7 @@ class MatterActivityEventService(object):
         verb_slug = slugify(action_object.__class__.__name__) + '-' + slugify(verb)
         logger.debug('possible verb_slug: "%s"' % verb_slug)
 
-        print(verb_slug)
+        #print(verb_slug)
         # with open('/tmp/verb_slugs.log', 'a') as f:
         #     f.write(verb_slug + '\r\n')
 
@@ -315,7 +317,7 @@ class MatterActivityEventService(object):
 
     def all_revision_reviews_complete(self, item, revision):
         override_message = u'All of the reviews of %s have been completed' % (item,)
-        self._create_activity(actor=user, verb=u'completed all reviews', action_object=item,
+        self._create_activity(actor=self.matter.lawyer, verb=u'completed all reviews', action_object=item,
                               override_message=override_message, revision=revision, filename=revision.name,
                               version=revision.slug, date_created=datetime.datetime.utcnow())
         self.analytics.event('review.all_requests.completed', user=self.matter.lawyer, **{

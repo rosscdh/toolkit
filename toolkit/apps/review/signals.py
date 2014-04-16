@@ -12,6 +12,7 @@ def _add_as_authorised(instance, pk_set):
         instance.authorise_user_access(user=user)
         instance.save(update_fields=['data'])
 
+
 def _remove_as_authorised(instance, pk_set):
     if pk_set:
         user = User.objects.filter(pk__in=pk_set).first()
@@ -36,8 +37,10 @@ def set_item_review_in_progress(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=ReviewDocument, dispatch_uid='review.post_save.reset_item_review_in_progress_on_complete')
 def reset_item_review_in_progress_on_complete(sender, instance, created, **kwargs):
-    if created is True:
-        if instance.document.reviewdocument_set.filter(is_complete=False).count() == 0:  # All of them are is_complete=True
+    if 'is_complete' in kwargs.get('update_fields'):
+
+        if instance.document.reviewdocument_set.filter(is_complete=False).count() == 1:  # All of them are is_complete=True; the only 1 that cant have is_complete is the primary_review whcih is for the matter.participants
+
             item = instance.document.item
             item.reset_review_in_progress()
             # send matter.action signal
