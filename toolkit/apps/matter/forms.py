@@ -80,21 +80,16 @@ class MatterForm(ModalForm, forms.ModelForm):
         self.fields['template'].queryset = Workspace.objects.mine(self.user)
 
         if self.instance.pk:
-            del self.fields['template']
-            # self.fields['template'] =
             if self.instance.is_archived:
-                self.helper.inputs.insert(0, Button('delete', 'Delete', css_class='btn btn-danger pull-left', **{
-                    'data-dismiss': 'modal',
-                    'data-remote': reverse('matter:delete', kwargs={'matter_slug': self.instance.slug}),
-                    'data-target': '#matter-delete-%s' % self.instance.slug,
-                    'data-toggle': 'modal',
-                }))
+
+                self.helper.inputs.insert(0, self.get_delete_button())
                 self.helper.inputs.insert(1, Button('unarchive', 'Unarchive', css_class='btn btn-info pull-left', **{
                     'data-dismiss': 'modal',
                     'data-remote': reverse('matter:unarchive', kwargs={'matter_slug': self.instance.slug}),
                     'data-target': '#matter-unarchive-%s' % self.instance.slug,
                     'data-toggle': 'modal',
                 }))
+
             else:
                 self.helper.inputs.insert(0, Button('archive', 'Archive', css_class='btn btn-info pull-left', **{
                     'data-dismiss': 'modal',
@@ -102,6 +97,7 @@ class MatterForm(ModalForm, forms.ModelForm):
                     'data-target': '#matter-archive-%s' % self.instance.slug,
                     'data-toggle': 'modal',
                 }))
+
 
         if self.instance.client:
             self.initial['client_name'] = self.instance.client.name
@@ -111,6 +107,44 @@ class MatterForm(ModalForm, forms.ModelForm):
         self.fields['client_name'].widget.attrs.update({
             'data-source': data
         })
+
+        # Only show matters that I'm a participant in
+        self.fields['template'].queryset = Workspace.objects.mine(self.user)
+
+    def get_delete_button(self):
+        if self.user_can_modify is True:
+            return self.delete_button
+
+        return self.stop_participating_button
+
+    @property
+    def show_action(self):
+        """
+        property to overide the ModalForm mixin test
+        """
+        return self.user_can_modify
+
+    @property
+    def user_can_modify(self):
+        return (self.user == self.instance.lawyer or self.user.profile.is_lawyer is True and self.is_new is True)
+
+    @property
+    def delete_button(self):
+        return Button('delete', 'Delete', css_class='btn btn-danger pull-left', **{
+                      'data-dismiss': 'modal',
+                      'data-remote': reverse('matter:delete', kwargs={'matter_slug': self.instance.slug}),
+                      'data-target': '#matter-delete-%s' % self.instance.slug,
+                      'data-toggle': 'modal',
+                })
+
+    @property
+    def stop_participating_button(self):
+        return Button('stop-participating', 'Stop Participating', css_class='btn btn-warning pull-left', **{
+                      'data-dismiss': 'modal',
+                      'data-remote': reverse('matter:delete', kwargs={'matter_slug': self.instance.slug}),
+                      'data-target': '#matter-delete-%s' % self.instance.slug,
+                      'data-toggle': 'modal',
+                })
 
     def save(self, commit=True):
         created = True if self.instance.pk is None else False

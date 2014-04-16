@@ -569,10 +569,11 @@ class RevisionRequestedDocumentTest(BaseEndpointTest):
 
         inviteduploader_user = User.objects.get(username='inviteduploader')
         invited_uploader = LiteUserSerializer(inviteduploader_user,
-                                              context={'request': self.request_factory.get(self.endpoint)})  ## should exist as we jsut created him in the patch
+                                              context={'request': self.request_factory.get(self.endpoint)}).data  ## should exist as we jsut created him in the patch
 
         self.assertTrue(json_data.get('is_requested') is True)
-        self.assertEqual(json_data.get('responsible_party'), invited_uploader.data)
+        self.assertItemsEqual(json_data.get('responsible_party').keys(), invited_uploader.keys())
+
 
         #
         # now upload a document and ensure

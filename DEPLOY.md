@@ -3,7 +3,7 @@ Deployment actions by branch
 
 [archived-matters]
 
-1. ./manage.py migrate workspace
+1. ./manage.py migrate workspace 0007  # add is_archived field
 
 --------------------------------------------------------------------------------
 ** DEPLOYED 6 April 2014 - celery tasks are preset but not enabled

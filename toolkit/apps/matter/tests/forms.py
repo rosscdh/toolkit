@@ -39,6 +39,36 @@ class MatterFormTest(BaseScenarios, TestCase):
 
         self.assertItemsEqual(form.helper.layout.get_field_names(), [[[0], 'name'], [[1], 'client_name'], [[2], 'matter_code']])
 
+    def test_user_can_modify(self):
+        form = MatterForm(instance=self.matter, user=self.lawyer, is_new=True)
+        self.assertTrue(form.user_can_modify)
+
+        form = MatterForm(instance=self.matter, user=self.lawyer, is_new=False)
+        self.assertTrue(form.user_can_modify)
+
+        # Normal Users can never modify the form
+        form = MatterForm(instance=self.matter, user=self.user, is_new=True)
+        self.assertFalse(form.user_can_modify)
+
+        form = MatterForm(instance=self.matter, user=self.user, is_new=False)
+        self.assertFalse(form.user_can_modify)
+
+    def test_delete_button_shows(self):
+        #
+        # Only the matter owner/lawyer can delete the matter
+        #
+        form = MatterForm(instance=self.matter, user=self.lawyer, is_new=False)       
+        self.assertItemsEqual([b.name for b in form.helper.inputs if b.input_type in ('button', 'submit',)], ['delete', 'cancel', 'submit'])
+
+        # The participants should only have the ability to stop participating
+        form = MatterForm(instance=self.matter, user=self.user)
+        self.assertItemsEqual([b.name for b in form.helper.inputs if b.input_type in ('button', 'submit',)], ['stop-participating', 'cancel'])
+
+    def test_stop_participating_button_shows(self):
+        # The participants should only have the ability to stop participating
+        form = MatterForm(instance=self.matter, user=self.user)
+        self.assertItemsEqual([b.name for b in form.helper.inputs if b.input_type in ('button', 'submit',)], ['stop-participating', 'cancel'])
+        
     def test_success(self):
         data = {
             'client_name': 'Acme Inc',

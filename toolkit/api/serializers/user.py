@@ -3,6 +3,7 @@
 Items are either todo items or document items
 """
 from django.contrib.auth.models import User
+from toolkit.apps.default.templatetags.intercom_tags import _get_intercom_user_hash
 
 from rest_framework import serializers
 
@@ -15,6 +16,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     initials = serializers.SerializerMethodField('get_initials')
     name = serializers.SerializerMethodField('get_full_name')
     user_class = serializers.SerializerMethodField('get_user_class')
+    intercom_user_hash = serializers.SerializerMethodField('get_intercom_user_hash')
 
     class Meta:
         model = User
@@ -29,6 +31,9 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     def get_user_class(self, obj):
         return obj.profile.user_class
 
+    def get_intercom_user_hash(self, obj):
+        return _get_intercom_user_hash(user_identifier=obj.username)
+
 
 class LiteUserSerializer(UserSerializer):
     """
@@ -37,7 +42,7 @@ class LiteUserSerializer(UserSerializer):
     Used when a user is referenced in other API objects.
     """
     class Meta(UserSerializer.Meta):
-        fields = ('url', 'username', 'name', 'initials', 'first_name', 'last_name', 'email', 'user_class')
+        fields = ('url', 'username', 'name', 'initials', 'first_name', 'last_name', 'email', 'user_class', 'intercom_user_hash', 'date_joined')
 
 
 class SimpleUserSerializer(UserSerializer):

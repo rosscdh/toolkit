@@ -1,7 +1,7 @@
 from django.conf import settings
-
-from django.core.urlresolvers import reverse, reverse_lazy
 from django.http import HttpResponseRedirect
+from django.core.exceptions import PermissionDenied
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, TemplateView, UpdateView
 
 from django.utils.decorators import method_decorator
@@ -12,6 +12,9 @@ from toolkit.apps.workspace.models import Workspace
 from toolkit.mixins import AjaxModelFormView, ModalView
 
 from .forms import MatterForm
+
+import logging
+logger = logging.getLogger('django.request')
 
 
 class MatterListView(ListView):
@@ -147,3 +150,38 @@ class MatterDeleteView(ModalView, DeleteView):
 
     def get_success_url(self):
         return reverse('matter:list')
+
+    def get_context_data(self, **kwargs):
+        context = super(MatterDeleteView, self).get_context_data(**kwargs)
+        context.update({
+            'action': 'delete' if self.request.user == self.object.lawyer else 'stop-participating'
+        })
+        return context
+
+    def delete(self, request, *args, **kwargs):
+        """
+        Calls the delete() method on the fetched object and then
+        redirects to the success URL.
+        """
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+
+        if request.user == self.object.lawyer:
+            #
+            # Only the lawyer can delete a matter
+            #
+            self.object.delete()
+        else:
+            #
+            # participants can remove themselves
+            #
+            if request.user in self.object.participants.all():
+                self.object.participants.remove(request.user)
+                # send activity event
+                self.object.actions.user_stopped_participating(user=request.user)
+
+            else:
+                logger.error('User %s tried to delete a matter: %s but was not the lawyer nor the participant' % (request.user, self.object))
+                raise PermissionDenied('You are not a participant of this matter')
+
+        return HttpResponseRedirect(success_url)
