@@ -104,9 +104,18 @@ def crocodoc_webhook_event_recieved(sender, verb, document, target, attachment_n
             matter = target.item.matter
 
         if matter is not None:
+            # review_document = document.source_object.reviewdocument_set.filter(reviewers__in=[user.pk, ])
+            # if review_document.count() == 1:
+            #     matter.actions.  # add review-copy-comment?
 
             if crocodoc_event in ['annotation.create', 'comment.create', 'comment.update']:
-                matter.actions.add_revision_comment(user=user, revision=document.source_object, comment=content)
+                if user in document.source_object.item.participants() or user == matter.lawyer:
+                    import pdb;pdb.set_trace()
+                    matter.actions.add_revision_comment(user=user, revision=document.source_object, comment=content)
+                else:
+                    import pdb;pdb.set_trace()
+                    matter.actions.add_review_session_comment(user=user, revision=document.source_object,
+                                                              comment=content)
 
             if crocodoc_event in ['annotation.delete', 'comment.delete']:
                 matter.actions.delete_revision_comment(user=user, revision=document.source_object)
