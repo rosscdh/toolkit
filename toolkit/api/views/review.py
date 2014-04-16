@@ -216,9 +216,6 @@ class ItemRevisionReviewerView(generics.RetrieveAPIView,
             status = http_status.HTTP_406_NOT_ACCEPTABLE
             logger.critical('A revision %s for a user %s has more than 1 reviewdocument they should only have 1 per revision' % (self.revision, user))
 
-        # TODO: MOVE
-        # After move we don't have the user any more!
-
         # create event
         self.revision.item.matter.actions.user_viewed_revision(item=self.revision.item,
                                                                user=user,

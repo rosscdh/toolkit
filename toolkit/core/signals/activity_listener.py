@@ -40,13 +40,19 @@ ABRIDGE_WHITELIST = settings.LAWPAL_ACTIVITY.get('abridge', {}).get('whitelist',
 NOTIFICATIONS_WHITELIST = settings.LAWPAL_ACTIVITY.get('notifications', {}).get('whitelist', [])
 
 
-def _activity_send(actor, **kwargs):
+def _activity_send(actor, target, action_object, message, **kwargs):
     """
     Send activity to django-activity-stream
     """
     verb_slug = kwargs.get('verb_slug', False)
     if verb_slug in ACTIVITY_WHITELIST:
-        action.send(actor, **kwargs)
+
+        # @TODO turn this into a reuseable method
+        for key, item in kwargs.iteritems():
+            if hasattr(item, 'api_serializer') is True:
+                kwargs[key] = item.api_serializer(item, context={'request': None}).data
+
+        action.send(actor, target=target, action_object=action_object, message=message, **kwargs)
 
 
 def _abridge_send(verb_slug, actor, target, action_object, message=None):
@@ -165,9 +171,10 @@ def on_activity_received(sender, **kwargs):
         # catch if we don't have it installed
         if action is None:
             logger.critical('actstream is not installed')
+
         else:
             # send to django-activity-stream
-            _activity_send(actor=actor, **kwargs)
+            _activity_send(actor=actor, target=kwargs.pop('target', None), action_object=kwargs.pop('action_object', None), message=kwargs.pop('message', None), **kwargs)
 
         # send the notifications to the participants
         _notifications_send(verb_slug=verb_slug, actor=actor, target=target, action_object=action_object, message=message)
