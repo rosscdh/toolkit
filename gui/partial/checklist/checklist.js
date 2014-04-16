@@ -38,6 +38,9 @@ angular.module('toolkit-gui')
 	'commentService',
 	'$timeout',
     '$log',
+    '$window',
+    'Intercom',
+    'INTERCOM_APP_ID',
 	function($scope,
 			 $rootScope,
 			 $routeParams,
@@ -56,7 +59,10 @@ angular.module('toolkit-gui')
 			 userService,
 			 commentService,
 			 $timeout,
-			 $log){
+			 $log,
+             $window,
+             Intercom,
+             INTERCOM_APP_ID){
 		/**
 		 * Scope based data for the checklist controller
 		 * @memberof			ChecklistCtrl
@@ -93,6 +99,8 @@ angular.module('toolkit-gui')
 					$scope.initializeActivityStream( singleMatter );
 
 					userService.setCurrent( singleMatter.current_user );
+
+                    $scope.initialiseIntercom(singleMatter.current_user);
 				},
 				function error(err){
 					toaster.pop('error', "Error!", "Unable to load matter");
@@ -123,6 +131,7 @@ angular.module('toolkit-gui')
 				jQuery.each( matter.categories, function( index, cat ) {
 					var categoryName = cat;
 					var items = jQuery.grep( matter.items, function( item ){ return item.category===categoryName; } );
+
 					categories.push( { 'name': categoryName, 'items': items } );
 				});
 
@@ -142,6 +151,35 @@ angular.module('toolkit-gui')
 				toaster.pop('warning', "Unable to load matter details");
 			}
 		};
+
+
+        /**
+		 * Inits the intercom interface
+         *
+		 * @name	initialiseIntercom
+		 * @param  {Object} Current user object
+		 * @private
+		 * @memberof			ChecklistCtrl
+		 * @method			initialiseIntercom
+		 */
+        $scope.initialiseIntercom = function(currUser){
+            $log.debug(currUser);
+
+            Intercom.boot({
+                user_id: currUser.username,
+                email: currUser.email,
+                type: currUser.user_class,
+                app_id: INTERCOM_APP_ID,
+                created_at: (new Date(currUser.date_joined).getTime()/1000),
+                user_hash: currUser.intercom_user_hash,
+                widget: {
+                    activator: '.intercom',
+                    use_counter: true
+                }
+            });
+
+            //Intercom.show();
+        };
 
 		/***
 		 ___ _
@@ -166,7 +204,8 @@ angular.module('toolkit-gui')
 		   if ($scope.data.newItemName) {
 			 matterItemService.create(matterSlug, $scope.data.newItemName, category.name).then(
 				 function success(item){
-					category.items.unshift(item);
+					/*category.items.unshift(item);*/
+					category.items.push(item);
 					$scope.data.newItemName = '';
 				 },
 				 function error(err){
@@ -1210,9 +1249,8 @@ angular.module('toolkit-gui')
 			'stop':  recalculateCategories, /* Fires once the drag and drop event has finished */
 			'start': function() { $scope.data.dragging=true; $scope.$apply();},
 			'connectWith': ".group",
-			'axis': 'y',
-			'distance': 15,
-			'delay': 10
+			'dropOnEmpty': true,
+			'axis': 'y'
 		};
 
 		/**
@@ -1229,8 +1267,7 @@ angular.module('toolkit-gui')
 			},
 			'stop':  recalculateCategories, /* Fires once the drag and drop event has finished */
 			'axis': 'y',
-			'distance': 15,
-			'delay': 10
+			'distance': 15
 		};
 
 

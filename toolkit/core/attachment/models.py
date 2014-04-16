@@ -6,7 +6,6 @@ from storages.backends.s3boto import S3BotoStorage
 
 from toolkit.core.mixins import ApiSerializerMixin
 from toolkit.utils import get_namedtuple_choices
-from toolkit.apps.workspace.models import Workspace
 
 from jsonfield import JSONField
 
@@ -123,6 +122,7 @@ class Revision(ApiSerializerMixin,
 
     def previous(self):
         return self.revisions.filter(pk__lt=self.pk).first()
+
 
 from .signals import (ensure_revision_slug,
                       ensure_one_current_revision,
