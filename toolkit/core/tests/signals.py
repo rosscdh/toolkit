@@ -111,7 +111,7 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         self.assertEqual(stream_item.action_object, item)
         self.assertEqual(stream_item.actor, self.lawyer)
         self.assertEqual(stream_item.data['override_message'],
-                         u'Lawyer Test changed the status of Test Item #1 from New to Executed')
+                         u'Lawyer Test set Test Item #1 to Executed')
 
     def test_revision_signals(self):
         """
