@@ -11,7 +11,7 @@ from toolkit.core.item.models import Item
 from toolkit.core.services.matter_activity import get_verb_slug
 
 
-TemplateDict = {
+ACTIVITY_TEMPLATES = {
     'default': loader.get_template('activity/default.html'),
     'item-commented': loader.get_template('activity/item_comment.html'),
     'revision-added-review-session-comment': loader.get_template('activity/review_session_comment.html'),
@@ -71,7 +71,7 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
         }
 
         verb_slug = get_verb_slug(obj.action_object, obj.verb)
-        template = TemplateDict.get(verb_slug, TemplateDict.get('default'))
+        template = ACTIVITY_TEMPLATES.get(verb_slug, ACTIVITY_TEMPLATES.get('default'))
 
         if verb_slug in ['revision-added-review-session-comment', 'revision-added-revision-comment']:
             # exception for revision-commens:
