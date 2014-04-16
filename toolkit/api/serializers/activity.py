@@ -14,6 +14,7 @@ from toolkit.core.services.matter_activity import get_verb_slug
 default_template = loader.get_template('activity/default.html')
 item_comment_template = loader.get_template('activity/item_comment.html')
 revision_comment_template = loader.get_template('activity/revision_comment.html')
+review_session_comment_template = loader.get_template('activity/review_session_comment.html')
 
 
 def _get_activity_display(ctx, template):
@@ -69,9 +70,15 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
             template = item_comment_template
             ctx.update({'comment': obj.data['comment']})
 
+        if verb_slug == 'revision-added-review-session-comment':
+            # crocodoc-template with "(review copy) "
+            template = review_session_comment_template
+
         if verb_slug == 'revision-added-revision-comment':
             # crocodoc-template
             template = revision_comment_template
+
+        if verb_slug in ['revision-added-review-session-comment', 'revision-added-revision-comment']:
             ctx.update({'comment': obj.data['comment']})
             ctx.update({'item': obj.data['item']})
 
