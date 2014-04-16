@@ -268,8 +268,9 @@ angular.module('toolkit-gui')
 		}
 
         $scope.loadItemDetails = function(item){
-            if(typeof(item.latest_revision) === "string") {
-                baseService.loadObjectByUrl(item.latest_revision).then(
+            //if(typeof(item.latest_revision.reviewers) === "string") {
+            if(item.latest_revision && !item.latest_revision.reviewers) {
+                baseService.loadObjectByUrl(item.latest_revision.url).then(
                     function success(obj){
                         item.latest_revision = obj;
                     },
@@ -896,6 +897,10 @@ angular.module('toolkit-gui')
 
 			modalInstance.result.then(
 				function ok(review) {
+                    if (!revision.reviewers) {
+                        revision.reviewers = [];
+                    }
+
 					var results = jQuery.grep( revision.reviewers, function( rev ){ return rev.reviewer.username===review.reviewer.username; } );
 					if( results.length===0 ) {
 						revision.reviewers.push(review);
