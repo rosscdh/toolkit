@@ -15,6 +15,7 @@ from toolkit.utils import get_namedtuple_choices
 
 from .managers import ItemManager
 from .mixins import (RequestDocumentUploadMixin,
+                     ReviewInProgressMixin,
                      RequestedDocumentReminderEmailsMixin,
                      RevisionReviewReminderEmailsMixin,
                      RevisionSignReminderEmailsMixin)
@@ -33,6 +34,7 @@ BASE_ITEM_STATUS = get_namedtuple_choices('ITEM_STATUS', (
 class Item(IsDeletedMixin,
            ApiSerializerMixin,
            RequestDocumentUploadMixin,
+           ReviewInProgressMixin,
            RequestedDocumentReminderEmailsMixin,
            RevisionReviewReminderEmailsMixin,
            RevisionSignReminderEmailsMixin,
@@ -119,7 +121,7 @@ class Item(IsDeletedMixin,
         do_recalculate = True
         try:
             # get the current
-            previous_instance = Item.objects.get(pk=self.pk)
+            previous_instance = self.__class__.objects.get(pk=self.pk)
             if previous_instance.is_complete == self.is_complete and not self.is_deleted:
                 do_recalculate = False
 

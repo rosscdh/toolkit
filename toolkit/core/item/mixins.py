@@ -8,6 +8,9 @@ from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 from .mailers import RequestedDocumentReminderEmail
 from toolkit.apps.sign.mailers import SignerReminderEmail
 
+import logging
+logger = logging.getLogger('django.request')
+
 
 class RequestDocumentUploadMixin(object):
     """
@@ -33,6 +36,45 @@ class RequestDocumentUploadMixin(object):
         request_document.update({'requested_by': value})
 
         self.data['request_document'] = request_document
+
+
+class ReviewInProgressMixin(object):
+    """
+    """
+    @property
+    def review_in_progress(self):
+        return self.data.get('review_in_progress', False)
+
+    @review_in_progress.setter
+    def review_in_progress(self, value):
+        value = True if value in [True, 't', 1, '1', 'true'] else False
+        logger.info('Item %s review_in_progress set to %s' % (self, value))
+
+        self.data['review_in_progress'] = value
+
+    def set_review_is_in_progress(self):
+        """
+        Sets the review_in_progress status to True
+        called when
+        1. a new review is created
+        """
+        if self.review_in_progress is False:  # only if its not already True
+            self.review_in_progress = True
+            logger.info('Item %s review_in_progress is True' % self)
+            self.save(update_fields=['data'])
+
+    def reset_review_in_progress(self):
+        """
+        Sets the review_in_progress status to False
+        called when
+        1. a new revision document is uploaded
+        2. all reviews are complete (approved)
+        3. all reviews are deleted
+        """
+        if self.review_in_progress is True: # only if its not already False
+            self.review_in_progress = False
+            logger.info('Item %s review_in_progress reset (set to False)' % self)
+            self.save(update_fields=['data'])
 
 
 class RequestedDocumentReminderEmailsMixin(object):
