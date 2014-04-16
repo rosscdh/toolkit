@@ -106,7 +106,7 @@ class MatterForm(ModalForm, forms.ModelForm):
 
     @property
     def user_can_modify(self):
-        return (self.user == self.instance.lawyer or self.is_new is True)
+        return (self.user == self.instance.lawyer or self.user.profile.is_lawyer is True and self.is_new is True)
 
     @property
     def delete_button(self):
@@ -119,7 +119,7 @@ class MatterForm(ModalForm, forms.ModelForm):
 
     @property
     def stop_participating_button(self):
-        return Button('delete', 'Stop Participating', css_class='btn btn-warning pull-left', **{
+        return Button('stop-participating', 'Stop Participating', css_class='btn btn-warning pull-left', **{
                       'data-dismiss': 'modal',
                       'data-remote': reverse('matter:delete', kwargs={'matter_slug': self.instance.slug}),
                       'data-target': '#matter-delete-%s' % self.instance.slug,
