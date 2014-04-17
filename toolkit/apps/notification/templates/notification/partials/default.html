@@ -2,13 +2,13 @@
 <article class="notification">
     <div class="row">
         <div class="col-xs-1">
-            <div class="avatar img-circle"><span class="initials" title="{{ message.data.actor.name }}">{{ actor_initials }}</span></div>
+            <div class="avatar img-circle"><span class="initials" title="{{ actor_name }}">{{ actor_initials }}</span></div>
         </div>
         <div class="col-xs-10">
             {% block notice %}
                 <p class="lead">{{ message }}</p>
                 <a href="{{ action_object_url }}">I AM AN API-ENDPOINT-LINK TO {{ action_object_name }} TO BE USED SOMEHOW</a>
-                <p class="small">{{ date|naturaltime }} — in <a href="{{ message.data.target.base_url }}">{{ target_name }}</a> for {{ client_name }}.</p>
+                <p class="small">{{ date|naturaltime }} — in <a href="{{ base_url }}">{{ target_name }}</a> for {{ client_name }}.</p>
             {% endblock %}
         </div>
         <div class="col-xs-1">
