@@ -163,7 +163,7 @@ def on_activity_received(sender, **kwargs):
     verb_slug = kwargs.get('verb_slug', False)
 
     if not message:
-        message = '%s %s %s' % (actor, verb, action_object)
+        message = u'%s %s %s' % (actor, verb, action_object)
 
     #
     # Test that we have the required arguments to send the action signal
