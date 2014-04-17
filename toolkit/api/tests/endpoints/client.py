@@ -30,7 +30,7 @@ class ClientsTest(BaseEndpointTest):
 
         json_data = json.loads(resp.content)
         self.assertEqual(json_data['count'], 2)
-        self.assertEqual(json_data['results'][1]['name'], self.lawyer_client.name)
+        self.assertEqual(json_data['results'][1]['name'], self.lawyer_client.__unicode__())
 
     def test_lawyer_post(self):
         self.client.login(username=self.lawyer.username, password=self.password)

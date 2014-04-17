@@ -150,6 +150,9 @@ class ItemRevisionTest(BaseEndpointTest):
         self.assertEqual(resp_json.get('slug'), 'v%d' % self.version_no)
         self.assertEqual(self.item.revision_set.all().count(), self.expected_num)
 
+        self.item = self.item.__class__.objects.get(pk=self.item.pk)  # reset
+        self.assertEqual(self.item.review_percentage_complete, 0)  # test review_percentage_complete is reset
+
     def test_revision_post_increment_with_url(self):
         self.client.login(username=self.lawyer.username, password=self.password)
         # set up a preexisting revision
@@ -170,6 +173,9 @@ class ItemRevisionTest(BaseEndpointTest):
         self.assertEqual(self.item.revision_set.all().count(), self.expected_num + 1)
         # @BUSINESSRULE order is preserved, oldest to newest
         self.assertTrue(all(i.slug == 'v%s' % str(c+1) for c, i in enumerate(self.item.revision_set.all())))
+
+        self.item = self.item.__class__.objects.get(pk=self.item.pk)  # reset
+        self.assertEqual(self.item.review_percentage_complete, 0)  # test review_percentage_complete is reset
 
 
 class ItemSubRevision2Test(ItemRevisionTest):
@@ -205,7 +211,8 @@ class ItemSubRevision3Test(ItemSubRevision2Test):
         self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/items/%s/revision/v%d' % (self.item.slug, self.version_no))
 
 
-class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerTestCase):
+class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
+                                                   LiveServerTestCase):
     FILE_TO_TEST_UPLOAD_WITH = TEST_PDF_PATH
 
     @property
@@ -258,10 +265,12 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         self.assertEqual(self.item.revision_set.all().count(), 1)
 
         # refresh
-        self.item = Item.objects.get(pk=self.item.pk)
+        self.item = self.item.__class__.objects.get(pk=self.item.pk)  # reset
         revision = self.item.revision_set.all().first()
         self.assertEqual(revision.executed_file.name, 'executed_files/v1-%s-%s-test-pirates-ahoy.pdf' % (self.item.pk, self.lawyer.username))
         self.assertEqual(revision.executed_file.url, 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test-pirates-ahoy.pdf' % (self.item.pk, self.lawyer.username))
+
+        self.assertEqual(self.item.review_percentage_complete, 0)  # test review_percentage_complete is reset
 
     @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_post_with_URL_executed_file(self):
@@ -284,6 +293,9 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
 
         self.assertEqual(resp.status_code, 201)  # 201 created
         self.assertEqual(resp_json.get('slug'), 'v2')
+
+        self.item = self.item.__class__.objects.get(pk=self.item.pk)  # reset
+        self.assertEqual(self.item.review_percentage_complete, 0)  # test review_percentage_complete is reset
 
     @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_post_with_FILE_executed_file(self):
@@ -319,13 +331,15 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         self.assertEqual(revision.executed_file.name, 'executed_files/v1-%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
         self.assertEqual(revision.executed_file.url, 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
 
+        self.item = self.item.__class__.objects.get(pk=self.item.pk)  # reset
+        self.assertEqual(self.item.review_percentage_complete, 0)  # test review_percentage_complete is reset
 
     @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_post_with_URL_executed_file_and_stream(self):
         self.test_post_with_URL_executed_file()
         stream = target_stream(self.matter)
         self.assertEqual(stream[0].data['override_message'],
-                         u'Lawyer Test added a file to Test Item with Revision')
+                         u'Lawyër Tëst added a file to Test Item with Revision')
 
 
     @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
@@ -333,7 +347,7 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerT
         self.test_post_with_FILE_executed_file()
         stream = target_stream(self.matter)
         self.assertEqual(stream[0].data['override_message'],
-                         u'Lawyer Test added a file to Test Item with Revision')
+                         u'Lawyër Tëst added a file to Test Item with Revision')
 
         revision = self.item.revision_set.all().first()
 
@@ -446,9 +460,16 @@ class RevisionDeleteWithReviewersTest(BaseEndpointTest):
         self.reviewer = mommy.make('auth.User', username='New Person', email='username@example.com')
         self.revision.reviewers.add(self.reviewer)
 
+        self.item = self.item.__class__.objects.get(pk=self.item.pk)  # reset
+        self.assertEqual(self.item.review_percentage_complete, 0)  # test review_percentage_complete is reset
+
     def test_delete_of_revision_not_blocked_by_reviwers(self):
         self.assertTrue(self.item.pk)
         self.revision.delete()
+
+        self.item = self.item.__class__.objects.get(pk=self.item.pk)  # reset
+        self.assertEqual(self.item.review_percentage_complete, 0)  # test review_percentage_complete is reset
+
         #
         # If it throws an Item.DoesNotExist exception here
         # then we have a problem becuause the field Item.latest_revision.on_delete should be on_delete=models.SET_NULL

@@ -3,43 +3,49 @@
 		<div class="row full">
 			<div class="col-sm-5 checklist-col full">
 				<!-- add new category //-->
-				<table class="table checklist" ng-show="data.showCategoryAddForm">
-					 <tr class="add-new-controls warning">
-						<td colspan="2">
-							<div class="input-group">
-								<input class="form-control input-sm" id="appendedInputButton-03" type="search" placeholder="Enter category name and press enter"
-									   ng-model="data.newCatName" ng-enter="submitNewCategory()" ng-blur="data.showCategoryAddForm=false" focus-on="eventAddCategory" />
-								<div class="input-group-btn">&nbsp;</div>
-							</div>
-						</td>
-					 </tr>
-				</table>
+				<div class="add-item checklist" ng-show="data.showCategoryAddForm">
+					<input class="form-control input-sm" id="appendedInputButton-03" type="search" placeholder="Enter category name and press enter"
+						   ng-model="data.newCatName" ng-enter="submitNewCategory()" ng-blur="data.showCategoryAddForm=false" focus-on="eventAddCategory" />
+					<div class="input-group-btn">&nbsp;</div>
+				</div>
 
 				<!-- LAWYER checklist //-->
 				<!-- null category //-->
+				<!--
 				<table class="table checklist ui-drag-disabled" ng-repeat="cat in data.categories | filter: { 'name': null }" ng-include="'/static/ng/partial/checklist/includes/checklist-line-item.html'" ng-show="data.usdata.current.user_class=='lawyer'">
 				</table>
+				//-->
 				<!-- end: null category //-->
 
+				<span ng-if="data.usdata.current.user_class=='lawyer'">
+					<div ui-sortable="checklistCategorySortableOptions" ng-model="data.categories">
+						<div ng-repeat="cat in data.categories">
+							<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-header.html'"></span>
+							<!-- Checklist //-->
+							<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-lawyer.html'"></span>
+							<!-- checklist footer //-->
+							<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-footer.html'"></span>
+						</div>
+					</div>
+				</span>
+
+				<span ng-if="data.usdata.current.user_class=='customer'">
+					<div ng-repeat="cat in data.categories">
+						<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-header.html'"></span>
+						<!-- Checklist //-->
+						<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-customer.html'"></span>
+					</div>
+				</span>
+
 				<!-- checklist //-->
+				<!--
 				<div ui-sortable="checklistCategorySortableOptions" ng-model="data.categories" ng-show="data.usdata.current.user_class=='lawyer'">
 					<table class="table checklist" ng-repeat="cat in data.categories" ng-hide="cat.name===null" ng-include="'/static/ng/partial/checklist/includes/checklist-line-item.html'">
 					</table>
 				</div>
+				//-->
 				<!-- end checklist //-->
 				<!-- end: LAWYER checklist //-->
-
-				<!-- CUSTOMER checklist //-->
-				<!-- null category //-->
-				<table class="table checklist" ng-repeat="cat in data.categories | filter: { 'name': null }" ng-include="'/static/ng/partial/checklist/includes/checklist-line-item.html'" ng-show="data.usdata.current.user_class!=='lawyer'">
-				</table>
-				<!-- end: null category //-->
-
-				<!-- checklist //-->
-				<table class="table checklist" ng-repeat="cat in data.categories" ng-hide="cat.name===null||data.usdata.current.user_class=='lawyer'" ng-include="'/static/ng/partial/checklist/includes/checklist-line-item.html'">
-				</table>
-				<!-- end checklist //-->
-				<!-- end: CUSTOMER checklist //-->
 			</div>
 			<div class="col-sm-7 item spa full">
 				<div class="row full">
@@ -57,11 +63,13 @@
 			</div>
 		</div>
 	</div>
-	<div class="upload-bar" ng-repeat="cat in data.categories">
+
+    <div class="upload-bar" ng-repeat="cat in data.categories">
 		<div class="progress progress-striped active" ng-repeat="item in cat.items | filter: { uploading: true }">
 			<div class="progress-bar progress-bar-info" ng-style="{'width': item.uploadingPercent + '%'}">Uploading to <font ng-bind="item.name"></font></div>
 		</div>
 	</div>
 </div>
+<div intercom user-id="{{ data.usdata.current.id }}" user-email="{{ data.usdata.current.email }}"></div>
 <toaster-container toaster-options="{'position-class': 'toast-bottom-right'}"></toaster-container>
 <!--<input type="filepicker" data-fp-apikey="A4Ly2eCpkR72XZVBKwJ06z" data-fp-mimetypes="*/*" data-fp-container="modal" onchange="alert(event.fpfile.url)">//-->

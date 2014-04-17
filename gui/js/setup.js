@@ -11,7 +11,9 @@ angular.module('toolkit-gui', [
     'ngSanitize',
     'btford.markdown',
     'monospaced.elastic',
-    'angularFileUpload'
+    'angularFileUpload',
+    'ngCookies',
+    'ngIntercom'
 ]);
 
 angular.module('toolkit-gui').config(function($stateProvider, $urlRouterProvider) {
@@ -95,6 +97,31 @@ angular.module('toolkit-gui').factory('$exceptionHandler', ['$window', '$log', '
 angular.module('toolkit-gui').config(function($logProvider, DEBUG_MODE){
   $logProvider.debugEnabled(DEBUG_MODE);
 });
+
+
+/**
+ * Setup intercom.io
+ *
+ * @memberof			setup.js
+ *
+ */
+
+angular.module('toolkit-gui')
+    .config(function (IntercomServiceProvider) {
+        IntercomServiceProvider
+            .asyncLoading(true)
+            // manually set url since there is no local server running
+            .scriptUrl('https://static.intercomcdn.com/intercom.v1.js');
+    });
+/*
+    .run(['Intercom','$log', 'INTERCOM_API_KEY',function (Intercom, $log, INTERCOM_API_KEY) {
+        $log.debug('booting');
+        Intercom.boot({
+            email: "john.doe@example.com",
+            created_at: 1234567890,
+            app_id: INTERCOM_API_KEY
+        });
+    }]);*/
 
 
 

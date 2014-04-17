@@ -61,8 +61,7 @@ class Revision(ApiSerializerMixin, models.Model):
 
     # allow reviewers to upload alternatives to the current
     # these alternatives may be set as the "current" if the lawyer approves
-    alternatives = models.ManyToManyField('attachment.Revision', null=True, blank=True, symmetrical=False,
-                                          related_name="parent")
+    alternatives = models.ManyToManyField('attachment.Revision', null=True, blank=True, symmetrical=False, related_name="parent")
 
     # True by default, so that on create of a new one, it's set as the current revision
     is_current = models.BooleanField(default=True)
@@ -86,36 +85,6 @@ class Revision(ApiSerializerMixin, models.Model):
     @property
     def revisions(self):
         return self.item.revision_set.all()
-
-    def get_user_review_url(self, user, review_document=None):
-        """
-        Try to provide an initial review url from the base review_document obj
-        for the currently logged in user
-        """
-        if user is not None:
-            if review_document is None:
-                review_document = self.reviewdocument_set.all().last()
-            return review_document.get_absolute_url(user=user, use_absolute=False) if review_document is not None else None
-        return None
-
-        # context = getattr(self, 'context', None)
-        # request = context.get('request')
-        # review_document = context.get('review_document', None)
-
-        # if request is not None:
-        #     #
-        #     # if we have a review_document present in the context
-        #     #
-        #     if review_document is None:
-        #         # we have none, then try find the reviewdocument object that has all the matter participants in it
-        #         #
-        #         # The bast one will have 0 reviewers! and be the last in the set (because it was added first)
-        #         #
-        #         review_document = obj.reviewdocument_set.all().last()
-        #
-        #     return review_document.get_absolute_url(user=request.user) if review_document is not None else None
-        #
-        # return None
 
     def get_revision_label(self):
         """
@@ -141,8 +110,9 @@ class Revision(ApiSerializerMixin, models.Model):
         return the relative revision id for this revision
         Used in the signal to generate the attachment slug
         and revision_label
+        NB! must exclude the self.pk otherwise the increment will be wrong +1
         """
-        return self.revisions.count() + 1  # default is 1
+        return self.revisions.exclude(pk=self.pk).count() + 1 # default is 1
 
     def next(self):
         return self.revisions.filter(pk__gt=self.pk).first()
@@ -150,14 +120,9 @@ class Revision(ApiSerializerMixin, models.Model):
     def previous(self):
         return self.revisions.filter(pk__lt=self.pk).first()
 
-    @property
-    def primary_reviewdocument(self):
-        # is this *really* only the case for a NEW reviewdocument/revision?
-        return self.reviewdocument_set.filter(reviewers=None).last()
-
-
 from .signals import (ensure_revision_slug,
                       ensure_one_current_revision,
+                      reset_item_review_percentage_complete_on_delete,
                       set_item_is_requested_false,
                       set_previous_revision_is_current_on_delete,
                       ensure_revision_reviewdocument_object,

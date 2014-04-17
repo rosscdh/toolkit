@@ -360,11 +360,6 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': False,
-        },
-        'django.test': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
         }
     }
 }
@@ -378,6 +373,9 @@ BLEACH_ALLOWED_TAGS = ['blockquote', 'br', 'div', 'li', 'ol', 'span', 'ul']
 BLEACH_STRIP_COMMENTS = True
 BLEACH_STRIP_TAGS = True
 
+
+INTERCOM_APP_ID = 'wkxzfou'
+INTERCOM_APP_SECRET = 'MZCesCDxkDrYdfX8HocAB2F6V5aZzCm-DuF7lyR5'
 
 #
 # ACTIVITY STREAM
@@ -413,25 +411,36 @@ LAWPAL_ACTIVITY = {
                       'item-commented', 'item-comment-created', 'item-comment-deleted',
                       'item-invited-reviewer',
                       'item-provide-a-document',
-
                       'item-invited-signer',
+                      'item-completed-review',
+                      'item-completed-all-reviews',
 
                       'revision-created', 'revision-comment-created', 'item-added-revision-comment', 
                       'revision-added-revision-comment',
                       'revision-added-review-session-comment',
-                      'workspace-added-participant', 'workspace-removed-participant'
+
+                      'workspace-deleted',
+                      'workspace-added-participant', 'workspace-removed-participant',
+                      'workspace-stopped-participating',
                       ]
     },
     "activity": {
         "whitelist": ['item-created', 'item-edited', 'item-commented', 'item-changed-the-status', 'item-renamed',
                       'item-provide-a-document', 'item-invited-reviewer', 'item-canceled-their-request-for-a-document',
                       'item-closed', 'item-reopened', 'item-added-revision-comment', 'item-deleted-revision-comment',
-                      'revision-created', 'revision-deleted',
+                      'item-completed-review',
+                      'item-completed-all-reviews',
                       'item-invited-signer',
                       'itemrequestrevisionview-provide-a-document',
-                      'workspace-created', 'workspace-added-participant', 'workspace-removed-participant',
+
+                      'revision-created', 'revision-deleted',
                       'revision-added-review-session-comment',
-                      'revision-added-revision-comment']
+                      'revision-added-revision-comment'
+
+                      'workspace-created', 'workspace-deleted',
+                      'workspace-added-participant', 'workspace-removed-participant', 
+                      'workspace-stopped-participating',
+                      ]
     },
 }
 

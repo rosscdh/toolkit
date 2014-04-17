@@ -197,6 +197,306 @@ tr.item-heading.file-drag-over td:nth-child(2):before {
 	&:before { content: "\e02d"; }
 }
 
+
+.checklist-wrapper table.checklist tr.tr-min-height, .checklist-wrapper table.checklist tr.tr-min-height td {
+	background:transparent !important;
+	height:1px;
+	border: 0 solid transparent;
+	padding:0 !important;
+	margin:0;
+}
+
+.checklist-wrapper table.checklist tr.tr-min-show, .checklist-wrapper table.checklist tr.tr-min-show td
+{
+	margin:10px 0 !important;
+	height:10px !important;
+	border-top: 10px solid transparent;
+}
+
+/*
+
+	.checklist {
+		background-color:white;
+		margin-top:10px;
+		margin-bottom:13px;
+
+		.row {
+			border-top:5px solid #f2f2f2;
+			cursor:pointer;
+
+		}
+		.row-header {
+			background-color:#f2f2f2;
+			&.category-controls {
+				.btn-group {
+					.dropdown-menu {
+					}
+				}
+			}
+			&.category {
+				padding:13px 0px 0px 0px;
+			}
+			text-transform: uppercase;
+			padding:8px 0px 0px 0px;
+			color: #AAA;
+			font-size:13px;
+			&.category {
+				color:#666;
+				font-size:14px;
+			}
+			td {
+				padding-top:20px;
+			}
+		}
+		.row {
+
+			display:;
+			&.item-icon {
+				padding-left:5px;
+				padding-right:0px;
+				width:20px;
+				.icon {
+					line-height: 20px;
+					width:18px;
+					float:left;
+					margin:-4px 1px 0px 3px;
+					span {
+						font-size: 12px;
+					}
+				}
+			}
+			&:hover .fui-list-columned {
+				opacity:0.9;
+			}
+
+		}
+		.status {
+
+		}
+		.add-new {
+			text-align:right;
+			padding:4px 0px 4px 0px;
+			font-size:13px;
+			background-color:#f2f2f2;
+			a {
+				color: @gray-light;
+				font-weight:bold;
+			}
+			a.set-property {
+				font-size:11px;
+			}
+		}
+		.add-new-controls {
+			.input-group {
+				width:100%;
+			}
+		}
+	}*/
+
+#checklist {
+	.add-item input {
+		margin-top:10px;
+		margin-bottom:0px;
+	}
+	.btn-new-item {
+		background-color:#faf9f9;
+		color:#999;
+		font-weight:normal;
+		margin-top:1px;
+		padding:5px 9px 4px 9px;
+		border-bottom:2px solid #ddd;
+		border-radius:0px;
+	}
+}
+.checklist-header {
+	h5 {
+		background-color:#f2f2f2;
+		margin-bottom:0px;
+		&.category {
+			padding:13px 0px 0px 0px;
+		}
+		text-transform: uppercase;
+		padding:8px 0px 0px 0px;
+		color: #AAA;
+		font-size:13px;
+		&.category {
+			color:#666;
+			font-size:14px;
+		}
+	}
+	.dropdown-toggle {
+		margin-top:10px;
+	}
+	input {
+		margin-bottom:0px;
+		margin-top:10px;
+	}
+
+}
+
+
+
+
+/* UL/LI based checklist */
+ul.checklist-items {
+	min-height: 1em;
+	margin: 0.25em 0 0.25em 0;
+	li {
+		cursor: pointer;
+		position: relative;
+		background-color: #FFF;
+		padding:0px 9px;
+		border-top:5px solid #f2f2f2;
+		border-bottom:none;
+		// The selection state
+		&.item-closed {
+			color: lighten(@nephritis, 70%);
+			opacity:0.8;
+			background-color:lighten(@emerland, 15%);
+			.item-title {
+				color: lighten(@nephritis, 70%);
+			}
+			&.selected {
+				background-color:darken(@emerland, 5%);
+			}
+			.fui-list-columned {
+				color:white;
+			}
+		}
+
+		.item-title {
+			font-size:14px;
+			font-family:Helvetica;
+			word-spacing: normal;
+			color:#777;
+			font-weight:bold;
+			padding-left:14px;
+			padding-top:6px;
+			padding-bottom:6px;
+			position:relative;
+			span {
+				outline:none;
+				&:focus {
+					border-bottom:2px solid lighten(@sun-flower, 25%);
+					background-color: lighten(@sun-flower, 46%);
+					color:#444;
+				}
+			}
+			&.item-open {
+				&hover {
+					border-left-width:6px;
+				}
+			}
+			.fui-list-columned {
+				opacity:0;
+				font-size:18px;
+				position:absolute;
+				cursor:move;
+				top:3px;
+				left:10px;
+				width:4px;
+				overflow:hidden;
+			}
+			&:hover .fui-list-columned {
+				opacity:1;
+			}
+		}
+		.status {
+			padding-top:3px;
+			margin-right:-2px;
+			padding-bottom:0px;
+			text-align:right;
+			.fui-check-inverted  {
+				padding-top:2px;
+			}
+			a {
+				text-decoration:underline;
+			}
+			button {
+				padding:5px 5px;
+				font-size:11px;
+				margin-right:02px;
+				&[class*="doc-status"] {
+					background-color:transparent;
+					border:1px solid white;
+				}
+				&.doc-status-0 { border-color:@doc-status-0;color:@doc-status-0; }
+				&.doc-status-1 { border-color:@doc-status-1;color:@doc-status-1; }
+				&.doc-status-2 { border-color:@doc-status-2;color:@doc-status-2; }
+				&.doc-status-3 { border-color:@doc-status-3;color:@doc-status-3; }
+				&.doc-status-4 { border-color:@doc-status-4;color:@doc-status-4; }
+				&.doc-status-5 { border-color:@doc-status-5;color:@doc-status-5; }
+				&.doc-status-6 { border-color:@doc-status-6;color:@doc-status-6; }
+				&.doc-status-7 { border-color:@doc-status-7;color:@doc-status-7; }
+				&.doc-status-8 { border-color:@doc-status-8;color:@doc-status-8; }
+				&.doc-status-9 { border-color:@doc-status-9;color:@doc-status-9;}
+			}
+		}
+		// The selection state
+		&.selected {
+			background-color: lighten(@belize-hole, 10%);
+			color:white;
+			.item-title {
+				color:white;
+				opacity:1;
+			}
+			.status {
+				button {
+					background-color:transparent;
+					color:white;
+					border-color:white;
+				}
+			}
+		}
+		.fui-check-inverted {
+			padding-top:4px;
+		}
+		.pe-7s-check {
+			font-size:24px;
+			margin-top:4px;
+		}
+		&.ui-sortable-placeholder {
+			border: 1px solid rgba(255,255,255,0.5);
+			background-color: rgba(255,255,255,0.15);
+			background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAHklEQVQIW2NkQAWSjEh8SSD7OUwAzAFJggTgHJAAAEkuAx5OdRJCAAAAAElFTkSuQmCC');
+			visibility: visible !important;
+			&:after {
+				content: 'Drop item here';
+				opacity: 0.6;
+				font-size: 0.85em;
+				padding: 0.25em;
+				text-align: center;
+				height:33px;
+			}
+		}
+
+		&.ui-sortable-placeholder {
+			opacity: 0.8;
+		}
+
+		&.file-drag-over {
+			background-color: rgba(255,255,255,0.15);
+			background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAHklEQVQIW2NkQAWSjEh8SSD7OUwAzAFJggTgHJAAAEkuAx5OdRJCAAAAAElFTkSuQmCC');
+			&:after {
+				content: 'Drop file(s) here';
+				opacity: 0.6;
+				font-size: 0.85em;
+				padding: 0.12em;
+				position: absolute;
+				top: 0.12em;
+				left: 0;
+				width: 100%;
+				text-align: center;
+			}
+		}
+
+		.fui-list-columned {
+			.text-muted;
+			margin-left: -0.25em;
+		}
+	}
+}
+
 .chat {
   h4 a {
     &.active {
@@ -209,4 +509,11 @@ tr.item-heading.file-drag-over td:nth-child(2):before {
       color: #ccc;
     }
   }
+
+}
+
+.status-label {
+  font-size: 12px;
+  font-weight: bold;
+  padding: 8px 11px;
 }
