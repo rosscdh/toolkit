@@ -10,6 +10,7 @@ from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import FormView, UpdateView, TemplateView
 from django.views.generic.edit import BaseUpdateView
+from django.contrib.auth import logout
 from django.shortcuts import get_object_or_404
 
 from toolkit.apps.me.signals import send_welcome_email
@@ -180,6 +181,7 @@ class ChangePasswordView(AjaxModelFormView, FormView):
     def form_valid(self, form):
         form.save()
         messages.warning(self.request, 'Almost there. Please check your email %s and click the password confirmation validation link' % self.request.user.email)
+        logout(self.request)
         return super(ChangePasswordView, self).form_valid(form)
 
 
