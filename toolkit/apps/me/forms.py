@@ -5,6 +5,8 @@ from django.contrib.auth import get_user_model
 from django.template.defaultfilters import slugify
 from django.contrib.auth.forms import SetPasswordForm
 
+from django.contrib.auth.hashers import make_password
+
 import os
 
 from storages.backends.s3boto import S3BotoStorage
@@ -16,6 +18,8 @@ from parsley.decorators import parsleyfy
 
 from toolkit.apps.default.fields import HTMLField
 from toolkit.mixins import ModalForm
+
+from .mailers import ValidatePasswordChangeMailer
 
 User = get_user_model()
 
@@ -125,6 +129,23 @@ class ChangePasswordForm(ModalForm, SetPasswordForm):
     @property
     def action_url(self):
         return reverse('me:change-password')
+
+    def save(self, commit=False):
+        """
+        save the password salted and hased in user.profile
+        send the confirmation email
+        on recipet of the confirmation link click update the user password
+        """
+        profile = self.user.profile
+        # salt and hash this thing
+        temp_password = make_password(self.cleaned_data['new_password1'])
+        profile.data['validation_required_temp_password'] = temp_password
+        profile.save(update_fields=['data'])
+
+        m = ValidatePasswordChangeMailer(
+                recipients=((self.user.get_full_name(), self.user.email),),)
+        m.process(user=self.user)
+        
 
 
 @parsleyfy
