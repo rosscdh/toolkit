@@ -44,6 +44,8 @@ class BaseDataProvider(BaseScenarios):
         self.reviewer = mommy.make('auth.User', username='invited_reviewer', email='invited_reviewer@lawpal.com')
 
         self.item = mommy.make('item.Item', matter=self.matter, name='Test Item No. 1', category="A")
+        self.assertEqual(self.item.review_percentage_complete, None)  # ensure we have None when there are no review requests
+        # this wil change to a percentage when the request goes in
 
         default_storage.save('executed_files/test.pdf', ContentFile(os.path.join(settings.SITE_ROOT, 'toolkit', 'casper', 'test.pdf')))
 
@@ -54,6 +56,8 @@ class BaseDataProvider(BaseScenarios):
 
         # there should always be 1 reviewdocument that the matter.participants can review together alone
         self.assertEqual(self.revision.reviewdocument_set.all().count(), 1)
+        self.assertEqual(self.item.review_percentage_complete, 0.0)
+
         # when I add another reviewer they should get their own reviewdocument to talk about with the matter.participants
         self.revision.reviewers.add(self.reviewer)
         self.assertEqual(self.revision.reviewdocument_set.all().count(), 2)
