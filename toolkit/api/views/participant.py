@@ -15,6 +15,7 @@ from rest_framework import status as http_status
 from toolkit.apps.matter.signals import PARTICIPANT_ADDED
 from toolkit.apps.workspace.models import Workspace
 from toolkit.apps.workspace.services import EnsureCustomerService
+from toolkit.apps.matter.services import MatterRemovalService
 
 from ..serializers import MatterSerializer, SimpleUserSerializer
 from .mixins import (MatterMixin,)
@@ -92,17 +93,8 @@ class MatterParticipant(generics.CreateAPIView,
         # will raise Does not exist if not found
         participant_to_remove = User.objects.get(email=email)
 
-        #
-        # @BUSINESSRULE you cannot delete the primary lawyer
-        #
-        if participant_to_remove == self.matter.lawyer:
-            raise exceptions.PermissionDenied('You are not able to remove the primary lawyer')
-
-        if participant_to_remove in self.matter.participants.all():
-            self.matter.participants.remove(participant_to_remove)
-
-            self.matter.actions.removed_matter_participant(matter=self.matter, removing_user=request.user,
-                                                           removed_user=participant_to_remove)
+        service = MatterRemovalService(matter=self.matter, removing_user=request.user)
+        service.process(participant_to_remove)
 
         return Response(status=http_status.HTTP_202_ACCEPTED)
 
@@ -113,7 +105,7 @@ class MatterParticipant(generics.CreateAPIView,
         return user.profile.is_lawyer
 
     def can_delete(self, user):
-        return user.profile.is_lawyer
+        return user.profile.user_class in ['lawyer', 'customer']
 
 
 rulez_registry.register("can_read", MatterParticipant)
