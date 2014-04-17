@@ -213,6 +213,58 @@ class ReviewerSendEmailTest(BaseDataProvider, TestCase):
         self.assertEqual(len(mail.outbox), 0)  # no email was sent
 
 
+class ReviewerPercentageCompleteTest(BaseDataProvider, TestCase):
+    num_reviewers = 5
+    test_reviewers = []
+
+    def setUp(self):
+        super(ReviewerPercentageCompleteTest, self).setUp()
+
+        base_num_reviewdocuments = self.review_document.document.reviewdocument_set.all().count() - 1
+
+        self.test_reviewers.append(self.reviewer)  # append the main reviewer added in SetUp
+
+        for u_num in range(1, self.num_reviewers + 1):
+            reviewer = mommy.make('auth.User', username='invited_reviewer_%d' % u_num, email='invited_reviewer_%d@lawpal.com' % u_num)
+            self.review_document.document.reviewers.add(reviewer)
+            self.test_reviewers.append(reviewer)
+
+            # test that we increment the reviewdocument_set of the base document
+            self.assertEqual(self.item.invited_document_reviews().count(), base_num_reviewdocuments + u_num)
+            #self.assertEqual(self.review_document.document.reviewdocument_set.all().count() - 1, base_num_reviewdocuments + u_num)
+
+        #self.item = self.review_document.document.item.__class__.objects.get(pk=self.review_document.document.item.pk)  # refresh
+
+    def test_percentage_complete_increments(self):
+        num_complete = 0
+        total_num_reviews = self.item.invited_document_reviews().count()
+
+        self.assertEqual(total_num_reviews, 6) # 6 not 5 because of the primary documentreview which is ignored
+        self.assertEqual(self.item.review_percentage_complete, 0)
+        self.assertEqual(self.item.percent_formatted(self.item.review_percentage_complete), '0%')
+
+        for c, user in enumerate(self.test_reviewers):
+            reviewdocument = self.item.invited_document_reviews().get(reviewers__in=[user])
+            reviewdocument.is_complete = True
+            reviewdocument.save(update_fields=['is_complete'])
+
+            # test that we are incrementing the number of reviewdocuments for each user
+            # test the built in api method
+            self.assertEqual(self.item.invited_document_reviews().filter(is_complete=True).count(), num_complete + (c+1))
+            # affirm that the built in matches the manual calc below
+            self.assertEqual(self.review_document.document.reviewdocument_set.filter(is_complete=True).count(), num_complete + (c+1))
+
+            # test % increment
+            num_reviewdocuments_complete = self.item.invited_document_reviews().filter(is_complete=True).count()
+            review_percentage_complete = float(num_reviewdocuments_complete) / float(total_num_reviews)
+            review_percentage_complete = round(review_percentage_complete * 100, 0)
+
+            self.assertEqual(self.item.review_percentage_complete, review_percentage_complete)
+
+        self.assertEqual(self.item.review_percentage_complete, 100.0)
+        self.assertEqual(self.item.percent_formatted(self.item.review_percentage_complete), '100%')
+
+
 """
 View tests
 1. if user is logged in, check they are a participant or the expected user according to the auth_key
