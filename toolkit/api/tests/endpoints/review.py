@@ -50,7 +50,7 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
 
     def test_lawyer_get_no_participants(self):
         """
-        We shoudl get a reviewdocument but with None reviewers (only the participants, can view this reviewdocument object)
+        We should get a reviewdocument but with None reviewers (only the participants, can view this reviewdocument object)
         """
         self.client.login(username=self.lawyer.username, password=self.password)
 
@@ -142,7 +142,8 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
 
         # test if activity shows in stream
         stream = target_stream(self.matter)
-        self.assertEqual(stream[0].data['message'], u'Lawyer Test invited Participant Number 1 as reviewer for Test Item with Revision')
+        self.assertEqual(stream[0].data['override_message'],
+                         u'Lawyër Tëst invited a reviewer to Test Item with Revision')
 
     def test_second_lawyer_post(self):
         """
@@ -239,7 +240,8 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
 
         # test if activity shows in stream
         stream = target_stream(self.matter)
-        self.assertEqual(stream[0].data['message'], u'Lawyer Test invited Participant Number 1 as reviewer for Test Item with Revision')
+        self.assertEqual(stream[0].data['override_message'],
+                         u'Lawyër Tëst invited a reviewer to Test Item with Revision')
 
 
 class ReviewObjectIncrementWithNewReviewerTest(BaseEndpointTest):
@@ -407,14 +409,14 @@ class RevisionReviewerTest(BaseEndpointTest):
         # Test the auth for the new reviewer
         #
         url = urllib.unquote_plus(reviewdocument.get_absolute_url(user=self.participant))
-        self.assertEqual(url, '/review/%s/%s/' % (reviewdocument.slug, reviewdocument.make_user_auth_key(user=self.participant)))
+        self.assertEqual(url, ABSOLUTE_BASE_URL('/review/%s/%s/' % (reviewdocument.slug, reviewdocument.make_user_auth_key(user=self.participant))))
         #
         # Test the auth urls for the matter.participants
         # test that they cant log in when logged in already (as the lawyer above)
         #
         for u in self.matter.participants.all():
             url = urllib.unquote_plus(reviewdocument.get_absolute_url(user=u))
-            self.assertEqual(url, '/review/%s/%s/' % (reviewdocument.slug, reviewdocument.get_user_auth(user=u)))
+            self.assertEqual(url, ABSOLUTE_BASE_URL('/review/%s/%s/' % (reviewdocument.slug, reviewdocument.get_user_auth(user=u))))
             # Test that permission is denied when logged in as a user that is not the auth_token user
             resp = self.client.get(url)
             self.assertTrue(resp.status_code, 403) # denied
@@ -517,7 +519,7 @@ class RevisionRequestedDocumentTest(BaseEndpointTest):
     and
     item.responsible_party must be a User
     """
-    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'status', u'category', u'is_complete', u'closing_group', u'description', u'parent', u'date_modified', u'url', u'is_requested', u'children', u'matter', u'date_due', u'responsible_party', u'is_final', u'date_created', u'latest_revision', u'request_document_meta', u'slug', u'name']
+    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'status', u'category', u'is_complete', u'closing_group', u'description', u'parent', u'date_modified', u'url', u'is_requested', u'children', u'matter', u'date_due', u'responsible_party', u'is_final', u'date_created', u'latest_revision', u'request_document_meta', u'slug', u'name', u'review_percentage_complete']
 
     @property
     def endpoint(self):
@@ -567,10 +569,11 @@ class RevisionRequestedDocumentTest(BaseEndpointTest):
 
         inviteduploader_user = User.objects.get(username='inviteduploader')
         invited_uploader = LiteUserSerializer(inviteduploader_user,
-                                              context={'request': self.request_factory.get(self.endpoint)})  ## should exist as we jsut created him in the patch
+                                              context={'request': self.request_factory.get(self.endpoint)}).data  ## should exist as we jsut created him in the patch
 
         self.assertTrue(json_data.get('is_requested') is True)
-        self.assertEqual(json_data.get('responsible_party'), invited_uploader.data)
+        self.assertItemsEqual(json_data.get('responsible_party').keys(), invited_uploader.keys())
+
 
         #
         # now upload a document and ensure

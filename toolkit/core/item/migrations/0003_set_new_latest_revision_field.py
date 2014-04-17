@@ -22,7 +22,6 @@ class Migration(DataMigration):
                 current_revision = orm['attachment.Revision'].objects.get(item=item, is_current=True)
                 item.latest_revision = current_revision
                 item.save()
-                #import pdb;pdb.set_trace()
 
     def backwards(self, orm):
         "Write your backwards methods here."

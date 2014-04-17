@@ -1,6 +1,4 @@
-{% extends 'notification/base.html' %}
-
-{% load url from future %}{% load humanize %}
+{% extends 'notification/base.html' %}{% load notice_tags %}{% load url from future %}
 
 {% block body %}
     <div id="notifications" class="content">
@@ -20,23 +18,8 @@
         <div class="container">
             <div class="row">
                 <div class="col-sm-8 col-sm-offset-2" role="main">
-                    {% for notice in object_list %}
-                        <article class="notification">
-                            <div class="row">
-                                <div class="col-xs-1">
-                                    <div class="avatar img-circle"><span class="initials" title="{{ notice.message.data.actor.name }}">{{ notice.message.data.actor.initials }}</span></div>
-                                </div>
-                                <div class="col-xs-10">
-                                    <p class="lead">{{ notice.message }}</p>
-                                    <p class="small">{{ notice.message.date|naturaltime }} — in <a href="{{ notice.message.data.target.base_url }}">{{ notice.message.data.target.name }}</a> for {{ notice.message.data.target.client.name }}.</p>
-                                </div>
-                                <div class="col-xs-1">
-                                    <a href="javascript:;" data-pk="{{ notice.pk }}" data-url="{% url 'notification:inbox-read' pk=notice.pk %}" class="btn btn-sm notification-btn mark-as-read" data-toggle="tooltip" data-placement="top" title="Mark as read">
-                                        <span class="fui-check text-info"></span>
-                                    </a>
-                                </div>
-                            </div>
-                        </article>
+                    {% for item in object_list %}
+                        {% render_notice item %}
                     {% empty %}
                         <div class="col-md-12 text-center">
                             <h6 class="text-muted">You currently have no notifications.</h6>

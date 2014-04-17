@@ -2,7 +2,7 @@ angular.module('toolkit-gui')
 /**
  * @class ChecklistCtrl
  * @classdesc 							Controller for retreiving and display checklists
- * 
+ *
  * @param  {Object} $scope                Contains the scope of this controller
  * @param  {Object} $rootScope            Rootscope variable
  * @param  {Object} $routeParams          Object that provides access to Angular route parameters
@@ -27,6 +27,7 @@ angular.module('toolkit-gui')
 	'ezConfirm',
 	'toaster',
 	'$modal',
+	'baseService',
 	'matterService',
 	'matterItemService',
 	'matterCategoryService',
@@ -37,6 +38,9 @@ angular.module('toolkit-gui')
 	'commentService',
 	'$timeout',
     '$log',
+    '$window',
+    'Intercom',
+    'INTERCOM_APP_ID',
 	function($scope,
 			 $rootScope,
 			 $routeParams,
@@ -45,6 +49,7 @@ angular.module('toolkit-gui')
 			 ezConfirm,
 			 toaster,
 			 $modal,
+			 baseService,
 			 matterService,
 			 matterItemService,
 			 matterCategoryService,
@@ -54,7 +59,10 @@ angular.module('toolkit-gui')
 			 userService,
 			 commentService,
 			 $timeout,
-			 $log){
+			 $log,
+             $window,
+             Intercom,
+             INTERCOM_APP_ID){
 		/**
 		 * Scope based data for the checklist controller
 		 * @memberof			ChecklistCtrl
@@ -72,7 +80,8 @@ angular.module('toolkit-gui')
 			'categories': [],
 			'users': [],
 			'searchData': searchService.data(),
-			'usdata': userService.data()
+			'usdata': userService.data(),
+            'streamType': 'matter'
 		};
 		//debugger;
 
@@ -87,9 +96,11 @@ angular.module('toolkit-gui')
 					//set matter in the services
 					matterService.selectMatter(singleMatter);
 					$scope.initialiseMatter( singleMatter );
-					$scope.initializeActivityMatterStream( singleMatter );
+					$scope.initializeActivityStream( singleMatter );
 
 					userService.setCurrent( singleMatter.current_user );
+
+                    $scope.initialiseIntercom(singleMatter.current_user);
 				},
 				function error(err){
 					toaster.pop('error', "Error!", "Unable to load matter");
@@ -114,12 +125,13 @@ angular.module('toolkit-gui')
 			categories.push(
 				{ 'name': categoryName, 'items': items }
 			);
-			
+
 			if( matter && matter.categories ) {
 				// Allocate items to specific categories to make multiple arrays
 				jQuery.each( matter.categories, function( index, cat ) {
 					var categoryName = cat;
 					var items = jQuery.grep( matter.items, function( item ){ return item.category===categoryName; } );
+
 					categories.push( { 'name': categoryName, 'items': items } );
 				});
 
@@ -140,9 +152,38 @@ angular.module('toolkit-gui')
 			}
 		};
 
+
+        /**
+		 * Inits the intercom interface
+         *
+		 * @name	initialiseIntercom
+		 * @param  {Object} Current user object
+		 * @private
+		 * @memberof			ChecklistCtrl
+		 * @method			initialiseIntercom
+		 */
+        $scope.initialiseIntercom = function(currUser){
+            $log.debug(currUser);
+
+            Intercom.boot({
+                user_id: currUser.username,
+                email: currUser.email,
+                type: currUser.user_class,
+                app_id: INTERCOM_APP_ID,
+                created_at: (new Date(currUser.date_joined).getTime()/1000),
+                user_hash: currUser.intercom_user_hash,
+                widget: {
+                    activator: '.intercom',
+                    use_counter: true
+                }
+            });
+
+            //Intercom.show();
+        };
+
 		/***
-		 ___ _                     
-		|_ _| |_ ___ _ __ ___  ___ 
+		 ___ _
+		|_ _| |_ ___ _ __ ___  ___
 		 | || __/ _ \ '_ ` _ \/ __|
 		 | || ||  __/ | | | | \__ \
 		|___|\__\___|_| |_| |_|___/
@@ -151,7 +192,7 @@ angular.module('toolkit-gui')
 		 * Requests the checklist API to add a checklist item
 		 *
 		 * @name				submitNewItem
-		 * 
+		 *
 		 * @param  {Object} category	Category object contains category name (String)
 		 * @private
 		 * @method				submitNewItem
@@ -163,7 +204,8 @@ angular.module('toolkit-gui')
 		   if ($scope.data.newItemName) {
 			 matterItemService.create(matterSlug, $scope.data.newItemName, category.name).then(
 				 function success(item){
-					category.items.unshift(item);
+					/*category.items.unshift(item);*/
+					category.items.push(item);
 					$scope.data.newItemName = '';
 				 },
 				 function error(err){
@@ -175,7 +217,7 @@ angular.module('toolkit-gui')
 
 		/**
 		 * Sets the currently selected item to the one passed through to this method
-		 * 
+		 *
 		 * @param  {Object}	item		Category object contains category name (String)
 		 * @param {Object}	category	object representing the category of the item to select
 		 * @private
@@ -186,7 +228,8 @@ angular.module('toolkit-gui')
 			$scope.data.selectedItem = item;
 			$scope.data.selectedCategory = category;
 
-			$scope.initializeActivityItemStream();
+			$scope.activateActivityStream('item');
+            $scope.loadItemDetails(item);
 
 			//Reset controls
             $scope.data.dueDatePickerDate = $scope.data.selectedItem.date_due;
@@ -224,6 +267,20 @@ angular.module('toolkit-gui')
 			}
 		}
 
+        $scope.loadItemDetails = function(item){
+            //if(typeof(item.latest_revision.reviewers) === "string") {
+            if(item.latest_revision && !item.latest_revision.reviewers) {
+                baseService.loadObjectByUrl(item.latest_revision.url).then(
+                    function success(obj){
+                        item.latest_revision = obj;
+                    },
+                    function error(err){
+                        toaster.pop('error', "Error!", "Unable to load latest revision");
+                    }
+                );
+            }
+        };
+
 
 		/**
 		 * Requests the checklist API to delete the currently selected checklist item
@@ -248,7 +305,7 @@ angular.module('toolkit-gui')
 									$scope.data.selectedCategory.items.splice(index,1);
 								}
 								$scope.data.selectedItem = null;
-								$scope.initializeActivityMatterStream();
+								$scope.initializeActivityStream();
 							},
 							function error(err){
 								toaster.pop('error', "Error!", "Unable to delete item");
@@ -265,7 +322,7 @@ angular.module('toolkit-gui')
 		 * @name 				showAddItemForm
 		 *
 		 * @param  {Number} index Index (starting at 0) of the group for which to display the add form
-		 * 
+		 *
 		 * @private
 		 * @method				showAddItemForm
 		 * @memberof			ChecklistCtrl
@@ -284,7 +341,7 @@ angular.module('toolkit-gui')
 		 * Executes a save of the selected item, using the in scope variable selectedItem
 		 *
 		 * @name 				saveSelectedItem
-		 * 
+		 *
 		 * @private
 		 * @method				saveSelectedItem
 		 * @memberof			ChecklistCtrl
@@ -346,18 +403,18 @@ angular.module('toolkit-gui')
 		/*** End item handling */
 
 		/*
-		  ____ ____  _   _ ____     ____      _                              
-		 / ___|  _ \| | | |  _ \   / ___|__ _| |_ ___  __ _  ___  _ __ _   _ 
+		  ____ ____  _   _ ____     ____      _
+		 / ___|  _ \| | | |  _ \   / ___|__ _| |_ ___  __ _  ___  _ __ _   _
 		| |   | |_) | | | | | | | | |   / _` | __/ _ \/ _` |/ _ \| '__| | | |
 		| |___|  _ <| |_| | |_| | | |__| (_| | ||  __/ (_| | (_) | |  | |_| |
 		 \____|_| \_\\___/|____/   \____\__,_|\__\___|\__, |\___/|_|   \__, |
-													  |___/            |___/ 
-		 */ 
+													  |___/            |___/
+		 */
 		/**
 		 * Return item due status
 		 *
 		 * @name 				submitNewCategory
-		 * 
+		 *
 		 * @private
 		 * @method				submitNewCategory
 		 * @memberof			ChecklistCtrl
@@ -386,31 +443,36 @@ angular.module('toolkit-gui')
 		 * @name 				deleteCategory
 		 *
 		 * @param {Object} cat Catgory object
-		 * 
+		 *
 		 * @private
 		 * @method				deleteCategory
 		 * @memberof			ChecklistCtrl
 		 */
-		$scope.deleteCategory = function(cat) {
-			var matterSlug = $scope.data.slug;
+        $scope.deleteCategory = function (cat) {
+            var matterSlug = $scope.data.slug;
 
-			matterCategoryService.delete(matterSlug, cat).then(
-				function success(){
-					var index = jQuery.inArray( cat, $scope.data.categories );
-					if( index>=0 ) {
-						// Remove item from in RAM array
-						$scope.data.categories.splice(index,1);
-					}
+            ezConfirm.create('Delete Category', 'Please confirm you would like to delete this category?',
+                function yes() {
+                    // Confirmed- delete category
+                    matterCategoryService.delete(matterSlug, cat).then(
+                        function success() {
+                            var index = jQuery.inArray(cat, $scope.data.categories);
+                            if (index >= 0) {
+                                // Remove item from in RAM array
+                                $scope.data.categories.splice(index, 1);
+                            }
 
-					if (cat === $scope.data.selectedCategory){
-						$scope.data.selectedItem = null;
-					}
-				},
-				function error(err){
-					toaster.pop('error', "Error!", "Unable to delete category");
-				}
-			);
-		};
+                            if (cat === $scope.data.selectedCategory) {
+                                $scope.data.selectedItem = null;
+                            }
+                        },
+                        function error(err) {
+                            toaster.pop('error', "Error!", "Unable to delete category");
+                        }
+                    );
+                }
+            );
+        };
 
 		/**
 		 * Sets an index value used to display/hide edit category form
@@ -418,7 +480,7 @@ angular.module('toolkit-gui')
 		 * @name 				showEditCategoryForm
 		 *
 		 * @param {Object} cat Catgory object
-		 * 
+		 *
 		 * @private
 		 * @method				showEditCategoryForm
 		 * @memberof			ChecklistCtrl
@@ -439,7 +501,7 @@ angular.module('toolkit-gui')
 		 * @name 				editCategory
 		 *
 		 * @param {Object} cat Catgory object
-		 * 
+		 *
 		 * @private
 		 * @method				editCategory
 		 * @memberof			ChecklistCtrl
@@ -460,12 +522,12 @@ angular.module('toolkit-gui')
 		/* End CRUD Category */
 
 		/*
-		 ____            _     _             
-		|  _ \ _____   _(_)___(_) ___  _ __  
-		| |_) / _ \ \ / / / __| |/ _ \| '_ \ 
+		 ____            _     _
+		|  _ \ _____   _(_)___(_) ___  _ __
+		| |_) / _ \ \ / / / __| |/ _ \| '_ \
 		|  _ <  __/\ V /| \__ \ | (_) | | | |
 		|_| \_\___| \_/ |_|___/_|\___/|_| |_|
-											 
+
 		 */
 
 		/**
@@ -474,7 +536,7 @@ angular.module('toolkit-gui')
 		 * @name 				processUpload
 		 *
 		 * @param {Object} cat Catgory object
-		 * 
+		 *
 		 * @private
 		 * @method				processUpload
 		 * @memberof			ChecklistCtrl
@@ -545,7 +607,7 @@ angular.module('toolkit-gui')
 		 * Request API to create a new revision
 		 *
 		 * @name 				saveLatestRevision
-		 * 
+		 *
 		 * @private
 		 * @method				saveLatestRevision
 		 * @memberof			ChecklistCtrl
@@ -571,7 +633,7 @@ angular.module('toolkit-gui')
 		 * Request API to delete latest revision
 		 *
 		 * @name 				deleteLatestRevision
-		 * 
+		 *
 		 * @private
 		 * @method				deleteLatestRevision
 		 * @memberof			ChecklistCtrl
@@ -835,6 +897,10 @@ angular.module('toolkit-gui')
 
 			modalInstance.result.then(
 				function ok(review) {
+                    if (!revision.reviewers) {
+                        revision.reviewers = [];
+                    }
+
 					var results = jQuery.grep( revision.reviewers, function( rev ){ return rev.reviewer.username===review.reviewer.username; } );
 					if( results.length===0 ) {
 						revision.reviewers.push(review);
@@ -946,7 +1012,7 @@ angular.module('toolkit-gui')
 		};
 
         $scope.getReviewPercentageComplete = function( item) {
-            if(item && item.latest_revision && item.latest_revision.reviewers.length>0) {
+            if(item && item.latest_revision && item.latest_revision.reviewers && item.latest_revision.reviewers.length>0) {
                 var reviews = item.latest_revision.reviewers;
                 var completed = 0;
 
@@ -973,7 +1039,7 @@ angular.module('toolkit-gui')
 		 *
 		 * @param {Event} evt Event as passed through from jQuery-ui drag and drop
 		 * @param {DOM} ui DOM element
-		 * 
+		 *
 		 * @private
 		 * @method				recalculateCategories
 		 * @memberof			ChecklistCtrl
@@ -1047,7 +1113,7 @@ angular.module('toolkit-gui')
 		 * takes a few milliseconds.
 		 *
 		 * @name 				focus
-		 * 
+		 *
 		 * @private
 		 * @method				focus
 		 * @memberof			ChecklistCtrl
@@ -1154,9 +1220,8 @@ angular.module('toolkit-gui')
 			'stop':  recalculateCategories, /* Fires once the drag and drop event has finished */
 			'start': function() { $scope.data.dragging=true; $scope.$apply();},
 			'connectWith': ".group",
-			'axis': 'y',
-			'distance': 15,
-			'delay': 10
+			'dropOnEmpty': true,
+			'axis': 'y'
 		};
 
 		/**
@@ -1173,8 +1238,7 @@ angular.module('toolkit-gui')
 			},
 			'stop':  recalculateCategories, /* Fires once the drag and drop event has finished */
 			'axis': 'y',
-			'distance': 15,
-			'delay': 10
+			'distance': 15
 		};
 
 
@@ -1190,55 +1254,65 @@ angular.module('toolkit-gui')
 		 */
 
 
+         /**
+		 * Activates the activity stream for the given type
+         *
+		 * @memberof			ChecklistCtrl
+		 * @private
+		 * @type {Object}
+		 */
+        $scope.activateActivityStream = function(streamtype){
+            if(streamtype === 'item' && $scope.data.selectedItem!==null) {
+                $scope.data.streamType = 'item';
+            } else {
+                $scope.data.streamType = 'matter';
+            }
+
+            $scope.initializeActivityStream();
+        };
+
 		 /**
 		 * Reads the matter activity stream from API.
 		 * @memberof			ChecklistCtrl
 		 * @private
 		 * @type {Object}
 		 */
-		$scope.initializeActivityMatterStream = function() {
+		$scope.initializeActivityStream = function() {
 			var matterSlug = $scope.data.slug;
 
-			activityService.matterstream(matterSlug).then(
-				 function success(result){
-					$scope.data.activitystream = result;
-				 },
-				 function error(err){
-					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to read activity matter stream.") {
-						toaster.pop('error', "Error!", "Unable to read activity matter stream.");
-					}
-				 }
-			);
+            if ($scope.data.streamType==='matter' || $scope.data.selectedItem===null){
+                activityService.matterstream(matterSlug).then(
+                     function success(result){
+                        $scope.data.activitystream = result;
+                     },
+                     function error(err){
+                        if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to read activity matter stream.") {
+                            toaster.pop('error', "Error!", "Unable to read activity matter stream.");
+                        }
+                     }
+                );
+            } else {
+                var itemSlug = $scope.data.selectedItem.slug;
+
+                activityService.itemstream(matterSlug, itemSlug).then(
+                     function success(result){
+                        if($scope.data.selectedItem!==null) {
+                            $scope.data.activitystream = result;
+                        }
+                     },
+                     function error(err){
+                        if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to read activity item stream.") {
+                            toaster.pop('error', "Error!", "Unable to read activity item stream.");
+                        }
+                     }
+                );
+            }
 
 			/*
 			//reload activity stream every 60seconds
 			$timeout(function (){
 				$scope.initializeActivityStream();
 			}, 1000 * 60);*/
-		};
-
-
-		/**
-		 * Reads the item activity stream from API.
-		 * @memberof			ChecklistCtrl
-		 * @private
-		 * @type {Object}
-		 */
-		$scope.initializeActivityItemStream = function() {
-			$scope.data.activitystream = [];
-			var matterSlug = $scope.data.slug;
-			var itemSlug = $scope.data.selectedItem.slug;
-
-			activityService.itemstream(matterSlug, itemSlug).then(
-				 function success(result){
-					$scope.data.activitystream = result;
-				 },
-				 function error(err){
-					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to read activity item stream.") {
-						toaster.pop('error', "Error!", "Unable to read activity item stream.");
-					}
-				 }
-			);
 		};
 
 
@@ -1265,7 +1339,7 @@ angular.module('toolkit-gui')
 			commentService.create(matterSlug, itemSlug, $scope.data.newcomment).then(
 				 function success(){
                     $scope.data.newcomment="";
-					$scope.initializeActivityItemStream();
+					$scope.activateActivityStream('item');
 				 },
 				 function error(err){
 					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to create item comment.") {
@@ -1288,7 +1362,7 @@ angular.module('toolkit-gui')
 
 			commentService.delete(matterSlug, itemSlug, comment).then(
 				 function success(){
-					$scope.initializeActivityItemStream();
+					$scope.activateActivityStream('item');
 				 },
 				 function error(err){
 					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to delete item comment.") {

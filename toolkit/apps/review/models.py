@@ -42,16 +42,16 @@ class ReviewDocument(IsDeletedMixin, FileExistsLocallyMixin, UserAuthMixin, mode
     def get_absolute_url(self, user):
         auth_key = self.get_user_auth(user=user)
         if auth_key is not None:
-            return reverse('review:review_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)})
+            return ABSOLUTE_BASE_URL(reverse('review:review_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)}))
         return None
 
     def get_download_url(self, user):
-        return reverse('review:download_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)})
+        return ABSOLUTE_BASE_URL(reverse('review:download_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)}))
 
     def get_approval_url(self, user):
         auth_key = self.get_user_auth(user=user)
         if auth_key is not None:
-            return reverse('review:approve_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)})
+            return ABSOLUTE_BASE_URL(reverse('review:approve_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)}))
         return None
 
     def complete(self, is_complete=True):
@@ -123,7 +123,7 @@ class ReviewDocument(IsDeletedMixin, FileExistsLocallyMixin, UserAuthMixin, mode
                 #
                 logger.info('Sending ReviewDocument invite email to: %s' % u)
 
-                m = ReviewerReminderEmail(recipients=((u.get_full_name(), u.email,),))
+                m = ReviewerReminderEmail(recipients=((u.get_full_name(), u.email,),), from_tuple=(from_user.get_full_name(), from_user.email,))
                 m.process(subject=m.subject,
                           item=self.document.item,
                           document=self.document,
@@ -143,6 +143,9 @@ rulez_registry.register("can_read", ReviewDocument)
 rulez_registry.register("can_edit", ReviewDocument)
 rulez_registry.register("can_delete", ReviewDocument)
 
-from .signals import (ensure_matter_participants_are_in_reviewdocument_participants,
+from .signals import (set_item_review_percentage_complete,
+                      reset_item_review_percentage_complete_on_complete,
+                      reset_item_review_percentage_complete_on_delete,
+                      ensure_matter_participants_are_in_reviewdocument_participants,
                       on_reviewer_add,
                       on_reviewer_remove,)

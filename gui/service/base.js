@@ -27,3 +27,41 @@ angular.module('toolkit-gui')
         $httpProvider.interceptors.push('myHttpInterceptor');
     }]);
 
+
+angular.module('toolkit-gui')
+/**
+ * @class baseService
+ * @classdesc 		                      Responsible for managing and requesting the API.
+ * @param  {Function} $q                  Contains the scope of this controller
+ * @param  {Function} $resource           Provides access to close and cancel methods
+ * @param  {Function} anon                Controller function
+ */
+.factory('baseService',[
+	'$q',
+	'$resource',
+	'$log',
+	function( $q, $resource, $log ) {
+
+        return {
+
+            'loadObjectByUrl': function (url ) {
+                var deferred = $q.defer();
+
+                var api = $resource( url, {}, {
+                    'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } }
+                });
+
+                api.get({},
+                    function success(obj){
+                        deferred.resolve(obj);
+                    },
+                    function error(err) {
+                        deferred.reject( err );
+                    }
+                );
+
+                return deferred.promise;
+            }
+        };
+     }]
+);

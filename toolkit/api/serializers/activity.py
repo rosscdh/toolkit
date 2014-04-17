@@ -47,14 +47,14 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
             #'target_pk': obj.target.slug,
         }
 
-        override_message = obj.data.get('message', None)
+        override_message = obj.data.get('override_message', None)
         comment = obj.data.get('comment', None)
 
         if comment is not None:
             return _get_comment_display(ctx, comment)
 
-        # if override_message is not None:
-        #     return override_message
+        if override_message is not None:
+            return override_message % ctx
 
         if obj.action_object.__class__.__name__ in ['Item']:
             return _('<span data-uid="%(actor_pk)d">%(actor)s</span> %(verb)s <a href="%(action_object_url)s">%(action_object)s</a> <span data-date="%(timestamp)s"></span>') % ctx
@@ -84,14 +84,9 @@ class ItemActivitySerializer(MatterActivitySerializer):
         if comment is not None:
             return _get_comment_display(ctx, comment)
 
-        override_message = obj.data.get('message', None)
+        override_message = obj.data.get('override_message', None)
 
-        comment = obj.data.get('comment', None)
-
-        if comment is not None:
-            return _get_comment_display(ctx, comment)
-
-        # if override_message is not None:
-        #     return override_message
+        if override_message is not None:
+            return override_message % ctx
 
         return _('<span data-uid="%(actor_pk)d">%(actor)s</span> %(verb)s <a href="%(action_object_url)s">%(action_object)s</a> <span data-date="%(timestamp)s"></span>') % ctx

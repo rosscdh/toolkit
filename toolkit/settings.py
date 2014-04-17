@@ -363,11 +363,6 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': False,
-        },
-        'django.test': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
         }
     }
 }
@@ -382,6 +377,9 @@ BLEACH_STRIP_COMMENTS = True
 BLEACH_STRIP_TAGS = True
 
 
+INTERCOM_APP_ID = 'wkxzfou'
+INTERCOM_APP_SECRET = 'MZCesCDxkDrYdfX8HocAB2F6V5aZzCm-DuF7lyR5'
+
 #
 # ACTIVITY STREAM
 #
@@ -394,6 +392,10 @@ ACTSTREAM_SETTINGS = {
     'USE_FOLLOWING': False,  # VERY importand; will break our system if this changes to True
 }
 
+#
+# Any change to the LAWPAL_ACTIVITY elements below needs to affect the
+# test_notices.py 
+#
 LAWPAL_ACTIVITY = {
     "abridge": {
         "whitelist": [
@@ -410,22 +412,36 @@ LAWPAL_ACTIVITY = {
         "whitelist": [
                       'item-reopened', 'item-closed',
                       'item-commented', 'item-comment-created', 'item-comment-deleted',
-                      'item-provide-a-document',
                       'item-invited-reviewer',
+                      'item-provide-a-document',
                       'item-invited-signer',
+                      'item-completed-review',
+                      'item-completed-all-reviews',
+
                       'revision-created', 'revision-comment-created', 'item-added-revision-comment', 
                       'revision-added-revision-comment',
-                      'workspace-added-participant', 'workspace-removed-participant'
+                      'workspace-deleted',
+                      'workspace-added-participant', 'workspace-removed-participant',
+                      'workspace-stopped-participating',
                       ]
     },
     "activity": {
         "whitelist": ['item-created', 'item-edited', 'item-commented', 'item-changed-the-status', 'item-renamed',
                       'item-provide-a-document', 'item-invited-reviewer', 'item-canceled-their-request-for-a-document',
                       'item-closed', 'item-reopened', 'item-added-revision-comment', 'item-deleted-revision-comment',
+                      'item-completed-review',
+                      'item-completed-all-reviews',
+
                       'revision-created', 'revision-deleted',
+
                       'item-invited-signer',
                       'itemrequestrevisionview-provide-a-document',
-                      'workspace-created', 'workspace-added-participant', 'workspace-removed-participant']  # create so many activities to keep tests running for now
+
+                      'workspace-created', 'workspace-deleted',
+                      'workspace-added-participant', 'workspace-removed-participant', 
+                      'workspace-stopped-participating',
+
+                      'revision-added-revision-comment']
     },
 }
 

@@ -46,7 +46,7 @@
     </h3>
 
     <!-- Begin option toolbar -->
-    <div class="add-new">
+    <div class="add-new clearfix">
         <div class="btn-group" ng-show="data.usdata.current.user_class=='lawyer'">
             <button class="btn btn-sm btn-info btn-embossed btn-add" filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)" extensions=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx"><span class="fui-upload"></span>
                 Add File
@@ -80,7 +80,7 @@
             <span class="fui-calendar"></span>{{ data.selectedItem.date_due | date:'dd MMMM' }}
         </a>
         //-->
-        <span class="calendar-group" ng-show="data.showDateDueInput||data.selectedItem.date_due" ng-click="data.showDateDuePicker=true">
+        <span class="calendar-group" ng-show="(data.showDateDueInput||data.selectedItem.date_due)&&data.usdata.current.user_class==='lawyer'" ng-click="data.showDateDuePicker=true">
             <input type="text" id="dateduepicker-input" datepicker-popup="dd-MMMM" ng-model="data.dueDatePickerDate"
                    datepicker-options="dateOptions" is-open="data.showDateDuePicker" class="btn-embossed btn-sm btn-silver" />
             <label class="fui-calendar" for="dateduepicker-input"></label>
@@ -98,7 +98,7 @@
         </a>
 
         <a ng-show="data.usdata.current.user_class!=='lawyer'"
-           class="btn btn-sm btn-embossed pull-right" ng-class="{ 'btn-success': !data.selectedItem.is_complete, 'btn-default': data.selectedItem.is_complete}">
+           class="label status-label pull-right" ng-class="{ 'label-primary': !data.selectedItem.is_complete, 'label-default': data.selectedItem.is_complete}">
             <span class="fui-checkbox"></span> <span ng-hide="data.selectedItem.is_complete">Open</span><span ng-show="data.selectedItem.is_complete">Closed</span>
         </a>
         <!--
@@ -110,6 +110,10 @@
         //-->
     </div>
     <!-- End option toolbar -->
+
+    <div class="no-revisions text-center" ng-show="data.usdata.current.user_class!=='lawyer'&&!data.selectedItem.latest_revision">
+        <span class="fui-document"></span> No files added yet.
+    </div>
 
     <div class="waiting-revision text-center" ng-show="data.selectedItem.is_requested&&data.selectedItem.responsible_party.username!=data.usdata.current.username">
         <span class="fui-time"></span> Waiting for a document from <span ng-bind="data.selectedItem.responsible_party | fullname"></span>.
@@ -136,7 +140,7 @@
         </div>
     </div>
 
-    <ul class="revisions list-unstyled" ng-show="data.selectedItem.latest_revision">
+    <ul class="revisions list-unstyled" ng-show="data.selectedItem.latest_revision.slug">
         <!-- Begin current revision -->
         <li class="header">Current</li>
         <li class="current">
@@ -192,7 +196,7 @@
                             <a class="close" href="javascript:;" ng-click="deleteRevisionReviewRequest(data.selectedItem, rev)"
                                ng-hide="rev.is_complete">x</a>
                             <a href="javascript:;" ng-click="showReview(data.selectedItem.latest_revision, rev)" class="pull-right">
-                                <button class="btn btn-warning btn-xs" ng-hide="rev.is_complete"><span class="fui-time"></span> In progress</button> 
+                                <button class="btn btn-warning btn-xs" ng-hide="rev.is_complete"><span class="fui-time"></span> In progress</button>
                                 <button class="btn btn-success btn-xs" ng-show="rev.is_complete">
                                     <span class="fui-check"></span> Complete
                                 </button>
@@ -205,7 +209,7 @@
                         </li>
                     </ul>
                 </div>
-            </div>  
+            </div>
             <div class="sub">{{ data.selectedItem.latest_revision.slug }} &middot; {{ data.selectedItem.latest_revision.uploaded_by.name }}, {{ data.selectedItem.latest_revision.date_created | timeago }}</div>
         </li>
         <!-- End current revision -->

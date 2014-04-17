@@ -4,6 +4,7 @@ from django.template.defaultfilters import slugify
 
 from storages.backends.s3boto import S3BotoStorage
 
+from toolkit.core.mixins import ApiSerializerMixin
 from toolkit.utils import get_namedtuple_choices
 
 from jsonfield import JSONField
@@ -40,7 +41,7 @@ def _upload_file(instance, filename):
     return 'executed_files/%s' % full_file_name
 
 
-class Revision(models.Model):
+class Revision(ApiSerializerMixin, models.Model):
     REVISION_STATUS = BASE_REVISION_STATUS
 
     name = models.CharField(max_length=255, null=True, blank=True)
@@ -71,6 +72,8 @@ class Revision(models.Model):
     date_modified = models.DateTimeField(auto_now=True, auto_now_add=True, db_index=True)
 
     objects = RevisionManager()
+
+    _serializer = 'toolkit.api.serializers.RevisionSerializer'
 
     class Meta:
         # @BUSINESS RULE always return the oldest to newest
@@ -107,8 +110,9 @@ class Revision(models.Model):
         return the relative revision id for this revision
         Used in the signal to generate the attachment slug
         and revision_label
+        NB! must exclude the self.pk otherwise the increment will be wrong +1
         """
-        return self.revisions.count() + 1 # default is 1
+        return self.revisions.exclude(pk=self.pk).count() + 1 # default is 1
 
     def next(self):
         return self.revisions.filter(pk__gt=self.pk).first()
@@ -118,6 +122,7 @@ class Revision(models.Model):
 
 from .signals import (ensure_revision_slug,
                       ensure_one_current_revision,
+                      reset_item_review_percentage_complete_on_delete,
                       set_item_is_requested_false,
                       set_previous_revision_is_current_on_delete,
                       ensure_revision_reviewdocument_object,
