@@ -36,8 +36,8 @@ class BaseUSPSTrackingCode(TestCase):
 
         self.subject = USPSEightyThreeBTracking()
 
-        self.user = mommy.make('auth.User', first_name='Customer', last_name='Test', email='test+customer@lawpal.com')
-        self.lawyer = mommy.make('auth.User', first_name='Lawyer', last_name='Test', email='test+lawyer@lawpal.com')
+        self.user = mommy.make('auth.User', first_name='Customër', last_name='Tëst', email='test+customer@lawpal.com')
+        self.lawyer = mommy.make('auth.User', first_name='Lawyër', last_name='Tëst', email='test+lawyer@lawpal.com')
         lawyer_profile = self.lawyer.profile
         lawyer_profile.data['user_class'] = 'lawyer'
         lawyer_profile.save(update_fields=['data'])
@@ -125,7 +125,7 @@ class USPSTrackingCodeCliCommandTest(BaseUSPSTrackingCode):
 
         self.assertEqual(len(email.to), 1)
         self.assertEqual(email.to, ['test+customer@lawpal.com'])
-        self.assertEqual(email.from_email, u'Lawyer Test (via LawPal) support@lawpal.com')
+        self.assertEqual(email.from_email, 'Lawyër Tëst (via LawPal) support@lawpal.com')
         self.assertEqual(email.extra_headers, {'Reply-To': self.lawyer.email})
 
 

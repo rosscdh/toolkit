@@ -126,7 +126,7 @@ class NotificationEventsListTest(BaseListViewTest):
         self.assertEqual(inbox.count(), 2)  # should get the notification about adding matter_participant to matter
         # for i in inbox:
         #     print i.__unicode__()
-        self.assertTrue(all(i.__unicode__() in [u'[Customer Test] Lawyer Test added Matter Participant as a participant to Lawpal (test)', u'[Customer Test] Lawyer Test removed Customer Test as a participant of Lawpal (test)'] for i in inbox))
+        self.assertTrue(all(i.__unicode__() in [u'[Customër Tëst] Lawyër Tëst added Matter Participant as a participant to Lawpal (test)', u'[Customër Tëst] Lawyër Tëst removed Customër Tëst as a participant of Lawpal (test)'] for i in inbox))
 
         inbox = self.get_inbox(user=matter_participant)
 
