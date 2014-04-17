@@ -47,10 +47,8 @@ def reset_item_review_percentage_complete_on_complete(sender, instance, created,
 
 @receiver(pre_delete, sender=ReviewDocument, dispatch_uid='review.pre_delete.reset_item_review_percentage_complete')
 def reset_item_review_percentage_complete_on_delete(sender, instance, **kwargs):
-    if instance.document.reviewdocument_set.all().count() <= 1:  # if we only have the BASE review present
-        # i.e. we have only 1 (or less) reviewdocument then set the item recalculate_review_percentage_complete
-        item = instance.document.item
-        item.recalculate_review_percentage_complete()
+    item = instance.document.item
+    item.recalculate_review_percentage_complete()
 
 
 @receiver(post_save, sender=ReviewDocument, dispatch_uid='review.ensure_matter_participants_are_in_reviewdocument_participants')
