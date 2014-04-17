@@ -19,10 +19,11 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
 
     status = serializers.ChoiceField(required=False, choices=Item.ITEM_STATUS.get_choices())
 
+    #review_percentage_complete = serializers.Field(source='review_percentage_complete')  # removed while fixing things
+
     responsible_party = LiteUserSerializer(required=False)
 
     latest_revision = SimpleRevisionSerializer(read_only=True)
-    #latest_revision = serializers.SerializerMethodField('get_latest_revision')
 
     matter = serializers.HyperlinkedRelatedField(many=False, required=True, view_name='workspace-detail', lookup_field='slug')
 
@@ -35,7 +36,9 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
         model = Item
         lookup_field = 'slug'
         fields = ('slug', 'url',
-                  'status', 'responsible_party',
+                  'status',
+                  'responsible_party',
+                  #'review_percentage_complete',
                   'name', 'description', 'matter',
                   'parent', 'children', 'closing_group', 'category',
                   'latest_revision',
@@ -93,7 +96,9 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
 class SimpleItemSerializer(ItemSerializer):
     class Meta(ItemSerializer.Meta):
         fields = ('url', 'slug', 'name', 
-                  'status', 'category',
+                  'status',
+                  #'review_percentage_complete',
+                  'category',
                   'latest_revision',
                   'is_final', 'is_complete', 'is_requested',
                   'date_due',)

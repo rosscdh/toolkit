@@ -7,8 +7,8 @@ class ReviewDocumentManager(IsDeletedManager):
     def get_query_set(self):
         return IsDeletedQuerySet(self.model, using=self._db).filter(is_deleted=False)
 
-    def deleted(self):
-        return super(ReviewDocumentManager, self).get_query_set().filter(is_deleted=True)
+    def deleted(self, **kwargs):
+        return super(ReviewDocumentManager, self).get_query_set().filter(is_deleted=True, **kwargs)
 
     def my_as_reviewer(self, user, **kwargs):
         """

@@ -41,7 +41,7 @@ class BaseUSPSTrackingCode(TestCase):
 
         self.password = 'password'
 
-        self.user = mommy.make('auth.User', first_name='Customer', last_name='Test', email='test+customer@lawpal.com')
+        self.user = mommy.make('auth.User', first_name='Customër', last_name='Tëst', email='test+customer@lawpal.com')
         self.user.set_password(self.password)
         self.user.save()
 
@@ -138,7 +138,7 @@ class TestTrackingCodeEmail(BaseUSPSTrackingCode):
 
         email = mail.outbox[0]
 
-        self.assertEqual(email.subject, u'83b Tracking Code entered for Customer Test')
+        self.assertEqual(email.subject, u'83b Tracking Code entered for Customër Tëst')
         self.assertEqual(len(email.attachments), num_attachments)  # test we have the attachments
         self.assertEqual(len(email.to), 1)
         self.assertEqual(email.to, ['test+customer@lawpal.com'])
@@ -146,7 +146,7 @@ class TestTrackingCodeEmail(BaseUSPSTrackingCode):
         self.assertEqual(email.extra_headers, {'Reply-To': 'support@lawpal.com'})
 
         email = mail.outbox[1]
-        self.assertEqual(email.subject, u'83b Tracking Code entered for Customer Test')
+        self.assertEqual(email.subject, u'83b Tracking Code entered for Customër Tëst')
         self.assertEqual(len(email.attachments), num_attachments)  # test we have the attachments
         self.assertEqual(len(email.to), 1)
         self.assertEqual(email.to, ['test+lawyer@lawpal.com'])

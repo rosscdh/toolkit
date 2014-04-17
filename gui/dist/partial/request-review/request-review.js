@@ -23,7 +23,8 @@ angular.module('toolkit-gui')
 	'participantService',
     'matterItemService',
 	'toaster',
-	function($scope, $modalInstance, participants, currentUser, matter, checklistItem, revision, participantService, matterItemService, toaster){
+    '$log',
+	function($scope, $modalInstance, participants, currentUser, matter, checklistItem, revision, participantService, matterItemService, toaster, $log){
 
 
 		/**
@@ -154,8 +155,12 @@ angular.module('toolkit-gui')
 		 * @memberof			RequestreviewCtrl
 		 */
         $scope.participantIsReviewer = function (p) {
-            var users = jQuery.grep( revision.reviewers, function( review ){ return review.reviewer.username===p.username; } );
-            return (users.length>0);
+            if($scope.revision.reviewers) {
+                var users = jQuery.grep( $scope.revision.reviewers, function( review ){ return review.reviewer.username===p.username; } );
+                return (users.length>0);
+            } else {
+                return 0;
+            }
         };
 
 		/**

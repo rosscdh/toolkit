@@ -32,5 +32,5 @@ class AttachmentManger(models.Manager):
     def get_query_set(self):
         return IsDeletedQuerySet(self.model, using=self._db).filter(is_deleted=False)
 
-    def deleted(self):
-        return super(AttachmentManger, self).get_query_set().filter(is_deleted=True)
+    def deleted(self, **kwargs):
+        return super(AttachmentManger, self).get_query_set().filter(is_deleted=True, **kwargs)
