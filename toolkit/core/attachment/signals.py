@@ -75,16 +75,16 @@ def ensure_revision_item_latest_revision_is_current(sender, instance, **kwargs):
         item.save(update_fields=['latest_revision'])
 
 
-@receiver(post_save, sender=Revision, dispatch_uid='revision.reset_item_review_in_progress')
-def reset_item_review_in_progress(sender, instance, created, **kwargs):
+@receiver(post_save, sender=Revision, dispatch_uid='revision.reset_item_review_percentage_complete')
+def reset_item_review_percentage_complete(sender, instance, created, **kwargs):
     """
     Ensure that the is_current=True revision is set to the item.latest_revision
     """
     if created is True:
         #
-        # Set the review_in_progress to False
+        # Set the recalculate_review_percentage_complete to False
         #
-        instance.item.reset_review_in_progress()
+        instance.item.recalculate_review_percentage_complete()
 
 
 @receiver(post_save, sender=Revision, dispatch_uid='revision.ensure_revision_reviewdocument_object')
@@ -135,15 +135,15 @@ can talk
 """
 
 
-@receiver(pre_delete, sender=Revision, dispatch_uid='revision.pre_delete.reset_item_review_in_progress')
-def reset_item_review_in_progress_on_delete(sender, instance, **kwargs):
+@receiver(pre_delete, sender=Revision, dispatch_uid='revision.pre_delete.reset_item_review_percentage_complete')
+def reset_item_review_percentage_complete_on_delete(sender, instance, **kwargs):
     """
-    On Delete of a revision we want to reset the review_in_progress setting for the item
+    On Delete of a revision we want to reset the recalculate_review_percentage_complete setting for the item
     """
     if instance.is_current is True:  # only reset it if its the most recent document one
-        # i.e. we have only 1 (or less) reviewdocument then set the item review_in_progress to False
+        # i.e. we have only 1 (or less) reviewdocument then set the item recalculate_review_percentage_complete to False
         item = instance.item
-        item.reset_review_in_progress()
+        item.recalculate_review_percentage_complete()
 
 
 @receiver(post_delete, sender=Revision, dispatch_uid='revision.set_previous_revision_is_current_on_delete')
