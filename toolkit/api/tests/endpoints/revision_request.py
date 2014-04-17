@@ -85,7 +85,7 @@ class ItemsRequestDocumentTest(BaseEndpointTest):
         # this should have created a new revision upload invite
         stream = action_object_stream(self.item)
         self.assertEqual(stream[0].data['override_message'],
-                         u'Lawyer Test requested Bob Da hoon provide a document on Test Item No. 1')
+                         u'Lawyër Tëst requested Bob Da hoon provide a document on Test Item No. 1')
 
         # now we patch again to remove the revision_request and see if the activity is created
         data = {
@@ -95,7 +95,7 @@ class ItemsRequestDocumentTest(BaseEndpointTest):
         self.client.patch(self.endpoint, json.dumps(data), content_type='application/json')
         stream = target_stream(self.matter)
         self.assertEqual(stream[0].data['override_message'],
-                         u'Lawyer Test canceled their request for Bob Da hoon to provide a document on Test Item No. 1')
+                         u'Lawyër Tëst canceled their request for Bob Da hoon to provide a document on Test Item No. 1')
 
     def test_lawyer_delete(self):
         self.client.login(username=self.lawyer.username, password=self.password)
