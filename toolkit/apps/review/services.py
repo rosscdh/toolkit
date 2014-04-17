@@ -21,15 +21,18 @@ class CrocodocLoaderService(object):
         self.service = CrocoDocConnectService(document_object=self.reviewdocument.document,
                        app_label='attachment',
                        field_name='executed_file',
-                       upload_immediately=False,  # this is handled by the ensure_local_file method
+                       upload_immediately=True,  # this is handled by the ensure_local_file method
                        # important for sandboxing the view to the specified reviewer
                        reviewer=self.reviewdocument.reviewer)
 
         self.ensure_lawpal_uuid()  # record the uuid
 
     def ensure_lawpal_uuid(self):
-        if self.service.is_new is True or self.reviewdocument.crocodoc_uuid in [None, '']:
+        if self.reviewdocument.document.primary_reviewdocument.crocodoc_uuid == self.service.obj.uuid:
+            crocodoc_object = self.service.obj
+            crocodoc_object.crocodoc_uuid = None
 
+        if self.service.is_new is True or self.reviewdocument.crocodoc_uuid in [None, '']:
             if self.service.obj.uuid:
                 #
                 # Save the uuid field so we can do lookups

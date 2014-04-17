@@ -1,15 +1,20 @@
 # -*- coding: utf-8 -*-
+import logging
 from django.contrib.auth.models import User
 from django.dispatch import Signal, receiver
 from django.db.models.signals import m2m_changed
 
 import dj_crocodoc.signals as crocodoc_signals
+from toolkit.apps.review.models import ReviewDocument
 
 from toolkit.apps.workspace.models import Workspace
 
 from toolkit.apps.workspace.models import InviteKey
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 from .mailers import ParticipantAddedEmail
+
+
+logger = logging.getLogger('django.request')
 
 
 PARTICIPANT_ADDED = Signal(providing_args=['matter', 'participant', 'user', 'note'])
@@ -106,26 +111,24 @@ def crocodoc_webhook_event_recieved(sender, verb, document, target, attachment_n
             matter = target.item.matter
 
         if matter is not None:
-            # review_document = document.source_object.reviewdocument_set.filter(reviewers__in=[user.pk, ])
-            # if review_document.count() == 1:
-            #     matter.actions.  # add review-copy-comment?
-
             if crocodoc_event in ['annotation.create', 'comment.create', 'comment.update']:
                 # user MUST be in document.source_object.primary_reviewdocument.reviewers
                 # otherwise he could not get to this point
 
-                if document.source_object.primary_reviewdocument == \
-                        document.source_object.reviewdocument_set.filter(reviewers__in=[user.pk]):
-                    # the primary one has NO reviewers. so this if will always have the same result.
-                    pass
+                reviewdocument = None
+                try:
+                    reviewdocument = document.source_object.reviewdocument_set.get(
+                        crocodoc_uuid=document.crocodoc_uuid.replace('-', ''))  # not found with '-' in uuid
+                except ReviewDocument.DoesNotExist:
+                    logger.error(u'ReviewDocument not found for crocodoc_uuid (no comment saved): %s' % document.crocodoc_uuid)
 
-                if user == matter.lawyer:
-                    # if it's MY revision, create revision-comment-action
-                    matter.actions.add_revision_comment(user=user, revision=document.source_object, comment=content)
-                else:
-                    # otherwise create review-session-comment
-                    matter.actions.add_review_session_comment(user=user, revision=document.source_object,
-                                                              comment=content)
+                if reviewdocument:
+                    if reviewdocument == document.source_object.primary_reviewdocument:
+                        # this reviewdocument is the PRIMARY one, meaning: one that is not being externally reviewed
+                        matter.actions.add_revision_comment(user=user, revision=document.source_object, comment=content)
+                    else:
+                        # otherwise it is externally reviewed -> add "(review copy)" to the displayed event
+                        matter.actions.add_review_copy_comment(user=user, revision=document.source_object, comment=content)
 
             if crocodoc_event in ['annotation.delete', 'comment.delete']:
                 matter.actions.delete_revision_comment(user=user, revision=document.source_object)

@@ -55,7 +55,7 @@ def _activity_send(actor, target, action_object, message, **kwargs):
         action.send(actor, target=target, action_object=action_object, message=message, **kwargs)
 
 
-def _abridge_send(verb_slug, actor, target, action_object, message=None):
+def _abridge_send(verb_slug, actor, target, action_object, message=None, comment=None, item=None):
     """
     Send activity data to abridge
     """
@@ -68,6 +68,10 @@ def _abridge_send(verb_slug, actor, target, action_object, message=None):
                 s = LawPalAbridgeService(user=user,
                                          ABRIDGE_ENABLED=getattr(settings, 'ABRIDGE_ENABLED', False))  # initialize and pass in the user
                 if message:
+                    # TODO:
+                    # if item and comment:
+                    #     send email including comment-text
+                    # else:
                     s.create_event(content_group=target.name,
                                    content='<div style="font-size:3.3em;">%s</div>' % message)
 
@@ -76,7 +80,7 @@ def _abridge_send(verb_slug, actor, target, action_object, message=None):
                 logger.critical('Abridge Service is not running because: %s' % e)
 
 
-def _notifications_send(verb_slug, actor, target, action_object, message):
+def _notifications_send(verb_slug, actor, target, action_object, message, comment, item):
     """
     Send persistent messages (notifications) for this user
     github notifications style
@@ -107,6 +111,8 @@ def _notifications_send(verb_slug, actor, target, action_object, message):
 
             if hasattr(action_object, 'api_serializer') is True:
                 action_object = action_object.api_serializer(action_object, context={'request': None}).data
+            if hasattr(item, 'api_serializer') is True:
+                item = item.api_serializer(item, context={'request': None}).data
 
             target_class_name = target.__class__.__name__
 
@@ -121,9 +127,12 @@ def _notifications_send(verb_slug, actor, target, action_object, message):
                                             message=message,
                                             extra_tags='',
                                             fail_silently=False,
+                                            verb_slug=verb_slug,
                                             actor=actor,
+                                            action_object=action_object,
                                             target=target,
-                                            action_object=action_object)
+                                            comment=comment,
+                                            item=item)
 
             #
             # @TODO move into manager?
@@ -178,7 +187,9 @@ def on_activity_received(sender, **kwargs):
 
         # send the notifications to the participants
         _notifications_send(verb_slug=verb_slug, actor=actor, target=target, action_object=action_object,
-                            message=message)
+                            message=message, comment=kwargs.get('comment', None),
+                            item=kwargs.get('item', None))
 
         # send to abridge service
-        _abridge_send(verb_slug=verb_slug, actor=actor, target=target, action_object=action_object, message=message)
+        _abridge_send(verb_slug=verb_slug, actor=actor, target=target, action_object=action_object, message=message,
+                      comment=kwargs.get('comment', None), item=kwargs.get('item', None))

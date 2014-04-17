@@ -25,6 +25,7 @@ class ReviewSerializer(serializers.HyperlinkedModelSerializer):
 
         if reviewer is not None:
             context = self.context.copy()
+
             context.update({
                 'review_document': obj
             })
