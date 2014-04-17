@@ -122,6 +122,7 @@ class Revision(ApiSerializerMixin, models.Model):
 
 from .signals import (ensure_revision_slug,
                       ensure_one_current_revision,
+                      reset_item_review_percentage_complete_on_delete,
                       set_item_is_requested_false,
                       set_previous_revision_is_current_on_delete,
                       ensure_revision_reviewdocument_object,

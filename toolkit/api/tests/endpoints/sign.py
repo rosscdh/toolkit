@@ -140,7 +140,7 @@ class RevisionSignaturesTest(PyQueryMixin, BaseEndpointTest):
 
         # test if activity shows in stream
         stream = target_stream(self.matter)
-        self.assertEqual(stream[0].data['message'], u'Lawyer Test invited Participant Number 1 as signer for Test Item with Revision')
+        self.assertEqual(stream[0].data['message'], u'Lawyër Tëst invited Participant Number 1 as signer for Test Item with Revision')
 
     def test_second_lawyer_post(self):
         """
