@@ -50,7 +50,6 @@ class ReviewInProgressMixin(object):
         else:
             return []
 
-
     @property
     def participants_review_document(self):
         """
@@ -66,12 +65,12 @@ class ReviewInProgressMixin(object):
 
     @property
     def review_percentage_complete(self):
-        return self.data.get('review_percentage_complete', 0)
+        return self.data.get('review_percentage_complete', None)
 
     @review_percentage_complete.setter
     def review_percentage_complete(self, value):
         if type(value) not in [None, float]:
-            raise Exception('review_percentage_complete must be a float')
+            raise Exception('review_percentage_complete must be None or a float was passed a: %s' % type(value))
 
         logger.info('Item %s review_percentage_complete set to %s' % (self, value))
         self.data['review_percentage_complete'] = value
@@ -84,7 +83,7 @@ class ReviewInProgressMixin(object):
         2. all reviews are complete (approved)
         3. all reviews are deleted
         """
-        num_reviewdocuments = None
+        num_reviewdocuments = None # this is necessary to ensure that we can present None when there are no reviews active
         num_reviewdocuments_complete = 0
         review_percentage_complete = 0
 
@@ -92,6 +91,7 @@ class ReviewInProgressMixin(object):
         if queryset:
 
             for rd in queryset.values('is_complete'):
+                # this is necessary to ensure that we can present None when there are no reviews active
                 num_reviewdocuments = 0 if num_reviewdocuments is None else num_reviewdocuments
                 num_reviewdocuments += 1
                 num_reviewdocuments_complete += 1 if rd.get('is_complete') is True else 0
@@ -100,10 +100,8 @@ class ReviewInProgressMixin(object):
                 review_percentage_complete = float(num_reviewdocuments_complete) / float(num_reviewdocuments)
                 review_percentage_complete = round(review_percentage_complete * 100, 0)
 
-            #review_percentage_complete = "{0:.0f}%".format(value)
-
         if review_percentage_complete != self.review_percentage_complete: # only if its different (save the db update event)
-            self.review_percentage_complete = review_percentage_complete
+            self.review_percentage_complete = float(review_percentage_complete)
             logger.info('Item %s review_percentage_complete set to %s' % (self, review_percentage_complete))
 
             self.save(update_fields=['data'])
