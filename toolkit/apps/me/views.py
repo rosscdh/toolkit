@@ -145,6 +145,9 @@ class ConfirmPasswordChangeRequest(TemplateView):
         if password and password is not False:
             self.user.password = password
             self.user.save(update_fields=['password'])
+            # remove temp password
+            del profile.data['validation_required_temp_password']
+            profile.save(update_fields=['data'])
 
         messages.success(self.request, 'Congratulations. Your password has been changed.')
 
