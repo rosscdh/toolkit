@@ -149,7 +149,7 @@ class ConfirmPasswordChangeRequest(TemplateView):
             del profile.data['validation_required_temp_password']
             profile.save(update_fields=['data'])
 
-        messages.success(self.request, 'Congratulations. Your password has been changed.')
+        messages.success(self.request, 'Congratulations. Your password has been changed. Please login below')
 
         return redirect('/')
 
