@@ -119,6 +119,37 @@ class ConfirmEmailValidationRequest(TemplateView):
         return redirect('/')
 
 
+class ConfirmPasswordChangeRequest(TemplateView):
+    """
+    When a user confirms that they want to change their password they come
+    here and it does that for them.
+    """
+    template_name = None
+
+    def dispatch(self, request, *args, **kwargs):
+        self.request = request
+        self.args = args
+        self.kwargs = kwargs
+
+        try:
+            pk = signing.loads(kwargs['token'], salt=settings.SECRET_KEY)
+        except signing.BadSignature:
+            raise Http404
+
+        self.user = get_object_or_404(get_user_model(), pk=pk)
+
+        profile = self.user.profile
+        password = profile.data.get('validation_required_temp_password', False)
+
+        if password and password is not False:
+            self.user.password = password
+            self.user.save(update_fields=['password'])
+
+        messages.success(self.request, 'Congratulations. Your password has been changed.')
+
+        return redirect('/')
+
+
 class AccountSettingsView(UpdateView):
     form_class = AccountSettingsForm
     model = User
@@ -148,7 +179,7 @@ class ChangePasswordView(AjaxModelFormView, FormView):
 
     def form_valid(self, form):
         form.save()
-        messages.success(self.request, 'Success. You have changed your password')
+        messages.warning(self.request, 'Almost there. Please check your email %s and click the password confirmation validation link' % self.request.user.email)
         return super(ChangePasswordView, self).form_valid(form)
 
 
