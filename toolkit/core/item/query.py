@@ -11,7 +11,7 @@ class ItemQuerySet(QuerySet):
         return self.filter(revision__is_current=True, revision__reviewers__in=[user])
 
     def needs_signature(self, user):
-        return self.filter(revision__is_current=True, revision__signatories__in=[user])
+        return self.filter(revision__is_current=True, revision__signers__in=[user])
 
     def needs_upload(self, user):
         return self.filter(responsible_party=user, is_requested=True)

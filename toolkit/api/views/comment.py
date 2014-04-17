@@ -43,7 +43,7 @@ class ItemCommentEndpoint(MatterItemsQuerySetMixin,
         comment = request.DATA.get('comment', '')
         if comment.strip() not in [None, '']:
             self.matter.actions.add_item_comment(user=request.user, item=self.item,
-                                                                comment=comment)
+                                                 comment=comment)
             return Response(status=http_status.HTTP_201_CREATED)
         else:
             return Response(status=http_status.HTTP_400_BAD_REQUEST, data={'reason': 'You should send a comment.'})

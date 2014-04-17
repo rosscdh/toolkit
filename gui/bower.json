@@ -27,6 +27,9 @@
     "font-awesome": "~4.0",
     "angular-ui-sortable": "~0.12.1",
     "ez-confirm": "*",
-    "raven-js":"~1.1"
+    "raven-js": "~1.1",
+    "FileAPI": "~2.0.3",
+    "angular-intercom": "latest",
+    "crypto-js": "http://crypto-js.googlecode.com/files/CryptoJS%20v3.1.2.zip"
   }
 }

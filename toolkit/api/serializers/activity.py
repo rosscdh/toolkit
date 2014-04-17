@@ -10,9 +10,11 @@ from toolkit.api.serializers.user import LiteUserSerializer
 
 def _get_comment_display(ctx, comment):
     template = loader.get_template('activity/comment.html')  # allow override of template_name
+    ctx['comment'] = comment
     context = loader.Context(ctx)
     # render the template with passed in context
     return template.render(context)
+
 
 class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
     event = serializers.SerializerMethodField('get_event')
@@ -45,14 +47,14 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
             #'target_pk': obj.target.slug,
         }
 
-        override_message = obj.data.get('message', None)
+        override_message = obj.data.get('override_message', None)
         comment = obj.data.get('comment', None)
 
         if comment is not None:
             return _get_comment_display(ctx, comment)
 
-        # if override_message is not None:
-        #     return override_message
+        if override_message is not None:
+            return override_message % ctx
 
         if obj.action_object.__class__.__name__ in ['Item']:
             return _('<span data-uid="%(actor_pk)d">%(actor)s</span> %(verb)s <a href="%(action_object_url)s">%(action_object)s</a> <span data-date="%(timestamp)s"></span>') % ctx
@@ -77,15 +79,14 @@ class ItemActivitySerializer(MatterActivitySerializer):
             #'target': obj.target,
             #'target_pk': obj.target.slug,
         }
-
-        override_message = obj.data.get('message', None)
-
         comment = obj.data.get('comment', None)
 
         if comment is not None:
             return _get_comment_display(ctx, comment)
 
-        # if override_message is not None:
-        #     return override_message
+        override_message = obj.data.get('override_message', None)
+
+        if override_message is not None:
+            return override_message % ctx
 
         return _('<span data-uid="%(actor_pk)d">%(actor)s</span> %(verb)s <a href="%(action_object_url)s">%(action_object)s</a> <span data-date="%(timestamp)s"></span>') % ctx

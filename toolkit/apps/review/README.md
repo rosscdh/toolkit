@@ -46,7 +46,7 @@ Technical
 
 1. an item by default has a ReviewDocument object that all of 
 the matter.participants have access to. This is to allow the participants to
-interact with each other at a sandboxed level
+interact with each other but noone else
 
 2. an item.revision gets a ReviewDocument per reviwer (who is invited to review the doc)
 The purpose of doing it in this way is to ensure that the reviewer is never exposed

@@ -8,9 +8,6 @@ from rest_framework import status as http_status
 
 from rulez import registry as rulez_registry
 
-from toolkit.core.item.mailers import SignatoryReminderEmail
-from toolkit.apps.review.mailers import ReviewerReminderEmail
-
 from ..serializers import SimpleUserSerializer
 from .mixins import SpecificAttributeMixin
 from .revision import ItemCurrentRevisionView
@@ -84,9 +81,12 @@ rulez_registry.register("can_delete", RemindReviewers)
 
 class RemindSignatories(BaseReminderMixin):
     """
-    Send reminder emails to signatories
+    Send reminder emails to signers
     """
-    specific_attribute = 'signatories.all()'
+    specific_attribute = 'signers.all()'
+
+    def send_reminders(self):
+        return self.item.send_sign_reminder_emails(from_user=self.request.user)
 
     def can_read(self, user):
         return user.profile.user_class in ['lawyer']

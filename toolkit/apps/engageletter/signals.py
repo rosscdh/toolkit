@@ -110,6 +110,7 @@ def on_lawyer_sign(sender, instance, actor, **kwargs):
                        actor_name=actor_name,
                        instance=instance)
 
+
 @receiver(complete)
 def on_complete(sender, instance, actor, **kwargs):
     marker_name = 'complete'
@@ -130,45 +131,52 @@ def _update_object_signatures(obj, new_signatures):
 
 
 @receiver(hellosign_webhook_event_recieved)
-def on_hellosign_webhook_event_recieved(sender, hellosign_log, signature_request_id, hellosign_request, event_type, data, **kwargs):
-    logging.info('Recieved event: %s for request: %s' % (event_type, hellosign_request,))
-
+def on_hellosign_webhook_event_recieved(sender, hellosign_log,
+                                        signature_request_id,
+                                        hellosign_request,
+                                        event_type,
+                                        data,
+                                        **kwargs):
     #
-    # Issue the signals
+    # Hear the signal
     #
-    # Should only be issued on recipet of the signed signal #
     engageletter = hellosign_request.source_object
-    user, status = hellosign_log.signer_status
 
-    if hellosign_log.event_type == 'signature_request_all_signed':
-        #
-        # Update the base Object with the current signature object
-        #
-        _update_object_signatures(obj=engageletter, new_signatures=hellosign_log.signatures)
-        #
-        # Mark as complete
-        #
-        logger.info('HelloSign Webhook: %s All signatures have been completed for: %s' % (event_type, engageletter))
-        engageletter.markers.marker('complete').issue_signals(request=sender, instance=engageletter, actor=user)
+    if engageletter.__class__.__name__ in ['EngagementLetter']:
 
-    elif hellosign_log.event_type == 'signature_request_signed':
+        logging.info('Recieved event: %s for request: %s' % (event_type, hellosign_request,))
 
-        if user is not None and status == 'signed':
+        user, status = hellosign_log.signer_status
+
+        if hellosign_log.event_type == 'signature_request_all_signed':
             #
             # Update the base Object with the current signature object
             #
             _update_object_signatures(obj=engageletter, new_signatures=hellosign_log.signatures)
+            #
+            # Mark as complete
+            #
+            logger.info('HelloSign Webhook: %s All signatures have been completed for: %s' % (event_type, engageletter))
+            engageletter.markers.marker('complete').issue_signals(request=sender, instance=engageletter, actor=user)
 
-            if user.profile.is_customer:
-                #
-                # Customer Signal
-                #
-                logger.info('HelloSign Webhook: %s for customer %s' % (event_type, user))
-                engageletter.markers.marker('customer_sign_and_send').issue_signals(request=sender, instance=engageletter, actor=user)
+        elif hellosign_log.event_type == 'signature_request_signed':
 
-            elif user.profile.is_lawyer:
+            if user is not None and status == 'signed':
                 #
-                # Lawyer Signal
+                # Update the base Object with the current signature object
                 #
-                logger.info('HelloSign Webhook: %s for lawyer %s' % (event_type, user))
-                engageletter.markers.marker('lawyer_sign').issue_signals(request=sender, instance=engageletter, actor=user)
+                _update_object_signatures(obj=engageletter, new_signatures=hellosign_log.signatures)
+
+                if user.profile.is_customer:
+                    #
+                    # Customer Signal
+                    #
+                    logger.info('HelloSign Webhook: %s for customer %s' % (event_type, user))
+                    engageletter.markers.marker('customer_sign_and_send').issue_signals(request=sender, instance=engageletter, actor=user)
+
+                elif user.profile.is_lawyer:
+                    #
+                    # Lawyer Signal
+                    #
+                    logger.info('HelloSign Webhook: %s for lawyer %s' % (event_type, user))
+                    engageletter.markers.marker('lawyer_sign').issue_signals(request=sender, instance=engageletter, actor=user)

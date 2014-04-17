@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth.models import User
 from django.dispatch import Signal, receiver
+from django.db.models.signals import m2m_changed
 
 import dj_crocodoc.signals as crocodoc_signals
+
+from toolkit.apps.workspace.models import Workspace
 
 from toolkit.apps.workspace.models import InviteKey
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
@@ -25,23 +28,49 @@ def participant_added(sender, matter, participant, user, note, **kwargs):
     invite.inviting_user = user
     invite.save(update_fields=['inviting_user'])
 
-    #
-    # Send invite email
-    #
-    recipient = (participant.get_full_name(), participant.email)
-    from_tuple = (user.get_full_name(), user.email)
+    if user != participant:
+        #
+        # Send invite email
+        #
+        recipient = (participant.get_full_name(), participant.email)
+        from_tuple = (user.get_full_name(), user.email)
 
-    mailer = ParticipantAddedEmail(from_tuple=from_tuple, recipients=(recipient,))
-    mailer.process(matter=matter,
-                   user=user,
-                   custom_message=note,
-                   # use the Invites absolute url as the action url
-                   # so we force them to enter passwords etc
-                   action_url=ABSOLUTE_BASE_URL(invite.get_absolute_url()))
+        mailer = ParticipantAddedEmail(from_tuple=from_tuple, recipients=(recipient,))
+        mailer.process(matter=matter,
+                       user=user,
+                       custom_message=note,
+                       # use the Invites absolute url as the action url
+                       # so we force them to enter passwords etc
+                       action_url=ABSOLUTE_BASE_URL(invite.get_absolute_url()))
 
+        matter.actions.added_matter_participant(adding_user=user, added_user=participant)
+
+
+@receiver(m2m_changed, sender=Workspace.participants.through, dispatch_uid='matter.on_participant_added')
+def on_participant_added(sender, instance, action, model, pk_set, **kwargs):
+    """
+    When we add a participant; ensure that they are also participants on all of the existing items
+    @BUSINESSRULE
+    @DB
+    @VERYIMPORTANT
+    """
+    if action in ['post_add']:
+        # loop over matter items
+        # add user to the participants for that instance
+        matter = instance
+        for item in matter.item_set.all():
+            for revision in item.revision_set.all():
+                for reviewdocument in revision.reviewdocument_set.all():
+                    #
+                    ## issue a save which will cause the participants to be readded
+                    #
+                    # @TODO this is REALLY HEAVY
+                    #
+                    reviewdocument.save()
 
 
 @receiver(crocodoc_signals.crocodoc_comment_create)
+@receiver(crocodoc_signals.crocodoc_comment_update)  # reply to
 @receiver(crocodoc_signals.crocodoc_comment_delete)
 #@receiver(crocodoc_signals.crocodoc_annotation_highlight)
 #@receiver(crocodoc_signals.crocodoc_annotation_strikeout)
@@ -77,7 +106,7 @@ def crocodoc_webhook_event_recieved(sender, verb, document, target, attachment_n
 
         if matter is not None:
 
-            if crocodoc_event in ['annotation.create', 'comment.create']:
+            if crocodoc_event in ['annotation.create', 'comment.create', 'comment.update']:
                 matter.actions.add_revision_comment(user=user, revision=document.source_object, comment=content)
 
             if crocodoc_event in ['annotation.delete', 'comment.delete']:

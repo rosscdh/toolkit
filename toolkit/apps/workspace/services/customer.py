@@ -4,6 +4,7 @@ Generic Customer services
 """
 from django.contrib.auth.models import User
 
+from toolkit.core.services.analytics import AtticusFinch
 from toolkit.apps.default import _get_unique_username
 
 from . import logger
@@ -17,6 +18,7 @@ class EnsureCustomerService(object):
         self.email = email
         self.full_name = full_name
         self.is_new, self.user, self.profile = (None, None, None)
+        self.analytics = AtticusFinch()
 
     def process(self):
         if self.email is None:
@@ -37,10 +39,23 @@ class EnsureCustomerService(object):
             user = User.objects.create(username=username,
                                        email=email,
                                        **kwargs)
+
             is_new = True
 
         profile = user.profile
 
+        #
+        # Set new users to validated email automaticaly
+        #
+        if is_new is True:
+            profile.validated_email = True
+            profile.save(update_fields=['data'])
+
+
+        #
+        # Set the users profile to customer by default to customer
+        # unless its overridden
+        #
         if is_new is True or 'user_class' not in profile.data:
             logger.info('Is a new User')
             profile.data['user_class'] = 'customer'

@@ -48,23 +48,23 @@ class ItemManagerTest(BaseScenarios, TestCase):
 
         # item, signatory: user, revision: stale
         item9 = mommy.make('item.Item', matter=self.matter, slug=uuid.uuid4())
-        rev9a = mommy.make('attachment.Revision', item=item9, signatories=[self.user])
+        rev9a = mommy.make('attachment.Revision', item=item9, signers=[self.user])
         rev9b = mommy.make('attachment.Revision', item=item9)
 
         # item, signatory: lawyer, revision: stale
         item10 = mommy.make('item.Item', matter=self.matter, slug=uuid.uuid4())
-        rev10a = mommy.make('attachment.Revision', item=item10, signatories=[self.lawyer])
+        rev10a = mommy.make('attachment.Revision', item=item10, signers=[self.lawyer])
         rev10b = mommy.make('attachment.Revision', item=item10)
 
         # item, signatory: user, revision: current
         item11 = mommy.make('item.Item', matter=self.matter, slug=uuid.uuid4())
         rev11a = mommy.make('attachment.Revision', item=item11)
-        rev11b = mommy.make('attachment.Revision', item=item11, signatories=[self.user])
+        rev11b = mommy.make('attachment.Revision', item=item11, signers=[self.user])
 
         # item, signatory: lawyer, revision: current
         item12 = mommy.make('item.Item', matter=self.matter, slug=uuid.uuid4())
         rev12a = mommy.make('attachment.Revision', item=item12)
-        rev12b = mommy.make('attachment.Revision', item=item12, signatories=[self.lawyer])
+        rev12b = mommy.make('attachment.Revision', item=item12, signers=[self.lawyer])
 
         my_requests = Item.objects.my_requests(self.user)
 

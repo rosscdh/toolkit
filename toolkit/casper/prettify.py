@@ -38,10 +38,10 @@ def mock_http_requests(view_func):
                        body='{"success": true}',
                        status=200)
         httpretty.register_uri(httpretty.POST, "https://crocodoc.com/api/v2/document/upload",
-                       body='{"success": true, "uuid": "123-test-123-uuid"}',
+                       body='{"success": true, "uuid": "1ad40181-605c-0747-8dc5-5cacf8b3faa9"}',
                        status=200)
         httpretty.register_uri(httpretty.POST, "https://crocodoc.com/api/v2/document/delete",
-                       body='{"token": "pRzHhZS4jaGes193db28cwyu", "uuid": "123-test-123-uuid"}',
+                       body='{"token": "aHzHhSK4jaGes193db28vwjw", "uuid": "1ad40181-605c-0747-8dc5-5cacf8b3faa9"}',
                        status=200)
         httpretty.register_uri(httpretty.GET, re.compile("https://crocodoc.com/view/(.*)"),
                        body='This is a document',

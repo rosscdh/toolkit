@@ -2,11 +2,15 @@
 """
 Items are either todo items or document items
 """
+from django.core.urlresolvers import reverse
+
 from rest_framework import serializers
 
 from toolkit.core.item.models import Item
 
-from .revision import RevisionSerializer
+from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
+
+from .revision import SimpleRevisionSerializer
 from .user import LiteUserSerializer, SimpleUserWithReviewUrlSerializer
 
 
@@ -15,26 +19,32 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
 
     status = serializers.ChoiceField(required=False, choices=Item.ITEM_STATUS.get_choices())
 
+    review_in_progress = serializers.Field(source='review_in_progress')
+
     responsible_party = LiteUserSerializer(required=False)
 
-    # must be read_only=True
-    latest_revision = RevisionSerializer(source='latest_revision', read_only=True)
+    latest_revision = SimpleRevisionSerializer(read_only=True)
+    #latest_revision = serializers.SerializerMethodField('get_latest_revision')
 
     matter = serializers.HyperlinkedRelatedField(many=False, required=True, view_name='workspace-detail', lookup_field='slug')
 
     parent = serializers.HyperlinkedRelatedField(required=False, many=False, view_name='item-detail', lookup_field='slug')
     children = serializers.SerializerMethodField('get_children')
 
+    request_document_meta = serializers.SerializerMethodField('get_request_document_meta')
+
     class Meta:
         model = Item
         lookup_field = 'slug'
         fields = ('slug', 'url',
-                  'status', 'responsible_party',
+                  'status', 'review_in_progress',
+                  'responsible_party',
                   'name', 'description', 'matter',
                   'parent', 'children', 'closing_group', 'category',
                   'latest_revision',
                   'is_final', 'is_complete', 'is_requested',
-                  'date_due', 'date_created', 'date_modified',)
+                  'date_due', 'date_created', 'date_modified',
+                  'request_document_meta',)
 
         exclude = ('data',)
 
@@ -46,24 +56,51 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
         """
         return []
 
+    def get_latest_revision(self, obj):
+        if obj.latest_revision is not None:
+            return ABSOLUTE_BASE_URL(reverse('matter_item_revision', kwargs={'matter_slug': obj.matter.slug, 'item_slug': obj.slug}))
+        return None
+
     def get_reviewers(self, obj):
         """
         placeholder
         """
-        if obj.latest_revision is not None:
+        if getattr(obj.latest_revision, 'pk', None) is not None:
             return [SimpleUserWithReviewUrlSerializer(u, context=self.context).data for u in obj.latest_revision.reviewers.all()]
+
         return []
 
-    def get_signatories(self, obj):
+    def get_signers(self, obj):
         """
         placeholder
         """
-        if obj.latest_revision is not None:
-            return [SimpleUserWithReviewUrlSerializer(u, context=self.context).data for u in obj.latest_revision.signatories.all()]
+        if getattr(obj.latest_revision, 'pk', None) is not None:
+            return [SimpleUserWithReviewUrlSerializer(u, context=self.context).data for u in obj.latest_revision.signers.all()]
         return []
 
     def get_children(self, obj):
         return [ItemSerializer(i, context=self.context).data for i in obj.item_set.all()]
+
+    def get_request_document_meta(self, obj):
+        """
+        Return the requested by info if present otherwise null
+        see item_request.py
+        """
+        return obj.data.get('request_document', {
+                'message': None,
+                'requested_by': None,
+                'date_requested': None
+            })
+
+
+class SimpleItemSerializer(ItemSerializer):
+    class Meta(ItemSerializer.Meta):
+        fields = ('url', 'slug', 'name', 
+                  'status', 'review_in_progress',
+                  'category',
+                  'latest_revision',
+                  'is_final', 'is_complete', 'is_requested',
+                  'date_due',)
 
 
 class LiteItemSerializer(ItemSerializer):

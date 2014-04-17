@@ -1,0 +1,13 @@
+<div class="modal-content">
+	<div class="modal-header">
+		<h4 class="modal-title" id="myModalLabel">Your session expired</h4>
+	</div>
+	<form name="requestForm" ng-submit="request()">
+	<div class="modal-body">
+		<a href="/start/?next=/matters/{{ matter.slug }}/#/checklist" class="btn btn-primary">Sign In</a>
+	</div>
+	<div class="modal-footer">
+		<!--<button class="btn btn-primary" type="submit">Login</button>-->
+	</div>
+	</form>
+</div>

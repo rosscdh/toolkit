@@ -16,6 +16,8 @@ TEST_RUNNER = 'toolkit.test_runner.AppTestRunner'
 
 PROJECT_ENVIRONMENT = 'test'
 
+ATOMIC_REQUESTS = True
+
 INSTALLED_APPS = INSTALLED_APPS + (
     'casper',
     'colortools',
@@ -56,6 +58,22 @@ ABRIDGE_SECRET_ACCESS_KEY = 'still_empty'
 ABRIDGE_USERNAME = 'blah'
 ABRIDGE_PASSWORD = 'blah'
 
+#
+# set the mixpanel token to None so that we dont send events in testing
+#
+MIXPANEL_SETTINGS = {
+    'token': None,
+}
+
+# activate everything to make sure all events are really called
+LAWPAL_ACTIVITY['activity']['whitelist'] = [
+    'item-created', 'item-edited', 'item-commented', 'item-changed-the-status', 'item-renamed',
+    'item-provide-a-document', 'item-invited-reviewer', 'item-canceled-their-request-for-a-document',
+    'item-closed', 'item-reopened', 'item-added-revision-comment', 'item-deleted-revision-comment',
+    'revision-created', 'revision-deleted',
+    'item-invited-signer',
+    'itemrequestrevisionview-provide-a-document',
+    'workspace-created', 'workspace-added-participant', 'workspace-removed-participant']
 
 # def AutoSlugFieldGenerator():
 #     hash_val = '{r}'.format(r=random.random())
@@ -70,3 +88,8 @@ ABRIDGE_PASSWORD = 'blah'
 #     'autoslug.fields.AutoSlugField': AutoSlugFieldGenerator,
 #     'django_filepicker.models.FPFileField': FPFileFieldGenerator,
 # }
+
+
+CELERY_DEFAULT_QUEUE = 'lawpal-test'
+RUN_TASKS = False
+ENABLE_CELERY_TASKS = False

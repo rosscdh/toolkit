@@ -1,19 +1,16 @@
 # -*- coding: UTF-8 -*-
-from .endpoints.client import (ClientsTest,)
-from .endpoints.matter import (MattersTest,
-                               MatterPercentageTest,
-                               MatterDetailTest,
-                               MatterDetailProvidedDataTest)
-from .endpoints.review import (RevisionReviewsTest,
-                               RevisionReviewerTest,
-                               RevisionRequestedDocumentTest,)
+from .endpoints.client import *
+from .endpoints.matter import *
+from .endpoints.revision_request import *
+from .endpoints.review import *
+from .endpoints.sign import *
 from .endpoints.item_request import *
-from .endpoints.item import (ItemsTest, ItemDetailTest, ItemDataTest)
-from .endpoints.sort import (MatterSortTest,)
-from .endpoints.participant import (MatterParticipantTest,)
-from .endpoints.category import (MatterCategoryTest,)
+from .endpoints.item import *
+from .endpoints.sort import *
+from .endpoints.participant import *
+from .endpoints.category import *
 from .endpoints.revision import *
-from .endpoints.user import (UsersTest,)
-from .endpoints.activity import (ItemActivityEndpointTest, MatterActivityEndpointTest)
+from .endpoints.user import *
+from .endpoints.activity import *
 from .endpoints.remind import *
-from .endpoints.comment import (CommentTest, )
+from .endpoints.comment import *

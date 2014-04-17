@@ -30,7 +30,7 @@ class ClientsTest(BaseEndpointTest):
 
         json_data = json.loads(resp.content)
         self.assertEqual(json_data['count'], 2)
-        self.assertEqual(json_data['results'][1]['name'], self.lawyer_client.name)
+        self.assertEqual(json_data['results'][1]['name'], self.lawyer_client.__unicode__())
 
     def test_lawyer_post(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -76,16 +76,16 @@ class ClientsTest(BaseEndpointTest):
 
     def test_anon_get(self):
         resp = self.client.get(self.endpoint)
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_post(self):
         resp = self.client.post(self.endpoint, {}, content_type='application/json')
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_patch(self):
         resp = self.client.patch(self.endpoint, {})
-        self.assertEqual(resp.status_code, 401)  # forbidden
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_delete(self):
         resp = self.client.delete(self.endpoint, {})
-        self.assertEqual(resp.status_code, 401)  # forbidden
+        self.assertEqual(resp.status_code, 403)  # forbidden

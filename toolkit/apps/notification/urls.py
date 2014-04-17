@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import patterns, url
+from django.contrib.auth.decorators import login_required
 
 from .views import (InboxNotificationsView,
                     ReadNotificationsView,
@@ -8,9 +9,9 @@ from .views import (InboxNotificationsView,
 
 
 urlpatterns = patterns('',
-    url(r'^endpoints/inbox/all/read/$', MarkAllAsReadEndpoint.as_view(), name='inbox-mark-all-read'),
-    url(r'^endpoints/inbox/(?P<pk>\d+)/read/$', InboxViewSet.as_view(), name='inbox-read'),
+    url(r'^endpoints/inbox/all/read/$', login_required(MarkAllAsReadEndpoint.as_view()), name='inbox-mark-all-read'),
+    url(r'^endpoints/inbox/(?P<pk>\d+)/read/$', login_required(InboxViewSet.as_view()), name='inbox-read'),
     #
-    url(r'^read/$', ReadNotificationsView.as_view(), name='default'),
-    url(r'^$', InboxNotificationsView.as_view(), name='default'),
+    url(r'^read/$', login_required(ReadNotificationsView.as_view()), name='default'),
+    url(r'^$', login_required(InboxNotificationsView.as_view()), name='default'),
 )

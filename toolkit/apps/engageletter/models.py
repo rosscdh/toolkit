@@ -35,7 +35,12 @@ def _upload_file(instance, filename):
     return 'templates/engageletter-%d-%s%s' % (instance.tool.user.pk, slugify(filename_no_ext), ext)
 
 
-class EngagementLetter(StatusMixin, HTMLMixin, HelloSignModelMixin, WorkspaceToolModelMixin, IsDeletedMixin, models.Model):
+class EngagementLetter(StatusMixin,
+                       HTMLMixin,
+                       HelloSignModelMixin,
+                       WorkspaceToolModelMixin,
+                       IsDeletedMixin,
+                       models.Model):
     """
     Enagement Letter model
     """
@@ -120,11 +125,17 @@ class EngagementLetter(StatusMixin, HTMLMixin, HelloSignModelMixin, WorkspaceToo
 
     def hs_document(self):
         """
-        Return the document to be senf for signing
+        Return the document to be sent for signing
         Ties in with HelloSignModelMixin method
         """
         doc_service = PDFKitService(html=self.html())
         return doc_service.pdf(template_name='engageletter.html')
+
+    def hs_signers(self):
+        """
+        Return a list of invitees to sign
+        """
+        return [{'name': u.get_full_name(), 'email': u.email} for u in [self.workspace.lawyer, self.user]]
 
     def get_absolute_url(self):
         return reverse('workspace:tool_object_overview', kwargs={'workspace': self.workspace.slug, 'tool': self.workspace.tools.filter(slug=self.tool_slug).first().slug, 'slug': self.slug})

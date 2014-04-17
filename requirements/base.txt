@@ -76,3 +76,10 @@ crocodoc
 
 # abridge integration: django-abridge
 -e git+https://github.com/rosscdh/django-abridge.git#egg=django-abridge
+
+# analytics
+mixpanel-py
+
+
+# celery management
+Celery

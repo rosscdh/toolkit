@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse
 from toolkit.core.item.models import Item
 from toolkit.core.attachment.models import Revision
 from toolkit.apps.workspace.models import Workspace
+from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 
 from . import BaseEndpointTest
 from ...serializers import LiteClientSerializer
@@ -82,19 +83,19 @@ class MattersTest(BaseEndpointTest):
 
     def test_anon_get(self):
         resp = self.client.get(self.endpoint)
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_post(self):
         resp = self.client.post(self.endpoint, {}, content_type='application/json')
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_patch(self):
         resp = self.client.patch(self.endpoint, {}, content_type='application/json')
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_delete(self):
         resp = self.client.delete(self.endpoint, {}, content_type='application/json')
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
 
 class MatterPercentageTest(BaseEndpointTest):
@@ -252,19 +253,19 @@ class MatterDetailTest(BaseEndpointTest):
 
     def test_anon_get(self):
         resp = self.client.get(self.endpoint)
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_post(self):
         resp = self.client.post(self.endpoint, {})
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_patch(self):
         resp = self.client.patch(self.endpoint, {}, content_type='application/json')
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_delete(self):
         resp = self.client.delete(self.endpoint, {}, content_type='application/json')
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
 
 class MatterDetailProvidedDataTest(BaseEndpointTest):
@@ -317,13 +318,16 @@ class MatterDetailProvidedDataTest(BaseEndpointTest):
 
     def confirm_item_latest_revision(self, items):
         """
-        Test that the latest_revision is as it shoudl be
+        Test that the latest_revision is as it should be
         """
         self.assertEqual(type(items), list)
 
         latest_revision = items[0].get('latest_revision')
         self.assertEqual(type(latest_revision), dict)
-        self.assertEqual(latest_revision.get('url'), 'http://testserver/api/v1/revisions/%d' % self.revision.pk)
+
+        expected_url = ABSOLUTE_BASE_URL(reverse('matter_item_revision', kwargs={'matter_slug': self.revision.item.matter.slug, 'item_slug': self.revision.item.slug }))
+        #self.assertEqual(latest_revision, expected_url)
+        self.assertItemsEqual(latest_revision.keys(), ['url', 'status', 'date_created', 'slug', 'name'])
 
     def test_endpoint_data_lawyer(self):
         self.client.login(username=self.lawyer.username, password=self.password)

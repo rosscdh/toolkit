@@ -7,13 +7,9 @@
 
 <p>{{ from_name }} has asked you to provide them with a document relating to: {{ item.name }}.</p>
 
-<p>{{ from_name }} added a message for you: "{{ item.message }}"</p>
+{% if item.request_document_message %}<p>{{ from_name }} added a message for you: "{{ item.request_document_message }}"</p>{% endif %}
 
-<p>You can provide the document at <a href="{{ action_url }}">{{ action_url }}</a></p>
-
-<p>Please go to there upload the requested document.</p>
-
-{%if note %}{{ note }}{% endif %}
+<p>You can provide the document at :<br /><a href="{{ action_url }}">{{ action_url }}</a></p>
 
 <p>Warning: do not forward this email to others or else they will be able to access your document.</p>
 {% endblock %}

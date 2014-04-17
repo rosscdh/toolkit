@@ -137,7 +137,7 @@ class MatterCategoryTest(BaseEndpointTest):
     def test_item_category_delete(self):
         """
         Set an items category to None. When multipe items belong to the category
-        we are deleting they.. the category shoudl stay in place (can delete items
+        we are deleting they.. the category should stay in place (can delete items
         and categories by DELETE to the matter/category/:cat_name endpoint)
         """
         self.assertEqual(self.matter.categories, ['C', 'B', 'A'])

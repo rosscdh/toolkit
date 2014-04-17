@@ -147,7 +147,7 @@ angular.module('toolkit-gui')
 		 * @memberof			RequestrevisionCtrl
 		 */
 		$scope.request = function() {
-			var selectedPerson = $scope.data.selectedIndex!==''?$scope.participants[$scope.data.selectedIndex]:null;
+			var selectedPerson = $scope.data.selectedIndex!==-1?$scope.participants[$scope.data.selectedIndex]:null;
 
             if (selectedPerson!=null){
                 $scope.data.request.email = selectedPerson.email;
@@ -178,7 +178,7 @@ angular.module('toolkit-gui')
 		 * @memberof			RequestrevisionCtrl
 		 */
 		$scope.invalid = function() {
-			return !$scope.data.selectedIndex&&!$scope.data.request.email;
+			return $scope.data.selectedIndex==null || $scope.data.selectedIndex===-1&&!$scope.data.request.email;
 		};
 	}
 ]);

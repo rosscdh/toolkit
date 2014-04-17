@@ -8,6 +8,9 @@ from .matter import (MatterSerializer, LiteMatterSerializer, SimpleMatterSeriali
 from .item import (ItemSerializer, LiteItemSerializer,)
 from .revision import (RevisionSerializer,)
 from .review import (ReviewSerializer,)
+
+from .sign import (SignatureSerializer,)
+
 from .user import (UserSerializer,
                    LiteUserSerializer,
                    SimpleUserSerializer,

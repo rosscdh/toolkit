@@ -9,6 +9,7 @@ from crispy_forms.helper import FormHelper, Layout
 from crispy_forms.layout import ButtonHolder, Div, Field, Fieldset, HTML, Submit
 
 from . import _get_unique_username
+from toolkit.core.services.analytics import AtticusFinch
 
 import logging
 LOGGER = logging.getLogger('django.request')
@@ -25,7 +26,7 @@ class SignUpForm(forms.Form):
             'required': "Firm name can't be blank."
         },
         label='',
-        widget=forms.TextInput(attrs={'placeholder': 'Firm name', 'size': 46})
+        widget=forms.TextInput(attrs={'placeholder': 'Firm name'})
     )
     first_name = forms.CharField(
         error_messages={
@@ -47,7 +48,7 @@ class SignUpForm(forms.Form):
             'required': "Email can't be blank."
         },
         label='',
-        widget=forms.EmailInput(attrs={'placeholder': 'Email address', 'size': 46})
+        widget=forms.EmailInput(attrs={'placeholder': 'Email address', 'autocomplete':'off'})
     )
     password = forms.CharField(
         error_messages={
@@ -61,7 +62,7 @@ class SignUpForm(forms.Form):
             'required': "Confirm password can't be blank."
         },
         label='',
-        widget=forms.PasswordInput(attrs={'placeholder': 'Password confirmation'})
+        widget=forms.PasswordInput(attrs={'placeholder': 'Password again'})
     )
     t_and_c = forms.BooleanField(
         error_messages={
@@ -72,9 +73,16 @@ class SignUpForm(forms.Form):
         required=True
     )
 
+    mpid = forms.CharField(
+        label='',
+        required=False,
+        widget=forms.HiddenInput()
+    )
+
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         self.helper.attrs = {
+            'id': 'signup-form',
             'parsley-validate': ''
         }
         self.helper.form_show_errors = False
@@ -83,22 +91,21 @@ class SignUpForm(forms.Form):
             HTML('{% include "partials/form-errors.html" with form=form %}'),
             Fieldset(
                 '',
-                Field('firm_name', css_class='input-hg'),
+                Field('firm_name'),
                 Div(
-                    Field('first_name', css_class='input-hg'),
-                    Field('last_name', css_class='input-hg'),
-                    css_class='form-inline'
+                    Field('first_name', css_class=''),
+                    Field('last_name', css_class=''),
+                    css_class='form-name clearfix'
                 ),
-                Field('email', css_class='input-hg'),
-                Div(
-                    Field('password', css_class='input-hg'),
-                    Field('password_confirm', css_class='input-hg'),
-                    css_class='form-inline'
-                ),
+
+                Field('email'),
+                Field('password'),
+                Field('password_confirm'),
                 Field('t_and_c', template='public/bootstrap3/t_and_c.html'),
+                Field('mpid'),
             ),
             ButtonHolder(
-                Submit('submit', 'Create my account', css_class='btn btn-primary btn-lg')
+                Submit('submit', 'Create Account')
             )
         )
 
@@ -149,6 +156,13 @@ class SignUpForm(forms.Form):
         profile.data['user_class'] = profile.LAWYER
         profile.save(update_fields=['data'])
 
+        mpid = self.cleaned_data.get('mpid', None)
+
+        analytics = AtticusFinch()
+        if mpid not in ['', None]:
+            analytics.mixpanel_alias(user.pk, mpid)
+        analytics.event('user.signup', user=user)
+
         return user
 
 
@@ -184,7 +198,7 @@ class SignInForm(forms.Form):
                 Field('password', css_class='input-hg'),
             ),
             ButtonHolder(
-                Submit('submit', 'Sign in', css_class='btn btn-primary btn-lg')
+                Submit('submit', 'Secure Sign In', css_class='btn btn-primary btn-lg')
             )
         )
         super(SignInForm, self).__init__(*args, **kwargs)

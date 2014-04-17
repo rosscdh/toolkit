@@ -9,7 +9,7 @@
                 <h4>All Matters</h4>
                 <div class="pull-right">
                     {% if can_create %}
-                        <a href="{% url 'matter:create' %}" data-toggle="modal" data-target="#matter-create" class="btn btn-sm btn-primary"><i class="fui-plus"></i> New Matter</a>
+                        <a href="{% url 'matter:create' %}" data-toggle="modal" data-target="#matter-create" class="btn btn-success btn-embossed"><i class="fui-plus"></i> New Matter</a>
                     {% endif %}
                 </div>
             </header>
@@ -51,9 +51,55 @@
                         </div>
                     </article>
                 {% empty %}
-                    <div class="col-md-12 text-center">
-                        <p class="lead text-muted">You currently have no matters.</p>
+                <div class="col-md-8 col-md-offset-2 text-center welcome-block">
+                    <p class="lead">Welcome to LawPal. Take a quick tour or create your first matter.</p>
+                        <ul id="tourTab" class="nav nav-tabs">
+                          <li class="active">
+                            <a href="#matter-overview"  data-toggle="tab">
+                                <span class="pe-7s-look"></span> Matter Overview</a>
+                          </li>
+                          <li class="">
+                            <a href="#checklist-overview" data-toggle="tab">
+                                <span class="pe-7s-menu"></span>
+                                Checklist
+                            </a>
+                         </li>
+                         <li class="">                                
+                            <a href="#requests" data-toggle="tab">
+                                <span class="pe-7s-check"></span>
+                                Client View
+                            </a>
+                         </li>
+                         <li  class="">
+                            <a href="#markup" data-toggle="tab">
+                                <span class="pe-7s-comment"></span> 
+                                Annotation
+                            </a>
+                          </li>
+                        </ul>
                     </div>
+                    <div class="col-md-10 col-md-offset-1 text-center welcome-block">
+                        <div id="tab-content" class="tab-content">
+                          <div class="tab-pane active" id="matter-overview">
+                                <div class="note">View all your projects at a glance including progress, who is participating and when they were last active. Access your Notifications in the top right of your screen. </div>
+                               <img src="{{STATIC_URL}}images/screenies/dashboard.png" class="animated fadeIn">
+                          </div>
+                          <div class="tab-pane " id="checklist-overview">
+                                <div class="note">Create a shared, collaborative checklist for your deal. Assign tasks, request documents from clients or third parties, upload documents for review and keep your client up to date. </div>
+                                <img src="{{STATIC_URL}}images/screenies/checklist.png">
+                          </div>
+                          <div class="tab-pane " id="requests">
+                                <div class="note">Your clients get a simple list of things they need to do whether it is uploading a file, reviewing a document or e-signing. Email is great for many things, but for complex projects it falls short.</div>
+                                <img src="{{STATIC_URL}}images/screenies/client-requests.png">
+                          </div>
+                          <div class="tab-pane " id="markup">
+                                <div class="note">Enjoy easy centralized markup with our built-in annotation tools. Clients will love the simplicity. </div>
+
+                                <img src="{{STATIC_URL}}images/screenies/document-markup.png">
+                          </div>
+                        </div>
+                    </div>
+                </div>
                 {% endfor %}
             </div>
         </section>

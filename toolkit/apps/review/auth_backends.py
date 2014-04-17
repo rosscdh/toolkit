@@ -22,7 +22,7 @@ class ReviewDocumentBackend(object):
         try:
 
             review = ReviewDocument.objects.get(slug=username)
-            pk = review.get_auth(key=password)
+            pk = review.get_auth(auth_key=password)
             if pk is None:
                 logger.error('ReviewDocument not found for: %s %s' % (review, password,))
                 raise ObjectDoesNotExist

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 from django.core.urlresolvers import reverse
-from django.core.files.storage import default_storage
 
 from rulez import registry as rulez_registry
 
@@ -9,23 +8,20 @@ from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 
 from toolkit.core.mixins import IsDeletedMixin
 
-from .mixins import UserAuthMixin
+from .mixins import UserAuthMixin, FileExistsLocallyMixin
 from .managers import ReviewDocumentManager
 from .mailers import ReviewerReminderEmail
-
-from storages.backends.s3boto import S3BotoStorage
 
 from uuidfield import UUIDField
 from jsonfield import JSONField
 
 import datetime
 
-
 import logging
 logger = logging.getLogger('django.request')
 
 
-class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
+class ReviewDocument(IsDeletedMixin, FileExistsLocallyMixin, UserAuthMixin, models.Model):
     """
     An object to represent a url that allows multiple reviewers to view
     a document using a service like crocodoc
@@ -46,18 +42,22 @@ class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
     def get_absolute_url(self, user):
         auth_key = self.get_user_auth(user=user)
         if auth_key is not None:
-            return reverse('review:review_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)})
+            return ABSOLUTE_BASE_URL(reverse('review:review_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)}))
         return None
+
+    def get_download_url(self, user):
+        return ABSOLUTE_BASE_URL(reverse('review:download_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)}))
 
     def get_approval_url(self, user):
         auth_key = self.get_user_auth(user=user)
         if auth_key is not None:
-            return reverse('review:approve_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)})
+            return ABSOLUTE_BASE_URL(reverse('review:approve_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)}))
         return None
 
     def complete(self, is_complete=True):
         self.is_complete = is_complete
         self.save(update_fields=['is_complete'])
+
     complete.alters_data = True
 
     @property
@@ -68,20 +68,18 @@ class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
     def reviewer_has_viewed(self, value):
         if value == True:
             self.date_last_viewed = datetime.datetime.utcnow()
+            # user has viewed -> 10
         else:
             self.date_last_viewed = None
         self.save(update_fields=['date_last_viewed'])
 
     @property
-    def file_exists_locally(self):
+    def is_current(self):
         """
-        Used to determine if we should download the file locally
+        Test that this revision is still the latest revision
+        if not then redirect elsewhere
         """
-        try:
-            return default_storage.exists(self.document.executed_file)
-        except Exception as e:
-            logger.critical('Crocodoc file does not exist locally: %s raised exception %s' % (self.document.executed_file, e))
-        return False
+        return self.document.item.latest_revision == self.document
 
     @property
     def matter(self):
@@ -104,29 +102,9 @@ class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
             combined = reviewers.union(participants)
             # get the common reviewer
             return reviewers.intersection(combined).pop()
-        except:
-            logger.error('no reviewer found for ReviewDocument: %s' % self)
+        except Exception as e:
+            logger.error('no reviewer found for ReviewDocument: %s, %s' % (self, e))
             return None
-
-    def download_if_not_exists(self):
-        """
-        Its necessary to download the file from s3 locally as we have restrictive s3
-        permissions (adds time but necessary for security)
-        """
-        file_name = self.document.executed_file.name
-
-        b = S3BotoStorage()
-
-        if b.exists(file_name) is False:
-            raise Exception('File does not exist on s3: %s' % file_name)
-
-        else:
-            #
-            # download from s3 and save the file locally
-            #
-            file_object = b._open(file_name)
-            return default_storage.save(file_name, file_object)
-
 
     def send_invite_email(self, from_user, users=[]):
         """
@@ -145,7 +123,7 @@ class ReviewDocument(IsDeletedMixin, UserAuthMixin, models.Model):
                 #
                 logger.info('Sending ReviewDocument invite email to: %s' % u)
 
-                m = ReviewerReminderEmail(recipients=((u.get_full_name(), u.email,),))
+                m = ReviewerReminderEmail(recipients=((u.get_full_name(), u.email,),), from_tuple=(from_user.get_full_name(), from_user.email,))
                 m.process(subject=m.subject,
                           item=self.document.item,
                           document=self.document,
@@ -165,6 +143,9 @@ rulez_registry.register("can_read", ReviewDocument)
 rulez_registry.register("can_edit", ReviewDocument)
 rulez_registry.register("can_delete", ReviewDocument)
 
-from .signals import (ensure_matter_participants_are_in_reviewdocument_participants,
+from .signals import (set_item_review_in_progress,
+                      reset_item_review_in_progress_on_complete,
+                      reset_item_review_in_progress_on_delete,
+                      ensure_matter_participants_are_in_reviewdocument_participants,
                       on_reviewer_add,
                       on_reviewer_remove,)

@@ -2,6 +2,73 @@ Deployment actions by branch
 ----------------------------
 
 
+--------------------------------------------------------------------------------
+** DEPLOYED 6 April 2014 - celery tasks are preset but not enabled
+--------------------------------------------------------------------------------
+
+[celery]
+
+2. manage.py migrate djcelery
+
+
+--------------------------------------------------------------------------------
+** DEPLOYED 4 April 2014 - fix a massive slowdown when larger matters were in
+use; such as https://app.lawpal.com/matters/lawpal-corporate-setup/#/checklist
+changed item.latest_revision from a property to an actual FKField reducing by a
+larger query
+--------------------------------------------------------------------------------
+
+[large-matter-optimisation]
+
+1. ./manage.py migrate item 0001 --fake
+2. ./manage.py migrate item 0002 # apply the latest_revision FK which optimises the lookups
+3. ./manage.py migrate item 0003 # convert all the existing data
+
+
+--------------------------------------------------------------------------------
+** DEPLOYED 4 April 2014
+--------------------------------------------------------------------------------
+
+[email-validation] - apply a degree of email validation
+@TODO needs tests - this is a patch
+
+1. ./manage.py migrate default  # will apply the validated_email = True to existing users
+
+
+--------------------------------------------------------------------------------
+** DEPLOYED 2 April 2014
+--------------------------------------------------------------------------------
+
+[sign-app] - Phase 1, done because the sign-app branch was very old and getting difficult to keep up to date with master
+note that when the sign app is completed we need to hook up the urls and things
+
+1. ./manage.py syncdb
+1. ./manage.py migrate attachment 0001 --fake  # intial
+2. ./manage.py migrate attachment  # signatories to signers
+3. update the hellosign callback url on hellosign
+
+--------------------------------------------------------------------------------
+** DEPLOYED 29 March 2014
+--------------------------------------------------------------------------------
+
+1. pip install mixpanel-py - using mixpanel for analytics
+
+--------------------------------------------------------------------------------
+** DEPLOYED 29 March 2014
+--------------------------------------------------------------------------------
+
+1. update pip install -e git+https://github.com/rosscdh/django-hello_sign.git#egg=django-hello_sign - changed the url namespace
+
+
+--------------------------------------------------------------------------------
+** DEPLOYED 27 March 2014 - chicago (early morn) (rosscdh)
+--------------------------------------------------------------------------------
+
+[review-app]
+
+1. pip install -e git+https://github.com/rosscdh/django-crocodoc.git#egg=django-crocodoc --upgrade #new .generate() on service
+2.  ./manage.py migrate dj_crocodoc 0001 --fake # initial
+3.  ./manage.py migrate dj_crocodoc 0002 # added reviewer field
 
 
 --------------------------------------------------------------------------------

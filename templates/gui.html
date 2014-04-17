@@ -7,21 +7,27 @@
 {% block navbar %}
     <div class="navbar navbar-inverse checklist-nav">
         <div class="navbar-header">
-            <a href="/" class="navbar-brand"><img src="{{ STATIC_URL }}images/logo-white.png" height="21" alt="LawPal"></a>
+            <a href="/" class="navbar-brand"><img src="{{ STATIC_URL }}images/logo-white-icon.png" height="21" alt="LawPal"></a>
         </div>
         <div class="navbar-collapse collapse navbar-collapse-01">
             <ul class="nav navbar-nav navbar-right">
+                 {% if user.is_authenticated %}
                 <li class="divider"></li>
-                <li class="notifications"><a href="{% url 'notification:default' %}" class="{% if user.profile.has_notifications %}unread{% endif %}"><span class="fui-radio-{% if user.profile.has_notifications %}checked animated pulse{% else %}unchecked{% endif %}"></span></a></li>
+                <li class="notifications"><a href="{% url 'notification:default' %}" class="{% if user.profile.has_notifications %}unread {% endif %}"><span class="pe-7s-bell {% if user.profile.has_notifications %}animated-slow swing{% endif %}"></span></a></li>
                 <li><a href="{% url 'request:list' %}">Requests {% if REQUESTS_COUNT %}<span class="label label-important">{{ REQUESTS_COUNT }}</span>{% endif %}</a></li>
-                <li><a href="#" class="intercom">Help</a></li>
+                <li><a href="#" class="intercom">Support</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.get_full_name }}<b class="caret"></b></a>
                     <ul>
                         <li><a href="{% url 'me:settings' %}">Account</a></li>
+                        {# <li><a href="{% url 'me:plans' %}">Plans</a></li> #}
                         <li><a href="{% url 'public:logout' %}">Sign out</a></li>
                     </ul>
                 </li>
+                {% else %}
+                <li><a href="{% url 'public:signin' %}">Sign In</a></li>
+                <li><a href="{% url 'public:signup' %}">Sign Up</a></li>
+                {% endif%}
             </ul>
         </div>
     </div>

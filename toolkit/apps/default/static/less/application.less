@@ -60,6 +60,7 @@ body.gui {
 
 .content-header {
   background-color: lighten(@silver, 27%);
+  border-bottom: 1px solid lighten(@silver, 12%);
   margin-bottom: 20px;
   margin-top: -20px;
 
@@ -77,6 +78,11 @@ body.gui {
       padding: 8px 15px;
     }
   }
+}
+
+.content-header-btn {
+  float: right;
+  margin-top: 45px;
 }
 
 
@@ -163,6 +169,10 @@ body.gui {
 // Matter
 // -------------------------
 
+.matters .page-header {
+  padding-bottom:20px!important;
+}
+
 .matter .card {
   background-color: lighten(@nephritis, 70%);
   border-right: 2px solid mix(@brand-primary, white, 20);
@@ -226,6 +236,78 @@ body.gui {
     border-radius:0px;
     .progress-bar {
       border-radius:0px;
+    }
+  }
+
+}
+
+// Welcome Block
+// -------------------------
+
+@tour-bg : darken(@belize-hole, 5%);
+
+.welcome-block {
+  ul#tourTab {
+    border-bottom:0px;
+    width:90%;
+    margin:0 auto;
+  }
+  li {
+    width:25%;
+    border:0px!important;
+    border-radius: 0px;
+    margin-bottom:0px;
+    float:left!important;
+    span {
+      font-size:30px;
+      display: block;
+    }
+    a {
+      padding-bottom:5px;
+      font-size:13px;
+      border-width:0px!important;
+      &:hover {
+        color: @tour-bg;
+      }
+    }
+    &.active {
+      border-width:0px;
+      a {
+        background-color:  @tour-bg;
+        color:white;
+        border-width:0px;
+        padding-bottom:10px;
+        &:hover {
+          border-width:0px;
+          background-color:darken( @tour-bg, 0%);
+          color:white;
+        }
+      }
+    }
+
+  }
+
+
+  .tab-content {
+    border: none;
+    border-radius: 0px;
+    margin-bottom: 20px;
+    padding: 0px 20px 5px;
+    position: relative;
+    z-index: auto;
+    img {
+        max-width: 100%;
+    }
+    .note {
+      background-color:@tour-bg;
+      width:100%;
+      margin: 0 auto 15px auto;
+      color:mix(white, @tour-bg, 90%);
+      padding:20px;
+      border-radius: 4px;
+      font-size:13px;
+      text-align: left;
+      text-rendering:optimizeLegibility;
     }
   }
 }
@@ -388,6 +470,33 @@ body.gui {
 }
 
 
+// Notifications
+// -------------------------
+
+#notifications {
+  .notification {
+    background-color: white;
+    border: 1px solid #e8ecec;
+    padding: 20px;
+
+    .avatar {
+      margin-top: 8px;
+    }
+
+    .notification-btn {
+        font-size: 20px;
+        margin-top: 8px;
+        text-align: right;
+    }
+
+    p {
+      color: @gray;
+      margin-bottom: 0;
+    }
+  }
+}
+
+
 // Requests
 // -------------------------
 
@@ -457,6 +566,7 @@ body.gui {
   padding-right: 30px;
 }
 
+
 // Parsley.js
 // -------------------------
 
@@ -479,6 +589,42 @@ body.gui {
     }
   }
 }
+
+
+// Plans
+// -------------------------
+
+.plan {
+  background: white;
+  border: 2px solid mix(@inverse, @brand-primary, 90%);
+  border-radius: @border-radius-large;
+  padding: 14px;
+  position: relative;
+  text-align: center;
+
+  .plan-image {
+    height: 100px;
+    margin: 31px 0 27px;
+    vertical-align: bottom;
+
+    &.big-illustration {
+      height: 111px;
+      margin-top: 20px;
+      width: 112px;
+    }
+  }
+  .plan-title {
+    margin: 0;
+  }
+  .plan-price {
+    color: @brand-success;
+  }
+  p {
+    font-size: 15px;
+    margin-bottom: 33px;
+  }
+}
+
 
 // Public
 // -------------------------
@@ -914,5 +1060,87 @@ body.gui {
     margin-bottom:0px;
     padding:10px;
     border-radius: 5px 5px 0px 0px;
+  }
+}
+
+// Signup
+// -------------------------
+body.entry-pages {
+  background-color:mix(@brand-primary, black, 100%);
+  .logo-wrap {
+    img {
+      margin:80px 0px 25px;
+      opacity:0.40;
+    }
+  }
+  .signup-wrap {
+    background-color:mix(white, @brand-primary, 90%);
+    box-shadow: 7px 7px 0 darken(@brand-primary, 10%);
+    margin-top:70px;
+  }
+  h4 {
+    color:lighten(@brand-primary, 1%);
+    font-weight:500;
+    font-size:18px;
+    opacity:0.9;
+    background-color:white;
+    margin:10px -24px 20px -24px;
+    padding:18px 25px 15px 25px;
+    border-bottom:1px solid mix(white, @brand-primary, 87%);
+  }
+  h5 {
+      color:mix(@midnight-blue, white, 30%);
+      font-weight:300;
+      margin:0px 0px 30px 0px;
+      font-size:13px;
+  }
+  label {
+    font-weight:300;
+    a {
+      color:inherit;
+      text-decoration:underline;
+    }
+  }
+  .btn.btn-primary {
+    font-weight:normal;
+    font-size:16px;
+    background-color:@brand-success;
+  }
+  .signup-wrap {
+    padding:0px 25px 30px;
+    p.lead {
+      margin-bottom:0px;
+    }
+    input {
+      width:100%;
+      border:0px;
+    }
+  }
+  .form-name .form-group {
+    width:50%;
+    float:left;
+    &:first-child {
+      padding-right:10px;
+    }
+    .form-control {
+      margin-bottom:0px;
+    }
+  }
+  .links {
+    margin: 20px 0px;
+    font-size:13px;
+    color:lighten(@brand-primary, 28%);
+    a {
+      color:lighten(@brand-primary, 28%);
+    }
+  }
+  .navbar-inverse .navbar-brand, .navbar-inverse .nav  li  a {
+    border-right:0px;
+    border-left:0px;
+    border-bottom:0px;
+    border-left:0px!important;
+  }
+  input:-webkit-autofill {
+      -webkit-box-shadow: 0 0 0px 1000px white inset;
   }
 }

@@ -25,7 +25,6 @@ from ..serializers import SimpleUserWithReviewUrlSerializer
 from ..serializers import ReviewSerializer
 
 import logging
-
 logger = logging.getLogger('django.request')
 
 
@@ -38,7 +37,7 @@ class ReviewEndpoint(viewsets.ModelViewSet):
     lookup_field = 'pk'
 
     def can_read(self, user):
-        return user.profile.user_class in ['lawyer',]
+        return user.profile.user_class in ['lawyer', ]
 
     def can_edit(self, user):
         return user.profile.is_lawyer
@@ -54,11 +53,11 @@ rulez_registry.register("can_delete", ReviewEndpoint)
 
 class BaseReviewerSignatoryMixin(generics.GenericAPIView):
     """
-    Provides the object to access .signatories or .reviewers
+    Provides the object to access .signers or .reviewers
     and their required functionality
     """
     model = Revision  # to allow us to use get_object generically
-    serializer_class = SimpleUserWithReviewUrlSerializer  # as we are returning the revision and not the item
+    serializer_class = ReviewSerializer  # as we are returning the revision and not the item
     lookup_field = 'slug'
     lookup_url_kwarg = 'item_slug'
 
@@ -93,19 +92,7 @@ class ItemRevisionReviewersView(generics.ListAPIView,
         [lawyer,customer] to list, create reviewers
     """
     def get_queryset_provider(self):
-        return self.revision.reviewers
-
-    # def process_event_purpose_object(self, user):
-    #     # perform ReviewDocument get or create
-    #     #
-    #     # @BUSINESSRULE NB: this will work as long as we have review.ASSOCIATION_STRATEGIES.single as default
-    #     #
-    #     review_doc, is_new = ReviewDocument.objects.get_or_create(document=self.revision,
-    #                                                               reviewers__in=[user])
-    #     # add the user to the reviewers if not there alreadt
-    #     review_doc.reviewers.add(user) if user not in review_doc.reviewers.all() else None
-
-    #     logger.info("Added %s to the ReviewDocument %s is_new: %s for revision: %s" % (user, review_doc, is_new, self.revision))
+        return self.revision.reviewdocument_set
 
     def create(self, request, **kwargs):
         """
@@ -142,22 +129,26 @@ class ItemRevisionReviewersView(generics.ListAPIView,
 
         if user not in self.get_queryset():
             # add to the join if not there already
-            self.get_queryset_provider().add(user)
+            # add the user to the purpose of this endpoint object review||signature
+            self.revision.reviewers.add(user)
 
             #
             # Send invite to review Email
             #
             self.item.send_invite_to_review_emails(from_user=request.user, to=[user], note=note)
 
-            self.matter.actions.added_user_as_reviewer(item=self.item,
-                                                       adding_user=request.user,
-                                                       added_user=user)
+            #
+            # add activity
+            #
+            self.matter.actions.invite_user_as_reviewer(item=self.item,
+                                                        inviting_user=request.user,
+                                                        invited_user=user)
 
-        # add the user to the purpose of this endpoint object review||signature
-        #self.process_event_purpose_object(user=user)
+        review_document = self.revision.reviewdocument_set.filter(reviewers__in=[user]).first()
 
         # we have the user at this point
-        serializer = self.get_serializer(user)
+        serializer = self.get_serializer(review_document)
+
         headers = self.get_success_headers(serializer.data)
 
         return Response(serializer.data, status=http_status.HTTP_201_CREATED, headers=headers)
@@ -206,23 +197,33 @@ class ItemRevisionReviewerView(generics.RetrieveAPIView,
 
         #
         # Find ReviewDocumets where this user is the reviewer
-        # Should only ever be one
+        # Should only ever be one per user
         #
-        reviewdocument_set = ReviewDocument.objects.filter(document=self.revision,
-                                                           reviewers__in=[user])
-        if len(reviewdocument_set) == 0:
+        user_reviewdocument_set = self.revision.reviewdocument_set.filter(reviewers__in=[user])
+
+        if len(user_reviewdocument_set) == 0:
             #
             # must not be 0 as we have the users username thus they should be
             # part of the reviewers at this stage
             #
+            logger.critical('A revision %s for a user %s has more than 0 reviewdocument they should have 1 per revision' % (self.revision, user))
             raise Http404
 
-        if len(reviewdocument_set) > 1:
+        if len(user_reviewdocument_set) > 1:
             #
             # Should never have more than 1
             #
             status = http_status.HTTP_406_NOT_ACCEPTABLE
+            logger.critical('A revision %s for a user %s has more than 1 reviewdocument they should only have 1 per revision' % (self.revision, user))
 
+        # create event
+        self.revision.item.matter.actions.user_viewed_revision(item=self.revision.item,
+                                                               user=user,
+                                                               revision=self.revision)
+        
+
+        # TODO: check if this was the last user to review the document.
+        # if so: user_revision_review_complete()
         status = http_status.HTTP_200_OK
 
         return Response(data, status=status)
@@ -242,10 +243,9 @@ class ItemRevisionReviewerView(generics.RetrieveAPIView,
             #
             self.revision.reviewers.remove(user)
 
-            self.matter.actions.removed_user_as_reviewer(item=self.item,
-                                                         removing_user=request.user,
-                                                         removed_user=user)
-
+            self.matter.actions.cancel_user_upload_revision_request(item=self.item,
+                                                                    removing_user=request.user,
+                                                                    removed_user=user)
         else:
             status = http_status.HTTP_404_NOT_FOUND
 

@@ -1,12 +1,20 @@
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
+from django.core.exceptions import PermissionDenied
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.views.generic import CreateView, DeleteView, ListView, TemplateView, UpdateView
+
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import user_passes_test
 
 from toolkit.api.serializers import LiteMatterSerializer
 from toolkit.apps.workspace.models import Workspace
-from toolkit.mixins import AjaxFormView, AjaxModelFormView, ModalView
+from toolkit.mixins import AjaxModelFormView, ModalView
 
 from .forms import MatterForm
+
+import logging
+logger = logging.getLogger('django.request')
 
 
 class MatterListView(ListView):
@@ -35,7 +43,7 @@ class MatterListView(ListView):
         deserializing input, and for serializing output.
         """
         serializer_class = self.serializer_class
-        context = self.get_serializer_context()
+        self.get_serializer_context()
         return serializer_class(instance)
 
     def get_serializer_context(self):
@@ -58,9 +66,16 @@ class MatterDetailView(TemplateView):
 class MatterCreateView(ModalView, AjaxModelFormView, CreateView):
     form_class = MatterForm
 
+    @method_decorator(user_passes_test(lambda u: u.profile.validated_email is True, login_url=reverse_lazy('me:email-not-validated')))
+    def dispatch(self, *args, **kwargs):
+        return super(MatterCreateView, self).dispatch(*args, **kwargs)
+
     def get_form_kwargs(self):
         kwargs = super(MatterCreateView, self).get_form_kwargs()
-        kwargs['user'] = self.request.user
+        kwargs.update({
+            'user': self.request.user,
+            'is_new': True
+        })
         return kwargs
 
     def get_success_url(self):
@@ -74,7 +89,10 @@ class MatterUpdateView(ModalView, AjaxModelFormView, UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super(MatterUpdateView, self).get_form_kwargs()
-        kwargs['user'] = self.request.user
+        kwargs.update({
+            'user': self.request.user,
+            'is_new': False
+        })
         return kwargs
 
     def get_success_url(self):
@@ -88,3 +106,38 @@ class MatterDeleteView(ModalView, DeleteView):
 
     def get_success_url(self):
         return reverse('matter:list')
+
+    def get_context_data(self, **kwargs):
+        context = super(MatterDeleteView, self).get_context_data(**kwargs)
+        context.update({
+            'action': 'delete' if self.request.user == self.object.lawyer else 'stop-participating'
+        })
+        return context
+
+    def delete(self, request, *args, **kwargs):
+        """
+        Calls the delete() method on the fetched object and then
+        redirects to the success URL.
+        """
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+
+        if request.user == self.object.lawyer:
+            #
+            # Only the lawyer can delete a matter
+            #
+            self.object.delete()
+        else:
+            #
+            # participants can remove themselves
+            #
+            if request.user in self.object.participants.all():
+                self.object.participants.remove(request.user)
+                # send activity event
+                self.object.actions.user_stopped_participating(user=request.user)
+
+            else:
+                logger.error('User %s tried to delete a matter: %s but was not the lawyer nor the participant' % (request.user, self.object))
+                raise PermissionDenied('You are not a participant of this matter')
+
+        return HttpResponseRedirect(success_url)

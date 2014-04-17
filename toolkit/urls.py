@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
 from django.conf.urls import patterns, include, url
+from django.views.generic.base import RedirectView
 
 from toolkit.static import static
 
@@ -37,8 +38,12 @@ urlpatterns = patterns('',
     url(r'^crocodoc/', include('dj_crocodoc.urls')),
 
     # signing events
-    url(r'^sign/', include('hello_sign.urls', namespace='sign')),
+    url(r'^sign/', include('toolkit.apps.sign.urls', namespace='sign')),
+    # HelloSign
+    url(r'^hellosign/', include('hello_sign.urls', namespace='hellosign')),
+    # DocuSign - Coming Soon
 
+    url(r'^favicon\.ico$', RedirectView.as_view(url='%simages/favicon.ico' % settings.STATIC_URL)),
     # home default terminator
     url(r'^', include('toolkit.apps.default.urls', namespace='public')),
 )

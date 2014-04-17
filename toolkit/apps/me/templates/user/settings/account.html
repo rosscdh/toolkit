@@ -1,20 +1,35 @@
-{% extends LAYOUT %}
+{% extends 'gui.html' %}
 
-{% load url from future %}{% load crispy_forms_tags django_bootstrap_breadcrumbs %}
+
+{% load crispy_forms_tags %}
+{#% load url from future %}{% load user_tags widont %#}
 
 {% block page_title %}Settings — {{ block.super }}{% endblock%}
 
-{% block breadcrumbs %}
-    {{ block.super }}
-    {% breadcrumb 'Settings' 'me:settings' %}
+{% block sidebar %}
 {% endblock %}
+
+
 
 {% block header %}
     <h4>Account Setup</h4>
 {% endblock %}
+{% block body %}
+    <div id="notifications" class="content">
+        <div class="content-header notifications-header clearfix">
+            <div class="container">
+                <div class="col-sm-6 col-sm-offset-3">
+                    <h3>Account Settings</h3>
+                </div>
+            </div>
+        </div>
 
-{% block main %}
-    {% crispy form %}
+        <div class="container">
+            <div class="col-sm-6 col-sm-offset-3" role="main">
+                {% crispy form %}
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block modals %}

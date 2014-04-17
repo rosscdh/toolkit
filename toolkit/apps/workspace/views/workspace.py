@@ -31,16 +31,13 @@ class CreateWorkspaceView(ModalView, AjaxModelFormView, CreateView):
     def get_success_url(self):
         return self.object.get_absolute_url()
 
+    def get_form_kwargs(self):
+        kwargs = super(CreateWorkspaceView, self).get_form_kwargs()
+        kwargs.update({'lawyer': self.request.user})
+        return kwargs
+
     def form_valid(self, form):
-        response = super(CreateWorkspaceView, self).form_valid(form)
-
-        # add lawyer
-        self.object.lawyer = self.request.user
-        self.object.save(update_fields=['lawyer'])
-
-        # add user as participant
-        self.object.participants.add(self.request.user)
-
+        workspace = super(CreateWorkspaceView, self).form_valid(form)
         # @BUSINESS_RULE - 83(b) is added by default
         # add the 83b tool by default
         tool_83b = Tool.objects.get(slug='83b-election-letters')
@@ -48,7 +45,7 @@ class CreateWorkspaceView(ModalView, AjaxModelFormView, CreateView):
 
         messages.success(self.request, 'You have sucessfully created a new workspace')
 
-        return response
+        return workspace
 
 
 class WorkspaceToolsView(ListView):

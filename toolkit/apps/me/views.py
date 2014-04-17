@@ -1,19 +1,30 @@
 # -*- coding: utf-8 -*-
+from django.http import Http404
+from django.core import signing
+from django.conf import settings
 from django.contrib import messages
+from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse_lazy
-from django.views.generic import FormView, UpdateView
+from django.views.generic import FormView, UpdateView, TemplateView
+from django.views.generic.edit import BaseUpdateView
+from django.shortcuts import get_object_or_404
 
 from toolkit.apps.me.signals import send_welcome_email
 from toolkit.apps.default.models import UserProfile
 from toolkit.mixins import AjaxModelFormView
+#from toolkit.apps.default.views import LogOutMixin
+
+from .mailers import ValidateEmailMailer
 
 from .forms import (ConfirmAccountForm,
                     ChangePasswordForm,
                     AccountSettingsForm,
                     LawyerLetterheadForm)
+
+import json
 
 User = get_user_model()
 
@@ -62,6 +73,50 @@ class ConfirmAccountView(UpdateView):
         except AttributeError:
             # was no invite key
             return reverse_lazy('public:home')
+
+
+class SendEmailValidationRequest(BaseUpdateView):
+    def post(self, request, *args, **kwargs):
+        """
+        Jsut send it; if the user has already validated then we will catch that
+        on the confirmation view
+        """
+        mailer = ValidateEmailMailer(((request.user.get_full_name(), request.user.email,),))
+        mailer.process(user=request.user)
+
+        content = {
+            'detail': 'Email sent'
+        }
+        return HttpResponse(json.dumps(content), content_type='application/json', **kwargs)
+
+
+#
+#class ConfirmEmailValidationRequest(LogOutMixin, TemplateView):
+#
+# The commented out option is very secure
+#
+#
+class ConfirmEmailValidationRequest(TemplateView):
+    template_name = None
+
+    def dispatch(self, request, *args, **kwargs):
+        self.request = request
+        self.args = args
+        self.kwargs = kwargs
+
+        try:
+            pk = signing.loads(kwargs['token'], salt=settings.SECRET_KEY)
+        except signing.BadSignature:
+            raise Http404
+
+        self.user = get_object_or_404(get_user_model(), pk=pk)
+        profile = self.user.profile
+        profile.validated_email = True
+        profile.save(update_fields=['data'])
+
+        messages.success(self.request, 'Thanks. You have confirmed your email address.')
+
+        return redirect('/')
 
 
 class AccountSettingsView(UpdateView):
@@ -134,3 +189,11 @@ class LawyerLetterheadView(UpdateView):
             'user': self.request.user
         })
         return kwargs
+
+
+class InvoicesView(TemplateView):
+    template_name = 'me/invoices.html'
+
+
+class PlansView(TemplateView):
+    template_name = 'me/plans.html'

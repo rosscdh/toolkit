@@ -4,43 +4,42 @@
 	</div>
 	<form name="requestForm" ng-submit="request()">
 	<div class="modal-body">
+		<p>Requesting a review from a LawPal user or External party will ask them read the document, add annotations and tell you when they are done.</p>
 		<strong ng-show="participants.length>0">Existing members</strong>
-		
 			<ul class="list-unstyled">
-                <li ng-repeat="person in participants" ng-hide="person.username==currentUser.username">
+                <li ng-repeat="person in participants" ng-hide="person.username==currentUser.username||participantIsReviewer(person)"
+                    ng-click="data.selectedIndex=$index">
 					<label class="radio" ng-class="{'checked':$index==data.selectedIndex}">
 						<span class="icons">
 							<span class="first-icon fui-radio-unchecked"></span>
 							<span class="second-icon fui-radio-checked"></span>
 						</span>
-						<input type="radio" value="{{$index}}" ng-model="data.selectedIndex" name="participants">
 						<label ng-bind="person | fullname"></label>
 					</label>
 				</li>
-				<li>
+				<li ng-click="data.selectedIndex=-1">
 					<label class="radio" ng-class="{'checked':data.selectedIndex==-1}">
 						<span class="icons"><span class="first-icon fui-radio-unchecked"></span><span class="second-icon fui-radio-checked"></span></span>
-						<input type="radio" ng-model="data.selectedIndex" name="participants" value="-1">
 						External party <span class="fui-lock" data-toggle="tooltip" title="" data-original-title="Requesting a file from a third party does not give them access to this matter."></span>
 					</label>
 				</li>
 			</ul>
-
-
-            <div class="form-group" ng-show="data.selectedIndex==-1"
+            <div class="" ng-show="data.selectedIndex==-1"
                  ng-class="{'has-success': data.participant, 'has-warning': data.isNew, 'has-error': data.validationError }">
+				<p>Asking an external party to review a document will invite them to LawPal and will ask them to read and comment on just this specific file. They will not have access to the checklist, other revisions or other aspects of this matter. </p>
+				<label>Email Address</label>
 				<input type="email" id="requestEmail" class="form-control form-control-full-width input-sm" ng-model="data.request.email"
-                       placeholder="your_email@gmail.com" ng-blur="checkIfUserExists()"/>
-                 <label class="control-label" for="requestEmail" ng-show="data.participant">User {{ data.participant | fullname }} found</label>
-                 <label class="control-label" for="requestEmail" ng-show="data.isNew">User does not exist yet</label>
+                       placeholder="john.smith@gmail.com" ng-blur="checkIfUserExists()"/>
+                 <p class="bg-info" for="requestEmail" ng-show="data.participant">{{ data.participant | fullname }} found!</label>
+                 <p class="bg-info"  for="requestEmail" ng-show="data.isNew">User does not exist yet. They will be invited to LawPal.</label>
 			</div>
-            <div class="form-group form-inline">
+            <div class="form-inline">
                 <input type="text" class="form-control input-sm" ng-model="data.request.first_name" placeholder="First name" ng-show="data.isNew" />
                 <input type="text" class="form-control input-sm" ng-model="data.request.last_name" placeholder="Last name" ng-show="data.isNew" />
             </div>
-
-			<div class="form-group">
-				<textarea class="form-control form-control-full-width" ng-model="data.request.message" placeholder="Add an optional message"></textarea>
+			<div class="">
+				<label>Optional Message</label>
+				<textarea class="form-control form-control-full-width" ng-model="data.request.message" placeholder="Add an optional message to this review request"></textarea>
 			</div>
 	</div>
 	<div class="modal-footer">

@@ -38,6 +38,7 @@ class WorkspaceForm(ModalForm, forms.ModelForm):
         fields = ['name']
 
     def __init__(self, *args, **kwargs):
+        self.lawyer = kwargs.pop('lawyer', None)
         super(WorkspaceForm, self).__init__(*args, **kwargs)
 
         self.helper.layout = Layout(
@@ -47,6 +48,19 @@ class WorkspaceForm(ModalForm, forms.ModelForm):
     @property
     def action_url(self):
         return reverse('workspace:create')
+
+    def save(self, commit=True):
+        matter = super(WorkspaceForm, self).save(commit=False)
+
+        # add client/lawyer to the matter
+        matter.lawyer = self.lawyer
+
+        matter.save()
+
+        # add user as participant
+        matter.participants.add(self.lawyer)
+        return matter
+
 
 
 @parsleyfy

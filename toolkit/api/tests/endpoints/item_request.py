@@ -69,7 +69,7 @@ class ItemsRequestDocumentTest(BaseEndpointTest):
 
         self.assertEqual(json_data['name'], new_item.name)
 
-        # we shoudl have this new item in the standard item objects
+        # we should have this new item in the standard item objects
         self.assertTrue(new_item in Item.objects.filter(matter=self.matter))
 
         outbox = mail.outbox
@@ -114,19 +114,19 @@ class ItemsRequestDocumentTest(BaseEndpointTest):
 
     def test_anon_get(self):
         resp = self.client.get(self.endpoint)
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_post(self):
         resp = self.client.post(self.endpoint, {})
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_patch(self):
         resp = self.client.patch(self.endpoint, {}, content_type='application/json')
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_delete(self):
         resp = self.client.delete(self.endpoint, {})
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
 
 class ItemsRequestDocumentReminderTest(BaseEndpointTest):
@@ -202,16 +202,16 @@ class ItemsRequestDocumentReminderTest(BaseEndpointTest):
 
     def test_anon_get(self):
         resp = self.client.get(self.endpoint)
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_post(self):
         resp = self.client.post(self.endpoint, {})
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_patch(self):
         resp = self.client.patch(self.endpoint, {}, content_type='application/json')
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_delete(self):
         resp = self.client.delete(self.endpoint, {})
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden

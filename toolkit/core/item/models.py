@@ -3,18 +3,22 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.db.models.signals import pre_save, post_save
 
-from toolkit.core.signals.activity import (on_item_post_save,)
-from .signals import (on_item_save_category,
-                      on_item_save_closing_group)
 
-from toolkit.core.mixins import IsDeletedMixin
+from .signals import (on_item_save_category,
+                      on_item_save_closing_group,
+                      on_item_save_changed_content,
+                      on_item_post_save)
+
+from toolkit.core.mixins import IsDeletedMixin, ApiSerializerMixin
 
 from toolkit.utils import get_namedtuple_choices
 
 from .managers import ItemManager
 from .mixins import (RequestDocumentUploadMixin,
+                     ReviewInProgressMixin,
                      RequestedDocumentReminderEmailsMixin,
-                     LatestRevisionReminderEmailsMixin,)
+                     RevisionReviewReminderEmailsMixin,
+                     RevisionSignReminderEmailsMixin)
 
 from jsonfield import JSONField
 from uuidfield import UUIDField
@@ -27,9 +31,13 @@ BASE_ITEM_STATUS = get_namedtuple_choices('ITEM_STATUS', (
                             ))
 
 
-class Item(IsDeletedMixin, RequestDocumentUploadMixin,
+class Item(IsDeletedMixin,
+           ApiSerializerMixin,
+           RequestDocumentUploadMixin,
+           ReviewInProgressMixin,
            RequestedDocumentReminderEmailsMixin,
-           LatestRevisionReminderEmailsMixin,
+           RevisionReviewReminderEmailsMixin,
+           RevisionSignReminderEmailsMixin,
            models.Model):
     """
     Matter.item
@@ -53,6 +61,8 @@ class Item(IsDeletedMixin, RequestDocumentUploadMixin,
     closing_group = models.CharField(max_length=128, null=True, blank=True, db_index=True)
     category = models.CharField(max_length=128, null=True, blank=True, db_index=True)
 
+    latest_revision = models.ForeignKey('attachment.Revision', null=True, blank=True, related_name='item_latest_revision', on_delete=models.SET_NULL)
+
     # if is final is true, then the latest_revision will be available for sending for signing
     is_final = models.BooleanField(default=False, db_index=True)
     # this item is complete and signed off on
@@ -69,6 +79,8 @@ class Item(IsDeletedMixin, RequestDocumentUploadMixin,
 
     objects = ItemManager()
 
+    _serializer = 'toolkit.api.serializers.ItemSerializer'
+
     class Meta:
         ordering = ('sort_order',)
 
@@ -79,12 +91,12 @@ class Item(IsDeletedMixin, RequestDocumentUploadMixin,
         return '{url}#/checklist/{item_slug}'.format(url=reverse('matter:detail', kwargs={'matter_slug': self.matter.slug}), item_slug=self.slug)
 
     @property
-    def display_status(self):
-        return self.ITEM_STATUS.get_desc_by_value(self.status)
+    def client(self):
+        return self.matter.client
 
     @property
-    def latest_revision(self):
-        return self.revision_set.current().first()
+    def display_status(self):
+        return self.ITEM_STATUS.get_desc_by_value(self.status)
 
     def participants(self):
         return self.data.get('participants', [])
@@ -92,8 +104,8 @@ class Item(IsDeletedMixin, RequestDocumentUploadMixin,
     def reviewers(self):
         return self.data.get('reviewers', [])
 
-    def signatories(self):
-        return self.data.get('signatories', [])
+    def signers(self):
+        return self.data.get('signers', [])
 
     def save(self, *args, **kwargs):
         """
@@ -109,7 +121,7 @@ class Item(IsDeletedMixin, RequestDocumentUploadMixin,
         do_recalculate = True
         try:
             # get the current
-            previous_instance = Item.objects.get(pk=self.pk)
+            previous_instance = self.__class__.objects.get(pk=self.pk)
             if previous_instance.is_complete == self.is_complete and not self.is_deleted:
                 do_recalculate = False
 
@@ -135,6 +147,7 @@ Connect signals
 """
 pre_save.connect(on_item_save_category, sender=Item, dispatch_uid='item.post_save.category')
 pre_save.connect(on_item_save_closing_group, sender=Item, dispatch_uid='item.post_save.closing_group')
+pre_save.connect(on_item_save_changed_content, sender=Item, dispatch_uid='item.post_save.changed_content')
 post_save.connect(on_item_post_save, sender=Item, dispatch_uid='item.post_save.category')
 
 

@@ -154,4 +154,4 @@ class CommentTest(BaseEndpointTest):
         }
         resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
 
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden

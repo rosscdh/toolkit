@@ -104,6 +104,7 @@ PROJECT_APPS = (
     'toolkit.apps.workspace',
     # Core related apps
     'toolkit.apps.review',
+    'toolkit.apps.sign',
     # Routine Apps
     'toolkit.apps.eightythreeb',
     'toolkit.apps.engageletter',
@@ -270,7 +271,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         #'rest_framework.authentication.TokenAuthentication',
         #'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-        'rest_framework.authentication.BasicAuthentication', # Here Temporarily for dev
+        #'rest_framework.authentication.BasicAuthentication', # Here Temporarily for dev
         'rest_framework.authentication.SessionAuthentication',
     ),
     'DEFAULT_FILTER_BACKENDS': (
@@ -302,7 +303,7 @@ JS_DATE_FORMAT = 'MM d, yy'
 SHORT_DATE_FORMAT = 'm/d/Y'
 JS_SHORT_DATE_FORMAT = 'mm/dd/yy'
 
-SPLUNKSTORM_ENDPOINT = 'logs2.splunkstorm.com'
+SPLUNKSTORM_ENDPOINT = 'tcp.pjg2-3xz4.data.splunkstorm.com'
 SPLUNKSTORM_PORT = 20824
 
 LOGGING = {
@@ -359,11 +360,6 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': False,
-        },
-        'django.test': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
         }
     }
 }
@@ -378,6 +374,9 @@ BLEACH_STRIP_COMMENTS = True
 BLEACH_STRIP_TAGS = True
 
 
+INTERCOM_APP_ID = 'wkxzfou'
+INTERCOM_APP_SECRET = 'MZCesCDxkDrYdfX8HocAB2F6V5aZzCm-DuF7lyR5'
+
 #
 # ACTIVITY STREAM
 #
@@ -388,6 +387,59 @@ ACTSTREAM_SETTINGS = {
     'USE_PREFETCH': True,
     'USE_JSONFIELD': True,
     'USE_FOLLOWING': False,  # VERY importand; will break our system if this changes to True
+}
+
+#
+# Any change to the LAWPAL_ACTIVITY elements below needs to affect the
+# test_notices.py 
+#
+LAWPAL_ACTIVITY = {
+    "abridge": {
+        "whitelist": [
+                      # 'item-reopened', 'item-closed',
+                      # 'item-commented', 'item-comment-created', 'item-comment-deleted',
+                      # 'item-invited-reviewer',
+                      # 'item-provide-a-document',
+                      # 'revision-created', 'revision-comment-created', 'item-added-revision-comment', 
+                      # 'revision-added-revision-comment',
+                      # 'workspace-added-participant', 'workspace-removed-participant'
+                      ]
+    },
+    "notifications": {
+        "whitelist": [
+                      'item-reopened', 'item-closed',
+                      'item-commented', 'item-comment-created', 'item-comment-deleted',
+                      'item-invited-reviewer',
+                      'item-provide-a-document',
+                      'item-invited-signer',
+                      'item-completed-review',
+                      'item-completed-all-reviews',
+
+                      'revision-created', 'revision-comment-created', 'item-added-revision-comment', 
+                      'revision-added-revision-comment',
+                      'workspace-deleted',
+                      'workspace-added-participant', 'workspace-removed-participant',
+                      'workspace-stopped-participating',
+                      ]
+    },
+    "activity": {
+        "whitelist": ['item-created', 'item-edited', 'item-commented', 'item-changed-the-status', 'item-renamed',
+                      'item-provide-a-document', 'item-invited-reviewer', 'item-canceled-their-request-for-a-document',
+                      'item-closed', 'item-reopened', 'item-added-revision-comment', 'item-deleted-revision-comment',
+                      'item-completed-review',
+                      'item-completed-all-reviews',
+
+                      'revision-created', 'revision-deleted',
+
+                      'item-invited-signer',
+                      'itemrequestrevisionview-provide-a-document',
+
+                      'workspace-created', 'workspace-deleted',
+                      'workspace-added-participant', 'workspace-removed-participant', 
+                      'workspace-stopped-participating',
+
+                      'revision-added-revision-comment']
+    },
 }
 
 try:

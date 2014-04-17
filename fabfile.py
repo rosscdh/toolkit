@@ -1,20 +1,17 @@
 from __future__ import with_statement
 from fabric.api import *
 from fabric.utils import error
-from fabric.contrib.console import confirm
 from fabric.context_managers import settings
 from fabric.contrib import files
 
 from git import *
 
 import os
-import json
-import getpass
-import datetime
+import sys
 import time
+import getpass
 import requests
 from termcolor import colored
-from pprint import pprint
 
 debug = True
 
@@ -22,10 +19,15 @@ env.local_project_path = os.path.dirname(os.path.realpath(__file__))
 # default to local override in env
 env.remote_project_path = env.local_project_path
 
-env.repo = Repo(env.local_project_path)
+try:
+    env.repo = Repo(env.local_project_path)
+except:
+    env.repo = None
+
 
 env.environment_class = 'local'
 env.project = 'toolkit'
+env.celery_app_name = env.project
 
 env.dev_fixtures = 'dev-fixtures'
 env.fixtures = 'sites tools'
@@ -37,8 +39,9 @@ env.local_user = getpass.getuser()
 env.environment = 'local'
 env.virtualenv_path = '~/.virtualenvs/toolkit/'
 
-env.truthy = ['true','t','y','yes','1',1]
-env.falsy = ['false','f','n','no','0',0]
+env.truthy = ['true', 't', 'y', 'yes', '1', 1]
+env.falsy = ['false', 'f', 'n', 'no', '0', 0]
+
 
 @task
 def prod_db():
@@ -81,7 +84,9 @@ def production():
     env.user = 'ubuntu'
     env.application_user = 'app'
     # connect to the port-forwarded ssh
-    env.hosts = ['ec2-184-169-191-190.us-west-1.compute.amazonaws.com', 'ec2-184-72-21-48.us-west-1.compute.amazonaws.com'] if not env.hosts else env.hosts
+    env.hosts = ['ec2-184-169-191-190.us-west-1.compute.amazonaws.com',
+                 'ec2-184-72-21-48.us-west-1.compute.amazonaws.com',
+                 'ec2-54-241-222-221.us-west-1.compute.amazonaws.com',] if not env.hosts else env.hosts
     env.celery_name = 'celery-production' # taken from chef cookbook
 
     env.key_filename = '%s/../lawpal-chef/chef-machines.pem' % env.local_project_path
@@ -96,11 +101,26 @@ def production():
 env.roledefs.update({
     'db': ['ec2-50-18-97-221.us-west-1.compute.amazonaws.com'], # the actual db host
     'db-actor': ['ec2-54-241-224-100.us-west-1.compute.amazonaws.com'], # database action host
-    'search': ['ec2-54-241-224-100.us-west-1.compute.amazonaws.com'], # elastic search action host
-    'web': ['ec2-184-169-191-190.us-west-1.compute.amazonaws.com', 'ec2-184-72-21-48.us-west-1.compute.amazonaws.com'],
-    'worker': ['ec2-54-241-224-100.us-west-1.compute.amazonaws.com'],
+    # 'search': ['ec2-54-241-224-100.us-west-1.compute.amazonaws.com'], # elastic search action host
+    'web': ['ec2-184-169-191-190.us-west-1.compute.amazonaws.com',
+            'ec2-184-72-21-48.us-west-1.compute.amazonaws.com'],
+    'worker': ['ec2-54-241-222-221.us-west-1.compute.amazonaws.com'],
 })
 
+
+@task
+def chores():
+    sudo('aptitude --assume-yes install build-essential python-setuptools python-dev apache2-utils uwsgi-plugin-python libjpeg8 libjpeg62-dev libfreetype6 libfreetype6-dev easy_install nmap htop vim unzip')
+    sudo('aptitude --assume-yes install git-core mercurial subversion')
+    sudo('aptitude --assume-yes install libtidy-dev postgresql-client libpq-dev python-psycopg2')
+
+    # GEO
+    sudo('aptitude --assume-yes install libgeos-dev')
+
+    sudo('easy_install pip')
+    sudo('pip install virtualenv pillow')
+
+    #put('conf/.bash_profile', '~/.bash_profile')
 
 @task
 def virtualenv(cmd, **kwargs):
@@ -114,7 +134,7 @@ def virtualenv(cmd, **kwargs):
 
 @task
 def pip_install():
-    virtualenv('pip install django-email-obfuscator')
+    virtualenv('pip install django-sslify')
 
 @task
 def cron():
@@ -239,21 +259,66 @@ def diff_outgoing_with_current():
 
 @task
 @roles('worker')
-def celery_restart():
+def celery_restart(name='worker.1'):
     with settings(warn_only=True): # only warning as we will often have errors importing
-        sudo('supervisorctl restart %s' % env.celery_name )
+        celery_stop()
+        celery_start()
+        # cmd = "celery multi restart {name}@%h -A {app_name}  --uid=app --pidfile='/var/run/celery/{name}.%n.pid'  --logfile='/var/log/celery/{name}.%n.log'".format(name=name, app_name=env.celery_app_name)
+        # if env.hosts:
+        #     #run(cmd)
+        #     virtualenv(cmd='cd %s%s;%s' % (env.remote_project_path, env.project, cmd))
+        # else:
+        #     local(cmd)
 
 @task
 @roles('worker')
-def celery_start(loglevel='info'):
+def celery_start(name='worker.1', loglevel='INFO', concurrency=5):
     with settings(warn_only=True): # only warning as we will often have errors importing
-        sudo('supervisorctl start %s' % env.celery_name )
+        #cmd = "celery worker --app=toolkit --loglevel={loglevel} --concurrency={concurrency} -n worker{name}.%h".format(name=name, loglevel=loglevel, concurrency=concurrency)
+        #cmd = "celery multi start {name}@%h -A {app_name} --loglevel={loglevel} --uid=app --pidfile='/var/run/celery/{name}.%n.pid' --logfile='/var/log/celery/{name}.%n.log' --concurrency={concurrency}".format(name=name, loglevel=loglevel, concurrency=concurrency, app_name=env.celery_app_name)
+        cmd = "celery worker -A {app_name} --loglevel={loglevel} --pidfile='/var/run/celery/{name}.%n.pid' --logfile='/var/log/celery/{name}.%n.log' --concurrency={concurrency} --detach".format(name=name, loglevel=loglevel, concurrency=concurrency, app_name=env.celery_app_name)
+        if env.hosts:
+            #run(cmd)
+            virtualenv(cmd='cd %s%s;%s' % (env.remote_project_path, env.project, cmd))
+        else:
+            local(cmd)
 
 @task
 @roles('worker')
-def celery_stop():
+def celery_stop(name='worker.1'):
     with settings(warn_only=True): # only warning as we will often have errors importing
-        sudo('supervisorctl stop %s' % env.celery_name )
+        #cmd = "celery multi stopwait {name}@%h -A {app_name} --uid=app --pidfile='/var/run/celery/{name}.%n.pid'".format(name=name, app_name=env.celery_app_name)
+        cmd = "ps aux | grep 'celery worker' | grep -v grep | awk '{print $2}' | xargs kill -9"
+        if env.hosts:
+            #run(cmd)
+            virtualenv(cmd='cd %s%s;%s' % (env.remote_project_path, env.project, cmd))
+        else:
+            local(cmd)
+
+@task
+@roles('worker')
+def celery_cmd(cmd=None):
+    if cmd is not None:
+        with settings(warn_only=True): # only warning as we will often have errors importing
+            cmd = "celery {cmd} -A {app_name}".format(cmd=cmd, app_name=env.celery_app_name)
+            if env.hosts:
+                run(cmd)
+            else:
+                local(cmd)
+
+#
+#  ps aux | grep 'celery worker' | grep -v grep | awk '{print $2}' | xargs kill -9
+#
+
+# @task
+# @roles('worker')
+# def celery_force_kill():
+#     with settings(warn_only=True): # only warning as we will often have errors importing
+#         cmd = "ps auxww | grep 'celery worker' |   | xargs kill -9"
+#         if env.hosts:
+#             run(cmd)
+#         else:
+#             local(cmd)
 
 @task
 @roles('worker')
@@ -288,14 +353,23 @@ def syncdb():
         virtualenv('python %s%s/manage.py syncdb' % (env.remote_project_path, env.project))
 
 @task
-def clean_versions():
+def clean_versions(delete=False, except_latest=3):
     current_version = get_sha1()
+
     versions_path = '%sversions' % env.remote_project_path
-    cmd = 'cd %s; ls %s/ | grep -v %s | xargs rm -R' % (versions_path, versions_path ,current_version,)
-    if env.environment_class is 'webfaction':
-        virtualenv(cmd)
-    else:
-        virtualenv(cmd)
+    #
+    # cd into the path so we can use xargs
+    # tail the list except the lastest N
+    # exclude the known current version
+    #
+    cmd = "cd {path};ls -t1 {path} | tail -n+{except_latest} | grep -v '{current_version}'".format(path=versions_path, except_latest=except_latest, current_version=current_version)
+    #
+    # optionally delete them
+    #
+    if delete in env.truthy:
+        cmd = cmd + ' | xargs rm -Rf'
+
+    virtualenv(cmd)
 
 # ------ RESTARTERS ------#
 @task
@@ -307,26 +381,31 @@ def supervisord_restart():
             sudo('supervisorctl restart uwsgi')
 
 @task
+@roles('web')
 def restart_lite():
     with settings(warn_only=True):
         sudo(env.light_restart)
 
 @task
+@roles('web')
 def stop_nginx():
     with settings(warn_only=True):
         sudo('service nginx stop')
 
 @task
+@roles('web')
 def start_nginx():
     with settings(warn_only=True):
         sudo('service nginx start')
 
 @task
+@roles('web')
 def restart_nginx():
     with settings(warn_only=True):
         sudo('service nginx restart')
 
 @task
+@roles('web')
 def restart_service(heavy_handed=False):
     with settings(warn_only=True):
         if env.environment_class not in ['celery']: # dont restart celery nginx services
@@ -384,7 +463,7 @@ def clean_start():
     clean_pyc()
     #clear_cache()
     clean_pyc()
-    #precompile_pyc()
+    precompile_pyc()
     start_service()
     clean_zip()
 
@@ -423,7 +502,7 @@ def update_env_conf():
         with cd(project_path):
             virtualenv('cp %s/conf/%s.local_settings.py %s/%s/local_settings.py' % (full_version_path, env.environment, full_version_path, env.project))
             virtualenv('cp %s/conf/%s.wsgi.py %s/%s/wsgi.py' % (full_version_path, env.environment, full_version_path, env.project))
-            #virtualenv('cp %s/conf/%s.newrelic.ini %s/%s/newrelic.ini' % (full_version_path, env.environment, full_version_path, env.project))
+            virtualenv('cp %s/conf/%s.newrelic.ini %s/%s/newrelic.ini' % (full_version_path, env.environment, full_version_path, env.project))
 
 @task
 def unzip_archive():
@@ -457,7 +536,7 @@ def requirements():
         env.SHA1_FILENAME = get_sha1()
     
     project_path = '%sversions/%s' % (env.remote_project_path, env.SHA1_FILENAME,)
-    requirements_path = '%s/requirements/dev.txt' % (project_path, )
+    requirements_path = '%s/requirements/%s.txt' % (project_path, env.environment, )
 
     virtualenv('pip install -r %s' % requirements_path )
 
@@ -504,7 +583,7 @@ def newrelic_deploynote():
 @runs_once
 def diff():
     diff = prompt(colored("View diff? [y,n]", 'magenta'), default="y")
-    if diff.lower() in ['y','yes', 1, '1']:
+    if diff.lower() in env.truthy:
         print(diff_outgoing_with_current())
 
 @task
@@ -512,7 +591,7 @@ def diff():
 @runs_once
 def run_tests():
     run_tests = prompt(colored("Run Tests? [y,n]", 'yellow'), default="y")
-    if run_tests.lower() in ['y','yes', 1, '1']:
+    if run_tests.lower() in env.truthy:
         result = local('python manage.py test')
         if result not in ['', 1, True]:
             error(colored('You may not proceed as the tests are not passing', 'orange'))
@@ -520,34 +599,36 @@ def run_tests():
 
 @task
 @runs_once
-def build_angular_app():
-    # move local_settings.py if present
-    if os.path.exists('toolkit/local_settings.py'):
-        local('mv toolkit/local_settings.py /tmp/local_settings.py')
+def build_gui():
+    if prompt(colored("Build GUI app? [y,n]", 'green'), default="y").lower() in env.truthy:
 
-    # copy conf/production.local_settings.py
-    # has the very important ("ng", os.path.join(SITE_ROOT, 'gui', 'dist')),
-    # settings
-    local('cp conf/production.local_settings.py toolkit/local_settings.py')
+        # move local_settings.py if present
+        if os.path.exists('toolkit/local_settings.py'):
+            local('mv toolkit/local_settings.py /tmp/local_settings.py')
 
-    # move tmp/local_settings.py back
-    if os.path.exists('/tmp/local_settings.py'):
-        local('rm toolkit/local_settings.py')  # remove the production version local_settings so noone loses their mind
-        local('mv /tmp/local_settings.py toolkit/local_settings.py')
-    else:
+        # copy conf/production.local_settings.py
+        # has the very important ("ng", os.path.join(SITE_ROOT, 'gui', 'dist')),
+        # settings
+        local('cp conf/production.local_settings.py toolkit/local_settings.py')
+
+        # move tmp/local_settings.py back
+        if os.path.exists('/tmp/local_settings.py'):
+            local('rm toolkit/local_settings.py')  # remove the production version local_settings so noone loses their mind
+            local('mv /tmp/local_settings.py toolkit/local_settings.py')
+        else:
+            if env.environment_class == 'local':
+                # copy the default dev localsettings
+                local('cp conf/dev.local_settings.py toolkit/local_settings.py')
+
+
+        # perform grunt build --djangoProd
+        local('cd gui;grunt build -djangoProd')
+
+        # collect static
         if env.environment_class == 'local':
-            # copy the default dev localsettings
-            import pdb;pdb.set_trace()
-            local('cp conf/dev.local_settings.py toolkit/local_settings.py')
+            local('python manage.py collectstatic --noinput')
 
-
-    # perform grunt build --djangoProd
-    local('cd gui;grunt build -djangoProd')
-
-    # collect static
-    if env.environment_class == 'local':
-        local('python manage.py collectstatic --noinput')
-
+        sys.exit(colored("You must now run: git add gui;git commit -m'Updated production gui'", 'yellow'))
 
 
 @task
@@ -592,10 +673,11 @@ def deploy(is_predeploy='False',full='False',db='False',search='False'):
     db = db.lower() in env.truthy
     search = search.lower() in env.truthy
 
+    build_gui()
     run_tests()
     diff()
-    #newrelic_note()
     git_set_tag()
+    newrelic_note()
 
     prepare_deploy()
     do_deploy()
@@ -607,5 +689,5 @@ def deploy(is_predeploy='False',full='False',db='False',search='False'):
     relink()
     assets()
     clean_start()
-    #conclude()
-
+    celery_restart()
+    conclude()

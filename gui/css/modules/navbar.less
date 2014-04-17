@@ -266,8 +266,7 @@
           &,
           &:hover,
           &:focus {
-            background-color: @brand-secondary;
-            border-bottom-color: mix(@brand-secondary, black, 85%);
+            border-bottom: 3px solid @brand-secondary;
             border-left: none;
             color: @inverse;
             padding-left: @navbar-link-space;
@@ -281,14 +280,30 @@
         }
       }
 
-      // Link styling
+        // Link styling
       > a {
         font-size: floor(@component-font-size-base * 1.067); // ~16px
-        border-bottom: 2px solid mix(@brand-primary, black, 85%);
-        border-left: 2px solid mix(@brand-primary, black, 85%) !important;
+        border-bottom: 0px solid mix(@brand-primary, black, 85%);
+        border-left: 0px solid mix(@brand-primary, black, 85%) !important;
         color: @inverse;
-        padding: 16px @navbar-link-space 15px;
+        padding: 16px @navbar-link-space 13px;
         line-height: 20px;
+        font-weight:500;
+        &.unread span{
+          background-color:@orange;
+          color:mix(white, @orange, 100%);
+          font-weight:bold;
+          padding:4px 6px 4px 7px;
+          margin-top:-4px;
+          border-radius:5px;
+          .pe-7s-bell {
+            font-size:16px;
+          }
+        }
+        .pe-7s-bell {
+          font-size:22px;
+          margin-right:-2px;
+        }
       }
     }
   }
@@ -549,7 +564,7 @@
     &.navbar-inverse {
       .navbar-brand {
         border: none;
-        padding-top: 11px;
+        padding-top: 10px;
         padding-bottom: 13px;
       }
       .nav {

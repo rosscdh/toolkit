@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from actstream.models import model_stream
 from django.core.urlresolvers import reverse
 
 from toolkit.core.item.models import Item
@@ -86,19 +87,19 @@ class ItemsTest(BaseEndpointTest):
 
     def test_anon_get(self):
         resp = self.client.get(self.endpoint)
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_post(self):
         resp = self.client.post(self.endpoint, {})
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_patch(self):
         resp = self.client.patch(self.endpoint, {}, content_type='application/json')
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_delete(self):
         resp = self.client.delete(self.endpoint, {})
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
 
 
@@ -188,19 +189,19 @@ class ItemDetailTest(BaseEndpointTest):
 
     def test_anon_get(self):
         resp = self.client.get(self.endpoint)
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_post(self):
         resp = self.client.post(self.endpoint, {}, content_type='application/json')
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_patch(self):
         resp = self.client.patch(self.endpoint, {}, content_type='application/json')
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_delete(self):
         resp = self.client.delete(self.endpoint, {}, content_type='application/json')
-        self.assertEqual(resp.status_code, 401)  # denied
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
 
 class ItemDataTest(BaseEndpointTest):
@@ -233,4 +234,42 @@ class ItemDataTest(BaseEndpointTest):
         self.assertEqual(type(json_data['status']), int)
         self.assertEqual(json_data['status'], 0)  # New == 0
 
+    def test_change_status_signal(self):
+        self.client.login(username=self.lawyer.username, password=self.password)
+        resp = self.client.patch(self.endpoint, json.dumps({'status': 1}), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
 
+        stream = model_stream(Item)
+        self.assertEqual(len(stream), 2)  # shall only find the newest entry, the 2 other ones are too old.
+
+        self.assertEqual(stream[0].data['override_message'],
+                         u'Lawyer Test changed the status of Item Data Test No. 1 from New to Final')
+
+    def test_change_name_signal(self):
+        self.client.login(username=self.lawyer.username, password=self.password)
+        resp = self.client.patch(self.endpoint, json.dumps({'name': 'New Name'}), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+
+        stream = model_stream(Item)
+        self.assertEqual(len(stream), 2)  # shall only find the newest entry, the 2 other ones are too old.
+
+        self.assertEqual(stream[0].data['override_message'],
+                         u'Lawyer Test renamed item from Item Data Test No. 1 to New Name')
+
+    def test_item_reopened_signal(self):
+        self.client.login(username=self.lawyer.username, password=self.password)
+        resp = self.client.patch(self.endpoint, json.dumps({'is_complete': 'true'}), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+
+        stream = model_stream(Item)
+        self.assertEqual(len(stream), 2)  # shall only find the newest entry, the 2 other ones are too old.
+
+        self.assertEqual(stream[0].data['override_message'], u'Lawyer Test closed Item Data Test No. 1')
+
+        resp = self.client.patch(self.endpoint, json.dumps({'is_complete': 'false'}), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+
+        stream = model_stream(Item)
+        self.assertEqual(len(stream), 3)  # shall only find the newest entry, the 2 other ones are too old.
+
+        self.assertEqual(stream[0].data['override_message'], 'Lawyer Test reopened Item Data Test No. 1')

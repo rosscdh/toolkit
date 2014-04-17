@@ -79,7 +79,7 @@ angular.module('toolkit-gui')
 		function reviewerItemResource() {
 			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/revision/:type/:username:action', {}, {
 				'request': { 'method': 'POST', 'params' : { 'type': 'reviewers' }, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
-				'remind': { 'method': 'POST', 'params': { 'type': 'reviewers', 'action':'remind'}, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
+                'remind': { 'method': 'POST', 'params': { 'type': 'reviewers', 'action':'remind'}, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'delete': { 'method': 'DELETE', 'params' : { 'type': 'reviewer' }, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
 			});
 		}
@@ -312,7 +312,7 @@ angular.module('toolkit-gui')
 			 * @name				updateRevision
 			 * @param {String}      matterSlug    Database slug, used as a unique identifier for a matter.
 			 * @param {String}      itemSlug      Database slug, used as a unique identifier for a checklist item.
-			 * @param {Object}      files         Details as provided by filepicker.io
+			 * @param {Object}      revision      The revision object to update
 			 *
 			 * @example
 			 * matterItemService.updateRevision( 'myItemName', 'ItemCategoryName', {} );
@@ -346,7 +346,7 @@ angular.module('toolkit-gui')
 			},
 
 			/**
-			 * Reqests the API to delete a specific revision.
+			 * Requests the API to delete a specific revision.
 			 *
 			 * @name				deleteRevision
 			 * @param {String}      matterSlug    Database slug, used as a unique identifier for a matter.
@@ -599,14 +599,53 @@ angular.module('toolkit-gui')
 			 *
 			 * @return {Promise}
 			 */
-			'deleteRevisionReviewRequest': function ( matterSlug, itemSlug, participant ) {
+			'deleteRevisionReviewRequest': function ( matterSlug, itemSlug, review ) {
 				var deferred = $q.defer();
 
 				var api = reviewerItemResource();
 
-				api.delete({'matterSlug': matterSlug, 'itemSlug': itemSlug, 'username': participant.username },
+				api.delete({'matterSlug': matterSlug, 'itemSlug': itemSlug, 'username': review.reviewer.username },
 					function success(){
 						deferred.resolve();
+					},
+					function error(err) {
+						deferred.reject( err );
+					}
+				);
+
+				return deferred.promise;
+			},
+
+            /**
+			 * Requests a review update
+			 *
+			 * @name				updateRevisionReview
+			 * @param {Object}      review        The review object to update
+			 *
+			 * @example
+			 * matterItemService.updateRevisionReview( {} );
+			 *
+			 * @public
+			 * @method				updateRevisionReview
+			 * @memberof			matterItemService
+			 *
+			 * @return {Promise}    Updated item object as provided by API
+			 */
+			'updateRevisionReview': function ( review ) {
+				var deferred = $q.defer();
+
+				var api = $resource(review.url, {}, {
+				    'update': { 'method': 'PATCH', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
+			    });
+
+
+				var updateFields = {
+					'is_complete': review.is_complete
+				};
+
+				api.update({}, updateFields,
+					function success(item){
+						deferred.resolve(item);
 					},
 					function error(err) {
 						deferred.reject( err );

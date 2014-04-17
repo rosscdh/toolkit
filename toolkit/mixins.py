@@ -109,7 +109,9 @@ class ModalForm(BaseForm):
         self.helper.attrs.update({'data-remote': 'true', 'parsley-validate': ''})
 
         self.helper.add_input(Button('cancel', 'Cancel', css_class='btn btn-default', data_dismiss='modal'))
-        self.helper.add_input(Submit('submit', 'Submit', css_class='btn-wide'))
+
+        if getattr(self, 'show_action', True) is True:
+            self.helper.add_input(Submit('submit', 'Submit', css_class='btn-wide'))
 
     @property
     def action_url(self):

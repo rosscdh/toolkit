@@ -9,14 +9,11 @@ from .query import ItemQuerySet
 
 
 class ItemManager(IsDeletedManager):
-    def mine(self, user, **kwargs):
-        return self.get_queryset().mine(user, **kwargs)
+    def get_queryset(self):
+        return ItemQuerySet(self.model, using=self._db).filter(is_deleted=False).select_related('latest_revision')
 
     def requested(self, **kwargs):
         return self.get_queryset().requested(**kwargs)
-
-    def get_queryset(self):
-        return ItemQuerySet(self.model, using=self._db).filter(is_deleted=False)
 
     def my_requests(self, user):
         queries = []
@@ -26,6 +23,6 @@ class ItemManager(IsDeletedManager):
         # review requests
         queries += [models.Q(revision__is_current=True) & models.Q(revision__reviewers__in=[user])]
         # signing requests
-        queries += [models.Q(revision__is_current=True) & models.Q(revision__signatories__in=[user])]
+        queries += [models.Q(revision__is_current=True) & models.Q(revision__signers__in=[user])]
 
         return self.get_queryset().filter(reduce(operator.or_, queries))

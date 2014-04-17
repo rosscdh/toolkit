@@ -2,17 +2,19 @@
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.db.models.loading import get_model
-from django.core.exceptions import ObjectDoesNotExist
-from django.db.models.signals import pre_save, post_save
+from django.db.models.signals import pre_save, post_save, post_delete, m2m_changed
+
+from toolkit.core.mixins import IsDeletedMixin, ApiSerializerMixin
+from toolkit.core.services.matter_activity import MatterActivityEventService  # cyclic
 
 from .signals import (ensure_workspace_slug,
                       ensure_workspace_matter_code,
                       # tool
-                      ensure_tool_slug)
+                      ensure_tool_slug,
+                      on_workspace_post_delete,
+                      on_workspace_post_save,
+                      on_workspace_m2m_changed,)
 
-from toolkit.core.mixins import IsDeletedMixin
-from toolkit.core.signals.activity import (on_workspace_post_save,)
-from toolkit.core.services.matter_activity import MatterActivityEventService  # cyclic
 
 from toolkit.utils import _class_importer
 
@@ -25,7 +27,11 @@ from .managers import WorkspaceManager
 from .mixins import ClosingGroupsMixin, CategoriesMixin
 
 
-class Workspace(IsDeletedMixin, ClosingGroupsMixin, CategoriesMixin, models.Model):
+class Workspace(IsDeletedMixin,
+                ClosingGroupsMixin,
+                CategoriesMixin,
+                ApiSerializerMixin,
+                models.Model):
     """
     Workspaces are areas that allow multiple tools
     to be associated with a group of users
@@ -50,10 +56,13 @@ class Workspace(IsDeletedMixin, ClosingGroupsMixin, CategoriesMixin, models.Mode
 
     objects = WorkspaceManager()
 
-    _actions = None  # private variable for MatterActivityEventService 
+    _actions = None  # private variable for MatterActivityEventService
+    _serializer = 'toolkit.api.serializers.LiteMatterSerializer'
 
     class Meta:
         ordering = ['name', '-pk']
+        verbose_name = 'Matter'
+        verbose_name_plural = 'Matters'
 
     def __init__(self, *args, **kwargs):
         #
@@ -108,14 +117,19 @@ class Workspace(IsDeletedMixin, ClosingGroupsMixin, CategoriesMixin, models.Mode
         return user.profile.is_lawyer and (user == self.lawyer or user in self.participants.all())
 
     def can_delete(self, user):
-        return user.profile.is_lawyer and (user == self.lawyer or user in self.participants.all())
+        return user.profile.is_lawyer and (user == self.lawyer)
 
 """
 Connect signals
 """
 pre_save.connect(ensure_workspace_slug, sender=Workspace, dispatch_uid='workspace.pre_save.ensure_workspace_slug')
 pre_save.connect(ensure_workspace_matter_code, sender=Workspace, dispatch_uid='workspace.pre_save.ensure_workspace_matter_code')
+
+post_delete.connect(on_workspace_post_delete, sender=Workspace, dispatch_uid='workspace.post_delete.on_workspace_post_delete')
 post_save.connect(on_workspace_post_save, sender=Workspace, dispatch_uid='workspace.post_save.on_workspace_post_save')
+
+m2m_changed.connect(on_workspace_m2m_changed, sender=Workspace.participants.through, dispatch_uid='workspace.m2m_changed.on_workspace_m2m_changed')
+
 
 rulez_registry.register("can_read", Workspace)
 rulez_registry.register("can_edit", Workspace)
@@ -148,7 +162,7 @@ class InviteKey(models.Model):
         try:
             tool_instance = self.tool.model.objects.get(pk=self.tool_object_id)
             return tool_instance.get_absolute_url()
-        except ObjectDoesNotExist:
+        except:
             return None
 
     def get_invite_login_url(self, request=None):

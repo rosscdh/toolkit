@@ -11,11 +11,18 @@ from rest_framework.response import Response
 
 from toolkit.core.attachment.models import Revision
 
+from toolkit.tasks import run_task
+from toolkit.apps.review.tasks import crocodoc_upload_task
+
 from .mixins import (MatterItemsQuerySetMixin,)
 
 from ..serializers import RevisionSerializer
 from ..serializers import ItemSerializer
 from ..serializers import UserSerializer
+
+
+import logging
+logger = logging.getLogger('django.request')
 
 
 class RevisionEndpoint(viewsets.ModelViewSet):
@@ -100,6 +107,10 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
                                                                    partial=partial)
 
     def create(self, request, *args, **kwargs):
+        """
+        Have had to copy directly the method from the base class
+        because of the need to modify the data
+        """
         #
         # NB! this is the important line
         # we always have a revision object! normally you dont you just pass in data and files
@@ -109,21 +120,35 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
         self.revision.pk = None  # ensure that we are CREATING a new one based on the existing one
         self.revision.is_current = True
         serializer = self.get_serializer(self.revision, data=request.DATA, files=request.FILES)
-        ##
-        # End import
-        ##
 
         if serializer.is_valid():
             self.pre_save(serializer.object)
             self.object = serializer.save(force_insert=True)
             self.post_save(self.object, created=True)
+
             headers = self.get_success_headers(serializer.data)
+
+            #
+            # Asynchronous celery task to upload the file
+            #
+            run_task(crocodoc_upload_task, fallback_enabled=False,
+                     user=self.request.user, revision=self.object)
+
             #
             # Custom signal event
             #
             self.matter.actions.created_revision(user=self.request.user,
                                                  item=self.item,
                                                  revision=self.revision)
+
+
+
+            # see if there is a previous request for this revision
+            # TODO: check if this works! absolutely not sure!
+            if self.item.requested_by is not None:
+                self.matter.actions.user_uploaded_revision(user=self.request.user,
+                                                           item=self.item,
+                                                           revision=self.revision)
 
             return Response(serializer.data, status=status.HTTP_201_CREATED,
                             headers=headers)
@@ -163,7 +188,8 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
 
     def can_edit(self, user):
         return (user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all() \
-            or user in self.item.latest_revision.reviewers.all())
+            or (self.item.latest_revision is not None and user in self.item.latest_revision.reviewers.all())
+            or user == self.item.responsible_party)
 
     def can_delete(self, user):
         return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant

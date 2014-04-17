@@ -10,6 +10,10 @@ def avatar(user):
         user.initials = user.get_initials
         user.name = user.get_full_name
 
+    elif isinstance(user, dict):
+        user.initials = getattr(user, 'initials', None)
+        user.name = getattr(user, 'name', None)
+
     return {
         'user': user,
     }

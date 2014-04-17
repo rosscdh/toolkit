@@ -15,9 +15,11 @@ angular.module('toolkit-gui')
 	'smartRoutes',
 	'$location',
 	'$modal',
+    '$log',
+    'toaster',
 	'userService',
 	'matterService',
-	function( $scope, $routeParams, smartRoutes, $location, $modal, userService, matterService ){
+	function( $scope, $routeParams, smartRoutes, $location, $modal, $log, toaster, userService, matterService ){
 		var routeParams = smartRoutes.params(); 
 		/**
 		 * In scope variable containing containing a list of participants
@@ -35,6 +37,7 @@ angular.module('toolkit-gui')
 		 */
 		$scope.matter = matterService.data();
 
+
 		/**
 		 * Scope based data for this controller
 		 * @memberof			NavigationCtrl
@@ -42,8 +45,18 @@ angular.module('toolkit-gui')
 		 * @type {Object}
 		 */
 		$scope.data = {
-			'id': routeParams.id,
+			'id': routeParams.id
 		};
+
+        //load all other matters from the current user
+        matterService.list().then(
+             function success(response){
+                $scope.data.matterlist = response;
+             },
+             function error(err){
+                toaster.pop('error', "Error!", "Unable to other matters.");
+             }
+        );
 
 		/**
 		 * This method is used by navigation items to determine ifthey should be highlighted (i.e. .active)

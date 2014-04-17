@@ -28,10 +28,6 @@ class LawyerCreateWorkspaceTest(BaseScenarios, PyQueryMixin, TestCase):
 
         self.client.login(username=self.lawyer.username, password=self.password)
 
-        # Valid user
-        resp = self.client.get(url)
-        self.assertEqual(resp.status_code, 200)
-
         # Valid submission
         resp = self.client.post(url, {
             'name': 'Test Workspace'
