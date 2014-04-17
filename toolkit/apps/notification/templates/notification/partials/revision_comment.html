@@ -1,0 +1,14 @@
+{% extends "notification/partials/default.html" %}
+
+{% load humanize %}
+
+{% block notice %}
+    <p class="lead">{{ actor_name }} annotated on Revision {{ revision_slug }} {% block review_information %}{% endblock %}"{{ comment }}"</p>
+    <a href="{{ action_object_url }}">I AM A LINK TO {{ action_object_name }}</a>
+    <p class="small">{{ date|naturaltime }} — in <a href="{{ base_url }}">{{ target_name }}</a> for {{ client_name }}.</p>
+{% endblock %}
+
+{% comment %}
+The block review_information contains "(review copy) " or nothing and is used by review_session_comment.html just to
+add this information.
+{% endcomment %}
