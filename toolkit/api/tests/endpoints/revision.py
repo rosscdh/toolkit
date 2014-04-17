@@ -150,7 +150,7 @@ class ItemRevisionTest(BaseEndpointTest):
         self.assertEqual(self.item.revision_set.all().count(), self.expected_num)
 
         self.item = self.item.__class__.objects.get(pk=self.item.pk)  # reset
-        self.assertEqual(self.item.review_in_progress, False)  # test review_in_progress is reset
+        self.assertEqual(self.item.review_percentage_complete, 0)  # test review_percentage_complete is reset
 
     def test_revision_post_increment_with_url(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -174,7 +174,7 @@ class ItemRevisionTest(BaseEndpointTest):
         self.assertTrue(all(i.slug == 'v%s' % str(c+1) for c, i in enumerate(self.item.revision_set.all())))
 
         self.item = self.item.__class__.objects.get(pk=self.item.pk)  # reset
-        self.assertEqual(self.item.review_in_progress, False)  # test review_in_progress is reset
+        self.assertEqual(self.item.review_percentage_complete, 0)  # test review_percentage_complete is reset
 
 
 class ItemSubRevision2Test(ItemRevisionTest):
@@ -269,7 +269,7 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
         self.assertEqual(revision.executed_file.name, 'executed_files/v1-%s-%s-test-pirates-ahoy.pdf' % (self.item.pk, self.lawyer.username))
         self.assertEqual(revision.executed_file.url, 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test-pirates-ahoy.pdf' % (self.item.pk, self.lawyer.username))
 
-        self.assertEqual(self.item.review_in_progress, False)  # test review_in_progress is reset
+        self.assertEqual(self.item.review_percentage_complete, 0)  # test review_percentage_complete is reset
 
     @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_post_with_URL_executed_file(self):
@@ -294,7 +294,7 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
         self.assertEqual(resp_json.get('slug'), 'v2')
 
         self.item = self.item.__class__.objects.get(pk=self.item.pk)  # reset
-        self.assertEqual(self.item.review_in_progress, False)  # test review_in_progress is reset
+        self.assertEqual(self.item.review_percentage_complete, 0)  # test review_percentage_complete is reset
 
     @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_post_with_FILE_executed_file(self):
@@ -331,7 +331,7 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
         self.assertEqual(revision.executed_file.url, 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
 
         self.item = self.item.__class__.objects.get(pk=self.item.pk)  # reset
-        self.assertEqual(self.item.review_in_progress, False)  # test review_in_progress is reset
+        self.assertEqual(self.item.review_percentage_complete, 0)  # test review_percentage_complete is reset
 
     @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_post_with_URL_executed_file_and_stream(self):
@@ -460,14 +460,14 @@ class RevisionDeleteWithReviewersTest(BaseEndpointTest):
         self.revision.reviewers.add(self.reviewer)
 
         self.item = self.item.__class__.objects.get(pk=self.item.pk)  # reset
-        self.assertEqual(self.item.review_in_progress, True)  # test review_in_progress is reset
+        self.assertEqual(self.item.review_percentage_complete, 0)  # test review_percentage_complete is reset
 
     def test_delete_of_revision_not_blocked_by_reviwers(self):
         self.assertTrue(self.item.pk)
         self.revision.delete()
 
         self.item = self.item.__class__.objects.get(pk=self.item.pk)  # reset
-        self.assertEqual(self.item.review_in_progress, False)  # test review_in_progress is reset
+        self.assertEqual(self.item.review_percentage_complete, 0)  # test review_percentage_complete is reset
 
         #
         # If it throws an Item.DoesNotExist exception here
