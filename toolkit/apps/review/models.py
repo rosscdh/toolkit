@@ -129,7 +129,7 @@ class ReviewDocument(IsDeletedMixin, FileExistsLocallyMixin, UserAuthMixin, mode
                 #
                 logger.info('Sending ReviewDocument invite email to: %s' % u)
 
-                m = ReviewerReminderEmail(recipients=((u.get_full_name(), u.email,),))
+                m = ReviewerReminderEmail(recipients=((u.get_full_name(), u.email,),), from_tuple=(from_user.get_full_name(), from_user.email,))
                 m.process(subject=m.subject,
                           item=self.document.item,
                           document=self.document,
@@ -149,6 +149,9 @@ rulez_registry.register("can_read", ReviewDocument)
 rulez_registry.register("can_edit", ReviewDocument)
 rulez_registry.register("can_delete", ReviewDocument)
 
-from .signals import (ensure_matter_participants_are_in_reviewdocument_participants,
+from .signals import (#set_item_review_percentage_complete,
+                      #reset_item_review_percentage_complete_on_complete,
+                      #reset_item_review_percentage_complete_on_delete,
+                      ensure_matter_participants_are_in_reviewdocument_participants,
                       on_reviewer_add,
                       on_reviewer_remove,)

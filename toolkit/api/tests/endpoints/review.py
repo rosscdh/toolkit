@@ -143,7 +143,7 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
         # test if activity shows in stream
         stream = target_stream(self.matter)
         self.assertEqual(stream[0].data['override_message'],
-                         u'Lawyer Test invited a reviewer to Test Item with Revision')
+                         u'Lawyër Tëst invited a reviewer to Test Item with Revision')
 
     def test_second_lawyer_post(self):
         """
@@ -241,7 +241,7 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
         # test if activity shows in stream
         stream = target_stream(self.matter)
         self.assertEqual(stream[0].data['override_message'],
-                         u'Lawyer Test invited a reviewer to Test Item with Revision')
+                         u'Lawyër Tëst invited a reviewer to Test Item with Revision')
 
 
 class ReviewObjectIncrementWithNewReviewerTest(BaseEndpointTest):
@@ -519,7 +519,7 @@ class RevisionRequestedDocumentTest(BaseEndpointTest):
     and
     item.responsible_party must be a User
     """
-    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'status', u'category', u'is_complete', u'closing_group', u'description', u'parent', u'date_modified', u'url', u'is_requested', u'children', u'matter', u'date_due', u'responsible_party', u'is_final', u'date_created', u'latest_revision', u'request_document_meta', u'slug', u'name']
+    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'status', u'category', u'is_complete', u'closing_group', u'description', u'parent', u'date_modified', u'url', u'is_requested', u'children', u'matter', u'date_due', u'responsible_party', u'is_final', u'date_created', u'latest_revision', u'request_document_meta', u'slug', u'name', u'review_percentage_complete']
 
     @property
     def endpoint(self):
@@ -569,10 +569,11 @@ class RevisionRequestedDocumentTest(BaseEndpointTest):
 
         inviteduploader_user = User.objects.get(username='inviteduploader')
         invited_uploader = LiteUserSerializer(inviteduploader_user,
-                                              context={'request': self.request_factory.get(self.endpoint)})  ## should exist as we jsut created him in the patch
+                                              context={'request': self.request_factory.get(self.endpoint)}).data  ## should exist as we jsut created him in the patch
 
         self.assertTrue(json_data.get('is_requested') is True)
-        self.assertEqual(json_data.get('responsible_party'), invited_uploader.data)
+        self.assertItemsEqual(json_data.get('responsible_party').keys(), invited_uploader.keys())
+
 
         #
         # now upload a document and ensure
