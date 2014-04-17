@@ -185,8 +185,8 @@
             </div>
 
             <div class="review in-progress" ng-show="data.selectedItem.latest_revision.reviewers.length>0">
-                <span ng-show="getReviewPercentageComplete(data.selectedItem)<100">Review in progress</span>
-                <span ng-show="getReviewPercentageComplete(data.selectedItem)==100">Review complete</span>
+                <span ng-show="data.selectedItem.review_percentage_complete<1">Review in progress</span>
+                <span ng-show="data.selectedItem.review_percentage_complete==1">Review complete</span>
                 <a class="btn btn-link btn-xs pull-right" href="javascript:;" ng-click="remindRevisionReview(data.selectedItem)">
                     Remind
                 </a>
