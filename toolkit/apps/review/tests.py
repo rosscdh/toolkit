@@ -231,9 +231,6 @@ class ReviewerPercentageCompleteTest(BaseDataProvider, TestCase):
 
             # test that we increment the reviewdocument_set of the base document
             self.assertEqual(self.item.invited_document_reviews().count(), base_num_reviewdocuments + u_num)
-            #self.assertEqual(self.review_document.document.reviewdocument_set.all().count() - 1, base_num_reviewdocuments + u_num)
-
-        #self.item = self.review_document.document.item.__class__.objects.get(pk=self.review_document.document.item.pk)  # refresh
 
     def test_percentage_complete_increments(self):
         num_complete = 0

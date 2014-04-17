@@ -70,7 +70,7 @@ class ReviewInProgressMixin(object):
 
     @review_percentage_complete.setter
     def review_percentage_complete(self, value):
-        if type(value) not in [float]:
+        if type(value) not in [None, float]:
             raise Exception('review_percentage_complete must be a float')
 
         logger.info('Item %s review_percentage_complete set to %s' % (self, value))
@@ -84,7 +84,7 @@ class ReviewInProgressMixin(object):
         2. all reviews are complete (approved)
         3. all reviews are deleted
         """
-        num_reviewdocuments = 0
+        num_reviewdocuments = None
         num_reviewdocuments_complete = 0
         review_percentage_complete = 0
 
@@ -92,6 +92,7 @@ class ReviewInProgressMixin(object):
         if queryset:
 
             for rd in queryset.values('is_complete'):
+                num_reviewdocuments = 0 if num_reviewdocuments is None else num_reviewdocuments
                 num_reviewdocuments += 1
                 num_reviewdocuments_complete += 1 if rd.get('is_complete') is True else 0
 
