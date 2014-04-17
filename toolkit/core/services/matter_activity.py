@@ -228,7 +228,7 @@ class MatterActivityEventService(object):
             'matter_pk': revision.item.matter.pk
         })
 
-    def add_review_session_comment(self, user, revision, comment):
+    def add_review_copy_comment(self, user, revision, comment):
         override_message = '%s annotated %s (review comment) in %s' % (user, revision.slug, revision.item)
         self._create_activity(actor=user, verb=u'added review-session comment', action_object=revision,
                               override_message=override_message, comment=comment, item=revision.item)
