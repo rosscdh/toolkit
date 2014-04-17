@@ -65,7 +65,7 @@ class MatterRemovalService(object):
             #
             # all participants can remove themselves; laywers can remove other participants but not the primary lawyer
             #
-            if self.removing_user.username == user_to_remove.username:
+            if self.removing_user == user_to_remove:
                 self.matter.participants.remove(user_to_remove)
                 self.matter.actions.user_stopped_participating(user=user_to_remove)
 
@@ -74,8 +74,8 @@ class MatterRemovalService(object):
                 self.matter.actions.removed_matter_participant(matter=self.matter, removing_user=self.removing_user, removed_user=user_to_remove)
 
             else:
-                logger.error('User %s tried to remove the participant: %s in the matter: %s but was not a lawyer' % (self.current_user, user_to_remove, self.matter))
+                logger.error(u'User %s tried to remove the participant: %s in the matter: %s but was not a lawyer' % (self.current_user, user_to_remove, self.matter))
                 raise PermissionDenied('You are not allowed to remove a participant of this matter')
         else:
-            logger.error('User %s is not the primary lawyer of the matter : %s and/or the user to remove: %s is not in the matter' % (self.removing_user, self.matter, self.user_to_remove))
+            logger.error(u'User %s is not the primary lawyer of the matter : %s and/or the user to remove: %s is not in the matter' % (self.removing_user, self.matter, self.user_to_remove))
             raise PermissionDenied('This user is not a participant of this matter and/or you are not the primary lawyer')
