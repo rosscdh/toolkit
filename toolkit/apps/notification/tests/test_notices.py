@@ -29,7 +29,7 @@ class BaseListViewTest(BaseScenarios, TestCase):
     def assert_html_present(self, test_html, notice_pk, actor_name, actor_initials, message, date, base_url,
                             target_name, client_name):
         expected_html = _get_notice_html({
-            'pk': notice_pk,
+            'notice_pk': notice_pk,
             'actor_name': actor_name,
             'actor_initials': actor_initials,
             'message': message,
@@ -92,13 +92,15 @@ class NotificationEventsListTest(BaseListViewTest):
         message = notice.message.data
         actor = message.get('actor')
         target = message.get('target')
-        client = message.get('client')
+        client = target.get('client')
+
+        import pdb;pdb.set_trace()
 
         self.assert_html_present(test_html=test_html,
                                  notice_pk=notice.pk,
                                  actor_name=actor.get('name') if actor else None,
                                  actor_initials=actor.get('initials') if actor else None,
-                                 message=notice.message,
+                                 message=notice.message.message,
                                  date=notice.message.date,
                                  base_url=target.get('base_url') if target else None,
                                  target_name=target.get('name') if target else None,
