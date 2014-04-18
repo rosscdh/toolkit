@@ -18,7 +18,7 @@ NOTIFICATION_TEMPLATES = {
 }
 
 
-def _get_template(verb_slug):
+def get_notification_template(verb_slug):
     return NOTIFICATION_TEMPLATES.get(verb_slug, NOTIFICATION_TEMPLATES.get('default'))
 
 
@@ -80,7 +80,7 @@ def render_notice(notice, request=None):
 
     verb_slug = message_data.get('verb_slug')
 
-    t = _get_template(verb_slug)
+    t = get_notification_template(verb_slug)
     ctx = _get_context(message_data, verb_slug, request.user)
     ctx.update({
         'notice_pk': notice.pk,
