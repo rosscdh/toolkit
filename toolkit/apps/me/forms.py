@@ -121,14 +121,18 @@ class AccountSettingsForm(BaseAccountSettingsFields, forms.ModelForm):
         # detect a change
         if temp_email != self.user.email:
             profile.data['validation_required_temp_email'] = temp_email
+            # require them to validate their email
+            profile.validated_email = False
             profile.save(update_fields=['data'])
 
             m = ValidateEmailChangeMailer(
                     recipients=((self.user.get_full_name(), self.user.email),),)
             m.process(user=self.user)
 
-            messages.info(self.request, 'It looks like you are trying to change your email address, for your security we have sent a confirmation email to %s please follow the instructions in that email to complete the change.' % self.user.email)
+            messages.warning(self.request, 'For your security you have been logged out. Please check your email address "%s" and click the email address change confirmation validation link' % self.request.user.email)
             logger.info('User: %s has requested a change of email address' % self.user)
+
+            logout(self.request)
 
             # always return the current email address! we dotn want to change it
             # until the change has been confirmed
@@ -285,7 +289,7 @@ class ChangePasswordForm(ModalForm, SetPasswordForm):
         m = ValidatePasswordChangeMailer(recipients=((self.user.get_full_name(), self.user.email),),)
         m.process(user=self.user)
 
-        messages.warning(self.request, 'For your security you have been logged out. Please check your email address "%s" and click the password confirmation validation link' % self.request.user.email)
+        messages.warning(self.request, 'For your security you have been logged out. Please check your email address "%s" and click the change of password confirmation validation link' % self.request.user.email)
         logger.info('User: %s has requested a change of password' % self.user)
 
         logout(self.request)

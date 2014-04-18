@@ -147,8 +147,11 @@ class ConfirmEmailChangeRequest(BaseConfirmValidationRequest):
         if email and email is not False:
             self.user.email = email
             self.user.save(update_fields=['email'])
+
             # remove temp password
             del self.profile.data['validation_required_temp_email']
+            # set validated_email to True
+            self.profile.validated_email = True
             self.profile.save(update_fields=['data'])
 
         messages.success(self.request, 'Congratulations. Your email has been changed. Please login with your new email.')
