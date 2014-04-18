@@ -120,6 +120,41 @@ class ConfirmEmailValidationRequest(TemplateView):
         return redirect('/')
 
 
+
+class ConfirmEmailChangeRequest(TemplateView):
+    """
+    When a user confirms that they want to change their email they come
+    here and it does that for them.
+    """
+    template_name = None
+
+    def dispatch(self, request, *args, **kwargs):
+        self.request = request
+        self.args = args
+        self.kwargs = kwargs
+
+        try:
+            pk = signing.loads(kwargs['token'], salt=settings.SECRET_KEY)
+        except signing.BadSignature:
+            raise Http404
+
+        self.user = get_object_or_404(get_user_model(), pk=pk)
+
+        profile = self.user.profile
+        email = profile.data.get('validation_required_temp_email', False)
+
+        if email and email is not False:
+            self.user.email = email
+            self.user.save(update_fields=['email'])
+            # remove temp password
+            del profile.data['validation_required_temp_email']
+            profile.save(update_fields=['data'])
+
+        messages.success(self.request, 'Congratulations. Your email has been changed. Please login with your new email.')
+
+        return redirect('/')
+
+
 class ConfirmPasswordChangeRequest(TemplateView):
     """
     When a user confirms that they want to change their password they come
@@ -149,7 +184,7 @@ class ConfirmPasswordChangeRequest(TemplateView):
             del profile.data['validation_required_temp_password']
             profile.save(update_fields=['data'])
 
-        messages.success(self.request, 'Congratulations. Your password has been changed. Please login below')
+        messages.success(self.request, 'Congratulations. Your password has been changed. Please login with your new password.')
 
         return redirect('/')
 
@@ -160,12 +195,15 @@ class AccountSettingsView(UpdateView):
     success_url = reverse_lazy('me:settings')
     template_name = 'user/settings/account.html'
 
+    def get_form_kwargs(self):
+        kwargs = super(AccountSettingsView, self).get_form_kwargs()
+        kwargs.update({
+            'request': self.request
+        })
+        return kwargs
+
     def get_object(self, queryset=None):
         return self.request.user
-
-    def get_success_url(self):
-        messages.success(self.request, 'Success. You have updated your account')
-        return super(AccountSettingsView, self).get_success_url()
 
 
 class ChangePasswordView(AjaxModelFormView, FormView):

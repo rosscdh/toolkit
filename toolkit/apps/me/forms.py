@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django import forms
+from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
 from django.template.defaultfilters import slugify
@@ -19,7 +20,7 @@ from parsley.decorators import parsleyfy
 from toolkit.apps.default.fields import HTMLField
 from toolkit.mixins import ModalForm
 
-from .mailers import ValidatePasswordChangeMailer
+from .mailers import (ValidatePasswordChangeMailer, ValidateEmailChangeMailer)
 
 User = get_user_model()
 
@@ -55,6 +56,9 @@ class AccountSettingsForm(forms.ModelForm):
         model = User
 
     def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        self.user = self.request.user
+
         self.helper = FormHelper()
         self.helper.attrs = {
             'parsley-validate': '',
@@ -90,6 +94,44 @@ class AccountSettingsForm(forms.ModelForm):
 
         super(AccountSettingsForm, self).__init__(*args, **kwargs)
 
+    def clean_email(self):
+        """
+        save the requested email in the user.profile.data['validation_required_temp_email']
+        send the confirmation email
+        on reciept of the confirmation link click update the user email
+        """
+        profile = self.user.profile
+        # salt and hash this thing
+        temp_email = self.cleaned_data['email']
+
+        # detect a change
+        if temp_email != self.user.email:
+            profile.data['validation_required_temp_email'] = temp_email
+            profile.save(update_fields=['data'])
+
+            m = ValidateEmailChangeMailer(
+                    recipients=((self.user.get_full_name(), self.user.email),),)
+            m.process(user=self.user)
+
+            messages.info(self.request, 'It looks like you are trying to change your email address, for your security we have sent a confirmation email to %s please follow the instructions in that email to complete the change.' % self.user.email)
+            # always return the current email address! we dotn want to change it
+            # until the change has been confirmed
+
+        return self.user.email
+
+    def clean_first_name(self):
+        first_name = self.cleaned_data.get('first_name')
+        if first_name != self.user.first_name:
+            messages.success(self.request, 'Success. You have updated your First Name')
+            return first_name
+        return self.user.first_name
+
+    def clean_last_name(self):
+        last_name = self.cleaned_data.get('last_name')
+        if last_name != self.user.last_name:
+            messages.success(self.request, 'Success. You have updated your Last Name')
+            return last_name
+        return self.user.last_name
 
 @parsleyfy
 class ChangePasswordForm(ModalForm, SetPasswordForm):
@@ -132,9 +174,9 @@ class ChangePasswordForm(ModalForm, SetPasswordForm):
 
     def save(self, commit=False):
         """
-        save the password salted and hased in user.profile
+        save the password salted and hashed in user.profile
         send the confirmation email
-        on recipet of the confirmation link click update the user password
+        on reciept of the confirmation link click only then update the user password
         """
         profile = self.user.profile
         # salt and hash this thing
