@@ -111,3 +111,20 @@ fab :environment celery_stop:name='custom_name.1'
 
 fab :environment celery_restart:name='custom_name.1'
 ```
+
+# Unit Tests
+
+## Runnig the tests
+
+# If karma not installed:
+
+```bash
+npm install
+npm install -g karma-cli
+```
+
+# to run Karma:
+
+```bash
+karma start karma.conf.js
+```
