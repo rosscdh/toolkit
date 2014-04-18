@@ -58,5 +58,5 @@ class InviteCustomerTest(BaseScenarios, TestCase):
         email = mail.outbox[0]
         self.assertEqual(email.subject, required_fields.get('subject'))
         self.assertEqual(email.recipients(), [self.user.email])
-        self.assertEqual(email.from_email, u'Lawyer Test (via LawPal) support@lawpal.com')
+        self.assertEqual(email.from_email, u'Lawyër Tëst (via LawPal) support@lawpal.com')
         self.assertEqual(email.extra_headers, {'Reply-To': self.lawyer.email})

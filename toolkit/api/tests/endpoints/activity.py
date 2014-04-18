@@ -40,7 +40,7 @@ class MatterActivityEndpointTest(BaseEndpointTest):
         self.assertItemsEqual(events[0].keys(), [u'timestamp', u'timesince', u'data', u'id', u'actor', u'event'])
 
         # check if actor was added correctly
-        self.assertEqual(events[0]['actor']['name'], u'Lawyer Test')
+        self.assertEqual(events[0]['actor']['name'], u'Lawyër Tëst')
 
 
 class ItemActivityEndpointTest(BaseEndpointTest):
