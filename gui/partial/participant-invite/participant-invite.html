@@ -9,8 +9,10 @@
                 <li ng-repeat="person in participants">
                     <span class="user" ng-bind="person | initials"></span>
                     <label ng-bind="person | fullname"></label>
-                    <small ng-show="person.user_class=='lawyer'">({{ person.user_class }}<span ng-show="person.username==currentUser.username">, you</span>)</small>
-                    <a class="text-danger" ng-show="person.username!==currentUser.username" href="javascript:;" ng-click="revoke(person)"><small>Revoke access</small></a>
+                    <small ng-show="person.user_class=='lawyer'">({{ person.user_class }}<span ng-show="person.username==currentUser.username">, you</span><span ng-show="person.username==matter.lawyer.username">, owner</span>)
+                    </small>
+                    <a class="text-danger" ng-show="person.username!==currentUser.username&&currentUser.user_class==='lawyer'&&person.username!=matter.lawyer.username" href="javascript:;" ng-click="revoke(person)"><small>Revoke access</small></a>
+                    <a class="text-danger" ng-show="person.username===currentUser.username&&currentUser.user_class!=='lawyer'" href="javascript:;" ng-click="revoke(person)"><small>Exit matter</small></a>
                 </li>
             </ul>
             <br />
