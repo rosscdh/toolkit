@@ -2,6 +2,7 @@
 from django.template import loader
 from django.test import TestCase, Client
 from django.core.urlresolvers import reverse
+from toolkit.apps.notification.templatetags.notice_tags import get_notification_template
 
 from toolkit.casper.workflow_case import BaseScenarios
 
@@ -9,11 +10,10 @@ from stored_messages.models import Inbox
 
 from model_mommy import mommy
 
-NOTICE_TEMPLATE = loader.get_template('notification/partials/default.html')  # allow override of template_name
 
-
-def _get_notice_html(ctx):
-    return NOTICE_TEMPLATE.render(loader.Context(ctx))
+def _get_notice_html(verb_slug, ctx):
+    t = get_notification_template(verb_slug)
+    return t.render(loader.Context(ctx))
 
 
 class BaseListViewTest(BaseScenarios, TestCase):
@@ -26,9 +26,13 @@ class BaseListViewTest(BaseScenarios, TestCase):
         super(BaseListViewTest, self).setUp()
         self.client = Client()
 
-    def assert_html_present(self, test_html, notice_pk, actor_name, actor_initials, message, date, base_url,
-                            target_name, client_name):
-        expected_html = _get_notice_html({
+    def assert_html_present(self, test_html, verb_slug, notice_pk, actor_name, actor_initials, message, date, base_url,
+                            target_name, client_name, action_object_name, action_object_url):
+
+
+        # TODO rebuild function to contain the ctx-elemtens used in partials/default.html
+
+        expected_html = _get_notice_html(verb_slug, {
             'notice_pk': notice_pk,
             'actor_name': actor_name,
             'actor_initials': actor_initials,
@@ -37,6 +41,8 @@ class BaseListViewTest(BaseScenarios, TestCase):
             'base_url': base_url,
             'target_name': target_name,
             'client_name': client_name,
+            'action_object_name': action_object_name,
+            'action_object_url': action_object_url,
         })
         #
         # The actual test
@@ -93,10 +99,13 @@ class NotificationEventsListTest(BaseListViewTest):
         actor = message.get('actor')
         target = message.get('target')
         client = target.get('client')
+        verb_slug = message.get('verb_slug')
 
-        import pdb;pdb.set_trace()
+        action_object_name = message.get('action_object', {}).get('name')
+        action_object_url = message.get('action_object', {}).get('url')
 
         self.assert_html_present(test_html=test_html,
+                                 verb_slug=verb_slug,
                                  notice_pk=notice.pk,
                                  actor_name=actor.get('name') if actor else None,
                                  actor_initials=actor.get('initials') if actor else None,
@@ -104,7 +113,10 @@ class NotificationEventsListTest(BaseListViewTest):
                                  date=notice.message.date,
                                  base_url=target.get('base_url') if target else None,
                                  target_name=target.get('name') if target else None,
-                                 client_name=client.get('name') if client else None)
+                                 client_name=client.get('name') if client else None,
+                                 action_object_name=action_object_name,
+                                 action_object_url=action_object_url,
+                                 )
 
     def test_removed_matter_participant(self):
         """
@@ -140,9 +152,14 @@ class NotificationEventsListTest(BaseListViewTest):
         message = notice.message.data
         actor = message.get('actor')
         target = message.get('target')
-        client = message.get('client')
+        client = target.get('client')
+        verb_slug = message.get('verb_slug')
+
+        action_object_name = message.get('action_object', {}).get('name')
+        action_object_url = message.get('action_object', {}).get('url')
 
         self.assert_html_present(test_html=test_html,
+                                 verb_slug=verb_slug,
                                  notice_pk=notice.pk,
                                  actor_name=actor.get('name') if actor else None,
                                  actor_initials=actor.get('initials') if actor else None,
@@ -150,4 +167,7 @@ class NotificationEventsListTest(BaseListViewTest):
                                  date=notice.message.date,
                                  base_url=target.get('base_url') if target else None,
                                  target_name=target.get('name') if target else None,
-                                 client_name=client.get('name') if client else None)
+                                 client_name=client.get('name') if client else None,
+                                 action_object_name=action_object_name,
+                                 action_object_url=action_object_url,
+                                 )
