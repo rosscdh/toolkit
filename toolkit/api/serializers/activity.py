@@ -51,7 +51,7 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
     def _get_context(self, obj, verb_slug):
         message = obj.data.get('override_message', None)
         if message is None:
-            message = "%s %s %s" % (obj.actor, obj.verb, obj.action_object)
+            message = u"%s %s %s" % (obj.actor, obj.verb, obj.action_object)
 
         ctx = {
             'actor': obj.actor,
