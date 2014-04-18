@@ -118,6 +118,13 @@ class AccountSettingsForm(BaseAccountSettingsFields, forms.ModelForm):
         # salt and hash this thing
         temp_email = self.cleaned_data['email']
 
+        # @TODO turn this into a reuseable function as its used in SignupForm too
+        temp_email = User.objects.normalize_email(self.cleaned_data.get('email'))
+        existing_user = User.objects.filter(email=temp_email).first()
+
+        if existing_user is not None:
+            raise forms.ValidationError("An account with that email already exists.")
+
         # detect a change
         if temp_email != self.user.email:
             profile.data['validation_required_temp_email'] = temp_email
