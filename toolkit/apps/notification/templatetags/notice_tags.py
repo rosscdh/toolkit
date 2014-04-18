@@ -83,7 +83,7 @@ def render_notice(notice, request=None):
     t = _get_template(verb_slug)
     ctx = _get_context(message_data, verb_slug, request.user)
     ctx.update({
-        'pk': notice.pk,
+        'notice_pk': notice.pk,
         'date': notice.message.date,
         'message': notice.message.message,
     })

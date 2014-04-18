@@ -12,7 +12,7 @@
             {% endblock %}
         </div>
         <div class="col-xs-1">
-            <a href="javascript:;" data-pk="{{ pk }}" data-url="{% url 'notification:inbox-read' pk=pk %}" class="btn btn-sm notification-btn mark-as-read" data-toggle="tooltip" data-placement="top" title="Mark as read">
+            <a href="javascript:;" data-pk="{{ notice_pk }}" data-url="{% url 'notification:inbox-read' pk=notice_pk %}" class="btn btn-sm notification-btn mark-as-read" data-toggle="tooltip" data-placement="top" title="Mark as read">
                 <span class="fui-check text-info"></span>
             </a>
         </div>
