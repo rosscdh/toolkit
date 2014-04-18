@@ -6,6 +6,7 @@ setup.cfg
 hellosign
 hello_sign
 actstream
+dj_crocodoc
 *_valid.html
 *_invalid.html
 \.coverage
