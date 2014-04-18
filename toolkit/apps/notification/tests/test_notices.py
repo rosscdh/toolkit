@@ -10,8 +10,6 @@ from stored_messages.models import Inbox
 
 from model_mommy import mommy
 
-# NOTICE_TEMPLATE = loader.get_template('notification/partials/default.html')  # allow override of template_name
-
 
 def _get_notice_html(verb_slug, ctx):
     t = get_notification_template(verb_slug)

@@ -98,6 +98,10 @@ class Item(IsDeletedMixin,
             revision = self.latest_revision
         return revision.get_user_review_url(user=user)
 
+    def get_full_user_review_url(self, user, version_slug):
+        review_document_link = self.get_user_review_url(user=user, version_slug=version_slug)
+        return "%s:%s" % (self.get_absolute_url(), review_document_link)
+
     @property
     def client(self):
         return self.matter.client
