@@ -43,9 +43,10 @@ def _get_context(message_data, verb_slug, user):
                 # item = item.object  # is a dict, not a serializer-object
                 # item_s = ItemSerializer(item)
                 # item_o = item_s.get_object()
-                review_document_link = item_object.get_user_review_url(user=user, version_slug=action_object['slug'])
+                action_object_url = item_object.get_full_user_review_url(user=user, version_slug=action_object['slug'])
+                # review_document_link = item_object.get_user_review_url(user=user, version_slug=action_object['slug'])
 
-                action_object_url = "%s:%s" % (item_object.get_absolute_url(), review_document_link)
+                # action_object_url = "%s:%s" % (item_object.get_absolute_url(), review_document_link)
             else:
                 # it's a link on an item -> show item-link
                 target_object = Item.objects.get(slug=action_object.get('slug'))

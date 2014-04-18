@@ -75,10 +75,12 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
             ctx.update({'item': obj.data['item']})
 
             item = Item.objects.get(slug=obj.data.get('item', {}).get('slug'))
-            review_document_link = item.get_user_review_url(user=self.request.user, version_slug=obj.action_object.slug)
-
-            ctx.update({'action_object_url': "%s:%s" % (obj.action_object.item.get_absolute_url(),
-                                                        review_document_link)})
+            # review_document_link = item.get_user_review_url(user=self.request.user, version_slug=obj.action_object.slug)
+            #
+            # ctx.update({'action_object_url': "%s:%s" % (obj.action_object.item.get_absolute_url(),
+            #                                             review_document_link)})
+            ctx.update({'action_object_url': item.get_full_user_review_url(user=self.request.user,
+                                                                           version_slug=obj.action_object.slug)})
             ctx.update({'revision_slug': "%s" % obj.action_object.slug})
 
         return ctx
