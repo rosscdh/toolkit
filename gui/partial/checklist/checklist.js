@@ -268,8 +268,9 @@ angular.module('toolkit-gui')
 		}
 
         $scope.loadItemDetails = function(item){
-            if(typeof(item.latest_revision) === "string") {
-                baseService.loadObjectByUrl(item.latest_revision).then(
+            //if(typeof(item.latest_revision.reviewers) === "string") {
+            if(item.latest_revision && !item.latest_revision.reviewers) {
+                baseService.loadObjectByUrl(item.latest_revision.url).then(
                     function success(obj){
                         item.latest_revision = obj;
                     },
@@ -545,10 +546,7 @@ angular.module('toolkit-gui')
 			var itemSlug = item.slug;
 			$scope.data.uploading = true;
 
-            var initwithstatus = Object.keys($scope.data.matter._meta.item.custom_status)[0];
-            $log.debug(initwithstatus);
-
-			matterItemService.uploadRevision( matterSlug, itemSlug, files, initwithstatus ).then(
+			matterItemService.uploadRevision( matterSlug, itemSlug, files ).then(
 				function success( revision ) {
 					revision.uploaded_by = matterService.data().selected.current_user;
 					item.latest_revision = revision;
@@ -899,6 +897,10 @@ angular.module('toolkit-gui')
 
 			modalInstance.result.then(
 				function ok(review) {
+                    if (!revision.reviewers) {
+                        revision.reviewers = [];
+                    }
+
 					var results = jQuery.grep( revision.reviewers, function( rev ){ return rev.reviewer.username===review.reviewer.username; } );
 					if( results.length===0 ) {
 						revision.reviewers.push(review);
@@ -1024,37 +1026,6 @@ angular.module('toolkit-gui')
             } else {
                 return 0;
             }
-        };
-
-
-        $scope.editRevisionStatusTitles = function() {
-            var matter = $scope.data.matter;
-
-            var modalInstance = $modal.open({
-                'templateUrl': '/static/ng/partial/edit-revision-status/edit-revision-status.html',
-                'controller': 'EditRevisionStatusCtrl',
-                'backdrop': 'static',
-                'resolve': {
-                    'currentUser': function () {
-                        return matter.current_user;
-                    },
-                    'matter': function () {
-                        return matter;
-                    },
-                    'customstatusdict': function () {
-                        return $scope.data.matter._meta.item.custom_status;
-                    },
-                    'defaultstatusdict': function () {
-                        return $scope.data.matter._meta.item.default_status;
-                    }
-                }
-            });
-
-            modalInstance.result.then(
-                function ok(result) {
-                    $scope.data.matter._meta.item.custom_status = result;
-                }
-            );
         };
 		/* End revision handling */
 

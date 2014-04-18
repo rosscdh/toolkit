@@ -8,6 +8,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
 
 from toolkit.api.serializers import LiteMatterSerializer
+from toolkit.apps.matter.services import (MatterRemovalService, MatterParticipantRemovalService)
 from toolkit.apps.workspace.models import Workspace
 from toolkit.mixins import AjaxModelFormView, ModalView
 
@@ -122,22 +123,15 @@ class MatterDeleteView(ModalView, DeleteView):
         self.object = self.get_object()
         success_url = self.get_success_url()
 
-        if request.user == self.object.lawyer:
-            #
-            # Only the lawyer can delete a matter
-            #
-            self.object.delete()
+        if self.object.lawyer == request.user:
+            service = MatterRemovalService(matter=self.object, removing_user=request.user)
+            service.process()
+
         else:
             #
-            # participants can remove themselves
+            # Is a participant trying to stop participating
             #
-            if request.user in self.object.participants.all():
-                self.object.participants.remove(request.user)
-                # send activity event
-                self.object.actions.user_stopped_participating(user=request.user)
-
-            else:
-                logger.error('User %s tried to delete a matter: %s but was not the lawyer nor the participant' % (request.user, self.object))
-                raise PermissionDenied('You are not a participant of this matter')
+            service = MatterParticipantRemovalService(matter=self.object, removing_user=request.user)
+            service.process(user_to_remove=request.user)
 
         return HttpResponseRedirect(success_url)
