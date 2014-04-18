@@ -150,3 +150,20 @@ class AccountEmailChangeTest(BaseScenarios, TestCase):
         self.assertNotEqual(expected_original_email, self.user.email)
         self.assertTrue('Congratulations. Your email has been changed. Please login with your new email.' in resp.content)
 
+    def test_email_cant_change_to_existing_user(self):
+        self.client.login(username=self.user.username, password=self.password)
+
+        resp = self.client.get(self.url)
+        form = resp.context_data.get('form')
+
+        form_data = form.initial
+        form_data.update({
+            'email': self.lawyer.email,  # Try to use another users email address
+            'csrfmiddlewaretoken': unicode(resp.context['csrf_token']),
+        })
+
+        resp = self.client.post(self.url, form_data, follow=True)
+        # shoudl show form again with error message
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.template_name, ['user/settings/account.html'])
+        self.assertTrue('An account with that email already exists.' in resp.content)
