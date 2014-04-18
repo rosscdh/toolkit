@@ -40,7 +40,12 @@ angular.module('toolkit-gui').config(function($stateProvider, $urlRouterProvider
       'url': "/:itemSlug",
       'templateUrl': '/static/ng/partial/checklist/includes/itemdetails.html',
       'controller': function($scope) {}
+    })
+    .state('checklist.item.review', {
+      'url': "/:reviewSlug",
+      'controller': function($scope) {}
     });
+
     /*
     $routeSegmentProvider.within('checklist').segment('itemInfo', {
     'templateUrl': '/static/ng/partial/checklist/includes/itemdetails.html'});
