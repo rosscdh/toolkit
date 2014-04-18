@@ -118,13 +118,13 @@ fab :environment celery_restart:name='custom_name.1'
 
 # If karma not installed:
 
-```bash
+```js
 npm install
 npm install -g karma-cli
 ```
 
 # to run Karma:
 
-```bash
+```js
 karma start karma.conf.js
 ```
