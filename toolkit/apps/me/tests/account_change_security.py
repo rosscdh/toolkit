@@ -48,10 +48,10 @@ class AccountPasswordChangeTest(BaseScenarios, TestCase):
         })
 
         resp = self.client.post(self.url, form_data, follow=True)
-        self.assertEqual(resp.status_code, 200)
-
         # get action url in email
         expected_action_url = _get_action_url('me:confirm-password-change', self.user)
+
+        self.assertEqual(resp.status_code, 200)
 
         # test the temp variable was set
         self.assertTrue('validation_required_temp_password' in self.user.profile.data)
@@ -69,6 +69,7 @@ class AccountPasswordChangeTest(BaseScenarios, TestCase):
 
         # test that the password gets reset when we visit this url
         resp = self.client.get(expected_action_url, follow=True)
+        self.assertEqual(resp.redirect_chain, [('http://testserver/', 301)])
 
         self.user = self.user.__class__.objects.get(pk=self.user.pk)  # refresh
 
@@ -106,10 +107,9 @@ class AccountEmailChangeTest(BaseScenarios, TestCase):
         })
 
         resp = self.client.post(self.url, form_data, follow=True)
-        self.assertEqual(resp.status_code, 200)
-
         # get action url in email
         expected_action_url = _get_action_url('me:confirm-email-change', self.user)
+        self.assertEqual(resp.status_code, 200)
 
         # test the temp variable was set
         self.assertTrue('validation_required_temp_email' in self.user.profile.data)
@@ -123,10 +123,14 @@ class AccountEmailChangeTest(BaseScenarios, TestCase):
 
         email = outbox[0]
         self.assertEqual(email.subject, u'Please confirm your change of email address')
+        # print email.body
+        # print expected_action_url
         self.assertTrue(expected_action_url in email.body)
 
         # test that the password gets reset when we visit this url
         resp = self.client.get(expected_action_url, follow=True)
+        # because the user can remain logged in they are redirected to / and then to /matters
+        self.assertEqual(resp.redirect_chain, [('http://testserver/', 301), ('http://testserver/matters/', 302)])
 
         self.user = self.user.__class__.objects.get(pk=self.user.pk)  # refresh
 
