@@ -5,12 +5,13 @@ from django.conf import settings
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import redirect
+from django.contrib.auth import logout
 from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import FormView, UpdateView, TemplateView
 from django.views.generic.edit import BaseUpdateView
-from django.contrib.auth import logout
+
 from django.shortcuts import get_object_or_404
 
 from toolkit.apps.me.signals import send_welcome_email
@@ -213,17 +214,11 @@ class ChangePasswordView(AjaxModelFormView, FormView):
 
     def get_form_kwargs(self):
         kwargs = super(ChangePasswordView, self).get_form_kwargs()
-        kwargs['user'] = self.get_user()
+        kwargs.update({
+            'request': self.request,
+            'user': self.request.user
+        })
         return kwargs
-
-    def get_user(self):
-        return self.request.user
-
-    def form_valid(self, form):
-        form.save()
-        messages.warning(self.request, 'Almost there. Please check your email %s and click the password confirmation validation link' % self.request.user.email)
-        logout(self.request)
-        return super(ChangePasswordView, self).form_valid(form)
 
 
 class LawyerLetterheadView(UpdateView):
