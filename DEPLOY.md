@@ -1,6 +1,11 @@
 Deployment actions by branch
 ----------------------------
 
+[stripe-payments]
+
+1. pip install django-stripe-payments
+2. ./manage.py syncdb
+
 
 --------------------------------------------------------------------------------
 ** DEPLOYED 18 April 2014
