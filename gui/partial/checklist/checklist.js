@@ -88,8 +88,8 @@ angular.module('toolkit-gui')
         
 		if( $scope.data.slug && $scope.data.slug!=='' && $scope.data.matterCalled==null) {
 			$scope.data.matterCalled = true;
-            
-			matterService.get( $scope.data.slug ).then(
+           
+			matterService.get( $scope.data.slug ).then( 
 				function success( singleMatter ){
 					$scope.data.matter = singleMatter;
 

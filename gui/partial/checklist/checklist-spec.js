@@ -21,29 +21,47 @@ describe('ChecklistCtrl', function() {
 	$scope,
 	ctrl,
 	$rootScope,
-	smartRoutes;
+	smartRoutes,
+	$q,
+    matterService;
 
+	
     beforeEach(inject(function($injector, $rootScope, $controller) {
 	
 	  $rootScope = $injector.get('$rootScope');
 	  $controller = $injector.get('$controller');
+	  $q = $injector.get('$q');
+	  
       $scope = $rootScope.$new();
-	  				
+	  //mocking smartRoutes		
 	  smartRoutes = {'params': function() { return { 'matterSlug': 'test-matter' }; }}
-				
+	  //mocking matterService       
+	  matterService = jasmine.createSpyObj('matterService',['get','selectMatter']);
+	  matterService.get.andCallFake(function(param){
+		   var deferred = $q.defer();							
+		   deferred.resolve({ message: "This is great!" });	           
+		   return deferred.promise;		
+	  });
+	  matterService.selectMatter.andCallFake(function(param){});  
       ctrl = $controller('ChecklistCtrl', {
-	  $scope: $scope,
-	  $rootScope:$rootScope,
-	  $routeParams:{},
-	  $location:{},
-	  smartRoutes:smartRoutes
+		  $scope: $scope,
+		  $rootScope:$rootScope,
+		  $routeParams:{},
+		  $location:{},
+		  smartRoutes:smartRoutes,
+		  ezConfirm:{},
+		  toaster:{},
+		  $modal:{},
+		  baseService:{},
+		  matterService:matterService
 	  });
     }));	
 
 	// Ceheck objects
-	it('should have usdata', function () {
+	it('should have usdata and call "matterService.get"', function () {
 		expect($scope.data instanceof Object).toBe(true);
 		expect($scope.data.usdata instanceof Object).toBe(true);
+		expect(matterService.get).toHaveBeenCalled();
 	});
 	
 	it('should evaluate smart routes', inject(function() {
@@ -95,5 +113,88 @@ describe('ChecklistCtrl', function() {
 	it('should set show category form by index', inject(function() {
 		$scope.showEditCategoryForm(1);
 		expect($scope.data.showEditCategoryForm).toEqual(1);
+	}));
+	
+	//matterService.get success
+	it('if matterService.get performed successfully -$scope.initialiseMatter should called', inject(function() {
+	    spyOn($scope,'initialiseMatter');
+		spyOn($scope,'initializeActivityStream');
+	    $scope.$apply();//makes promise.resolve to fire
+		expect($scope.initialiseMatter).toHaveBeenCalled();
+		expect($scope.initializeActivityStream).toHaveBeenCalled();
+	}));
+	
+});
+//matterService.get failure
+describe('ChecklistCtrl', function() {
+    beforeEach(function() {
+        module(function($provide) {            
+			$provide.constant('API_BASE_URL', '/api/v1/');
+            $provide.constant('STATUS_LEVEL', {'OK':0,'WARNING':1,'ERROR':2} );
+            $provide.constant('DEBUG_MODE', false);
+            $provide.constant('SENTRY_PUBLIC_DSN', 'https://b5a6429d03e2418cbe71cd5a4c9faca6@app.getsentry.com/6287' );
+            $provide.constant('INTERCOM_APP_ID', 'ooqtbx99' );
+			
+
+			
+			$provide.constant('matterCategoryService',{});
+			$provide.constant('matterItemService',{});
+			$provide.constant('baseService',{});
+        });
+		
+	});
+	beforeEach(module('toolkit-gui'));
+
+	var 
+	$scope,
+	ctrl,
+	$rootScope,
+	smartRoutes,
+	$q,
+	toaster,
+    matterService;
+
+	
+    beforeEach(inject(function($injector, $rootScope, $controller) {
+	
+	  $rootScope = $injector.get('$rootScope');
+	  $controller = $injector.get('$controller');
+	  $q = $injector.get('$q');
+	  
+      $scope = $rootScope.$new();
+	  //mocking smartRoutes		
+	  smartRoutes = {'params': function() { return { 'matterSlug': 'test-matter' }; }}
+	  //mocking matterService       
+	  matterService = jasmine.createSpyObj('matterService',['get','selectMatter']);
+	  matterService.get.andCallFake(function(param){
+		   var deferred = $q.defer();							
+		   deferred.reject({ message: "This is great!" });	           
+		   return deferred.promise;		
+	  });
+	  
+	  toaster  = jasmine.createSpyObj('toaster',['pop']);
+	  toaster.pop.andCallFake(function(param1,param2,param3){});
+	  
+	  matterService.selectMatter.andCallFake(function(param){});  
+      ctrl = $controller('ChecklistCtrl', {
+		  $scope: $scope,
+		  $rootScope:$rootScope,
+		  $routeParams:{},
+		  $location:{},
+		  smartRoutes:smartRoutes,
+		  ezConfirm:{},
+		  toaster:toaster,
+		  $modal:{},
+		  baseService:{},
+		  matterService:matterService
+	  });
+    }));
+
+	
+	//matterService.get success
+	it('if matterService.get performed successfully -$scope.initialiseMatter should called', inject(function() {
+        
+	    $scope.$apply();//makes promise.resolve to fire
+        expect(toaster.pop.mostRecentCall.args[0]).toBe('error');
 	}));	
 });
