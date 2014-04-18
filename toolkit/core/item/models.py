@@ -98,6 +98,12 @@ class Item(IsDeletedMixin,
             revision = self.latest_revision
         return revision.get_user_review_url(user=user)
 
+    def get_full_user_review_url(self, user, version_slug):
+        # returns url to item AND revision
+        # example: /matters/test-matter-1/#/checklist/e89403f273a045cd8a0ca7e7dd2bc383:/review/1d5d8b3ac969415e941aab3dd2ce41e8/BR45Ps8PPplMXg%3D%3D/
+        review_document_link = self.get_user_review_url(user=user, version_slug=version_slug)
+        return "%s:%s" % (self.get_absolute_url(), review_document_link)
+
     @property
     def client(self):
         return self.matter.client
