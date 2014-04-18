@@ -19,7 +19,7 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
 
     status = serializers.ChoiceField(required=False, choices=Item.ITEM_STATUS.get_choices())
 
-    #review_percentage_complete = serializers.Field(source='review_percentage_complete')  # removed while fixing things
+    # review_percentage_complete = serializers.Field(source='review_percentage_complete')  # removed while fixing things
 
     responsible_party = LiteUserSerializer(required=False)
 

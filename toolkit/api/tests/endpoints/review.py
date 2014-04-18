@@ -519,7 +519,11 @@ class RevisionRequestedDocumentTest(BaseEndpointTest):
     and
     item.responsible_party must be a User
     """
-    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'status', u'category', u'is_complete', u'closing_group', u'description', u'parent', u'date_modified', u'url', u'is_requested', u'children', u'matter', u'date_due', u'responsible_party', u'is_final', u'date_created', u'latest_revision', u'request_document_meta', u'slug', u'name', u'review_percentage_complete']
+    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'status', u'category', u'is_complete', u'closing_group', u'description',
+                                           u'parent', u'date_modified', u'url', u'is_requested', u'children', u'matter',
+                                           u'date_due', u'responsible_party', u'is_final', u'date_created',
+                                           u'latest_revision', u'request_document_meta', u'slug', u'name',
+                                           u'review_percentage_complete']
 
     @property
     def endpoint(self):

@@ -86,6 +86,17 @@ class Revision(ApiSerializerMixin, models.Model):
     def revisions(self):
         return self.item.revision_set.all()
 
+    def get_user_review_url(self, user, review_document=None):
+        """
+        Try to provide an initial review url from the base review_document obj
+        for the currently logged in user
+        """
+        if user is not None:
+            if review_document is None:
+                review_document = self.reviewdocument_set.all().last()
+            return review_document.get_absolute_url(user=user, use_absolute=False) if review_document is not None else None
+        return None
+
     def get_revision_label(self):
         """
         potential bug here.. if the uuid starts with a  v.
@@ -119,6 +130,11 @@ class Revision(ApiSerializerMixin, models.Model):
 
     def previous(self):
         return self.revisions.filter(pk__lt=self.pk).first()
+
+    @property
+    def primary_reviewdocument(self):
+        # is this *really* only the case for a NEW reviewdocument/revision?
+        return self.reviewdocument_set.filter(reviewers=None).last()
 
 from .signals import (ensure_revision_slug,
                       ensure_one_current_revision,
