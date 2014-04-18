@@ -1,0 +1,11 @@
+{% extends 'email/base.email' %}
+
+{% block subject_line %}Please confirm your change of email address{% endblock %}
+
+{% block html_content %}
+<p>Hi there,</p>
+<p>Someone is trying to change your email address.</p>
+<p>If it was you then, please follow the link below.</p>
+<p><strong><a href="{{ action_url }}">Click here to validate your change of email address</a></strong></p>
+<p>If you have not tried to change your email address at LawPal, or you believe there to be a problem, please contact us at <a href="mailto:hello@lawpal.com"> hello@lawpal.com</a></p>
+{% endblock %}
