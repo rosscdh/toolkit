@@ -4,6 +4,7 @@ Matter Participant endpoint
 """
 from django.forms import EmailField
 from django.contrib.auth.models import User
+from django.core.exceptions import PermissionDenied
 
 from rulez import registry as rulez_registry
 
@@ -15,7 +16,7 @@ from rest_framework import status as http_status
 from toolkit.apps.matter.signals import PARTICIPANT_ADDED
 from toolkit.apps.workspace.models import Workspace
 from toolkit.apps.workspace.services import EnsureCustomerService
-from toolkit.apps.matter.services import MatterRemovalService
+from toolkit.apps.matter.services import MatterParticipantRemovalService
 
 from ..serializers import MatterSerializer, SimpleUserSerializer
 from .mixins import (MatterMixin,)
@@ -84,6 +85,8 @@ class MatterParticipant(generics.CreateAPIView,
         return Response(SimpleUserSerializer(new_participant, context={'request': self.request}).data, status=http_status.HTTP_202_ACCEPTED)
 
     def delete(self, request, **kwargs):
+        status = http_status.HTTP_202_ACCEPTED
+        
         # extract from url arg
         data = {"email": self.kwargs.get('email')}
 
@@ -93,10 +96,14 @@ class MatterParticipant(generics.CreateAPIView,
         # will raise Does not exist if not found
         participant_to_remove = User.objects.get(email=email)
 
-        service = MatterRemovalService(matter=self.matter, removing_user=request.user)
-        service.process(participant_to_remove)
+        try:
+            service = MatterParticipantRemovalService(matter=self.matter, removing_user=request.user)
+            service.process(participant_to_remove)
 
-        return Response(status=http_status.HTTP_202_ACCEPTED)
+        except PermissionDenied:
+            status = http_status.HTTP_403_FORBIDDEN
+
+        return Response(status=status)
 
     def can_read(self, user):
         return user.profile.user_class in ['lawyer', 'customer']
