@@ -52,6 +52,8 @@ class AccountPasswordChangeTest(BaseScenarios, TestCase):
         expected_action_url = _get_action_url('me:confirm-password-change', self.user)
 
         self.assertEqual(resp.status_code, 200)
+        # test they were logged out
+        self.assertTrue('_auth_user_id' not in self.client.session)
 
         # test the temp variable was set
         self.assertTrue('validation_required_temp_password' in self.user.profile.data)
@@ -72,6 +74,9 @@ class AccountPasswordChangeTest(BaseScenarios, TestCase):
         self.assertEqual(resp.redirect_chain, [('http://testserver/', 301)])
 
         self.user = self.user.__class__.objects.get(pk=self.user.pk)  # refresh
+
+        # test they were not logged in
+        self.assertTrue('_auth_user_id' not in self.client.session)
 
         self.assertTrue('validation_required_temp_password' not in self.user.profile.data)
         self.assertNotEqual(expected_original_password, self.user.password)
@@ -113,6 +118,8 @@ class AccountEmailChangeTest(BaseScenarios, TestCase):
 
         # test the temp variable was set
         self.assertTrue('validation_required_temp_email' in self.user.profile.data)
+        # test that their account email needs to be revalidated
+        self.assertTrue(self.user.profile.validated_email is False)
         # and that the passwords are not the same
         self.assertNotEqual(expected_original_email, self.user.profile.data['validation_required_temp_email'])
         # test users password has not been changes
@@ -134,7 +141,12 @@ class AccountEmailChangeTest(BaseScenarios, TestCase):
 
         self.user = self.user.__class__.objects.get(pk=self.user.pk)  # refresh
 
+        # test they were not logged in
+        self.assertTrue('_auth_user_id' not in self.client.session)
+        # test the marker was deleted
         self.assertTrue('validation_required_temp_email' not in self.user.profile.data)
+        # test that their account email has been validated
+        self.assertTrue(self.user.profile.validated_email is True)
         self.assertNotEqual(expected_original_email, self.user.email)
         self.assertTrue('Congratulations. Your email has been changed. Please login with your new email.' in resp.content)
 
