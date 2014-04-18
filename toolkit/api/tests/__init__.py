@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 from .endpoints.client import *
 from .endpoints.matter import *
-from .endpoints.revision_request import *
+from .endpoints.item_request import *
 from .endpoints.review import *
 from .endpoints.sign import *
 from .endpoints.item_request import *

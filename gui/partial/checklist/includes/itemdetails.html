@@ -168,15 +168,22 @@
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="deleteLatestRevision()">Delete</a>
                     <div class="btn-group pull-right">
                         <button type="button" class="btn btn-default btn-xs status-{{ data.selectedItem.latest_revision.status }}" data-toggle="dropdown">
-                          {{ data.matter._meta.revision.status | valueforkey:data.selectedItem.latest_revision.status }}
+                          {{ data.matter._meta.item.custom_status[data.selectedItem.latest_revision.status] }}
                         </button>
-                        <button class="btn btn-default btn-xs status-{{ data.selectedItem.latest_revision.status }}" data-toggle="dropdown" ng-show="data.usdata.current.user_class=='lawyer'">
+                        <button class="btn btn-default btn-xs status-{{ data.selectedItem.latest_revision.status }}"
+                                data-toggle="dropdown" ng-show="data.usdata.current.user_class=='lawyer'">
                           <span class="caret" ></span>
                         </button>
-                        <ul class="dropdown-menu" ng-show="data.usdata.current.user_class=='lawyer'">
-                          <li class="" ng-repeat="status in data.matter._meta.revision.status | setValueAsArrayIndex">
-                              <a href="javascript:;" ng-click="data.selectedItem.latest_revision.status=$index;saveLatestRevision();">
-                                  <span class="icon status-{{ $index }}"></span> {{ status }}
+                        <ul class="dropdown-menu" ng-show="data.usdata.current.user_class=='lawyer'" >
+                          <li class="" ng-repeat="(key, status) in data.matter._meta.item.custom_status">
+                              <a href="javascript:;" ng-click="data.showRevisionStatusDropdown=false;data.selectedItem.latest_revision.status=key;saveLatestRevision();"
+                                 ng-hide="data.showEditRevisionTitles">
+                                  <span class="icon status-{{ key }}"></span> {{ status }}
+                              </a>
+                          </li>
+                          <li>
+                              <a href="javascript:;" ng-click="editRevisionStatusTitles()">
+                                  <span class="icon"></span> Change status titles...
                               </a>
                           </li>
                         </ul>
@@ -233,7 +240,7 @@
                 <div class="tools status-{{ rev.status }}">
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="showRevisionDocument(rev)">View</a>
                     <a href="{{ rev.executed_file }}" class="btn btn-link btn-xs" target="_blank">Download</a>
-                    <span class="pull-right sub" ng-bind="data.matter._meta.revision.status | valueforkey:rev.status"></span>
+                    <span class="pull-right sub" ng-bind="data.matter._meta.item.custom_status[rev.status]"></span>
                 </div>
             </div>
             <div class="review expired" ng-show="rev.reviewers.length>0">
