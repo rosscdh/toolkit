@@ -23,6 +23,10 @@ from toolkit.mixins import ModalForm
 
 from .mailers import (ValidatePasswordChangeMailer, ValidateEmailChangeMailer)
 
+import logging
+logger = logging.getLogger('django.request')
+
+
 User = get_user_model()
 
 
@@ -124,9 +128,10 @@ class AccountSettingsForm(BaseAccountSettingsFields, forms.ModelForm):
             m.process(user=self.user)
 
             messages.info(self.request, 'It looks like you are trying to change your email address, for your security we have sent a confirmation email to %s please follow the instructions in that email to complete the change.' % self.user.email)
+            logger.info('User: %s has requested a change of email address' % self.user)
+
             # always return the current email address! we dotn want to change it
             # until the change has been confirmed
-
         return self.user.email
 
     def clean_first_name(self):
@@ -281,6 +286,8 @@ class ChangePasswordForm(ModalForm, SetPasswordForm):
         m.process(user=self.user)
 
         messages.warning(self.request, 'For your security you have been logged out. Please check your email address "%s" and click the password confirmation validation link' % self.request.user.email)
+        logger.info('User: %s has requested a change of password' % self.user)
+
         logout(self.request)
 
         return new_password

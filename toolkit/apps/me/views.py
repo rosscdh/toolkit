@@ -27,6 +27,8 @@ from .forms import (ConfirmAccountForm,
                     LawyerLetterheadForm)
 
 import json
+import logging
+logger = logging.getLogger('django.request')
 
 User = get_user_model()
 
@@ -117,6 +119,7 @@ class ConfirmEmailValidationRequest(TemplateView):
         profile.save(update_fields=['data'])
 
         messages.success(self.request, 'Thanks. You have confirmed your email address.')
+        logger.info('User: %s has validated their email' % self.user)
 
         return redirect('/')
 
@@ -143,6 +146,7 @@ class ConfirmEmailChangeRequest(TemplateView):
 
         profile = self.user.profile
         email = profile.data.get('validation_required_temp_email', False)
+        original_email = self.user.email
 
         if email and email is not False:
             self.user.email = email
@@ -152,6 +156,7 @@ class ConfirmEmailChangeRequest(TemplateView):
             profile.save(update_fields=['data'])
 
         messages.success(self.request, 'Congratulations. Your email has been changed. Please login with your new email.')
+        logger.info('User: %s has confirmed their change of email address from: %s to: %s' % (self.user, original_email, self.user.email))
 
         return redirect('/')
 
@@ -186,6 +191,7 @@ class ConfirmPasswordChangeRequest(TemplateView):
             profile.save(update_fields=['data'])
 
         messages.success(self.request, 'Congratulations. Your password has been changed. Please login with your new password.')
+        logger.info('User: %s has confirmed their change of password' % self.user)
 
         return redirect('/')
 
