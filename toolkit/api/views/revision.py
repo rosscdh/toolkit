@@ -106,6 +106,7 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
                                                                    many=many,
                                                                    partial=partial)
 
+
     def create(self, request, *args, **kwargs):
         """
         Have had to copy directly the method from the base class
@@ -119,7 +120,15 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
         #
         self.revision.pk = None  # ensure that we are CREATING a new one based on the existing one
         self.revision.is_current = True
-        serializer = self.get_serializer(self.revision, data=request.DATA, files=request.FILES)
+
+        request_data = request.DATA.copy()
+
+        request_data.update({
+            # get default if none present
+            'status': request_data.get('status', self.matter.default_status_index),  # get the default status if its not presetn
+        })
+
+        serializer = self.get_serializer(self.revision, data=request_data, files=request.FILES)
 
         if serializer.is_valid():
             self.pre_save(serializer.object)
