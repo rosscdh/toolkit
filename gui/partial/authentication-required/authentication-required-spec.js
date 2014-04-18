@@ -52,10 +52,10 @@ describe('AuthenticationRequiredCtrl', function() {
 	  
     }));	
 
-	it('should ...', inject(function() {
-
-		expect(1).toEqual(1);
-		
+	it('$scope.ok should call $modalInstance.close', inject(function() {
+       // spyOn($modalInstance,'close');
+		scope.ok();
+		expect($modalInstance.close).toHaveBeenCalled();
 	}));
 
 });

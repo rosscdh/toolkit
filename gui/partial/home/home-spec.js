@@ -17,10 +17,9 @@ describe('HomeCtrl', function() {
       ctrl = $controller('HomeCtrl', {$scope: scope});
     }));	
 
-	it('should ...', inject(function() {
-
-		expect(1).toEqual(1);
-		
-	}));
+	// Controller exists
+	it('should have data', function () {
+		expect(scope.data instanceof Object).toBe(true);
+	});
 
 });
