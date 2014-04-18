@@ -41,6 +41,7 @@ angular.module('toolkit-gui')
 	'$timeout',
     '$log',
     '$window',
+    '$q',
     'Intercom',
     'INTERCOM_APP_ID',
 	function($scope,
@@ -65,6 +66,7 @@ angular.module('toolkit-gui')
 			 $timeout,
 			 $log,
              $window,
+             $q,
              Intercom,
              INTERCOM_APP_ID){
 		/**
@@ -116,25 +118,43 @@ angular.module('toolkit-gui')
 
         $rootScope.$on("$stateChangeSuccess", function () {
             $log.debug("location changed");
+            $log.debug(smartRoutes.params());
 
             var itemSlug = smartRoutes.params().itemSlug;
+            var reviewSlug = smartRoutes.params().reviewSlug;
+            var itemToSelect = null;
 
             if(itemSlug && (!$scope.data.selectedItem || itemSlug !== $scope.data.selectedItem.slug)){
                 $log.debug("Selecting item because of url change");
 
                 // find item
-                var foundItems = jQuery.grep( $scope.data.matter.items, function( item ){ return item.slug===itemSlug; } );
-                if (foundItems.length > 0){
-                    $scope.selectItem(foundItems[0], foundItems[0].category);
+                itemToSelect = $scope.getItemBySlug(itemSlug);
+                if(itemToSelect) {
+                    $scope.selectItem(itemToSelect,itemToSelect.category).then(
+                        function success(item){
+                            //item if fully loaded, open the review modal now
+                            if (reviewSlug && item.latest_revision) {
+                                $scope.showReviewBySlug(item.latest_revision, reviewSlug);
+                            }
+                        }
+                    );
                 } else {
                     toaster.pop('warning', "Item does not exist anymore.");
+                }
+            }
+
+            if(reviewSlug && !itemToSelect){
+                itemToSelect = $scope.data.selectedItem;
+                //if the item is the same as already selected
+                if(itemToSelect.latest_revision) {
+                    $scope.showReviewBySlug(itemToSelect.latest_revision, reviewSlug);
                 }
             }
         });
 
 
 		/**
-		 * Spilts the matter items into seperate arrays for the purpose of displaying seperate sortable lists, where items can be dragged
+		 * Splits the matter items into seperate arrays for the purpose of displaying seperate sortable lists, where items can be dragged
 		 * @name	initialiseMatter
 		 * @param  {Object} matter Full matter object as recieved from API
 		 * @private
@@ -163,12 +183,8 @@ angular.module('toolkit-gui')
 				$scope.data.categories = categories;
 
 				if( routeParams.itemSlug ) {
-					// find item
-					for(i=0;i<matter.items.length;i++) {
-						if( matter.items[i].slug===routeParams.itemSlug ) {
-							$scope.selectItem( matter.items[i], matter.items[i].category );
-						}
-					}
+					var item = $scope.getItemBySlug(routeParams.itemSlug);
+                    $scope.selectItem(item,item.category );
 				}
 			} else {
 				// Display error
@@ -222,6 +238,21 @@ angular.module('toolkit-gui')
 		 * @method				submitNewItem
 		 * @memberof			ChecklistCtrl
 		 */
+        $scope.getItemBySlug = function (itemSlug) {
+            var matter = $scope.data.matter;
+
+            if (matter) {
+                var items = jQuery.grep( matter.items, function(item) {
+                    return item.slug === itemSlug;
+			    });
+
+                if (items.length > 0){
+                    return items[0];
+                }
+            }
+            return null;
+        };
+
 		$scope.submitNewItem = function(category) {
 		   var matterSlug = $scope.data.slug;
 
@@ -244,16 +275,21 @@ angular.module('toolkit-gui')
 		 *
 		 * @param  {Object}	item		Category object contains category name (String)
 		 * @param {Object}	category	object representing the category of the item to select
+		 * @param {Object}	reviewSlug	slug to the
 		 * @private
 		 * @method						selectItem
 		 * @memberof					ChecklistCtrl
 		 */
 		$scope.selectItem = function(item, category) {
-			$scope.data.selectedItem = item;
+            var deferred = $q.defer();
+
+            $scope.data.selectedItem = item;
 			$scope.data.selectedCategory = category;
 
 			$scope.activateActivityStream('item');
-            $scope.loadItemDetails(item);
+            $scope.loadItemDetails(item).then(function success(item){
+                deferred.resolve(item);
+		    });
 
 			//Reset controls
             $scope.data.dueDatePickerDate = $scope.data.selectedItem.date_due;
@@ -262,6 +298,7 @@ angular.module('toolkit-gui')
 			$scope.data.showPreviousRevisions = false;
 
 			$log.debug(item);
+            return deferred.promise;
 		};
 
 		/**
@@ -292,17 +329,24 @@ angular.module('toolkit-gui')
 		}
 
         $scope.loadItemDetails = function(item){
+            var deferred = $q.defer();
+
             //if(typeof(item.latest_revision.reviewers) === "string") {
             if(item.latest_revision && !item.latest_revision.reviewers) {
                 baseService.loadObjectByUrl(item.latest_revision.url).then(
                     function success(obj){
                         item.latest_revision = obj;
+                        deferred.resolve(item);
                     },
                     function error(err){
                         toaster.pop('error', "Error!", "Unable to load latest revision");
                     }
                 );
+            } else {
+                deferred.resolve(item);
             }
+
+            return deferred.promise;
         };
 
 
@@ -1040,6 +1084,18 @@ angular.module('toolkit-gui')
 				}
 			);
 		};
+
+        $scope.showReviewBySlug = function (revision, reviewSlug) {
+            var reviews = jQuery.grep(revision.reviewers, function (r) {
+                return r.id === reviewSlug;
+            });
+
+            if (reviews.length > 0) {
+                $scope.showReview(revision, reviews[0]);
+            } else {
+                toaster.pop('warning', "Review does not exist anymore.");
+            }
+        };
 
         $scope.getReviewPercentageComplete = function( item) {
             if(item && item.latest_revision && item.latest_revision.reviewers && item.latest_revision.reviewers.length>0) {

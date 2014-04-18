@@ -27,10 +27,6 @@ angular.module('toolkit-gui').factory('smartRoutes', [ '$routeParams', '$state',
 			var matchingPath = jQuery.grep( paths, function( path ) {
 				return urlPath.match( path.match );
 			});
-            $log.debug(matchingPath);
-            $log.debug($routeParams);
-            //$state.reload();
-            $log.debug($state.params);
 
 			if( matchingPath && matchingPath.length>0 ) {
 				pathEls = matchingPath[0].pattern.split('/');

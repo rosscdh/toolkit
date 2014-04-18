@@ -182,12 +182,12 @@ class MatterActivityEventService(object):
                               override_message=override_message)
 
     def add_item_comment(self, user, item, comment):
-        override_message = '%s commented on %s "%s"' % (user, item, comment)
+        override_message = u'%s commented on %s "%s"' % (user, item, comment)
         self._create_activity(actor=user, verb=u'commented', action_object=item, override_message=override_message,
                               comment=comment)
 
     def delete_item_comment(self, user, item):
-        override_message = '%s deleted a comment on %s' % (user, item)
+        override_message = u'%s deleted a comment on %s' % (user, item)
         self._create_activity(actor=user, verb=u'deleted comment', action_object=item,
                               override_message=override_message)
 
@@ -240,7 +240,7 @@ class MatterActivityEventService(object):
         })
 
     def add_revision_comment(self, user, revision, comment):
-        override_message = '%s annotated %s in %s' % (user, revision.slug, revision.item)
+        override_message = u'%s annotated %s in %s' % (user, revision.slug, revision.item)
         self._create_activity(actor=user, verb=u'added revision comment', action_object=revision,
                               override_message=override_message, comment=comment, item=revision.item)
         self.analytics.event('revision.comment.added', user=user, **{
@@ -249,7 +249,7 @@ class MatterActivityEventService(object):
         })
 
     def add_review_copy_comment(self, user, revision, comment):
-        override_message = '%s annotated %s (review comment) in %s' % (user, revision.slug, revision.item)
+        override_message = u'%s annotated %s (review comment) in %s' % (user, revision.slug, revision.item)
         self._create_activity(actor=user, verb=u'added review-session comment', action_object=revision,
                               override_message=override_message, comment=comment, item=revision.item)
         self.analytics.event('revision.comment.added', user=user, **{
@@ -258,7 +258,7 @@ class MatterActivityEventService(object):
         })
 
     def delete_revision_comment(self, user, revision):
-        override_message = '%s deleted a comment on %s' % (user, revision)
+        override_message = u'%s deleted a comment on %s' % (user, revision)
         self._create_activity(actor=user, verb=u'deleted revision comment', action_object=revision,
                               override_message=override_message, item=revision.item)
 
