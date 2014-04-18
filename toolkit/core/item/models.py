@@ -61,7 +61,8 @@ class Item(IsDeletedMixin,
     closing_group = models.CharField(max_length=128, null=True, blank=True, db_index=True)
     category = models.CharField(max_length=128, null=True, blank=True, db_index=True)
 
-    latest_revision = models.ForeignKey('attachment.Revision', null=True, blank=True, related_name='item_latest_revision', on_delete=models.SET_NULL)
+    latest_revision = models.ForeignKey('attachment.Revision', null=True, blank=True,
+                                        related_name='item_latest_revision', on_delete=models.SET_NULL)
 
     # if is final is true, then the latest_revision will be available for sending for signing
     is_final = models.BooleanField(default=False, db_index=True)
@@ -89,6 +90,13 @@ class Item(IsDeletedMixin,
 
     def get_absolute_url(self):
         return '{url}#/checklist/{item_slug}'.format(url=reverse('matter:detail', kwargs={'matter_slug': self.matter.slug}), item_slug=self.slug)
+
+    def get_user_review_url(self, user, version_slug=None):
+        if version_slug is not None:
+            revision = self.revision_set.get(slug=version_slug)
+        else:
+            revision = self.latest_revision
+        return revision.get_user_review_url(user=user)
 
     @property
     def client(self):

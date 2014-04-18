@@ -306,7 +306,7 @@ class MatterActivityEventService(object):
         override_message = u'%s downloaded revision %s (%s) for %s' % (user, revision.name, revision.slug, item)
         self._create_activity(actor=user, verb=u'viewed revision', action_object=revision,
                               override_message=override_message, item=item, filename=revision.name,
-                              version=revision.slug, date_created=datetime.datetime.utcnow(), comment=comment)
+                              version=revision.slug, date_created=datetime.datetime.utcnow())
         self.analytics.event('review.request.comment.added', user=user, **{
             'item_pk': item.pk,
             'matter_pk': self.matter.pk,
