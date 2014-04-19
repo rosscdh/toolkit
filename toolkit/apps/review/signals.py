@@ -37,22 +37,18 @@ def set_item_review_percentage_complete(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=ReviewDocument, dispatch_uid='review.post_save.reset_item_review_percentage_complete_on_complete')
 def reset_item_review_percentage_complete_on_complete(sender, instance, created, update_fields, **kwargs):
-    if update_fields and 'is_complete' in update_fields:
+    item = instance.document.item
+    item.recalculate_review_percentage_complete()
 
-        item = instance.document.item
-        item.recalculate_review_percentage_complete()
-
-        if instance.document.reviewdocument_set.filter(is_complete=False).count() == 1:  # All of them are is_complete=True; the only 1 that cant have is_complete is the primary_review whcih is for the matter.participants
-            # send matter.action signal
-            item.matter.actions.all_revision_reviews_complete(item=item, revision=instance.document)
+    if instance.document.reviewdocument_set.filter(is_complete=False).count() == 1:  # All of them are is_complete=True; the only 1 that cant have is_complete is the primary_review whcih is for the matter.participants
+        # send matter.action signal
+        item.matter.actions.all_revision_reviews_complete(item=item, revision=instance.document)
 
 
 @receiver(pre_delete, sender=ReviewDocument, dispatch_uid='review.pre_delete.reset_item_review_percentage_complete')
 def reset_item_review_percentage_complete_on_delete(sender, instance, **kwargs):
-    if instance.document.reviewdocument_set.all().count() <= 1:  # if we only have the BASE review present
-        # i.e. we have only 1 (or less) reviewdocument then set the item recalculate_review_percentage_complete
-        item = instance.document.item
-        item.recalculate_review_percentage_complete()
+    item = instance.document.item
+    item.recalculate_review_percentage_complete()
 
 
 @receiver(post_save, sender=ReviewDocument, dispatch_uid='review.ensure_matter_participants_are_in_reviewdocument_participants')
