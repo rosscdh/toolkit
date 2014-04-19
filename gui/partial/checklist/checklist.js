@@ -1030,6 +1030,36 @@ angular.module('toolkit-gui')
                 return 0;
             }
         };
+
+         $scope.editRevisionStatusTitles = function() {
+            var matter = $scope.data.matter;
+
+            var modalInstance = $modal.open({
+                'templateUrl': '/static/ng/partial/edit-revision-status/edit-revision-status.html',
+                'controller': 'EditRevisionStatusCtrl',
+                'backdrop': 'static',
+                'resolve': {
+                    'currentUser': function () {
+                        return matter.current_user;
+                    },
+                    'matter': function () {
+                        return matter;
+                    },
+                    'customstatusdict': function () {
+                        return $scope.data.matter._meta.item.custom_status;
+                    },
+                    'defaultstatusdict': function () {
+                        return $scope.data.matter._meta.item.default_status;
+                    }
+                }
+            });
+
+            modalInstance.result.then(
+                function ok(result) {
+                    $scope.data.matter._meta.item.custom_status = result;
+                }
+            );
+        };
 		/* End revision handling */
 
 
