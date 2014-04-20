@@ -6,6 +6,8 @@ from django.core.urlresolvers import reverse
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 
+from actstream.models import Action
+
 from toolkit.casper.prettify import mock_http_requests
 from toolkit.casper.workflow_case import BaseScenarios
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
@@ -264,6 +266,32 @@ class ReviewerPercentageCompleteTest(BaseDataProvider, TestCase):
 
         self.assertEqual(self.item.review_percentage_complete, 100.0)
         self.assertEqual(self.item.percent_formatted(self.item.review_percentage_complete), '100%')
+        # we have recorded the action
+        self.assertEqual(Action.objects.all()[0].__unicode__(), u'Lawyër Tëst completed all reviews Test Item No. 1 on Lawpal (test) 0\xa0minutes ago')
+        Action.objects.all().delete()
+
+        # Test Decrement
+        for c, user in enumerate(self.test_reviewers):
+            reviewdocument = self.item.invited_document_reviews().get(reviewers__in=[user])
+            reviewdocument.is_complete = False
+            reviewdocument.save(update_fields=['is_complete'])
+
+            # test that we are incrementing the number of reviewdocuments for each user
+            # test the built in api method
+            self.assertEqual(self.item.invited_document_reviews().filter(is_complete=True).count(), total_num_reviews - (c+1))
+            # affirm that the built in matches the manual calc below
+            self.assertEqual(self.review_document.document.reviewdocument_set.filter(is_complete=True).count(), total_num_reviews - (c+1))
+
+            # test % increment
+            num_reviewdocuments_complete = self.item.invited_document_reviews().filter(is_complete=True).count()
+            review_percentage_complete = float(num_reviewdocuments_complete) / float(total_num_reviews)
+            review_percentage_complete = round(review_percentage_complete * 100, 0)
+
+            self.assertEqual(self.item.review_percentage_complete, review_percentage_complete)
+
+        self.assertEqual(self.item.review_percentage_complete, 0.0)
+        self.assertEqual(self.item.percent_formatted(self.item.review_percentage_complete), '0%')
+        self.assertEqual(Action.objects.all().count(), 0)
 
 
 """
