@@ -57,7 +57,7 @@ describe('ChecklistCtrl', function() {
 		   return {selected:{current_user:''}};		
 	  });	  
 	  
-	  matterItemService  = jasmine.createSpyObj('matterItemService',['create','delete','update','uploadRevision','updateRevision','deleteRevision','loadRevision']);
+	  matterItemService  = jasmine.createSpyObj('matterItemService',['create','delete','update','uploadRevision','updateRevision','deleteRevision','loadRevision','remindRevisionRequest','deleteRevisionRequest','remindRevisionReview','deleteRevisionReviewRequest']);
 	  matterItemService.create.andCallFake(function(param){
 		   var deferred = $q.defer();							
 		   deferred.resolve({ message: "This is great!" });	           
@@ -92,7 +92,23 @@ describe('ChecklistCtrl', function() {
 		   var deferred = $q.defer();							
 		   deferred.resolve({ message: "This is so great!" });	           
 		   return deferred.promise;	  
-	  })
+	  });
+	  matterItemService.remindRevisionRequest.andCallFake(function(param){
+		   var deferred = $q.defer();							
+		   deferred.resolve({ message: "This is so great!" });	           
+		   return deferred.promise;	   
+	  });
+	  matterItemService.deleteRevisionRequest.andCallFake(function(param){
+		   var deferred = $q.defer();							
+		   deferred.resolve({ is_requested: "This is so great!" });	           
+		   return deferred.promise;	  
+	  });
+	  matterItemService.remindRevisionReview.andCallFake(function(param){
+		   var deferred = $q.defer();							
+		   deferred.resolve({ is_requested: "This is so great!" });	           
+		   return deferred.promise;		  
+	  });
+	  
 	  
 	  baseService = jasmine.createSpyObj('baseService',['loadObjectByUrl']);
 	  baseService.loadObjectByUrl.andCallFake(function(param){
@@ -115,6 +131,8 @@ describe('ChecklistCtrl', function() {
 		   deferred.resolve({ message: "This is great!" });	           
 		   return deferred.promise;	  
 	  });
+	  
+	  
 	  matterCategoryService = jasmine.createSpyObj('matterCategoryService',['create','delete','update']);
 	  matterCategoryService.create.andCallFake(function(param){
 		   var deferred = $q.defer();							
@@ -458,7 +476,85 @@ describe('ChecklistCtrl', function() {
 		$scope.requestRevision(item);
 		$scope.$apply();
 		expect(item.responsible_party).toBe('This is great!')
-	})	
+	});
+
+	it('$scope.remindRevisionRequest success should trigger toaster',function(){
+	    var item = {slug:{}};
+		$scope.remindRevisionRequest(item);
+		$scope.$apply();
+		expect(toaster.pop.mostRecentCall.args[2]).toBe("The user has been successfully informed.");
+	});
+
+
+	it('$scope.remindRevisionRequest error should also trigger toaster',function(){
+	    matterItemService.remindRevisionRequest.andCallFake(function(param){
+		   var deferred = $q.defer();							
+		   deferred.reject({ message: "This is not so great!" });	           
+		   return deferred.promise;	   
+	    });	
+	    var item = {slug:{}};
+		$scope.remindRevisionRequest(item);
+		$scope.$apply();
+		expect(toaster.pop.mostRecentCall.args[2]).toBe("Unable to remind the participant.");
+	});
+
+	it('$scope.deleteRevisionRequest success'	,function(){
+	    var item = {slug:{},is_requested:''};
+	    $scope.deleteRevisionRequest(item);
+		$scope.$apply();
+        expect(item.is_requested).toBe('This is so great!')		
+	});
+
+	it('$scope.deleteRevisionRequest error'	,function(){
+	    matterItemService.deleteRevisionRequest.andCallFake(function(param){
+		   var deferred = $q.defer();							
+		   deferred.reject({ is_requested: "This is not so great!" });	           
+		   return deferred.promise;	  
+	    });	
+	    var item = {slug:{},is_requested:''};
+	    $scope.deleteRevisionRequest(item);
+		$scope.$apply();
+        expect(toaster.pop.mostRecentCall.args[2]).toBe("Unable to delete the revision request.");	
+	});
+	
+	it('$scope.showRevisionDocument' 	,function(){
+	    $scope.data.selectedItem = {};
+		$scope.showRevisionDocument();
+	});
+	
+	it('$scope.requestReview',function(){
+	    var revision = {reviewers:null};
+		$scope.requestReview(revision);
+		 expect( $modal.open).toHaveBeenCalled();
+		 $scope.$apply();		
+		 expect(angular.equals(revision.reviewers,[{responsible_party: 'This is great!'}])).toBeTruthy()
+	});
+	
+	it('$scope.remindRevisionReview - success',function(){
+		$scope.remindRevisionReview({slug:{}})
+	    $scope.$apply();
+		expect(toaster.pop.mostRecentCall.args[2]).toBe("All reviewers have been successfully informed.");
+	});
+	
+	it('$scope.remindRevisionReview - failure',function(){
+	    matterItemService.remindRevisionReview.andCallFake(function(param){
+		   var deferred = $q.defer();							
+		   deferred.reject({ is_requested: "This is so great!" });	           
+		   return deferred.promise;		  
+	    });	
+		$scope.remindRevisionReview({slug:{}})
+	    $scope.$apply();
+		expect(toaster.pop.mostRecentCall.args[2]).toBe("Unable to remind the participant.");
+	});
+	
+	it('$scope.deleteRevisionReviewRequest',function(){
+	    matterItemService.deleteRevisionReviewRequest.andCallFake(function(param){
+		   var deferred = $q.defer();							
+		   deferred.reject({ is_requested: "This is so great!" });	           
+		   return deferred.promise;			
+		})
+		$scope.deleteRevisionReviewRequest({slug:{}});
+	});
 });
 //matterService.get failure
 describe('ChecklistCtrl', function() {
