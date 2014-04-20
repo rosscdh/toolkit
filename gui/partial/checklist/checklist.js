@@ -615,7 +615,7 @@ angular.module('toolkit-gui')
 		$scope.saveLatestRevision = function () {
 			var matterSlug = $scope.data.slug;
 			var item = $scope.data.selectedItem;
-
+              
 			if (item && item.latest_revision) {
 				matterItemService.updateRevision(matterSlug, item.slug, $scope.data.selectedItem.latest_revision).then(
 					function success(item){
@@ -651,7 +651,7 @@ angular.module('toolkit-gui')
 								if(item.latest_revision.revisions != null && item.latest_revision.revisions.length>0){
 									var revurl = item.latest_revision.revisions[item.latest_revision.revisions.length-1];
                                     var revslug = revurl.substring(revurl.lastIndexOf('/')+1, revurl.length);
-
+                                    
 									//First revision in array is the latest one
 									matterItemService.loadRevision(matterSlug, item.slug, revslug).then(
 										function success(revision){
@@ -707,7 +707,7 @@ angular.module('toolkit-gui')
 
 				jQuery.each( item.latest_revision.revisions, function( index, revurl ){
 					var revslug = revurl.substring(revurl.lastIndexOf('/')+1, revurl.length);
-
+                    
 					matterItemService.loadRevision(matterSlug, item.slug, revslug).then(
 						function success(revision){
 							//store revisisions locally

@@ -1,3 +1,4 @@
+
 describe('ChecklistCtrl', function() {
     beforeEach(function() {
         module(function($provide) {            
@@ -14,6 +15,7 @@ describe('ChecklistCtrl', function() {
 			$provide.constant('baseService',{});
         });
 		
+		
 	});
 	beforeEach(module('toolkit-gui'));
 
@@ -28,6 +30,7 @@ describe('ChecklistCtrl', function() {
 	matterItemService,
 	participantService,
 	matterCategoryService,
+	$modal,
     matterService;
 
 	
@@ -43,17 +46,22 @@ describe('ChecklistCtrl', function() {
 	  //mocking smartRoutes		
 	  smartRoutes = {'params': function() { return { 'matterSlug': 'test-matter', itemSlug:'123' }; }}
 	  //mocking matterService       
-	  matterService = jasmine.createSpyObj('matterService',['get','selectMatter']);
+	  matterService = jasmine.createSpyObj('matterService',['get','selectMatter','data']);
 	  matterService.get.andCallFake(function(param){
 		   var deferred = $q.defer();							
 		   deferred.resolve({ message: "This is great!" });	           
 		   return deferred.promise;		
 	  });
-	  matterItemService  = jasmine.createSpyObj('matterItemService',['create','delete','update']);
+	  
+	  matterService.data.andCallFake(function(param){           
+		   return {selected:{current_user:''}};		
+	  });	  
+	  
+	  matterItemService  = jasmine.createSpyObj('matterItemService',['create','delete','update','uploadRevision','updateRevision','deleteRevision','loadRevision']);
 	  matterItemService.create.andCallFake(function(param){
 		   var deferred = $q.defer();							
 		   deferred.resolve({ message: "This is great!" });	           
-		   return deferred.promise;		  
+		   return deferred.promise;	           		  
 	  });
 	  matterItemService.delete.andCallFake(function(param){
 		   var deferred = $q.defer();							
@@ -65,6 +73,26 @@ describe('ChecklistCtrl', function() {
 		   deferred.resolve({ message: "This is so great!" });	           
 		   return deferred.promise;		  
 	  });	
+	  matterItemService.uploadRevision.andCallFake(function(param){
+		   var deferred = $q.defer();							
+		   deferred.resolve({ message: "This is so great!" });	           
+		   return deferred.promise;		  
+	  });
+	  matterItemService.updateRevision.andCallFake(function(param){
+		   var deferred = $q.defer();							
+		   deferred.resolve({ message: "This is so great!" });	           
+		   return deferred.promise;		  
+	  });
+	  matterItemService.deleteRevision.andCallFake(function(param){	  
+		   var deferred = $q.defer();							
+		   deferred.resolve({ message: "This is so great!" });	           
+		   return deferred.promise;		  
+	  });
+	  matterItemService.loadRevision.andCallFake(function(param){
+		   var deferred = $q.defer();							
+		   deferred.resolve({ message: "This is so great!" });	           
+		   return deferred.promise;	  
+	  })
 	  
 	  baseService = jasmine.createSpyObj('baseService',['loadObjectByUrl']);
 	  baseService.loadObjectByUrl.andCallFake(function(param){
@@ -103,7 +131,19 @@ describe('ChecklistCtrl', function() {
 		   deferred.resolve({ message: "This is great!" });	           
 		   return deferred.promise;	  
 	  });  	  
-	  matterService.selectMatter.andCallFake(function(param){});  
+	  matterService.selectMatter.andCallFake(function(param){}); 
+
+	  $modal = jasmine.createSpyObj('$modal',['open'])
+	  $modal.open.andCallFake(function(param){
+	    return {
+		 result: function(){
+		   var deferred = $q.defer();							
+		   deferred.resolve({ responsible_party: "This is great!" });	           
+		   return deferred.promise;	  		 
+		 }()
+		}
+	  }); 
+	  
       ctrl = $controller('ChecklistCtrl', {
 		  $scope: $scope,
 		  $rootScope:$rootScope,
@@ -112,7 +152,7 @@ describe('ChecklistCtrl', function() {
 		  smartRoutes:smartRoutes,
 		  ezConfirm:ezConfirm,
 		  toaster:toaster,
-		  $modal:{},
+		  $modal:$modal,
 		  baseService: baseService,
 		  matterService:matterService,
 		  matterItemService:matterItemService,
@@ -332,6 +372,93 @@ describe('ChecklistCtrl', function() {
 		$scope.$apply();
 		expect(cat.name).toBe('Sasha');
 	});
+	
+	//$scope.processUpload
+	it('$scope.processUpload - $scope.data.showPreviousRevisions should become false', function(){
+	   $scope.processUpload([],{slug:1});
+	   $scope.$apply();
+	   expect($scope.data.showPreviousRevisions).toBe(false);
+	});
+	
+	it('$scope.saveLatestRevision sholud call "matterItemService.updateRevision"', function(){
+		$scope.data.selectedItem = {latest_revision:'something'};
+		$scope.saveLatestRevision();
+		expect(matterItemService.updateRevision).toHaveBeenCalled();
+	});
+	
+	//$scope.deleteLatestRevision
+	it('$scope.deleteLatestRevision "matterItemService.deleteRevision" should been called',function(){
+	    $scope.data.selectedItem = {latest_revision:{revisions:['something']},slug:'slugof'};
+	    $scope.deleteLatestRevision();
+		expect(matterItemService.deleteRevision).toHaveBeenCalled();
+		$scope.$apply();
+		
+		expect(matterItemService.loadRevision).toHaveBeenCalledWith('test-matter','slugof','something');
+	});
+
+	it('$scope.deleteLatestRevision - if no reveisions there...',function(){
+	    $scope.data.selectedItem = {latest_revision:{revisions:[]},slug:'slugof'};
+	    $scope.deleteLatestRevision();
+		expect(matterItemService.deleteRevision).toHaveBeenCalled();
+		$scope.$apply();
+		
+		expect(matterItemService.loadRevision).not.toHaveBeenCalled();
+		expect($scope.data.selectedItem.latest_revision).toBe(null)
+	});	
+	
+    //$scope.deleteLatestRevision -matterItemService.loadRevision faliure
+	
+	it('$scope.deleteLatestRevision "matterItemService.loadRevision" failed',function(){
+        matterItemService.loadRevision.andCallFake(function(param){	  
+		   var deferred = $q.defer();							
+		   deferred.reject({ message: "This is disgusting!" });	           
+		   return deferred.promise;		
+        });	
+	    $scope.data.selectedItem = {latest_revision:{revisions:['something']},slug:'slugof'};
+	    $scope.deleteLatestRevision();
+		expect(matterItemService.deleteRevision).toHaveBeenCalled();
+		$scope.$apply();
+		
+		expect(matterItemService.loadRevision).toHaveBeenCalledWith('test-matter','slugof','something');
+		expect(toaster.pop.mostRecentCall.args[2]).toBe('Unable to set new current revision');	
+	});	
+	
+	// $scope.loadPreviousRevisions
+	it('$scope.loadPreviousRevisions - if  "previousRevisions:null" is  null -$scope.data.selectedItem.previousRevisions should become []',function(){
+	    $scope.data.selectedItem = {previousRevisions:null,latest_revision:{revisions:[]}};
+		$scope.loadPreviousRevisions();
+		expect(angular.equals($scope.data.selectedItem.previousRevisions,[])).toBeTruthy();
+	});	
+	
+	it('$scope.loadPreviousRevisions, latest_revision.revisions is array',function(){
+	    $scope.data.selectedItem = {previousRevisions:null,latest_revision:{revisions:['something']}};
+		$scope.loadPreviousRevisions();
+		expect(angular.equals($scope.data.selectedItem.previousRevisions,[])).toBeTruthy();
+		expect(matterItemService.loadRevision.callCount).toBe(1);//if there one item it should be called once
+		$scope.$apply();
+		expect(angular.equals($scope.data.selectedItem.previousRevisions[0],{message: 'This is so great!'})).toBeTruthy();
+	});
+	
+	it('$scope.loadPreviousRevisions, if matterItemService.loadRevision fails',function(){
+        matterItemService.loadRevision.andCallFake(function(param){	  
+		   var deferred = $q.defer();							
+		   deferred.reject({ message: "This is disgusting!" });	           
+		   return deferred.promise;		
+        });		
+	    $scope.data.selectedItem = {previousRevisions:null,latest_revision:{revisions:['something']}};
+		$scope.loadPreviousRevisions();
+		expect(angular.equals($scope.data.selectedItem.previousRevisions,[])).toBeTruthy();
+		expect(matterItemService.loadRevision.callCount).toBe(1);//if there one item it should be called once
+		$scope.$apply();
+        expect(toaster.pop.mostRecentCall.args[2]).toBe("Unable to load previous revision");
+	});	
+	
+    it('$scope.requestRevision',function(){
+	    var item  ={responsible_party:'some responsible_party'}
+		$scope.requestRevision(item);
+		$scope.$apply();
+		expect(item.responsible_party).toBe('This is great!')
+	})	
 });
 //matterService.get failure
 describe('ChecklistCtrl', function() {
@@ -342,10 +469,7 @@ describe('ChecklistCtrl', function() {
             $provide.constant('DEBUG_MODE', false);
             $provide.constant('SENTRY_PUBLIC_DSN', 'https://b5a6429d03e2418cbe71cd5a4c9faca6@app.getsentry.com/6287' );
             $provide.constant('INTERCOM_APP_ID', 'ooqtbx99' );
-			
-
-			
-			$provide.constant('matterCategoryService',{});
+    		$provide.constant('matterCategoryService',{});
 			$provide.constant('matterItemService',{});
 			$provide.constant('baseService',{});
         });
@@ -378,19 +502,26 @@ describe('ChecklistCtrl', function() {
 	  //mocking smartRoutes		
 	  smartRoutes = {'params': function() { return { 'matterSlug': 'test-matter' }; }}
 	  //mocking matterService       
-	  matterService = jasmine.createSpyObj('matterService',['get','selectMatter']);
+	  matterService = jasmine.createSpyObj('matterService',['get','selectMatter','data']);
 	  matterService.get.andCallFake(function(param){
 		   var deferred = $q.defer();							
 		   deferred.reject({ message: "This is not so great!" });	           
 		   return deferred.promise;		
 	  });
-	  matterItemService  = jasmine.createSpyObj('matterItemService',['create','delete','update']);
+	  matterService.data.andCallFake(function(param){           
+		   return {selected:{current_user:''}};		
+	  });	  
+	  matterItemService  = jasmine.createSpyObj('matterItemService',['create','delete','update','uploadRevision','updateRevision','deleteRevision','loadRevision']);
 	  matterItemService.create.andCallFake(function(param){
 		   var deferred = $q.defer();							
 		   deferred.reject({ message: "This is not so great!" });	           
 		   return deferred.promise;		  
 	  });
-	  
+	  matterItemService.uploadRevision.andCallFake(function(param){
+		   var deferred = $q.defer();							
+		   deferred.reject({ message: "This is not so great!" });	           
+		   return deferred.promise;		  
+	  });	  
 	  matterItemService.delete.andCallFake(function(param){
 		   var deferred = $q.defer();							
 		   deferred.reject({ message: "This is not so great!" });	           
@@ -400,7 +531,23 @@ describe('ChecklistCtrl', function() {
 		   var deferred = $q.defer();							
 		   deferred.reject({ message: "This is not so great!" });	           
 		   return deferred.promise;		  
-	  });	  
+	  });
+	  matterItemService.updateRevision.andCallFake(function(param){
+		   var deferred = $q.defer();							
+		   deferred.reject({ message: "This is not so great!" });	           
+		   return deferred.promise;		  
+	  });
+	  matterItemService.deleteRevision.andCallFake(function(param){	  
+		   var deferred = $q.defer();							
+		   deferred.reject({ message: "This is disgusting!" });	           
+		   return deferred.promise;		  
+	  });
+      matterItemService.loadRevision.andCallFake(function(param){	  
+		   var deferred = $q.defer();							
+		   deferred.reject({ message: "This is disgusting!" });	           
+		   return deferred.promise;		
+      })
+	  
 	  baseService = jasmine.createSpyObj('baseService',['loadObjectByUrl']);
 	  baseService.loadObjectByUrl.andCallFake(function(param){
 		   var deferred = $q.defer();							
@@ -527,4 +674,26 @@ describe('ChecklistCtrl', function() {
 		$scope.$apply();
 		expect(toaster.pop.mostRecentCall.args[2]).toBe("Unable to edit category");
 	});
+	
+	//$scope.processUpload -failure
+	it('$scope.processUpload- matterItemService.uploadRevision failed', function(){
+	   $scope.processUpload([],{slug:1});
+	   $scope.$apply();
+	   expect(toaster.pop.mostRecentCall.args[2]).toBe("Unable to upload revision");
+	});
+	
+	it('$scope.saveLatestRevision', function(){
+		$scope.data.selectedItem = {latest_revision:'xxx'};
+		$scope.saveLatestRevision();
+	    $scope.$apply();
+	    expect(toaster.pop.mostRecentCall.args[2]).toBe("Unable to update revision");
+	});
+    //$scope.deleteLatestRevision faliure
+	it('$scope.deleteLatestRevision',function(){
+	   $scope.data.selectedItem = {latest_revision:'something'};
+	   $scope.deleteLatestRevision();
+	   $scope.$apply();
+	   expect(toaster.pop.mostRecentCall.args[2]).toBe("Unable to delete revision")	  ;
+	});	
+	
 });
