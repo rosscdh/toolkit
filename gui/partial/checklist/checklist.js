@@ -555,6 +555,7 @@ angular.module('toolkit-gui')
 					//Reset previous revisions
 					item.previousRevisions = null;
 					$scope.data.showPreviousRevisions = false;
+                    $scope.calculateReviewPercentageComplete(item);
 				},
 				function error(err) {
 					$scope.data.uploading = false;
@@ -656,6 +657,7 @@ angular.module('toolkit-gui')
 									matterItemService.loadRevision(matterSlug, item.slug, revslug).then(
 										function success(revision){
 											item.latest_revision = revision;
+                                            $scope.calculateReviewPercentageComplete(item);
 										},
 										function error(err){
 											toaster.pop('error', "Error!", "Unable to set new current revision");
@@ -663,6 +665,7 @@ angular.module('toolkit-gui')
 									);
 								} else {
 									item.latest_revision = null;
+                                    $scope.calculateReviewPercentageComplete(item);
 								}
 
 								//Reset previous revisions
