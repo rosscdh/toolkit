@@ -1023,11 +1023,11 @@ angular.module('toolkit-gui')
                         completed += 1;
                     }
 				});
-                item.review_percentage_complete = parseFloat(completed / reviews.length);
+                item.review_percentage_complete = parseInt(completed / reviews.length * 100);
                 $log.debug(item.review_percentage_complete);
 
             } else {
-                return 0;
+                item.review_percentage_complete = null;
             }
         };
 
