@@ -40,8 +40,8 @@
                         <span class="fui-time"></span> Review in progress
                     </button>
                     <button disabled="" class="btn btn-warning btn-xs"
-                            ng-show="!item.is_requested&&item.review_percentage_complete>0&&item.review_percentage_complete<1">
-                        <span class="fui-user"></span> Review {{ item.review_percentage_complete * 100 }}%
+                            ng-show="!item.is_requested&&item.review_percentage_complete>0&&item.review_percentage_complete<100">
+                        <span class="fui-user"></span> Review {{ item.review_percentage_complete }}%
                     </button>
 
 				</span>
