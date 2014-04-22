@@ -3,13 +3,25 @@
 {% block subject_line %}{{ subject }}{% endblock %}
 
 {% block html_content %}
-<p>Hi {{ to_name }},</p>
+	<h1 style="font-size:20px;margin:16px 0;color:#333;text-align:center">{{ item.matter.name }} ({{item.matter.client.name}})</h1>
+	<p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica;color:#333;text-align:center"> {{ from_name }} has requested a document from you. Click the link below to upload it.</p>
+	<div style="background-color:#f1f1f1;padding:22px 30px;text-align:center;">
+		<a href="#" style="font-size:26px;text-decoration:none;color:#222;line-height:33px;margin-bottom:20px">{{item.name}}</a>
+		<table border="0" cellpadding="0" cellspacing="0" style="background-color:#2ecc71; border-radius:5px;margin-top:16px;" align="center">
+		    <tr>
+		        <td align="center" valign="middle" style="color:#FFFFFF; font-family:Helvetica, Arial, sans-serif; font-size:16px; font-weight:bold; letter-spacing:-.5px; line-height:150%; padding-top:15px; padding-right:40px; padding-bottom:15px; padding-left:40px;">
+		            <a href="{{ action_url }}" target="_blank" style="color:#FFFFFF; text-decoration:none;">Upload document</a>
+		        </td>
+		    </tr>
 
-<p>{{ from_name }} has asked you to provide them with a document relating to: {{ item.name }}.</p>
-
-{% if item.request_document_message %}<p>{{ from_name }} added a message for you: "{{ item.request_document_message }}"</p>{% endif %}
-
-<p>You can provide the document at :<br /><a href="{{ action_url }}">{{ action_url }}</a></p>
-
-<p>Warning: do not forward this email to others or else they will be able to access your document.</p>
+		</table>		
+		{% if item.request_document_message %}
+			<br />
+			<br />
+			<div style="text-align:left;color:#888;font-size:15px;line-height:19px;padding:20px 30px 10px 30px;border-top:1px solid #ddd">
+				<strong>Message from {{ from_name }}</strong>: <br />
+			    {{ item.request_document_message }}
+	    	</div>
+	    {% endif %}
+	</div>
 {% endblock %}
