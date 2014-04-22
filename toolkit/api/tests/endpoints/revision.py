@@ -74,7 +74,7 @@ class ItemRevisionTest(BaseEndpointTest):
                               item=self.item,
                               uploaded_by=self.lawyer)
         #
-        # Add a reviewer so we can test the specific user_review_url
+        # Add a reviewer so we can test the specific user_review
         #
         reviewer = mommy.make('auth.User')
         revision.reviewers.add(reviewer)
@@ -89,11 +89,14 @@ class ItemRevisionTest(BaseEndpointTest):
 
         self.assertEqual(resp_json.get('name'), 'filename.txt')
         self.assertEqual(resp_json.get('description'), 'A test file')
-        # we have a user_review_url
-        self.assertTrue(resp_json.get('user_review_url') is not None)
+        # we have a user_review
+        self.assertTrue(resp_json.get('user_review') is not None)
         # it is the correct url for this specific user to view object
-        self.assertEqual(resp_json.get('user_review_url'), document_review.get_absolute_url(user=self.lawyer,
-                                                                                            use_absolute=False))
+        self.assertEqual(resp_json.get('user_review'), {
+            'url': document_review.get_absolute_url(user=self.lawyer),
+            'slug': str(document_review.slug)
+        })
+
         # test date is present
         self.assertTrue(resp_json.get('date_created') is not None)
         # test user is provided as a SimpleUserserializer
@@ -115,14 +118,17 @@ class ItemRevisionTest(BaseEndpointTest):
         # get that person
         resp_reviewer = reviewers[0].get('reviewer')
         # test their url
-        self.assertTrue(resp_reviewer.get('user_review_url') is not None)
+        self.assertTrue(type(resp_reviewer.get('user_review')) is dict)
         # it is the correct url for this specific user to view object in this case the lawyer is looking at this review
         # not this is a head trip, but the viewing user should only EVER see THEIR url to that document
-        self.assertEqual(resp_reviewer.get('user_review_url'), invited_reviewer_document_review.get_absolute_url(user=self.lawyer))
+        self.assertEqual(resp_reviewer.get('user_review'), {
+            'url': invited_reviewer_document_review.get_absolute_url(user=self.lawyer),
+            'slug': str(invited_reviewer_document_review.slug)
+        })
 
-        # ensure that the user_review_url is never the actual reviewers url that gets sent out
+        # ensure that the user_review is never the actual reviewers url that gets sent out
         for rd in revision.reviewdocument_set.all():
-            self.assertTrue(resp_reviewer.get('user_review_url') != rd.get_user_auth(user=reviewer))
+            self.assertTrue(resp_reviewer.get('user_review') != rd.get_user_auth(user=reviewer))
 
         # ensure that the reviewer user does have a url in the appropriate object
         self.assertTrue(invited_reviewer_document_review.get_absolute_url(user=reviewer) is not None)
