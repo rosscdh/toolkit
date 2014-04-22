@@ -555,6 +555,7 @@ angular.module('toolkit-gui')
 					//Reset previous revisions
 					item.previousRevisions = null;
 					$scope.data.showPreviousRevisions = false;
+                    $scope.calculateReviewPercentageComplete(item);
 				},
 				function error(err) {
 					$scope.data.uploading = false;
@@ -656,6 +657,7 @@ angular.module('toolkit-gui')
 									matterItemService.loadRevision(matterSlug, item.slug, revslug).then(
 										function success(revision){
 											item.latest_revision = revision;
+                                            $scope.calculateReviewPercentageComplete(item);
 										},
 										function error(err){
 											toaster.pop('error', "Error!", "Unable to set new current revision");
@@ -663,6 +665,7 @@ angular.module('toolkit-gui')
 									);
 								} else {
 									item.latest_revision = null;
+                                    $scope.calculateReviewPercentageComplete(item);
 								}
 
 								//Reset previous revisions
@@ -852,7 +855,7 @@ angular.module('toolkit-gui')
 
 			modalInstance.result.then(
 				function ok(result) {
-					//
+                    //
 				},
 				function cancel() {
 					//
@@ -904,6 +907,7 @@ angular.module('toolkit-gui')
 					var results = jQuery.grep( revision.reviewers, function( rev ){ return rev.reviewer.username===review.reviewer.username; } );
 					if( results.length===0 ) {
 						revision.reviewers.push(review);
+                        $scope.calculateReviewPercentageComplete(item);
 					}
 				},
 				function cancel() {
@@ -957,6 +961,7 @@ angular.module('toolkit-gui')
 					if( index>=0 ) {
 						// Remove reviewer from list in RAM array
 						item.latest_revision.reviewers.splice(index,1);
+                        $scope.calculateReviewPercentageComplete(item);
 					}
 				},
 				function error(err){
@@ -1003,7 +1008,7 @@ angular.module('toolkit-gui')
 
 			modalInstance.result.then(
 				function ok(result) {
-					//
+				    $scope.calculateReviewPercentageComplete(item);
 				},
 				function cancel() {
 					//
@@ -1011,7 +1016,7 @@ angular.module('toolkit-gui')
 			);
 		};
 
-        $scope.getReviewPercentageComplete = function( item) {
+        $scope.calculateReviewPercentageComplete = function( item) {
             if(item && item.latest_revision && item.latest_revision.reviewers && item.latest_revision.reviewers.length>0) {
                 var reviews = item.latest_revision.reviewers;
                 var completed = 0;
@@ -1021,11 +1026,42 @@ angular.module('toolkit-gui')
                         completed += 1;
                     }
 				});
-                return parseInt(completed / reviews.length * 100);
+                item.review_percentage_complete = parseInt(completed / reviews.length * 100);
+                $log.debug(item.review_percentage_complete);
 
             } else {
-                return 0;
+                item.review_percentage_complete = null;
             }
+        };
+
+         $scope.editRevisionStatusTitles = function() {
+            var matter = $scope.data.matter;
+
+            var modalInstance = $modal.open({
+                'templateUrl': '/static/ng/partial/edit-revision-status/edit-revision-status.html',
+                'controller': 'EditRevisionStatusCtrl',
+                'backdrop': 'static',
+                'resolve': {
+                    'currentUser': function () {
+                        return matter.current_user;
+                    },
+                    'matter': function () {
+                        return matter;
+                    },
+                    'customstatusdict': function () {
+                        return $scope.data.matter._meta.item.custom_status;
+                    },
+                    'defaultstatusdict': function () {
+                        return $scope.data.matter._meta.item.default_status;
+                    }
+                }
+            });
+
+            modalInstance.result.then(
+                function ok(result) {
+                    $scope.data.matter._meta.item.custom_status = result;
+                }
+            );
         };
 		/* End revision handling */
 

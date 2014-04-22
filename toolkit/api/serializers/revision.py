@@ -157,7 +157,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
 
     executed_file = HyperlinkedAutoDownloadFileField(required=False)
 
-    status = serializers.ChoiceField(required=False, choices=Revision.REVISION_STATUS.get_choices())
+    status = serializers.IntegerField(required=False)
 
     item = serializers.HyperlinkedRelatedField(many=False, view_name='item-detail')
 
