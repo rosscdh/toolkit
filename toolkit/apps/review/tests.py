@@ -267,7 +267,7 @@ class ReviewerPercentageCompleteTest(BaseDataProvider, TestCase):
         self.assertEqual(self.item.review_percentage_complete, 100.0)
         self.assertEqual(self.item.percent_formatted(self.item.review_percentage_complete), '100%')
         # we have recorded the action
-        self.assertEqual(Action.objects.all()[0].__unicode__(), u'Lawyër Tëst completed all reviews Test Item No. 1 on Lawpal (test) 0\xa0minutes ago')
+        self.assertEqual(Action.objects.all().first().__unicode__(), u'Lawyër Tëst completed all reviews Test Item No. 1 on Lawpal (test) 0 minutes ago')
         Action.objects.all().delete()
 
         # Test Decrement

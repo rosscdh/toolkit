@@ -269,7 +269,7 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
         self.assertEqual(revision.executed_file.name, 'executed_files/v1-%s-%s-test-pirates-ahoy.pdf' % (self.item.pk, self.lawyer.username))
         self.assertEqual(revision.executed_file.url, 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test-pirates-ahoy.pdf' % (self.item.pk, self.lawyer.username))
 
-        self.assertEqual(self.item.review_percentage_complete, 0)  # test review_percentage_complete is reset
+        self.assertEqual(self.item.review_percentage_complete, None)  # test review_percentage_complete is reset
 
     @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_post_with_URL_executed_file(self):
