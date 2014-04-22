@@ -517,3 +517,72 @@ ul.checklist-items {
   font-weight: bold;
   padding: 8px 11px;
 }
+
+.mobile {
+	display: none;
+}
+
+.btn-square {
+	border-radius: 0;
+}
+
+@media only screen and (max-width : 1200px) {
+	.container-fluid {
+		padding: 0 15px;
+	}
+	.mobile {
+		display: block;
+		.btn-transparent {
+			color: #414141;
+		}
+		.btn-light {
+			background-color: #e1e4e5;
+			color: #414141;
+		}
+		.btn-white {
+			background-color: #FFF;
+			color: #414141;
+		}
+		.btn-square {
+			border-radius: 0;
+		}
+	}
+	.checklist-wrapper {
+		// Mobile view
+		#checklist-items {
+			//
+		}
+
+		#checklist-items,
+		#checklist-detail-container,
+		#checklist-detail,
+		#checklist-activity {
+			width: 100%;
+			opacity: 1;
+
+			-webkit-transition: opacity 0.3s ease-in-out;
+		    -moz-transition: opacity 0.3s ease-in-out;
+		    -o-transition: opacity 0.3s ease-in-out;
+		    transition: opacity 0.3s ease-in-out;
+		}
+
+		#checklist-items.zero,
+		#checklist-detail-container.zero,
+		#checklist-detail.zero,
+		#checklist-activity.zero {
+			width: 0;
+			padding: 0;
+			margin: 0;
+			height: 0;
+			overflow: hidden;
+			opacity: 0;
+
+			
+		}
+
+		.chat.full {
+			position: static;
+			height: 100%;
+		}
+	}
+}

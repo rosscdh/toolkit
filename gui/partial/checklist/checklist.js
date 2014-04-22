@@ -81,7 +81,8 @@ angular.module('toolkit-gui')
 			'users': [],
 			'searchData': searchService.data(),
 			'usdata': userService.data(),
-            'streamType': 'matter'
+            'streamType': 'matter',
+            'page': 'checklist'
 		};
 		//debugger;
 
@@ -238,6 +239,20 @@ angular.module('toolkit-gui')
 			$scope.data.showPreviousRevisions = false;
 
 			$log.debug(item);
+
+			$scope.displayDetails();	// @mobile
+		};
+
+		$scope.displayChecklist = function() {
+			$scope.data.page = 'checklist';
+		};
+
+		$scope.displayDetails = function() {
+			$scope.data.page = 'details';
+		};
+
+		$scope.displayActivity = function() {
+			$scope.data.page = 'activity';
 		};
 
 		/**
