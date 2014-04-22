@@ -7,7 +7,7 @@
         <div class="col-xs-10">
             {% block notice %}
                 <p class="lead">{{ message }}</p>
-                <a href="{{ action_object_url }}">I AM AN API-ENDPOINT-LINK TO {{ action_object_name }} TO BE USED SOMEHOW</a>
+                <a href="{{ action_object_url }}">{{ action_object_name }}</a>
                 <p class="small">{{ date|naturaltime }} — in <a href="{{ base_url }}">{{ target_name }}</a> for {{ client_name }}.</p>
             {% endblock %}
         </div>
