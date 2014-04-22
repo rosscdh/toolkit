@@ -61,13 +61,13 @@
 					<span class="fui-time"></span> Awaiting Files <span ng-bind="item.responsible_party | initials:true"></span>
 				</button>
                 <button disabled="" class="btn btn-warning btn-xs"
-                        ng-show="!item.is_requested&&item.latest_revision.reviewers.length>0&&getReviewPercentageComplete(item)==0">
+                        ng-show="!item.is_requested&&item.review_percentage_complete==0">
 					<span class="fui-time"></span> Review in progress
 				</button>
                 <button disabled="" class="btn btn-warning btn-xs"
-                        ng-show="!item.is_requested&&item.latest_revision.reviewers.length>0&&getReviewPercentageComplete(item)>0&&getReviewPercentageComplete(item)<100">
-                    <span class="fui-user"></span> Review {{ getReviewPercentageComplete(item) }}%
-                </button>
+                        ng-show="!item.is_requested&&item.review_percentage_complete>0&&item.review_percentage_complete<1">
+                    <span class="fui-user"></span> Review {{ item.review_percentage_complete * 100 }}%
+                </button> <!--getReviewPercentageComplete(item)-->
 			</span>
 			<span class="fui-check-inverted" ng-show="item.is_complete"></span>
 		</td>

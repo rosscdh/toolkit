@@ -1,5 +1,5 @@
 <ul ui:sortable="checklistItemSortableOptions" ng:model="cat.items" class="group list-unstyled checklist-items">
-	<li 
+	<li
 		ng-repeat="item in cat.items"
 		ng-click="selectItem(item, cat)"
 		ng-class="{ 'item-closed': item.is_complete, 'item-open': !item.is_complete, 'selected': item.slug===data.selectedItem.slug}"
@@ -20,13 +20,13 @@
 						ng-show="item.latest_revision&&!item.is_requested">
                             {{ data.matter._meta.item.custom_status[item.latest_revision.status] }}
 					</button>
-					<button 
+					<button
 						class="btn btn-xs {{ item.date_due | duestatus }}"
-						ng-show="item.date_due" 
+						ng-show="item.date_due"
 						disabled>
 							{{ item.date_due | date:'dd MMM' }}
 					</button>
-					<button 
+					<button
 						disabled=""
 						class="btn btn-warning btn-xs"
 						ng-show="item.is_requested">
@@ -34,18 +34,16 @@
 							Awaiting Files
 							<span ng-bind="item.responsible_party | initials:true"></span>
 					</button>
-					<button 
-						disabled="" class="btn btn-warning btn-xs"
-						ng-show="!item.is_requested&&item.latest_revision.reviewers.length>0&&getReviewPercentageComplete(item)==0">
-							<span class="fui-time"></span>
-							Review in progress
-					</button>
-					<button
-						disabled="" class="btn btn-warning btn-xs"
-						ng-show="!item.is_requested&&item.latest_revision.reviewers.length>0&&getReviewPercentageComplete(item)>0&&getReviewPercentageComplete(item)<100">
-							<span class="fui-user"></span>
-							Review {{ getReviewPercentageComplete(item) }}%
-					</button>
+
+                     <button disabled="" class="btn btn-warning btn-xs"
+                        ng-show="!item.is_requested&&item.review_percentage_complete==0">
+                        <span class="fui-time"></span> Review in progress
+                    </button>
+                    <button disabled="" class="btn btn-warning btn-xs"
+                            ng-show="!item.is_requested&&item.review_percentage_complete>0&&item.review_percentage_complete<100">
+                        <span class="fui-user"></span> Review {{ item.review_percentage_complete }}%
+                    </button>
+
 				</span>
 				<span class="pe-7s-check pull-right" ng-show="item.is_complete"></span>
 			</div>
