@@ -247,7 +247,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
 
         if review_document is not None:
             return {
-                'url': review_document.get_absolute_url(user=request.user) if review_document is not None else None,
+                'url': review_document.get_absolute_url(user=request.user),
                 'slug': review_document.slug
             }
 
@@ -262,7 +262,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
         review_document = _get_user_review(self=self, obj=obj, context=context)
 
         if review_document is not None:
-            return review_document.get_download_url(user=request.user) if review_document is not None else None
+            return review_document.get_download_url(user=request.user)
 
         return None
 
