@@ -13,16 +13,20 @@ from model_mommy import mommy
 
 import json
 
-
-class RemindReviewersTest(PyQueryMixin, BaseEndpointTest):
-    """
-    /matters/:matter_slug/items/:item_slug/revision/reviewers/remind (POST)
-        Send reminder emails to any outstanding reviewers
-    """
+class BaseReviewEndpointTest(object):
     @property
     def endpoint(self):
         return reverse('item_revision_remind_reviewers', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug})
 
+    def test_endpoint_name(self):
+        self.assertEqual(self.endpoint, '/api/v1/matters/%s/items/%s/revision/reviewers/remind' % (self.matter.slug, self.item.slug))
+
+
+class RemindReviewersTest(PyQueryMixin, BaseReviewEndpointTest, BaseEndpointTest):
+    """
+    /matters/:matter_slug/items/:item_slug/revision/reviewers/remind (POST)
+        Send reminder emails to any outstanding reviewers
+    """
     def setUp(self):
         super(RemindReviewersTest, self).setUp()
         # setup the items for testing
@@ -30,9 +34,6 @@ class RemindReviewersTest(PyQueryMixin, BaseEndpointTest):
         self.revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
         self.reviewer = mommy.make('auth.User', username='authorised-reviewer', first_name='Reviewer', last_name='Number 1', email='reviewer+1@lawpal.com')
         self.revision.reviewers.add(self.reviewer)
-
-    def test_endpoint_name(self):
-        self.assertEqual(self.endpoint, '/api/v1/matters/%s/items/%s/revision/reviewers/remind' % (self.matter.slug, self.item.slug))
 
     def test_lawyer_get(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -114,3 +115,44 @@ class RemindReviewersTest(PyQueryMixin, BaseEndpointTest):
     def test_anon_delete(self):
         resp = self.client.delete(self.endpoint, {})
         self.assertEqual(resp.status_code, 403)  # forbidden
+
+
+class RemindOnlyReviewersWhoHaveNotCompletedTheirReviewTest(BaseReviewEndpointTest, BaseEndpointTest):
+    def setUp(self):
+        super(RemindOnlyReviewersWhoHaveNotCompletedTheirReviewTest, self).setUp()
+        # setup the items for testing
+        self.item = mommy.make('item.Item', matter=self.matter, name='Test Item for Review Reminder', category=None)
+        self.revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
+
+        self.reviewer = mommy.make('auth.User', username='authorised-reviewer', first_name='Reviewer', last_name='Number 1', email='reviewer+1@lawpal.com')
+        self.revision.reviewers.add(self.reviewer)
+
+        self.reviewer2 = mommy.make('auth.User', username='authorised-reviewer-2', first_name='Reviewer', last_name='Number 2', email='reviewer+1@lawpal.com')
+        self.revision.reviewers.add(self.reviewer2)
+
+        self.reviewer3 = mommy.make('auth.User', username='authorised-reviewer-3', first_name='Reviewer', last_name='Number 3', email='reviewer+3@lawpal.com')
+        self.revision.reviewers.add(self.reviewer3)
+
+        # mark one of them as complete
+        review_document = self.item.invited_document_reviews().first()
+        review_document.is_complete = True
+        review_document.save(update_fields=['is_complete'])
+
+    def test_only_un_reviewed_emails_are_sent(self):
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        resp = self.client.post(self.endpoint, {}, content_type='application/json')
+
+        self.assertEqual(resp.status_code, 202)  # accepted
+        json_data = json.loads(resp.content)
+
+        outbox = mail.outbox
+        self.assertEqual(len(outbox), 2)
+
+        email = outbox[0]
+        self.assertEqual(email.subject, '[REMINDER] Please review this document')
+        self.assertEqual(email.recipients(), [self.reviewer.email])
+
+        email = outbox[1]
+        self.assertEqual(email.subject, '[REMINDER] Please review this document')
+        self.assertEqual(email.recipients(), [self.reviewer2.email])
