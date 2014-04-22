@@ -4,6 +4,7 @@ Signals that listen for changes to the core models and then record them as
 activity_stream objects
 @TODO turn the signal handlers into its own module
 """
+from django import template
 from django.conf import settings
 from django.dispatch import receiver
 from django.dispatch.dispatcher import Signal
@@ -19,6 +20,8 @@ except ImportError:
     stored_messages = None
 
 from toolkit.core.services.lawpal_abridge import LawPalAbridgeService
+
+from toolkit.apps.notification.templatetags.notice_tags import get_notification_template, get_notification_context
 
 #from toolkit.apps.notification.tasks import youve_got_notifications
 
@@ -40,6 +43,13 @@ ABRIDGE_WHITELIST = settings.LAWPAL_ACTIVITY.get('abridge', {}).get('whitelist',
 NOTIFICATIONS_WHITELIST = settings.LAWPAL_ACTIVITY.get('notifications', {}).get('whitelist', [])
 
 
+def _serialize_kwargs(kwargs):
+    for key, item in kwargs.iteritems():
+        if hasattr(item, 'api_serializer') is True:
+            kwargs[key] = item.api_serializer(item, context={'request': None}).data
+    return kwargs
+
+
 def _activity_send(actor, target, action_object, message, **kwargs):
     """
     Send activity to django-activity-stream
@@ -47,10 +57,7 @@ def _activity_send(actor, target, action_object, message, **kwargs):
     verb_slug = kwargs.get('verb_slug', False)
 
     if verb_slug in ACTIVITY_WHITELIST:
-        # @TODO turn this into a reuseable method
-        for key, item in kwargs.iteritems():
-            if hasattr(item, 'api_serializer') is True:
-                kwargs[key] = item.api_serializer(item, context={'request': None}).data
+        kwargs = _serialize_kwargs(kwargs)
         action.send(actor, target=target, action_object=action_object, message=message, **kwargs)
 
 
@@ -66,17 +73,33 @@ def _abridge_send(verb_slug, actor, target, action_object, message=None, comment
             try:
                 s = LawPalAbridgeService(user=user,
                                          ABRIDGE_ENABLED=getattr(settings, 'ABRIDGE_ENABLED', False))  # initialize and pass in the user
-                if message:
-                    # TODO:
-                    # if item and comment:
-                    #     send email including comment-text
-                    # else:
-                    s.create_event(content_group=target.name,
-                                   content='<div style="font-size:3.3em;">%s</div>' % message)
-
             except Exception as e:
                 # AbridgeService is not running.
                 logger.critical('Abridge Service is not running because: %s' % e)
+                s = False
+
+            if s:
+                if message:
+                    message_data = _serialize_kwargs({'actor': actor,
+                                                      'action_object': action_object,
+                                                      'target': target,
+                                                      'comment': comment,
+                                                      'item': item})
+                    t = get_notification_template(verb_slug)
+                    ctx = get_notification_context(message_data, user)
+                    ctx.update({
+                        # 'notice_pk': notice.pk,
+                        # 'date': notice.message.date,
+                        'message': message,
+                    })
+
+                    context = template.loader.Context(ctx)
+
+                    # render the template with passed in context
+                    message_for_abridge = t.render(context)
+
+                    s.create_event(content_group=target.name,
+                                   content=message_for_abridge)
 
 
 def _notifications_send(verb_slug, actor, target, action_object, message, comment, item, send_to_all=False):
@@ -185,7 +208,8 @@ def on_activity_received(sender, **kwargs):
     if actor and action_object and target and verb_slug:
         # send to django-activity-stream
         # note the kwarg.pop so that they dont get sent in as kwargs
-        _activity_send(actor=actor, target=kwargs.pop('target', None), action_object=kwargs.pop('action_object', None), message=kwargs.pop('message', None), **kwargs)
+        _activity_send(actor=actor, target=kwargs.pop('target', None), action_object=kwargs.pop('action_object', None),
+                       message=kwargs.pop('message', None), **kwargs)
 
         # send the notifications to the participants
         _notifications_send(verb_slug=verb_slug, actor=actor, target=target, action_object=action_object,

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django import template
 import re
-from toolkit.core.item.models import Item
+from toolkit.api.serializers import LiteUserSerializer
 
 prog = re.compile('/([a-z\d]*)$', flags=re.IGNORECASE)
 register = template.Library()
@@ -22,8 +22,9 @@ def get_notification_template(verb_slug):
     return NOTIFICATION_TEMPLATES.get(verb_slug, NOTIFICATION_TEMPLATES.get('default'))
 
 
-def _get_context(message_data, user):
+def get_notification_context(message_data, user):
     actor = message_data.get('actor')
+
     action_object = message_data.get('action_object')
     target = message_data.get('target')
     client = target.get('client')
@@ -39,6 +40,7 @@ def _get_context(message_data, user):
             if item:
                 # # if action_object contains an item, it MUST be a revision. -> build revision link of the following format:
                 # # /matters/lawpal-corporate-setup/#/checklist/41b53cd527224809a5fd5e325c7511f1/:user_crocodoc_deatil_view_url
+                from toolkit.core.item.models import Item  # circular
                 item_object = Item.objects.get(slug=item.get('slug'))
                 # item = item.object  # is a dict, not a serializer-object
                 # item_s = ItemSerializer(item)
@@ -60,8 +62,8 @@ def _get_context(message_data, user):
 
     if message_data is not None:
         ctx = {
-            'actor_name': actor.get('name') if actor else None,
-            'actor_initials': actor.get('initials') if actor else None,
+            'actor_name': actor.get('name') if hasattr(actor, 'name') else actor.__unicode__(),
+            'actor_initials': actor.get('initials') if hasattr(actor, 'actor_initials') else actor.get_initials(),  # everything else serialized before
             'comment': comment,
             'item_name': item.get('name') if item else None,
             'revision_slug': action_object.get('slug') if action_object else None,
@@ -87,7 +89,7 @@ def render_notice(notice, request=None):
     verb_slug = message_data.get('verb_slug')
 
     t = get_notification_template(verb_slug)
-    ctx = _get_context(message_data, request.user)
+    ctx = get_notification_context(message_data, request.user)
     ctx.update({
         'notice_pk': notice.pk,
         'date': notice.message.date,

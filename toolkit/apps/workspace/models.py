@@ -5,7 +5,6 @@ from django.db.models.loading import get_model
 from django.db.models.signals import pre_save, post_save, post_delete, m2m_changed
 
 from toolkit.core.mixins import IsDeletedMixin, ApiSerializerMixin
-from toolkit.core.services.matter_activity import MatterActivityEventService  # cyclic
 
 from .signals import (ensure_workspace_slug,
                       ensure_workspace_matter_code,
@@ -68,6 +67,7 @@ class Workspace(IsDeletedMixin,
         #
         # Initialize the actions property
         #
+        from toolkit.core.services.matter_activity import MatterActivityEventService  # cyclic
         self._actions = MatterActivityEventService(self)
         super(Workspace, self).__init__(*args, **kwargs)
 
