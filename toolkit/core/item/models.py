@@ -105,7 +105,7 @@ class Item(IsDeletedMixin,
 
         # instead we could use the reviewer ID if we added it to the reviewer-serializer. or if we use the non-absolute
         # user_review_url as identifier, we must add it to the review
-        
+
         review_document_link = self.get_user_review_url(user=user, version_slug=version_slug)
         return "%s/%s%s" % (self.get_absolute_url(), version_slug, review_document_link)
 
