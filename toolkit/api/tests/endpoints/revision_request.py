@@ -85,7 +85,7 @@ class ItemsRequestDocumentTest(BaseEndpointTest):
         # this should have created a new revision upload invite
         stream = action_object_stream(self.item)
         self.assertEqual(stream[0].data['override_message'],
-                         u'Lawyër Tëst requested Bob Da hoon provide a document on Test Item No. 1')
+                         u'Lawyër Tëst requested a file from Bob Da hoon for Test Item No. 1')
 
         # now we patch again to remove the revision_request and see if the activity is created
         data = {
