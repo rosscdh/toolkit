@@ -58,7 +58,7 @@ class BaseDataProvider(BaseScenarios):
 
         # there should always be 1 reviewdocument that the matter.participants can review together alone
         self.assertEqual(self.revision.reviewdocument_set.all().count(), 1)
-        self.assertEqual(self.item.review_percentage_complete, 0.0)
+        self.assertEqual(self.item.review_percentage_complete, None)
 
         # when I add another reviewer they should get their own reviewdocument to talk about with the matter.participants
         self.revision.reviewers.add(self.reviewer)
@@ -292,6 +292,16 @@ class ReviewerPercentageCompleteTest(BaseDataProvider, TestCase):
         self.assertEqual(self.item.review_percentage_complete, 0.0)
         self.assertEqual(self.item.percent_formatted(self.item.review_percentage_complete), '0%')
         self.assertEqual(Action.objects.all().count(), 0)
+
+        # Test new Revision added should set count to null
+        previous_revision = self.item.latest_revision
+        # create a new one
+        new_revision = mommy.make('attachment.Revision', item=self.item)
+        self.assertTrue(self.item.latest_revision is new_revision)
+        self.assertTrue(new_revision.is_current)
+        self.assertEqual(self.item.review_percentage_complete, None)
+        self.assertEqual(self.item.percent_formatted(self.item.review_percentage_complete), None)
+
 
 
 """
