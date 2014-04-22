@@ -31,9 +31,9 @@ def reset_item_review_percentage_complete_on_complete(sender, instance, created,
     item = instance.document.item
     item.recalculate_review_percentage_complete()
 
-    if item.review_percentage_complete == 100.0:
-        # send matter.action signal
-        item.matter.actions.all_revision_reviews_complete(item=item, revision=instance.document)
+    # if item.review_percentage_complete == 100.0:
+    #     # send matter.action signal
+    #     item.matter.actions.all_revision_reviews_complete(item=item, revision=instance.document)
 
 
 @receiver(post_delete, sender=ReviewDocument, dispatch_uid='review.pre_delete.reset_item_review_percentage_complete')
