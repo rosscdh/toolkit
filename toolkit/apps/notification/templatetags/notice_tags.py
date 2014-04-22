@@ -22,7 +22,7 @@ def get_notification_template(verb_slug):
     return NOTIFICATION_TEMPLATES.get(verb_slug, NOTIFICATION_TEMPLATES.get('default'))
 
 
-def _get_context(message_data, verb_slug, user):
+def _get_context(message_data, user):
     actor = message_data.get('actor')
     action_object = message_data.get('action_object')
     target = message_data.get('target')
@@ -82,7 +82,7 @@ def render_notice(notice, request=None):
     verb_slug = message_data.get('verb_slug')
 
     t = get_notification_template(verb_slug)
-    ctx = _get_context(message_data, verb_slug, request.user)
+    ctx = _get_context(message_data, request.user)
     ctx.update({
         'notice_pk': notice.pk,
         'date': notice.message.date,
