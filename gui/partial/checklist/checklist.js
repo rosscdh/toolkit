@@ -592,7 +592,7 @@ angular.module('toolkit-gui')
 						toaster.pop('error', "Error!", "Unable to upload revision");
 						item.uploading = false;
 					},
-					function progress( num ) {
+					function progress( num ) {console.log('notify')
 						/* IE-Fix, timeout and force GUI update */
 						setTimeout(function(){
 							item.uploadingPercent = num;
@@ -1308,11 +1308,11 @@ angular.module('toolkit-gui')
                 );
             }
 
-			/*
+			
 			//reload activity stream every 60seconds
 			$timeout(function (){
 				$scope.initializeActivityStream();
-			}, 1000 * 60);*/
+			}, 1000 * 60);
 		};
 
 

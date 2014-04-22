@@ -7,7 +7,14 @@ describe('ChecklistCtrl', function() {
 		   return deferred.promise;
         }		   
 	}
-	
+	function makeFake(fkname, methods){
+	    var msg  = { message: "This is so great!" };
+	    var fk = jasmine.createSpyObj(fkname,methods);
+	    angular.forEach(methods, function(func, key){
+			fk[func].andCallFake(doPromiseResolve(msg));
+        });
+	    return 	fk;	
+	}	
     beforeEach(function() {
         module(function($provide) {            
 			$provide.constant('API_BASE_URL', '/api/v1/');
@@ -41,30 +48,28 @@ describe('ChecklistCtrl', function() {
 	$modal,
 	userService,
 	searchService,
-	userService,
+	userService, 
+	AuthenticationRequiredCtrl,
+	$modalInstance,	
     matterService;
 
 	
-    beforeEach(inject(function($injector, $rootScope, $controller) {
+    beforeEach(inject(function($injector) {
 	  
 	  $rootScope = $injector.get('$rootScope');
 	  $controller = $injector.get('$controller');
 	  $q = $injector.get('$q');
-	  
+	  $timeout = $injector.get('$timeout');
       $scope = $rootScope.$new();
-	  
+	  //AuthenticationRequiredCtrl = $injector.get('AuthenticationRequiredCtrl');
 	  //MOCKS
 	  var msg  = { message: "This is so great!" };
 	  //mocking smartRoutes		
 	  smartRoutes = {'params': function() { return { 'matterSlug': 'test-matter', itemSlug:'123' }; }}
 	  //mocking matterService       
-	  matterService = jasmine.createSpyObj('matterService',['get','selectMatter','data']);
-	  matterService.get.andCallFake(doPromiseResolve(msg));	  
-	  matterService.data.andCallFake(function(param){           
-		   return {selected:{current_user:''}};	
-	  });	  
+  
 	  
-	  matterItemService  = jasmine.createSpyObj('matterItemService',[
+	  matterItemService  = makeFake('matterItemService',[
 	  'create',
 	  'delete',
 	  'update',
@@ -75,48 +80,50 @@ describe('ChecklistCtrl', function() {
 	  'remindRevisionRequest',
 	  'deleteRevisionRequest',
 	  'remindRevisionReview',
-	  'deleteRevisionReviewRequest',
-	  'uploadRevisionFile'
-	  ]);
-	  matterItemService.create.andCallFake(doPromiseResolve(msg));
-	  matterItemService.delete.andCallFake(doPromiseResolve(msg));
-	  matterItemService.update.andCallFake(doPromiseResolve(msg));
-	  matterItemService.uploadRevision.andCallFake(doPromiseResolve(msg));
-	  matterItemService.updateRevision.andCallFake(doPromiseResolve(msg));
-	  matterItemService.deleteRevision.andCallFake(doPromiseResolve(msg)); 
-	  matterItemService.loadRevision.andCallFake(doPromiseResolve(msg));
-	  matterItemService.remindRevisionRequest.andCallFake(doPromiseResolve(msg));
+	  'deleteRevisionReviewRequest',	  
+	  'uploadRevisionFile'	  
+	  ]);	  
 	  matterItemService.deleteRevisionRequest.andCallFake(doPromiseResolve({ is_requested: "This is so great!" }));
-	  matterItemService.remindRevisionReview.andCallFake(doPromiseResolve(msg));
-	  matterItemService.uploadRevisionFile.andCallFake(doPromiseResolve(msg));
-	  baseService = jasmine.createSpyObj('baseService',['loadObjectByUrl']);
-	  baseService.loadObjectByUrl.andCallFake(doPromiseResolve(msg));
-
+	  
+	  baseService = makeFake('baseService',['loadObjectByUrl']);	  
 	  
 	  
+	  toaster = makeFake('toaster',['pop']);
 	  
-	  toaster = jasmine.createSpyObj('toaster',['pop']);
-	  toaster.pop.andCallFake(function(param){});
 	  
 	  ezConfirm = jasmine.createSpyObj('ezConfirm',['create']);
 	  ezConfirm.create.andCallFake(function(param,param1,callbck){           
 		   callbck()	  
 	  });
 	  
-	  participantService = jasmine.createSpyObj('participantService',['getByURL']);
-	  participantService.getByURL.andCallFake(doPromiseResolve(msg));
+	  participantService = makeFake('participantService',['getByURL']);	  
+	  matterCategoryService = makeFake('matterCategoryService',['create','delete','update']); 
 
-	  
-	  
-	  matterCategoryService = jasmine.createSpyObj('matterCategoryService',['create','delete','update']);
-	  matterCategoryService.create.andCallFake(doPromiseResolve(msg));
-	  matterCategoryService.delete.andCallFake(doPromiseResolve(msg));
-	  matterCategoryService.update.andCallFake(doPromiseResolve(msg));
- 
-	  matterService.selectMatter.andCallFake(function(param){}); 
+	  matterService = makeFake('matterService',['get','selectMatter','data']);	  	 
+	  matterService.data.andCallFake(function(param){           
+		   return {selected:{current_user:''}};	
+	  });	
+
+        
+      $modalInstance = {                    // Create a mock object using spies
+        close: jasmine.createSpy('modalInstance.close'),
+        dismiss: jasmine.createSpy('modalInstance.dismiss'),
+        result: {
+          then: jasmine.createSpy('modalInstance.result.then')
+        }
+      };	  
 
 	  $modal = jasmine.createSpyObj('$modal',['open'])
-	  $modal.open.andCallFake(function(param){
+	  $modal.open.andCallFake(function(param){	  
+	    /*
+	    'templateUrl': '/static/ng/partial/authentication-required/authentication-required.html',
+        'controller': 'AuthenticationRequiredCtrl',
+        'backdrop': 'static',
+        'resolve'	  
+	    */
+		//$controller(param.controller,{$scope: $scope, $modalInstance:$modalInstance, matter:{},toaster:{}})
+		
+		
 	    return {
 		 result: function(){
 		   var deferred = $q.defer();							
@@ -128,8 +135,8 @@ describe('ChecklistCtrl', function() {
 	  
 	  userService = {data:function(){return { current:{user_class:'lawyer'}};},setCurrent:function(p){return {};}};
 	  searchService = {data:function(){return {};}};
-	  activityService = jasmine.createSpyObj('matterCategoryService',['itemstream']);
-	  activityService.itemstream.andCallFake(doPromiseResolve({ message: "This is so great!" }));
+	  activityService = makeFake('matterCategoryService',['itemstream']);
+	 
 	  
       ctrl = $controller('ChecklistCtrl', {
 		  $scope: $scope,
@@ -519,21 +526,109 @@ describe('ChecklistCtrl', function() {
 		expect(toaster.pop.mostRecentCall.args[2]).toBe("Unable to remind the participant.");
 	});
 	
-	it('$scope.deleteRevisionReviewRequest',function(){
-	    matterItemService.deleteRevisionReviewRequest.andCallFake(function(param){
+
+	
+	it('$scope.onFileDropped - success',function(){	   
+	    var $files = [], item = {slug:{}};
+		$scope.onFileDropped($files, item);
+		$scope.$apply();
+		expect($scope.data.showPreviousRevisions).toBe(false);
+	});
+	
+	it('$scope.onFileDropped - failure',function(){	
+	    matterItemService.uploadRevisionFile.andCallFake(function(param){
 		   var deferred = $q.defer();							
 		   deferred.reject({ is_requested: "This is so great!" });	           
 		   return deferred.promise;			
+		})	
+	    var $files = [], item = {slug:{}};
+		$scope.onFileDropped($files, item);
+		$scope.$apply();
+		expect(toaster.pop.mostRecentCall.args[2]).toBe('Unable to upload revision');
+	});	
+
+    it('$scope.deleteRevisionReviewRequest' ,function(){
+	   var  item = {slug:{},latest_revision:{reviewers:['some','other']}},review = 'some';
+       $scope.deleteRevisionReviewRequest( item, review);
+	   $scope.$apply();
+	   expect(angular.equals(item.latest_revision.reviewers,['other'])).toBeTruthy();
+	});
+
+	it('$scope.deleteRevisionReviewRequest',function(){
+	    matterItemService.deleteRevisionReviewRequest.andCallFake(function(param){
+		   var deferred = $q.defer();							
+		   deferred.reject({ is_requested: "This is not so great!" });	           
+		   return deferred.promise;
 		})
 		$scope.deleteRevisionReviewRequest({slug:{}});
+		$scope.$apply();
+		expect(toaster.pop.mostRecentCall.args[2]).toBe('Unable to delete the revision review request.');
 	});
 	
-	it('$scope.onFileDropped',function(){
-	   
-	    var $files = [], item = {slug:{}};
-		$scope.onFileDropped($files, item)
+	it('$scope.showReview ',function(){
+		$scope.showReview();
+		expect($modal.open).toHaveBeenCalled();
 	});
 	
+	it('$scope.getReviewPercentageComplete - if 50% completed must retrun 50',function(){
+	    var  item = {slug:{},latest_revision:{reviewers:[{name:'some',is_complete:false},{name:'other',is_complete:true}]}}
+		var res = $scope.getReviewPercentageComplete(item);
+	    expect(res).toBe(50)
+	});
+	
+	it('$scope.getReviewPercentageComplete - must retrun 0',function(){
+	    var  item = {slug:{},latest_revision:{reviewers:null}};
+		var res = $scope.getReviewPercentageComplete(item);
+	    expect(res).toBe(0)
+	});
+
+    it('$scope.focus',function(){
+	    spyOn($scope,'$broadcast');
+		$scope.focus('shlomo');
+		$timeout.flush();
+		expect($scope.$broadcast).toHaveBeenCalledWith('focusOn','shlomo')
+	});
+	
+	it('$rootScope.$on  after getting the result -  $scope.data.authenticationModalOpened should be false',function(){
+	    $scope.data.matter = {};
+	    $modal.open.andCallFake(function(param){	  
+  
+			var matter = param.resolve.matter();
+			var currentUser = param.resolve.currentUser();
+			$controller(param.controller,
+			{
+				$scope: $scope,
+				$modalInstance:$modalInstance,
+				currentUser:currentUser,
+				matter:matter
+			});
+		    
+		    
+			return {
+				result: function(){
+				   var deferred = $q.defer();							
+				   deferred.resolve({ responsible_party: "This is great!" });	           
+				   return deferred.promise;	  		 
+				}()
+			}
+	    }); 	    
+	    $scope.$emit('authenticationRequired',true);			
+		expect($modal.open).toHaveBeenCalled();
+		$scope.$apply();
+		expect($scope.data.authenticationModalOpened).toBe(false)
+	});
+	
+	it('watch after data.dueDatePickerDate',function(){
+	    $scope.data.selectedItem = {date_due:{}};
+        spyOn($scope,'saveSelectedItem');		
+		jQuery.datepicker= jasmine.createSpyObj(jQuery.datepicker ,['formatDate']);					
+		$scope.data.dueDatePickerDate = new  Date();
+		
+		
+	    $scope.$apply();
+		expect(jQuery.datepicker.formatDate).toHaveBeenCalled();
+		expect($scope.saveSelectedItem).toHaveBeenCalled();
+	})
 });
 //matterService.get failure
 describe('ChecklistCtrl', function() {
@@ -544,6 +639,14 @@ describe('ChecklistCtrl', function() {
 		   return deferred.promise;
         }		   
 	}
+	function makeFake(fkname, methods){
+	    var msg  = { message: "This is not so great!" };
+	    var fk = jasmine.createSpyObj(fkname,methods);
+	    angular.forEach(methods, function(func, key){
+			fk[func].andCallFake(doPromiseReject(msg));
+        });
+	    return 	fk;	
+	}	
     beforeEach(function() {
         module(function($provide) {            
 			$provide.constant('API_BASE_URL', '/api/v1/');
@@ -584,34 +687,26 @@ describe('ChecklistCtrl', function() {
 	  //mocking smartRoutes		
 	  smartRoutes = {'params': function() { return { 'matterSlug': 'test-matter' }; }}
 	  //mocking matterService       
-	  matterService = jasmine.createSpyObj('matterService',['get','selectMatter','data']);
-	  matterService.get.andCallFake(function(param){
-		   var deferred = $q.defer();							
-		   deferred.reject({ message: "This is not so great!" });	           
-		   return deferred.promise;		
-	  });
+	  matterService = makeFake('matterService',['get','selectMatter','data']);
 	  matterService.data.andCallFake(function(param){           
 		   return {selected:{current_user:''}};		
 	  });
       var msg  = { message: "This is not so great!" }; 	  
-	  matterItemService  = jasmine.createSpyObj('matterItemService',['create','delete','update','uploadRevision','updateRevision','deleteRevision','loadRevision']);
-	  matterItemService.create.andCallFake(doPromiseReject(msg));	
-	  matterItemService.uploadRevision.andCallFake(doPromiseReject(msg));		 
-	  matterItemService.delete.andCallFake(doPromiseReject(msg));	
-	  matterItemService.update.andCallFake(doPromiseReject(msg));	
-	  matterItemService.updateRevision.andCallFake(doPromiseReject(msg));
-	  matterItemService.deleteRevision.andCallFake(doPromiseReject(msg));
-      matterItemService.loadRevision.andCallFake(doPromiseReject(msg));	  
-
+	  matterItemService  = makeFake('matterItemService',[
+	  'create',
+	  'delete',
+	  'update',
+	  'uploadRevision',
+	  'updateRevision',
+	  'deleteRevision',
+	  'loadRevision'
+	  ]);
+ 
 	  
-	  baseService = jasmine.createSpyObj('baseService',['loadObjectByUrl']);
-	  baseService.loadObjectByUrl.andCallFake(function(param){
-		   var deferred = $q.defer();							
-		   deferred.reject({ message: "This is great!" });	           
-		   return deferred.promise;		  	  
-	  });	  
-	  toaster  = jasmine.createSpyObj('toaster',['pop']);
-	  toaster.pop.andCallFake(function(param1,param2,param3){});
+	  baseService = makeFake('baseService',['loadObjectByUrl']);
+  
+	  toaster  = makeFake('toaster',['pop']);
+	  
 	  ezConfirm = jasmine.createSpyObj('ezConfirm',['create']);
 	  ezConfirm.create.andCallFake(function(param,param1,callbck){           
 		   callbck()	  
@@ -620,10 +715,8 @@ describe('ChecklistCtrl', function() {
 	  participantService = jasmine.createSpyObj('participantService',['getByURL']);
 	  participantService.getByURL.andCallFake(doPromiseReject({ message: "This is bad!" }));
 
-	  matterCategoryService = jasmine.createSpyObj('matterCategoryService',['create','delete','update']);
-	  matterCategoryService.create.andCallFake(doPromiseReject(msg));
-	  matterCategoryService.delete.andCallFake(doPromiseReject(msg));
-	  matterCategoryService.update.andCallFake(doPromiseReject(msg));
+	  matterCategoryService = makeFake('matterCategoryService',['create','delete','update']);
+
 	  
 	  matterService.selectMatter.andCallFake(function(param){});  
       ctrl = $controller('ChecklistCtrl', {
@@ -735,7 +828,9 @@ describe('ChecklistCtrl', function() {
 	   $scope.data.selectedItem = {latest_revision:'something'};
 	   $scope.deleteLatestRevision();
 	   $scope.$apply();
+	   
 	   expect(toaster.pop.mostRecentCall.args[2]).toBe("Unable to delete revision")	  ;
 	});	
+	
 	
 });
