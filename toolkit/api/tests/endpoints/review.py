@@ -31,7 +31,7 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
     /matters/:matter_slug/items/:item_slug/revision/reviewers/ (GET,POST)
         [lawyer,customer] to list, create reviewers
     """
-    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review_url', u'url', u'initials', u'user_class', u'name',]
+    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review', u'url', u'initials', u'user_class', u'name',]
 
     @property
     def endpoint(self):
@@ -113,15 +113,19 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
         self.assertEqual(json_data['results'][1]['reviewer'], None)
 
         # user review url must be in it
-        self.assertTrue('user_review_url' in json_data['results'][0]['reviewer'].keys())
+        self.assertTrue('user_review' in json_data['results'][0]['reviewer'].keys())
 
         #
         # we expect the currently logged in users url to be returned;
         # as the view is relative to the user
         #
-        expected_url = self.item.latest_revision.reviewdocument_set.all().first().get_absolute_url(user=self.lawyer)
+        review_document = self.item.latest_revision.reviewdocument_set.all().first()
+        expected_url = review_document.get_absolute_url(user=self.lawyer)
 
-        self.assertEqual(json_data['results'][0]['reviewer']['user_review_url'], expected_url)
+        self.assertEqual(json_data['results'][0]['reviewer']['user_review'], {
+            'url': expected_url,
+            'slug': str(review_document.slug)
+        })
 
         outbox = mail.outbox
         self.assertEqual(len(outbox), 1)
@@ -183,15 +187,19 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
         self.assertEqual(json_data['results'][1]['reviewer'], None)
 
         # user review url must be in it
-        self.assertTrue('user_review_url' in json_data['results'][0]['reviewer'].keys())
+        self.assertTrue('user_review' in json_data['results'][0]['reviewer'].keys())
 
         #
         # we expect the currently logged in users url to be returned;
         # as the view is relative to the user
         #
-        expected_url = self.item.latest_revision.reviewdocument_set.all().first().get_absolute_url(user=self.lawyer)
+        review_document = self.item.latest_revision.reviewdocument_set.all().first()
+        expected_url = review_document.get_absolute_url(user=self.lawyer)
 
-        self.assertEqual(json_data['results'][0]['reviewer']['user_review_url'], expected_url)
+        self.assertEqual(json_data['results'][0]['reviewer']['user_review'], {
+            'url': expected_url,
+            'slug': str(review_document.slug)
+        })
 
         outbox = mail.outbox
         self.assertEqual(len(outbox), 1)
@@ -211,15 +219,19 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
         self.assertEqual(invite_key.next, reverse('request:list'))
 
         # user review url must be in it
-        self.assertTrue('user_review_url' in json_data['results'][0]['reviewer'].keys())
+        self.assertTrue('user_review' in json_data['results'][0]['reviewer'].keys())
 
         #
         # we expect the currently logged in users url to be returned;
         # as the view is relative to the user
         #
-        expected_url = self.item.latest_revision.reviewdocument_set.all().first().get_absolute_url(user=self.lawyer)
+        review_document = self.item.latest_revision.reviewdocument_set.all().first()
+        expected_url = review_document.get_absolute_url(user=self.lawyer)
 
-        self.assertEqual(json_data['results'][0]['reviewer']['user_review_url'], expected_url)
+        self.assertEqual(json_data['results'][0]['reviewer']['user_review'], {
+            'url': expected_url,
+            'slug': str(review_document.slug)
+        })
 
         outbox = mail.outbox
         self.assertEqual(len(outbox), 1)
@@ -339,7 +351,7 @@ class RevisionReviewerTest(BaseEndpointTest):
     /matters/:matter_slug/items/:item_slug/revision/reviewer/:username (GET,DELETE)
         [lawyer,customer] to view, delete reviewers
     """
-    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review_url', u'url', u'initials', u'user_class', u'name',]
+    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review', u'url', u'initials', u'user_class', u'name',]
 
     @property
     def endpoint(self):

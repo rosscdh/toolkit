@@ -3,9 +3,34 @@
 Items are either todo items or document items
 """
 from django.contrib.auth.models import User
+
 from toolkit.apps.default.templatetags.intercom_tags import _get_intercom_user_hash
 
 from rest_framework import serializers
+
+
+def _get_user_review(self, obj, context):
+    """
+    Try to provide an initial reivew url from the base review_document obj
+    for the currently logged in user
+    """
+    request = context.get('request')
+    review_document = context.get('review_document', None)
+
+    if request is not None:
+        #
+        # if we have a review_document present in the context
+        #
+        if review_document is None:
+            # we have none, then try find the reviewdocument object that has all the matter participants in it
+            #
+            # The bast one will have 0 reviewers! and be the last in the set (because it was added first)
+            #
+            review_document = obj.reviewdocument_set.all().last()
+
+        return review_document
+
+    return None
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -55,28 +80,24 @@ class SimpleUserWithReviewUrlSerializer(SimpleUserSerializer):
     User serilizer to provide a user object with the very important
     user_review_url
     """
-    user_review_url = serializers.SerializerMethodField('get_user_review_url')
+    user_review = serializers.SerializerMethodField('get_user_review')
 
     class Meta(SimpleUserSerializer.Meta):
-        fields = SimpleUserSerializer.Meta.fields +('user_review_url',)
+        fields = SimpleUserSerializer.Meta.fields +('user_review',)
 
-    def get_user_review_url(self, obj):
+    def get_user_review(self, obj):
         """
         Try to provide an initial reivew url from the base review_document obj
         """
         context = getattr(self, 'context', None)
         request = context.get('request')
-        review_document = context.get('review_document', None)
 
-        if request is not None:
-            #
-            # if we have a review_document present in the context
-            #
-            if review_document is None:
-                # we have none, then try find the reviewdocument object where the current user is a reviewer
-                # @TODO this does not look right? what is obj?
-                review_document = obj.reviewdocument_set.filter(reviewers__in=[obj]).first()
+        review_document = _get_user_review(self=self, obj=obj, context=context)
 
-            return review_document.get_absolute_url(user=request.user) if review_document is not None else None
+        if review_document is not None:
+            return {
+                'url': review_document.get_absolute_url(user=request.user) if review_document is not None else None,
+                'slug': review_document.slug
+            }
 
         return None
