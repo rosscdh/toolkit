@@ -84,7 +84,7 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
     def get_request_document_meta(self, obj):
         """
         Return the requested by info if present otherwise null
-        see item_request.py
+        see revision_request.py
         """
         return obj.data.get('request_document', {
                 'message': None,

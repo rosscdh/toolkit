@@ -16,6 +16,25 @@ class ItemRequestRevisionView(MatterItemView):
     """
     http_method_names = ('get', 'patch',)
 
+    message = None  # provided by requesting party and added to item.data json obj
+
+    def get_serializer(self, instance, data=None,
+                       files=None, many=False, partial=False):
+        """
+        Remove the note from the data to be validated but use it again in
+        pre_save add it to the data
+        """
+        #
+        # Save the note for later
+        #
+        self.message = data.pop('message', None) if data is not None else None
+
+        return super(ItemRequestRevisionView, self).get_serializer(instance=instance,
+                                                                   data=data,
+                                                                   files=files,
+                                                                   many=many,
+                                                                   partial=partial)
+
     def responsible_party(self, obj):
         email = self.request.DATA.get('email')
         first_name = self.request.DATA.get('first_name')
@@ -34,7 +53,7 @@ class ItemRequestRevisionView(MatterItemView):
         #
         obj.data.update({
             'request_document': {
-                'message': self.request.DATA.get('message', None),
+                'message': self.message,
                 'requested_by': SimpleUserSerializer(self.request.user, context={'request': self.request}).data,
                 'date_requested': datetime.datetime.utcnow()
             }
