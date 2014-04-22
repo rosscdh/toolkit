@@ -227,9 +227,9 @@ angular.module('toolkit-gui')
 		$scope.selectItem = function(item, category) {
 			$scope.data.selectedItem = item;
 			$scope.data.selectedCategory = category;
-
+             
 			$scope.activateActivityStream('item');
-            $scope.loadItemDetails(item);
+            $scope.loadItemDetails(item); 
 
 			//Reset controls
             $scope.data.dueDatePickerDate = $scope.data.selectedItem.date_due;
@@ -1279,7 +1279,7 @@ angular.module('toolkit-gui')
 		 */
 		$scope.initializeActivityStream = function() {
 			var matterSlug = $scope.data.slug;
-
+ 
             if ($scope.data.streamType==='matter' || $scope.data.selectedItem===null){
                 activityService.matterstream(matterSlug).then(
                      function success(result){
@@ -1293,7 +1293,7 @@ angular.module('toolkit-gui')
                 );
             } else {
                 var itemSlug = $scope.data.selectedItem.slug;
-
+                
                 activityService.itemstream(matterSlug, itemSlug).then(
                      function success(result){
                         if($scope.data.selectedItem!==null) {

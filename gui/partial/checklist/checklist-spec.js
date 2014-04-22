@@ -1,5 +1,13 @@
 
 describe('ChecklistCtrl', function() {
+    function doPromiseResolve(msg){
+	    return  function(){
+		   var deferred = $q.defer();							
+		   deferred.resolve(msg);           
+		   return deferred.promise;
+        }		   
+	}
+	
     beforeEach(function() {
         module(function($provide) {            
 			$provide.constant('API_BASE_URL', '/api/v1/');
@@ -31,11 +39,14 @@ describe('ChecklistCtrl', function() {
 	participantService,
 	matterCategoryService,
 	$modal,
+	userService,
+	searchService,
+	userService,
     matterService;
 
 	
     beforeEach(inject(function($injector, $rootScope, $controller) {
-	
+	  
 	  $rootScope = $injector.get('$rootScope');
 	  $controller = $injector.get('$controller');
 	  $q = $injector.get('$q');
@@ -43,79 +54,46 @@ describe('ChecklistCtrl', function() {
       $scope = $rootScope.$new();
 	  
 	  //MOCKS
+	  var msg  = { message: "This is so great!" };
 	  //mocking smartRoutes		
 	  smartRoutes = {'params': function() { return { 'matterSlug': 'test-matter', itemSlug:'123' }; }}
 	  //mocking matterService       
 	  matterService = jasmine.createSpyObj('matterService',['get','selectMatter','data']);
-	  matterService.get.andCallFake(function(param){
-		   var deferred = $q.defer();							
-		   deferred.resolve({ message: "This is great!" });	           
-		   return deferred.promise;		
-	  });
-	  
+	  matterService.get.andCallFake(doPromiseResolve(msg));	  
 	  matterService.data.andCallFake(function(param){           
-		   return {selected:{current_user:''}};		
+		   return {selected:{current_user:''}};	
 	  });	  
 	  
-	  matterItemService  = jasmine.createSpyObj('matterItemService',['create','delete','update','uploadRevision','updateRevision','deleteRevision','loadRevision','remindRevisionRequest','deleteRevisionRequest','remindRevisionReview','deleteRevisionReviewRequest']);
-	  matterItemService.create.andCallFake(function(param){
-		   var deferred = $q.defer();							
-		   deferred.resolve({ message: "This is great!" });	           
-		   return deferred.promise;	           		  
-	  });
-	  matterItemService.delete.andCallFake(function(param){
-		   var deferred = $q.defer();							
-		   deferred.resolve({ message: "This is so great!" });	           
-		   return deferred.promise;		  
-	  });
-	  matterItemService.update.andCallFake(function(param){
-		   var deferred = $q.defer();							
-		   deferred.resolve({ message: "This is so great!" });	           
-		   return deferred.promise;		  
-	  });	
-	  matterItemService.uploadRevision.andCallFake(function(param){
-		   var deferred = $q.defer();							
-		   deferred.resolve({ message: "This is so great!" });	           
-		   return deferred.promise;		  
-	  });
-	  matterItemService.updateRevision.andCallFake(function(param){
-		   var deferred = $q.defer();							
-		   deferred.resolve({ message: "This is so great!" });	           
-		   return deferred.promise;		  
-	  });
-	  matterItemService.deleteRevision.andCallFake(function(param){	  
-		   var deferred = $q.defer();							
-		   deferred.resolve({ message: "This is so great!" });	           
-		   return deferred.promise;		  
-	  });
-	  matterItemService.loadRevision.andCallFake(function(param){
-		   var deferred = $q.defer();							
-		   deferred.resolve({ message: "This is so great!" });	           
-		   return deferred.promise;	  
-	  });
-	  matterItemService.remindRevisionRequest.andCallFake(function(param){
-		   var deferred = $q.defer();							
-		   deferred.resolve({ message: "This is so great!" });	           
-		   return deferred.promise;	   
-	  });
-	  matterItemService.deleteRevisionRequest.andCallFake(function(param){
-		   var deferred = $q.defer();							
-		   deferred.resolve({ is_requested: "This is so great!" });	           
-		   return deferred.promise;	  
-	  });
-	  matterItemService.remindRevisionReview.andCallFake(function(param){
-		   var deferred = $q.defer();							
-		   deferred.resolve({ is_requested: "This is so great!" });	           
-		   return deferred.promise;		  
-	  });
-	  
-	  
+	  matterItemService  = jasmine.createSpyObj('matterItemService',[
+	  'create',
+	  'delete',
+	  'update',
+	  'uploadRevision',
+	  'updateRevision',
+	  'deleteRevision',
+	  'loadRevision',
+	  'remindRevisionRequest',
+	  'deleteRevisionRequest',
+	  'remindRevisionReview',
+	  'deleteRevisionReviewRequest',
+	  'uploadRevisionFile'
+	  ]);
+	  matterItemService.create.andCallFake(doPromiseResolve(msg));
+	  matterItemService.delete.andCallFake(doPromiseResolve(msg));
+	  matterItemService.update.andCallFake(doPromiseResolve(msg));
+	  matterItemService.uploadRevision.andCallFake(doPromiseResolve(msg));
+	  matterItemService.updateRevision.andCallFake(doPromiseResolve(msg));
+	  matterItemService.deleteRevision.andCallFake(doPromiseResolve(msg)); 
+	  matterItemService.loadRevision.andCallFake(doPromiseResolve(msg));
+	  matterItemService.remindRevisionRequest.andCallFake(doPromiseResolve(msg));
+	  matterItemService.deleteRevisionRequest.andCallFake(doPromiseResolve({ is_requested: "This is so great!" }));
+	  matterItemService.remindRevisionReview.andCallFake(doPromiseResolve(msg));
+	  matterItemService.uploadRevisionFile.andCallFake(doPromiseResolve(msg));
 	  baseService = jasmine.createSpyObj('baseService',['loadObjectByUrl']);
-	  baseService.loadObjectByUrl.andCallFake(function(param){
-		   var deferred = $q.defer();							
-		   deferred.resolve({ message: "This is great!" });	           
-		   return deferred.promise;		  	  
-	  });
+	  baseService.loadObjectByUrl.andCallFake(doPromiseResolve(msg));
+
+	  
+	  
 	  
 	  toaster = jasmine.createSpyObj('toaster',['pop']);
 	  toaster.pop.andCallFake(function(param){});
@@ -126,29 +104,15 @@ describe('ChecklistCtrl', function() {
 	  });
 	  
 	  participantService = jasmine.createSpyObj('participantService',['getByURL']);
-	  participantService.getByURL.andCallFake(function(param){
-		   var deferred = $q.defer();							
-		   deferred.resolve({ message: "This is great!" });	           
-		   return deferred.promise;	  
-	  });
+	  participantService.getByURL.andCallFake(doPromiseResolve(msg));
+
 	  
 	  
 	  matterCategoryService = jasmine.createSpyObj('matterCategoryService',['create','delete','update']);
-	  matterCategoryService.create.andCallFake(function(param){
-		   var deferred = $q.defer();							
-		   deferred.resolve({ message: "This is great!" });	           
-		   return deferred.promise;	  
-	  });
-	  matterCategoryService.delete.andCallFake(function(param){
-		   var deferred = $q.defer();							
-		   deferred.resolve({ message: "This is great!" });	           
-		   return deferred.promise;	  
-	  });
-	  matterCategoryService.update.andCallFake(function(param){
-		   var deferred = $q.defer();							
-		   deferred.resolve({ message: "This is great!" });	           
-		   return deferred.promise;	  
-	  });  	  
+	  matterCategoryService.create.andCallFake(doPromiseResolve(msg));
+	  matterCategoryService.delete.andCallFake(doPromiseResolve(msg));
+	  matterCategoryService.update.andCallFake(doPromiseResolve(msg));
+ 
 	  matterService.selectMatter.andCallFake(function(param){}); 
 
 	  $modal = jasmine.createSpyObj('$modal',['open'])
@@ -161,6 +125,11 @@ describe('ChecklistCtrl', function() {
 		 }()
 		}
 	  }); 
+	  
+	  userService = {data:function(){return { current:{user_class:'lawyer'}};},setCurrent:function(p){return {};}};
+	  searchService = {data:function(){return {};}};
+	  activityService = jasmine.createSpyObj('matterCategoryService',['itemstream']);
+	  activityService.itemstream.andCallFake(doPromiseResolve({ message: "This is so great!" }));
 	  
       ctrl = $controller('ChecklistCtrl', {
 		  $scope: $scope,
@@ -175,7 +144,10 @@ describe('ChecklistCtrl', function() {
 		  matterService:matterService,
 		  matterItemService:matterItemService,
 		  matterCategoryService:matterCategoryService,
-		  participantService:participantService		  
+		  participantService:participantService,		  
+		  searchService:searchService,
+		  activityService:activityService,
+		  userService:userService		  
 	  });
     }));	
 
@@ -221,13 +193,13 @@ describe('ChecklistCtrl', function() {
 	}));
 	
 	//$scope.submitNewItem
-	it('should',function() {
+	it('$scope.submitNewItem should return result as exected',function() {
 	    $scope.data.newItemName = 'newItem'
 		var category = {name:'ooo',items:[]};
 		expect(angular.equals([],category.items)).toBeTruthy();
 		$scope.submitNewItem(category);
 		$scope.$apply();
-		expect(angular.equals([{message: 'This is great!'}],category.items)).toBeTruthy();
+		expect(angular.equals([{message: 'This is so great!'}],category.items)).toBeTruthy();
 	})
 	
 	//deleteCommentIsEnabled
@@ -289,13 +261,13 @@ describe('ChecklistCtrl', function() {
 	   expect($scope.selectItem).toHaveBeenCalledWith({category:'someCategory'},{ name : 'someCategory' });	
 	});
 	
-	//$scope.loadItemDetails 
+	//$scope.loadItemDetails KKKK 
 	it('$scope.loadItemDetails "item.latest_revision" must be populated with response data',function(){
 	    var item = {latest_revision:{url:'somerevision'}};
 		$scope.loadItemDetails(item);
 		expect(baseService.loadObjectByUrl).toHaveBeenCalled();
 		$scope.$apply();
-		expect(item.latest_revision).toEqual({ message: "This is great!" });
+		expect(item.latest_revision).toEqual({ message: "This is so great!" });
 	});
 	
 	//$scope.deleteItem
@@ -341,7 +313,7 @@ describe('ChecklistCtrl', function() {
 		$scope.getParticipantByUrl('someUrl');
 		expect(angular.equals($scope.data.loadedParticipants,{someUrl:{}})).toBeTruthy();
 		$scope.$apply();
-		expect(angular.equals($scope.data.loadedParticipants['someUrl'],{ message: "This is great!" })).toBeTruthy();		
+		expect(angular.equals($scope.data.loadedParticipants['someUrl'],{ message: "This is so great!" })).toBeTruthy();		
 	});	
 	
 	//$scope.getParticipantByUrl - 2
@@ -497,7 +469,7 @@ describe('ChecklistCtrl', function() {
 		$scope.$apply();
 		expect(toaster.pop.mostRecentCall.args[2]).toBe("Unable to remind the participant.");
 	});
-
+    
 	it('$scope.deleteRevisionRequest success'	,function(){
 	    var item = {slug:{},is_requested:''};
 	    $scope.deleteRevisionRequest(item);
@@ -555,9 +527,23 @@ describe('ChecklistCtrl', function() {
 		})
 		$scope.deleteRevisionReviewRequest({slug:{}});
 	});
+	
+	it('$scope.onFileDropped',function(){
+	   
+	    var $files = [], item = {slug:{}};
+		$scope.onFileDropped($files, item)
+	});
+	
 });
 //matterService.get failure
 describe('ChecklistCtrl', function() {
+    function doPromiseReject(msg){
+	    return  function(){
+		   var deferred = $q.defer();							
+		   deferred.reject(msg);           
+		   return deferred.promise;
+        }		   
+	}
     beforeEach(function() {
         module(function($provide) {            
 			$provide.constant('API_BASE_URL', '/api/v1/');
@@ -606,43 +592,17 @@ describe('ChecklistCtrl', function() {
 	  });
 	  matterService.data.andCallFake(function(param){           
 		   return {selected:{current_user:''}};		
-	  });	  
+	  });
+      var msg  = { message: "This is not so great!" }; 	  
 	  matterItemService  = jasmine.createSpyObj('matterItemService',['create','delete','update','uploadRevision','updateRevision','deleteRevision','loadRevision']);
-	  matterItemService.create.andCallFake(function(param){
-		   var deferred = $q.defer();							
-		   deferred.reject({ message: "This is not so great!" });	           
-		   return deferred.promise;		  
-	  });
-	  matterItemService.uploadRevision.andCallFake(function(param){
-		   var deferred = $q.defer();							
-		   deferred.reject({ message: "This is not so great!" });	           
-		   return deferred.promise;		  
-	  });	  
-	  matterItemService.delete.andCallFake(function(param){
-		   var deferred = $q.defer();							
-		   deferred.reject({ message: "This is not so great!" });	           
-		   return deferred.promise;		  
-	  });
-	  matterItemService.update.andCallFake(function(param){
-		   var deferred = $q.defer();							
-		   deferred.reject({ message: "This is not so great!" });	           
-		   return deferred.promise;		  
-	  });
-	  matterItemService.updateRevision.andCallFake(function(param){
-		   var deferred = $q.defer();							
-		   deferred.reject({ message: "This is not so great!" });	           
-		   return deferred.promise;		  
-	  });
-	  matterItemService.deleteRevision.andCallFake(function(param){	  
-		   var deferred = $q.defer();							
-		   deferred.reject({ message: "This is disgusting!" });	           
-		   return deferred.promise;		  
-	  });
-      matterItemService.loadRevision.andCallFake(function(param){	  
-		   var deferred = $q.defer();							
-		   deferred.reject({ message: "This is disgusting!" });	           
-		   return deferred.promise;		
-      })
+	  matterItemService.create.andCallFake(doPromiseReject(msg));	
+	  matterItemService.uploadRevision.andCallFake(doPromiseReject(msg));		 
+	  matterItemService.delete.andCallFake(doPromiseReject(msg));	
+	  matterItemService.update.andCallFake(doPromiseReject(msg));	
+	  matterItemService.updateRevision.andCallFake(doPromiseReject(msg));
+	  matterItemService.deleteRevision.andCallFake(doPromiseReject(msg));
+      matterItemService.loadRevision.andCallFake(doPromiseReject(msg));	  
+
 	  
 	  baseService = jasmine.createSpyObj('baseService',['loadObjectByUrl']);
 	  baseService.loadObjectByUrl.andCallFake(function(param){
@@ -658,27 +618,13 @@ describe('ChecklistCtrl', function() {
 	  });
 	  
 	  participantService = jasmine.createSpyObj('participantService',['getByURL']);
-	  participantService.getByURL.andCallFake(function(param){
-		   var deferred = $q.defer();							
-		   deferred.reject({ message: "This is bad!" });	           
-		   return deferred.promise;	  
-	  });
+	  participantService.getByURL.andCallFake(doPromiseReject({ message: "This is bad!" }));
+
 	  matterCategoryService = jasmine.createSpyObj('matterCategoryService',['create','delete','update']);
-	  matterCategoryService.create.andCallFake(function(param){
-		   var deferred = $q.defer();							
-		   deferred.reject({ message: "This is not great!" });	           
-		   return deferred.promise;	  
-	  });
-	  matterCategoryService.delete.andCallFake(function(param){
-		   var deferred = $q.defer();							
-		   deferred.reject({ message: "This is not great!" });	           
-		   return deferred.promise;	  
-	  }); 
-	  matterCategoryService.update.andCallFake(function(param){
-		   var deferred = $q.defer();							
-		   deferred.reject({ message: "This is NOT great!" });	           
-		   return deferred.promise;	  
-	  }); 	  
+	  matterCategoryService.create.andCallFake(doPromiseReject(msg));
+	  matterCategoryService.delete.andCallFake(doPromiseReject(msg));
+	  matterCategoryService.update.andCallFake(doPromiseReject(msg));
+	  
 	  matterService.selectMatter.andCallFake(function(param){});  
       ctrl = $controller('ChecklistCtrl', {
 		  $scope: $scope,
