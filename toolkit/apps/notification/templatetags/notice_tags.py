@@ -77,6 +77,11 @@ def _get_context(message_data, user):
 
 @register.simple_tag
 def render_notice(notice, request=None):
+    """
+    Is used on notifications-page and works similar to ActivitySerializer:
+    - load verb_slug and decide on this (-> NOTIFICATION_TEMPLATES) which template is used
+    - fill ctx with needed data
+    """
     message_data = notice.message.data
 
     verb_slug = message_data.get('verb_slug')
