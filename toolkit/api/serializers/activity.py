@@ -22,19 +22,10 @@ ACTIVITY_TEMPLATES = {
 class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
     event = serializers.SerializerMethodField('get_event')
 
-    timesince = serializers.SerializerMethodField('get_timesince')
-    actor = LiteUserSerializer('actor')
-    action_object = LiteItemSerializer('action_object')
-                        # TODO: change this to a generic one with URL. action_object can be Item/Revision/Matter/...
-                        # instead we could use the rendered event-html in the gui
-
     class Meta:
         model = Action
         lookup_field = 'id'
-        fields = ('id', 'actor', 'action_object', 'event', 'data', 'timestamp', 'timesince')
-
-    def get_timesince(self, obj):
-        return obj.timesince()
+        fields = ('id', 'event', 'timestamp')  # timestamp can possibly be removed (if ONLY event is shown in template)
 
     def __init__(self, *args, **kwargs):
         if 'context' in kwargs and 'request' in kwargs['context']:
@@ -49,45 +40,51 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
         return ACTIVITY_TEMPLATES.get(verb_slug, ACTIVITY_TEMPLATES.get('default'))
 
     def _get_context(self, obj, verb_slug):
+        """
+        'comment' gets set IF it is a revision- or item-comment
+        'message' is set otherwise
+
+        'item' is only set if it is a revision-comment. no other activity has an item.
+        """
+
         message = obj.data.get('override_message', None)
         if message is None:
             message = u"%s %s %s" % (obj.actor, obj.verb, obj.action_object)
 
         ctx = {
-            'actor': obj.actor,
+            'actor_name': obj.actor.__unicode__() if obj else None,
+            'actor_initials': obj.actor.get_initials() if obj else None,
             'actor_pk': obj.actor.pk,
-            # 'verb': obj.verb,
-            'action_object': obj.action_object,
-            'action_object_url': obj.action_object.get_absolute_url() if obj.action_object and hasattr(obj.action_object, 'get_absolute_url') else None,
+            'action_object_name': obj.action_object.__unicode__() if obj else None,
+            'action_object_url': None,
             'timestamp': obj.timestamp,
             'timesince': obj.timesince(),
             'message': message,
             'comment': obj.data.get('comment', None),
-            # 'data': obj.data,
-            #'target': obj.target,
-            #'target_pk': obj.target.slug,
         }
 
         if verb_slug in ['revision-added-review-session-comment', 'revision-added-revision-comment']:
             # exception for revision-commens:
             # add item, revision_slug and modify action_object_url to contain item AND revision
 
-            ctx.update({'item': obj.data['item']})
+            # ctx.update({'item': obj.data['item']})
+            ctx.update({'item_name': obj.data.get('item', {}).get('name')})
 
             item = Item.objects.get(slug=obj.data.get('item', {}).get('slug'))
-            # review_document_link = item.get_user_review_url(user=self.request.user, version_slug=obj.action_object.slug)
-            #
-            # ctx.update({'action_object_url': "%s:%s" % (obj.action_object.item.get_absolute_url(),
-            #                                             review_document_link)})
             ctx.update({'action_object_url': item.get_full_user_review_url(user=self.request.user,
                                                                            version_slug=obj.action_object.slug)})
             ctx.update({'revision_slug': "%s" % obj.action_object.slug})
+        else:
+            if obj.action_object and hasattr(obj.action_object, 'get_absolute_url'):
+                ctx.update({'action_object_url': obj.action_object.get_absolute_url()})
 
         return ctx
 
     def get_event(self, obj):
         """
-        Matter level actions should show minimalinformation about an event
+        Is used on notifications-page and works similar to notice_tags:
+        - load verb_slug and decide on this (-> ACTIVITY_TEMPLATES) which template is used
+        - fill ctx with needed data
         """
         verb_slug = get_verb_slug(obj.action_object, obj.verb)
 

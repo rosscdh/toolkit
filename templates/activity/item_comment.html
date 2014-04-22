@@ -1,6 +1,7 @@
 <div class="media" ng-show="activity.data.comment">
-    {{ actor }} ({{ actor.get_initials }}) commented on Item {{ action_object.name }}): "{{ comment }}".
+    {{ actor_name }} ({{ actor_initials }}) commented on Item {{ action_object_name }}): "{{ comment }}".
     If you need additional information, just take a note.
-    <a href="{{ action_object_url }}">Link to {{ action_object.name }}</a>
+    <a href="{{ action_object_url }}">Link to {{ action_object_name }}</a>
     {{ timesince }}
+    {{ timestamp }}
 </div>
