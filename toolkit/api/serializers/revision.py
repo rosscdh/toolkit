@@ -183,7 +183,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
                   'item',
                   'uploaded_by',
                   'reviewers', 'signers',
-                  # 'revisions',
+                  'revisions',
                   'user_review_url', 'user_download_url',
                   'date_created',)
 

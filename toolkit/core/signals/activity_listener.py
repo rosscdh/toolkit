@@ -45,13 +45,12 @@ def _activity_send(actor, target, action_object, message, **kwargs):
     Send activity to django-activity-stream
     """
     verb_slug = kwargs.get('verb_slug', False)
-    if verb_slug in ACTIVITY_WHITELIST:
 
+    if verb_slug in ACTIVITY_WHITELIST:
         # @TODO turn this into a reuseable method
         for key, item in kwargs.iteritems():
             if hasattr(item, 'api_serializer') is True:
                 kwargs[key] = item.api_serializer(item, context={'request': None}).data
-
         action.send(actor, target=target, action_object=action_object, message=message, **kwargs)
 
 
@@ -76,7 +75,7 @@ def _abridge_send(verb_slug, actor, target, action_object, message=None):
                 logger.critical('Abridge Service is not running because: %s' % e)
 
 
-def _notifications_send(verb_slug, actor, target, action_object, message):
+def _notifications_send(verb_slug, actor, target, action_object, message, send_to_all=False):
     """
     Send persistent messages (notifications) for this user
     github notifications style
@@ -100,7 +99,12 @@ def _notifications_send(verb_slug, actor, target, action_object, message):
             from toolkit.api.serializers.user import LiteUserSerializer
             # from toolkit.api.serializers.matter import LiteMatterSerializer
 
-            query_set = target.participants.exclude(id=actor.pk)
+            query_set = target.participants
+            #
+            # If we are not sending this message to all participants then exclude the originator
+            #
+            if send_to_all is False:
+                query_set = query_set.exclude(id=actor.pk)
 
             # Because we cant mixn the ApiMixin class ot the django User Object
             actor = LiteUserSerializer(actor, context={'request': None}).data
@@ -145,6 +149,8 @@ def on_activity_received(sender, **kwargs):
     action_object = kwargs.get('action_object', False)
     target = kwargs.get('target', False)
 
+    send_to_all = kwargs.get('send_to_all', False)
+
     message = kwargs.get('message', False)
     #
     # allow us to override the generic message passed in
@@ -168,16 +174,12 @@ def on_activity_received(sender, **kwargs):
     #
     # Test that we have the required arguments to send the action signal
     #
-    if actor and verb and action_object and target and verb_slug:
-        # catch if we don't have it installed
-        if action is None:
-            logger.critical('actstream is not installed')
-
-        else:
-            # send to django-activity-stream
-            _activity_send(actor=actor, target=kwargs.pop('target', None), action_object=kwargs.pop('action_object', None), message=kwargs.pop('message', None), **kwargs)
+    if actor and action_object and target and verb_slug:
+        # send to django-activity-stream
+        # note the kwarg.pop so that they dont get sent in as kwargs
+        _activity_send(actor=actor, target=kwargs.pop('target', None), action_object=kwargs.pop('action_object', None), message=kwargs.pop('message', None), **kwargs)
 
         # send the notifications to the participants
-        _notifications_send(verb_slug=verb_slug, actor=actor, target=target, action_object=action_object, message=message)
+        _notifications_send(verb_slug=verb_slug, actor=actor, target=target, action_object=action_object, message=message, send_to_all=send_to_all)
         # send to abridge service
         _abridge_send(verb_slug=verb_slug, actor=actor, target=target, action_object=action_object, message=message)

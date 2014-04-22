@@ -61,7 +61,7 @@ class ReviewInProgressMixin(object):
         """
         Get the main review_document used by the matter.participants as a str(%)
         """
-        return "{0:.0f}%".format(value)
+        return "{0:.0f}%".format(value) if value is not None else None
 
     @property
     def review_percentage_complete(self):
@@ -69,7 +69,7 @@ class ReviewInProgressMixin(object):
 
     @review_percentage_complete.setter
     def review_percentage_complete(self, value):
-        if type(value) not in [None, float]:
+        if type(value) not in [type(None), int, float]:
             raise Exception('review_percentage_complete must be None or a float was passed a: %s' % type(value))
 
         logger.info('Item %s review_percentage_complete set to %s' % (self, value))
@@ -85,10 +85,11 @@ class ReviewInProgressMixin(object):
         """
         num_reviewdocuments = None # this is necessary to ensure that we can present None when there are no reviews active
         num_reviewdocuments_complete = 0
-        review_percentage_complete = 0
+        review_percentage_complete = None
 
         queryset = self.invited_document_reviews()
         if queryset:
+            # we have a queryset
 
             for rd in queryset.values('is_complete'):
                 # this is necessary to ensure that we can present None when there are no reviews active
@@ -101,9 +102,8 @@ class ReviewInProgressMixin(object):
                 review_percentage_complete = round(review_percentage_complete * 100, 0)
 
         if review_percentage_complete != self.review_percentage_complete: # only if its different (save the db update event)
-            self.review_percentage_complete = float(review_percentage_complete)
+            self.review_percentage_complete = review_percentage_complete
             logger.info('Item %s review_percentage_complete set to %s' % (self, review_percentage_complete))
-
             self.save(update_fields=['data'])
 
 
