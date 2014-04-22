@@ -403,6 +403,23 @@ LAWPAL_ACTIVITY = {
                       # 'revision-created', 'revision-comment-created', 'item-added-revision-comment', 
                       # 'revision-added-revision-comment',
                       # 'workspace-added-participant', 'workspace-removed-participant'
+
+                      # activate nearly everything for testing;
+                      'item-reopened', 'item-closed',
+                      'item-commented', 'item-comment-created', 'item-comment-deleted',
+                      'item-invited-reviewer',
+                      'item-provide-a-document',
+                      'item-invited-signer',
+                      'item-completed-review',
+                      'item-completed-all-reviews',
+
+                      'revision-created', 'revision-comment-created', 'item-added-revision-comment',
+                      'revision-added-revision-comment',
+                      'revision-added-review-session-comment',
+
+                      'workspace-deleted',
+                      'workspace-added-participant', 'workspace-removed-participant',
+                      'workspace-stopped-participating',
                       ]
     },
     "notifications": {
