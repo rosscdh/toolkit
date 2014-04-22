@@ -156,6 +156,8 @@ def set_previous_revision_is_current_on_delete(sender, instance, **kwargs):
     if previous_revision:
         previous_revision.is_current = True
         previous_revision.save(update_fields=['is_current'])
+        # recalc to % complete
+        previous_revision.item.recalculate_review_percentage_complete()
 
 
 @receiver(m2m_changed, sender=Revision.reviewers.through, dispatch_uid='revision.on_reviewer_add')

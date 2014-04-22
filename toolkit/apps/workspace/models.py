@@ -15,7 +15,6 @@ from .signals import (ensure_workspace_slug,
                       on_workspace_post_save,
                       on_workspace_m2m_changed,)
 
-
 from toolkit.utils import _class_importer
 
 from rulez import registry as rulez_registry
@@ -24,13 +23,14 @@ from uuidfield import UUIDField
 from jsonfield import JSONField
 
 from .managers import WorkspaceManager
-from .mixins import ClosingGroupsMixin, CategoriesMixin
+from .mixins import ClosingGroupsMixin, CategoriesMixin, RevisionLabelMixin
 
 
 class Workspace(IsDeletedMixin,
                 ClosingGroupsMixin,
                 CategoriesMixin,
                 ApiSerializerMixin,
+                RevisionLabelMixin,
                 models.Model):
     """
     Workspaces are areas that allow multiple tools

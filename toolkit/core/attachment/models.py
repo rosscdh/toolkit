@@ -10,6 +10,7 @@ from toolkit.utils import get_namedtuple_choices
 from jsonfield import JSONField
 
 from .managers import RevisionManager
+from .mixins import StatusLabelsMixin
 
 import re
 import os
@@ -41,7 +42,9 @@ def _upload_file(instance, filename):
     return 'executed_files/%s' % full_file_name
 
 
-class Revision(ApiSerializerMixin, models.Model):
+class Revision(ApiSerializerMixin,
+               StatusLabelsMixin,
+               models.Model):
     REVISION_STATUS = BASE_REVISION_STATUS
 
     name = models.CharField(max_length=255, null=True, blank=True)
@@ -50,8 +53,6 @@ class Revision(ApiSerializerMixin, models.Model):
     slug = models.SlugField(blank=True, null=True)  # stores the revision number v3..v2..v1
 
     executed_file = models.FileField(upload_to=_upload_file, storage=S3BotoStorage(), null=True, blank=True)
-
-    status = models.IntegerField(choices=REVISION_STATUS.get_choices(), default=REVISION_STATUS.draft)
 
     item = models.ForeignKey('item.Item')
     uploaded_by = models.ForeignKey('auth.User')
@@ -70,6 +71,8 @@ class Revision(ApiSerializerMixin, models.Model):
 
     date_created = models.DateTimeField(auto_now=False, auto_now_add=True, db_index=True)
     date_modified = models.DateTimeField(auto_now=True, auto_now_add=True, db_index=True)
+
+    # status = models.IntegerField(choices=REVISION_STATUS.get_choices(), default=REVISION_STATUS.draft)
 
     objects = RevisionManager()
 
@@ -136,9 +139,9 @@ class Revision(ApiSerializerMixin, models.Model):
         # is this *really* only the case for a NEW reviewdocument/revision?
         return self.reviewdocument_set.filter(reviewers=None).last()
 
+
 from .signals import (ensure_revision_slug,
                       ensure_one_current_revision,
-                      reset_item_review_percentage_complete_on_delete,
                       set_item_is_requested_false,
                       set_previous_revision_is_current_on_delete,
                       ensure_revision_reviewdocument_object,

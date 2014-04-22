@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.dispatch import receiver
 from django.contrib.auth.models import User
-from django.db.models.signals import m2m_changed, post_save, pre_delete
+from django.db.models.signals import m2m_changed, post_save, post_delete
 
 from .models import ReviewDocument
 
@@ -26,26 +26,13 @@ This allows them to enter into conversation with each document and its invited
 reviewer
 """
 
-@receiver(post_save, sender=ReviewDocument, dispatch_uid='review.post_save.set_item_review_percentage_complete')
-def set_item_review_percentage_complete(sender, instance, created, **kwargs):
-    if created is True:
-        if instance.document.reviewdocument_set.all().count() > 1:  # we are looking at NOT the BASE reviewdocument
-            # i.e. we have more than 1 reviewdocument as the 1st reviewdocument is that which the matter participants have to discuss
-            item = instance.document.item
-            item.recalculate_review_percentage_complete()
-
-
 @receiver(post_save, sender=ReviewDocument, dispatch_uid='review.post_save.reset_item_review_percentage_complete_on_complete')
 def reset_item_review_percentage_complete_on_complete(sender, instance, created, update_fields, **kwargs):
     item = instance.document.item
     item.recalculate_review_percentage_complete()
 
-    if instance.document.reviewdocument_set.filter(is_complete=False).count() == 1:  # All of them are is_complete=True; the only 1 that cant have is_complete is the primary_review whcih is for the matter.participants
-        # send matter.action signal
-        item.matter.actions.all_revision_reviews_complete(item=item, revision=instance.document)
 
-
-@receiver(pre_delete, sender=ReviewDocument, dispatch_uid='review.pre_delete.reset_item_review_percentage_complete')
+@receiver(post_delete, sender=ReviewDocument, dispatch_uid='review.pre_delete.reset_item_review_percentage_complete')
 def reset_item_review_percentage_complete_on_delete(sender, instance, **kwargs):
     item = instance.document.item
     item.recalculate_review_percentage_complete()
