@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from django import template
 import re
-from toolkit.api.serializers import LiteUserSerializer
+
+from toolkit.core.item.models import Item  # circular
 
 prog = re.compile('/([a-z\d]*)$', flags=re.IGNORECASE)
 register = template.Library()
@@ -40,7 +41,6 @@ def get_notification_context(message_data, user):
             if item:
                 # # if action_object contains an item, it MUST be a revision. -> build revision link of the following format:
                 # # /matters/lawpal-corporate-setup/#/checklist/41b53cd527224809a5fd5e325c7511f1/:user_crocodoc_deatil_view_url
-                from toolkit.core.item.models import Item  # circular
                 item_object = Item.objects.get(slug=item.get('slug'))
                 # item = item.object  # is a dict, not a serializer-object
                 # item_s = ItemSerializer(item)
@@ -61,9 +61,43 @@ def get_notification_context(message_data, user):
             action_object_url = action_object.get('url') if action_object else None
 
     if message_data is not None:
+        actor_name = None
+        actor_initials = None
+        if actor:
+
+            # TODO: CLEANUP!
+            # and why does hasattr not work?
+            try:
+                actor_name = actor.get('name')
+            except:
+                if isinstance(actor, dict):
+                    actor_name = None
+                else:
+                    actor_name = u"%s" % actor
+            # if hasattr(actor, 'name'):
+            #     actor_name = actor.get('name')
+            # elif isinstance(actor, dict):
+            #     actor_name = None
+            # else:
+            #     actor_name = u"%s" % actor
+
+            try:
+                actor_initials = actor.get('initials')
+            except:
+                if isinstance(actor, dict):
+                    actor_initials = None
+                else:
+                    actor_initials = actor.get_initials()
+            # if hasattr(actor, 'initials'):
+            #     actor_initials = actor.get('initials')
+            # elif isinstance(actor, dict):
+            #     actor_initials = None
+            # else:
+            #     actor_initials = actor.get_initials()
+
         ctx = {
-            'actor_name': actor.get('name') if hasattr(actor, 'name') else actor.__unicode__(),
-            'actor_initials': actor.get('initials') if hasattr(actor, 'actor_initials') else actor.get_initials(),  # everything else serialized before
+            'actor_name': actor_name,  # everything else serialized before
+            'actor_initials': actor_initials,  # everything else serialized before
             'comment': comment,
             'item_name': item.get('name') if item else None,
             'revision_slug': action_object.get('slug') if action_object else None,
