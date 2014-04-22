@@ -152,4 +152,4 @@ class MatterCategoryTest(BaseEndpointTest):
         # we should stil have 5
         self.assertEqual(item.matter.item_set.all().count(), 5)
         # that same first item is now category = None
-        self.assertEqual(item.matter.item_set.all().first().category, None)
+        self.assertEqual(item.matter.item_set.all().order_by('-category').first().category, None)
