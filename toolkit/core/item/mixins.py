@@ -102,6 +102,12 @@ class ReviewInProgressMixin(object):
                 review_percentage_complete = round(review_percentage_complete * 100, 0)
 
         if review_percentage_complete != self.review_percentage_complete: # only if its different (save the db update event)
+
+            # Has changed AND is 100.00
+            if review_percentage_complete == 100.0:
+                # send matter.action signal
+                self.matter.actions.all_revision_reviews_complete(item=self, revision=self.latest_revision)
+
             self.review_percentage_complete = review_percentage_complete
             logger.info('Item %s review_percentage_complete set to %s' % (self, review_percentage_complete))
             self.save(update_fields=['data'])
