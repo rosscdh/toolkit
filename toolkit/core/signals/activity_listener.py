@@ -80,11 +80,17 @@ def _abridge_send(verb_slug, actor, target, action_object, message=None, comment
 
             if s:
                 if message:
+                    from toolkit.api.serializers.user import LiteUserSerializer
+
                     message_data = _serialize_kwargs({'actor': actor,
                                                       'action_object': action_object,
                                                       'target': target,
                                                       'comment': comment,
                                                       'item': item})
+
+                    # Because we cant mixn the ApiMixin class ot the django User Object
+                    message_data['actor'] = LiteUserSerializer(actor, context={'request': None}).data
+
                     t = get_notification_template(verb_slug)
                     ctx = get_notification_context(message_data, user)
                     ctx.update({
