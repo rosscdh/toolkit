@@ -186,8 +186,8 @@ class RevisionReviewReminderEmailsMixin(object):
         #
 
         # send to the provided recipients if there are any
-        # otherwise send to the reviewers
-        recipients_set = recipients if recipients else self.latest_revision.reviewers.all()
+        # otherwise send to the reviewers who have not complted the review
+        recipients_set = recipients if recipients else self.invited_document_reviews().filter(is_complete=False)
 
         for u in recipients_set:
 
