@@ -61,51 +61,63 @@ def _activity_send(actor, target, action_object, message, **kwargs):
         action.send(actor, target=target, action_object=action_object, message=message, **kwargs)
 
 
-def _abridge_send(verb_slug, actor, target, action_object, message=None, comment=None, item=None):
+def _abridge_send(verb_slug, actor, target, action_object, message=None, comment=None, item=None, send_to_all=False):
     """
     Send activity data to abridge
     """
     if verb_slug in ABRIDGE_WHITELIST:
-        for user in target.participants.exclude(id=actor.pk).all():
+
+        query_set = target.participants
+        #
+        # If we are not sending this message to all participants then exclude the originator
+        #
+        if send_to_all is False:
+            query_set = query_set.exclude(id=actor.pk)
+
+        for user in query_set.all():
             #
             # Categorically turn it off by default
             #
             try:
-                s = LawPalAbridgeService(user=user,
-                                         ABRIDGE_ENABLED=getattr(settings, 'ABRIDGE_ENABLED', False))  # initialize and pass in the user
+                abridge_service = LawPalAbridgeService(user=user,
+                                                       ABRIDGE_ENABLED=getattr(settings, 'ABRIDGE_ENABLED', False))  
+                                                       # initialize and pass in the user
             except Exception as e:
                 # AbridgeService is not running.
                 logger.critical('Abridge Service is not running because: %s' % e)
-                s = False
+                abridge_service = False
 
-            if s:
-                if message:
-                    from toolkit.api.serializers.user import LiteUserSerializer
+            if abridge_service:
+                from toolkit.api.serializers.user import LiteUserSerializer
 
-                    message_data = _serialize_kwargs({'actor': actor,
-                                                      'action_object': action_object,
-                                                      'target': target,
-                                                      'comment': comment,
-                                                      'item': item})
+                #
+                # @MARIUS I think that this would best be done as a @staticmethod
+                # as part of the LawPalAbridgeService that way its reuseable
+                # and sole responsiblity? thoughts? rc
+                #
+                message_data = _serialize_kwargs({'actor': actor,
+                                                  'action_object': action_object,
+                                                  'target': target,
+                                                  'comment': comment,
+                                                  'item': item})
+                # Because we cant mixn the ApiMixin class ot the django User Object
+                message_data['actor'] = LiteUserSerializer(actor, context={'request': None}).data
 
-                    # Because we cant mixn the ApiMixin class ot the django User Object
-                    message_data['actor'] = LiteUserSerializer(actor, context={'request': None}).data
+                t = get_notification_template(verb_slug)
+                ctx = get_notification_context(message_data, user)
+                ctx.update({
+                    # 'notice_pk': notice.pk,
+                    # 'date': notice.message.date,
+                    'message': message,
+                })
 
-                    t = get_notification_template(verb_slug)
-                    ctx = get_notification_context(message_data, user)
-                    ctx.update({
-                        # 'notice_pk': notice.pk,
-                        # 'date': notice.message.date,
-                        'message': message,
-                    })
+                context = template.loader.Context(ctx)
 
-                    context = template.loader.Context(ctx)
+                # render the template with passed in context
+                message_for_abridge = t.render(context)
 
-                    # render the template with passed in context
-                    message_for_abridge = t.render(context)
-
-                    s.create_event(content_group=target.name,
-                                   content=message_for_abridge)
+                abridge_service.create_event(content_group=target.name,
+                                             content=message_for_abridge)
 
 
 def _notifications_send(verb_slug, actor, target, action_object, message, comment, item, send_to_all=False):
@@ -223,4 +235,4 @@ def on_activity_received(sender, **kwargs):
                             item=kwargs.get('item', None), send_to_all=send_to_all)
         # send to abridge service
         _abridge_send(verb_slug=verb_slug, actor=actor, target=target, action_object=action_object, message=message,
-                      comment=kwargs.get('comment', None), item=kwargs.get('item', None))
+                      comment=kwargs.get('comment', None), item=kwargs.get('item', None), send_to_all=send_to_all)
