@@ -451,6 +451,33 @@ describe('ChecklistCtrl', function() {
 	});	
 	
     it('$scope.requestRevision',function(){
+	    $scope.data.matter = {current_user:{}};
+		
+	    $modal.open.andCallFake(function(param){	  
+  
+			var matter = param.resolve.matter();
+			var currentUser = param.resolve.currentUser();
+			var participants = param.resolve.participants();
+			var checklistItem = param.resolve.checklistItem();			
+			$controller(param.controller,//RequestrevisionCtrl
+			{
+				$scope: $scope,
+				$modalInstance:$modalInstance,
+				participants:participants,
+				currentUser:currentUser,
+				matter:matter,
+				checklistItem:checklistItem
+			});
+		    
+		    
+			return {
+				result: function(){
+				   var deferred = $q.defer();							
+				   deferred.resolve({ responsible_party: "This is great!" });	           
+				   return deferred.promise;	  		 
+				}()
+			}
+	    }); 	
 	    var item  ={responsible_party:'some responsible_party'}
 		$scope.requestRevision(item);
 		$scope.$apply();
@@ -497,16 +524,119 @@ describe('ChecklistCtrl', function() {
 	});
 	
 	it('$scope.showRevisionDocument' 	,function(){
+	    $modal.open.andCallFake(function(param){	  
+  
+			var matter = param.resolve.matter();						
+			var checklistItem = param.resolve.checklistItem();
+			var revision = param.resolve.revision();
+			/*'$scope',
+			'$modalInstance',
+			'toaster',
+			'matterItemService',
+			'matter',
+			'checklistItem',
+			'revision',*/			
+			$controller(param.controller,//ViewDocumentCtrl
+			{
+				$scope: $scope,
+				$modalInstance:$modalInstance,
+				toaster:{},
+				matterItemService:{},
+				matter:matter,
+				checklistItem:checklistItem,
+				revision:revision
+			});
+		    
+		    
+			return {
+				result: function(){
+				   var deferred = $q.defer();							
+				   deferred.resolve({ responsible_party: "This is great!" });	           
+				   return deferred.promise;	  		 
+				}()
+			}
+	    }); 	
 	    $scope.data.selectedItem = {};
 		$scope.showRevisionDocument();
 	});
 	
-	it('$scope.requestReview',function(){
-	    var revision = {reviewers:null};
+	it('$scope.requestReview -  should add new reviewer to "reviewers"',function(){
+	    $scope.data.matter = {participants:[]};
+		var revision = {reviewers:[{reviewer:{username:'vasia'}}]};
+		var new_reviewer = {reviewer:{username:'shlomo'}};
+		
+	    $modal.open.andCallFake(function(param){	  
+            
+			var participants = param.resolve.participants();						
+			var currentUser = param.resolve.currentUser();
+			var matter = param.resolve.matter();
+			var checklistItem = param.resolve.checklistItem();
+			var revision = param.resolve.revision();			
+			$controller(param.controller,//RequestreviewCtrl
+			{
+				$scope: $scope,
+				$modalInstance:$modalInstance,
+				participants:participants,
+				currentUser:currentUser,
+				matter:matter,
+				checklistItem:checklistItem,
+				revision:revision
+			});
+		    
+		    
+			return {
+				result: function(){
+				   var deferred = $q.defer();							
+				   deferred.resolve(new_reviewer);	           
+				   return deferred.promise;	  		 
+				}()
+			}
+	    }); 	
+	    
 		$scope.requestReview(revision);
-		 expect( $modal.open).toHaveBeenCalled();
-		 $scope.$apply();		
-		 expect(angular.equals(revision.reviewers,[{responsible_party: 'This is great!'}])).toBeTruthy()
+		expect( $modal.open).toHaveBeenCalled();
+		$scope.$apply();	        
+		expect(angular.equals(revision.reviewers,[{reviewer:{username:'vasia'}},new_reviewer])).toBeTruthy()
+	});
+
+	it('$scope.requestReview -  if  "reviewers" inside revision is  null it should became empty array',function(){
+	    $scope.data.matter = {participants:[]};
+		var revision = {reviewers:null};
+		var new_reviewer = {reviewer:{username:'shlomo'}};
+		
+	    $modal.open.andCallFake(function(param){	  
+            
+			var participants = param.resolve.participants();						
+			var currentUser = param.resolve.currentUser();
+			var matter = param.resolve.matter();
+			var checklistItem = param.resolve.checklistItem();
+			var revision = param.resolve.revision();			
+			$controller(param.controller,//RequestreviewCtrl
+			{
+				$scope: $scope,
+				$modalInstance:$modalInstance,
+				participants:participants,
+				currentUser:currentUser,
+				matter:matter,
+				checklistItem:checklistItem,
+				revision:revision
+			});
+		    
+		    
+			return {
+				result: function(){
+				   var deferred = $q.defer();							
+				   deferred.resolve(new_reviewer);	           
+				   return deferred.promise;	  		 
+				}()
+			}
+	    }); 	
+	    
+		$scope.requestReview(revision);
+		expect( $modal.open).toHaveBeenCalled();
+		$scope.$apply();	        
+		
+		expect(angular.equals(revision.reviewers,[new_reviewer])).toBeTruthy()
 	});
 	
 	it('$scope.remindRevisionReview - success',function(){

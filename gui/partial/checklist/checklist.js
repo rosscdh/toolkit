@@ -900,7 +900,7 @@ angular.module('toolkit-gui')
                     if (!revision.reviewers) {
                         revision.reviewers = [];
                     }
-
+                   
 					var results = jQuery.grep( revision.reviewers, function( rev ){ return rev.reviewer.username===review.reviewer.username; } );
 					if( results.length===0 ) {
 						revision.reviewers.push(review);
