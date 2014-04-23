@@ -6,7 +6,16 @@ describe('RequestreviewCtrl', function() {
 
     beforeEach(inject(function($rootScope, $controller) {
       scope = $rootScope.$new();
-      ctrl = $controller('RequestreviewCtrl', {$scope: scope});
+      ctrl = $controller('RequestreviewCtrl', {
+      	'$scope': scope,
+      	'$modalInstance': {},
+      	'participants': [],
+      	'checklistItem': {},
+      	'revision': {},
+      	'currentUser': { 'name': 'Me' },
+      	'matter': { 'name': 'Matter name' },
+      	'participantService': {}
+      });
     }));	
 
 	it('should ...', inject(function() {

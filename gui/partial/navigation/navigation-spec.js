@@ -4,15 +4,13 @@ describe('NavigationCtrl', function() {
 
 	var scope,ctrl;
 
-    beforeEach(inject(function($rootScope, $controller) {
-      scope = $rootScope.$new();
-      ctrl = $controller('NavigationCtrl', {$scope: scope});
-    }));	
+	beforeEach(inject(function($rootScope, $controller) {
+		scope = $rootScope.$new();
+		ctrl = $controller('NavigationCtrl', {$scope: scope});
+	}));	
 
-	it('should ...', inject(function() {
-
-		expect(1).toEqual(1);
-		
-	}));
-
+	// Check objects
+	it('should have data', function () {
+		expect(scope.data instanceof Object).toBe(true);
+	});
 });
