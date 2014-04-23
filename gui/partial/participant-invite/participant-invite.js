@@ -219,12 +219,22 @@ angular.module('toolkit-gui')
 			$modalInstance.dismiss('cancel');
 		};
 
-		/*
-		$scope.compareUrls = function( urla, urlb ) {
-			console.log(urla, urlb, urla.indexOf(urlb)>=0||urlb.indexOf(urla)>=0);
-			return urla.indexOf(urlb)>=0||urlb.indexOf(urla)>=0;
+
+
+        /**
+		 * Determines if inputis valid or not.
+		 *
+		 * @name				invalid
+		 *
+		 * @private
+		 * @method				invalid
+		 * @memberof			ParticipantInviteCtrl
+		 */
+		$scope.invalid = function() {
+            return $scope.data.validationError ||
+                !($scope.data.invitee.email&&$scope.data.invitee.first_name&&$scope.data.invitee.last_name);
 		};
-		*/
+
 	}
 ]);
 
