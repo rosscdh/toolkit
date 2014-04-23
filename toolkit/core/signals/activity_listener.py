@@ -61,7 +61,7 @@ def _activity_send(actor, target, action_object, message, **kwargs):
         action.send(actor, target=target, action_object=action_object, message=message, **kwargs)
 
 
-def _abridge_send(verb_slug, actor, target, action_object, message=None, comment=None, item=None):
+def _abridge_send(verb_slug, actor, target, action_object, message=None, comment=None, item=None, send_to_all=False):
     """
     Send activity data to abridge
     """
@@ -78,6 +78,7 @@ def _abridge_send(verb_slug, actor, target, action_object, message=None, comment
             #
             # Categorically turn it off by default
             #
+            import pdb;pdb.set_trace()
             try:
                 abridge_service = LawPalAbridgeService(user=user,
                                          ABRIDGE_ENABLED=getattr(settings, 'ABRIDGE_ENABLED', False))  # initialize and pass in the user
@@ -110,8 +111,8 @@ def _abridge_send(verb_slug, actor, target, action_object, message=None, comment
                 # render the template with passed in context
                 message_for_abridge = t.render(context)
 
-                s.create_event(content_group=target.name,
-                               content=message_for_abridge)
+                abridge_service.create_event(content_group=target.name,
+                                             content=message_for_abridge)
 
 
 def _notifications_send(verb_slug, actor, target, action_object, message, comment, item, send_to_all=False):
@@ -229,4 +230,4 @@ def on_activity_received(sender, **kwargs):
                             item=kwargs.get('item', None), send_to_all=send_to_all)
         # send to abridge service
         _abridge_send(verb_slug=verb_slug, actor=actor, target=target, action_object=action_object, message=message,
-                      comment=kwargs.get('comment', None), item=kwargs.get('item', None))
+                      comment=kwargs.get('comment', None), item=kwargs.get('item', None), send_to_all=send_to_all)
