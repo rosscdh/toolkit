@@ -34,7 +34,7 @@ document being reviewed
 3. matter participants automatically get a review_document to interact and comment on alongside the other participants
 4. matter participants can also be invited to review a document; in this case they should be shown the url of the primary review_document
 
-![item reviews overview](https://s3-eu-west-1.amazonaws.com/documentation-lawpal/item_latest_revision_reviews_overview.png "Item Document Reviews Overview")
+![item reviews overview](https://s3-eu-west-1.amazonaws.com/documentation-lawpal/item_latest_revision_reviews_overview.png?cache=2 "Item Document Reviews Overview")
 
 
 Signals
