@@ -80,6 +80,11 @@ def _abridge_send(verb_slug, actor, target, action_object, message=None, comment
 
             if s:
                 if message:
+                    #
+                    # @MARIUS I think that this would best be done as a @staticmethod
+                    # as part of the LawPalAbridgeService that way its reuseable
+                    # and sole responsiblity? thoughts? rc
+                    #
                     message_data = _serialize_kwargs({'actor': actor,
                                                       'action_object': action_object,
                                                       'target': target,
