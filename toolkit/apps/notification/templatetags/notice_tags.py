@@ -38,10 +38,7 @@ def get_notification_context(message_data, user):
     if action_object:
         action_object_url = None  # default
         # it's a default object.
-        if hasattr(action_object, 'get_regular_url') is True:
-            action_object_url = action_object.get_regular_url()
-        else:
-            action_object_url = action_object.get('url', None)
+        action_object_url = action_object.get('regular_url', action_object.get('url', None))
 
         if comment:
             # it's a comment either on item or revision
