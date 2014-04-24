@@ -28,7 +28,7 @@ def get_notification_context(message_data, user):
 
     action_object = message_data.get('action_object')
     target = message_data.get('target')
-    client = target.get('client')
+    client = target.get('client') if target is not None else None
 
     comment = message_data.get('comment', None)
     item = message_data.get('item', None)
