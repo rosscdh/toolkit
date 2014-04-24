@@ -36,9 +36,9 @@ def get_notification_context(message_data, user):
     action_object_url = ""
 
     if action_object:
-        action_object_url = None  # default
+
         # it's a default object.
-        action_object_url = action_object.get('regular_url', action_object.get('url', None))
+        action_object_url = action_object.get('regular_url', None)  # never use action_object.get('url', None) as we never want the serializer (api) url which is the api link to be used here
 
         if comment:
             # it's a comment either on item or revision
