@@ -5,7 +5,6 @@
         <section class="matters cards">
             <header class="page-header">
                 <h4>All Matters</h4>
-                <div class="col-md-6 col-md-offset-3">{{ search_form }}</div>
                 <div class="pull-right">
                     {% if can_create %}
                         <a href="{% url 'matter:create' %}" data-toggle="modal" data-target="#matter-create" class="btn btn-success btn-embossed"><i class="fui-plus"></i> New Matter</a>
@@ -47,20 +46,7 @@ var UserData = {
     'can_edit': {{ can_edit|lower }}
 };
 var edit_url = "{% url 'matter:edit' matter_slug='lp-react-name' %}";
-
 var MatterListData = {{ object_list_json|safe }};
-
-var fuse = new Fuse(MatterListData, { keys: ["name", "matter_code", "client.name", "lawyer.name"] });
-
-$( document ).ready(function () {
-    $('#id_q').on('keyup', function ( e ) {
-        e.preventDefault();
-        var val = $(this).val();
-        console.log(val)
-        console.log(fuse.search(val))
-
-    })
-});
 </script>
 
 {% verbatim %}
@@ -158,9 +144,20 @@ var EditMatterInterface = React.createClass({
     }
 });
 
+
 var MatterList = React.createClass({
+  fuse: new Fuse(MatterListData, { keys: ["name", "client.name", "lawyer.name"] }),
+  getInitialState: function() {
+    return {
+        'matters': MatterListData
+    }
+  },
+  handleChange: function(event) {
+    var searchFor = event.target.value;
+    this.setState({'matters': (searchFor != '') ? this.fuse.search(event.target.value) : MatterListData });
+  },
   render: function() {
-    var matterNodes = this.props.data.map(function (matter) {
+    var matterNodes = this.state.matters.map(function (matter) {
 
         var editUrl = edit_url.replace('lp-react-name', matter.slug);
         var detailUrl = matter.base_url;
@@ -190,7 +187,13 @@ var MatterList = React.createClass({
     });
     return (
       <div className="MatterList">
-        {matterNodes}
+          <div className="row">
+            <input className="input-lg" onChange={this.handleChange} autocomplete="off" id="id_q" name="q" parsley-required="true" parsley-required-message="This field is required." placeholder="Search Matters" type="text" />
+          </div>
+          <br/>
+          <div className="row">
+            {matterNodes}
+          </div>
       </div>
     );
   }
@@ -198,7 +201,7 @@ var MatterList = React.createClass({
 
 React.renderComponent(
   //<MatterList data={MatterListData} can_create={can_create} can_edit={can_edit} can_delete={can_delete} />,
-  <MatterList data={MatterListData} />,
+  <MatterList />,
   document.getElementById('matter-content')
 );
 </script>

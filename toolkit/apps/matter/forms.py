@@ -3,8 +3,7 @@ import json
 from django import forms
 from django.core.urlresolvers import reverse
 
-from crispy_forms.helper import FormHelper, Layout
-from crispy_forms.layout import Button, Field, Layout, HTML, Submit, Fieldset
+from crispy_forms.layout import Button, Field, Layout
 
 from parsley.decorators import parsleyfy
 
@@ -13,14 +12,6 @@ from toolkit.core.client.models import Client
 from toolkit.mixins import ModalForm
 
 from .services import MatterCloneService
-
-
-@parsleyfy
-class MatterSearchForm(forms.Form):
-    """
-    Used for matter search abilities
-    """
-    q = forms.CharField(label='', required=True, widget=forms.TextInput(attrs={'placeholder': 'Search Matters', 'autocomplete':'off'}))
 
 
 @parsleyfy
