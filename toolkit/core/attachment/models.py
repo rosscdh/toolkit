@@ -90,7 +90,11 @@ class Revision(ApiSerializerMixin,
         return self.item.revision_set.all()
 
     def get_absolute_url(self):
-        return '{url}/revision/{slug}'.format(url=self.item.get_absolute_url(), slug=self.slug)
+        """
+        @TODO currently there is no GUI route to handle linking directly to a revision
+        """
+        # return '{url}/revision/{slug}'.format(url=self.item.get_absolute_url(), slug=self.slug)
+        return '{url}'.format(url=self.item.get_absolute_url())
 
     def get_regular_url(self):
         """
