@@ -61,6 +61,12 @@ class ReviewDocument(IsDeletedMixin, FileExistsLocallyMixin, UserAuthMixin, mode
                                              kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)}))
         return None
 
+    def get_regular_url(self):
+        """
+        Used in notficiations & activity
+        """
+        return self.document.item.get_regular_url()
+
     def complete(self, is_complete=True):
         self.is_complete = is_complete
         self.save(update_fields=['is_complete'])

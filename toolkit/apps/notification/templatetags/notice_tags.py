@@ -36,6 +36,13 @@ def get_notification_context(message_data, user):
     action_object_url = ""
 
     if action_object:
+        action_object_url = None  # default
+        # it's a default object.
+        if hasattr(action_object, 'get_regular_url') is True:
+            action_object_url = action_object.get_regular_url()
+        else:
+            action_object_url = action_object.get('url', None)
+
         if comment:
             # it's a comment either on item or revision
             if item:
@@ -54,11 +61,6 @@ def get_notification_context(message_data, user):
                 target_object = Item.objects.get(slug=action_object.get('slug'))
                 action_object_url = target_object.get_absolute_url() if action_object else None
                 # action_object_url = action_object.get('url') if action_object else None
-        else:
-            # it's a default object.
-            # would be great to have a generic way from the serialized object (-> dict) to the object to call
-            # get_absolute_url()
-            action_object_url = action_object.get('url') if action_object else None
 
     if message_data is not None:
         ctx = {
