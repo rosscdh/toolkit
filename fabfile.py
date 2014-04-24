@@ -274,7 +274,7 @@ def celery_restart(name='worker.1'):
 def celery_start(name='worker.1', loglevel='INFO', concurrency=5):
     with settings(warn_only=True): # only warning as we will often have errors importing
         #cmd = "celery worker -A {app_name} --loglevel={loglevel} --pidfile='/var/run/celery/{name}.%n.pid' --logfile='/var/log/celery/{name}.%n.log' --concurrency={concurrency} --detach".format(name=name, loglevel=loglevel, concurrency=concurrency, app_name=env.celery_app_name)
-        cmd = 'celery multi start {name} -A {app_name} --loglevel={loglevel} --pidfile="/tmp/celery.%n.pid"'.format(name=name, loglevel=loglevel, concurrency=concurrency, app_name=env.celery_app_name)
+        cmd = 'celery multi start {name} -A {app_name} --loglevel={loglevel} --logfile="/tmp/celery.%n.log" --pidfile="/tmp/celery.%n.pid"'.format(name=name, loglevel=loglevel, concurrency=concurrency, app_name=env.celery_app_name)
         if env.hosts:
             #run(cmd)
             virtualenv(cmd='cd %s%s;%s' % (env.remote_project_path, env.project, cmd))
