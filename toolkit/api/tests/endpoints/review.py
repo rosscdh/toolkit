@@ -147,7 +147,7 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
         # test if activity shows in stream
         stream = target_stream(self.matter)
         self.assertEqual(stream[0].data['override_message'],
-                         u'Lawyër Tëst invited a reviewer to Test Item with Revision')
+                         u'Lawyër Tëst invited Participant Number 1 to review Revision v1 of Test Item with Revision')
 
     def test_second_lawyer_post(self):
         """
@@ -253,7 +253,7 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
         # test if activity shows in stream
         stream = target_stream(self.matter)
         self.assertEqual(stream[0].data['override_message'],
-                         u'Lawyër Tëst invited a reviewer to Test Item with Revision')
+                         u'Lawyër Tëst invited Participant Number 1 to review Revision v1 of Test Item with Revision')
 
 
 class ReviewObjectIncrementWithNewReviewerTest(BaseEndpointTest):
