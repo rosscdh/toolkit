@@ -4,7 +4,6 @@ Matters are workspaces; and are composted of items, which may be a todo item
 or a document item
 """
 from rest_framework import serializers
-
 from toolkit.apps.workspace.models import Workspace
 
 from .client import LiteClientSerializer

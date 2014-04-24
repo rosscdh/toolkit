@@ -12,8 +12,11 @@ from toolkit.apps.matter.services import (MatterRemovalService, MatterParticipan
 from toolkit.apps.workspace.models import Workspace
 from toolkit.mixins import AjaxModelFormView, ModalView
 
-from .forms import MatterForm
+from rest_framework.renderers import UnicodeJSONRenderer
 
+from .forms import (MatterForm, MatterSearchForm)
+
+import json
 import logging
 logger = logging.getLogger('django.request')
 
@@ -28,11 +31,15 @@ class MatterListView(ListView):
     def get_context_data(self, **kwargs):
         context = super(MatterListView, self).get_context_data(**kwargs)
 
+        object_list = self.get_serializer(self.object_list, many=True).data
+
         context.update({
+            'search_form': MatterSearchForm(),
             'can_create': self.request.user.profile.is_lawyer,
             'can_delete': self.request.user.profile.is_lawyer,
             'can_edit': self.request.user.profile.is_lawyer,
-            'object_list': self.get_serializer(self.object_list, many=True).data,
+            #'object_list': object_list,
+            'object_list_json': UnicodeJSONRenderer().render(object_list),
         })
 
         return context
