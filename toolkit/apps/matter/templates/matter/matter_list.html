@@ -149,7 +149,7 @@ var EditMatterInterface = React.createClass({
 
 
 var MatterList = React.createClass({
-  fuse: new Fuse(MatterListData, { keys: ["name", "matter_code", "client.name"] }),
+  fuse: new Fuse(MatterListData, { keys: ["name", "matter_code", "client.name"], threshold: 0.3 }),
   getInitialState: function() {
     return {
         'matters': MatterListData
