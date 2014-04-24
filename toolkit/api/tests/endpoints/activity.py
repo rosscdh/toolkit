@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-from django.contrib.contenttypes.models import ContentType
-from actstream.models import Action
-from django.core.urlresolvers import reverse
 from django.template import loader
+from django.core.urlresolvers import reverse
+from django.contrib.contenttypes.models import ContentType
+
+from actstream.models import Action
 
 from model_mommy import mommy
 
