@@ -1,14 +1,29 @@
-<div class="comment" ng-show="activity.data.comment">
+<!-- <div class="comment" ng-show="activity.data.comment">
 	<span class="pe-7s-note"></span> 
-    <strong>{{ actor_name }}</strong> annotated {{ revision_slug }} ({{ item_name }})
+    <strong>{{ actor_name }}</strong> annotated  ({{ item_name }})
     <blockquote>{{ comment }}</blockquote> 
     <a href="{{ action_object_url }}">Link to {{ action_object_name }}</a>
         {% block review_information %}{% endblock %}
     {{ timesince }}
 </div>
+ -->
 
+<div class="annotation" ng-show="activity.data.comment">
+    <strong>{{ actor_name }}</strong> annotated  {{ revision_slug }} of <a href="{{ action_object_url }}">{{ action_object_name }}</a> <!--M: THIS SHOULD BE ITEM NAME-->  <span class="pe-7s-clock" tooltip="{{ timestamp }}"></span>
+    <blockquote>
+    	<span class="fui-document"></span> 
+    	<div>{{ comment }}<br />
+        <a href="#">View annotation</a><!--Open up review window-->
+        </div>
+	</blockquote>
+</div>
 
 {% comment %}
 The block review_information contains "(review copy) " or nothing and is used by review_session_comment.html just to
 add this information.
 {% endcomment %}
+
+
+
+
+
