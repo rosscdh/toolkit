@@ -186,9 +186,18 @@ class RevisionReviewReminderEmailsMixin(object):
         #
 
         # send to the provided recipients if there are any
-        # otherwise send to the reviewers
-        recipients_set = recipients if recipients else self.latest_revision.reviewers.all()
-
+        # otherwise send to the reviewers who have not complted the review
+        if recipients:
+            recipients_set = recipients
+        else:
+            #
+            # Combine the set of invited_reviewers who have NOT yet completed
+            # their review (or have been marked complete)
+            #
+            recipients_set = set()
+            for r in self.invited_document_reviews().filter(is_complete=False):
+                recipients_set = recipients_set.union(r.reviewers.all())
+        
         for u in recipients_set:
 
             mailer = ReviewerReminderEmail(recipients=((u.get_full_name(), u.email,),), from_tuple=(from_user.get_full_name(), from_user.email,))

@@ -157,6 +157,8 @@ class FileFieldAsUrlField(LimitedExtensionMixin, serializers.FileField):
 class RevisionSerializer(serializers.HyperlinkedModelSerializer):
     url = serializers.SerializerMethodField('get_custom_api_url')
 
+    regular_url = serializers.Field(source='get_regular_url')
+
     executed_file = HyperlinkedAutoDownloadFileField(required=False)
 
     status = serializers.IntegerField(required=False)
@@ -178,7 +180,8 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Revision
-        fields = ('url', 'slug',
+        fields = ('slug',
+                  'url', 'regular_url',
                   'name', 'description',
                   'executed_file',
                   'status',
@@ -276,7 +279,8 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
 
 class SimpleRevisionSerializer(RevisionSerializer):
     class Meta(RevisionSerializer.Meta):
-        fields = ('url', 'slug',
+        fields = ('slug',
+                  'url', 'regular_url',
                   'name',
                   'status',
                   'date_created',)

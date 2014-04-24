@@ -92,5 +92,4 @@ LAWPAL_ACTIVITY['activity']['whitelist'] = [
 
 
 CELERY_DEFAULT_QUEUE = 'lawpal-test'
-RUN_TASKS = False
 ENABLE_CELERY_TASKS = False

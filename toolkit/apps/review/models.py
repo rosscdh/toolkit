@@ -7,6 +7,7 @@ from rulez import registry as rulez_registry
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 
 from toolkit.core.mixins import IsDeletedMixin
+from toolkit.core.mixins import ApiSerializerMixin
 
 from .mixins import UserAuthMixin, FileExistsLocallyMixin
 from .managers import ReviewDocumentManager
@@ -21,7 +22,11 @@ import logging
 logger = logging.getLogger('django.request')
 
 
-class ReviewDocument(IsDeletedMixin, FileExistsLocallyMixin, UserAuthMixin, models.Model):
+class ReviewDocument(IsDeletedMixin,
+                     FileExistsLocallyMixin,
+                     UserAuthMixin,
+                     ApiSerializerMixin,
+                     models.Model):
     """
     An object to represent a url that allows multiple reviewers to view
     a document using a service like crocodoc
@@ -35,6 +40,8 @@ class ReviewDocument(IsDeletedMixin, FileExistsLocallyMixin, UserAuthMixin, mode
     data = JSONField(default={})
 
     objects = ReviewDocumentManager()
+
+    _serializer = 'toolkit.api.serializers.ReviewSerializer'
 
     class Meta:
         # @BUSINESS RULE always return the newest to oldest
@@ -60,6 +67,12 @@ class ReviewDocument(IsDeletedMixin, FileExistsLocallyMixin, UserAuthMixin, mode
             return ABSOLUTE_BASE_URL(reverse('review:approve_document',
                                              kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)}))
         return None
+
+    def get_regular_url(self):
+        """
+        Used in notficiations & activity
+        """
+        return '{url}/review/{slug}'.format(url=self.document.get_absolute_url(), slug=self.slug)
 
     def complete(self, is_complete=True):
         self.is_complete = is_complete

@@ -7,6 +7,7 @@ from ..signals.activity_listener import send_activity_log
 import datetime
 
 import logging
+
 logger = logging.getLogger('django.request')
 
 
@@ -82,6 +83,7 @@ class MatterActivityEventService(object):
     def _create_activity(self, actor, verb, action_object, **kwargs):
         from toolkit.api.serializers import ItemSerializer  # must be imported due to cyclic with this class being imported in Workspace.models
         from toolkit.api.serializers.user import LiteUserSerializer  # must be imported due to cyclic with this class being imported in Workspace.models
+        from toolkit.api.serializers import ReviewSerializer
 
         activity_kwargs = {
             'actor': actor,
@@ -93,6 +95,7 @@ class MatterActivityEventService(object):
             'override_message': kwargs.get('override_message', None),
             'user': None if not kwargs.get('user', None) else LiteUserSerializer(kwargs.get('user')).data,
             'item': None if not kwargs.get('item', None) else ItemSerializer(kwargs.get('item')).data,
+            'reviewdocument': None if not kwargs.get('reviewdocument', None) else ReviewSerializer(kwargs.get('reviewdocument')).data,
             'comment': kwargs.get('comment', None),
             'previous_name': kwargs.get('previous_name', None),
             'current_status': kwargs.get('previous_name', None),
@@ -239,19 +242,21 @@ class MatterActivityEventService(object):
             'matter_pk': self.matter.pk
         })
 
-    def add_revision_comment(self, user, revision, comment):
+    def add_revision_comment(self, user, revision, comment, reviewdocument):
         override_message = u'%s annotated %s in %s' % (user, revision.slug, revision.item)
         self._create_activity(actor=user, verb=u'added revision comment', action_object=revision,
-                              override_message=override_message, comment=comment, item=revision.item)
+                              override_message=override_message, comment=comment, item=revision.item,
+                              reviewdocument=reviewdocument)
         self.analytics.event('revision.comment.added', user=user, **{
             'item_pk': revision.item.pk,
             'matter_pk': self.matter.pk
         })
 
-    def add_review_copy_comment(self, user, revision, comment):
+    def add_review_copy_comment(self, user, revision, comment, reviewdocument):
         override_message = u'%s annotated %s (review comment) in %s' % (user, revision.slug, revision.item)
         self._create_activity(actor=user, verb=u'added review-session comment', action_object=revision,
-                              override_message=override_message, comment=comment, item=revision.item)
+                              override_message=override_message, comment=comment, item=revision.item,
+                              reviewdocument=reviewdocument)
         self.analytics.event('revision.comment.added', user=user, **{
             'item_pk': revision.item.pk,
             'matter_pk': revision.item.matter.pk
@@ -268,8 +273,7 @@ class MatterActivityEventService(object):
 
     def invite_user_as_reviewer(self, item, inviting_user, invited_user):
         if inviting_user.pk != invited_user:
-            override_message = u'%s invited a reviewer to %s' % (inviting_user, item)
-            # override_message = u'%s invited %s as reviewer for %s' % (inviting_user, invited_user, item)
+            override_message = u'%s invited %s to review %s of %s' % (inviting_user, invited_user, item.latest_revision, item)
             self._create_activity(actor=inviting_user, verb=u'invited reviewer', action_object=item,
                                   override_message=override_message, user=invited_user)
             self.analytics.event('review.request.sent', user=inviting_user, **{

@@ -6,6 +6,7 @@ from rest_framework import serializers
 
 from toolkit.api.serializers.item import LiteItemSerializer
 from toolkit.api.serializers.user import LiteUserSerializer
+from toolkit.apps.review.models import ReviewDocument
 from toolkit.core.item.models import Item
 
 from toolkit.core.services.matter_activity import get_verb_slug
@@ -51,16 +52,18 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
         if message is None:
             message = u"%s %s %s" % (obj.actor, obj.verb, obj.action_object)
 
+        reviewdocument = obj.data.get('reviewdocument', None)
+
         ctx = {
             'actor_name': obj.actor.__unicode__() if obj else None,
             'actor_initials': obj.actor.get_initials() if obj else None,
+            'comment': obj.data.get('comment', None),
             'actor_pk': obj.actor.pk,
             'action_object_name': obj.action_object.__unicode__() if obj else None,
             'action_object_url': None,
             'timestamp': obj.timestamp,
             'timesince': obj.timesince(),
             'message': message,
-            'comment': obj.data.get('comment', None),
         }
 
         if verb_slug in ['revision-added-review-session-comment', 'revision-added-revision-comment']:
@@ -70,9 +73,13 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
             # ctx.update({'item': obj.data['item']})
             ctx.update({'item_name': obj.data.get('item', {}).get('name')})
 
-            item = Item.objects.get(slug=obj.data.get('item', {}).get('slug'))
-            ctx.update({'action_object_url': item.get_full_user_review_url(user=self.request.user,
-                                                                           version_slug=obj.action_object.slug)})
+            # item = Item.objects.get(slug=obj.data.get('item', {}).get('slug'))
+            # ctx.update({'action_object_url': item.get_full_user_review_url(user=self.request.user,
+            #                                                                version_slug=obj.action_object.slug)})
+
+            # get reviewdocument to create the action_object_url
+            reviewdocument_object = ReviewDocument.objects.get(slug=reviewdocument.get('slug')) if reviewdocument else None
+            ctx.update({'action_object_url': reviewdocument_object.get_regular_url() if reviewdocument else None})
             ctx.update({'revision_slug': "%s" % obj.action_object.slug})
         else:
             if obj.action_object and hasattr(obj.action_object, 'get_absolute_url'):
