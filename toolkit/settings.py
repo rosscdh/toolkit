@@ -247,7 +247,7 @@ AWS_HEADERS = {
     'x-amz-acl': 'public-read',
 }
 
-CELERY_ACCEPT_CONTENT = ['json', 'yaml']
+CELERY_ACCEPT_CONTENT = ['json', 'pickle', ]
 
 FILEPICKER_API_KEY = 'A4Ly2eCpkR72XZVBKwJ06z'
 
