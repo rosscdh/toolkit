@@ -91,5 +91,4 @@ MIXPANEL_SETTINGS = {
 # Celery SQS Tasks
 #
 CELERY_DEFAULT_QUEUE = 'lawpal-local'
-RUN_TASKS = True
 ENABLE_CELERY_TASKS = True
