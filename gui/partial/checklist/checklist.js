@@ -117,7 +117,7 @@ angular.module('toolkit-gui')
 
                 // find item
                 var matter = $scope.data.matter;
-                for (i = 0; i < matter.items.length; i++) {
+                for (var i = 0; i < matter.items.length; i++) {
                     if (matter.items[i].slug === itemSlug) {
                         $scope.selectItem(matter.items[i], matter.items[i].category);
                     }
