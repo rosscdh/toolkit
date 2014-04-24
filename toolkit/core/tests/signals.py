@@ -153,7 +153,7 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         self.assertEqual(stream_item.action_object, item)
         self.assertEqual(stream_item.actor, self.lawyer)
         self.assertEqual(stream_item.data['override_message'],
-                         u'Lawyër Tëst renamed item from Test Item #1 to New Name')
+                         u'Lawyër Tëst renamed Test Item #1 to New Name')
 
     def test_item_status_changed(self):
         item = mommy.make('item.Item', name='Test Item #1', matter=self.workspace)
@@ -194,7 +194,7 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         self.assertEqual(stream[0].action_object, item)
         self.assertEqual(stream[0].actor, self.lawyer)
         self.assertEqual(stream[0].data['override_message'],
-                         u'Lawyër Tëst invited a reviewer to Test Item #1')
+                         u'Lawyër Tëst invited Customër Tëst to review Revision v1 of Test Item #1')
 
         """
         delete user as reviewer and check if it worked
