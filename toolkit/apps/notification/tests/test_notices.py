@@ -102,7 +102,12 @@ class NotificationEventsListTest(BaseListViewTest):
         verb_slug = message.get('verb_slug')
 
         action_object_name = message.get('action_object', {}).get('name')
+
+
+        # TODO: use get_regular_url()
         action_object_url = message.get('action_object', {}).get('url')
+
+
 
         self.assert_html_present(test_html=test_html,
                                  verb_slug=verb_slug,
@@ -156,7 +161,11 @@ class NotificationEventsListTest(BaseListViewTest):
         verb_slug = message.get('verb_slug')
 
         action_object_name = message.get('action_object', {}).get('name')
+
+
+        # TODO: use get_regular_url()
         action_object_url = message.get('action_object', {}).get('url')
+
 
         self.assert_html_present(test_html=test_html,
                                  verb_slug=verb_slug,

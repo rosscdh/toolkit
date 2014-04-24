@@ -9,12 +9,19 @@ class ReviewSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for the ReviewDocument
     """
+    regular_url = serializers.Field(source='get_regular_url')
     reviewer = serializers.SerializerMethodField('get_reviewer')
     item = serializers.SerializerMethodField('get_item')
 
     class Meta:
         model = ReviewDocument
-        fields = ('url', 'document', 'item', 'reviewer', 'is_complete', 'date_last_viewed')
+        fields = ('slug',
+                  'url', 'regular_url',
+                  'document',
+                  'item',
+                  'reviewer',
+                  'is_complete',
+                  'date_last_viewed')
 
     def get_item(self, obj):
         from .item import LiteItemSerializer

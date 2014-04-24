@@ -89,6 +89,19 @@ class Revision(ApiSerializerMixin,
     def revisions(self):
         return self.item.revision_set.all()
 
+    def get_absolute_url(self):
+        """
+        @TODO currently there is no GUI route to handle linking directly to a revision
+        """
+        # return '{url}'.format(url=self.item.get_absolute_url())
+        return '{url}/revision/{slug}'.format(url=self.item.get_absolute_url(), slug=self.slug)
+
+    def get_regular_url(self):
+        """
+        Used in notficiations & activity
+        """
+        return self.get_absolute_url()
+
     def get_user_review_url(self, user, review_document=None):
         """
         Try to provide an initial review url from the base review_document obj

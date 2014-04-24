@@ -1,14 +1,13 @@
 <div class="annotation" ng-show="activity.data.comment">
-    <strong>{{ actor_name }}</strong> annotated  {{ revision_slug }} of <a href="{{ action_object_url }}">{{ action_object_name }}</a> {% block review_information %}{% endblock %}<!--M: THIS SHOULD BE ITEM NAME-->  <span class="pe-7s-clock" tooltip="{{ timestamp }}"></span>
-    <blockquote>
-    	<span class="fui-document"></span> 
-    	<div>{{ comment }}<br />
-        <a href="#">View annotation</a><!--Open up review window-->
-        </div>
-	</blockquote>
+    <strong>{{ actor_name }}</strong> annotated  {{ revision_slug }} of <a href="{{ action_object_url }}">{{ item_name }}</a> {% block review_information %}{% endblock %}<!--M: THIS SHOULD BE ITEM NAME-->  <span class="pe-7s-clock" tooltip="{{ timestamp }}"></span>
 </div>
 
 {% comment %}
+I changed action_object_name to item_name and added the {% block review_information %}{% endblock %} which is filled
+with "(review copy) " ONLY if we look at a review-document.
+
+
+{% block review_information %}{% endblock %}
 The block review_information contains "(review copy) " or nothing and is used by review_session_comment.html just to
 add this information.
 

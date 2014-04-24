@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django import template
 import re
+from toolkit.apps.review.models import ReviewDocument
 
 from toolkit.core.item.models import Item  # circular
 
@@ -28,37 +29,34 @@ def get_notification_context(message_data, user):
 
     action_object = message_data.get('action_object')
     target = message_data.get('target')
-    client = target.get('client')
+    client = target.get('client') if target is not None else None
 
     comment = message_data.get('comment', None)
     item = message_data.get('item', None)
+    reviewdocument = message_data.get('reviewdocument', None)
 
     action_object_url = ""
 
     if action_object:
+
+        # it's a default object.
+        action_object_url = action_object.get('regular_url', None)  # never use action_object.get('url', None) as we never want the serializer (api) url which is the api link to be used here
+
+        item_queryset = Item.objects.select_related('matter')
+
         if comment:
             # it's a comment either on item or revision
             if item:
                 # # if action_object contains an item, it MUST be a revision. -> build revision link of the following format:
                 # # /matters/lawpal-corporate-setup/#/checklist/41b53cd527224809a5fd5e325c7511f1/:user_crocodoc_deatil_view_url
-                item_object = Item.objects.get(slug=item.get('slug'))
-                # item = item.object  # is a dict, not a serializer-object
-                # item_s = ItemSerializer(item)
-                # item_o = item_s.get_object()
-                action_object_url = item_object.get_full_user_review_url(user=user, version_slug=action_object['slug'])
-                # review_document_link = item_object.get_user_review_url(user=user, version_slug=action_object['slug'])
-
-                # action_object_url = "%s:%s" % (item_object.get_absolute_url(), review_document_link)
+                # item_object = item_queryset.get(slug=item.get('slug'))
+                # action_object_url = item_object.get_full_user_review_url(user=user, version_slug=action_object['slug'])
+                reviewdocument_object = ReviewDocument.objects.get(slug=reviewdocument.get('slug')) if reviewdocument else None
+                action_object_url = reviewdocument_object.get_regular_url() if reviewdocument else None
             else:
                 # it's a link on an item -> show item-link
-                target_object = Item.objects.get(slug=action_object.get('slug'))
-                action_object_url = target_object.get_absolute_url() if action_object else None
-                # action_object_url = action_object.get('url') if action_object else None
-        else:
-            # it's a default object.
-            # would be great to have a generic way from the serialized object (-> dict) to the object to call
-            # get_absolute_url()
-            action_object_url = action_object.get('url') if action_object else None
+                target_object = item_queryset.get(slug=action_object.get('slug'))
+                action_object_url = target_object.get_regular_url()
 
     if message_data is not None:
         ctx = {

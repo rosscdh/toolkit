@@ -330,7 +330,7 @@ class MatterDetailProvidedDataTest(BaseEndpointTest):
 
         expected_url = ABSOLUTE_BASE_URL(reverse('matter_item_revision', kwargs={'matter_slug': self.revision.item.matter.slug, 'item_slug': self.revision.item.slug }))
         #self.assertEqual(latest_revision, expected_url)
-        self.assertItemsEqual(latest_revision.keys(), ['url', 'status', 'date_created', 'slug', 'name'])
+        self.assertItemsEqual(latest_revision.keys(), ['url', 'regular_url', 'status', 'date_created', 'slug', 'name'])
 
     def test_endpoint_data_lawyer(self):
         self.client.login(username=self.lawyer.username, password=self.password)

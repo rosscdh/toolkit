@@ -29,6 +29,7 @@ expected_cache_keys = {
                           "<type 'NoneType'>",
                           "<type 'NoneType'>",
                           "<type 'NoneType'>",
+                          "<type 'NoneType'>",
                           "<class 'toolkit.apps.workspace.models.Workspace'>"],
     'workspace-added-participant': ["<type 'NoneType'>",
                                     u'workspace-added-participant',
@@ -43,6 +44,7 @@ expected_cache_keys = {
                                     "<class 'rest_framework.serializers.SortedDictWithMetadata'>",
                                     "<type 'NoneType'>",
                                     "<class 'toolkit.apps.workspace.models.Workspace'>",
+                                    "<type 'NoneType'>",
                                     "<type 'NoneType'>",
                                     "<type 'NoneType'>",
                                     "<type 'NoneType'>",
@@ -65,6 +67,7 @@ expected_cache_keys = {
                      "<type 'NoneType'>",
                      "<type 'NoneType'>",
                      "<type 'NoneType'>",
+                     "<type 'NoneType'>",
                      "<class 'toolkit.apps.workspace.models.Workspace'>"],
     'item-commented': [u'Sleep with one eye open',
                        u'item-commented',
@@ -79,6 +82,7 @@ expected_cache_keys = {
                        "<type 'NoneType'>",
                        "<type 'NoneType'>",
                        "<class 'toolkit.core.item.models.Item'>",
+                       "<type 'NoneType'>",
                        "<type 'NoneType'>",
                        "<type 'NoneType'>",
                        "<type 'NoneType'>",
@@ -116,7 +120,7 @@ class ActivitySignalTest(BaseScenarios, TestCase):
             self.assertItemsEqual(cache_obj.keys(), ['sender', 'signal', 'actor', 'verb', 'verb_slug', 'action_object',
                                                      'target', 'item', 'user', 'override_message', 'comment',
                                                      'previous_name', 'current_status', 'previous_status', 'filename',
-                                                     'date_created', 'version', 'message'])
+                                                     'date_created', 'version', 'message', 'reviewdocument'])
             #print '%s has these values: %s' % (cache_key, cache_obj.values())
             self.assertItemsEqual(cache_obj.values(), expected_cache_keys[cache_key])
             cache.delete(cache_key)
@@ -153,7 +157,7 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         self.assertEqual(stream_item.action_object, item)
         self.assertEqual(stream_item.actor, self.lawyer)
         self.assertEqual(stream_item.data['override_message'],
-                         u'Lawyër Tëst renamed item from Test Item #1 to New Name')
+                         u'Lawyër Tëst renamed Test Item #1 to New Name')
 
     def test_item_status_changed(self):
         item = mommy.make('item.Item', name='Test Item #1', matter=self.workspace)
@@ -194,7 +198,7 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         self.assertEqual(stream[0].action_object, item)
         self.assertEqual(stream[0].actor, self.lawyer)
         self.assertEqual(stream[0].data['override_message'],
-                         u'Lawyër Tëst invited a reviewer to Test Item #1')
+                         u'Lawyër Tëst invited Customër Tëst to review Revision v1 of Test Item #1')
 
         """
         delete user as reviewer and check if it worked

@@ -125,10 +125,12 @@ def crocodoc_webhook_event_recieved(sender, verb, document, target, attachment_n
                 if reviewdocument:
                     if reviewdocument == document.source_object.primary_reviewdocument:
                         # this reviewdocument is the PRIMARY one, meaning: one that is not being externally reviewed
-                        matter.actions.add_revision_comment(user=user, revision=document.source_object, comment=content)
+                        matter.actions.add_revision_comment(user=user, revision=document.source_object, comment=content,
+                                                            reviewdocument=reviewdocument)
                     else:
                         # otherwise it is externally reviewed -> add "(review copy)" to the displayed event
-                        matter.actions.add_review_copy_comment(user=user, revision=document.source_object, comment=content)
+                        matter.actions.add_review_copy_comment(user=user, revision=document.source_object,
+                                                               comment=content, reviewdocument=reviewdocument)
 
             if crocodoc_event in ['annotation.delete', 'comment.delete']:
                 matter.actions.delete_revision_comment(user=user, revision=document.source_object)
