@@ -95,6 +95,12 @@ class Workspace(IsDeletedMixin,
         """
         return '%s#/checklist' % reverse('matter:detail', kwargs={'matter_slug': self.slug})
 
+    def get_regular_url(self):
+        """
+        Used in notficiations & activity
+        """
+        return self.get_absolute_url()
+
     def available_tools(self):
         return Tool.objects.exclude(pk__in=[t.pk for t in self.tools.all()])
 
