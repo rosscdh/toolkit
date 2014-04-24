@@ -119,7 +119,7 @@ MIXPANEL_SETTINGS = {
 }
 
 CELERY_DEFAULT_QUEUE = 'prod-toolkit'
-RUN_TASKS = False
+RUN_TASKS = True
 ENABLE_CELERY_TASKS = False
 
 
