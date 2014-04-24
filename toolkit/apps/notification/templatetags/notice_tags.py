@@ -46,18 +46,11 @@ def get_notification_context(message_data, user):
                 # # if action_object contains an item, it MUST be a revision. -> build revision link of the following format:
                 # # /matters/lawpal-corporate-setup/#/checklist/41b53cd527224809a5fd5e325c7511f1/:user_crocodoc_deatil_view_url
                 item_object = Item.objects.get(slug=item.get('slug'))
-                # item = item.object  # is a dict, not a serializer-object
-                # item_s = ItemSerializer(item)
-                # item_o = item_s.get_object()
                 action_object_url = item_object.get_full_user_review_url(user=user, version_slug=action_object['slug'])
-                # review_document_link = item_object.get_user_review_url(user=user, version_slug=action_object['slug'])
-
-                # action_object_url = "%s:%s" % (item_object.get_absolute_url(), review_document_link)
             else:
                 # it's a link on an item -> show item-link
                 target_object = Item.objects.get(slug=action_object.get('slug'))
-                action_object_url = target_object.get_absolute_url() if action_object else None
-                # action_object_url = action_object.get('url') if action_object else None
+                action_object_url = target_object.get_regular_url()
 
     if message_data is not None:
         ctx = {
