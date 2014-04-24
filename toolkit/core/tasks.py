@@ -49,6 +49,7 @@ def _abridge_send(verb_slug, actor, target, action_object, message=None, comment
     Send activity data to abridge
     """
     if verb_slug in ABRIDGE_WHITELIST:
+        abridge_service = False  # assume false
 
         query_set = target.participants
         #
@@ -68,7 +69,6 @@ def _abridge_send(verb_slug, actor, target, action_object, message=None, comment
             except Exception as e:
                 # AbridgeService is not running.
                 logger.critical('Abridge Service is not running because: %s' % e)
-                abridge_service = False
 
             if abridge_service:
                 from toolkit.api.serializers.user import LiteUserSerializer
