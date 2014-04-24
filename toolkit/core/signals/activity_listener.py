@@ -8,22 +8,24 @@ from django.conf import settings
 from django.dispatch import receiver
 from django.dispatch.dispatcher import Signal
 
+from toolkit.core.services.lawpal_abridge import LawPalAbridgeService
+from toolkit.tasks import run_task
+
+import logging
+logger = logging.getLogger('django.request')
+
 try:
     from actstream import action
 except ImportError:
-    action = None
+    logger.critical('django-activity-stream is not installed')
+    raise Exception('django-activity-stream is not installed')
 
 try:
     import stored_messages
 except ImportError:
-    stored_messages = None
+    logger.critical('django-stored-messages is not installed')
+    raise Exception('django-stored-messages is not installed')
 
-from toolkit.core.services.lawpal_abridge import LawPalAbridgeService
-
-#from toolkit.apps.notification.tasks import youve_got_notifications
-
-import logging
-logger = logging.getLogger('django.request')
 
 """
 Base Signal and listener used to funnel events
@@ -216,5 +218,5 @@ def on_activity_received(sender, **kwargs):
                             message=message, comment=kwargs.get('comment', None),
                             item=kwargs.get('item', None), send_to_all=send_to_all)
         # send to abridge service
-        _abridge_send(verb_slug=verb_slug, actor=actor, target=target, action_object=action_object, message=message,
-                      comment=kwargs.get('comment', None), item=kwargs.get('item', None), send_to_all=send_to_all)
+        run_task(_abridge_send, verb_slug=verb_slug, actor=actor, target=target, action_object=action_object, message=message,
+                                comment=kwargs.get('comment', None), item=kwargs.get('item', None), send_to_all=send_to_all)
