@@ -78,7 +78,6 @@ def _abridge_send(verb_slug, actor, target, action_object, message=None, comment
             #
             # Categorically turn it off by default
             #
-            import pdb;pdb.set_trace()
             try:
                 abridge_service = LawPalAbridgeService(user=user,
                                          ABRIDGE_ENABLED=getattr(settings, 'ABRIDGE_ENABLED', False))  # initialize and pass in the user
