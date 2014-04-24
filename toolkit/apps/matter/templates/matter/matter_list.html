@@ -12,9 +12,12 @@
                 </div>
             </header>
 
-            <div id="matter-content" class="row">
-                {#% include 'matter/partials/matter_list.html' %#}
-            </div>
+            {% if not object_list %}
+                <div id="overview" class="row">{% include 'matter/partials/intro.html' %}</div>
+            {% else %}
+                <div id="matter-content" class="row">{#% include 'matter/partials/matter_list.html' %#}</div>
+            {% endif %}
+
         </section>
     </div>
 {% endblock %}
@@ -146,7 +149,7 @@ var EditMatterInterface = React.createClass({
 
 
 var MatterList = React.createClass({
-  fuse: new Fuse(MatterListData, { keys: ["name", "client.name", "lawyer.name"] }),
+  fuse: new Fuse(MatterListData, { keys: ["name", "matter_code", "client.name"] }),
   getInitialState: function() {
     return {
         'matters': MatterListData
@@ -163,7 +166,7 @@ var MatterList = React.createClass({
         var detailUrl = matter.base_url;
 
         var percentStyle = {'width': matter.percent_complete};
-        var lawyer_or_client_name = (UserData.is_lawyer) ? matter.client.name : matter.lawyer.name ;
+        var lawyer_or_client_name = (UserData.is_lawyer) ? (matter.client !== null) ? matter.client.name : null : matter.lawyer.name ;
 
         var participantList = <Participants data={matter.participants} />
         var lastupdatedOrComplete = <LatUpdatedOrComplete percent_complete={matter.percent_complete}
@@ -186,15 +189,11 @@ var MatterList = React.createClass({
                 edit_url={editUrl}>{matter}</MatterItem>;
     });
     return (
-      <div className="MatterList">
-          <div className="row">
-            <input className="input-lg" onChange={this.handleChange} autocomplete="off" id="id_q" name="q" parsley-required="true" parsley-required-message="This field is required." placeholder="Search Matters" type="text" />
-          </div>
-          <br/>
-          <div className="row">
-            {matterNodes}
-          </div>
-      </div>
+      <span>
+        <form><input className="input-lg" onChange={this.handleChange} autocomplete="off" id="id_q" name="q" parsley-required="true" parsley-required-message="This field is required." placeholder="Search Matters" type="text" /></form>
+        <br/>
+        {matterNodes}
+      </span>
     );
   }
 });
