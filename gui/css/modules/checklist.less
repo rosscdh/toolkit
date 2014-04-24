@@ -504,11 +504,12 @@ html,body, div.full
 				color:#777;
 				position:relative;
 				a {
-					color:lighten(@belize-hole, 20%);
+					text-decoration: underline;
+					color:#999;
 				}
-				.comment {
+				.comment, .annotation {
 					margin-top:10px;
-					margin-bottom:10px;
+					margin-bottom:12px;
 				}
 				blockquote {
 					margin-top:0px;
@@ -517,11 +518,17 @@ html,body, div.full
 					position:relative;
 					font-size:13px;
 					color:@belize-hole;
-					padding:4px 6px 4px 20px;
+					padding:4px 6px 4px 26px;
 					background-color:mix(white, @belize-hole, 95%);
 					div {
 						line-height: 17px;
 						padding:4px;
+					}
+					a {
+						font-style: normal;
+						color:inherit;
+						font-size:11px;
+						opacity:0.6;
 					}
 					span {
 						display:block;
@@ -529,12 +536,28 @@ html,body, div.full
 						font-weight: bold;
 						left:0;
 						color:mix(white, @belize-hole, 70%);
-						padding:8px 3px 0px 5px;
-						font-size:14px;
+						padding:8px 3px 0px 4px;
+						font-size:12px;
+						text-align: center;
+						width:23px;
 						top:0;
 						height:100%;
 						background-color:lighten(@belize-hole, 15%);
+						&.fui-document {
+							padding-left:7px;
+						}
 					}
+				}
+				.annotation {
+					blockquote {
+						color:@orange;
+						background-color:mix(white, @orange, 95%);
+						span {
+							color:mix(white, @orange, 70%);
+							background-color:lighten(@orange, 15%);
+						}
+					}
+
 				}
 				div.basic {
 					color:#aaa;
