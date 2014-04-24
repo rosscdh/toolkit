@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django import template
 import re
+from toolkit.apps.review.models import ReviewDocument
 
 from toolkit.core.item.models import Item  # circular
 
@@ -32,6 +33,7 @@ def get_notification_context(message_data, user):
 
     comment = message_data.get('comment', None)
     item = message_data.get('item', None)
+    reviewdocument = message_data.get('reviewdocument', None)
 
     action_object_url = ""
 
@@ -47,8 +49,10 @@ def get_notification_context(message_data, user):
             if item:
                 # # if action_object contains an item, it MUST be a revision. -> build revision link of the following format:
                 # # /matters/lawpal-corporate-setup/#/checklist/41b53cd527224809a5fd5e325c7511f1/:user_crocodoc_deatil_view_url
-                item_object = item_queryset.get(slug=item.get('slug'))
-                action_object_url = item_object.get_full_user_review_url(user=user, version_slug=action_object['slug'])
+                # item_object = item_queryset.get(slug=item.get('slug'))
+                # action_object_url = item_object.get_full_user_review_url(user=user, version_slug=action_object['slug'])
+                reviewdocument_object = ReviewDocument.objects.get(slug=reviewdocument.get('slug')) if reviewdocument else None
+                action_object_url = reviewdocument_object.get_regular_url() if reviewdocument else None
             else:
                 # it's a link on an item -> show item-link
                 target_object = item_queryset.get(slug=action_object.get('slug'))

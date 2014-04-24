@@ -89,7 +89,10 @@ class Item(IsDeletedMixin,
         return u'%s' % self.name
 
     def get_absolute_url(self):
-        return '{url}#/checklist/{item_slug}'.format(url=reverse('matter:detail', kwargs={'matter_slug': self.matter.slug}), item_slug=self.slug)
+        return '{url}#/checklist/{item_slug}'.format(
+            url=reverse('matter:detail', kwargs={'matter_slug': self.matter.slug}),
+            item_slug=self.slug
+        )
 
     def get_regular_url(self):
         """
