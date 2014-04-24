@@ -44,7 +44,8 @@ def _activity_send(actor, target, action_object, message, **kwargs):
 
 
 @app.task
-def _abridge_send(verb_slug, actor, target, action_object, message=None, comment=None, item=None, send_to_all=False):
+def _abridge_send(verb_slug, actor, target, action_object, message=None, comment=None, item=None,
+                  reviewdocument=None, send_to_all=False):
     """
     Send activity data to abridge
     """
@@ -78,6 +79,7 @@ def _abridge_send(verb_slug, actor, target, action_object, message=None, comment
                                                   'comment': comment,
                                                   'message': message,
                                                   'item': item,
+                                                  'reviewdocument': reviewdocument,
                                                   'verb_slug': verb_slug})
                 # Because we cant mixn the ApiMixin class ot the django User Object
                 message_data['actor'] = LiteUserSerializer(actor, context={'request': None}).data
@@ -89,7 +91,8 @@ def _abridge_send(verb_slug, actor, target, action_object, message=None, comment
 
 
 @app.task
-def _notifications_send(verb_slug, actor, target, action_object, message, comment, item, send_to_all=False):
+def _notifications_send(verb_slug, actor, target, action_object, message, comment, item, reviewdocument,
+                        send_to_all=False):
     """
     Send persistent messages (notifications) for this user
     github notifications style
@@ -127,6 +130,8 @@ def _notifications_send(verb_slug, actor, target, action_object, message, commen
                 action_object = action_object.api_serializer(action_object, context={'request': None}).data
             if hasattr(item, 'api_serializer') is True:
                 item = item.api_serializer(item, context={'request': None}).data
+            if hasattr(reviewdocument, 'api_serializer') is True:
+                reviewdocument = reviewdocument.api_serializer(item, context={'request': None}).data
 
             target_class_name = target.__class__.__name__
 
@@ -146,7 +151,8 @@ def _notifications_send(verb_slug, actor, target, action_object, message, commen
                                             action_object=action_object,
                                             target=target,
                                             comment=comment,
-                                            item=item)
+                                            item=item,
+                                            reviewdocument=reviewdocument)
 
             #
             # @TODO move into manager?

@@ -35,6 +35,7 @@ def on_activity_received(sender, **kwargs):
     verb = kwargs.get('verb', False)
     action_object = kwargs.get('action_object', False)
     target = kwargs.get('target', False)
+    reviewdocument = kwargs.get('reviewdocument', False)
 
     send_to_all = kwargs.get('send_to_all', False)
 
@@ -70,9 +71,9 @@ def on_activity_received(sender, **kwargs):
         # send the notifications to the participants
         run_task(_notifications_send, verb_slug=verb_slug, actor=actor, target=target, action_object=action_object,
                  message=message, comment=kwargs.get('comment', None), item=kwargs.get('item', None),
-                 send_to_all=send_to_all)
+                 reviewdocument=reviewdocument, send_to_all=send_to_all)
 
         # send to abridge service
         run_task(_abridge_send, verb_slug=verb_slug, actor=actor, target=target, action_object=action_object,
                  message=message, comment=kwargs.get('comment', None), item=kwargs.get('item', None),
-                 send_to_all=send_to_all)
+                 reviewdocument=reviewdocument, send_to_all=send_to_all)
