@@ -54,13 +54,13 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
         ctx = {
             'actor_name': obj.actor.__unicode__() if obj else None,
             'actor_initials': obj.actor.get_initials() if obj else None,
+            'comment': obj.data.get('comment', None),
             'actor_pk': obj.actor.pk,
             'action_object_name': obj.action_object.__unicode__() if obj else None,
             'action_object_url': None,
             'timestamp': obj.timestamp,
             'timesince': obj.timesince(),
             'message': message,
-            'comment': obj.data.get('comment', None),
         }
 
         if verb_slug in ['revision-added-review-session-comment', 'revision-added-revision-comment']:
