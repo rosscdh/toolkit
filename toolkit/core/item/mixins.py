@@ -8,6 +8,9 @@ from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 from .mailers import RequestedDocumentReminderEmail
 from toolkit.apps.sign.mailers import SignerReminderEmail
 
+import logging
+logger = logging.getLogger('django.request')
+
 
 class RequestDocumentUploadMixin(object):
     """
@@ -33,6 +36,81 @@ class RequestDocumentUploadMixin(object):
         request_document.update({'requested_by': value})
 
         self.data['request_document'] = request_document
+
+
+class ReviewInProgressMixin(object):
+    """
+    """
+    def invited_document_reviews(self):
+        """
+        exclude the primary reviewdocument which is only for matter.participants
+        """
+        if self.latest_revision:
+            return self.latest_revision.reviewdocument_set.exclude(reviewers=None)
+        else:
+            return []
+
+    @property
+    def participants_review_document(self):
+        """
+        Get the main review_document used by the matter.participants
+        """
+        return self.latest_revision.reviewdocument_set.filter(reviewers=None).last()
+
+    def percent_formatted(self, value):
+        """
+        Get the main review_document used by the matter.participants as a str(%)
+        """
+        return "{0:.0f}%".format(value) if value is not None else None
+
+    @property
+    def review_percentage_complete(self):
+        return self.data.get('review_percentage_complete', None)
+
+    @review_percentage_complete.setter
+    def review_percentage_complete(self, value):
+        if type(value) not in [type(None), int, float]:
+            raise Exception('review_percentage_complete must be None or a float was passed a: %s' % type(value))
+
+        logger.info('Item %s review_percentage_complete set to %s' % (self, value))
+        self.data['review_percentage_complete'] = value
+
+    def recalculate_review_percentage_complete(self):
+        """
+        Sets the review_percentage_complete status to False
+        called when
+        1. a new revision document is uploaded
+        2. all reviews are complete (approved)
+        3. all reviews are deleted
+        """
+        num_reviewdocuments = None # this is necessary to ensure that we can present None when there are no reviews active
+        num_reviewdocuments_complete = 0
+        review_percentage_complete = None
+
+        queryset = self.invited_document_reviews()
+        if queryset:
+            # we have a queryset
+
+            for rd in queryset.values('is_complete'):
+                # this is necessary to ensure that we can present None when there are no reviews active
+                num_reviewdocuments = 0 if num_reviewdocuments is None else num_reviewdocuments
+                num_reviewdocuments += 1
+                num_reviewdocuments_complete += 1 if rd.get('is_complete') is True else 0
+
+            if num_reviewdocuments > 0:
+                review_percentage_complete = float(num_reviewdocuments_complete) / float(num_reviewdocuments)
+                review_percentage_complete = round(review_percentage_complete * 100, 0)
+
+        if review_percentage_complete != self.review_percentage_complete: # only if its different (save the db update event)
+
+            # Has changed AND is 100.00
+            if review_percentage_complete == 100.0:
+                # send matter.action signal
+                self.matter.actions.all_revision_reviews_complete(item=self, revision=self.latest_revision)
+
+            self.review_percentage_complete = review_percentage_complete
+            logger.info('Item %s review_percentage_complete set to %s' % (self, review_percentage_complete))
+            self.save(update_fields=['data'])
 
 
 class RequestedDocumentReminderEmailsMixin(object):
@@ -73,7 +151,7 @@ class RequestedDocumentReminderEmailsMixin(object):
                     #
                     kwargs.update({'subject': subject})
 
-                mailer = RequestedDocumentReminderEmail(recipients=((user.get_full_name(), user.email,),))
+                mailer = RequestedDocumentReminderEmail(recipients=((user.get_full_name(), user.email,),), from_tuple=(from_user.get_full_name(), from_user.email,))
                 mailer.process(item=self,
                                from_name=from_user.get_full_name(),
                                action_url=action_url,  # please understsand the diff between action_url and next_url
@@ -108,12 +186,21 @@ class RevisionReviewReminderEmailsMixin(object):
         #
 
         # send to the provided recipients if there are any
-        # otherwise send to the reviewers
-        recipients_set = recipients if recipients else self.latest_revision.reviewers.all()
-
+        # otherwise send to the reviewers who have not complted the review
+        if recipients:
+            recipients_set = recipients
+        else:
+            #
+            # Combine the set of invited_reviewers who have NOT yet completed
+            # their review (or have been marked complete)
+            #
+            recipients_set = set()
+            for r in self.invited_document_reviews().filter(is_complete=False):
+                recipients_set = recipients_set.union(r.reviewers.all())
+        
         for u in recipients_set:
 
-            mailer = ReviewerReminderEmail(recipients=((u.get_full_name(), u.email,),))
+            mailer = ReviewerReminderEmail(recipients=((u.get_full_name(), u.email,),), from_tuple=(from_user.get_full_name(), from_user.email,))
 
             #
             # Get the review document for this user
@@ -185,7 +272,7 @@ class RevisionSignReminderEmailsMixin(object):
 
         for u in recipients_set:
 
-            mailer = SignerReminderEmail(recipients=((u.get_full_name(), u.email,),))
+            mailer = SignerReminderEmail(recipients=((u.get_full_name(), u.email,),), from_tuple=(from_user.get_full_name(), from_user.email,))
 
             #
             # Get the review document for this user

@@ -3,14 +3,12 @@
 Matters are workspaces; and are composted of items, which may be a todo item
 or a document item
 """
-from django.core.urlresolvers import reverse
-
 from rest_framework import serializers
 
 from toolkit.apps.workspace.models import Workspace
-from toolkit.core.item.models import Item
+
 from .client import LiteClientSerializer
-from .item import ItemSerializer
+from .item import SimpleItemSerializer
 from .user import LiteUserSerializer
 
 import datetime
@@ -70,7 +68,7 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
         """
         tmp method will eventually be replaced by matter.items_set.all()
         """
-        return [ItemSerializer(i, context=self.context).data for i in obj.item_set.filter(parent=None)]
+        return [SimpleItemSerializer(i, context=self.context).data for i in obj.item_set.filter(parent=None)]
 
     def get_comments(self, obj):
         """

@@ -37,18 +37,21 @@
   <script src="<!-- @echo staticPath -->bower_components/angular-ui-utils/ui-utils.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/angular-ui-sortable/sortable.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/angular-elastic/elastic.js"></script>
+  <script src="<!-- @echo staticPath -->bower_components/angular-cookies/angular-cookies.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/angular-markdown-directive/markdown.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/angular-sanitize/angular-sanitize.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/showdown/compressed/showdown.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/AngularJS-Toaster/toaster.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/ez-confirm/dist/ez-confirm.min.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/ez-confirm/dist/ez-confirm-tpl.js"></script>
-  <script src="<!-- @echo staticPath -->bower_components/ng-file-upload/angular-file-upload-shim.min.js"></script> 
+  <script src="<!-- @echo staticPath -->bower_components/ng-file-upload/angular-file-upload-shim.min.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/ng-file-upload/angular-file-upload.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/angular-ui-router/release/angular-ui-router.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/respond/dest/respond.src.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/raven-js/dist/raven.min.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/respond/dest/respond.src.js"></script>
+  <script src="<!-- @echo staticPath -->bower_components/angular-intercom/angular-intercom.js"></script>
+  <script src="<!-- @echo staticPath -->bower_components/crypto-js/rollups/hmac-sha256.js"></script>
   <script type="text/javascript" src="//api.filepicker.io/v1/filepicker.js" data-remove="exclude"></script>
 
   <!-- Main App JS -->
@@ -94,6 +97,7 @@
   <script src="<!-- @echo staticPath -->partial/view-review/view-review.js"></script>
   <script src="<!-- @echo staticPath -->partial/searchCtrl/searchCtrl.js"></script>
   <script src="<!-- @echo staticPath -->partial/authentication-required/authentication-required.js"></script>
+  <script src="<!-- @echo staticPath -->partial/edit-revision-status/edit-revision-status.js"></script>
   <!-- Add New Partial JS Above -->
 
   <div class="navbar navbar-inverse checklist-nav" ng-controller="NavigationCtrl">
@@ -129,10 +133,10 @@
         <li id="closing-nav" ng-class="{'active': isActive('/closing')}">
           <a ng-href="#/closing">Closing</a>
         </li>-->
-         
+
         <li class="checklist-members">
           <a href="javascript:;" ng-click="invite()">
-            <span class="fui-user"></span> 
+            <span class="fui-user"></span>
             <span class="user" ng-repeat="user in matter.selected.participants" ng-bind="user | initials"></span>
           </a>
         </li>
@@ -151,7 +155,7 @@
             <input class="form-control" id="navbarInput-02" type="search" placeholder="Search" ng-model="data.term" ng-keyup="startSearch()" ng-blur="hide()" xng-focus="show()" autocomplete="off" onmouseup="this.select()">
             <span class="input-group-btn">
               <button type="submit" class="btn"><span class="fui-search"></span></button>
-            </span>            
+            </span>
           </div>
         </div>
         <div class="search-container">
@@ -173,6 +177,7 @@
         <li class="notifications"><a href="/notifications/" ng-class="matter.selected.current_user.has_notifications ? 'unread' : ''"><!-- <span ng-class="matter.selected.current_user.has_notifications ? 'fui-radio-checked animated pulse' : 'fui-radio-unchecked'"></span> --><span class="pe-7s-bell"></span></a></li>
 
         <li><a href="/requests/">Requests</a></li>
+        <li><a href="#" class="intercom">Support</a></li>
         <li class="divider"></li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -180,7 +185,7 @@
           </a>
           <ul class="dropdown-menu">
             <li><a href="/me/settings/">Account</a></li>
-            
+
             <li><a href="/end/">Sign out</a></li>
           </ul>
         </li>
@@ -191,13 +196,14 @@
     <!--/.navbar-collapse -->
   </div>
 
-  <div ui-view class="full">
+  <div ui-view class="full"></div>
   <span id="landmine"></span>
   <script language="javascript" data-remove="exclude">
     angular.module('toolkit-gui').constant('API_BASE_URL', '<!-- @echo apiBaseUrl -->');
     angular.module('toolkit-gui').constant('STATUS_LEVEL', {'OK':0,'WARNING':1,'ERROR':2} );
     angular.module('toolkit-gui').constant('DEBUG_MODE', <!-- @echo DEBUG_MODE -->);
     angular.module('toolkit-gui').constant('SENTRY_PUBLIC_DSN', '<!-- @echo SENTRY_PUBLIC_DSN -->' );
+    angular.module('toolkit-gui').constant('INTERCOM_APP_ID', '<!-- @echo INTERCOM_APP_ID -->' );
   </script>
 </body>
 </html>

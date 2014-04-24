@@ -1,6 +1,6 @@
 <div class="modal-content">
 	<div class="modal-header">
-		<h4 class="modal-title" id="myModalLabel">Request file for <span ng-bind="checklistItem.name"></span></h4>
+		<h4 class="modal-title" id="myModalLabel">Request document for <span ng-bind="checklistItem.name"></span></h4>
 	</div>
 	<form name="requestForm" ng-submit="request()">
 	<div class="modal-body">
@@ -25,26 +25,26 @@
 				</li>
 			</ul>
 
-            <div class="form-group" ng-show="data.selectedIndex==-1"
+            <div class="" ng-show="data.selectedIndex==-1"
                  ng-class="{'has-success': data.participant, 'has-warning': data.isNew, 'has-error': data.validationError }">
 				<input type="email" id="requestEmail" class="form-control form-control-full-width input-sm" ng-model="data.request.email"
-                       placeholder="your_email@gmail.com" ng-blur="checkIfUserExists()"/>
-                 <label class="control-label" for="requestEmail" ng-show="data.participant">User {{ data.participant | fullname }} found</label>
-                 <label class="control-label" for="requestEmail" ng-show="data.isNew">User does not exist yet</label>
+                       placeholder="sarah.smith@gmail.com" ng-blur="checkIfUserExists()"/>
+                 <p class="bg-info"  for="requestEmail" ng-show="data.participant">User {{ data.participant | fullname }} found!</p>
+                 <p class="bg-info" for="requestEmail" ng-show="data.isNew">This user does not exist yet. This will create them.</p>
 			</div>
-            <div class="form-group form-inline">
+            <div class=" form-inline">
                 <input type="text" class="form-control input-sm" ng-model="data.request.first_name" placeholder="First name" ng-show="data.isNew" />
                 <input type="text" class="form-control input-sm" ng-model="data.request.last_name" placeholder="Last name" ng-show="data.isNew" />
             </div>
 
-			<div class="form-group">
-				<textarea class="form-control form-control-full-width" ng-model="data.request.message" placeholder="Add an optional message"></textarea>
+			<div class="">
+				<textarea class="form-control form-control-full-width" ng-model="data.request.message" placeholder="Add an optional message to this request"></textarea>
 			</div>
 		
 	</div>
 	<div class="modal-footer">
 		<button class="btn btn-default" ng-click="cancel()">Cancel</button>
-		<button class="btn btn-primary" type="submit" ng-disabled="invalid()">Request revision</button>
+		<button class="btn btn-primary" type="submit" ng-disabled="invalid()">Request document</button>
 	</div>
 	</form>
 </div>

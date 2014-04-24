@@ -52,7 +52,8 @@ angular.module('toolkit-gui')
 			return $resource( API_BASE_URL + 'matters/:matterSlug/:action', {}, {
 				'list': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } },
 				'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } },
-				'sort': { 'method': 'PATCH', 'params': {'action': 'sort'}, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } }
+				'sort': { 'method': 'PATCH', 'params': {'action': 'sort'}, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } },
+				'revisionstatus': { 'method': 'POST', 'params': {'action': 'revision_label'}, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } }
 			});
 		}
 
@@ -159,7 +160,7 @@ angular.module('toolkit-gui')
 			 * Incepts request of the API to save checklist and category order
 			 *
 			 * @name				saveSortOrder
-			 * @param {Object}      APIUpdate     Used by the API as a unique identifier for a specific matter
+			 * @param {Object}      matterSlug     Used by the API as a unique identifier for a specific matter
 			 *
 			 * @example
 		 	 * matterService.saveSortOrder( { 'items': [] } );
@@ -186,6 +187,42 @@ angular.module('toolkit-gui')
 
 				return deferred.promise;
 	        },
+
+
+             /**
+			 * Incepts request of the API to save the revision status
+			 *
+			 * @name				saveRevisionStatus
+			 * @param {Object}      matterSlug     Used by the API as a unique identifier for a specific matter
+			 * @param {Object}      APIUpdate      Object
+			 *
+			 * @example
+		 	 * matterService.saveSortOrder( 'mymatter', { } );
+			 *
+			 * @public
+			 * @method				saveRevisionStatus
+			 * @memberof			matterService
+			 *
+			 * @return {Promise}
+		 	 */
+            'saveRevisionStatus': function ( matterSlug, APIUpdate ) {
+	            var deferred = $q.defer();
+
+				var api = matterResource();
+
+				api.revisionstatus({'matterSlug': matterSlug }, APIUpdate,
+					function success(){
+						deferred.resolve();
+					},
+					function error(err) {
+						deferred.reject( err );
+					}
+				);
+
+				return deferred.promise;
+	        },
+
+
 
 	        /**
 	         * This function is used to maintain the array of checklist items (used for search)

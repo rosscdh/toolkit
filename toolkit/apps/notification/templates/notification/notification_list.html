@@ -19,7 +19,7 @@
             <div class="row">
                 <div class="col-sm-8 col-sm-offset-2" role="main">
                     {% for item in object_list %}
-                        {% render_notice item %}
+                        {% render_notice item request %}
                     {% empty %}
                         <div class="col-md-12 text-center">
                             <h6 class="text-muted">You currently have no notifications.</h6>

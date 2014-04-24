@@ -16,6 +16,8 @@ django-rulez
 django-password-reset
 django-uuidfield
 
+django-braces
+
 # Image Thumbnails
 pillow
 sorl-thumbnail

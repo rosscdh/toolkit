@@ -10,6 +10,7 @@ from toolkit.utils import get_namedtuple_choices
 from jsonfield import JSONField
 
 from .managers import RevisionManager
+from .mixins import StatusLabelsMixin
 
 import re
 import os
@@ -41,7 +42,9 @@ def _upload_file(instance, filename):
     return 'executed_files/%s' % full_file_name
 
 
-class Revision(ApiSerializerMixin, models.Model):
+class Revision(ApiSerializerMixin,
+               StatusLabelsMixin,
+               models.Model):
     REVISION_STATUS = BASE_REVISION_STATUS
 
     name = models.CharField(max_length=255, null=True, blank=True)
@@ -50,8 +53,6 @@ class Revision(ApiSerializerMixin, models.Model):
     slug = models.SlugField(blank=True, null=True)  # stores the revision number v3..v2..v1
 
     executed_file = models.FileField(upload_to=_upload_file, storage=S3BotoStorage(), null=True, blank=True)
-
-    status = models.IntegerField(choices=REVISION_STATUS.get_choices(), default=REVISION_STATUS.draft)
 
     item = models.ForeignKey('item.Item')
     uploaded_by = models.ForeignKey('auth.User')
@@ -71,6 +72,8 @@ class Revision(ApiSerializerMixin, models.Model):
     date_created = models.DateTimeField(auto_now=False, auto_now_add=True, db_index=True)
     date_modified = models.DateTimeField(auto_now=True, auto_now_add=True, db_index=True)
 
+    # status = models.IntegerField(choices=REVISION_STATUS.get_choices(), default=REVISION_STATUS.draft)
+
     objects = RevisionManager()
 
     _serializer = 'toolkit.api.serializers.RevisionSerializer'
@@ -85,6 +88,17 @@ class Revision(ApiSerializerMixin, models.Model):
     @property
     def revisions(self):
         return self.item.revision_set.all()
+
+    def get_user_review_url(self, user, review_document=None):
+        """
+        Try to provide an initial review url from the base review_document obj
+        for the currently logged in user
+        """
+        if user is not None:
+            if review_document is None:
+                review_document = self.reviewdocument_set.all().last()
+            return review_document.get_absolute_url(user=user, use_absolute=False) if review_document is not None else None
+        return None
 
     def get_revision_label(self):
         """
@@ -110,14 +124,21 @@ class Revision(ApiSerializerMixin, models.Model):
         return the relative revision id for this revision
         Used in the signal to generate the attachment slug
         and revision_label
+        NB! must exclude the self.pk otherwise the increment will be wrong +1
         """
-        return self.revisions.count() + 1 # default is 1
+        return self.revisions.exclude(pk=self.pk).count() + 1 # default is 1
 
     def next(self):
         return self.revisions.filter(pk__gt=self.pk).first()
 
     def previous(self):
         return self.revisions.filter(pk__lt=self.pk).first()
+
+    @property
+    def primary_reviewdocument(self):
+        # is this *really* only the case for a NEW reviewdocument/revision?
+        return self.reviewdocument_set.filter(reviewers=None).last()
+
 
 from .signals import (ensure_revision_slug,
                       ensure_one_current_revision,

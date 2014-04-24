@@ -5,11 +5,13 @@ from django.conf import settings
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import redirect
+from django.contrib.auth import logout
 from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse_lazy
-from django.views.generic import FormView, UpdateView, TemplateView
+from django.views.generic import FormView, UpdateView, TemplateView, RedirectView
 from django.views.generic.edit import BaseUpdateView
+
 from django.shortcuts import get_object_or_404
 
 from toolkit.apps.me.signals import send_welcome_email
@@ -25,6 +27,8 @@ from .forms import (ConfirmAccountForm,
                     LawyerLetterheadForm)
 
 import json
+import logging
+logger = logging.getLogger('django.request')
 
 User = get_user_model()
 
@@ -90,33 +94,92 @@ class SendEmailValidationRequest(BaseUpdateView):
         return HttpResponse(json.dumps(content), content_type='application/json', **kwargs)
 
 
-#
-#class ConfirmEmailValidationRequest(LogOutMixin, TemplateView):
-#
-# The commented out option is very secure
-#
-#
-class ConfirmEmailValidationRequest(TemplateView):
-    template_name = None
+# ------------------------------------------
+# Start Settings Change Confirmation Views
+# ------------------------------------------
+
+
+class BaseConfirmValidationRequest(RedirectView):
+    url = '/'  # redirect to home
 
     def dispatch(self, request, *args, **kwargs):
         self.request = request
         self.args = args
         self.kwargs = kwargs
 
+        self.user = self.get_user(token=kwargs.get('token'))
+        self.profile = self.user.profile
+
+        self.save()
+        return super(BaseConfirmValidationRequest, self).dispatch(request=request, *args, **kwargs)
+
+    def get_user(self, token):
         try:
-            pk = signing.loads(kwargs['token'], salt=settings.SECRET_KEY)
+            pk = signing.loads(token, salt=settings.SECRET_KEY)
         except signing.BadSignature:
             raise Http404
+        return get_object_or_404(get_user_model(), pk=pk)
 
-        self.user = get_object_or_404(get_user_model(), pk=pk)
-        profile = self.user.profile
-        profile.validated_email = True
-        profile.save(update_fields=['data'])
+    def save(self):
+        raise NotImplementedError
+
+
+class ConfirmEmailValidationRequest(BaseConfirmValidationRequest):
+
+    def save(self):
+        self.profile.validated_email = True
+        self.profile.save(update_fields=['data'])
 
         messages.success(self.request, 'Thanks. You have confirmed your email address.')
+        logger.info('User: %s has validated their email' % self.user)
 
-        return redirect('/')
+
+class ConfirmEmailChangeRequest(BaseConfirmValidationRequest):
+    """
+    When a user confirms that they want to change their email they come
+    here and it does that for them.
+    """
+
+    def save(self):
+        email = self.profile.data.get('validation_required_temp_email', False)
+        original_email = self.user.email
+
+        if email and email is not False:
+            self.user.email = email
+            self.user.save(update_fields=['email'])
+
+            # remove temp password
+            del self.profile.data['validation_required_temp_email']
+            # set validated_email to True
+            self.profile.validated_email = True
+            self.profile.save(update_fields=['data'])
+
+        messages.success(self.request, 'Congratulations. Your email has been changed. Please login with your new email.')
+        logger.info('User: %s has confirmed their change of email address from: %s to: %s' % (self.user, original_email, self.user.email))
+
+
+class ConfirmPasswordChangeRequest(BaseConfirmValidationRequest):
+    """
+    When a user confirms that they want to change their password they come
+    here and it does that for them.
+    """
+
+    def save(self):
+        password = self.profile.data.get('validation_required_temp_password', False)
+
+        if password and password is not False:
+            self.user.password = password
+            self.user.save(update_fields=['password'])
+            # remove temp password
+            del self.profile.data['validation_required_temp_password']
+            self.profile.save(update_fields=['data'])
+
+        messages.success(self.request, 'Congratulations. Your password has been changed. Please login with your new password.')
+        logger.info('User: %s has confirmed their change of password' % self.user)
+
+# ----------------------------
+# End Confirmation Views
+# ----------------------------
 
 
 class AccountSettingsView(UpdateView):
@@ -125,12 +188,15 @@ class AccountSettingsView(UpdateView):
     success_url = reverse_lazy('me:settings')
     template_name = 'user/settings/account.html'
 
+    def get_form_kwargs(self):
+        kwargs = super(AccountSettingsView, self).get_form_kwargs()
+        kwargs.update({
+            'request': self.request
+        })
+        return kwargs
+
     def get_object(self, queryset=None):
         return self.request.user
-
-    def get_success_url(self):
-        messages.success(self.request, 'Success. You have updated your account')
-        return super(AccountSettingsView, self).get_success_url()
 
 
 class ChangePasswordView(AjaxModelFormView, FormView):
@@ -140,16 +206,11 @@ class ChangePasswordView(AjaxModelFormView, FormView):
 
     def get_form_kwargs(self):
         kwargs = super(ChangePasswordView, self).get_form_kwargs()
-        kwargs['user'] = self.get_user()
+        kwargs.update({
+            'request': self.request,
+            'user': self.request.user
+        })
         return kwargs
-
-    def get_user(self):
-        return self.request.user
-
-    def form_valid(self, form):
-        form.save()
-        messages.success(self.request, 'Success. You have changed your password')
-        return super(ChangePasswordView, self).form_valid(form)
 
 
 class LawyerLetterheadView(UpdateView):
@@ -189,3 +250,11 @@ class LawyerLetterheadView(UpdateView):
             'user': self.request.user
         })
         return kwargs
+
+
+class InvoicesView(TemplateView):
+    template_name = 'me/invoices.html'
+
+
+class PlansView(TemplateView):
+    template_name = 'me/plans.html'

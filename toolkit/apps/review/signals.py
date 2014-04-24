@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.dispatch import receiver
 from django.contrib.auth.models import User
-from django.db.models.signals import m2m_changed, post_save
+from django.db.models.signals import m2m_changed, post_save, post_delete
 
 from .models import ReviewDocument
 
@@ -11,6 +11,7 @@ def _add_as_authorised(instance, pk_set):
         user = User.objects.filter(pk__in=pk_set).first()
         instance.authorise_user_access(user=user)
         instance.save(update_fields=['data'])
+
 
 def _remove_as_authorised(instance, pk_set):
     if pk_set:
@@ -24,6 +25,17 @@ added as reviewdocument.auth and given auth keys
 This allows them to enter into conversation with each document and its invited
 reviewer
 """
+
+@receiver(post_save, sender=ReviewDocument, dispatch_uid='review.post_save.reset_item_review_percentage_complete_on_complete')
+def reset_item_review_percentage_complete_on_complete(sender, instance, created, update_fields, **kwargs):
+    item = instance.document.item
+    item.recalculate_review_percentage_complete()
+
+
+@receiver(post_delete, sender=ReviewDocument, dispatch_uid='review.pre_delete.reset_item_review_percentage_complete')
+def reset_item_review_percentage_complete_on_delete(sender, instance, **kwargs):
+    item = instance.document.item
+    item.recalculate_review_percentage_complete()
 
 
 @receiver(post_save, sender=ReviewDocument, dispatch_uid='review.ensure_matter_participants_are_in_reviewdocument_participants')

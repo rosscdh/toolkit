@@ -58,8 +58,13 @@ def get_namedtuple_choices(name, choices_tuple):
             return zip(tuple(self), self._choices)
 
         def get_choices_dict(self):
+            """
+            Return an ordered dict of key and their values
+            must be ordered correctly as there are items that depend on the key
+            order
+            """
             choices = OrderedDict()
-            for v, k in self.get_choices():
+            for k, v in self.get_choices():
                 choices[k] = v
             return choices
 

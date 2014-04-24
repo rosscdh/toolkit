@@ -2,7 +2,7 @@
 from django.db import transaction
 from django.dispatch import receiver
 from django.db import IntegrityError
-from django.db.models.signals import pre_save, post_save, post_delete, m2m_changed
+from django.db.models.signals import pre_save, post_save, pre_delete, post_delete, m2m_changed
 
 from toolkit.apps.workspace import _model_slug_exists
 
@@ -75,6 +75,18 @@ def ensure_revision_item_latest_revision_is_current(sender, instance, **kwargs):
         item.save(update_fields=['latest_revision'])
 
 
+@receiver(post_save, sender=Revision, dispatch_uid='revision.reset_item_review_percentage_complete')
+def reset_item_review_percentage_complete(sender, instance, created, **kwargs):
+    """
+    Ensure that the is_current=True revision is set to the item.latest_revision
+    """
+    if created is True:
+        #
+        # Set the recalculate_review_percentage_complete to False
+        #
+        instance.item.recalculate_review_percentage_complete()
+
+
 @receiver(post_save, sender=Revision, dispatch_uid='revision.ensure_revision_reviewdocument_object')
 def ensure_revision_reviewdocument_object(sender, instance, **kwargs):
     """
@@ -123,6 +135,17 @@ can talk
 """
 
 
+@receiver(pre_delete, sender=Revision, dispatch_uid='revision.pre_delete.reset_item_review_percentage_complete')
+def reset_item_review_percentage_complete_on_delete(sender, instance, **kwargs):
+    """
+    On Delete of a revision we want to reset the recalculate_review_percentage_complete setting for the item
+    """
+    if instance.is_current is True:  # only reset it if its the most recent document one
+        # i.e. we have only 1 (or less) reviewdocument then set the item recalculate_review_percentage_complete to False
+        item = instance.item
+        item.recalculate_review_percentage_complete()
+
+
 @receiver(post_delete, sender=Revision, dispatch_uid='revision.set_previous_revision_is_current_on_delete')
 def set_previous_revision_is_current_on_delete(sender, instance, **kwargs):
     """
@@ -133,6 +156,8 @@ def set_previous_revision_is_current_on_delete(sender, instance, **kwargs):
     if previous_revision:
         previous_revision.is_current = True
         previous_revision.save(update_fields=['is_current'])
+        # recalc to % complete
+        previous_revision.item.recalculate_review_percentage_complete()
 
 
 @receiver(m2m_changed, sender=Revision.reviewers.through, dispatch_uid='revision.on_reviewer_add')
