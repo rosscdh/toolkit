@@ -1,7 +1,7 @@
-<div class="media" ng-show="activity.data.comment">
-    {{ actor_name }} ({{ actor_initials }}) commented on Item {{ action_object_name }}): "{{ comment }}".
-    If you need additional information, just take a note.
-    <a href="{{ action_object_url }}">Link to {{ action_object_name }}</a>
-    {{ timesince }}
-    {{ timestamp }}
+<div class="comment" ng-show="activity.data.comment">
+    <strong>{{ actor_name }}</strong> commented on <a href="{{ action_object_url }}">{{ action_object_name }}</a> <span class="pe-7s-clock" tooltip="{{ timestamp }}"></span>
+    <blockquote>
+    	<span class="pe-7s-note"></span> 
+    	<div>{{ comment }}</div>
+	</blockquote>
 </div>
