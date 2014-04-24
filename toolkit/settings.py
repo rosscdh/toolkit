@@ -247,6 +247,8 @@ AWS_HEADERS = {
     'x-amz-acl': 'public-read',
 }
 
+CELERY_ACCEPT_CONTENT = ['json', 'yaml']
+
 FILEPICKER_API_KEY = 'A4Ly2eCpkR72XZVBKwJ06z'
 
 HELLOSIGN_AUTHENTICATION = ("founders@lawpal.com", "test2007")
