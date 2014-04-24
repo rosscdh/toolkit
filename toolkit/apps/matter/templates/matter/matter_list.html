@@ -1,12 +1,11 @@
-{% extends 'gui.html' %}
-
-{% load url from future %}{% load user_tags widont %}
+{% extends 'gui.html' %}{% load url from future %}
 
 {% block body %}
     <div id="matter-list" class="content col-lg-12">
         <section class="matters cards">
             <header class="page-header">
                 <h4>All Matters</h4>
+                <div class="col-md-6 col-md-offset-3">{{ search_form }}</div>
                 <div class="pull-right">
                     {% if can_create %}
                         <a href="{% url 'matter:create' %}" data-toggle="modal" data-target="#matter-create" class="btn btn-success btn-embossed"><i class="fui-plus"></i> New Matter</a>
@@ -14,93 +13,8 @@
                 </div>
             </header>
 
-            <div class="row">
-                {% for m in object_list %}
-                    <article class="col-md-4 matter">
-                        <div class="card">
-                            {% if can_edit %}
-                                <a href="{% url 'matter:edit' matter_slug=m.slug %}" data-toggle="modal" data-target="#matter-edit-{{ m.slug }}" class="edit">
-                                    <span class="fui-gear"></span>
-                                </a>
-                            {% endif %}
-                            <a href="{% url 'matter:detail' matter_slug=m.slug %}#/checklist" title="{{ m.name }}" class="content">
-                                <div class="title">
-                                    {% if user.profile.is_lawyer %}
-                                        <h6>{{ m.client.name }}</h6>
-                                    {% else %}
-                                        <h6>{{ m.lawyer.name }}</h6>
-                                    {% endif %}
-                                    <h5>{{ m.name|widont|safe }}</h5>
-                                </div>
-                                <div class="meta clearfix">
-                                    {% if m.percent_complete == '100%' %}
-                                        <p class="small pull-left done"><span class="fui-check-inverted"></span> Complete</p>
-                                    {% else %}
-                                        <p class="small pull-left">Last updated <time datetime="{{ m.date_modified|timesince }}">{{ m.date_modified|timesince }} ago</time></p>
-                                    {% endif %}
-                                    <div class="people pull-right">
-                                        {% for user in m.participants %}
-                                            {% avatar user %}
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </a>
-                            <div class="progress">
-                                <div class="progress-bar" style="width: {{m.percent_complete}}%;"></div>
-                            </div>
-                        </div>
-                    </article>
-                {% empty %}
-                <div class="col-md-8 col-md-offset-2 text-center welcome-block">
-                    <p class="lead">Welcome to LawPal. Take a quick tour or create your first matter.</p>
-                        <ul id="tourTab" class="nav nav-tabs">
-                          <li class="active">
-                            <a href="#matter-overview"  data-toggle="tab">
-                                <span class="pe-7s-look"></span> Matter Overview</a>
-                          </li>
-                          <li class="">
-                            <a href="#checklist-overview" data-toggle="tab">
-                                <span class="pe-7s-menu"></span>
-                                Checklist
-                            </a>
-                         </li>
-                         <li class="">                                
-                            <a href="#requests" data-toggle="tab">
-                                <span class="pe-7s-check"></span>
-                                Client View
-                            </a>
-                         </li>
-                         <li  class="">
-                            <a href="#markup" data-toggle="tab">
-                                <span class="pe-7s-comment"></span> 
-                                Annotation
-                            </a>
-                          </li>
-                        </ul>
-                    </div>
-                    <div class="col-md-10 col-md-offset-1 text-center welcome-block">
-                        <div id="tab-content" class="tab-content">
-                          <div class="tab-pane active" id="matter-overview">
-                                <div class="note">View all your projects at a glance including progress, who is participating and when they were last active. Access your Notifications in the top right of your screen. </div>
-                               <img src="{{STATIC_URL}}images/screenies/dashboard.png" class="animated fadeIn">
-                          </div>
-                          <div class="tab-pane " id="checklist-overview">
-                                <div class="note">Create a shared, collaborative checklist for your deal. Assign tasks, request documents from clients or third parties, upload documents for review and keep your client up to date. </div>
-                                <img src="{{STATIC_URL}}images/screenies/checklist.png">
-                          </div>
-                          <div class="tab-pane " id="requests">
-                                <div class="note">Your clients get a simple list of things they need to do whether it is uploading a file, reviewing a document or e-signing. Email is great for many things, but for complex projects it falls short.</div>
-                                <img src="{{STATIC_URL}}images/screenies/client-requests.png">
-                          </div>
-                          <div class="tab-pane " id="markup">
-                                <div class="note">Enjoy easy centralized markup with our built-in annotation tools. Clients will love the simplicity. </div>
-
-                                <img src="{{STATIC_URL}}images/screenies/document-markup.png">
-                          </div>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
+            <div id="matter-content" class="row">
+                {#% include 'matter/partials/matter_list.html' %#}
             </div>
         </section>
     </div>
@@ -118,4 +32,176 @@
             <div class="modal" id="matter-delete-{{ m.slug }}"></div>
         {% endif %}
     {% endfor %}
+{% endblock %}
+
+{% block js %}
+<script src="//fb.me/react-0.10.0.js"></script>
+<script src="//fb.me/JSXTransformer-0.10.0.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/fuse.js/1.0.1/fuse.min.js"></script>
+<script>
+'use strict';
+
+var UserData = {
+    'is_lawyer': {{ user.profile.is_lawyer|lower }},
+    'name': "{{ user.get_full_name }}",
+    'can_edit': {{ can_edit|lower }}
+};
+var edit_url = "{% url 'matter:edit' matter_slug='lp-react-name' %}";
+
+var MatterListData = {{ object_list_json|safe }};
+
+var fuse = new Fuse(MatterListData, { keys: ["name", "matter_code", "client.name", "lawyer.name"] });
+
+$( document ).ready(function () {
+    $('#id_q').on('keyup', function ( e ) {
+        e.preventDefault();
+        var val = $(this).val();
+        console.log(val)
+        console.log(fuse.search(val))
+
+    })
+});
+</script>
+
+{% verbatim %}
+<script type="text/jsx">
+/** @jsx React.DOM */
+/**
+* ReactJS Experiment
+*
+*/
+var MatterItem = React.createClass({
+  render: function() {
+    return (
+            <article className="col-md-4 matter">
+                <div className="card">
+
+                    { this.props.editMatterInterface }
+                    
+                    <a href={ this.props.detail_url } title={ this.props.name } className="content">
+                        <div className="title">
+                            <h6>{ this.props.lawyer_or_client_name }</h6>
+                            <h5>{ this.props.name }</h5>
+                        </div>
+                        <div className="meta clearfix">
+                            { this.props.lastupdated_or_complete }
+                            { this.props.participantList }
+                        </div>
+                    </a>
+                    <div className="progress">
+                        <div className="progress-bar" style={ this.props.percentStyle }></div>
+                    </div>
+                </div>
+            </article>
+    );
+  }
+});
+
+var Participants = React.createClass({
+    render: function() {
+        var userNodes = this.props.data.map(function (user) {
+            //console.log(user)
+            return (
+                <div className="avatar img-circle">
+                    <span className="initials" title={ user.name }>{ user.initials }</span>
+                </div>
+            )
+        });
+
+        return (
+          <div className="people pull-right">
+            {userNodes}
+          </div>
+        );
+    }
+});
+
+var LatUpdatedOrComplete = React.createClass({
+    render: function() {
+        var percent_complete = this.props.percent_complete;
+        var date_modified = this.props.date_modified;
+
+        if (percent_complete === '100%') {
+
+            return (
+                <p className="small pull-left done"><span className="fui-check-inverted"></span> Complete</p>
+            );
+
+        } else {
+
+            return (
+                <p className="small pull-left">Last updated <time datetime={ date_modified }>{ date_modified } ago</time></p>
+            );
+        }
+    }
+});
+
+
+var EditMatterInterface = React.createClass({
+    render: function() {
+        var key = this.props.key;
+        var can_edit = this.props.can_edit;
+        var edit_url = this.props.edit_url;
+        var modal_target = '#matter-edit-' + key;
+        if (can_edit === true) {
+
+            return (
+                <a href={edit_url} data-toggle="modal" data-target={modal_target} className="edit">
+                    <span className="fui-gear"></span>
+                </a>
+            );
+
+        } else {
+
+            return '';
+        }
+    }
+});
+
+var MatterList = React.createClass({
+  render: function() {
+    var matterNodes = this.props.data.map(function (matter) {
+
+        var editUrl = edit_url.replace('lp-react-name', matter.slug);
+        var detailUrl = matter.base_url;
+
+        var percentStyle = {'width': matter.percent_complete};
+        var lawyer_or_client_name = (UserData.is_lawyer) ? matter.client.name : matter.lawyer.name ;
+
+        var participantList = <Participants data={matter.participants} />
+        var lastupdatedOrComplete = <LatUpdatedOrComplete percent_complete={matter.percent_complete}
+                                                          date_modified={matter.date_modified} />
+        var editMatterInterface = <EditMatterInterface key={matter.slug} can_edit={UserData.can_edit} edit_url={editUrl} />
+
+        return <MatterItem 
+                key={matter.slug}
+                name={matter.name}
+                is_lawyer={UserData.is_lawyer}
+                lawyer_or_client_name={lawyer_or_client_name}
+
+                participantList={participantList}
+                lastupdated_or_complete={lastupdatedOrComplete}
+                editMatterInterface={editMatterInterface}
+
+                percent_complete={matter.percent_complete}
+                percentStyle={percentStyle}
+                detail_url={detailUrl}
+                edit_url={editUrl}>{matter}</MatterItem>;
+    });
+    return (
+      <div className="MatterList">
+        {matterNodes}
+      </div>
+    );
+  }
+});
+
+React.renderComponent(
+  //<MatterList data={MatterListData} can_create={can_create} can_edit={can_edit} can_delete={can_delete} />,
+  <MatterList data={MatterListData} />,
+  document.getElementById('matter-content')
+);
+</script>
+{% endverbatim %}
+
 {% endblock %}
