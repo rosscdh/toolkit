@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.http import HttpResponseRedirect
-from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.views.generic import CreateView, DeleteView, ListView, TemplateView, UpdateView
 
@@ -14,9 +13,8 @@ from toolkit.mixins import AjaxModelFormView, ModalView
 
 from rest_framework.renderers import UnicodeJSONRenderer
 
-from .forms import (MatterForm, MatterSearchForm)
+from .forms import MatterForm
 
-import json
 import logging
 logger = logging.getLogger('django.request')
 
@@ -34,7 +32,6 @@ class MatterListView(ListView):
         object_list = self.get_serializer(self.object_list, many=True).data
 
         context.update({
-            'search_form': MatterSearchForm(),
             'can_create': self.request.user.profile.is_lawyer,
             'can_delete': self.request.user.profile.is_lawyer,
             'can_edit': self.request.user.profile.is_lawyer,
