@@ -1,5 +1,7 @@
-<div class="media" ng-show="activity.data.comment">
-    {{ actor_name }} ({{ actor_initials }}) annotated on Revision {{ revision_slug }} ({{ item_name }}): "{{ comment }}". If you need additional information, just take a note.
+<div class="comment" ng-show="activity.data.comment">
+	<span class="pe-7s-note"></span> 
+    <strong>{{ actor_name }}</strong> annotated {{ revision_slug }} ({{ item_name }})
+    <blockquote>{{ comment }}</blockquote> 
     <a href="{{ action_object_url }}">Link to {{ action_object_name }}</a>
         {% block review_information %}{% endblock %}
     {{ timesince }}
