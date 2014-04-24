@@ -269,7 +269,6 @@ class MatterActivityEventService(object):
     def invite_user_as_reviewer(self, item, inviting_user, invited_user):
         if inviting_user.pk != invited_user:
             override_message = u'%s invited %s to review %s of %s' % (inviting_user, invited_user, item.latest_revision, item)
-            # override_message = u'%s invited %s as reviewer for %s' % (inviting_user, invited_user, item)
             self._create_activity(actor=inviting_user, verb=u'invited reviewer', action_object=item,
                                   override_message=override_message, user=invited_user)
             self.analytics.event('review.request.sent', user=inviting_user, **{
