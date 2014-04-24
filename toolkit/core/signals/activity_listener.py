@@ -4,7 +4,6 @@ Signals that listen for changes to the core models and then record them as
 activity_stream objects
 @TODO turn the signal handlers into its own module
 """
-from django import template
 from django.conf import settings
 from django.dispatch import receiver
 from django.dispatch.dispatcher import Signal
@@ -20,8 +19,6 @@ except ImportError:
     stored_messages = None
 
 from toolkit.core.services.lawpal_abridge import LawPalAbridgeService
-
-from toolkit.apps.notification.templatetags.notice_tags import get_notification_template, get_notification_context
 
 #from toolkit.apps.notification.tasks import youve_got_notifications
 
@@ -80,35 +77,26 @@ def _abridge_send(verb_slug, actor, target, action_object, message=None, comment
             #
             try:
                 abridge_service = LawPalAbridgeService(user=user,
-                                         ABRIDGE_ENABLED=getattr(settings, 'ABRIDGE_ENABLED', False))  # initialize and pass in the user
+                                                       ABRIDGE_ENABLED=getattr(settings, 'ABRIDGE_ENABLED', False))  
+                                                       # initialize and pass in the user
             except Exception as e:
                 # AbridgeService is not running.
                 logger.critical('Abridge Service is not running because: %s' % e)
                 abridge_service = False
 
             if abridge_service:
-                #
-                # @MARIUS I think that this would best be done as a @staticmethod
-                # as part of the LawPalAbridgeService that way its reuseable
-                # and sole responsiblity? thoughts? rc
-                #
+                from toolkit.api.serializers.user import LiteUserSerializer
                 message_data = _serialize_kwargs({'actor': actor,
                                                   'action_object': action_object,
                                                   'target': target,
                                                   'comment': comment,
-                                                  'item': item})
-                t = get_notification_template(verb_slug)
-                ctx = get_notification_context(message_data, user)
-                ctx.update({
-                    # 'notice_pk': notice.pk,
-                    # 'date': notice.message.date,
-                    'message': message,
-                })
+                                                  'message': message,
+                                                  'item': item,
+                                                  'verb_slug': verb_slug})
+                # Because we cant mixn the ApiMixin class ot the django User Object
+                message_data['actor'] = LiteUserSerializer(actor, context={'request': None}).data
 
-                context = template.loader.Context(ctx)
-
-                # render the template with passed in context
-                message_for_abridge = t.render(context)
+                message_for_abridge = LawPalAbridgeService.render_message_template(user, **message_data)
 
                 abridge_service.create_event(content_group=target.name,
                                              content=message_for_abridge)

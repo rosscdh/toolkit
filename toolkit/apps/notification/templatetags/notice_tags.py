@@ -61,43 +61,9 @@ def get_notification_context(message_data, user):
             action_object_url = action_object.get('url') if action_object else None
 
     if message_data is not None:
-        actor_name = None
-        actor_initials = None
-        if actor:
-
-            # TODO: CLEANUP!
-            # and why does hasattr not work?
-            try:
-                actor_name = actor.get('name')
-            except:
-                if isinstance(actor, dict):
-                    actor_name = None
-                else:
-                    actor_name = u"%s" % actor
-            # if hasattr(actor, 'name'):
-            #     actor_name = actor.get('name')
-            # elif isinstance(actor, dict):
-            #     actor_name = None
-            # else:
-            #     actor_name = u"%s" % actor
-
-            try:
-                actor_initials = actor.get('initials')
-            except:
-                if isinstance(actor, dict):
-                    actor_initials = None
-                else:
-                    actor_initials = actor.get_initials()
-            # if hasattr(actor, 'initials'):
-            #     actor_initials = actor.get('initials')
-            # elif isinstance(actor, dict):
-            #     actor_initials = None
-            # else:
-            #     actor_initials = actor.get_initials()
-
         ctx = {
-            'actor_name': actor_name,  # everything else serialized before
-            'actor_initials': actor_initials,  # everything else serialized before
+            'actor_name': actor.get('name') if actor else None,
+            'actor_initials': actor.get('initials') if actor else None,
             'comment': comment,
             'item_name': item.get('name') if item else None,
             'revision_slug': action_object.get('slug') if action_object else None,
