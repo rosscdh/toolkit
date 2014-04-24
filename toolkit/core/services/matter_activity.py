@@ -159,7 +159,7 @@ class MatterActivityEventService(object):
         })
 
     def item_rename(self, user, item, previous_name):
-        override_message = u'%s renamed item from %s to %s' % (user, previous_name, item.name)
+        override_message = u'%s renamed %s to %s' % (user, previous_name, item.name)
         self._create_activity(actor=user, verb=u'renamed', action_object=item, item=item,
                               override_message=override_message, previous_name=previous_name)
 
