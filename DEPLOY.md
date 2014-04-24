@@ -5,6 +5,7 @@ Deployment actions by branch
 
 1. ./manage.py migrate review 0001 --initial # setup the base
 2. ./manage.py migrate review # add the crocodoc uuid field
+3. ensure that angular (bower) has "angular-sanitize": "~1.2.16",
 
 --------------------------------------------------------------------------------
 ** DEPLOYED 18 April 2014
