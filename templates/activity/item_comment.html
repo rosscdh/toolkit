@@ -1,9 +1,7 @@
-<div class="media" ng-show="activity.data.comment">
-    <a class="user-icon ng-scope ng-binding" tooltip-placement="left" tooltip="{{ actor }}, {{ timesince }} ago" href="#">{{ actor.get_initials }}</a>
-    <div class="media-body">
-        <a href="{{ action_object_url }}">{{ action_object }}</a>
-        <div>{{ actor }} commented on {{ action_object.name }}</div>
-        <div class="msg-body ng-binding" ng-bind-html="activity.data.comment | newlines">{{ data.comment }}</div>
-        <div class="msg-meta ng-binding">{{ actor}}, {{ timesince }}</div>
-    </div>
+<div class="comment" ng-show="activity.data.comment">
+    <strong>{{ actor_name }}</strong> commented on <a href="{{ action_object_url }}">{{ action_object_name }}</a> <span class="pe-7s-clock" tooltip="{{ timestamp }}"></span>
+    <blockquote>
+    	<span class="fui-chat"></span> 
+    	<div>{{ comment }}</div>
+	</blockquote>
 </div>

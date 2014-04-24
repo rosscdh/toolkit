@@ -4,8 +4,8 @@
     "model": "auth.user",
     "fields": {
       "username": "testcustomer",
-      "first_name": "Test",
-      "last_name": "Customer",
+      "first_name": "Tëst",
+      "last_name": "Customër",
       "is_active": true,
       "is_superuser": false,
       "is_staff": false,
@@ -22,8 +22,8 @@
     "model": "auth.user",
     "fields": {
       "username": "testlawyer",
-      "first_name": "Test",
-      "last_name": "Lawyer",
+      "first_name": "Tëst",
+      "last_name": "Lawyër",
       "is_active": true,
       "is_superuser": false,
       "is_staff": false,
@@ -40,8 +40,8 @@
     "model": "auth.user",
     "fields": {
       "username": "testlawyerinproject",
-      "first_name": "Test",
-      "last_name": "Lawyer in Project",
+      "first_name": "Tëst",
+      "last_name": "Lawyër in Project",
       "is_active": true,
       "is_superuser": false,
       "is_staff": false,
@@ -58,8 +58,8 @@
     "model": "auth.user",
     "fields": {
       "username": "testlawyernotinproject",
-      "first_name": "Test",
-      "last_name": "Lawyer not in Project",
+      "first_name": "Tëst",
+      "last_name": "Lawyër not in Project",
       "is_active": true,
       "is_superuser": false,
       "is_staff": false,
@@ -116,7 +116,7 @@
     "model": "workspace.workspace",
     "fields": {
       "is_deleted": false,
-      "name": "Test Workspace",
+      "name": "Tëst Workspace",
       "date_modified": "2014-02-27T09:40:41.635Z",
       "tools": [
         1

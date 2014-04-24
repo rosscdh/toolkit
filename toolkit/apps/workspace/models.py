@@ -2,17 +2,17 @@
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.db.models.loading import get_model
-from django.db.models.signals import pre_save, post_save, m2m_changed
+from django.db.models.signals import pre_save, post_save, post_delete, m2m_changed
 
 from toolkit.core.mixins import IsDeletedMixin, ApiSerializerMixin
-from toolkit.core.services.matter_activity import MatterActivityEventService  # cyclic
 
 from .signals import (ensure_workspace_slug,
                       ensure_workspace_matter_code,
                       # tool
                       ensure_tool_slug,
+                      on_workspace_post_delete,
                       on_workspace_post_save,
-                      on_workspace_m2m_changed)
+                      on_workspace_m2m_changed,)
 
 from toolkit.utils import _class_importer
 
@@ -22,13 +22,14 @@ from uuidfield import UUIDField
 from jsonfield import JSONField
 
 from .managers import WorkspaceManager
-from .mixins import ClosingGroupsMixin, CategoriesMixin
+from .mixins import ClosingGroupsMixin, CategoriesMixin, RevisionLabelMixin
 
 
 class Workspace(IsDeletedMixin,
                 ClosingGroupsMixin,
                 CategoriesMixin,
                 ApiSerializerMixin,
+                RevisionLabelMixin,
                 models.Model):
     """
     Workspaces are areas that allow multiple tools
@@ -66,6 +67,7 @@ class Workspace(IsDeletedMixin,
         #
         # Initialize the actions property
         #
+        from toolkit.core.services.matter_activity import MatterActivityEventService  # cyclic
         self._actions = MatterActivityEventService(self)
         super(Workspace, self).__init__(*args, **kwargs)
 
@@ -115,15 +117,19 @@ class Workspace(IsDeletedMixin,
         return user.profile.is_lawyer and (user == self.lawyer or user in self.participants.all())
 
     def can_delete(self, user):
-        return user.profile.is_lawyer and (user == self.lawyer or user in self.participants.all())
+        return user.profile.is_lawyer and (user == self.lawyer)
 
 """
 Connect signals
 """
 pre_save.connect(ensure_workspace_slug, sender=Workspace, dispatch_uid='workspace.pre_save.ensure_workspace_slug')
 pre_save.connect(ensure_workspace_matter_code, sender=Workspace, dispatch_uid='workspace.pre_save.ensure_workspace_matter_code')
+
+post_delete.connect(on_workspace_post_delete, sender=Workspace, dispatch_uid='workspace.post_delete.on_workspace_post_delete')
 post_save.connect(on_workspace_post_save, sender=Workspace, dispatch_uid='workspace.post_save.on_workspace_post_save')
+
 m2m_changed.connect(on_workspace_m2m_changed, sender=Workspace.participants.through, dispatch_uid='workspace.m2m_changed.on_workspace_m2m_changed')
+
 
 rulez_registry.register("can_read", Workspace)
 rulez_registry.register("can_edit", Workspace)

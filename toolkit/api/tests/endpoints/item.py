@@ -243,7 +243,7 @@ class ItemDataTest(BaseEndpointTest):
         self.assertEqual(len(stream), 2)  # shall only find the newest entry, the 2 other ones are too old.
 
         self.assertEqual(stream[0].data['override_message'],
-                         u'Lawyer Test changed the status of Item Data Test No. 1 from New to Final')
+                         u'Lawyër Tëst set Item Data Test No. 1 to Final')
 
     def test_change_name_signal(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -254,7 +254,7 @@ class ItemDataTest(BaseEndpointTest):
         self.assertEqual(len(stream), 2)  # shall only find the newest entry, the 2 other ones are too old.
 
         self.assertEqual(stream[0].data['override_message'],
-                         u'Lawyer Test renamed item from Item Data Test No. 1 to New Name')
+                         u'Lawyër Tëst renamed item from Item Data Test No. 1 to New Name')
 
     def test_item_reopened_signal(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -264,7 +264,7 @@ class ItemDataTest(BaseEndpointTest):
         stream = model_stream(Item)
         self.assertEqual(len(stream), 2)  # shall only find the newest entry, the 2 other ones are too old.
 
-        self.assertEqual(stream[0].data['override_message'], u'Lawyer Test closed Item Data Test No. 1')
+        self.assertEqual(stream[0].data['override_message'], u'Lawyër Tëst closed Item Data Test No. 1')
 
         resp = self.client.patch(self.endpoint, json.dumps({'is_complete': 'false'}), content_type='application/json')
         self.assertEqual(resp.status_code, 200)
@@ -272,4 +272,4 @@ class ItemDataTest(BaseEndpointTest):
         stream = model_stream(Item)
         self.assertEqual(len(stream), 3)  # shall only find the newest entry, the 2 other ones are too old.
 
-        self.assertEqual(stream[0].data['override_message'], 'Lawyer Test reopened Item Data Test No. 1')
+        self.assertEqual(stream[0].data['override_message'], 'Lawyër Tëst reopened Item Data Test No. 1')

@@ -40,7 +40,7 @@
 <!-- LAWYER checklist items //-->
 <tbody ui:sortable="checklistItemSortableOptions" ng:model="cat.items" class="group" ng-show="data.usdata.current.user_class=='lawyer'">
 	<tr class="item-heading animation" ng-repeat="item in cat.items" ng-click="selectItem(item, cat)"
-		 ng-class="{ 'item-closed': item.is_complete, 'item-open': !item.is_complete, 'selected': item.slug===data.selectedItem.slug }"
+		 ng-class="{ 'item-closed': item.is_complete, 'item-open': !item.is_complete, 'selected': item.slug===data.selectedItem.slug, 'tr-min-height':item.placeholder, 'tr-min-show': data.dragging }"
 		 ng-file-drop="onFileDropped($files, item, this);selectItem(item, cat);" ng-file-drag-over-class="file-drag-over"
 		 ui-sref="checklist.item({ 'itemSlug': item.slug })">
 		<td class="item-title">
@@ -61,22 +61,20 @@
 					<span class="fui-time"></span> Awaiting Files <span ng-bind="item.responsible_party | initials:true"></span>
 				</button>
                 <button disabled="" class="btn btn-warning btn-xs"
-                        ng-show="!item.is_requested&&item.latest_revision.reviewers.length>0&&getReviewPercentageComplete(item)==0">
+                        ng-show="!item.is_requested&&item.review_percentage_complete==0">
 					<span class="fui-time"></span> Review in progress
 				</button>
                 <button disabled="" class="btn btn-warning btn-xs"
-                        ng-show="!item.is_requested&&item.latest_revision.reviewers.length>0&&getReviewPercentageComplete(item)>0&&getReviewPercentageComplete(item)<100">
-                    <span class="fui-user"></span> Review {{ getReviewPercentageComplete(item) }}%
-                </button>
+                        ng-show="!item.is_requested&&item.review_percentage_complete>0&&item.review_percentage_complete<1">
+                    <span class="fui-user"></span> Review {{ item.review_percentage_complete * 100 }}%
+                </button> <!--getReviewPercentageComplete(item)-->
 			</span>
 			<span class="fui-check-inverted" ng-show="item.is_complete"></span>
 		</td>
 	</tr>
-	<tr ng-class="{ 'showme': cat.items.length==0&&data.dragging}" class="hidden"><td colspan="2" class="text-muted">Drag item into this empty category</td></tr>
-	<tr class="hidden"><td colspan="2" class="text-muted">Drag item into this empty category</td></tr>
 </tbody>
 <tbody ng-show="cat.items.length==0" ng-show="data.usdata.current.user_class=='lawyer'">
-	<tr ng-show="cat.items.length==0&&data.showAddForm!=$index&&!data.dragging"><td colspan="2" ng-click="showAddItemForm($index);" class="text-center"><span class="btn btn-link btn-xs animated-slow flash" style="text-decoration:underline;">Add the first item</span></td></tr>
+	<tr ng-show="cat.items.length==0&&data.showAddForm!=$index"><td colspan="2" ng-click="showAddItemForm($index);"><span class=" btn btn-info btn-xs">Add the first item</span></td></tr>
 </tbody>
 <!-- end LAWYER checklist //-->
 

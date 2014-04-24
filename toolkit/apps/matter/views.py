@@ -1,4 +1,6 @@
 from django.conf import settings
+from django.http import HttpResponseRedirect
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.views.generic import CreateView, DeleteView, ListView, TemplateView, UpdateView
 
@@ -6,10 +8,14 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
 
 from toolkit.api.serializers import LiteMatterSerializer
+from toolkit.apps.matter.services import (MatterRemovalService, MatterParticipantRemovalService)
 from toolkit.apps.workspace.models import Workspace
 from toolkit.mixins import AjaxModelFormView, ModalView
 
 from .forms import MatterForm
+
+import logging
+logger = logging.getLogger('django.request')
 
 
 class MatterListView(ListView):
@@ -101,3 +107,31 @@ class MatterDeleteView(ModalView, DeleteView):
 
     def get_success_url(self):
         return reverse('matter:list')
+
+    def get_context_data(self, **kwargs):
+        context = super(MatterDeleteView, self).get_context_data(**kwargs)
+        context.update({
+            'action': 'delete' if self.request.user == self.object.lawyer else 'stop-participating'
+        })
+        return context
+
+    def delete(self, request, *args, **kwargs):
+        """
+        Calls the delete() method on the fetched object and then
+        redirects to the success URL.
+        """
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+
+        if self.object.lawyer == request.user:
+            service = MatterRemovalService(matter=self.object, removing_user=request.user)
+            service.process()
+
+        else:
+            #
+            # Is a participant trying to stop participating
+            #
+            service = MatterParticipantRemovalService(matter=self.object, removing_user=request.user)
+            service.process(user_to_remove=request.user)
+
+        return HttpResponseRedirect(success_url)

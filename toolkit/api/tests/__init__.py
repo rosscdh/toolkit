@@ -4,7 +4,6 @@ from .endpoints.matter import *
 from .endpoints.revision_request import *
 from .endpoints.review import *
 from .endpoints.sign import *
-from .endpoints.item_request import *
 from .endpoints.item import *
 from .endpoints.sort import *
 from .endpoints.participant import *

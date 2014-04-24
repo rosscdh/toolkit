@@ -1,0 +1,24 @@
+{% load humanize %}{% load url from future %}
+<article class="notification">
+    <div class="row">
+        <div class="col-xs-1">
+            <div class="avatar img-circle"><span class="initials" title="{{ actor_name }}">{{ actor_initials }}</span></div>
+        </div>
+        <div class="col-xs-10">
+            {% block notice %}
+                <p class="lead">{{ message }}</p>
+                <a href="{{ action_object_url }}">{{ action_object_name }}</a>
+                <p class="small">{{ date|naturaltime }} — in <a href="{{ base_url }}">{{ target_name }}</a> for {{ client_name }}.</p>
+            {% endblock %}
+        </div>
+
+        <div class="col-xs-1">
+            {% if notice_pk %}
+                {% comment %}ONLY SHOW A LINK IF A PK IS AVAILABLE (NOT IN ABRIDGE WHICH USES THE SAME TEMPLATE){% endcomment %}
+                <a href="javascript:;" data-pk="{{ notice_pk }}" data-url="{% url 'notification:inbox-read' pk=notice_pk %}" class="btn btn-sm notification-btn mark-as-read" data-toggle="tooltip" data-placement="top" title="Mark as read">
+                    <span class="fui-check text-info"></span>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</article>

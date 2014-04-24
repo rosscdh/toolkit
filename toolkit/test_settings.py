@@ -72,6 +72,7 @@ LAWPAL_ACTIVITY['activity']['whitelist'] = [
     'item-closed', 'item-reopened', 'item-added-revision-comment', 'item-deleted-revision-comment',
     'revision-created', 'revision-deleted',
     'item-invited-signer',
+    'item-completed-all-reviews',
     'itemrequestrevisionview-provide-a-document',
     'workspace-created', 'workspace-added-participant', 'workspace-removed-participant']
 

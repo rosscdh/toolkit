@@ -10,6 +10,7 @@ from toolkit.core.item.models import Item
 
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 
+from .revision import SimpleRevisionSerializer
 from .user import LiteUserSerializer, SimpleUserWithReviewUrlSerializer
 
 
@@ -18,9 +19,11 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
 
     status = serializers.ChoiceField(required=False, choices=Item.ITEM_STATUS.get_choices())
 
+    review_percentage_complete = serializers.Field(source='review_percentage_complete')  # removed while fixing things
+
     responsible_party = LiteUserSerializer(required=False)
 
-    latest_revision = serializers.SerializerMethodField('get_latest_revision')
+    latest_revision = SimpleRevisionSerializer(read_only=True)
 
     matter = serializers.HyperlinkedRelatedField(many=False, required=True, view_name='workspace-detail', lookup_field='slug')
 
@@ -33,7 +36,9 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
         model = Item
         lookup_field = 'slug'
         fields = ('slug', 'url',
-                  'status', 'responsible_party',
+                  'status',
+                  'responsible_party',
+                  'review_percentage_complete',
                   'name', 'description', 'matter',
                   'parent', 'children', 'closing_group', 'category',
                   'latest_revision',
@@ -79,13 +84,24 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
     def get_request_document_meta(self, obj):
         """
         Return the requested by info if present otherwise null
-        see item_request.py
+        see revision_request.py
         """
         return obj.data.get('request_document', {
                 'message': None,
                 'requested_by': None,
                 'date_requested': None
             })
+
+
+class SimpleItemSerializer(ItemSerializer):
+    class Meta(ItemSerializer.Meta):
+        fields = ('url', 'slug', 'name', 
+                  'status',
+                  'review_percentage_complete',
+                  'category',
+                  'latest_revision',
+                  'is_final', 'is_complete', 'is_requested',
+                  'date_due',)
 
 
 class LiteItemSerializer(ItemSerializer):

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.core.urlresolvers import reverse
-
-from actstream.models import target_stream
+from django.template import loader
 
 from model_mommy import mommy
 
@@ -34,14 +33,16 @@ class MatterActivityEndpointTest(BaseEndpointTest):
 
         events = json_data['results']
 
-        self.assertEqual(len(events), 2)  # create matter, create item; we dont record the participant add because participant add where the adding user is teh same as the added user is skipped
+        self.assertEqual(len(events), 3)  # create matter, create item, added participant; we dont record the participant add because participant add where the adding user is teh same as the added user is skipped
         self.assertGreater(len(events[0]['event']), 10)  # just to see if event-text contains information. username is not fix.
-        #self.assertEqual(events[0]['event'], u'%s created 1 %s on %s' % (self.lawyer, self.item.slug, self.matter,))
-        self.assertItemsEqual(events[0].keys(),
-                              [u'timestamp', u'timesince', u'data', u'id', u'actor', u'action_object', u'event'])
 
-        # check if actor was added correctly
-        self.assertEqual(events[0]['actor']['name'], u'Lawyer Test')
+        t = loader.get_template('activity/default.html')
+        ctx = loader.Context({'message': u'%s created %s' % (self.lawyer, self.item.name)})
+        rendered = t.render(ctx)
+        self.assertEqual(rendered, events[0].get('event'))
+
+        self.assertItemsEqual(events[0].keys(),
+                              [u'timestamp', u'id', u'event'])
 
 
 class ItemActivityEndpointTest(BaseEndpointTest):

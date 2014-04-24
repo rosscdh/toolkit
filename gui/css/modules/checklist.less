@@ -17,7 +17,7 @@ html,body, div.full
 @doc-status-7:		lighten(@concrete, 10%);			// Custom C
 @doc-status-8:		lighten(@alizarin, 10%);			// Custom D
 @doc-status-9:		lighten(@concrete, 10%);			// Custom E
- 
+
 
 /* Navbar - this is the top of sthe matter  */
 .navbar {
@@ -40,7 +40,7 @@ html,body, div.full
 				margin-right:3px;
 				font-size:14px;
 			}
-			img.user { 
+			img.user {
 				width:26px;
 				border-radius: 15px;
 				margin-top:-9px;
@@ -76,7 +76,7 @@ html,body, div.full
 
 	}
 	.logo-mark {
-		float:left;	
+		float:left;
 		border-right:0px solid darken(@brand-primary, 5%);
 		padding:14px 12px 15px 17px;
 		img {
@@ -127,181 +127,11 @@ html,body, div.full
 		color:#666;
 	}
 
-	img.user { 
+	img.user {
 		width:30px;
 		border-radius: 15px;
 		margin-top:-4px;
 		margin-bottom:-5px;
-	}
-	table.checklist {
-		background-color:white;
-		margin-top:10px;
-		margin-bottom:13px;
-		tr.category-uncategorized th.category {
-			color:#ccc;
-		}
-		tr {
-			border-top:5px solid #f2f2f2;
-			cursor:pointer;
-			&.item-closed {
-				color: lighten(@nephritis, 70%);
-				opacity:0.8;
-				background-color:lighten(@emerland, 15%);
-				padding-top:10px;
-				td {
-				}
-				.item-title { 
-					color: lighten(@nephritis, 70%);
-				}
-				&.selected {
-					background-color:darken(@emerland, 5%);
-				}
-			}
-			&.selected {
-				background-color: lighten(@belize-hole, 10%);
-				color:white;
-				td, td.item-title {
-					color:white;
-					opacity:1;
-				}
-				td.status {
-					button {
-						background-color:transparent;
-						color:white;
-						border-color:white;
-					} 
-				}
-			}
-		}
-		th {
-			background-color:#f2f2f2;
-			&.category-controls {
-				.btn-group {
-					.dropdown-menu {
-					}
-				} 
-			}
-			&.category {
-				padding:13px 0px 0px 0px;
-			}
-			text-transform: uppercase;
-			padding:8px 0px 0px 0px;
-			color: #AAA;
-			font-size:13px;
-			&.category {
-				color:#666;
-				font-size:14px;
-			}
-			td {
-				padding-top:20px;
-			}
-		}
-		tr td {
-			padding:8px 9px;
-			border-top:none;
-			border-bottom:none;
-			&.item-icon {
-				padding-left:5px;
-				padding-right:0px;
-				width:20px;
-				.icon {
-					line-height: 20px;
-					width:18px;
-					float:left;
-					margin:-4px 1px 0px 3px;
-					span {
-						font-size: 12px;
-					}
-				}
-			}
-			&:hover .fui-list-columned {
-				opacity:0.9;
-			}
-			&.item-title {
-				font-size:14px;
-				font-family:Helvetica;
-				word-spacing: normal;
-				color:#777;
-				font-weight:bold;
-				padding-left:9px;
-				padding-top:9px;
-				position:relative;
-				span {
-					outline:none;
-					&:focus {
-						border-bottom:2px solid lighten(@sun-flower, 25%);
-						background-color: lighten(@sun-flower, 46%);
-						color:#444;
-					}
-				}
-				&.item-open {
-					&hover {
-						border-left-width:6px;
-					}
-				}
-				.fui-list-columned {
-					opacity:0;
-					font-size:18px;
-					position:absolute;
-					cursor:move;
-					top:10px;
-					left:0px;
-					width:6px;
-					overflow:hidden;
-				}
-				&:hover .fui-list-columned {
-					opacity:1;
-				}
-			}
-		}
-		td.status {
-			padding-top:5px;
-			padding-bottom:0px;
-			text-align:right;
-			.fui-check-inverted {
-				padding-top:2px;
-			}
-			a {
-				text-decoration:underline;
-			}
-			button {
-				padding:5px 5px;
-				font-size:11px;
-				margin-right:02px;
-				&[class*="doc-status"] {
-					background-color:transparent;
-					border:1px solid white;
-				}
-				&.doc-status-0 { border-color:@doc-status-0;color:@doc-status-0; }
-				&.doc-status-1 { border-color:@doc-status-1;color:@doc-status-1; }
-				&.doc-status-2 { border-color:@doc-status-2;color:@doc-status-2; }
-				&.doc-status-3 { border-color:@doc-status-3;color:@doc-status-3; }
-				&.doc-status-4 { border-color:@doc-status-4;color:@doc-status-4; }
-				&.doc-status-5 { border-color:@doc-status-5;color:@doc-status-5; }
-				&.doc-status-6 { border-color:@doc-status-6;color:@doc-status-6; }
-				&.doc-status-7 { border-color:@doc-status-7;color:@doc-status-7; }
-				&.doc-status-8 { border-color:@doc-status-8;color:@doc-status-8; }
-				&.doc-status-9 { border-color:@doc-status-9;color:@doc-status-9;}
-			}
-		}
-		td.add-new {
-			text-align:right;
-			padding:4px 0px 4px 0px;
-			font-size:13px;
-			background-color:#f2f2f2;
-			a {
-				color: @gray-light;
-				font-weight:bold;
-			}
-			a.set-property {
-				font-size:11px;
-			}
-		}
-		tr.add-new-controls {
-			.input-group {
-				width:100%;
-			}
-		}
 	}
 
 	// Middle panel, item view
@@ -324,7 +154,7 @@ html,body, div.full
 				text-decoration:underline;
 			}
 		}
-		small { 
+		small {
 			font-size:13px;
 		}
 		.item-help {
@@ -408,8 +238,12 @@ html,body, div.full
 					border-width:5px 4px;
 				}
 			}
-
 		}
+        .no-revisions {
+            color:lighten(@gray, 20%);
+            padding:10px;
+            text-align:center;
+        }
 		.waiting-revision {
 			text-align:center;
 			background-color:lighten(@brand-warning, 15%);
@@ -488,7 +322,7 @@ html,body, div.full
 					}
 					.item-description {
 						margin-bottom:10px;
-					}					
+					}
 					.tools {
 						background-color:@doc-status-0;
 						padding:1px 3px 2px 4px;
@@ -570,7 +404,7 @@ html,body, div.full
 						background-color:lighten(@silver, 18%);
 					}
 					ul {
-					
+
 						li {
 							margin-bottom:5px;
 							margin-top:5px;
@@ -650,7 +484,7 @@ html,body, div.full
 			padding-top:10px;
 			padding-bottom:10px;
 			textarea {
-				font-size:12px; 
+				font-size:12px;
 				border:0px;
 				margin-top:3px;
 				&:focus {
@@ -662,7 +496,88 @@ html,body, div.full
 				margin-top:-10px;
 			}
 		}
-		ul {
+		ul.activity-log {
+			margin-top: 10px;
+			li {
+				font-size:12px;
+				margin-bottom:4px;
+				color:#777;
+				position:relative;
+				a {
+					text-decoration: underline;
+					color:#999;
+				}
+				.comment, .annotation {
+					margin-top:10px;
+					margin-bottom:12px;
+				}
+				blockquote {
+					margin-top:0px;
+					margin-bottom:0px;
+					border-left:none;
+					position:relative;
+					font-size:13px;
+					color:@belize-hole;
+					padding:4px 6px 4px 26px;
+					background-color:mix(white, @belize-hole, 95%);
+					div {
+						line-height: 17px;
+						padding:4px;
+					}
+					a {
+						font-style: normal;
+						color:inherit;
+						font-size:11px;
+						opacity:0.6;
+					}
+					span {
+						display:block;
+						position:absolute;
+						font-weight: bold;
+						left:0;
+						color:mix(white, @belize-hole, 70%);
+						padding:8px 3px 0px 4px;
+						font-size:12px;
+						text-align: center;
+						width:23px;
+						top:0;
+						height:100%;
+						background-color:lighten(@belize-hole, 15%);
+						&.fui-document {
+							padding-left:7px;
+						}
+					}
+				}
+				.annotation {
+					blockquote {
+						color:@orange;
+						background-color:mix(white, @orange, 95%);
+						span {
+							color:mix(white, @orange, 70%);
+							background-color:lighten(@orange, 15%);
+						}
+					}
+
+				}
+				div.basic {
+					color:#aaa;
+				}
+				span.pe-7s-clock {
+					color:#aaa;
+					opacity:0;
+					position:absolute;
+					right:0;
+					top:0;
+				}
+				&:hover {
+					span.pe-7s-clock {
+						opacity:1;
+					}
+				}
+			}			
+		}
+
+		/*ul {
 			padding-top:15px;
 			li {
 				.media {
@@ -690,7 +605,7 @@ html,body, div.full
 							background-color:#f1f1f1;
 							padding:8px 10px;
 							color:darken(@asbestos, 0%);
-							text-rendering: optimizeLegibility; 
+							text-rendering: optimizeLegibility;
 							border-radius:4px;
 						}
 						.msg-meta {
@@ -715,7 +630,7 @@ html,body, div.full
 						.msg-body{
 							color:darken(@peter-river, 10%);
 							background-color:mix(@peter-river, white, 10%);
-							text-rendering: optimizeLegibility; 
+							text-rendering: optimizeLegibility;
 							border-radius:4px;
 						}
 						.msg-meta {
@@ -730,7 +645,7 @@ html,body, div.full
 				&.action {
 					padding:3px 0px;
 					color: lighten(@asbestos, 20%);
-					font-size:12px;	
+					font-size:12px;
 					margin-bottom:0px;
 					a {
 						color:lighten(@asbestos, 15%);
@@ -738,7 +653,7 @@ html,body, div.full
 					}
 				}
 			}
-		}
+		}*/
 	}
 }
 
@@ -754,7 +669,7 @@ html,body, div.full
 				background-color:#FFF;
 				padding:8px;
 				font-size:12px;
-				border-radius: 40px;				
+				border-radius: 40px;
 			}
 			label {
 				font-weight:normal;
@@ -889,7 +804,7 @@ html,body, div.full
 		.sub {
 			font-size:13px;
 			line-height:12px;
-			color:darken(@silver, 13%);	
+			color:darken(@silver, 13%);
 		}
 		.btn {
 			margin-top:4px;
@@ -942,5 +857,3 @@ html,body, div.full
 		}
 	}
 }
-
-

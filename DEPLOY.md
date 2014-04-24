@@ -1,6 +1,46 @@
 Deployment actions by branch
 ----------------------------
 
+[activity-stream-update]
+
+1. ./manage.py migrate review 0001 --initial # setup the base
+2. ./manage.py migrate review # add the crocodoc uuid field
+
+--------------------------------------------------------------------------------
+** DEPLOYED 18 April 2014
+--------------------------------------------------------------------------------
+
+[choices-names]
+
+1. git co master;./manage.py migrate attachment 0003 
+must first run this data migration to ensure we catch all the current
+item statuses
+
+2. ./manage.py migrate attachment 0004  # removal of the status field 
+
+
+[celery]
+
+2. manage.py migrate djcelery
+
+
+--------------------------------------------------------------------------------
+** DEPLOYED 6 April 2014 - celery tasks are preset but not enabled
+--------------------------------------------------------------------------------
+
+[celery]
+
+2. manage.py migrate djcelery
+
+
+--------------------------------------------------------------------------------
+** DEPLOYED 6 April 2014 - celery tasks are preset but not enabled
+--------------------------------------------------------------------------------
+
+[celery]
+
+2. manage.py migrate djcelery
+
 
 --------------------------------------------------------------------------------
 ** DEPLOYED 6 April 2014 - celery tasks are preset but not enabled

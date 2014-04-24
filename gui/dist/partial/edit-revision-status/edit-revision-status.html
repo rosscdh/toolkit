@@ -1,0 +1,26 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel">Edit States</h4>
+    </div>
+    <form name="requestForm" ng-submit="request()">
+        <div class="modal-body">
+            <p class="">Modifying file states will affect this matter only. If you choose to copy an existing matter when you create a new one, the states will also be copied over.</p>
+            <strong ng-show="participants.length>0">Revision status</strong>
+            <ul class="list-unstyled">
+                <li ng-repeat="obj in statuslist">
+                   <span class="icon status-{{ obj.key }}"></span>
+                   <input class="form-control input-sm" id="input-status-{{obj.key}}" ng-model="obj.value" />
+                   <a href="javascript:;" ng-click="resetDefault(obj.key)"><small class="text-muted">Reset</small></a>
+                   <a href="javascript:;" ng-click="removeStatus(obj.key, $index)" ng-show="statuslist.length>1"><small class="text-muted">Del</small></a>
+                </li>
+            </ul>
+            <a href="javascript:;" ng-click="addStatus()" ng-show="statuslist.length<9" class="btn btn-default btn-sm"><span class="fui-plus-inverted"></span> Add new status</a>&nbsp;
+        </div>
+        <div class="modal-footer">
+            <!--<input type="button" class="btn btn-default" ng-click="resetDefault()" style="float: left;" value="Reset to default"/>-->
+
+            <button class="btn btn-default" ng-click="cancel()">Cancel</button>
+            <button class="btn btn-primary" type="submit" ng-disabled="invalid()">Save</button>
+        </div>
+    </form>
+</div>
