@@ -40,16 +40,18 @@ def get_notification_context(message_data, user):
         # it's a default object.
         action_object_url = action_object.get('regular_url', None)  # never use action_object.get('url', None) as we never want the serializer (api) url which is the api link to be used here
 
+        item_queryset = Item.objects.select_related('matter')
+
         if comment:
             # it's a comment either on item or revision
             if item:
                 # # if action_object contains an item, it MUST be a revision. -> build revision link of the following format:
                 # # /matters/lawpal-corporate-setup/#/checklist/41b53cd527224809a5fd5e325c7511f1/:user_crocodoc_deatil_view_url
-                item_object = Item.objects.get(slug=item.get('slug'))
+                item_object = item_queryset.get(slug=item.get('slug'))
                 action_object_url = item_object.get_full_user_review_url(user=user, version_slug=action_object['slug'])
             else:
                 # it's a link on an item -> show item-link
-                target_object = Item.objects.get(slug=action_object.get('slug'))
+                target_object = item_queryset.get(slug=action_object.get('slug'))
                 action_object_url = target_object.get_regular_url()
 
     if message_data is not None:
