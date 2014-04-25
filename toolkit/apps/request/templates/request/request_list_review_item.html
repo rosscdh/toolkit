@@ -25,7 +25,7 @@
     {% endif %}
 </article>
 
-<div class="modal modal-full" id="request-review-{{ review.pk }}">
+<div class="modal modal-full" id="request-review-{{ review.pk }}" data-reviewdocument_slug="{{ review.slug }}" data-item_slug="{{ review.document.item.slug }}" data-matter_slug="{{ review.document.item.matter.slug }}">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">

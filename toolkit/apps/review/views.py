@@ -42,8 +42,6 @@ def _authenticate(request, obj, matter, **kwargs):
             # We are indeed the reviewer and are reviewing the document
             #
             login(request, requested_authenticated_user)
-            # only for the reviewer, we dont do this for when participants view
-            obj.reviewer_has_viewed = True
 
 
 class ReviewRevisionView(DetailView):
@@ -75,10 +73,6 @@ class ReviewRevisionView(DetailView):
         # Perform authentication of the user here
         #
         _authenticate(request=self.request, obj=self.object, matter=self.matter, **self.kwargs)
-
-        self.object.document.item.matter.actions.user_viewed_revision(item=self.object.document.item,
-                                                                      user=self.request.user,
-                                                                      revision=self.object.document)
 
         return self.object
 
