@@ -15,7 +15,8 @@ from .matter import (MatterEndpoint,
 
 from .review import (ReviewEndpoint,
                      ItemRevisionReviewersView,
-                     ItemRevisionReviewerView,)
+                     ItemRevisionReviewerView,
+                     ReviewerHasViewedRevision,)
 
 from .sign import   (SignatureEndpoint,
                      ItemRevisionSignersView,
