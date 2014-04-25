@@ -13,8 +13,9 @@ from .views import (ConfirmAccountView,
                     ConfirmEmailValidationRequest,
                     SendEmailValidationRequest,
 
-                    InvoicesView,
-                    PlansView,
+                    PaymentListView,
+                    PlanListView,
+                    PlanChangeView,
 
                     AccountSettingsView,
                     LawyerLetterheadView)
@@ -29,8 +30,9 @@ urlpatterns = patterns(
     url(r'^email_change_confirmed/(?P<token>.*)/$', ConfirmEmailChangeRequest.as_view(), name='confirm-email-change'),
     url(r'^password_change_confirmed/(?P<token>.*)/$', ConfirmPasswordChangeRequest.as_view(), name='confirm-password-change'),
 
-    url(r'^invoices/$', login_required(InvoicesView.as_view()), name='invoices'),
-    url(r'^plans/$', login_required(PlansView.as_view()), name='plans'),
+    url(r'^payments/$', login_required(PaymentListView.as_view()), name='payment-list'),
+    url(r'^plans/(?P<plan>[a-z0-9_-]{1,25})/$', login_required(PlanChangeView.as_view()), name='plan-change'),
+    url(r'^plans/$', login_required(PlanListView.as_view()), name='plan-list'),
 
     url(r'^settings/letterhead/$', login_required(LawyerLetterheadView.as_view()), name='letterhead'),
     url(r'^settings/confirm/$', login_required(ConfirmAccountView.as_view()), name='confirm-account'),

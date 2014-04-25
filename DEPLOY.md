@@ -1,11 +1,16 @@
 Deployment actions by branch
 ----------------------------
 
-[activity-stream-update]
+[stripe-payments]
+
+1. pip install django-stripe-payments==2.0b34
+2. ./manage.py syncdb --migrate
 
 --------------------------------------------------------------------------------
 ** DEPLOYED 29 April 2014
 --------------------------------------------------------------------------------
+
+[activity-stream-update]
 
 1. ./manage.py migrate review 0001 --fake # setup the base
 2. ./manage.py migrate review # add the crocodoc uuid field
@@ -19,11 +24,11 @@ Deployment actions by branch
 
 [choices-names]
 
-1. git co master;./manage.py migrate attachment 0003 
+1. git co master;./manage.py migrate attachment 0003
 must first run this data migration to ensure we catch all the current
 item statuses
 
-2. ./manage.py migrate attachment 0004  # removal of the status field 
+2. ./manage.py migrate attachment 0004  # removal of the status field
 
 
 [celery]

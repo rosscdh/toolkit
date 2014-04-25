@@ -3,20 +3,23 @@ from django.http import Http404
 from django.core import signing
 from django.conf import settings
 from django.contrib import messages
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.contrib.auth import logout
 from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse_lazy
-from django.views.generic import FormView, UpdateView, TemplateView, RedirectView
+from django.views.generic import FormView, ListView, UpdateView, TemplateView, RedirectView
 from django.views.generic.edit import BaseUpdateView
 
 from django.shortcuts import get_object_or_404
 
+from payments.models import Charge, Customer
+
 from toolkit.apps.me.signals import send_welcome_email
 from toolkit.apps.default.models import UserProfile
-from toolkit.mixins import AjaxModelFormView
+from toolkit.mixins import AjaxFormView, AjaxModelFormView, ModalView
 #from toolkit.apps.default.views import LogOutMixin
 
 from .mailers import ValidateEmailMailer
@@ -24,11 +27,15 @@ from .mailers import ValidateEmailMailer
 from .forms import (ConfirmAccountForm,
                     ChangePasswordForm,
                     AccountSettingsForm,
-                    LawyerLetterheadForm)
+                    LawyerLetterheadForm,
+                    PlanChangeForm)
 
 import json
+
 import logging
 logger = logging.getLogger('django.request')
+
+import stripe
 
 User = get_user_model()
 
@@ -252,9 +259,55 @@ class LawyerLetterheadView(UpdateView):
         return kwargs
 
 
-class InvoicesView(TemplateView):
-    template_name = 'me/invoices.html'
+class PaymentListView(ListView):
+    template_name = 'me/payment_list.html'
+
+    def get_queryset(self):
+        try:
+            return Charge.objects.filter(customer=self.request.user.customer)
+        except Customer.DoesNotExist:
+            return Charge.objects.none()
 
 
-class PlansView(TemplateView):
-    template_name = 'me/plans.html'
+class PlanListView(TemplateView):
+    template_name = 'me/plan_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(PlanListView, self).get_context_data(**kwargs)
+        context.update({
+            'object_list': [settings.PAYMENTS_PLANS['early-bird-monthly'],]
+        })
+        return context
+
+
+class PlanChangeView(ModalView, AjaxFormView, FormView):
+    form_class = PlanChangeForm
+    template_name = 'me/plan_change.html'
+
+    def get_initial(self):
+        return {
+            'plan': self.kwargs.get('plan', None)
+        }
+
+    def form_valid(self, form):
+        form.save()
+        return super(PlanChangeView, self).form_valid(form)
+
+    def get_object(self, **kwargs):
+        slug = self.kwargs.get('plan', None)
+        try:
+            obj = settings.PAYMENTS_PLANS[slug]
+        except KeyError:
+            raise Http404("No plan found matching the id: {0}".format(slug))
+        return obj
+
+    def get_form_kwargs(self):
+        kwargs = super(PlanChangeView, self).get_form_kwargs()
+        kwargs.update({
+            'plan': self.get_object(),
+            'user': self.request.user,
+        })
+        return kwargs
+
+    def get_success_url(self):
+        return reverse('matter:list')

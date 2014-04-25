@@ -2,6 +2,7 @@
 from django import forms
 from django.contrib import messages
 from django.contrib.auth import logout
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
 from django.template.defaultfilters import slugify
@@ -10,6 +11,7 @@ from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth.hashers import make_password
 
 import os
+import stripe
 
 from storages.backends.s3boto import S3BotoStorage
 
@@ -17,6 +19,9 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import ButtonHolder, Div, Field, Fieldset, HTML, Layout, Submit
 
 from parsley.decorators import parsleyfy
+
+from payments.forms import PlanForm
+from payments.models import Customer
 
 from toolkit.apps.default.fields import HTMLField
 from toolkit.mixins import ModalForm
@@ -395,3 +400,68 @@ class LawyerLetterheadForm(forms.Form):
         profile.data = data
 
         profile.save(update_fields=['data'])
+
+
+class PlanChangeForm(PlanForm, ModalForm):
+    stripe_token = forms.CharField(required=False, widget=forms.HiddenInput())
+
+    def __init__(self, plan, user, *args, **kwargs):
+        self.plan = plan
+        self.user = user
+
+        super(PlanChangeForm, self).__init__(*args, **kwargs)
+
+        if self.user.profile.subscription:
+            self.helper.attrs.update({'id': 'plan-change-form'})
+
+            self.helper.layout = Layout(
+                'plan',
+                HTML('<p>Your monthly bill will increase from ${0} to ${1} on {2}.</p>'.format(
+                    '25',
+                    self.plan['price'],
+                    '18 April, 2014'
+                )),
+                HTML('<p><strong>Plan changes are immediate.</strong></p>'),
+                # Yes, change my plan
+            )
+        else:
+            self.helper.attrs.update({'id': 'subscribe-form'})
+            del self.helper.attrs['data-remote']
+
+            self.helper.layout = Layout(
+                'plan',
+                'stripe_token',
+                HTML('<p><strong>We will charge your card ${0} on the {1} of every month starting on {2}.</strong></p>'.format(
+                    self.plan['price'],
+                    '{% now "jS" %}',
+                    '{% now "F j, Y" %}'
+                )),
+                HTML('<p>We will email you a receipt each time. You can always upgrade, downgrade, or cancel any time.</p>'),
+                # Subscribe
+            )
+
+        self.fields['plan'].widget = forms.HiddenInput()
+
+    def save(self, **kwargs):
+        # try:
+        try:
+            customer = self.user.customer
+        except ObjectDoesNotExist:
+            customer = Customer.create(self.user)
+        finally:
+            if self.cleaned_data['stripe_token'] not in [None, '']:
+                customer.update_card(self.cleaned_data['stripe_token'])
+            customer.subscribe(self.cleaned_data['plan'])
+        # except stripe.StripeError as e:
+            # print e.args[0]
+
+    @property
+    def action_url(self):
+        return reverse('me:plan-change', kwargs={'plan':self.plan['stripe_plan_id']})
+
+    @property
+    def title(self):
+        if self.user.profile.subscription:
+            return 'Change to the {0} plan'.format(self.plan['name'])
+        else:
+            return 'Subscribe to the {0} plan'.format(self.plan['name'])

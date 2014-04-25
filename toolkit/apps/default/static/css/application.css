@@ -1621,3 +1621,7 @@ body.entry-pages .navbar-inverse .nav li a {
 body.entry-pages input:-webkit-autofill {
   -webkit-box-shadow: 0 0 0px 1000px white inset;
 }
+.gui .table-bordered {
+  background-color: white;
+  border: 2px solid #dee1e3 !important;
+}

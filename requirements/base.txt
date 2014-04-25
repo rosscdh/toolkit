@@ -85,3 +85,7 @@ mixpanel-py
 
 # celery management
 Celery
+
+
+# Payments
+django-stripe-payments==2.0b34
