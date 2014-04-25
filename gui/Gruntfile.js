@@ -85,6 +85,12 @@ module.exports = function (grunt) {
             }
         }
     },
+	karma: {
+	  unit: {
+		configFile: 'karma.conf.js',
+		autoWatch: true
+	  }
+	},
     watch: {
       main: {
         options: {
@@ -311,7 +317,7 @@ module.exports = function (grunt) {
   grunt.registerTask('makedoc', ['jsdoc']);
   grunt.registerTask('validate', ['jshint']);
   grunt.registerTask('test',['dom_munger:testscripts','jasmine']);
-
+  grunt.loadNpmTasks('grunt-karma');
 
   grunt.registerTask('build', 'Deploys the app in the dist folder. Target django as option.', function(n) {
     var target = grunt.option('target');

@@ -1,5 +1,5 @@
 
-describe('ChecklistCtrl', function() {
+describe('Controller: Checklist', function() {
     function doPromiseResolve(msg){
 	    return  function(){
 		   var deferred = $q.defer();							
