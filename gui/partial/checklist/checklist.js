@@ -81,7 +81,8 @@ angular.module('toolkit-gui')
 			'users': [],
 			'searchData': searchService.data(),
 			'usdata': userService.data(),
-            'streamType': 'matter'
+            'streamType': 'matter',
+            'history': {}
 		};
 		//debugger;
 
@@ -181,6 +182,20 @@ angular.module('toolkit-gui')
             //Intercom.show();
         };
 
+
+
+        $scope.editTextattribute = function(obj, context, attr) {
+            $scope.data['show_edit_'+ context + '_' + attr] = true;
+
+            if (obj['edit_'+ context + '_' + attr] && obj['edit_'+ context + '_'+ attr].length > 0){
+                //do nothing
+            } else {
+                obj['edit_'+ context + '_' + attr] = obj[attr];
+            }
+
+            $scope.focus('event_edit_'+ context + '_' + attr);
+        }
+
 		/***
 		 ___ _
 		|_ _| |_ ___ _ __ ___  ___
@@ -215,6 +230,7 @@ angular.module('toolkit-gui')
 		   }
 		};
 
+
 		/**
 		 * Sets the currently selected item to the one passed through to this method
 		 *
@@ -233,9 +249,11 @@ angular.module('toolkit-gui')
 
 			//Reset controls
             $scope.data.dueDatePickerDate = $scope.data.selectedItem.date_due;
-			$scope.data.showEditItemDescriptionForm = false;
 			$scope.data.showEditItemTitleForm = false;
 			$scope.data.showPreviousRevisions = false;
+
+			$scope.data.show_edit_description = false;
+			$scope.data.show_edit_revision_description = false;
 
 			$log.debug(item);
 		};
