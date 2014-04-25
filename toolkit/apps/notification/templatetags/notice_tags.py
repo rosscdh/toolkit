@@ -36,6 +36,7 @@ def get_notification_context(message_data, user):
     reviewdocument = message_data.get('reviewdocument', None)
 
     action_object_url = ""
+    reviewer_object = None
 
     if action_object:
 
@@ -47,11 +48,11 @@ def get_notification_context(message_data, user):
         if comment:
             # it's a comment either on item or revision
             if item:
-                # # if action_object contains an item, it MUST be a revision. -> build revision link of the following format:
-                # # /matters/lawpal-corporate-setup/#/checklist/41b53cd527224809a5fd5e325c7511f1/:user_crocodoc_deatil_view_url
-                # item_object = item_queryset.get(slug=item.get('slug'))
-                # action_object_url = item_object.get_full_user_review_url(user=user, version_slug=action_object['slug'])
                 reviewdocument_object = ReviewDocument.objects.get(slug=reviewdocument.get('slug')) if reviewdocument else None
+
+                # getting the reviewer_object is ONLY possible if we have a review_copy. otherwise the reviewers are empty
+                reviewer_object = reviewdocument_object.reviewers.first() if reviewdocument_object else None
+
                 action_object_url = reviewdocument_object.get_regular_url() if reviewdocument else None
             else:
                 # it's a link on an item -> show item-link
@@ -64,6 +65,7 @@ def get_notification_context(message_data, user):
             'actor_initials': actor.get('initials') if actor else None,
             'comment': comment,
             'item_name': item.get('name') if item else None,
+            'reviewer_name': reviewer_object.get_full_name() if reviewer_object else None,
             'revision_slug': action_object.get('slug') if action_object else None,
             'action_object_url': action_object_url,
             'action_object_name': action_object.get('name') if action_object else None,
