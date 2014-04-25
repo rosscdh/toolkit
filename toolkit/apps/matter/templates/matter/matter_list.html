@@ -155,12 +155,17 @@ var MatterList = React.createClass({
   fuse: new Fuse(MatterListData, { keys: ["name", "matter_code", "client.name"], threshold: 0.3 }),
   getInitialState: function() {
     return {
-        'matters': MatterListData
+        'matters': MatterListData,
+        'total_num_matters': MatterListData.length
     }
   },
   handleChange: function(event) {
     var searchFor = event.target.value;
-    this.setState({'matters': (searchFor != '') ? this.fuse.search(event.target.value) : MatterListData });
+    var matter_list_results = (searchFor != '') ? this.fuse.search(event.target.value) : MatterListData
+    this.setState({
+        'matters': matter_list_results,
+        'total_num_matters': matter_list_results.length
+    });
   },
   render: function() {
     var matterNodes = this.state.matters.map(function (matter) {
@@ -192,11 +197,16 @@ var MatterList = React.createClass({
                 edit_url={editUrl}>{matter}</MatterItem>;
     });
     return (
-      <span>
-        <form><input className="input-lg" onChange={this.handleChange} autocomplete="off" id="id_q" name="q" parsley-required="true" parsley-required-message="This field is required." placeholder="Search Matters" type="text" /></form>
+      <div>
+        <form className="form-horizontal" role="form">
+            <div className="input-group">
+              <input className="input-lg" onChange={this.handleChange} autocomplete="off" id="id_q" name="q" parsley-required="true" parsley-required-message="This field is required." placeholder="Search Matters" type="text" />
+              <span className="input-group-addon input-lg"><b>{this.state.total_num_matters}</b></span>
+            </div>
+        </form>
         <br/>
         {matterNodes}
-      </span>
+      </div>
     );
   }
 });
