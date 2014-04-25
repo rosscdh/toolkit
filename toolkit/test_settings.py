@@ -70,6 +70,7 @@ LAWPAL_ACTIVITY['activity']['whitelist'] = [
     'item-created', 'item-edited', 'item-commented', 'item-changed-the-status', 'item-renamed',
     'item-provide-a-document', 'item-invited-reviewer', 'item-canceled-their-request-for-a-document',
     'item-closed', 'item-reopened', 'item-added-revision-comment', 'item-deleted-revision-comment',
+    'item-viewed-revision',
     'revision-created', 'revision-deleted',
     'item-invited-signer',
     'item-completed-all-reviews',
