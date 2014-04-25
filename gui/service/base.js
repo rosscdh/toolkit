@@ -9,9 +9,12 @@ angular.module('toolkit-gui')
             },
 
             'responseError': function (rejection) {
-                $exceptionHandler("API " + rejection.config.method + " call to URL " + rejection.config.url + " failed with status " + rejection.status);
-
                 var status = rejection.status;
+
+                if (status !== 404) {
+                    $exceptionHandler("API " + rejection.config.method + " call to URL " + rejection.config.url + " failed with status " + rejection.status);
+                }
+
                 if (status === 403) {
                     $log.debug("Authentication failed");
                     $rootScope.$broadcast('authenticationRequired', true);

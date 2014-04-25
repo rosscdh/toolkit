@@ -41,8 +41,12 @@ angular.module('toolkit-gui').config(function($stateProvider, $urlRouterProvider
       'templateUrl': '/static/ng/partial/checklist/includes/itemdetails.html',
       'controller': function($scope) {}
     })
-    .state('checklist.item.review', {
-      'url': "/:reviewSlug",
+    .state('checklist.item.revision', {
+      'url': "/revision/:revisionSlug",
+      'controller': function($scope) {}
+    })
+    .state('checklist.item.revision.review', {
+      'url': "/review/:reviewSlug",
       'controller': function($scope) {}
     });
 
