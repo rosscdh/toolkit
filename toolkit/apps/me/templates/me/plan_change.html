@@ -1,0 +1,72 @@
+{% extends 'modal.html' %}
+
+{% block content %}
+    {{ block.super }}
+
+    <script src="//checkout.stripe.com/checkout.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var $form = $('#subscribe-form');
+            var $errorContainer = $form.find('.form-errors');
+            var $errors = $errorContainer.find('.parsley-errors');
+
+            var errorHandler = function(data) {
+                var payload = data.responseJSON;
+                $errorContainer.find('p').html('There was 1 error with this:');
+
+                $errors.html('').append("\<ul>\<li>" + payload['error']['message'] + "\</li>\</ul>");
+                $errorContainer.removeClass('hide');
+            };
+            var successHandler = function(data) {
+                if (data['redirect']) {
+                    window.location.href = data['url'];
+                };
+            };
+
+            $form.on('submit', function(e) {
+                e.preventDefault();
+
+                $errorContainer.addClass('hide');
+
+                $elem = $form.find('input[name=stripe_token]');
+                if ($elem.val() == '') {
+                    StripeCheckout.open({
+                        allowRememberMe: false,
+                        key: '{{ GLOBALS.STRIPE_PUBLIC_KEY }}',
+                        name: '{{ object.name }}',
+                        description: '{{ object.description }}',
+                        email: '{{ user.email }}',
+                        panelLabel: 'Subscribe',
+                        token: function(token, args) {
+                            $form.find('input[name=stripe_token]').val(token.id);
+
+                            $.ajax({
+                                data: $form.serialize(),
+                                dataType: 'json',
+                                headers: {
+                                    'X-CSRFToken': $form.find('input[name=csrfmiddlewaretoken]').val()
+                                },
+                                type: $form.attr('method'),
+                                url: $form.attr('action'),
+                                error: errorHandler,
+                                success: successHandler
+                            });
+                        }
+                    });
+                } else {
+                    $.ajax({
+                        data: $form.serialize(),
+                        dataType: 'json',
+                        headers: {
+                            'X-CSRFToken': $form.find('input[name=csrfmiddlewaretoken]').val()
+                        },
+                        type: $form.attr('method'),
+                        url: $form.attr('action'),
+                        error: errorHandler,
+                        success: successHandler
+                    });
+                };
+            });
+        });
+    </script>
+{% endblock %}

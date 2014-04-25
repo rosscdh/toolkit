@@ -31,10 +31,13 @@ class MixpanelOnLawpal(object):
             if distinct_id is None:
                 distinct_id = user.pk
 
+            user_profile = user.profile
             all_properties = {
-                'account_type': user.profile.account_type,
+                'account_type': user_profile.account_type,
+                'plan': user_profile.plan,
+                'plan_interval': user_profile.plan_interval,
                 'user': user.get_full_name(),
-                'user_type': user.profile.type,
+                'user_type': user_profile.type,
                 'via': 'web'
             }
             all_properties.update(kwargs)
