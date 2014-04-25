@@ -3,8 +3,9 @@
 {% load humanize %}
 
 {% block notice %}
-    <p class="lead">{{ actor_name }} annotated on Revision {{ revision_slug }} {% block review_information %}{% endblock %}"{{ comment }}"</p>
-    <a href="{{ action_object_url }}">{{ action_object_name }}</a>
+    <p class="lead">{{ actor_name }} annotated {{ revision_slug }} of <a href="{{ action_object_url }}">{{ action_object_name }}</a> {% block review_information %}{% endblock %}<br/>
+    </p>
+    <p class="quote">{{ comment }}</p>
     <p class="small">{{ date|naturaltime }} — in <a href="{{ base_url }}">{{ target_name }}</a> for {{ client_name }}.</p>
 {% endblock %}
 

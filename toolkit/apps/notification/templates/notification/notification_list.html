@@ -7,7 +7,7 @@
                 <div class="col-sm-8 col-sm-offset-2">
                     {% if object_list.count > 0 %}
                         <div class="content-header-btn">
-                            <a href="javascript:;" id="mark-all-as-read" data-url="{% url 'notification:inbox-mark-all-read' %}" class="btn btn-default btn-wide"><span class="fui-check-inverted"></span>&nbsp;&nbsp;Mark everything as read</a>
+                            <a href="javascript:;" id="mark-all-as-read" data-url="{% url 'notification:inbox-mark-all-read' %}" class="btn btn-info btn-wide"><span class="fui-check-inverted"></span>&nbsp;&nbsp;Mark everything as read</a>
                         </div>
                     {% endif %}
                     <h3>{% if object_list.count > 0 %}<span class="circle">{{ object_list.count }}</span> {% endif %}Notifications</h3>

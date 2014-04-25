@@ -1,5 +1,9 @@
 <div class="annotation" ng-show="activity.data.comment">
-    <strong>{{ actor_name }}</strong> annotated  {{ revision_slug }} of <a href="{{ action_object_url }}">{{ item_name }}</a> {% block review_information %}{% endblock %}<!--M: THIS SHOULD BE ITEM NAME-->  <span class="pe-7s-clock" tooltip="{{ timestamp }}"></span>
+    <strong>{{ actor_name }}</strong> annotated  {{ revision_slug }} of <a href="{{ action_object_url }}">{{ item_name }}</a> {% block review_information %}{% endblock %}<span class="since">{{timesince}}</span>
+    <blockquote>
+        <span class="fui-document"></span> 
+        <div>{{ comment }}</div>
+    </blockquote>
 </div>
 
 {% comment %}
