@@ -296,7 +296,7 @@ class MatterActivityEventService(object):
     #                           user=removed_user)
 
     def user_viewed_revision(self, item, user, revision):
-        override_message = u'%s viewed revision %s (%s) for %s' % (user, revision.name, revision.slug, item)
+        override_message = u'%s viewed %s (%s) of %s' % (user, revision.name, revision.slug, item)
         self._create_activity(actor=user, verb=u'viewed revision', action_object=item,
                               override_message=override_message, revision=revision, filename=revision.name,
                               version=revision.slug, date_created=datetime.datetime.utcnow())
@@ -307,8 +307,8 @@ class MatterActivityEventService(object):
         })
 
     def user_downloaded_revision(self, item, user, revision):
-        override_message = u'%s downloaded revision %s (%s) for %s' % (user, revision.name, revision.slug, item)
-        self._create_activity(actor=user, verb=u'viewed revision', action_object=revision,
+        override_message = u'%s downloaded %s (%s) of %s' % (user, revision.name, revision.slug, item)
+        self._create_activity(actor=user, verb=u'downloaded revision', action_object=revision,
                               override_message=override_message, item=item, filename=revision.name,
                               version=revision.slug, date_created=datetime.datetime.utcnow())
         self.analytics.event('review.request.comment.added', user=user, **{
@@ -318,7 +318,7 @@ class MatterActivityEventService(object):
         })
 
     def user_revision_review_complete(self, item, user, revision):
-        override_message = u'%s completed their review of %s' % (user, revision.slug)
+        override_message = u'%s completed their review of %s' % (user, revision)
         self._create_activity(actor=user, verb=u'completed review', action_object=item,
                               override_message=override_message, revision=revision, filename=revision.name,
                               version=revision.slug, date_created=datetime.datetime.utcnow())
