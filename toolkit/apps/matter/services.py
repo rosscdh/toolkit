@@ -29,13 +29,19 @@ class MatterCloneService(object):
 
         logger.info('Cloning Matter source: %s target: %s num_items: %d' % (self.source_matter, self.target_matter, num_items) )
 
+        bulk_create_items = []
+
         for item in self.source_matter.item_set.all():
 
             item.pk = None  # pk should be regenerated
             item.slug = None  # slug must be unique too
             item.matter = self.target_matter  # set the matter to be the target matter
             item.latest_revision = None  # remove any connected revisions
-            item.save()  # save it out
+            item.data = {}  # reset all status etc
+            bulk_create_items.append(item)
+
+        # Bulk create the items
+        item.__class__.objects.bulk_create(bulk_create_items)
 
         self.target_matter.data['cloned'] = {
             'date_cloned': datetime.datetime.utcnow(),
