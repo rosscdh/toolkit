@@ -80,6 +80,8 @@ def on_item_save_closing_group(sender, instance, **kwargs):
 def on_item_save_changed_content(sender, instance, **kwargs):
     """
     Update and modify matter closing_group when item is changes
+
+    also check if item is_deleted which was not before
     """
     matter = instance.matter
 
@@ -116,6 +118,9 @@ def on_item_save_changed_content(sender, instance, **kwargs):
                 matter.actions.item_closed(user=matter.lawyer, item=instance)
             else:
                 matter.actions.item_reopened(user=matter.lawyer, item=instance)
+
+        if not previous_instance.is_deleted and instance.is_deleted:
+            matter.actions.item_deleted(user=matter.lawyer, item=instance)
 
     logger.debug('Recieved item.pre_save:changed_content event: %s' % sender)
 
