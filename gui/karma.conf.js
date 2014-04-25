@@ -28,47 +28,17 @@ module.exports = function(config) {
 	  //templates
 	  'bower_components/ez-confirm/src/ez-confirm-tpl.html',
 	  
-	  //app files
+	  //main app file
 	  'js/setup.js',
 	  
-	  //service
-	  'service/matter.js',
-	  'service/matterItem.js',
-	  'service/mattercategory.js',
-	  'service/participants.js',
-	  'service/search.js',
-	  'service/smartRoutes.js',
-	  'service/activity.js',
-	  'service/user.js',
-	  'service/comment.js',
+	  //services
+	  'service/!(*spec).js',
 	  
 	  //controllers
-	  'partial/authentication-required/authentication-required.js',
-	  'partial/checklist/checklist.js',
-	  'partial/home/home.js',
-	  'partial/closing/closing.js',
-	  'partial/navigation/navigation.js',
-	  'partial/participant-invite/participant-invite.js',
-	  'partial/request-review/request-review.js',
-	  'partial/request-revision/request-revision.js',
-	  'partial/request-signing/request-signing.js',
-	  'partial/searchCtrl/searchCtrl.js',
-	  'partial/view-document/view-document.js',
-	  'partial/view-review/view-review.js',
+	  'partial/**/!(*spec).js',
 	  
-      //test      
-	  'partial/authentication-required/authentication-required-spec.js',
-	  'partial/checklist/checklist-spec.js',
-	  'partial/home/home-spec.js',
-	  'partial/closing/closing-spec.js',
-	  'partial/navigation/navigation-spec.js',
-	  'partial/participant-invite/participant-invite-spec.js',
-	  'partial/request-review/request-review-spec.js',
-	  'partial/request-revision/request-revision-spec.js',
-	  'partial/request-signing/request-signing-spec.js',
-	  'partial/searchCtrl/searchCtrl-spec.js',
-	  'partial/view-document/view-document-spec.js',
-	  'partial/view-review/view-review-spec.js'
+      //test ->controllers
+      'partial/**/*-spec.js'
 
     ],
     // coverage reporter generates the coverage
@@ -82,7 +52,7 @@ module.exports = function(config) {
     // list of files / patterns to exclude
     exclude: [],
     preprocessors: {
-	  'partial/**/*.js': ['coverage'],
+	  'partial/**/!(*spec).js': ['coverage'],
       'bower_components/ez-confirm/src/ez-confirm-tpl.html': ['ng-html2js']
     },
     /*ngHtml2JsPreprocessor: {
