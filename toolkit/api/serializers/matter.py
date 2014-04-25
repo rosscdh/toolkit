@@ -129,7 +129,7 @@ class LiteMatterSerializer(MatterSerializer):
     class Meta(MatterSerializer.Meta):
         fields = ('url', 'base_url', 'name', 'slug', 'matter_code', 'client',
                   'lawyer', 'participants', 'date_created', 'date_modified',
-                  'percent_complete')
+                  'percent_complete', 'regular_url')
 
 
 class SimpleMatterSerializer(MatterSerializer):

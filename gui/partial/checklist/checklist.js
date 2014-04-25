@@ -22,6 +22,7 @@ angular.module('toolkit-gui')
 	'$scope',
 	'$rootScope',
 	'$routeParams',
+	'$state',
 	'$location',
     '$sce',
     '$route',
@@ -47,6 +48,7 @@ angular.module('toolkit-gui')
 	function($scope,
 			 $rootScope,
 			 $routeParams,
+			 $state,
 			 $location,
              $sce,
              $route,
@@ -69,6 +71,7 @@ angular.module('toolkit-gui')
              $q,
              Intercom,
              INTERCOM_APP_ID){
+
 		/**
 		 * Scope based data for the checklist controller
 		 * @memberof			ChecklistCtrl
@@ -115,26 +118,43 @@ angular.module('toolkit-gui')
 			);
 		}
 
-
+        /**
+         * Handles the event when the URL params changes inside the ng app
+         *
+         * @private
+		 * @memberof			ChecklistCtrl
+         */
         $rootScope.$on("$stateChangeSuccess", function () {
-            $log.debug("location changed");
-            $log.debug(smartRoutes.params());
+            $scope.handleUrlState();
+        });
 
-            var itemSlug = smartRoutes.params().itemSlug;
-            var reviewSlug = smartRoutes.params().reviewSlug;
+
+        /**
+         * This function activates the following states inside the app by the URL params:
+         * 1) Select a checklist item
+         * 2) Show a review in the review modal window
+         * 
+         * @private
+		 * @memberof			ChecklistCtrl
+         * @method              handleUrlState
+         */
+        $scope.handleUrlState = function () {
+            var itemSlug = $state.params.itemSlug;
+            var revisionSlug = $state.params.revisionSlug;
+            var reviewSlug = $state.params.reviewSlug;
             var itemToSelect = null;
 
-            if(itemSlug && (!$scope.data.selectedItem || itemSlug !== $scope.data.selectedItem.slug)){
+            if (itemSlug && (!$scope.data.selectedItem || itemSlug !== $scope.data.selectedItem.slug)) {
                 $log.debug("Selecting item because of url change");
 
                 // find item
                 itemToSelect = $scope.getItemBySlug(itemSlug);
-                if(itemToSelect) {
-                    $scope.selectItem(itemToSelect,itemToSelect.category).then(
-                        function success(item){
-                            //item if fully loaded, open the review modal now
-                            if (reviewSlug && item.latest_revision) {
-                                $scope.showReviewBySlug(item.latest_revision, reviewSlug);
+                if (itemToSelect) {
+                    $scope.selectItem(itemToSelect, itemToSelect.category).then(
+                        function success(item) {
+                            //item is fully loaded
+                            if (revisionSlug && reviewSlug) {
+                                $scope.showReviewBySlug(revisionSlug, reviewSlug);
                             }
                         }
                     );
@@ -143,14 +163,11 @@ angular.module('toolkit-gui')
                 }
             }
 
-            if(reviewSlug && !itemToSelect){
-                itemToSelect = $scope.data.selectedItem;
-                //if the item is the same as already selected
-                if(itemToSelect.latest_revision) {
-                    $scope.showReviewBySlug(itemToSelect.latest_revision, reviewSlug);
-                }
+            if (revisionSlug && reviewSlug && !itemToSelect && $scope.data.selectedItem) {
+                //item is already loaded
+                $scope.showReviewBySlug(revisionSlug, reviewSlug);
             }
-        });
+        }
 
 
 		/**
@@ -182,10 +199,8 @@ angular.module('toolkit-gui')
 				$scope.data.matter = matter;
 				$scope.data.categories = categories;
 
-				if( routeParams.itemSlug ) {
-					var item = $scope.getItemBySlug(routeParams.itemSlug);
-                    $scope.selectItem(item,item.category );
-				}
+                $scope.handleUrlState();
+
 			} else {
 				// Display error
 				toaster.pop('warning', "Unable to load matter details");
@@ -289,6 +304,7 @@ angular.module('toolkit-gui')
 			$scope.activateActivityStream('item');
             $scope.loadItemDetails(item).then(function success(item){
                 deferred.resolve(item);
+                $log.debug(item);
 		    });
 
 			//Reset controls
@@ -297,7 +313,6 @@ angular.module('toolkit-gui')
 			$scope.data.showEditItemTitleForm = false;
 			$scope.data.showPreviousRevisions = false;
 
-			$log.debug(item);
             return deferred.promise;
 		};
 
@@ -1090,15 +1105,27 @@ angular.module('toolkit-gui')
 			);
 		};
 
-        $scope.showReviewBySlug = function (revision, reviewSlug) {
-            var reviews = jQuery.grep(revision.reviewers, function (r) {
-                return r.id === reviewSlug;
-            });
+        $scope.showReviewBySlug = function (revisionSlug, reviewSlug) {
+            var matterSlug = $scope.data.slug;
+            var item = $scope.data.selectedItem;
 
-            if (reviews.length > 0) {
-                $scope.showReview(revision, reviews[0]);
-            } else {
-                toaster.pop('warning', "Review does not exist anymore.");
+            if (item) {
+                matterItemService.loadRevision(matterSlug, item.slug, revisionSlug).then(
+                    function success(revision) {
+                        var reviews = jQuery.grep(revision.reviewers, function (r) {
+                            return r.slug === reviewSlug;
+                        });
+
+                        if (reviews.length > 0) {
+                            $scope.showReview(revision, reviews[0]);
+                        } else {
+                            toaster.pop('warning', "Review does not exist anymore.");
+                        }
+                    },
+                    function error(err) {
+                        toaster.pop('warning', "Warning!", "Revision does not exist anymore");
+                    }
+                );
             }
         };
 

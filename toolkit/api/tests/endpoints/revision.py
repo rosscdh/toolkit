@@ -470,11 +470,17 @@ class RevisionDeleteWithReviewersTest(BaseEndpointTest):
         self.assertEqual(self.item.review_percentage_complete, 0.0)  # test review_percentage_complete is reset
 
     def test_delete_of_revision_not_blocked_by_reviwers(self):
-        self.assertTrue(self.item.pk)
+        self.assertEqual(self.item.latest_revision, self.revision)
+        # print self.item.latest_revision.pk
+        self.assertEqual(self.item.revision_set.all().count(), 1)
         self.revision.delete()
+        self.assertEqual(self.item.revision_set.all().count(), 0)
 
-        self.item = self.item.__class__.objects.get(pk=self.item.pk)  # reset
+        self.item = self.item.__class__.objects.get(pk=self.item.pk)  # refresh
+
         self.assertEqual(self.item.review_percentage_complete, None)  # test review_percentage_complete is reset
+        # print self.item.latest_revision.pk
+        self.assertEqual(self.item.latest_revision, None)
 
         #
         # If it throws an Item.DoesNotExist exception here

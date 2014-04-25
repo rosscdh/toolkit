@@ -7,6 +7,7 @@ from django.db.models.signals import pre_save, post_save
 from .signals import (on_item_save_category,
                       on_item_save_closing_group,
                       on_item_save_changed_content,
+                      on_item_save_manual_latest_item_delete,
                       on_item_post_save)
 
 from toolkit.core.mixins import IsDeletedMixin, ApiSerializerMixin
@@ -173,9 +174,10 @@ class Item(IsDeletedMixin,
 """
 Connect signals
 """
-pre_save.connect(on_item_save_category, sender=Item, dispatch_uid='item.post_save.category')
-pre_save.connect(on_item_save_closing_group, sender=Item, dispatch_uid='item.post_save.closing_group')
-pre_save.connect(on_item_save_changed_content, sender=Item, dispatch_uid='item.post_save.changed_content')
+pre_save.connect(on_item_save_category, sender=Item, dispatch_uid='item.pre_save.category')
+pre_save.connect(on_item_save_closing_group, sender=Item, dispatch_uid='item.pre_save.closing_group')
+pre_save.connect(on_item_save_changed_content, sender=Item, dispatch_uid='item.pre_save.changed_content')
+pre_save.connect(on_item_save_manual_latest_item_delete, sender=Item, dispatch_uid='item.pre_save.on_item_save_manual_latest_item_delete')
 post_save.connect(on_item_post_save, sender=Item, dispatch_uid='item.post_save.category')
 
 

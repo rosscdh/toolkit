@@ -141,8 +141,10 @@ def reset_item_review_percentage_complete_on_delete(sender, instance, **kwargs):
     On Delete of a revision we want to reset the recalculate_review_percentage_complete setting for the item
     """
     if instance.is_current is True:  # only reset it if its the most recent document one
-        # i.e. we have only 1 (or less) reviewdocument then set the item recalculate_review_percentage_complete to False
+        # i.e. we have only 1 (or less) reviewdocument then set the item recalculate_review_percentage_complete
         item = instance.item
+        item.latest_revision = None  # @BUSINESRULE very important for soft delete, as we no longer can rely on the model field on_delete auto set to null
+        item.save(update_fields=['latest_revision'])
         item.recalculate_review_percentage_complete()
 
 
@@ -153,11 +155,10 @@ def set_previous_revision_is_current_on_delete(sender, instance, **kwargs):
     is_current = True
     """
     previous_revision = instance.__class__.objects.filter(item=instance.item).last()
+
     if previous_revision:
         previous_revision.is_current = True
         previous_revision.save(update_fields=['is_current'])
-        # recalc to % complete
-        previous_revision.item.recalculate_review_percentage_complete()
 
 
 @receiver(m2m_changed, sender=Revision.reviewers.through, dispatch_uid='revision.on_reviewer_add')

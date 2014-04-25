@@ -88,6 +88,7 @@ class ReviewInProgressMixin(object):
         review_percentage_complete = None
 
         queryset = self.invited_document_reviews()
+
         if queryset:
             # we have a queryset
 
@@ -109,6 +110,7 @@ class ReviewInProgressMixin(object):
                 self.matter.actions.all_revision_reviews_complete(item=self, revision=self.latest_revision)
 
             self.review_percentage_complete = review_percentage_complete
+
             logger.info('Item %s review_percentage_complete set to %s' % (self, review_percentage_complete))
             self.save(update_fields=['data'])
 

@@ -504,7 +504,7 @@ class RevisionReviewerTest(BaseEndpointTest):
 
     def test_customer_delete(self):
         self.client.login(username=self.user.username, password=self.password)
-        resp = self.client.patch(self.endpoint, {}, content_type='application/json')
+        resp = self.client.delete(self.endpoint, {}, content_type='application/json')
         self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_get(self):
@@ -624,7 +624,128 @@ class RevisionRequestedDocumentTest(BaseEndpointTest):
 
     def test_customer_delete(self):
         self.client.login(username=self.user.username, password=self.password)
+        resp = self.client.delete(self.endpoint, {}, content_type='application/json')
+        self.assertEqual(resp.status_code, 403)  # forbidden
+
+    def test_anon_get(self):
+        resp = self.client.get(self.endpoint)
+        self.assertEqual(resp.status_code, 403)  # forbidden
+
+    def test_anon_post(self):
+        resp = self.client.post(self.endpoint, {}, content_type='application/json')
+        self.assertEqual(resp.status_code, 403)  # forbidden
+
+    def test_anon_patch(self):
+        resp = self.client.patch(self.endpoint, {})
+        self.assertEqual(resp.status_code, 403)  # forbidden
+
+    def test_anon_delete(self):
+        resp = self.client.delete(self.endpoint, {})
+        self.assertEqual(resp.status_code, 403)  # forbidden
+
+
+
+class ReviewerHasViewedRevisionTest(BaseEndpointTest):
+    """
+    When an invited reviewer actually views a documnet
+    when they close the crocodoc modal window we issue an ajax request
+    this is to ensure the user has actuall viewed it and not some programatic preloading 
+    """
+    @property
+    def endpoint(self):
+        return reverse('matter_item_specific_revision_user_viewed', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug, 'reviewdocument_slug': self.reviewdocument.slug})
+
+    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
+    def setUp(self):
+        super(ReviewerHasViewedRevisionTest, self).setUp()
+
+        self.request_factory = RequestFactory()
+
+        self.item = mommy.make('item.Item', matter=self.matter, name='Test Item with Revision', category=None)
+        self.revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
+
+        self.reviewer = mommy.make('auth.User', first_name='Reviewer', last_name='Number 1', email='reviewer+1@lawpal.com')
+        self.reviewer.set_password(self.password)
+        self.reviewer.save()
+
+        self.revision.reviewers.add(self.reviewer)
+        self.reviewdocument = self.revision.reviewdocument_set.all().first()  # the new invited reviewers document
+
+    def test_endpoint_name(self):
+        self.assertEqual(self.endpoint, '/api/v1/matters/%s/items/%s/reviewdocument/%s/viewed' % (self.matter.slug, self.item.slug, self.reviewdocument.slug))
+
+    def test_lawyer_get(self):
+        self.client.login(username=self.lawyer.username, password=self.password)
+        resp = self.client.get(self.endpoint)
+
+        self.assertEqual(resp.status_code, 405) # method not allowed
+
+    def test_lawyer_post(self):
+        self.client.login(username=self.lawyer.username, password=self.password)
+        resp = self.client.post(self.endpoint, {}, content_type='application/json')
+        self.assertEqual(resp.status_code, 405)  # method not allowed
+
+    def test_lawyer_patch(self):
+        
+        self.assertEqual(self.reviewdocument.date_last_viewed, None)
+        self.assertEqual(self.reviewdocument.reviewer_has_viewed, False)
+
+        self.client.login(username=self.lawyer.username, password=self.password)
+        data = {}
+        resp = self.client.patch(self.endpoint, json.dumps(data), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+
+        json_data = json.loads(resp.content)
+
+        # refresh
+        self.reviewdocument = self.reviewdocument.__class__.objects.get(pk=self.reviewdocument.pk)
+
+        # now the item should be is_requested = False
+        self.assertEqual(self.item.is_requested, False)
+        self.assertEqual(self.reviewdocument.reviewer_has_viewed, True)
+        self.assertTrue(self.reviewdocument.date_last_viewed is not None)
+
+    def test_customer_get(self):
+        self.client.login(username=self.user.username, password=self.password)
+        resp = self.client.get(self.endpoint)
+        self.assertEqual(resp.status_code, 405)  # method not allowed
+
+    def test_customer_post(self):
+        self.client.login(username=self.user.username, password=self.password)
+        resp = self.client.post(self.endpoint, {}, content_type='application/json')
+        self.assertEqual(resp.status_code, 405)  # method not allowed
+
+    def test_customer_patch(self):
+        self.client.login(username=self.user.username, password=self.password)
         resp = self.client.patch(self.endpoint, {}, content_type='application/json')
+        self.assertEqual(resp.status_code, 200)  # ok
+
+    def test_customer_delete(self):
+        self.client.login(username=self.user.username, password=self.password)
+        resp = self.client.delete(self.endpoint, {}, content_type='application/json')
+        self.assertEqual(resp.status_code, 403)  # forbidden
+
+    #
+    # REVIEWER is the primary important user here
+    #
+    def test_reviewer_get(self):
+        self.client.login(username=self.reviewer.username, password=self.password)
+        resp = self.client.get(self.endpoint)
+        self.assertEqual(resp.status_code, 405)  # method not allowed
+
+    def test_reviewer_post(self):
+        self.client.login(username=self.reviewer.username, password=self.password)
+        resp = self.client.post(self.endpoint, {}, content_type='application/json')
+        self.assertEqual(resp.status_code, 405)  # method not allowed
+
+    def test_reviewer_patch(self):
+        self.client.login(username=self.reviewer.username, password=self.password)
+        resp = self.client.patch(self.endpoint, {}, content_type='application/json')
+        self.assertEqual(resp.status_code, 200)  # ok
+
+    def test_reviewer_delete(self):
+        self.client.login(username=self.reviewer.username, password=self.password)
+        resp = self.client.delete(self.endpoint, {}, content_type='application/json')
         self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_get(self):
