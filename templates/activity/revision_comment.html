@@ -1,8 +1,11 @@
 <div class="annotation" ng-show="activity.data.comment">
-    <strong>{{ actor_name }}</strong> annotated  {{ revision_slug }} of <a href="{{ action_object_url }}">{{ item_name }}</a> {% block review_information %}{% endblock %}<span class="since">{{timesince}}</span>
+    <strong>{{ actor_name }}</strong> annotated  {{ revision_slug }} of {{ item_name }} {% block review_information %}{% endblock %}<span class="since">{{timesince}}</span>
     <blockquote>
         <span class="fui-document"></span> 
-        <div>{{ comment }}</div>
+        <div>{{ comment }}<br />
+        <small><a href="{{ action_object_url }}">View annotation</a></small>
+        </div>
+        
     </blockquote>
 </div>
 
