@@ -27,7 +27,8 @@ from .views import (MatterItemsView,
                     MatterItemCurrentRevisionView,
                     MatterItemSpecificReversionView,)
 
-from .views import (ItemRevisionReviewersView,
+from .views import (ReviewerHasViewedRevision,
+                    ItemRevisionReviewersView,
                     ItemRevisionReviewerView,
                     RemindReviewers,
 
@@ -94,6 +95,9 @@ urlpatterns = router.urls + patterns('',
     #
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/?$', MatterItemCurrentRevisionView.as_view(), name='matter_item_revision'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/v(?P<version>[\d]+)/?$', MatterItemSpecificReversionView.as_view(), name='matter_item_specific_revision'),
+    # reviewer reviewed document
+    url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/reviewdocument/(?P<reviewdocument_slug>[\d\w-]+)/viewed/?$', ReviewerHasViewedRevision.as_view(), name='matter_item_specific_revision_user_viewed'),
+
     #
     # Revision reviewers and signers
     #
