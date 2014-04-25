@@ -176,13 +176,15 @@ class MatterActivityEventService(object):
 
     def item_closed(self, user, item):
         override_message = u'%s closed %s' % (user, item)
-        self._create_activity(actor=user, verb=u'closed', action_object=item, item=item,
-                              override_message=override_message)
+        self._create_activity(actor=user, verb=u'closed', action_object=item, override_message=override_message)
 
     def item_reopened(self, user, item):
         override_message = u'%s reopened %s' % (user, item)
-        self._create_activity(actor=user, verb=u'reopened', action_object=item, item=item,
-                              override_message=override_message)
+        self._create_activity(actor=user, verb=u'reopened', action_object=item, override_message=override_message)
+
+    def item_deleted(self, user, item):
+        override_message = u'%s deleted %s' % (user, item)
+        self._create_activity(actor=user, verb=u'deleted', action_object=item, override_message=override_message)
 
     def add_item_comment(self, user, item, comment):
         override_message = u'%s commented on %s "%s"' % (user, item, comment)
