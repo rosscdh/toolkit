@@ -44,6 +44,15 @@ def on_item_save_category(sender, instance, **kwargs):
     logger.debug('Recieved item.pre_save:category event: %s' % sender)
 
 
+def on_item_save_manual_latest_item_delete(sender, instance, **kwargs):
+    """
+    due to softdelete we need to manually ensure self.latest_revision is set to None
+    if self.latest_revision.is_deleted is True
+    """
+    if instance.latest_revision is not None and instance.latest_revision.is_deleted is True:
+        instance.latest_revision = None
+
+
 def on_item_save_closing_group(sender, instance, **kwargs):
     """
     Update and modify matter closing_group when item is changes
@@ -129,6 +138,8 @@ def on_item_post_save(sender, instance, created, **kwargs):
     """
         At this moment only the layer can edit items. So this is possible.
     """
+    #print kwargs
+    #print instance.latest_revision
     if created:
         matter = instance.matter
 
