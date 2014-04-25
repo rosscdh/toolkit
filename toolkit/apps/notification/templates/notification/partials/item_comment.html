@@ -3,7 +3,6 @@
 {% load humanize %}
 
 {% block notice %}
-    <p class="lead">{{ actor_name }} commented on {{ action_object_name }} "{{ comment }}"</p>
-    <a href="{{ action_object_url }}">{{ action_object_name }}</a>
+    <p class="lead">{{ actor_name }} commented on <a href="{{ action_object_url }}">{{ action_object_name }}</a> "{{ comment }}"</p>
     <p class="small">{{ date|naturaltime }} — in <a href="{{ base_url }}">{{ target_name }}</a> for {{ client_name }}.</p>
 {% endblock %}
