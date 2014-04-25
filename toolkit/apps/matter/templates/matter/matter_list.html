@@ -37,6 +37,8 @@
 {% endblock %}
 
 {% block js %}
+
+<script src="{{ STATIC_URL }}moment.2.6.0.min.js"></script>
 <script src="{{ STATIC_URL }}react-0.10.0.js"></script>
 <script src="{{ STATIC_URL }}JSXTransformer-0.10.0.js"></script>
 <script src="{{ STATIC_URL }}fuse.min.js"></script>
@@ -109,6 +111,7 @@ var LatUpdatedOrComplete = React.createClass({
     render: function() {
         var percent_complete = this.props.percent_complete;
         var date_modified = this.props.date_modified;
+        var date_modified_ago = moment(date_modified).fromNow();
 
         if (percent_complete === '100%') {
 
@@ -119,7 +122,7 @@ var LatUpdatedOrComplete = React.createClass({
         } else {
 
             return (
-                <p className="small pull-left">Last updated <time datetime={ date_modified }>{ date_modified } ago</time></p>
+                <p className="small pull-left">Last updated <time datetime={ date_modified }>{ date_modified_ago }</time></p>
             );
         }
     }
