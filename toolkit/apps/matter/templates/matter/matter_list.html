@@ -151,6 +151,15 @@ var EditMatterInterface = React.createClass({
 });
 
 
+var NoResultsInterface = React.createClass({
+    render: function() {
+        return (
+            <div><b>Nothing found</b></div>
+        );
+    },
+});
+
+
 var MatterList = React.createClass({
   fuse: new Fuse(MatterListData, { keys: ["name", "matter_code", "client.name"], threshold: 0.5 }),
   getInitialState: function() {
@@ -168,34 +177,42 @@ var MatterList = React.createClass({
     });
   },
   render: function() {
-    var matterNodes = this.state.matters.map(function (matter) {
+    var matterNodes = null;
 
-        var editUrl = edit_url.replace('lp-react-name', matter.slug);
-        var detailUrl = matter.base_url;
+    if ( this.state.total_num_matters == 0 ) {
 
-        var percentStyle = {'width': matter.percent_complete};
-        var lawyer_or_client_name = (UserData.is_lawyer) ? (matter.client !== null) ? matter.client.name : null : matter.lawyer.name ;
+        matterNodes = <NoResultsInterface />
 
-        var participantList = <Participants data={matter.participants} />
-        var lastupdatedOrComplete = <LatUpdatedOrComplete percent_complete={matter.percent_complete}
-                                                          date_modified={matter.date_modified} />
-        var editMatterInterface = <EditMatterInterface key={matter.slug} can_edit={UserData.can_edit} edit_url={editUrl} />
+    } else {
+        matterNodes = this.state.matters.map(function (matter) {
 
-        return <MatterItem 
-                key={matter.slug}
-                name={matter.name}
-                is_lawyer={UserData.is_lawyer}
-                lawyer_or_client_name={lawyer_or_client_name}
+            var editUrl = edit_url.replace('lp-react-name', matter.slug);
+            var detailUrl = matter.base_url;
 
-                participantList={participantList}
-                lastupdated_or_complete={lastupdatedOrComplete}
-                editMatterInterface={editMatterInterface}
+            var percentStyle = {'width': matter.percent_complete};
+            var lawyer_or_client_name = (UserData.is_lawyer) ? (matter.client !== null) ? matter.client.name : null : matter.lawyer.name ;
 
-                percent_complete={matter.percent_complete}
-                percentStyle={percentStyle}
-                detail_url={detailUrl}
-                edit_url={editUrl}>{matter}</MatterItem>;
-    });
+            var participantList = <Participants data={matter.participants} />
+            var lastupdatedOrComplete = <LatUpdatedOrComplete percent_complete={matter.percent_complete}
+                                                              date_modified={matter.date_modified} />
+            var editMatterInterface = <EditMatterInterface key={matter.slug} can_edit={UserData.can_edit} edit_url={editUrl} />
+
+            return <MatterItem 
+                    key={matter.slug}
+                    name={matter.name}
+                    is_lawyer={UserData.is_lawyer}
+                    lawyer_or_client_name={lawyer_or_client_name}
+
+                    participantList={participantList}
+                    lastupdated_or_complete={lastupdatedOrComplete}
+                    editMatterInterface={editMatterInterface}
+
+                    percent_complete={matter.percent_complete}
+                    percentStyle={percentStyle}
+                    detail_url={detailUrl}
+                    edit_url={editUrl}>{matter}</MatterItem>
+        });
+    }
     return (
       <div>
         <form className="form-horizontal" role="form">
