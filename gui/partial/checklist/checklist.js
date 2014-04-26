@@ -194,7 +194,7 @@ angular.module('toolkit-gui')
             }
 
             $scope.focus('event_edit_'+ context + '_' + attr);
-        }
+        };
 
 		/***
 		 ___ _
@@ -252,7 +252,7 @@ angular.module('toolkit-gui')
 			$scope.data.showEditItemTitleForm = false;
 			$scope.data.showPreviousRevisions = false;
 
-			$scope.data.show_edit_description = false;
+			$scope.data.show_edit_item_description = false;
 			$scope.data.show_edit_revision_description = false;
 
 			$log.debug(item);
@@ -1388,11 +1388,11 @@ angular.module('toolkit-gui')
 		 */
         $scope.submitComment = function() {
 			var matterSlug = $scope.data.slug;
-			var itemSlug = $scope.data.selectedItem.slug;
+			var item = $scope.data.selectedItem;
 
-			commentService.create(matterSlug, itemSlug, $scope.data.newcomment).then(
+			commentService.create(matterSlug, item.slug, item.newcomment).then(
 				 function success(){
-                    $scope.data.newcomment="";
+                    item.newcomment="";
 					$scope.activateActivityStream('item');
 				 },
 				 function error(err){
