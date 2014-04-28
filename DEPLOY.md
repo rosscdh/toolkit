@@ -3,7 +3,7 @@ Deployment actions by branch
 
 [activity-stream-update]
 
-1. ./manage.py migrate review 0001 --initial # setup the base
+1. ./manage.py migrate review 0001 --fake # setup the base
 2. ./manage.py migrate review # add the crocodoc uuid field
 3. ./manage.py migrate attachment # add is_deleted to revision
 4. ensure that angular (bower) has "angular-sanitize": "~1.2.16",
