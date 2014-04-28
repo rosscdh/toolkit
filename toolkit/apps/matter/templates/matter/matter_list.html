@@ -1,5 +1,7 @@
 {% extends 'gui.html' %}{% load url from future %}
 
+{% block page_title %}Your Matters{% endblock %}
+
 {% block body %}
     <div id="matter-list" class="content col-lg-12">
         <section class="matters cards">
@@ -161,7 +163,7 @@ var NoResultsInterface = React.createClass({
 
 
 var MatterList = React.createClass({
-  fuse: new Fuse(MatterListData, { keys: ["name", "matter_code", "client.name"], threshold: 0.5 }),
+  fuse: new Fuse(MatterListData, { keys: ["name", "matter_code", "client.name"], threshold: 0.35 }),
   getInitialState: function() {
     return {
         'matters': MatterListData,
