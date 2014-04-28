@@ -304,6 +304,38 @@ class ReviewerPercentageCompleteTest(BaseDataProvider, TestCase):
 
 
 
+class ParticipantReviewerGetsPrimaryReviewDocumentUrlToViewTest(BaseDataProvider, TestCase):
+    """
+    A reviewer who is a matter.participant should be given the url of the primary document to review
+    this is to allow all top level matter.participants to comment and communicate on the same document
+    but 3rd parties are sandboxed
+    """
+    def setUp(self):
+        super(ParticipantReviewerGetsPrimaryReviewDocumentUrlToViewTest, self).setUp()
+        # add the reviewer for this test
+        self.review_document.reviewers.add(self.reviewer)
+
+    def test_participant_has_primary_review_doc_url(self):
+        # invite a participant to review the doc
+        self.revision.reviewers.add(self.user)
+        self.assertEqual(self.revision.reviewdocument_set.all().count(), 3)
+        # their url to view should be the same as the primary url
+        primary_document = self.revision.item.primary_participant_review_document()
+        participant_invited_to_review_doc = self.revision.reviewdocument_set.all().first() # should be the most recent
+        third_party_review_doc = self.revision.reviewdocument_set.all()[1]
+
+        self.assertNotEqual(primary_document.pk, participant_invited_to_review_doc.pk)
+        expected_primary_url = primary_document.get_absolute_url(user=self.user)
+        expected_matching_with_primary_url_for_participant = participant_invited_to_review_doc.get_absolute_url(user=self.user)
+
+        # should be exactly the same, as when a participant reivews a document it should be the same as all the other participants
+        self.assertEqual(expected_primary_url, expected_matching_with_primary_url_for_participant)
+
+        # the participant users review url should not be the same if they are not the review_document.reviewer
+        third_party_participant_url = third_party_review_doc.get_absolute_url(user=self.user)
+        self.assertNotEqual(expected_primary_url, third_party_participant_url)
+
+
 """
 View tests
 1. if user is logged in, check they are a participant or the expected user according to the auth_key
