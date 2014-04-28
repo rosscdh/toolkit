@@ -1098,9 +1098,12 @@ angular.module('toolkit-gui')
 			modalInstance.result.then(
 				function ok(result) {
 				    $scope.calculateReviewPercentageComplete(item);
+				    // revert back to previous URL
+				    $location.path('/checklist/' + $state.params.itemSlug );
 				},
 				function cancel() {
-					//
+					// revert back to previous URL
+					$location.path('/checklist/' + $state.params.itemSlug );
 				}
 			);
 		};
@@ -1112,9 +1115,19 @@ angular.module('toolkit-gui')
             if (item) {
                 matterItemService.loadRevision(matterSlug, item.slug, revisionSlug).then(
                     function success(revision) {
+                    	/*var reviewUrl;*/
                         var reviews = jQuery.grep(revision.reviewers, function (r) {
                             return r.slug === reviewSlug;
                         });
+                        /*
+                        if(reviews.length===0 && revision.user_review && revision.user_review.url ) {
+                        	// no external reviewers and there is a user_review
+                        	reviewUrl = revision.user_review.url;
+                        	reviews = jQuery.grep(revision.reviewers, function (r) {
+	                            return r.slug === reviewSlug;
+	                        });
+                        }
+                        */
 
                         if (reviews.length > 0) {
                             $scope.showReview(revision, reviews[0]);
