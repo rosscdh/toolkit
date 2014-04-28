@@ -152,4 +152,6 @@ class MatterCategoryTest(BaseEndpointTest):
         # we should stil have 5
         self.assertEqual(item.matter.item_set.all().count(), 5)
         # that same first item is now category = None
-        self.assertEqual(item.matter.item_set.all().order_by('-category').first().category, None)
+        # either the first or the last must be done
+        # for testing in sqlite its the last in postgres its the first
+        self.assertTrue(any(i.category is None for i in [item.matter.item_set.all().order_by('-category').first(), item.matter.item_set.all().order_by('-category').last()]))
