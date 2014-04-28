@@ -2,6 +2,8 @@
 from toolkit.apps.workspace.models import Workspace
 from django.core.exceptions import PermissionDenied
 
+from collections import OrderedDict
+
 import datetime
 import logging
 from copy import deepcopy
@@ -48,6 +50,9 @@ class MatterCloneService(object):
         # cant bulk create as we need save to be called
         #
         #item.__class__.objects.bulk_create(bulk_create_items)
+
+        # clone the categories via the mixin attribs to preserve order
+        self.target_matter.categories = self.source_matter.categories
 
         self.target_matter.data['cloned'] = {
             'date_cloned': datetime.datetime.utcnow(),
