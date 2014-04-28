@@ -48,12 +48,18 @@ def get_notification_context(message_data, user):
         if comment:
             # it's a comment either on item or revision
             if item:
-                reviewdocument_object = ReviewDocument.objects.get(slug=reviewdocument.get('slug')) if reviewdocument else None
+                try:
+                    reviewdocument_object = ReviewDocument.objects.get(slug=reviewdocument.get('slug')) if reviewdocument else None
+                except ReviewDocument.DoesNotExist:
+                    # should not happen in production, only in dev if first crocodoc-signal didn't reach the server
+                    # (for example because of missing ngrok)
+                    logger.error(u"ReviewDocument did not exist: %s" % reviewdocument.get('slug'))
+                    reviewdocument_object = None
 
                 # getting the reviewer_object is ONLY possible if we have a review_copy. otherwise the reviewers are empty
                 reviewer_object = reviewdocument_object.reviewers.first() if reviewdocument_object else None
 
-                action_object_url = reviewdocument_object.get_regular_url() if reviewdocument else None
+                action_object_url = reviewdocument_object.get_regular_url() if reviewdocument_object else None
             else:
                 # it's a link on an item -> show item-link
                 target_object = item_queryset.get(slug=action_object.get('slug'))
