@@ -17,20 +17,20 @@
             </a>
         </div>-->
 
-        <div class="item-description-toggle" ng-hide="data.showEditItemDescriptionForm">
+        <div class="item-description-toggle" ng-hide="data.show_edit_item_description">
             <small class="text-muted">
                 <a href="javascript:;" class="link"
-                   ng-click="data.showEditItemDescriptionForm=!data.showEditItemDescriptionForm;data.editItemDescription=data.selectedItem.description;focus('eventEditItemDescription')">
+                   ng-click="editTextattribute(data.selectedItem, 'item' , 'description')">
                     <div btf-markdown="data.selectedItem.description | newlines"></div>
                     <span ng-hide="data.selectedItem.description">Enter item description</span>
                 </a>
             </small>
         </div>
-        <div class="item-description" ng-show="data.showEditItemDescriptionForm">
+        <div class="item-description" ng-show="data.show_edit_item_description">
             <textarea class="form-control" msd-elastic placeholder="Enter a description for this item"
-                      ng-model="data.editItemDescription" focus-on="eventEditItemDescription"></textarea>
-            <a href="javascript:;" class="btn btn-primary btn-xs" ng-click="data.selectedItem.description=data.editItemDescription;saveSelectedItem();data.showEditItemDescriptionForm=false;">Save description</a>
-            <a href="javascript:;" class="btn btn-inverse btn-xs item-description-cancel" ng-click="data.showEditItemDescriptionForm=false;">Cancel</a>
+                      ng-model="data.selectedItem.edit_item_description" focus-on="event_edit_item_description"></textarea>
+            <a href="javascript:;" class="btn btn-primary btn-xs" ng-click="data.selectedItem.description=data.selectedItem.edit_item_description;saveSelectedItem();data.show_edit_item_description=false;">Save description</a>
+            <a href="javascript:;" class="btn btn-inverse btn-xs item-description-cancel" ng-click="data.selectedItem.edit_item_description='';data.show_edit_item_description=false;">Cancel</a>
             <a href="javascript:;" class="btn btn-link btn-xs pull-right" title="Markdown help" onclick="alert('LawPal supports markdown.');">Formatting Help</a>
         </div>
     </h3>
@@ -147,18 +147,18 @@
             <div class="doc-wrap">
                 <!-- <span class="version">{{ data.selectedItem.latest_revision.slug }}</span> -->
                 <h4><a href="javascript:;" ng-click="showRevisionDocument(data.selectedItem.latest_revision)"><span class="fui-document status-{{ data.selectedItem.latest_revision.status }}"></span> {{ data.selectedItem.latest_revision.name }}</a></h4>
-                <div class="desc" ng-hide="data.showEditRevisionDescriptionForm||data.usdata.current.user_class!=='lawyer'">
+                <div class="desc" ng-hide="data.show_edit_revision_description||data.usdata.current.user_class!=='lawyer'">
                      <a href="javascript:;" class="link"
-                        ng-click="data.showEditRevisionDescriptionForm=!data.showEditRevisionDescriptionForm;data.editRevisionDescription=data.selectedItem.latest_revision.description;focus('eventEditLatestRevisionDescription')">
+                        ng-click="editTextattribute(data.selectedItem.latest_revision, 'revision', 'description')">
                         <div btf-markdown="data.selectedItem.latest_revision.description | newlines"></div>
                         <span ng-hide="data.selectedItem.latest_revision.description">Enter description</span>
                     </a>
                 </div>
-                <div class="item-description" ng-show="data.showEditRevisionDescriptionForm">
+                <div class="item-description" ng-show="data.show_edit_revision_description">
                     <textarea class="form-control" msd-elastic placeholder="Enter a description for this revision"
-                              ng-model="data.editRevisionDescription" focus-on="eventEditLatestRevisionDescription"></textarea>
-                    <a href="javascript:;" class="btn btn-primary btn-xs" ng-click="data.selectedItem.latest_revision.description=data.editRevisionDescription;saveLatestRevision();data.showEditRevisionDescriptionForm=false;">Save description</a>
-                    <a href="javascript:;" class="btn btn-inverse btn-xs item-description-cancel" ng-click="data.showEditRevisionDescriptionForm=false;">Cancel</a>
+                              ng-model="data.selectedItem.latest_revision.edit_revision_description" focus-on="event_edit_revision_description"></textarea>
+                    <a href="javascript:;" class="btn btn-primary btn-xs" ng-click="data.selectedItem.latest_revision.description=data.selectedItem.latest_revision.edit_revision_description;saveLatestRevision();data.show_edit_revision_description=false;">Save description</a>
+                    <a href="javascript:;" class="btn btn-inverse btn-xs item-description-cancel" ng-click="data.selectedItem.latest_revision.edit_revision_description='';data.show_edit_revision_description=false;">Cancel</a>
                     <a href="javascript:;" class="btn btn-link btn-xs pull-right" title="Markdown help" onclick="alert('Markdown help popup like trello');">Formatting Help</a>
                 </div>
                 <div class="tools status-{{ data.selectedItem.latest_revision.status }}">
