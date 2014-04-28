@@ -11,7 +11,6 @@
                     {% endif %}
                 </div>
             </header>
-
             {% if not object_list %}
                 <div id="overview" class="row">{% include 'matter/partials/intro.html' %}</div>
             {% else %}
@@ -198,12 +197,20 @@ var MatterList = React.createClass({
     });
     return (
       <div>
-        <form className="form-horizontal" role="form">
-            <div className="input-group">
-              <input className="input-lg" onChange={this.handleChange} autocomplete="off" id="id_q" name="q" parsley-required="true" parsley-required-message="This field is required." placeholder="Search Matters" type="text" />
-              <span className="input-group-addon input-lg"><b>{this.state.total_num_matters}</b></span>
+        <div className="col-sm-12">
+            <div className="row">
+                <div className="col-sm-5 col-sm-offset-7">
+                   <form className="form-horizontal" role="form">
+                        <div className="input-group input-group-sm">
+                          <input className="form-control" type="search" placeholder="Search" onChange={this.handleChange} autocomplete="off" id="id_q" name="q" parsley-required="true" parsley-required-message="This field is required." placeholder="Filter by matter title or client name" type="text" />
+                          <span className="input-group-btn">
+                            <button className="btn" type="button"><span className="fui-search"></span></button>
+                          </span>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </form>
+        </div>
         <br/>
         {matterNodes}
       </div>
