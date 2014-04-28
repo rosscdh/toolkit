@@ -15,6 +15,7 @@ class MatterCloneTest(TestCase):
 
         # matter to clone
         self.source = mommy.make('workspace.Workspace', name='Source Matter to be copied', lawyer=self.lawyer)
+        self.source.categories = ['A', 'B', 'C']
 
         # items to clone
         self.item = mommy.make('item.Item', matter=self.source, name='Test Item from Source No.1', category=None)
@@ -63,3 +64,6 @@ class MatterCloneTest(TestCase):
         self.assertEqual(target.data.get('cloned').keys(), ['date_cloned', 'num_items'])
         self.assertEqual(type(target.data.get('cloned').get('date_cloned')), datetime.datetime)
         self.assertEqual(target.data.get('cloned').get('num_items'), 2)
+
+        # test the target matter has the caegories preserved and in correct order
+        self.assertEqual(target.categories, self.source.categories)
