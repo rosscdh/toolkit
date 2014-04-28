@@ -1119,20 +1119,18 @@ angular.module('toolkit-gui')
                         var reviews = jQuery.grep(revision.reviewers, function (r) {
                             return r.slug === reviewSlug;
                         });
-                        /*
-                        if(reviews.length===0 && revision.user_review && revision.user_review.url ) {
-                        	// no external reviewers and there is a user_review
-                        	reviewUrl = revision.user_review.url;
-                        	reviews = jQuery.grep(revision.reviewers, function (r) {
-	                            return r.slug === reviewSlug;
-	                        });
-                        }
-                        */
 
                         if (reviews.length > 0) {
                             $scope.showReview(revision, reviews[0]);
                         } else if (revision.user_review && revision.user_review.url) {
-                        	$scope.showReview(revision, revision.user_review);
+                        	var review = {
+                        		'reviewer': angular.copy($scope.data.usdata.current), // current user
+                        		'item': revision.item
+                        	}; 
+
+                        	review.reviewer.user_review = revision.user_review;
+                        	
+                        	$scope.showReview(revision, review);
                         } else {
                             toaster.pop('warning', "Review does not exist anymore.");
                         }
