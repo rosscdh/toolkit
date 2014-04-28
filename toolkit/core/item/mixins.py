@@ -41,6 +41,15 @@ class RequestDocumentUploadMixin(object):
 class ReviewInProgressMixin(object):
     """
     """
+    def primary_participant_review_document(self):
+        """
+        return the primary reviewdocument which is only for matter.participants
+        """
+        if self.latest_revision:
+            return self.latest_revision.reviewdocument_set.filter(reviewers=None).first()
+        else:
+            return None
+
     def invited_document_reviews(self):
         """
         exclude the primary reviewdocument which is only for matter.participants

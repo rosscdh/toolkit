@@ -179,12 +179,12 @@ class MatterActivityEventService(object):
                               override_message=override_message)
 
     def add_item_comment(self, user, item, comment):
-        override_message = '%s commented on %s "%s"' % (user, item, comment)
+        override_message = u'%s commented on %s "%s"' % (user, item, comment)
         self._create_activity(actor=user, verb=u'commented', action_object=item, override_message=override_message,
                               comment=comment)
 
     def delete_item_comment(self, user, item):
-        override_message = '%s deleted a comment on %s' % (user, item)
+        override_message = u'%s deleted a comment on %s' % (user, item)
         self._create_activity(actor=user, verb=u'deleted comment', action_object=item, override_message=override_message)
 
     #
