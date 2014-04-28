@@ -167,7 +167,7 @@ angular.module('toolkit-gui')
                 //item is already loaded
                 $scope.showReviewBySlug(revisionSlug, reviewSlug);
             }
-        }
+        };
 
 
 		/**
@@ -1131,6 +1131,8 @@ angular.module('toolkit-gui')
 
                         if (reviews.length > 0) {
                             $scope.showReview(revision, reviews[0]);
+                        } else if (revision.user_review && revision.user_review.url) {
+                        	$scope.showReview(revision, revision.user_review);
                         } else {
                             toaster.pop('warning', "Review does not exist anymore.");
                         }
