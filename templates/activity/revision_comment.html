@@ -3,12 +3,9 @@
     {% block review_information %}{% endblock %}<span class="since">{{ timesince }}</span>
     <blockquote>
         <span class="fui-document"></span>
-
         <div>{{ comment }}<br/>
             <small><a href="{{ action_object_url }}">View annotation</a></small>
         </div>
-
-        Timestamp for clock-tooltip: {{ timestamp }} or {{ timestamp|date:"m/d/Y H:i" }}
     </blockquote>
 </div>
 
