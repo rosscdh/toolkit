@@ -115,8 +115,7 @@ def crocodoc_webhook_event_recieved(sender, verb, document, target, attachment_n
                 # user MUST be in document.source_object.primary_reviewdocument.reviewers
                 # otherwise he could not get to this point
 
-                reviewdocument = document.source_object.reviewdocument_set.get(
-                    crocodoc_uuid=document.crocodoc_uuid.replace('-', ''))  # not found with '-' in uuid
+                reviewdocument = document.source_object.reviewdocument_set.get(crocodoc_uuid=document.uuid)
 
                 if reviewdocument:
 
