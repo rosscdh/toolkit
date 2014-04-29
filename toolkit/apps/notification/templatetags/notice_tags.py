@@ -65,6 +65,12 @@ def get_notification_context(message_data, user):
                 target_object = item_queryset.get(slug=action_object.get('slug'))
                 action_object_url = target_object.get_regular_url()
 
+    #
+    # UGLY HACK
+    #
+    if action_object_url is None or 'None' in action_object_url:
+        action_object_url = None
+
     if message_data is not None:
         ctx = {
             'actor_name': actor.get('name') if actor else None,
