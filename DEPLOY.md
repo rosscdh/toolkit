@@ -3,6 +3,10 @@ Deployment actions by branch
 
 [activity-stream-update]
 
+--------------------------------------------------------------------------------
+** DEPLOYED 29 April 2014
+--------------------------------------------------------------------------------
+
 1. ./manage.py migrate review 0001 --fake # setup the base
 2. ./manage.py migrate review # add the crocodoc uuid field
 3. ./manage.py migrate attachment # add is_deleted to revision
