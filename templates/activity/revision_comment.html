@@ -4,7 +4,7 @@
     <blockquote>
         <span class="fui-document"></span>
         <div>{{ comment }}<br/>
-            <small><a href="{{ action_object_url }}">View annotation</a></small>
+            {% if action_object_url %}<small><a href="{{ action_object_url }}">View annotation</a></small>{% endif %}
         </div>
     </blockquote>
 </div>
