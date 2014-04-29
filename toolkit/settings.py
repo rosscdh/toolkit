@@ -52,6 +52,8 @@ STATICFILES_DIRS = (
     # These are the dev files
     ("ng", os.path.join(SITE_ROOT, 'gui')),
 )
+STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+
 
 MEDIA_ROOT = os.path.join(SITE_ROOT, 'media')
 MEDIA_URL = '/m/'
@@ -150,6 +152,9 @@ HELPER_APPS = (
     # Api helpers
     #'corsheaders',  # not required yet
 
+    # Asset pipeline
+    'pipeline',
+
     # db migrations
     'south',
     # jenkins
@@ -167,6 +172,8 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # 'corsheaders.middleware.CorsMiddleware',  # not required yet
     'toolkit.apps.me.middleware.EnsureUserHasPasswordMiddleware',
+    'django.middleware.gzip.GZipMiddleware',
+    'pipeline.middleware.MinifyHTMLMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -284,6 +291,36 @@ REST_FRAMEWORK = {
         'toolkit.apps.api.permissions.ApiObjectPermission',
     ],
     'PAGINATE_BY': 10,
+}
+
+
+PIPELINE_COMPILERS = (
+  'react.utils.pipeline.JSXCompiler',
+)
+PIPELINE_CSS = {
+    'colors': {
+        'source_filenames': (
+          'css/core.css',
+          'css/colors/*.css',
+          'css/layers.css'
+        ),
+        'output_filename': 'css/colors.css',
+        'extra_context': {
+            'media': 'screen,projection',
+        },
+    },
+}
+
+PIPELINE_JS = {
+    'stats': {
+        'source_filenames': (
+          'js/jquery.js',
+          'js/d3.js',
+          'js/collections/*.js',
+          'js/application.js',
+        ),
+        'output_filename': 'js/stats.js',
+    }
 }
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
