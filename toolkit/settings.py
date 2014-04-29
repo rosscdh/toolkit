@@ -52,7 +52,9 @@ STATICFILES_DIRS = (
     # These are the dev files
     ("ng", os.path.join(SITE_ROOT, 'gui')),
 )
-STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+
+#STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 
 
 MEDIA_ROOT = os.path.join(SITE_ROOT, 'media')
@@ -63,7 +65,10 @@ MEDIA_URL = '/m/'
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'compressor.finders.CompressorFinder',
+    'pipeline.finders.FileSystemFinder',
+    'pipeline.finders.AppDirectoriesFinder',
+    'pipeline.finders.PipelineFinder',
+    'pipeline.finders.CachedFileFinder',
 )
 
 
@@ -294,34 +299,18 @@ REST_FRAMEWORK = {
 }
 
 
-PIPELINE_COMPILERS = (
-  'react.utils.pipeline.JSXCompiler',
-)
-PIPELINE_CSS = {
-    'colors': {
-        'source_filenames': (
-          'css/core.css',
-          'css/colors/*.css',
-          'css/layers.css'
-        ),
-        'output_filename': 'css/colors.css',
-        'extra_context': {
-            'media': 'screen,projection',
-        },
-    },
-}
-
+#PIPELINE_CSS = {}
 PIPELINE_JS = {
-    'stats': {
+    'reactjs': {
         'source_filenames': (
-          'js/jquery.js',
-          'js/d3.js',
-          'js/collections/*.js',
-          'js/application.js',
+            'js/matter_search.jsx',
         ),
-        'output_filename': 'js/stats.js',
+        'output_filename': 'js/jsx-all-compiled.js',
     }
 }
+PIPELINE_COMPILERS = [
+  'react.utils.pipeline.JSXCompiler',
+]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
