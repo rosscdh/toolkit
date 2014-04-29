@@ -25,9 +25,10 @@ class CrocodocLoaderService(object):
                                               # important for sandboxing the view to the specified reviewer
                                               reviewer=self.reviewdocument.reviewer)
 
-        self.ensure_reference_crocodoc_uuid()  # record the uuid
+        self.ensure_local_reference_crocodoc_uuid()  # record the uuid
 
-    def ensure_reference_crocodoc_uuid(self):
+    def ensure_local_reference_crocodoc_uuid(self):
+        # make sure its a copy when necessary
         self.ensure_reset_copied_reviewdocument()
 
         # if the crocodoc has not been saved to lawpal yet, save it's uuid:
