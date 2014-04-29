@@ -444,7 +444,8 @@ class RevisionReviewerTest(BaseEndpointTest):
             self.assertTrue(resp.status_code, 200) # ok logged in
 
             context_data = resp.context_data
-            self.assertEqual(context_data.keys(), ['crocodoc_view_url', 'reviewdocument', u'object', 'CROCDOC_PARAMS', 'crocodoc', u'view'])
+
+            self.assertEqual(context_data.keys(), ['crocodoc_view_url', 'CROCODOC_PARAMS', 'reviewdocument', u'object', 'crocodoc', u'view'])
             # is a valid url for crocodoc
             self.assertTrue(validate_url(context_data.get('crocodoc_view_url')) is None)
             self.assertTrue('https://crocodoc.com/view/' in context_data.get('crocodoc_view_url'))
@@ -456,7 +457,7 @@ class RevisionReviewerTest(BaseEndpointTest):
                                         'copyprotected': False,
                                         'sidebar': 'auto'}
 
-            self.assertEqual(context_data.get('CROCDOC_PARAMS'), expected_crocodoc_params)
+            self.assertEqual(context_data.get('CROCODOC_PARAMS'), expected_crocodoc_params)
 
     def test_lawyer_post(self):
         self.client.login(username=self.lawyer.username, password=self.password)
