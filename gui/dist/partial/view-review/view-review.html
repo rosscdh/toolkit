@@ -1,0 +1,25 @@
+<div class="modal-content">
+	<div class="modal-header">
+		<h4 class="modal-title">
+            Review from {{ review.reviewer.name }} for {{ revision.name }}
+            <span class="pull-right"><span class="fui-lock"></span> Visible to
+                <div class="avatar img-circle" ng-repeat="r in usersWithAccess">
+                    <span class="initials" title="Test Customer">{{ r.initials }}</span>
+                </div>
+            </span>
+        </h4>
+	</div>
+	<div class="modal-body">
+        <iframe ng-src="{{ review.reviewer.user_review.url }}" style="width: 100%;"></iframe>
+	</div>
+	<div class="modal-footer">
+        <button class="btn" ng-click="review.is_complete=!review.is_complete;saveReview()" style="float: left;"
+                ng-class="{'btn-primary': review.is_complete==false, 'btn-default': review.is_complete==true}"
+                ng-show="item.latest_revision.slug==revision.slug">
+            <span ng-hide="review.is_complete"><span class="fui-check-inverted"></span> Mark completed</span>
+            <span ng-show="review.is_complete">Mark incomplete</span>
+        </button>
+
+		<button class="btn btn-default" ng-click="ok()">Close</button>
+	</div>
+</div>
