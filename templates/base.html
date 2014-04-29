@@ -173,13 +173,11 @@ mixpanel.init("{{ GLOBALS.MIXPANEL_API_TOKEN }}");
         '$last_login': '{{ user.last_login|date:"c" }}',
         'pk': '{{ user.pk }}',
         'Account Type': '{{ user.profile.account_type }}',
+        {% if user.profile.is_lawyer %}'Firm Name': '{{ user.profile.firm_name }}',{% endif %}
+        'Plan': '{{ user.profile.plan }}',
+        {% if user.profile.plan_interval %}'Plan Interval': '{{ user.profile.plan_interval }}',{% endif %}
         'Type': '{{ user.profile.type }}'
         });
-    {% if user.profile.is_lawyer %}
-        mixpanel.people.set({
-            'Firm Name': '{{ user.profile.firm_name }}'
-        });
-    {% endif %}
 {% endif %}
     </script>
     <!-- end Mixpanel -->
@@ -192,10 +190,11 @@ mixpanel.init("{{ GLOBALS.MIXPANEL_API_TOKEN }}");
           window.intercomSettings = {
             user_id: "{{user.username}}",
             email: "{{user.email}}",
+            account_type: "{{ user.profile.account_type }}",
+            plan: "{{ user.profile.plan }}",
+            {% if user.profile.plan_interval %}plan_interval: "{{ user.profile.plan_interval }}",{% endif %}
             type: "{{user.profile.user_class}}",
-            {% if user.profile.firm_name %}
-            firm: "{{user.profile.firm_name}}",
-            {% endif %}
+            {% if user.profile.firm_name %}firm: "{{user.profile.firm_name}}",{% endif %}
             created_at: "{{ user.date_joined|date:"U" }}",
             app_id: "{{ GLOBALS.INTERCOM_APP_ID }}",
             user_hash: "{% intercom_user_hash user.username %}",
