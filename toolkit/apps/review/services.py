@@ -19,11 +19,11 @@ class CrocodocLoaderService(object):
         self.reviewdocument = reviewdocument
         self.ensure_reviewer()
         self.service = CrocoDocConnectService(document_object=self.reviewdocument.document,
-                       app_label='attachment',
-                       field_name='executed_file',
-                       upload_immediately=True,  # this is handled by the ensure_local_file method
-                       # important for sandboxing the view to the specified reviewer
-                       reviewer=self.reviewdocument.reviewer)
+                                              app_label='attachment',
+                                              field_name='executed_file',
+                                              upload_immediately=True,  # this is handled by the ensure_local_file method
+                                              # important for sandboxing the view to the specified reviewer
+                                              reviewer=self.reviewdocument.reviewer)
 
         self.ensure_lawpal_uuid()  # record the uuid
 
@@ -70,7 +70,7 @@ class CrocodocLoaderService(object):
         # @TODO this should ideally be set in the service on init
         # and session automatically updated
         # https://crocodoc.com/docs/api/ for more info
-        CROCDOC_PARAMS = {
+        CROCODOC_PARAMS = {
                 "user": {
                     "name": self.user.get_full_name(),
                     "id": self.user.pk
@@ -91,10 +91,10 @@ class CrocodocLoaderService(object):
         #
         # Set out session key based on params above
         #
-        self.service.obj.crocodoc_service.session_key(**CROCDOC_PARAMS),
+        self.service.obj.crocodoc_service.session_key(**CROCODOC_PARAMS),
 
         return {
             'crocodoc': self.service.obj.crocodoc_service,
-            'crocodoc_view_url': self.service.obj.crocodoc_service.view_url(**CROCDOC_PARAMS),  # this is where the view params must be sent in order to show toolbar etc
-            'CROCDOC_PARAMS': CROCDOC_PARAMS, # for testing the values
+            'crocodoc_view_url': self.service.obj.crocodoc_service.view_url(**CROCODOC_PARAMS),  # this is where the view params must be sent in order to show toolbar etc
+            'CROCODOC_PARAMS': CROCODOC_PARAMS, # for testing the values
         }
