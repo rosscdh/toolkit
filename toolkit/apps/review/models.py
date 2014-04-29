@@ -32,11 +32,15 @@ class ReviewDocument(IsDeletedMixin,
     a document using a service like crocodoc
     """
     slug = UUIDField(auto=True, db_index=True)
-    crocodoc_uuid = UUIDField(null=True, blank=True)
+
+    crocodoc_uuid = UUIDField(hyphenate=True, null=True, blank=True)
+
     document = models.ForeignKey('attachment.Revision')
     reviewers = models.ManyToManyField('auth.User')
+
     is_complete = models.BooleanField(default=False)
     date_last_viewed = models.DateTimeField(blank=True, null=True)
+
     data = JSONField(default={})
 
     objects = ReviewDocumentManager()
