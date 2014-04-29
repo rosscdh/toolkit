@@ -67,15 +67,11 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
         }
 
         if verb_slug in ['revision-added-review-session-comment', 'revision-added-revision-comment']:
-            # exception for revision-commens:
-            # add item, revision_slug and modify action_object_url to contain item AND revision
-
-            # ctx.update({'item': obj.data['item']})
+            #
+            # in the case of the comments we need to do some funky things to get the
+            # regular_url from the object
+            #
             ctx.update({'item_name': obj.data.get('item', {}).get('name')})
-
-            # item = Item.objects.get(slug=obj.data.get('item', {}).get('slug'))
-            # ctx.update({'action_object_url': item.get_full_user_review_url(user=self.request.user,
-            #                                                                version_slug=obj.action_object.slug)})
 
             # get reviewdocument to create the action_object_url
             reviewdocument_object = ReviewDocument.objects.get(slug=reviewdocument.get('slug')) if reviewdocument else None
@@ -87,6 +83,9 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
             ctx.update({'action_object_url': reviewdocument_object.get_regular_url() if reviewdocument else None})
             ctx.update({'revision_slug': "%s" % obj.action_object.slug})
         else:
+            #
+            # its not a special attention activity item and we can just process it normally
+            #
             if obj.action_object and hasattr(obj.action_object, 'get_absolute_url'):
                 ctx.update({'action_object_url': obj.action_object.get_absolute_url()})
 
