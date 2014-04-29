@@ -25,13 +25,12 @@ class CrocodocLoaderService(object):
                        # important for sandboxing the view to the specified reviewer
                        reviewer=self.reviewdocument.reviewer)
 
-        self.ensure_lawpal_uuid()  # record the uuid
+        self.ensure_reference_crocodoc_uuid()  # record the uuid
 
-    def ensure_lawpal_uuid(self):
-        if self.reviewdocument.document.primary_reviewdocument.crocodoc_uuid == self.service.obj.uuid:
-            crocodoc_object = self.service.obj
-            crocodoc_object.crocodoc_uuid = None
+    def ensure_reference_crocodoc_uuid(self):
+        self.ensure_reset_copied_reviewdocument()
 
+        # if the crocodoc has not been saved to lawpal yet, save it's uuid:
         if self.service.is_new is True or self.reviewdocument.crocodoc_uuid in [None, '']:
             if self.service.obj.uuid:
                 #
@@ -42,6 +41,17 @@ class CrocodocLoaderService(object):
 
             else:
                 logger.error('Crocodoc Service did not provide a uuid for the reviewdocument: %s for revision: %s on item: %s' % (self.reviewdocument, self.reviewdocument.document, self.reviewdocument.document.item.slug))
+
+    def ensure_reset_copied_reviewdocument(self):
+        """
+        In the process of "request review" the database-entry for the base-object is copied with only one user as
+        reviewer.
+        Since the WHOLE entry including the crocodoc_uuid is copied, we need to check if the actual object has the same
+        uuid and possibly reset it. Otherwise we couldn't identify the review copies.
+        """
+        if self.reviewdocument.document.primary_reviewdocument.crocodoc_uuid == self.service.obj.uuid:
+            crocodoc_object = self.service.obj
+            crocodoc_object.crocodoc_uuid = None
 
     def ensure_reviewer(self):
         if self.reviewdocument.reviewer is None:
