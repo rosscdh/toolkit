@@ -328,12 +328,10 @@ angular.module('toolkit-gui')
 			$scope.data.showEditItemTitleForm = false;
 			$scope.data.showPreviousRevisions = false;
 
-//            return deferred.promise; // commented out in merge
-
 			$scope.data.show_edit_item_description = false;
 			$scope.data.show_edit_revision_description = false;
 
-			$log.debug(item);
+            return deferred.promise;
 		};
 
 		/**
