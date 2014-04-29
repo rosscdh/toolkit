@@ -469,7 +469,7 @@ class RevisionSignerTest(BaseEndpointTest):
             #                             'copyprotected': False,
             #                             'sidebar': 'auto'}
 
-            # self.assertEqual(context_data.get('CROCDOC_PARAMS'), expected_crocodoc_params)
+            # self.assertEqual(context_data.get('CROCODOC_PARAMS'), expected_crocodoc_params)
 
     def test_lawyer_post(self):
         self.client.login(username=self.lawyer.username, password=self.password)
