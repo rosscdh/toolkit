@@ -1,64 +1,3 @@
-{% extends 'gui.html' %}{% load url from future %}
-
-{% block page_title %}Your Matters{% endblock %}
-
-{% block body %}
-    <div id="matter-list" class="content col-lg-12">
-        <section class="matters cards">
-            <header class="page-header">
-                <h4>All Matters</h4>
-                <div class="pull-right">
-                    {% if can_create %}
-                        <a href="{% url 'matter:create' %}" data-toggle="modal" data-target="#matter-create" class="btn btn-success btn-embossed"><i class="fui-plus"></i> New Matter</a>
-                    {% endif %}
-                </div>
-            </header>
-
-            {% if not object_list %}
-                <div id="overview" class="row">{% include 'matter/partials/intro.html' %}</div>
-            {% else %}
-                <div id="matter-content" class="row">{#% include 'matter/partials/matter_list.html' %#}</div>
-            {% endif %}
-
-        </section>
-    </div>
-{% endblock %}
-
-{% block modals %}
-    {% if can_create %}
-        <div class="modal" id="matter-create"></div>
-    {% endif %}
-    {% for m in object_list %}
-        {% if can_edit %}
-            <div class="modal" id="matter-edit-{{ m.slug }}"></div>
-        {% endif %}
-        {% if can_delete %}
-            <div class="modal" id="matter-delete-{{ m.slug }}"></div>
-        {% endif %}
-    {% endfor %}
-{% endblock %}
-
-{% block js %}
-
-<script src="{{ STATIC_URL }}js/react-0.10.0.js"></script>
-<script src="{{ STATIC_URL }}js/JSXTransformer-0.10.0.js"></script>
-<script src="{{ STATIC_URL }}js/moment.2.6.0.min.js"></script>
-<script src="{{ STATIC_URL }}js/fuse.min.js"></script>
-
-<script>
-'use strict';
-
-var UserData = {
-    'is_lawyer': {{ user.profile.is_lawyer|lower }},
-    'name': "{{ user.get_full_name }}",
-    'can_edit': {{ can_edit|lower }}
-};
-var edit_url = "{% url 'matter:edit' matter_slug='lp-react-name' %}";
-var MatterListData = {{ object_list_json|safe }};
-</script>
-
-{% verbatim %}
-<script type="text/jsx">
 /** @jsx React.DOM */
 /**
 * ReactJS Experiment
@@ -230,13 +169,3 @@ var MatterList = React.createClass({
     );
   }
 });
-
-React.renderComponent(
-  //<MatterList data={MatterListData} can_create={can_create} can_edit={can_edit} can_delete={can_delete} />,
-  <MatterList />,
-  document.getElementById('matter-content')
-);
-</script>
-{% endverbatim %}
-
-{% endblock %}
