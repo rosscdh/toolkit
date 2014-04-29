@@ -51,21 +51,50 @@ class ReviewDocument(IsDeletedMixin,
         # @BUSINESS RULE always return the newest to oldest
         ordering = ('-id',)
 
-    def get_absolute_url(self, user, use_absolute=True):
+    def reviewing_user_is_participant_review_url(self, user):
+        """
+        if a mater.participant is invited to review a document
+        they should be directed to comment on the primary document and not
+        the sandboxed copy document. This method returns the prmary document
+        url if the user is a matter.participant
+        """
+        # is the invited reviewer and is a participant
+        if user == self.reviewer and user in self.matter.participants.all():
+            primary_review_document = self.document.item.primary_participant_review_document()
+            return ABSOLUTE_BASE_URL(reverse('review:review_document', kwargs={'slug': primary_review_document.slug, 'auth_slug': primary_review_document.get_user_auth(user=user)}))
+        return None
+
+    def get_absolute_url(self, user):
+        """
+        should change depending on who is looking at it.
+        in order to make matter.participants all reivew and comment on the same document
+        we have to check if they are matter.participant
+        """
         auth_key = self.get_user_auth(user=user)
         if auth_key is not None:
-            url = reverse('review:review_document',
-                          kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)})
-            if use_absolute:
-                return ABSOLUTE_BASE_URL(url)
-            return url
+            # see if the user is a participant and review their primary review_documnet
+            primary_document_review_url = self.reviewing_user_is_participant_review_url(user=user)
+            if primary_document_review_url is not None:
+                return primary_document_review_url
+            else:
+                # is a normal 3rd party invited user
+                return ABSOLUTE_BASE_URL(reverse('review:review_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)}))
         return None
 
     def get_download_url(self, user):
-        return ABSOLUTE_BASE_URL(reverse('review:download_document',
-                                         kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)}))
+        """
+        The download url must stay not be changed even if the user is a matter.participant
+        as its used to see if their review of the document is done
+        and since the documents are simply copies of the primary this is safe
+        """
+        return ABSOLUTE_BASE_URL(reverse('review:download_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)}))
 
     def get_approval_url(self, user):
+        """
+        The approval url must stay not be changed even if the user is a matter.participant
+        as its used to see if their review of the document is done
+        and since the documents are simply copies of the primary this is safe
+        """
         auth_key = self.get_user_auth(user=user)
         if auth_key is not None:
             return ABSOLUTE_BASE_URL(reverse('review:approve_document',
