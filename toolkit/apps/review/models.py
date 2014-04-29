@@ -7,6 +7,7 @@ from rulez import registry as rulez_registry
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 
 from toolkit.core.mixins import IsDeletedMixin
+from toolkit.core.mixins import ApiSerializerMixin
 
 from .mixins import UserAuthMixin, FileExistsLocallyMixin
 from .managers import ReviewDocumentManager
@@ -24,19 +25,27 @@ logger = logging.getLogger('django.request')
 class ReviewDocument(IsDeletedMixin,
                      FileExistsLocallyMixin,
                      UserAuthMixin,
+                     ApiSerializerMixin,
                      models.Model):
     """
     An object to represent a url that allows multiple reviewers to view
     a document using a service like crocodoc
     """
     slug = UUIDField(auto=True, db_index=True)
+
+    crocodoc_uuid = UUIDField(hyphenate=True, null=True, blank=True)
+
     document = models.ForeignKey('attachment.Revision')
     reviewers = models.ManyToManyField('auth.User')
+
     is_complete = models.BooleanField(default=False)
     date_last_viewed = models.DateTimeField(blank=True, null=True)
+
     data = JSONField(default={})
 
     objects = ReviewDocumentManager()
+
+    _serializer = 'toolkit.api.serializers.ReviewSerializer'
 
     class Meta:
         # @BUSINESS RULE always return the newest to oldest
@@ -88,8 +97,15 @@ class ReviewDocument(IsDeletedMixin,
         """
         auth_key = self.get_user_auth(user=user)
         if auth_key is not None:
-            return ABSOLUTE_BASE_URL(reverse('review:approve_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)}))
+            return ABSOLUTE_BASE_URL(reverse('review:approve_document',
+                                             kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)}))
         return None
+
+    def get_regular_url(self):
+        """
+        Used in notficiations & activity
+        """
+        return '{url}/review/{slug}'.format(url=self.document.get_absolute_url(), slug=self.slug)
 
     def complete(self, is_complete=True):
         self.is_complete = is_complete

@@ -1,0 +1,9 @@
+{% extends "notification/partials/default.html" %}
+
+{% load humanize %}
+
+{% block notice %}
+    <p class="lead">{{ actor_name }} commented on <a href="{{ action_object_url }}">{{ action_object_name }}</a></p>
+    <p class="quote">{{ comment }}</p>
+    <p class="small">{{ date|naturaltime }} — in <a href="{{ base_url }}">{{ target_name }}</a> for {{ client_name }}.</p>
+{% endblock %}
