@@ -1,4 +1,4 @@
-angular.module('toolkit-gui').factory('smartRoutes', [ '$routeParams', '$state', function($routeParams, $state) {
+angular.module('toolkit-gui').factory('smartRoutes', [ '$routeParams', '$state', '$location', '$log', function($routeParams, $state, $location, $log) {
 
 	var paths = [
 		{ 'pattern': '/matters/:matterSlug', 'match': new RegExp('/matters', 'i') },
@@ -21,11 +21,11 @@ angular.module('toolkit-gui').factory('smartRoutes', [ '$routeParams', '$state',
 
 	var smartRoutes = {
 		'params': function() {
-			var urlPath = parseUrl(window.location);
+			var urlPath = parseUrl($location.absUrl());
 			var pathEls = [];
 			var urlPathEls = [];
 			var matchingPath = jQuery.grep( paths, function( path ) {
-				return urlPath.match( path.match ); 
+				return urlPath.match( path.match );
 			});
 
 			if( matchingPath && matchingPath.length>0 ) {

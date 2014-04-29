@@ -17,9 +17,11 @@ from .user import LiteUserSerializer, SimpleUserWithReviewUrlSerializer
 class ItemSerializer(serializers.HyperlinkedModelSerializer):
     description = serializers.CharField(source='description', required=False)
 
+    regular_url = serializers.Field(source='get_regular_url')
+
     status = serializers.ChoiceField(required=False, choices=Item.ITEM_STATUS.get_choices())
 
-    review_percentage_complete = serializers.Field(source='review_percentage_complete')  # removed while fixing things
+    review_percentage_complete = serializers.Field(source='review_percentage_complete')
 
     responsible_party = LiteUserSerializer(required=False)
 
@@ -35,7 +37,8 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Item
         lookup_field = 'slug'
-        fields = ('slug', 'url',
+        fields = ('slug',
+                  'url', 'regular_url',
                   'status',
                   'responsible_party',
                   'review_percentage_complete',
@@ -84,7 +87,7 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
     def get_request_document_meta(self, obj):
         """
         Return the requested by info if present otherwise null
-        see item_request.py
+        see revision_request.py
         """
         return obj.data.get('request_document', {
                 'message': None,

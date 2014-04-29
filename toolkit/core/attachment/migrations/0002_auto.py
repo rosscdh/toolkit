@@ -8,9 +8,6 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Removing M2M table for field signatories on 'Revision'
-        db.delete_table(db.shorten_name(u'attachment_revision_signatories'))
-
         # Adding M2M table for field signers on 'Revision'
         m2m_table_name = db.shorten_name(u'attachment_revision_signers')
         db.create_table(m2m_table_name, (
@@ -22,15 +19,6 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        # Adding M2M table for field signatories on 'Revision'
-        m2m_table_name = db.shorten_name(u'attachment_revision_signatories')
-        db.create_table(m2m_table_name, (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('revision', models.ForeignKey(orm[u'attachment.revision'], null=False)),
-            ('user', models.ForeignKey(orm[u'auth.user'], null=False))
-        ))
-        db.create_unique(m2m_table_name, ['revision_id', 'user_id'])
-
         # Removing M2M table for field signers on 'Revision'
         db.delete_table(db.shorten_name(u'attachment_revision_signers'))
 

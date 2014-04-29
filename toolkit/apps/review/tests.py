@@ -421,3 +421,12 @@ class ReviewRevisionViewTest(BaseDataProvider, TestCase):
 
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed, None)
+
+
+"""
+test primary_reviewdocument()-function for Revision to get the revision that JUST belongs to the participants
+"""
+class PrimaryReviewDocumentTest(BaseDataProvider, TestCase):
+    def test_primary_reviewdocument(self):
+        reviewer_reviewdocument = self.revision.reviewdocument_set.get(reviewers=self.reviewer)
+        self.assertNotEqual(reviewer_reviewdocument, self.revision.primary_reviewdocument)

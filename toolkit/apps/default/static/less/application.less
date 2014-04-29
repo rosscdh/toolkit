@@ -480,7 +480,14 @@ body.gui {
     padding: 20px;
 
     .avatar {
-      margin-top: 8px;
+      margin-top: 5px;
+    }
+    a {
+      color:#666;
+      border-bottom:1px dotted darken(@gray, 5%);
+    }
+    a.btn {
+      border-bottom:none;
     }
 
     .notification-btn {
@@ -490,8 +497,19 @@ body.gui {
     }
 
     p {
-      color: @gray;
+      color: #888;
       margin-bottom: 0;
+    }
+    .lead {
+      font-weight: bold;
+      font-size:17px;
+    }
+    p.quote {
+      font-size:14px;
+      line-height: 19px!important;
+      border-left:2px solid lighten(@gray, 25%);
+      padding-left:10px;
+      margin:5px;
     }
   }
 }

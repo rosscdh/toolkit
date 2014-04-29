@@ -243,7 +243,7 @@ class ItemDataTest(BaseEndpointTest):
         self.assertEqual(len(stream), 2)  # shall only find the newest entry, the 2 other ones are too old.
 
         self.assertEqual(stream[0].data['override_message'],
-                         u'Lawyër Tëst changed the status of Item Data Test No. 1 from New to Final')
+                         u'Lawyër Tëst set Item Data Test No. 1 to Final')
 
     def test_change_name_signal(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -254,7 +254,7 @@ class ItemDataTest(BaseEndpointTest):
         self.assertEqual(len(stream), 2)  # shall only find the newest entry, the 2 other ones are too old.
 
         self.assertEqual(stream[0].data['override_message'],
-                         u'Lawyër Tëst renamed item from Item Data Test No. 1 to New Name')
+                         u'Lawyër Tëst renamed Item Data Test No. 1 to New Name')
 
     def test_item_reopened_signal(self):
         self.client.login(username=self.lawyer.username, password=self.password)
