@@ -304,12 +304,45 @@ class ReviewerPercentageCompleteTest(BaseDataProvider, TestCase):
 
 
 
+class ParticipantReviewerGetsPrimaryReviewDocumentUrlToViewTest(BaseDataProvider, TestCase):
+    """
+    A reviewer who is a matter.participant should be given the url of the primary document to review
+    this is to allow all top level matter.participants to comment and communicate on the same document
+    but 3rd parties are sandboxed
+    """
+    def setUp(self):
+        super(ParticipantReviewerGetsPrimaryReviewDocumentUrlToViewTest, self).setUp()
+        # add the reviewer for this test
+        self.review_document.reviewers.add(self.reviewer)
+
+    def test_participant_has_primary_review_doc_url(self):
+        # invite a participant to review the doc
+        self.revision.reviewers.add(self.user)
+        self.assertEqual(self.revision.reviewdocument_set.all().count(), 3)
+        # their url to view should be the same as the primary url
+        primary_document = self.revision.item.primary_participant_review_document()
+        participant_invited_to_review_doc = self.revision.reviewdocument_set.all().first() # should be the most recent
+        third_party_review_doc = self.revision.reviewdocument_set.all()[1]
+
+        self.assertNotEqual(primary_document.pk, participant_invited_to_review_doc.pk)
+        expected_primary_url = primary_document.get_absolute_url(user=self.user)
+        expected_matching_with_primary_url_for_participant = participant_invited_to_review_doc.get_absolute_url(user=self.user)
+
+        # should be exactly the same, as when a participant reivews a document it should be the same as all the other participants
+        self.assertEqual(expected_primary_url, expected_matching_with_primary_url_for_participant)
+
+        # the participant users review url should not be the same if they are not the review_document.reviewer
+        third_party_participant_url = third_party_review_doc.get_absolute_url(user=self.user)
+        self.assertNotEqual(expected_primary_url, third_party_participant_url)
+
+
 """
 View tests
 1. if user is logged in, check they are a participant or the expected user according to the auth_key
 2. logs user in based on url :auth_slug matching with a currently authorized reviewer
 3. if the user is not lawyer or a participant then they can only see their own commments annotation etc
 3a. this is done using the crocodoc_service.view_url(filter=id,id,id)
+@TODO use a casper test to test the user_has_viewed signal was sent when the iframe modal is closed
 """
 class ReviewRevisionViewTest(BaseDataProvider, TestCase):
     def setUp(self):
@@ -329,13 +362,13 @@ class ReviewRevisionViewTest(BaseDataProvider, TestCase):
         #
         # And date updated
         #
-        self.review_document = self.review_document.__class__.objects.get(pk=self.review_document.pk)  # refresh
-        self.assertEqual(self.review_document.date_last_viewed.year, 1970)
-        self.assertEqual(self.review_document.date_last_viewed.month, 1)
-        self.assertEqual(self.review_document.date_last_viewed.day, 1)
-        self.assertEqual(self.review_document.date_last_viewed.hour, 0)
-        self.assertEqual(self.review_document.date_last_viewed.minute, 0)
-        self.assertEqual(self.review_document.date_last_viewed.second, 0)
+        # self.review_document = self.review_document.__class__.objects.get(pk=self.review_document.pk)  # refresh
+        # self.assertEqual(self.review_document.date_last_viewed.year, 1970)
+        # self.assertEqual(self.review_document.date_last_viewed.month, 1)
+        # self.assertEqual(self.review_document.date_last_viewed.day, 1)
+        # self.assertEqual(self.review_document.date_last_viewed.hour, 0)
+        # self.assertEqual(self.review_document.date_last_viewed.minute, 0)
+        # self.assertEqual(self.review_document.date_last_viewed.second, 0)
 
     @mock_http_requests
     def test_logged_in_invalid_user(self):
@@ -359,13 +392,13 @@ class ReviewRevisionViewTest(BaseDataProvider, TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.context['user'], self.reviewer)
 
-        self.review_document = self.review_document.__class__.objects.get(pk=self.review_document.pk)  # refresh
-        self.assertEqual(self.review_document.date_last_viewed.year, 1970)
-        self.assertEqual(self.review_document.date_last_viewed.month, 1)
-        self.assertEqual(self.review_document.date_last_viewed.day, 1)
-        self.assertEqual(self.review_document.date_last_viewed.hour, 0)
-        self.assertEqual(self.review_document.date_last_viewed.minute, 0)
-        self.assertEqual(self.review_document.date_last_viewed.second, 0)
+        # self.review_document = self.review_document.__class__.objects.get(pk=self.review_document.pk)  # refresh
+        # self.assertEqual(self.review_document.date_last_viewed.year, 1970)
+        # self.assertEqual(self.review_document.date_last_viewed.month, 1)
+        # self.assertEqual(self.review_document.date_last_viewed.day, 1)
+        # self.assertEqual(self.review_document.date_last_viewed.hour, 0)
+        # self.assertEqual(self.review_document.date_last_viewed.minute, 0)
+        # self.assertEqual(self.review_document.date_last_viewed.second, 0)
 
         #
         # Test the api endpoint returns the expected date_last_viewed
@@ -375,7 +408,7 @@ class ReviewRevisionViewTest(BaseDataProvider, TestCase):
         self.assertEqual(resp.status_code, 200)
 
         json_resp = json.loads(resp.content)
-        self.assertEqual(json_resp.get('date_last_viewed'), u'1970-01-01T00:00:00.113Z')
+        # self.assertEqual(json_resp.get('date_last_viewed'), u'1970-01-01T00:00:00.113Z')
 
     @mock_http_requests
     def test_lawyer_viewing_revision_updates_nothing(self):
