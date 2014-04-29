@@ -34,15 +34,6 @@ class Migration(SchemaMigration):
         ))
         db.create_unique(m2m_table_name, ['revision_id', 'user_id'])
 
-        # Adding M2M table for field signatories on 'Revision'
-        m2m_table_name = db.shorten_name(u'attachment_revision_signatories')
-        db.create_table(m2m_table_name, (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('revision', models.ForeignKey(orm[u'attachment.revision'], null=False)),
-            ('user', models.ForeignKey(orm[u'auth.user'], null=False))
-        ))
-        db.create_unique(m2m_table_name, ['revision_id', 'user_id'])
-
         # Adding M2M table for field alternatives on 'Revision'
         m2m_table_name = db.shorten_name(u'attachment_revision_alternatives')
         db.create_table(m2m_table_name, (
@@ -59,9 +50,6 @@ class Migration(SchemaMigration):
 
         # Removing M2M table for field reviewers on 'Revision'
         db.delete_table(db.shorten_name(u'attachment_revision_reviewers'))
-
-        # Removing M2M table for field signatories on 'Revision'
-        db.delete_table(db.shorten_name(u'attachment_revision_signatories'))
 
         # Removing M2M table for field alternatives on 'Revision'
         db.delete_table(db.shorten_name(u'attachment_revision_alternatives'))
