@@ -1,4 +1,4 @@
-Django==1.6.3
+Django==1.6.4
 django-extensions>=1.3
 south
 
@@ -49,8 +49,12 @@ decorator
 
 boto
 django-storages
-
 requests
+
+# assets
+django-pipeline
+# react plugin for django-pipeline
+PyReact
 
 python-dateutil
 
@@ -59,10 +63,9 @@ python-memcached
 # Activity stream
 pytz
 -e git+https://github.com/lawpal/django-activity-stream.git@lawpal#egg=django-activity-stream
+
 # Notfications
 -e git+https://github.com/rosscdh/django-stored-messages.git@lawpal#egg=django-stored-messages
-
-
 -e git+https://github.com/GoodCloud/django-ajax-uploader.git#egg=django-ajax-uploader
 
 raven # getsentry

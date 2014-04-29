@@ -1,4 +1,6 @@
-{% extends 'gui.html' %}{% load url from future %}
+{% extends 'gui.html' %}{% load url from future %}{% load compressed %}
+
+{% block page_title %}Your Matters{% endblock %}
 
 {% block body %}
     <div id="matter-list" class="content col-lg-12">
@@ -11,6 +13,7 @@
                     {% endif %}
                 </div>
             </header>
+
             {% if not object_list %}
                 <div id="overview" class="row">{% include 'matter/partials/intro.html' %}</div>
             {% else %}
@@ -36,11 +39,10 @@
 {% endblock %}
 
 {% block js %}
+<script src="{{ STATIC_URL }}js/react-0.10.0.min.js"></script>
+<script src="{{ STATIC_URL }}js/moment.2.6.0.min.js"></script>
+<script src="{{ STATIC_URL }}js/fuse.min.js"></script>
 
-<script src="{{ STATIC_URL }}moment.2.6.0.min.js"></script>
-<script src="{{ STATIC_URL }}react-0.10.0.js"></script>
-<script src="{{ STATIC_URL }}JSXTransformer-0.10.0.js"></script>
-<script src="{{ STATIC_URL }}fuse.min.js"></script>
 <script>
 'use strict';
 
@@ -53,177 +55,6 @@ var edit_url = "{% url 'matter:edit' matter_slug='lp-react-name' %}";
 var MatterListData = {{ object_list_json|safe }};
 </script>
 
-{% verbatim %}
-<script type="text/jsx">
-/** @jsx React.DOM */
-/**
-* ReactJS Experiment
-*
-*/
-var MatterItem = React.createClass({
-  render: function() {
-    return (
-            <article className="col-md-4 matter">
-                <div className="card">
-
-                    { this.props.editMatterInterface }
-                    
-                    <a href={ this.props.detail_url } title={ this.props.name } className="content">
-                        <div className="title">
-                            <h6>{ this.props.lawyer_or_client_name }</h6>
-                            <h5>{ this.props.name }</h5>
-                        </div>
-                        <div className="meta clearfix">
-                            { this.props.lastupdated_or_complete }
-                            { this.props.participantList }
-                        </div>
-                    </a>
-                    <div className="progress">
-                        <div className="progress-bar" style={ this.props.percentStyle }></div>
-                    </div>
-                </div>
-            </article>
-    );
-  }
-});
-
-var Participants = React.createClass({
-    render: function() {
-        var userNodes = this.props.data.map(function (user) {
-            //console.log(user)
-            return (
-                <div className="avatar img-circle">
-                    <span className="initials" title={ user.name }>{ user.initials }</span>
-                </div>
-            )
-        });
-
-        return (
-          <div className="people pull-right">
-            {userNodes}
-          </div>
-        );
-    }
-});
-
-var LatUpdatedOrComplete = React.createClass({
-    render: function() {
-        var percent_complete = this.props.percent_complete;
-        var date_modified = this.props.date_modified;
-        var date_modified_ago = moment(date_modified).fromNow();
-
-        if (percent_complete === '100%') {
-
-            return (
-                <p className="small pull-left done"><span className="fui-check-inverted"></span> Complete</p>
-            );
-
-        } else {
-
-            return (
-                <p className="small pull-left">Last updated <time datetime={ date_modified }>{ date_modified_ago }</time></p>
-            );
-        }
-    }
-});
-
-
-var EditMatterInterface = React.createClass({
-    render: function() {
-        var key = this.props.key;
-        var can_edit = this.props.can_edit;
-        var edit_url = this.props.edit_url;
-        var modal_target = '#matter-edit-' + key;
-        if (can_edit === true) {
-
-            return (
-                <a href={edit_url} data-toggle="modal" data-target={modal_target} className="edit">
-                    <span className="fui-gear"></span>
-                </a>
-            );
-
-        } else {
-
-            return '';
-        }
-    }
-});
-
-
-var MatterList = React.createClass({
-  fuse: new Fuse(MatterListData, { keys: ["name", "matter_code", "client.name"], threshold: 0.5 }),
-  getInitialState: function() {
-    return {
-        'matters': MatterListData,
-        'total_num_matters': MatterListData.length
-    }
-  },
-  handleChange: function(event) {
-    var searchFor = event.target.value;
-    var matter_list_results = (searchFor != '') ? this.fuse.search(event.target.value) : MatterListData
-    this.setState({
-        'matters': matter_list_results,
-        'total_num_matters': matter_list_results.length
-    });
-  },
-  render: function() {
-    var matterNodes = this.state.matters.map(function (matter) {
-
-        var editUrl = edit_url.replace('lp-react-name', matter.slug);
-        var detailUrl = matter.base_url;
-
-        var percentStyle = {'width': matter.percent_complete};
-        var lawyer_or_client_name = (UserData.is_lawyer) ? (matter.client !== null) ? matter.client.name : null : matter.lawyer.name ;
-
-        var participantList = <Participants data={matter.participants} />
-        var lastupdatedOrComplete = <LatUpdatedOrComplete percent_complete={matter.percent_complete}
-                                                          date_modified={matter.date_modified} />
-        var editMatterInterface = <EditMatterInterface key={matter.slug} can_edit={UserData.can_edit} edit_url={editUrl} />
-
-        return <MatterItem 
-                key={matter.slug}
-                name={matter.name}
-                is_lawyer={UserData.is_lawyer}
-                lawyer_or_client_name={lawyer_or_client_name}
-
-                participantList={participantList}
-                lastupdated_or_complete={lastupdatedOrComplete}
-                editMatterInterface={editMatterInterface}
-
-                percent_complete={matter.percent_complete}
-                percentStyle={percentStyle}
-                detail_url={detailUrl}
-                edit_url={editUrl}>{matter}</MatterItem>;
-    });
-    return (
-      <div>
-        <div className="col-sm-12">
-            <div className="row">
-                <div className="col-sm-5 col-sm-offset-7">
-                   <form className="form-horizontal" role="form">
-                        <div className="input-group input-group-sm">
-                          <input className="form-control" type="search" placeholder="Search" onChange={this.handleChange} autocomplete="off" id="id_q" name="q" parsley-required="true" parsley-required-message="This field is required." placeholder="Filter by matter title or client name" type="text" />
-                          <span className="input-group-btn">
-                            <button className="btn" type="button"><span className="fui-search"></span></button>
-                          </span>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <br/>
-        {matterNodes}
-      </div>
-    );
-  }
-});
-
-React.renderComponent(
-  //<MatterList data={MatterListData} can_create={can_create} can_edit={can_edit} can_delete={can_delete} />,
-  <MatterList />,
-  document.getElementById('matter-content')
-);
-</script>
-{% endverbatim %}
-
+{% compressed_js 'reactjs' %}
+{% if DEBUG %}<script src="{{ STATIC_URL }}js/JSXTransformer-0.10.0.js"></script>{% endif %}
 {% endblock %}
