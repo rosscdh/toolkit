@@ -115,19 +115,17 @@ def crocodoc_webhook_event_recieved(sender, verb, document, target, attachment_n
                 # user MUST be in document.source_object.primary_reviewdocument.reviewers
                 # otherwise he could not get to this point
 
-                reviewdocument = None
-                try:
-                    reviewdocument = document.source_object.reviewdocument_set.get(
-                        crocodoc_uuid=document.crocodoc_uuid.replace('-', ''))  # not found with '-' in uuid
-                except ReviewDocument.DoesNotExist:
-                    logger.error(u'ReviewDocument not found for crocodoc_uuid (no comment saved): %s' % document.crocodoc_uuid)
+                reviewdocument = document.source_object.reviewdocument_set.get(
+                    crocodoc_uuid=document.crocodoc_uuid.replace('-', ''))  # not found with '-' in uuid
 
                 if reviewdocument:
+
                     if reviewdocument == document.source_object.primary_reviewdocument:
-                        # this reviewdocument is the PRIMARY one, meaning: one that is not being externally reviewed
+                        # this reviewdocument is the PRIMARY one, meaning: one that is being reviewed by a matter.participant
                         matter.actions.add_revision_comment(user=user, revision=document.source_object, comment=content,
                                                             reviewdocument=reviewdocument)
                     else:
+                        # this reviewdoc is a 3rd party review
                         # otherwise it is externally reviewed -> add "(review copy)" to the displayed event
                         matter.actions.add_review_copy_comment(user=user, revision=document.source_object,
                                                                comment=content, reviewdocument=reviewdocument)
