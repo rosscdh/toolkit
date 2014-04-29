@@ -229,22 +229,22 @@ Unlike reviewrs, signdocuments have only 1 object per set of signature invitees
 """
 
 
-# @receiver(m2m_changed, sender=Revision.signers.through, dispatch_uid='revision.on_signatory_add')
-# def on_signatory_add(sender, instance, action, model, pk_set, **kwargs):
-#     """
-#     when a signatory is added from the m2m then authorise them
-#     for access
-#     """
-#     if action in ['post_add'] and pk_set:
-#         user_pk = next(iter(pk_set))  # get the first item in the set should only ever be 1 anyway
-#         user = model.objects.get(pk=user_pk)
-#         #
-#         # Get the base sign documnet; created to alow the participants to access
-#         # and sign a documnet
-#         #
-#         signdocument = instance.signdocument_set.all().first()
+@receiver(m2m_changed, sender=Revision.signers.through, dispatch_uid='revision.on_signatory_add')
+def on_signatory_add(sender, instance, action, model, pk_set, **kwargs):
+    """
+    when a signatory is added from the m2m then authorise them
+    for access
+    """
+    if action in ['post_add'] and pk_set:
+        user_pk = next(iter(pk_set))  # get the first item in the set should only ever be 1 anyway
+        user = model.objects.get(pk=user_pk)
+        #
+        # Get the base sign documnet; created to alow the participants to access
+        # and sign a documnet
+        #
+        signdocument = instance.signdocument_set.all().first()
 
-#         #
-#         # 1 signing document for this document; as we only sign the final document
-#         #
-#         signdocument.signers.add(user)  # add the reviewer
+        #
+        # 1 signing document for this document; as we only sign the final document
+        #
+        signdocument.signers.add(user)  # add the reviewer
