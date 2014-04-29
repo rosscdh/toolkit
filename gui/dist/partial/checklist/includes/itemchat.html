@@ -13,7 +13,8 @@
         </form>
     </div>
 </div>
-<ul class="list-unstyled">
+<ul class="list-unstyled activity-log">
+    <!--
     <li ng-repeat="activity in data.activitystream"
         ng-class="{'action': activity.data.comment==null, 'message me': activity.data.comment!=null&&activity.actor.username==data.usdata.current.username, 'message other': activity.data.comment!=null&&activity.actor.username!=data.usdata.current.username }">
         <div class="media" ng-show="activity.data.comment&&data.selectedItem">
@@ -21,12 +22,14 @@
             <div class="media-body">
                 <div class="msg-body" ng-bind-html="activity.data.comment | newlines"></div>
                 <div class="msg-meta">
-                   <!--  {{ activity.actor | fullname }},  -->{{ activity.timestamp | timeago }} &middot;
+                   {{ activity.timestamp | timeago }} &middot;
                     <span ng-show="deleteCommentIsEnabled(activity)"><a href="javascript:;" ng-click="deleteComment(activity)">Delete</a></span>
                 </div>
             </div>
         </div>
         <span ng-hide="activity.data.comment" ng-bind-html="activity.event"></span>
+    </li>-->
+    <li ng-repeat="activity in data.activitystream" ng-bind-html="activity.event | unsafe">
     </li>
     <li ng-show="!data.activitystream.length"><small class="lead text-muted">Discussion and activity will appear here.</small></li>
 </ul>
