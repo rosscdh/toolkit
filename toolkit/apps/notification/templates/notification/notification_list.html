@@ -5,12 +5,12 @@
         <div class="content-header notifications-header clearfix">
             <div class="container">
                 <div class="col-sm-8 col-sm-offset-2">
-                    {% if object_list.count > 0 %}
+                    {% if object_list %}
                         <div class="content-header-btn">
                             <a href="javascript:;" id="mark-all-as-read" data-url="{% url 'notification:inbox-mark-all-read' %}" class="btn btn-info btn-wide"><span class="fui-check-inverted"></span>&nbsp;&nbsp;Mark everything as read</a>
                         </div>
                     {% endif %}
-                    <h3>{% if object_list.count > 0 %}<span class="circle">{{ object_list.count }}</span> {% endif %}Notifications</h3>
+                    <h3><span id="notification-count" class="circle">&nbsp;</span> Notifications</h3>
                 </div>
             </div>
         </div>
@@ -37,6 +37,8 @@
 $(document).ready(function () {
     'use strict';
 
+    calculateTotalNotifications();
+
     $('a.mark-as-read').on('click', function(e) {
         var $this = $(this);
         var data = $this.data();
@@ -44,9 +46,24 @@ $(document).ready(function () {
         e.preventDefault();
         e.stopPropagation();
 
+        sendDeleteRequest($this, data.url);
+
+    });
+
+    function calculateTotalNotifications() {
+        var current_num = parseInt($('article.notification').length);
+        if (current_num == 0) {
+            $('#mark-all-as-read').hide();
+        }
+        $('#notification-count').html(current_num);
+    }
+
+    function sendDeleteRequest(obj, url) {
+        var $this = obj;
+
         $.ajax({
             "type": 'DELETE',
-            "url": data.url,
+            "url": url,
             "dataType": 'json',
             "contentType": 'application/json',
             "beforeSend": function (jqXHR, settings) {
@@ -54,10 +71,11 @@ $(document).ready(function () {
                 jqXHR.setRequestHeader('X-CSRFToken', $('input[name=csrf_token]:first').val());
             },
             "success": function (data) {
-                $this.closest('article').hide()
+                $this.closest('article').remove()
+                calculateTotalNotifications();
             }
         });
-    });
+    }
 
     $('#mark-all-as-read').on('click', function(e) {
         var $this = $(this);
