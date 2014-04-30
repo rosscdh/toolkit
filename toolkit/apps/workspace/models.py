@@ -5,7 +5,6 @@ from django.db.models.loading import get_model
 from django.db.models.signals import pre_save, post_save, post_delete, m2m_changed
 
 from toolkit.core.mixins import IsDeletedMixin, ApiSerializerMixin
-from toolkit.core.services.matter_activity import MatterActivityEventService  # cyclic
 
 from .signals import (ensure_workspace_slug,
                       ensure_workspace_matter_code,
@@ -68,6 +67,7 @@ class Workspace(IsDeletedMixin,
         #
         # Initialize the actions property
         #
+        from toolkit.core.services.matter_activity import MatterActivityEventService  # cyclic
         self._actions = MatterActivityEventService(self)
         super(Workspace, self).__init__(*args, **kwargs)
 
@@ -94,6 +94,12 @@ class Workspace(IsDeletedMixin,
         @BUSINESSRULE append checklist to the url
         """
         return '%s#/checklist' % reverse('matter:detail', kwargs={'matter_slug': self.slug})
+
+    def get_regular_url(self):
+        """
+        Used in notficiations & activity
+        """
+        return self.get_absolute_url()
 
     def available_tools(self):
         return Tool.objects.exclude(pk__in=[t.pk for t in self.tools.all()])

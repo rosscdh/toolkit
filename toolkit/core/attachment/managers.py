@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from toolkit.core.mixins import IsDeletedManager
 
 
-class RevisionManager(models.Manager):
+class RevisionManager(IsDeletedManager):
     def get_query_set(self):
         qs = super(RevisionManager, self).get_query_set()
         return qs.select_related('matter', 'item', 'uploaded_by')

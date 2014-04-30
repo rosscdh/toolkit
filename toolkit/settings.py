@@ -259,6 +259,8 @@ AWS_HEADERS = {
     'x-amz-acl': 'public-read',
 }
 
+CELERY_ACCEPT_CONTENT = ['json', 'pickle', ]
+
 FILEPICKER_API_KEY = 'A4Ly2eCpkR72XZVBKwJ06z'
 
 HELLOSIGN_AUTHENTICATION = ("founders@lawpal.com", "test2007")
@@ -351,7 +353,7 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'django.utils.log.NullHandler',
         },
-        'console':{
+        'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'medium'
@@ -429,6 +431,23 @@ LAWPAL_ACTIVITY = {
                       # 'revision-created', 'revision-comment-created', 'item-added-revision-comment', 
                       # 'revision-added-revision-comment',
                       # 'workspace-added-participant', 'workspace-removed-participant'
+
+                      # activate nearly everything for testing;
+                      'item-reopened', 'item-closed',
+                      'item-commented', 'item-comment-created', 'item-comment-deleted',
+                      'item-invited-reviewer',
+                      'item-provide-a-document',
+                      'item-invited-signer',
+                      'item-completed-review',
+                      'item-completed-all-reviews',
+
+                      'revision-created', 'revision-comment-created', 'item-added-revision-comment',
+                      'revision-added-revision-comment',
+                      'revision-added-review-session-comment',
+
+                      'workspace-deleted',
+                      'workspace-added-participant', 'workspace-removed-participant',
+                      'workspace-stopped-participating',
                       ]
     },
     "notifications": {
@@ -443,6 +462,8 @@ LAWPAL_ACTIVITY = {
 
                       'revision-created', 'revision-comment-created', 'item-added-revision-comment', 
                       'revision-added-revision-comment',
+                      'revision-added-review-session-comment',
+
                       'workspace-deleted',
                       'workspace-added-participant', 'workspace-removed-participant',
                       'workspace-stopped-participating',
@@ -452,19 +473,19 @@ LAWPAL_ACTIVITY = {
         "whitelist": ['item-created', 'item-edited', 'item-commented', 'item-changed-the-status', 'item-renamed',
                       'item-provide-a-document', 'item-invited-reviewer', 'item-canceled-their-request-for-a-document',
                       'item-closed', 'item-reopened', 'item-added-revision-comment', 'item-deleted-revision-comment',
-                      'item-completed-review',
+                      'item-completed-review', 'item-viewed-revision',
                       'item-completed-all-reviews',
-
-                      'revision-created', 'revision-deleted',
-
                       'item-invited-signer',
                       'itemrequestrevisionview-provide-a-document',
+
+                      'revision-created', 'revision-deleted',
+                      'revision-added-review-session-comment',
+                      'revision-added-revision-comment',
 
                       'workspace-created', 'workspace-deleted',
                       'workspace-added-participant', 'workspace-removed-participant', 
                       'workspace-stopped-participating',
-
-                      'revision-added-revision-comment']
+                      ]
     },
 }
 
