@@ -292,6 +292,9 @@ angular.module('toolkit-gui')
 					/*category.items.unshift(item);*/
 					category.items.push(item);
 					$scope.data.newItemName = '';
+
+					// Display item that has just been added
+					$scope.selectItem( item, category );
 				 },
 				 function error(/*err*/){
 					toaster.pop('error', 'Error!', 'Unable to create new item');
