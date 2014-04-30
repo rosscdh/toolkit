@@ -45,8 +45,10 @@ class MatterActivityEndpointTest(BaseEndpointTest):
 
         t = loader.get_template('activity/default.html')
         ctx = loader.Context({'message': u'%s created %s' % (self.lawyer, self.item.name),
-                              'timestamp': stream_event.timestamp})
+                              'timesince': stream_event.timesince})
+
         rendered = t.render(ctx)
+
         self.assertEqual(rendered, events[0].get('event'))
 
         self.assertItemsEqual(events[0].keys(),
