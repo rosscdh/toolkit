@@ -264,7 +264,7 @@ class PaymentListView(ListView):
 
     def get_queryset(self):
         try:
-            return Charge.objects.filter(customer=self.request.user.customer)
+            return Charge.objects.filter(customer=self.request.user.customer).order_by('-created_at')
         except Customer.DoesNotExist:
             return Charge.objects.none()
 
@@ -310,4 +310,8 @@ class PlanChangeView(ModalView, AjaxFormView, FormView):
         return kwargs
 
     def get_success_url(self):
-        return reverse('matter:list')
+        return reverse('me:welcome')
+
+
+class WelcomeView(TemplateView):
+    template_name = 'me/welcome.html'

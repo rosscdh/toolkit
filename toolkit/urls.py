@@ -44,7 +44,7 @@ urlpatterns = patterns('',
     # DocuSign - Coming Soon
 
     # Payments
-    url(r"^payments/", include("payments.urls")),
+    url(r'^payments/', include('payments.urls')),
 
     url(r'^favicon\.ico$', RedirectView.as_view(url='%simages/favicon.ico' % settings.STATIC_URL)),
 

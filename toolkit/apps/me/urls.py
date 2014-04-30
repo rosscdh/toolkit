@@ -16,6 +16,7 @@ from .views import (ConfirmAccountView,
                     PaymentListView,
                     PlanListView,
                     PlanChangeView,
+                    WelcomeView,
 
                     AccountSettingsView,
                     LawyerLetterheadView)
@@ -33,6 +34,7 @@ urlpatterns = patterns(
     url(r'^payments/$', login_required(PaymentListView.as_view()), name='payment-list'),
     url(r'^plans/(?P<plan>[a-z0-9_-]{1,25})/$', login_required(PlanChangeView.as_view()), name='plan-change'),
     url(r'^plans/$', login_required(PlanListView.as_view()), name='plan-list'),
+    url(r'^welcome/$', login_required(WelcomeView.as_view()), name='welcome'),
 
     url(r'^settings/letterhead/$', login_required(LawyerLetterheadView.as_view()), name='letterhead'),
     url(r'^settings/confirm/$', login_required(ConfirmAccountView.as_view()), name='confirm-account'),
