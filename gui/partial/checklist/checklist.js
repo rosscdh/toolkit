@@ -602,6 +602,17 @@ angular.module('toolkit-gui')
 			}
 		};
 
+		// showAddCategoryForm
+		$scope.showAddCategoryForm = function(index) {
+			if ($scope.data.showAddCategoryForm !== index) {
+				$scope.data.showAddCategoryForm = index;
+				$scope.focus('eventAddCategory-'+index);
+			}
+			else {
+				$scope.data.showAddCategoryForm = null;
+			}
+		};
+
 		/**
 		 * Request the API to update a specific category
 		 *
