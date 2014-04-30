@@ -20,7 +20,7 @@ from ..serializers import MatterSerializer
 from ..serializers.matter import LiteMatterSerializer
 
 
-from toolkit.apps.notification import ACTIVITY_TEMPLATES
+from toolkit.apps.notification.template_loaders import ACTIVITY_TEMPLATES
 
 import logging
 logger = logging.getLogger('django.request')

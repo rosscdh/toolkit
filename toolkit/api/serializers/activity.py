@@ -8,7 +8,7 @@ from toolkit.apps.review.models import ReviewDocument
 
 from toolkit.core.services.matter_activity import get_verb_slug
 
-from toolkit.apps.notification import ACTIVITY_TEMPLATES
+from toolkit.apps.notification.template_loaders import ACTIVITY_TEMPLATES
 
 
 class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
