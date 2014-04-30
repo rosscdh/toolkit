@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
-from django.template.loaders.filesystem import Loader
-
+from django.template.loader import render_to_string
 from rulez import registry as rulez_registry
 
 from rest_framework import viewsets
@@ -27,6 +26,18 @@ import logging
 logger = logging.getLogger('django.request')
 
 
+#
+# Have to re-output the variable names here
+# can adapt them to the ng variable style here as desired
+#
+ITEM_COMMENTS_TEMPLATE = render_to_string(ACTIVITY_TEMPLATES.get('item-commented').name, {
+    'actor_name': '{{ actor_name }}',
+    'action_object_name': '{{ action_object_name }}',
+    'timesince': '{{ timesince }}',
+    'comment': '{{ comment }}',
+})
+
+
 class MatterEndpoint(viewsets.ModelViewSet):
     """
     Primary Matter ViewSet
@@ -47,7 +58,7 @@ class MatterEndpoint(viewsets.ModelViewSet):
                     'custom_status': self.object.status_labels if hasattr(self, 'object') is True and self.object.status_labels else default_status_labels
                 },
                 'templates': {
-                    'item.comment': Loader().load_template_source(ACTIVITY_TEMPLATES.get('item-commented').name)[0]  # comment template for instance activity entries in gui
+                    'item.comment': ITEM_COMMENTS_TEMPLATE
                 }
             }
 
