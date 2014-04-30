@@ -35,8 +35,8 @@ class PaymentListViewTest(BaseScenarios, TestCase):
 
         data = response.context['object_list']
         self.assertEqual(len(data), 2)
-        self.assertEqual(data[0], charge1)
-        self.assertEqual(data[1], charge2)
+        self.assertEqual(data[0], charge2)
+        self.assertEqual(data[1], charge1)
 
 
 class PlanListViewTest(TestCase):
@@ -77,7 +77,7 @@ class PlanChangeViewTest(BaseScenarios, TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json.loads(response.content), {
             'redirect': True,
-            'url': reverse('matter:list')
+            'url': reverse('me:welcome')
         })
 
     @mock.patch('payments.models.Customer.subscribe')
@@ -93,7 +93,7 @@ class PlanChangeViewTest(BaseScenarios, TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json.loads(response.content), {
             'redirect': True,
-            'url': reverse('matter:list')
+            'url': reverse('me:welcome')
         })
 
     @mock.patch('payments.models.Customer.subscribe')
