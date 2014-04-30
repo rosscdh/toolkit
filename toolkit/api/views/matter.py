@@ -1,4 +1,6 @@
 # -*- coding: UTF-8 -*-
+from django.template.loaders.filesystem import Loader
+
 from rulez import registry as rulez_registry
 
 from rest_framework import viewsets
@@ -18,6 +20,9 @@ from rest_framework import status as http_status
 from ..serializers import MatterSerializer
 from ..serializers.matter import LiteMatterSerializer
 
+
+from toolkit.apps.notification import ACTIVITY_TEMPLATES
+
 import logging
 logger = logging.getLogger('django.request')
 
@@ -34,12 +39,15 @@ class MatterEndpoint(viewsets.ModelViewSet):
     def get_meta(self):
         default_status_labels = Revision.REVISION_STATUS.get_choices_dict()
         return {
-            'matter': {
-                'status': None,
-            },
-            'item': {
+                'matter': {
+                    'status': None,
+                },
+                'item': {
                     'default_status': default_status_labels,
                     'custom_status': self.object.status_labels if hasattr(self, 'object') is True and self.object.status_labels else default_status_labels
+                },
+                'templates': {
+                    'item.comment': Loader().load_template_source(ACTIVITY_TEMPLATES.get('item-commented').name)[0]  # comment template for instance activity entries in gui
                 }
             }
 
