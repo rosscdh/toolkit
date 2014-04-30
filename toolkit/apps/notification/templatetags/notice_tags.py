@@ -13,7 +13,7 @@ import logging
 logger = logging.getLogger('django.request')
 
 
-from toolkit.apps.notification import NOTIFICATION_TEMPLATES
+from toolkit.apps.notification.template_loaders import NOTIFICATION_TEMPLATES
 
 
 def get_notification_template(verb_slug):
