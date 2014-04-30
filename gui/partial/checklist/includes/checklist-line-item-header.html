@@ -13,7 +13,7 @@
 		<h5
 			ng-hide="data.showEditCategoryForm==$index||cat.name||data.showAddCategoryForm==$index">UNCATEGORIZED
 		</h5>
-
+		<!-- add new category //-->
 		<input  class="form-control input-sm"
 				ng-show="data.showAddCategoryForm==$index"
 				id="appendedInputButton-03"
@@ -24,7 +24,7 @@
 				ng-blur="data.showAddCategoryForm=null"
 				focus-on="eventAddCategory-{{$index}}"
 		/>
-		<!-- Categoery form //-->
+		<!-- edit categoery form //-->
 		<input
 			class="form-control input-sm"
 			ng-show="data.showEditCategoryForm==$index"
