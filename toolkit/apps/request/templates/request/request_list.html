@@ -53,7 +53,7 @@
                 beforeSend: function (jqXHR, settings) {
                     // Pull the token out of the DOM.
                     jqXHR.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
-                },
+                }
             });
         })
 

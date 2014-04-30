@@ -31,7 +31,7 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
     /matters/:matter_slug/items/:item_slug/revision/reviewers/ (GET,POST)
         [lawyer,customer] to list, create reviewers
     """
-    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review_url', u'url', u'initials', u'user_class', u'name',]
+    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review', u'url', u'initials', u'user_class', u'name',]
 
     @property
     def endpoint(self):
@@ -113,15 +113,19 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
         self.assertEqual(json_data['results'][1]['reviewer'], None)
 
         # user review url must be in it
-        self.assertTrue('user_review_url' in json_data['results'][0]['reviewer'].keys())
+        self.assertTrue('user_review' in json_data['results'][0]['reviewer'].keys())
 
         #
         # we expect the currently logged in users url to be returned;
         # as the view is relative to the user
         #
-        expected_url = self.item.latest_revision.reviewdocument_set.all().first().get_absolute_url(user=self.lawyer)
+        review_document = self.item.latest_revision.reviewdocument_set.all().first()
+        expected_url = review_document.get_absolute_url(user=self.lawyer)
 
-        self.assertEqual(json_data['results'][0]['reviewer']['user_review_url'], expected_url)
+        self.assertEqual(json_data['results'][0]['reviewer']['user_review'], {
+            'url': expected_url,
+            'slug': str(review_document.slug)
+        })
 
         outbox = mail.outbox
         self.assertEqual(len(outbox), 1)
@@ -143,7 +147,7 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
         # test if activity shows in stream
         stream = target_stream(self.matter)
         self.assertEqual(stream[0].data['override_message'],
-                         u'Lawyër Tëst invited a reviewer to Test Item with Revision')
+                         u'Lawyër Tëst invited Participant Number 1 to review Revision v1 of Test Item with Revision')
 
     def test_second_lawyer_post(self):
         """
@@ -183,15 +187,19 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
         self.assertEqual(json_data['results'][1]['reviewer'], None)
 
         # user review url must be in it
-        self.assertTrue('user_review_url' in json_data['results'][0]['reviewer'].keys())
+        self.assertTrue('user_review' in json_data['results'][0]['reviewer'].keys())
 
         #
         # we expect the currently logged in users url to be returned;
         # as the view is relative to the user
         #
-        expected_url = self.item.latest_revision.reviewdocument_set.all().first().get_absolute_url(user=self.lawyer)
+        review_document = self.item.latest_revision.reviewdocument_set.all().first()
+        expected_url = review_document.get_absolute_url(user=self.lawyer)
 
-        self.assertEqual(json_data['results'][0]['reviewer']['user_review_url'], expected_url)
+        self.assertEqual(json_data['results'][0]['reviewer']['user_review'], {
+            'url': expected_url,
+            'slug': str(review_document.slug)
+        })
 
         outbox = mail.outbox
         self.assertEqual(len(outbox), 1)
@@ -211,15 +219,19 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
         self.assertEqual(invite_key.next, reverse('request:list'))
 
         # user review url must be in it
-        self.assertTrue('user_review_url' in json_data['results'][0]['reviewer'].keys())
+        self.assertTrue('user_review' in json_data['results'][0]['reviewer'].keys())
 
         #
         # we expect the currently logged in users url to be returned;
         # as the view is relative to the user
         #
-        expected_url = self.item.latest_revision.reviewdocument_set.all().first().get_absolute_url(user=self.lawyer)
+        review_document = self.item.latest_revision.reviewdocument_set.all().first()
+        expected_url = review_document.get_absolute_url(user=self.lawyer)
 
-        self.assertEqual(json_data['results'][0]['reviewer']['user_review_url'], expected_url)
+        self.assertEqual(json_data['results'][0]['reviewer']['user_review'], {
+            'url': expected_url,
+            'slug': str(review_document.slug)
+        })
 
         outbox = mail.outbox
         self.assertEqual(len(outbox), 1)
@@ -241,7 +253,7 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
         # test if activity shows in stream
         stream = target_stream(self.matter)
         self.assertEqual(stream[0].data['override_message'],
-                         u'Lawyër Tëst invited a reviewer to Test Item with Revision')
+                         u'Lawyër Tëst invited Participant Number 1 to review Revision v1 of Test Item with Revision')
 
 
 class ReviewObjectIncrementWithNewReviewerTest(BaseEndpointTest):
@@ -339,7 +351,7 @@ class RevisionReviewerTest(BaseEndpointTest):
     /matters/:matter_slug/items/:item_slug/revision/reviewer/:username (GET,DELETE)
         [lawyer,customer] to view, delete reviewers
     """
-    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review_url', u'url', u'initials', u'user_class', u'name',]
+    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review', u'url', u'initials', u'user_class', u'name',]
 
     @property
     def endpoint(self):
@@ -432,7 +444,8 @@ class RevisionReviewerTest(BaseEndpointTest):
             self.assertTrue(resp.status_code, 200) # ok logged in
 
             context_data = resp.context_data
-            self.assertEqual(context_data.keys(), ['crocodoc_view_url', 'reviewdocument', u'object', 'CROCDOC_PARAMS', 'crocodoc', u'view'])
+
+            self.assertEqual(context_data.keys(), ['crocodoc_view_url', 'CROCODOC_PARAMS', 'reviewdocument', u'object', 'crocodoc', u'view'])
             # is a valid url for crocodoc
             self.assertTrue(validate_url(context_data.get('crocodoc_view_url')) is None)
             self.assertTrue('https://crocodoc.com/view/' in context_data.get('crocodoc_view_url'))
@@ -444,7 +457,7 @@ class RevisionReviewerTest(BaseEndpointTest):
                                         'copyprotected': False,
                                         'sidebar': 'auto'}
 
-            self.assertEqual(context_data.get('CROCDOC_PARAMS'), expected_crocodoc_params)
+            self.assertEqual(context_data.get('CROCODOC_PARAMS'), expected_crocodoc_params)
 
     def test_lawyer_post(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -519,7 +532,11 @@ class RevisionRequestedDocumentTest(BaseEndpointTest):
     and
     item.responsible_party must be a User
     """
-    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'status', u'category', u'is_complete', u'closing_group', u'description', u'parent', u'date_modified', u'url', u'is_requested', u'children', u'matter', u'date_due', u'responsible_party', u'is_final', u'date_created', u'latest_revision', u'request_document_meta', u'slug', u'name', u'review_percentage_complete']
+    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'status', u'category', u'is_complete', u'closing_group', u'description',
+                                           u'parent', u'date_modified', u'url', u'regular_url', u'is_requested', u'children', u'matter',
+                                           u'date_due', u'responsible_party', u'is_final', u'date_created',
+                                           u'latest_revision', u'request_document_meta', u'slug', u'name',
+                                           u'review_percentage_complete']
 
     @property
     def endpoint(self):

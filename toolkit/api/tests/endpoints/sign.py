@@ -31,7 +31,7 @@ class RevisionSignaturesTest(PyQueryMixin, BaseEndpointTest):
     /matters/:matter_slug/items/:item_slug/revision/signers/ (GET,POST)
         [lawyer,customer] to list, create signers
     """
-    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review_url', u'url', u'initials', u'user_class', u'name',]
+    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review', u'url', u'initials', u'user_class', u'name',]
 
     @property
     def endpoint(self):
@@ -111,15 +111,19 @@ class RevisionSignaturesTest(PyQueryMixin, BaseEndpointTest):
         self.assertEqual(json_data['results'][0]['signer']['name'], participant.get_full_name())
 
         # user review url must be in it
-        self.assertTrue('user_review_url' in json_data['results'][0]['signer'].keys())
+        self.assertTrue('user_review' in json_data['results'][0]['signer'].keys())
 
         #
         # we expect the currently logged in users url to be returned;
         # as the view is relative to the user
         #
-        expected_url = self.item.latest_revision.signdocument_set.all().first().get_absolute_url(user=self.lawyer)
+        review_document = self.item.latest_revision.signdocument_set.all().first()
+        expected_url = review_document.get_absolute_url(user=self.lawyer)
 
-        self.assertEqual(json_data['results'][0]['signer']['user_review_url'], expected_url)
+        self.assertEqual(json_data['results'][0]['signer']['user_review'], {
+            'url': expected_url,
+            'slug': str(review_document.slug)
+        })
 
         outbox = mail.outbox
         self.assertEqual(len(outbox), 1)
@@ -178,15 +182,19 @@ class RevisionSignaturesTest(PyQueryMixin, BaseEndpointTest):
         self.assertEqual(json_data['results'][0]['signer']['name'], participant.get_full_name())
 
         # user review url must be in it
-        self.assertTrue('user_review_url' in json_data['results'][0]['signer'].keys())
+        self.assertTrue('user_review' in json_data['results'][0]['signer'].keys())
 
         #
         # we expect the currently logged in users url to be returned;
         # as the view is relative to the user
         #
-        expected_url = self.item.latest_revision.signdocument_set.all().first().get_absolute_url(user=self.lawyer)
+        review_document = self.item.latest_revision.signdocument_set.all().first()
+        expected_url = review_document.get_absolute_url(user=self.lawyer)
 
-        self.assertEqual(json_data['results'][0]['signer']['user_review_url'], expected_url)
+        self.assertEqual(json_data['results'][0]['signer']['user_review'], {
+            'url': expected_url,
+            'slug': str(review_document.slug)
+        })
 
         outbox = mail.outbox
         self.assertEqual(len(outbox), 1)
@@ -344,7 +352,7 @@ class RevisionSignerTest(BaseEndpointTest):
     /matters/:matter_slug/items/:item_slug/revision/signer/:username (GET,DELETE)
         [lawyer,customer] to view, delete signers
     """
-    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review_url', u'url', u'initials', u'user_class', u'name',]
+    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review', u'url', u'initials', u'user_class', u'name',]
 
     @property
     def endpoint(self):
@@ -461,7 +469,7 @@ class RevisionSignerTest(BaseEndpointTest):
             #                             'copyprotected': False,
             #                             'sidebar': 'auto'}
 
-            # self.assertEqual(context_data.get('CROCDOC_PARAMS'), expected_crocodoc_params)
+            # self.assertEqual(context_data.get('CROCODOC_PARAMS'), expected_crocodoc_params)
 
     def test_lawyer_post(self):
         self.client.login(username=self.lawyer.username, password=self.password)
