@@ -1,23 +1,19 @@
 # -*- coding: utf-8 -*-
-from django import template
+from django.template import Library, loader
+
 import re
 from toolkit.apps.review.models import ReviewDocument
 
 from toolkit.core.item.models import Item  # circular
 
 prog = re.compile('/([a-z\d]*)$', flags=re.IGNORECASE)
-register = template.Library()
+register = Library()
 
 import logging
 logger = logging.getLogger('django.request')
 
 
-NOTIFICATION_TEMPLATES = {
-    'default': template.loader.get_template('notification/partials/default.html'),
-    'item-commented': template.loader.get_template('notification/partials/item_comment.html'),
-    'revision-added-review-session-comment': template.loader.get_template('notification/partials/review_session_comment.html'),
-    'revision-added-revision-comment': template.loader.get_template('notification/partials/revision_comment.html'),
-}
+from toolkit.apps.notification import NOTIFICATION_TEMPLATES
 
 
 def get_notification_template(verb_slug):
@@ -107,7 +103,7 @@ def render_notice(notice, request=None):
         'date': notice.message.date,
         'message': notice.message.message,
     })
-    context = template.loader.Context(ctx)
+    context = loader.Context(ctx)
 
     # render the template with passed in context
     return t.render(context)
