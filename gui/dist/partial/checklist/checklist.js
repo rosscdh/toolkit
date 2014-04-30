@@ -292,6 +292,9 @@ angular.module('toolkit-gui')
 					/*category.items.unshift(item);*/
 					category.items.push(item);
 					$scope.data.newItemName = '';
+
+					// Display item that has just been added
+					$scope.selectItem( item, category );
 				 },
 				 function error(/*err*/){
 					toaster.pop('error', 'Error!', 'Unable to create new item');
@@ -663,6 +666,8 @@ angular.module('toolkit-gui')
 					item.previousRevisions = null;
 					$scope.data.showPreviousRevisions = false;
                     $scope.calculateReviewPercentageComplete(item);
+
+                    toaster.pop('success', 'Success!', 'Revision added successfully');
 				},
 				function error(/*err*/) {
 					$scope.data.uploading = false;
@@ -695,6 +700,8 @@ angular.module('toolkit-gui')
 						$scope.data.showPreviousRevisions = false;
 						item.uploadingPercent = 0;
 						item.uploading = false;
+
+						toaster.pop('success', 'Success!', 'File added successfully');
 					},
 					function error(/*err*/) {
 						toaster.pop('error', 'Error!', 'Unable to upload revision');
