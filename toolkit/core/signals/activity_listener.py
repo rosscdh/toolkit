@@ -56,6 +56,9 @@ def on_activity_received(sender, **kwargs):
 
     verb_slug = kwargs.get('verb_slug', False)
 
+    #
+    # Ugly default message
+    #
     if not message:
         message = u'%s %s %s' % (actor, verb, action_object)
 
@@ -77,3 +80,6 @@ def on_activity_received(sender, **kwargs):
         run_task(_abridge_send, verb_slug=verb_slug, actor=actor, target=target, action_object=action_object,
                  message=message, comment=kwargs.get('comment', None), item=kwargs.get('item', None),
                  reviewdocument=reviewdocument, send_to_all=send_to_all)
+    else:
+        logger.error('One or more or actor: {actor} action_object: {action_object} target: {target} verb_slug: {verb_slug} where not provided'.format(actor=actor, action_object=action_object, target=target, verb_slug=verb_slug))
+
