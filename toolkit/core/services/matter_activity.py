@@ -111,6 +111,16 @@ class MatterActivityEventService(object):
         kwargs.update(activity_kwargs)
         send_activity_log.send(self, **kwargs)
 
+        self.update_matter_date_modified()
+
+    def update_matter_date_modified(self):
+        """
+        Update the matter date_modified on every event
+        @NB we use the .update() on a queryset here as this does not then fire
+        the pre_save and post_save signals thus is more efficient
+        """
+        self.matter.__class__.objects.filter(pk=self.matter.pk).update(date_modified=datetime.datetime.utcnow())
+
     #
     # Matter
     #
