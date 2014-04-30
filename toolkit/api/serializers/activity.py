@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from django.template import Context
+
 from actstream.models import Action
 from rest_framework import serializers
 
@@ -6,7 +8,7 @@ from toolkit.apps.review.models import ReviewDocument
 
 from toolkit.core.services.matter_activity import get_verb_slug
 
-from toolkit.apps.notification import loader, ACTIVITY_TEMPLATES
+from toolkit.apps.notification import ACTIVITY_TEMPLATES
 
 
 class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
@@ -89,7 +91,7 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
         verb_slug = get_verb_slug(obj.action_object, obj.verb)
 
         template = self._get_template(verb_slug)
-        context = loader.Context(self._get_context(obj, verb_slug))
+        context = Context(self._get_context(obj, verb_slug))
 
         # render the template with passed in context
         return template.render(context)
