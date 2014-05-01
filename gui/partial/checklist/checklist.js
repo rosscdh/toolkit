@@ -1582,8 +1582,7 @@ angular.module('toolkit-gui')
 
 			// Format item
 			content = content
-						.replace('<a href="">', '<a href="#/checklist/' +  checklistItem.slug + '">')
-						.replace('class="comment"', 'class="comment comment-faded"');
+						.replace('<a href="">', '<a href="#/checklist/' +  checklistItem.slug + '">');
 
 			// Insert into conversation
 			$scope.data.activitystream.unshift( { 'event': content, 'id': null, 'timestamp': 'just now', 'status': 'awaiting' });
