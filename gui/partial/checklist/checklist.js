@@ -1538,10 +1538,15 @@ angular.module('toolkit-gui')
 			var matterSlug = $scope.data.slug;
 			var item = $scope.data.selectedItem;
 
+			// Show activity straight away
+			appendActivity('item.comment', item.newcomment, item);
+
+			// Post activity
 			commentService.create(matterSlug, item.slug, item.newcomment).then(
-				 function success(){
-                    item.newcomment='';
-					$scope.activateActivityStream('item');
+				 function success( activityItem ){
+				 	// please note: do not refresh activity stream as the new item may not exist yet
+				 	// clear form
+					item.newcomment='';
 				 },
 				 function error(/*err*/){
 					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to create item comment.') {
@@ -1549,6 +1554,54 @@ angular.module('toolkit-gui')
 					}
 				 }
 			);
+		};
+
+		/**
+		 * appendActivity - formats and inserts activity into activity stream
+		 * @param  {String} activityType  template lookup _meta.templates
+		 * @param  {String} comment       Comment entered by user
+		 * @param  {Object} checklistItem Checlist item that comment is being inserted into
+		 */
+		function appendActivity( activityType, comment, checklistItem ) {
+			var template = matterTemplate( activityType );
+			var map = {
+				'{{ actor_name }}': $scope.data.usdata.current.name,
+				'{{ action_object_name }}': checklistItem.name,
+				'{{ timesince }}': 'just now',
+				'{{ comment }}': comment
+			};
+			var content = '<li>' + template + '</li>';
+
+			// Just incase this is not initialised
+			$scope.data.activitystream = $scope.data.activitystream || [];
+
+			// Run map
+			for( var key in map ) {
+				content = content.replace( key, map[key] );
+			}
+
+			// Format item
+			content = content
+						.replace('<a href="">', '<a href="#/checklist/' +  checklistItem.slug + '">');
+
+			// Insert into conversation
+			$scope.data.activitystream.unshift( { 'event': content, 'id': null, 'timestamp': 'just now', 'status': 'awaiting' });
+		}
+
+		/**
+		 * matterTemplate - returns the specific item template as provided by API
+		 * @param  {String} templateName name of template
+		 * @return {String}              template string as provided by API
+		 */
+		function matterTemplate( templateName ) {
+			var templates = $scope.data.matter._meta.templates;
+			var template = '';
+
+			if(templates) {
+				template = templates[templateName]||'';
+			}
+
+			return template;
 		};
 
         /**
