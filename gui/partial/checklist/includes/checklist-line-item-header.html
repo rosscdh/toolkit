@@ -51,7 +51,7 @@
 				<li ng-show="data.usdata.current.permissions.category.put">
 					<a href="javascript:;" ng-click="data.newCategoryName=cat.name;showEditCategoryForm($index);" ng-hide="!cat.name">Edit Category</a>
 				</li>
-				<li ng-show="data.usdata.current.usdata.permissions.category.delete">
+				<li ng-show="data.usdata.current.permissions.category.delete">
 					<a href="javascript:;" ng-click="deleteCategory(cat);" ng-hide="!cat.name">Delete Category</a>
 				</li>
 				<li ng-show="data.usdata.current.permissions.category.post">
