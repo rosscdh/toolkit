@@ -606,6 +606,27 @@ angular.module('toolkit-gui')
 		};
 
 		/**
+		 * Sets an index value used to display/hide add category form
+		 *
+		 * @name 				showAddCategoryForm
+		 *
+		 * @param {Object} cat Catgory object
+		 *
+		 * @private
+		 * @method				showEditCategoryForm
+		 * @memberof			ChecklistCtrl
+		 */
+		$scope.showAddCategoryForm = function(index) {
+			if ($scope.data.showAddCategoryForm !== index) {
+				$scope.data.showAddCategoryForm = index;
+				$scope.focus('eventAddCategory-'+index);
+			}
+			else {
+				$scope.data.showAddCategoryForm = null;
+			}
+		};
+
+		/**
 		 * Request the API to update a specific category
 		 *
 		 * @name 				editCategory
