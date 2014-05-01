@@ -20,7 +20,8 @@ def EXPOSED_GLOBALS(request):
             'FILEPICKER_API_KEY': settings.FILEPICKER_API_KEY,
             'HELLOSIGN_CLIENT_ID': settings.HELLOSIGN_CLIENT_ID,
             'INTERCOM_APP_ID': settings.INTERCOM_APP_ID,
-            'MIXPANEL_API_TOKEN': settings.MIXPANEL_SETTINGS['token']
+            'MIXPANEL_API_TOKEN': settings.MIXPANEL_SETTINGS['token'],
+            'PUSHER_KEY': settings.PUSHER_KEY,
         }
     }
 

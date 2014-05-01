@@ -5,6 +5,10 @@ from django.template.defaultfilters import slugify
 
 from . import _model_slug_exists
 
+from snowshoestamp.signals import snowshoestamp_event
+from snowshoestamp.models import AssociatedSnowShoeStamp
+from toolkit.apps.notification.services import PusherPublisherService
+
 import uuid
 import logging
 import datetime
@@ -184,3 +188,15 @@ def on_workspace_m2m_changed(sender, instance, action, pk_set, **kwargs):
             if removing_user != removed_user:
                 instance.actions.removed_matter_participant(removing_user=removing_user,
                                                             removed_user=removed_user)  # assumption: only the creating lawyer can edit participants
+
+
+@receiver(snowshoestamp_event)
+def auth_request_snowshoestamp_event(sender, signal, stamp_serial, **kwargs):
+    stamp = AssociatedSnowShoeStamp.objects.get(stamp_serial=stamp_serial)
+    matter = stamp.source_object
+    channel = 'sss-%d' % matter.pk
+    pusher = PusherPublisherService(channel=channel,
+                                    event='auth',
+                                    stamp_serial=stamp_serial,
+                                    message='Authentication for %s recieved, you may pass' % stamp_serial)
+    pusher.process(**kwargs)

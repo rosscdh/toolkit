@@ -12,7 +12,8 @@ from .signals import (ensure_workspace_slug,
                       ensure_tool_slug,
                       on_workspace_post_delete,
                       on_workspace_post_save,
-                      on_workspace_m2m_changed,)
+                      on_workspace_m2m_changed,
+                      auth_request_snowshoestamp_event,)
 
 from toolkit.utils import _class_importer
 
