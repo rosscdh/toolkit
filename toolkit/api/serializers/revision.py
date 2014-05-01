@@ -4,8 +4,11 @@ from django.core.urlresolvers import reverse
 
 from rest_framework import serializers
 
-from toolkit.core.attachment.tasks import _download_file
 from toolkit.core.attachment.models import Revision
+from toolkit.core.attachment.tasks import _download_file
+from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
+
+from toolkit.api.serializers.user import _get_user_review
 
 from .user import SimpleUserSerializer
 from .review import ReviewSerializer
@@ -152,9 +155,13 @@ class FileFieldAsUrlField(LimitedExtensionMixin, serializers.FileField):
 
 
 class RevisionSerializer(serializers.HyperlinkedModelSerializer):
+    url = serializers.SerializerMethodField('get_custom_api_url')
+
+    regular_url = serializers.Field(source='get_regular_url')
+
     executed_file = HyperlinkedAutoDownloadFileField(required=False)
 
-    status = serializers.ChoiceField(required=False, choices=Revision.REVISION_STATUS.get_choices())
+    status = serializers.IntegerField(required=False)
 
     item = serializers.HyperlinkedRelatedField(many=False, view_name='item-detail')
 
@@ -162,25 +169,27 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
     signers = serializers.HyperlinkedRelatedField(many=True, view_name='user-detail', lookup_field='username')
 
     # "user" <— the currently logged in user.. "review_url" because the url is relative to the current user
-    user_review_url = serializers.SerializerMethodField('get_user_review_url')
+    user_review = serializers.SerializerMethodField('get_user_review')
     user_download_url = serializers.SerializerMethodField('get_user_download_url')
 
     revisions = serializers.SerializerMethodField('get_revisions')
 
-    uploaded_by = SimpleUserSerializer()
+    uploaded_by = serializers.SerializerMethodField('get_uploaded_by')
 
     date_created = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = Revision
-        fields = ('url', 'slug',
+        fields = ('slug',
+                  'url', 'regular_url',
                   'name', 'description',
-                  'executed_file', 
-                  'status', 
-                  'item', 'uploaded_by', 
+                  'executed_file',
+                  'status',
+                  'item',
+                  'uploaded_by',
                   'reviewers', 'signers',
                   'revisions',
-                  'user_review_url', 'user_download_url',
+                  'user_review', 'user_download_url',
                   'date_created',)
 
     def __init__(self, *args, **kwargs):
@@ -195,52 +204,55 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
         if 'context' in kwargs and 'request' in kwargs['context']:
 
             request = kwargs['context'].get('request')
-            #
-            # set the executed_file field to be a seriallizer.FileField and behave like one of those
-            #
-            if request.method in ['PATCH', 'POST']:
+            if request:
+                #
+                # set the executed_file field to be a seriallizer.FileField and behave like one of those
+                #
+                if request.method in ['PATCH', 'POST']:
 
-                # ensure the uploaded_by is just a simple hyplinkrelatedfield on update,create
-                self.base_fields['uploaded_by'] = serializers.HyperlinkedRelatedField(many=False, view_name='user-detail', lookup_field='username')
+                    # ensure the uploaded_by is just a simple hyplinkrelatedfield on update,create
+                    self.base_fields['uploaded_by'] = serializers.HyperlinkedRelatedField(many=False, view_name='user-detail', lookup_field='username')
 
-                if 'multipart/form-data;' in kwargs['context']['request'].content_type:
-                    if kwargs['context']['request'].FILES:
-                        self.base_fields['executed_file'] = FileFieldAsUrlField(allow_empty_file=True, required=False)
+                    if 'multipart/form-data;' in kwargs['context']['request'].content_type:
+                        if kwargs['context']['request'].FILES:
+                            self.base_fields['executed_file'] = FileFieldAsUrlField(allow_empty_file=True, required=False)
 
         super(RevisionSerializer, self).__init__(*args, **kwargs)
 
+    def get_custom_api_url(self, obj):
+        return ABSOLUTE_BASE_URL(reverse('matter_item_specific_revision',
+                                         kwargs={'matter_slug': obj.item.matter.slug,
+                                                 'item_slug': obj.item.slug,
+                                                 'version': obj.slug.replace('v', '')}))
+
+    def get_uploaded_by(self, obj):
+        return SimpleUserSerializer(obj.uploaded_by, context={'request': self.context.get('request')}).data
+
     def get_reviewers(self, obj):
         reviewers = []
-        #return [SimpleUserWithReviewUrlSerializer(u, context=self.context).data for u in obj.reviewers.all()]
-        for u in obj.reviewers.all():
-            reviewdoc = obj.reviewdocument_set.filter(reviewers__in=[u]).first()
-            if reviewdoc is not None:
-                reviewers.append(ReviewSerializer(reviewdoc, context={'request': self.context.get('request')}).data)
+        if getattr(obj, 'pk', None) is not None:  # it has not been deleted when pk is None
+            for u in obj.reviewers.all():
+                reviewdoc = obj.reviewdocument_set.filter(reviewers__in=[u]).first()
+                if reviewdoc is not None:
+                    reviewers.append(ReviewSerializer(reviewdoc, context={'request': self.context.get('request')}).data)
+
         return reviewers
 
-    def get_user_review_url(self, obj):
+    def get_user_review(self, obj):
         """
         Try to provide an initial reivew url from the base review_document obj
         for the currently logged in user
         """
         context = getattr(self, 'context', None)
         request = context.get('request')
-        review_document = context.get('review_document', None)
 
-        if request is not None:
-            #
-            # if we have a review_document present in the context
-            #
-            if review_document is None:
-                # we have none, then try find the reviewdocument object that has all the matter participants in it
-                #
-                # The bast one will have 0 reviewers! and be the last in the set (because it was added first)
-                #
-                review_document = obj.reviewdocument_set.all().last()
+        review_document = _get_user_review(self=self, obj=obj, context=context)
 
-            return review_document.get_absolute_url(user=request.user) if review_document is not None else None
-
-        return None
+        if review_document is not None:
+            return {
+                'url': review_document.get_absolute_url(user=request.user),
+                'slug': review_document.slug
+            }
 
     def get_user_download_url(self, obj):
         """
@@ -249,26 +261,27 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
         """
         context = getattr(self, 'context', None)
         request = context.get('request')
-        review_document = context.get('review_document', None)
 
-        if request is not None:
-            #
-            # if we have a review_document present in the context
-            #
-            if review_document is None:
-                # we have none, then try find the reviewdocument object that has all the matter participants in it
-                #
-                # The bast one will have 0 reviewers! and be the last in the set (because it was added first)
-                #
-                review_document = obj.reviewdocument_set.all().last()
+        review_document = _get_user_review(self=self, obj=obj, context=context)
 
-            return review_document.get_download_url(user=request.user) if review_document is not None else None
+        if review_document is not None:
+            return review_document.get_download_url(user=request.user)
 
         return None
 
     def get_revisions(self, obj):
-        return [reverse('matter_item_specific_revision', kwargs={
+        return [ABSOLUTE_BASE_URL(reverse('matter_item_specific_revision', kwargs={
                     'matter_slug': obj.item.matter.slug,
                     'item_slug': obj.item.slug,
                     'version': c + 1
-                }) for c, revision in enumerate(obj.revisions) if revision.pk != obj.pk]
+                })) for c, revision in enumerate(obj.revisions) if revision.pk != obj.pk]
+
+
+class SimpleRevisionSerializer(RevisionSerializer):
+    class Meta(RevisionSerializer.Meta):
+        fields = ('slug',
+                  'url', 'regular_url',
+                  'name',
+                  'status',
+                  'date_created',)
+

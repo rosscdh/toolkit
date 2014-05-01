@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
+from django.template import loader
 from django.core.urlresolvers import reverse
+from django.contrib.contenttypes.models import ContentType
+
+from actstream.models import Action
 
 from model_mommy import mommy
 
@@ -32,13 +36,23 @@ class MatterActivityEndpointTest(BaseEndpointTest):
 
         events = json_data['results']
 
-        self.assertEqual(len(events), 4)  # create matter, create item. add 2 users.
+        self.assertEqual(len(events), 3)  # create matter, create item, added participant; we dont record the participant add because participant add where the adding user is teh same as the added user is skipped
         self.assertGreater(len(events[0]['event']), 10)  # just to see if event-text contains information. username is not fix.
-        #self.assertEqual(events[0]['event'], u'%s created 1 %s on %s' % (self.lawyer, self.item.slug, self.matter,))
-        self.assertItemsEqual(events[0].keys(), [u'timestamp', u'timesince', u'data', u'id', u'actor', u'event'])
 
-        # check if actor was added correctly
-        self.assertEqual(events[0]['actor']['name'], u'Lawyer Test')
+        stream_event = Action.objects.filter(action_object_object_id=self.item.id,
+                                             action_object_content_type=ContentType.objects.get_for_model(self.item))\
+            .first()
+
+        t = loader.get_template('activity/default.html')
+        ctx = loader.Context({'message': u'%s created %s' % (self.lawyer, self.item.name),
+                              'timesince': stream_event.timesince})
+
+        rendered = t.render(ctx)
+
+        self.assertEqual(rendered, events[0].get('event'))
+
+        self.assertItemsEqual(events[0].keys(),
+                              [u'timestamp', u'id', u'event'])
 
 
 class ItemActivityEndpointTest(BaseEndpointTest):
@@ -65,12 +79,7 @@ class ItemActivityEndpointTest(BaseEndpointTest):
 
         events = json_data['results']
 
-        self.assertEqual(len(events), 1)
-        self.assertGreater(len(events[0]['event']), 10)  # just to see if event-text contains information. username is not fix.
-        self.assertItemsEqual(events[0].keys(), [u'timestamp', u'timesince', u'data', u'id', u'actor', u'event'])
-
-        # check if actor was added correctly
-        self.assertEqual(events[0]['actor']['name'], u'Lawyer Test')
+        self.assertEqual(len(events), 1)  # we should have 1, the create of the item
 
     def test_comments_in_activitystream(self):
         # create comment and see if *special* template is used
@@ -91,4 +100,4 @@ class ItemActivityEndpointTest(BaseEndpointTest):
         self.assertEqual(len(events), 2)
 
         event = events[0]['event']
-        self.assertEqual(event[:18], '<div class="media"')
+        self.assertEqual(event[:18], '<div class="commen')

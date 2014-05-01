@@ -111,9 +111,20 @@ ABRIDGE_SECRET_ACCESS_KEY = '2a2c7c6104c80855a12d53bd846e117fbf81f41c'
 ABRIDGE_USERNAME = 'lawpal-production'
 ABRIDGE_PASSWORD = 'production123'
 
+INTERCOM_APP_ID = 'ooqtbx99'
+INTERCOM_APP_SECRET = '_oukEAo1iYdHMJ_qATkAKe00jh4xYreHyjilBM7O'
+
 MIXPANEL_SETTINGS = {
     'token': 'd7c53d3f0559022a42a74e99950b6934',
 }
+
+CELERY_DEFAULT_QUEUE = 'prod-toolkit'
+ENABLE_CELERY_TASKS = True
+
+
+PUSHER_APP_ID = 44301
+PUSHER_KEY = '60281f610bbf5370aeaa'
+PUSHER_SECRET = '72b185ac8ba23bda3552'
 
 LOGGING = {
     'version': 1,
@@ -167,11 +178,6 @@ LOGGING = {
         },
         'django.request': {
             'handlers': ['splunkstorm'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'django.test': {
-            'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': False,
         }

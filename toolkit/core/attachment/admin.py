@@ -3,4 +3,10 @@ from django.contrib import admin
 
 from .models import Revision
 
-admin.site.register([Revision])
+
+class RevisionAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description', 'slug', 'display_status',)
+    search_fields = ('name', 'slug',)
+
+
+admin.site.register(Revision, RevisionAdmin)

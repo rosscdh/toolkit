@@ -29,7 +29,7 @@ class InboxNotificationsView(ListView):
 
     def get_queryset(self):
         if self.request.user.is_authenticated():
-            return self.model.objects.prefetch_related().filter(user=self.request.user).order_by('-id')
+            return self.model.objects.filter(user=self.request.user).select_related('message').order_by('-id')
 
         return self.model.objects.none()
 

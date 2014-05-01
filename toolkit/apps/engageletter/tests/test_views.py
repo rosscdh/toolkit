@@ -50,7 +50,7 @@ class SetupEngagementLetterTemplateViewTest(BaseProjectCaseMixin):
 class LawyerCreateLetterWithoutTemplateSetText(PyQueryMixin, BaseProjectCaseMixin):
     """
     when the lawyer has not setup a template then the first step before creating
-    a letter shoudl be to fill in the template form
+    a letter should be to fill in the template form
     """
     def setUp(self):
         super(LawyerCreateLetterWithoutTemplateSetText, self).setUp()

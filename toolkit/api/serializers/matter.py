@@ -3,14 +3,12 @@
 Matters are workspaces; and are composted of items, which may be a todo item
 or a document item
 """
-from django.core.urlresolvers import reverse
-
 from rest_framework import serializers
 
 from toolkit.apps.workspace.models import Workspace
-from toolkit.core.item.models import Item
+
 from .client import LiteClientSerializer
-from .item import ItemSerializer
+from .item import SimpleItemSerializer
 from .user import LiteUserSerializer
 
 import datetime
@@ -18,6 +16,11 @@ import datetime
 
 class MatterSerializer(serializers.HyperlinkedModelSerializer):
     slug = serializers.CharField(read_only=True)
+
+    regular_url = serializers.Field(source='get_regular_url')
+    # django url # @TODO depreciate this url in facour of get_regular_url
+    base_url = serializers.Field(source='get_regular_url')
+
     matter_code = serializers.CharField(required=False)
     date_created = serializers.DateTimeField(read_only=True)
     date_modified = serializers.DateTimeField(read_only=True)
@@ -25,9 +28,6 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
     client = LiteClientSerializer(required=False)
     lawyer = LiteUserSerializer(required=False)
     participants = LiteUserSerializer(many=True, required=False)
-
-    # django url
-    base_url = serializers.SerializerMethodField('get_base_url')
 
     categories = serializers.SerializerMethodField('get_categories')
     closing_groups = serializers.SerializerMethodField('get_closing_groups')
@@ -43,10 +43,13 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Workspace
-        fields = ('url', 'base_url', 'name', 'slug', 'matter_code',
+        fields = ('slug', 
+                  'url', 'regular_url',
+                  'name', 'matter_code',
                   'client', 'lawyer', 'participants',
                   'closing_groups', 'categories',
-                  'items', 'comments', 'activity',
+                  'items',
+                  'comments', 'activity',
                   'current_user', 'current_user_todo',
                   'date_created', 'date_modified',
                   'percent_complete')
@@ -69,7 +72,7 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
         """
         tmp method will eventually be replaced by matter.items_set.all()
         """
-        return [ItemSerializer(i, context=self.context).data for i in obj.item_set.filter(parent=None)]
+        return [SimpleItemSerializer(i, context=self.context).data for i in obj.item_set.filter(parent=None)]
 
     def get_comments(self, obj):
         """
@@ -115,9 +118,6 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
         #return [todo.copy() for i in xrange(0,5)]
         return []
 
-    def get_base_url(self, obj):
-        return obj.get_absolute_url() if hasattr(obj, 'get_absolute_url') else None
-
     def get_percent_complete(self, obj):
         return obj.get_percent_complete
 
@@ -129,7 +129,7 @@ class LiteMatterSerializer(MatterSerializer):
     class Meta(MatterSerializer.Meta):
         fields = ('url', 'base_url', 'name', 'slug', 'matter_code', 'client',
                   'lawyer', 'participants', 'date_created', 'date_modified',
-                  'percent_complete')
+                  'percent_complete', 'regular_url')
 
 
 class SimpleMatterSerializer(MatterSerializer):

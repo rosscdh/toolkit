@@ -3,17 +3,20 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.db.models.signals import pre_save, post_save
 
+
 from .signals import (on_item_save_category,
                       on_item_save_closing_group,
                       on_item_save_changed_content,
+                      on_item_save_manual_latest_item_delete,
                       on_item_post_save)
 
-from toolkit.core.mixins import IsDeletedMixin
+from toolkit.core.mixins import IsDeletedMixin, ApiSerializerMixin
 
 from toolkit.utils import get_namedtuple_choices
 
 from .managers import ItemManager
 from .mixins import (RequestDocumentUploadMixin,
+                     ReviewInProgressMixin,
                      RequestedDocumentReminderEmailsMixin,
                      RevisionReviewReminderEmailsMixin,
                      RevisionSignReminderEmailsMixin)
@@ -30,7 +33,9 @@ BASE_ITEM_STATUS = get_namedtuple_choices('ITEM_STATUS', (
 
 
 class Item(IsDeletedMixin,
+           ApiSerializerMixin,
            RequestDocumentUploadMixin,
+           ReviewInProgressMixin,
            RequestedDocumentReminderEmailsMixin,
            RevisionReviewReminderEmailsMixin,
            RevisionSignReminderEmailsMixin,
@@ -57,6 +62,9 @@ class Item(IsDeletedMixin,
     closing_group = models.CharField(max_length=128, null=True, blank=True, db_index=True)
     category = models.CharField(max_length=128, null=True, blank=True, db_index=True)
 
+    latest_revision = models.ForeignKey('attachment.Revision', null=True, blank=True,
+                                        related_name='item_latest_revision', on_delete=models.SET_NULL)
+
     # if is final is true, then the latest_revision will be available for sending for signing
     is_final = models.BooleanField(default=False, db_index=True)
     # this item is complete and signed off on
@@ -73,6 +81,8 @@ class Item(IsDeletedMixin,
 
     objects = ItemManager()
 
+    _serializer = 'toolkit.api.serializers.ItemSerializer'
+
     class Meta:
         ordering = ('sort_order',)
 
@@ -80,7 +90,34 @@ class Item(IsDeletedMixin,
         return u'%s' % self.name
 
     def get_absolute_url(self):
-        return '{url}#/checklist/{item_slug}'.format(url=reverse('matter:detail', kwargs={'matter_slug': self.matter.slug}), item_slug=self.slug)
+        return '{url}#/checklist/{item_slug}'.format(
+            url=reverse('matter:detail', kwargs={'matter_slug': self.matter.slug}),
+            item_slug=self.slug
+        )
+
+    def get_regular_url(self):
+        """
+        Used in notficiations & activity
+        """
+        return self.get_absolute_url()
+
+    def get_user_review_url(self, user, version_slug=None):
+        if version_slug is not None:
+            revision = self.revision_set.get(slug=version_slug)
+        else:
+            revision = self.latest_revision
+        return revision.get_user_review_url(user=user)
+
+    def get_full_user_review_url(self, user, version_slug):
+        # returns url to item AND revision
+        # outdated example: /matters/test-matter-1/#/checklist/e89403f273a045cd8a0ca7e7dd2bc383:/review/1d5d8b3ac969415e941aab3dd2ce41e8/BR45Ps8PPplMXg%3D%3D/
+        # example: /matters/test-matter-1/#/checklist/e89403f273a045cd8a0ca7e7dd2bc383/v3/review/1d5d8b3ac969415e941aab3dd2ce41e8/BR45Ps8PPplMXg%3D%3D/
+
+        # instead we could use the reviewer ID if we added it to the reviewer-serializer. or if we use the non-absolute
+        # user_review_url as identifier, we must add it to the review
+
+        review_document_link = self.get_user_review_url(user=user, version_slug=version_slug)
+        return "%s/%s%s" % (self.get_absolute_url(), version_slug, review_document_link)
 
     @property
     def client(self):
@@ -89,10 +126,6 @@ class Item(IsDeletedMixin,
     @property
     def display_status(self):
         return self.ITEM_STATUS.get_desc_by_value(self.status)
-
-    @property
-    def latest_revision(self):
-        return self.revision_set.current().first()
 
     def participants(self):
         return self.data.get('participants', [])
@@ -117,85 +150,7 @@ class Item(IsDeletedMixin,
         do_recalculate = True
         try:
             # get the current
-            previous_instance = Item.objects.get(pk=self.pk)
-            if previous_instance.is_complete == self.is_complete and not self.is_deleted:
-                do_recalculate = False
-
-        except Item.DoesNotExist:
-            pass
-
-        super(Item, self).save(*args, **kwargs)
-
-        if do_recalculate:
-            self.matter.update_percent_complete()
-
-    def save(self, *args, **kwargs):
-        """
-            reset percentage completed of the matter only if item is newly created or
-                                                          if item.is_complete changed
-                                                          if item.is_deleted
-
-            This is done here and not in a signal because the percentage has to get calculated with the NEW
-            is_complete-value which is not yet available present in the matters' .reset_percentage()-function when
-            using pre_save.
-            It is only available after the saving.
-        """
-        do_recalculate = True
-        try:
-            # get the current
-            previous_instance = Item.objects.get(pk=self.pk)
-            if previous_instance.is_complete == self.is_complete and not self.is_deleted:
-                do_recalculate = False
-
-        except Item.DoesNotExist:
-            pass
-
-        super(Item, self).save(*args, **kwargs)
-
-        if do_recalculate:
-            self.matter.update_percent_complete()
-
-    def save(self, *args, **kwargs):
-        """
-            reset percentage completed of the matter only if item is newly created or
-                                                          if item.is_complete changed
-                                                          if item.is_deleted
-
-            This is done here and not in a signal because the percentage has to get calculated with the NEW
-            is_complete-value which is not yet available present in the matters' .reset_percentage()-function when
-            using pre_save.
-            It is only available after the saving.
-        """
-        do_recalculate = True
-        try:
-            # get the current
-            previous_instance = Item.objects.get(pk=self.pk)
-            if previous_instance.is_complete == self.is_complete and not self.is_deleted:
-                do_recalculate = False
-
-        except Item.DoesNotExist:
-            pass
-
-        super(Item, self).save(*args, **kwargs)
-
-        if do_recalculate:
-            self.matter.update_percent_complete()
-
-    def save(self, *args, **kwargs):
-        """
-            reset percentage completed of the matter only if item is newly created or
-                                                          if item.is_complete changed
-                                                          if item.is_deleted
-
-            This is done here and not in a signal because the percentage has to get calculated with the NEW
-            is_complete-value which is not yet available present in the matters' .reset_percentage()-function when
-            using pre_save.
-            It is only available after the saving.
-        """
-        do_recalculate = True
-        try:
-            # get the current
-            previous_instance = Item.objects.get(pk=self.pk)
+            previous_instance = self.__class__.objects.get(pk=self.pk)
             if previous_instance.is_complete == self.is_complete and not self.is_deleted:
                 do_recalculate = False
 
@@ -219,9 +174,10 @@ class Item(IsDeletedMixin,
 """
 Connect signals
 """
-pre_save.connect(on_item_save_category, sender=Item, dispatch_uid='item.post_save.category')
-pre_save.connect(on_item_save_closing_group, sender=Item, dispatch_uid='item.post_save.closing_group')
-pre_save.connect(on_item_save_changed_content, sender=Item, dispatch_uid='item.post_save.changed_content')
+pre_save.connect(on_item_save_category, sender=Item, dispatch_uid='item.pre_save.category')
+pre_save.connect(on_item_save_closing_group, sender=Item, dispatch_uid='item.pre_save.closing_group')
+pre_save.connect(on_item_save_changed_content, sender=Item, dispatch_uid='item.pre_save.changed_content')
+pre_save.connect(on_item_save_manual_latest_item_delete, sender=Item, dispatch_uid='item.pre_save.on_item_save_manual_latest_item_delete')
 post_save.connect(on_item_post_save, sender=Item, dispatch_uid='item.post_save.category')
 
 

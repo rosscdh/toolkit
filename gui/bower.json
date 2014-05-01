@@ -22,12 +22,19 @@
     "angular-markdown-directive": "latest",
     "angular-elastic": "latest",
     "angular-ui-router": "latest",
+    "angular-sanitize": "~1.2.16",
     "moment": "~2.5",
     "less.js": "~1.5",
     "font-awesome": "~4.0",
     "angular-ui-sortable": "~0.12.1",
     "ez-confirm": "*",
     "raven-js": "~1.1",
-    "FileAPI": "~2.0.3"
+    "FileAPI": "~2.0.3",
+    "angular-intercom": "latest",
+    "crypto-js": "http://crypto-js.googlecode.com/files/CryptoJS%20v3.1.2.zip"
+  },
+  "resolutions": {
+    "angular": "~1.2.x",
+    "angular-sanitize": "~1.2.16"
   }
 }

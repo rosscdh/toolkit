@@ -44,6 +44,18 @@ class EnsureCustomerService(object):
 
         profile = user.profile
 
+        #
+        # Set new users to validated email automaticaly
+        #
+        if is_new is True:
+            profile.validated_email = True
+            profile.save(update_fields=['data'])
+
+
+        #
+        # Set the users profile to customer by default to customer
+        # unless its overridden
+        #
         if is_new is True or 'user_class' not in profile.data:
             logger.info('Is a new User')
             profile.data['user_class'] = 'customer'

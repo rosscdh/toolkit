@@ -1,18 +1,16 @@
-{% extends 'notification/base.html' %}
-
-{% load url from future %}{% load humanize %}
+{% extends 'notification/base.html' %}{% load notice_tags %}{% load url from future %}
 
 {% block body %}
     <div id="notifications" class="content">
         <div class="content-header notifications-header clearfix">
             <div class="container">
                 <div class="col-sm-8 col-sm-offset-2">
-                    {% if object_list.count > 0 %}
+                    {% if object_list %}
                         <div class="content-header-btn">
-                            <a href="javascript:;" id="mark-all-as-read" data-url="{% url 'notification:inbox-mark-all-read' %}" class="btn btn-default btn-wide"><span class="fui-check-inverted"></span>&nbsp;&nbsp;Mark everything as read</a>
+                            <a href="javascript:;" id="mark-all-as-read" data-url="{% url 'notification:inbox-mark-all-read' %}" class="btn btn-info btn-wide"><span class="fui-check-inverted"></span>&nbsp;&nbsp;Mark everything as read</a>
                         </div>
                     {% endif %}
-                    <h3>{% if object_list.count > 0 %}<span class="circle">{{ object_list.count }}</span> {% endif %}Notifications</h3>
+                    <h3><span id="notification-count" class="circle">&nbsp;</span> Notifications</h3>
                 </div>
             </div>
         </div>
@@ -20,23 +18,8 @@
         <div class="container">
             <div class="row">
                 <div class="col-sm-8 col-sm-offset-2" role="main">
-                    {% for notice in object_list %}
-                        <article class="notification">
-                            <div class="row">
-                                <div class="col-xs-1">
-                                    <div class="avatar img-circle"><span class="initials" title="{{ notice.message.data.actor.name }}">{{ notice.message.data.actor.initials }}</span></div>
-                                </div>
-                                <div class="col-xs-10">
-                                    <p class="lead">{{ notice.message }}</p>
-                                    <p class="small">{{ notice.message.date|naturaltime }} — in <a href="{{ notice.message.data.target.base_url }}">{{ notice.message.data.target.name }}</a> for {{ notice.message.data.target.client.name }}.</p>
-                                </div>
-                                <div class="col-xs-1">
-                                    <a href="javascript:;" data-pk="{{ notice.pk }}" data-url="{% url 'notification:inbox-read' pk=notice.pk %}" class="btn btn-sm notification-btn mark-as-read" data-toggle="tooltip" data-placement="top" title="Mark as read">
-                                        <span class="fui-check text-info"></span>
-                                    </a>
-                                </div>
-                            </div>
-                        </article>
+                    {% for item in object_list %}
+                        {% render_notice item request %}
                     {% empty %}
                         <div class="col-md-12 text-center">
                             <h6 class="text-muted">You currently have no notifications.</h6>
@@ -54,6 +37,8 @@
 $(document).ready(function () {
     'use strict';
 
+    calculateTotalNotifications();
+
     $('a.mark-as-read').on('click', function(e) {
         var $this = $(this);
         var data = $this.data();
@@ -61,9 +46,24 @@ $(document).ready(function () {
         e.preventDefault();
         e.stopPropagation();
 
+        sendDeleteRequest($this, data.url);
+
+    });
+
+    function calculateTotalNotifications() {
+        var current_num = parseInt($('article.notification').length);
+        if (current_num == 0) {
+            $('#mark-all-as-read').hide();
+        }
+        $('#notification-count').html(current_num);
+    }
+
+    function sendDeleteRequest(obj, url) {
+        var $this = obj;
+
         $.ajax({
             "type": 'DELETE',
-            "url": data.url,
+            "url": url,
             "dataType": 'json',
             "contentType": 'application/json',
             "beforeSend": function (jqXHR, settings) {
@@ -71,10 +71,11 @@ $(document).ready(function () {
                 jqXHR.setRequestHeader('X-CSRFToken', $('input[name=csrf_token]:first').val());
             },
             "success": function (data) {
-                document.location.reload();
+                $this.closest('article').remove()
+                calculateTotalNotifications();
             }
         });
-    });
+    }
 
     $('#mark-all-as-read').on('click', function(e) {
         var $this = $(this);

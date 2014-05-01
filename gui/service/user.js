@@ -3,7 +3,7 @@ angular.module('toolkit-gui').factory('userService',[
 	'$resource',
 	'API_BASE_URL',
 	function( $q, $resource, API_BASE_URL ) {
-
+		'use strict';
 		var user = {
 			'data': {
 				'items': []
@@ -27,6 +27,11 @@ angular.module('toolkit-gui').factory('userService',[
 			'setCurrent': function( userData ) {
 				user.current = userData;
 
+				//debugger;
+				if(Raven) {
+					Raven.setUser(userData);
+				}
+
 				//user.current.user_class='customer';
 			},
 
@@ -36,7 +41,7 @@ angular.module('toolkit-gui').factory('userService',[
 				var deferred = $q.defer();
 
 				api.get( {},
-					function success( result ) {
+					function success( /*result*/ ) {
 						deferred.resolve();
 					},
 					function error( /*err*/ ) {
