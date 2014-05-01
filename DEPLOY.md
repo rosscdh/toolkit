@@ -1,11 +1,17 @@
 Deployment actions by branch
 ----------------------------
 
-[activity-stream-update]
+[signing]
+
+1. pip install -e git+https://github.com/rosscdh/django-hello_sign.git#egg=django-hello_sign # lots of upgrades here
+2. pip install -e git+https://github.com/rosscdh/hellosign.git#egg=hellosign
+
 
 --------------------------------------------------------------------------------
 ** DEPLOYED 29 April 2014
 --------------------------------------------------------------------------------
+
+[activity-stream-update]
 
 1. ./manage.py migrate review 0001 --fake # setup the base
 2. ./manage.py migrate review # add the crocodoc uuid field
