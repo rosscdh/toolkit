@@ -31,7 +31,7 @@ class RevisionSignaturesTest(PyQueryMixin, BaseEndpointTest):
     /matters/:matter_slug/items/:item_slug/revision/signers/ (GET,POST)
         [lawyer,customer] to list, create signers
     """
-    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review_url', u'url', u'initials', u'user_class', u'name',]
+    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review', u'url', u'initials', u'user_class', u'name',]
 
     @property
     def endpoint(self):
@@ -111,15 +111,19 @@ class RevisionSignaturesTest(PyQueryMixin, BaseEndpointTest):
         self.assertEqual(json_data['results'][0]['signer']['name'], participant.get_full_name())
 
         # user review url must be in it
-        self.assertTrue('user_review_url' in json_data['results'][0]['signer'].keys())
+        self.assertTrue('user_review' in json_data['results'][0]['signer'].keys())
 
         #
         # we expect the currently logged in users url to be returned;
         # as the view is relative to the user
         #
-        expected_url = self.item.latest_revision.signdocument_set.all().first().get_absolute_url(user=self.lawyer)
+        review_document = self.item.latest_revision.signdocument_set.all().first()
+        expected_url = review_document.get_absolute_url(user=self.lawyer)
 
-        self.assertEqual(json_data['results'][0]['signer']['user_review_url'], expected_url)
+        self.assertEqual(json_data['results'][0]['signer']['user_review'], {
+            'url': expected_url,
+            'slug': str(review_document.slug)
+        })
 
         outbox = mail.outbox
         self.assertEqual(len(outbox), 1)
@@ -140,7 +144,7 @@ class RevisionSignaturesTest(PyQueryMixin, BaseEndpointTest):
 
         # test if activity shows in stream
         stream = target_stream(self.matter)
-        self.assertEqual(stream[0].data['message'], u'Lawyer Test invited Participant Number 1 as signer for Test Item with Revision')
+        self.assertEqual(stream[0].data['message'], u'Lawyër Tëst invited Participant Number 1 as signer for Test Item with Revision')
 
     def test_second_lawyer_post(self):
         """
@@ -178,15 +182,19 @@ class RevisionSignaturesTest(PyQueryMixin, BaseEndpointTest):
         self.assertEqual(json_data['results'][0]['signer']['name'], participant.get_full_name())
 
         # user review url must be in it
-        self.assertTrue('user_review_url' in json_data['results'][0]['signer'].keys())
+        self.assertTrue('user_review' in json_data['results'][0]['signer'].keys())
 
         #
         # we expect the currently logged in users url to be returned;
         # as the view is relative to the user
         #
-        expected_url = self.item.latest_revision.signdocument_set.all().first().get_absolute_url(user=self.lawyer)
+        review_document = self.item.latest_revision.signdocument_set.all().first()
+        expected_url = review_document.get_absolute_url(user=self.lawyer)
 
-        self.assertEqual(json_data['results'][0]['signer']['user_review_url'], expected_url)
+        self.assertEqual(json_data['results'][0]['signer']['user_review'], {
+            'url': expected_url,
+            'slug': str(review_document.slug)
+        })
 
         outbox = mail.outbox
         self.assertEqual(len(outbox), 1)
@@ -344,7 +352,7 @@ class RevisionSignerTest(BaseEndpointTest):
     /matters/:matter_slug/items/:item_slug/revision/signer/:username (GET,DELETE)
         [lawyer,customer] to view, delete signers
     """
-    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review_url', u'url', u'initials', u'user_class', u'name',]
+    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review', u'url', u'initials', u'user_class', u'name',]
 
     @property
     def endpoint(self):
@@ -461,7 +469,7 @@ class RevisionSignerTest(BaseEndpointTest):
             #                             'copyprotected': False,
             #                             'sidebar': 'auto'}
 
-            # self.assertEqual(context_data.get('CROCDOC_PARAMS'), expected_crocodoc_params)
+            # self.assertEqual(context_data.get('CROCODOC_PARAMS'), expected_crocodoc_params)
 
     def test_lawyer_post(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -528,116 +536,3 @@ class RevisionSignerTest(BaseEndpointTest):
         self.assertEqual(resp.status_code, 403)  # forbidden
 
 
-class RevisionRequestedDocumentTest(BaseEndpointTest):
-    """
-    When you request a document from someone
-    item.is_requested = True
-    and
-    item.responsible_party must be a User
-    """
-    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'status', u'category', u'is_complete', u'closing_group', u'description', u'parent', u'date_modified', u'url', u'is_requested', u'children', u'matter', u'date_due', u'responsible_party', u'is_final', u'date_created', u'latest_revision', u'request_document_meta', u'slug', u'name']
-
-    @property
-    def endpoint(self):
-        return reverse('matter_item_request_doc', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug})
-
-    def setUp(self):
-        super(RevisionRequestedDocumentTest, self).setUp()
-
-        self.request_factory = RequestFactory()
-
-        #self.invited_uploader = mommy.make('auth.User', username='Invited Uploader', first_name='Invited', last_name='Uploader', email='inviteduploader@lawpal.com')
-        # setup the items for testing
-        self.item = mommy.make('item.Item',
-                               matter=self.matter,
-                               name='Test Item with Revision',
-                               category=None)
-
-    def test_endpoint_name(self):
-        self.assertEqual(self.endpoint, '/api/v1/matters/%s/items/%s/request_document' % (self.matter.slug, self.item.slug))
-
-    def test_lawyer_get(self):
-        self.client.login(username=self.lawyer.username, password=self.password)
-        resp = self.client.get(self.endpoint)
-
-        self.assertEqual(resp.status_code, 200)
-        json_data = json.loads(resp.content)
-
-        self.assertItemsEqual(self.EXPECTED_USER_SERIALIZER_FIELD_KEYS, json_data.keys())
-
-    def test_lawyer_post(self):
-        self.client.login(username=self.lawyer.username, password=self.password)
-        resp = self.client.post(self.endpoint, {}, content_type='application/json')
-        self.assertEqual(resp.status_code, 405)  # not allowed
-
-    def test_lawyer_patch(self):
-        self.client.login(username=self.lawyer.username, password=self.password)
-        data = {
-            'email': 'inviteduploader@lawpal.com',
-            'first_name': 'Invited',
-            'last_name': 'Uploader User',
-            'note': 'Please provide me with a document monkeyboy!',
-        }
-        resp = self.client.patch(self.endpoint, json.dumps(data), content_type='application/json')
-        self.assertEqual(resp.status_code, 200)  # method not allowed
-
-        json_data = json.loads(resp.content)
-
-        inviteduploader_user = User.objects.get(username='inviteduploader')
-        invited_uploader = LiteUserSerializer(inviteduploader_user,
-                                              context={'request': self.request_factory.get(self.endpoint)})  ## should exist as we jsut created him in the patch
-
-        self.assertTrue(json_data.get('is_requested') is True)
-        self.assertEqual(json_data.get('responsible_party'), invited_uploader.data)
-
-        #
-        # now upload a document and ensure
-        # from the responsible_party above and ensure that is_requested is False
-        #
-        new_revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item,
-                                  uploaded_by=inviteduploader_user)
-
-        # refresh
-        self.item = self.item.__class__.objects.get(pk=self.item.pk)
-
-        # now the item should be is_requested = False
-        self.assertEqual(self.item.is_requested, False)
-
-    def test_customer_get(self):
-        self.client.login(username=self.user.username, password=self.password)
-        resp = self.client.get(self.endpoint)
-        self.assertEqual(resp.status_code, 200)  # ok
-        json_data = json.loads(resp.content)
-
-        self.assertItemsEqual(self.EXPECTED_USER_SERIALIZER_FIELD_KEYS, json_data.keys())
-
-    def test_customer_post(self):
-        self.client.login(username=self.user.username, password=self.password)
-        resp = self.client.post(self.endpoint, {}, content_type='application/json')
-        self.assertEqual(resp.status_code, 403)  # forbidden
-
-    def test_customer_patch(self):
-        self.client.login(username=self.user.username, password=self.password)
-        resp = self.client.patch(self.endpoint, {}, content_type='application/json')
-        self.assertEqual(resp.status_code, 403)  # forbidden
-
-    def test_customer_delete(self):
-        self.client.login(username=self.user.username, password=self.password)
-        resp = self.client.patch(self.endpoint, {}, content_type='application/json')
-        self.assertEqual(resp.status_code, 403)  # forbidden
-
-    def test_anon_get(self):
-        resp = self.client.get(self.endpoint)
-        self.assertEqual(resp.status_code, 403)  # forbidden
-
-    def test_anon_post(self):
-        resp = self.client.post(self.endpoint, {}, content_type='application/json')
-        self.assertEqual(resp.status_code, 403)  # forbidden
-
-    def test_anon_patch(self):
-        resp = self.client.patch(self.endpoint, {})
-        self.assertEqual(resp.status_code, 403)  # forbidden
-
-    def test_anon_delete(self):
-        resp = self.client.delete(self.endpoint, {})
-        self.assertEqual(resp.status_code, 403)  # forbidden

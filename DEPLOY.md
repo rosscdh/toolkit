@@ -1,6 +1,87 @@
 Deployment actions by branch
 ----------------------------
 
+[activity-stream-update]
+
+--------------------------------------------------------------------------------
+** DEPLOYED 29 April 2014
+--------------------------------------------------------------------------------
+
+1. ./manage.py migrate review 0001 --fake # setup the base
+2. ./manage.py migrate review # add the crocodoc uuid field
+3. ./manage.py migrate attachment # add is_deleted to revision
+4. ensure the latest version of django-crocodoc is installed (pip_install in fab)
+5. ensure that angular (bower) has "angular-sanitize": "~1.2.16",
+
+--------------------------------------------------------------------------------
+** DEPLOYED 18 April 2014
+--------------------------------------------------------------------------------
+
+[choices-names]
+
+1. git co master;./manage.py migrate attachment 0003 
+must first run this data migration to ensure we catch all the current
+item statuses
+
+2. ./manage.py migrate attachment 0004  # removal of the status field 
+
+
+[celery]
+
+2. manage.py migrate djcelery
+
+
+--------------------------------------------------------------------------------
+** DEPLOYED 6 April 2014 - celery tasks are preset but not enabled
+--------------------------------------------------------------------------------
+
+[celery]
+
+2. manage.py migrate djcelery
+
+
+--------------------------------------------------------------------------------
+** DEPLOYED 6 April 2014 - celery tasks are preset but not enabled
+--------------------------------------------------------------------------------
+
+[celery]
+
+2. manage.py migrate djcelery
+
+
+--------------------------------------------------------------------------------
+** DEPLOYED 6 April 2014 - celery tasks are preset but not enabled
+--------------------------------------------------------------------------------
+
+[celery]
+
+2. manage.py migrate djcelery
+
+
+--------------------------------------------------------------------------------
+** DEPLOYED 4 April 2014 - fix a massive slowdown when larger matters were in
+use; such as https://app.lawpal.com/matters/lawpal-corporate-setup/#/checklist
+changed item.latest_revision from a property to an actual FKField reducing by a
+larger query
+--------------------------------------------------------------------------------
+
+[large-matter-optimisation]
+
+1. ./manage.py migrate item 0001 --fake
+2. ./manage.py migrate item 0002 # apply the latest_revision FK which optimises the lookups
+3. ./manage.py migrate item 0003 # convert all the existing data
+
+
+--------------------------------------------------------------------------------
+** DEPLOYED 4 April 2014
+--------------------------------------------------------------------------------
+
+[email-validation] - apply a degree of email validation
+@TODO needs tests - this is a patch
+
+1. ./manage.py migrate default  # will apply the validated_email = True to existing users
+
+
 --------------------------------------------------------------------------------
 ** DEPLOYED 2 April 2014
 --------------------------------------------------------------------------------

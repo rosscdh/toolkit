@@ -44,6 +44,15 @@ def on_item_save_category(sender, instance, **kwargs):
     logger.debug('Recieved item.pre_save:category event: %s' % sender)
 
 
+def on_item_save_manual_latest_item_delete(sender, instance, **kwargs):
+    """
+    due to softdelete we need to manually ensure self.latest_revision is set to None
+    if self.latest_revision.is_deleted is True
+    """
+    if instance.latest_revision is not None and instance.latest_revision.is_deleted is True:
+        instance.latest_revision = None
+
+
 def on_item_save_closing_group(sender, instance, **kwargs):
     """
     Update and modify matter closing_group when item is changes
@@ -80,6 +89,8 @@ def on_item_save_closing_group(sender, instance, **kwargs):
 def on_item_save_changed_content(sender, instance, **kwargs):
     """
     Update and modify matter closing_group when item is changes
+
+    also check if item is_deleted which was not before
     """
     matter = instance.matter
 
@@ -117,6 +128,9 @@ def on_item_save_changed_content(sender, instance, **kwargs):
             else:
                 matter.actions.item_reopened(user=matter.lawyer, item=instance)
 
+        if not previous_instance.is_deleted and instance.is_deleted:
+            matter.actions.item_deleted(user=matter.lawyer, item=instance)
+
     logger.debug('Recieved item.pre_save:changed_content event: %s' % sender)
 
 
@@ -124,6 +138,14 @@ def on_item_post_save(sender, instance, created, **kwargs):
     """
         At this moment only the layer can edit items. So this is possible.
     """
+    #print kwargs
+    #print instance.latest_revision
     if created:
         matter = instance.matter
+
+        if instance.sort_order in [None, '']:
+            instance.sort_order = matter.item_set.filter(category=instance.category).count() + 1 
+            instance.save(update_fields=['sort_order'])
+
         matter.actions.item_created(user=matter.lawyer, item=instance)
+

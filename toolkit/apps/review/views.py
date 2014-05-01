@@ -6,7 +6,7 @@ from django.core.exceptions import PermissionDenied
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseRedirect
 
-from dj_crocodoc.services import CrocoDocConnectService
+from .services import CrocodocLoaderService
 
 from .models import ReviewDocument
 
@@ -42,8 +42,6 @@ def _authenticate(request, obj, matter, **kwargs):
             # We are indeed the reviewer and are reviewing the document
             #
             login(request, requested_authenticated_user)
-            # only for the reviewer, we dont do this for when participants view
-            obj.reviewer_has_viewed = True
 
 
 class ReviewRevisionView(DetailView):
@@ -76,70 +74,18 @@ class ReviewRevisionView(DetailView):
         #
         _authenticate(request=self.request, obj=self.object, matter=self.matter, **self.kwargs)
 
-        self.object.document.item.matter.actions.user_viewed_revision(item=self.object.document.item,
-                                                                      user=self.request.user,
-                                                                      revision=self.object.document)
-
         return self.object
 
     def get_context_data(self, **kwargs):
         kwargs = super(ReviewRevisionView, self).get_context_data(**kwargs)
 
-        if self.object.reviewer is None:
-            #
-            # @BUG seems that the reviewer for some reason has not been assigned
-            #
-            self.object.save()  # calling save causes the system to reevaluate the reviewers
-
-        crocodoc = CrocoDocConnectService(document_object=self.object.document,
-                                          app_label='attachment',
-                                          field_name='executed_file',
-                                          upload_immediately=False,
-                                          # important for sandboxing the view to ths reviewer
-                                          reviewer=self.object.reviewer)
         #
-        # ok this is a brand new file, we now need to ensure its available lcoally
-        # and then if/when it is upload it to crocdoc
+        # Use the loader to get the crocodoc documet present and available
+        # service provides a dict with the appropriate variables includeing 
+        # crocodoc_view_url
         #
-        # if crocodoc.is_new is True:
-        #
-        # Ensure we have a local copy of this file so it can be sent
-        #
-        if self.object.ensure_file():
-            # so we have a file, now lets upload it
-            crocodoc.generate()
-
-        # @TODO this should ideally be set in the service on init
-        # and session automatically updated
-        # https://crocodoc.com/docs/api/ for more info
-        CROCDOC_PARAMS = {
-                "user": {
-                    "name": self.request.user.get_full_name(),
-                    "id": self.request.user.pk
-                },
-                "sidebar": 'auto',
-                "editable": self.object.is_current, # allow comments only if the item is current
-                "admin": False, # noone should be able to delete other comments
-                "downloadable": True, # everyone should be able to download a copy
-                "copyprotected": False, # should not have copyprotection
-                "demo": False,
-                #
-                # We create a ReviewDocument object for each and every reviewer
-                # for the matter.participants there is 1 ReviewDocument object
-                # that they all can see
-                #
-                #"filter": self.get_filter_ids() # must be a comma seperated list
-        }
-        #
-        # Set out session key based on params above
-        #
-        crocodoc.obj.crocodoc_service.session_key(**CROCDOC_PARAMS),
-
-        kwargs.update({
-            'crocodoc': crocodoc.obj.crocodoc_service,
-            'crocodoc_view_url': crocodoc.obj.crocodoc_service.view_url(**CROCDOC_PARAMS),  # this is where the view params must be sent in order to show toolbar etc
-            'CROCDOC_PARAMS': CROCDOC_PARAMS, # for testing the values
-        })
+        kwarg_service = CrocodocLoaderService(user=self.request.user, reviewdocument=self.object)
+        kwargs.update(kwarg_service.process())
 
         return kwargs
 

@@ -1038,7 +1038,14 @@ body.gui .main-content {
   padding: 20px;
 }
 #notifications .notification .avatar {
-  margin-top: 8px;
+  margin-top: 5px;
+}
+#notifications .notification a {
+  color: #666;
+  border-bottom: 1px dotted #87999a;
+}
+#notifications .notification a.btn {
+  border-bottom: none;
 }
 #notifications .notification .notification-btn {
   font-size: 20px;
@@ -1046,8 +1053,19 @@ body.gui .main-content {
   text-align: right;
 }
 #notifications .notification p {
-  color: #95a5a6;
+  color: #888;
   margin-bottom: 0;
+}
+#notifications .notification .lead {
+  font-weight: bold;
+  font-size: 17px;
+}
+#notifications .notification p.quote {
+  font-size: 14px;
+  line-height: 19px!important;
+  border-left: 2px solid #dae0e0;
+  padding-left: 10px;
+  margin: 5px;
 }
 #requests section {
   margin-bottom: 50px;
@@ -1128,6 +1146,34 @@ body.gui .main-content {
   color: #e74c3c;
   border-color: #e74c3c;
   background-color: #ffffff;
+}
+.plan {
+  background: white;
+  border: 2px solid #ececec;
+  border-radius: 6px;
+  padding: 14px;
+  position: relative;
+  text-align: center;
+}
+.plan .plan-image {
+  height: 100px;
+  margin: 31px 0 27px;
+  vertical-align: bottom;
+}
+.plan .plan-image.big-illustration {
+  height: 111px;
+  margin-top: 20px;
+  width: 112px;
+}
+.plan .plan-title {
+  margin: 0;
+}
+.plan .plan-price {
+  color: #2ecc71;
+}
+.plan p {
+  font-size: 15px;
+  margin-bottom: 33px;
 }
 .home .splash {
   background: url('/static/images/home-splash.jpg');

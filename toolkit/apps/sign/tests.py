@@ -63,7 +63,6 @@ class BaseDataProvider(BaseScenarios):
                                    uploaded_by=self.lawyer)
 
         self.revision.signers.add(self.signer)
-        #import pdb;pdb.set_trace()
         #
         # Matter.participants automatically get an auth so that they can individual view the object
         # the 2 below are based on the matter.participants that are included as part of BaseScenarios

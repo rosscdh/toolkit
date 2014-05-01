@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
-from mixpanel import Mixpanel
+from mixpanel import Mixpanel, MixpanelException
+
+import logging
+logger = logging.getLogger('django.request')
 
 
 MIXPANEL_SETTINGS = getattr(settings, 'MIXPANEL_SETTINGS', {
@@ -16,9 +19,12 @@ class MixpanelOnLawpal(object):
         if self.token is not None:
             self.service = Mixpanel(self.token)
 
-    def alias(self, alias_id, original, meta={}):
+    def mixpanel_alias(self, alias_id, original, **kwargs):
         if self.service is not None:
-            self.service.alias(alias_id=alias_id, original=original, meta=meta)
+            try:
+                self.service.alias(alias_id=alias_id, original=original, **kwargs)
+            except MixpanelException:
+                logger.error('Mixpanel error: distinct_id, missing or empty: %s' % alias_id)
 
     def event(self, key, user, distinct_id=None, **kwargs):
         if self.service is not None:

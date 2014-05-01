@@ -197,8 +197,8 @@ angular.module('toolkit-gui').factory('participantService', [
 				var api = participantAPI();
 
 				api.revoke( { 'matterSlug': matterSlug, 'id': details.email },
-					function success( response ) {
-						deferred.resolve( response );
+					function success() {
+						deferred.resolve();
 					},
 					function error( err ) {
 						deferred.reject( err );

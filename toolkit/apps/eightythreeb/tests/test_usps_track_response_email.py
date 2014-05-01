@@ -47,7 +47,7 @@ class EightyThreeBIsCompleteEmailTest(BaseCustomer):
         self.assertEqual(len(mail.outbox), 1)
         email = mail.outbox[0]
 
-        self.assertEqual(email.from_email, u'Lawyer Test (via LawPal) support@lawpal.com')
+        self.assertEqual(email.from_email, u'Lawyër Tëst (via LawPal) support@lawpal.com')
         self.assertEqual(email.extra_headers, {'Reply-To': self.lawyer.email})
         self.assertEqual(email.subject, '83(b) Filing Completed for %s' % self.user.get_full_name())
         self.assertEqual(email.recipients(), [self.user.email])

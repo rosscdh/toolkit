@@ -9,11 +9,11 @@ from .query import ItemQuerySet
 
 
 class ItemManager(IsDeletedManager):
+    def get_queryset(self):
+        return ItemQuerySet(self.model, using=self._db).filter(is_deleted=False).select_related('matter', 'latest_revision')
+
     def requested(self, **kwargs):
         return self.get_queryset().requested(**kwargs)
-
-    def get_queryset(self):
-        return ItemQuerySet(self.model, using=self._db).filter(is_deleted=False)
 
     def my_requests(self, user):
         queries = []

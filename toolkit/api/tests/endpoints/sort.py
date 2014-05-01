@@ -1,16 +1,12 @@
 # -*- coding: utf-8 -*-
 from django.core.urlresolvers import reverse
 
-from toolkit.apps.workspace.models import Workspace
-
 from . import BaseEndpointTest
-from ...serializers import ClientSerializer
 
 from model_mommy import mommy
 
 import json
 import random
-
 
 
 class MatterSortTest(BaseEndpointTest):
@@ -33,11 +29,11 @@ class MatterSortTest(BaseEndpointTest):
         super(MatterSortTest, self).setUp()
 
         # setup the items for testing
-        mommy.make('item.Item', matter=self.matter, name='Test Item No. 1', category="A")
-        mommy.make('item.Item', matter=self.matter, name='Test Item No. 2', category="A")
-        mommy.make('item.Item', matter=self.matter, name='Test Item No. 3', category="B")
-        mommy.make('item.Item', matter=self.matter, name='Test Item No. 4', category="C")
-        mommy.make('item.Item', matter=self.matter, name='Test Item No. 5', category=None)
+        mommy.make('item.Item', matter=self.matter, name='Test Item No. 1', category="A", sort_order=1)
+        mommy.make('item.Item', matter=self.matter, name='Test Item No. 2', category="A", sort_order=2)
+        mommy.make('item.Item', matter=self.matter, name='Test Item No. 3', category="B", sort_order=3)
+        mommy.make('item.Item', matter=self.matter, name='Test Item No. 4', category="C", sort_order=4)
+        mommy.make('item.Item', matter=self.matter, name='Test Item No. 5', category=None, sort_order=5)
 
         self.items = self.matter.item_set.all()
         self.categories = ["A", "B", "C"]
@@ -75,29 +71,37 @@ class MatterSortTest(BaseEndpointTest):
 
         self.client.login(username=self.lawyer.username, password=self.password)
 
-        item_order = [str(i.slug) for i in self.matter.item_set.all()]
-        random.shuffle(item_order)
+        expected_item_order = [str(i.get('slug')) for i in self.matter.item_set.all().values('slug')]
+        # randomize the items
+        random.shuffle(expected_item_order)
 
         data = {
             "categories": self.categories,
-            "items": item_order,
+            "items": expected_item_order,
         }
 
         resp = self.client.patch(self.endpoint, json.dumps(data), content_type='application/json')
         resp_json = json.loads(resp.content)
 
         self.assertEqual(resp.status_code, 200)  # all ok
-        self.assertEqual(json.loads(resp_json), {"items": item_order, "categories": self.categories})
+        self.assertEqual(json.loads(resp_json), {"items": expected_item_order, "categories": self.categories})
 
         # refresh
-        self.matter = Workspace.objects.get(pk=self.matter.pk)
+        self.matter = self.matter.__class__.objects.get(pk=self.matter.pk)
 
         # test categories are as we expect them
         self.assertEqual(self.matter.categories, [u'A', u'B', u'C'])
 
+        #
+        # Test all slugs are present
+        #
+        self.assertItemsEqual(expected_item_order, [str(i.get('slug')) for i in self.matter.item_set.all().values('slug')])
+
         # rely on the item.Meta.sort_order
         # the items should return from .all() in the same order as they are specified
-        self.assertTrue(all(str(i.slug) == item_order[sort_index] for sort_index, i in enumerate(self.matter.item_set.all())))
+        # Test the slugs are in the right order
+        self.assertTrue(all(str(i.get('slug')) == expected_item_order[sort_index] for sort_index, i in enumerate(self.matter.item_set.all().values('slug'))))
+
 
     def test_lawyer_patch_invalid(self):
         self.client.login(username=self.lawyer.username, password=self.password)

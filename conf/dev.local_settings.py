@@ -77,7 +77,18 @@ ABRIDGE_SECRET_ACCESS_KEY = ''
 ABRIDGE_USERNAME = ''
 ABRIDGE_PASSWORD = ''
 
+INTERCOM_APP_ID = 'wkxzfou'
+INTERCOM_APP_SECRET = 'MZCesCDxkDrYdfX8HocAB2F6V5aZzCm-DuF7lyR5'
 
+#
+# Mixpanel Analytics
+#
 MIXPANEL_SETTINGS = {
     'token': '92deaf40d5aa77e00bf8f764002950ab',
 }
+
+#
+# Celery SQS Tasks
+#
+CELERY_DEFAULT_QUEUE = 'lawpal-local'
+ENABLE_CELERY_TASKS = True

@@ -2,7 +2,7 @@ angular.module('toolkit-gui')
 /**
  * @class ChecklistCtrl
  * @classdesc 							Controller for retreiving and display checklists
- * 
+ *
  * @param  {Object} $scope                Contains the scope of this controller
  * @param  {Object} $rootScope            Rootscope variable
  * @param  {Object} $routeParams          Object that provides access to Angular route parameters
@@ -22,11 +22,15 @@ angular.module('toolkit-gui')
 	'$scope',
 	'$rootScope',
 	'$routeParams',
+	'$state',
 	'$location',
+    '$sce',
+    '$route',
 	'smartRoutes',
 	'ezConfirm',
 	'toaster',
 	'$modal',
+	'baseService',
 	'matterService',
 	'matterItemService',
 	'matterCategoryService',
@@ -37,14 +41,22 @@ angular.module('toolkit-gui')
 	'commentService',
 	'$timeout',
     '$log',
+    '$window',
+    '$q',
+    'Intercom',
+    'INTERCOM_APP_ID',
 	function($scope,
 			 $rootScope,
 			 $routeParams,
+			 $state,
 			 $location,
+             $sce,
+             $route,
 			 smartRoutes,
 			 ezConfirm,
 			 toaster,
 			 $modal,
+			 baseService,
 			 matterService,
 			 matterItemService,
 			 matterCategoryService,
@@ -54,7 +66,12 @@ angular.module('toolkit-gui')
 			 userService,
 			 commentService,
 			 $timeout,
-			 $log){
+			 $log,
+             $window,
+             $q,
+             Intercom,
+             INTERCOM_APP_ID){
+		'use strict';
 		/**
 		 * Scope based data for the checklist controller
 		 * @memberof			ChecklistCtrl
@@ -72,7 +89,9 @@ angular.module('toolkit-gui')
 			'categories': [],
 			'users': [],
 			'searchData': searchService.data(),
-			'usdata': userService.data()
+			'usdata': userService.data(),
+            'streamType': 'matter',
+            'history': {}
 		};
 		//debugger;
 
@@ -87,19 +106,73 @@ angular.module('toolkit-gui')
 					//set matter in the services
 					matterService.selectMatter(singleMatter);
 					$scope.initialiseMatter( singleMatter );
-					$scope.initializeActivityMatterStream( singleMatter );
+					$scope.initializeActivityStream( singleMatter );
 
 					userService.setCurrent( singleMatter.current_user );
+
+                    $scope.initialiseIntercom(singleMatter.current_user);
 				},
-				function error(err){
-					toaster.pop('error', "Error!", "Unable to load matter");
+				function error(/*err*/){
+					toaster.pop('error', 'Error!', 'Unable to load matter');
 					// @TODO: redirect user maybe?
 				}
 			);
 		}
 
+        /**
+         * Handles the event when the URL params changes inside the ng app
+         *
+         * @private
+		 * @memberof			ChecklistCtrl
+         */
+        $rootScope.$on('$stateChangeSuccess', function () {
+            $scope.handleUrlState();
+        });
+
+
+        /**
+         * This function activates the following states inside the app by the URL params:
+         * 1) Select a checklist item
+         * 2) Show a review in the review modal window
+         * 
+         * @private
+		 * @memberof			ChecklistCtrl
+         * @method              handleUrlState
+         */
+        $scope.handleUrlState = function () {
+            var itemSlug = $state.params.itemSlug;
+            var revisionSlug = $state.params.revisionSlug;
+            var reviewSlug = $state.params.reviewSlug;
+            var itemToSelect = null;
+
+            if (itemSlug && (!$scope.data.selectedItem || itemSlug !== $scope.data.selectedItem.slug)) {
+                $log.debug('Selecting item because of url change');
+
+                // find item
+                itemToSelect = $scope.getItemBySlug(itemSlug);
+                if (itemToSelect) {
+                    $scope.selectItem(itemToSelect, itemToSelect.category).then(
+                        function success(/*item*/) {
+                            //item is fully loaded
+                            if (revisionSlug && reviewSlug) {
+                                $scope.showReviewBySlug(revisionSlug, reviewSlug);
+                            }
+                        }
+                    );
+                } else {
+                    toaster.pop('warning', 'Item does not exist anymore.');
+                }
+            }
+
+            if (revisionSlug && reviewSlug && !itemToSelect && $scope.data.selectedItem) {
+                //item is already loaded
+                $scope.showReviewBySlug(revisionSlug, reviewSlug);
+            }
+        };
+
+
 		/**
-		 * Spilts the matter items into seperate arrays for the purpose of displaying seperate sortable lists, where items can be dragged
+		 * Splits the matter items into seperate arrays for the purpose of displaying seperate sortable lists, where items can be dragged
 		 * @name	initialiseMatter
 		 * @param  {Object} matter Full matter object as recieved from API
 		 * @private
@@ -107,42 +180,80 @@ angular.module('toolkit-gui')
 		 * @method			initialiseMatter
 		 */
 		$scope.initialiseMatter = function( matter ) {
-			var i, categoryName = null, categories = [], items = [];
+			var /*i, */categoryName = null, categories = [], items = [];
 
 			// Items with blank category name
 			items = jQuery.grep( matter.items, function( item ){ return item.category===categoryName; } );
 			categories.push(
 				{ 'name': categoryName, 'items': items }
 			);
-			
+
 			if( matter && matter.categories ) {
 				// Allocate items to specific categories to make multiple arrays
 				jQuery.each( matter.categories, function( index, cat ) {
 					var categoryName = cat;
 					var items = jQuery.grep( matter.items, function( item ){ return item.category===categoryName; } );
+
 					categories.push( { 'name': categoryName, 'items': items } );
 				});
 
 				$scope.data.matter = matter;
 				$scope.data.categories = categories;
 
-				if( routeParams.itemSlug ) {
-					// find item
-					for(i=0;i<matter.items.length;i++) {
-						if( matter.items[i].slug===routeParams.itemSlug ) {
-							$scope.selectItem( matter.items[i], matter.items[i].category );
-						}
-					}
-				}
+                $scope.handleUrlState();
+
 			} else {
 				// Display error
-				toaster.pop('warning', "Unable to load matter details");
+				toaster.pop('warning', 'Unable to load matter details');
 			}
 		};
 
+
+        /**
+		 * Inits the intercom interface
+         *
+		 * @name	initialiseIntercom
+		 * @param  {Object} Current user object
+		 * @private
+		 * @memberof			ChecklistCtrl
+		 * @method			initialiseIntercom
+		 */
+        $scope.initialiseIntercom = function(currUser){
+            $log.debug(currUser);
+
+            Intercom.boot({
+                user_id: currUser.username,
+                email: currUser.email,
+                type: currUser.user_class,
+                app_id: INTERCOM_APP_ID,
+                created_at: (new Date(currUser.date_joined).getTime()/1000),
+                user_hash: currUser.intercom_user_hash,
+                widget: {
+                    activator: '.intercom',
+                    use_counter: true
+                }
+            });
+
+            //Intercom.show();
+        };
+
+
+
+        $scope.editTextattribute = function(obj, context, attr) {
+            $scope.data['show_edit_'+ context + '_' + attr] = true;
+
+            if (obj['edit_'+ context + '_' + attr] && obj['edit_'+ context + '_'+ attr].length > 0){
+                //do nothing
+            } else {
+                obj['edit_'+ context + '_' + attr] = obj[attr];
+            }
+
+            $scope.focus('event_edit_'+ context + '_' + attr);
+        };
+
 		/***
-		 ___ _                     
-		|_ _| |_ ___ _ __ ___  ___ 
+		 ___ _
+		|_ _| |_ ___ _ __ ___  ___
 		 | || __/ _ \ '_ ` _ \/ __|
 		 | || ||  __/ | | | | \__ \
 		|___|\__\___|_| |_| |_|___/
@@ -151,50 +262,79 @@ angular.module('toolkit-gui')
 		 * Requests the checklist API to add a checklist item
 		 *
 		 * @name				submitNewItem
-		 * 
+		 *
 		 * @param  {Object} category	Category object contains category name (String)
 		 * @private
 		 * @method				submitNewItem
 		 * @memberof			ChecklistCtrl
 		 */
+        $scope.getItemBySlug = function (itemSlug) {
+            var matter = $scope.data.matter;
+
+            if (matter) {
+                var items = jQuery.grep( matter.items, function(item) {
+                    return item.slug === itemSlug;
+			    });
+
+                if (items.length > 0){
+                    return items[0];
+                }
+            }
+            return null;
+        };
+
 		$scope.submitNewItem = function(category) {
 		   var matterSlug = $scope.data.slug;
 
 		   if ($scope.data.newItemName) {
 			 matterItemService.create(matterSlug, $scope.data.newItemName, category.name).then(
 				 function success(item){
-					category.items.unshift(item);
+					/*category.items.unshift(item);*/
+					category.items.push(item);
 					$scope.data.newItemName = '';
+
+					// Display item that has just been added
+					$scope.selectItem( item, category );
 				 },
-				 function error(err){
-					toaster.pop('error', "Error!", "Unable to create new item");
+				 function error(/*err*/){
+					toaster.pop('error', 'Error!', 'Unable to create new item');
 				 }
 			 );
 		   }
 		};
 
+
 		/**
 		 * Sets the currently selected item to the one passed through to this method
-		 * 
+		 *
 		 * @param  {Object}	item		Category object contains category name (String)
 		 * @param {Object}	category	object representing the category of the item to select
+		 * @param {Object}	reviewSlug	slug to the
 		 * @private
 		 * @method						selectItem
 		 * @memberof					ChecklistCtrl
 		 */
 		$scope.selectItem = function(item, category) {
-			$scope.data.selectedItem = item;
+            var deferred = $q.defer();
+
+            $scope.data.selectedItem = item;
 			$scope.data.selectedCategory = category;
 
-			$scope.initializeActivityItemStream();
+			$scope.activateActivityStream('item');
+            $scope.loadItemDetails(item).then(function success(item){
+                deferred.resolve(item);
+                $log.debug(item);
+		    });
 
 			//Reset controls
             $scope.data.dueDatePickerDate = $scope.data.selectedItem.date_due;
-			$scope.data.showEditItemDescriptionForm = false;
 			$scope.data.showEditItemTitleForm = false;
 			$scope.data.showPreviousRevisions = false;
 
-			$log.debug(item);
+			$scope.data.show_edit_item_description = false;
+			$scope.data.show_edit_revision_description = false;
+
+            return deferred.promise;
 		};
 
 		/**
@@ -224,6 +364,27 @@ angular.module('toolkit-gui')
 			}
 		}
 
+        $scope.loadItemDetails = function(item){
+            var deferred = $q.defer();
+
+            //if(typeof(item.latest_revision.reviewers) === "string") {
+            if(item.latest_revision && !item.latest_revision.reviewers) {
+                baseService.loadObjectByUrl(item.latest_revision.url).then(
+                    function success(obj){
+                        item.latest_revision = obj;
+                        deferred.resolve(item);
+                    },
+                    function error(/*err*/){
+                        toaster.pop('error', 'Error!', 'Unable to load latest revision');
+                    }
+                );
+            } else {
+                deferred.resolve(item);
+            }
+
+            return deferred.promise;
+        };
+
 
 		/**
 		 * Requests the checklist API to delete the currently selected checklist item
@@ -247,11 +408,17 @@ angular.module('toolkit-gui')
 									// Remove item from in RAM array
 									$scope.data.selectedCategory.items.splice(index,1);
 								}
-								$scope.data.selectedItem = null;
-								$scope.initializeActivityMatterStream();
+
+                                index = jQuery.inArray( $scope.data.selectedItem, $scope.data.matter.items );
+                                if( index>=0 ) {
+                                    $scope.data.matter.items.splice(index,1);
+                                }
+
+                                $scope.data.selectedItem = null;
+								$scope.initializeActivityStream();
 							},
-							function error(err){
-								toaster.pop('error', "Error!", "Unable to delete item");
+							function error(/*err*/){
+								toaster.pop('error', 'Error!', 'Unable to delete item');
 							}
 						);
 					}
@@ -265,7 +432,7 @@ angular.module('toolkit-gui')
 		 * @name 				showAddItemForm
 		 *
 		 * @param  {Number} index Index (starting at 0) of the group for which to display the add form
-		 * 
+		 *
 		 * @private
 		 * @method				showAddItemForm
 		 * @memberof			ChecklistCtrl
@@ -284,7 +451,7 @@ angular.module('toolkit-gui')
 		 * Executes a save of the selected item, using the in scope variable selectedItem
 		 *
 		 * @name 				saveSelectedItem
-		 * 
+		 *
 		 * @private
 		 * @method				saveSelectedItem
 		 * @memberof			ChecklistCtrl
@@ -294,11 +461,11 @@ angular.module('toolkit-gui')
 
 			if ($scope.data.selectedItem) {
 				matterItemService.update(matterSlug, $scope.data.selectedItem).then(
-					function success(item){
+					function success(/*item*/){
 						//do nothing
 					},
-					function error(err){
-						toaster.pop('error', "Error!", "Unable to update item");
+					function error(/*err*/){
+						toaster.pop('error', 'Error!', 'Unable to update item');
 					}
 				);
 			}
@@ -333,7 +500,7 @@ angular.module('toolkit-gui')
 						 $scope.data.loadedParticipants[participanturl] = participant;
 						 return participant;
 					 },
-					 function error(err){
+					 function error( /*err*/ ){
 						 return '';
 					 }
 				 );
@@ -346,18 +513,18 @@ angular.module('toolkit-gui')
 		/*** End item handling */
 
 		/*
-		  ____ ____  _   _ ____     ____      _                              
-		 / ___|  _ \| | | |  _ \   / ___|__ _| |_ ___  __ _  ___  _ __ _   _ 
+		  ____ ____  _   _ ____     ____      _
+		 / ___|  _ \| | | |  _ \   / ___|__ _| |_ ___  __ _  ___  _ __ _   _
 		| |   | |_) | | | | | | | | |   / _` | __/ _ \/ _` |/ _ \| '__| | | |
 		| |___|  _ <| |_| | |_| | | |__| (_| | ||  __/ (_| | (_) | |  | |_| |
 		 \____|_| \_\\___/|____/   \____\__,_|\__\___|\__, |\___/|_|   \__, |
-													  |___/            |___/ 
-		 */ 
+													  |___/            |___/
+		 */
 		/**
 		 * Return item due status
 		 *
 		 * @name 				submitNewCategory
-		 * 
+		 *
 		 * @private
 		 * @method				submitNewCategory
 		 * @memberof			ChecklistCtrl
@@ -372,8 +539,8 @@ angular.module('toolkit-gui')
                         $scope.data.categories.splice(1, 0, {'name': $scope.data.newCatName, 'items': []});
 						$scope.data.newCatName = '';
 					},
-					function error(err){
-						toaster.pop('error', "Error!", "Unable to create a new category");
+					function error(/*err*/){
+						toaster.pop('error', 'Error!', 'Unable to create a new category');
 					}
 				);
 				$scope.data.showCategoryAddForm = null;
@@ -386,31 +553,36 @@ angular.module('toolkit-gui')
 		 * @name 				deleteCategory
 		 *
 		 * @param {Object} cat Catgory object
-		 * 
+		 *
 		 * @private
 		 * @method				deleteCategory
 		 * @memberof			ChecklistCtrl
 		 */
-		$scope.deleteCategory = function(cat) {
-			var matterSlug = $scope.data.slug;
+        $scope.deleteCategory = function (cat) {
+            var matterSlug = $scope.data.slug;
 
-			matterCategoryService.delete(matterSlug, cat).then(
-				function success(){
-					var index = jQuery.inArray( cat, $scope.data.categories );
-					if( index>=0 ) {
-						// Remove item from in RAM array
-						$scope.data.categories.splice(index,1);
-					}
+            ezConfirm.create('Delete Category', 'Please confirm you would like to delete this category?',
+                function yes() {
+                    // Confirmed- delete category
+                    matterCategoryService.delete(matterSlug, cat).then(
+                        function success() {
+                            var index = jQuery.inArray(cat, $scope.data.categories);
+                            if (index >= 0) {
+                                // Remove item from in RAM array
+                                $scope.data.categories.splice(index, 1);
+                            }
 
-					if (cat === $scope.data.selectedCategory){
-						$scope.data.selectedItem = null;
-					}
-				},
-				function error(err){
-					toaster.pop('error', "Error!", "Unable to delete category");
-				}
-			);
-		};
+                            if (cat === $scope.data.selectedCategory) {
+                                $scope.data.selectedItem = null;
+                            }
+                        },
+                        function error(/*err*/) {
+                            toaster.pop('error', 'Error!', 'Unable to delete category');
+                        }
+                    );
+                }
+            );
+        };
 
 		/**
 		 * Sets an index value used to display/hide edit category form
@@ -418,7 +590,7 @@ angular.module('toolkit-gui')
 		 * @name 				showEditCategoryForm
 		 *
 		 * @param {Object} cat Catgory object
-		 * 
+		 *
 		 * @private
 		 * @method				showEditCategoryForm
 		 * @memberof			ChecklistCtrl
@@ -439,7 +611,7 @@ angular.module('toolkit-gui')
 		 * @name 				editCategory
 		 *
 		 * @param {Object} cat Catgory object
-		 * 
+		 *
 		 * @private
 		 * @method				editCategory
 		 * @memberof			ChecklistCtrl
@@ -451,8 +623,8 @@ angular.module('toolkit-gui')
 				function success(){
 					cat.name = $scope.data.newCategoryName;
 				},
-				function error(err){
-					toaster.pop('error', "Error!", "Unable to edit category");
+				function error(/*err*/){
+					toaster.pop('error', 'Error!', 'Unable to edit category');
 				}
 			);
 			$scope.data.showEditCategoryForm = null;
@@ -460,12 +632,12 @@ angular.module('toolkit-gui')
 		/* End CRUD Category */
 
 		/*
-		 ____            _     _             
-		|  _ \ _____   _(_)___(_) ___  _ __  
-		| |_) / _ \ \ / / / __| |/ _ \| '_ \ 
+		 ____            _     _
+		|  _ \ _____   _(_)___(_) ___  _ __
+		| |_) / _ \ \ / / / __| |/ _ \| '_ \
 		|  _ <  __/\ V /| \__ \ | (_) | | | |
 		|_| \_\___| \_/ |_|___/_|\___/|_| |_|
-											 
+
 		 */
 
 		/**
@@ -474,7 +646,7 @@ angular.module('toolkit-gui')
 		 * @name 				processUpload
 		 *
 		 * @param {Object} cat Catgory object
-		 * 
+		 *
 		 * @private
 		 * @method				processUpload
 		 * @memberof			ChecklistCtrl
@@ -493,10 +665,13 @@ angular.module('toolkit-gui')
 					//Reset previous revisions
 					item.previousRevisions = null;
 					$scope.data.showPreviousRevisions = false;
+                    $scope.calculateReviewPercentageComplete(item);
+
+                    toaster.pop('success', 'Success!', 'Revision added successfully');
 				},
-				function error(err) {
+				function error(/*err*/) {
 					$scope.data.uploading = false;
-					toaster.pop('error', "Error!", "Unable to upload revision");
+					toaster.pop('error', 'Error!', 'Unable to upload revision');
 				}
 			);
 		};
@@ -525,9 +700,11 @@ angular.module('toolkit-gui')
 						$scope.data.showPreviousRevisions = false;
 						item.uploadingPercent = 0;
 						item.uploading = false;
+
+						toaster.pop('success', 'Success!', 'File added successfully');
 					},
-					function error(err) {
-						toaster.pop('error', "Error!", "Unable to upload revision");
+					function error(/*err*/) {
+						toaster.pop('error', 'Error!', 'Unable to upload revision');
 						item.uploading = false;
 					},
 					function progress( num ) {
@@ -545,7 +722,7 @@ angular.module('toolkit-gui')
 		 * Request API to create a new revision
 		 *
 		 * @name 				saveLatestRevision
-		 * 
+		 *
 		 * @private
 		 * @method				saveLatestRevision
 		 * @memberof			ChecklistCtrl
@@ -556,11 +733,11 @@ angular.module('toolkit-gui')
 
 			if (item && item.latest_revision) {
 				matterItemService.updateRevision(matterSlug, item.slug, $scope.data.selectedItem.latest_revision).then(
-					function success(item){
+					function success(/*item*/){
 						//do nothing
 					},
-					function error(err){
-						toaster.pop('error', "Error!", "Unable to update revision");
+					function error(/*err*/){
+						toaster.pop('error', 'Error!', 'Unable to update revision');
 					}
 				);
 			}
@@ -571,7 +748,7 @@ angular.module('toolkit-gui')
 		 * Request API to delete latest revision
 		 *
 		 * @name 				deleteLatestRevision
-		 * 
+		 *
 		 * @private
 		 * @method				deleteLatestRevision
 		 * @memberof			ChecklistCtrl
@@ -594,21 +771,23 @@ angular.module('toolkit-gui')
 									matterItemService.loadRevision(matterSlug, item.slug, revslug).then(
 										function success(revision){
 											item.latest_revision = revision;
+                                            $scope.calculateReviewPercentageComplete(item);
 										},
-										function error(err){
-											toaster.pop('error', "Error!", "Unable to set new current revision");
+										function error(/*err*/){
+											toaster.pop('error', 'Error!', 'Unable to set new current revision');
 										}
 									);
 								} else {
 									item.latest_revision = null;
+                                    $scope.calculateReviewPercentageComplete(item);
 								}
 
 								//Reset previous revisions
 								item.previousRevisions = null;
 								$scope.data.showPreviousRevisions = false;
 							},
-							function error(err){
-								toaster.pop('error', "Error!", "Unable to delete revision");
+							function error(/*err*/){
+								toaster.pop('error', 'Error!', 'Unable to delete revision');
 							}
 						);
 					}
@@ -630,8 +809,8 @@ angular.module('toolkit-gui')
 			var item = $scope.data.selectedItem;
 
 			function SortDescendingByCreationDate(a, b){
-				var aDate = moment(a.date_created, "YYYY-MM-DDTHH:mm:ss.SSSZ");
-				var bDate = moment(b.date_created, "YYYY-MM-DDTHH:mm:ss.SSSZ");
+				var aDate = moment(a.date_created, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+				var bDate = moment(b.date_created, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
 				return (aDate < bDate) ? 1 : -1;
 			}
 
@@ -653,9 +832,9 @@ angular.module('toolkit-gui')
 							//Sort array
 							item.previousRevisions.sort(SortDescendingByCreationDate);
 						},
-						function error(err){
-							if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to load previous revision") {
-								toaster.pop('error', "Error!", "Unable to load previous revision");
+						function error(/*err*/){
+							if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to load previous revision') {
+								toaster.pop('error', 'Error!', 'Unable to load previous revision');
 							}
 						}
 					);
@@ -674,7 +853,7 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
 		$scope.requestRevision = function( item ) {
-			var matterSlug = $scope.data.slug;
+			/*var matterSlug = $scope.data.slug;*/
 
 			var modalInstance = $modal.open({
 				'templateUrl': '/static/ng/partial/request-revision/request-revision.html',
@@ -721,11 +900,11 @@ angular.module('toolkit-gui')
 
 			matterItemService.remindRevisionRequest(matterSlug, item.slug).then(
 					function success(){
-						toaster.pop('success', "Success!", "The user has been successfully informed.");
+						toaster.pop('success', 'Success!', 'The user has been successfully informed.');
 					},
-					function error(err){
-						if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to remind the participant.") {
-							toaster.pop('error', "Error!", "Unable to remind the participant.");
+					function error(/*err*/){
+						if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to remind the participant.') {
+							toaster.pop('error', 'Error!', 'Unable to remind the participant.');
 						}
 					}
 			);
@@ -749,9 +928,9 @@ angular.module('toolkit-gui')
 						item.is_requested = response.is_requested;
 						item.responsible_party = response.responsible_party;
 					},
-					function error(err){
-						if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to delete the revision request.") {
-							toaster.pop('error', "Error!", "Unable to delete the revision request.");
+					function error(/*err*/){
+						if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to delete the revision request.') {
+							toaster.pop('error', 'Error!', 'Unable to delete the revision request.');
 						}
 					}
 			);
@@ -768,8 +947,8 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
 		$scope.showRevisionDocument = function( revision ) {
-			var matterSlug = $scope.data.slug;
-			var item = $scope.data.selectedItem;
+			/*var matterSlug = $scope.data.slug;*/
+			/*var item = $scope.data.selectedItem;*/
 
 			var modalInstance = $modal.open({
 				'templateUrl': '/static/ng/partial/view-document/view-document.html',
@@ -789,8 +968,8 @@ angular.module('toolkit-gui')
 			});
 
 			modalInstance.result.then(
-				function ok(result) {
-					//
+				function ok(/*result*/) {
+                    //
 				},
 				function cancel() {
 					//
@@ -808,7 +987,7 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
 		$scope.requestReview = function( revision ) {
-			var matterSlug = $scope.data.slug;
+			/*var matterSlug = $scope.data.slug;*/
 			var item = $scope.data.selectedItem;
 
 			var modalInstance = $modal.open({
@@ -835,9 +1014,14 @@ angular.module('toolkit-gui')
 
 			modalInstance.result.then(
 				function ok(review) {
+                    if (!revision.reviewers) {
+                        revision.reviewers = [];
+                    }
+
 					var results = jQuery.grep( revision.reviewers, function( rev ){ return rev.reviewer.username===review.reviewer.username; } );
 					if( results.length===0 ) {
 						revision.reviewers.push(review);
+                        $scope.calculateReviewPercentageComplete(item);
 					}
 				},
 				function cancel() {
@@ -861,11 +1045,11 @@ angular.module('toolkit-gui')
 
 			matterItemService.remindRevisionReview(matterSlug, item.slug).then(
 					function success(){
-						toaster.pop('success', "Success!", "All reviewers have been successfully informed.");
+						toaster.pop('success', 'Success!', 'All reviewers have been successfully informed.');
 					},
-					function error(err){
-						if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to remind the participant.") {
-							toaster.pop('error', "Error!", "Unable to remind the participant.");
+					function error(/*err*/){
+						if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to remind the participant.') {
+							toaster.pop('error', 'Error!', 'Unable to remind the participant.');
 						}
 					}
 			);
@@ -891,11 +1075,12 @@ angular.module('toolkit-gui')
 					if( index>=0 ) {
 						// Remove reviewer from list in RAM array
 						item.latest_revision.reviewers.splice(index,1);
+                        $scope.calculateReviewPercentageComplete(item);
 					}
 				},
-				function error(err){
-					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to delete the revision review request.") {
-						toaster.pop('error', "Error!", "Unable to delete the revision review request.");
+				function error(/*err*/){
+					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to delete the revision review request.') {
+						toaster.pop('error', 'Error!', 'Unable to delete the revision review request.');
 					}
 				}
 			);
@@ -912,7 +1097,7 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
 		$scope.showReview = function( revision, review ) {
-			var matterSlug = $scope.data.slug;
+			/*var matterSlug = $scope.data.slug;*/
 			var item = $scope.data.selectedItem;
 
 			var modalInstance = $modal.open({
@@ -936,17 +1121,69 @@ angular.module('toolkit-gui')
 			});
 
 			modalInstance.result.then(
-				function ok(result) {
-					//
+				function ok(/*result*/) {
+				    $scope.calculateReviewPercentageComplete(item);
+				    // revert back to previous URL
+				    $location.path('/checklist/' + $state.params.itemSlug );
 				},
 				function cancel() {
-					//
+					// revert back to previous URL
+					$location.path('/checklist/' + $state.params.itemSlug );
 				}
 			);
 		};
 
-        $scope.getReviewPercentageComplete = function( item) {
-            if(item && item.latest_revision && item.latest_revision.reviewers.length>0) {
+        $scope.showReviewBySlug = function (revisionSlug, reviewSlug) {
+            var matterSlug = $scope.data.slug;
+            var item = $scope.data.selectedItem;
+
+            if (item) {
+                matterItemService.loadRevision(matterSlug, item.slug, revisionSlug).then(
+                    function success(revision) {
+                    	/*var reviewUrl;*/
+                        var reviews = jQuery.grep(revision.reviewers, function (r) {
+                            return r.slug === reviewSlug;
+                        });
+
+                        if (reviews.length > 0) {
+                            $scope.showReview(revision, reviews[0]);
+                        } else if (revision.user_review && revision.user_review.url) {
+                        	// Generate review object
+                        	var review = generateReviewObject( $scope.data.usdata.current, revision.item, revision.user_review);
+                        	// Show review
+                        	$scope.showReview(revision, review);
+                        } else {
+                            toaster.pop('warning', 'Review does not exist anymore.');
+                        }
+                    },
+                    function error(/*err*/) {
+                        toaster.pop('warning', 'Warning!', 'Revision does not exist anymore');
+                    }
+                );
+            }
+        };
+
+        /**
+         * Generate a user review object
+         * @param  {Object} user       Object representing the user
+         * @param  {String} itemId     Checklist item slug
+         * @param  {Object} userReview REview object containing slug and url
+         * @return {Object}            Review object
+         */
+        function generateReviewObject( user, itemId, userReview ) {
+        	// generate custom review object
+        	var review = {
+        		'reviewer': angular.copy(user),
+        		'item': itemId
+        	};
+
+        	review.reviewer.user_review = userReview;
+
+        	return review;
+        }
+
+        $scope.calculateReviewPercentageComplete = function( item) {
+            if(item && item.latest_revision && item.latest_revision.reviewers && item.latest_revision.reviewers.length>0) {
                 var reviews = item.latest_revision.reviewers;
                 var completed = 0;
 
@@ -955,11 +1192,42 @@ angular.module('toolkit-gui')
                         completed += 1;
                     }
 				});
-                return parseInt(completed / reviews.length * 100);
+                item.review_percentage_complete = parseInt(completed / reviews.length * 100);
+                $log.debug(item.review_percentage_complete);
 
             } else {
-                return 0;
+                item.review_percentage_complete = null;
             }
+        };
+
+         $scope.editRevisionStatusTitles = function() {
+            var matter = $scope.data.matter;
+
+            var modalInstance = $modal.open({
+                'templateUrl': '/static/ng/partial/edit-revision-status/edit-revision-status.html',
+                'controller': 'EditRevisionStatusCtrl',
+                'backdrop': 'static',
+                'resolve': {
+                    'currentUser': function () {
+                        return matter.current_user;
+                    },
+                    'matter': function () {
+                        return matter;
+                    },
+                    'customstatusdict': function () {
+                        return $scope.data.matter._meta.item.custom_status;
+                    },
+                    'defaultstatusdict': function () {
+                        return $scope.data.matter._meta.item.default_status;
+                    }
+                }
+            });
+
+            modalInstance.result.then(
+                function ok(result) {
+                    $scope.data.matter._meta.item.custom_status = result;
+                }
+            );
         };
 		/* End revision handling */
 
@@ -973,15 +1241,15 @@ angular.module('toolkit-gui')
 		 *
 		 * @param {Event} evt Event as passed through from jQuery-ui drag and drop
 		 * @param {DOM} ui DOM element
-		 * 
+		 *
 		 * @private
 		 * @method				recalculateCategories
 		 * @memberof			ChecklistCtrl
 		 */
-		function recalculateCategories( evt, ui ) {
+		function recalculateCategories( /*evt, ui*/ ) {
 			var matterSlug = $scope.data.slug;
 			var cats = $scope.data.categories;
-			var categoryName, items = [], item, i;
+			var categoryName, items = [], /*item,*/ i;
 			var APIUpdate = {
 				'categories': [],
 				'items': []
@@ -1024,17 +1292,17 @@ angular.module('toolkit-gui')
 							function success(){
 								// do nothing
 							},
-							function error(err){
-								if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to update the order of items, please reload the page.") {
-									toaster.pop('error', "Error!", "Unable to update the order of items, please reload the page.");
+							function error(/*err*/){
+								if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to update the order of items, please reload the page.') {
+									toaster.pop('error', 'Error!', 'Unable to update the order of items, please reload the page.');
 								}
 							}
 					);
 					}
 				 },
-				 function error(err){
-					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to update the order of items, please reload the page.") {
-						toaster.pop('error', "Error!", "Unable to update the order of items, please reload the page.");
+				 function error(/*err*/){
+					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to update the order of items, please reload the page.') {
+						toaster.pop('error', 'Error!', 'Unable to update the order of items, please reload the page.');
 					}
 				 }
 			);
@@ -1047,7 +1315,7 @@ angular.module('toolkit-gui')
 		 * takes a few milliseconds.
 		 *
 		 * @name 				focus
-		 * 
+		 *
 		 * @private
 		 * @method				focus
 		 * @memberof			ChecklistCtrl
@@ -1067,7 +1335,7 @@ angular.module('toolkit-gui')
 		 */
         $rootScope.$on('authenticationRequired', function(e, isRequired) {
             if(isRequired===true && $scope.data.authenticationModalOpened!==true) {
-                $log.debug("opening authentication modal");
+                $log.debug('opening authentication modal');
                 $scope.data.authenticationModalOpened = true;
                 var matter = $scope.data.matter;
 
@@ -1086,7 +1354,7 @@ angular.module('toolkit-gui')
                 });
 
                 modalInstance.result.then(
-                    function ok(result) {
+                    function ok(/*result*/) {
                         $scope.data.authenticationModalOpened = false;
                     }
 			    );
@@ -1102,7 +1370,7 @@ angular.module('toolkit-gui')
 		 *
 		 * @param  newValue,oldValue of the datepicker
 		 */
-		$scope.$watch('data.dueDatePickerDate', function(newValue, oldValue) {
+		$scope.$watch('data.dueDatePickerDate', function(newValue/*, oldValue*/) {
             if (newValue instanceof Date) {
                 newValue = jQuery.datepicker.formatDate('yy-mm-ddT00:00:00', newValue);
             }
@@ -1123,7 +1391,7 @@ angular.module('toolkit-gui')
 		 * @type {Object}
 		 */
 		$scope.dateOptions = {
-			'year-format': "'yy'",
+			'year-format': '\'yy\'',
 			'starting-day': 1
 		};
 
@@ -1153,10 +1421,9 @@ angular.module('toolkit-gui')
 		$scope.checklistItemSortableOptions = {
 			'stop':  recalculateCategories, /* Fires once the drag and drop event has finished */
 			'start': function() { $scope.data.dragging=true; $scope.$apply();},
-			'connectWith': ".group",
-			'axis': 'y',
-			'distance': 15,
-			'delay': 10
+			'connectWith': '.group',
+			'dropOnEmpty': true,
+			'axis': 'y'
 		};
 
 		/**
@@ -1173,8 +1440,7 @@ angular.module('toolkit-gui')
 			},
 			'stop':  recalculateCategories, /* Fires once the drag and drop event has finished */
 			'axis': 'y',
-			'distance': 15,
-			'delay': 10
+			'distance': 15
 		};
 
 
@@ -1190,55 +1456,65 @@ angular.module('toolkit-gui')
 		 */
 
 
+         /**
+		 * Activates the activity stream for the given type
+         *
+		 * @memberof			ChecklistCtrl
+		 * @private
+		 * @type {Object}
+		 */
+        $scope.activateActivityStream = function(streamtype){
+            if(streamtype === 'item' && $scope.data.selectedItem!==null) {
+                $scope.data.streamType = 'item';
+            } else {
+                $scope.data.streamType = 'matter';
+            }
+
+            $scope.initializeActivityStream();
+        };
+
 		 /**
 		 * Reads the matter activity stream from API.
 		 * @memberof			ChecklistCtrl
 		 * @private
 		 * @type {Object}
 		 */
-		$scope.initializeActivityMatterStream = function() {
+		$scope.initializeActivityStream = function() {
 			var matterSlug = $scope.data.slug;
 
-			activityService.matterstream(matterSlug).then(
-				 function success(result){
-					$scope.data.activitystream = result;
-				 },
-				 function error(err){
-					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to read activity matter stream.") {
-						toaster.pop('error', "Error!", "Unable to read activity matter stream.");
-					}
-				 }
-			);
+            if ($scope.data.streamType==='matter' || $scope.data.selectedItem===null){
+                activityService.matterstream(matterSlug).then(
+                     function success(result){
+                        $scope.data.activitystream = result;
+                     },
+                     function error(/*err*/){
+                        if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to read activity matter stream.') {
+                            toaster.pop('error', 'Error!', 'Unable to read activity matter stream.');
+                        }
+                     }
+                );
+            } else {
+                var itemSlug = $scope.data.selectedItem.slug;
+
+                activityService.itemstream(matterSlug, itemSlug).then(
+                     function success(result){
+                        if($scope.data.selectedItem!==null) {
+                            $scope.data.activitystream = result;
+                        }
+                     },
+                     function error(/*err*/){
+                        if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to read activity item stream.') {
+                            toaster.pop('error', 'Error!', 'Unable to read activity item stream.');
+                        }
+                     }
+                );
+            }
 
 			/*
 			//reload activity stream every 60seconds
 			$timeout(function (){
 				$scope.initializeActivityStream();
 			}, 1000 * 60);*/
-		};
-
-
-		/**
-		 * Reads the item activity stream from API.
-		 * @memberof			ChecklistCtrl
-		 * @private
-		 * @type {Object}
-		 */
-		$scope.initializeActivityItemStream = function() {
-			$scope.data.activitystream = [];
-			var matterSlug = $scope.data.slug;
-			var itemSlug = $scope.data.selectedItem.slug;
-
-			activityService.itemstream(matterSlug, itemSlug).then(
-				 function success(result){
-					$scope.data.activitystream = result;
-				 },
-				 function error(err){
-					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to read activity item stream.") {
-						toaster.pop('error', "Error!", "Unable to read activity item stream.");
-					}
-				 }
-			);
 		};
 
 
@@ -1260,16 +1536,16 @@ angular.module('toolkit-gui')
 		 */
         $scope.submitComment = function() {
 			var matterSlug = $scope.data.slug;
-			var itemSlug = $scope.data.selectedItem.slug;
+			var item = $scope.data.selectedItem;
 
-			commentService.create(matterSlug, itemSlug, $scope.data.newcomment).then(
+			commentService.create(matterSlug, item.slug, item.newcomment).then(
 				 function success(){
-                    $scope.data.newcomment="";
-					$scope.initializeActivityItemStream();
+                    item.newcomment='';
+					$scope.activateActivityStream('item');
 				 },
-				 function error(err){
-					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to create item comment.") {
-						toaster.pop('error', "Error!", "Unable to create item comment.");
+				 function error(/*err*/){
+					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to create item comment.') {
+						toaster.pop('error', 'Error!', 'Unable to create item comment.');
 					}
 				 }
 			);
@@ -1288,11 +1564,11 @@ angular.module('toolkit-gui')
 
 			commentService.delete(matterSlug, itemSlug, comment).then(
 				 function success(){
-					$scope.initializeActivityItemStream();
+					$scope.activateActivityStream('item');
 				 },
-				 function error(err){
-					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to delete item comment.") {
-						toaster.pop('error', "Error!", "Unable to delete item comment.");
+				 function error(/*err*/){
+					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to delete item comment.') {
+						toaster.pop('error', 'Error!', 'Unable to delete item comment.');
 					}
 				 }
 			);

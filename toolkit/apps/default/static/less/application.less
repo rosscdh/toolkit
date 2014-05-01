@@ -287,7 +287,7 @@ body.gui {
 
   }
 
- 
+
   .tab-content {
     border: none;
     border-radius: 0px;
@@ -480,7 +480,14 @@ body.gui {
     padding: 20px;
 
     .avatar {
-      margin-top: 8px;
+      margin-top: 5px;
+    }
+    a {
+      color:#666;
+      border-bottom:1px dotted darken(@gray, 5%);
+    }
+    a.btn {
+      border-bottom:none;
     }
 
     .notification-btn {
@@ -490,8 +497,19 @@ body.gui {
     }
 
     p {
-      color: @gray;
+      color: #888;
       margin-bottom: 0;
+    }
+    .lead {
+      font-weight: bold;
+      font-size:17px;
+    }
+    p.quote {
+      font-size:14px;
+      line-height: 19px!important;
+      border-left:2px solid lighten(@gray, 25%);
+      padding-left:10px;
+      margin:5px;
     }
   }
 }
@@ -566,6 +584,7 @@ body.gui {
   padding-right: 30px;
 }
 
+
 // Parsley.js
 // -------------------------
 
@@ -588,6 +607,42 @@ body.gui {
     }
   }
 }
+
+
+// Plans
+// -------------------------
+
+.plan {
+  background: white;
+  border: 2px solid mix(@inverse, @brand-primary, 90%);
+  border-radius: @border-radius-large;
+  padding: 14px;
+  position: relative;
+  text-align: center;
+
+  .plan-image {
+    height: 100px;
+    margin: 31px 0 27px;
+    vertical-align: bottom;
+
+    &.big-illustration {
+      height: 111px;
+      margin-top: 20px;
+      width: 112px;
+    }
+  }
+  .plan-title {
+    margin: 0;
+  }
+  .plan-price {
+    color: @brand-success;
+  }
+  p {
+    font-size: 15px;
+    margin-bottom: 33px;
+  }
+}
+
 
 // Public
 // -------------------------
@@ -1101,10 +1156,9 @@ body.entry-pages {
     border-right:0px;
     border-left:0px;
     border-bottom:0px;
-    border-left:0px!important;        
+    border-left:0px!important;
   }
   input:-webkit-autofill {
       -webkit-box-shadow: 0 0 0px 1000px white inset;
   }
 }
-

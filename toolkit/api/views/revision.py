@@ -11,12 +11,18 @@ from rest_framework.response import Response
 
 from toolkit.core.attachment.models import Revision
 
+from toolkit.tasks import run_task
+from toolkit.apps.review.tasks import crocodoc_upload_task
+
 from .mixins import (MatterItemsQuerySetMixin,)
 
 from ..serializers import RevisionSerializer
 from ..serializers import ItemSerializer
 from ..serializers import UserSerializer
-from toolkit.core.item.models import Item
+
+
+import logging
+logger = logging.getLogger('django.request')
 
 
 class RevisionEndpoint(viewsets.ModelViewSet):
@@ -100,6 +106,7 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
                                                                    many=many,
                                                                    partial=partial)
 
+
     def create(self, request, *args, **kwargs):
         """
         Have had to copy directly the method from the base class
@@ -113,19 +120,38 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
         #
         self.revision.pk = None  # ensure that we are CREATING a new one based on the existing one
         self.revision.is_current = True
-        serializer = self.get_serializer(self.revision, data=request.DATA, files=request.FILES)
+
+        request_data = request.DATA.copy()
+
+        request_data.update({
+            # get default if none present
+            'status': request_data.get('status', self.matter.default_status_index),  # get the default status if its not presetn
+        })
+
+        serializer = self.get_serializer(self.revision, data=request_data, files=request.FILES)
 
         if serializer.is_valid():
             self.pre_save(serializer.object)
             self.object = serializer.save(force_insert=True)
             self.post_save(self.object, created=True)
+
             headers = self.get_success_headers(serializer.data)
+
+            #
+            # Asynchronous celery task to upload the file
+            #
+            # @TODO add this back when the bug with viewing a matter signal is fixed
+            # run_task(crocodoc_upload_task, fallback_enabled=False,
+            #          user=self.request.user, revision=self.object)
+
             #
             # Custom signal event
             #
             self.matter.actions.created_revision(user=self.request.user,
                                                  item=self.item,
                                                  revision=self.revision)
+
+
 
             # see if there is a previous request for this revision
             # TODO: check if this works! absolutely not sure!

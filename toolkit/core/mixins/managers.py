@@ -15,5 +15,5 @@ class IsDeletedManager(models.Manager):
     def all_with_deleted(self):
         return QuerySet(self.model, using=self._db)
 
-    def deleted(self):
-        return super(IsDeletedManager, self).get_query_set().filter(is_deleted=True)
+    def deleted(self, **kwargs):
+        return super(IsDeletedManager, self).get_query_set().filter(is_deleted=True).filter(**kwargs)

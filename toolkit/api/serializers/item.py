@@ -2,23 +2,30 @@
 """
 Items are either todo items or document items
 """
+from django.core.urlresolvers import reverse
+
 from rest_framework import serializers
 
 from toolkit.core.item.models import Item
 
-from .revision import RevisionSerializer
+from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
+
+from .revision import SimpleRevisionSerializer
 from .user import LiteUserSerializer, SimpleUserWithReviewUrlSerializer
 
 
 class ItemSerializer(serializers.HyperlinkedModelSerializer):
     description = serializers.CharField(source='description', required=False)
 
+    regular_url = serializers.Field(source='get_regular_url')
+
     status = serializers.ChoiceField(required=False, choices=Item.ITEM_STATUS.get_choices())
+
+    review_percentage_complete = serializers.Field(source='review_percentage_complete')
 
     responsible_party = LiteUserSerializer(required=False)
 
-    # must be read_only=True
-    latest_revision = RevisionSerializer(source='latest_revision', read_only=True)
+    latest_revision = SimpleRevisionSerializer(read_only=True)
 
     matter = serializers.HyperlinkedRelatedField(many=False, required=True, view_name='workspace-detail', lookup_field='slug')
 
@@ -30,8 +37,11 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Item
         lookup_field = 'slug'
-        fields = ('slug', 'url',
-                  'status', 'responsible_party',
+        fields = ('slug',
+                  'url', 'regular_url',
+                  'status',
+                  'responsible_party',
+                  'review_percentage_complete',
                   'name', 'description', 'matter',
                   'parent', 'children', 'closing_group', 'category',
                   'latest_revision',
@@ -49,19 +59,25 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
         """
         return []
 
+    def get_latest_revision(self, obj):
+        if obj.latest_revision is not None:
+            return ABSOLUTE_BASE_URL(reverse('matter_item_revision', kwargs={'matter_slug': obj.matter.slug, 'item_slug': obj.slug}))
+        return None
+
     def get_reviewers(self, obj):
         """
         placeholder
         """
-        if obj.latest_revision is not None:
+        if getattr(obj.latest_revision, 'pk', None) is not None:
             return [SimpleUserWithReviewUrlSerializer(u, context=self.context).data for u in obj.latest_revision.reviewers.all()]
+
         return []
 
     def get_signers(self, obj):
         """
         placeholder
         """
-        if obj.latest_revision is not None:
+        if getattr(obj.latest_revision, 'pk', None) is not None:
             return [SimpleUserWithReviewUrlSerializer(u, context=self.context).data for u in obj.latest_revision.signers.all()]
         return []
 
@@ -71,13 +87,24 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
     def get_request_document_meta(self, obj):
         """
         Return the requested by info if present otherwise null
-        see item_request.py
+        see revision_request.py
         """
         return obj.data.get('request_document', {
                 'message': None,
                 'requested_by': None,
                 'date_requested': None
             })
+
+
+class SimpleItemSerializer(ItemSerializer):
+    class Meta(ItemSerializer.Meta):
+        fields = ('url', 'slug', 'name', 
+                  'status',
+                  'review_percentage_complete',
+                  'category',
+                  'latest_revision',
+                  'is_final', 'is_complete', 'is_requested',
+                  'date_due',)
 
 
 class LiteItemSerializer(ItemSerializer):
