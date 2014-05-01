@@ -1623,7 +1623,7 @@ angular.module('toolkit-gui')
 			}
 
 			return template;
-		};
+		}
 
         /**
 		 * Deletes the given activity stream item
