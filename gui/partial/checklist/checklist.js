@@ -1544,7 +1544,8 @@ angular.module('toolkit-gui')
 			// Post activity
 			commentService.create(matterSlug, item.slug, item.newcomment).then(
 				 function success( activityItem ){
-					$scope.activateActivityStream('item');
+				 	// please note: do not refresh activity stream as the new item may not exist yet
+				 	// clear form
 					item.newcomment='';
 				 },
 				 function error(/*err*/){
@@ -1585,7 +1586,7 @@ angular.module('toolkit-gui')
 						.replace('class="comment"', 'class="comment comment-faded"');
 
 			// Insert into conversation
-			$scope.data.activitystream.unshift( { 'event': content, 'id': null, 'timestamp': 'just now' });
+			$scope.data.activitystream.unshift( { 'event': content, 'id': null, 'timestamp': 'just now', 'status': 'awaiting' });
 		}
 
 		/**
