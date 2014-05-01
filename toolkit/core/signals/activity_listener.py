@@ -70,7 +70,7 @@ def on_activity_received(sender, **kwargs):
         # note the kwarg.pop so that they dont get sent in as kwargs
         # skip_async = True means the activity will be added synchronously
         run_task(_activity_send, actor=actor, target=kwargs.pop('target', None),
-                 action_object=kwargs.pop('action_object', None), message=kwargs.pop('message', None)
+                 action_object=kwargs.pop('action_object', None), message=kwargs.pop('message', None),
                  skip_async=True, **kwargs)
 
         # send the notifications to the participants
