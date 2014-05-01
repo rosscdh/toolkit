@@ -45,16 +45,16 @@
 				<span class="fui-triangle-down"></span>
 			</button>
 			<ul class="dropdown-menu dropdown-inverse dropdown-small">
-				<li>
+				<li ng-show="data.usdata.current.permissions.matterItem.post">
 					<a href="javascript:;" ng-click="showAddItemForm($index);">New Item</a>
 				</li>
-				<li>
+				<li ng-show="data.usdata.current.permissions.category.put">
 					<a href="javascript:;" ng-click="data.newCategoryName=cat.name;showEditCategoryForm($index);" ng-hide="!cat.name">Edit Category</a>
 				</li>
-				<li>
+				<li ng-show="data.usdata.current.usdata.permissions.category.delete">
 					<a href="javascript:;" ng-click="deleteCategory(cat);" ng-hide="!cat.name">Delete Category</a>
 				</li>
-				<li>
+				<li ng-show="data.usdata.current.permissions.category.post">
 					<a href="javascript:;" ng-click="showAddCategoryForm($index);">Add Category</a>
 				</li>
 			</ul>

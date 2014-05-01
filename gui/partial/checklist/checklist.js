@@ -108,7 +108,7 @@ angular.module('toolkit-gui')
 					$scope.initialiseMatter( singleMatter );
 					$scope.initializeActivityStream( singleMatter );
 
-					userService.setCurrent( singleMatter.current_user );
+					userService.setCurrent( singleMatter.current_user, singleMatter.lawyer );
 
                     $scope.initialiseIntercom(singleMatter.current_user);
 				},
