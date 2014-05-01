@@ -76,8 +76,9 @@ angular.module('toolkit-gui')
 		 */
 		$scope.data = {
 			'selectedUsers': {},
+			'invitee': {},
 			'request': {
-				'signer': [],
+				'signers': [],
 				'message': null
 			}
 		};
@@ -121,17 +122,17 @@ angular.module('toolkit-gui')
 		 * @memberof			RequestreviewCtrl
 		 */
         $scope.checkIfUserExists = function () {
-            if ($scope.data.invitee.email != null && $scope.data.invitee.email.length>0) {
+            if ($scope.data.request.email != null && $scope.data.request.email.length>0) {
                 $scope.data.validationError = false;
 
                 participantService.getByEmail( $scope.data.request.email ).then(
                     function success(response) {
                         if (response.count===1){
                             $scope.data.isNew = false;
-                            $scope.data.invitee = response.results[0];
+                            $scope.data.participant = response.results[0];
                         } else {
                             $scope.data.isNew = true;
-                            $scope.data.external = null;
+                            $scope.data.participant = null;
                         }
                     },
                     function error() {
@@ -141,44 +142,7 @@ angular.module('toolkit-gui')
             } else {
                 $scope.data.validationError = true;
                 $scope.data.isNew = false;
-                $scope.data.invitee = null;
-            }
-        };
-
-
-        /**
-		 * Initiates request to API to invite a person or an already registered user
-		 *
-		 * @name				invite
-		 *
-		 * @private
-		 * @method				invite
-		 * @memberof			RequestreviewCtrl
-		 */
-		$scope.createUser = function () {
-			participantService.createUser( $scope.data.invitee ).then(
-				function success(response) {
-                    participantService.getByURL(response.url).then(
-                        function success(user){
-                            $scope.participants.push(user);
-                        },
-                        function error(err){
-                            toaster.pop('error', "Error!", "Unable to load participant");
-                        }
-                    );
-				},
-				function error() {
-					toaster.pop('error', "Error!", "Unable to create this person, please try again in a few moments");
-				}
-			);
-		};
-
-
-        $scope.toggleUser = function (user) {
-            if (!(user.username in $scope.data.selectedUsers)) {
-                $scope.data.selectedUsers[user.username] = user;
-            } else {
-                delete $scope.data.selectedUsers[user.username];
+                $scope.data.participant = null;
             }
         };
 
@@ -193,9 +157,14 @@ angular.module('toolkit-gui')
 		 * @memberof			RequestreviewCtrl
 		 */
 		$scope.request = function() {
-            for (var key in $scope.data.selectedUsers) {
-                $scope.data.request.signer.push($scope.data.selectedUsers[key]);
+           var selectedPerson = $scope.data.selectedIndex!==-1?$scope.participants[$scope.data.selectedIndex]:null;
+
+            if (selectedPerson!=null){
+                $scope.data.request.email = selectedPerson.email;
+                $scope.data.request.first_name = selectedPerson.first_name;
+                $scope.data.request.last_name = selectedPerson.last_name;
             }
+
             $log.debug($scope.data.request);
             matterItemService.requestSigner($scope.matter.slug, $scope.checklistItem.slug, $scope.data.request).then(
                     function success(response){
@@ -221,7 +190,7 @@ angular.module('toolkit-gui')
 		 * @memberof			RequestreviewCtrl
 		 */
 		$scope.invalid = function() {
-            return Object.keys($scope.data.selectedUsers).length===0;
+            return $scope.data.selectedIndex==null || $scope.data.selectedIndex===-1&&!$scope.data.request.email;
 		};
 	}
 ]);
