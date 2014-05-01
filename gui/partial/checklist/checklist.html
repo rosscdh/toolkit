@@ -19,8 +19,17 @@
 				<!-- end: null category //-->
 
 				<span ng-if="data.usdata.current.user_class=='lawyer'">
+					<div>
+						<div ng-repeat="cat in data.categories | filter: {name:'!'}">
+							<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-header.html'"></span>
+							<!-- Checklist //-->
+							<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-lawyer.html'"></span>
+							<!-- checklist footer //-->
+							<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-footer.html'"></span>
+						</div>
+					</div>
 					<div ui-sortable="checklistCategorySortableOptions" ng-model="data.categories">
-						<div ng-repeat="cat in data.categories">
+						<div ng-repeat="cat in data.categories" ng-show="cat.name!==null">
 							<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-header.html'"></span>
 							<!-- Checklist //-->
 							<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-lawyer.html'"></span>
