@@ -43,6 +43,8 @@ urlpatterns = patterns('',
     url(r'^hellosign/', include('hello_sign.urls', namespace='hellosign')),
     # DocuSign - Coming Soon
 
+    url(r'^sss/', include('snowshoestamp.urls', namespace='snowshoestamp')),
+
     url(r'^favicon\.ico$', RedirectView.as_view(url='%simages/favicon.ico' % settings.STATIC_URL)),
     # home default terminator
     url(r'^', include('toolkit.apps.default.urls', namespace='public')),
