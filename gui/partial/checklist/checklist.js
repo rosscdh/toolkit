@@ -108,7 +108,7 @@ angular.module('toolkit-gui')
 					$scope.initialiseMatter( singleMatter );
 					$scope.initializeActivityStream( singleMatter );
 
-					userService.setCurrent( singleMatter.current_user );
+					userService.setCurrent( singleMatter.current_user, singleMatter.lawyer );
 
                     $scope.initialiseIntercom(singleMatter.current_user);
 				},
@@ -602,6 +602,27 @@ angular.module('toolkit-gui')
 			}
 			else {
 				$scope.data.showEditCategoryForm = null;
+			}
+		};
+
+		/**
+		 * Sets an index value used to display/hide add category form
+		 *
+		 * @name 				showAddCategoryForm
+		 *
+		 * @param {Object} cat Catgory object
+		 *
+		 * @private
+		 * @method				showEditCategoryForm
+		 * @memberof			ChecklistCtrl
+		 */
+		$scope.showAddCategoryForm = function(index) {
+			if ($scope.data.showAddCategoryForm !== index) {
+				$scope.data.showAddCategoryForm = index;
+				$scope.focus('eventAddCategory-'+index);
+			}
+			else {
+				$scope.data.showAddCategoryForm = null;
 			}
 		};
 
