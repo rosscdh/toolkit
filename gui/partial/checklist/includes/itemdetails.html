@@ -218,6 +218,29 @@
                     </ul>
                 </div>
             </div>
+
+            <div class="signing in-progress" ng-show="data.selectedItem.latest_revision.signers.length>0">
+                <span>Signing in progress</span>
+                <a class="btn btn-link btn-xs pull-right" href="javascript:;">
+                    Remind
+                </a>
+                <div class="signing-members">
+                    <ul class="list-unstyled">
+                        <li ng-repeat="sig in data.selectedItem.latest_revision.signers" ng-class="{'complete': sig.is_complete==true }">
+                            <a class="close" href="javascript:;" ng-click="deleteSignatoryRequest(data.selectedItem, sig)"
+                               ng-hide="sig.is_complete">x</a>
+                            <a href="javascript:;" ng-click="showSignatory(data.selectedItem.latest_revision, sig)" class="pull-right">
+                                <button class="btn btn-warning btn-xs" ng-hide="sig.is_complete"><span class="fui-time"></span> In progress</button>
+                                <button class="btn btn-success btn-xs" ng-show="sig.is_complete">
+                                    <span class="fui-check"></span> Complete
+                                </button>
+                            </a>
+                           <a href="javascript:;" ng-click="showSignatory(data.selectedItem.latest_revision, sig)">{{ sig }}</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
             <div class="sub">{{ data.selectedItem.latest_revision.slug }} &middot; {{ data.selectedItem.latest_revision.uploaded_by.name }}, {{ data.selectedItem.latest_revision.date_created | timeago }}</div>
         </li>
         <!-- End current revision -->

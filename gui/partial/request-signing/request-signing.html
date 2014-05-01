@@ -5,77 +5,39 @@
         <div class="modal-body">
             <p>Here the description.</p>
 
-            <div ng-hide="data.showAddExternal">
-                <strong ng-show="participants.length>0">Existing members</strong>
-                <ul class="list-unstyled">
-                    <li ng-repeat="person in participants" ng-hide="person.username==currentUser.username">
-                        <label class="checkbox" ng-class="{'checked':data.selectedUsers[person.username]!=null}"
-                               ng-click="toggleUser(person)">
-						<span class="icons">
-							<span class="first-icon fui-checkbox-unchecked"></span>
-							<span class="second-icon fui-checkbox-checked"></span>
-						</span>
-                            <label ng-bind="person | fullname"></label>
-                        </label>
-                    </li>
-                </ul>
-                <br/>
-                <h5>Add New Signer</h5>
-
-                <div class="row">
-                    <div class="col-sm-6">
-                        <a href="javascript:;" class="btn btn-info" ng-click="data.showAddExternal=true">Add an external signer</a>
-                        <br/>
-
-                        <p class="note">
-                            Asking an external party to sign a document will invite them to LawPal and will ask them to
-                            sign on just this specific file.
-                            They will not have access to the checklist, other revisions or other aspects of this matter.
-                        </p>
-                    </div>
-                </div>
+            <strong ng-show="participants.length>0">Existing members</strong>
+            <ul class="list-unstyled">
+                <li ng-repeat="person in participants" ng-hide="person.username==currentUser.username" ng-click="data.selectedIndex=$index">
+                    <label class="radio" ng-class="{'checked':$index==data.selectedIndex}">
+                        <span class="icons">
+                            <span class="first-icon fui-radio-unchecked"></span>
+                            <span class="second-icon fui-radio-checked"></span>
+                        </span>
+                        <label ng-bind="person | fullname"></label>
+                    </label>
+                </li>
+                <li ng-click="data.selectedIndex=-1">
+                <label class="radio" ng-class="{'checked':data.selectedIndex==-1}">
+                    <span class="icons"><span class="first-icon fui-radio-unchecked"></span><span class="second-icon fui-radio-checked"></span></span>
+                    External party <span class="fui-lock" data-toggle="tooltip" title="" data-original-title="Requesting a file from a third party does not give them access to this matter."></span>
+                </label>
+            </li>
+            </ul>
+            <div class="form-group" ng-show="data.selectedIndex==-1"
+                 ng-class="{'has-success': data.participant, 'has-warning': data.isNew, 'has-error': data.validationError }">
+                <input type="email" id="requestEmail" class="form-control form-control-full-width input-sm" ng-model="data.request.email"
+                       placeholder="your_email@gmail.com" ng-blur="checkIfUserExists()"/>
+                 <label class="control-label" for="requestEmail" ng-show="data.participant">User {{ data.participant | fullname }} found</label>
+                 <label class="control-label" for="requestEmail" ng-show="data.isNew">User does not exist yet</label>
+            </div>
+            <div class="form-group form-inline">
+                <input type="text" class="form-control input-sm" ng-model="data.request.first_name" placeholder="First name" ng-show="data.isNew" />
+                <input type="text" class="form-control input-sm" ng-model="data.request.last_name" placeholder="Last name" ng-show="data.isNew" />
             </div>
 
-            <div ng-show="data.showAddExternal">
-                <form class="form" ng-submit="createUser()">
-                    <h5>Add a Client <a href="javascript:;" class="close" ng-click="data.showAddExternal=false;">x</a>
-                    </h5>
-
-                    <p>Asking an external party to sign a document will invite them to LawPal and will ask them to sign on
-                        just this specific file.
-                        They will not have access to the checklist, other revisions or other aspects of this matter.</p>
-
-                    <div ng-class="{'has-success': data.participant, 'has-warning': data.isNew, 'has-error': data.validationError }">
-                        <p class="bg-info" for="inviteeEmail" ng-show="data.participant">{{ data.participant | fullname }}
-                            found.</p>
-
-                        <p class="bg-info" for="inviteeEmail" ng-show="data.isNew">User does not exist yet. They will be
-                            invited to LawPal.</p>
-
-                        <p class="bg-danger" for="inviteeEmail" ng-show="data.isLawyer">The entered mail address belongs to
-                            a lawyer. Lawyers can not currently be added to matters as clients.</p>
-
-                        <input type="email" id="inviteeEmail" class="form-control form-control-full-width"
-                               ng-model="data.invitee.email"
-                               placeholder="your_email@gmail.com" required ng-blur="checkIfUserExists()"
-                               autocomplete="off"/>
-                    </div>
-                    <div class="">
-                        <input type="text" class="form-control input-sm" ng-model="data.invitee.first_name"
-                               placeholder="First name" ng-show="data.isNew"/>
-                        <input type="text" class="form-control input-sm" ng-model="data.invitee.last_name"
-                               placeholder="Last name" ng-show="data.isNew"/>
-                    </div>
-                    <div class="">
-                        <textarea class="form-control form-control-full-width" ng-model="data.invitee.message"
-                                  placeholder="Add an optional message"></textarea>
-                    </div>
-                    <div>
-                        <button class="btn btn-info btn-wide btn-sm" ng-disabled="data.validationError">Add an external signer</button>
-                    </div>
-                </form>
+            <div class="form-group">
+                <textarea class="form-control form-control-full-width" ng-model="data.request.message" placeholder="Add an optional message"></textarea>
             </div>
-
         </div>
         <div class="modal-footer">
             <button class="btn btn-default" ng-click="cancel()">Cancel</button>
