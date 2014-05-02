@@ -10,7 +10,7 @@ var MatterItem = React.createClass({displayName: 'MatterItem',
                 React.DOM.div( {className:"card"}, 
 
                      this.props.editMatterInterface, 
-                    
+
                     React.DOM.a( {href: this.props.detail_url,  title: this.props.name,  className:"content"}, 
                         React.DOM.div( {className:"title"}, 
                             React.DOM.h6(null,  this.props.lawyer_or_client_name ),
@@ -96,81 +96,107 @@ var EditMatterInterface = React.createClass({displayName: 'EditMatterInterface',
 var NoResultsInterface = React.createClass({displayName: 'NoResultsInterface',
     render: function() {
         return (
-            React.DOM.div(null, React.DOM.b(null, "Nothing found"))
+            React.DOM.div( {className:"col-md-12 text-center"}, 
+                React.DOM.h6( {className:"text-muted"}, "Could not find any matters.")
+            )
+        );
+    },
+});
+
+
+var CreateMatterButton = React.createClass({displayName: 'CreateMatterButton',
+    render: function() {
+        var create_url = this.props.create_url;
+        return (
+            React.DOM.a( {href:create_url, 'data-toggle':"modal", 'data-target':"#matter-create", className:"btn btn-success btn-embossed pull-right"}, React.DOM.i( {className:"fui-plus"}), " New Matter")
         );
     },
 });
 
 
 var MatterList = React.createClass({displayName: 'MatterList',
-  fuse: new Fuse(MatterListData, { keys: ["name", "matter_code", "client.name"], threshold: 0.35 }),
-  getInitialState: function() {
-    return {
-        'matters': MatterListData,
-        'total_num_matters': MatterListData.length
-    }
-  },
-  handleChange: function(event) {
-    var searchFor = event.target.value;
-    var matter_list_results = (searchFor != '') ? this.fuse.search(event.target.value) : MatterListData
-    this.setState({
-        'matters': matter_list_results,
-        'total_num_matters': matter_list_results.length
-    });
-  },
-  render: function() {
-    var matterNodes = null;
+    fuse: new Fuse(MatterListData, { keys: ["name", "matter_code", "client.name"], threshold: 0.35 }),
+    getInitialState: function() {
+        return {
+            'can_create': UserData.can_create,
+            'matters': MatterListData,
+            'total_num_matters': MatterListData.length
+        }
+    },
+    handleSearch: function(event) {
+        var searchFor = event.target.value;
+        var matter_list_results = (searchFor != '') ? this.fuse.search(event.target.value) : MatterListData
 
-    if ( this.state.total_num_matters == 0 ) {
-
-        matterNodes = NoResultsInterface(null )
-
-    } else {
-        matterNodes = this.state.matters.map(function (matter) {
-
-            var editUrl = edit_url.replace('lp-react-name', matter.slug);
-            var detailUrl = matter.base_url;
-
-            var percentStyle = {'width': matter.percent_complete};
-            var lawyer_or_client_name = (UserData.is_lawyer) ? (matter.client !== null) ? matter.client.name : null : matter.lawyer.name ;
-
-            var participantList = Participants( {data:matter.participants} )
-            var lastupdatedOrComplete = LatUpdatedOrComplete( {percent_complete:matter.percent_complete,
-                                                              date_modified:matter.date_modified} )
-            var editMatterInterface = EditMatterInterface( {key:matter.slug, can_edit:UserData.can_edit, edit_url:editUrl} )
-
-            return MatterItem( 
-                    {key:matter.slug,
-                    name:matter.name,
-                    is_lawyer:UserData.is_lawyer,
-                    lawyer_or_client_name:lawyer_or_client_name,
-
-                    participantList:participantList,
-                    lastupdated_or_complete:lastupdatedOrComplete,
-                    editMatterInterface:editMatterInterface,
-
-                    percent_complete:matter.percent_complete,
-                    percentStyle:percentStyle,
-                    detail_url:detailUrl,
-                    edit_url:editUrl}, matter)
+        this.setState({
+            matters: matter_list_results,
+            total_num_matters: matter_list_results.length,
+            searched: true
         });
-    }
-    return (
-      React.DOM.div(null, 
-        React.DOM.form( {className:"form-horizontal", role:"form"}, 
-            React.DOM.div( {className:"input-group"}, 
-              React.DOM.input( {className:"input-lg", onChange:this.handleChange, autocomplete:"off", id:"id_q", name:"q", 'parsley-required':"true", 'parsley-required-message':"This field is required.", placeholder:"Search Matters", type:"text"} ),
-              React.DOM.span( {className:"input-group-addon input-lg"}, React.DOM.b(null, this.state.total_num_matters))
+    },
+    render: function() {
+        var matterNodes = null;
+
+        var createButton = null;
+        if (this.state.can_create) {
+            createButton = CreateMatterButton( {create_url:create_url})
+        }
+
+        if ( this.state.total_num_matters == 0 ) {
+            matterNodes = NoResultsInterface(null )
+        } else {
+            matterNodes = this.state.matters.map(function (matter) {
+                var editUrl = edit_url.replace('lp-react-name', matter.slug);
+                var detailUrl = matter.base_url;
+
+                var percentStyle = {'width': matter.percent_complete};
+                var lawyer_or_client_name = (UserData.is_lawyer) ? (matter.client !== null) ? matter.client.name : null : matter.lawyer.name ;
+
+                var participantList = Participants( {data:matter.participants} )
+                var lastupdatedOrComplete = LatUpdatedOrComplete( {percent_complete:matter.percent_complete,
+                                                                  date_modified:matter.date_modified} )
+                var editMatterInterface = EditMatterInterface( {key:matter.slug, can_edit:UserData.can_edit, edit_url:editUrl} )
+
+                return MatterItem(
+                        {key:matter.slug,
+                        name:matter.name,
+                        is_lawyer:UserData.is_lawyer,
+                        lawyer_or_client_name:lawyer_or_client_name,
+
+                        participantList:participantList,
+                        lastupdated_or_complete:lastupdatedOrComplete,
+                        editMatterInterface:editMatterInterface,
+
+                        percent_complete:matter.percent_complete,
+                        percentStyle:percentStyle,
+                        detail_url:detailUrl,
+                        edit_url:editUrl}, matter)
+            });
+        }
+        return (
+            React.DOM.section( {className:"matters cards"}, 
+                React.DOM.header( {className:"page-header"}, 
+                    React.DOM.h4(null, "All Matters"),
+                    React.DOM.div( {className:"pull-right"}, 
+                        createButton,
+    		            React.DOM.div( {className:"form-group pull-right"}, 
+                            React.DOM.div( {className:"input-group search-field"}, 
+                                React.DOM.input( {type:"text", className:"form-control", placeholder:"Search matters by name or client name...", name:"q", autocomplete:"off", onChange:this.handleSearch}),
+                                React.DOM.span( {className:"input-group-btn"}, 
+                                    React.DOM.button( {type:"submit", className:"btn"}, React.DOM.span( {className:"fui-search"}))
+                                )
+                            )
+                        )
+                    )
+                ),
+                React.DOM.div( {className:"row"}, 
+                    matterNodes
+                )
             )
-        ),
-        React.DOM.br(null),
-        matterNodes
-      )
-    );
-  }
+        );
+    }
 });
 
 React.renderComponent(
   MatterList(null ),
-  document.getElementById('matter-content')
+  document.getElementById('matter-list')
 );
