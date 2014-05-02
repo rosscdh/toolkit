@@ -194,12 +194,13 @@ module.exports = function (grunt) {
         },
         src:'<%= PRODUCTION_PATH %>' + 'index.html'
       },
-      //add verbatim and endverbatim to prohibit conflicts with the django template tags
       addscript: {
         options:{
-              append:{selector:'#landmine',html:'<script src="' + '<%= DJANGO_PRODUCTION_ASSET_SERVER %><%= APP_STATIC_PATH %>' + 'app.full.min.js?<%= gitinfo.local.branch.current.shortSHA %>"></script>'}
-            src:'<%= PRODUCTION_PATH %>' + 'index.html'
+              append:{selector:'#landmine',html:'<script src="' + '<%= DJANGO_PRODUCTION_ASSET_SERVER %><%= APP_STATIC_PATH %>' + 'app.full.min.js?<%= gitinfo.local.branch.current.shortSHA %>"></script>'},
+          },
+          src:'<%= PRODUCTION_PATH %>' + 'index.html'
       },
+      //add verbatim and endverbatim to prohibit conflicts with the django template tags
       addverbatimprod:{
         options:{
           prepend:{selector:'body',html:'{% verbatim %}'},
