@@ -7,7 +7,7 @@ logger = logging.getLogger('django.request')
 ENABLE_CELERY_TASKS = getattr(settings, 'ENABLE_CELERY_TASKS', False)
 
 
-def run_task(task, fallback_enabled=True, **kwargs):
+def run_task(task, **kwargs):
     """
     Function to attemt to run a task async, able to revert to running sync
     if exception happens
@@ -26,7 +26,7 @@ def run_task(task, fallback_enabled=True, **kwargs):
     # Run the task sync if specified
     # if fallback is true and celery tasks is disabled still run the task
     #
-    if fallback_enabled is True or skip_async is True:
+    if ENABLE_CELERY_TASKS is False or skip_async is True:
         logger.info('Did not run task async: %s now performing synchronously' % task)
         task(**kwargs)
         return True
