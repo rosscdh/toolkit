@@ -158,9 +158,8 @@ var MatterList = React.createClass({displayName: 'MatterList',
     return (
       React.DOM.div(null, 
         React.DOM.form( {className:"form-horizontal", role:"form"}, 
-            React.DOM.div( {className:"input-group"}, 
-              React.DOM.input( {className:"input-lg", onChange:this.handleChange, autocomplete:"off", id:"id_q", name:"q", 'parsley-required':"true", 'parsley-required-message':"This field is required.", placeholder:"Search Matters", type:"text"} ),
-              React.DOM.span( {className:"input-group-addon input-lg"}, React.DOM.b(null, this.state.total_num_matters))
+            React.DOM.div( {className:"col-sm-4 col-sm-offset-8"}, 
+              React.DOM.input( {className:"input-lg form-control", onChange:this.handleChange, autocomplete:"off", id:"id_q", name:"q", 'parsley-required':"true", 'parsley-required-message':"This field is required.", placeholder:"Quick search matters", type:"text"} )
             )
         ),
         React.DOM.br(null),
