@@ -1,13 +1,30 @@
 <div class="row checklist-header">
+
+	<div class="col-xs-12" class="add-new-controls warning" >
+		<!-- New category form //-->
+		
+	</div>
+
 	<div class="col-xs-8">
 		<h5
 			ng-bind="cat.name"
-			ng-hide="data.showEditCategoryForm==$index||!cat.name">
+			ng-hide="data.showEditCategoryForm==$index||!cat.name||data.showAddCategoryForm==$index">
 		</h5>
 		<h5
-			ng-hide="data.showEditCategoryForm==$index||cat.name">UNCATEGORIZED
+			ng-hide="data.showEditCategoryForm==$index||cat.name||data.showAddCategoryForm==$index">UNCATEGORIZED
 		</h5>
-		<!-- Categoery form //-->
+		<!-- add new category //-->
+		<input  class="form-control input-sm"
+				ng-show="data.showAddCategoryForm==$index"
+				id="appendedInputButton-03"
+				type="search"
+				placeholder="Enter a new category name and press enter"
+				ng-model="data.newCatName"
+				ng-enter="submitNewCategory()"
+				ng-blur="data.showAddCategoryForm=null"
+				focus-on="eventAddCategory-{{$index}}"
+		/>
+		<!-- edit categoery form //-->
 		<input
 			class="form-control input-sm"
 			ng-show="data.showEditCategoryForm==$index"
@@ -15,7 +32,8 @@
 			ng-model="data.newCategoryName"
 			ng-enter="editCategory(cat)"
 			ng-blur="data.showEditCategoryForm=null"
-			focus-on="eventEditCategorytitle-{{$index}}">
+			focus-on="eventEditCategorytitle-{{$index}}"
+		 />
 	</div>
 	<div class="col-xs-4">
 		<!-- category actions //-->
@@ -27,17 +45,17 @@
 				<span class="fui-triangle-down"></span>
 			</button>
 			<ul class="dropdown-menu dropdown-inverse dropdown-small">
-				<li>
+				<li ng-show="data.usdata.current.permissions.matterItem.post">
 					<a href="javascript:;" ng-click="showAddItemForm($index);">New Item</a>
 				</li>
-				<li>
+				<li ng-show="data.usdata.current.permissions.category.put">
 					<a href="javascript:;" ng-click="data.newCategoryName=cat.name;showEditCategoryForm($index);" ng-hide="!cat.name">Edit Category</a>
 				</li>
-				<li>
+				<li ng-show="data.usdata.current.permissions.category.delete">
 					<a href="javascript:;" ng-click="deleteCategory(cat);" ng-hide="!cat.name">Delete Category</a>
 				</li>
-				<li>
-					<a href="javascript:;" ng-click="data.showCategoryAddForm=!data.showCategoryAddForm;focus('eventAddCategory');" ng-show="!cat.name">Add Category</a>
+				<li ng-show="data.usdata.current.permissions.category.post">
+					<a href="javascript:;" ng-click="showAddCategoryForm($index);">Add Category</a>
 				</li>
 			</ul>
 		</div>
