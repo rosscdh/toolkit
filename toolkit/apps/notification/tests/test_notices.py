@@ -2,8 +2,10 @@
 from django.template import loader
 from django.test import TestCase, Client
 from django.core.urlresolvers import reverse
-from toolkit.apps.notification.templatetags.notice_tags import get_notification_template
+from django.utils.html import strip_spaces_between_tags as minify_html
 
+from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
+from toolkit.apps.notification.templatetags.notice_tags import get_notification_template
 from toolkit.casper.workflow_case import BaseScenarios
 
 from stored_messages.models import Inbox
@@ -13,7 +15,11 @@ from model_mommy import mommy
 
 def _get_notice_html(verb_slug, ctx):
     t = get_notification_template(verb_slug)
-    return t.render(loader.Context(ctx))
+    #
+    # minify the html (as were using minification middleware)
+    # also remove \r\n chars
+    #
+    return minify_html(t.render(loader.Context(ctx)).strip())
 
 
 class BaseListViewTest(BaseScenarios, TestCase):
@@ -38,11 +44,11 @@ class BaseListViewTest(BaseScenarios, TestCase):
             'actor_initials': actor_initials,
             'message': message,
             'date': date,
-            'base_url': base_url,
+            'base_url': ABSOLUTE_BASE_URL(base_url),
             'target_name': target_name,
             'client_name': client_name,
             'action_object_name': action_object_name,
-            'action_object_url': action_object_url,
+            'action_object_url': ABSOLUTE_BASE_URL(action_object_url),
         })
         #
         # The actual test
