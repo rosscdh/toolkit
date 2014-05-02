@@ -2,12 +2,13 @@
 	<div class="container-fluid full">
 		<div class="row full">
 			<div class="col-sm-5 checklist-col full">
-				<!-- add new category //-->
+				<!-- // Add new category form
 				<div class="add-item checklist" ng-show="data.showCategoryAddForm">
 					<input class="form-control input-sm" id="appendedInputButton-03" type="search" placeholder="Enter category name and press enter"
 						   ng-model="data.newCatName" ng-enter="submitNewCategory()" ng-blur="data.showCategoryAddForm=false" focus-on="eventAddCategory" />
 					<div class="input-group-btn">&nbsp;</div>
 				</div>
+				//-->
 
 				<!-- LAWYER checklist //-->
 				<!-- null category //-->
@@ -18,8 +19,17 @@
 				<!-- end: null category //-->
 
 				<span ng-if="data.usdata.current.user_class=='lawyer'">
+					<div>
+						<div ng-repeat="cat in data.categories | filter: {name:'!'}">
+							<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-header.html'"></span>
+							<!-- Checklist //-->
+							<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-lawyer.html'"></span>
+							<!-- checklist footer //-->
+							<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-footer.html'"></span>
+						</div>
+					</div>
 					<div ui-sortable="checklistCategorySortableOptions" ng-model="data.categories">
-						<div ng-repeat="cat in data.categories">
+						<div ng-repeat="cat in data.categories" ng-show="cat.name!==null">
 							<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-header.html'"></span>
 							<!-- Checklist //-->
 							<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-lawyer.html'"></span>

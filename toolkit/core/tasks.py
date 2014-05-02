@@ -3,6 +3,7 @@ from django.conf import settings
 
 from toolkit.celery import app
 from toolkit.core.services.lawpal_abridge import LawPalAbridgeService
+from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 
 import logging
 logger = logging.getLogger('django.request')
@@ -85,6 +86,8 @@ def _abridge_send(verb_slug, actor, target, action_object, message=None, comment
                 message_data['actor'] = LiteUserSerializer(actor, context={'request': None}).data
 
                 message_for_abridge = LawPalAbridgeService.render_message_template(user, **message_data)
+
+
 
                 abridge_service.create_event(content_group=target.name,
                                              content=message_for_abridge)
