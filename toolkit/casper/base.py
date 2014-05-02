@@ -5,6 +5,8 @@ from casper.tests import CasperTestCase
 import sys
 import os.path
 
+PROJECT_NAME = settings.ROOT_URLCONF.split('.')[0]
+
 
 class BaseCasperJs(CasperTestCase):
     """
@@ -25,9 +27,8 @@ class BaseCasperJs(CasperTestCase):
                                 )
         kwargs.update({
             'timeout': 30000,
-            'casper_helper_js_path': kwargs.get('casper_helper_js_path', os.path.join(settings.SITE_ROOT, 'glynt/casper/jslib/djangocasper.js')),
-            'STATIC_PATH': kwargs.get('STATIC_PATH', os.path.join(settings.SITE_ROOT, 'glynt/apps/default/static/')),
+            'casper_helper_js_path': kwargs.get('casper_helper_js_path', os.path.join(settings.SITE_ROOT, '{project}/casper/jslib/djangocasper.js'.format(project=PROJECT_NAME))),
+            'STATIC_PATH': kwargs.get('STATIC_PATH', os.path.join(settings.SITE_ROOT, '{project}/apps/default/static/'.format(project=PROJECT_NAME))),
         })
-        #from nose.tools import set_trace; set_trace()
 
         return self.casper(test_path, **kwargs)

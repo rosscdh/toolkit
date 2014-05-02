@@ -1,6 +1,12 @@
 Deployment actions by branch
 ----------------------------
 
+[matter-search]
+
+1. need to install npm -g install yuglify on prod servers
+2. pip install django-pipeline PyReact
+
+
 --------------------------------------------------------------------------------
 ** DEPLOYED 29 April 2014
 --------------------------------------------------------------------------------
