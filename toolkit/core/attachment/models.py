@@ -90,6 +90,14 @@ class Revision(IsDeletedMixin,
     def revisions(self):
         return self.item.revision_set.all()
 
+    @property
+    def status(self):
+        return self.data.get('status')  # is always set in ItemCurrentRevisionView.create
+
+    @status.setter
+    def status(self, value):
+        self.data['status'] = value
+
     def get_absolute_url(self):
         """
         @TODO currently there is no GUI route to handle linking directly to a revision
@@ -152,6 +160,10 @@ class Revision(IsDeletedMixin,
     def primary_reviewdocument(self):
         # is this *really* only the case for a NEW reviewdocument/revision?
         return self.reviewdocument_set.filter(reviewers=None).last()
+
+    @property
+    def display_status(self):
+        return self.REVISION_STATUS.get_desc_by_value(self.status)
 
 
 from .signals import (ensure_revision_slug,
