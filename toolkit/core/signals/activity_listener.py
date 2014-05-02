@@ -68,8 +68,10 @@ def on_activity_received(sender, **kwargs):
     if actor and action_object and target and verb_slug:
         # send to django-activity-stream
         # note the kwarg.pop so that they dont get sent in as kwargs
+        # skip_async = True means the activity will be added synchronously
         run_task(_activity_send, actor=actor, target=kwargs.pop('target', None),
-                 action_object=kwargs.pop('action_object', None), message=kwargs.pop('message', None), **kwargs)
+                 action_object=kwargs.pop('action_object', None), message=kwargs.pop('message', None),
+                 **kwargs)
 
         # send the notifications to the participants
         run_task(_notifications_send, verb_slug=verb_slug, actor=actor, target=target, action_object=action_object,

@@ -1,23 +1,14 @@
 # -*- coding: utf-8 -*-
-from django.template import loader
+from django.template import Context
 
 from actstream.models import Action
 from rest_framework import serializers
 
-from toolkit.api.serializers.item import LiteItemSerializer
-from toolkit.api.serializers.user import LiteUserSerializer
 from toolkit.apps.review.models import ReviewDocument
-from toolkit.core.item.models import Item
 
 from toolkit.core.services.matter_activity import get_verb_slug
 
-
-ACTIVITY_TEMPLATES = {
-    'default': loader.get_template('activity/default.html'),
-    'item-commented': loader.get_template('activity/item_comment.html'),
-    'revision-added-review-session-comment': loader.get_template('activity/review_session_comment.html'),
-    'revision-added-revision-comment': loader.get_template('activity/revision_comment.html'),
-}
+from toolkit.apps.notification.template_loaders import ACTIVITY_TEMPLATES
 
 
 class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
@@ -100,7 +91,7 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
         verb_slug = get_verb_slug(obj.action_object, obj.verb)
 
         template = self._get_template(verb_slug)
-        context = loader.Context(self._get_context(obj, verb_slug))
+        context = Context(self._get_context(obj, verb_slug))
 
         # render the template with passed in context
         return template.render(context)

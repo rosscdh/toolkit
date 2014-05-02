@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-from django.template import loader
+from django.template import Context
+from django.template.loader import get_template
+from django.template.loaders.app_directories import Loader
 from django.template import Template
 from django.utils.safestring import mark_safe
 
@@ -15,13 +17,10 @@ class HTMLMixin(object):
     """
     @property
     def template(self):
-        return loader.get_template(self.pdf_template_name)
+        return get_template(self.pdf_template_name)
 
     def template_source(self, template_name):
-        from django.template.loaders.app_directories import Loader
-
         source_loader = Loader()
-        from django.template.loaders.app_directories import Loader
         source, file_path = source_loader.load_template_source(template_name)
         return source
 
@@ -31,7 +30,7 @@ class HTMLMixin(object):
         context_data.update({'object': self})
         # update with kwargs passed in which take priority for overrides
         context_data.update(kwargs)
-        local_context = loader.Context(context_data)
+        local_context = Context(context_data)
         # Mark strings as safe
         for k, v in context_data.items():
             if type(v) in [str, unicode]:
@@ -43,7 +42,7 @@ class HTMLMixin(object):
     def html(self, **kwargs):
         context_data = self.get_context_data(**kwargs)
 
-        context = loader.Context(context_data)
+        context = Context(context_data)
         source = self.template.render(context)
         return source
 

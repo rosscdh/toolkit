@@ -39,6 +39,22 @@ $(document).ready(function () {
 
     calculateTotalNotifications();
 
+    $('.notification a').on('click', function(e) {
+        var $this = $(this);
+        var data = $this.data();
+        var href_url = $this.attr('href');
+        if (href_url) {
+            e.preventDefault();
+            e.stopPropagation();
+            var mark_as_read_a = $($this.closest('article.notification').find('a.mark-as-read'));
+            var data = mark_as_read_a.data();
+            sendDeleteRequest(mark_as_read_a, data.url, function (obj, url) {
+                window.location = href_url;
+            });
+        }
+
+    });
+
     $('a.mark-as-read').on('click', function(e) {
         var $this = $(this);
         var data = $this.data();
@@ -58,7 +74,7 @@ $(document).ready(function () {
         $('#notification-count').html(current_num);
     }
 
-    function sendDeleteRequest(obj, url) {
+    function sendDeleteRequest(obj, url, callback) {
         var $this = obj;
 
         $.ajax({
@@ -71,8 +87,14 @@ $(document).ready(function () {
                 jqXHR.setRequestHeader('X-CSRFToken', $('input[name=csrf_token]:first').val());
             },
             "success": function (data) {
-                $this.closest('article').remove()
                 calculateTotalNotifications();
+                if (callback !== undefined) {
+                    callback(obj, url)
+                } else {
+                    // only remove when we dont have a callback
+                    $this.closest('article').remove()    
+                }
+                
             }
         });
     }
