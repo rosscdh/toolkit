@@ -21,7 +21,4 @@ class MatterSearchClientSideTest(BaseScenarios, BaseCasperJs, LiveServerTestCase
             matter.participants.add(self.lawyer)
 
         url = reverse('matter:list')
-        import pdb;pdb.set_trace()
         self.assertTrue(self.load_casper_file(js_file='matter_list_basic.js', test_label='Basic Tests of the matter list for a lawyer', url=url))
-
-
