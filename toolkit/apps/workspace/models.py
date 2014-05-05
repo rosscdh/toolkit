@@ -6,6 +6,8 @@ from django.db.models.signals import pre_save, post_save, post_delete, m2m_chang
 
 from toolkit.core.mixins import IsDeletedMixin, ApiSerializerMixin
 
+from dj_authy.models import AuthyModelMixin
+
 from .signals import (ensure_workspace_slug,
                       ensure_workspace_matter_code,
                       # tool
@@ -26,6 +28,7 @@ from .mixins import ClosingGroupsMixin, CategoriesMixin, RevisionLabelMixin
 
 
 class Workspace(IsDeletedMixin,
+                AuthyModelMixin,
                 ClosingGroupsMixin,
                 CategoriesMixin,
                 ApiSerializerMixin,
