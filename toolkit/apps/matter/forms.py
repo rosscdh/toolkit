@@ -51,6 +51,12 @@ class MatterForm(ModalForm, forms.ModelForm):
         widget=forms.TextInput(attrs={'placeholder': 'Matter name', 'size': '40'})
     )
 
+    require_authy_authentication = forms.BooleanField(
+                                            label='is_secure',
+                                            help_text='Enable 2 Factor authentication for extra security',
+                                            initial=False,
+                                            required=False)
+
     template = forms.ModelChoiceField(
         help_text='',
         label='Copy checklist items from',
@@ -59,7 +65,7 @@ class MatterForm(ModalForm, forms.ModelForm):
     )
 
     class Meta:
-        fields = ['matter_code', 'name']
+        fields = ['matter_code', 'name', 'require_authy_authentication',]
         model = Workspace
 
     def __init__(self, *args, **kwargs):
@@ -72,8 +78,11 @@ class MatterForm(ModalForm, forms.ModelForm):
             'name',
             'client_name',
             'matter_code',
+            'is_secure',
             Field('template', css_class='select-block') if self.is_new is True else None
         )
+
+        self.initial['require_authy_authentication'] = self.instance.require_authy_authentication
 
         if self.instance.pk:
             self.helper.inputs.insert(0, self.get_delete_button())
@@ -133,6 +142,9 @@ class MatterForm(ModalForm, forms.ModelForm):
         # add client/lawyer to the matter
         matter.client, is_new = self.user.clients.get_or_create(name=self.cleaned_data['client_name'])
         matter.lawyer = self.user
+
+        # update manually the data mixin
+        matter.require_authy_authentication = self.cleaned_data.get('require_authy_authentication', False)
 
         matter.save()
 
