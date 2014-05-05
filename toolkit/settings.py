@@ -500,7 +500,8 @@ PAYMENTS_PLANS = {
     "early-bird-monthly": {
         "stripe_plan_id": "early-bird-monthly",
         "name": "Early Bird",
-        "description": "Lorem ipsum dolor sit amet.",
+        "description": "Signup for LawPal's Early Bird plan and save! <br />Create unlimited projects with unlimited collaborators.<br /> Available for a limited time only.",
+        "features": "Unlimited Projects<br/> Unlimited Collaborators<br/> E-Signing<br/> Priority Support<br/> No long-term commitment",
         "price": 25,
         "currency": "usd",
         "interval": "month"
