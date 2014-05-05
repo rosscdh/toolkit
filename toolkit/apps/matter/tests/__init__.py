@@ -4,3 +4,4 @@ from .forms import *
 from .signals import *
 from .views import *
 from .matter_clone import *
+from matter_search import *

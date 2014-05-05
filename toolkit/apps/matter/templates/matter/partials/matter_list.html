@@ -1,0 +1,39 @@
+{% load user_tags widont %}
+{% for m in object_list %}
+    <article class="col-md-4 matter">
+        <div class="card">
+            {% if can_edit %}
+                <a href="{% url 'matter:edit' matter_slug=m.slug %}" data-toggle="modal" data-target="#matter-edit-{{ m.slug }}" class="edit">
+                    <span class="fui-gear"></span>
+                </a>
+            {% endif %}
+            <a href="{% url 'matter:detail' matter_slug=m.slug %}#/checklist" title="{{ m.name }}" class="content">
+                <div class="title">
+                    {% if user.profile.is_lawyer %}
+                        <h6>{{ m.client.name }}</h6>
+                    {% else %}
+                        <h6>{{ m.lawyer.name }}</h6>
+                    {% endif %}
+                    <h5>{{ m.name|widont|safe }}</h5>
+                </div>
+                <div class="meta clearfix">
+                    {% if m.percent_complete == '100%' %}
+                        <p class="small pull-left done"><span class="fui-check-inverted"></span> Complete</p>
+                    {% else %}
+                        <p class="small pull-left">Last updated <time datetime="{{ m.date_modified|timesince }}">{{ m.date_modified|timesince }} ago</time></p>
+                    {% endif %}
+                    <div class="people pull-right">
+                        {% for user in m.participants %}
+                            {% avatar user %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </a>
+            <div class="progress">
+                <div class="progress-bar" style="width: {{m.percent_complete}}%;"></div>
+            </div>
+        </div>
+    </article>
+{% empty %}
+    {% include 'matter/partials/intro.html' %}
+{% endfor %}

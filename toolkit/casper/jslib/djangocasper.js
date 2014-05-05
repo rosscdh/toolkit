@@ -40,18 +40,27 @@ module.exports = (function() {
               'desktop_standard': {width: 1280, height: 1024}
             };
 
+            casper.options.viewports = viewports;
             casper.options.clientScripts = [
-                                                casper.cli.options.STATIC_PATH + 'js/jquery.min.js',
-                                                casper.cli.options.STATIC_PATH + 'js/jquery.getPath.js',
-                                                casper.cli.options.STATIC_PATH + 'js/angularjs/mocks/PusherMock.js'
+                                                // casper.cli.options.STATIC_PATH + 'js/jquery.min.js',
+                                                // casper.cli.options.STATIC_PATH + 'js/jquery.getPath.js',
+                                                // casper.cli.options.STATIC_PATH + 'js/angularjs/mocks/PusherMock.js'
                                             ];
 
+            casper.options.verbose = true;
+            casper.options.logLevel = 'debug';
             casper.options.viewportSize = viewports.desktop_standard;
             casper.options.timeout = casper.cli.options.timeout || 30000;
             casper.options.onTimeout = function() {
                 casper.die("Timed out after "+ casper.options.timeout/1000 +" seconds.", 1);
             };
-
+            casper.on("page.error", function(msg, trace) {
+              this.echo("Error:    " + msg, "ERROR");
+              this.echo("file:     " + trace[0].file, "WARNING");
+              this.echo("line:     " + trace[0].line, "WARNING");
+              this.echo("function: " + trace[0]["function"], "WARNING");
+            });
+            
             casper.start(start_url, arguments[1]);
             first_scenario = false;
         } else {
@@ -156,8 +165,8 @@ module.exports = (function() {
             this.capture('/tmp/page_' + delay + '.png', {
                 top: 0,
                 left: 0,
-                width: 2048,
-                height: 1024
+                width: casper.options.viewports.desktop_standard.width,
+                height: casper.options.viewports.desktop_standard.height
             });
         });
     }
@@ -166,8 +175,8 @@ module.exports = (function() {
         this.capture('/tmp/page_' + num + '.png', {
             top: 0,
             left: 0,
-            width: 2048,
-            height: 1024
+            width: casper.options.viewports.desktop_standard.width,
+            height: casper.options.viewports.desktop_standard.height
         });
     }
 

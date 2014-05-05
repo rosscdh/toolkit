@@ -6,6 +6,7 @@ from toolkit.apps.workspace.models import Workspace
 
 def EXPOSED_GLOBALS(request):
     return {
+        'DEBUG': settings.DEBUG,
         'PROJECT_ENVIRONMENT': settings.PROJECT_ENVIRONMENT,
         # @TODO remove this GLOBALS as its totally not necessary as a context processor
         # context processors ARE template globals by definition
