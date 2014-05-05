@@ -76,8 +76,9 @@ angular.module('toolkit-gui')
 		 */
 		$scope.data = {
 			'selectedUsers': {},
+			'invitee': {},
 			'request': {
-				'signer': [],
+				'signers': [],
 				'message': null
 			}
 		};
@@ -118,7 +119,7 @@ angular.module('toolkit-gui')
 		 *
 		 * @private
 		 * @method				checkIfUserExists
-		 * @memberof			ParticipantInviteCtrl
+		 * @memberof			RequestreviewCtrl
 		 */
         $scope.checkIfUserExists = function () {
             if ($scope.data.request.email != null && $scope.data.request.email.length>0) {
@@ -145,14 +146,6 @@ angular.module('toolkit-gui')
             }
         };
 
-        $scope.toggleUser = function (user) {
-            if (!(user.username in $scope.data.selectedUsers)) {
-                $scope.data.selectedUsers[user.username] = user;
-            } else {
-                delete $scope.data.selectedUsers[user.username];
-            }
-        };
-
 		/**
 		 * Initiates request to invite and receive the user.
 		 *
@@ -164,9 +157,14 @@ angular.module('toolkit-gui')
 		 * @memberof			RequestreviewCtrl
 		 */
 		$scope.request = function() {
-            for (var key in $scope.data.selectedUsers) {
-                $scope.data.request.signer.push($scope.data.selectedUsers[key]);
+           var selectedPerson = $scope.data.selectedIndex!==-1?$scope.participants[$scope.data.selectedIndex]:null;
+
+            if (selectedPerson!=null){
+                $scope.data.request.email = selectedPerson.email;
+                $scope.data.request.first_name = selectedPerson.first_name;
+                $scope.data.request.last_name = selectedPerson.last_name;
             }
+
             $log.debug($scope.data.request);
             matterItemService.requestSigner($scope.matter.slug, $scope.checklistItem.slug, $scope.data.request).then(
                     function success(response){
@@ -192,7 +190,7 @@ angular.module('toolkit-gui')
 		 * @memberof			RequestreviewCtrl
 		 */
 		$scope.invalid = function() {
-            return Object.keys($scope.data.selectedUsers).length===0;
+            return $scope.data.selectedIndex==null || $scope.data.selectedIndex===-1&&!$scope.data.request.email;
 		};
 	}
 ]);

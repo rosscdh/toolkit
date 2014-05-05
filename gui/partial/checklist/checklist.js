@@ -1051,6 +1051,53 @@ angular.module('toolkit-gui')
 			);
 		};
 
+        /**
+		 * Initiate the process of requesting signing from existing participants or new participants
+		 *
+		 * @param {Object} Revision object to perform action upon
+		 *
+		 * @private
+		 * @method				requestSigning
+		 * @memberof			ChecklistCtrl
+		 */
+		$scope.requestSigning = function( revision ) {
+			var matterSlug = $scope.data.slug;
+			var item = $scope.data.selectedItem;
+
+			var modalInstance = $modal.open({
+				'templateUrl': '/static/ng/partial/request-signing/request-signing.html',
+				'controller': 'RequestsigningCtrl',
+				'resolve': {
+					'participants': function () {
+						return $scope.data.matter.participants;
+					},
+					'currentUser': function () {
+						return $scope.data.matter.current_user;
+					},
+					'matter': function () {
+						return $scope.data.matter;
+					},
+					'checklistItem': function () {
+						return item;
+					},
+					'revision': function () {
+						return revision;
+					}
+				}
+			});
+
+			modalInstance.result.then(
+				function ok(sign) {
+                    var results = jQuery.grep( revision.signers, function( sig ){ return sig.signer.username===sign.signer.username; } );
+					if( results.length===0 ) {
+						revision.signers.push(sign);
+					}
+				},
+				function cancel() {
+					//
+				}
+			);
+		};
 
 		/**
 		* Remind all review users who haven´t reviewed yet.
