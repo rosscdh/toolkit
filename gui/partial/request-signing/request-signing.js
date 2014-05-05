@@ -75,8 +75,10 @@ angular.module('toolkit-gui')
 		 * @type {Object}
 		 */
 		$scope.data = {
+            'showAddSigner': false,
 			'selectedUsers': {},
 			'invitee': {},
+			'participant': null,
 			'request': {
 				'signers': [],
 				'message': null
@@ -119,13 +121,13 @@ angular.module('toolkit-gui')
 		 *
 		 * @private
 		 * @method				checkIfUserExists
-		 * @memberof			RequestreviewCtrl
+		 * @memberof			RequestsigningCtrl
 		 */
         $scope.checkIfUserExists = function () {
-            if ($scope.data.request.email != null && $scope.data.request.email.length>0) {
+            if ($scope.data.invitee.email != null && $scope.data.invitee.email.length>0) {
                 $scope.data.validationError = false;
 
-                participantService.getByEmail( $scope.data.request.email ).then(
+                participantService.getByEmail( $scope.data.invitee.email ).then(
                     function success(response) {
                         if (response.count===1){
                             $scope.data.isNew = false;
@@ -146,51 +148,104 @@ angular.module('toolkit-gui')
             }
         };
 
+
+
+        $scope.toggleUser = function (user) {
+            if (!(user.username in $scope.data.selectedUsers)) {
+                $scope.data.selectedUsers[user.username] = user;
+            } else {
+                delete $scope.data.selectedUsers[user.username];
+            }
+        };
+
+
+        /**
+		 * Adds a new person to be selectable as signer
+		 *
+		 * @name				invite
+		 *
+		 * @private
+		 * @method				invite
+		 * @memberof			RequestsigningCtrl
+		 */
+		$scope.invite = function () {
+            var invitee;
+            if ($scope.data.participant) {
+                invitee = $scope.data.participant;
+            } else {
+                invitee = $scope.data.invitee;
+            }
+
+            var results = jQuery.grep( $scope.participants, function( p ){ return p.email===invitee.email; } );
+            if( results.length===0 ) {
+                $scope.participants.push(invitee);
+            }
+
+            //reset form
+            $scope.data.invitee= {'email':'','first_name':'', 'last_name':'', 'message':''};
+            $scope.data.isNew = false;
+            $scope.data.participant = null;
+            $scope.data.validationError = false;
+            $scope.data.showAddSigner=false;
+		};
+
+
 		/**
-		 * Initiates request to invite and receive the user.
+		 * Initiates request to sign the document for the selected users.
 		 *
 		 * @name				request
 		 * 
 		 * @param  {Object} person	User object
 		 * @private
 		 * @method				request
-		 * @memberof			RequestreviewCtrl
+		 * @memberof			RequestsigningCtrl
 		 */
-		$scope.request = function() {
-           var selectedPerson = $scope.data.selectedIndex!==-1?$scope.participants[$scope.data.selectedIndex]:null;
+        $scope.request = function() {
+            $scope.data.request.signers = [];
 
-            if (selectedPerson!=null){
-                $scope.data.request.email = selectedPerson.email;
-                $scope.data.request.first_name = selectedPerson.first_name;
-                $scope.data.request.last_name = selectedPerson.last_name;
+            for (var key in $scope.data.selectedUsers) {
+                var usr = $scope.data.selectedUsers[key];
+                $scope.data.request.signers.push({'email': usr.email, 'first_name': usr.first_name, 'last_name': usr.last_name});
             }
-
             $log.debug($scope.data.request);
             matterItemService.requestSigner($scope.matter.slug, $scope.checklistItem.slug, $scope.data.request).then(
                     function success(response){
                         $modalInstance.close( response );
                     },
                     function error(err){
-                        if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to request a signer.") {
-                            toaster.pop('error', "Error!", "Unable to request a signer.");
+                        if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to request signers.") {
+                            toaster.pop('error', "Error!", "Unable to request signers.");
                         }
                     }
             );
 
 		};
 
+
 		/**
-		 * Determines if request revision for is valid or not.
-		 * This is a little complex as the end user can select an existing user or enter an email address
+		 * Determines if request signing for is valid or not.
 		 *
 		 * @name				invalid
 		 * 
 		 * @private
 		 * @method				invalid
-		 * @memberof			RequestreviewCtrl
+		 * @memberof			RequestsigningCtrl
 		 */
 		$scope.invalid = function() {
-            return $scope.data.selectedIndex==null || $scope.data.selectedIndex===-1&&!$scope.data.request.email;
+            return $scope.data.showAddSigner===true || jQuery.isEmptyObject($scope.data.selectedUsers);
+		};
+
+        /**
+		 * Determines if the new user  is valid or not.
+		 *
+		 * @name				invalid
+		 *
+		 * @private
+		 * @method				invalid
+		 * @memberof			RequestsigningCtrl
+		 */
+		$scope.invalidNewSigner = function() {
+            return $scope.data.participant===null && !($scope.data.invitee.email&&$scope.data.invitee.first_name&&$scope.data.invitee.last_name);
 		};
 	}
 ]);
