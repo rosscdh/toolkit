@@ -53,6 +53,10 @@ STATICFILES_DIRS = (
     ("ng", os.path.join(SITE_ROOT, 'gui')),
 )
 
+#STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
+
+
 MEDIA_ROOT = os.path.join(SITE_ROOT, 'media')
 MEDIA_URL = '/m/'
 
@@ -61,7 +65,10 @@ MEDIA_URL = '/m/'
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'compressor.finders.CompressorFinder',
+    'pipeline.finders.FileSystemFinder',
+    'pipeline.finders.AppDirectoriesFinder',
+    'pipeline.finders.PipelineFinder',
+    'pipeline.finders.CachedFileFinder',
 )
 
 
@@ -153,6 +160,9 @@ HELPER_APPS = (
     # Api helpers
     #'corsheaders',  # not required yet
 
+    # Asset pipeline
+    'pipeline',
+
     # db migrations
     'south',
     # jenkins
@@ -170,6 +180,8 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # 'corsheaders.middleware.CorsMiddleware',  # not required yet
     'toolkit.apps.me.middleware.EnsureUserHasPasswordMiddleware',
+    'django.middleware.gzip.GZipMiddleware',
+    'pipeline.middleware.MinifyHTMLMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -290,6 +302,20 @@ REST_FRAMEWORK = {
     ],
     'PAGINATE_BY': 10,
 }
+
+
+#PIPELINE_CSS = {}
+PIPELINE_JS = {
+    'reactjs': {
+        'source_filenames': (
+            'js/matter_search.jsx',
+        ),
+        'output_filename': 'js/jsx-all-compiled.js',
+    }
+}
+PIPELINE_COMPILERS = [
+  'react.utils.pipeline.JSXCompiler',
+]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 

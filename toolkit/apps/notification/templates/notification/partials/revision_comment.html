@@ -1,12 +1,10 @@
-{% extends "notification/partials/default.html" %}
-
-{% load humanize %}
+{% extends "notification/partials/default.html" %}{% load toolkit_tags humanize %}
 
 {% block notice %}
-    <p class="lead">{{ actor_name }} annotated {{ revision_slug }} of <a href="{{ action_object_url }}">{{ action_object_name }}</a> {% block review_information %}{% endblock %}<br/>
+    <p class="lead">{{ actor_name }} annotated {{ revision_slug }} of <a href="{% ABSOLUTE_BASE_URL action_object_url %}">{{ action_object_name }}</a> {% block review_information %}{% endblock %}<br/>
     </p>
     <p class="quote">{{ comment }}</p>
-    <p class="small">{{ date|naturaltime }} — in <a href="{{ base_url }}">{{ target_name }}</a> for {{ client_name }}.</p>
+    <p class="small">{{ date|naturaltime }} — in <a href="{% ABSOLUTE_BASE_URL base_url %}">{{ target_name }}</a> for {{ client_name }}.</p>
 {% endblock %}
 
 

@@ -1,4 +1,4 @@
-{% load humanize %}{% load url from future %}
+{% load toolkit_tags humanize %}{% load url from future %}
 <article class="notification">
     <div class="row">
         <div class="col-xs-1">
@@ -7,8 +7,8 @@
         <div class="col-xs-10">
             {% block notice %}
                 <p class="lead">{{ message }}</p>
-                <a href="{{ action_object_url }}">{{ action_object_name }}</a>
-                <p class="small">{{ date|naturaltime }} — in <a href="{{ base_url }}">{{ target_name }}</a> for {{ client_name }}.</p>
+                <a href="{% ABSOLUTE_BASE_URL action_object_url %}">{{ action_object_name }}</a>
+                <p class="small">{{ date|naturaltime }} — in <a href="{% ABSOLUTE_BASE_URL base_url %}">{{ target_name }}</a> for {{ client_name }}.</p>
             {% endblock %}
         </div>
 
