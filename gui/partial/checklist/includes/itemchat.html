@@ -29,7 +29,7 @@
         </div>
         <span ng-hide="activity.data.comment" ng-bind-html="activity.event"></span>
     </li>-->
-    <li ng-repeat="activity in data.activitystream" ng-bind-html="activity.event | unsafe">
+    <li ng-repeat="activity in data.activitystream" ng-bind-html="activity.event | unsafe" ng-class="{ 'comment-faded': activity.status=='awaiting'}">
     </li>
     <li ng-show="!data.activitystream.length"><small class="lead text-muted">Discussion and activity will appear here.</small></li>
 </ul>

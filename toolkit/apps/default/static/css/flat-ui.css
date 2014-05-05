@@ -5368,8 +5368,7 @@ a.list-group-item.active > .badge,
   border-radius: 0 6px 6px 0;
   border-color: #6bdb7e;
 }
-/*@import "modules/carousel";
-*/
+
 .last-col {
   overflow: hidden;
 }

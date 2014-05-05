@@ -152,11 +152,6 @@ module.exports = function (grunt) {
         src: ['temp/templates.js'],
         overwrite: true,                 // overwrite matched source files
         replacements: [
-        /*
-          {
-          from: 'partial/',
-          to: '<%= APP_STATIC_PATH %>' + 'partial/'
-          },*/
           {
           from: '$templateCache.put(\'partial/',
           to: '$templateCache.put(\'<%= APP_STATIC_PATH %>partial/'
@@ -168,7 +163,7 @@ module.exports = function (grunt) {
       main: {
         files: [
           {src: ['index.html'], dest: '<%= PRODUCTION_PATH %>'},
-          {src: ['img/**'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['images/**'], dest: '<%= PRODUCTION_PATH %>'},
           {src: ['fonts/**'], dest: '<%= PRODUCTION_PATH %>'},
           {src: ['partial/**'], dest: '<%= PRODUCTION_PATH %>'},
           {src: ['bower_components/jquery/**'], dest: '<%= PRODUCTION_PATH %>'},
@@ -176,8 +171,6 @@ module.exports = function (grunt) {
           {src: ['bower_components/bootstrap/**'], dest: '<%= PRODUCTION_PATH %>'},
           {src: ['bower_components/font-awesome/**'], dest: '<%= PRODUCTION_PATH %>'},
           {src: ['bower_components/angular/**'], dest: '<%= PRODUCTION_PATH %>'}
-          // {src: ['bower_components/select2/*.png','bower_components/select2/*.gif'], dest:'dist/css/',flatten:true,expand:true},
-          // {src: ['bower_components/angular-mocks/angular-mocks.js'], dest: 'dist/'}
         ]
       }
     },
@@ -201,13 +194,13 @@ module.exports = function (grunt) {
         },
         src:'<%= PRODUCTION_PATH %>' + 'index.html'
       },
-      //add verbatim and endverbatim to prohibit conflicts with the django template tags
       addscript: {
         options:{
-              append:{selector:'#landmine',html:'<script src="' + '<%= DJANGO_PRODUCTION_ASSET_SERVER %><%= APP_STATIC_PATH %>' + 'app.full.min.js?<%= gitinfo.local.branch.current.shortSHA %>"></script>'}
-            },/* <%= DJANGO_PRODUCTION_ASSET_SERVER => */
-            src:'<%= PRODUCTION_PATH %>' + 'index.html'
+              append:{selector:'#landmine',html:'<script src="' + '<%= DJANGO_PRODUCTION_ASSET_SERVER %><%= APP_STATIC_PATH %>' + 'app.full.min.js?<%= gitinfo.local.branch.current.shortSHA %>"></script>'},
+          },
+          src:'<%= PRODUCTION_PATH %>' + 'index.html'
       },
+      //add verbatim and endverbatim to prohibit conflicts with the django template tags
       addverbatimprod:{
         options:{
           prepend:{selector:'body',html:'{% verbatim %}'},

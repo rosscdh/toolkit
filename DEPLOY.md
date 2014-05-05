@@ -6,6 +6,14 @@ Deployment actions by branch
 1. pip install -e git+https://github.com/rosscdh/django-hello_sign.git#egg=django-hello_sign # lots of upgrades here
 2. pip install -e git+https://github.com/rosscdh/hellosign.git#egg=hellosign
 
+--------------------------------------------------------------------------------
+** DEPLOYED 29 April 2014
+--------------------------------------------------------------------------------
+
+[matter-search]
+
+1. need to install npm -g install yuglify on prod servers
+2. pip install django-pipeline PyReact
 
 --------------------------------------------------------------------------------
 ** DEPLOYED 29 April 2014
@@ -25,11 +33,11 @@ Deployment actions by branch
 
 [choices-names]
 
-1. git co master;./manage.py migrate attachment 0003 
+1. git co master;./manage.py migrate attachment 0003
 must first run this data migration to ensure we catch all the current
 item statuses
 
-2. ./manage.py migrate attachment 0004  # removal of the status field 
+2. ./manage.py migrate attachment 0004  # removal of the status field
 
 
 [celery]
