@@ -444,6 +444,7 @@ LAWPAL_ACTIVITY = {
                       'revision-created', 'revision-comment-created', 'item-added-revision-comment',
                       'revision-added-revision-comment',
                       'revision-added-review-session-comment',
+                      'revision-changed-the-status',
 
                       'workspace-deleted',
                       'workspace-added-participant', 'workspace-removed-participant',
@@ -463,6 +464,7 @@ LAWPAL_ACTIVITY = {
                       'revision-created', 'revision-comment-created', 'item-added-revision-comment', 
                       'revision-added-revision-comment',
                       'revision-added-review-session-comment',
+                      'revision-changed-the-status',
 
                       'workspace-deleted',
                       'workspace-added-participant', 'workspace-removed-participant',
@@ -481,6 +483,7 @@ LAWPAL_ACTIVITY = {
                       'revision-created', 'revision-deleted',
                       'revision-added-review-session-comment',
                       'revision-added-revision-comment',
+                      'revision-changed-the-status',
 
                       'workspace-created', 'workspace-deleted',
                       'workspace-added-participant', 'workspace-removed-participant', 
