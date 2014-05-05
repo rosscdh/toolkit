@@ -1,6 +1,15 @@
 Deployment actions by branch
 ----------------------------
 
+[authy-integration]
+
+1. install -e git+https://github.com/rosscdh/django-authy.git#egg=django-authy
+2. ./manage.py syncdb add the authy table
+
+--------------------------------------------------------------------------------
+** DEPLOYED 29 April 2014
+--------------------------------------------------------------------------------
+
 [matter-search]
 
 1. need to install npm -g install yuglify on prod servers
