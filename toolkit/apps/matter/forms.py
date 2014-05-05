@@ -3,7 +3,6 @@ import json
 from django import forms
 from django.core.urlresolvers import reverse
 
-from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Button, Field, Layout
 
 from parsley.decorators import parsleyfy

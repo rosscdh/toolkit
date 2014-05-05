@@ -141,7 +141,7 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
             # Asynchronous celery task to upload the file
             #
             # @TODO add this back when the bug with viewing a matter signal is fixed
-            # run_task(crocodoc_upload_task, fallback_enabled=False,
+            # run_task(crocodoc_upload_task,
             #          user=self.request.user, revision=self.object)
 
             #
