@@ -431,7 +431,7 @@ class PlanChangeForm(PlanForm, ModalForm):
             self.helper.layout = Layout(
                 'plan',
                 'stripe_token',
-                HTML('<p><strong>We will charge your card ${0} on the {1} of every month starting on {2}.</strong></p>'.format(
+                HTML('<p class="lead"><strong>Thank you for choosing LawPal. We will charge your card ${0} on the {1} of every month starting on {2}.</strong></p><p>If you change your mind, you can cancel your account at any time.</p> '.format(
                     self.plan['price'],
                     '{% now "jS" %}',
                     '{% now "F j, Y" %}'
