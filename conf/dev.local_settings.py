@@ -91,3 +91,7 @@ MIXPANEL_SETTINGS = {
 #
 CELERY_DEFAULT_QUEUE = 'lawpal-local'
 ENABLE_CELERY_TASKS = True
+
+
+AUTHY_KEY = 'bcdfb7ce5e6854dcfe65ce5dd0d568c7' # dev-lawpal app
+AUTHY_IS_SANDBOXED = True
