@@ -134,6 +134,9 @@ HELPER_APPS = (
     # getsentry.com
     'raven.contrib.django.raven_compat',
 
+    # Payments
+    'payments',
+
     # api
     'rest_framework',
     'rest_framework.authtoken',
@@ -419,7 +422,7 @@ ACTSTREAM_SETTINGS = {
 
 #
 # Any change to the LAWPAL_ACTIVITY elements below needs to affect the
-# test_notices.py 
+# test_notices.py
 #
 LAWPAL_ACTIVITY = {
     "abridge": {
@@ -428,7 +431,7 @@ LAWPAL_ACTIVITY = {
                       # 'item-commented', 'item-comment-created', 'item-comment-deleted',
                       # 'item-invited-reviewer',
                       # 'item-provide-a-document',
-                      # 'revision-created', 'revision-comment-created', 'item-added-revision-comment', 
+                      # 'revision-created', 'revision-comment-created', 'item-added-revision-comment',
                       # 'revision-added-revision-comment',
                       # 'workspace-added-participant', 'workspace-removed-participant'
 
@@ -461,7 +464,7 @@ LAWPAL_ACTIVITY = {
                       'item-completed-review',
                       'item-completed-all-reviews',
 
-                      'revision-created', 'revision-comment-created', 'item-added-revision-comment', 
+                      'revision-created', 'revision-comment-created', 'item-added-revision-comment',
                       'revision-added-revision-comment',
                       'revision-added-review-session-comment',
                       'revision-changed-the-status',
@@ -486,11 +489,28 @@ LAWPAL_ACTIVITY = {
                       'revision-changed-the-status',
 
                       'workspace-created', 'workspace-deleted',
-                      'workspace-added-participant', 'workspace-removed-participant', 
+                      'workspace-added-participant', 'workspace-removed-participant',
                       'workspace-stopped-participating',
                       ]
     },
 }
+
+
+#
+# Payments
+#
+PAYMENTS_PLANS = {
+    "early-bird-monthly": {
+        "stripe_plan_id": "early-bird-monthly",
+        "name": "Early Bird",
+        "description": "Signup for LawPal's Early Bird plan and save! <br />Create unlimited projects with unlimited collaborators.<br /> Available for a limited time only.",
+        "features": "Unlimited Projects<br/> Unlimited Collaborators<br/> E-Signing<br/> Priority Support<br/> No long-term commitment",
+        "price": 25,
+        "currency": "usd",
+        "interval": "month"
+    }
+}
+
 
 try:
     LOCAL_SETTINGS
