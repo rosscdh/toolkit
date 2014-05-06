@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth.models import User
-from django.core.files.storage import default_storage
-
-from storages.backends.s3boto import S3BotoStorage
 
 import base64
 import hashlib
@@ -100,65 +97,3 @@ class UserAuthMixin(object):
                     break
             self.auth = auth
             self.save(update_fields=['data'])
-
-
-
-class FileExistsLocallyMixin(object):
-    """
-    Mixin to ensure we have the file available on the local filesystem, this is
-    important as in order to send documents for review at crocdoc and or for
-    signing at hellosign; the document must be available locally
-    @TODO make this asynchronous
-    """
-    def ensure_file(self):
-        """
-        initially this will be called in the view; but may cause render slowness
-        in the case of larger files that are not present on the local machine
-        eventually should have django-storages syncing all the filestores with
-        these files
-        """
-        if self.file_exists_locally is False:
-            # Download the file
-            # @TODO make this optional
-            # @TODO make this asyncronous?
-            #
-            file_name = self.document.executed_file.name
-            logger.info('File.DoesNotExistLocally: %s downloading' % file_name)
-            return self.download_file(file_name=file_name)
-        return False
-
-    @property
-    def file_exists_locally(self):
-        """
-        Used to determine if we should download the file locally
-        """
-        try:
-            return default_storage.exists(self.document.executed_file)
-        except Exception as e:
-            logger.error('Crocodoc file does not exist locally: %s raised exception %s' % (self.document.executed_file, e))
-        return False
-
-    def read_local_file(self):
-        if self.file_exists_locally is True:
-            return default_storage.open(self.document.executed_file).read()
-        return False
-
-    def download_file(self, file_name):
-        """
-        Its necessary to download the file from s3 locally as we have restrictive s3
-        permissions (adds time but necessary for security)
-        """
-        b = S3BotoStorage()
-
-        if b.exists(file_name) is False:
-            msg = 'file does not exist on s3: %s' % file_name
-            logger.critical(msg)
-            raise Exception(msg)
-
-        else:
-            #
-            # download from s3 and save the file locally
-            #
-            file_object = b._open(file_name)
-            logger.info('Downloading file from s3: %s' % file_name)
-            return default_storage.save(file_name, file_object)
