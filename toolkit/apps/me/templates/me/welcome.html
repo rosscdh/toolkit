@@ -1,0 +1,31 @@
+{% extends 'gui.html' %}
+
+{% block page_title %}Welcome to LawPal — {{ block.super }}{% endblock%}
+
+{% block body %}
+    <div id="plans" class="content">
+        <div class="content-header plans-header clearfix">
+            <div class="container">
+                <div class="col-sm-6 col-sm-offset-3 text-center">
+                    <br />
+                    <br />
+                    <img src="{{ STATIC_URL }}images/rocket.png" width="150px">
+                    <h3>Upgrade Successful</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="col-sm-6 col-sm-offset-3 text-center" role="main">
+                <p class="lead">We are thrilled to have you and your firm join LawPal. We look forward to working with you to shape our service in the coming months. 
+                </p>
+                <p class="lead">Your account is now active. If you have not yet done so, please take a few minutes to schedule a platform walkthrough, or continue back to your matter dashboard.</p>
+                <p class="text-center">
+                    <br />
+                <a href="/" class="btn btn-info btn-lg">Matter Dashboard</a> <a href="https://lawpal.youcanbook.me/" class="btn btn-success btn-lg">Book a Walkthrough</a>
+                </p>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

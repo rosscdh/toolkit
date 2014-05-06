@@ -178,13 +178,11 @@
             '$last_login': '{{ user.last_login|date:"c" }}',
             'pk': '{{ user.pk }}',
             'Account Type': '{{ user.profile.account_type }}',
+            {% if user.profile.is_lawyer %}'Firm Name': '{{ user.profile.firm_name }}',{% endif %}
+            'Plan': '{{ user.profile.plan }}',
+            {% if user.profile.plan_interval %}'Plan Interval': '{{ user.profile.plan_interval }}',{% endif %}
             'Type': '{{ user.profile.type }}'
             });
-        {% if user.profile.is_lawyer %}
-            mixpanel.people.set({
-                'Firm Name': '{{ user.profile.firm_name }}'
-            });
-        {% endif %}
     {% endif %}
         </script>
         <!-- end Mixpanel -->
