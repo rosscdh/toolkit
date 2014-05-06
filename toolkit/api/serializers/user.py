@@ -26,9 +26,33 @@ def _get_user_review(self, obj, context):
             #
             # The bast one will have 0 reviewers! and be the last in the set (because it was added first)
             #
-            review_document = obj.reviewdocument_set.all().last()
+            review_document = obj.primary_reviewdocument
 
         return review_document
+
+    return None
+
+
+def _get_user_sign(self, obj, context):
+    """
+    Try to provide an initial sign url from the base review_document obj
+    for the currently logged in user
+    """
+    request = context.get('request')
+    sign_document = context.get('sign_document', None)
+
+    if request is not None:
+        #
+        # if we have a sign_document present in the context
+        #
+        if sign_document is None:
+            # we have none, then try find the reviewdocument object that has all the matter participants in it
+            #
+            # The bast one will have 0 reviewers! and be the last in the set (because it was added first)
+            #
+            sign_document = obj.primary_signdocument
+
+        return sign_document
 
     return None
 

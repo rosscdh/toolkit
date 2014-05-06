@@ -28,7 +28,7 @@ class Command(BaseCommand):
         for e in self.records:
 
             sd = e.signdocument_set.all().first()
-            resp = sd.send_for_signing()
+            resp = sd.send_for_signing(requester_email_address='ross@lawpal.com')
             print resp.json()
 
             # invitees = [

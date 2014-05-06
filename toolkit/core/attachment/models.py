@@ -90,6 +90,16 @@ class Revision(IsDeletedMixin,
     def revisions(self):
         return self.item.revision_set.all()
 
+    @property
+    def primary_reviewdocument(self):
+        # is this *really* only the case for a NEW reviewdocument/revision?
+        return self.reviewdocument_set.filter(reviewers=None).last()
+
+    @property
+    def primary_signdocument(self):
+        # there is only ever 1 of these, per revision (document)
+        return self.signdocument_set.filter(reviewers=None).first()
+
     def get_absolute_url(self):
         """
         @TODO currently there is no GUI route to handle linking directly to a revision
@@ -108,11 +118,18 @@ class Revision(IsDeletedMixin,
         Try to provide an initial review url from the base review_document obj
         for the currently logged in user
         """
-        if user is not None:
-            if review_document is None:
-                review_document = self.reviewdocument_set.all().last()
-            return review_document.get_absolute_url(user=user, use_absolute=False) if review_document is not None else None
-        return None
+        if review_document is None:
+            review_document = self.primary_reviewdocument
+        return review_document.get_absolute_url(user=user, use_absolute=False) if review_document is not None else None
+
+    def get_user_sign_url(self, user, sign_document=None):
+        """
+        Try to provide an initial signing url from the base sign_document obj
+        for the currently logged in user
+        """
+        if sign_document is None:
+            sign_document = self.primary_signdocument
+        return sign_document.get_absolute_url(user=user, use_absolute=False) if sign_document is not None else None
 
     def get_revision_label(self):
         """
@@ -147,11 +164,6 @@ class Revision(IsDeletedMixin,
 
     def previous(self):
         return self.revisions.filter(pk__lt=self.pk).first()
-
-    @property
-    def primary_reviewdocument(self):
-        # is this *really* only the case for a NEW reviewdocument/revision?
-        return self.reviewdocument_set.filter(reviewers=None).last()
 
 
 from .signals import (ensure_revision_slug,

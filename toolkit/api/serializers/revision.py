@@ -8,7 +8,7 @@ from toolkit.core.attachment.models import Revision
 from toolkit.core.attachment.tasks import _download_file
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 
-from toolkit.api.serializers.user import _get_user_review
+from toolkit.api.serializers.user import _get_user_review, _get_user_sign
 
 from .user import SimpleUserSerializer
 from .review import ReviewSerializer
@@ -172,6 +172,8 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
     user_review = serializers.SerializerMethodField('get_user_review')
     user_download_url = serializers.SerializerMethodField('get_user_download_url')
 
+    user_sign = serializers.SerializerMethodField('get_user_sign')
+
     revisions = serializers.SerializerMethodField('get_revisions')
 
     uploaded_by = serializers.SerializerMethodField('get_uploaded_by')
@@ -268,6 +270,22 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
             return review_document.get_download_url(user=request.user)
 
         return None
+
+    def get_user_sign(self, obj):
+        """
+        Try to provide an initial sign url from the base review_document obj
+        for the currently logged in user
+        """
+        context = getattr(self, 'context', None)
+        request = context.get('request')
+
+        sign_document = _get_user_sign(self=self, obj=obj, context=context)
+
+        if sign_document is not None:
+            return {
+                'url': sign_document.get_absolute_url(user=request.user),
+                'slug': sign_document.slug
+            }
 
     def get_revisions(self, obj):
         return [ABSOLUTE_BASE_URL(reverse('matter_item_specific_revision', kwargs={
