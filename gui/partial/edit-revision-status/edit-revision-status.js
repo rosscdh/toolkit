@@ -21,7 +21,7 @@ angular.module('toolkit-gui')
 	'toaster',
 	'$log',
 	function($scope, $modalInstance, currentUser, matter, customstatusdict, defaultstatusdict, matterService, toaster, $log){
-
+		'use strict';
 		/**
 		 * In scope variable containing details about the current user. This is passed through from the originating controller.
 		 * @memberof EditRevisionStatusCtrl
@@ -108,7 +108,7 @@ angular.module('toolkit-gui')
 		 * @private
 		 */
         $scope.removeStatus = function(key, index) {
-            var qtyStatus = $scope.statuslist.length;
+            /*var qtyStatus = $scope.statuslist.length;*/
             var statusToRemove = parseInt(key);
 
             var inUse = false;
@@ -120,7 +120,7 @@ angular.module('toolkit-gui')
             });
 
             if (inUse === true) {
-                toaster.pop('warning', "Warning!", "This status is in use and cannot be removed.");
+                toaster.pop('warning', 'Warning!', 'This status is in use and cannot be removed.', 5000);
             } else {
                 $scope.statuslist.splice(index,1);
             }
@@ -165,9 +165,9 @@ angular.module('toolkit-gui')
                     function success(){
                         $modalInstance.close(  $scope.customstatusdict );
                     },
-                    function error(err){
-                        if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to save the status.") {
-                            toaster.pop('error', "Error!", "Unable to save the status.");
+                    function error(/*err*/){
+                        if( !toaster.toast || !toaster.toast.body || toaster.toast.body !== 'Unable to save the status.') {
+                            toaster.pop('error', 'Error!', 'Unable to save the status.',5000);
                         }
                     }
             );
