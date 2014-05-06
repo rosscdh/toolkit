@@ -3,36 +3,13 @@
 * ReactJS Experiment
 *
 */
-
-var IsHighlySecure = React.createClass({displayName: 'IsHighlySecure',
-    render: function() {
-        if (this.props.is_highly_secure === true) {
-            return (
-                React.DOM.p( {className:"small pull-left done"}, React.DOM.a( {href:"{ url }", title:"Highly Secure Matter"}, React.DOM.span( {className:"fui-lock"})))
-            );
-        } else {
-            return (
-                React.DOM.span(null, " ")
-            );
-        };
-    }
-});
-
-
 var MatterItem = React.createClass({displayName: 'MatterItem',
   render: function() {
-
-    var isHighlySecure = IsHighlySecure(
-                            {is_highly_secure:this.props.is_highly_secure,
-                            url:this.props.detail_url} )
 
     return (
             React.DOM.article( {className:"col-md-4 matter"}, 
                 React.DOM.div( {className:"card"}, 
-
-                     isHighlySecure, 
                      this.props.editMatterInterface, 
-
                     React.DOM.a( {href: this.props.detail_url,  title: this.props.name,  className:"content"}, 
                         React.DOM.div( {className:"title"}, 
                             React.DOM.h6(null,  this.props.lawyer_or_client_name ),
@@ -187,8 +164,6 @@ var MatterList = React.createClass({displayName: 'MatterList',
                         participantList:participantList,
                         lastupdated_or_complete:lastupdatedOrComplete,
                         editMatterInterface:editMatterInterface,
-
-                        is_highly_secure:matter.is_highly_secure,
 
                         percent_complete:matter.percent_complete,
                         percentStyle:percentStyle,

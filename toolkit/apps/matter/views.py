@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse, reverse_lazy
-from django.views.generic import DetailView, CreateView, DeleteView, ListView, TemplateView, UpdateView
+from django.views.generic import DetailView, CreateView, DeleteView, ListView, UpdateView
 
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
@@ -11,7 +11,6 @@ from toolkit.apps.matter.services import (MatterRemovalService, MatterParticipan
 from toolkit.apps.workspace.models import Workspace
 from toolkit.mixins import AjaxModelFormView, ModalView
 
-from dj_authy.views import AuthyAuthyRequiredViewMixin
 from rest_framework.renderers import UnicodeJSONRenderer
 
 from .forms import MatterForm
@@ -58,8 +57,7 @@ class MatterListView(ListView):
         }
 
 
-class MatterDetailView(AuthyAuthyRequiredViewMixin,
-                       DetailView):
+class MatterDetailView(DetailView):
     """
     Just a proxy view through to the AngularJS app.
     """

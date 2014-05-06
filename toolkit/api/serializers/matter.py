@@ -28,8 +28,6 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
     lawyer = LiteUserSerializer(required=False)
     participants = LiteUserSerializer(many=True, required=False)
 
-    is_highly_secure = serializers.SerializerMethodField('get_is_highly_secure')  # hooked up to dj_authy
-
     categories = serializers.SerializerMethodField('get_categories')
     closing_groups = serializers.SerializerMethodField('get_closing_groups')
 
@@ -122,12 +120,6 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
     def get_percent_complete(self, obj):
         return obj.get_percent_complete
 
-    def get_is_highly_secure(self, obj):
-        if hasattr(obj, 'require_authy_authentication'):
-            return obj.require_authy_authentication
-        else:
-            return False
-
 
 class LiteMatterSerializer(MatterSerializer):
     """
@@ -136,7 +128,7 @@ class LiteMatterSerializer(MatterSerializer):
     class Meta(MatterSerializer.Meta):
         fields = ('url', 'base_url', 'name', 'slug', 'matter_code', 'client',
                   'lawyer', 'participants', 'date_created', 'date_modified',
-                  'percent_complete', 'regular_url', 'is_highly_secure')
+                  'percent_complete', 'regular_url')
 
 
 class SimpleMatterSerializer(MatterSerializer):

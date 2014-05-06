@@ -3,36 +3,13 @@
 * ReactJS Experiment
 *
 */
-
-var IsHighlySecure = React.createClass({
-    render: function() {
-        if (this.props.is_highly_secure === true) {
-            return (
-                <p className="small pull-left done"><a href="{ url }" title="Highly Secure Matter"><span className="fui-lock"></span></a></p>
-            );
-        } else {
-            return (
-                <span>&nbsp;</span>
-            );
-        };
-    }
-});
-
-
 var MatterItem = React.createClass({
   render: function() {
-
-    var isHighlySecure = <IsHighlySecure
-                            is_highly_secure={this.props.is_highly_secure}
-                            url={this.props.detail_url} />
 
     return (
             <article className="col-md-4 matter">
                 <div className="card">
-
-                    { isHighlySecure }
                     { this.props.editMatterInterface }
-
                     <a href={ this.props.detail_url } title={ this.props.name } className="content">
                         <div className="title">
                             <h6>{ this.props.lawyer_or_client_name }</h6>
@@ -187,8 +164,6 @@ var MatterList = React.createClass({
                         participantList={participantList}
                         lastupdated_or_complete={lastupdatedOrComplete}
                         editMatterInterface={editMatterInterface}
-
-                        is_highly_secure={matter.is_highly_secure}
 
                         percent_complete={matter.percent_complete}
                         percentStyle={percentStyle}
