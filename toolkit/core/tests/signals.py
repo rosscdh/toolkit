@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-from django.core.cache import cache
 from django.test import TestCase
+from django.core.cache import cache
 from django.dispatch import receiver
 
-import time
 from model_mommy import mommy
 from actstream.models import action_object_stream, model_stream
 
@@ -56,7 +55,7 @@ expected_cache_keys = {
                      "<class 'toolkit.core.services.matter_activity.MatterActivityEventService'>",
                      "<class 'django.dispatch.dispatcher.Signal'>",
                      "<type 'NoneType'>",
-                     "<class 'django.contrib.auth.models.User'>",
+                     "<class 'django.utils.functional.SimpleLazyObject'>",
                      "<type 'NoneType'>",
                      "<type 'NoneType'>",
                      u'created',
@@ -108,20 +107,27 @@ class ActivitySignalTest(BaseScenarios, TestCase):
     def setUp(self):
         super(ActivitySignalTest, self).setUp()
         self.basic_workspace()
+        self.item = self._api_create_item(matter=self.matter, name='Test Item #1')
 
     def test_workspace_created_signal_received_on_basic_workspace(self):
         """
         Created by the self.basic_workspace() call
         """
         for cache_key in expected_cache_keys.keys():
-            # in setUp the workspace was created which should have reached on_activity_received above:
+            # in setUp the workspace was created which
+            # should have reached on_activity_received above:
             cache_obj = cache.get(cache_key)
 
             self.assertItemsEqual(cache_obj.keys(), ['sender', 'signal', 'actor', 'verb', 'verb_slug', 'action_object',
                                                      'target', 'item', 'user', 'override_message', 'comment',
                                                      'previous_name', 'current_status', 'previous_status', 'filename',
                                                      'date_created', 'version', 'message', 'reviewdocument'])
-            #print '%s has these values: %s' % (cache_key, cache_obj.values())
+
+            # print cache_key + " \r\n"
+            # print cache_obj.values()
+            # print "\n\rcompared with\n\r"
+            # print expected_cache_keys[cache_key]
+            # print "\n\r"
             self.assertItemsEqual(cache_obj.values(), expected_cache_keys[cache_key])
             cache.delete(cache_key)
 
@@ -136,39 +142,36 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         self.assertEqual(stream_item.actor, self.lawyer)
 
     def test_item_created(self):
-        item = mommy.make('item.Item', name='Test Item #1', matter=self.workspace)
-        stream = action_object_stream(item)
+        stream = action_object_stream(self.item)
         self.assertEqual(len(stream), 1)
         stream_item = stream[0]
         self.assertEqual(stream_item.verb, 'created')
-        self.assertEqual(stream_item.target, self.workspace)
-        self.assertEqual(stream_item.action_object, item)
+        self.assertEqual(stream_item.target, self.matter)
+        self.assertEqual(stream_item.action_object, self.item)
         self.assertEqual(stream_item.actor, self.lawyer)
 
     def test_item_renamed(self):
-        item = mommy.make('item.Item', name='Test Item #1', matter=self.workspace)
-        item.name = 'New Name'
-        item.save()
-        stream = action_object_stream(item)
+        self.item.name = 'New Name'
+        self.item.save()
+        stream = action_object_stream(self.item)
         self.assertEqual(len(stream), 2)
         stream_item = stream[0]
         self.assertEqual(stream_item.verb, 'renamed')
-        self.assertEqual(stream_item.target, self.workspace)
-        self.assertEqual(stream_item.action_object, item)
+        self.assertEqual(stream_item.target, self.matter)
+        self.assertEqual(stream_item.action_object, self.item)
         self.assertEqual(stream_item.actor, self.lawyer)
         self.assertEqual(stream_item.data['override_message'],
                          u'Lawyër Tëst renamed Test Item #1 to New Name')
 
     def test_item_status_changed(self):
-        item = mommy.make('item.Item', name='Test Item #1', matter=self.workspace)
-        item.status = 2
-        item.save()
-        stream = action_object_stream(item)
+        self.item.status = 2
+        self.item.save()
+        stream = action_object_stream(self.item)
         self.assertEqual(len(stream), 2)
         stream_item = stream[0]
         self.assertEqual(stream_item.verb, 'changed the status')
-        self.assertEqual(stream_item.target, self.workspace)
-        self.assertEqual(stream_item.action_object, item)
+        self.assertEqual(stream_item.target, self.matter)
+        self.assertEqual(stream_item.action_object, self.item)
         self.assertEqual(stream_item.actor, self.lawyer)
         self.assertEqual(stream_item.data['override_message'],
                          u'Lawyër Tëst set Test Item #1 to Executed')
@@ -178,10 +181,9 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         first create a revision and call the service which would be called from the api in reality.
         test, if stream entry was created
         """
-        item = mommy.make('item.Item', name='Test Item #1', matter=self.workspace)
-        revision1 = mommy.make('attachment.Revision', name='Test Revision #1', item=item, uploaded_by=self.user)
+        revision1 = mommy.make('attachment.Revision', name='Test Revision #1', item=self.item, uploaded_by=self.user)
         self.matter.actions.created_revision(user=self.user,
-                                             item=item,
+                                             item=self.item,
                                              revision=revision1)
         stream = model_stream(Revision)
         self.assertEqual(len(stream), 1)
@@ -192,10 +194,11 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         add a user as reviewer and check if it worked
         """
         reviewer = mommy.make('auth.User', username='test-reviewer', first_name='Customër', last_name='Tëst', email='testreviewer@lawpal.com')
-        self.matter.actions.invite_user_as_reviewer(item, self.lawyer, reviewer)
+        self.matter.actions.invite_user_as_reviewer(self.item, self.lawyer, reviewer)
         stream = model_stream(Item)
+
         self.assertEqual(len(stream), 2)  # first one was the creation
-        self.assertEqual(stream[0].action_object, item)
+        self.assertEqual(stream[0].action_object, self.item)
         self.assertEqual(stream[0].actor, self.lawyer)
         self.assertEqual(stream[0].data['override_message'],
                          u'Lawyër Tëst invited Customër Tëst to review Revision v1 of Test Item #1')
@@ -203,10 +206,10 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         """
         delete user as reviewer and check if it worked
         """
-        self.matter.actions.cancel_user_upload_revision_request(item, self.user, reviewer)
+        self.matter.actions.cancel_user_upload_revision_request(self.item, self.user, reviewer)
         stream = model_stream(Item)
         self.assertEqual(len(stream), 3)
-        self.assertEqual(stream[0].action_object, item)
+        self.assertEqual(stream[0].action_object, self.item)
         self.assertEqual(stream[0].actor, self.user)
         self.assertEqual(stream[0].data['override_message'],
                          u'Customër Tëst canceled their request for Customër Tëst to provide a document on Test Item #1')
@@ -214,7 +217,7 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         """
         remove revision again and check if it worked
         """
-        self.matter.actions.deleted_revision(self.lawyer, item, revision1)
+        self.matter.actions.deleted_revision(self.lawyer, self.item, revision1)
         stream = model_stream(Revision)
         self.assertEqual(len(stream), 2)
         self.assertEqual(stream[0].action_object, revision1)
@@ -222,10 +225,9 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         self.assertEqual(stream[0].data['override_message'], u'Lawyër Tëst destroyed a revision for Test Item #1')
 
     def test_add_comment(self):
-        item = mommy.make('item.Item', name='Test Item #1', matter=self.matter)
         comment_text = u'Sleep with one eye open'
 
-        self.matter.actions.add_item_comment(self.lawyer, item, comment_text)
+        self.matter.actions.add_item_comment(self.lawyer, self.item, comment_text)
 
         stream = model_stream(Item)
         self.assertEqual(len(stream), 2)  # create item, and add comment -> 2
@@ -233,11 +235,12 @@ class ActivitySignalTest(BaseScenarios, TestCase):
 
     def test_customer_stream(self):
         from actstream.models import Action
+        self.client.login(username=self.lawyer.username, password=self.password)
         # just for testing during development, only works because of hard set starting time in target_by_customer_stream
-        workspace = mommy.make('workspace.Workspace', name='Action Created by Signal Workspace', lawyer=self.lawyer)
-        mommy.make('item.Item', name='Test Item #1', matter=workspace)
-        time.sleep(2)
-        mommy.make('item.Item', name='Test Item #2', matter=workspace)
+        matter = mommy.make('workspace.Workspace', name='Action Created by Signal Workspace', lawyer=self.lawyer)
 
-        stream = Action.objects.target_by_customer_stream(workspace, self.lawyer)
+        for i in range(0,2):
+            new_item = self._api_create_item(matter=matter, name='New Test Item No. %d' % i)
+
+        stream = Action.objects.target_by_customer_stream(matter, self.lawyer)
         self.assertEqual(len(stream), 1)  # shall only find the newest entry, the 2 other ones are too old.
