@@ -108,16 +108,12 @@ class Item(IsDeletedMixin,
             revision = self.latest_revision
         return revision.get_user_review_url(user=user)
 
-    def get_full_user_review_url(self, user, version_slug):
-        # returns url to item AND revision
-        # outdated example: /matters/test-matter-1/#/checklist/e89403f273a045cd8a0ca7e7dd2bc383:/review/1d5d8b3ac969415e941aab3dd2ce41e8/BR45Ps8PPplMXg%3D%3D/
-        # example: /matters/test-matter-1/#/checklist/e89403f273a045cd8a0ca7e7dd2bc383/v3/review/1d5d8b3ac969415e941aab3dd2ce41e8/BR45Ps8PPplMXg%3D%3D/
-
-        # instead we could use the reviewer ID if we added it to the reviewer-serializer. or if we use the non-absolute
-        # user_review_url as identifier, we must add it to the review
-
-        review_document_link = self.get_user_review_url(user=user, version_slug=version_slug)
-        return "%s/%s%s" % (self.get_absolute_url(), version_slug, review_document_link)
+    def get_user_sign_url(self, user, version_slug=None):
+        if version_slug is not None:
+            revision = self.revision_set.get(slug=version_slug)
+        else:
+            revision = self.latest_revision
+        return revision.get_user_sign_url(user=user)
 
     @property
     def client(self):

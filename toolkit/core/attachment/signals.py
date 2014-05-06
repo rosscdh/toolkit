@@ -235,16 +235,16 @@ def on_signatory_add(sender, instance, action, model, pk_set, **kwargs):
     when a signatory is added from the m2m then authorise them
     for access
     """
-    if action in ['post_add'] and pk_set:
-        user_pk = next(iter(pk_set))  # get the first item in the set should only ever be 1 anyway
-        user = model.objects.get(pk=user_pk)
+    if action in ['post_add']:
         #
         # Get the base sign documnet; created to alow the participants to access
         # and sign a documnet
         #
-        signdocument = instance.signdocument_set.all().first()
+        signdocument, is_new = instance.signdocument_set.model.objects.get_or_create(document=instance)
 
         #
         # 1 signing document for this document; as we only sign the final document
         #
-        signdocument.signers.add(user)  # add the reviewer
+        signdocument.signers.clear()  # clear all existing
+        # re add the curent updated set
+        signdocument.signers = instance.signers.all()

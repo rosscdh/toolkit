@@ -66,50 +66,47 @@ class ItemRevisionSignersView(generics.ListAPIView,
         2. is the user already a signer for this revision
         3. if not make them one
         """
-        username = request.DATA.get('username')
-        first_name = request.DATA.get('first_name')
-        last_name = request.DATA.get('last_name')
-        email = request.DATA.get('email')
-        note = request.DATA.get('note')
 
-        if username is None and email is None:
-            raise exceptions.APIException('You must provide a username or email')
+        message = request.DATA.get('message')
+        signers = request.DATA.get('signers')
 
-        try:
-            if username is not None:
-                user = User.objects.get(username=username)
+        for signer in signers:
 
-            elif email is not None:
-                user = User.objects.get(email=email)
-
-        except User.DoesNotExist:
+            first_name = signer.get('first_name')
+            last_name = signer.get('last_name')
+            email = signer.get('email')
 
             if email is None:
-                raise Http404
+                raise exceptions.APIException('You must provide a list of signers and they must have an email attribute  {"signers": [{"email": "me@example.com"},]}')
 
-            else:
+            try:
+                user = User.objects.get(email=email)
+
+            except User.DoesNotExist:
+
                 # we have a new user here
                 user_service = EnsureCustomerService(email=email, full_name='%s %s' % (first_name, last_name))
                 is_new, user, profile = user_service.process()
 
-        if user not in self.get_queryset():
-            # add to the join if not there already
-            # add the user to the purpose of this endpoint object review||signature
-            self.revision.signers.add(user)
+            if user not in self.get_queryset():
+                # add to the join if not there already
+                # add the user to the purpose of this endpoint object review||signature
+                self.revision.signers.add(user)
 
-            #
-            # Send invite to review Email
-            #
-            self.item.send_invite_to_sign_emails(from_user=request.user, to=[user], note=note)
+                #
+                # Send invite to review Email
+                #
+                self.item.send_invite_to_sign_emails(from_user=request.user, to=[user], message=message)
 
-            #
-            # add activity
-            #
-            self.matter.actions.invite_user_as_signer(item=self.item,
-                                                      inviting_user=request.user,
-                                                      invited_user=user)
+                #
+                # add activity
+                #
+                self.matter.actions.invite_user_as_signer(item=self.item,
+                                                          inviting_user=request.user,
+                                                          invited_user=user)
 
-        sign_document = self.revision.signdocument_set.filter(signers__in=[user]).first()
+        sign_document = self.revision.signdocument_set.filter(signers=self.revision.signers.all()).first()
+        sign_document.send_for_signing(requester_email_address=request.user.email)
 
         # we have the user at this point
         serializer = self.get_serializer(sign_document)
