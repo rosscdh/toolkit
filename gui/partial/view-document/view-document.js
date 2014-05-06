@@ -80,7 +80,6 @@ angular.module('toolkit-gui')
                     $scope.revision.user_review_url = revision.user_review_url;
                 },
                 function error(/*err*/){
-                	toaster.clear();
                     toaster.pop('error', 'Error!', 'Unable to load revision details',5000);
                 }
             );

@@ -55,7 +55,6 @@ angular.module('toolkit-gui')
                 $scope.data.matterlist = response;
              },
              function error(/*err*/){
-             	toaster.clear();
                 toaster.pop('error', 'Error!', 'Unable to other matters.',5000);
              }
         );

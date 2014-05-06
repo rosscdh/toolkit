@@ -69,7 +69,6 @@ angular.module('toolkit-gui')
 		 * @memberof			ParticipantInviteCtrl
 		 */
         $scope.checkIfUserExists = function (lawyerObligatory) {
-        	toaster.clear();
             if ($scope.data.invitee.email != null && $scope.data.invitee.email.length>0) {
                 $scope.data.validationError = false;
 
@@ -108,8 +107,7 @@ angular.module('toolkit-gui')
                         }
                     },
                     function error() {
-                    	toaster.clear();
-                        toaster.pop('error', 'Error!', 'Unable to load participant');
+                        toaster.pop('error', 'Error!', 'Unable to load participant', 3000);
                     }
                 );
             } else {
@@ -129,7 +127,6 @@ angular.module('toolkit-gui')
 		 * @memberof			ParticipantInviteCtrl
 		 */
 		$scope.invite = function () {
-			toaster.clear();
             if($scope.data.showAddLawyer===true){
                 $scope.data.invitee.user_class='lawyer';
             } else {
@@ -156,13 +153,11 @@ angular.module('toolkit-gui')
                             $scope.data.showAddParticipant=false;
                         },
                         function error(/*err*/){
-                        	toaster.clear();
                             toaster.pop('error', 'Error!', 'Unable to load participant',5000);
                         }
                     );
 				},
 				function error() {
-					toaster.clear();
 					toaster.pop('error', 'Error!', 'Unable to invite this person to particpate, please try again in a few moments',5000);
 				}
 			);
@@ -179,7 +174,6 @@ angular.module('toolkit-gui')
 		 * @memberof			ParticipantInviteCtrl
 		 */
 		$scope.revoke = function ( person ) {
-			toaster.clear();
 			participantService.revoke( $scope.matter.slug, person ).then(
 				function success() {
 					var index = jQuery.inArray( person, $scope.participants );

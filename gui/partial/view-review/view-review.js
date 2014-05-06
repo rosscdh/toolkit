@@ -127,7 +127,6 @@ angular.module('toolkit-gui')
 		 * @private
          */
         $scope.saveReview = function(){
-        	toaster.clear();
             matterItemService.updateRevisionReview(review).then(
                 function success(){
                     // do nothing
