@@ -132,11 +132,8 @@ angular.module('toolkit-gui')
                             $scope.data.isNew = true;
                             $scope.data.selectedPerson = null;
                         }
-
-                        toaster.clear();
                     },
                     function error() {
-                    	toaster.clear();
                         toaster.pop('error', 'Error!', 'Unable to load participant',5000);
                     }
                 );
@@ -176,7 +173,6 @@ angular.module('toolkit-gui')
 		 * @memberof			RequestreviewCtrl
 		 */
         $scope.request = function () {
-        	toaster.clear();
             var selectedPerson = $scope.data.selectedPerson;
             if (selectedPerson != null) {
                 $scope.data.request.email = selectedPerson.email;
@@ -190,8 +186,7 @@ angular.module('toolkit-gui')
                 },
                 function error(/*err*/) {
                     if (!toaster.toast || !toaster.toast.body || toaster.toast.body !== 'Unable to request a revision review.') {
-                    	toaster.clear();
-                        toaster.pop('error', 'Error!', 'Unable to request a revision review.');
+                        toaster.pop('error', 'Error!', 'Unable to request a revision review.', 3000);
                     }
                 }
             );

@@ -121,7 +121,6 @@ angular.module('toolkit-gui')
 		 * @memberof			ParticipantInviteCtrl
 		 */
         $scope.checkIfUserExists = function () {
-        	toaster.clear();
             if ($scope.data.request.email != null && $scope.data.request.email.length>0) {
                 $scope.data.validationError = false;
 
@@ -136,7 +135,6 @@ angular.module('toolkit-gui')
                         }
                     },
                     function error() {
-                    	toaster.clear();
                         toaster.pop('error', 'Error!', 'Unable to load participant',5000);
                     }
                 );
@@ -166,7 +164,6 @@ angular.module('toolkit-gui')
 		 * @memberof			RequestreviewCtrl
 		 */
 		$scope.request = function() {
-			toaster.clear();
             for (var key in $scope.data.selectedUsers) {
                 $scope.data.request.signer.push($scope.data.selectedUsers[key]);
             }
@@ -177,7 +174,6 @@ angular.module('toolkit-gui')
                     },
                     function error(/*err*/){
                         if( !toaster.toast || !toaster.toast.body || toaster.toast.body !== 'Unable to request a signer.') {
-                        	toaster.clear();
                             toaster.pop('error', 'Error!', 'Unable to request a signer.');
                         }
                     }

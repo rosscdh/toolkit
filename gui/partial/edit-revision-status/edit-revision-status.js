@@ -120,7 +120,6 @@ angular.module('toolkit-gui')
             });
 
             if (inUse === true) {
-            	toaster.clear();
                 toaster.pop('warning', 'Warning!', 'This status is in use and cannot be removed.', 5000);
             } else {
                 $scope.statuslist.splice(index,1);
@@ -168,7 +167,6 @@ angular.module('toolkit-gui')
                     },
                     function error(/*err*/){
                         if( !toaster.toast || !toaster.toast.body || toaster.toast.body !== 'Unable to save the status.') {
-                        	toaster.clear();
                             toaster.pop('error', 'Error!', 'Unable to save the status.',5000);
                         }
                     }
