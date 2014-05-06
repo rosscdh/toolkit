@@ -18,7 +18,7 @@ angular.module('toolkit-gui')
 	'review',
 	'$log',
 	function($scope, $modalInstance, toaster, matterItemService, matter, checklistItem, revision, review, $log){
-
+		'use strict';
 		/**
 		 * WIP
 		 *
@@ -88,7 +88,7 @@ angular.module('toolkit-gui')
 		 * @private
          */
         $scope.initUserWithAccess = function(){
-            var reviews = $scope.revision.reviewers;
+            /*var reviews = $scope.revision.reviewers;*/
             var participants = matter.participants;
             var usersWithAccess = [];
             var reviewers = [];
@@ -127,19 +127,19 @@ angular.module('toolkit-gui')
 		 * @private
          */
         $scope.saveReview = function(){
+        	toaster.clear();
             matterItemService.updateRevisionReview(review).then(
                 function success(){
                     // do nothing
                 },
-                function error(err){
-                    if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to update the review.") {
-                        toaster.pop('error', "Error!", "Unable to update the review.");
+                function error(/*err*/){
+                    if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to update the review.') {
+                        toaster.pop('error', 'Error!', 'Unable to update the review.');
                     }
                 }
             );
         };
 
         $scope.initUserWithAccess();
-
 	}
 ]);

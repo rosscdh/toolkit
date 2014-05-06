@@ -23,6 +23,7 @@ angular.module('toolkit-gui')
 	'$log',
 	'$window',
 	function($scope, $modalInstance, participants, currentUser, matter, participantService, toaster, $location, $log, $window){
+		'use strict';
 		/**
 		 * In scope variable containing a list of participants within this matter. This is passed through from the originating controller.
 		 * @memberof ParticipantInviteCtrl
@@ -68,6 +69,7 @@ angular.module('toolkit-gui')
 		 * @memberof			ParticipantInviteCtrl
 		 */
         $scope.checkIfUserExists = function (lawyerObligatory) {
+        	toaster.clear();
             if ($scope.data.invitee.email != null && $scope.data.invitee.email.length>0) {
                 $scope.data.validationError = false;
 
@@ -106,7 +108,8 @@ angular.module('toolkit-gui')
                         }
                     },
                     function error() {
-                        toaster.pop('error', "Error!", "Unable to load participant");
+                    	toaster.clear();
+                        toaster.pop('error', 'Error!', 'Unable to load participant');
                     }
                 );
             } else {
@@ -126,10 +129,11 @@ angular.module('toolkit-gui')
 		 * @memberof			ParticipantInviteCtrl
 		 */
 		$scope.invite = function () {
+			toaster.clear();
             if($scope.data.showAddLawyer===true){
-                $scope.data.invitee.user_class="lawyer";
+                $scope.data.invitee.user_class='lawyer';
             } else {
-                $scope.data.invitee.user_class="customer";
+                $scope.data.invitee.user_class='customer';
             }
 
 			participantService.invite( $scope.matter.slug, $scope.data.invitee ).then(
@@ -151,13 +155,15 @@ angular.module('toolkit-gui')
                             $scope.data.showAddLawyer=false;
                             $scope.data.showAddParticipant=false;
                         },
-                        function error(err){
-                            toaster.pop('error', "Error!", "Unable to load participant");
+                        function error(/*err*/){
+                        	toaster.clear();
+                            toaster.pop('error', 'Error!', 'Unable to load participant',5000);
                         }
                     );
 				},
 				function error() {
-					toaster.pop('error', "Error!", "Unable to invite this person to particpate, please try again in a few moments");
+					toaster.clear();
+					toaster.pop('error', 'Error!', 'Unable to invite this person to particpate, please try again in a few moments',5000);
 				}
 			);
 		};
@@ -173,6 +179,7 @@ angular.module('toolkit-gui')
 		 * @memberof			ParticipantInviteCtrl
 		 */
 		$scope.revoke = function ( person ) {
+			toaster.clear();
 			participantService.revoke( $scope.matter.slug, person ).then(
 				function success() {
 					var index = jQuery.inArray( person, $scope.participants );
@@ -182,11 +189,11 @@ angular.module('toolkit-gui')
                     }
 
                     if(person.username===$scope.currentUser.username){
-                        $window.location = "/";
+                        $window.location = '/';
                     }
 				},
 				function error() {
-					toaster.pop('error', "Error!", "Unable to revoke the access of this person");
+					toaster.pop('error', 'Error!', 'Unable to revoke the access of this person',5000);
 				}
 			);
 		};

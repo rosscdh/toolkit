@@ -113,7 +113,8 @@ angular.module('toolkit-gui')
                     $scope.initialiseIntercom(singleMatter.current_user);
 				},
 				function error(/*err*/){
-					toaster.pop('error', 'Error!', 'Unable to load matter');
+					toaster.clear();
+					toaster.pop('error', 'Error!', 'Unable to load matter',5000);
 					// @TODO: redirect user maybe?
 				}
 			);
@@ -140,6 +141,7 @@ angular.module('toolkit-gui')
          * @method              handleUrlState
          */
         $scope.handleUrlState = function () {
+        	toaster.clear();
             var itemSlug = $state.params.itemSlug;
             var revisionSlug = $state.params.revisionSlug;
             var reviewSlug = $state.params.reviewSlug;
@@ -160,7 +162,8 @@ angular.module('toolkit-gui')
                         }
                     );
                 } else {
-                    toaster.pop('warning', 'Item does not exist anymore.');
+                	toaster.clear();
+                    toaster.pop('warning', 'Item does not exist anymore.',5000);
                 }
             }
 
@@ -180,6 +183,7 @@ angular.module('toolkit-gui')
 		 * @method			initialiseMatter
 		 */
 		$scope.initialiseMatter = function( matter ) {
+			toaster.clear();
 			var /*i, */categoryName = null, categories = [], items = [];
 
 			// Items with blank category name
@@ -204,7 +208,8 @@ angular.module('toolkit-gui')
 
 			} else {
 				// Display error
-				toaster.pop('warning', 'Unable to load matter details');
+				toaster.clear();
+				toaster.pop('warning', 'Unable to load matter details',5000);
 			}
 		};
 
@@ -284,23 +289,25 @@ angular.module('toolkit-gui')
         };
 
 		$scope.submitNewItem = function(category) {
-		   var matterSlug = $scope.data.slug;
+			toaster.clear();
+			var matterSlug = $scope.data.slug;
 
-		   if ($scope.data.newItemName) {
-			 matterItemService.create(matterSlug, $scope.data.newItemName, category.name).then(
-				 function success(item){
+			if ($scope.data.newItemName) {
+				matterItemService.create(matterSlug, $scope.data.newItemName, category.name).then(
+				function success(item){
 					/*category.items.unshift(item);*/
 					category.items.push(item);
 					$scope.data.newItemName = '';
 
 					// Display item that has just been added
 					$scope.selectItem( item, category );
-				 },
-				 function error(/*err*/){
-					toaster.pop('error', 'Error!', 'Unable to create new item');
-				 }
-			 );
-		   }
+				},
+				function error(/*err*/){
+					toaster.clear();
+					toaster.pop('error', 'Error!', 'Unable to create new item',5000);
+				}
+			);
+			}
 		};
 
 
@@ -365,6 +372,7 @@ angular.module('toolkit-gui')
 		}
 
         $scope.loadItemDetails = function(item){
+        	toaster.clear();
             var deferred = $q.defer();
 
             //if(typeof(item.latest_revision.reviewers) === "string") {
@@ -375,7 +383,8 @@ angular.module('toolkit-gui')
                         deferred.resolve(item);
                     },
                     function error(/*err*/){
-                        toaster.pop('error', 'Error!', 'Unable to load latest revision');
+                    	toaster.clear();
+                        toaster.pop('error', 'Error!', 'Unable to load latest revision',5000);
                     }
                 );
             } else {
@@ -395,6 +404,7 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
 		$scope.deleteItem = function() {
+			toaster.clear();
 			var matterSlug = $scope.data.slug;
 
 			if ($scope.data.selectedItem) {
@@ -418,7 +428,8 @@ angular.module('toolkit-gui')
 								$scope.initializeActivityStream();
 							},
 							function error(/*err*/){
-								toaster.pop('error', 'Error!', 'Unable to delete item');
+								toaster.clear();
+								toaster.pop('error', 'Error!', 'Unable to delete item', 5000);
 							}
 						);
 					}
@@ -457,6 +468,7 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
 		$scope.saveSelectedItem = function () {
+			toaster.clear();
 			var matterSlug = $scope.data.slug;
 
 			if ($scope.data.selectedItem) {
@@ -465,7 +477,8 @@ angular.module('toolkit-gui')
 						//do nothing
 					},
 					function error(/*err*/){
-						toaster.pop('error', 'Error!', 'Unable to update item');
+						toaster.clear();
+						toaster.pop('error', 'Error!', 'Unable to update item',5000);
 					}
 				);
 			}
@@ -530,6 +543,7 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
 		$scope.submitNewCategory = function() {
+			toaster.clear();
 			var matterSlug = $scope.data.slug;
 
 			if ($scope.data.newCatName) {
@@ -540,7 +554,8 @@ angular.module('toolkit-gui')
 						$scope.data.newCatName = '';
 					},
 					function error(/*err*/){
-						toaster.pop('error', 'Error!', 'Unable to create a new category');
+						toaster.clear();
+						toaster.pop('error', 'Error!', 'Unable to create a new category',5000);
 					}
 				);
 				$scope.data.showCategoryAddForm = null;
@@ -559,6 +574,7 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
         $scope.deleteCategory = function (cat) {
+        	toaster.clear();
             var matterSlug = $scope.data.slug;
 
             ezConfirm.create('Delete Category', 'Please confirm you would like to delete this category?',
@@ -577,7 +593,8 @@ angular.module('toolkit-gui')
                             }
                         },
                         function error(/*err*/) {
-                            toaster.pop('error', 'Error!', 'Unable to delete category');
+                        	toaster.clear();
+                            toaster.pop('error', 'Error!', 'Unable to delete category',5000);
                         }
                     );
                 }
@@ -638,6 +655,7 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
 		$scope.editCategory = function(cat) {
+			toaster.clear();
 			var matterSlug = $scope.data.slug;
 
 			matterCategoryService.update(matterSlug, cat.name, $scope.data.newCategoryName).then(
@@ -645,7 +663,8 @@ angular.module('toolkit-gui')
 					cat.name = $scope.data.newCategoryName;
 				},
 				function error(/*err*/){
-					toaster.pop('error', 'Error!', 'Unable to edit category');
+					toaster.clear();
+					toaster.pop('error', 'Error!', 'Unable to edit category',5000);
 				}
 			);
 			$scope.data.showEditCategoryForm = null;
@@ -687,12 +706,13 @@ angular.module('toolkit-gui')
 					item.previousRevisions = null;
 					$scope.data.showPreviousRevisions = false;
                     $scope.calculateReviewPercentageComplete(item);
-
-                    toaster.pop('success', 'Success!', 'Revision added successfully');
+                    toaster.clear();
+                    toaster.pop('success', 'Success!', 'Revision added successfully', 3000);
 				},
 				function error(/*err*/) {
 					$scope.data.uploading = false;
-					toaster.pop('error', 'Error!', 'Unable to upload revision');
+					toaster.clear();
+					toaster.pop('error', 'Error!', 'Unable to upload revision', 5000);
 				}
 			);
 		};
@@ -705,6 +725,8 @@ angular.module('toolkit-gui')
 		$scope.onFileDropped = function( $files, item ) {
 			var matterSlug = $scope.data.slug;
 			var itemSlug = item.slug;
+
+			toaster.clear();
 
 			var user = userService.data().current;
 
@@ -721,11 +743,12 @@ angular.module('toolkit-gui')
 						$scope.data.showPreviousRevisions = false;
 						item.uploadingPercent = 0;
 						item.uploading = false;
-
-						toaster.pop('success', 'Success!', 'File added successfully');
+						toaster.clear();
+						toaster.pop('success', 'Success!', 'File added successfully',3000);
 					},
 					function error(/*err*/) {
-						toaster.pop('error', 'Error!', 'Unable to upload revision');
+						toaster.clear();
+						toaster.pop('error', 'Error!', 'Unable to upload revision',5000);
 						item.uploading = false;
 					},
 					function progress( num ) {
@@ -751,6 +774,7 @@ angular.module('toolkit-gui')
 		$scope.saveLatestRevision = function () {
 			var matterSlug = $scope.data.slug;
 			var item = $scope.data.selectedItem;
+			toaster.clear();
 
 			if (item && item.latest_revision) {
 				matterItemService.updateRevision(matterSlug, item.slug, $scope.data.selectedItem.latest_revision).then(
@@ -758,6 +782,7 @@ angular.module('toolkit-gui')
 						//do nothing
 					},
 					function error(/*err*/){
+						toaster.clear();
 						toaster.pop('error', 'Error!', 'Unable to update revision');
 					}
 				);
@@ -777,6 +802,7 @@ angular.module('toolkit-gui')
 		 $scope.deleteLatestRevision = function () {
 			var matterSlug = $scope.data.slug;
 			var item = $scope.data.selectedItem;
+			toaster.clear();
 
 			if (item && item.latest_revision) {
 				ezConfirm.create('Delete Revision', 'Please confirm you would like to delete this revision?',
@@ -795,7 +821,8 @@ angular.module('toolkit-gui')
                                             $scope.calculateReviewPercentageComplete(item);
 										},
 										function error(/*err*/){
-											toaster.pop('error', 'Error!', 'Unable to set new current revision');
+											toaster.clear();
+											toaster.pop('error', 'Error!', 'Unable to set new current revision',5000);
 										}
 									);
 								} else {
@@ -808,7 +835,8 @@ angular.module('toolkit-gui')
 								$scope.data.showPreviousRevisions = false;
 							},
 							function error(/*err*/){
-								toaster.pop('error', 'Error!', 'Unable to delete revision');
+								toaster.clear();
+								toaster.pop('error', 'Error!', 'Unable to delete revision',5000);
 							}
 						);
 					}
@@ -848,14 +876,16 @@ angular.module('toolkit-gui')
 
 					matterItemService.loadRevision(matterSlug, item.slug, revslug).then(
 						function success(revision){
+							toaster.clear();
 							//store revisisions locally
 							item.previousRevisions.unshift(revision);
 							//Sort array
 							item.previousRevisions.sort(SortDescendingByCreationDate);
 						},
 						function error(/*err*/){
+							toaster.clear();
 							if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to load previous revision') {
-								toaster.pop('error', 'Error!', 'Unable to load previous revision');
+								toaster.pop('error', 'Error!', 'Unable to load previous revision',5000);
 							}
 						}
 					);
@@ -917,6 +947,7 @@ angular.module('toolkit-gui')
 		* @memberof			ChecklistCtrl
 		*/
 		$scope.remindRevisionRequest = function( item ) {
+			toaster.clear();
 			var matterSlug = $scope.data.slug;
 
 			matterItemService.remindRevisionRequest(matterSlug, item.slug).then(
@@ -925,7 +956,8 @@ angular.module('toolkit-gui')
 					},
 					function error(/*err*/){
 						if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to remind the participant.') {
-							toaster.pop('error', 'Error!', 'Unable to remind the participant.');
+							toaster.clear();
+							toaster.pop('error', 'Error!', 'Unable to remind the participant.',5000);
 						}
 					}
 			);
@@ -942,6 +974,7 @@ angular.module('toolkit-gui')
 		* @memberof			ChecklistCtrl
 		*/
 		$scope.deleteRevisionRequest = function( item ) {
+			toaster.clear();
 			var matterSlug = $scope.data.slug;
 
 			matterItemService.deleteRevisionRequest(matterSlug, item.slug).then(
@@ -951,7 +984,8 @@ angular.module('toolkit-gui')
 					},
 					function error(/*err*/){
 						if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to delete the revision request.') {
-							toaster.pop('error', 'Error!', 'Unable to delete the revision request.');
+							toaster.clear();
+							toaster.pop('error', 'Error!', 'Unable to delete the revision request.',5000);
 						}
 					}
 			);
@@ -1062,15 +1096,18 @@ angular.module('toolkit-gui')
 		* @memberof			ChecklistCtrl
 		*/
 		$scope.remindRevisionReview = function( item ) {
+			toaster.clear();
 			var matterSlug = $scope.data.slug;
 
 			matterItemService.remindRevisionReview(matterSlug, item.slug).then(
 					function success(){
+						toaster.clear();
 						toaster.pop('success', 'Success!', 'All reviewers have been successfully informed.');
 					},
 					function error(/*err*/){
 						if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to remind the participant.') {
-							toaster.pop('error', 'Error!', 'Unable to remind the participant.');
+							toaster.clear();
+							toaster.pop('error', 'Error!', 'Unable to remind the participant.',5000);
 						}
 					}
 			);
@@ -1087,6 +1124,7 @@ angular.module('toolkit-gui')
 		* @memberof			ChecklistCtrl
 		*/
 		$scope.deleteRevisionReviewRequest = function( item, review ) {
+			toaster.clear();
 			var matterSlug = $scope.data.slug;
 			//var participant = $scope.getParticipantByUrl(participant_url);
 
@@ -1101,7 +1139,8 @@ angular.module('toolkit-gui')
 				},
 				function error(/*err*/){
 					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to delete the revision review request.') {
-						toaster.pop('error', 'Error!', 'Unable to delete the revision review request.');
+						toaster.clear();
+						toaster.pop('error', 'Error!', 'Unable to delete the revision review request.',5000);
 					}
 				}
 			);
@@ -1155,6 +1194,7 @@ angular.module('toolkit-gui')
 		};
 
         $scope.showReviewBySlug = function (revisionSlug, reviewSlug) {
+        	toaster.clear();
             var matterSlug = $scope.data.slug;
             var item = $scope.data.selectedItem;
 
@@ -1174,10 +1214,12 @@ angular.module('toolkit-gui')
                         	// Show review
                         	$scope.showReview(revision, review);
                         } else {
+                        	toaster.clear();
                             toaster.pop('warning', 'Review does not exist anymore.');
                         }
                     },
                     function error(/*err*/) {
+                    	toaster.clear();
                         toaster.pop('warning', 'Warning!', 'Revision does not exist anymore');
                     }
                 );
@@ -1307,6 +1349,7 @@ angular.module('toolkit-gui')
 
 			matterService.saveSortOrder(matterSlug, APIUpdate).then(
 				 function success(){
+				 	toaster.clear();
 					//if category changed for an item, save that
 					if (itemToUpdate != null){
 						matterItemService.update(matterSlug, itemToUpdate).then(
@@ -1315,15 +1358,18 @@ angular.module('toolkit-gui')
 							},
 							function error(/*err*/){
 								if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to update the order of items, please reload the page.') {
-									toaster.pop('error', 'Error!', 'Unable to update the order of items, please reload the page.');
+									toaster.clear();
+									toaster.pop('error', 'Error!', 'Unable to update the order of items, please reload the page.', 5000);
 								}
 							}
 					);
 					}
 				 },
 				 function error(/*err*/){
+				 	toaster.clear();
 					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to update the order of items, please reload the page.') {
-						toaster.pop('error', 'Error!', 'Unable to update the order of items, please reload the page.');
+						toaster.clear();
+						toaster.pop('error', 'Error!', 'Unable to update the order of items, please reload the page.', 5000);
 					}
 				 }
 			);
@@ -1501,6 +1547,7 @@ angular.module('toolkit-gui')
 		 * @type {Object}
 		 */
 		$scope.initializeActivityStream = function() {
+			toaster.clear();
 			var matterSlug = $scope.data.slug;
 
             if ($scope.data.streamType==='matter' || $scope.data.selectedItem===null){
@@ -1510,7 +1557,7 @@ angular.module('toolkit-gui')
                      },
                      function error(/*err*/){
                         if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to read activity matter stream.') {
-                            toaster.pop('error', 'Error!', 'Unable to read activity matter stream.');
+                            toaster.pop('error', 'Error!', 'Unable to read activity matter stream.',5000);
                         }
                      }
                 );
@@ -1525,7 +1572,7 @@ angular.module('toolkit-gui')
                      },
                      function error(/*err*/){
                         if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to read activity item stream.') {
-                            toaster.pop('error', 'Error!', 'Unable to read activity item stream.');
+                            toaster.pop('error', 'Error!', 'Unable to read activity item stream.',5000);
                         }
                      }
                 );
@@ -1556,6 +1603,7 @@ angular.module('toolkit-gui')
 		 * @type {Object}
 		 */
         $scope.submitComment = function() {
+        	toaster.clear();
 			var matterSlug = $scope.data.slug;
 			var item = $scope.data.selectedItem;
 
@@ -1564,14 +1612,14 @@ angular.module('toolkit-gui')
 
 			// Post activity
 			commentService.create(matterSlug, item.slug, item.newcomment).then(
-				 function success( activityItem ){
+				 function success( /*activityItem*/ ){
 				 	// please note: do not refresh activity stream as the new item may not exist yet
 				 	// clear form
 					item.newcomment='';
 				 },
 				 function error(/*err*/){
 					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to create item comment.') {
-						toaster.pop('error', 'Error!', 'Unable to create item comment.');
+						toaster.pop('error', 'Error!', 'Unable to create item comment.',5000);
 					}
 				 }
 			);
@@ -1636,13 +1684,15 @@ angular.module('toolkit-gui')
 			var matterSlug = $scope.data.slug;
 			var itemSlug = $scope.data.selectedItem.slug;
 
+			toaster.clear();
+
 			commentService.delete(matterSlug, itemSlug, comment).then(
 				 function success(){
 					$scope.activateActivityStream('item');
 				 },
 				 function error(/*err*/){
 					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to delete item comment.') {
-						toaster.pop('error', 'Error!', 'Unable to delete item comment.');
+						toaster.pop('error', 'Error!', 'Unable to delete item comment.',5000);
 					}
 				 }
 			);
