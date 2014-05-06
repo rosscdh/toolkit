@@ -2,6 +2,7 @@
 from django.db import models
 from django.db import IntegrityError
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 
 from .mixins import EmailIsValidatedMixin
 from .managers import CustomUserManager
@@ -62,7 +63,28 @@ class UserProfile(EmailIsValidatedMixin, models.Model):
 
     @property
     def account_type(self):
-        return 'Free'
+        return 'Paid' if self.subscription else 'Free'
+        # return 'Complimentary'
+
+    @property
+    def plan(self):
+        if self.subscription:
+            plan, interval = self.subscription.plan.rsplit('-', 1)
+            return plan
+        return 'trial'
+
+    @property
+    def plan_interval(self):
+        if self.subscription:
+            plan, interval = self.subscription.plan.rsplit('-', 1)
+            return interval
+
+    @property
+    def subscription(self):
+        try:
+            return self.user.customer.current_subscription
+        except ObjectDoesNotExist:
+            pass
 
     @property
     def type(self):

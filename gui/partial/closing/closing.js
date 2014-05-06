@@ -1,4 +1,3 @@
-angular.module('toolkit-gui').controller('ClosingCtrl',function($scope){
-	
-
+angular.module('toolkit-gui').controller('ClosingCtrl',function(/*$scope*/){
+	'use strict';
 });
