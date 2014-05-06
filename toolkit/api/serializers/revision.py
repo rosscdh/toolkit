@@ -192,6 +192,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
                   'reviewers', 'signers',
                   'revisions',
                   'user_review', 'user_download_url',
+                  'user_sign',
                   'date_created',)
 
     def __init__(self, *args, **kwargs):
