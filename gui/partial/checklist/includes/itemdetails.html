@@ -229,13 +229,16 @@
                         <li ng-repeat="sig in data.selectedItem.latest_revision.signers" ng-class="{'complete': sig.is_complete==true }">
                             <a class="close" href="javascript:;" ng-click="deleteSignatoryRequest(data.selectedItem, sig)"
                                ng-hide="sig.is_complete">x</a>
-                            <a href="javascript:;" ng-click="showSignatory(data.selectedItem.latest_revision, sig)" class="pull-right">
+                            <a href="javascript:;" ng-click="showSigning(data.selectedItem.latest_revision, sig)" class="pull-right">
                                 <button class="btn btn-warning btn-xs" ng-hide="sig.is_complete"><span class="fui-time"></span> In progress</button>
                                 <button class="btn btn-success btn-xs" ng-show="sig.is_complete">
                                     <span class="fui-check"></span> Complete
                                 </button>
                             </a>
-                           <a href="javascript:;" ng-click="showSignatory(data.selectedItem.latest_revision, sig)">{{ sig }}</a>
+                            <span ng-show="sig.date_last_viewed">
+                                <a href="javascript:;" ng-click="showSigning(data.selectedItem.latest_revision, sig)">{{ sig.signer.initials }}</a> viewed <span ng-bind="sig.date_last_viewed | timeago"></span>
+                            </span>
+                            <a ng-hide="sig.date_last_viewed" href="javascript:;" ng-click="showSigning(data.selectedItem.latest_revision, sig)">{{ sig.signer.name }}</a>
                         </li>
                     </ul>
                 </div>

@@ -1087,11 +1087,15 @@ angular.module('toolkit-gui')
 			});
 
 			modalInstance.result.then(
-				function ok(sign) {
+				function ok(signers) {
+                    //TODO an array should be returned!
+                    revision.signers = [];
+                    revision.signers.push(signers);
+                    /*
                     var results = jQuery.grep( revision.signers, function( sig ){ return sig.signer.username===sign.signer.username; } );
 					if( results.length===0 ) {
 						revision.signers.push(sign);
-					}
+					}*/
 				},
 				function cancel() {
 					//
@@ -1201,6 +1205,7 @@ angular.module('toolkit-gui')
 			);
 		};
 
+
         $scope.showReviewBySlug = function (revisionSlug, reviewSlug) {
             var matterSlug = $scope.data.slug;
             var item = $scope.data.selectedItem;
@@ -1297,6 +1302,49 @@ angular.module('toolkit-gui')
                 }
             );
         };
+
+        /**
+		 * Initiates the view for signing as modal window.
+		 *
+		 * @param {Object} revision object to view
+		 * @param {Object} signing object
+		 *
+		 * @private
+		 * @method				showReview
+		 * @memberof			ChecklistCtrl
+		 */
+		$scope.showSigning = function( revision, signing ) {
+			var item = $scope.data.selectedItem;
+
+			var modalInstance = $modal.open({
+				'templateUrl': '/static/ng/partial/view-signing/view-signing.html',
+				'controller': 'ViewSigningCtrl',
+				'windowClass': 'modal-full',
+				'resolve': {
+					'matter': function () {
+						return $scope.data.matter;
+					},
+					'checklistItem': function () {
+						return $scope.data.selectedItem;
+					},
+					'revision': function () {
+						return revision;
+					},
+					'signing': function () {
+						return signing;
+					}
+				}
+			});
+
+			modalInstance.result.then(
+				function ok(/*result*/) {
+
+				},
+				function cancel() {
+					// do nothing
+				}
+			);
+		};
 		/* End revision handling */
 
 
