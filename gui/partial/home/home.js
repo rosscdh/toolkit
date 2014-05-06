@@ -3,7 +3,7 @@ angular.module('toolkit-gui').controller('HomeCtrl', [
 	'matterService',
     '$log',
 	function( $scope, matterService, $log){
-
+		'use strict';
 		$scope.data = {
 			'matters': matterService.data()
 		};
