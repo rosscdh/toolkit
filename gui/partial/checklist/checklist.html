@@ -2,8 +2,8 @@
 	<div class="container-fluid full">
 		<div class="row mobile" ng-show="data.page!=='checklist'">
 			<button type="button" class="btn btn-link btn-transparent" ng-click="displayChecklist()">&lt; Checklist</button>
-			<button type="button" class="btn btn-default pull-right btn-square btn-white" ng-click="displayActivity()" ng-class="{ 'active': data.page==='activity' }"> Chat</button>
-			<button type="button" class="btn btn-default pull-right btn-square btn-light" ng-click="displayDetails()" ng-class="{ 'active': data.page==='details' }"> details</button>
+			<button type="button" class="btn btn-default pull-right btn-square btn-white" ng-click="displayActivity()" ng-class="{ 'active': data.page==='activity' }"> Activity and Discussion</button>
+			<button type="button" class="btn btn-default pull-right btn-square btn-light" ng-click="displayDetails()" ng-class="{ 'active': data.page==='details' }"> Files</button>
 		</div>
 		<div class="row full">
 			<div class="col-sm-5 checklist-col full" id="checklist-items" ng-class="{ 'zero': data.page!=='checklist' }">
