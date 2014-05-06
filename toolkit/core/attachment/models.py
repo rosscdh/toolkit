@@ -93,12 +93,12 @@ class Revision(IsDeletedMixin,
     @property
     def primary_reviewdocument(self):
         # is this *really* only the case for a NEW reviewdocument/revision?
-        return self.reviewdocument_set.filter(reviewers=None).last()
+        return self.reviewdocument_set.filter(reviewers=None).last() 
 
     @property
     def primary_signdocument(self):
         # there is only ever 1 of these, per revision (document)
-        return self.signdocument_set.filter(reviewers=None).first()
+        return self.signdocument_set.all().first()
 
     def get_absolute_url(self):
         """
