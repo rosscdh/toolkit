@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
+import os
+from django.conf import settings
+from django.core.files import File
+from django.core.files.storage import FileSystemStorage
 from django.core.urlresolvers import reverse
+import mock
 
 from toolkit.core.attachment.models import Revision
 from toolkit.apps.workspace.models import Workspace
@@ -418,3 +423,36 @@ class MatterRevisionLabelTest(BaseEndpointTest):
         self.assertEqual(201, resp.status_code)
         resp_data = json.loads(resp.content)
         self.assertEqual(resp_data['status'], 5)
+
+
+class MatterExportTest(BaseEndpointTest):
+    """
+    /matters/ (POST)
+        Allow the [lawyer] user to start exporting a matter
+    """
+    @property
+    def endpoint(self):
+        return reverse('matter_export', kwargs={'matter_slug': self.matter.slug})
+
+    def test_endpoint_name(self):
+        self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/export')
+
+    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
+    def test_export_matter_post(self):
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        self.item = mommy.make('item.Item', matter=self.matter, name='Test Item with Revision', category=None)
+        self.revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item,
+                                   uploaded_by=self.lawyer)
+
+        with open(os.path.join(settings.SITE_ROOT, 'toolkit', 'casper', 'test.pdf'), 'r') as filename:
+            self.revision.executed_file.save('test.pdf', File(filename))
+            self.revision.save(update_fields=['executed_file'])
+
+        resp = self.client.post(self.endpoint, json.dumps({}), content_type='application/json')
+
+        self.assertEqual(resp.status_code, 200)  # created
+
+        json_data = json.loads(resp.content)
+
+        # import pdb;pdb.set_trace()

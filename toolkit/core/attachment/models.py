@@ -4,7 +4,7 @@ from django.template.defaultfilters import slugify
 
 from storages.backends.s3boto import S3BotoStorage
 
-from toolkit.core.mixins import (ApiSerializerMixin, IsDeletedMixin,)
+from toolkit.core.mixins import (ApiSerializerMixin, IsDeletedMixin, FileExistsLocallyMixin)
 from toolkit.utils import get_namedtuple_choices
 
 from jsonfield import JSONField
@@ -45,6 +45,7 @@ def _upload_file(instance, filename):
 class Revision(IsDeletedMixin,
                ApiSerializerMixin,
                StatusLabelsMixin,
+               FileExistsLocallyMixin,
                models.Model):
     REVISION_STATUS = BASE_REVISION_STATUS
 
@@ -85,6 +86,10 @@ class Revision(IsDeletedMixin,
 
     def __unicode__(self):
         return 'Revision %s' % (self.slug)
+
+    # override for FileExistsLocallyMixin:
+    def get_document(self):
+        return self.executed_file
 
     @property
     def revisions(self):

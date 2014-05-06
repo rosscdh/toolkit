@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from toolkit.core.attachment.models import Revision
 
 from toolkit.apps.workspace.models import Workspace
+from toolkit.apps.matter.tasks import _export_matter
 
 from .mixins import (MatterMixin,
                      _MetaJSONRendererMixin,
@@ -23,6 +24,8 @@ from ..serializers.matter import LiteMatterSerializer
 from toolkit.apps.notification.template_loaders import ACTIVITY_TEMPLATES
 
 import logging
+from toolkit.tasks import run_task
+
 logger = logging.getLogger('django.request')
 
 
@@ -101,6 +104,17 @@ rulez_registry.register("can_delete", MatterEndpoint)
 """
 Custom Api Endpoints
 """
+
+
+class MatterExportView(generics.CreateAPIView, MatterMixin):
+    def create(self, request, *args, **kwargs):
+        run_task(_export_matter, matter=self.matter)
+        return Response('ok')
+
+    def can_edit(self, user):
+        return user.profile.is_lawyer
+
+rulez_registry.register("can_edit", MatterExportView)
 
 
 class ClosingGroupView(SpecificAttributeMixin,

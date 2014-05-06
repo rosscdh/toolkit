@@ -1,14 +1,15 @@
 from django.conf import settings
-from django.http import HttpResponseRedirect
+from django.core import signing
+from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse, reverse_lazy
-from django.views.generic import CreateView, DeleteView, ListView, TemplateView, UpdateView
+from django.views.generic import CreateView, DeleteView, ListView, TemplateView, UpdateView, View
 
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
 
 from toolkit.api.serializers import LiteMatterSerializer
 from toolkit.apps.matter.services import (MatterRemovalService, MatterParticipantRemovalService)
-from toolkit.apps.workspace.models import Workspace
+from toolkit.apps.workspace.models import Workspace, ExportedMatter
 from toolkit.mixins import AjaxModelFormView, ModalView
 
 from rest_framework.renderers import UnicodeJSONRenderer
@@ -17,6 +18,16 @@ from .forms import MatterForm
 
 import logging
 logger = logging.getLogger('django.request')
+
+
+class MatterDownloadExportView(View):
+    def get(self, request, *args, **kwargs):
+        exported_matter_id = signing.loads(kwargs.get('token'), salt=settings.SECRET_KEY)
+        exported_matter = ExportedMatter.objects.get(id=exported_matter_id)
+
+        fsock = file.open(exported_matter.file, "rb")
+        response = HttpResponse(fsock, mimetype='application/zip')
+        return response
 
 
 class MatterListView(ListView):
