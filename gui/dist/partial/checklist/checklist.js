@@ -91,7 +91,8 @@ angular.module('toolkit-gui')
 			'searchData': searchService.data(),
 			'usdata': userService.data(),
             'streamType': 'matter',
-            'history': {}
+            'history': {},
+            'page': 'checklist'
 		};
 		//debugger;
 
@@ -334,7 +335,22 @@ angular.module('toolkit-gui')
 			$scope.data.show_edit_item_description = false;
 			$scope.data.show_edit_revision_description = false;
 
+			$log.debug(item);
+			$scope.displayDetails();	// @mobile
+
             return deferred.promise;
+		};
+
+		$scope.displayChecklist = function() {
+			$scope.data.page = 'checklist';
+		};
+
+		$scope.displayDetails = function() {
+			$scope.data.page = 'details';
+		};
+
+		$scope.displayActivity = function() {
+			$scope.data.page = 'activity';
 		};
 
 		/**
