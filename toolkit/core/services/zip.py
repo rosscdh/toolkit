@@ -19,7 +19,7 @@ class ZipService(object):
     def __init__(self, filename):
         self.file_list = []
         self.filename = filename
-        self.targetfolder = "%s/exported_matters/" % default_storage.location
+        self.targetfolder = "%s/%s/" % (default_storage.location, os.path.dirname(filename))
         self.ensure_targetfolder()
 
     def ensure_targetfolder(self):
