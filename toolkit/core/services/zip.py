@@ -44,7 +44,6 @@ class ZipService(object):
             for file_to_add in self.file_list:
                 myzip.write('%s/%s' % (default_storage.location, file_to_add.get('file', {}).name),
                             arcname=file_to_add.get('path_in_zip'))
-                # TODO: think of better structure within the zip. perhaps add a 'target_filename' to add_file.
         return target_path
 
     def process(self):
