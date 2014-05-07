@@ -20,7 +20,7 @@ class FileExistsLocallyMixin(object):
         raise NotImplementedError
 
     def get_document_name(self):
-        self.get_document().name
+        return self.get_document().name
 
     def ensure_file(self):
         """
@@ -31,8 +31,6 @@ class FileExistsLocallyMixin(object):
         """
         if self.file_exists_locally is False:
             # Download the file
-            # @TODO make this optional
-            # @TODO make this asyncronous?
             #
             file_name = self.get_document_name()
             logger.info('File.DoesNotExistLocally: %s downloading' % file_name)
@@ -47,7 +45,7 @@ class FileExistsLocallyMixin(object):
         try:
             return default_storage.exists(self.get_document())
         except Exception as e:
-            logger.error('Crocodoc file does not exist locally: %s raised exception %s' % (self.get_document(), e))
+            logger.error('File does not exist locally: %s raised exception %s' % (self.get_document(), e))
         return False
 
     def read_local_file(self):
