@@ -8,8 +8,9 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
 
 from toolkit.api.serializers import LiteMatterSerializer
+from toolkit.apps.matter.models import ExportedMatter
 from toolkit.apps.matter.services import (MatterRemovalService, MatterParticipantRemovalService)
-from toolkit.apps.workspace.models import Workspace, ExportedMatter
+from toolkit.apps.workspace.models import Workspace
 from toolkit.mixins import AjaxModelFormView, ModalView
 
 from rest_framework.renderers import UnicodeJSONRenderer
