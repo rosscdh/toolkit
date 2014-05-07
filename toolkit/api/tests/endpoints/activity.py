@@ -8,6 +8,7 @@ from actstream.models import Action
 from model_mommy import mommy
 
 from toolkit.api.tests import BaseEndpointTest
+from toolkit.api.serializers import ItemSerializer
 
 import json
 
@@ -23,7 +24,7 @@ class MatterActivityEndpointTest(BaseEndpointTest):
     def setUp(self):
         super(MatterActivityEndpointTest, self).setUp()
         # setup the items for testing
-        self.item = mommy.make('item.Item', matter=self.matter, name='Test Item with Revision', category=None)
+        self.item = self._api_create_item(matter=self.matter, name='Test Item with Revision', category=None)
         self.revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
 
     def test_activitystream_in_response_name(self):
@@ -66,7 +67,8 @@ class ItemActivityEndpointTest(BaseEndpointTest):
     def setUp(self):
         super(ItemActivityEndpointTest, self).setUp()
         # setup the items for testing
-        self.item = mommy.make('item.Item', matter=self.matter, name='Test Item with Revision', category=None)
+        self.item = self._api_create_item(matter=self.matter, name='Test Item with Revision', category=None)
+
         self.revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
 
     def test_activitystream_in_response_name(self):

@@ -147,5 +147,7 @@ def on_item_post_save(sender, instance, created, **kwargs):
             instance.sort_order = matter.item_set.filter(category=instance.category).count() + 1 
             instance.save(update_fields=['sort_order'])
 
-        matter.actions.item_created(user=matter.lawyer, item=instance)
+        #
+        # The matter.actions.item_created activity event has moved to the
+        # api endpoint view
 

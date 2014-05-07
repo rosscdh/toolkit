@@ -70,6 +70,7 @@ $(document).ready(function () {
         var current_num = parseInt($('article.notification').length);
         if (current_num == 0) {
             $('#mark-all-as-read').hide();
+            $('#notification-count').hide();
         }
         $('#notification-count').html(current_num);
     }

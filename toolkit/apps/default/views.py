@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import urllib
+
 from django.shortcuts import render
 from django.contrib import messages
 from django.http import HttpResponseRedirect
@@ -191,7 +193,9 @@ class SignUpView(LogOutMixin, AuthenticateUserMixin, FormView):
     form_class = SignUpForm
 
     def get_success_url(self):
-        return reverse('matter:list')
+        return reverse('matter:list') + '?' + urllib.urlencode({
+            'firstseen': 1
+        })
 
     def form_valid(self, form):
         # user a valid form log them in
