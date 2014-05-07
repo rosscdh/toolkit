@@ -68,8 +68,8 @@ class SignRevisionView(DetailView):
 
         #
         # Perform authentication of the user here
-        #
-        _authenticate(request=self.request, obj=self.object, matter=self.matter, **self.kwargs)
+        # not required for signing
+        # _authenticate(request=self.request, obj=self.object, matter=self.matter, **self.kwargs)
 
         return self.object
 
