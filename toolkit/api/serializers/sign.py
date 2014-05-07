@@ -2,30 +2,30 @@
 from rest_framework import serializers
 
 from toolkit.apps.sign.models import SignDocument
-from .user import SimpleUserWithReviewUrlSerializer
-from .item import LiteItemSerializer
+from .user import SimpleUserWithSignUrlSerializer
 
 
 class SignatureSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for the SignDocument
     """
-    signer = serializers.SerializerMethodField('get_signer')
+    signers = serializers.SerializerMethodField('get_signers')
     item = serializers.SerializerMethodField('get_item')
 
     class Meta:
         model = SignDocument
-        fields = ('url', 'document', 'item', 'signer', 'is_complete', 'date_last_viewed')
+        fields = ('url', 'document', 'item', 'signers', 'is_complete', 'date_last_viewed')
 
     def get_item(self, obj):
+        from .item import LiteItemSerializer
         return LiteItemSerializer(obj.document.item, context=self.context).data.get('url')
 
-    def get_signer(self, obj):
-        signer = obj.signer
-        if signer is not None:
+    def get_signers(self, obj):
+        signers = []
+        for signer in obj.signers.all():
             context = self.context.copy()
             context.update({
-                'review_document': obj
+                'sign_document': obj
             })
-            return SimpleUserWithReviewUrlSerializer(signer, context=context).data
+            signers.append(SimpleUserWithSignUrlSerializer(signer, context=context).data)
         return None

@@ -12,6 +12,7 @@ from toolkit.api.serializers.user import _get_user_review, _get_user_sign
 
 from .user import SimpleUserSerializer
 from .review import ReviewSerializer
+from .sign import SignatureSerializer
 
 import os
 import logging
@@ -166,12 +167,12 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
     item = serializers.HyperlinkedRelatedField(many=False, view_name='item-detail')
 
     reviewers = serializers.SerializerMethodField('get_reviewers')
-    signers = serializers.HyperlinkedRelatedField(many=True, view_name='user-detail', lookup_field='username')
+    signers = serializers.SerializerMethodField('get_signers')
+    #signers = serializers.HyperlinkedRelatedField(many=True, view_name='user-detail', lookup_field='username')
 
     # "user" <— the currently logged in user.. "review_url" because the url is relative to the current user
     user_review = serializers.SerializerMethodField('get_user_review')
     user_download_url = serializers.SerializerMethodField('get_user_download_url')
-
     user_sign = serializers.SerializerMethodField('get_user_sign')
 
     revisions = serializers.SerializerMethodField('get_revisions')
@@ -234,12 +235,18 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
     def get_reviewers(self, obj):
         reviewers = []
         if getattr(obj, 'pk', None) is not None:  # it has not been deleted when pk is None
-            for u in obj.reviewers.all():
-                reviewdoc = obj.reviewdocument_set.filter(reviewers__in=[u]).first()
-                if reviewdoc is not None:
-                    reviewers.append(ReviewSerializer(reviewdoc, context={'request': self.context.get('request')}).data)
+            for reviewdoc in obj.reviewdocument_set.filter(reviewers__in=obj.reviewers.all()):
+                reviewers.append(ReviewSerializer(reviewdoc, context={'request': self.context.get('request')}).data)
 
         return reviewers
+
+    def get_signers(self, obj):
+        signers = []
+        if getattr(obj, 'pk', None) is not None:  # it has not been deleted when pk is None
+            for u in obj.primary_signdocument.signers.all():
+                signers.append(SimpleUserSerializer(u, context={'request': self.context.get('request')}).data)
+
+        return signers
 
     def get_user_review(self, obj):
         """
