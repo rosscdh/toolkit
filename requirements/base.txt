@@ -37,6 +37,7 @@ django-localflavor
 
 django-bootstrap-breadcrumbs
 django-email-obfuscator
+django-jsonify
 decorator
 
 -e git+https://github.com/rosscdh/django-templated-email.git@attachments#egg=django-templated-email

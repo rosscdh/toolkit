@@ -76,6 +76,6 @@ class SignRevisionView(DetailView):
     def get_context_data(self, **kwargs):
         kwargs = super(SignRevisionView, self).get_context_data(**kwargs)
         kwargs.update({
-            'hellosign_view_url': None
+            'hellosign_view_url': self.object.signing_request.get_absolute_url()
         })
         return kwargs

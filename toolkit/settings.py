@@ -154,6 +154,8 @@ HELPER_APPS = (
     # notifications
     'stored_messages',
 
+    'jsonify',
+
     # integration for abridge; django-abridge
     'abridge',
 
