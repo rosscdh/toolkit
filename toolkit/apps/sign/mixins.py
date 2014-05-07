@@ -32,10 +32,6 @@ class HelloSignOverridesMixin(object):
         #
         result = result.get('unclaimed_draft', result)
 
-        if 'claim_url' in result:
-            # append client_id to the claim_url attrib
-            result['claim_url_with_client_id'] = '%s&client_id=%s' % (result['claim_url'], settings.HELLOSIGN_CLIENT_ID)
-
         return result
 
     def hs_record_result(self, result):
