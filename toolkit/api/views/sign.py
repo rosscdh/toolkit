@@ -57,7 +57,7 @@ class ItemRevisionSignersView(generics.ListAPIView,
     serializer_class = SignatureSerializer
 
     def get_queryset_provider(self):
-        return self.revision.signdocument_set
+        return self.revision.signing_request.signers
 
     def create(self, request, **kwargs):
         """
@@ -105,7 +105,7 @@ class ItemRevisionSignersView(generics.ListAPIView,
                                                           inviting_user=request.user,
                                                           invited_user=user)
 
-        sign_document = self.revision.signdocument_set.filter(signers=self.revision.signers.all()).first()
+        sign_document = self.revision.primary_signdocument
         sign_document.send_for_signing(requester_email_address=request.user.email)
 
         # we have the user at this point
@@ -145,7 +145,7 @@ class ItemRevisionSignerView(generics.RetrieveAPIView,
     lookup_url_kwarg = 'username'
 
     def get_queryset_provider(self):
-        return self.revision.signers
+        return self.revision.signing_request.signers
 
     def get_object(self):
         return get_object_or_404(User, username=self.kwargs.get('username'))
