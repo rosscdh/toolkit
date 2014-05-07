@@ -10,6 +10,11 @@ logger = logging.getLogger('django.request')
 class ZipService(object):
     """
     Service to compress a list of locally saved files
+
+    service = ZipService('a.zip')
+    service.add({'file': needed_revision.get_document(),
+                 'path_in_zip': "folder/filename.pdf"})
+    service.process()
     """
     def __init__(self, filename):
         self.file_list = []
@@ -23,6 +28,9 @@ class ZipService(object):
             os.makedirs(d)
 
     def add_file(self, file):
+
+        # check for dict?
+
         if hasattr(file, '__iter__'):
             for one_file in file:
                 self.file_list.append(one_file)
@@ -31,10 +39,11 @@ class ZipService(object):
 
     def compress(self):
         # do some zipping
-        target_path = "%s/exported_matters/%s.zip" % (default_storage.location, self.filename)
+        target_path = "%s/%s" % (default_storage.location, self.filename)
         with ZipFile(target_path, 'w') as myzip:
             for file_to_add in self.file_list:
-                myzip.write('%s/%s' % (default_storage.location, file_to_add.name), arcname=file_to_add.name)
+                myzip.write('%s/%s' % (default_storage.location, file_to_add.get('file', {}).name),
+                            arcname=file_to_add.get('path_in_zip'))
                 # TODO: think of better structure within the zip. perhaps add a 'target_filename' to add_file.
         return target_path
 

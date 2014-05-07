@@ -7,7 +7,7 @@ from django.views.generic import CreateView, DeleteView, ListView, TemplateView,
 
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
-from storages.backends import s3boto
+from storages.backends.s3boto import S3BotoStorage
 
 from toolkit.api.serializers import LiteMatterSerializer
 from toolkit.apps.matter.services import (MatterRemovalService, MatterParticipantRemovalService)
@@ -29,8 +29,8 @@ class MatterDownloadExportView(View):
         valid_until = token_data.get('valid_until')
         if valid_until and valid_until > datetime.datetime.now():
             zip_filename = MatterExportService.get_zip_filename(token_data)
-            s3boto.exists('exported_matters/%s.zip' % zip_filename)  # TODO: need bucket? path-prefix.
-            return HttpResponse(s3boto.read(zip_filename), 'binary')
+            S3BotoStorage().exists(zip_filename)  # TODO: need bucket? path-prefix.
+            return HttpResponse(S3BotoStorage().read(zip_filename), 'binary')
         return HttpResponse('not valid any more')
 
 

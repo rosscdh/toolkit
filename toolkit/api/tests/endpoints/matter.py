@@ -5,6 +5,7 @@ from django.core.files import File
 from django.core.files.storage import FileSystemStorage
 from django.core.urlresolvers import reverse
 import mock
+from storages.backends.s3boto import S3BotoStorage
 
 from toolkit.core.attachment.models import Revision
 from toolkit.apps.workspace.models import Workspace
@@ -443,7 +444,7 @@ class MatterExportTest(BaseEndpointTest):
 
         self.item = mommy.make('item.Item', matter=self.matter, name='Test Item with Revision', category=None)
         self.revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item,
-                                   uploaded_by=self.lawyer)
+                                   uploaded_by=self.lawyer, name='test file')
 
         with open(os.path.join(settings.SITE_ROOT, 'toolkit', 'casper', 'test.pdf'), 'r') as filename:
             self.revision.executed_file.save('test.pdf', File(filename))
@@ -454,5 +455,8 @@ class MatterExportTest(BaseEndpointTest):
         self.assertEqual(resp.status_code, 200)  # created
 
         json_data = json.loads(resp.content)
+
+        # s = S3BotoStorage()
+        # s.exists('exported_matters/')  # do not have the token here
 
         # import pdb;pdb.set_trace()
