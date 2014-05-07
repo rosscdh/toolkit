@@ -443,44 +443,44 @@ class MatterExportTest(BaseEndpointTest):
     def test_endpoint_name(self):
         self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/export')
 
-    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_export_matter_post(self):
-        self.client.login(username=self.lawyer.username, password=self.password)
+        with mock.patch('storages.backends.s3boto.S3BotoStorage', new_callable=FileSystemStorage):
+            self.client.login(username=self.lawyer.username, password=self.password)
 
-        self.item = mommy.make('item.Item', matter=self.matter, name='Test Item with Revision', category=None)
-        self.revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item,
-                                   uploaded_by=self.lawyer, name='test file')
+            self.item = mommy.make('item.Item', matter=self.matter, name='Test Item with Revision', category=None)
+            self.revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item,
+                                       uploaded_by=self.lawyer, name='test file')
 
-        with open(os.path.join(settings.SITE_ROOT, 'toolkit', 'casper', 'test.pdf'), 'r') as filename:
-            self.revision.executed_file.save('test.pdf', File(filename))
-            self.revision.save(update_fields=['executed_file'])
+            with open(os.path.join(settings.SITE_ROOT, 'toolkit', 'casper', 'test.pdf'), 'r') as filename:
+                self.revision.executed_file.save('test.pdf', File(filename))
+                self.revision.save(update_fields=['executed_file'])
 
-        resp = self.client.post(self.endpoint, {}, content_type='application/json')
+            resp = self.client.post(self.endpoint, {}, content_type='application/json')
 
-        self.assertEqual(resp.status_code, 200)  # ok
+            self.assertEqual(resp.status_code, 200)  # ok
 
-        # json_data = json.loads(resp.content)
+            # json_data = json.loads(resp.content)
 
-        outbox = mail.outbox
-        self.assertEqual(len(outbox), 1)
+            outbox = mail.outbox
+            self.assertEqual(len(outbox), 1)
 
-        email = outbox[0]
-        self.assertEqual(email.subject, u'Export has finished')
-        self.assertEqual(email.recipients(), [u'test+lawyer@lawpal.com'])
+            email = outbox[0]
+            self.assertEqual(email.subject, u'Export has finished')
+            self.assertEqual(email.recipients(), [u'test+lawyer@lawpal.com'])
 
-        valid_until = (datetime.date.today() + datetime.timedelta(days=MATTER_EXPORT_DAYS_VALID)).isoformat()
-        token_data = {'matter_slug': self.matter.slug,
-                      'user_pk': self.matter.lawyer.pk,
-                      'valid_until': valid_until}
-        token = signing.dumps(token_data, salt=settings.SECRET_KEY)
+            valid_until = (datetime.date.today() + datetime.timedelta(days=MATTER_EXPORT_DAYS_VALID)).isoformat()
+            token_data = {'matter_slug': self.matter.slug,
+                          'user_pk': self.matter.lawyer.pk,
+                          'valid_until': valid_until}
+            token = signing.dumps(token_data, salt=settings.SECRET_KEY)
 
-        download_link = ABSOLUTE_BASE_URL(reverse('matter:download-exported', kwargs={'token': token}))
+            download_link = ABSOLUTE_BASE_URL(reverse('matter:download-exported', kwargs={'token': token}))
 
-        # filename = MatterExportService(self.matter).get_zip_filename(token_data)
+            # filename = MatterExportService(self.matter).get_zip_filename(token_data)
 
-        response = self.client.get(download_link)
+            response = self.client.get(download_link)
 
-        import pdb;pdb.set_trace()
+            # import pdb;pdb.set_trace()
 
-        # s = S3BotoStorage()
-        # s.exists('exported_matters/')  # do not have the token here
+            # s = S3BotoStorage()
+            # s.exists('exported_matters/')  # do not have the token here
