@@ -263,6 +263,7 @@ AWS_HEADERS = {
 }
 
 CELERY_ACCEPT_CONTENT = ['json', 'pickle', ]
+#CELERY_ACKS_LATE = True  # as we want to to be acknowledged after its completed; http://celery.readthedocs.org/en/latest/configuration.html#celery-acks-late
 
 FILEPICKER_API_KEY = 'A4Ly2eCpkR72XZVBKwJ06z'
 
