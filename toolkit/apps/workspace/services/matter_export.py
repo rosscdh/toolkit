@@ -30,7 +30,7 @@ class MatterExportService(object):
         return 'exported_documents/%s_%s_%s.zip' % \
                (token_data.get('matter_slug'), token_data.get('user_pk'), token_data.get('valid_until'))
 
-    def ensure_needed_files_list(self):  # TODO: perhaps rename to list_executed_files (depending on which files we collect)
+    def ensure_needed_files_list(self):
         # collects all latest_revisions with the correct state
         for item in self.matter.item_set.all():
             if item.latest_revision:
