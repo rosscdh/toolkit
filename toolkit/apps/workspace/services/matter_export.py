@@ -27,7 +27,7 @@ class MatterExportService(object):
     def get_zip_filename(self, token_data):
         # returns the filename the created .zip should have
         # in in a function to get called from the download-view without instantiating an object
-        return 'exported_matters/%s_%s_%s.zip' % \
+        return 'exported_documents/%s_%s_%s.zip' % \
                (token_data.get('matter_slug'), token_data.get('user_pk'), token_data.get('valid_until'))
 
     def ensure_needed_files_list(self):  # TODO: perhaps rename to list_executed_files (depending on which files we collect)
@@ -58,7 +58,6 @@ class MatterExportService(object):
         # send the token-link to the owning lawyer
         download_link = ABSOLUTE_BASE_URL(reverse('matter:download-exported', kwargs={'token': token}))
 
-        import pdb;pdb.set_trace()
         m = MatterExportFinishedEmail(
             subject='Export has finished',
             message='Your matter "%s" has been exported and is ready to be downloaded from: %s' % (self.matter.name, download_link),

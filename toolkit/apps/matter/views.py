@@ -30,7 +30,9 @@ class MatterDownloadExportView(View):
         if valid_until and valid_until > datetime.datetime.now():
             zip_filename = MatterExportService.get_zip_filename(token_data)
             S3BotoStorage().exists(zip_filename)  # TODO: need bucket? path-prefix.
-            return HttpResponse(S3BotoStorage().read(zip_filename), 'binary')
+            response = HttpResponse(S3BotoStorage().read(zip_filename), 'binary')
+            response['Content-Disposition'] = 'attachment; filename=%s.zip' % token_data.get('matter_slug')
+            return response
         return HttpResponse('not valid any more')
 
 

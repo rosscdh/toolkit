@@ -462,7 +462,7 @@ class MatterExportTest(BaseEndpointTest):
 
         email = outbox[1]
         self.assertEqual(email.subject, u'Export has finished')
-        import pdb;pdb.set_trace()
+        # import pdb;pdb.set_trace()
         self.assertEqual(email.recipients(), [u'test+lawyer@lawpal.com'])
 
         # s = S3BotoStorage()
