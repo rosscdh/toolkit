@@ -173,7 +173,9 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
     # "user" <— the currently logged in user.. "review_url" because the url is relative to the current user
     user_review = serializers.SerializerMethodField('get_user_review')
     user_download_url = serializers.SerializerMethodField('get_user_download_url')
-    user_sign = serializers.SerializerMethodField('get_user_sign')
+
+    signing_url = serializers.SerializerMethodField('get_user_sign_url')
+    signing_claim_url = serializers.SerializerMethodField('get_signing_claim_url')
 
     revisions = serializers.SerializerMethodField('get_revisions')
 
@@ -193,7 +195,8 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
                   'reviewers', 'signers',
                   'revisions',
                   'user_review', 'user_download_url',
-                  'user_sign',
+                  'signing_url',
+                  'signing_claim_url',
                   'date_created',)
 
     def __init__(self, *args, **kwargs):
@@ -279,7 +282,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
 
         return None
 
-    def get_user_sign(self, obj):
+    def get_user_sign_url(self, obj):
         """
         Try to provide an initial sign url from the base review_document obj
         for the currently logged in user
@@ -290,10 +293,17 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
         sign_document = _get_user_sign(self=self, obj=obj, context=context)
 
         if sign_document is not None:
-            return {
-                'url': sign_document.get_absolute_url(user=request.user),
-                'slug': sign_document.slug
-            }
+            return sign_document.get_absolute_url(user=request.user)
+        return None
+    def get_signing_claim_url(self, obj):
+        context = getattr(self, 'context', None)
+        request = context.get('request')
+
+        sign_document = _get_user_sign(self=self, obj=obj, context=context)
+
+        if sign_document is not None:
+            return sign_document.get_claim_url(user=request.user)
+        return None
 
     def get_revisions(self, obj):
         return [ABSOLUTE_BASE_URL(reverse('matter_item_specific_revision', kwargs={

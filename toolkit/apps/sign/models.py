@@ -110,6 +110,9 @@ class SignDocument(IsDeletedMixin,
         # return None
         return ABSOLUTE_BASE_URL(reverse('sign:sign_document', kwargs={'slug': self.slug}))
 
+    def get_claim_url(self, user):
+        return ABSOLUTE_BASE_URL(reverse('sign:claim_sign_document', kwargs={'slug': self.slug}))
+
     def complete(self, is_complete=True):
         self.is_complete = is_complete
         self.save(update_fields=['is_complete'])

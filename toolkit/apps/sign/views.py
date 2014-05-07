@@ -57,7 +57,7 @@ class SignRevisionView(DetailView):
         return self.request.user in self.matter.participants.all()
 
     def get_template_names(self):
-        if self.object.is_current is False and self.user_is_matter_participant is False:
+        if self.object.is_current is False:
             return ['sign/sign-nolongercurrent.html']
         else:
             return ['sign/sign.html']
@@ -76,6 +76,23 @@ class SignRevisionView(DetailView):
     def get_context_data(self, **kwargs):
         kwargs = super(SignRevisionView, self).get_context_data(**kwargs)
         kwargs.update({
-            'hellosign_view_url': self.object.signing_request.get_absolute_url()
+            'sign_url': self.object.signing_request.get_absolute_url()
+        })
+        return kwargs
+
+
+class ClaimSignRevisionView(SignRevisionView):
+    template_name = 'sign/claim.html'
+
+    def get_template_names(self):
+        if self.object.is_current is False:
+            return ['sign/sign-nolongercurrent.html']
+        else:
+            return ['sign/claim.html']
+
+    def get_context_data(self, **kwargs):
+        kwargs = super(SignRevisionView, self).get_context_data(**kwargs)
+        kwargs.update({
+            'claim_url': self.object.signing_request.data.get('claim_url')
         })
         return kwargs
