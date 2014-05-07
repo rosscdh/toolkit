@@ -6,7 +6,7 @@ $(document).ready(function () {
     'use strict';
     HelloSign.init('{{ GLOBALS.HELLOSIGN_CLIENT_ID }}');
     HelloSign.open({
-        url: '{{ sign_url }}',                // Signature url your fetched via the API on your server
+        url: '{{ claim_url }}',                // Signature url your fetched via the API on your server
         allowCancel: true,                              // (optional) Whether to allow the user to cancel i.e. close the iFrame without signing (default is true)
         debug: true,
         skipDomainVerification: true,
