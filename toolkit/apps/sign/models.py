@@ -108,7 +108,7 @@ class SignDocument(IsDeletedMixin,
         # if auth_key is not None:
         #     return reverse('sign:sign_document', kwargs={'slug': self.slug, 'auth_slug': auth_key})
         # return None
-        return reverse('sign:sign_document', kwargs={'slug': self.slug})
+        return ABSOLUTE_BASE_URL(reverse('sign:sign_document', kwargs={'slug': self.slug}))
 
     def complete(self, is_complete=True):
         self.is_complete = is_complete

@@ -26,7 +26,7 @@ def _get_user_review(self, obj, context):
             #
             # The bast one will have 0 reviewers! and be the last in the set (because it was added first)
             #
-            review_document = obj.primary_reviewdocument
+            review_document = getattr(obj, 'primary_reviewdocument', getattr(self, 'primary_reviewdocument', None))
 
         return review_document
 
@@ -40,7 +40,7 @@ def _get_user_sign(self, obj, context):
     """
     request = context.get('request')
     sign_document = context.get('sign_document', None)
-    import pdb;pdb.set_trace()
+
     if request is not None:
         #
         # if we have a sign_document present in the context
@@ -50,7 +50,7 @@ def _get_user_sign(self, obj, context):
             #
             # The bast one will have 0 reviewers! and be the last in the set (because it was added first)
             #
-            sign_document = obj.primary_signdocument
+            sign_document = getattr(obj, 'primary_signdocument', getattr(self, 'primary_signdocument', None))
 
         return sign_document
 
