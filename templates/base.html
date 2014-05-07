@@ -1,4 +1,4 @@
-{% load cache i18n %}{% load url from future %}{% load django_bootstrap_breadcrumbs intercom_tags %}
+{% load cache i18n %}{% load url from future %}{% load django_bootstrap_breadcrumbs intercom_tags toolkit_tags %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -239,5 +239,7 @@
             </script>
         {% endif %}
     {% endif %}
+
+    {% firstseen %}
 </body>
 </html>
