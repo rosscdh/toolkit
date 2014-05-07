@@ -57,7 +57,7 @@ class ItemRevisionSignersView(generics.ListAPIView,
     serializer_class = SignatureSerializer
 
     def get_queryset_provider(self):
-        return self.revision.signing_request.signers
+        return self.revision.signers
 
     def create(self, request, **kwargs):
         """
