@@ -1,3 +1,4 @@
+import datetime
 from django.conf import settings
 from django.core import signing
 from django.http import HttpResponseRedirect, HttpResponse
@@ -6,9 +7,9 @@ from django.views.generic import CreateView, DeleteView, ListView, TemplateView,
 
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
+from storages.backends import s3boto
 
 from toolkit.api.serializers import LiteMatterSerializer
-from toolkit.apps.matter.models import ExportedMatter
 from toolkit.apps.matter.services import (MatterRemovalService, MatterParticipantRemovalService)
 from toolkit.apps.workspace.models import Workspace
 from toolkit.mixins import AjaxModelFormView, ModalView
@@ -23,12 +24,13 @@ logger = logging.getLogger('django.request')
 
 class MatterDownloadExportView(View):
     def get(self, request, *args, **kwargs):
-        exported_matter_id = signing.loads(kwargs.get('token'), salt=settings.SECRET_KEY)
-        exported_matter = ExportedMatter.objects.get(id=exported_matter_id)
-
-        fsock = file.open(exported_matter.file, "rb")
-        response = HttpResponse(fsock, mimetype='application/zip')
-        return response
+        token = signing.loads(kwargs.get('token'), salt=settings.SECRET_KEY)
+        valid_until = token.get('valid_until')
+        if valid_until and valid_until > datetime.datetime.now():
+            zip_filename = '%s_%s_%s' % (token.get('matter_slug'), token.get('user_pk'), valid_until)
+            s3boto.exists(zip_filename)  # TODO: need bucket? path-prefix.
+            return HttpResponse(s3boto.read(), 'binary')
+        return HttpResponse('not valid any more')
 
 
 class MatterListView(ListView):

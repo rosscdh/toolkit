@@ -7,10 +7,10 @@ class ParticipantAddedEmail(BaseSpecifiedFromMailerService):
 
 class MatterExportFinishedEmail(BaseMailerService):
     """
-    m = MatterExportFinishedEmail(
-            subject='The export has finished',
-            message='{from_name} has created an 83b form for you, you can find it at {location}',
-            recipients=(('Alex', 'alex@lawpal.com')))
-    m.process()
+        m = MatterExportFinishedEmail(
+            subject='Export has finished',
+            message='Your matter "{{ matter.name }}" has been exported and is ready to be downloaded from: %s' % exported_matter.file.url,
+            recipients=((matter.lawyer.get_full_name(), matter.lawyer.email)))
+        m.process()
     """
     email_template = 'matter_export_finished'

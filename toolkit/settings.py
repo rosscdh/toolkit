@@ -511,6 +511,7 @@ PAYMENTS_PLANS = {
     }
 }
 
+MATTER_EXPORT_DAYS = 3
 
 try:
     LOCAL_SETTINGS
