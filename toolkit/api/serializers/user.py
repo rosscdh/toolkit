@@ -40,7 +40,7 @@ def _get_user_sign(self, obj, context):
     """
     request = context.get('request')
     sign_document = context.get('sign_document', None)
-
+    import pdb;pdb.set_trace()
     if request is not None:
         #
         # if we have a sign_document present in the context
@@ -108,7 +108,7 @@ class SimpleUserWithReviewUrlSerializer(SimpleUserSerializer):
     user_review = serializers.SerializerMethodField('get_user_review')
 
     class Meta(SimpleUserSerializer.Meta):
-        fields = SimpleUserSerializer.Meta.fields +('user_review',)
+        fields = SimpleUserSerializer.Meta.fields + ('user_review',)
 
     def get_user_review(self, obj):
         """
@@ -123,6 +123,34 @@ class SimpleUserWithReviewUrlSerializer(SimpleUserSerializer):
             return {
                 'url': review_document.get_absolute_url(user=request.user),
                 'slug': review_document.slug
+            }
+
+        return None
+
+
+class SimpleUserWithSignUrlSerializer(SimpleUserSerializer):
+    """
+    User serilizer to provide a user object with the very important
+    user_sign_url
+    """
+    user_sign = serializers.SerializerMethodField('get_user_sign')
+
+    class Meta(SimpleUserSerializer.Meta):
+        fields = SimpleUserSerializer.Meta.fields + ('user_sign',)
+
+    def get_user_sign(self, obj):
+        """
+        Try to provide an initial reivew url from the base sign_document obj
+        """
+        context = getattr(self, 'context', None)
+        request = context.get('request')
+
+        sign_document = _get_user_sign(self=self, obj=obj, context=context)
+
+        if sign_document is not None:
+            return {
+                'url': sign_document.get_absolute_url(user=request.user),
+                'slug': sign_document.slug
             }
 
         return None

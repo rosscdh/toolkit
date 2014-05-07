@@ -98,7 +98,8 @@ class Revision(IsDeletedMixin,
     @property
     def primary_signdocument(self):
         # there is only ever 1 of these, per revision (document)
-        return self.signdocument_set.all().first()
+        sign_document, is_new = self.signdocument_set.model.objects.get_or_create(document=self)
+        return sign_document
 
     def get_absolute_url(self):
         """

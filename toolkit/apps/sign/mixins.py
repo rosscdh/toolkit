@@ -4,7 +4,8 @@ from django.core.files.storage import default_storage
 
 
 # NB! hellosign is not the same lib as hello_sign
-from hellosign import HelloSignUnclaimedDraftDocumentSignature
+from hellosign import (HelloSignEmbeddedDocumentSignature,
+                       HelloSignUnclaimedDraftDocumentSignature)
 # django wrapper hello_sign imports
 from hello_sign.models import HelloSignRequest
 from hello_sign.services import HelloSignService

@@ -15,10 +15,10 @@ from toolkit.apps.sign.models import SignDocument
 
 from toolkit.apps.workspace.services import EnsureCustomerService
 
-from ..serializers import SimpleUserWithReviewUrlSerializer
+from ..serializers import SimpleUserWithSignUrlSerializer
 from ..serializers import SignatureSerializer
 
-from .review import BaseReviewerSignatoryMixin
+from .review import BaseReviewerOrSignerMixin
 
 import logging
 logger = logging.getLogger('django.request')
@@ -49,15 +49,15 @@ rulez_registry.register("can_delete", SignatureEndpoint)
 
 class ItemRevisionSignersView(generics.ListAPIView,
                               generics.CreateAPIView,
-                              BaseReviewerSignatoryMixin):
+                              BaseReviewerOrSignerMixin):
     """
     /matters/:matter_slug/items/:item_slug/revision/signers/ (GET,POST)
         [lawyer,customer] to list, create signers
     """
-    serializer_class = SignatureSerializer
+    serializer_class = SimpleUserWithSignUrlSerializer  # as we are returning the revision and not the item
 
     def get_queryset_provider(self):
-        return self.revision.signing_request.signers
+        return self.revision.signers
 
     def create(self, request, **kwargs):
         """
@@ -109,7 +109,7 @@ class ItemRevisionSignersView(generics.ListAPIView,
         sign_document.send_for_signing(requester_email_address=request.user.email)
 
         # we have the user at this point
-        serializer = self.get_serializer(sign_document)
+        serializer = self.get_serializer(self.revision.signers.all(), many=True)
 
         headers = self.get_success_headers(serializer.data)
 
@@ -133,14 +133,14 @@ rulez_registry.register("can_delete", ItemRevisionSignersView)
 # singular looking at a specific
 class ItemRevisionSignerView(generics.RetrieveAPIView,
                              generics.DestroyAPIView,
-                             BaseReviewerSignatoryMixin):
+                             BaseReviewerOrSignerMixin):
     """
     Singular
     /matters/:matter_slug/items/:item_slug/revision/signer/:username (GET,DELETE)
         [lawyer,customer] to view, delete signers
     """
     model = User  # to allow us to use get_object generically
-    serializer_class = SimpleUserWithReviewUrlSerializer  # as we are returning the revision and not the item
+    serializer_class = SimpleUserWithSignUrlSerializer  # as we are returning the revision and not the item
     lookup_field = 'username'
     lookup_url_kwarg = 'username'
 
