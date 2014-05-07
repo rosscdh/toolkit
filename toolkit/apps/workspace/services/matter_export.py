@@ -6,7 +6,9 @@ Service to export a matter
 import datetime
 from django.conf import settings
 from django.core import signing
+from django.core.files.storage import default_storage
 from django.core.urlresolvers import reverse
+from storages.backends.s3boto import S3BotoStorage
 from toolkit.apps.matter.mailers import MatterExportFinishedEmail
 from toolkit.core.services.zip import ZipService
 
@@ -18,6 +20,7 @@ class MatterExportService(object):
     def __init__(self, matter):
         self.matter = matter
         self.needed_revisions = []
+        self.needed_files = []
 
     def ensure_needed_files_list(self):  # TODO: perhaps rename to list_executed_files (depending on which files we collect)
         for item in self.matter.item_set.all():  # all items must be completed, otherwise the button wasn't shown
@@ -27,12 +30,16 @@ class MatterExportService(object):
     def ensure_files_exist_locally(self):
         for needed_revision in self.needed_revisions:
             # download latest_revision
-            downloaded_file = needed_revision.ensure_file()
+            needed_revision.ensure_file()
+            self.needed_files.append(needed_revision.get_document())
 
     def ensure_list_of_existing_files(self):
         self.ensure_needed_files_list()
         self.ensure_files_exist_locally()
-        self.needed_files = self.needed_revisions
+
+    def get_zip_filename(self, token_data):
+        # in in a function to get called from the download-view without instantiating an object
+        return '%s_%s_%s' % (token_data.get('matter_slug'), token_data.get('user_pk'), token_data.get('valid_until'))
 
     def create_zip(self, filename):
         # zip collection
@@ -56,19 +63,22 @@ class MatterExportService(object):
         # collect the needed revisions and put them in self.needed_files
         self.ensure_list_of_existing_files()
 
-        # zip everything in self.needed_files
+        # put everything needed to find the file into the token
         valid_until = (datetime.datetime.now() + datetime.timedelta(days=MATTER_EXPORT_DAYS)).isoformat()
-        zip_filename = '%s_%s_%s' % (self.matter.slug, self.matter.lawyer.pk, valid_until)
+        token_data = {'matter_slug': self.matter.slug,
+                      'user_pk': self.matter.lawyer.pk,
+                      'valid_until': valid_until}
+
+        token = signing.dumps(token_data, salt=settings.SECRET_KEY)
+
+        # zip everything in self.needed_files
+        zip_filename = self.get_zip_filename(token_data)
         zip_file_path = self.create_zip(zip_filename)
 
-
         # upload to AWS as zip_filename
-
-        token = signing.dumps({'matter_slug': self.matter.slug,
-                               'user_pk': self.matter.lawyer.pk,
-                               'valid_until': valid_until}, salt=settings.SECRET_KEY)
+        s3boto_storage = S3BotoStorage()
+        with default_storage.open(zip_file_path) as myfile:
+            result = s3boto_storage.save('exported_matters/%s.zip' % zip_filename, myfile)  # seems to need open file instead of path
 
         # send token-link via email
         self.send_email(token)
-
-        # load zip by: signing.loads(get_url_vale, salt=settings.SECRET_KEY)

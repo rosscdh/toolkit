@@ -12,6 +12,7 @@ from storages.backends import s3boto
 from toolkit.api.serializers import LiteMatterSerializer
 from toolkit.apps.matter.services import (MatterRemovalService, MatterParticipantRemovalService)
 from toolkit.apps.workspace.models import Workspace
+from toolkit.apps.workspace.services.matter_export import MatterExportService
 from toolkit.mixins import AjaxModelFormView, ModalView
 
 from rest_framework.renderers import UnicodeJSONRenderer
@@ -24,12 +25,12 @@ logger = logging.getLogger('django.request')
 
 class MatterDownloadExportView(View):
     def get(self, request, *args, **kwargs):
-        token = signing.loads(kwargs.get('token'), salt=settings.SECRET_KEY)
-        valid_until = token.get('valid_until')
+        token_data = signing.loads(kwargs.get('token'), salt=settings.SECRET_KEY)
+        valid_until = token_data.get('valid_until')
         if valid_until and valid_until > datetime.datetime.now():
-            zip_filename = '%s_%s_%s' % (token.get('matter_slug'), token.get('user_pk'), valid_until)
-            s3boto.exists(zip_filename)  # TODO: need bucket? path-prefix.
-            return HttpResponse(s3boto.read(), 'binary')
+            zip_filename = MatterExportService.get_zip_filename(token_data)
+            s3boto.exists('exported_matters/%s.zip' % zip_filename)  # TODO: need bucket? path-prefix.
+            return HttpResponse(s3boto.read(zip_filename), 'binary')
         return HttpResponse('not valid any more')
 
 
