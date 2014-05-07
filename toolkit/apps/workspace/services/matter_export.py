@@ -43,7 +43,7 @@ class MatterExportService(object):
             needed_revision.ensure_file()
             self.needed_files.append({
                 'file': needed_revision.get_document(),
-                'path_in_zip': "%s/%s/%s" % (needed_revision.item.category.slug if needed_revision.item.category else None,
+                'path_in_zip': "%s/%s/%s" % (needed_revision.item.category.slug if needed_revision.item.category else 'no category',
                                              needed_revision.item.name,
                                              os.path.basename(needed_revision.executed_file.name))
             })
@@ -61,7 +61,7 @@ class MatterExportService(object):
         m = MatterExportFinishedEmail(
             subject='Export has finished',
             message='Your matter "%s" has been exported and is ready to be downloaded from: %s' % (self.matter.name, download_link),
-            recipients=((self.matter.lawyer.get_full_name(), self.matter.lawyer.email)))
+            recipients=((self.matter.lawyer.get_full_name(), self.matter.lawyer.email), ))
         m.process()
 
     def process(self):
@@ -70,7 +70,7 @@ class MatterExportService(object):
         self.ensure_files_exist_locally()
 
         # put everything needed to find the file in AWS into the token
-        valid_until = (datetime.datetime.now() + datetime.timedelta(days=MATTER_EXPORT_DAYS_VALID)).isoformat()
+        valid_until = (datetime.date.today() + datetime.timedelta(days=MATTER_EXPORT_DAYS_VALID)).isoformat()
         token_data = {'matter_slug': self.matter.slug,
                       'user_pk': self.matter.lawyer.pk,
                       'valid_until': valid_until}

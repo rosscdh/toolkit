@@ -1,9 +1,10 @@
+from StringIO import StringIO
 import datetime
 from django.conf import settings
 from django.core import signing
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, StreamingHttpResponse
 from django.core.urlresolvers import reverse, reverse_lazy
-from django.views.generic import CreateView, DeleteView, ListView, TemplateView, UpdateView, View
+from django.views.generic import CreateView, DeleteView, ListView, TemplateView, UpdateView, DetailView
 
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
@@ -23,16 +24,34 @@ import logging
 logger = logging.getLogger('django.request')
 
 
-class MatterDownloadExportView(View):
-    def get(self, request, *args, **kwargs):
+class MatterDownloadExportView(DetailView):
+    model = Workspace
+
+    def dispatch(self, request, *args, **kwargs):
         token_data = signing.loads(kwargs.get('token'), salt=settings.SECRET_KEY)
-        valid_until = token_data.get('valid_until')
-        if valid_until and valid_until > datetime.datetime.now():
-            zip_filename = MatterExportService.get_zip_filename(token_data)
-            S3BotoStorage().exists(zip_filename)  # TODO: need bucket? path-prefix.
-            response = HttpResponse(S3BotoStorage().read(zip_filename), 'binary')
-            response['Content-Disposition'] = 'attachment; filename=%s.zip' % token_data.get('matter_slug')
-            return response
+        kwargs.update(token_data)
+        kwargs.update({'slug': token_data.get('matter_slug')})
+
+        self.kwargs = kwargs
+
+        return super(MatterDownloadExportView, self).dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        valid_until = kwargs.get('valid_until')
+
+        if valid_until and datetime.datetime.strptime(valid_until, '%Y-%m-%d') > datetime.datetime.now():
+            zip_filename = MatterExportService(self.object).get_zip_filename(kwargs)
+            if S3BotoStorage().exists(zip_filename):
+                response = HttpResponse()
+                response['Content-Disposition'] = 'attachment; filename=%s.zip' % kwargs.get('matter_slug')
+                s3_storage = S3BotoStorage()
+                with s3_storage.open(zip_filename, 'r') as myfile:
+                    response.write(myfile.read())
+                return response
+            else:
+                logger.error('Exported matter should be in S3 but is not: %s' % zip_filename)
         return HttpResponse('not valid any more')
 
 

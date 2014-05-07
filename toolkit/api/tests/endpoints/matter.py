@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 import os
+import datetime
 from django.conf import settings
 from django.core.files import File
 from django.core.files.storage import FileSystemStorage
 from django.core.urlresolvers import reverse
 from django.core import mail
+from django.core import signing
 import mock
-from storages.backends.s3boto import S3BotoStorage
 
 from toolkit.core.attachment.models import Revision
 from toolkit.apps.workspace.models import Workspace
@@ -18,6 +19,9 @@ from ...serializers import LiteClientSerializer
 from model_mommy import mommy
 
 import json
+
+
+MATTER_EXPORT_DAYS_VALID = getattr(settings, 'MATTER_EXPORT_DAYS_VALID', 3)
 
 
 class MattersTest(BaseEndpointTest):
@@ -451,19 +455,32 @@ class MatterExportTest(BaseEndpointTest):
             self.revision.executed_file.save('test.pdf', File(filename))
             self.revision.save(update_fields=['executed_file'])
 
-        resp = self.client.post(self.endpoint, json.dumps({}), content_type='application/json')
+        resp = self.client.post(self.endpoint, {}, content_type='application/json')
 
-        self.assertEqual(resp.status_code, 200)  # created
+        self.assertEqual(resp.status_code, 200)  # ok
 
-        json_data = json.loads(resp.content)
+        # json_data = json.loads(resp.content)
 
         outbox = mail.outbox
-        self.assertEqual(len(outbox), 2)
+        self.assertEqual(len(outbox), 1)
 
-        email = outbox[1]
+        email = outbox[0]
         self.assertEqual(email.subject, u'Export has finished')
-        # import pdb;pdb.set_trace()
         self.assertEqual(email.recipients(), [u'test+lawyer@lawpal.com'])
+
+        valid_until = (datetime.date.today() + datetime.timedelta(days=MATTER_EXPORT_DAYS_VALID)).isoformat()
+        token_data = {'matter_slug': self.matter.slug,
+                      'user_pk': self.matter.lawyer.pk,
+                      'valid_until': valid_until}
+        token = signing.dumps(token_data, salt=settings.SECRET_KEY)
+
+        download_link = ABSOLUTE_BASE_URL(reverse('matter:download-exported', kwargs={'token': token}))
+
+        # filename = MatterExportService(self.matter).get_zip_filename(token_data)
+
+        response = self.client.get(download_link)
+
+        import pdb;pdb.set_trace()
 
         # s = S3BotoStorage()
         # s.exists('exported_matters/')  # do not have the token here
