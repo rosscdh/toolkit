@@ -99,6 +99,11 @@ class Revision(IsDeletedMixin,
     def primary_signdocument(self):
         # there is only ever 1 of these, per revision (document)
         sign_document, is_new = self.signdocument_set.model.objects.get_or_create(document=self)
+        if is_new is True:
+            #
+            # set the sign_doc signers to the current object signers
+            #
+            sign_document.signers = self.signers.all()
         return sign_document
 
     def get_absolute_url(self):

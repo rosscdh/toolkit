@@ -66,54 +66,61 @@ class ItemRevisionSignersView(generics.ListAPIView,
         2. is the user already a signer for this revision
         3. if not make them one
         """
-
+        status = http_status.HTTP_400_BAD_REQUEST
         message = request.DATA.get('message')
         signers = request.DATA.get('signers')
 
-        for signer in signers:
+        if not signers:
+            data = {'detail': 'You need to provide at least 1 signer: You provided: %s' % signers}
 
-            first_name = signer.get('first_name')
-            last_name = signer.get('last_name')
-            email = signer.get('email')
+        else:
 
-            if email is None:
-                raise exceptions.APIException('You must provide a list of signers and they must have an email attribute  {"signers": [{"email": "me@example.com"},]}')
+            for signer in signers:
 
-            try:
-                user = User.objects.get(email=email)
+                first_name = signer.get('first_name')
+                last_name = signer.get('last_name')
+                email = signer.get('email')
 
-            except User.DoesNotExist:
+                if email is None:
+                    raise exceptions.APIException('You must provide a list of signers and they must have an email attribute  {"signers": [{"email": "me@example.com"},]}')
 
-                # we have a new user here
-                user_service = EnsureCustomerService(email=email, full_name='%s %s' % (first_name, last_name))
-                is_new, user, profile = user_service.process()
+                try:
+                    user = User.objects.get(email=email)
 
-            if user not in self.get_queryset():
-                # add to the join if not there already
-                # add the user to the purpose of this endpoint object review||signature
-                self.revision.signers.add(user)
+                except User.DoesNotExist:
 
-                #
-                # Send invite to review Email
-                #
-                self.item.send_invite_to_sign_emails(from_user=request.user, to=[user], message=message)
+                    # we have a new user here
+                    user_service = EnsureCustomerService(email=email, full_name='%s %s' % (first_name, last_name))
+                    is_new, user, profile = user_service.process()
 
-                #
-                # add activity
-                #
-                self.matter.actions.invite_user_as_signer(item=self.item,
-                                                          inviting_user=request.user,
-                                                          invited_user=user)
+                if user not in self.get_queryset():
+                    # add to the join if not there already
+                    # add the user to the purpose of this endpoint object review||signature
+                    self.revision.signers.add(user)
 
-        sign_document = self.revision.primary_signdocument
-        sign_document.send_for_signing(requester_email_address=request.user.email)
+                    #
+                    # Send invite to review Email
+                    #
+                    self.item.send_invite_to_sign_emails(from_user=request.user, to=[user], message=message)
 
-        # we have the user at this point
-        serializer = self.get_serializer(self.revision.signers.all(), many=True)
+                    #
+                    # add activity
+                    #
+                    self.matter.actions.invite_user_as_signer(item=self.item,
+                                                              inviting_user=request.user,
+                                                              invited_user=user)
 
-        headers = self.get_success_headers(serializer.data)
+            sign_document = self.revision.primary_signdocument
+            sign_document.send_for_signing(requester_email_address=request.user.email)
 
-        return Response(serializer.data, status=http_status.HTTP_201_CREATED, headers=headers)
+            # we have the user at this point
+            serializer = self.get_serializer(self.revision.signers.all(), many=True)
+
+            headers = self.get_success_headers(serializer.data)
+            status = http_status.HTTP_201_CREATED
+            data = serializer.data
+
+        return Response(data, status=status, headers=headers)
 
     def can_read(self, user):
         return user.profile.user_class in ['lawyer', 'customer']
