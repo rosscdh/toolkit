@@ -5,7 +5,7 @@
 {% block html_content %}
 <p>Hi {{ to_name }},</p>
 
-<p>{{ from_name }} has asked you to review and provide feedback relating to: {{ item.name }}.</p>
+<p>{{ from_name }} has asked you to sign the document: {{ item.name }}.</p>
 
 <p>You can find it at <a href="{{ action_url }}">{{ action_url }}</a></p>
 
@@ -17,7 +17,7 @@
 {% block plain_content %}
 Hi {{ to_name }},
 
-{{ from_name }} has asked you to review and provide feedback relating to: {{ item.name }}.
+{{ from_name }} has asked you to sign the document: {{ item.name }}.
 
 You can find it at {{ action_url }}
 
