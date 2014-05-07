@@ -4,6 +4,7 @@ from django.conf import settings
 from django.core.files import File
 from django.core.files.storage import FileSystemStorage
 from django.core.urlresolvers import reverse
+from django.core import mail
 import mock
 from storages.backends.s3boto import S3BotoStorage
 
@@ -456,7 +457,13 @@ class MatterExportTest(BaseEndpointTest):
 
         json_data = json.loads(resp.content)
 
+        outbox = mail.outbox
+        self.assertEqual(len(outbox), 2)
+
+        email = outbox[1]
+        self.assertEqual(email.subject, u'Export has finished')
+        import pdb;pdb.set_trace()
+        self.assertEqual(email.recipients(), [u'test+lawyer@lawpal.com'])
+
         # s = S3BotoStorage()
         # s.exists('exported_matters/')  # do not have the token here
-
-        # import pdb;pdb.set_trace()

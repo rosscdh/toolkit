@@ -10,6 +10,7 @@ from django.core import signing
 from django.core.files.storage import default_storage
 from django.core.urlresolvers import reverse
 from storages.backends.s3boto import S3BotoStorage
+from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 from toolkit.apps.matter.mailers import MatterExportFinishedEmail
 from toolkit.core.services.zip import ZipService
 
@@ -55,11 +56,12 @@ class MatterExportService(object):
 
     def send_email(self, token):
         # send the token-link to the owning lawyer
-        download_link = reverse('matter:download-exported', kwargs={'token': token})
+        download_link = ABSOLUTE_BASE_URL(reverse('matter:download-exported', kwargs={'token': token}))
 
+        import pdb;pdb.set_trace()
         m = MatterExportFinishedEmail(
             subject='Export has finished',
-            message='Your matter "{{ matter.name }}" has been exported and is ready to be downloaded from: %s' % download_link,
+            message='Your matter "%s" has been exported and is ready to be downloaded from: %s' % (self.matter.name, download_link),
             recipients=((self.matter.lawyer.get_full_name(), self.matter.lawyer.email)))
         m.process()
 
