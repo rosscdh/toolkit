@@ -32,20 +32,35 @@ var MatterItem = React.createClass({displayName: 'MatterItem',
 
 var Participants = React.createClass({displayName: 'Participants',
     render: function() {
-        var userNodes = this.props.data.map(function (user) {
-            //console.log(user)
-            return (
-                React.DOM.div( {className:"avatar img-circle"}, 
-                    React.DOM.span( {className:"initials", title: user.name },  user.initials )
-                )
-            )
-        });
+        if (this.props.data.length > 3) {
+            var userNames = this.props.data.map(function(user) {
+                return user.name;
+            });
 
-        return (
-          React.DOM.div( {className:"people pull-right"}, 
-            userNodes
-          )
-        );
+            return (
+                React.DOM.div( {className:"people people-multi pull-right", 'data-toggle':"tooltip", title:userNames}, 
+                    React.DOM.div( {className:"avatar img-circle one"}, 
+                        React.DOM.span( {className:"initials"}, this.props.data.length)
+                    ),
+                    React.DOM.div( {className:"avatar img-circle two"}, React.DOM.span( {className:"initials"}, " ")),
+                    React.DOM.div( {className:"avatar img-circle three"}, React.DOM.span( {className:"initials"}, " "))
+                )
+            );
+        } else {
+            var userNodes = this.props.data.map(function(user) {
+                return (
+                    React.DOM.div( {className:"avatar img-circle"}, 
+                        React.DOM.span( {className:"initials", title:user.name}, user.initials)
+                    )
+                )
+            });
+
+            return (
+                React.DOM.div( {className:"people pull-right"}, 
+                    userNodes
+                )
+            );
+        }
     }
 });
 

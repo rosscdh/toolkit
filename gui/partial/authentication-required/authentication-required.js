@@ -13,9 +13,9 @@ angular.module('toolkit-gui')
 	'$modalInstance',
 	'currentUser',
 	'matter',
-	'toaster',
-	function($scope, $modalInstance, currentUser, matter, toaster){
-
+	/*'toaster',*/
+	function($scope, $modalInstance, currentUser, matter/*, toaster*/){
+		'use strict';
 
 		/**
 		 * In scope variable containing details about the current user. This is passed through from the originating controller.

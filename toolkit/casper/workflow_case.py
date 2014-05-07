@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.core.urlresolvers import reverse
 from django.core.files.storage import FileSystemStorage
 
 from model_mommy import mommy
@@ -6,6 +7,10 @@ from pyquery import PyQuery as pq
 
 from .base import BaseCasperJs
 
+from toolkit.core.item.models import Item
+from toolkit.api.serializers import MatterSerializer
+
+import json
 import mock
 import logging
 import datetime
@@ -72,6 +77,25 @@ class BaseScenarios(object):
                             filing_date=datetime.date.today() + datetime.timedelta(days=30),
                             transfer_date=datetime.date.today(),
                             status=EightyThreeB.STATUS.lawyer_complete_form)
+
+        # endpoint for api cretion via the api
+        self.item_create_endpoint = reverse('matter_items', kwargs={'matter_slug': self.matter.slug})
+
+    def _api_create_item(self, **kwargs):
+        """
+        Create items via the api (to get the activity)
+        """
+        if kwargs.get('matter'):
+            kwargs['matter'] = MatterSerializer(kwargs['matter']).data.get('url')
+
+        if not self.client.session:
+            self.client.login(username=self.lawyer.username, password=self.password)
+
+        resp = self.client.post(self.item_create_endpoint,
+                                kwargs)
+        json_resp = json.loads(resp.content)
+
+        return Item.objects.get(slug=json_resp.get('slug'))
 
 
 class BaseProjectCaseMixin(BaseScenarios, BaseCasperJs):

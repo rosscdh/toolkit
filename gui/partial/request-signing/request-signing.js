@@ -25,7 +25,7 @@ angular.module('toolkit-gui')
 	'toaster',
     '$log',
 	function($scope, $modalInstance, participants, currentUser, matter, checklistItem, revision, participantService, matterItemService, toaster, $log){
-
+		'use strict';
 
 		/**
 		 * In scope variable containing a list of participants within this matter. This is passed through from the originating controller.
@@ -138,7 +138,7 @@ angular.module('toolkit-gui')
                         }
                     },
                     function error() {
-                        toaster.pop('error', "Error!", "Unable to load participant");
+                        toaster.pop('error', 'Error!', 'Unable to load participant',5000);
                     }
                 );
             } else {
@@ -212,7 +212,7 @@ angular.module('toolkit-gui')
                     function success(response){
                         $modalInstance.close( response );
                     },
-                    function error(err){
+                    function error(/*err*/){
                         if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to request signers.") {
                             toaster.pop('error', "Error!", "Unable to request signers.");
                         }
