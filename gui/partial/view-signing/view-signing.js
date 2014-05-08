@@ -90,5 +90,13 @@ angular.module('toolkit-gui')
         $scope.saveSigning = function(){
 
         };
+
+        $scope.getSigningUrl = function(){
+            if ($scope.revision.is_claimed === true){
+                return $scope.revision.signing_url;
+            } else {
+                return $scope.revision.signing_claim_url;
+            }
+        };
 	}
 ]);
