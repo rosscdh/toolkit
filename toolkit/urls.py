@@ -39,9 +39,6 @@ urlpatterns = patterns('',
 
     # signing events
     url(r'^sign/', include('toolkit.apps.sign.urls', namespace='sign')),
-    # HelloSign
-    url(r'^hellosign/', include('hello_sign.urls', namespace='hellosign')),
-    # DocuSign - Coming Soon
 
     # Payments
     url(r'^payments/', include('payments.urls')),
