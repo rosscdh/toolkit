@@ -286,7 +286,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
         request = context.get('request')
 
         sign_document = _get_user_sign(self=self, obj=obj, context=context)
-        if sign_document is not None:
+        if sign_document is not None and sign_document.signing_request is not None:
             data = {
                 'url': sign_document.get_absolute_url(user=request.user),
                 'claim_url': sign_document.get_claim_url(user=request.user),
