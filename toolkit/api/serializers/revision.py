@@ -167,6 +167,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
     item = serializers.HyperlinkedRelatedField(many=False, view_name='item-detail')
 
     reviewers = serializers.SerializerMethodField('get_reviewers')
+    signers = SimpleUserSerializer(source='signers.all', many=True)
     signing = serializers.SerializerMethodField('get_signing')
 
     user_review = serializers.SerializerMethodField('get_user_review')
@@ -187,7 +188,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
                   'status',
                   'item',
                   'uploaded_by',
-                  'reviewers',
+                  'reviewers', 'signers',
                   'signing',
                   'revisions',
                   'user_review', 'user_download_url',

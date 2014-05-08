@@ -36,10 +36,10 @@ class SignatureEndpoint(viewsets.ModelViewSet):
         return user.profile.user_class in ['lawyer', 'customer']
 
     def can_edit(self, user):
-        return user.profile.is_lawyer
+        return user == self.object.item.matter.lawyer
 
     def can_delete(self, user):
-        return user.profile.is_lawyer
+        return user == self.object.item.matter.lawyer
 
 
 rulez_registry.register("can_read", SignatureEndpoint)
