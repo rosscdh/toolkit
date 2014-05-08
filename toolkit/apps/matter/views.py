@@ -31,9 +31,7 @@ class MatterDownloadExportView(DetailView):
         token_data = signing.loads(kwargs.get('token'), salt=settings.SECRET_KEY)
         kwargs.update(token_data)
         kwargs.update({'slug': token_data.get('matter_slug')})
-
         self.kwargs = kwargs
-
         return super(MatterDownloadExportView, self).dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
