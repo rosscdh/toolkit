@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.views.generic import DetailView
+from django.utils.safestring import mark_safe
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth import authenticate, login
-
 
 from .models import SignDocument
 
@@ -76,7 +76,7 @@ class SignRevisionView(DetailView):
     def get_context_data(self, **kwargs):
         kwargs = super(SignRevisionView, self).get_context_data(**kwargs)
         kwargs.update({
-            'sign_url': self.object.signing_request.get_absolute_url()
+            'sign_url': mark_safe(self.object.signing_request.get_absolute_url())
         })
         return kwargs
 
@@ -93,6 +93,6 @@ class ClaimSignRevisionView(SignRevisionView):
     def get_context_data(self, **kwargs):
         kwargs = super(SignRevisionView, self).get_context_data(**kwargs)
         kwargs.update({
-            'claim_url': self.object.signing_request.data.get('claim_url')
+            'claim_url': mark_safe(self.object.signing_request.data.get('unclaimed_draft', {}).get('claim_url'))
         })
         return kwargs
