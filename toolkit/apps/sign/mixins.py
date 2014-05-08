@@ -124,7 +124,7 @@ class HelloSignOverridesMixin(object):
         """
         Return a list of invitees to sign
         """
-        return [{'name': u.get_full_name(), 'email': u.email} for u in self.signers.all()]
+        return [{'name': u.get_full_name(), 'email': u.email} for u in self.document.signers.all()]
 
     def create_unclaimed_draft(self, requester_email_address, **kwargs):
         hs_request_object = self.get_hs_request_object()

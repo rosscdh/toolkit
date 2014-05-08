@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.views.generic import DetailView
+from django.views.generic.edit import ProcessFormView
 from django.utils.safestring import mark_safe
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth import authenticate, login
@@ -81,8 +82,11 @@ class SignRevisionView(DetailView):
         return kwargs
 
 
-class ClaimSignRevisionView(SignRevisionView):
+class ClaimSignRevisionView(SignRevisionView,
+                            ProcessFormView):
+
     template_name = 'sign/claim.html'
+    http_method_names = [u'get', u'post']
 
     def get_template_names(self):
         if self.object.is_current is False:
@@ -96,3 +100,7 @@ class ClaimSignRevisionView(SignRevisionView):
             'claim_url': mark_safe(self.object.signing_request.data.get('unclaimed_draft', {}).get('claim_url'))
         })
         return kwargs
+
+    def post(self, request, *args, **kwargs):
+        import pdb;pdb.set_trace()
+

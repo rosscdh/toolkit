@@ -1,4 +1,4 @@
-{{ hellosign_view_url }}
+{% csrf_token %}
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <script src="//s3.amazonaws.com/cdn.hellofax.com/js/embedded.js"></script>
 <script type="text/javascript">
@@ -6,14 +6,31 @@ $(document).ready(function () {
     'use strict';
     HelloSign.init('{{ GLOBALS.HELLOSIGN_CLIENT_ID }}');
     HelloSign.open({
-        url: '{{ claim_url }}',                // Signature url your fetched via the API on your server
-        allowCancel: true,                              // (optional) Whether to allow the user to cancel i.e. close the iFrame without signing (default is true)
+        url: '{{ claim_url }}',
+        allowCancel: false,
+        {% if DEBUG %}
         debug: true,
         skipDomainVerification: true,
-        messageListener: function(eventData) {          // (optional) Called whenever the iFrame is messaging your page
-            if (eventData.event == HelloSign.EVENT_SIGNED) {
-                document.location.reload();
-            };
+        {% endif %}
+        messageListener: function(eventData) {
+            var self = this;
+            if (eventData.event == HelloSign.EVENT_SENT) {
+                // the event was completed and sent
+                // now we need to set out manual signing request is_claimed = True
+                $.ajax({
+                  type: 'POST',
+                  url: '{% url "sign:claim_sign_document" slug=object.slug %}',
+                  data: eventData,
+                  dataType: 'json',
+                  contentType: 'application/json',
+                  beforeSend: function (jqXHR, settings) {
+                      // Pull the token out of the DOM.
+                      jqXHR.setRequestHeader('X-CSRFToken', $('input[name=csrfmiddlewaretoken]:first').val());
+                  },
+                  complete: function ( data ) {
+                  }
+                });
+            }
         }
     });
 });
