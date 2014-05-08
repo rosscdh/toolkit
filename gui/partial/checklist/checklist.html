@@ -33,7 +33,7 @@
 							<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-footer.html'"></span>
 						</div>
 					</div>
-					<div ui-sortable="checklistCategorySortableOptions" ng-model="data.categories">
+					<div class="categories-list">
 						<div ng-repeat="cat in data.categories" ng-show="cat.name!==null">
 							<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-header.html'"></span>
 							<!-- Checklist //-->
@@ -44,7 +44,7 @@
 					</div>
 				</span>
 
-				<span ng-if="data.usdata.current.user_class=='customer'">
+				<span ng-if="data.usdata.current.user_class=='customer'" class="categories-list">
 					<div ng-repeat="cat in data.categories">
 						<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-header.html'"></span>
 						<!-- Checklist //-->
@@ -79,7 +79,7 @@
 		</div>
 	</div>
 
-    <div class="upload-bar" ng-repeat="cat in data.categories">
+    <div class="upload-bar" ng-repeat="cat in data.categories" ng-show="data.uploading">
 		<div class="progress progress-striped active" ng-repeat="item in cat.items | filter: { uploading: true }">
 			<div class="progress-bar progress-bar-info" ng-style="{'width': item.uploadingPercent + '%'}">Uploading to <font ng-bind="item.name"></font></div>
 		</div>
