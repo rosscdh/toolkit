@@ -83,14 +83,10 @@ class SignDocument(IsDeletedMixin,
     def __unicode__(self):
         return u'%s' % str(self.slug)
 
-    def get_absolute_url(self, user):
-        # auth_key = self.get_user_auth(user=user)
-        # if auth_key is not None:
-        #     return reverse('sign:sign_document', kwargs={'slug': self.slug, 'auth_slug': auth_key})
-        # return None
+    def get_absolute_url(self):
         return ABSOLUTE_BASE_URL(reverse('sign:sign_document', kwargs={'slug': self.slug}))
 
-    def get_claim_url(self, user):
+    def get_claim_url(self):
         return ABSOLUTE_BASE_URL(reverse('sign:claim_sign_document', kwargs={'slug': self.slug}))
 
     def complete(self, is_complete=True):

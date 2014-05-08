@@ -30,7 +30,7 @@ class SignatureEndpoint(viewsets.ModelViewSet):
     """
     model = SignDocument
     serializer_class = SignatureSerializer
-    lookup_field = 'pk'
+    lookup_field = 'slug'
 
     def can_read(self, user):
         return user.profile.user_class in ['lawyer', 'customer']
@@ -54,7 +54,7 @@ class ItemRevisionSignersView(generics.ListAPIView,
     /matters/:matter_slug/items/:item_slug/revision/signers/ (GET,POST)
         [lawyer,customer] to list, create signers
     """
-    serializer_class = SimpleUserWithSignUrlSerializer  # as we are returning the revision and not the item
+    serializer_class = SignatureSerializer  # as we are returning the revision and not the item
 
     def get_queryset_provider(self):
         return self.revision.signers
@@ -119,7 +119,7 @@ class ItemRevisionSignersView(generics.ListAPIView,
             sign_document.create_unclaimed_draft(requester_email_address=request.user.email)
 
             # we have the user at this point
-            serializer = self.get_serializer(self.revision.signers.all(), many=True)
+            serializer = self.get_serializer(sign_document)
 
             headers = self.get_success_headers(serializer.data)
             status = http_status.HTTP_201_CREATED

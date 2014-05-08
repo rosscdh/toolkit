@@ -167,14 +167,10 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
     item = serializers.HyperlinkedRelatedField(many=False, view_name='item-detail')
 
     reviewers = serializers.SerializerMethodField('get_reviewers')
-    signers = serializers.SerializerMethodField('get_signers')
-    #signers = serializers.HyperlinkedRelatedField(many=True, view_name='user-detail', lookup_field='username')
+    signing = serializers.SerializerMethodField('get_signing')
 
-    # "user" <— the currently logged in user.. "review_url" because the url is relative to the current user
     user_review = serializers.SerializerMethodField('get_user_review')
     user_download_url = serializers.SerializerMethodField('get_user_download_url')
-
-    signing = serializers.SerializerMethodField('get_signing')
 
     revisions = serializers.SerializerMethodField('get_revisions')
 
@@ -191,10 +187,10 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
                   'status',
                   'item',
                   'uploaded_by',
-                  'reviewers', 'signers',
+                  'reviewers',
+                  'signing',
                   'revisions',
                   'user_review', 'user_download_url',
-                  'signing',
                   'date_created',)
 
     def __init__(self, *args, **kwargs):
@@ -241,14 +237,6 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
 
         return reviewers
 
-    def get_signers(self, obj):
-        signers = []
-        if getattr(obj, 'pk', None) is not None:  # it has not been deleted when pk is None
-            for u in obj.signers.all():
-                signers.append(SimpleUserSerializer(u, context={'request': self.context.get('request')}).data)
-
-        return signers
-
     def get_user_review(self, obj):
         """
         Try to provide an initial reivew url from the base review_document obj
@@ -287,11 +275,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
 
         sign_document = _get_user_sign(self=self, obj=obj, context=context)
         if sign_document is not None and sign_document.signing_request is not None:
-            data = {
-                'url': sign_document.get_absolute_url(user=request.user),
-                'claim_url': sign_document.get_claim_url(user=request.user),
-                'is_claimed': sign_document.signing_request.data.get('is_claimed', False),
-            }
+            data = SignatureSerializer(sign_document, context=context).data
         return data
 
 

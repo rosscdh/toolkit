@@ -9,23 +9,33 @@ class SignatureSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for the SignDocument
     """
+    sign_url = serializers.SerializerMethodField('get_sign_url')
+    claim_url = serializers.SerializerMethodField('get_claim_url')
+    is_claimed = serializers.SerializerMethodField('get_is_claimed')
     signers = serializers.SerializerMethodField('get_signers')
-    item = serializers.SerializerMethodField('get_item')
 
     class Meta:
         model = SignDocument
-        fields = ('url', 'document', 'item', 'signers', 'is_complete', 'date_last_viewed')
+        fields = ('url',
+                  'sign_url',
+                  'claim_url',
+                  'signers',
+                  'is_claimed',)
 
-    def get_item(self, obj):
-        from .item import LiteItemSerializer
-        return LiteItemSerializer(obj.document.item, context=self.context).data.get('url')
+    def get_sign_url(self, obj):
+        return obj.get_absolute_url()
+
+    def get_claim_url(self, obj):
+        return obj.get_claim_url()
+
+    def get_is_claimed(self, obj):
+        signing_request = obj.signing_request
+        if signing_request:
+            return obj.signing_request.data.get('is_claimed', False)
+        return False
 
     def get_signers(self, obj):
         signers = []
         for signer in obj.document.signers.all():
-            context = self.context.copy()
-            context.update({
-                'sign_document': obj
-            })
-            signers.append(SimpleUserWithSignUrlSerializer(signer, context=context).data)
-        return None
+            signers.append(SimpleUserWithSignUrlSerializer(signer).data)
+        return signers
