@@ -36,19 +36,26 @@ var ExportButtonInterface = React.createClass({displayName: 'ExportButtonInterfa
         });
     },
     render: function() {
-        return (
-            React.DOM.div(null, 
-            React.DOM.button( {className:"btn btn-inverse", onClick:this.handleClick}, React.DOM.span( {className:"fui-check-inverted"}), " Export"
-            ),React.DOM.span( {className:"{this.state.export_message_classname}"}, this.state.export_message)
-            )
-        );
+        console.log(this.props.is_matter_owner)
+        if (this.props.is_matter_owner === false) {
+            // is not the owner (matter.lawyer)
+            return (React.DOM.span(null));
+        }else{
+            // is the matter owner
+            return (
+                React.DOM.div(null, 
+                React.DOM.button( {className:"btn btn-inverse", onClick:this.handleClick}, React.DOM.span( {className:"fui-check-inverted"}), " Export"
+                ),React.DOM.span( {className:"{this.state.export_message_classname}"}, this.state.export_message)
+                )
+            );
+        };
     }
 });
 
 var MatterItem = React.createClass({displayName: 'MatterItem',
   render: function() {
 
-    var ExportButton = ExportButtonInterface( {matter_slug:this.props.key} )
+    var ExportButton = ExportButtonInterface( {is_matter_owner:this.props.is_matter_owner, matter_slug:this.props.key} )
 
     return (
             React.DOM.article( {className:"col-md-4 matter"}, 
@@ -217,10 +224,13 @@ var MatterList = React.createClass({displayName: 'MatterList',
                                                                   date_modified:matter.date_modified} )
                 var editMatterInterface = EditMatterInterface( {key:matter.slug, can_edit:UserData.can_edit, edit_url:editUrl} )
 
+                var is_matter_owner = matter.lawyer.username == UserData.username
+
                 return MatterItem(
                         {key:matter.slug,
                         name:matter.name,
                         is_lawyer:UserData.is_lawyer,
+                        is_matter_owner:is_matter_owner,
                         lawyer_or_client_name:lawyer_or_client_name,
 
                         participantList:participantList,

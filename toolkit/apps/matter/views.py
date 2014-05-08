@@ -31,9 +31,7 @@ class MatterDownloadExportView(DetailView):
         token_data = signing.loads(kwargs.get('token'), salt=settings.SECRET_KEY)
         kwargs.update(token_data)
         kwargs.update({'slug': token_data.get('matter_slug')})
-
         self.kwargs = kwargs
-
         return super(MatterDownloadExportView, self).dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
@@ -41,7 +39,8 @@ class MatterDownloadExportView(DetailView):
 
         valid_until = kwargs.get('valid_until')
 
-        if valid_until and datetime.datetime.strptime(valid_until, '%Y-%m-%d') > datetime.datetime.now():
+        if valid_until and datetime.datetime.strptime(valid_until, '%Y-%m-%d') > datetime.datetime.now() and \
+                        request.user.pk == kwargs.get('user_pk'):
             zip_filename = MatterExportService(self.object).get_zip_filename(kwargs)
             if S3BotoStorage().exists(zip_filename):
                 response = HttpResponse()

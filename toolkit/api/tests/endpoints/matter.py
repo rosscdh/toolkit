@@ -329,7 +329,6 @@ class MatterDetailProvidedDataTest(BaseEndpointTest):
         self.assertTrue('http://testserver/api/v1/users/%s' % self.user.username in participant_urls)
         self.assertTrue('http://testserver/api/v1/users/%s' % self.lawyer.username in participant_urls)
 
-
     def confirm_item_latest_revision(self, items):
         """
         Test that the latest_revision is as it should be
@@ -442,6 +441,14 @@ class MatterExportTest(BaseEndpointTest):
 
     def test_endpoint_name(self):
         self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/export')
+
+    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
+    def test_export_matter_post_not_allowed(self):
+        self.client.login(username=self.user.username, password=self.password)
+
+        # start the export
+        resp = self.client.post(self.endpoint, {}, content_type='application/json')
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
     @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_export_matter_post(self):

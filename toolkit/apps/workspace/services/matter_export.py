@@ -40,10 +40,9 @@ class MatterExportService(object):
         # make sure the files exist locally
         for needed_revision in self.needed_revisions:
             # download latest_revision
-            needed_revision.ensure_file()
             self.needed_files.append({
                 'file': needed_revision.get_document(),
-                'path_in_zip': "%s/%s/%s" % (needed_revision.item.category.slug if needed_revision.item.category else 'no category',
+                'path_in_zip': "%s/%s/%s" % (needed_revision.item.category if needed_revision.item.category else 'no category',
                                              needed_revision.item.name,
                                              os.path.basename(needed_revision.executed_file.name))
             })
