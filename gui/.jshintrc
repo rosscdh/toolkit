@@ -26,7 +26,8 @@
         "expect": true,
         "filepicker": true,
         "TimeSpan": true,
-        "Raven": true
+        "Raven": true,
+        "jasmine": true
     },
     "-W083": false,
     "-W099": false
