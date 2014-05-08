@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
+from django.http import Http404
 from django.views.generic import DetailView
-from django.views.generic.edit import ProcessFormView
 from django.utils.safestring import mark_safe
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth import authenticate, login
+from django.views.generic.edit import BaseUpdateView
 
 from .models import SignDocument
+
+import logging
+logger = logging.getLogger('django.request')
 
 
 def _authenticate(request, obj, matter, **kwargs):
@@ -83,7 +87,7 @@ class SignRevisionView(DetailView):
 
 
 class ClaimSignRevisionView(SignRevisionView,
-                            ProcessFormView):
+                            BaseUpdateView):
 
     template_name = 'sign/claim.html'
     http_method_names = [u'get', u'post']
@@ -102,5 +106,20 @@ class ClaimSignRevisionView(SignRevisionView,
         return kwargs
 
     def post(self, request, *args, **kwargs):
-        import pdb;pdb.set_trace()
+        #import pdb;pdb.set_trace()
+        signature_request_id = request.POST.get('signature_request_id')
+        logger.info('found signature_request_id: %s' % signature_request_id)
+
+        self.object = self.get_object()
+        object_signature_request = self.object.signing_request
+
+        if object_signature_request.signature_request_id != signature_request_id:
+            logger.error('signature_request_id did not match for %s self.object.signing_request: %s != %s' % (self.object.signing_request, self.object.signing_request.signature_request_id, signature_request_id))
+            raise Http404
+
+        # set the is_claimed property
+        object_signature_request.data['is_claimed'] = True
+        object_signature_request.save(update_fields=['data'])
+
+        return super(ClaimSignRevisionView, self).post(request=request, *args, **kwargs)
 
