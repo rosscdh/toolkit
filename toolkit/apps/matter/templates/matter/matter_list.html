@@ -3,6 +3,10 @@
 {% block page_title %}Your Matters{% endblock %}
 
 {% block body %}
+
+    <!-- needed for react -->
+    {% csrf_token %}
+
     {% if object_list %}
         <div id="matter-list" class="content col-lg-12"></div>
     {% else %}

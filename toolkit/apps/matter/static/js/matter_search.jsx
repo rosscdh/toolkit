@@ -3,13 +3,38 @@
 * ReactJS Experiment
 *
 */
+var ExportButtonInterface = React.createClass({
+    handleClick: function(event) {
+        var url = '/api/v1/matters/'+ this.props.matter_slug +'/export';
+
+        $.ajax({
+            type: 'POST',
+            url: url,
+            dataType: 'json',
+            headers: {'X-CSRFToken': $('input[name=csrfmiddlewaretoken]:first').val()},
+            success: function(data) {
+                console.log(data);
+            }.bind(this)
+        });
+    },
+    render: function() {
+        return (
+            <button onClick={this.handleClick}>Export</button>
+        );
+    }
+});
+
 var MatterItem = React.createClass({
   render: function() {
+
+    var ExportButton = <ExportButtonInterface matter_slug={this.props.key} />
+
     return (
             <article className="col-md-4 matter">
                 <div className="card">
 
                     { this.props.editMatterInterface }
+                    { ExportButton }
 
                     <a href={ this.props.detail_url } title={ this.props.name } className="content">
                         <div className="title">
