@@ -725,6 +725,7 @@ angular.module('toolkit-gui')
 
 			if( user.user_class === 'lawyer' ) {
 				item.uploading = true;
+				$scope.data.uploading = true;
 
 				matterItemService.uploadRevisionFile( matterSlug, itemSlug, $files ).then(
 					function success( revision ) {
@@ -1446,6 +1447,9 @@ angular.module('toolkit-gui')
 			}
 		};
 
+		$scope.cancelEvent = function(evt) {
+			evt.stopPropagation();
+		};
 
 		/**
 		 * UI.sortable options for checklist items
@@ -1458,7 +1462,8 @@ angular.module('toolkit-gui')
 			'start': function() { $scope.data.dragging=true; $scope.$apply();},
 			'connectWith': '.group',
 			'dropOnEmpty': true,
-			'axis': 'y'
+			'axis': 'y',
+			'distance': 15
 		};
 
 		/**
@@ -1477,6 +1482,11 @@ angular.module('toolkit-gui')
 			'axis': 'y',
 			'distance': 15
 		};
+
+		var width = $( document ).width();
+		if( width<=1200 ) {
+			$scope.checklistItemSortableOptions.handle = '.fui-list-columned';
+		}
 
 
 		/**
