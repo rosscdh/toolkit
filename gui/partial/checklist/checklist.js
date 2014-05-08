@@ -1359,6 +1359,11 @@ angular.module('toolkit-gui')
 				}
 			);
 		};
+
+        $scope.deleteSignatoryRequest = function(revision){
+            //TODO implement
+            $log.debug("not implemented yet");
+        };
 		/* End revision handling */
 
 

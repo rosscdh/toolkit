@@ -164,7 +164,9 @@
                 <div class="tools status-{{ data.selectedItem.latest_revision.status }}">
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="showRevisionDocument(data.selectedItem.latest_revision)">View</a>  <a href="{{ data.selectedItem.latest_revision.user_download_url }}" class="btn btn-link btn-xs" target="_blank">Download</a>
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="requestReview(data.selectedItem.latest_revision)">Request Review</a>
-                    <a href="javascript:;" class="btn btn-link btn-xs" ng-click="requestSigning(data.selectedItem.latest_revision)">Request Signing</a>
+                    <a href="javascript:;" class="btn btn-link btn-xs"
+                       ng-click="requestSigning(data.selectedItem.latest_revision)"
+                       ng-hide="data.selectedItem.latest_revision.signers">Request Signing</a>
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="deleteLatestRevision()">Delete</a>
 
                     <div class="btn-group pull-right">
@@ -224,11 +226,10 @@
                 <a class="btn btn-link btn-xs pull-right" href="javascript:;">
                     Remind
                 </a>
+                <a class="btn btn-link btn-xs pull-right" href="javascript:;" ng-click="deleteSignatoryRequest(data.selectedItem.latest_revision)">Delete</a>
                 <div class="signing-members">
                     <ul class="list-unstyled">
                         <li ng-repeat="sig in data.selectedItem.latest_revision.signers" ng-class="{'complete': sig.is_complete==true }">
-                            <a class="close" href="javascript:;" ng-click="deleteSignatoryRequest(data.selectedItem, sig)"
-                               ng-hide="sig.is_complete">x</a>
                             <a href="javascript:;" ng-click="showSigning(data.selectedItem.latest_revision, sig)" class="pull-right">
                                 <button class="btn btn-warning btn-xs" ng-hide="sig.is_complete"><span class="fui-time"></span> In progress</button>
                                 <button class="btn btn-success btn-xs" ng-show="sig.is_complete">
@@ -236,9 +237,9 @@
                                 </button>
                             </a>
                             <span ng-show="sig.date_last_viewed">
-                                <a href="javascript:;" ng-click="showSigning(data.selectedItem.latest_revision, sig)">{{ sig.signer.initials }}</a> viewed <span ng-bind="sig.date_last_viewed | timeago"></span>
+                                <a href="javascript:;" ng-click="showSigning(data.selectedItem.latest_revision, sig)">{{ sig.initials }}</a> viewed <span ng-bind="sig.date_last_viewed | timeago"></span>
                             </span>
-                            <a ng-hide="sig.date_last_viewed" href="javascript:;" ng-click="showSigning(data.selectedItem.latest_revision, sig)">{{ sig.signer.name }}</a>
+                            <a ng-hide="sig.date_last_viewed" href="javascript:;" ng-click="showSigning(data.selectedItem.latest_revision, sig)">{{ sig.name }}</a>
                         </li>
                     </ul>
                 </div>
