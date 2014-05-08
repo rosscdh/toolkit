@@ -22,7 +22,7 @@ class SignatureSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_signers(self, obj):
         signers = []
-        for signer in obj.signers.all():
+        for signer in obj.document.signers.all():
             context = self.context.copy()
             context.update({
                 'sign_document': obj
