@@ -210,6 +210,7 @@ angular.module('toolkit-gui')
             $log.debug($scope.data.request);
             matterItemService.requestSigner($scope.matter.slug, $scope.checklistItem.slug, $scope.data.request).then(
                     function success(response){
+                        $log.debug(response);
                         $modalInstance.close( response );
                     },
                     function error(/*err*/){
