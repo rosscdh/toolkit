@@ -1,7 +1,6 @@
 {% extends 'gui.html' %}
 
-{% load crispy_forms_tags %}
-{#% load url from future %}{% load user_tags widont %#}
+{% load url from future %}{% load crispy_forms_tags %}
 
 {% block page_title %}Settings — {{ block.super }}{% endblock%}
 
@@ -25,6 +24,8 @@
         <div class="container">
             <div class="col-sm-6 col-sm-offset-3" role="main">
                 {% crispy form %}
+                <hr>
+                <a href="{% url 'me:cancel' %}" data-toggle="modal" data-target="#cancel-account">Cancel my account</a>
             </div>
         </div>
     </div>
@@ -33,4 +34,5 @@
 {% block modals %}
     {{ block.super }}
     <div class="modal" id="change-password"></div>
+    <div class="modal" id="cancel-account"></div>
 {% endblock %}
