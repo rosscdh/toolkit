@@ -4,7 +4,14 @@
 *
 */
 var ExportButtonInterface = React.createClass({displayName: 'ExportButtonInterface',
+    getInitialState: function() {
+        return {
+            'export_message': null,
+            'export_message_classname': null
+        }
+    },
     handleClick: function(event) {
+        var self = this;
         var url = '/api/v1/matters/'+ this.props.matter_slug +'/export';
 
         $.ajax({
@@ -13,13 +20,27 @@ var ExportButtonInterface = React.createClass({displayName: 'ExportButtonInterfa
             dataType: 'json',
             headers: {'X-CSRFToken': $('input[name=csrfmiddlewaretoken]:first').val()},
             success: function(data) {
-                console.log(data);
+                // console.log(data)
+                self.setState({
+                    'export_message': data.detail,
+                    'export_message_classname': 'palette-midnight-blue'
+                });
+            },
+            error: function(result, a, b) {
+                data = result.responseJSON
+                self.setState({
+                    'export_message': data.detail,
+                    'export_message_classname': 'palette-pomegranate'
+                });
             }.bind(this)
         });
     },
     render: function() {
         return (
-            React.DOM.button( {onClick:this.handleClick}, "Export")
+            React.DOM.div(null, 
+            React.DOM.button( {className:"btn btn-inverse", onClick:this.handleClick}, React.DOM.span( {className:"fui-check-inverted"}), " Export"
+            ),React.DOM.span( {className:"{this.state.export_message_classname}"}, this.state.export_message)
+            )
         );
     }
 });
