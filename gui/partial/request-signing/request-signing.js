@@ -158,6 +158,11 @@ angular.module('toolkit-gui')
             }
         };
 
+        if($scope.revision.signers) {
+            jQuery.each( $scope.revision.signers, function( index, signer ){
+                $scope.toggleUser(signer);
+            });
+        }
 
         /**
 		 * Adds a new person to be selectable as signer
@@ -221,7 +226,6 @@ angular.module('toolkit-gui')
             );
 
 		};
-
 
 		/**
 		 * Determines if request signing for is valid or not.

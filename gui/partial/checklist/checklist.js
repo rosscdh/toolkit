@@ -1326,7 +1326,7 @@ angular.module('toolkit-gui')
 		 * @method				showReview
 		 * @memberof			ChecklistCtrl
 		 */
-		$scope.showSigning = function( revision, signing ) {
+		$scope.showSigning = function( revision ) {
 			var item = $scope.data.selectedItem;
 
 			var modalInstance = $modal.open({
@@ -1342,9 +1342,6 @@ angular.module('toolkit-gui')
 					},
 					'revision': function () {
 						return revision;
-					},
-					'signing': function () {
-						return signing;
 					}
 				}
 			});
@@ -1359,9 +1356,9 @@ angular.module('toolkit-gui')
 			);
 		};
 
-        $scope.deleteSignatoryRequest = function(revision){
+        $scope.deleteSigningRequest = function(revision){
             //TODO implement
-            $log.debug("not implemented yet");
+            revision.signing = null;
         };
 		/* End revision handling */
 
