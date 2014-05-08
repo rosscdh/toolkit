@@ -15,9 +15,8 @@ angular.module('toolkit-gui')
 	'matter',
 	'checklistItem',
 	'revision',
-	'signing',
 	'$log',
-	function($scope, $modalInstance, toaster, matterItemService, matter, checklistItem, revision, signing, $log){
+	function($scope, $modalInstance, toaster, matterItemService, matter, checklistItem, revision, $log){
 
 		/**
 		 * WIP
@@ -70,18 +69,8 @@ angular.module('toolkit-gui')
 		 */
 		$scope.revision = revision;
 
-        /**
-		 * In scope variable containing details about the specific review
-		 * @memberof ViewReviewCtrl
-		 * @type {Object}
-		 * @private
-		 */
-		$scope.signing = signing;
-        $log.debug(signing);
-
-
          /**
-         * Updates the signing object
+         * Updates the signing process
          *
          * @memberof ViewReviewCtrl
 		 * @type method
