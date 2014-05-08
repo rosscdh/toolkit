@@ -42,9 +42,11 @@ class MatterExportService(object):
             # download latest_revision
             self.needed_files.append({
                 'file': needed_revision.get_document(),
-                'path_in_zip': "%s/%s/%s" % (needed_revision.item.category if needed_revision.item.category else 'no category',
-                                             needed_revision.item.name,
-                                             os.path.basename(needed_revision.executed_file.name))
+                'path_in_zip': "%s/%s/%s/%s" % (
+                    self.matter.slug,
+                    needed_revision.item.category if needed_revision.item.category else 'no category',
+                    needed_revision.item.name,
+                    os.path.basename(needed_revision.executed_file.name))
             })
 
     def create_zip(self, filename):
