@@ -92,10 +92,10 @@ angular.module('toolkit-gui')
         };
 
         $scope.getSigningUrl = function(){
-            if ($scope.revision.is_claimed === true){
-                return $scope.revision.signing_url;
+            if ($scope.revision.signing.is_claimed === true){
+                return $scope.revision.url;
             } else {
-                return $scope.revision.signing_claim_url;
+                return $scope.revision.claim_url;
             }
         };
 	}
