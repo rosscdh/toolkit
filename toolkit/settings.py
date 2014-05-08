@@ -442,7 +442,7 @@ LAWPAL_ACTIVITY = {
                       'item-commented', 'item-comment-created', 'item-comment-deleted',
                       'item-invited-reviewer',
                       'item-provide-a-document',
-                      'item-invited-signer',
+                      'item-added-signer',
                       'item-completed-review',
                       'item-completed-all-reviews',
 
@@ -462,7 +462,7 @@ LAWPAL_ACTIVITY = {
                       'item-commented', 'item-comment-created', 'item-comment-deleted',
                       'item-invited-reviewer',
                       'item-provide-a-document',
-                      'item-invited-signer',
+                      'item-added-signer',
                       'item-completed-review',
                       'item-completed-all-reviews',
 
@@ -482,7 +482,7 @@ LAWPAL_ACTIVITY = {
                       'item-closed', 'item-reopened', 'item-added-revision-comment', 'item-deleted-revision-comment',
                       'item-completed-review', 'item-viewed-revision',
                       'item-completed-all-reviews',
-                      'item-invited-signer',
+                      'item-added-signer',
                       'itemrequestrevisionview-provide-a-document',
 
                       'revision-created', 'revision-deleted',

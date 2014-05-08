@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 from django.core.urlresolvers import reverse
-from django.core.files.storage import default_storage
 
 from rulez import registry as rulez_registry
 
@@ -17,8 +16,6 @@ from toolkit.apps.review.mixins import UserAuthMixin
 from .managers import SignDocumentManager
 from .mailers import SignerReminderEmail
 from .mixins import HelloSignOverridesMixin
-
-from storages.backends.s3boto import S3BotoStorage
 
 from uuidfield import UUIDField
 from jsonfield import JSONField
@@ -79,23 +76,6 @@ class SignDocument(IsDeletedMixin,
     def participants(self):
         return set(self.signers.all() | self.matter.participants.all())
 
-    # @property
-    # def signer(self):
-    #     """
-    #     return the reviewer: the person in self.signers that is not in self.participants
-    #     """
-    #     try:
-    #         # combine signers and participants
-    #         # this is necessary as a participant may be a reviewer by request
-    #         signers = set(self.signers.all())
-    #         participants = set(self.matter.participants.all())
-    #         combined = signers.union(participants)
-    #         # get the common reviewer
-    #         return signers.intersection(combined).pop()
-    #     except:
-    #         logger.error('no reviewer found for ReviewDocument: %s' % self)
-    #         return None
-
     @property
     def signing_request(self):
         return self.hellosign_requests().first()
@@ -117,32 +97,6 @@ class SignDocument(IsDeletedMixin,
         self.is_complete = is_complete
         self.save(update_fields=['is_complete'])
     complete.alters_data = True
-
-    def send_for_signing(self, **kwargs):
-        kwargs.update({
-            'requester_email_address': kwargs.get('requester_email_address', self.matter.lawyer.email),  # required for this type
-        })
-
-        return super(SignDocument, self).send_for_signing(**kwargs)
-
-    # def download_if_not_exists(self):
-    #     """
-    #     Its necessary to download the file from s3 locally as we have restrictive s3
-    #     permissions (adds time but necessary for security)
-    #     """
-    #     file_name = self.document.executed_file.name
-
-    #     b = S3BotoStorage()
-
-    #     if b.exists(file_name) is False:
-    #         raise Exception('File does not exist on s3: %s' % file_name)
-
-    #     else:
-    #         #
-    #         # download from s3 and save the file locally
-    #         #
-    #         file_object = b._open(file_name)
-    #         return default_storage.save(file_name, file_object)
 
     def send_invite_email(self, from_user, users=[]):
         """
