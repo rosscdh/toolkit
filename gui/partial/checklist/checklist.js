@@ -1103,8 +1103,7 @@ angular.module('toolkit-gui')
 			modalInstance.result.then(
 				function ok(signers) {
                     //TODO an array should be returned!
-                    revision.signers = [];
-                    revision.signers.push(signers);
+                    revision.signers = signers;
                     /*
                     var results = jQuery.grep( revision.signers, function( sig ){ return sig.signer.username===sign.signer.username; } );
 					if( results.length===0 ) {
