@@ -101,17 +101,22 @@ class ItemRevisionSignersView(generics.ListAPIView,
                     #
                     # Send invite to review Email
                     #
-                    self.item.send_invite_to_sign_emails(from_user=request.user, to=[user], message=message)
+                    # self.item.send_invite_to_sign_emails(from_user=request.user, to=[user], message=message)
+                    # @NB Dont invite them to sign yet, as we ahve to setup the document for signing first
 
                     #
                     # add activity
                     #
-                    self.matter.actions.invite_user_as_signer(item=self.item,
-                                                              inviting_user=request.user,
-                                                              invited_user=user)
+                    self.matter.actions.add_user_as_signer(item=self.item,
+                                                           inviting_user=request.user,
+                                                           invited_user=user)
 
             sign_document = self.revision.primary_signdocument
-            sign_document.send_for_signing(requester_email_address=request.user.email)
+
+            if not sign_document:
+                raise Exception('Could not get Revision.primary_signdocument')
+
+            sign_document.create_unclaimed_draft(requester_email_address=request.user.email)
 
             # we have the user at this point
             serializer = self.get_serializer(self.revision.signers.all(), many=True)

@@ -361,9 +361,9 @@ class MatterActivityEventService(object):
     #
     # Signing
     #
-    def invite_user_as_signer(self, item, inviting_user, invited_user):
-        message = u'%s invited %s as signer for %s' % (inviting_user, invited_user, item)
-        self._create_activity(actor=inviting_user, verb=u'invited signer', action_object=item, message=message,
+    def add_user_as_signer(self, item, inviting_user, invited_user):
+        message = u'%s added %s as signer for %s' % (inviting_user, invited_user, item)
+        self._create_activity(actor=inviting_user, verb=u'added signer', action_object=item, message=message,
                               user=invited_user)
         self.analytics.event('sign.request.sent', user=inviting_user, **{
             'invited': invited_user.get_full_name(),
