@@ -2,6 +2,7 @@
 import os
 import datetime
 from django.conf import settings
+from django.contrib.auth.models import AnonymousUser
 from django.core.files import File
 from django.core.files.storage import FileSystemStorage
 from django.core.urlresolvers import reverse
@@ -474,15 +475,60 @@ class MatterExportTest(BaseEndpointTest):
         self.assertEqual(email.subject, u'Export has finished')
         self.assertEqual(email.recipients(), [u'test+lawyer@lawpal.com'])
 
+    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
+    def test_export_matter_post_with_download_lawyer(self):
+        self.test_export_matter_post()
+        self.client.login(username=self.lawyer.username, password=self.password)
+
         # calculate download-link (which could also be taken from the email)
         valid_until = (datetime.date.today() + datetime.timedelta(days=MATTER_EXPORT_DAYS_VALID)).isoformat()
         token_data = {'matter_slug': self.matter.slug,
-                      'user_pk': self.matter.lawyer.pk,
+                      'user_pk': self.lawyer.pk,
                       'valid_until': valid_until}
         token = signing.dumps(token_data, salt=settings.SECRET_KEY)
 
         # download the file and check its content
         download_link = ABSOLUTE_BASE_URL(reverse('matter:download-exported', kwargs={'token': token}))
-        response = self.client.get(download_link)
-        self.assertEqual(len(response.content), 4128)
-        self.assertEqual(response.get('Content-Type'), 'application/zip')
+        resp = self.client.get(download_link)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.content), 4128)
+        self.assertEqual(resp.get('Content-Type'), 'application/zip')
+
+    # TODO: do not POST to create the export but run task independently
+    # TODO: finish tests
+
+    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
+    def test_export_matter_post_with_download_customer(self):
+        raise NotImplementedError
+        self.test_export_matter_post()
+        self.client.login(username=self.user.username, password=self.password)
+
+        # calculate download-link (which could also be taken from the email)
+        valid_until = (datetime.date.today() + datetime.timedelta(days=MATTER_EXPORT_DAYS_VALID)).isoformat()
+        token_data = {'matter_slug': self.matter.slug,
+                      'user_pk': self.user.pk,
+                      'valid_until': valid_until}
+        token = signing.dumps(token_data, salt=settings.SECRET_KEY)
+
+        # download the file and check its content
+        download_link = ABSOLUTE_BASE_URL(reverse('matter:download-exported', kwargs={'token': token}))
+        resp = self.client.get(download_link)
+        self.assertEqual(resp.status_code, 403)  # forbidden
+
+    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
+    def test_export_matter_post_with_download_anon(self):
+        raise NotImplementedError
+        self.test_export_matter_post()
+        self.client.logout()
+
+        # calculate download-link (which could also be taken from the email)
+        valid_until = (datetime.date.today() + datetime.timedelta(days=MATTER_EXPORT_DAYS_VALID)).isoformat()
+        token_data = {'matter_slug': self.matter.slug,
+                      'user_pk': AnonymousUser.pk,
+                      'valid_until': valid_until}
+        token = signing.dumps(token_data, salt=settings.SECRET_KEY)
+
+        # download the file and check its content
+        download_link = ABSOLUTE_BASE_URL(reverse('matter:download-exported', kwargs={'token': token}))
+        resp = self.client.get(download_link)
+        self.assertEqual(resp.status_code, 403)  # forbidden
