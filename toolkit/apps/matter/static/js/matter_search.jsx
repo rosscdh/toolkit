@@ -36,19 +36,26 @@ var ExportButtonInterface = React.createClass({
         });
     },
     render: function() {
-        return (
-            <div>
-            <button className="btn btn-inverse" onClick={this.handleClick}><span className="fui-check-inverted"></span> Export
-            </button><span className="{this.state.export_message_classname}">{this.state.export_message}</span>
-            </div>
-        );
+        console.log(this.props.is_matter_owner)
+        if (this.props.is_matter_owner === false) {
+            // is not the owner (matter.lawyer)
+            return (<span/>);
+        }else{
+            // is the matter owner
+            return (
+                <div>
+                <button className="btn btn-inverse" onClick={this.handleClick}><span className="fui-check-inverted"></span> Export
+                </button><span className="{this.state.export_message_classname}">{this.state.export_message}</span>
+                </div>
+            );
+        };
     }
 });
 
 var MatterItem = React.createClass({
   render: function() {
 
-    var ExportButton = <ExportButtonInterface matter_slug={this.props.key} />
+    var ExportButton = <ExportButtonInterface is_matter_owner={this.props.is_matter_owner} matter_slug={this.props.key} />
 
     return (
             <article className="col-md-4 matter">
@@ -217,10 +224,13 @@ var MatterList = React.createClass({
                                                                   date_modified={matter.date_modified} />
                 var editMatterInterface = <EditMatterInterface key={matter.slug} can_edit={UserData.can_edit} edit_url={editUrl} />
 
+                var is_matter_owner = matter.lawyer.username == UserData.username
+
                 return <MatterItem
                         key={matter.slug}
                         name={matter.name}
                         is_lawyer={UserData.is_lawyer}
+                        is_matter_owner={is_matter_owner}
                         lawyer_or_client_name={lawyer_or_client_name}
 
                         participantList={participantList}

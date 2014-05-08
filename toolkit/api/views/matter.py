@@ -111,12 +111,16 @@ class MatterExportView(generics.CreateAPIView, MatterMixin):
         try:
             run_task(_export_matter, matter=self.matter)
             return Response(status=http_status.HTTP_200_OK, data={'detail': 'Your export is being generated. Once complete, you will recieve an email with the next steps.'})
+
         except Exception as e:
             logger.critical('Export Error: %s for user: %s' % (e, request.user))
             return Response(status=http_status.HTTP_500_INTERNAL_SERVER_ERROR, data={'detail': 'An exception has occurred, our development team have been notified. We apologise for the inconvenience.'})
 
     def can_edit(self, user):
-        return user.profile.is_lawyer
+        """
+        Only the matter.lawyer can access this functionality
+        """
+        return user == self.matter.lawyer
 
 rulez_registry.register("can_edit", MatterExportView)
 
