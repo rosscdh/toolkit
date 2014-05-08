@@ -2,7 +2,7 @@
 from django.core.management.base import BaseCommand, CommandError
 
 from hellosign import HelloSignUnclaimedDraftDocumentSignature
-
+from hellosign import HelloSignEmbeddedDocumentSignature, HelloSignEmbeddedDocumentSigningUrl
 import pprint
 PPP = pprint.PrettyPrinter(indent=4)
 
@@ -21,7 +21,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.slugs = args
-
+        auth = ("founders@lawpal.com", "test2007")
         try:
             args[0]
         except IndexError:
@@ -29,10 +29,13 @@ class Command(BaseCommand):
 
         for e in self.records:
 
-            sd = e.primary_signdocument
+            #sd = e.primary_signdocument
             # #import pdb;pdb.set_trace()
             #resp = sd.send_for_signing(requester_email_address='ross@lawpal.com')
-            resp = sd.create_unclaimed_draft(requester_email_address='ross@lawpal.com')
+            #resp = sd.create_unclaimed_draft(requester_email_address='ross@lawpal.com')
+            s =  HelloSignEmbeddedDocumentSigningUrl(signature_id='cfba65107b0532430bb4ec0960336edd3c6decf8')
+            resp = s.detail(signature_request_id='cfba65107b0532430bb4ec0960336edd3c6decf8', auth=auth)
+            import pdb;pdb.set_trace()
             print resp
 
             # s = HelloSignUnclaimedDraftDocumentSignature()
