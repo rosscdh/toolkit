@@ -1480,7 +1480,8 @@ angular.module('toolkit-gui')
 			},
 			'stop':  recalculateCategories, /* Fires once the drag and drop event has finished */
 			'axis': 'y',
-			'distance': 15
+			'distance': 15,
+			'handle': 'h5'
 		};
 
 		var width = $( document ).width();
