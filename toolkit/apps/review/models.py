@@ -156,7 +156,6 @@ class ReviewDocument(IsDeletedMixin,
             # get the common reviewer
             return reviewers.intersection(combined).pop()
         except Exception as e:
-            logger.error('no reviewer found for ReviewDocument: %s, %s' % (self, e))
             return None
 
     def send_invite_email(self, from_user, users=[]):
