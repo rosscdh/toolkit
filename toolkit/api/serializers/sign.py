@@ -2,7 +2,7 @@
 from rest_framework import serializers
 
 from toolkit.apps.sign.models import SignDocument
-from .user import SimpleUserWithSignUrlSerializer
+from .user import SimpleUserSerializer
 
 
 class SignatureSerializer(serializers.HyperlinkedModelSerializer):
@@ -37,5 +37,5 @@ class SignatureSerializer(serializers.HyperlinkedModelSerializer):
     def get_signers(self, obj):
         signers = []
         for signer in obj.document.signers.all():
-            signers.append(SimpleUserWithSignUrlSerializer(signer).data)
+            signers.append(SimpleUserSerializer(signer).data)
         return signers

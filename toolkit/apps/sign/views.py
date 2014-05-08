@@ -126,7 +126,7 @@ class ClaimSignRevisionView(SignRevisionView,
         #
         # Ok we have it all, now we can send it for signing
         #
-        self.object.send_for_signing()
+        self.object.send_for_signing(signature_request_id=signature_request_id)
 
         return super(ClaimSignRevisionView, self).post(request=request, *args, **kwargs)
 
