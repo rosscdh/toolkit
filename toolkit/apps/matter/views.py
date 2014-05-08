@@ -46,6 +46,7 @@ class MatterDownloadExportView(DetailView):
             if S3BotoStorage().exists(zip_filename):
                 response = HttpResponse()
                 response['Content-Disposition'] = 'attachment; filename=%s.zip' % kwargs.get('matter_slug')
+                response['Content-Type'] = 'application/zip'
                 s3_storage = S3BotoStorage()
                 with s3_storage.open(zip_filename, 'r') as myfile:
                     response.write(myfile.read())
