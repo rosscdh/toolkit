@@ -108,8 +108,10 @@ Custom Api Endpoints
 
 class MatterExportView(generics.CreateAPIView, MatterMixin):
     def create(self, request, *args, **kwargs):
-        run_task(_export_matter, matter=self.matter)
-        return Response('ok')
+        if request.user.pk == self.matter.lawyer.pk:
+            run_task(_export_matter, matter=self.matter)
+            return Response('ok')
+        return Response(status=http_status.HTTP_403_FORBIDDEN, data='Only the owning lawyer may export his matter.')
 
     def can_edit(self, user):
         return user.profile.is_lawyer
