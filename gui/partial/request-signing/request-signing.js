@@ -22,9 +22,10 @@ angular.module('toolkit-gui')
 	'revision',
 	'participantService',
     'matterItemService',
+    'baseService',
 	'toaster',
     '$log',
-	function($scope, $modalInstance, participants, currentUser, matter, checklistItem, revision, participantService, matterItemService, toaster, $log){
+	function($scope, $modalInstance, participants, currentUser, matter, checklistItem, revision, participantService, matterItemService, baseService, toaster, $log){
 		'use strict';
 
 		/**
@@ -67,6 +68,7 @@ angular.module('toolkit-gui')
 		 * @private
 		 */
 		$scope.revision = revision;
+        $log.debug(revision);
 
 		/**
 		 * Scope based data for this controller
@@ -158,9 +160,28 @@ angular.module('toolkit-gui')
             }
         };
 
-        if($scope.revision.signers) {
-            jQuery.each( $scope.revision.signers, function( index, signer ){
-                $scope.toggleUser(signer);
+        //preload/preselect old requested signers
+        if ($scope.revision.signers) {
+            jQuery.each($scope.revision.signers, function (index, signer) {
+                var users = jQuery.grep($scope.participants, function (p) {
+                    return p.username === signer.username;
+                });
+
+                if (users.length > 0) {
+                    $scope.toggleUser(users[0]);
+                } else {
+                    //user not in list of participants
+                    //must be an external member
+                    baseService.loadObjectByUrl(signer.url).then(
+                        function success(obj) {
+                            $scope.participants.push(obj);
+                            $scope.toggleUser(obj);
+                        },
+                        function error(/*err*/) {
+                            toaster.pop('error', 'Error!', 'Unable to load external member', 5000);
+                        }
+                    );
+                }
             });
         }
 

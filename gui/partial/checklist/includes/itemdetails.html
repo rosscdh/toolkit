@@ -166,7 +166,7 @@
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="requestReview(data.selectedItem.latest_revision)">Request Review</a>
                     <a href="javascript:;" class="btn btn-link btn-xs"
                        ng-click="requestSigning(data.selectedItem.latest_revision)"
-                       ng-hide="data.selectedItem.latest_revision.signing.url">Request Signing</a>
+                       ng-hide="data.selectedItem.latest_revision.signing.sign_url">Request Signing</a>
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="deleteLatestRevision()">Delete</a>
 
                     <div class="btn-group pull-right">
@@ -221,7 +221,7 @@
                 </div>
             </div>
 
-            <div class="signing in-progress" ng-show="data.selectedItem.latest_revision.signing.url">
+            <div class="signing in-progress" ng-show="data.selectedItem.latest_revision.signing.sign_url">
                 <span>Signing in progress</span>
                 <a class="btn btn-link btn-xs pull-right" href="javascript:;" ng-click="showSigning(data.selectedItem.latest_revision)">
                     View

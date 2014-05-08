@@ -1101,14 +1101,9 @@ angular.module('toolkit-gui')
 			});
 
 			modalInstance.result.then(
-				function ok(signers) {
-                    //TODO an array should be returned!
-                    revision.signers = signers;
-                    /*
-                    var results = jQuery.grep( revision.signers, function( sig ){ return sig.signer.username===sign.signer.username; } );
-					if( results.length===0 ) {
-						revision.signers.push(sign);
-					}*/
+				function ok(result) {
+                    revision.signing = result;
+                    revision.signers = result.signers;
 				},
 				function cancel() {
 					//
