@@ -80,6 +80,7 @@ class SignRevisionView(DetailView):
 
     def get_context_data(self, **kwargs):
         kwargs = super(SignRevisionView, self).get_context_data(**kwargs)
+        import pdb;pdb.set_trace()
         kwargs.update({
             'sign_url': mark_safe(self.object.signing_request.get_absolute_url())
         })
@@ -106,20 +107,26 @@ class ClaimSignRevisionView(SignRevisionView,
         return kwargs
 
     def post(self, request, *args, **kwargs):
-        #import pdb;pdb.set_trace()
+        """
+        Handle the claim_url postback when the user has completed the claim setup
+        """
         signature_request_id = request.POST.get('signature_request_id')
         logger.info('found signature_request_id: %s' % signature_request_id)
 
         self.object = self.get_object()
-        object_signature_request = self.object.signing_request
+        object_signature_request = self.object.signing_request  # Get the HelloSignReqeust object for this SignDocument
 
-        if object_signature_request.signature_request_id != signature_request_id:
+        if not object_signature_request or object_signature_request.signature_request_id != signature_request_id:
             logger.error('signature_request_id did not match for %s self.object.signing_request: %s != %s' % (self.object.signing_request, self.object.signing_request.signature_request_id, signature_request_id))
             raise Http404
 
         # set the is_claimed property
         object_signature_request.data['is_claimed'] = True
         object_signature_request.save(update_fields=['data'])
+        #
+        # Ok we have it all, now we can send it for signing
+        #
+        self.object.send_for_signing()
 
         return super(ClaimSignRevisionView, self).post(request=request, *args, **kwargs)
 
