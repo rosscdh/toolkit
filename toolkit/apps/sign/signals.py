@@ -7,6 +7,9 @@ from hello_sign.signals import hellosign_webhook_event_recieved
 
 from .models import SignDocument
 
+import logging
+logger = logging.getLogger('django.request')
+
 
 def _add_as_authorised(instance, pk_set):
     if pk_set:
