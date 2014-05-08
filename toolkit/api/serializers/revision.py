@@ -244,7 +244,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
     def get_signers(self, obj):
         signers = []
         if getattr(obj, 'pk', None) is not None:  # it has not been deleted when pk is None
-            for u in obj.primary_signdocument.signers.all():
+            for u in obj.signers.all():
                 signers.append(SimpleUserSerializer(u, context={'request': self.context.get('request')}).data)
 
         return signers
