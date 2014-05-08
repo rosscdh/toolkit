@@ -108,7 +108,7 @@ angular.module('toolkit-gui')
 		 */
 		function signerItemResource() {
 			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/revision/:type/:username:action', {}, {
-				'request': { 'method': 'POST', 'params' : { 'type': 'signers' }, 'headers': { 'Content-Type': 'application/json'}, 'isArray': true },
+				'request': { 'method': 'POST', 'params' : { 'type': 'signers' }, 'headers': { 'Content-Type': 'application/json'}},
 				'delete': { 'method': 'DELETE', 'params' : { 'type': 'signer' }, 'headers': { 'Content-Type': 'application/json'}}
 			});
 		}
