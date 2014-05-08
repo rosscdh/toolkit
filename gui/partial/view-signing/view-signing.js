@@ -93,9 +93,10 @@ angular.module('toolkit-gui')
 
         $scope.getSigningUrl = function(){
             if ($scope.revision.signing.is_claimed === true){
-                return $scope.revision.url;
+                $log.debug('signing is claimed');
+                return $scope.revision.signing.url;
             } else {
-                return $scope.revision.claim_url;
+                return $scope.revision.signing.claim_url;
             }
         };
 	}
