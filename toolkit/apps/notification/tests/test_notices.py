@@ -2,18 +2,24 @@
 from django.template import loader
 from django.test import TestCase, Client
 from django.core.urlresolvers import reverse
+from django.utils.html import strip_spaces_between_tags as minify_html
 
+from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
+from toolkit.apps.notification.templatetags.notice_tags import get_notification_template
 from toolkit.casper.workflow_case import BaseScenarios
 
 from stored_messages.models import Inbox
 
 from model_mommy import mommy
 
-NOTICE_TEMPLATE = loader.get_template('notification/partials/notice.html')  # allow override of template_name
 
-
-def _get_notice_html(ctx):
-    return NOTICE_TEMPLATE.render(loader.Context(ctx))
+def _get_notice_html(verb_slug, ctx):
+    t = get_notification_template(verb_slug)
+    #
+    # minify the html (as were using minification middleware)
+    # also remove \r\n chars
+    #
+    return minify_html(t.render(loader.Context(ctx)).strip())
 
 
 class BaseListViewTest(BaseScenarios, TestCase):
@@ -26,17 +32,23 @@ class BaseListViewTest(BaseScenarios, TestCase):
         super(BaseListViewTest, self).setUp()
         self.client = Client()
 
-    def assert_html_present(self, test_html, notice_pk, actor_name, actor_initials, message, date, base_url, target_name, client_name, notice_message):
-        expected_html = _get_notice_html({
-            'pk': notice_pk,
+    def assert_html_present(self, test_html, verb_slug, notice_pk, actor_name, actor_initials, message, date, base_url,
+                            target_name, client_name, action_object_name, action_object_url):
+
+
+        # TODO rebuild function to contain the ctx-elemtens used in partials/default.html
+
+        expected_html = _get_notice_html(verb_slug, {
+            'notice_pk': notice_pk,
             'actor_name': actor_name,
             'actor_initials': actor_initials,
             'message': message,
             'date': date,
-            'base_url': base_url,
+            'base_url': ABSOLUTE_BASE_URL(base_url),
             'target_name': target_name,
             'client_name': client_name,
-            'notice_message': notice_message,
+            'action_object_name': action_object_name,
+            'action_object_url': ABSOLUTE_BASE_URL(action_object_url),
         })
         #
         # The actual test
@@ -92,9 +104,14 @@ class NotificationEventsListTest(BaseListViewTest):
         message = notice.message.data
         actor = message.get('actor')
         target = message.get('target')
-        client = message.get('client')
+        client = target.get('client')
+        verb_slug = message.get('verb_slug')
+
+        action_object_name = message.get('action_object', {}).get('name')
+        action_object_url = message.get('action_object', {}).get('regular_url')
 
         self.assert_html_present(test_html=test_html,
+                                 verb_slug=verb_slug,
                                  notice_pk=notice.pk,
                                  actor_name=actor.get('name') if actor else None,
                                  actor_initials=actor.get('initials') if actor else None,
@@ -102,8 +119,10 @@ class NotificationEventsListTest(BaseListViewTest):
                                  date=notice.message.date,
                                  base_url=target.get('base_url') if target else None,
                                  target_name=target.get('name') if target else None,
-                                 client_name=target.get('client').get('name') if client else None,
-                                 notice_message=notice.message)
+                                 client_name=client.get('name') if client else None,
+                                 action_object_name=action_object_name,
+                                 action_object_url=action_object_url,
+                                 )
 
     def test_removed_matter_participant(self):
         """
@@ -126,7 +145,8 @@ class NotificationEventsListTest(BaseListViewTest):
         self.assertEqual(inbox.count(), 2)  # should get the notification about adding matter_participant to matter
         # for i in inbox:
         #     print i.__unicode__()
-        self.assertTrue(all(i.__unicode__() in [u'[Customer Test] Lawyer Test added Matter Participant as a participant to Lawpal (test)', u'[Customer Test] Lawyer Test removed Customer Test as a participant of Lawpal (test)'] for i in inbox))
+        self.assertTrue(all(i.__unicode__() in [u'[Customër Tëst] Lawyër Tëst added a new member to Lawpal (test)',
+                                                u'[Customër Tëst] Lawyër Tëst removed Customër Tëst as a participant of Lawpal (test)'] for i in inbox))
 
         inbox = self.get_inbox(user=matter_participant)
 
@@ -138,15 +158,23 @@ class NotificationEventsListTest(BaseListViewTest):
         message = notice.message.data
         actor = message.get('actor')
         target = message.get('target')
-        client = message.get('client')
+        client = target.get('client')
+        verb_slug = message.get('verb_slug')
+
+        action_object_name = message.get('action_object', {}).get('name')
+        action_object_url = message.get('action_object', {}).get('regular_url')
+        #/matters/test-matter-1/#/checklist/d777c6c9fbfb4e53baf3efa896111972/revision/v1/review/bcfbea3b32a0476bb141a677746349a0
 
         self.assert_html_present(test_html=test_html,
+                                 verb_slug=verb_slug,
                                  notice_pk=notice.pk,
                                  actor_name=actor.get('name') if actor else None,
                                  actor_initials=actor.get('initials') if actor else None,
-                                 message=notice.message.message,
+                                 message=notice.message,
                                  date=notice.message.date,
                                  base_url=target.get('base_url') if target else None,
                                  target_name=target.get('name') if target else None,
-                                 client_name=target.get('client').get('name') if client else None,
-                                 notice_message=notice.message)
+                                 client_name=client.get('name') if client else None,
+                                 action_object_name=action_object_name,
+                                 action_object_url=action_object_url,
+                                 )

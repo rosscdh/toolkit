@@ -5,12 +5,12 @@
         <div class="content-header notifications-header clearfix">
             <div class="container">
                 <div class="col-sm-8 col-sm-offset-2">
-                    {% if object_list.count > 0 %}
+                    {% if object_list %}
                         <div class="content-header-btn">
-                            <a href="javascript:;" id="mark-all-as-read" data-url="{% url 'notification:inbox-mark-all-read' %}" class="btn btn-default btn-wide"><span class="fui-check-inverted"></span>&nbsp;&nbsp;Mark everything as read</a>
+                            <a href="javascript:;" id="mark-all-as-read" data-url="{% url 'notification:inbox-mark-all-read' %}" class="btn btn-info btn-wide"><span class="fui-check-inverted"></span>&nbsp;&nbsp;Mark everything as read</a>
                         </div>
                     {% endif %}
-                    <h3>{% if object_list.count > 0 %}<span class="circle">{{ object_list.count }}</span> {% endif %}Notifications</h3>
+                    <h3><span id="notification-count" class="circle">&nbsp;</span> Notifications</h3>
                 </div>
             </div>
         </div>
@@ -19,7 +19,7 @@
             <div class="row">
                 <div class="col-sm-8 col-sm-offset-2" role="main">
                     {% for item in object_list %}
-                        {% render_notice item %}
+                        {% render_notice item request %}
                     {% empty %}
                         <div class="col-md-12 text-center">
                             <h6 class="text-muted">You currently have no notifications.</h6>
@@ -37,6 +37,24 @@
 $(document).ready(function () {
     'use strict';
 
+    calculateTotalNotifications();
+
+    $('.notification a').on('click', function(e) {
+        var $this = $(this);
+        var data = $this.data();
+        var href_url = $this.attr('href');
+        if (href_url) {
+            e.preventDefault();
+            e.stopPropagation();
+            var mark_as_read_a = $($this.closest('article.notification').find('a.mark-as-read'));
+            var data = mark_as_read_a.data();
+            sendDeleteRequest(mark_as_read_a, data.url, function (obj, url) {
+                window.location = href_url;
+            });
+        }
+
+    });
+
     $('a.mark-as-read').on('click', function(e) {
         var $this = $(this);
         var data = $this.data();
@@ -44,9 +62,25 @@ $(document).ready(function () {
         e.preventDefault();
         e.stopPropagation();
 
+        sendDeleteRequest($this, data.url);
+
+    });
+
+    function calculateTotalNotifications() {
+        var current_num = parseInt($('article.notification').length);
+        if (current_num == 0) {
+            $('#mark-all-as-read').hide();
+            $('#notification-count').hide();
+        }
+        $('#notification-count').html(current_num);
+    }
+
+    function sendDeleteRequest(obj, url, callback) {
+        var $this = obj;
+
         $.ajax({
             "type": 'DELETE',
-            "url": data.url,
+            "url": url,
             "dataType": 'json',
             "contentType": 'application/json',
             "beforeSend": function (jqXHR, settings) {
@@ -54,10 +88,17 @@ $(document).ready(function () {
                 jqXHR.setRequestHeader('X-CSRFToken', $('input[name=csrf_token]:first').val());
             },
             "success": function (data) {
-                $this.closest('article').hide()
+                calculateTotalNotifications();
+                if (callback !== undefined) {
+                    callback(obj, url)
+                } else {
+                    // only remove when we dont have a callback
+                    $this.closest('article').remove()    
+                }
+                
             }
         });
-    });
+    }
 
     $('#mark-all-as-read').on('click', function(e) {
         var $this = $(this);

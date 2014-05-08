@@ -17,20 +17,20 @@
             </a>
         </div>-->
 
-        <div class="item-description-toggle" ng-hide="data.showEditItemDescriptionForm">
+        <div class="item-description-toggle" ng-hide="data.show_edit_item_description">
             <small class="text-muted">
                 <a href="javascript:;" class="link"
-                   ng-click="data.showEditItemDescriptionForm=!data.showEditItemDescriptionForm;data.editItemDescription=data.selectedItem.description;focus('eventEditItemDescription')">
+                   ng-click="editTextattribute(data.selectedItem, 'item' , 'description')">
                     <div btf-markdown="data.selectedItem.description | newlines"></div>
                     <span ng-hide="data.selectedItem.description">Enter item description</span>
                 </a>
             </small>
         </div>
-        <div class="item-description" ng-show="data.showEditItemDescriptionForm">
+        <div class="item-description" ng-show="data.show_edit_item_description">
             <textarea class="form-control" msd-elastic placeholder="Enter a description for this item"
-                      ng-model="data.editItemDescription" focus-on="eventEditItemDescription"></textarea>
-            <a href="javascript:;" class="btn btn-primary btn-xs" ng-click="data.selectedItem.description=data.editItemDescription;saveSelectedItem();data.showEditItemDescriptionForm=false;">Save description</a>
-            <a href="javascript:;" class="btn btn-inverse btn-xs item-description-cancel" ng-click="data.showEditItemDescriptionForm=false;">Cancel</a>
+                      ng-model="data.selectedItem.edit_item_description" focus-on="event_edit_item_description"></textarea>
+            <a href="javascript:;" class="btn btn-primary btn-xs" ng-click="data.selectedItem.description=data.selectedItem.edit_item_description;saveSelectedItem();data.show_edit_item_description=false;">Save description</a>
+            <a href="javascript:;" class="btn btn-inverse btn-xs item-description-cancel" ng-click="data.selectedItem.edit_item_description='';data.show_edit_item_description=false;">Cancel</a>
             <a href="javascript:;" class="btn btn-link btn-xs pull-right" title="Markdown help" onclick="alert('LawPal supports markdown.');">Formatting Help</a>
         </div>
     </h3>
@@ -46,7 +46,7 @@
     </h3>
 
     <!-- Begin option toolbar -->
-    <div class="add-new">
+    <div class="add-new clearfix">
         <div class="btn-group" ng-show="data.usdata.current.user_class=='lawyer'">
             <button class="btn btn-sm btn-info btn-embossed btn-add" filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)" extensions=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx"><span class="fui-upload"></span>
                 Add File
@@ -80,7 +80,7 @@
             <span class="fui-calendar"></span>{{ data.selectedItem.date_due | date:'dd MMMM' }}
         </a>
         //-->
-        <span class="calendar-group" ng-show="data.showDateDueInput||data.selectedItem.date_due" ng-click="data.showDateDuePicker=true">
+        <span class="calendar-group" ng-show="(data.showDateDueInput||data.selectedItem.date_due)&&data.usdata.current.user_class==='lawyer'" ng-click="data.showDateDuePicker=true">
             <input type="text" id="dateduepicker-input" datepicker-popup="dd-MMMM" ng-model="data.dueDatePickerDate"
                    datepicker-options="dateOptions" is-open="data.showDateDuePicker" class="btn-embossed btn-sm btn-silver" />
             <label class="fui-calendar" for="dateduepicker-input"></label>
@@ -98,7 +98,7 @@
         </a>
 
         <a ng-show="data.usdata.current.user_class!=='lawyer'"
-           class="btn btn-sm btn-embossed pull-right" ng-class="{ 'btn-success': !data.selectedItem.is_complete, 'btn-default': data.selectedItem.is_complete}">
+           class="label status-label pull-right" ng-class="{ 'label-primary': !data.selectedItem.is_complete, 'label-default': data.selectedItem.is_complete}" disabled>
             <span class="fui-checkbox"></span> <span ng-hide="data.selectedItem.is_complete">Open</span><span ng-show="data.selectedItem.is_complete">Closed</span>
         </a>
         <!--
@@ -110,6 +110,10 @@
         //-->
     </div>
     <!-- End option toolbar -->
+
+    <div class="no-revisions text-center" ng-show="data.usdata.current.user_class!=='lawyer'&&!data.selectedItem.latest_revision">
+        <span class="fui-document"></span> No files added yet.
+    </div>
 
     <div class="waiting-revision text-center" ng-show="data.selectedItem.is_requested&&data.selectedItem.responsible_party.username!=data.usdata.current.username">
         <span class="fui-time"></span> Waiting for a document from <span ng-bind="data.selectedItem.responsible_party | fullname"></span>.
@@ -143,18 +147,18 @@
             <div class="doc-wrap">
                 <!-- <span class="version">{{ data.selectedItem.latest_revision.slug }}</span> -->
                 <h4><a href="javascript:;" ng-click="showRevisionDocument(data.selectedItem.latest_revision)"><span class="fui-document status-{{ data.selectedItem.latest_revision.status }}"></span> {{ data.selectedItem.latest_revision.name }}</a></h4>
-                <div class="desc" ng-hide="data.showEditRevisionDescriptionForm||data.usdata.current.user_class!=='lawyer'">
+                <div class="desc" ng-hide="data.show_edit_revision_description||data.usdata.current.user_class!=='lawyer'">
                      <a href="javascript:;" class="link"
-                        ng-click="data.showEditRevisionDescriptionForm=!data.showEditRevisionDescriptionForm;data.editRevisionDescription=data.selectedItem.latest_revision.description;focus('eventEditLatestRevisionDescription')">
+                        ng-click="editTextattribute(data.selectedItem.latest_revision, 'revision', 'description')">
                         <div btf-markdown="data.selectedItem.latest_revision.description | newlines"></div>
                         <span ng-hide="data.selectedItem.latest_revision.description">Enter description</span>
                     </a>
                 </div>
-                <div class="item-description" ng-show="data.showEditRevisionDescriptionForm">
+                <div class="item-description" ng-show="data.show_edit_revision_description">
                     <textarea class="form-control" msd-elastic placeholder="Enter a description for this revision"
-                              ng-model="data.editRevisionDescription" focus-on="eventEditLatestRevisionDescription"></textarea>
-                    <a href="javascript:;" class="btn btn-primary btn-xs" ng-click="data.selectedItem.latest_revision.description=data.editRevisionDescription;saveLatestRevision();data.showEditRevisionDescriptionForm=false;">Save description</a>
-                    <a href="javascript:;" class="btn btn-inverse btn-xs item-description-cancel" ng-click="data.showEditRevisionDescriptionForm=false;">Cancel</a>
+                              ng-model="data.selectedItem.latest_revision.edit_revision_description" focus-on="event_edit_revision_description"></textarea>
+                    <a href="javascript:;" class="btn btn-primary btn-xs" ng-click="data.selectedItem.latest_revision.description=data.selectedItem.latest_revision.edit_revision_description;saveLatestRevision();data.show_edit_revision_description=false;">Save description</a>
+                    <a href="javascript:;" class="btn btn-inverse btn-xs item-description-cancel" ng-click="data.selectedItem.latest_revision.edit_revision_description='';data.show_edit_revision_description=false;">Cancel</a>
                     <a href="javascript:;" class="btn btn-link btn-xs pull-right" title="Markdown help" onclick="alert('Markdown help popup like trello');">Formatting Help</a>
                 </div>
                 <div class="tools status-{{ data.selectedItem.latest_revision.status }}">
@@ -164,15 +168,22 @@
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="deleteLatestRevision()">Delete</a>
                     <div class="btn-group pull-right">
                         <button type="button" class="btn btn-default btn-xs status-{{ data.selectedItem.latest_revision.status }}" data-toggle="dropdown">
-                          {{ data.matter._meta.revision.status | valueforkey:data.selectedItem.latest_revision.status }}
+                          {{ data.matter._meta.item.custom_status[data.selectedItem.latest_revision.status] }}
                         </button>
-                        <button class="btn btn-default btn-xs status-{{ data.selectedItem.latest_revision.status }}" data-toggle="dropdown" ng-show="data.usdata.current.user_class=='lawyer'">
+                        <button class="btn btn-default btn-xs status-{{ data.selectedItem.latest_revision.status }}"
+                                data-toggle="dropdown" ng-show="data.usdata.current.user_class=='lawyer'">
                           <span class="caret" ></span>
                         </button>
-                        <ul class="dropdown-menu" ng-show="data.usdata.current.user_class=='lawyer'">
-                          <li class="" ng-repeat="status in data.matter._meta.revision.status | setValueAsArrayIndex">
-                              <a href="javascript:;" ng-click="data.selectedItem.latest_revision.status=$index;saveLatestRevision();">
-                                  <span class="icon status-{{ $index }}"></span> {{ status }}
+                        <ul class="dropdown-menu" ng-show="data.usdata.current.user_class=='lawyer'" >
+                          <li class="" ng-repeat="(key, status) in data.matter._meta.item.custom_status">
+                              <a href="javascript:;" ng-click="data.showRevisionStatusDropdown=false;data.selectedItem.latest_revision.status=key;saveLatestRevision();"
+                                 ng-hide="data.showEditRevisionTitles">
+                                  <span class="icon status-{{ key }}"></span> {{ status }}
+                              </a>
+                          </li>
+                          <li>
+                              <a href="javascript:;" ng-click="editRevisionStatusTitles()">
+                                  <span class="icon"></span> Change status titles...
                               </a>
                           </li>
                         </ul>
@@ -181,8 +192,8 @@
             </div>
 
             <div class="review in-progress" ng-show="data.selectedItem.latest_revision.reviewers.length>0">
-                <span ng-show="getReviewPercentageComplete(data.selectedItem)<100">Review in progress</span>
-                <span ng-show="getReviewPercentageComplete(data.selectedItem)==100">Review complete</span>
+                <span ng-show="data.selectedItem.review_percentage_complete<100">Review in progress</span>
+                <span ng-show="data.selectedItem.review_percentage_complete==100">Review complete</span>
                 <a class="btn btn-link btn-xs pull-right" href="javascript:;" ng-click="remindRevisionReview(data.selectedItem)">
                     Remind
                 </a>
@@ -192,7 +203,7 @@
                             <a class="close" href="javascript:;" ng-click="deleteRevisionReviewRequest(data.selectedItem, rev)"
                                ng-hide="rev.is_complete">x</a>
                             <a href="javascript:;" ng-click="showReview(data.selectedItem.latest_revision, rev)" class="pull-right">
-                                <button class="btn btn-warning btn-xs" ng-hide="rev.is_complete"><span class="fui-time"></span> In progress</button> 
+                                <button class="btn btn-warning btn-xs" ng-hide="rev.is_complete"><span class="fui-time"></span> In progress</button>
                                 <button class="btn btn-success btn-xs" ng-show="rev.is_complete">
                                     <span class="fui-check"></span> Complete
                                 </button>
@@ -205,7 +216,7 @@
                         </li>
                     </ul>
                 </div>
-            </div>  
+            </div>
             <div class="sub">{{ data.selectedItem.latest_revision.slug }} &middot; {{ data.selectedItem.latest_revision.uploaded_by.name }}, {{ data.selectedItem.latest_revision.date_created | timeago }}</div>
         </li>
         <!-- End current revision -->
@@ -229,7 +240,7 @@
                 <div class="tools status-{{ rev.status }}">
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="showRevisionDocument(rev)">View</a>
                     <a href="{{ rev.executed_file }}" class="btn btn-link btn-xs" target="_blank">Download</a>
-                    <span class="pull-right sub" ng-bind="data.matter._meta.revision.status | valueforkey:rev.status"></span>
+                    <span class="pull-right sub" ng-bind="data.matter._meta.item.custom_status[rev.status]"></span>
                 </div>
             </div>
             <div class="review expired" ng-show="rev.reviewers.length>0">

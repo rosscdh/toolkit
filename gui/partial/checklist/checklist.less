@@ -223,7 +223,7 @@ tr.item-heading.file-drag-over td:nth-child(2):before {
 		.row {
 			border-top:5px solid #f2f2f2;
 			cursor:pointer;
-			
+
 		}
 		.row-header {
 			background-color:#f2f2f2;
@@ -231,7 +231,7 @@ tr.item-heading.file-drag-over td:nth-child(2):before {
 				.btn-group {
 					.dropdown-menu {
 					}
-				} 
+				}
 			}
 			&.category {
 				padding:13px 0px 0px 0px;
@@ -249,7 +249,7 @@ tr.item-heading.file-drag-over td:nth-child(2):before {
 			}
 		}
 		.row {
-			
+
 			display:;
 			&.item-icon {
 				padding-left:5px;
@@ -268,10 +268,10 @@ tr.item-heading.file-drag-over td:nth-child(2):before {
 			&:hover .fui-list-columned {
 				opacity:0.9;
 			}
-			
+
 		}
 		.status {
-			
+
 		}
 		.add-new {
 			text-align:right;
@@ -297,7 +297,7 @@ tr.item-heading.file-drag-over td:nth-child(2):before {
 	.add-item input {
 		margin-top:10px;
 		margin-bottom:0px;
-	} 
+	}
 	.btn-new-item {
 		background-color:#faf9f9;
 		color:#999;
@@ -353,7 +353,7 @@ ul.checklist-items {
 			color: lighten(@nephritis, 70%);
 			opacity:0.8;
 			background-color:lighten(@emerland, 15%);
-			.item-title { 
+			.item-title {
 				color: lighten(@nephritis, 70%);
 			}
 			&.selected {
@@ -445,7 +445,7 @@ ul.checklist-items {
 					background-color:transparent;
 					color:white;
 					border-color:white;
-				} 
+				}
 			}
 		}
 		.fui-check-inverted {
@@ -499,9 +499,10 @@ ul.checklist-items {
 
 .chat {
   h4 a {
+  	font-size:13px;
     &.active {
       color: gray;
-      border-bottom:3px solid @peter-river;
+      border-bottom:2px solid @peter-river;
 
     }
 
@@ -510,4 +511,81 @@ ul.checklist-items {
     }
   }
 
+}
+
+.status-label {
+  font-size: 12px;
+  font-weight: bold;
+  padding: 8px 11px;
+}
+
+.comment-faded { opacity: 0.6; }
+
+.mobile {
+	display: none;
+}
+
+.btn-square {
+	border-radius: 0;
+}
+
+@media only screen and (max-width : 1200px) {
+	.container-fluid {
+		padding: 0 15px;
+	}
+	.mobile {
+		display: block;
+		.btn-transparent {
+			color: #414141;
+		}
+		.btn-light {
+			background-color: #e1e4e5;
+			color: #414141;
+		}
+		.btn-white {
+			background-color: #FFF;
+			color: #414141;
+		}
+		.btn-square {
+			border-radius: 0;
+		}
+	}
+	.checklist-wrapper {
+		// Mobile view
+		#checklist-items {
+			//
+		}
+
+		#checklist-items,
+		#checklist-detail-container,
+		#checklist-detail,
+		#checklist-activity {
+			width: 100%;
+			opacity: 1;
+
+			-webkit-transition: opacity 0.3s ease-in-out;
+		    -moz-transition: opacity 0.3s ease-in-out;
+		    -o-transition: opacity 0.3s ease-in-out;
+		    transition: opacity 0.3s ease-in-out;
+		}
+
+		#checklist-items.zero,
+		#checklist-detail-container.zero,
+		#checklist-detail.zero,
+		#checklist-activity.zero {
+			width: 0;
+			padding: 0;
+			margin: 0;
+			height: 0;
+			overflow: hidden;
+			opacity: 0;
+
+			
+		}
+
+		.chat.full {
+			position: static;
+			height: 100%;
+		}
+	}
 }

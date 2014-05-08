@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.http import HttpResponseRedirect
-from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.views.generic import CreateView, DeleteView, ListView, TemplateView, UpdateView
 
@@ -8,8 +7,11 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
 
 from toolkit.api.serializers import LiteMatterSerializer
+from toolkit.apps.matter.services import (MatterRemovalService, MatterParticipantRemovalService)
 from toolkit.apps.workspace.models import Workspace
 from toolkit.mixins import AjaxModelFormView, ModalView
+
+from rest_framework.renderers import UnicodeJSONRenderer
 
 from .forms import MatterForm
 
@@ -27,11 +29,14 @@ class MatterListView(ListView):
     def get_context_data(self, **kwargs):
         context = super(MatterListView, self).get_context_data(**kwargs)
 
+        object_list = self.get_serializer(self.object_list, many=True).data
+
         context.update({
             'can_create': self.request.user.profile.is_lawyer,
             'can_delete': self.request.user.profile.is_lawyer,
             'can_edit': self.request.user.profile.is_lawyer,
-            'object_list': self.get_serializer(self.object_list, many=True).data,
+            #'object_list': object_list,
+            'object_list_json': UnicodeJSONRenderer().render(object_list),
         })
 
         return context
@@ -122,22 +127,15 @@ class MatterDeleteView(ModalView, DeleteView):
         self.object = self.get_object()
         success_url = self.get_success_url()
 
-        if request.user == self.object.lawyer:
-            #
-            # Only the lawyer can delete a matter
-            #
-            self.object.delete()
+        if self.object.lawyer == request.user:
+            service = MatterRemovalService(matter=self.object, removing_user=request.user)
+            service.process()
+
         else:
             #
-            # participants can remove themselves
+            # Is a participant trying to stop participating
             #
-            if request.user in self.object.participants.all():
-                self.object.participants.remove(request.user)
-                # send activity event
-                self.object.actions.user_stopped_participating(user=request.user)
-
-            else:
-                logger.error('User %s tried to delete a matter: %s but was not the lawyer nor the participant' % (request.user, self.object))
-                raise PermissionDenied('You are not a participant of this matter')
+            service = MatterParticipantRemovalService(matter=self.object, removing_user=request.user)
+            service.process(user_to_remove=request.user)
 
         return HttpResponseRedirect(success_url)

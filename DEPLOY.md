@@ -3,6 +3,72 @@ Deployment actions by branch
 
 
 --------------------------------------------------------------------------------
+** DEPLOYED 06 May 2014
+--------------------------------------------------------------------------------
+
+[stripe-payments]
+
+1. pip install django-stripe-payments==2.0b34
+2. ./manage.py syncdb --migrate
+
+--------------------------------------------------------------------------------
+** DEPLOYED 29 April 2014
+--------------------------------------------------------------------------------
+
+[matter-search]
+
+1. need to install npm -g install yuglify on prod servers
+2. pip install django-pipeline PyReact
+
+--------------------------------------------------------------------------------
+** DEPLOYED 29 April 2014
+--------------------------------------------------------------------------------
+
+[activity-stream-update]
+
+1. ./manage.py migrate review 0001 --fake # setup the base
+2. ./manage.py migrate review # add the crocodoc uuid field
+3. ./manage.py migrate attachment # add is_deleted to revision
+4. ensure the latest version of django-crocodoc is installed (pip_install in fab)
+5. ensure that angular (bower) has "angular-sanitize": "~1.2.16",
+
+--------------------------------------------------------------------------------
+** DEPLOYED 18 April 2014
+--------------------------------------------------------------------------------
+
+[choices-names]
+
+1. git co master;./manage.py migrate attachment 0003
+must first run this data migration to ensure we catch all the current
+item statuses
+
+2. ./manage.py migrate attachment 0004  # removal of the status field
+
+
+[celery]
+
+2. manage.py migrate djcelery
+
+
+--------------------------------------------------------------------------------
+** DEPLOYED 6 April 2014 - celery tasks are preset but not enabled
+--------------------------------------------------------------------------------
+
+[celery]
+
+2. manage.py migrate djcelery
+
+
+--------------------------------------------------------------------------------
+** DEPLOYED 6 April 2014 - celery tasks are preset but not enabled
+--------------------------------------------------------------------------------
+
+[celery]
+
+2. manage.py migrate djcelery
+
+
+--------------------------------------------------------------------------------
 ** DEPLOYED 6 April 2014 - celery tasks are preset but not enabled
 --------------------------------------------------------------------------------
 

@@ -25,12 +25,8 @@ class EightyThreeBManager(IsDeletedManager):
                                                 .filter(filing_date__gte=datetime.date.today())
 
 
-class AttachmentManger(models.Manager):
+class AttachmentManger(IsDeletedManager):
     """
     Manager for 83b attachments
     """
-    def get_query_set(self):
-        return IsDeletedQuerySet(self.model, using=self._db).filter(is_deleted=False)
-
-    def deleted(self, **kwargs):
-        return super(AttachmentManger, self).get_query_set().filter(is_deleted=True, **kwargs)
+    pass

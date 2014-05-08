@@ -8,6 +8,8 @@ from toolkit.core.attachment.models import Revision
 from toolkit.core.attachment.tasks import _download_file
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 
+from toolkit.api.serializers.user import _get_user_review
+
 from .user import SimpleUserSerializer
 from .review import ReviewSerializer
 
@@ -155,9 +157,11 @@ class FileFieldAsUrlField(LimitedExtensionMixin, serializers.FileField):
 class RevisionSerializer(serializers.HyperlinkedModelSerializer):
     url = serializers.SerializerMethodField('get_custom_api_url')
 
+    regular_url = serializers.Field(source='get_regular_url')
+
     executed_file = HyperlinkedAutoDownloadFileField(required=False)
 
-    status = serializers.ChoiceField(required=False, choices=Revision.REVISION_STATUS.get_choices())
+    status = serializers.IntegerField(required=False)
 
     item = serializers.HyperlinkedRelatedField(many=False, view_name='item-detail')
 
@@ -165,7 +169,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
     signers = serializers.HyperlinkedRelatedField(many=True, view_name='user-detail', lookup_field='username')
 
     # "user" <— the currently logged in user.. "review_url" because the url is relative to the current user
-    user_review_url = serializers.SerializerMethodField('get_user_review_url')
+    user_review = serializers.SerializerMethodField('get_user_review')
     user_download_url = serializers.SerializerMethodField('get_user_download_url')
 
     revisions = serializers.SerializerMethodField('get_revisions')
@@ -176,7 +180,8 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Revision
-        fields = ('url', 'slug',
+        fields = ('slug',
+                  'url', 'regular_url',
                   'name', 'description',
                   'executed_file',
                   'status',
@@ -184,7 +189,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
                   'uploaded_by',
                   'reviewers', 'signers',
                   'revisions',
-                  'user_review_url', 'user_download_url',
+                  'user_review', 'user_download_url',
                   'date_created',)
 
     def __init__(self, *args, **kwargs):
@@ -215,7 +220,10 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
         super(RevisionSerializer, self).__init__(*args, **kwargs)
 
     def get_custom_api_url(self, obj):
-        return ABSOLUTE_BASE_URL(reverse('matter_item_specific_revision', kwargs={'matter_slug': obj.item.matter.slug, 'item_slug': obj.item.slug, 'version': obj.slug.replace('v', '')}))
+        return ABSOLUTE_BASE_URL(reverse('matter_item_specific_revision',
+                                         kwargs={'matter_slug': obj.item.matter.slug,
+                                                 'item_slug': obj.item.slug,
+                                                 'version': obj.slug.replace('v', '')}))
 
     def get_uploaded_by(self, obj):
         return SimpleUserSerializer(obj.uploaded_by, context={'request': self.context.get('request')}).data
@@ -230,29 +238,21 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
 
         return reviewers
 
-    def get_user_review_url(self, obj):
+    def get_user_review(self, obj):
         """
         Try to provide an initial reivew url from the base review_document obj
         for the currently logged in user
         """
         context = getattr(self, 'context', None)
         request = context.get('request')
-        review_document = context.get('review_document', None)
 
-        if request is not None:
-            #
-            # if we have a review_document present in the context
-            #
-            if review_document is None:
-                # we have none, then try find the reviewdocument object that has all the matter participants in it
-                #
-                # The bast one will have 0 reviewers! and be the last in the set (because it was added first)
-                #
-                review_document = obj.reviewdocument_set.all().last()
+        review_document = _get_user_review(self=self, obj=obj, context=context)
 
-            return review_document.get_absolute_url(user=request.user) if review_document is not None else None
-
-        return None
+        if review_document is not None:
+            return {
+                'url': review_document.get_absolute_url(user=request.user),
+                'slug': review_document.slug
+            }
 
     def get_user_download_url(self, obj):
         """
@@ -261,20 +261,11 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
         """
         context = getattr(self, 'context', None)
         request = context.get('request')
-        review_document = context.get('review_document', None)
 
-        if request is not None:
-            #
-            # if we have a review_document present in the context
-            #
-            if review_document is None:
-                # we have none, then try find the reviewdocument object that has all the matter participants in it
-                #
-                # The bast one will have 0 reviewers! and be the last in the set (because it was added first)
-                #
-                review_document = obj.reviewdocument_set.all().last()
+        review_document = _get_user_review(self=self, obj=obj, context=context)
 
-            return review_document.get_download_url(user=request.user) if review_document is not None else None
+        if review_document is not None:
+            return review_document.get_download_url(user=request.user)
 
         return None
 
@@ -288,7 +279,8 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
 
 class SimpleRevisionSerializer(RevisionSerializer):
     class Meta(RevisionSerializer.Meta):
-        fields = ('url', 'slug',
+        fields = ('slug',
+                  'url', 'regular_url',
                   'name',
                   'status',
                   'date_created',)

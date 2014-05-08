@@ -67,3 +67,11 @@ def ABSOLUTE_MEDIA_URL(path=None):
         path = path if settings.MEDIA_URL in path else '%s%s' % (settings.MEDIA_URL, path)
     return urlparse.urljoin(_DOMAIN_WITH_END_SLASH(), path)
 ABSOLUTE_MEDIA_URL.is_safe = True
+
+
+@register.inclusion_tag('partials/firstseen.html', takes_context=True)
+def firstseen(context):
+    return {
+        'PROJECT_ENVIRONMENT': settings.PROJECT_ENVIRONMENT,
+        'show': True if context['request'].GET.get('firstseen', '0') == '1' else False,
+    }

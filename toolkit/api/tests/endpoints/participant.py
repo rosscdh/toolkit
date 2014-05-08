@@ -219,8 +219,14 @@ class MatterParticipantTest(BaseEndpointTest):
 
     def test_customer_cant(self):
         self.client.login(username=self.user.username, password=self.password)
+
+        user_to_delete = self.matter.participants.all().last()
+
         for event, status_code in [('get', 405), ('post', 403), ('patch', 403), ('delete', 403)]:
-            resp = getattr(self.client, event)(self.endpoint, {}, content_type='application/json')
+
+            endpoint = '%s/%s' % (self.endpoint, user_to_delete.email) if event == 'delete' else self.endpoint
+
+            resp = getattr(self.client, event)(endpoint, {}, content_type='application/json')
             self.assertEqual(resp.status_code, status_code)
 
     def test_anon_cant(self):

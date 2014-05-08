@@ -4,7 +4,6 @@ Matters are workspaces; and are composted of items, which may be a todo item
 or a document item
 """
 from rest_framework import serializers
-
 from toolkit.apps.workspace.models import Workspace
 
 from .client import LiteClientSerializer
@@ -16,6 +15,11 @@ import datetime
 
 class MatterSerializer(serializers.HyperlinkedModelSerializer):
     slug = serializers.CharField(read_only=True)
+
+    regular_url = serializers.Field(source='get_regular_url')
+    # django url # @TODO depreciate this url in facour of get_regular_url
+    base_url = serializers.Field(source='get_regular_url')
+
     matter_code = serializers.CharField(required=False)
     date_created = serializers.DateTimeField(read_only=True)
     date_modified = serializers.DateTimeField(read_only=True)
@@ -23,9 +27,6 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
     client = LiteClientSerializer(required=False)
     lawyer = LiteUserSerializer(required=False)
     participants = LiteUserSerializer(many=True, required=False)
-
-    # django url
-    base_url = serializers.SerializerMethodField('get_base_url')
 
     categories = serializers.SerializerMethodField('get_categories')
     closing_groups = serializers.SerializerMethodField('get_closing_groups')
@@ -41,7 +42,9 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Workspace
-        fields = ('url', 'base_url', 'name', 'slug', 'matter_code',
+        fields = ('slug', 
+                  'url', 'regular_url',
+                  'name', 'matter_code',
                   'client', 'lawyer', 'participants',
                   'closing_groups', 'categories',
                   'items',
@@ -97,10 +100,12 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_current_user(self, obj):
         request = self.context.get('request')
-        current_user = LiteUserSerializer(request.user, context={'request': request}).data
-        current_user.update({
-            'has_notifications': request.user.profile.has_notifications
-        })
+        current_user = None
+        if request:
+            current_user = LiteUserSerializer(request.user, context={'request': request}).data
+            current_user.update({
+                'has_notifications': request.user.profile.has_notifications
+            })
         return current_user
 
     def get_current_user_todo(self, obj):
@@ -114,9 +119,6 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
         #return [todo.copy() for i in xrange(0,5)]
         return []
 
-    def get_base_url(self, obj):
-        return obj.get_absolute_url() if hasattr(obj, 'get_absolute_url') else None
-
     def get_percent_complete(self, obj):
         return obj.get_percent_complete
 
@@ -128,7 +130,7 @@ class LiteMatterSerializer(MatterSerializer):
     class Meta(MatterSerializer.Meta):
         fields = ('url', 'base_url', 'name', 'slug', 'matter_code', 'client',
                   'lawyer', 'participants', 'date_created', 'date_modified',
-                  'percent_complete')
+                  'percent_complete', 'regular_url')
 
 
 class SimpleMatterSerializer(MatterSerializer):

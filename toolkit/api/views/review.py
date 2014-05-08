@@ -61,11 +61,13 @@ class BaseReviewerSignatoryMixin(generics.GenericAPIView):
     lookup_field = 'slug'
     lookup_url_kwarg = 'item_slug'
 
-    def initial(self, request, *args, **kwargs):
+    def get_objects(self, **kwargs):
         self.matter = get_object_or_404(Workspace, slug=kwargs.get('matter_slug'))
         self.item = get_object_or_404(self.matter.item_set.all(), slug=kwargs.get('item_slug'))
         self.revision = self.item.latest_revision
 
+    def initial(self, request, *args, **kwargs):
+        self.get_objects(**kwargs)
         super(BaseReviewerSignatoryMixin, self).initial(request, *args, **kwargs)
 
     def get_queryset_provider(self):
@@ -217,9 +219,12 @@ class ItemRevisionReviewerView(generics.RetrieveAPIView,
             logger.critical('A revision %s for a user %s has more than 1 reviewdocument they should only have 1 per revision' % (self.revision, user))
 
         # create event
-        self.revision.item.matter.actions.user_viewed_revision(item=self.revision.item,
-                                                               user=user,
-                                                               revision=self.revision)
+        #
+        # @TODO discuss with @alex do we need to know when a lawyer/participant views the revision?
+        #
+        # self.revision.item.matter.actions.user_viewed_revision(item=self.revision.item,
+        #                                                        user=user,
+        #                                                        revision=self.revision)
         
 
         # TODO: check if this was the last user to review the document.
@@ -264,3 +269,46 @@ class ItemRevisionReviewerView(generics.RetrieveAPIView,
 rulez_registry.register("can_read", ItemRevisionReviewerView)
 rulez_registry.register("can_edit", ItemRevisionReviewerView)
 rulez_registry.register("can_delete", ItemRevisionReviewerView)
+
+
+class ReviewerHasViewedRevision(generics.UpdateAPIView,
+                                BaseReviewerSignatoryMixin):
+    """
+    Called when the invited user views the revision
+    via ajax event of closing the crocodoc modal window
+    """
+    http_method_names = ('patch',)
+
+    model = ReviewDocument
+    serializer_class = ReviewSerializer
+    lookup_url_kwarg = 'reviewdocument_slug'
+    lookup_field = 'slug'
+
+    def get_objects(self, **kwargs):
+        super(ReviewerHasViewedRevision, self).get_objects(**kwargs)
+        self.reviewdocument = get_object_or_404(self.model, slug=kwargs.get('reviewdocument_slug'))
+
+    def update(self, request, **kwargs):
+        # 
+        # Just issue the user viewed the object
+        #
+        self.reviewdocument.reviewer_has_viewed = True
+
+        self.matter.actions.user_viewed_revision(item=self.item,
+                                                 user=self.request.user,
+                                                 revision=self.revision)
+        return Response({'detail': 'Set user last viewed'}, status=http_status.HTTP_200_OK)
+
+    def can_read(self, user):
+        return user in self.reviewdocument.participants
+
+    def can_edit(self, user):
+        return user in self.reviewdocument.participants
+
+    def can_delete(self, user):
+        return False
+
+
+rulez_registry.register("can_read", ReviewerHasViewedRevision)
+rulez_registry.register("can_edit", ReviewerHasViewedRevision)
+rulez_registry.register("can_delete", ReviewerHasViewedRevision)

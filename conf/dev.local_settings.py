@@ -8,7 +8,6 @@ PROJECT_ENVIRONMENT = 'dev'
 
 DEBUG = True
 TEST_PREPROD = False  # set to true and DEBUG = False in order to test angular app
-COMPRESSION_ENABLED = False
 
 if TEST_PREPROD is True:
     STATICFILES_DIRS = (
@@ -88,8 +87,13 @@ MIXPANEL_SETTINGS = {
 }
 
 #
+# Payments
+#
+STRIPE_PUBLIC_KEY = 'sk_test_8Po9Bh0rj12nISHPFsOQz46Q'
+STRIPE_SECRET_KEY = 'pk_test_pVBXSHiazhp3b0EyGHQa8Dx2'
+
+#
 # Celery SQS Tasks
 #
 CELERY_DEFAULT_QUEUE = 'lawpal-local'
-RUN_TASKS = True
 ENABLE_CELERY_TASKS = True

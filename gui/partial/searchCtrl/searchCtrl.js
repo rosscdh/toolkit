@@ -6,6 +6,7 @@ angular.module('toolkit-gui').controller('SearchCtrl',[
 	'$state',
     '$log',
 	function($scope, searchService, $rootScope, $timeout, $state, $log){
+		'use strict';
 		$scope.data = {
 			'searchResults': searchService.data(),
 			'term': '',

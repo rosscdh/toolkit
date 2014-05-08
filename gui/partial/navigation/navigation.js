@@ -20,6 +20,7 @@ angular.module('toolkit-gui')
 	'userService',
 	'matterService',
 	function( $scope, $routeParams, smartRoutes, $location, $modal, $log, toaster, userService, matterService ){
+		'use strict';
 		var routeParams = smartRoutes.params(); 
 		/**
 		 * In scope variable containing containing a list of participants
@@ -53,8 +54,8 @@ angular.module('toolkit-gui')
              function success(response){
                 $scope.data.matterlist = response;
              },
-             function error(err){
-                toaster.pop('error', "Error!", "Unable to other matters.");
+             function error(/*err*/){
+                toaster.pop('error', 'Error!', 'Unable to other matters.',5000);
              }
         );
 
@@ -92,13 +93,13 @@ angular.module('toolkit-gui')
 						return $scope.matter.selected.current_user;
 					},
 					matter: function () {
-						return $scope.matter;
+						return $scope.matter.selected;
 					}
 				}
 			});
 
 			modalInstance.result.then(
-				function ok(selectedItem) {
+				function ok(/*selectedItem*/) {
 					
 				},
 				function cancel() {

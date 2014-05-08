@@ -134,7 +134,7 @@ def virtualenv(cmd, **kwargs):
 
 @task
 def pip_install():
-    virtualenv('pip install django-sslify')
+    virtualenv('pip install django-stripe-payments==2.0b34')
 
 @task
 def cron():
@@ -153,7 +153,6 @@ def clean_all():
         virtualenv(cmd='python %s%s/manage.py clean_nonces' % (env.remote_project_path, env.project))
         virtualenv(cmd='python %s%s/manage.py clean_associations' % (env.remote_project_path, env.project))
         #virtualenv(cmd='python %s%s/manage.py clear_cache' % (env.remote_project_path, env.project))
-        virtualenv(cmd='python %s%s/manage.py clean_pyc' % (env.remote_project_path, env.project))
         virtualenv(cmd='python %s%s/manage.py compile_pyc' % (env.remote_project_path, env.project))
 
 @task
@@ -259,6 +258,7 @@ def diff_outgoing_with_current():
 
 @task
 @roles('worker')
+@runs_once
 def celery_restart(name='worker.1'):
     with settings(warn_only=True): # only warning as we will often have errors importing
         celery_stop()
@@ -274,9 +274,8 @@ def celery_restart(name='worker.1'):
 @roles('worker')
 def celery_start(name='worker.1', loglevel='INFO', concurrency=5):
     with settings(warn_only=True): # only warning as we will often have errors importing
-        #cmd = "celery worker --app=toolkit --loglevel={loglevel} --concurrency={concurrency} -n worker{name}.%h".format(name=name, loglevel=loglevel, concurrency=concurrency)
-        #cmd = "celery multi start {name}@%h -A {app_name} --loglevel={loglevel} --uid=app --pidfile='/var/run/celery/{name}.%n.pid' --logfile='/var/log/celery/{name}.%n.log' --concurrency={concurrency}".format(name=name, loglevel=loglevel, concurrency=concurrency, app_name=env.celery_app_name)
-        cmd = "celery worker -A {app_name} --loglevel={loglevel} --pidfile='/var/run/celery/{name}.%n.pid' --logfile='/var/log/celery/{name}.%n.log' --concurrency={concurrency} --detach".format(name=name, loglevel=loglevel, concurrency=concurrency, app_name=env.celery_app_name)
+        #cmd = "celery worker -A {app_name} --loglevel={loglevel} --pidfile='/var/run/celery/{name}.%n.pid' --logfile='/var/log/celery/{name}.%n.log' --concurrency={concurrency} --detach".format(name=name, loglevel=loglevel, concurrency=concurrency, app_name=env.celery_app_name)
+        cmd = 'celery multi start {name} -A {app_name} --loglevel={loglevel} --logfile="/tmp/celery.%n.log" --pidfile="/tmp/celery.%n.pid"'.format(name=name, loglevel=loglevel, concurrency=concurrency, app_name=env.celery_app_name)
         if env.hosts:
             #run(cmd)
             virtualenv(cmd='cd %s%s;%s' % (env.remote_project_path, env.project, cmd))
@@ -288,7 +287,8 @@ def celery_start(name='worker.1', loglevel='INFO', concurrency=5):
 def celery_stop(name='worker.1'):
     with settings(warn_only=True): # only warning as we will often have errors importing
         #cmd = "celery multi stopwait {name}@%h -A {app_name} --uid=app --pidfile='/var/run/celery/{name}.%n.pid'".format(name=name, app_name=env.celery_app_name)
-        cmd = "ps aux | grep 'celery worker' | grep -v grep | awk '{print $2}' | xargs kill -9"
+        #cmd = "ps aux | grep 'celery worker' | grep -v grep | awk '{print $2}' | xargs kill -9"
+        cmd = 'celery multi stopwait {name} --pidfile="/tmp/celery.%n.pid"'.format(name=name)
         if env.hosts:
             #run(cmd)
             virtualenv(cmd='cd %s%s;%s' % (env.remote_project_path, env.project, cmd))
@@ -460,7 +460,6 @@ def relink():
 @task
 def clean_start():
     stop_service()
-    clean_pyc()
     #clear_cache()
     clean_pyc()
     precompile_pyc()

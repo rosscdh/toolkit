@@ -200,6 +200,8 @@ class MatterDeleteViewTest(BaseScenarios, TestCase):
         # test the matter is deleted
         with self.assertRaises(Workspace.DoesNotExist):
             Workspace.objects.get(pk=self.workspace.pk)
+        # is in the deleted namespace
+        self.assertTrue(Workspace.objects.deleted(pk=self.workspace.pk))
 
     def test_redirects_to_login_if_not_logged_in(self):
         # User not logged in
