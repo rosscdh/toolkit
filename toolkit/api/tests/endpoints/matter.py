@@ -452,10 +452,7 @@ class MatterExportTest(BaseEndpointTest):
         resp = self.client.post(self.endpoint, {}, content_type='application/json')
         self.assertEqual(resp.status_code, 403)  # forbidden
 
-    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
-    def test_export_matter_post(self):
-        self.client.login(username=self.lawyer.username, password=self.password)
-
+    def add_item_with_revision(self):
         # prepare item with revision and file
         self.item = mommy.make('item.Item', matter=self.matter, name='Test Item with Revision', category=None)
         self.revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item,
@@ -464,7 +461,13 @@ class MatterExportTest(BaseEndpointTest):
             self.revision.executed_file.save('test.pdf', File(filename))
             self.revision.save(update_fields=['executed_file'])
 
-        # start the export
+    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
+    def test_export_matter_post(self):
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        self.add_item_with_revision()
+
+        # start the export via post
         resp = self.client.post(self.endpoint, {}, content_type='application/json')
         self.assertEqual(resp.status_code, 200)  # ok
         # json_data = json.loads(resp.content)
@@ -477,9 +480,12 @@ class MatterExportTest(BaseEndpointTest):
         self.assertEqual(email.recipients(), [u'test+lawyer@lawpal.com'])
 
     @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
-    def test_export_matter_post_with_download_lawyer(self):
+    def test_exported_matter_download(self):
         self.client.login(username=self.lawyer.username, password=self.password)
-        
+
+        self.add_item_with_revision()
+
+        # start the export directly
         _export_matter(self.matter)
 
         # calculate download-link (which could also be taken from the email)
@@ -500,6 +506,7 @@ class MatterExportTest(BaseEndpointTest):
     def test_export_matter_post_with_download_customer(self):
         self.client.login(username=self.user.username, password=self.password)
 
+        # start the export directly
         _export_matter(self.matter)
 
         # calculate download-link (which could also be taken from the email)
@@ -516,6 +523,7 @@ class MatterExportTest(BaseEndpointTest):
 
     @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_export_matter_post_with_download_anon(self):
+        # start the export directly
         _export_matter(self.matter)
 
         # calculate download-link (which could also be taken from the email)
