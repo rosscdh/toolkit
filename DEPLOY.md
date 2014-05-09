@@ -1,12 +1,19 @@
 Deployment actions by branch
 ----------------------------
 
-
 [authy-integration]
 
 1. pip install -e git+https://github.com/rosscdh/django-authy.git#egg=django-authy
 2. ./manage.py syncdb add the authy table
 
+--------------------------------------------------------------------------------
+** DEPLOYED 06 May 2014
+--------------------------------------------------------------------------------
+
+[stripe-payments]
+
+1. pip install django-stripe-payments==2.0b34
+2. ./manage.py syncdb --migrate
 
 --------------------------------------------------------------------------------
 ** DEPLOYED 29 April 2014

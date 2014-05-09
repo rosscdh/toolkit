@@ -47,6 +47,7 @@
   <script src="<!-- @echo staticPath -->bower_components/ng-file-upload/angular-file-upload-shim.min.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/ng-file-upload/angular-file-upload.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+  <script src="<!-- @echo staticPath -->bower_components/jquery-ui-touch-punch/jquery.ui.touch-punch.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/respond/dest/respond.src.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/raven-js/dist/raven.min.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/respond/dest/respond.src.js"></script>
@@ -107,9 +108,7 @@
               <img src="<!-- @echo staticBase -->images/logo-white-icon.png">
             </a>
         </div>
-        <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-collapse-03"></button>
-
-        <ul class="nav navbar-nav navbar-matters" ng-show="matter.selected&&data.matterlist.length>1">
+        <ul class="nav navbar-nav navbar-matters hidden-xs" ng-show="matter.selected&&data.matterlist.length>1">
             <li class="dropdown">
               <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" ng-bind="matter.selected.name"></a>
               <ul class="dropdown-menu">
@@ -124,20 +123,26 @@
         </ul>
     </div>
 
-    <div class="navbar-collapse collapse navbar-collapse-03">
+    <div class="hidden-xs">
       <ul class="nav navbar-nav" ng-show="matter.selected">
-        <li id="checklist-nav" ng-class="{'active': isActive('/checklist')}">
+        <!-- Hide for now, just taking up space -->
+        <!-- <li id="checklist-nav" ng-class="{'active': isActive('/checklist')}">
           <a href="#/checklist">Checklist</a>
-        </li>
+        </li> -->
         <!-- Hide for now - discussed 2014-03-14
         <li id="closing-nav" ng-class="{'active': isActive('/closing')}">
           <a ng-href="#/closing">Closing</a>
         </li>-->
 
-        <li class="checklist-members">
+        <li class="checklist-members  hidden-xs  hidden-sm">
           <a href="javascript:;" ng-click="invite()">
             <span class="fui-user"></span>
-            <span class="user" ng-repeat="user in matter.selected.participants" ng-bind="user | initials"></span>
+            <span ng-show="matter.selected&&matter.selected.participants.length<=3">
+                <span class="user" ng-repeat="user in matter.selected.participants" ng-bind="user | initials"></span>
+            </span>
+            <span ng-show="matter.selected&&matter.selected.participants.length>3">
+                <span class="user" ng-bind="matter.selected.participants.length"></span>
+            </span>
           </a>
         </li>
         <!-- Hide for now - discussed 2014-03-14
@@ -149,7 +154,7 @@
         </li>-->
       </ul>
       <!-- /nav -->
-      <form class="navbar-form navbar-left" ng-show="matter.selected" ng-controller="SearchCtrl" ng-submit="startSearch()">
+      <form class="navbar-form navbar-left hidden-xs" ng-show="matter.selected" ng-controller="SearchCtrl" ng-submit="startSearch()">
         <div class="form-group">
           <div class="input-group input-group-sm">
             <input class="form-control" id="navbarInput-02" type="search" placeholder="Search" ng-model="data.term" ng-keyup="startSearch()" ng-blur="hide()" xng-focus="show()" autocomplete="off" onmouseup="this.select()">
@@ -173,15 +178,15 @@
         </div>
       </form>
       {% verbatim %}
-      <ul class="nav navbar-nav navbar-right">
+      <ul class="nav navbar-nav navbar-right hidden-xs">
         <li class="notifications"><a href="/notifications/" ng-class="matter.selected.current_user.has_notifications ? 'unread' : ''"><!-- <span ng-class="matter.selected.current_user.has_notifications ? 'fui-radio-checked animated pulse' : 'fui-radio-unchecked'"></span> --><span class="pe-7s-bell"></span></a></li>
 
         <li><a href="/requests/">Requests</a></li>
-        <li><a href="#" class="intercom">Support</a></li>
-        <li class="divider"></li>
+        <li class="hidden-xs hidden-sm"><a href="#" class="intercom">Support</a></li>
+        <li class="divider hidden-xs hidden-sm"></li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-          {{ matter.selected.current_user | fullname }} <b class="caret"></b>
+          <span class="hidden-xs">{{ matter.selected.current_user | fullname }}</span> <b class="caret"></b>
           </a>
           <ul class="dropdown-menu">
             <li><a href="/me/settings/">Account</a></li>

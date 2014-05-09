@@ -210,9 +210,9 @@ class ItemDataTest(BaseEndpointTest):
     """
     def setUp(self):
         super(ItemDataTest, self).setUp()
-        self.item = mommy.make('item.Item',
-                               matter=self.workspace,
-                               name='Item Data Test No. 1')
+        # get the signal
+        self.client.login(username=self.lawyer.username, password=self.password)
+        self.item = self._api_create_item(matter=self.matter, name='Item Data Test No. 1')
 
     @property
     def endpoint(self):
@@ -240,7 +240,7 @@ class ItemDataTest(BaseEndpointTest):
         self.assertEqual(resp.status_code, 200)
 
         stream = model_stream(Item)
-        self.assertEqual(len(stream), 2)  # shall only find the newest entry, the 2 other ones are too old.
+        self.assertEqual(len(stream), 2)
 
         self.assertEqual(stream[0].data['override_message'],
                          u'Lawyër Tëst set Item Data Test No. 1 to Final')
@@ -251,7 +251,8 @@ class ItemDataTest(BaseEndpointTest):
         self.assertEqual(resp.status_code, 200)
 
         stream = model_stream(Item)
-        self.assertEqual(len(stream), 2)  # shall only find the newest entry, the 2 other ones are too old.
+        #import pdb;pdb.set_trace()
+        self.assertEqual(len(stream), 2)
 
         self.assertEqual(stream[0].data['override_message'],
                          u'Lawyër Tëst renamed Item Data Test No. 1 to New Name')
@@ -270,6 +271,6 @@ class ItemDataTest(BaseEndpointTest):
         self.assertEqual(resp.status_code, 200)
 
         stream = model_stream(Item)
-        self.assertEqual(len(stream), 3)  # shall only find the newest entry, the 2 other ones are too old.
+        self.assertEqual(len(stream), 3)
 
         self.assertEqual(stream[0].data['override_message'], 'Lawyër Tëst reopened Item Data Test No. 1')

@@ -31,20 +31,35 @@ var MatterItem = React.createClass({
 
 var Participants = React.createClass({
     render: function() {
-        var userNodes = this.props.data.map(function (user) {
-            //console.log(user)
-            return (
-                <div className="avatar img-circle">
-                    <span className="initials" title={ user.name }>{ user.initials }</span>
-                </div>
-            )
-        });
+        if (this.props.data.length > 3) {
+            var userNames = this.props.data.map(function(user) {
+                return user.name;
+            });
 
-        return (
-          <div className="people pull-right">
-            {userNodes}
-          </div>
-        );
+            return (
+                <div className="people people-multi pull-right" data-toggle="tooltip" title={userNames}>
+                    <div className="avatar img-circle one">
+                        <span className="initials">{this.props.data.length}</span>
+                    </div>
+                    <div className="avatar img-circle two"><span className="initials">&nbsp;</span></div>
+                    <div className="avatar img-circle three"><span className="initials">&nbsp;</span></div>
+                </div>
+            );
+        } else {
+            var userNodes = this.props.data.map(function(user) {
+                return (
+                    <div className="avatar img-circle">
+                        <span className="initials" title={user.name}>{user.initials}</span>
+                    </div>
+                )
+            });
+
+            return (
+                <div className="people pull-right">
+                    {userNodes}
+                </div>
+            );
+        }
     }
 });
 

@@ -16,7 +16,7 @@ angular.module('toolkit-gui')
 	'checklistItem',
 	'revision',
 	function($scope, $modalInstance, toaster, matterItemService, matter, checklistItem, revision ){
-
+		'use strict';
 		/**
 		 * WIP
 		 *
@@ -79,8 +79,8 @@ angular.module('toolkit-gui')
                 function success(revision){
                     $scope.revision.user_review_url = revision.user_review_url;
                 },
-                function error(err){
-                    toaster.pop('error', "Error!", "Unable to load revision details");
+                function error(/*err*/){
+                    toaster.pop('error', 'Error!', 'Unable to load revision details',5000);
                 }
             );
         }

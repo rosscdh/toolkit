@@ -134,7 +134,7 @@ def virtualenv(cmd, **kwargs):
 
 @task
 def pip_install():
-    virtualenv('pip install django-sslify')
+    virtualenv('pip install django-stripe-payments==2.0b34')
 
 @task
 def cron():
@@ -258,6 +258,7 @@ def diff_outgoing_with_current():
 
 @task
 @roles('worker')
+@runs_once
 def celery_restart(name='worker.1'):
     with settings(warn_only=True): # only warning as we will often have errors importing
         celery_stop()

@@ -114,9 +114,19 @@ ABRIDGE_PASSWORD = 'production123'
 INTERCOM_APP_ID = 'ooqtbx99'
 INTERCOM_APP_SECRET = '_oukEAo1iYdHMJ_qATkAKe00jh4xYreHyjilBM7O'
 
+#
+# Mixpanel
+#
 MIXPANEL_SETTINGS = {
     'token': 'd7c53d3f0559022a42a74e99950b6934',
 }
+
+#
+# Payments
+#
+STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC_KEY", "pk_live_DqLrZGJxqeVzijnLV4VZ5dnK")
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "sk_live_dcqYJmw9BEDgGExWyQvOBQOF")
+
 
 CELERY_DEFAULT_QUEUE = 'prod-toolkit'
 ENABLE_CELERY_TASKS = True
