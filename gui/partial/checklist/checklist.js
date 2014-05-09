@@ -1352,8 +1352,18 @@ angular.module('toolkit-gui')
 		};
 
         $scope.deleteSigningRequest = function(revision){
-            //TODO implement
-            revision.signing = null;
+            if (revision.signing){
+                matterItemService.deleteSigningRequest(revision.signing).then(
+                    function success(revision) {
+                        revision.signing = null;
+                    },
+                    function error(/*err*/) {
+                        if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to delete the signing request.') {
+                            toaster.pop('error', 'Error!', 'Unable to delete the signing request.', 5000);
+                        }
+                    }
+                );
+            }
         };
 		/* End revision handling */
 
