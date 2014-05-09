@@ -64,6 +64,7 @@ class MatterExportService(object):
             message='Your matter "%s" has been exported and is ready to be downloaded from: %s' % (self.matter.name, download_link),
             recipients=((self.matter.lawyer.get_full_name(), self.matter.lawyer.email), ))
         m.process()
+        self.matter.actions.matter_export_finished(user=self.matter.lawyer)
 
     def process(self):
         # collect the needed revisions and put them in self.needed_files; make sure they exist on local disk

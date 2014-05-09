@@ -53,6 +53,7 @@ class MatterDownloadExportView(DetailView):
                 s3_storage = _managed_S3BotoStorage()
                 with s3_storage.open(zip_filename, 'r') as myfile:
                     response.write(myfile.read())
+                self.object.actions.user_downloaded_exported_matter(user=self.object.lawyer)
                 return response
             else:
                 logger.error('Exported matter should be in S3 but is not: %s' % zip_filename)

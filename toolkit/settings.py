@@ -453,6 +453,9 @@ LAWPAL_ACTIVITY = {
                       'workspace-deleted',
                       'workspace-added-participant', 'workspace-removed-participant',
                       'workspace-stopped-participating',
+                      'workspace-export-started',
+                      'workspace-export-finished',
+                      'workspace-export-downloaded',
                       ]
     },
     "notifications": {
@@ -473,6 +476,9 @@ LAWPAL_ACTIVITY = {
                       'workspace-deleted',
                       'workspace-added-participant', 'workspace-removed-participant',
                       'workspace-stopped-participating',
+                      'workspace-export-started',
+                      'workspace-export-finished',
+                      'workspace-export-downloaded',
                       ]
     },
     "activity": {
@@ -492,6 +498,9 @@ LAWPAL_ACTIVITY = {
                       'workspace-created', 'workspace-deleted',
                       'workspace-added-participant', 'workspace-removed-participant',
                       'workspace-stopped-participating',
+                      'workspace-export-started',
+                      'workspace-export-finished',
+                      'workspace-export-downloaded',
                       ]
     },
 }

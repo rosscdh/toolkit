@@ -38,6 +38,9 @@ class MatterActivityEventService(object):
     workspace-edited
     workspace-removed-participant
     workspace-stopped-participating
+    workspace-export-started
+    workspace-export-finished
+    workspace-export-downloaded
 
     Items
     =======
@@ -169,12 +172,12 @@ class MatterActivityEventService(object):
 
     def matter_export_finished(self, user):
         override_message = u'The export of %s for %s has been completed' % (self.matter, user)
-        self._create_activity(actor=user, verb=u'matter finished', action_object=self.matter,
+        self._create_activity(actor=user, verb=u'export finished', action_object=self.matter,
                               override_message=override_message)
 
     def user_downloaded_exported_matter(self, user):
-        override_message = u'%s downloaded %s' % (self.matter, user)
-        self._create_activity(actor=user, verb=u'matter finished', action_object=self.matter,
+        override_message = u'%s downloaded %s' % (user, self.matter)
+        self._create_activity(actor=user, verb=u'export downloaded', action_object=self.matter,
                               override_message=override_message)
 
 
