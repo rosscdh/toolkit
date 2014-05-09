@@ -109,6 +109,7 @@ Custom Api Endpoints
 class MatterExportView(generics.CreateAPIView, MatterMixin):
     def create(self, request, *args, **kwargs):
         try:
+            self.matter.actions.started_matter_export(user=request.user)
             run_task(_export_matter, matter=self.matter)
             return Response(status=http_status.HTTP_200_OK, data={
                 'detail': 'Your export is being generated. Once complete, you will recieve an email with the next steps.'})
