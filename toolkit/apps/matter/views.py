@@ -1,5 +1,6 @@
 from StringIO import StringIO
 import datetime
+import dateutil
 from django.conf import settings
 from django.core import signing
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
@@ -24,6 +25,9 @@ import logging
 logger = logging.getLogger('django.request')
 
 
+MATTER_EXPORT_DAYS_VALID = getattr(settings, 'MATTER_EXPORT_DAYS_VALID', 3)
+
+
 class MatterDownloadExportView(DetailView):
     model = Workspace
 
@@ -37,14 +41,15 @@ class MatterDownloadExportView(DetailView):
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
 
-        valid_until = kwargs.get('valid_until')
+        created_at = dateutil.parser.parse(kwargs.get('created_at'))
 
-        if valid_until and datetime.datetime.strptime(valid_until, '%Y-%m-%d') > datetime.datetime.now() and \
+        if created_at and created_at + datetime.timedelta(days=MATTER_EXPORT_DAYS_VALID) > datetime.datetime.now() and \
                         request.user.pk == kwargs.get('user_pk'):
             zip_filename = MatterExportService(self.object).get_zip_filename(kwargs)
             if S3BotoStorage().exists(zip_filename):
                 response = HttpResponse()
-                response['Content-Disposition'] = 'attachment; filename=%s.zip' % kwargs.get('matter_slug')
+                response['Content-Disposition'] = 'attachment; filename=%s_%s.zip' % \
+                                                  (kwargs.get('matter_slug'), created_at.strftime('%Y-%m-%d_%H-%M-%S'))
                 response['Content-Type'] = 'application/zip'
                 s3_storage = S3BotoStorage()
                 with s3_storage.open(zip_filename, 'r') as myfile:
