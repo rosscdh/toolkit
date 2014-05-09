@@ -478,8 +478,9 @@ class MatterExportTest(BaseEndpointTest):
 
     @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_export_matter_post_with_download_lawyer(self):
-        self.test_export_matter_post()
         self.client.login(username=self.lawyer.username, password=self.password)
+        
+        _export_matter(self.matter)
 
         # calculate download-link (which could also be taken from the email)
         valid_until = (datetime.date.today() + datetime.timedelta(days=MATTER_EXPORT_DAYS_VALID)).isoformat()
