@@ -489,6 +489,7 @@ class MatterExportTest(BaseEndpointTest):
 
         self.add_item_with_revision()
 
+        # we need the SAME datetime.datetime.now() in _export_matter and for token-creation
         with mock.patch('datetime.datetime', PatchedDateTime):
             # start the export directly
             _export_matter(self.matter)
@@ -506,7 +507,6 @@ class MatterExportTest(BaseEndpointTest):
         self.assertEqual(resp.status_code, 200)
         self.assertGreater(len(resp.content), 3000)
         self.assertEqual(resp.get('Content-Type'), 'application/zip')
-
 
     def test_export_matter_post_with_download_customer(self):
         self.client.login(username=self.user.username, password=self.password)
