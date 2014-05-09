@@ -29,7 +29,7 @@ class BaseEndpointTest(BaseScenarios, TestCase):
         Cleanup items
         """
         for item in self.matter.item_set.all().iterator():
-            latest_revision = item.__class__.objects.get(pk=self.item.pk).latest_revision
+            latest_revision = item.latest_revision
             if latest_revision is not None:
                 latest_revision.executed_file.delete()
 
