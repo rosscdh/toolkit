@@ -23,9 +23,6 @@ from model_mommy import mommy
 import json
 
 
-MATTER_EXPORT_DAYS_VALID = getattr(settings, 'MATTER_EXPORT_DAYS_VALID', 3)
-
-
 class MattersTest(BaseEndpointTest):
     """
     /matters/ (GET,POST)
@@ -489,10 +486,10 @@ class MatterExportTest(BaseEndpointTest):
         _export_matter(self.matter)
 
         # calculate download-link (which could also be taken from the email)
-        valid_until = (datetime.date.today() + datetime.timedelta(days=MATTER_EXPORT_DAYS_VALID)).isoformat()
+        created_at = datetime.date.today().isoformat()
         token_data = {'matter_slug': self.matter.slug,
                       'user_pk': self.lawyer.pk,
-                      'valid_until': valid_until}
+                      'created_at': created_at}
         token = signing.dumps(token_data, salt=settings.SECRET_KEY)
 
         # download the file and check its content
@@ -510,10 +507,10 @@ class MatterExportTest(BaseEndpointTest):
         _export_matter(self.matter)
 
         # calculate download-link (which could also be taken from the email)
-        valid_until = (datetime.date.today() + datetime.timedelta(days=MATTER_EXPORT_DAYS_VALID)).isoformat()
+        created_at = datetime.date.today().isoformat()
         token_data = {'matter_slug': self.matter.slug,
                       'user_pk': self.user.pk,
-                      'valid_until': valid_until}
+                      'created_at': created_at}
         token = signing.dumps(token_data, salt=settings.SECRET_KEY)
 
         # download the file and check its content
@@ -527,10 +524,10 @@ class MatterExportTest(BaseEndpointTest):
         _export_matter(self.matter)
 
         # calculate download-link (which could also be taken from the email)
-        valid_until = (datetime.date.today() + datetime.timedelta(days=MATTER_EXPORT_DAYS_VALID)).isoformat()
+        created_at = (datetime.date.today()).isoformat()
         token_data = {'matter_slug': self.matter.slug,
                       'user_pk': AnonymousUser.pk,
-                      'valid_until': valid_until}
+                      'created_at': created_at}
         token = signing.dumps(token_data, salt=settings.SECRET_KEY)
 
         # download the file and check its content
