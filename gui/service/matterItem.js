@@ -662,6 +662,25 @@ angular.module('toolkit-gui')
 				return deferred.promise;
 			},
 
+            'deleteSigningRequest': function ( signing ) {
+				var deferred = $q.defer();
+
+				var api = $resource( signing.url, {}, {
+                        'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'} }
+                });
+
+				api.delete({},
+					function success(){
+						deferred.resolve();
+					},
+					function error(err) {
+						deferred.reject( err );
+					}
+				);
+
+				return deferred.promise;
+			},
+
             /**
 			 * Requests a review update
 			 *
