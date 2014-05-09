@@ -9,6 +9,7 @@ from django.core.urlresolvers import reverse
 from django.core import mail
 from django.core import signing
 import mock
+from toolkit.apps.matter.tasks import _export_matter
 
 from toolkit.core.attachment.models import Revision
 from toolkit.apps.workspace.models import Workspace
@@ -491,17 +492,14 @@ class MatterExportTest(BaseEndpointTest):
         download_link = ABSOLUTE_BASE_URL(reverse('matter:download-exported', kwargs={'token': token}))
         resp = self.client.get(download_link)
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(len(resp.content), 4128)
+        self.assertGreater(len(resp.content), 3000)
         self.assertEqual(resp.get('Content-Type'), 'application/zip')
-
-    # TODO: do not POST to create the export but run task independently
-    # TODO: finish tests
 
     @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_export_matter_post_with_download_customer(self):
-        raise NotImplementedError
-        self.test_export_matter_post()
         self.client.login(username=self.user.username, password=self.password)
+
+        _export_matter(self.matter)
 
         # calculate download-link (which could also be taken from the email)
         valid_until = (datetime.date.today() + datetime.timedelta(days=MATTER_EXPORT_DAYS_VALID)).isoformat()
@@ -517,9 +515,7 @@ class MatterExportTest(BaseEndpointTest):
 
     @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_export_matter_post_with_download_anon(self):
-        raise NotImplementedError
-        self.test_export_matter_post()
-        self.client.logout()
+        _export_matter(self.matter)
 
         # calculate download-link (which could also be taken from the email)
         valid_until = (datetime.date.today() + datetime.timedelta(days=MATTER_EXPORT_DAYS_VALID)).isoformat()
@@ -531,4 +527,4 @@ class MatterExportTest(BaseEndpointTest):
         # download the file and check its content
         download_link = ABSOLUTE_BASE_URL(reverse('matter:download-exported', kwargs={'token': token}))
         resp = self.client.get(download_link)
-        self.assertEqual(resp.status_code, 403)  # forbidden
+        self.assertEqual(resp.status_code, 302)  # redirect to login-page
