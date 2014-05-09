@@ -80,7 +80,6 @@ class SignRevisionView(DetailView):
 
     def get_context_data(self, **kwargs):
         kwargs = super(SignRevisionView, self).get_context_data(**kwargs)
-        import pdb;pdb.set_trace()
         kwargs.update({
             'sign_url': mark_safe(self.object.signing_request.get_absolute_url())
         })
