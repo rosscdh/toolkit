@@ -5,7 +5,6 @@ from django.conf import settings
 from django.core.files import File
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import AnonymousUser
-from django.core.files.storage import FileSystemStorage
 
 from toolkit.apps.matter.tasks import _export_matter
 
@@ -19,7 +18,6 @@ from ...serializers import LiteClientSerializer
 from model_mommy import mommy
 
 import os
-import mock
 import json
 import datetime
 
@@ -460,7 +458,6 @@ class MatterExportTest(BaseEndpointTest):
             self.revision.executed_file.save('test.pdf', File(filename))
             self.revision.save(update_fields=['executed_file'])
 
-    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_export_matter_post(self):
         self.client.login(username=self.lawyer.username, password=self.password)
 
@@ -499,6 +496,7 @@ class MatterExportTest(BaseEndpointTest):
         self.assertEqual(resp.status_code, 200)
         self.assertGreater(len(resp.content), 3000)
         self.assertEqual(resp.get('Content-Type'), 'application/zip')
+
 
     def test_export_matter_post_with_download_customer(self):
         self.client.login(username=self.user.username, password=self.password)
