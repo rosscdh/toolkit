@@ -5,6 +5,7 @@ from django.conf import settings
 from django.core.files import File
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import AnonymousUser
+import mock
 
 from toolkit.apps.matter.tasks import _export_matter
 
@@ -457,16 +458,14 @@ class MatterExportTest(BaseEndpointTest):
         resp = self.client.post(self.endpoint, {}, content_type='application/json')
         self.assertEqual(resp.status_code, 403)  # forbidden
 
-    def test_export_matter_post(self):
-        self.client.login(username=self.lawyer.username, password=self.password)
-
+    def add_item_with_revision(self):
         # prepare item with revision and file
         self.item = mommy.make('item.Item', matter=self.matter, name='Test Item with Revision', category=None)
         self.revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item,
-                                   uploaded_by=self.lawyer, name='test file')
+                                  uploaded_by=self.lawyer, name='test file')
         with open(os.path.join(settings.SITE_ROOT, 'toolkit', 'casper', 'test.pdf'), 'r') as filename:
-            self.revision.executed_file.save('test.pdf', File(filename))
-            self.revision.save(update_fields=['executed_file'])
+           self.revision.executed_file.save('test.pdf', File(filename))
+           self.revision.save(update_fields=['executed_file'])
 
     def test_export_matter_post(self):
         self.client.login(username=self.lawyer.username, password=self.password)
