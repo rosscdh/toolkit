@@ -42,8 +42,12 @@ class MatterDownloadExportView(DetailView):
         self.object = self.get_object()
 
         created_at = dateutil.parser.parse(kwargs.get('created_at'))
-        if created_at and created_at + datetime.timedelta(days=MATTER_EXPORT_DAYS_VALID) > datetime.datetime.now() and \
-                        request.user.pk == kwargs.get('user_pk'):
+        
+        if request.user.pk == kwargs.get('user_pk'):
+            logger.critical("%s tried accessing %s (%s) but is not allowed." % (request.user, self.object, created_at))
+            return HttpResponseForbidden('You are not allowed to access this file.')
+
+        if created_at and created_at + datetime.timedelta(days=MATTER_EXPORT_DAYS_VALID) > datetime.datetime.now():
             zip_filename = MatterExportService(self.object).get_zip_filename(kwargs)
             if _managed_S3BotoStorage().exists(zip_filename):
                 response = HttpResponse()
@@ -56,7 +60,9 @@ class MatterDownloadExportView(DetailView):
                 self.object.actions.user_downloaded_exported_matter(user=self.object.lawyer)
                 return response
             else:
-                logger.error('Exported matter should be in S3 but is not: %s' % zip_filename)
+                logger.critical('Exported matter should be in S3 but is not: %s' % zip_filename)
+
+        logger.critical("%s tried accessing %s (%s) but his link had expired." % (request.user, self.object, created_at))
         return HttpResponseForbidden('Your link has expired.')
 
 
