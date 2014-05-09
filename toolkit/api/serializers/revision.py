@@ -106,6 +106,8 @@ class HyperlinkedAutoDownloadFileField(LimitedExtensionMixin, serializers.URLFie
 
                 original_filename = request.DATA.get('name')
 
+                original_filename = original_filename[0:100] # 100 is the max length of a filefield
+
                 #
                 # NB! we pass this into download which then brings the filedown and names it in the precribed
                 # upload_to manner
@@ -149,6 +151,7 @@ class FileFieldAsUrlField(LimitedExtensionMixin, serializers.FileField):
             #
             # Just download the object, the rest gets handled naturally
             #
+            value.name = value.name[0:100]  # 100 is the max length of a filefield
             _download_file(url=value.url, filename=value.name, obj=value.instance)
 
         return getattr(value, 'url', super(FileFieldAsUrlField, self).to_native(value=value))
