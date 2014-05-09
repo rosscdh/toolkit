@@ -28,7 +28,7 @@ class MatterExportService(object):
         # returns the filename the created .zip should have
         # in in a function to get called from the download-view without instantiating an object
         return 'exported_documents/%s_%s_%s.zip' % \
-               (token_data.get('matter_slug'), token_data.get('user_pk'), token_data.get('valid_until'))
+               (token_data.get('matter_slug'), token_data.get('user_pk'), token_data.get('created_at'))
 
     def ensure_needed_files_list(self):
         # collects all latest_revisions with the correct state
@@ -71,10 +71,10 @@ class MatterExportService(object):
         self.ensure_files_exist_locally()
 
         # put everything needed to find the file in AWS into the token
-        valid_until = (datetime.date.today() + datetime.timedelta(days=MATTER_EXPORT_DAYS_VALID)).isoformat()
+        created_at = datetime.datetime.now().isoformat()
         token_data = {'matter_slug': self.matter.slug,
                       'user_pk': self.matter.lawyer.pk,
-                      'valid_until': valid_until}
+                      'created_at': created_at}
 
         # zip everything in self.needed_files
         zip_filename = self.get_zip_filename(token_data)

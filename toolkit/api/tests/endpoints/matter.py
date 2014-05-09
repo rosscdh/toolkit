@@ -24,9 +24,6 @@ import json
 import datetime
 
 
-MATTER_EXPORT_DAYS_VALID = getattr(settings, 'MATTER_EXPORT_DAYS_VALID', 3)
-
-
 class MattersTest(BaseEndpointTest):
     """
     /matters/ (GET,POST)
@@ -463,7 +460,13 @@ class MatterExportTest(BaseEndpointTest):
             self.revision.executed_file.save('test.pdf', File(filename))
             self.revision.save(update_fields=['executed_file'])
 
-        # start the export
+    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
+    def test_export_matter_post(self):
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        self.add_item_with_revision()
+
+        # start the export via post
         resp = self.client.post(self.endpoint, {}, content_type='application/json')
         self.assertEqual(resp.status_code, 200)  # ok
         # json_data = json.loads(resp.content)
@@ -475,15 +478,19 @@ class MatterExportTest(BaseEndpointTest):
         self.assertEqual(email.subject, u'Export has finished')
         self.assertEqual(email.recipients(), [u'test+lawyer@lawpal.com'])
 
-    def test_export_matter_post_with_download_lawyer(self):
-        self.test_export_matter_post()
+    def test_exported_matter_download(self):
         self.client.login(username=self.lawyer.username, password=self.password)
 
+        self.add_item_with_revision()
+
+        # start the export directly
+        _export_matter(self.matter)
+
         # calculate download-link (which could also be taken from the email)
-        valid_until = (datetime.date.today() + datetime.timedelta(days=MATTER_EXPORT_DAYS_VALID)).isoformat()
+        created_at = datetime.date.today().isoformat()
         token_data = {'matter_slug': self.matter.slug,
                       'user_pk': self.lawyer.pk,
-                      'valid_until': valid_until}
+                      'created_at': created_at}
         token = signing.dumps(token_data, salt=settings.SECRET_KEY)
 
         # download the file and check its content
@@ -496,13 +503,14 @@ class MatterExportTest(BaseEndpointTest):
     def test_export_matter_post_with_download_customer(self):
         self.client.login(username=self.user.username, password=self.password)
 
+        # start the export directly
         _export_matter(self.matter)
 
         # calculate download-link (which could also be taken from the email)
-        valid_until = (datetime.date.today() + datetime.timedelta(days=MATTER_EXPORT_DAYS_VALID)).isoformat()
+        created_at = datetime.date.today().isoformat()
         token_data = {'matter_slug': self.matter.slug,
                       'user_pk': self.user.pk,
-                      'valid_until': valid_until}
+                      'created_at': created_at}
         token = signing.dumps(token_data, salt=settings.SECRET_KEY)
 
         # download the file and check its content
@@ -511,13 +519,14 @@ class MatterExportTest(BaseEndpointTest):
         self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_export_matter_post_with_download_anon(self):
+        # start the export directly
         _export_matter(self.matter)
 
         # calculate download-link (which could also be taken from the email)
-        valid_until = (datetime.date.today() + datetime.timedelta(days=MATTER_EXPORT_DAYS_VALID)).isoformat()
+        created_at = (datetime.date.today()).isoformat()
         token_data = {'matter_slug': self.matter.slug,
                       'user_pk': AnonymousUser.pk,
-                      'valid_until': valid_until}
+                      'created_at': created_at}
         token = signing.dumps(token_data, salt=settings.SECRET_KEY)
 
         # download the file and check its content
