@@ -2,7 +2,7 @@ from StringIO import StringIO
 import datetime
 from django.conf import settings
 from django.core import signing
-from django.http import HttpResponseRedirect, HttpResponse, StreamingHttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.views.generic import CreateView, DeleteView, ListView, TemplateView, UpdateView, DetailView
 
@@ -52,7 +52,7 @@ class MatterDownloadExportView(DetailView):
                 return response
             else:
                 logger.error('Exported matter should be in S3 but is not: %s' % zip_filename)
-        return HttpResponse('not valid any more')
+        return HttpResponseForbidden('Your link has expired.')
 
 
 class MatterListView(ListView):
