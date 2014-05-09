@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from toolkit.celery import app
-from toolkit.apps.workspace.services.matter_export import MatterExportService
+from toolkit.apps.matter.services import MatterExportService
 
 
 @app.task
