@@ -13,7 +13,7 @@ from storages.backends.s3boto import S3BotoStorage
 from toolkit.api.serializers import LiteMatterSerializer
 from toolkit.apps.matter.services import (MatterRemovalService, MatterParticipantRemovalService)
 from toolkit.apps.workspace.models import Workspace
-from toolkit.apps.workspace.services.matter_export import MatterExportService
+from toolkit.apps.matter.services import MatterExportService
 from toolkit.mixins import AjaxModelFormView, ModalView
 
 from rest_framework.renderers import UnicodeJSONRenderer
