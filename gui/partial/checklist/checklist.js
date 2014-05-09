@@ -1354,7 +1354,7 @@ angular.module('toolkit-gui')
         $scope.deleteSigningRequest = function(revision){
             if (revision.signing){
                 matterItemService.deleteSigningRequest(revision.signing).then(
-                    function success(revision) {
+                    function success() {
                         revision.signing = null;
                     },
                     function error(/*err*/) {
