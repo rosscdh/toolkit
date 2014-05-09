@@ -19,16 +19,22 @@ MATTER_EXPORT_DAYS_VALID = getattr(settings, 'MATTER_EXPORT_DAYS_VALID', 3)
 
 
 class MatterExportService(object):
+    """
+    Service to export a matter and all of the latest revisions of the documents
+    for each of its items; and upload it to s3; as well as send an email with a
+    salted tokenized link that will allow the lawyer to download their zip
+    """
     def __init__(self, matter):
         self.matter = matter
         self.needed_revisions = []
         self.needed_files = []
+        self.created_at = datetime.datetime.now().isoformat()
 
-    def get_zip_filename(self, token_data):
-        # returns the filename the created .zip should have
-        # in in a function to get called from the download-view without instantiating an object
-        return 'exported_documents/%s_%s_%s.zip' % \
-               (token_data.get('matter_slug'), token_data.get('user_pk'), token_data.get('created_at'))
+    @property
+    def token_data(self):
+        return {'matter_slug': self.matter.slug,
+                'user_pk': self.matter.lawyer.pk,
+                'created_at': self.created_at}
 
     def ensure_needed_files_list(self):
         # collects all latest_revisions with the correct state
@@ -48,6 +54,12 @@ class MatterExportService(object):
                     needed_revision.item.name,
                     os.path.basename(needed_revision.executed_file.name))
             })
+
+    def get_zip_filename(self, token_data):
+        # returns the filename the created .zip should have
+        # in in a function to get called from the download-view without instantiating an object
+        return 'exported_documents/%s_%s_%s.zip' % \
+               (token_data.get('matter_slug'), token_data.get('user_pk'), token_data.get('created_at'))
 
     def create_zip(self, filename):
         # zip all needed files to filename
@@ -72,10 +84,7 @@ class MatterExportService(object):
         self.ensure_files_exist_locally()
 
         # put everything needed to find the file in AWS into the token
-        created_at = datetime.datetime.now().isoformat()
-        token_data = {'matter_slug': self.matter.slug,
-                      'user_pk': self.matter.lawyer.pk,
-                      'created_at': created_at}
+        token_data = self.token_data
 
         # zip everything in self.needed_files
         zip_filename = self.get_zip_filename(token_data)
