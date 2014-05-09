@@ -429,6 +429,16 @@ class MatterRevisionLabelTest(BaseEndpointTest):
         self.assertEqual(resp_data['status'], 5)
 
 
+"""
+Patched class for testing datetime
+"""
+class PatchedDateTime(datetime.datetime):
+    @staticmethod
+    def now():
+        today = datetime.date.today()  # return today with the same time so the tests work even if other files are used which are NOT moke.
+        return datetime.datetime(today.year, today.month, today.day, 0, 0, 0, 113903)
+
+
 class MatterExportTest(BaseEndpointTest):
     """
     /matters/ (POST)
@@ -482,15 +492,16 @@ class MatterExportTest(BaseEndpointTest):
 
         self.add_item_with_revision()
 
-        # start the export directly
-        _export_matter(self.matter)
+        with mock.patch('datetime.datetime', PatchedDateTime):
+            # start the export directly
+            _export_matter(self.matter)
 
-        # calculate download-link (which could also be taken from the email)
-        created_at = datetime.date.today().isoformat()
-        token_data = {'matter_slug': self.matter.slug,
-                      'user_pk': self.lawyer.pk,
-                      'created_at': created_at}
-        token = signing.dumps(token_data, salt=settings.SECRET_KEY)
+            # calculate download-link (which could also be taken from the email)
+            created_at = datetime.datetime.now().isoformat()
+            token_data = {'matter_slug': self.matter.slug,
+                          'user_pk': self.lawyer.pk,
+                          'created_at': created_at}
+            token = signing.dumps(token_data, salt=settings.SECRET_KEY)
 
         # download the file and check its content
         download_link = ABSOLUTE_BASE_URL(reverse('matter:download-exported', kwargs={'token': token}))

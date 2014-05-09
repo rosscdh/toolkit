@@ -42,7 +42,6 @@ class MatterDownloadExportView(DetailView):
         self.object = self.get_object()
 
         created_at = dateutil.parser.parse(kwargs.get('created_at'))
-
         if created_at and created_at + datetime.timedelta(days=MATTER_EXPORT_DAYS_VALID) > datetime.datetime.now() and \
                         request.user.pk == kwargs.get('user_pk'):
             zip_filename = MatterExportService(self.object).get_zip_filename(kwargs)
