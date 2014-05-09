@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from django.db.models.loading import get_model
 from django.db.models.signals import pre_save, post_save, post_delete, m2m_changed
 from django.template.defaultfilters import slugify
-from storages.backends.s3boto import S3BotoStorage
+from toolkit.core import _managed_S3BotoStorage
 
 from toolkit.core.mixins import IsDeletedMixin, ApiSerializerMixin
 

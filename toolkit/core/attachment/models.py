@@ -2,7 +2,7 @@
 from django.db import models
 from django.template.defaultfilters import slugify
 
-from storages.backends.s3boto import S3BotoStorage
+from toolkit.core import _managed_S3BotoStorage
 
 from toolkit.core.mixins import (ApiSerializerMixin, IsDeletedMixin, FileExistsLocallyMixin)
 from toolkit.utils import get_namedtuple_choices
@@ -54,7 +54,7 @@ class Revision(IsDeletedMixin,
 
     slug = models.SlugField(blank=True, null=True)  # stores the revision number v3..v2..v1
 
-    executed_file = models.FileField(upload_to=_upload_file, storage=S3BotoStorage(), null=True, blank=True)
+    executed_file = models.FileField(upload_to=_upload_file, storage=_managed_S3BotoStorage(), null=True, blank=True)
 
     item = models.ForeignKey('item.Item')
     uploaded_by = models.ForeignKey('auth.User')

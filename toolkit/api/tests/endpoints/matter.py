@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
-import os
-import datetime
-from django.conf import settings
-from django.contrib.auth.models import AnonymousUser
-from django.core.files import File
-from django.core.files.storage import FileSystemStorage
-from django.core.urlresolvers import reverse
 from django.core import mail
 from django.core import signing
-import mock
+from django.conf import settings
+from django.core.files import File
+from django.core.urlresolvers import reverse
+from django.contrib.auth.models import AnonymousUser
+from django.core.files.storage import FileSystemStorage
+
 from toolkit.apps.matter.tasks import _export_matter
 
 from toolkit.core.attachment.models import Revision
@@ -20,7 +18,10 @@ from ...serializers import LiteClientSerializer
 
 from model_mommy import mommy
 
+import os
+import mock
 import json
+import datetime
 
 
 MATTER_EXPORT_DAYS_VALID = getattr(settings, 'MATTER_EXPORT_DAYS_VALID', 3)
@@ -444,7 +445,6 @@ class MatterExportTest(BaseEndpointTest):
     def test_endpoint_name(self):
         self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/export')
 
-    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_export_matter_post_not_allowed(self):
         self.client.login(username=self.user.username, password=self.password)
 
@@ -452,7 +452,6 @@ class MatterExportTest(BaseEndpointTest):
         resp = self.client.post(self.endpoint, {}, content_type='application/json')
         self.assertEqual(resp.status_code, 403)  # forbidden
 
-    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_export_matter_post(self):
         self.client.login(username=self.lawyer.username, password=self.password)
 
@@ -476,7 +475,6 @@ class MatterExportTest(BaseEndpointTest):
         self.assertEqual(email.subject, u'Export has finished')
         self.assertEqual(email.recipients(), [u'test+lawyer@lawpal.com'])
 
-    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_export_matter_post_with_download_lawyer(self):
         self.test_export_matter_post()
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -495,7 +493,6 @@ class MatterExportTest(BaseEndpointTest):
         self.assertGreater(len(resp.content), 3000)
         self.assertEqual(resp.get('Content-Type'), 'application/zip')
 
-    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_export_matter_post_with_download_customer(self):
         self.client.login(username=self.user.username, password=self.password)
 
@@ -513,7 +510,6 @@ class MatterExportTest(BaseEndpointTest):
         resp = self.client.get(download_link)
         self.assertEqual(resp.status_code, 403)  # forbidden
 
-    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_export_matter_post_with_download_anon(self):
         _export_matter(self.matter)
 
