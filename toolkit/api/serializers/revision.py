@@ -167,7 +167,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
     item = serializers.HyperlinkedRelatedField(many=False, view_name='item-detail')
 
     reviewers = serializers.SerializerMethodField('get_reviewers')
-    signers = SimpleUserSerializer(source='signers.all', many=True)
+    signers = SimpleUserSerializer(source='signers.all', many=True, required=False)
     signing = serializers.SerializerMethodField('get_signing')
 
     user_review = serializers.SerializerMethodField('get_user_review')
