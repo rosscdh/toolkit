@@ -9,7 +9,7 @@ from django.views.generic import CreateView, DeleteView, ListView, TemplateView,
 
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
-from storages.backends.s3boto import S3BotoStorage
+from toolkit.core import _managed_S3BotoStorage
 
 from toolkit.api.serializers import LiteMatterSerializer
 from toolkit.apps.matter.services import (MatterRemovalService, MatterParticipantRemovalService)
@@ -45,12 +45,12 @@ class MatterDownloadExportView(DetailView):
         if created_at and created_at + datetime.timedelta(days=MATTER_EXPORT_DAYS_VALID) > datetime.datetime.now() and \
                         request.user.pk == kwargs.get('user_pk'):
             zip_filename = MatterExportService(self.object).get_zip_filename(kwargs)
-            if S3BotoStorage().exists(zip_filename):
+            if _managed_S3BotoStorage().exists(zip_filename):
                 response = HttpResponse()
                 response['Content-Disposition'] = 'attachment; filename=%s_%s.zip' % \
                                                   (kwargs.get('matter_slug'), created_at.strftime('%Y-%m-%d_%H-%M-%S'))
                 response['Content-Type'] = 'application/zip'
-                s3_storage = S3BotoStorage()
+                s3_storage = _managed_S3BotoStorage()
                 with s3_storage.open(zip_filename, 'r') as myfile:
                     response.write(myfile.read())
                 return response

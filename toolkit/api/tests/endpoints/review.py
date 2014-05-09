@@ -37,7 +37,6 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
     def endpoint(self):
         return reverse('item_revision_reviewers', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug})
 
-    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def setUp(self):
         super(RevisionReviewsTest, self).setUp()
 
@@ -265,7 +264,6 @@ class ReviewObjectIncrementWithNewReviewerTest(BaseEndpointTest):
     def endpoint(self):
         return reverse('item_revision_reviewers', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug})
 
-    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def setUp(self):
         super(ReviewObjectIncrementWithNewReviewerTest, self).setUp()
 
@@ -357,7 +355,6 @@ class RevisionReviewerTest(BaseEndpointTest):
     def endpoint(self):
         return reverse('item_revision_reviewer', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug, 'username': self.participant.username})
 
-    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def setUp(self):
         super(RevisionReviewerTest, self).setUp()
 
@@ -656,7 +653,6 @@ class ReviewerHasViewedRevisionTest(BaseEndpointTest):
     def endpoint(self):
         return reverse('matter_item_specific_revision_user_viewed', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug, 'reviewdocument_slug': self.reviewdocument.slug})
 
-    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def setUp(self):
         super(ReviewerHasViewedRevisionTest, self).setUp()
 
