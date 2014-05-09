@@ -37,7 +37,6 @@ class RevisionSignaturesTest(PyQueryMixin, BaseEndpointTest):
     def endpoint(self):
         return reverse('item_revision_signers', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug})
 
-    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def setUp(self):
         super(RevisionSignaturesTest, self).setUp()
 
@@ -269,7 +268,6 @@ class ReviewObjectIncrementWithNewSignerTest(BaseEndpointTest):
     def endpoint(self):
         return reverse('item_revision_signers', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug})
 
-    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def setUp(self):
         super(ReviewObjectIncrementWithNewSignerTest, self).setUp()
 
@@ -358,7 +356,6 @@ class RevisionSignerTest(BaseEndpointTest):
     def endpoint(self):
         return reverse('item_revision_signer', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug, 'username': self.participant.username})
 
-    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def setUp(self):
 
 

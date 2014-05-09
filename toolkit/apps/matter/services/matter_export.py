@@ -9,7 +9,7 @@ from django.conf import settings
 from django.core import signing
 from django.core.files.storage import default_storage
 from django.core.urlresolvers import reverse
-from storages.backends.s3boto import S3BotoStorage
+from toolkit.core import _managed_S3BotoStorage
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 from toolkit.apps.matter.mailers import MatterExportFinishedEmail
 from toolkit.core.services.zip import ZipService
@@ -81,7 +81,7 @@ class MatterExportService(object):
         zip_file_path = self.create_zip(zip_filename)
 
         # upload to AWS as zip_filename
-        s3boto_storage = S3BotoStorage()
+        s3boto_storage = _managed_S3BotoStorage()
         with default_storage.open(zip_file_path) as myfile:
             result = s3boto_storage.save(zip_filename, myfile)
 

@@ -13,7 +13,7 @@ from django.contrib.auth.hashers import make_password
 import os
 import stripe
 
-from storages.backends.s3boto import S3BotoStorage
+from toolkit.core import _managed_S3BotoStorage
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import ButtonHolder, Div, Field, Fieldset, HTML, Layout, Submit
@@ -386,7 +386,7 @@ class LawyerLetterheadForm(forms.Form):
         firm_logo = self.cleaned_data.pop('firm_logo', None)
         if firm_logo is not None:
             if hasattr(firm_logo, 'name'):
-                image_storage = S3BotoStorage()
+                image_storage = _managed_S3BotoStorage()
                 # slugify a unique name
                 name, ext = os.path.splitext(firm_logo.name)
                 filename = slugify('%s-%s-%s' % (data.get('firm_name', self.user.username), self.user.pk, name))
