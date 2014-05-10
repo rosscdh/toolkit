@@ -25,16 +25,25 @@ class MatterExportService(object):
     salted tokenized link that will allow the lawyer to download their zip
     """
     def __init__(self, matter):
+        self._token = None  # very important, reset token
         self.matter = matter
         self.needed_revisions = []
         self.needed_files = []
         self.created_at = datetime.datetime.now().isoformat()
+        self.download_link = None
 
     @property
     def token_data(self):
+        # put everything needed to find the file in AWS into the token
         return {'matter_slug': self.matter.slug,
                 'user_pk': self.matter.lawyer.pk,
                 'created_at': self.created_at}
+
+    @property
+    def token(self):
+        if self._token is None:
+            self._token = signing.dumps(self.token_data, salt=settings.SECRET_KEY)
+        return self._token
 
     def ensure_needed_files_list(self):
         # collects all latest_revisions with the correct state
@@ -69,13 +78,15 @@ class MatterExportService(object):
 
     def send_email(self, token):
         # send the token-link to the owning lawyer
-        download_link = ABSOLUTE_BASE_URL(reverse('matter:download-exported', kwargs={'token': token}))
+        self.download_link = ABSOLUTE_BASE_URL(reverse('matter:download-exported', kwargs={'token': token}))
 
         m = MatterExportFinishedEmail(
-            subject='Export has finished',
-            message='Your matter "%s" has been exported and is ready to be downloaded from: %s' % (self.matter.name, download_link),
+            subject='Your Matter export has completed',
+            message='Your matter "%s" has been exported and is ready to be downloaded from: %s' % (self.matter.name, self.download_link),
             recipients=((self.matter.lawyer.get_full_name(), self.matter.lawyer.email), ))
         m.process()
+
+        # record the event
         self.matter.actions.matter_export_finished(user=self.matter.lawyer)
 
     def process(self):
@@ -83,11 +94,8 @@ class MatterExportService(object):
         self.ensure_needed_files_list()
         self.ensure_files_exist_locally()
 
-        # put everything needed to find the file in AWS into the token
-        token_data = self.token_data
-
         # zip everything in self.needed_files
-        zip_filename = self.get_zip_filename(token_data)
+        zip_filename = self.get_zip_filename(self.token_data)
         zip_file_path = self.create_zip(zip_filename)
 
         # upload to AWS as zip_filename
@@ -96,5 +104,4 @@ class MatterExportService(object):
             result = s3boto_storage.save(zip_filename, myfile)
 
         # send token-link via email
-        token = signing.dumps(token_data, salt=settings.SECRET_KEY)
-        self.send_email(token)
+        self.send_email(self.token)
