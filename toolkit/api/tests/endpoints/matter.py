@@ -464,8 +464,8 @@ class MatterExportTest(BaseEndpointTest):
         self.revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item,
                                   uploaded_by=self.lawyer, name='test file')
         with open(os.path.join(settings.SITE_ROOT, 'toolkit', 'casper', 'test.pdf'), 'r') as filename:
-           self.revision.executed_file.save('test.pdf', File(filename))
-           self.revision.save(update_fields=['executed_file'])
+            self.revision.executed_file.save('test.pdf', File(filename))
+            self.revision.save(update_fields=['executed_file'])
 
     def test_export_matter_post(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -481,7 +481,7 @@ class MatterExportTest(BaseEndpointTest):
         outbox = mail.outbox
         self.assertEqual(len(outbox), 1)
         email = outbox[0]
-        self.assertEqual(email.subject, u'Export has finished')
+        self.assertEqual(email.subject, u'Your Matter export has completed')
         self.assertEqual(email.recipients(), [u'test+lawyer@lawpal.com'])
 
     def test_exported_matter_download(self):
