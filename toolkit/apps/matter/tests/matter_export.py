@@ -49,7 +49,6 @@ class MatterExportTest(BaseScenarios, TestCase):
         self.service = self.subject(matter=self.matter)
 
     def test_needed_revisions(self):
-        self.service.ensure_needed_files_list()
         self.assertItemsEqual(self.service.needed_revisions, [self.revision])
 
     def test_token_data(self):
