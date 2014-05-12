@@ -39,7 +39,8 @@ class MatterExportTest(BaseScenarios, TestCase):
 
         self.item = mommy.make('item.Item', matter=self.workspace, name='Test Item #1')
 
-        default_storage.save('testing/casper/test.pdf', ContentFile(os.path.join(settings.SITE_ROOT, 'toolkit', 'casper', 'test.pdf')))
+        default_storage.save('testing/casper/test.pdf',
+                             ContentFile(os.path.join(settings.SITE_ROOT, 'toolkit', 'casper', 'test.pdf')))
 
         self.revision = mommy.make('attachment.Revision',
                                    item=self.item,
@@ -52,7 +53,9 @@ class MatterExportTest(BaseScenarios, TestCase):
         self.assertItemsEqual(self.service.needed_revisions, [self.revision])
 
     def test_token_data(self):
-        self.assertEqual(self.service.token_data, {'matter_slug': u'lawpal-test', 'user_pk': 2, 'created_at': self.service.created_at})
+        self.assertEqual(self.service.token_data, {'matter_slug': u'lawpal-test',
+                                                   'user_pk': 2,
+                                                   'created_at': self.service.created_at})
 
     def test_token(self):
         encrypted_token = signing.dumps(self.service.token_data, salt=settings.SECRET_KEY)
