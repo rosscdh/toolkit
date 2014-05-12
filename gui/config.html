@@ -21,6 +21,23 @@
         'staticPath': '<!-- @echo staticBase -->ng/bower_components/FileAPI/'
     }
   </script>
+  <script language="javascript" data-remove="exclude">
+    var protocol = (
+        ("https:" == document.location.protocol) 
+        ? "https" 
+        : "http"
+    );
+
+      var fileref=document.createElement('script');
+      fileref.setAttribute("type","text/javascript");
+      if(protocol==="http") {
+        fileref.setAttribute("src", 'http://js.pusher.com/2.2/pusher.min.js');
+      } else {
+        fileref.setAttribute("src", 'https://d3dy5gmtp8yhk7.cloudfront.net/2.2/pusher.min.js');
+      }
+      document.getElementsByTagName("head")[0].appendChild(fileref);
+
+  </script>
 </head>
 <body>
   <!-- Livereload script for development only (stripped during dist build) -->
@@ -72,6 +89,7 @@
   <script src="<!-- @echo staticPath -->service/search.js"></script>
   <script src="<!-- @echo staticPath -->service/activity.js"></script>
   <script src="<!-- @echo staticPath -->service/comment.js"></script>
+  <script src="<!-- @echo staticPath -->service/pusher.js"></script>
   <!-- Add New Service JS Above -->
 
   <!-- Directive JS -->
@@ -179,7 +197,7 @@
       </form>
       {% verbatim %}
       <ul class="nav navbar-nav navbar-right hidden-xs">
-        <li class="notifications"><a href="/notifications/" ng-class="matter.selected.current_user.has_notifications ? 'unread' : ''"><!-- <span ng-class="matter.selected.current_user.has_notifications ? 'fui-radio-checked animated pulse' : 'fui-radio-unchecked'"></span> --><span class="pe-7s-bell"></span></a></li>
+        <li class="notifications"><a href="/notifications/" ng-class="matter.selected.current_user.has_notifications ? 'unread' : ''"><!-- <span ng-class="matter.selected.current_user.has_notifications ? 'fui-radio-checked animated pulse' : 'fui-radio-unchecked'"></span> --><span ng-class="matter.selected.current_user.has_notifications ? 'swing' : ''" class="pe-7s-bell animated-slow"></span></a></li>
 
         <li><a href="/requests/">Requests</a></li>
         <li class="hidden-xs hidden-sm"><a href="#" class="intercom">Support</a></li>
@@ -209,6 +227,7 @@
     angular.module('toolkit-gui').constant('DEBUG_MODE', <!-- @echo DEBUG_MODE -->);
     angular.module('toolkit-gui').constant('SENTRY_PUBLIC_DSN', '<!-- @echo SENTRY_PUBLIC_DSN -->' );
     angular.module('toolkit-gui').constant('INTERCOM_APP_ID', '<!-- @echo INTERCOM_APP_ID -->' );
+    angular.module('toolkit-gui').constant('pusher_api_key', '<!-- @echo PUSHER_API_KEY -->' );
   </script>
 </body>
 </html>
