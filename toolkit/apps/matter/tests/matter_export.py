@@ -19,6 +19,10 @@ import urllib
 import os
 
 
+SOURCE_TEST_DOCUMENT_PATH = os.path.join(settings.SITE_ROOT, 'toolkit', 'casper', 'test.pdf')
+MEDIA_ROOT_FOR_TEST_FILE_PATH = os.path.join(settings.MEDIA_ROOT, 'testing', 'casper', 'test.pdf')
+
+
 def _ensure_file_exists_on_s3_for_testing():
     """
     Ensure that our test file exists on s3, which it must in order for this export
@@ -26,7 +30,8 @@ def _ensure_file_exists_on_s3_for_testing():
     """
     s3_storage = S3BotoStorage()
     if not s3_storage.exists('testing/casper/test.pdf'):
-        with open(os.path.join(settings.SITE_ROOT, 'toolkit', 'casper', 'test.pdf'), 'r') as filename:
+        # save it there from our local source if we dont have it there
+        with open(SOURCE_TEST_DOCUMENT_PATH, 'r') as filename:
             s3_storage.save('testing/casper/test.pdf', filename)
     return s3_storage.exists('testing/casper/test.pdf')
 
@@ -37,10 +42,14 @@ class MatterExportTest(BaseScenarios, TestCase):
     def setUp(self):
         self.basic_workspace()
 
+        # remove the test file and dir
+        if os.path.isdir(os.path.join(settings.MEDIA_ROOT, 'testing', 'casper')):
+            shutil.rmtree(os.path.join(settings.MEDIA_ROOT, 'testing', 'casper'))
+
         self.item = mommy.make('item.Item', matter=self.workspace, name='Test Item #1')
 
         default_storage.save('testing/casper/test.pdf',
-                             ContentFile(os.path.join(settings.SITE_ROOT, 'toolkit', 'casper', 'test.pdf')))
+                             ContentFile(SOURCE_TEST_DOCUMENT_PATH))
 
         self.revision = mommy.make('attachment.Revision',
                                    item=self.item,
@@ -53,7 +62,7 @@ class MatterExportTest(BaseScenarios, TestCase):
 
     def test_token_data(self):
         self.assertEqual(self.service.token_data, {'matter_slug': u'lawpal-test',
-                                                   'user_pk': 2,
+                                                   'user_pk': self.lawyer.pk,
                                                    'created_at': self.service.created_at})
 
     def test_token(self):
@@ -76,21 +85,24 @@ class MatterExportTest(BaseScenarios, TestCase):
 
         # delete the test file if it exists locally, as we want to download it from
         # s3 for this test
-        if os.path.exists(os.path.join(settings.MEDIA_ROOT, 'testing', 'casper', 'test.pdf')):
-            os.remove(os.path.join(settings.MEDIA_ROOT, 'testing', 'casper', 'test.pdf'))
-        self.assertTrue(os.path.exists(os.path.join(settings.MEDIA_ROOT, 'testing', 'casper', 'test.pdf')) is False)
+        if os.path.exists(MEDIA_ROOT_FOR_TEST_FILE_PATH):
+            # delete the local version of this file for this test
+            os.remove(MEDIA_ROOT_FOR_TEST_FILE_PATH)
+        # test that its deleted
+        self.assertTrue(os.path.exists(MEDIA_ROOT_FOR_TEST_FILE_PATH) is False)
 
         # ensure our test file exists on s3 and not locally
         self.assertTrue(_ensure_file_exists_on_s3_for_testing())
 
         self.service.ensure_files_exist_locally()  # call the service
         # test that the service downloaded the file locally
-        self.assertTrue(os.path.exists(os.path.join(settings.MEDIA_ROOT, 'testing', 'casper', 'test.pdf')) is True)
+        self.assertTrue(os.path.exists(MEDIA_ROOT_FOR_TEST_FILE_PATH) is True)
+
         # remove the test file and dir
         shutil.rmtree(os.path.join(settings.MEDIA_ROOT, 'testing', 'casper'))
 
     def test_get_zip_filename(self):
-        self.assertEqual(self.service.get_zip_filename(token_data=self.service.token_data), u'exported_documents/lawpal-test_2_%s.zip' % self.service.created_at)
+        self.assertEqual(self.service.get_zip_filename(token_data=self.service.token_data), u'exported_documents/lawpal-test_%s_%s.zip' % (self.lawyer.pk, self.service.created_at))
 
     def test_create_zip(self):
         zip_result = self.service.create_zip(filename=self.service.get_zip_filename(token_data=self.service.token_data))
