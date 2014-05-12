@@ -18,6 +18,30 @@ import os
 import logging
 logger = logging.getLogger('django.request')
 
+# should be as short as possible, to allow for the upload_to path as well as extension as well as other addons
+MAX_LENGTH_FILENAME = 50
+# list of extensions to accept
+EXT_WHITELIST = ('.pdf', '.docx', '.doc', '.ppt', '.pptx', '.xls', '.xlsx')
+# need to get a list of mimetypes for teh above
+
+
+def _valid_filename_length(filename):
+    """
+    1. ensure length is max 85 (to account for 100 char limit in django filename fields)
+    """
+
+    original_filename = filename
+    base_filename, ext = os.path.splitext(original_filename)
+    ext = ext.lower()
+
+    if ext not in EXT_WHITELIST:
+        raise ValidationError("Invalid filetype, is: %s should be in: %s" % (ext, self.ext_whitelist))
+
+    if len(base_filename) > MAX_LENGTH_FILENAME:  # allow for 20 aspects to the name in addition ie. v1-etc
+        base_filename = base_filename[0:MAX_LENGTH_FILENAME]
+
+    return '%s%s' % (base_filename, ext)
+
 
 class FileHasNoNameException(Exception):
     """
@@ -42,7 +66,7 @@ class LimitedExtensionMixin(object):
     ...
     ValidationError: [u'Not allowed filetype!']
     """
-    ext_whitelist = ('.pdf', '.docx', '.doc', '.ppt', '.pptx', '.xls', '.xlsx')
+    ext_whitelist = EXT_WHITELIST
 
     def __init__(self, *args, **kwargs):
         ext_whitelist = kwargs.pop("ext_whitelist", self.ext_whitelist)
@@ -105,7 +129,7 @@ class HyperlinkedAutoDownloadFileField(LimitedExtensionMixin, serializers.URLFie
                 request = self.context.get('request', {})
                 url = request.DATA.get('executed_file')
 
-                original_filename = request.DATA.get('name')
+                original_filename = _valid_filename_length(request.DATA.get('name'))
 
                 #
                 # NB! we pass this into download which then brings the filedown and names it in the precribed
@@ -220,6 +244,17 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
                             self.base_fields['executed_file'] = FileFieldAsUrlField(allow_empty_file=True, required=False)
 
         super(RevisionSerializer, self).__init__(*args, **kwargs)
+
+    def validate_executed_file(self, attrs, source):
+        """
+        Ensure is valid length filename 100 is the max length
+        """
+        executed_file = attrs.get(source)
+        if executed_file is not None and type(executed_file) not in [str, unicode]:
+            executed_file.name = _valid_filename_length(executed_file.name)
+            attrs[source] = executed_file
+
+        return attrs
 
     def get_custom_api_url(self, obj):
         return ABSOLUTE_BASE_URL(reverse('matter_item_specific_revision',
