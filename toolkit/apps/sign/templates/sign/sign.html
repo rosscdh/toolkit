@@ -1,21 +1,26 @@
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<script src="//s3.amazonaws.com/cdn.hellofax.com/js/embedded.js"></script>
-<script type="text/javascript">
-$(document).ready(function () {
-    'use strict';
-    HelloSign.init('{{ GLOBALS.HELLOSIGN_CLIENT_ID }}');
-    HelloSign.open({
-        url: '{{ sign_url }}',
-        allowCancel: false,
-        {% if DEBUG %}
-        debug: true,
-        skipDomainVerification: true,
-        {% endif %}
-        messageListener: function(eventData) {          // (optional) Called whenever the iFrame is messaging your page
-            if (eventData.event == HelloSign.EVENT_SIGNED) {
-                document.location.reload();
-            };
-        }
+{#% if can_sign %#}
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="//s3.amazonaws.com/cdn.hellofax.com/js/embedded.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function () {
+        'use strict';
+        HelloSign.init('{{ GLOBALS.HELLOSIGN_CLIENT_ID }}');
+        HelloSign.open({
+            url: '{{ sign_url }}',
+            allowCancel: false,
+            {% if DEBUG %}
+            debug: true,
+            skipDomainVerification: true,
+            {% endif %}
+            messageListener: function(eventData) {          // (optional) Called whenever the iFrame is messaging your page
+                if (eventData.event == HelloSign.EVENT_SIGNED) {
+                    document.location.reload();
+                };
+            }
+        });
     });
-});
-</script>
+    </script>
+{#% else %#}
+<p>Sorry, you can not sign this document.</p>
+<p>You need to be one of the invited signers.</p>
+{#% endif %#}

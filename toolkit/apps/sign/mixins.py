@@ -97,7 +97,6 @@ class HelloSignOverridesMixin(object):
             return hs_request_object
 
         else:
-
             #
             # the claim has been lodged
             #
