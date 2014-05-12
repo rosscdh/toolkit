@@ -61,7 +61,7 @@ angular.module('toolkit-gui').factory('userService',[
 
 				if(Pusher) {
 					// Send notification through rootscope
-					PusherService.subscribe( userData.username, 'notification', function(msg) {
+					PusherService.subscribe( userData.username, 'notifications.new', function(msg) {
 						var base64string, snd;
 						// HTML5 audio
 						if( Audio ) {
