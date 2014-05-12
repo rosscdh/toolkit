@@ -1343,8 +1343,9 @@ angular.module('toolkit-gui')
 			});
 
 			modalInstance.result.then(
-				function ok(/*result*/) {
-
+				function ok(obj) {
+                    $log.debug(obj);
+                    revision.signing = obj;
 				},
 				function cancel() {
 					// do nothing
