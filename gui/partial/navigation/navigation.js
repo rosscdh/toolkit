@@ -16,10 +16,11 @@ angular.module('toolkit-gui')
 	'$location',
 	'$modal',
     '$log',
+    '$timeout',
     'toaster',
 	'userService',
 	'matterService',
-	function( $scope, $routeParams, smartRoutes, $location, $modal, $log, toaster, userService, matterService ){
+	function( $scope, $routeParams, smartRoutes, $location, $modal, $log, $timeout, toaster, userService, matterService ){
 		'use strict';
 		var routeParams = smartRoutes.params(); 
 		/**
@@ -119,6 +120,24 @@ angular.module('toolkit-gui')
 		$scope.$on('$routeChangeSuccess', function updateNavigationID() {
 			var routeParams = smartRoutes.params(); 
 			$scope.data.id = routeParams.id;
+		});
+
+		/**
+		 * recievePusherNotification - recieves broadcast message
+		 * @param  {Event} evt     browser triggered event
+		 * @param  {Object} message JSON object from server
+		 *
+		 * @private
+		 * @method				recievePusherNotification
+		 * @memberof			NavigationCtrl
+		 */
+		$scope.$on('notification', function recievePusherNotification( evt, message ){
+			// Remove notification styles
+			$scope.matter.selected.current_user.has_notifications = false;
+			// Re-apply style in a few moments so that the css animation runs again
+			$timeout(function(){
+				$scope.matter.selected.current_user.has_notifications = true;
+			},100);
 		});
 	}
 ]);
