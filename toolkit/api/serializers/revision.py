@@ -241,9 +241,10 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
         """
         Ensure is valid length filename 100 is the max length
         """
-        executed_file = attrs.get(source)
-        executed_file.name = _valid_filename_length(executed_file.name)
-        attrs[source] = executed_file
+        if executed_file is not none:
+            executed_file = attrs.get(source)
+            executed_file.name = _valid_filename_length(executed_file.name)
+            attrs[source] = executed_file
 
         return attrs
 
