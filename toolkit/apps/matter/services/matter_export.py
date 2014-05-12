@@ -31,6 +31,8 @@ class MatterExportService(object):
         self.needed_files = []
         self.created_at = datetime.datetime.now().isoformat()
         self.download_link = None
+        # collect the needed revisions and put them in self.needed_files; make sure they exist on local disk
+        self.ensure_needed_files_list()
 
     @property
     def token_data(self):
@@ -54,6 +56,7 @@ class MatterExportService(object):
     def ensure_files_exist_locally(self):
         # make sure the files exist locally
         for needed_revision in self.needed_revisions:
+            needed_revision.ensure_file()
             # download latest_revision
             self.needed_files.append({
                 'file': needed_revision.get_document(),
@@ -90,8 +93,6 @@ class MatterExportService(object):
         self.matter.actions.matter_export_finished(user=self.matter.lawyer)
 
     def process(self):
-        # collect the needed revisions and put them in self.needed_files; make sure they exist on local disk
-        self.ensure_needed_files_list()
         self.ensure_files_exist_locally()
 
         # zip everything in self.needed_files
