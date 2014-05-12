@@ -5,7 +5,7 @@ from .services import PusherPublisherService
 
 
 @app.task
-def youve_got_notifications(user_username, event, *args, **kwargs):
-    pusher = PusherPublisherService(channel=user_username,
+def youve_got_notifications(username, event, *args, **kwargs):
+    pusher = PusherPublisherService(channel=username,
                                     event=event)
     pusher.process(**kwargs)
