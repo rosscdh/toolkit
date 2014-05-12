@@ -11,6 +11,7 @@ from toolkit.core.item.models import Item
 
 from . import BaseEndpointTest
 from ...serializers import ItemSerializer, UserSerializer, SimpleUserSerializer
+from ...serializers.revision import MAX_LENGTH_FILENAME
 
 from model_mommy import mommy
 
@@ -23,6 +24,7 @@ import urllib
 TEST_INVALID_UPLOAD_IMAGE_PATH = os.path.join(os.path.dirname(__file__), 'data', 'test-image.png')
 # Pdfs ARE valid filetypes
 TEST_PDF_PATH = os.path.join(settings.SITE_ROOT, 'toolkit', 'casper', 'test.pdf')
+TEST_LONG_FILENAME_PATH = os.path.join(settings.SITE_ROOT, 'toolkit', 'casper', 'test-long-filename-@-(LawPal)-#1236202-v1-test-long-filename-@-(LawPal)-#1236202-v1-test-long-filename-@-(LawPal)-#1236202-v1-test-long-filename-@-(LawPal)-#1236202-v1-test-long-filename-@-(LawPal)-#1236202-v1-.doc')
 
 
 class ItemRevisionTest(BaseEndpointTest):
@@ -220,6 +222,7 @@ class ItemSubRevision3Test(ItemSubRevision2Test):
 class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
                                                    LiveServerTestCase):
     FILE_TO_TEST_UPLOAD_WITH = TEST_PDF_PATH
+    TEST_LONG_FILENAME_PATH = TEST_LONG_FILENAME_PATH
 
     @property
     def endpoint(self):
@@ -339,6 +342,37 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
 
         self.item = self.item.__class__.objects.get(pk=self.item.pk)  # reset
         self.assertEqual(self.item.review_percentage_complete, None)  # test review_percentage_complete is reset
+
+    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
+    def test_post_with_LONG_filename(self):
+        """
+        ensure we can upload an actual file to the endpoint
+        """
+        self.assertEqual(MAX_LENGTH_FILENAME, 50)  # should be as short as possible to allow for, upload_to path as well as extension and other attribs
+
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        with open(self.TEST_LONG_FILENAME_PATH) as file_being_posted:
+            data = {
+                'executed_file': file_being_posted,
+            }
+            #
+            # NB. uploading files must be a patch
+            #
+            self.assertEqual(self.item.revision_set.all().count(), 0)
+            #
+            # @BUSINESSRULE if you are sending a binary file that needs to be download
+            # ie. plain post then the CONTENT_TYPE must be MULTIPART_CONTENT and
+            # the field "executed_file": a binary file object
+            #
+            resp = self.client.post(self.endpoint, data, content_type=MULTIPART_CONTENT)
+        resp_json = json.loads(resp.content)
+
+        self.assertEqual(resp.status_code, 201)  # created
+        self.assertEqual(resp_json.get('slug'), 'v1')
+        self.assertEqual(resp_json.get('name'), u'test-long-filename-@-(LawPal)-#1236202-v1-test-lon.doc')
+        self.assertEqual(resp_json.get('executed_file'), u'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test-long-filename-lawpal-1236202-v1-test-lon.doc' % (self.item.pk, self.lawyer.username))
+        self.assertEqual(self.item.revision_set.all().count(), 1)
 
     @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_post_with_URL_executed_file_and_stream(self):
