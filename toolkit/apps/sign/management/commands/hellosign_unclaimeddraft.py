@@ -29,14 +29,14 @@ class Command(BaseCommand):
 
         for e in self.records:
 
-            #sd = e.primary_signdocument
-            # #import pdb;pdb.set_trace()
-            #resp = sd.send_for_signing(requester_email_address='ross@lawpal.com')
+            sd = e.primary_signdocument
+            resp = sd.send_for_signing(signature_request_id=sd.signature_request_id)
             #resp = sd.create_unclaimed_draft(requester_email_address='ross@lawpal.com')
-            s =  HelloSignEmbeddedDocumentSigningUrl(signature_id='cfba65107b0532430bb4ec0960336edd3c6decf8')
-            resp = s.detail(signature_request_id='cfba65107b0532430bb4ec0960336edd3c6decf8', auth=auth)
             import pdb;pdb.set_trace()
-            print resp
+            # s =  HelloSignEmbeddedDocumentSigningUrl(signature_id='cfba65107b0532430bb4ec0960336edd3c6decf8')
+            # resp = s.detail(signature_request_id='cfba65107b0532430bb4ec0960336edd3c6decf8', auth=auth)
+            # import pdb;pdb.set_trace()
+            # print resp
 
             # s = HelloSignUnclaimedDraftDocumentSignature()
             # resp = s.detail(signature_request_id='ad1dfe0f9a666f5052ef201d667efd79bfa515ec', auth=("founders@lawpal.com", "test2007"))
