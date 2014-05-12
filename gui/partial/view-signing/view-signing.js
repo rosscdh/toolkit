@@ -11,15 +11,15 @@ angular.module('toolkit-gui')
 	'$scope',
 	'$modalInstance',
 	'toaster',
-	'matterItemService',
+	'baseService',
 	'matter',
 	'checklistItem',
 	'revision',
 	'$log',
-	function($scope, $modalInstance, toaster, matterItemService, matter, checklistItem, revision, $log){
+	function($scope, $modalInstance, toaster, baseService, matter, checklistItem, revision, $log){
 
 		/**
-		 * WIP
+		 * Close modal window
 		 *
 		 * @name				ok
 		 * 
@@ -28,20 +28,16 @@ angular.module('toolkit-gui')
 		 * @memberof			ViewReviewCtrl
 		 */
 		$scope.ok = function () {
-			$modalInstance.close();
-		};
-
-		/**
-		 * WIP
-		 *
-		 * @name				cancel
-		 * 
-		 * @private
-		 * @method				cancel
-		 * @memberof			ViewReviewCtrl
-		 */
-		$scope.cancel = function () {
-			$modalInstance.dismiss('cancel');
+            baseService.loadObjectByUrl(revision.signing.url).then(
+                function success(obj) {
+                    $modalInstance.close(obj);
+                },
+                function error(/*err*/) {
+                    if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to reload the signing request.') {
+                        toaster.pop('error', 'Error!', 'Unable to reload the signing request.', 5000);
+                    }
+                }
+            );
 		};
 
         /**
