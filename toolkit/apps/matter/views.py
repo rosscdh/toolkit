@@ -42,8 +42,8 @@ class MatterDownloadExportView(DetailView):
         self.object = self.get_object()
 
         created_at = dateutil.parser.parse(kwargs.get('created_at'))
-        
-        if request.user.pk == kwargs.get('user_pk'):
+
+        if request.user.pk != kwargs.get('user_pk'):
             logger.critical("%s tried accessing %s (%s) but is not allowed." % (request.user, self.object, created_at))
             return HttpResponseForbidden('You are not allowed to access this file.')
 
