@@ -703,7 +703,7 @@ angular.module('toolkit-gui')
 					item.previousRevisions = null;
 					$scope.data.showPreviousRevisions = false;
                     $scope.calculateReviewPercentageComplete(item);
-                    toaster.pop('success', 'Success!', 'Revision added successfully', 3000);
+                    toaster.pop('success', 'Success!', 'Document added successfully', 3000);
 				},
 				function error(/*err*/) {
 					$scope.data.uploading = false;
@@ -725,6 +725,7 @@ angular.module('toolkit-gui')
 
 			if( user.user_class === 'lawyer' ) {
 				item.uploading = true;
+				$scope.data.uploading = true;
 
 				matterItemService.uploadRevisionFile( matterSlug, itemSlug, $files ).then(
 					function success( revision ) {
@@ -1493,6 +1494,9 @@ angular.module('toolkit-gui')
 			}
 		};
 
+		$scope.cancelEvent = function(evt) {
+			evt.stopPropagation();
+		};
 
 		/**
 		 * UI.sortable options for checklist items
@@ -1505,7 +1509,8 @@ angular.module('toolkit-gui')
 			'start': function() { $scope.data.dragging=true; $scope.$apply();},
 			'connectWith': '.group',
 			'dropOnEmpty': true,
-			'axis': 'y'
+			'axis': 'y',
+			'distance': 15
 		};
 
 		/**
@@ -1522,8 +1527,14 @@ angular.module('toolkit-gui')
 			},
 			'stop':  recalculateCategories, /* Fires once the drag and drop event has finished */
 			'axis': 'y',
-			'distance': 15
+			'distance': 15,
+			'handle': 'h5'
 		};
+
+		var width = $( document ).width();
+		if( width<=1200 ) {
+			$scope.checklistItemSortableOptions.handle = '.fui-list-columned';
+		}
 
 
 		/**
