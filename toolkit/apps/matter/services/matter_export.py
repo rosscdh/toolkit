@@ -50,7 +50,7 @@ class MatterExportService(object):
     def ensure_needed_files_list(self):
         # collects all latest_revisions with the correct state
         for item in self.matter.item_set.all():
-            if item.latest_revision:
+            if item.latest_revision and item.latest_revision not in self.needed_revisions:
                 self.needed_revisions.append(item.latest_revision)
 
     def ensure_files_exist_locally(self):
