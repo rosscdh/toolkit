@@ -30,5 +30,5 @@ class Command(BaseCommand):
         if username:
             youve_got_notifications(
                      username=username,
-                     event='notification',
+                     event='notifications.new',
                      detail='You have %d new notifications' % 10000000)
