@@ -106,7 +106,7 @@ class MatterExportTest(BaseScenarios, TestCase):
 
     def test_create_zip(self):
         zip_result = self.service.create_zip(filename=self.service.get_zip_filename(token_data=self.service.token_data))
-        self.assertEqual(zip_result, u'%s/exported_documents/lawpal-test_2_%s.zip' % (settings.MEDIA_ROOT, self.service.created_at,))
+        self.assertEqual(zip_result, u'%s/exported_documents/lawpal-test_%s_%s.zip' % (self.lawyer.pk, settings.MEDIA_ROOT, self.service.created_at,))
         self.assertTrue(os.path.isfile(zip_result), True)
 
     def test_send_email(self):
