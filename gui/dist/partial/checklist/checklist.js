@@ -703,7 +703,7 @@ angular.module('toolkit-gui')
 					item.previousRevisions = null;
 					$scope.data.showPreviousRevisions = false;
                     $scope.calculateReviewPercentageComplete(item);
-                    toaster.pop('success', 'Success!', 'Revision added successfully', 3000);
+                    toaster.pop('success', 'Success!', 'Document added successfully', 3000);
 				},
 				function error(/*err*/) {
 					$scope.data.uploading = false;
