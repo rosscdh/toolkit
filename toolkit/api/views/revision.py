@@ -181,9 +181,10 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
 
         if obj.name is None:
             executed_file = self.request.FILES.get('executed_file')
+
             if executed_file is not None:
                 #
-                # Set the object name to the filename if no obj.name exists
+                # Set the object name to the filename
                 #
                 obj.name = executed_file.name
 

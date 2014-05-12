@@ -3,7 +3,7 @@ import logging
 
 from django.core.files.storage import default_storage
 
-from toolkit.core import _managed_S3BotoStorage
+from storages.backends.s3boto import S3BotoStorage
 
 
 logger = logging.getLogger('django.request')
@@ -53,12 +53,13 @@ class FileExistsLocallyMixin(object):
             return default_storage.open(self.get_document()).read()
         return False
 
-    def download_file(self, file_name):
+    def download_file(self, file_name, storage=None):
         """
         Its necessary to download the file from s3 locally as we have restrictive s3
         permissions (adds time but necessary for security)
         """
-        b = _managed_S3BotoStorage()
+        # force use of s3Boto here and not the managed boto as this must always come from s3 and never locally
+        b = S3BotoStorage()
 
         if b.exists(file_name) is False:
             msg = 'file does not exist on s3: %s' % file_name

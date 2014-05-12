@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.db import models
-from django.db import IntegrityError
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -9,6 +8,9 @@ from .managers import CustomUserManager
 
 from jsonfield import JSONField
 from sorl.thumbnail.images import ImageFile
+
+import logging
+logger = logging.getLogger('django.request')
 
 
 class UserProfile(EmailIsValidatedMixin, models.Model):
@@ -108,8 +110,10 @@ def _get_or_create_user_profile(user):
     try:
         profile, is_new = UserProfile.objects.get_or_create(user=user)  # added like this so django noobs can see the result of get_or_create
         return (profile, is_new,)
-    except IntegrityError as e:
+
+    except Exception as e:
         logger.critical('transaction.atomic() integrity error: %s' % e)
+
     return (None, None,)
 
 
