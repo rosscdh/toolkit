@@ -1,8 +1,10 @@
-<div class="comment" ng-show="activity.data.comment">
-    <strong>{{ actor_name }}</strong> commented on <a href="{{ action_object_url }}">{{ action_object_name }}</a> <span
-        class="since">{{ timesince }}</span>
+<div class="comment">
+    <div class="ng-head">
+        <strong>{{ actor_name }}</strong> commented on <a href="{{ action_object_url }}">{{ action_object_name }}</a>
+        <span class="since">{{ timesince }}</span>
+    </div>
     <blockquote>
         <span class="fui-chat"></span>
-        <div>{{ comment }}</div>
+        <div class="ng-comment">{{ comment }}</div>
     </blockquote>
 </div>

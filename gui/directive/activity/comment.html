@@ -1,0 +1,16 @@
+<div class="comment">
+    <div ng-bind-html="head"></div>
+    <blockquote>
+        <span class="fui-chat"></span>
+        <div ng-click="startEditingComment()" ng-hide="show_edit_comment" ng-bind-html="comment | newlines"></div>
+        <div class="comment-description" ng-show="show_edit_comment">
+            <textarea class="form-control" msd-elastic
+                      ng-model="edit_comment" focus-on="event_edit_comment"></textarea>
+            <a href="javascript:;" class="btn btn-primary btn-xs"
+               ng-click="comment=edit_comment;saveComment();show_edit_comment=false;">Save comment</a>
+            <a href="javascript:;" class="btn btn-inverse btn-xs item-description-cancel"
+               ng-click="show_edit_comment=false;edit_comment=false;">Cancel</a>
+        </div>
+    </blockquote>
+    <a href="javascript:;" ng-click="deleteComment()" ng-show="deleteCommentIsEnabled()">Delete</a>
+</div>

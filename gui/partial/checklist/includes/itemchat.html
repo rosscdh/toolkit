@@ -30,8 +30,10 @@
         <span ng-hide="activity.data.comment" ng-bind-html="activity.event"></span>
     </li>-->
     <li ng-repeat="activity in data.activitystream" ng-class="{ 'comment-faded': activity.status=='awaiting'}">
-        <div ng-bind-html="activity.event | unsafe"></div>
-        <span ng-show="deleteCommentIsEnabled(activity)"><a href="javascript:;" ng-click="deleteComment(activity)">Delete</a></span>
+        <!--<div ng-bind-html="activity.event | unsafe"></div>
+        <span ng-show="deleteCommentIsEnabled(activity)"><a href="javascript:;" ng-click="deleteComment(activity)">Delete</a></span>-->
+        <div activity ng-model="activity" matter-slug="data.slug" item-slug="data.selectedItem.slug"
+                      user="data.usdata.current" activity-stream="data.activitystream"></div>
     </li>
     <li ng-show="!data.activitystream.length"><small class="lead text-muted">Discussion and activity will appear here.</small></li>
 </ul>
