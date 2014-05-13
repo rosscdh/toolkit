@@ -4,6 +4,7 @@ from django.core import signing
 from django.conf import settings
 from django.test import TestCase
 from django.core.files.base import ContentFile
+from django.template.defaultfilters import slugify
 
 from django.core.files.storage import default_storage
 from storages.backends.s3boto import S3BotoStorage
@@ -55,7 +56,7 @@ class MatterExportTest(BaseScenarios, TestCase):
                                    item=self.item,
                                    executed_file='testing/casper/test.pdf',
                                    uploaded_by=self.lawyer)
-        self.service = self.subject(matter=self.matter)
+        self.service = self.subject(matter=self.matter, requested_by=self.lawyer)
 
     def test_needed_revisions(self):
         self.assertItemsEqual(self.service.needed_revisions, [self.revision])
@@ -63,7 +64,7 @@ class MatterExportTest(BaseScenarios, TestCase):
     def test_token_data(self):
         self.assertEqual(self.service.token_data, {'matter_slug': u'lawpal-test',
                                                    'user_pk': self.lawyer.pk,
-                                                   'created_at': self.service.created_at})
+                                                   'created_at': self.service.created_at.isoformat()})
 
     def test_token(self):
         encrypted_token = signing.dumps(self.service.token_data, salt=settings.SECRET_KEY)
@@ -73,7 +74,7 @@ class MatterExportTest(BaseScenarios, TestCase):
 
     def test_token_unique(self):
         # compare against a new token from a new matterexport service
-        self.assertTrue(self.service.token != self.subject(matter=self.matter).token)
+        self.assertTrue(self.service.token != self.subject(matter=self.matter, requested_by=self.user).token)
 
     def test_ensure_files_exist_locally(self):
         """
@@ -102,11 +103,12 @@ class MatterExportTest(BaseScenarios, TestCase):
         shutil.rmtree(os.path.join(settings.MEDIA_ROOT, 'testing', 'casper'))
 
     def test_get_zip_filename(self):
-        self.assertEqual(self.service.get_zip_filename(token_data=self.service.token_data), u'exported_documents/lawpal-test_%s_%s.zip' % (self.lawyer.pk, self.service.created_at))
+        self.assertEqual(self.service.get_zip_filename(token_data=self.service.token_data), u'exported_documents/lawpal-test_%s_%s.zip' % (self.lawyer.pk, slugify(self.service.created_at.isoformat())))
 
     def test_create_zip(self):
         zip_result = self.service.create_zip(filename=self.service.get_zip_filename(token_data=self.service.token_data))
-        self.assertEqual(zip_result, u'%s/exported_documents/lawpal-test_%s_%s.zip' % (self.lawyer.pk, settings.MEDIA_ROOT, self.service.created_at,))
+
+        self.assertEqual(zip_result, u'%s/exported_documents/lawpal-test_%s_%s.zip' % (settings.MEDIA_ROOT, self.lawyer.pk, slugify(self.service.created_at.isoformat()),))
         self.assertTrue(os.path.isfile(zip_result), True)
 
     def test_send_email(self):
