@@ -9,7 +9,6 @@ from rest_framework.response import Response
 from toolkit.core.attachment.models import Revision
 
 from toolkit.apps.workspace.models import Workspace
-from toolkit.apps.matter.tasks import _export_matter
 
 from .mixins import (MatterMixin,
                      _MetaJSONRendererMixin,
@@ -24,8 +23,6 @@ from ..serializers.matter import LiteMatterSerializer
 from toolkit.apps.notification.template_loaders import ACTIVITY_TEMPLATES
 
 import logging
-from toolkit.tasks import run_task
-
 logger = logging.getLogger('django.request')
 
 
@@ -109,10 +106,7 @@ Custom Api Endpoints
 class MatterExportView(generics.CreateAPIView, MatterMixin):
     def create(self, request, *args, **kwargs):
         try:
-            # start the process
-            run_task(_export_matter, matter=self.matter, requested_by=request.user)
-            # record the event
-            self.matter.actions.started_matter_export(user=request.user)
+            self.matter.export_matter(requested_by=request.user)
 
             return Response(status=http_status.HTTP_200_OK, data={
                 'detail': 'Your export is being generated. Once complete, you will recieve an email with the next steps.'})
