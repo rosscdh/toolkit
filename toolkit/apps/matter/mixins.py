@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
+from django.utils.timezone import utc
 from dateutil.parser import parse as dateutil_parse
+
+
+def _ensure_utc(date):
+    return dateutil_parse(date).replace(tzinfo=utc)  # ensure is utc
 
 
 class MatterExportMixin(object):
@@ -18,13 +23,13 @@ class MatterExportMixin(object):
             'download_url': None,
         })
         if type(data.get('last_exported')) in [str, unicode]:
-            data['last_exported'] = dateutil_parse(data['last_exported'])
+            data['last_exported'] = _ensure_utc(data['last_exported'])
 
         if type(data.get('last_export_requested')) in [str, unicode]:
-            data['last_export_requested'] = dateutil_parse(data['last_export_requested'])
+            data['last_export_requested'] = _ensure_utc(data['last_export_requested'])
 
         if type(data.get('download_valid_until')) in [str, unicode]:
-            data['download_valid_until'] = dateutil_parse(data['download_valid_until'])
+            data['download_valid_until'] = _ensure_utc(data['download_valid_until'])
 
         return data
 
