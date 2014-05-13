@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.core.urlresolvers import reverse
 from django.template import Context
 
 from actstream.models import Action
@@ -13,11 +14,12 @@ from toolkit.apps.notification.template_loaders import ACTIVITY_TEMPLATES
 
 class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
     event = serializers.SerializerMethodField('get_event')
+    type = serializers.SerializerMethodField('get_type')
 
     class Meta:
         model = Action
         lookup_field = 'id'
-        fields = ('id', 'event', 'timestamp')  # timestamp can possibly be removed (if ONLY event is shown in template)
+        fields = ('id', 'event', 'timestamp', 'type')  # timestamp can possibly be removed (if ONLY event is shown in template)
 
     def __init__(self, *args, **kwargs):
         if 'context' in kwargs and 'request' in kwargs['context']:
@@ -95,6 +97,16 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
 
         # render the template with passed in context
         return template.render(context)
+
+    def get_type(self, obj):
+        # not in Action.type-property because Action is an external module
+        verb_slug = get_verb_slug(obj.action_object, obj.verb)
+        if verb_slug in ['item-commented']:
+            return 'item-comment'
+        elif verb_slug in ['revision-added-review-session-comment', 'revision-added-revision-comment']:
+            return 'revision-comment'
+        else:
+            return 'default'
 
 
 class ItemActivitySerializer(MatterActivitySerializer):
