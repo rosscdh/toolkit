@@ -24,6 +24,7 @@
     "angular-ui-router": "latest",
     "angular-sanitize": "~1.2.16",
     "moment": "~2.5",
+    "moment-timezone": "~0.0.6",
     "less.js": "~1.5",
     "font-awesome": "~4.0",
     "angular-ui-sortable": "~0.12.1",
