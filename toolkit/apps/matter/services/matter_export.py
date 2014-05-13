@@ -14,8 +14,10 @@ from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 from toolkit.apps.matter.mailers import MatterExportFinishedEmail
 from toolkit.core.services.zip import ZipService
 
+import logging
+logger = logging.getLogger('django.request')
 
-MATTER_EXPORT_DAYS_VALID = getattr(settings, 'MATTER_EXPORT_DAYS_VALID', 3)
+from .. import MATTER_EXPORT_DAYS_VALID
 
 
 class MatterExportService(object):
@@ -24,13 +26,15 @@ class MatterExportService(object):
     for each of its items; and upload it to s3; as well as send an email with a
     salted tokenized link that will allow the lawyer to download their zip
     """
-    def __init__(self, matter):
+    def __init__(self, matter, requested_by):
         self._token = None  # very important, reset token
         self.matter = matter
+        self.requested_by = requested_by
         self.needed_revisions = []
         self.needed_files = []
-        self.created_at = datetime.datetime.now().isoformat()
+        self.created_at = datetime.datetime.utcnow()
         self.download_link = None
+        logger.info('Exporting matter: %s' % self.matter)
         # collect the needed revisions and put them in self.needed_files; make sure they exist on local disk
         self.ensure_needed_files_list()
 
@@ -38,8 +42,8 @@ class MatterExportService(object):
     def token_data(self):
         # put everything needed to find the file in AWS into the token
         return {'matter_slug': self.matter.slug,
-                'user_pk': self.matter.lawyer.pk,
-                'created_at': self.created_at}
+                'user_pk': self.requested_by.pk,
+                'created_at': self.created_at.isoformat()}
 
     @property
     def token(self):
@@ -86,11 +90,27 @@ class MatterExportService(object):
         m = MatterExportFinishedEmail(
             subject='Your Matter export has completed',
             message='Your matter "%s" has been exported and is ready to be downloaded from: %s' % (self.matter.name, self.download_link),
-            recipients=((self.matter.lawyer.get_full_name(), self.matter.lawyer.email), ))
+            recipients=((self.requested_by.get_full_name(), self.requested_by.email), ))
         m.process()
 
+    def conclude(self):
         # record the event
-        self.matter.actions.matter_export_finished(user=self.matter.lawyer)
+        self.matter.actions.matter_export_finished(user=self.requested_by)
+        #
+        # Reset Pending Export
+        #
+        export_info = self.matter.export_info
+        download_valid_until = self.created_at + datetime.timedelta(days=MATTER_EXPORT_DAYS_VALID)
+        export_info.update({
+            'is_pending_export': False,  # reset it
+            'last_exported': datetime.datetime.utcnow().isoformat(),
+            'last_exported_by': self.requested_by.get_full_name(),
+            'download_valid_until': download_valid_until.isoformat(),
+            'download_url': self.download_link,
+            # leave the request info alone!
+        })
+        self.matter.export_info = export_info
+        self.matter.save(update_fields=['data'])
 
     def process(self):
         self.ensure_files_exist_locally()
@@ -106,3 +126,4 @@ class MatterExportService(object):
 
         # send token-link via email
         self.send_email(self.token)
+        self.conclude()
