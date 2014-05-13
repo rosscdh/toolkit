@@ -10,6 +10,7 @@ from .client import LiteClientSerializer
 from .item import SimpleItemSerializer
 from .user import LiteUserSerializer
 
+import pytz
 import datetime
 
 
@@ -21,7 +22,12 @@ class ExportInfoSerializer(serializers.Serializer):
     last_exported_by = serializers.CharField(max_length=255, read_only=True, required=False)
     last_export_requested_by = serializers.CharField(max_length=255, read_only=True, required=False)
     
-    download_url = serializers.CharField(max_length=300, read_only=True, required=False)
+    download_url = serializers.SerializerMethodField('get_download_url')
+
+    def get_download_url(self, obj):
+        if obj.get('download_valid_until') is not None and datetime.datetime.utcnow().replace(tzinfo=pytz.utc) < obj.get('download_valid_until'):
+            return obj.get('download_valid_until')
+        return None
 
 
 class MatterSerializer(serializers.HyperlinkedModelSerializer):
