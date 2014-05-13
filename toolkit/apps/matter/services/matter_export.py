@@ -3,17 +3,19 @@
 Service to export a matter
 (executed files get zipped and mailed to the user)
 """
-import datetime
-import os
-from django.conf import settings
 from django.core import signing
-from django.core.files.storage import default_storage
+from django.conf import settings
 from django.core.urlresolvers import reverse
-from toolkit.core import _managed_S3BotoStorage
-from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
-from toolkit.apps.matter.mailers import MatterExportFinishedEmail
-from toolkit.core.services.zip import ZipService
+from django.template.defaultfilters import slugify
+from django.core.files.storage import default_storage
 
+from toolkit.core import _managed_S3BotoStorage
+from toolkit.core.services.zip import ZipService
+from toolkit.apps.matter.mailers import MatterExportFinishedEmail
+from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
+
+import os
+import datetime
 import logging
 logger = logging.getLogger('django.request')
 
@@ -75,7 +77,7 @@ class MatterExportService(object):
         # returns the filename the created .zip should have
         # in in a function to get called from the download-view without instantiating an object
         return 'exported_documents/%s_%s_%s.zip' % \
-               (token_data.get('matter_slug'), token_data.get('user_pk'), token_data.get('created_at'))
+               (token_data.get('matter_slug'), token_data.get('user_pk'), slugify(token_data.get('created_at')))
 
     def create_zip(self, filename):
         # zip all needed files to filename
