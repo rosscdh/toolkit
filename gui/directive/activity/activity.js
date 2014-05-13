@@ -4,12 +4,16 @@ angular.module('toolkit-gui').directive('activity', ['$compile','$log', '$sce', 
     scope: {
       ngModel: '=',
       matterSlug: '=',
+      itemSlug: '=',
       user: '=',
       activityStream: '='
     },
     replace: true,
-    controller: ['$scope', '$http', '$log', 'commentService', 'toaster', function($scope, $http, $log, commentService, toaster) {
+    controller: ['$scope', '$http', '$log', 'commentService', 'toaster','$timeout',
+        function($scope, $http, $log, commentService, toaster, $timeout) {
+
          $scope.deleteComment = function(){
+             //TODO itemSlug shouldnt be necessary
              commentService.delete($scope.matterSlug, $scope.itemSlug, $scope.ngModel.id).then(
 				 function success(){
                     $scope.isDeleted = true;
@@ -31,8 +35,13 @@ angular.module('toolkit-gui').directive('activity', ['$compile','$log', '$sce', 
          };
 
         $scope.startEditingComment = function(){
-            show_edit_comment=true;
-            edit_comment=comment;
+            //TODO check user permission
+            $scope.show_edit_comment=true;
+            $scope.edit_comment=$scope.comment;
+
+            $timeout(function (){
+			  $scope.$broadcast('focusOn', 'event_edit_comment');
+			}, 300);
         };
 
         /**
@@ -44,17 +53,20 @@ angular.module('toolkit-gui').directive('activity', ['$compile','$log', '$sce', 
 		 */
         $scope.deleteCommentIsEnabled = function(){
             if ($scope.ngModel.type === "item-comment") {
+                $log.debug($scope.user.user_class);
                 //if user is lawyer, he might delete all comments
                 if($scope.user.user_class==='lawyer'){
                     return true;
                 } else {
-                    var comments = jQuery.grep( $scope.activityStream, function( item ){ return item.comment!==null; } );
-                    var index = jQuery.inArray( activity, comments );
+                    var comments = jQuery.grep( $scope.activityStream, function( item ){ return item.type==="item-comment"; } );
+                    var index = jQuery.inArray( $scope.ngModel,comments );
+                    $log.debug(index);
 
                     //if the user is a client, then he might only delete his own comments if there is no newer comment
-                    if(activity.actor.username === $scope.data.usdata.current.username && index===0) {
+                    //TODO username not yet provided
+                    /*if($scope.ngModel.actor.username === $scope.user.username && index===0) {
                         return true;
-                    }
+                    }*/
                 }
             }
 
