@@ -17,6 +17,7 @@ from toolkit.api.views.mixins import MatterItemsQuerySetMixin
 
 class ItemCommentEndpoint(MatterItemsQuerySetMixin,
                           generics.CreateAPIView,
+                          generics.UpdateAPIView,
                           generics.DestroyAPIView):
     """
     Endpoint to post new comments for item in matter
@@ -42,9 +43,21 @@ class ItemCommentEndpoint(MatterItemsQuerySetMixin,
     def create(self, request, **kwargs):
         comment = request.DATA.get('comment', '')
         if comment.strip() not in [None, '']:
-            self.matter.actions.add_item_comment(user=request.user, item=self.item,
+            self.matter.actions.add_item_comment(user=request.user,
+                                                 item=self.item,
                                                  comment=comment)
+            # the comment is created via a signal, so we do NOT have the comment-object with its id directly.
             return Response(status=http_status.HTTP_201_CREATED)
+        else:
+            return Response(status=http_status.HTTP_400_BAD_REQUEST, data={'reason': 'You should send a comment.'})
+
+    def update(self, request, *args, **kwargs):
+        comment = request.DATA.get('comment', '')
+        if comment.strip() not in [None, '']:
+            comment_object = self.get_object()
+            comment_object.data['comment'] = comment
+            comment_object.save(update_fields=['data'])
+            return Response(status=http_status.HTTP_200_OK)
         else:
             return Response(status=http_status.HTTP_400_BAD_REQUEST, data={'reason': 'You should send a comment.'})
 

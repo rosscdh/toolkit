@@ -50,6 +50,33 @@ class CommentTest(BaseEndpointTest):
 
         self.assertEqual(resp.status_code, 201)  # created
 
+    def test_lawyer_patch(self):
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        # post comment
+        data = {
+            "comment": "The rain in spain, falls mainly on a monkey."
+        }
+        resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
+
+        # load the newly created comment and check if it was saved
+        comment_object = Action.objects.first()
+        self.assertEqual(comment_object.data.get('comment'), "The rain in spain, falls mainly on a monkey.")
+
+        # patch the comment with its id
+        data = {
+            "comment": "The rain in france, falls mainly on a baguette."
+        }
+        patch_endpoint = reverse('item_comment', kwargs={'matter_slug': self.matter.slug,
+                                                         'item_slug': self.item.slug,
+                                                         'id': comment_object.id})
+        resp = self.client.patch(patch_endpoint, json.dumps(data), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)  # ok
+
+        # reload object and check if change was saved
+        comment_object = Action.objects.get(id=comment_object.id)
+        self.assertEqual(comment_object.data.get('comment'), "The rain in france, falls mainly on a baguette.")
+
     def test_lawyer_delete(self):
         self.client.login(username=self.lawyer.username, password=self.password)
 
