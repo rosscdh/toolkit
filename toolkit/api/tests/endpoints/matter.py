@@ -492,7 +492,7 @@ class MatterExportTest(BaseEndpointTest):
         # we need the SAME datetime.datetime.now() in _export_matter and for token-creation
         with mock.patch('datetime.datetime', PatchedDateTime):
             # start the export directly
-            _export_matter(self.matter)
+            _export_matter(matter=self.matter, requested_by=self.lawyer)
 
             # calculate download-link (which could also be taken from the email)
             created_at = datetime.datetime.now().isoformat()
@@ -512,7 +512,7 @@ class MatterExportTest(BaseEndpointTest):
         self.client.login(username=self.user.username, password=self.password)
 
         # start the export directly
-        _export_matter(self.matter)
+        _export_matter(matter=self.matter, requested_by=self.lawyer)
 
         # calculate download-link (which could also be taken from the email)
         created_at = datetime.date.today().isoformat()
@@ -528,7 +528,7 @@ class MatterExportTest(BaseEndpointTest):
 
     def test_export_matter_post_with_download_anon(self):
         # start the export directly
-        _export_matter(self.matter)
+        _export_matter(matter=self.matter, requested_by=self.lawyer)
 
         # calculate download-link (which could also be taken from the email)
         created_at = (datetime.date.today()).isoformat()
