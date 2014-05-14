@@ -18,6 +18,8 @@ from storages.backends.s3boto import S3BotoStorage
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import ButtonHolder, Div, Field, Fieldset, HTML, Layout, Submit
 
+from dj_authy.forms import BaseAuthyMediaForm
+
 from parsley.decorators import parsleyfy
 
 from payments.forms import PlanForm
@@ -35,7 +37,7 @@ logger = logging.getLogger('django.request')
 User = get_user_model()
 
 
-class BaseAccountSettingsFields(object):
+class BaseAccountSettingsFields(BaseAuthyMediaForm):
     """
     Provides base field for various account settings forms
     """
@@ -71,6 +73,13 @@ class BaseAccountSettingsFields(object):
         }
         self.helper.form_show_errors = False
 
+        if self.user.profile.data.get('two_factor_enabled', False):
+            two_factor_button = HTML('<a href="{% url "me:two-factor-disable" %}" data-toggle="modal" data-target="#disable-two-factor" class="btn btn-default btn-sm"> Disable two-factor authentication</a>')
+            two_factor_status = HTML('<p>Status: <strong>On</strong> <span class="input-icon fui-check-inverted text-success" style="margin-left: 5px;"></span></p>')
+        else:
+            two_factor_button = HTML('<a href="{% url "me:two-factor-enable" %}" data-toggle="modal" data-target="#enable-two-factor" class="btn btn-default btn-sm"> Enable two-factor authentication</a>')
+            two_factor_status = HTML('<p>Status: <strong>Off</strong></p>')
+
         self.helper.layout = Layout(
             HTML('{% include "partials/form-errors.html" with form=form %}'),
             Fieldset(
@@ -90,6 +99,14 @@ class BaseAccountSettingsFields(object):
                         HTML('<a href="{% url "me:change-password" %}" data-toggle="modal" data-target="#change-password" class="btn btn-default btn-sm"> Change your password</a>'),
                     ),
                     css_class='form-group'
+                ),
+                Div(
+                    HTML('<label>Two-factor authentication</label>'),
+                    Div(
+                        two_factor_status,
+                        two_factor_button,
+                    ),
+                    css_class='form-group'
                 )
             ),
             ButtonHolder(
@@ -99,6 +116,7 @@ class BaseAccountSettingsFields(object):
         )
 
         super(BaseAccountSettingsFields, self).__init__(*args, **kwargs)
+
 
 @parsleyfy
 class AccountSettingsForm(BaseAccountSettingsFields, forms.ModelForm):

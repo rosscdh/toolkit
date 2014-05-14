@@ -4,7 +4,7 @@ Deployment actions by branch
 [authy-integration]
 
 1. pip install -e git+https://github.com/rosscdh/django-authy.git#egg=django-authy
-2. ./manage.py syncdb add the authy table
+2. ./manage.py syncdb --migrate
 
 --------------------------------------------------------------------------------
 ** DEPLOYED 06 May 2014

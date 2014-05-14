@@ -11,6 +11,7 @@ from .views import (DisclaimerView,
                     PrivacyView,
                     SignUpView,
                     StartView,
+                    VerifyTwoFactorView,
                     TermsView)
 
 
@@ -24,6 +25,7 @@ urlpatterns = patterns('',
     url(r'^tools/83b-election-letters/$', TemplateView.as_view(template_name='public/tools/83b-election-letters.html'), name='83b'),
 
     url(r'^start/$', StartView.as_view(), name='signin'),
+    url(r'^start/two-factor/$', VerifyTwoFactorView.as_view(), name='signin-two-factor'),
     url(r'^start/signup/$', SignUpView.as_view(), name='signup'),
     url(r'^start/invite/(?P<key>[-\w\d]+)/$', InviteKeySignInView.as_view(), name='invite'),
     url(r'^start/invite/$', InviteKeySignInView.as_view(), name='invite_form'),

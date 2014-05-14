@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 from django.core import signing
 from django.conf import settings
 from django.contrib import messages
@@ -12,8 +12,9 @@ from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import FormView, ListView, UpdateView, TemplateView, RedirectView
 from django.views.generic.edit import BaseUpdateView
-
 from django.shortcuts import get_object_or_404
+
+from dj_authy.views import HoldingPageView, ProfileView
 
 from payments.models import Charge, Customer
 
@@ -311,6 +312,59 @@ class PlanChangeView(ModalView, AjaxFormView, FormView):
 
     def get_success_url(self):
         return reverse('me:welcome')
+
+
+class TwoFactorDisableView(AjaxFormView, TemplateView):
+    template_name = 'user/settings/two_factor_confirm_disable.html'
+
+    def disable(self, request, *args, **kwargs):
+        profile = self.request.user.profile
+        profile.data['two_factor_enabled'] = False
+        profile.save(update_fields=['data'])
+
+        # messages.success(self.request, 'You have successfully disabled two-step verification for your LawPal account.')
+
+        return HttpResponseRedirect(self.get_success_url())
+
+    def post(self, request, *args, **kwargs):
+        return self.disable(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return reverse('me:settings')
+
+
+class TwoFactorEnableView(AjaxModelFormView, ProfileView):
+    template_name = 'user/settings/two_factor_enable.html'
+
+    def get_success_url(self):
+        return reverse('me:two-factor-verify')
+
+    def form_valid(self, form):
+        super(TwoFactorEnableView, self).form_valid(form)
+
+        data = {
+            'modal': True,
+            'target': '#verify-two-factor',
+            'url': self.get_success_url()
+        }
+
+        return self.render_to_json_response(data)
+
+
+class TwoFactorVerifyView(HoldingPageView):
+    template_name = 'user/settings/two_factor_verify.html'
+
+    def form_valid(self, form):
+        profile = self.request.user.profile
+        profile.data['two_factor_enabled'] = True
+        profile.save(update_fields=['data'])
+
+        # messages.success(self.request, 'You have successfully set up two-step verification for your LawPal account.')
+
+        return super(TwoFactorVerifyView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse('me:settings')
 
 
 class WelcomeView(TemplateView):

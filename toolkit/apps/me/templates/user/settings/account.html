@@ -33,4 +33,18 @@
 {% block modals %}
     {{ block.super }}
     <div class="modal" id="change-password"></div>
+
+    <div class="modal" id="disable-two-factor"></div>
+    <div class="modal" id="enable-two-factor"></div>
+    <div class="modal" id="verify-two-factor"></div>
+{% endblock %}
+
+{% block css %}
+    {{ block.super }}
+    {{ form.media.css }}
+{% endblock %}
+
+{% block js %}
+    {{ block.super }}
+    {{ form.media.js }}
 {% endblock %}

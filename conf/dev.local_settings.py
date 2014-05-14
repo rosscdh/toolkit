@@ -98,6 +98,8 @@ STRIPE_SECRET_KEY = 'pk_test_pVBXSHiazhp3b0EyGHQa8Dx2'
 CELERY_DEFAULT_QUEUE = 'lawpal-local'
 ENABLE_CELERY_TASKS = True
 
-
-AUTHY_KEY = 'bcdfb7ce5e6854dcfe65ce5dd0d568c7' # dev-lawpal app
+#
+# Authy
+#
+AUTHY_KEY = 'bcdfb7ce5e6854dcfe65ce5dd0d568c7'
 AUTHY_IS_SANDBOXED = True
