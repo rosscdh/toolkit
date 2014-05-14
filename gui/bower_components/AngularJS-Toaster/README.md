@@ -1,15 +1,16 @@
 AngularJS-Toaster
 =================
 
-**AngularJS Toaster** is a AngularJS port of the **toastr** non-blocking notification jQuery library. Requires AngularJS v1.2, and animations use CSS3 transformations.
+**AngularJS Toaster** is a AngularJS port of the **toastr** non-blocking notification jQuery library. It requires AngularJS v1.2.6 or higher and angular-animate for the CSS3 transformations. 
+(I would suggest to use /1.2.8/angular-animate.js, there is a weird blinking in newer versions.)
 
-### Current Version 0.4.3
+### Current Version 0.4.6
 
 ## Demo
-- Simple demo is at http://plnkr.co/edit/lzYaZt
+- Simple demo is at http://plnkr.co/edit/lzYaZt (with version 0.4.6)
 - Older version with Angular 1.2.0 is placed at http://plnkr.co/edit/mejR4h
-- Old version with Angular 1.2.0-rc.2 is placed at http://plnkr.co/edit/iaC2NY
-- Old version with Angular 1.1.5 is placed at http://plnkr.co/mVR4P4
+- Older version with Angular 1.2.0-rc.2 is placed at http://plnkr.co/edit/iaC2NY
+- Older version with Angular 1.1.5 is placed at http://plnkr.co/mVR4P4
 
 ## Getting started
 
@@ -17,12 +18,13 @@ AngularJS-Toaster
 
 ```html
 <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" />
-<link href="toaster.css" rel="stylesheet" />
+<link href="http://cdnjs.cloudflare.com/ajax/libs/angularjs-toaster/0.4.4/toaster.css" rel="stylesheet" />
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js" ></script>
 <script src="http://code.angularjs.org/1.2.0/angular-animate.min.js" ></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/angularjs-toaster/0.4.4/toaster.js"></script>
 ```
 
-2. Add toaster container directive: `<toaster-container> </toaster-container>`
+2. Add toaster container directive: `<toaster-container></toaster-container>`
 
 3. Prepare the call of toaster method:
 

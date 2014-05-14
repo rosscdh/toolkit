@@ -197,7 +197,6 @@ tr.item-heading.file-drag-over td:nth-child(2):before {
 	&:before { content: "\e02d"; }
 }
 
-
 .checklist-wrapper table.checklist tr.tr-min-height, .checklist-wrapper table.checklist tr.tr-min-height td {
 	background:transparent !important;
 	height:1px;
@@ -211,6 +210,10 @@ tr.item-heading.file-drag-over td:nth-child(2):before {
 	margin:10px 0 !important;
 	height:10px !important;
 	border-top: 10px solid transparent;
+}
+
+.checklist-wrapper .checklist-col {
+	padding-bottom: 3em;
 }
 
 /*
@@ -530,6 +533,10 @@ ul.checklist-items {
 }
 
 @media only screen and (max-width : 1200px) {
+	.full {
+		heigth: auto;
+		min-heigth: 100%;
+	}
 	.container-fluid {
 		padding: 0 15px;
 	}
@@ -550,10 +557,37 @@ ul.checklist-items {
 			border-radius: 0;
 		}
 	}
+	.checklist-wrapper .checklist-col {
+		
+		margin-bottom: 2em;
+
+		.item-title {
+			padding-left: 34px !important;
+		}
+
+		.fui-list-columned {
+			width: 30px !important;
+		}
+
+		.categories-list {
+			padding-bottom: 3em;
+		}
+	}
+	.checklist-wrapper div.full {
+		overflow-y: visible;
+		/*
+		height: auto !important;
+		float: none;
+		display: block;
+		position: static;
+		min-height: 100% !important;
+		*/
+	}
 	.checklist-wrapper {
+		height: auto;
 		// Mobile view
 		#checklist-items {
-			//
+			height: auto;
 		}
 
 		#checklist-items,
