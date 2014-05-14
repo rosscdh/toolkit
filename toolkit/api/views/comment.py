@@ -68,6 +68,8 @@ class ItemCommentEndpoint(MatterItemsQuerySetMixin,
         # lawyer can delete at any time
         # customer can ONLY delete if it is the newest comment
 
+        # possibly change to time limit instead of this last-comment-rule for customers
+
         self.object = self.get_object()
         try:
             newest_comment_by_user = Action.objects.get_queryset().filter(
