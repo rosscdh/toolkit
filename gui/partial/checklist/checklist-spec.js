@@ -183,12 +183,15 @@ describe('Controller: Checklist', function() {
 	
 	// initialiseMatter
 	it('should initialise matter', inject(function() {
-		$scope.initialiseMatter( { 'items': [ { 'category': 'My Category', 'slug': '123' } ], 'categories': [ 'My Category' ] } );
+        var item =  { 'category': 'My Category', 'slug': '123' };
+        var cat =  'My Category';
+		$scope.initialiseMatter( { 'items': [ item ], 'categories': [ cat ] } );
 
 		expect($scope.data.categories.length).toEqual(2); // 2 because of the null category
 		expect($scope.data.matter.items.length).toEqual(1);
-		//should also sselect item
-		expect(angular.equals($scope.data.selectedItem,{category: 'My Category', slug: '123'})).toBeTruthy();
+		//should also select item
+        $scope.selectItem( item , cat );
+		expect(angular.equals($scope.data.selectedItem, item)).toBeTruthy();
 	}));
 	
     // initialiseMatter if error 
@@ -316,7 +319,7 @@ describe('Controller: Checklist', function() {
 	});
 	
 	//$scope.getParticipantByUrl - 1
-    it('$scope.getParticipantByUrl when url speified',function(){
+    it('$scope.getParticipantByUrl when url specified',function(){
 		$scope.getParticipantByUrl('someUrl');
 		expect(angular.equals($scope.data.loadedParticipants,{someUrl:{}})).toBeTruthy();
 		$scope.$apply();
@@ -700,16 +703,16 @@ describe('Controller: Checklist', function() {
 		expect($modal.open).toHaveBeenCalled();
 	});
 	
-	it('$scope.getReviewPercentageComplete - if 50% completed must retrun 50',function(){
+	it('$scope.getReviewPercentageComplete - if 50% completed must return 50',function(){
 	    var  item = {slug:{},latest_revision:{reviewers:[{name:'some',is_complete:false},{name:'other',is_complete:true}]}}
-		var res = $scope.getReviewPercentageComplete(item);
-	    expect(res).toBe(50)
+		var res = $scope.calculateReviewPercentageComplete(item);
+	    expect(item.review_percentage_complete).toBe(50)
 	});
 	
-	it('$scope.getReviewPercentageComplete - must retrun 0',function(){
+	it('$scope.getReviewPercentageComplete - must return 0',function(){
 	    var  item = {slug:{},latest_revision:{reviewers:null}};
-		var res = $scope.getReviewPercentageComplete(item);
-	    expect(res).toBe(0)
+		var res = $scope.calculateReviewPercentageComplete(item);
+	    expect(item.review_percentage_complete).toBe(null)
 	});
 
     it('$scope.focus',function(){
