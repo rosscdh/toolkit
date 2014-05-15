@@ -38,3 +38,4 @@ composer.lock
 /log/*.log
 /MANIFEST
 /build
+gui/coverage
