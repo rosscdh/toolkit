@@ -104,7 +104,7 @@ class DownloadRevision(ReviewRevisionView):
         # Use our localised filename so the user has info about which version
         # etc that it came from
         #
-        file_name = self.object.document.executed_file.name
+        file_name = self.object.get_document().name
 
         split_file_name = os.path.split(file_name)[-1]
         filename_no_ext, ext = os.path.splitext(split_file_name)
@@ -115,7 +115,7 @@ class DownloadRevision(ReviewRevisionView):
 
         try:
             #
-            # Try read it from teh local file first
+            # Try read it from the local file first
             #
             resp = HttpResponse(self.object.read_local_file(), content_type='application/{ext}'.format(ext=ext))
         except:

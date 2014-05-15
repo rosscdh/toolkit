@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
+import os
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.db.models.loading import get_model
 from django.db.models.signals import pre_save, post_save, post_delete, m2m_changed
+from django.template.defaultfilters import slugify
+from toolkit.core import _managed_S3BotoStorage
 
 from toolkit.core.mixins import IsDeletedMixin, ApiSerializerMixin
+from toolkit.apps.matter.mixins import MatterExportMixin
 
 from .signals import (ensure_workspace_slug,
                       ensure_workspace_matter_code,
@@ -26,6 +30,7 @@ from .mixins import ClosingGroupsMixin, CategoriesMixin, RevisionLabelMixin
 
 
 class Workspace(IsDeletedMixin,
+                MatterExportMixin,
                 ClosingGroupsMixin,
                 CategoriesMixin,
                 ApiSerializerMixin,

@@ -33,7 +33,6 @@ class BaseUSPSTrackingCode(TestCase):
     """
     fixtures = ['sites', 'tools']
 
-    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def setUp(self):
         super(BaseUSPSTrackingCode, self).setUp()
 
