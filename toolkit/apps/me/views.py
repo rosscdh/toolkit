@@ -3,6 +3,7 @@ from django.http import Http404
 from django.core import signing
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth import logout
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.shortcuts import redirect
@@ -28,7 +29,8 @@ from .forms import (ConfirmAccountForm,
                     ChangePasswordForm,
                     AccountSettingsForm,
                     LawyerLetterheadForm,
-                    PlanChangeForm)
+                    PlanChangeForm,
+                    AccountCancelForm)
 
 import json
 
@@ -311,6 +313,25 @@ class PlanChangeView(ModalView, AjaxFormView, FormView):
 
     def get_success_url(self):
         return reverse('me:welcome')
+
+
+class AccountCancelView(ModalView, AjaxFormView, FormView):
+    form_class = AccountCancelForm
+
+    def form_valid(self, form):
+        form.save()
+        logout(self.request)
+        return super(AccountCancelView, self).form_valid(form)
+
+    def get_form_kwargs(self):
+        kwargs = super(AccountCancelView, self).get_form_kwargs()
+        kwargs.update({
+            'user': self.request.user,
+        })
+        return kwargs
+
+    def get_success_url(self):
+        return reverse('public:welcome')
 
 
 class WelcomeView(TemplateView):
