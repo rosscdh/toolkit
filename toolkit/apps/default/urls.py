@@ -35,10 +35,3 @@ urlpatterns = patterns('',
 
     url(r'^$', HomePageView.as_view(), name='home'),
 )
-
-
-# Dev only
-if settings.DEBUG:
-    urlpatterns += patterns('',
-        url(r'^checklist-2/$', TemplateView.as_view(template_name='public/checklist-2.html'), name='welcome'),
-    )
