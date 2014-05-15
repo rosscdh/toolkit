@@ -3,6 +3,10 @@
 {% block page_title %}Your Matters{% endblock %}
 
 {% block body %}
+
+    <!-- needed for react -->
+    {% csrf_token %}
+
     {% if object_list %}
         <div id="matter-list" class="content col-lg-12"></div>
     {% else %}
@@ -40,14 +44,26 @@
 {% block js %}
 <script src="{{ STATIC_URL }}js/react-0.10.0.min.js"></script>
 <script src="{{ STATIC_URL }}js/moment.2.6.0.min.js"></script>
+<script src="{{ STATIC_URL }}js/moment-timezone.0.0.6.js"></script>
 <script src="{{ STATIC_URL }}js/fuse.min.js"></script>
 
 <script>
 'use strict';
 
+moment.tz.add({
+    "zones": {
+        "Etc/UTC": [
+            "0 - UTC"
+        ]
+    },
+    "rules": {},
+    "links": {}
+});
+
 var UserData = {
     'is_lawyer': {{ user.profile.is_lawyer|lower }},
     'name': "{{ user.get_full_name }}",
+    'username': "{{ user.username }}",
     'can_create': {{ can_create|lower }},
     'can_edit': {{ can_edit|lower }}
 };

@@ -236,7 +236,6 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
     def test_endpoint_name(self):
         self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/items/%s/revision' % self.item.slug)
 
-    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_patch_with_URL_executed_file(self):
         """
         complicated: upload a file based on a filepicker.io url (or any url as below)
@@ -270,18 +269,22 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
         self.assertEqual(resp.status_code, 201)  # ok created
 
         self.assertEqual(resp_json.get('slug'), 'v1')
-        self.assertEqual(resp_json.get('executed_file'), 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test-pirates-ahoy.pdf' % (self.item.pk, self.lawyer.username))
+
+        #self.assertEqual(resp_json.get('executed_file'), 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test-pirates-ahoy.pdf' % (self.item.pk, self.lawyer.username))
+        # NB: the media path is local here as we use the localstorage for test environment so what were really testing is the upload_to path
+        self.assertEqual(resp_json.get('executed_file'), u'/m/executed_files/v1-%s-%s-test-pirates-ahoy.pdf' % (self.item.pk, self.lawyer.username))
         self.assertEqual(self.item.revision_set.all().count(), 1)
 
         # refresh
         self.item = self.item.__class__.objects.get(pk=self.item.pk)  # reset
         revision = self.item.revision_set.all().first()
         self.assertEqual(revision.executed_file.name, 'executed_files/v1-%s-%s-test-pirates-ahoy.pdf' % (self.item.pk, self.lawyer.username))
-        self.assertEqual(revision.executed_file.url, 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test-pirates-ahoy.pdf' % (self.item.pk, self.lawyer.username))
+        #self.assertEqual(revision.executed_file.url, 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test-pirates-ahoy.pdf' % (self.item.pk, self.lawyer.username))
+        # NB: the media path is local here as we use the localstorage for test environment so what were really testing is the upload_to path
+        self.assertEqual(revision.executed_file.url, u'/m/executed_files/v1-%s-%s-test-pirates-ahoy.pdf' % (self.item.pk, self.lawyer.username))
 
         self.assertEqual(self.item.review_percentage_complete, None)  # test review_percentage_complete is reset
 
-    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_post_with_URL_executed_file(self):
         """
         POSTING and PATCHING to the endpoint BOTH return a "new" revision with the slug
@@ -306,7 +309,6 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
         self.item = self.item.__class__.objects.get(pk=self.item.pk)  # reset
         self.assertEqual(self.item.review_percentage_complete, None)  # test review_percentage_complete is reset
 
-    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_post_with_FILE_executed_file(self):
         """
         ensure we can upload an actual file to the endpoint
@@ -332,18 +334,17 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
         self.assertEqual(resp.status_code, 201)  # created
         self.assertEqual(resp_json.get('slug'), 'v1')
         self.assertEqual(resp_json.get('name'), 'test.pdf')
-        self.assertEqual(resp_json.get('executed_file'), 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
+        self.assertEqual(resp_json.get('executed_file'), '/m/executed_files/v1-%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
         self.assertEqual(self.item.revision_set.all().count(), 1)
 
         revision = self.item.revision_set.all().first()
 
         self.assertEqual(revision.executed_file.name, 'executed_files/v1-%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
-        self.assertEqual(revision.executed_file.url, 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
+        self.assertEqual(revision.executed_file.url, '/m/executed_files/v1-%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
 
         self.item = self.item.__class__.objects.get(pk=self.item.pk)  # reset
         self.assertEqual(self.item.review_percentage_complete, None)  # test review_percentage_complete is reset
 
-    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_post_with_LONG_filename(self):
         """
         ensure we can upload an actual file to the endpoint
@@ -371,10 +372,10 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
         self.assertEqual(resp.status_code, 201)  # created
         self.assertEqual(resp_json.get('slug'), 'v1')
         self.assertEqual(resp_json.get('name'), u'test-long-filename-@-(LawPal)-#1236202-v1-test-lon.doc')
-        self.assertEqual(resp_json.get('executed_file'), u'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test-long-filename-lawpal-1236202-v1-test-lon.doc' % (self.item.pk, self.lawyer.username))
+        # self.assertEqual(resp_json.get('executed_file'), u'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test-long-filename-lawpal-1236202-v1-test-lon.doc' % (self.item.pk, self.lawyer.username))
+        self.assertEqual(resp_json.get('executed_file'), u'/m/executed_files/v1-%s-%s-test-long-filename-lawpal-1236202-v1-test-lon.doc' % (self.item.pk, self.lawyer.username))
         self.assertEqual(self.item.revision_set.all().count(), 1)
 
-    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_post_with_URL_executed_file_and_stream(self):
         self.test_post_with_URL_executed_file()
         stream = target_stream(self.matter)
@@ -382,7 +383,6 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
                          u'Lawyër Tëst added a file to Test Item with Revision')
 
 
-    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_post_with_FILE_executed_file_and_stream(self):
         self.test_post_with_FILE_executed_file()
         stream = target_stream(self.matter)
@@ -392,9 +392,8 @@ class RevisionExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
         revision = self.item.revision_set.all().first()
 
         self.assertEqual(revision.executed_file.name, 'executed_files/v1-%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
-        self.assertEqual(revision.executed_file.url, 'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
+        self.assertEqual(revision.executed_file.url, '/m/executed_files/v1-%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
 
-    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_requested_revision_upload(self):
         """
         what should happen here:
@@ -428,7 +427,6 @@ class InvalidFileTypeAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerTestCa
     def test_endpoint_name(self):
         self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/items/%s/revision' % self.item.slug)
 
-    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_patch_with_URL_executed_file(self):
         # normally there is no logo-white.png from filepicker io it sends name seperately
         # but for our tests we need to fake this out
@@ -456,7 +454,6 @@ class InvalidFileTypeAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerTestCa
         self.assertEqual(resp.status_code, 400)  # error
         self.assertEqual(resp_json.get('executed_file'), [u"Invalid filetype, is: .png should be in: ['.pdf', '.docx', '.doc', '.ppt', '.pptx', '.xls', '.xlsx']"])  # error
 
-    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_post_with_URL_executed_file(self):
         mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
 
@@ -472,7 +469,6 @@ class InvalidFileTypeAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerTestCa
 
         self.assertEqual(resp.status_code, 400)  # invalid
 
-    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def test_post_with_FILE_executed_file(self):
         self.client.login(username=self.lawyer.username, password=self.password)
 

@@ -31,7 +31,6 @@ class BaseScenarios(object):
     fixtures = ['sites', 'tools']
     password = 'password'
 
-    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def basic_workspace(self):
         from toolkit.apps.workspace.models import Tool
         from toolkit.apps.eightythreeb.models import EightyThreeB

@@ -9,7 +9,7 @@ from jsonfield import JSONField
 from uuidfield import UUIDField
 
 from rulez import registry as rulez_registry
-from storages.backends.s3boto import S3BotoStorage
+from toolkit.core import _managed_S3BotoStorage
 
 from toolkit.core.mixins import IsDeletedMixin
 
@@ -159,7 +159,7 @@ rulez_registry.register("can_delete", EngagementLetter)
 
 class Attachment(IsDeletedMixin, models.Model):
     tool = models.ForeignKey('engageletter.EngagementLetter')
-    attachment = models.FileField(upload_to=_upload_file, blank=True, storage=S3BotoStorage())
+    attachment = models.FileField(upload_to=_upload_file, blank=True, storage=_managed_S3BotoStorage())
     body = models.TextField()
 
     def can_delete(self, user):
