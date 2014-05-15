@@ -16,6 +16,7 @@ from .views import (ConfirmAccountView,
                     PaymentListView,
                     PlanListView,
                     PlanChangeView,
+                    AccountCancelView,
                     WelcomeView,
 
                     AccountSettingsView,
@@ -40,4 +41,6 @@ urlpatterns = patterns(
     url(r'^settings/confirm/$', login_required(ConfirmAccountView.as_view()), name='confirm-account'),
     url(r'^settings/change-password/$', login_required(ChangePasswordView.as_view()), name='change-password'),
     url(r'^settings/$', login_required(AccountSettingsView.as_view()), name='settings'),
+
+    url(r'^cancel/$', login_required(AccountCancelView.as_view()), name='cancel'),
 )

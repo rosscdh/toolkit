@@ -1,4 +1,4 @@
-Django==1.6.4
+Django==1.6.5
 django-extensions>=1.3
 south
 
@@ -89,6 +89,8 @@ mixpanel-py
 # celery management
 Celery
 
+# Realtime
+pusher
 
 # Payments
 django-stripe-payments==2.0b34
