@@ -35,7 +35,6 @@ class MatterExportService(object):
         self.needed_revisions = []
         self.needed_files = []
         self.created_at = datetime.datetime.utcnow()
-        self.download_link = None
         logger.info('Exporting matter: %s' % self.matter)
         # collect the needed revisions and put them in self.needed_files; make sure they exist on local disk
         self.ensure_needed_files_list()
@@ -79,6 +78,10 @@ class MatterExportService(object):
         return 'exported_documents/%s_%s_%s.zip' % \
                (token_data.get('matter_slug'), token_data.get('user_pk'), slugify(token_data.get('created_at')))
 
+    @property
+    def download_link(self):
+        return ABSOLUTE_BASE_URL(reverse('matter:download-exported', kwargs={'token': self.token}))
+
     def create_zip(self, filename):
         # zip all needed files to filename
         zip_service = ZipService(filename)
@@ -86,9 +89,6 @@ class MatterExportService(object):
         return zip_service.compress()
 
     def send_email(self, token):
-        # send the token-link to the owning lawyer
-        self.download_link = ABSOLUTE_BASE_URL(reverse('matter:download-exported', kwargs={'token': token}))
-
         m = MatterExportFinishedEmail(
             subject='Your Matter export has completed',
             message='Your matter "%s" has been exported and is ready to be downloaded from: %s' % (self.matter.name, self.download_link),

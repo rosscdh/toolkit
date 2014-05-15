@@ -1,17 +1,13 @@
 # -*- coding: utf-8 -*-
 from django.core import mail
-from django.core import signing
 from django.conf import settings
 from django.core.files import File
 from django.core.urlresolvers import reverse
-from django.contrib.auth.models import AnonymousUser
-import mock
-
-from toolkit.apps.matter.tasks import _export_matter
 
 from toolkit.core.attachment.models import Revision
 from toolkit.apps.workspace.models import Workspace
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
+from toolkit.apps.matter.services import MatterExportService
 
 from . import BaseEndpointTest
 from ...serializers import LiteClientSerializer
@@ -337,8 +333,6 @@ class MatterDetailProvidedDataTest(BaseEndpointTest):
         latest_revision = items[0].get('latest_revision')
         self.assertEqual(type(latest_revision), dict)
 
-        expected_url = ABSOLUTE_BASE_URL(reverse('matter_item_revision', kwargs={'matter_slug': self.revision.item.matter.slug, 'item_slug': self.revision.item.slug }))
-        #self.assertEqual(latest_revision, expected_url)
         self.assertItemsEqual(latest_revision.keys(), ['url', 'regular_url', 'status', 'date_created', 'slug', 'name'])
 
     def test_endpoint_data_lawyer(self):
@@ -448,6 +442,10 @@ class MatterExportTest(BaseEndpointTest):
     def endpoint(self):
         return reverse('matter_export', kwargs={'matter_slug': self.matter.slug})
 
+    def setUp(self):
+        super(MatterExportTest, self).setUp()
+        self.subject = MatterExportService
+
     def test_endpoint_name(self):
         self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/export')
 
@@ -463,6 +461,7 @@ class MatterExportTest(BaseEndpointTest):
         self.item = mommy.make('item.Item', matter=self.matter, name='Test Item with Revision', category=None)
         self.revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item,
                                   uploaded_by=self.lawyer, name='test file')
+
         with open(os.path.join(settings.SITE_ROOT, 'toolkit', 'casper', 'test.pdf'), 'r') as filename:
             self.revision.executed_file.save('test.pdf', File(filename))
             self.revision.save(update_fields=['executed_file'])
@@ -480,6 +479,7 @@ class MatterExportTest(BaseEndpointTest):
         # check if mail is present
         outbox = mail.outbox
         self.assertEqual(len(outbox), 1)
+
         email = outbox[0]
         self.assertEqual(email.subject, u'Your Matter export has completed')
         self.assertEqual(email.recipients(), [u'test+lawyer@lawpal.com'])
@@ -489,55 +489,28 @@ class MatterExportTest(BaseEndpointTest):
 
         self.add_item_with_revision()
 
-        # we need the SAME datetime.datetime.now() in _export_matter and for token-creation
-        with mock.patch('datetime.datetime', PatchedDateTime):
-            # start the export directly
-            _export_matter(matter=self.matter, requested_by=self.lawyer)
-
-            # calculate download-link (which could also be taken from the email)
-            created_at = datetime.datetime.now().isoformat()
-            token_data = {'matter_slug': self.matter.slug,
-                          'user_pk': self.lawyer.pk,
-                          'created_at': created_at}
-            token = signing.dumps(token_data, salt=settings.SECRET_KEY)
+        service = self.subject(matter=self.matter, requested_by=self.lawyer)
+        service.process()
 
         # download the file and check its content
-        download_link = ABSOLUTE_BASE_URL(reverse('matter:download-exported', kwargs={'token': token}))
-        resp = self.client.get(download_link)
+        resp = self.client.get(service.download_link)
+
         self.assertEqual(resp.status_code, 200)
         self.assertGreater(len(resp.content), 3000)
         self.assertEqual(resp.get('Content-Type'), 'application/zip')
 
-    def test_export_matter_post_with_download_customer(self):
+    def test_export_matter_download_unavailable_to_customer(self):
         self.client.login(username=self.user.username, password=self.password)
 
-        # start the export directly
-        _export_matter(matter=self.matter, requested_by=self.lawyer)
+        service = self.subject(matter=self.matter, requested_by=self.lawyer)
+        service.process()
 
-        # calculate download-link (which could also be taken from the email)
-        created_at = datetime.date.today().isoformat()
-        token_data = {'matter_slug': self.matter.slug,
-                      'user_pk': self.user.pk,
-                      'created_at': created_at}
-        token = signing.dumps(token_data, salt=settings.SECRET_KEY)
-
-        # download the file and check its content
-        download_link = ABSOLUTE_BASE_URL(reverse('matter:download-exported', kwargs={'token': token}))
-        resp = self.client.get(download_link)
+        resp = self.client.get(service.download_link)
         self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_export_matter_post_with_download_anon(self):
-        # start the export directly
-        _export_matter(matter=self.matter, requested_by=self.lawyer)
+        service = self.subject(matter=self.matter, requested_by=self.lawyer)
+        service.process()
 
-        # calculate download-link (which could also be taken from the email)
-        created_at = (datetime.date.today()).isoformat()
-        token_data = {'matter_slug': self.matter.slug,
-                      'user_pk': AnonymousUser.pk,
-                      'created_at': created_at}
-        token = signing.dumps(token_data, salt=settings.SECRET_KEY)
-
-        # download the file and check its content
-        download_link = ABSOLUTE_BASE_URL(reverse('matter:download-exported', kwargs={'token': token}))
-        resp = self.client.get(download_link)
+        resp = self.client.get(service.download_link)
         self.assertEqual(resp.status_code, 302)  # redirect to login-page
