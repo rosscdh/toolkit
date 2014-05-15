@@ -128,3 +128,48 @@ class PlanChangeViewTest(BaseScenarios, TestCase):
         self.assertEqual(json.loads(response.content), {
             'error': { 'message': 'Bad card' }
         })
+
+
+class AccountCancelViewTest(BaseScenarios, TestCase):
+    def setUp(self):
+        super(AccountCancelViewTest, self).setUp()
+        self.basic_workspace()
+
+        customer = Customer.objects.create(
+            stripe_id='cus_1',
+            user=self.lawyer
+        )
+        CurrentSubscription.objects.create(
+            customer=customer,
+            plan='pro',
+            quantity=1,
+            start=timezone.now(),
+            status='active',
+            cancel_at_period_end=False,
+            amount=decimal.Decimal('19.99')
+        )
+
+    @mock.patch('payments.models.Customer.cancel')
+    def test_cancel_account(self, cancel_mock):
+        self.client.login(username=self.lawyer.username, password=self.password)
+        response = self.client.post(
+            reverse('me:cancel'),
+            {'reason': 'other'},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+
+        # Check that cancel was called in Stripe
+        self.assertEqual(cancel_mock.call_count, 1)
+
+        # Check that the lawyer isn't active any more
+        self.lawyer = self.lawyer.__class__.objects.get(pk=self.lawyer.pk)
+        self.assertFalse(self.lawyer.is_active)
+
+        # Check that the user was logged out
+        self.assertNotIn('_auth_user_id', self.client.session)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content), {
+            'redirect': True,
+            'url': reverse('public:welcome')
+        })
