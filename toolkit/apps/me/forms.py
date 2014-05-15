@@ -13,7 +13,7 @@ from django.contrib.auth.hashers import make_password
 import os
 import stripe
 
-from storages.backends.s3boto import S3BotoStorage
+from toolkit.core import _managed_S3BotoStorage
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import ButtonHolder, Div, Field, Fieldset, HTML, Layout, Submit
@@ -26,6 +26,7 @@ from payments.forms import PlanForm
 from payments.models import Customer
 
 from toolkit.apps.default.fields import HTMLField
+from toolkit.core.services.analytics import AtticusFinch
 from toolkit.mixins import ModalForm
 
 from .mailers import (ValidatePasswordChangeMailer, ValidateEmailChangeMailer)
@@ -404,7 +405,7 @@ class LawyerLetterheadForm(forms.Form):
         firm_logo = self.cleaned_data.pop('firm_logo', None)
         if firm_logo is not None:
             if hasattr(firm_logo, 'name'):
-                image_storage = S3BotoStorage()
+                image_storage = _managed_S3BotoStorage()
                 # slugify a unique name
                 name, ext = os.path.splitext(firm_logo.name)
                 filename = slugify('%s-%s-%s' % (data.get('firm_name', self.user.username), self.user.pk, name))
@@ -483,3 +484,45 @@ class PlanChangeForm(PlanForm, ModalForm):
             return 'Change to the {0} plan'.format(self.plan['name'])
         else:
             return 'Subscribe to the {0} plan'.format(self.plan['name'])
+
+
+class AccountCancelForm(ModalForm, forms.Form):
+    title = 'Is there anything we can do better? We want to help.'
+
+    reason = forms.ChoiceField(
+        choices=(
+            ('', 'Select a reason...'),
+            ('difficulty-of-use', 'Difficulty of use'),
+            ('other', 'Other'),
+        ),
+        error_messages={
+            'required': "Reason can't be blank."
+        },
+        label='Please tell us why you want to close your account:',
+        help_text='',
+        required=True
+    )
+
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super(AccountCancelForm, self).__init__(*args, **kwargs)
+
+    def save(self, **kwargs):
+        # delete their subscription
+        try:
+            customer = self.user.customer
+        except ObjectDoesNotExist:
+            pass
+        else:
+            customer.cancel(at_period_end=False)
+
+        # set the account to be inactive
+        self.user.is_active = False
+        self.user.save(update_fields=['is_active'])
+
+        analytics = AtticusFinch()
+        analytics.event('user.cancel', reason=self.cleaned_data.get('reason'), user=self.user)
+
+    @property
+    def action_url(self):
+        return reverse('me:cancel')

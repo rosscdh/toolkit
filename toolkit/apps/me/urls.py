@@ -16,6 +16,7 @@ from .views import (ConfirmAccountView,
                     PaymentListView,
                     PlanListView,
                     PlanChangeView,
+                    AccountCancelView,
                     WelcomeView,
 
                     TwoFactorDisableView,
@@ -49,4 +50,6 @@ urlpatterns = patterns(
     url(r'^settings/two-factor/verify/$', login_required(TwoFactorVerifyView.as_view()), name='two-factor-verify'),
 
     url(r'^settings/$', login_required(AccountSettingsView.as_view()), name='settings'),
+
+    url(r'^cancel/$', login_required(AccountCancelView.as_view()), name='cancel'),
 )

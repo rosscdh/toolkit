@@ -12,7 +12,8 @@ from .views import (MatterEndpoint,
                     MatterClosingGroupView,
                     MatterRevisionLabelView,
                     MatterSortView,
-                    MatterParticipant,)
+                    MatterParticipant,
+                    MatterExportView, )
 
 from .views import (ActivityEndpoint,
                     MatterActivityEndpoint,
@@ -79,6 +80,8 @@ urlpatterns = router.urls + patterns('',
     url(r'^matters/(?P<matter_slug>[\w-]+)/participant(/(?P<email>.+))?/?$', MatterParticipant.as_view(), name='matter_participant'),
 
     url(r'^matters/(?P<matter_slug>[\w-]+)/activity/?$', MatterActivityEndpoint.as_view(), name='matter_activity'),
+
+    url(r'^matters/(?P<matter_slug>[\w-]+)/export/?$', MatterExportView.as_view(), name='matter_export'),
 
     #
     # Matter Items

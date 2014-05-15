@@ -59,3 +59,15 @@ def on_subscription_created(sender, event, **kwargs):
 
     analytics = AtticusFinch()
     analytics.event('subscription.created', time=time, user=user)
+
+
+@receiver(WEBHOOK_SIGNALS['customer.subscription.deleted'])
+def on_subscription_deleted(sender, event, **kwargs):
+    user = event.customer.user
+
+    data = event.message['data']
+    canceled_at = data['object']['canceled_at']
+    time = format(datetime.datetime.fromtimestamp(int(canceled_at)), 'c')
+
+    analytics = AtticusFinch()
+    analytics.event('subscription.cancelled', time=time, user=user)

@@ -11,7 +11,8 @@ from .client import ClientEndpoint
 
 from .matter import (MatterEndpoint,
                      ClosingGroupView as MatterClosingGroupView,
-                     RevisionLabelView as MatterRevisionLabelView)
+                     RevisionLabelView as MatterRevisionLabelView,
+                     MatterExportView)
 
 from .review import (ReviewEndpoint,
                      ItemRevisionReviewersView,
