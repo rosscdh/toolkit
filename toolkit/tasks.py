@@ -12,7 +12,7 @@ def run_task(task, **kwargs):
     Function to attemt to run a task async, able to revert to running sync
     if exception happens
     """
-    skip_async = kwargs.get('skip_async', False)
+    skip_async = kwargs.pop('skip_async', False)
 
     if ENABLE_CELERY_TASKS is True and skip_async is False:
         try:

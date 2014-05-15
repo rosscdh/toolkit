@@ -60,7 +60,8 @@ module.exports = function (grunt) {
                     apiBaseUrl : '/api/v1/',
                     DEBUG_MODE : true,
                     SENTRY_PUBLIC_DSN : 'http://5584db708b75400fb439d4592c29fc9a@sentry.ambient-innovation.com/24',
-                    INTERCOM_APP_ID : 'wkxzfou'
+                    INTERCOM_APP_ID : 'wkxzfou',
+                    PUSHER_API_KEY: '60281f610bbf5370aeaa'
                 }
             }
         },
@@ -74,7 +75,8 @@ module.exports = function (grunt) {
                     apiBaseUrl : '/api/v1/',
                     DEBUG_MODE : false,
                     SENTRY_PUBLIC_DSN : 'https://b5a6429d03e2418cbe71cd5a4c9faca6@app.getsentry.com/6287',
-                    INTERCOM_APP_ID : 'ooqtbx99'
+                    INTERCOM_APP_ID : 'ooqtbx99',
+                    PUSHER_API_KEY: '60281f610bbf5370aeaa'
                 }
             }
         },
@@ -88,7 +90,8 @@ module.exports = function (grunt) {
                     apiBaseUrl : '/api/v1/',
                     DEBUG_MODE : true,
                     SENTRY_PUBLIC_DSN : '',
-                    INTERCOM_APP_ID : 'wkxzfou'
+                    INTERCOM_APP_ID : 'wkxzfou',
+                    PUSHER_API_KEY: '60281f610bbf5370aeaa'
                 }
             }
         }
