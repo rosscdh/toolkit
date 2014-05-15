@@ -55,9 +55,12 @@ class ItemCommentEndpoint(MatterItemsQuerySetMixin,
         comment = request.DATA.get('comment', '')
         if comment.strip() not in [None, '']:
             comment_object = self.get_object()
-            comment_object.data['comment'] = comment
-            comment_object.save(update_fields=['data'])
-            return Response(status=http_status.HTTP_200_OK)
+            if comment_object.actor == request.user:
+                comment_object.data['comment'] = comment
+                comment_object.save(update_fields=['data'])
+                return Response(status=http_status.HTTP_200_OK)
+            return Response(status=http_status.HTTP_403_FORBIDDEN,
+                            data={'reason': 'You are not the creator of the comment you want to edit.'})
         else:
             return Response(status=http_status.HTTP_400_BAD_REQUEST, data={'reason': 'You should send a comment.'})
 

@@ -77,6 +77,26 @@ class CommentTest(BaseEndpointTest):
         comment_object = Action.objects.get(id=comment_object.id)
         self.assertEqual(comment_object.data.get('comment'), "The rain in france, falls mainly on a baguette.")
 
+    def test_lawyer_patch_not_allowed(self):
+        # create comment and patch as other user which should not be allowed
+        self.client.login(username=self.user.username, password=self.password)
+
+        comment1 = mommy.make('actstream.Action',
+                              actor=self.lawyer,
+                              verb=u'commented',
+                              action_object=self.item,
+                              target=self.matter,
+                              data={'comment': u'I"m a test comment by lawyer'})
+
+        patch_endpoint = reverse('item_comment', kwargs={'matter_slug': self.matter.slug,
+                                                         'item_slug': self.item.slug,
+                                                         'id': comment1.id})
+        # patch edited comment
+        resp = self.client.patch(patch_endpoint,
+                                 json.dumps({"comment": "The rain in france, falls mainly on a baguette."}),
+                                 content_type='application/json')
+        self.assertEqual(resp.status_code, 403)
+
     def test_lawyer_delete(self):
         self.client.login(username=self.lawyer.username, password=self.password)
 
