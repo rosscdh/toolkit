@@ -5,8 +5,7 @@ angular.module('toolkit-gui').directive('activity', ['$compile','$log', '$sce', 
       ngModel: '=',
       matterSlug: '=',
       itemSlug: '=',
-      user: '=',
-      activityStream: '='
+      user: '='
     },
     replace: true,
     controller: ['$scope', '$http', '$log', 'commentService', 'toaster','$timeout',
@@ -58,15 +57,11 @@ angular.module('toolkit-gui').directive('activity', ['$compile','$log', '$sce', 
                 if($scope.user.user_class==='lawyer'){
                     return true;
                 } else {
-                    var comments = jQuery.grep( $scope.activityStream, function( item ){ return item.type==="item-comment"; } );
-                    var index = jQuery.inArray( $scope.ngModel,comments );
-                    $log.debug(index);
 
                     //if the user is a client, then he might only delete his own comments if there is no newer comment
-                    //TODO username not yet provided
-                    /*if($scope.ngModel.actor.username === $scope.user.username && index===0) {
+                    if($scope.ngModel.actor.username === $scope.user.username) {
                         return true;
-                    }*/
+                    }
                 }
             }
 
