@@ -181,9 +181,10 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
 
         if obj.name is None:
             executed_file = self.request.FILES.get('executed_file')
+
             if executed_file is not None:
                 #
-                # Set the object name to the filename if no obj.name exists
+                # Set the object name to the filename
                 #
                 obj.name = executed_file.name
 
@@ -213,10 +214,11 @@ rulez_registry.register("can_delete", ItemCurrentRevisionView)
 class ItemSpecificReversionView(ItemCurrentRevisionView):
     def get_latest_revision(self):
         version = int(self.kwargs.get('version', 1))
+        revision = None
 
         try:
-            revision = [v for c, v in enumerate(self.item.revision_set.all()) if int(c + 1) == version][0]
+            revision = self.item.revision_set.filter(slug='v%d'%version).first()
         except:
-            revision = None
+            logger.info('Could not find attachment.Revision v%d for matter: %s' % (version, self.matter))
 
         return revision
