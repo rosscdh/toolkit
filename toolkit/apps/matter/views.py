@@ -72,7 +72,6 @@ class MatterDownloadExportView(DetailView):
                 #
                 # File was not found
                 #
-                import pdb;pdb.set_trace()
                 return HttpResponseNotFound('%s was not found on s3' % zip_filename)
 
             else:
