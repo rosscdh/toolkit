@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from django.core.urlresolvers import reverse
 from django.template import Context
 
 from actstream.models import Action
@@ -15,11 +14,12 @@ from toolkit.apps.notification.template_loaders import ACTIVITY_TEMPLATES
 class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
     event = serializers.SerializerMethodField('get_event')
     type = serializers.SerializerMethodField('get_type')
+    username = serializers.CharField(source='actor.username', read_only=True)  # using the LiteUserSerializer would result in more data to transfer
 
     class Meta:
         model = Action
         lookup_field = 'id'
-        fields = ('id', 'event', 'timestamp', 'type')  # timestamp can possibly be removed (if ONLY event is shown in template)
+        fields = ('id', 'event', 'timestamp', 'type', 'username')  # timestamp can possibly be removed (if ONLY event is shown in template)
 
     def __init__(self, *args, **kwargs):
         if 'context' in kwargs and 'request' in kwargs['context']:

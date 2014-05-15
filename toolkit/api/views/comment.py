@@ -27,7 +27,7 @@ class ItemCommentEndpoint(MatterItemsQuerySetMixin,
     lookup_field = 'slug'
     lookup_url_kwarg = 'item_slug'
 
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, )
 
     def initialize_request(self, request, *args, **kwargs):
         """
