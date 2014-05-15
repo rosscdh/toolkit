@@ -1,15 +1,13 @@
-from StringIO import StringIO
-import datetime
-import dateutil
-from django.conf import settings
+# -*- coding: utf-8 -*-
 from django.core import signing
-from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
+from django.conf import settings
+from django.utils.decorators import method_decorator
 from django.core.urlresolvers import reverse, reverse_lazy
+from django.contrib.auth.decorators import user_passes_test
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden, HttpResponseNotFound
 from django.views.generic import CreateView, DeleteView, ListView, TemplateView, UpdateView, DetailView
 
-from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import user_passes_test
-from storages.backends.s3boto import S3BotoStorage
+from toolkit.core import _managed_S3BotoStorage
 
 from toolkit.api.serializers import LiteMatterSerializer
 from toolkit.apps.matter.services import (MatterRemovalService, MatterParticipantRemovalService)
@@ -22,9 +20,12 @@ from rest_framework.renderers import UnicodeJSONRenderer
 from . import MATTER_EXPORT_DAYS_VALID
 from .forms import MatterForm
 
+from StringIO import StringIO
+
+import datetime
+import dateutil
 import logging
 logger = logging.getLogger('django.request')
-
 
 
 class MatterDownloadExportView(DetailView):
@@ -35,7 +36,8 @@ class MatterDownloadExportView(DetailView):
         # take the passed in token and decode it, use the decoded parameters
         # to try to find and serve the exported zip file from s3
         #
-        self.storage = S3BotoStorage()
+        self.storage = _managed_S3BotoStorage()
+        self.export_service = None
 
         token_data = signing.loads(kwargs.get('token'), salt=settings.SECRET_KEY)
 
@@ -46,23 +48,34 @@ class MatterDownloadExportView(DetailView):
         return super(MatterDownloadExportView, self).dispatch(request, *args, **kwargs)
 
     def has_not_expired(self, created_at):
-        return created_at + datetime.timedelta(days=MATTER_EXPORT_DAYS_VALID) > datetime.datetime.now()
+        return created_at + datetime.timedelta(days=MATTER_EXPORT_DAYS_VALID) > datetime.datetime.today()
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
+        self.export_service = MatterExportService(matter=self.object, requested_by=request.user)
 
         created_at = dateutil.parser.parse(kwargs.get('created_at'))
 
         if request.user.pk != kwargs.get('user_pk'):
+            #
+            # user_id does not match, only matter.lawyer can download atm
+            #
             logger.critical("%s tried accessing %s (%s) but is not allowed." % (request.user, self.object, created_at))
             return HttpResponseForbidden('You are not allowed to access this file.')
 
         if self.has_not_expired(created_at=created_at):
 
             # get the name of the zip file on the s3 storage device
-            zip_filename = MatterExportService(matter=self.object, requested_by=request.user).get_zip_filename(kwargs)
+            zip_filename = self.export_service.get_zip_filename(kwargs)
 
-            if self.storage.exists(zip_filename):
+            if not self.storage.exists(zip_filename):
+                #
+                # File was not found
+                #
+                import pdb;pdb.set_trace()
+                return HttpResponseNotFound('%s was not found on s3' % zip_filename)
+
+            else:
                 response = HttpResponse()
                 response['Content-Disposition'] = 'attachment; filename=%s_%s.zip' % \
                                                   (kwargs.get('matter_slug'), created_at.strftime('%Y-%m-%d_%H-%M-%S'))
@@ -79,9 +92,6 @@ class MatterDownloadExportView(DetailView):
                 self.object.actions.user_downloaded_exported_matter(user=request.user)
 
                 return response
-
-            else:
-                logger.critical('Exported matter should be in S3 but is not there: %s' % zip_filename)
 
         logger.info("%s tried accessing %s (%s) but his link had expired." % (request.user, self.object, created_at))
         return HttpResponseForbidden('Your download link has expired.')
