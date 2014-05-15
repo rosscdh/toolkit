@@ -89,6 +89,8 @@ mixpanel-py
 # celery management
 Celery
 
+# Realtime
+pusher
 
 # Payments
 django-stripe-payments==2.0b34
