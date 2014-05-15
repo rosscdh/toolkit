@@ -53,7 +53,7 @@ class MatterActivityEndpointTest(BaseEndpointTest):
         self.assertEqual(rendered, events[0].get('event'))
 
         self.assertItemsEqual(events[0].keys(),
-                              [u'timestamp', u'id', u'event', u'type'])
+                              [u'timestamp', u'id', u'event', u'type', u'username'])
 
 
 class ItemActivityEndpointTest(BaseEndpointTest):
