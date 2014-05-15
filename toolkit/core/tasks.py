@@ -2,8 +2,10 @@
 from django.conf import settings
 
 from toolkit.celery import app
+from toolkit.tasks import run_task
 from toolkit.core.services.lawpal_abridge import LawPalAbridgeService
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
+from toolkit.apps.notification.tasks import youve_got_notifications
 
 import logging
 logger = logging.getLogger('django.request')
@@ -117,9 +119,8 @@ def _notifications_send(verb_slug, actor, target, action_object, message, commen
         if message:
 
             from toolkit.api.serializers.user import LiteUserSerializer
-            # from toolkit.api.serializers.matter import LiteMatterSerializer
 
-            query_set = target.participants
+            query_set = target.participants.select_related('profile')
             #
             # If we are not sending this message to all participants then exclude the originator
             #
@@ -160,7 +161,14 @@ def _notifications_send(verb_slug, actor, target, action_object, message, commen
             #
             # @TODO move into manager?
             #
-            for u in query_set.select_related('profile').exclude(profile__has_notifications=True):
+            for u in query_set.exclude(profile__has_notifications=True):
                 profile = u.profile
                 profile.has_notifications = True
                 profile.save(update_fields=['has_notifications'])
+            #
+            # Send pusher notification
+            #
+            for u in query_set.values('username'):
+                run_task(youve_got_notifications, 
+                    username=u.get('username'),
+                    event='notifications.new')

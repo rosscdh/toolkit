@@ -58,6 +58,11 @@ angular.module('toolkit-gui').config(function($stateProvider, $urlRouterProvider
     $urlRouterProvider.otherwise('/checklist'); 
 });
 
+/**
+ * Pusher API key
+ */
+//angular.module('toolkit-gui').constant('pusher_api_key','60281f610bbf5370aeaa');
+
 
 /**
  * Required to be compatible with the django CSRF protection
