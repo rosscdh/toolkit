@@ -15,7 +15,7 @@ django-jenkins
 HTTPretty
 django-casper
 mock
--e git+https://github.com/vandersonmota/model_mommy.git#egg=model_mommy
+model_mommy
 -e git+git://github.com/neubloc/django-colortools#egg=django-colortools
 pyquery
 django-inmemorystorage
