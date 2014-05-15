@@ -1,6 +1,9 @@
 # -*- coding: UTF-8 -*-
+import datetime
+from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 
 from rulez import registry as rulez_registry
 
@@ -29,18 +32,19 @@ class ItemCommentEndpoint(MatterItemsQuerySetMixin,
 
     permission_classes = (permissions.IsAuthenticated, )
 
-    def _get_newest_comment_by_user(self, user):
-        try:
-            return Action.objects.get_queryset().filter(
-                actor_content_type=ContentType.objects.get_for_model(user),
-                actor_object_id=user.id,
-                verb=u'commented',
-                action_object_content_type=ContentType.objects.get_for_model(self.item),
-                action_object_object_id=self.item.id,
-                target_content_type=ContentType.objects.get_for_model(self.matter),
-                target_object_id=self.matter.id)[0]
-        except IndexError:
-            return None
+    # should not be needed any more since we don't care who edited the comment
+    # def _get_newest_comment_by_user(self, user):
+    #     try:
+    #         return Action.objects.get_queryset().filter(
+    #             actor_content_type=ContentType.objects.get_for_model(user),
+    #             actor_object_id=user.id,
+    #             verb=u'commented',
+    #             action_object_content_type=ContentType.objects.get_for_model(self.item),
+    #             action_object_object_id=self.item.id,
+    #             target_content_type=ContentType.objects.get_for_model(self.matter),
+    #             target_object_id=self.matter.id)[0]
+    #     except IndexError:
+    #         return None
 
     def initialize_request(self, request, *args, **kwargs):
         """
@@ -68,14 +72,14 @@ class ItemCommentEndpoint(MatterItemsQuerySetMixin,
         comment = request.DATA.get('comment', '')
         if comment.strip() not in [None, '']:
             comment_object = self.get_object()
-            # I am only allowed to update a comment if it is my latest one
-            if comment_object.actor == request.user and \
-                            comment_object == self._get_newest_comment_by_user(request.user):
+            # I am only allowed to update a comment if it is mine and it is not older than EDIT_COMMENTS_DURATION
+            if comment_object.actor == request.user and comment_object.timestamp > \
+                            timezone.now() - datetime.timedelta(minutes=settings.EDIT_COMMENTS_DURATION):
                 comment_object.data['comment'] = comment
                 comment_object.save(update_fields=['data'])
                 return Response(status=http_status.HTTP_200_OK)
             return Response(status=http_status.HTTP_403_FORBIDDEN,
-                            data={'reason': u'You are not the creator of the comment you want to edit or it is not your newest comment.'})
+                            data={'reason': u'Your comment is too old to be edited.'})
         else:
             return Response(status=http_status.HTTP_400_BAD_REQUEST, data={'reason': 'You should send a comment.'})
 
@@ -84,14 +88,12 @@ class ItemCommentEndpoint(MatterItemsQuerySetMixin,
 
     def delete(self, request, *args, **kwargs):
         # lawyer can delete at any time
-        # customer can ONLY delete if it is the newest comment
-
-        # possibly change to time limit instead of this last-comment-rule for customers
+        # customer can ONLY delete if it not older than DELETE_COMMENTS_DURATION
 
         self.object = self.get_object()
-        newest_comment_by_user = self._get_newest_comment_by_user(request.user)
 
-        if self.object == newest_comment_by_user or request.user.profile.is_lawyer:
+        if request.user.profile.is_lawyer or self.object.timestamp > \
+                        timezone.now() - datetime.timedelta(minutes=settings.DELETE_COMMENTS_DURATION):
             # TODO: check if lawyer from different matter needs to be blocked
             self.object.delete()
             return Response(status=http_status.HTTP_204_NO_CONTENT)

@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import datetime
+from django.conf import settings
+from django.utils import timezone
 from actstream.models import Action
 from django.core.urlresolvers import reverse
 
@@ -101,6 +104,7 @@ class CommentTest(BaseEndpointTest):
                               verb=u'commented',
                               action_object=self.item,
                               target=self.matter,
+                              timestamp=timezone.now() - datetime.timedelta(minutes=settings.EDIT_COMMENTS_DURATION + 10),
                               data={'comment': u'I"m a test comment #2 by user'})
         comment3 = mommy.make('actstream.Action',
                               actor=self.user,
@@ -109,14 +113,52 @@ class CommentTest(BaseEndpointTest):
                               target=self.matter,
                               data={'comment': u'I"m a test comment #3 by user'})
 
-        # patch comment2 should not be allowed because it is not my newest
+        # patch comment2 should not be allowed because it is too old
         resp = self.client.patch(reverse('item_comment', kwargs={'matter_slug': self.matter.slug,
                                                                  'item_slug': self.item.slug,
                                                                  'id': comment2.id}),
                                  json.dumps({"comment": "The rain in france, falls mainly on a baguette."}),
                                  content_type='application/json')
         self.assertEqual(resp.status_code, 403)
-
+    # def test_lawyer_patch_not_allowed(self):
+    #     # create comment and patch as other user which should not be allowed
+    #     self.client.login(username=self.user.username, password=self.password)
+    #
+    #     comment1 = mommy.make('actstream.Action',
+    #                           actor=self.lawyer,
+    #                           verb=u'commented',
+    #                           action_object=self.item,
+    #                           target=self.matter,
+    #                           data={'comment': u'I"m a test comment by lawyer'})
+    #
+    #     # patch comment1 should not be allowed because it is not mine
+    #     resp = self.client.patch(reverse('item_comment', kwargs={'matter_slug': self.matter.slug,
+    #                                                              'item_slug': self.item.slug,
+    #                                                              'id': comment1.id}),
+    #                              json.dumps({"comment": "The rain in france, falls mainly on a baguette."}),
+    #                              content_type='application/json')
+    #     self.assertEqual(resp.status_code, 403)
+    #
+    #     comment2 = mommy.make('actstream.Action',
+    #                           actor=self.user,
+    #                           verb=u'commented',
+    #                           action_object=self.item,
+    #                           target=self.matter,
+    #                           data={'comment': u'I"m a test comment #2 by user'})
+    #     comment3 = mommy.make('actstream.Action',
+    #                           actor=self.user,
+    #                           verb=u'commented',
+    #                           action_object=self.item,
+    #                           target=self.matter,
+    #                           data={'comment': u'I"m a test comment #3 by user'})
+    #
+    #     # patch comment2 should not be allowed because it is not my newest
+    #     resp = self.client.patch(reverse('item_comment', kwargs={'matter_slug': self.matter.slug,
+    #                                                              'item_slug': self.item.slug,
+    #                                                              'id': comment2.id}),
+    #                              json.dumps({"comment": "The rain in france, falls mainly on a baguette."}),
+    #                              content_type='application/json')
+    #     self.assertEqual(resp.status_code, 403)
 
     def test_lawyer_delete(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -189,6 +231,7 @@ class CommentTest(BaseEndpointTest):
                               verb=u'commented',
                               action_object=self.item,
                               target=self.matter,
+                              timestamp=timezone.now() - datetime.timedelta(minutes=settings.DELETE_COMMENTS_DURATION + 10),
                               data={'comment': u'I"m a test comment #1'})
         comment2 = mommy.make('actstream.Action',
                               actor=self.user,
@@ -197,7 +240,7 @@ class CommentTest(BaseEndpointTest):
                               target=self.matter,
                               data={'comment': u'I"m a test comment #2'})
 
-        # delete
+        # delete too old comment
         resp = self.client.delete(reverse('item_comment', kwargs={'matter_slug': self.matter.slug,
                                                                   'item_slug': self.item.slug,
                                                                   'id': comment1.id}),
