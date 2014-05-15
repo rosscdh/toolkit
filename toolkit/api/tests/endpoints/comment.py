@@ -88,14 +88,35 @@ class CommentTest(BaseEndpointTest):
                               target=self.matter,
                               data={'comment': u'I"m a test comment by lawyer'})
 
-        patch_endpoint = reverse('item_comment', kwargs={'matter_slug': self.matter.slug,
-                                                         'item_slug': self.item.slug,
-                                                         'id': comment1.id})
-        # patch edited comment
-        resp = self.client.patch(patch_endpoint,
+        # patch comment1 should not be allowed because it is not mine
+        resp = self.client.patch(reverse('item_comment', kwargs={'matter_slug': self.matter.slug,
+                                                                 'item_slug': self.item.slug,
+                                                                 'id': comment1.id}),
                                  json.dumps({"comment": "The rain in france, falls mainly on a baguette."}),
                                  content_type='application/json')
         self.assertEqual(resp.status_code, 403)
+
+        comment2 = mommy.make('actstream.Action',
+                              actor=self.user,
+                              verb=u'commented',
+                              action_object=self.item,
+                              target=self.matter,
+                              data={'comment': u'I"m a test comment #2 by user'})
+        comment3 = mommy.make('actstream.Action',
+                              actor=self.user,
+                              verb=u'commented',
+                              action_object=self.item,
+                              target=self.matter,
+                              data={'comment': u'I"m a test comment #3 by user'})
+
+        # patch comment2 should not be allowed because it is not my newest
+        resp = self.client.patch(reverse('item_comment', kwargs={'matter_slug': self.matter.slug,
+                                                                 'item_slug': self.item.slug,
+                                                                 'id': comment2.id}),
+                                 json.dumps({"comment": "The rain in france, falls mainly on a baguette."}),
+                                 content_type='application/json')
+        self.assertEqual(resp.status_code, 403)
+
 
     def test_lawyer_delete(self):
         self.client.login(username=self.lawyer.username, password=self.password)
