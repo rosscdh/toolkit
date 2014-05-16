@@ -24,6 +24,13 @@ In a terminal, run:
 	wget -qO- https://raw.github.com/creationix/nvm/master/install.sh | sh
 	nvm use 0.10
 
+If you have trouble getting node to link with nvm, check out:
+  http://stackoverflow.com/questions/12607155/error-the-brew-link-step-did-not-complete-successfully
+
+
+
+
+
 Then each time you open a terminal:
 
 	nvm use 0.10
