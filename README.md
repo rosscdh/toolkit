@@ -5,8 +5,8 @@ Toolkit is a simplified interface for adding tools and users to a generic
 workspace.
 
 
-Getting started
----------------
+Requirements
+------------
 
 1. mkvirtualenv toolkit (assume you have virtualenv and virtualenvwrapper installed)
 2. pip install -r requirements/dev.txt *
@@ -24,21 +24,33 @@ ARCHFLAGS=-Wno-error=unused-command-line-argument-hard-error-in-future pip insta
 http://stackoverflow.com/questions/22716854/os-x-pillow-installation-error/22727537#22727537
 
 
-Pandoc
-------
+```
+easy_isntall pip
+pip install virtualenvwrapper
+...
+$ export WORKON_HOME=~/.virtualenvs
+$ mkdir -p $WORKON_HOME
+$ source /usr/local/bin/virtualenvwrapper.sh
+$ mkvirtualenv toolkit
+```
 
-__Installing__
+this line goes in your .bashrc .zshrc or whatever your flavour is:
 
-1. Mac: https://code.google.com/p/pandoc/downloads/detail?name=pandoc-1.12.3.pkg.zip&can=2&q= install the osx package
-2. Ubuntu: apt-get install pandoc should do it
+```
+source /usr/local/bin/virtualenvwrapper.sh
+```
 
-__PDF Latext__
+it gives you access to mkvirtualenv rmvirtualenv etc
 
-In order to use the pandoc conversion of html to pdf you need to install latex
 
-1. Mac: http://tug.org/mactex/
-2. Ubuntu: http://java.dzone.com/articles/installing-latex-ubuntu
+Getting started
+---------------
 
+1. mkvirtualenv toolkit (assume you have virtualenv and virtualenvwrapper installed)
+2. pip install -r requirements/dev.txt
+3. fab rebuild_local (will download and install "stamp" - ruby rest api)
+4. honcho start (starts runserver_plus in threaded mode as well as the stamp service)
+5. or just ./manage.py runserver_plus --threaded
 
 Testing
 -------
