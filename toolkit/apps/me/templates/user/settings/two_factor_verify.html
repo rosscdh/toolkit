@@ -1,0 +1,31 @@
+{% extends 'modal.html' %}
+
+{% load url from future %}
+
+{% block modal_title %}Verify{% endblock %}
+
+{% block content %}
+    <form method="POST" action="{% url 'me:two-factor-verify' %}" data-remote="true" parsley-validate="true">
+        {% csrf_token %}
+        <div class="modal-body">
+            {% include "partials/form-errors.html" with form=form %}
+            {{ form.as_p }}
+        </div>
+        <div class="modal-footer">
+            <a href="#" class="btn btn-default" data-dismiss="modal">Cancel</a>
+            <input type="submit" name="submit" value="Next" class="btn btn-danger btn-wide" id="submit-id-submit">
+        </div>
+    </form>
+{% endblock %}
+
+{% block js %}
+    {{ block.super }}
+    <script type="text/javascript">
+    // <![CDATA[
+    (function($) {
+        // Re-bind our overloaded version of parsley to any forms
+        $('#two-factory-verify [parsley-validate]').parsley();
+    })(jQuery);
+    // ]]>
+    </script>
+{% endblock %}

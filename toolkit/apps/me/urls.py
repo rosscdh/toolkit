@@ -16,7 +16,12 @@ from .views import (ConfirmAccountView,
                     PaymentListView,
                     PlanListView,
                     PlanChangeView,
+                    AccountCancelView,
                     WelcomeView,
+
+                    TwoFactorDisableView,
+                    TwoFactorEnableView,
+                    TwoFactorVerifyView,
 
                     AccountSettingsView,
                     LawyerLetterheadView)
@@ -39,5 +44,12 @@ urlpatterns = patterns(
     url(r'^settings/letterhead/$', login_required(LawyerLetterheadView.as_view()), name='letterhead'),
     url(r'^settings/confirm/$', login_required(ConfirmAccountView.as_view()), name='confirm-account'),
     url(r'^settings/change-password/$', login_required(ChangePasswordView.as_view()), name='change-password'),
+
+    url(r'^settings/two-factor/disable/$', login_required(TwoFactorDisableView.as_view()), name='two-factor-disable'),
+    url(r'^settings/two-factor/enable/$', login_required(TwoFactorEnableView.as_view()), name='two-factor-enable'),
+    url(r'^settings/two-factor/verify/$', login_required(TwoFactorVerifyView.as_view()), name='two-factor-verify'),
+
     url(r'^settings/$', login_required(AccountSettingsView.as_view()), name='settings'),
+
+    url(r'^cancel/$', login_required(AccountCancelView.as_view()), name='cancel'),
 )

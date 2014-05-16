@@ -10,7 +10,24 @@ from .client import LiteClientSerializer
 from .item import SimpleItemSerializer
 from .user import LiteUserSerializer
 
+import pytz
 import datetime
+
+
+class ExportInfoSerializer(serializers.Serializer):
+    last_exported = serializers.DateTimeField(read_only=True, required=False)
+    last_export_requested = serializers.DateTimeField(read_only=True, required=False)
+    download_valid_until = serializers.DateTimeField(read_only=True, required=False)
+
+    last_exported_by = serializers.CharField(max_length=255, read_only=True, required=False)
+    last_export_requested_by = serializers.CharField(max_length=255, read_only=True, required=False)
+    
+    download_url = serializers.SerializerMethodField('get_download_url')
+
+    def get_download_url(self, obj):
+        if obj.get('download_valid_until') is not None and datetime.datetime.utcnow().replace(tzinfo=pytz.utc) < obj.get('download_valid_until'):
+            return obj.get('download_valid_until')
+        return None
 
 
 class MatterSerializer(serializers.HyperlinkedModelSerializer):
@@ -39,6 +56,8 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
     current_user = serializers.SerializerMethodField('get_current_user')
 
     percent_complete = serializers.SerializerMethodField('get_percent_complete')
+
+    export_info = serializers.SerializerMethodField('get_export_info')
 
     class Meta:
         model = Workspace
@@ -122,6 +141,10 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
     def get_percent_complete(self, obj):
         return obj.get_percent_complete
 
+    def get_export_info(self, obj):
+        export_info = ExportInfoSerializer(obj.export_info)
+        return export_info.data
+
 
 class LiteMatterSerializer(MatterSerializer):
     """
@@ -130,7 +153,7 @@ class LiteMatterSerializer(MatterSerializer):
     class Meta(MatterSerializer.Meta):
         fields = ('url', 'base_url', 'name', 'slug', 'matter_code', 'client',
                   'lawyer', 'participants', 'date_created', 'date_modified',
-                  'percent_complete', 'regular_url')
+                  'percent_complete', 'export_info', 'regular_url')
 
 
 class SimpleMatterSerializer(MatterSerializer):

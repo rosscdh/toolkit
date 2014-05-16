@@ -98,7 +98,8 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
 
 class SimpleItemSerializer(ItemSerializer):
     class Meta(ItemSerializer.Meta):
-        fields = ('url', 'slug', 'name', 'description',
+        fields = ('url', 'slug',
+                  'name', 'description',
                   'status',
                   'review_percentage_complete',
                   'category',

@@ -8,8 +8,9 @@ from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 
 from toolkit.core.mixins import IsDeletedMixin
 from toolkit.core.mixins import ApiSerializerMixin
+from toolkit.core.mixins import FileExistsLocallyMixin
 
-from .mixins import UserAuthMixin, FileExistsLocallyMixin
+from .mixins import UserAuthMixin
 from .managers import ReviewDocumentManager
 from .mailers import ReviewerReminderEmail
 
@@ -50,6 +51,10 @@ class ReviewDocument(IsDeletedMixin,
     class Meta:
         # @BUSINESS RULE always return the newest to oldest
         ordering = ('-id',)
+
+    # override for FileExistsLocallyMixin:
+    def get_document(self):
+        return self.document.executed_file
 
     def reviewing_user_is_participant_review_url(self, user):
         """

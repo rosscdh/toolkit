@@ -1,4 +1,4 @@
-Django==1.6.4
+Django==1.6.5
 django-extensions>=1.3
 south
 
@@ -82,6 +82,9 @@ crocodoc
 # abridge integration: django-abridge
 -e git+https://github.com/rosscdh/django-abridge.git#egg=django-abridge
 
+# Authy 2fa integration
+-e git+https://github.com/rosscdh/django-authy.git#egg=django-authy
+
 # analytics
 mixpanel-py
 
@@ -89,6 +92,8 @@ mixpanel-py
 # celery management
 Celery
 
+# Realtime
+pusher
 
 # Payments
 django-stripe-payments==2.0b34

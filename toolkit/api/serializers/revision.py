@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 
 from rest_framework import serializers
+from urlparse import urlparse
 
 from toolkit.core.attachment.models import Revision
 from toolkit.core.attachment.tasks import _download_file
@@ -130,12 +131,22 @@ class HyperlinkedAutoDownloadFileField(LimitedExtensionMixin, serializers.URLFie
 
                 original_filename = _valid_filename_length(request.DATA.get('name'))
 
+                if original_filename is None:
+                    #
+                    # the name was not set; therefore extract it from executed_file which shoudl be a url at this point
+                    #
+                    try:
+                        url_path = urlparse(request.DATA.get('executed_file'))
+                    except:
+                        # sometimes, yknow its not a url
+                        url_path = request.DATA.get('executed_file')
+                    original_filename = os.path.basename(url_path.path)
+
                 #
                 # NB! we pass this into download which then brings the filedown and names it in the precribed
                 # upload_to manner
                 #
                 file_name, file_object = _download_file(url=url, filename=original_filename, obj=obj, obj_fieldname=field_name)
-
                 field = getattr(obj, field_name)
 
                 # NB! we reuse the original_filename!
@@ -173,7 +184,8 @@ class FileFieldAsUrlField(LimitedExtensionMixin, serializers.FileField):
             #
             # Just download the object, the rest gets handled naturally
             #
-            _download_file(url=value.url, filename=value.name, obj=value.instance)
+            if urlparse(value.url).scheme:  # check where delaing with an actual url here
+                _download_file(url=value.url, filename=value.name, obj=value.instance)
 
         return getattr(value, 'url', super(FileFieldAsUrlField, self).to_native(value=value))
 
