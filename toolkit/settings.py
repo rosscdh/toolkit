@@ -119,6 +119,7 @@ PROJECT_APPS = (
     # Lawpal Modules
     'hello_sign',
     'dj_crocodoc',
+    'dj_authy',
 )
 
 HELPER_APPS = (
