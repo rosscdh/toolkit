@@ -5,6 +5,8 @@
         <div ng-bind-html="head"></div>
         <blockquote>
             <span class="fui-chat"></span>
+            <a href="javascript:;" ng-click="deleteComment()" ng-show="deleteCommentIsEnabled()" class="close">x</a>
+            <a href="javascript:;" ng-click="startEditingComment()" ng-show="editCommentIsEnabled()" class="edit fui-new"></a>
             <div ng-click="startEditingComment()" ng-hide="show_edit_comment" ng-bind-html="data.comment | newlines"></div>
             <div class="comment-description" ng-show="show_edit_comment">
                 <textarea class="form-control" ng-model="data.edit_comment" focus-on="event_edit_comment"></textarea>
@@ -13,8 +15,6 @@
                 <a href="javascript:;" class="btn btn-inverse btn-xs item-description-cancel"
                    ng-click="show_edit_comment=false;data.edit_comment='';">Cancel</a>
             </div>
-        </blockquote>
-        <a href="javascript:;" ng-click="startEditingComment()" ng-show="editCommentIsEnabled()">Edit</a>
-        <a href="javascript:;" ng-click="deleteComment()" ng-show="deleteCommentIsEnabled()">Delete</a>
+        </blockquote>       
     </div>
 </div>

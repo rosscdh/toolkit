@@ -1,3 +1,14 @@
+/**
+ * @class activity
+ * @classdesc                             Directive for handling activity events
+ *
+ * @param  {Object} $scope                Contains the scope of this controller
+ * @param  {Object} commentService        An angular service designed to work with the COMMENT end-point
+ * @param  {Object} ngModel               The activity event object
+ * @param  {Object} matterSlug            The slug of the matter
+ * @param  {Object} itemSlug              The slug of the currently selected item
+ * @param  {Object} user                  The current user object
+ */
 angular.module('toolkit-gui').directive('activity', ['$compile', '$log', '$sce', '$filter', function ($compile, $log, $sce, $filter) {
     return {
         scope: {
@@ -15,6 +26,13 @@ angular.module('toolkit-gui').directive('activity', ['$compile', '$log', '$sce',
                     'comment': ''
                 };
 
+                /**
+                 * Delete the given comment object
+                 *
+                 * @memberof            activity
+                 * @private
+                 * @type {Object}
+                 */
                 $scope.deleteComment = function () {
                     //TODO itemSlug shouldnt be necessary
                     commentService.delete($scope.matterSlug, $scope.itemSlug, $scope.ngModel.id).then(
@@ -27,6 +45,13 @@ angular.module('toolkit-gui').directive('activity', ['$compile', '$log', '$sce',
                     );
                 };
 
+                /**
+                 * Update the given comment object
+                 *
+                 * @memberof            activity
+                 * @private
+                 * @type {Object}
+                 */
                 $scope.saveComment = function () {
                     $scope.data.comment = $scope.data.edit_comment;
                     commentService.update($scope.matterSlug, $scope.itemSlug, $scope.ngModel.id, $scope.data.comment).then(
@@ -38,6 +63,13 @@ angular.module('toolkit-gui').directive('activity', ['$compile', '$log', '$sce',
                     );
                 };
 
+                /**
+                 * Delete the given comment object
+                 *
+                 * @memberof            activity
+                 * @private
+                 * @type {Object}
+                 */
                 $scope.startEditingComment = function () {
                     if ($scope.editCommentIsEnabled()) {
                         $scope.show_edit_comment = true;
@@ -52,12 +84,12 @@ angular.module('toolkit-gui').directive('activity', ['$compile', '$log', '$sce',
                 /**
                  * Checks if the current user may delete the given comment item
                  *
-                 * @memberof            ChecklistCtrl
+                 * @memberof            activity
                  * @private
                  * @type {Object}
                  */
                 $scope.deleteCommentIsEnabled = function () {
-                    if ($scope.ngModel.type === "item-comment") {
+                    if ($scope.ngModel.type === "item-comment" && $scope.itemSlug) {
                         $log.debug($scope.user.user_class);
                         //if user is lawyer, he might delete all comments
                         if ($scope.user.user_class === 'lawyer') {
@@ -75,14 +107,14 @@ angular.module('toolkit-gui').directive('activity', ['$compile', '$log', '$sce',
                 };
 
                 /**
-                 * Checks if the current user may delete the given comment item
+                 * Checks if the current user may edit the given comment item
                  *
-                 * @memberof            ChecklistCtrl
+                 * @memberof            activity
                  * @private
                  * @type {Object}
                  */
                 $scope.editCommentIsEnabled = function () {
-                    if ($scope.ngModel.type === "item-comment") {
+                    if ($scope.ngModel.type === "item-comment" && $scope.itemSlug) {
                         $log.debug($scope.user.user_class);
 
                         var timediff = moment().diff(moment($scope.ngModel.timestamp),'minutes');
