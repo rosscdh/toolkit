@@ -49,7 +49,7 @@ var LastExportRequestedView = React.createClass({
 
 var ExportButtonInterface = React.createClass({
     getInitialState: function() {
-        var is_pending_export = this.props.export_info.is_pending_export        
+        var is_pending_export = this.props.export_info.is_pending_export
         var requested_by = this.props.export_info.last_export_requested_by
 
         if (is_pending_export == true) {

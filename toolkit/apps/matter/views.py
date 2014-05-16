@@ -135,10 +135,13 @@ class MatterListView(ListView):
         }
 
 
-class MatterDetailView(TemplateView):
+class MatterDetailView(DetailView):
     """
     Just a proxy view through to the AngularJS app.
     """
+    model = Workspace
+    slug_url_kwarg = 'matter_slug'
+
     def get_template_names(self):
         if settings.PROJECT_ENVIRONMENT in ['prod'] or settings.DEBUG is False:
             return ['dist/index.html']
