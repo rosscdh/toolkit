@@ -5,8 +5,10 @@ from django.dispatch import Signal, receiver
 from django.db.models.signals import m2m_changed
 
 import dj_crocodoc.signals as crocodoc_signals
-from toolkit.apps.review.models import ReviewDocument
 
+from toolkit.core.services.analytics import AtticusFinch
+
+from toolkit.apps.review.models import ReviewDocument
 from toolkit.apps.workspace.models import Workspace
 
 from toolkit.apps.workspace.models import InviteKey
@@ -111,6 +113,10 @@ def crocodoc_webhook_event_recieved(sender, verb, document, target, attachment_n
             matter = target.item.matter
 
         if matter is not None:
+
+            analytics = AtticusFinch()
+            analytics.event('crocodoc.%s' % crocodoc_event, reason='Interacted with a crocodoc document', user=user)
+
             if crocodoc_event in ['annotation.create', 'comment.create', 'comment.update']:
                 # user MUST be in document.source_object.primary_reviewdocument.reviewers
                 # otherwise he could not get to this point
