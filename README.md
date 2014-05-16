@@ -5,6 +5,28 @@ Toolkit is a simplified interface for adding tools and users to a generic
 workspace.
 
 
+Requirements
+------------
+
+```
+easy_isntall pip
+pip install virtualenvwrapper
+...
+$ export WORKON_HOME=~/.virtualenvs
+$ mkdir -p $WORKON_HOME
+$ source /usr/local/bin/virtualenvwrapper.sh
+$ mkvirtualenv toolkit
+```
+
+this line goes in your .bashrc .zshrc or whatever your flavour is:
+
+```
+source /usr/local/bin/virtualenvwrapper.sh
+```
+
+it gives you access to mkvirtualenv rmvirtualenv etc
+
+
 Getting started
 ---------------
 
@@ -12,23 +34,7 @@ Getting started
 2. pip install -r requirements/dev.txt
 3. fab rebuild_local (will download and install "stamp" - ruby rest api)
 4. honcho start (starts runserver_plus in threaded mode as well as the stamp service)
-
-
-Pandoc
-------
-
-__Installing__
-
-1. Mac: https://code.google.com/p/pandoc/downloads/detail?name=pandoc-1.12.3.pkg.zip&can=2&q= install the osx package
-2. Ubuntu: apt-get install pandoc should do it
-
-__PDF Latext__
-
-In order to use the pandoc conversion of html to pdf you need to install latex
-
-1. Mac: http://tug.org/mactex/
-2. Ubuntu: http://java.dzone.com/articles/installing-latex-ubuntu
-
+5. or just ./manage.py runserver_plus --threaded
 
 Testing
 -------
