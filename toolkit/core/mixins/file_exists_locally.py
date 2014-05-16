@@ -45,7 +45,7 @@ class FileExistsLocallyMixin(object):
         try:
             return default_storage.exists(self.get_document())
         except Exception as e:
-            logger.error('File does not exist locally: %s raised exception %s' % (self.get_document(), e))
+            logger.info('File does not exist locally: %s raised exception %s' % (self.get_document(), e))
         return False
 
     def read_local_file(self):
@@ -64,7 +64,7 @@ class FileExistsLocallyMixin(object):
         if b.exists(file_name) is False:
             msg = 'file does not exist on s3: %s' % file_name
             logger.critical(msg)
-            raise Exception(msg)
+            return None
 
         else:
             #

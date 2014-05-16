@@ -76,8 +76,6 @@ class CrocodocLoaderService(object):
         # and then if/when it is upload it to crocdoc
         self.ensure_local_file()
 
-        
-
         # @TODO this should ideally be set in the service on init
         # and session automatically updated
         # https://crocodoc.com/docs/api/ for more info
