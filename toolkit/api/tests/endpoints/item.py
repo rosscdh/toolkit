@@ -251,7 +251,6 @@ class ItemDataTest(BaseEndpointTest):
         self.assertEqual(resp.status_code, 200)
 
         stream = model_stream(Item)
-        #import pdb;pdb.set_trace()
         self.assertEqual(len(stream), 2)
 
         self.assertEqual(stream[0].data['override_message'],
