@@ -104,10 +104,17 @@ STRIPE_SECRET_KEY = 'pk_test_pVBXSHiazhp3b0EyGHQa8Dx2'
 # Celery SQS Tasks
 #
 CELERY_DEFAULT_QUEUE = 'lawpal-local'
-ENABLE_CELERY_TASKS = True
+ENABLE_CELERY_TASKS = False
 
 #
 # Authy
 #
 AUTHY_KEY = 'bcdfb7ce5e6854dcfe65ce5dd0d568c7'
 AUTHY_IS_SANDBOXED = True
+
+#
+# Pusher
+#
+PUSHER_APP_ID = 44301
+PUSHER_KEY = '514360ee427ceb00cd8d'
+PUSHER_SECRET = '8fa687dde7e745e8f9d7'
