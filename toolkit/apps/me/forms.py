@@ -214,6 +214,9 @@ class ConfirmAccountForm(BaseAccountSettingsFields, forms.ModelForm):
         model = User
 
     def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        self.user = self.request.user
+
         super(ConfirmAccountForm, self).__init__(*args, **kwargs)
 
         self.helper.layout = Layout(

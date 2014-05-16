@@ -60,6 +60,13 @@ class ConfirmAccountView(UpdateView):
     def get_object(self, queryset=None):
         return self.request.user
 
+    def get_form_kwargs(self):
+        kwargs = super(ConfirmAccountView, self).get_form_kwargs()
+        kwargs.update({
+            'request': self.request
+        })
+        return kwargs
+
     def form_valid(self, form):
         # get target user, profile
         profile = self.request.user.profile
