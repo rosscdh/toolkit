@@ -34,9 +34,5 @@
     "angular-intercom": "latest",
     "crypto-js": "http://crypto-js.googlecode.com/files/CryptoJS%20v3.1.2.zip",
     "jquery-ui-touch-punch": "*"
-  },
-  "resolutions": {
-    "angular": "~1.2.x",
-    "angular-sanitize": "~1.2.16"
   }
 }

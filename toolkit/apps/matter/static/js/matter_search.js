@@ -215,7 +215,7 @@ var EditMatterInterface = React.createClass({displayName: 'EditMatterInterface',
 
         } else {
 
-            return '';
+            return (React.DOM.span(null));
         }
     }
 });
