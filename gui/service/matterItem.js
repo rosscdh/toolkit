@@ -14,13 +14,14 @@ angular.module('toolkit-gui')
 	'matterService',
 	'API_BASE_URL',
 	function( $q, $resource, $rootScope, $upload, matterService, API_BASE_URL) {
+		'use strict';
 		/**
 		 * TBC: this variable will contain the JWT token required to make authenticated requests
 		 * @memberof matterItemService
 		 * @type {Object}
 		 * @private
 		 */
-		var token = { 'value': 'xyz' };
+		//var token = { 'value': 'xyz' };
 
 		/**
 		 * Selected matter item.
@@ -126,17 +127,17 @@ angular.module('toolkit-gui')
 				var api = matterItemResource();
 
 				var matterItem = {
-					"status": 0,
-					"name": itemName,
-					"category": categoryName,
-					"matter": API_BASE_URL + 'matters/' + matterSlug,
-					"parent": null,
-					"children": [],
-					"closing_group": null,
-					"latest_revision": null,
-					"is_final": false,
-					"is_complete": false,
-					"date_due": null
+					'status': 0,
+					'name': itemName,
+					'category': categoryName,
+					'matter': API_BASE_URL + 'matters/' + matterSlug,
+					'parent': null,
+					'children': [],
+					'closing_group': null,
+					'latest_revision': null,
+					'is_final': false,
+					'is_complete': false,
+					'date_due': null
 				};
 
 				api.create({'matterSlug': matterSlug }, matterItem,
@@ -246,7 +247,7 @@ angular.module('toolkit-gui')
 			 *
 			 * @return {Promise}    Updated item object as provided by API
 			 */
-			'uploadRevision': function( matterSlug, itemSlug, files ) {
+			'uploadRevision': function( matterSlug, itemSlug, files, status ) {
 				var deferred = $q.defer();
 
 				var api = revisionItemResource();
@@ -254,7 +255,7 @@ angular.module('toolkit-gui')
 				var fileurl = files[0].url;
 				var filename = files[0].filename;
 
-				api.create({'matterSlug': matterSlug, 'itemSlug': itemSlug }, { 'executed_file': fileurl, 'name': filename },
+				api.create({'matterSlug': matterSlug, 'itemSlug': itemSlug }, { 'executed_file': fileurl, 'name': filename, 'status':status },
 					function success(revision){
 						deferred.resolve(revision);
 					},
@@ -274,9 +275,9 @@ angular.module('toolkit-gui')
 			 * @return {Promise}
 			 */
 			'uploadRevisionFile': function( matterSlug, itemSlug, $files ) {
-				var deferred = $q.defer(), files, url;
+				var deferred = $q.defer(), /*files,*/ url;
 
-				var api = revisionItemResource();
+				//var api = revisionItemResource();
 
 				if( $files.length>0 ) {
 					url = API_BASE_URL + 'matters/'+matterSlug+'/items/'+itemSlug+'/revision';
@@ -290,10 +291,12 @@ angular.module('toolkit-gui')
 						console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
 
 						deferred.notify(parseInt(100.0 * evt.loaded / evt.total));
-					}).success(function(data, status, headers, config) {
+					}).success(function(data/*, status, headers, config*/) {
 						// file is uploaded successfully
 						deferred.resolve(data);
-						console.log(data);
+						//console.log(data);
+					}).error(function(){
+						deferred.reject('Unable to upload file');
 					});
 				} else {
 					setTimeout(

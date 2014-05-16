@@ -170,7 +170,7 @@ body.gui {
 // -------------------------
 
 .matters .page-header {
-  padding-bottom: 20px !important;
+  padding-bottom:20px!important;
 }
 
 .matter .card {
@@ -232,22 +232,13 @@ body.gui {
     top: 5px;
   }
   .progress {
-    margin-bottom: 0px;
-    border-radius: 0px;
+    margin-bottom:0px;
+    border-radius:0px;
     .progress-bar {
-      border-radius: 0px;
+      border-radius:0px;
     }
   }
-}
 
-.matter.archived .card {
-  .title {
-    height: auto;
-  }
-  .edit {
-    right: 10px;
-    top: 27px;
-  }
 }
 
 // Welcome Block
@@ -489,7 +480,14 @@ body.gui {
     padding: 20px;
 
     .avatar {
-      margin-top: 8px;
+      margin-top: 5px;
+    }
+    a {
+      color:#666;
+      border-bottom:1px dotted darken(@gray, 5%);
+    }
+    a.btn {
+      border-bottom:none;
     }
 
     .notification-btn {
@@ -499,8 +497,19 @@ body.gui {
     }
 
     p {
-      color: @gray;
+      color: #888;
       margin-bottom: 0;
+    }
+    .lead {
+      font-weight: bold;
+      font-size:17px;
+    }
+    p.quote {
+      font-size:14px;
+      line-height: 19px!important;
+      border-left:2px solid lighten(@gray, 25%);
+      padding-left:10px;
+      margin:5px;
     }
   }
 }
@@ -575,6 +584,7 @@ body.gui {
   padding-right: 30px;
 }
 
+
 // Parsley.js
 // -------------------------
 
@@ -597,6 +607,51 @@ body.gui {
     }
   }
 }
+
+
+// Plans
+// -------------------------
+
+.plan {
+  background: white;
+  border: 2px solid mix(@inverse, @brand-primary, 90%);
+  border-radius: @border-radius-large;
+  padding: 14px;
+  position: relative;
+  text-align: center;
+
+  .plan-image {
+    height: 100px;
+    margin: 31px 0 27px;
+    vertical-align: bottom;
+
+    &.big-illustration {
+      height: 111px;
+      margin-top: 20px;
+      width: 112px;
+    }
+  }
+  .plan-title {
+    margin: 0;
+  }
+  .plan-price {
+    color: @brand-success;
+  }
+  .plan-description {
+    padding:0px 20px;
+    margin-bottom: 15px;
+  }
+  .plan-features {
+    font-size:16px;
+    font-weight:bold;
+    margin-bottom: 15px;
+  }
+  p {
+    font-size: 15px;
+    margin-bottom: 33px;
+  }
+}
+
 
 // Public
 // -------------------------
@@ -948,6 +1003,24 @@ body.gui {
   }
 }
 
+.people-multi {
+  .avatar {
+    border: 2px solid white;
+
+    &:first-child {
+      margin-right: -30px;
+      z-index: 999;
+    }
+    &:nth-child(2) {
+      margin-right: -30px;
+      z-index: 666;
+    }
+    &:nth-child(3) {
+      z-index: 333;
+    }
+  }
+}
+
 
 // Widget
 // -------------------------
@@ -1115,4 +1188,27 @@ body.entry-pages {
   input:-webkit-autofill {
       -webkit-box-shadow: 0 0 0px 1000px white inset;
   }
+}
+
+
+// Bordered Tables
+// -------------------------
+
+.gui .table-bordered {
+  background-color: white;
+  border: 2px solid lighten(@silver, 12%) !important;
+}
+
+
+// Matter Search Field
+// -------------------------
+
+.search-field {
+    margin-right: 10px;
+    margin-top: -1px;
+    width: 230px;
+
+    input {
+        margin-top: -5px;
+    }
 }

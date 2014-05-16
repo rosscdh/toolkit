@@ -42,8 +42,6 @@ def _authenticate(request, obj, matter, **kwargs):
             # We are indeed the reviewer and are reviewing the document
             #
             login(request, requested_authenticated_user)
-            # only for the reviewer, we dont do this for when participants view
-            obj.reviewer_has_viewed = True
 
 
 class ReviewRevisionView(DetailView):
@@ -76,10 +74,6 @@ class ReviewRevisionView(DetailView):
         #
         _authenticate(request=self.request, obj=self.object, matter=self.matter, **self.kwargs)
 
-        self.object.document.item.matter.actions.user_viewed_revision(item=self.object.document.item,
-                                                                      user=self.request.user,
-                                                                      revision=self.object.document)
-
         return self.object
 
     def get_context_data(self, **kwargs):
@@ -110,7 +104,7 @@ class DownloadRevision(ReviewRevisionView):
         # Use our localised filename so the user has info about which version
         # etc that it came from
         #
-        file_name = self.object.document.executed_file.name
+        file_name = self.object.get_document().name
 
         split_file_name = os.path.split(file_name)[-1]
         filename_no_ext, ext = os.path.splitext(split_file_name)
@@ -121,7 +115,7 @@ class DownloadRevision(ReviewRevisionView):
 
         try:
             #
-            # Try read it from teh local file first
+            # Try read it from the local file first
             #
             resp = HttpResponse(self.object.read_local_file(), content_type='application/{ext}'.format(ext=ext))
         except:

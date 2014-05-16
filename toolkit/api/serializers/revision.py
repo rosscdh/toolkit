@@ -3,10 +3,13 @@ from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 
 from rest_framework import serializers
+from urlparse import urlparse
 
 from toolkit.core.attachment.models import Revision
 from toolkit.core.attachment.tasks import _download_file
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
+
+from toolkit.api.serializers.user import _get_user_review
 
 from .user import SimpleUserSerializer
 from .review import ReviewSerializer
@@ -14,6 +17,30 @@ from .review import ReviewSerializer
 import os
 import logging
 logger = logging.getLogger('django.request')
+
+# should be as short as possible, to allow for the upload_to path as well as extension as well as other addons
+MAX_LENGTH_FILENAME = 50
+# list of extensions to accept
+EXT_WHITELIST = ('.pdf', '.docx', '.doc', '.ppt', '.pptx', '.xls', '.xlsx')
+# need to get a list of mimetypes for teh above
+
+
+def _valid_filename_length(filename):
+    """
+    1. ensure length is max 85 (to account for 100 char limit in django filename fields)
+    """
+
+    original_filename = filename
+    base_filename, ext = os.path.splitext(original_filename)
+    ext = ext.lower()
+
+    if ext not in EXT_WHITELIST:
+        raise ValidationError("Invalid filetype, is: %s should be in: %s" % (ext, self.ext_whitelist))
+
+    if len(base_filename) > MAX_LENGTH_FILENAME:  # allow for 20 aspects to the name in addition ie. v1-etc
+        base_filename = base_filename[0:MAX_LENGTH_FILENAME]
+
+    return '%s%s' % (base_filename, ext)
 
 
 class FileHasNoNameException(Exception):
@@ -39,7 +66,7 @@ class LimitedExtensionMixin(object):
     ...
     ValidationError: [u'Not allowed filetype!']
     """
-    ext_whitelist = ('.pdf', '.docx', '.doc', '.ppt', '.pptx', '.xls', '.xlsx')
+    ext_whitelist = EXT_WHITELIST
 
     def __init__(self, *args, **kwargs):
         ext_whitelist = kwargs.pop("ext_whitelist", self.ext_whitelist)
@@ -102,14 +129,24 @@ class HyperlinkedAutoDownloadFileField(LimitedExtensionMixin, serializers.URLFie
                 request = self.context.get('request', {})
                 url = request.DATA.get('executed_file')
 
-                original_filename = request.DATA.get('name')
+                original_filename = _valid_filename_length(request.DATA.get('name'))
+
+                if original_filename is None:
+                    #
+                    # the name was not set; therefore extract it from executed_file which shoudl be a url at this point
+                    #
+                    try:
+                        url_path = urlparse(request.DATA.get('executed_file'))
+                    except:
+                        # sometimes, yknow its not a url
+                        url_path = request.DATA.get('executed_file')
+                    original_filename = os.path.basename(url_path.path)
 
                 #
                 # NB! we pass this into download which then brings the filedown and names it in the precribed
                 # upload_to manner
                 #
                 file_name, file_object = _download_file(url=url, filename=original_filename, obj=obj, obj_fieldname=field_name)
-
                 field = getattr(obj, field_name)
 
                 # NB! we reuse the original_filename!
@@ -147,7 +184,8 @@ class FileFieldAsUrlField(LimitedExtensionMixin, serializers.FileField):
             #
             # Just download the object, the rest gets handled naturally
             #
-            _download_file(url=value.url, filename=value.name, obj=value.instance)
+            if urlparse(value.url).scheme:  # check where delaing with an actual url here
+                _download_file(url=value.url, filename=value.name, obj=value.instance)
 
         return getattr(value, 'url', super(FileFieldAsUrlField, self).to_native(value=value))
 
@@ -155,9 +193,11 @@ class FileFieldAsUrlField(LimitedExtensionMixin, serializers.FileField):
 class RevisionSerializer(serializers.HyperlinkedModelSerializer):
     url = serializers.SerializerMethodField('get_custom_api_url')
 
+    regular_url = serializers.Field(source='get_regular_url')
+
     executed_file = HyperlinkedAutoDownloadFileField(required=False)
 
-    status = serializers.ChoiceField(required=False, choices=Revision.REVISION_STATUS.get_choices())
+    status = serializers.IntegerField(required=False)
 
     item = serializers.HyperlinkedRelatedField(many=False, view_name='item-detail')
 
@@ -165,7 +205,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
     signers = serializers.HyperlinkedRelatedField(many=True, view_name='user-detail', lookup_field='username')
 
     # "user" <— the currently logged in user.. "review_url" because the url is relative to the current user
-    user_review_url = serializers.SerializerMethodField('get_user_review_url')
+    user_review = serializers.SerializerMethodField('get_user_review')
     user_download_url = serializers.SerializerMethodField('get_user_download_url')
 
     revisions = serializers.SerializerMethodField('get_revisions')
@@ -176,7 +216,8 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Revision
-        fields = ('url', 'slug',
+        fields = ('slug',
+                  'url', 'regular_url',
                   'name', 'description',
                   'executed_file',
                   'status',
@@ -184,7 +225,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
                   'uploaded_by',
                   'reviewers', 'signers',
                   'revisions',
-                  'user_review_url', 'user_download_url',
+                  'user_review', 'user_download_url',
                   'date_created',)
 
     def __init__(self, *args, **kwargs):
@@ -214,8 +255,22 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
 
         super(RevisionSerializer, self).__init__(*args, **kwargs)
 
+    def validate_executed_file(self, attrs, source):
+        """
+        Ensure is valid length filename 100 is the max length
+        """
+        executed_file = attrs.get(source)
+        if executed_file is not None and type(executed_file) not in [str, unicode]:
+            executed_file.name = _valid_filename_length(executed_file.name)
+            attrs[source] = executed_file
+
+        return attrs
+
     def get_custom_api_url(self, obj):
-        return ABSOLUTE_BASE_URL(reverse('matter_item_specific_revision', kwargs={'matter_slug': obj.item.matter.slug, 'item_slug': obj.item.slug, 'version': obj.slug.replace('v', '')}))
+        return ABSOLUTE_BASE_URL(reverse('matter_item_specific_revision',
+                                         kwargs={'matter_slug': obj.item.matter.slug,
+                                                 'item_slug': obj.item.slug,
+                                                 'version': obj.slug.replace('v', '')}))
 
     def get_uploaded_by(self, obj):
         return SimpleUserSerializer(obj.uploaded_by, context={'request': self.context.get('request')}).data
@@ -230,29 +285,21 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
 
         return reviewers
 
-    def get_user_review_url(self, obj):
+    def get_user_review(self, obj):
         """
         Try to provide an initial reivew url from the base review_document obj
         for the currently logged in user
         """
         context = getattr(self, 'context', None)
         request = context.get('request')
-        review_document = context.get('review_document', None)
 
-        if request is not None:
-            #
-            # if we have a review_document present in the context
-            #
-            if review_document is None:
-                # we have none, then try find the reviewdocument object that has all the matter participants in it
-                #
-                # The bast one will have 0 reviewers! and be the last in the set (because it was added first)
-                #
-                review_document = obj.reviewdocument_set.all().last()
+        review_document = _get_user_review(self=self, obj=obj, context=context)
 
-            return review_document.get_absolute_url(user=request.user) if review_document is not None else None
-
-        return None
+        if review_document is not None:
+            return {
+                'url': review_document.get_absolute_url(user=request.user),
+                'slug': review_document.slug
+            }
 
     def get_user_download_url(self, obj):
         """
@@ -261,20 +308,11 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
         """
         context = getattr(self, 'context', None)
         request = context.get('request')
-        review_document = context.get('review_document', None)
 
-        if request is not None:
-            #
-            # if we have a review_document present in the context
-            #
-            if review_document is None:
-                # we have none, then try find the reviewdocument object that has all the matter participants in it
-                #
-                # The bast one will have 0 reviewers! and be the last in the set (because it was added first)
-                #
-                review_document = obj.reviewdocument_set.all().last()
+        review_document = _get_user_review(self=self, obj=obj, context=context)
 
-            return review_document.get_download_url(user=request.user) if review_document is not None else None
+        if review_document is not None:
+            return review_document.get_download_url(user=request.user)
 
         return None
 
@@ -288,7 +326,8 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
 
 class SimpleRevisionSerializer(RevisionSerializer):
     class Meta(RevisionSerializer.Meta):
-        fields = ('url', 'slug',
+        fields = ('slug',
+                  'url', 'regular_url',
                   'name',
                   'status',
                   'date_created',)

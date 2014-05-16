@@ -17,7 +17,7 @@ html,body, div.full
 @doc-status-7:		lighten(@concrete, 10%);			// Custom C
 @doc-status-8:		lighten(@alizarin, 10%);			// Custom D
 @doc-status-9:		lighten(@concrete, 10%);			// Custom E
- 
+
 
 /* Navbar - this is the top of sthe matter  */
 .navbar {
@@ -40,7 +40,7 @@ html,body, div.full
 				margin-right:3px;
 				font-size:14px;
 			}
-			img.user { 
+			img.user {
 				width:26px;
 				border-radius: 15px;
 				margin-top:-9px;
@@ -76,7 +76,7 @@ html,body, div.full
 
 	}
 	.logo-mark {
-		float:left;	
+		float:left;
 		border-right:0px solid darken(@brand-primary, 5%);
 		padding:14px 12px 15px 17px;
 		img {
@@ -127,7 +127,7 @@ html,body, div.full
 		color:#666;
 	}
 
-	img.user { 
+	img.user {
 		width:30px;
 		border-radius: 15px;
 		margin-top:-4px;
@@ -154,7 +154,7 @@ html,body, div.full
 				text-decoration:underline;
 			}
 		}
-		small { 
+		small {
 			font-size:13px;
 		}
 		.item-help {
@@ -238,8 +238,12 @@ html,body, div.full
 					border-width:5px 4px;
 				}
 			}
-
 		}
+        .no-revisions {
+            color:lighten(@gray, 20%);
+            padding:10px;
+            text-align:center;
+        }
 		.waiting-revision {
 			text-align:center;
 			background-color:lighten(@brand-warning, 15%);
@@ -318,7 +322,7 @@ html,body, div.full
 					}
 					.item-description {
 						margin-bottom:10px;
-					}					
+					}
 					.tools {
 						background-color:@doc-status-0;
 						padding:1px 3px 2px 4px;
@@ -400,7 +404,7 @@ html,body, div.full
 						background-color:lighten(@silver, 18%);
 					}
 					ul {
-					
+
 						li {
 							margin-bottom:5px;
 							margin-top:5px;
@@ -480,7 +484,7 @@ html,body, div.full
 			padding-top:10px;
 			padding-bottom:10px;
 			textarea {
-				font-size:12px; 
+				font-size:12px;
 				border:0px;
 				margin-top:3px;
 				&:focus {
@@ -492,7 +496,108 @@ html,body, div.full
 				margin-top:-10px;
 			}
 		}
-		ul {
+		ul.activity-log {
+			margin-top: 10px;
+			li {
+				font-size:12px;
+				line-height: 17px;
+				margin-bottom:4px;
+				color:#777;
+				position:relative;
+				a {
+					border-bottom:1px dotted #ccc;
+					color:#999;
+				}
+				.comment, .annotation {
+					margin-top:10px;
+					margin-bottom:12px;
+				}
+				.btn {
+					color: white;
+				}
+				.edit {
+					float: right;
+				    font-weight: normal;
+				    line-height: 1;
+				    text-shadow: 0 1px 0 #FFFFFF;
+				    font-size: 8px;
+				    margin-right: 5px;
+				    margin-top: 1px;
+				}
+
+				blockquote {
+					margin-top:2px;
+					margin-bottom:0px;
+					border-left:none;
+					position:relative;
+					font-size:13px;
+					color:@belize-hole;
+					padding:4px 6px 4px 26px;
+					background-color:mix(white, @belize-hole, 95%);
+					border-radius: 4px;
+					div {
+						line-height: 17px;
+						padding:4px;
+					}
+					a {
+						font-style: normal;
+						color:inherit;
+						font-size:11px;
+						opacity:0.6;
+					}
+					span {
+						border-radius: 4px 0px 0px 4px;
+						display:block;
+						position:absolute;
+						font-weight: bold;
+						left:0;
+						color:mix(white, @belize-hole, 97%);
+						padding:8px 3px 0px 4px;
+						font-size:11px;
+						text-align: center;
+						width:23px;
+						top:0;
+						height:100%;
+						background-color:lighten(@belize-hole, 35%);
+						&.fui-document {
+							margin-top:-1px;
+							padding-left:7px;
+						}
+					}
+				}
+				.annotation {
+					blockquote {
+						color:@orange;
+						background-color:mix(white, @orange, 95%);
+						span {
+							color:mix(white, @orange, 97%);
+							background-color:lighten(@orange, 35%);
+						}
+					}
+
+				}
+				div.basic {
+					color:#aaa;
+				}
+				span.since {
+					color:#ccc;
+				}
+				span.pe-7s-clock {
+					color:#aaa;
+					opacity:0;
+					position:absolute;
+					right:0;
+					top:0;
+				}
+				&:hover {
+					span.pe-7s-clock {
+						opacity:1;
+					}
+				}
+			}			
+		}
+
+		/*ul {
 			padding-top:15px;
 			li {
 				.media {
@@ -520,7 +625,7 @@ html,body, div.full
 							background-color:#f1f1f1;
 							padding:8px 10px;
 							color:darken(@asbestos, 0%);
-							text-rendering: optimizeLegibility; 
+							text-rendering: optimizeLegibility;
 							border-radius:4px;
 						}
 						.msg-meta {
@@ -545,7 +650,7 @@ html,body, div.full
 						.msg-body{
 							color:darken(@peter-river, 10%);
 							background-color:mix(@peter-river, white, 10%);
-							text-rendering: optimizeLegibility; 
+							text-rendering: optimizeLegibility;
 							border-radius:4px;
 						}
 						.msg-meta {
@@ -560,7 +665,7 @@ html,body, div.full
 				&.action {
 					padding:3px 0px;
 					color: lighten(@asbestos, 20%);
-					font-size:12px;	
+					font-size:12px;
 					margin-bottom:0px;
 					a {
 						color:lighten(@asbestos, 15%);
@@ -568,7 +673,7 @@ html,body, div.full
 					}
 				}
 			}
-		}
+		}*/
 	}
 }
 
@@ -584,7 +689,7 @@ html,body, div.full
 				background-color:#FFF;
 				padding:8px;
 				font-size:12px;
-				border-radius: 40px;				
+				border-radius: 40px;
 			}
 			label {
 				font-weight:normal;
@@ -719,7 +824,7 @@ html,body, div.full
 		.sub {
 			font-size:13px;
 			line-height:12px;
-			color:darken(@silver, 13%);	
+			color:darken(@silver, 13%);
 		}
 		.btn {
 			margin-top:4px;
@@ -772,5 +877,3 @@ html,body, div.full
 		}
 	}
 }
-
-

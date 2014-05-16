@@ -1,0 +1,11 @@
+{% extends 'email/base.email' %}
+
+{% block subject_line %}{{ subject }}{% endblock %}
+
+{% block html_content %}
+{{ message }}
+{% endblock %}
+
+{% block plain_content %}
+{{ message }}
+{% endblock %}

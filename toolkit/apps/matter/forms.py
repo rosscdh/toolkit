@@ -3,7 +3,6 @@ import json
 from django import forms
 from django.core.urlresolvers import reverse
 
-from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Button, Field, Layout
 
 from parsley.decorators import parsleyfy
@@ -60,7 +59,7 @@ class MatterForm(ModalForm, forms.ModelForm):
     )
 
     class Meta:
-        fields = ['matter_code', 'name']
+        fields = ['matter_code', 'name',]
         model = Workspace
 
     def __init__(self, *args, **kwargs):
@@ -73,6 +72,7 @@ class MatterForm(ModalForm, forms.ModelForm):
             'name',
             'client_name',
             'matter_code',
+            'is_secure',
             Field('template', css_class='select-block') if self.is_new is True else None
         )
 

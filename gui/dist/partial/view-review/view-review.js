@@ -18,7 +18,7 @@ angular.module('toolkit-gui')
 	'review',
 	'$log',
 	function($scope, $modalInstance, toaster, matterItemService, matter, checklistItem, revision, review, $log){
-
+		'use strict';
 		/**
 		 * WIP
 		 *
@@ -79,16 +79,26 @@ angular.module('toolkit-gui')
 		$scope.review = review;
         $log.debug(review);
 
+
+        /**
+         * Collects all users who are allowed to see this review
+         *
+         * @memberof ViewReviewCtrl
+		 * @type method
+		 * @private
+         */
         $scope.initUserWithAccess = function(){
-            var reviews = $scope.revision.reviewers;
+            /*var reviews = $scope.revision.reviewers;*/
             var participants = matter.participants;
             var usersWithAccess = [];
             var reviewers = [];
 
             if ($scope.item.latest_revision.slug === $scope.revision.slug){
+                reviewers.push(review.reviewer);
+                /*
                 jQuery.each( reviews, function( index, r ){
                    reviewers.push(r.reviewer);
-                });
+                });*/
 
                 jQuery.each( participants, function( index, p ){
                     var results = jQuery.grep( reviewers, function( r ){ return r.username===p.username; });
@@ -108,20 +118,27 @@ angular.module('toolkit-gui')
             }
         };
 
+
+         /**
+         * Updates the review objects
+         *
+         * @memberof ViewReviewCtrl
+		 * @type method
+		 * @private
+         */
         $scope.saveReview = function(){
             matterItemService.updateRevisionReview(review).then(
                 function success(){
                     // do nothing
                 },
-                function error(err){
-                    if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to update the review.") {
-                        toaster.pop('error', "Error!", "Unable to update the review.");
+                function error(/*err*/){
+                    if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to update the review.') {
+                        toaster.pop('error', 'Error!', 'Unable to update the review.');
                     }
                 }
             );
         };
 
         $scope.initUserWithAccess();
-
 	}
 ]);

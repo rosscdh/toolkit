@@ -7,8 +7,10 @@ from rulez import registry as rulez_registry
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 
 from toolkit.core.mixins import IsDeletedMixin
+from toolkit.core.mixins import ApiSerializerMixin
+from toolkit.core.mixins import FileExistsLocallyMixin
 
-from .mixins import UserAuthMixin, FileExistsLocallyMixin
+from .mixins import UserAuthMixin
 from .managers import ReviewDocumentManager
 from .mailers import ReviewerReminderEmail
 
@@ -21,38 +23,94 @@ import logging
 logger = logging.getLogger('django.request')
 
 
-class ReviewDocument(IsDeletedMixin, FileExistsLocallyMixin, UserAuthMixin, models.Model):
+class ReviewDocument(IsDeletedMixin,
+                     FileExistsLocallyMixin,
+                     UserAuthMixin,
+                     ApiSerializerMixin,
+                     models.Model):
     """
     An object to represent a url that allows multiple reviewers to view
     a document using a service like crocodoc
     """
     slug = UUIDField(auto=True, db_index=True)
+
+    crocodoc_uuid = UUIDField(hyphenate=True, null=True, blank=True)
+
     document = models.ForeignKey('attachment.Revision')
     reviewers = models.ManyToManyField('auth.User')
+
     is_complete = models.BooleanField(default=False)
     date_last_viewed = models.DateTimeField(blank=True, null=True)
+
     data = JSONField(default={})
 
     objects = ReviewDocumentManager()
+
+    _serializer = 'toolkit.api.serializers.ReviewSerializer'
 
     class Meta:
         # @BUSINESS RULE always return the newest to oldest
         ordering = ('-id',)
 
+    # override for FileExistsLocallyMixin:
+    def get_document(self):
+        return self.document.executed_file
+
+    def reviewing_user_is_participant_review_url(self, user):
+        """
+        if a mater.participant is invited to review a document
+        they should be directed to comment on the primary document and not
+        the sandboxed copy document. This method returns the prmary document
+        url if the user is a matter.participant
+        """
+        # is the invited reviewer and is a participant
+        if user == self.reviewer and user in self.matter.participants.all():
+            primary_review_document = self.document.item.primary_participant_review_document()
+            return ABSOLUTE_BASE_URL(reverse('review:review_document', kwargs={'slug': primary_review_document.slug, 'auth_slug': primary_review_document.get_user_auth(user=user)}))
+        return None
+
     def get_absolute_url(self, user):
+        """
+        should change depending on who is looking at it.
+        in order to make matter.participants all reivew and comment on the same document
+        we have to check if they are matter.participant
+        """
         auth_key = self.get_user_auth(user=user)
         if auth_key is not None:
-            return ABSOLUTE_BASE_URL(reverse('review:review_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)}))
+            # see if the user is a participant and review their primary review_documnet
+            primary_document_review_url = self.reviewing_user_is_participant_review_url(user=user)
+            if primary_document_review_url is not None:
+                return primary_document_review_url
+            else:
+                # is a normal 3rd party invited user
+                return ABSOLUTE_BASE_URL(reverse('review:review_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)}))
         return None
 
     def get_download_url(self, user):
+        """
+        The download url must stay not be changed even if the user is a matter.participant
+        as its used to see if their review of the document is done
+        and since the documents are simply copies of the primary this is safe
+        """
         return ABSOLUTE_BASE_URL(reverse('review:download_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)}))
 
     def get_approval_url(self, user):
+        """
+        The approval url must stay not be changed even if the user is a matter.participant
+        as its used to see if their review of the document is done
+        and since the documents are simply copies of the primary this is safe
+        """
         auth_key = self.get_user_auth(user=user)
         if auth_key is not None:
-            return ABSOLUTE_BASE_URL(reverse('review:approve_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)}))
+            return ABSOLUTE_BASE_URL(reverse('review:approve_document',
+                                             kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)}))
         return None
+
+    def get_regular_url(self):
+        """
+        Used in notficiations & activity
+        """
+        return '{url}/review/{slug}'.format(url=self.document.get_absolute_url(), slug=self.slug)
 
     def complete(self, is_complete=True):
         self.is_complete = is_complete
@@ -143,6 +201,9 @@ rulez_registry.register("can_read", ReviewDocument)
 rulez_registry.register("can_edit", ReviewDocument)
 rulez_registry.register("can_delete", ReviewDocument)
 
-from .signals import (ensure_matter_participants_are_in_reviewdocument_participants,
+from .signals import (#set_item_review_percentage_complete,
+                      #reset_item_review_percentage_complete_on_complete,
+                      #reset_item_review_percentage_complete_on_delete,
+                      ensure_matter_participants_are_in_reviewdocument_participants,
                       on_reviewer_add,
                       on_reviewer_remove,)

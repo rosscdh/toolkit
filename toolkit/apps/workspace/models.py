@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
+import os
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.db.models.loading import get_model
 from django.db.models.signals import pre_save, post_save, post_delete, m2m_changed
+from django.template.defaultfilters import slugify
+from toolkit.core import _managed_S3BotoStorage
 
 from toolkit.core.mixins import IsDeletedMixin, ApiSerializerMixin
-from toolkit.core.services.matter_activity import MatterActivityEventService  # cyclic
+from toolkit.apps.matter.mixins import MatterExportMixin
+
+from dj_authy.models import AuthyModelMixin
 
 from .signals import (ensure_workspace_slug,
                       ensure_workspace_matter_code,
@@ -15,7 +20,6 @@ from .signals import (ensure_workspace_slug,
                       on_workspace_post_save,
                       on_workspace_m2m_changed,)
 
-
 from toolkit.utils import _class_importer
 
 from rulez import registry as rulez_registry
@@ -24,13 +28,16 @@ from uuidfield import UUIDField
 from jsonfield import JSONField
 
 from .managers import WorkspaceManager
-from .mixins import ClosingGroupsMixin, CategoriesMixin
+from .mixins import ClosingGroupsMixin, CategoriesMixin, RevisionLabelMixin
 
 
 class Workspace(IsDeletedMixin,
+                AuthyModelMixin,
+                MatterExportMixin,
                 ClosingGroupsMixin,
                 CategoriesMixin,
                 ApiSerializerMixin,
+                RevisionLabelMixin,
                 models.Model):
     """
     Workspaces are areas that allow multiple tools
@@ -70,6 +77,7 @@ class Workspace(IsDeletedMixin,
         #
         # Initialize the actions property
         #
+        from toolkit.core.services.matter_activity import MatterActivityEventService  # cyclic
         self._actions = MatterActivityEventService(self)
         super(Workspace, self).__init__(*args, **kwargs)
 
@@ -101,6 +109,12 @@ class Workspace(IsDeletedMixin,
         @BUSINESSRULE append checklist to the url
         """
         return '%s#/checklist' % reverse('matter:detail', kwargs={'matter_slug': self.slug})
+
+    def get_regular_url(self):
+        """
+        Used in notficiations & activity
+        """
+        return self.get_absolute_url()
 
     def available_tools(self):
         return Tool.objects.exclude(pk__in=[t.pk for t in self.tools.all()])

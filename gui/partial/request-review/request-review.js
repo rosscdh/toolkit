@@ -23,9 +23,9 @@ angular.module('toolkit-gui')
 	'participantService',
     'matterItemService',
 	'toaster',
-	function($scope, $modalInstance, participants, currentUser, matter, checklistItem, revision, participantService, matterItemService, toaster){
-
-
+    /*'$log',*/
+	function($scope, $modalInstance, participants, currentUser, matter, checklistItem, revision, participantService, matterItemService, toaster/*, $log*/){
+		'use strict';
 		/**
 		 * In scope variable containing a list of participants within this matter. This is passed through from the originating controller.
 		 * This object is cloned, and therefore changes to this object will not be refected in thr originating object.
@@ -127,20 +127,20 @@ angular.module('toolkit-gui')
                     function success(response) {
                         if (response.count===1){
                             $scope.data.isNew = false;
-                            $scope.data.participant = response.results[0];
+                            $scope.data.selectedPerson = response.results[0];
                         } else {
                             $scope.data.isNew = true;
-                            $scope.data.participant = null;
+                            $scope.data.selectedPerson = null;
                         }
                     },
                     function error() {
-                        toaster.pop('error', "Error!", "Unable to load participant");
+                        toaster.pop('error', 'Error!', 'Unable to load participant',5000);
                     }
                 );
             } else {
                 $scope.data.validationError = true;
                 $scope.data.isNew = false;
-                $scope.data.participant = null;
+                $scope.data.selectedPerson = null;
             }
         };
 
@@ -154,8 +154,12 @@ angular.module('toolkit-gui')
 		 * @memberof			RequestreviewCtrl
 		 */
         $scope.participantIsReviewer = function (p) {
-            var users = jQuery.grep( revision.reviewers, function( review ){ return review.reviewer.username===p.username; } );
-            return (users.length>0);
+            if($scope.revision.reviewers) {
+                var users = jQuery.grep( $scope.revision.reviewers, function( review ){ return review.reviewer.username===p.username; } );
+                return (users.length>0);
+            } else {
+                return 0;
+            }
         };
 
 		/**
@@ -168,27 +172,25 @@ angular.module('toolkit-gui')
 		 * @method				request
 		 * @memberof			RequestreviewCtrl
 		 */
-		$scope.request = function() {
-			var selectedPerson = $scope.data.selectedIndex!==-1?$scope.participants[$scope.data.selectedIndex]:null;
-
-            if (selectedPerson!=null){
+        $scope.request = function () {
+            var selectedPerson = $scope.data.selectedPerson;
+            if (selectedPerson != null) {
                 $scope.data.request.email = selectedPerson.email;
                 $scope.data.request.first_name = selectedPerson.first_name;
                 $scope.data.request.last_name = selectedPerson.last_name;
             }
 
             matterItemService.requestRevisionReview($scope.matter.slug, $scope.checklistItem.slug, $scope.data.request).then(
-                    function success(response){
-                        $modalInstance.close( response );
-                    },
-                    function error(err){
-                        if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to request a revision review.") {
-                            toaster.pop('error', "Error!", "Unable to request a revision review.");
-                        }
+                function success(response) {
+                    $modalInstance.close(response);
+                },
+                function error(/*err*/) {
+                    if (!toaster.toast || !toaster.toast.body || toaster.toast.body !== 'Unable to request a revision review.') {
+                        toaster.pop('error', 'Error!', 'Unable to request a revision review.', 3000);
                     }
+                }
             );
-
-		};
+        };
 
 		/**
 		 * Determines if request revision for is valid or not.
@@ -201,7 +203,8 @@ angular.module('toolkit-gui')
 		 * @memberof			RequestreviewCtrl
 		 */
 		$scope.invalid = function() {
-            return $scope.data.selectedIndex==null || $scope.data.selectedIndex===-1&&!$scope.data.request.email;
+            return $scope.data.selectedPerson==null &&
+                !($scope.data.request.email&&$scope.data.request.first_name&&$scope.data.request.last_name);
 		};
 	}
 ]);

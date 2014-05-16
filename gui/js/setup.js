@@ -8,6 +8,7 @@ angular.module('toolkit-gui', [
     'ui.router',
     'ngAnimate',
     'ngResource',
+    'ngSanitize',
     'btford.markdown',
     'monospaced.elastic',
     'angularFileUpload',
@@ -39,7 +40,16 @@ angular.module('toolkit-gui').config(function($stateProvider, $urlRouterProvider
       'url': "/:itemSlug",
       'templateUrl': '/static/ng/partial/checklist/includes/itemdetails.html',
       'controller': function($scope) {}
+    })
+    .state('checklist.item.revision', {
+      'url': "/revision/:revisionSlug",
+      'controller': function($scope) {}
+    })
+    .state('checklist.item.revision.review', {
+      'url': "/review/:reviewSlug",
+      'controller': function($scope) {}
     });
+
     /*
     $routeSegmentProvider.within('checklist').segment('itemInfo', {
     'templateUrl': '/static/ng/partial/checklist/includes/itemdetails.html'});
@@ -47,6 +57,11 @@ angular.module('toolkit-gui').config(function($stateProvider, $urlRouterProvider
    
     $urlRouterProvider.otherwise('/checklist'); 
 });
+
+/**
+ * Pusher API key
+ */
+//angular.module('toolkit-gui').constant('pusher_api_key','60281f610bbf5370aeaa');
 
 
 /**

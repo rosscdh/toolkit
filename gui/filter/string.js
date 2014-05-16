@@ -9,6 +9,7 @@
  */
 angular.module('toolkit-gui').filter('newlines', function () {
     return function(txt) {
+        txt = "" + txt;
         if (txt != null) {
             return txt.replace(/\n/g, '<br/>');
         } else {
@@ -16,3 +17,11 @@ angular.module('toolkit-gui').filter('newlines', function () {
         }
     };
 });
+
+
+angular.module('toolkit-gui').filter('unsafe', function($sce) {
+    return function(val) {
+        return $sce.trustAsHtml(val);
+    };
+});
+

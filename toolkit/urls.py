@@ -41,9 +41,14 @@ urlpatterns = patterns('',
     url(r'^sign/', include('toolkit.apps.sign.urls', namespace='sign')),
     # HelloSign
     url(r'^hellosign/', include('hello_sign.urls', namespace='hellosign')),
-    # DocuSign - Coming Soon
+    # Authy authentication
+    url(r'^authy/', include('dj_authy.urls', namespace='dj_authy')),
+
+    # Payments
+    url(r'^payments/', include('payments.urls')),
 
     url(r'^favicon\.ico$', RedirectView.as_view(url='%simages/favicon.ico' % settings.STATIC_URL)),
+
     # home default terminator
     url(r'^', include('toolkit.apps.default.urls', namespace='public')),
 )

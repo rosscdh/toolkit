@@ -34,7 +34,21 @@ class MatterCloneService(object):
             item.slug = None  # slug must be unique too
             item.matter = self.target_matter  # set the matter to be the target matter
             item.latest_revision = None  # remove any connected revisions
-            item.save()  # save it out
+            item.is_requested = False
+            item.is_complete = False
+            item.is_final = False
+            item.date_due = None
+            item.status = item.ITEM_STATUS.new
+            item.data = {}  # reset all status etc
+            item.save()
+
+        # Bulk create the items
+        # cant bulk create as we need save to be called
+        #
+        #item.__class__.objects.bulk_create(bulk_create_items)
+
+        # clone the categories via the mixin attribs to preserve order
+        self.target_matter.categories = self.source_matter.categories
 
         self.target_matter.data['cloned'] = {
             'date_cloned': datetime.datetime.utcnow(),

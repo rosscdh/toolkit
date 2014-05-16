@@ -68,7 +68,13 @@ class MatterItemsView(MatterItemsQuerySetMixin,
 
     def pre_save(self, obj):
         obj.matter = self.matter  # set in MatterItemsQuerySetMixin
+
         return super(MatterItemsView, self).pre_save(obj=obj)
+
+    def post_save(self, obj, created=False):
+        if created is True:
+            # issue the created item signal
+            self.matter.actions.item_created(user=self.request.user, item=obj)
 
     def can_read(self, user):
         return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()

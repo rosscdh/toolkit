@@ -19,7 +19,11 @@ angular.module('toolkit-gui')
 	'matter',
 	'participantService',
 	'toaster',
-	function($scope, $modalInstance, participants, currentUser, matter, participantService, toaster){
+	'$location',
+	'$log',
+	'$window',
+	function($scope, $modalInstance, participants, currentUser, matter, participantService, toaster, $location, $log, $window){
+		'use strict';
 		/**
 		 * In scope variable containing a list of participants within this matter. This is passed through from the originating controller.
 		 * @memberof ParticipantInviteCtrl
@@ -103,7 +107,7 @@ angular.module('toolkit-gui')
                         }
                     },
                     function error() {
-                        toaster.pop('error', "Error!", "Unable to load participant");
+                        toaster.pop('error', 'Error!', 'Unable to load participant', 3000);
                     }
                 );
             } else {
@@ -124,12 +128,12 @@ angular.module('toolkit-gui')
 		 */
 		$scope.invite = function () {
             if($scope.data.showAddLawyer===true){
-                $scope.data.invitee.user_class="lawyer";
+                $scope.data.invitee.user_class='lawyer';
             } else {
-                $scope.data.invitee.user_class="customer";
+                $scope.data.invitee.user_class='customer';
             }
 
-			participantService.invite( matter.selected.slug, $scope.data.invitee ).then(
+			participantService.invite( $scope.matter.slug, $scope.data.invitee ).then(
 				function success(response) {
                     participantService.getByURL(response.url).then(
                         function success(participant){
@@ -148,13 +152,13 @@ angular.module('toolkit-gui')
                             $scope.data.showAddLawyer=false;
                             $scope.data.showAddParticipant=false;
                         },
-                        function error(err){
-                            toaster.pop('error', "Error!", "Unable to load participant");
+                        function error(/*err*/){
+                            toaster.pop('error', 'Error!', 'Unable to load participant',5000);
                         }
                     );
 				},
 				function error() {
-					toaster.pop('error', "Error!", "Unable to invite this person to particpate, please try again in a few moments");
+					toaster.pop('error', 'Error!', 'Unable to invite this person to particpate, please try again in a few moments',5000);
 				}
 			);
 		};
@@ -170,16 +174,20 @@ angular.module('toolkit-gui')
 		 * @memberof			ParticipantInviteCtrl
 		 */
 		$scope.revoke = function ( person ) {
-			participantService.revoke( matter.selected.slug, person ).then(
+			participantService.revoke( $scope.matter.slug, person ).then(
 				function success() {
 					var index = jQuery.inArray( person, $scope.participants );
                     if( index>=0 ) {
                         // Remove user from in RAM array
                         $scope.participants.splice(index,1);
                     }
+
+                    if(person.username===$scope.currentUser.username){
+                        $window.location = '/';
+                    }
 				},
 				function error() {
-					toaster.pop('error', "Error!", "Unable to revoke the access of this person");
+					toaster.pop('error', 'Error!', 'Unable to revoke the access of this person',5000);
 				}
 			);
 		};
@@ -212,12 +220,22 @@ angular.module('toolkit-gui')
 			$modalInstance.dismiss('cancel');
 		};
 
-		/*
-		$scope.compareUrls = function( urla, urlb ) {
-			console.log(urla, urlb, urla.indexOf(urlb)>=0||urlb.indexOf(urla)>=0);
-			return urla.indexOf(urlb)>=0||urlb.indexOf(urla)>=0;
+
+
+        /**
+		 * Determines if inputis valid or not.
+		 *
+		 * @name				invalid
+		 *
+		 * @private
+		 * @method				invalid
+		 * @memberof			ParticipantInviteCtrl
+		 */
+		$scope.invalid = function() {
+            return $scope.data.validationError ||
+                !($scope.data.invitee.email&&$scope.data.invitee.first_name&&$scope.data.invitee.last_name);
 		};
-		*/
+
 	}
 ]);
 

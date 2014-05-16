@@ -53,6 +53,10 @@ STATICFILES_DIRS = (
     ("ng", os.path.join(SITE_ROOT, 'gui')),
 )
 
+#STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
+
+
 MEDIA_ROOT = os.path.join(SITE_ROOT, 'media')
 MEDIA_URL = '/m/'
 
@@ -61,7 +65,10 @@ MEDIA_URL = '/m/'
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'compressor.finders.CompressorFinder',
+    'pipeline.finders.FileSystemFinder',
+    'pipeline.finders.AppDirectoriesFinder',
+    'pipeline.finders.PipelineFinder',
+    'pipeline.finders.CachedFileFinder',
 )
 
 
@@ -112,6 +119,7 @@ PROJECT_APPS = (
     # Lawpal Modules
     'hello_sign',
     'dj_crocodoc',
+    'dj_authy',
 )
 
 HELPER_APPS = (
@@ -126,6 +134,9 @@ HELPER_APPS = (
 
     # getsentry.com
     'raven.contrib.django.raven_compat',
+
+    # Payments
+    'payments',
 
     # api
     'rest_framework',
@@ -150,6 +161,9 @@ HELPER_APPS = (
     # Api helpers
     #'corsheaders',  # not required yet
 
+    # Asset pipeline
+    'pipeline',
+
     # db migrations
     'south',
     # jenkins
@@ -166,7 +180,10 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # 'corsheaders.middleware.CorsMiddleware',  # not required yet
+    'dj_authy.middleware.AuthyAuthenticationRequiredMiddleware',
     'toolkit.apps.me.middleware.EnsureUserHasPasswordMiddleware',
+    'django.middleware.gzip.GZipMiddleware',
+    'pipeline.middleware.MinifyHTMLMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -247,6 +264,9 @@ AWS_HEADERS = {
     'x-amz-acl': 'public-read',
 }
 
+CELERY_ACCEPT_CONTENT = ['json', 'pickle', ]
+#CELERY_ACKS_LATE = True  # as we want to to be acknowledged after its completed; http://celery.readthedocs.org/en/latest/configuration.html#celery-acks-late
+
 FILEPICKER_API_KEY = 'A4Ly2eCpkR72XZVBKwJ06z'
 
 HELLOSIGN_AUTHENTICATION = ("founders@lawpal.com", "test2007")
@@ -285,6 +305,20 @@ REST_FRAMEWORK = {
     ],
     'PAGINATE_BY': 10,
 }
+
+
+#PIPELINE_CSS = {}
+PIPELINE_JS = {
+    'reactjs': {
+        'source_filenames': (
+            'js/matter_search.jsx',
+        ),
+        'output_filename': 'js/jsx-all-compiled.js',
+    }
+}
+PIPELINE_COMPILERS = [
+  'react.utils.pipeline.JSXCompiler',
+]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
@@ -325,7 +359,7 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'django.utils.log.NullHandler',
         },
-        'console':{
+        'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'medium'
@@ -360,11 +394,6 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': False,
-        },
-        'django.test': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
         }
     }
 }
@@ -378,6 +407,9 @@ BLEACH_ALLOWED_TAGS = ['blockquote', 'br', 'div', 'li', 'ol', 'span', 'ul']
 BLEACH_STRIP_COMMENTS = True
 BLEACH_STRIP_TAGS = True
 
+# how long are users allowed to edit/delete their comments (in minutes)
+DELETE_COMMENTS_DURATION = 60
+EDIT_COMMENTS_DURATION = DELETE_COMMENTS_DURATION
 
 INTERCOM_APP_ID = 'wkxzfou'
 INTERCOM_APP_SECRET = 'MZCesCDxkDrYdfX8HocAB2F6V5aZzCm-DuF7lyR5'
@@ -396,7 +428,7 @@ ACTSTREAM_SETTINGS = {
 
 #
 # Any change to the LAWPAL_ACTIVITY elements below needs to affect the
-# test_notices.py 
+# test_notices.py
 #
 LAWPAL_ACTIVITY = {
     "abridge": {
@@ -405,9 +437,30 @@ LAWPAL_ACTIVITY = {
                       # 'item-commented', 'item-comment-created', 'item-comment-deleted',
                       # 'item-invited-reviewer',
                       # 'item-provide-a-document',
-                      # 'revision-created', 'revision-comment-created', 'item-added-revision-comment', 
+                      # 'revision-created', 'revision-comment-created', 'item-added-revision-comment',
                       # 'revision-added-revision-comment',
                       # 'workspace-added-participant', 'workspace-removed-participant'
+
+                      # activate nearly everything for testing;
+                      'item-reopened', 'item-closed',
+                      'item-commented', 'item-comment-created', 'item-comment-deleted',
+                      'item-invited-reviewer',
+                      'item-provide-a-document',
+                      'item-invited-signer',
+                      'item-completed-review',
+                      'item-completed-all-reviews',
+
+                      'revision-created', 'revision-comment-created', 'item-added-revision-comment',
+                      'revision-added-revision-comment',
+                      'revision-added-review-session-comment',
+                      'revision-changed-the-status',
+
+                      'workspace-deleted',
+                      'workspace-added-participant', 'workspace-removed-participant',
+                      'workspace-stopped-participating',
+                      'workspace-export-started',
+                      'workspace-export-finished',
+                      'workspace-export-downloaded',
                       ]
     },
     "notifications": {
@@ -416,31 +469,64 @@ LAWPAL_ACTIVITY = {
                       'item-commented', 'item-comment-created', 'item-comment-deleted',
                       'item-invited-reviewer',
                       'item-provide-a-document',
-
                       'item-invited-signer',
+                      'item-completed-review',
+                      'item-completed-all-reviews',
 
-                      'revision-created', 'revision-comment-created', 'item-added-revision-comment', 
+                      'revision-created', 'revision-comment-created', 'item-added-revision-comment',
                       'revision-added-revision-comment',
+                      'revision-added-review-session-comment',
+                      'revision-changed-the-status',
+
                       'workspace-deleted',
                       'workspace-added-participant', 'workspace-removed-participant',
                       'workspace-stopped-participating',
+                      'workspace-export-started',
+                      'workspace-export-finished',
+                      'workspace-export-downloaded',
                       ]
     },
     "activity": {
         "whitelist": ['item-created', 'item-edited', 'item-commented', 'item-changed-the-status', 'item-renamed',
                       'item-provide-a-document', 'item-invited-reviewer', 'item-canceled-their-request-for-a-document',
                       'item-closed', 'item-reopened', 'item-added-revision-comment', 'item-deleted-revision-comment',
-                      'revision-created', 'revision-deleted',
+                      'item-completed-review', 'item-viewed-revision',
+                      'item-completed-all-reviews',
                       'item-invited-signer',
                       'itemrequestrevisionview-provide-a-document',
 
-                      'workspace-created', 'workspace-deleted',
-                      'workspace-added-participant', 'workspace-removed-participant', 
-                      'workspace-stopped-participating',
+                      'revision-created', 'revision-deleted',
+                      'revision-added-review-session-comment',
+                      'revision-added-revision-comment',
+                      'revision-changed-the-status',
 
-                      'revision-added-revision-comment']
+                      'workspace-created', 'workspace-deleted',
+                      'workspace-added-participant', 'workspace-removed-participant',
+                      'workspace-stopped-participating',
+                      'workspace-export-started',
+                      'workspace-export-finished',
+                      'workspace-export-downloaded',
+                      ]
     },
 }
+
+
+#
+# Payments
+#
+PAYMENTS_PLANS = {
+    "early-bird-monthly": {
+        "stripe_plan_id": "early-bird-monthly",
+        "name": "Early Bird",
+        "description": "Signup for LawPal's Early Bird plan and save! <br />Create unlimited projects with unlimited collaborators.<br /> Available for a limited time only.",
+        "features": "Unlimited Projects<br/> Unlimited Collaborators<br/> E-Signing<br/> Priority Support<br/> No long-term commitment",
+        "price": 25,
+        "currency": "usd",
+        "interval": "month"
+    }
+}
+
+MATTER_EXPORT_DAYS_VALID = 3
 
 try:
     LOCAL_SETTINGS

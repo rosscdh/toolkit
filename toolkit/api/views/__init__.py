@@ -10,11 +10,14 @@ from .activity import (ActivityEndpoint,
 from .client import ClientEndpoint
 
 from .matter import (MatterEndpoint,
-                     ClosingGroupView as MatterClosingGroupView,)
+                     ClosingGroupView as MatterClosingGroupView,
+                     RevisionLabelView as MatterRevisionLabelView,
+                     MatterExportView)
 
 from .review import (ReviewEndpoint,
                      ItemRevisionReviewersView,
-                     ItemRevisionReviewerView,)
+                     ItemRevisionReviewerView,
+                     ReviewerHasViewedRevision,)
 
 from .sign import   (SignatureEndpoint,
                      ItemRevisionSignersView,

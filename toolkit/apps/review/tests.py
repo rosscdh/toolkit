@@ -6,6 +6,8 @@ from django.core.urlresolvers import reverse
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 
+from actstream.models import Action
+
 from toolkit.casper.prettify import mock_http_requests
 from toolkit.casper.workflow_case import BaseScenarios
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
@@ -44,6 +46,8 @@ class BaseDataProvider(BaseScenarios):
         self.reviewer = mommy.make('auth.User', username='invited_reviewer', email='invited_reviewer@lawpal.com')
 
         self.item = mommy.make('item.Item', matter=self.matter, name='Test Item No. 1', category="A")
+        self.assertEqual(self.item.review_percentage_complete, None)  # ensure we have None when there are no review requests
+        # this wil change to a percentage when the request goes in
 
         default_storage.save('executed_files/test.pdf', ContentFile(os.path.join(settings.SITE_ROOT, 'toolkit', 'casper', 'test.pdf')))
 
@@ -54,6 +58,8 @@ class BaseDataProvider(BaseScenarios):
 
         # there should always be 1 reviewdocument that the matter.participants can review together alone
         self.assertEqual(self.revision.reviewdocument_set.all().count(), 1)
+        self.assertEqual(self.item.review_percentage_complete, None)
+
         # when I add another reviewer they should get their own reviewdocument to talk about with the matter.participants
         self.revision.reviewers.add(self.reviewer)
         self.assertEqual(self.revision.reviewdocument_set.all().count(), 2)
@@ -213,12 +219,130 @@ class ReviewerSendEmailTest(BaseDataProvider, TestCase):
         self.assertEqual(len(mail.outbox), 0)  # no email was sent
 
 
+class ReviewerPercentageCompleteTest(BaseDataProvider, TestCase):
+    num_reviewers = 5
+    test_reviewers = []
+
+    def setUp(self):
+        super(ReviewerPercentageCompleteTest, self).setUp()
+
+        base_num_reviewdocuments = self.review_document.document.reviewdocument_set.all().count() - 1
+
+        self.test_reviewers.append(self.reviewer)  # append the main reviewer added in SetUp
+
+        for u_num in range(1, self.num_reviewers + 1):
+            reviewer = mommy.make('auth.User', username='invited_reviewer_%d' % u_num, email='invited_reviewer_%d@lawpal.com' % u_num)
+            self.review_document.document.reviewers.add(reviewer)
+            self.test_reviewers.append(reviewer)
+
+            # test that we increment the reviewdocument_set of the base document
+            self.assertEqual(self.item.invited_document_reviews().count(), base_num_reviewdocuments + u_num)
+
+    def test_percentage_complete_increments(self):
+        num_complete = 0
+        total_num_reviews = self.item.invited_document_reviews().count()
+
+        self.assertEqual(total_num_reviews, 6) # 6 not 5 because of the primary documentreview which is ignored
+        self.assertEqual(self.item.review_percentage_complete, 0)
+        self.assertEqual(self.item.percent_formatted(self.item.review_percentage_complete), '0%')
+
+        for c, user in enumerate(self.test_reviewers):
+            reviewdocument = self.item.invited_document_reviews().get(reviewers__in=[user])
+            reviewdocument.is_complete = True
+            reviewdocument.save(update_fields=['is_complete'])
+
+            # test that we are incrementing the number of reviewdocuments for each user
+            # test the built in api method
+            self.assertEqual(self.item.invited_document_reviews().filter(is_complete=True).count(), num_complete + (c+1))
+            # affirm that the built in matches the manual calc below
+            self.assertEqual(self.review_document.document.reviewdocument_set.filter(is_complete=True).count(), num_complete + (c+1))
+
+            # test % increment
+            num_reviewdocuments_complete = self.item.invited_document_reviews().filter(is_complete=True).count()
+            review_percentage_complete = float(num_reviewdocuments_complete) / float(total_num_reviews)
+            review_percentage_complete = round(review_percentage_complete * 100, 0)
+
+            self.assertEqual(self.item.review_percentage_complete, review_percentage_complete)
+
+        self.assertEqual(self.item.review_percentage_complete, 100.0)
+        self.assertEqual(self.item.percent_formatted(self.item.review_percentage_complete), '100%')
+        # we have recorded the action
+        self.assertEqual(Action.objects.all().first().__unicode__(), u'Lawyër Tëst completed all reviews Test Item No. 1 on Lawpal (test) 0 minutes ago')
+        Action.objects.all().delete()
+
+        # Test Decrement
+        for c, user in enumerate(self.test_reviewers):
+            reviewdocument = self.item.invited_document_reviews().get(reviewers__in=[user])
+            reviewdocument.is_complete = False
+            reviewdocument.save(update_fields=['is_complete'])
+
+            # test that we are incrementing the number of reviewdocuments for each user
+            # test the built in api method
+            self.assertEqual(self.item.invited_document_reviews().filter(is_complete=True).count(), total_num_reviews - (c+1))
+            # affirm that the built in matches the manual calc below
+            self.assertEqual(self.review_document.document.reviewdocument_set.filter(is_complete=True).count(), total_num_reviews - (c+1))
+
+            # test % increment
+            num_reviewdocuments_complete = self.item.invited_document_reviews().filter(is_complete=True).count()
+            review_percentage_complete = float(num_reviewdocuments_complete) / float(total_num_reviews)
+            review_percentage_complete = round(review_percentage_complete * 100, 0)
+
+            self.assertEqual(self.item.review_percentage_complete, review_percentage_complete)
+
+        self.assertEqual(self.item.review_percentage_complete, 0.0)
+        self.assertEqual(self.item.percent_formatted(self.item.review_percentage_complete), '0%')
+        self.assertEqual(Action.objects.all().count(), 0)
+
+        # Test new Revision added should set count to null
+        previous_revision = self.item.latest_revision
+        # create a new one
+        new_revision = mommy.make('attachment.Revision', item=self.item)
+        self.assertTrue(self.item.latest_revision is new_revision)
+        self.assertTrue(new_revision.is_current)
+        self.assertEqual(self.item.review_percentage_complete, None)
+        self.assertEqual(self.item.percent_formatted(self.item.review_percentage_complete), None)
+
+
+
+class ParticipantReviewerGetsPrimaryReviewDocumentUrlToViewTest(BaseDataProvider, TestCase):
+    """
+    A reviewer who is a matter.participant should be given the url of the primary document to review
+    this is to allow all top level matter.participants to comment and communicate on the same document
+    but 3rd parties are sandboxed
+    """
+    def setUp(self):
+        super(ParticipantReviewerGetsPrimaryReviewDocumentUrlToViewTest, self).setUp()
+        # add the reviewer for this test
+        self.review_document.reviewers.add(self.reviewer)
+
+    def test_participant_has_primary_review_doc_url(self):
+        # invite a participant to review the doc
+        self.revision.reviewers.add(self.user)
+        self.assertEqual(self.revision.reviewdocument_set.all().count(), 3)
+        # their url to view should be the same as the primary url
+        primary_document = self.revision.item.primary_participant_review_document()
+        participant_invited_to_review_doc = self.revision.reviewdocument_set.all().first() # should be the most recent
+        third_party_review_doc = self.revision.reviewdocument_set.all()[1]
+
+        self.assertNotEqual(primary_document.pk, participant_invited_to_review_doc.pk)
+        expected_primary_url = primary_document.get_absolute_url(user=self.user)
+        expected_matching_with_primary_url_for_participant = participant_invited_to_review_doc.get_absolute_url(user=self.user)
+
+        # should be exactly the same, as when a participant reivews a document it should be the same as all the other participants
+        self.assertEqual(expected_primary_url, expected_matching_with_primary_url_for_participant)
+
+        # the participant users review url should not be the same if they are not the review_document.reviewer
+        third_party_participant_url = third_party_review_doc.get_absolute_url(user=self.user)
+        self.assertNotEqual(expected_primary_url, third_party_participant_url)
+
+
 """
 View tests
 1. if user is logged in, check they are a participant or the expected user according to the auth_key
 2. logs user in based on url :auth_slug matching with a currently authorized reviewer
 3. if the user is not lawyer or a participant then they can only see their own commments annotation etc
 3a. this is done using the crocodoc_service.view_url(filter=id,id,id)
+@TODO use a casper test to test the user_has_viewed signal was sent when the iframe modal is closed
 """
 class ReviewRevisionViewTest(BaseDataProvider, TestCase):
     def setUp(self):
@@ -238,13 +362,13 @@ class ReviewRevisionViewTest(BaseDataProvider, TestCase):
         #
         # And date updated
         #
-        self.review_document = self.review_document.__class__.objects.get(pk=self.review_document.pk)  # refresh
-        self.assertEqual(self.review_document.date_last_viewed.year, 1970)
-        self.assertEqual(self.review_document.date_last_viewed.month, 1)
-        self.assertEqual(self.review_document.date_last_viewed.day, 1)
-        self.assertEqual(self.review_document.date_last_viewed.hour, 0)
-        self.assertEqual(self.review_document.date_last_viewed.minute, 0)
-        self.assertEqual(self.review_document.date_last_viewed.second, 0)
+        # self.review_document = self.review_document.__class__.objects.get(pk=self.review_document.pk)  # refresh
+        # self.assertEqual(self.review_document.date_last_viewed.year, 1970)
+        # self.assertEqual(self.review_document.date_last_viewed.month, 1)
+        # self.assertEqual(self.review_document.date_last_viewed.day, 1)
+        # self.assertEqual(self.review_document.date_last_viewed.hour, 0)
+        # self.assertEqual(self.review_document.date_last_viewed.minute, 0)
+        # self.assertEqual(self.review_document.date_last_viewed.second, 0)
 
     @mock_http_requests
     def test_logged_in_invalid_user(self):
@@ -268,13 +392,13 @@ class ReviewRevisionViewTest(BaseDataProvider, TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.context['user'], self.reviewer)
 
-        self.review_document = self.review_document.__class__.objects.get(pk=self.review_document.pk)  # refresh
-        self.assertEqual(self.review_document.date_last_viewed.year, 1970)
-        self.assertEqual(self.review_document.date_last_viewed.month, 1)
-        self.assertEqual(self.review_document.date_last_viewed.day, 1)
-        self.assertEqual(self.review_document.date_last_viewed.hour, 0)
-        self.assertEqual(self.review_document.date_last_viewed.minute, 0)
-        self.assertEqual(self.review_document.date_last_viewed.second, 0)
+        # self.review_document = self.review_document.__class__.objects.get(pk=self.review_document.pk)  # refresh
+        # self.assertEqual(self.review_document.date_last_viewed.year, 1970)
+        # self.assertEqual(self.review_document.date_last_viewed.month, 1)
+        # self.assertEqual(self.review_document.date_last_viewed.day, 1)
+        # self.assertEqual(self.review_document.date_last_viewed.hour, 0)
+        # self.assertEqual(self.review_document.date_last_viewed.minute, 0)
+        # self.assertEqual(self.review_document.date_last_viewed.second, 0)
 
         #
         # Test the api endpoint returns the expected date_last_viewed
@@ -284,7 +408,7 @@ class ReviewRevisionViewTest(BaseDataProvider, TestCase):
         self.assertEqual(resp.status_code, 200)
 
         json_resp = json.loads(resp.content)
-        self.assertEqual(json_resp.get('date_last_viewed'), u'1970-01-01T00:00:00.113Z')
+        # self.assertEqual(json_resp.get('date_last_viewed'), u'1970-01-01T00:00:00.113Z')
 
     @mock_http_requests
     def test_lawyer_viewing_revision_updates_nothing(self):
@@ -297,3 +421,12 @@ class ReviewRevisionViewTest(BaseDataProvider, TestCase):
 
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(ReviewDocument.objects.get(pk=self.review_document.pk).date_last_viewed, None)
+
+
+"""
+test primary_reviewdocument()-function for Revision to get the revision that JUST belongs to the participants
+"""
+class PrimaryReviewDocumentTest(BaseDataProvider, TestCase):
+    def test_primary_reviewdocument(self):
+        reviewer_reviewdocument = self.revision.reviewdocument_set.get(reviewers=self.reviewer)
+        self.assertNotEqual(reviewer_reviewdocument, self.revision.primary_reviewdocument)

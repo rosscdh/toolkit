@@ -24,5 +24,14 @@ class BaseEndpointTest(BaseScenarios, TestCase):
         # provide a lawyer client
         self.lawyer_client = mommy.make('client.Client', lawyer=self.lawyer, name='Test Client for Test Lawyer')
 
+    def tearDown(self):
+        """
+        Cleanup items
+        """
+        for item in self.matter.item_set.all().iterator():
+            latest_revision = item.latest_revision
+            if latest_revision is not None:
+                latest_revision.executed_file.delete()
+
     def test_endpoint_name(self):
         self.assertEqual(self.endpoint, None)
