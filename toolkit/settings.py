@@ -407,6 +407,9 @@ BLEACH_ALLOWED_TAGS = ['blockquote', 'br', 'div', 'li', 'ol', 'span', 'ul']
 BLEACH_STRIP_COMMENTS = True
 BLEACH_STRIP_TAGS = True
 
+# how long are users allowed to edit/delete their comments (in minutes)
+DELETE_COMMENTS_DURATION = 60
+EDIT_COMMENTS_DURATION = DELETE_COMMENTS_DURATION
 
 INTERCOM_APP_ID = 'wkxzfou'
 INTERCOM_APP_SECRET = 'MZCesCDxkDrYdfX8HocAB2F6V5aZzCm-DuF7lyR5'
