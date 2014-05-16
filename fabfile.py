@@ -16,6 +16,7 @@ from termcolor import colored
 debug = True
 
 env.local_project_path = os.path.dirname(os.path.realpath(__file__))
+env.environment_settings_path = os.path.dirname(os.path.realpath(__file__) + '../lawpal-chef/uwsgi-app/files/default/conf/')
 # default to local override in env
 env.remote_project_path = env.local_project_path
 
@@ -499,9 +500,12 @@ def update_env_conf():
     if not env.is_predeploy:
         # copy the live local_settings
         with cd(project_path):
-            virtualenv('cp %s/conf/%s.local_settings.py %s/%s/local_settings.py' % (full_version_path, env.environment, full_version_path, env.project))
+            #virtualenv('cp %s/conf/%s.local_settings.py %s/%s/local_settings.py' % (full_version_path, env.environment, full_version_path, env.project))
             virtualenv('cp %s/conf/%s.wsgi.py %s/%s/wsgi.py' % (full_version_path, env.environment, full_version_path, env.project))
             virtualenv('cp %s/conf/%s.newrelic.ini %s/%s/newrelic.ini' % (full_version_path, env.environment, full_version_path, env.project))
+
+            # note the removal of the envirnment name part
+            put(local_path='%s/%s.local_settings.py' % (env.environment_settings_path, env.environment), remote_path='%s/%s/local_settings.py' % (full_version_path, env.project))
 
 @task
 def unzip_archive():
