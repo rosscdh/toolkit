@@ -3,7 +3,6 @@
 {% block page_title %}Your Matters{% endblock %}
 
 {% block body %}
-
     <!-- needed for react -->
     {% csrf_token %}
 
@@ -15,6 +14,7 @@
                 <header class="page-header">
                     <h4>All Matters</h4>
                     <div class="pull-right">
+                        <a href="{% url 'matter:list_archived' %}" style="margin-right: 10px;">Show archived matters</a>
                         {% if can_create %}
                             <a href="{% url 'matter:create' %}" data-toggle="modal" data-target="#matter-create" class="btn btn-success btn-embossed"><i class="fui-plus"></i> New Matter</a>
                         {% endif %}
@@ -35,8 +35,8 @@
         {% if can_edit %}
             <div class="modal" id="matter-edit-{{ m.slug }}"></div>
         {% endif %}
-        {% if can_delete %}
-            <div class="modal" id="matter-delete-{{ m.slug }}"></div>
+        {% if can_archive %}
+            <div class="modal" id="matter-archive-{{ m.slug }}"></div>
         {% endif %}
     {% endfor %}
 {% endblock %}

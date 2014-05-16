@@ -1,0 +1,19 @@
+{% extends 'modal.html' %}
+
+{% load url from future %}
+
+{% block modal_title %}Archive: {{ object.name }}{% endblock %}
+
+{% block content %}
+    <form method="POST" action="{% url 'matter:archive' matter_slug=object.slug %}">
+        {% csrf_token %}
+        <div class="modal-body">
+            <p>Are you sure you want to archive the matter {{ object.name }}?</p>
+
+        </div>
+        <div class="modal-footer">
+            <a href="#" class="btn btn-default" data-dismiss="modal">Cancel</a>
+            <input type="submit" name="submit" value="Yes, archive this matter" class="btn btn-danger btn-wide" id="submit-id-submit">
+        </div>
+    </form>
+{% endblock %}

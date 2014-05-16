@@ -1,6 +1,12 @@
 Deployment actions by branch
 ----------------------------
 
+
+[archived-matters]
+
+1. ./manage.py migrate workspace 0007  # add is_archived field
+
+
 [authy-integration]
 
 1. pip install -e git+https://github.com/rosscdh/django-authy.git#egg=django-authy
@@ -80,6 +86,7 @@ item statuses
 
 2. manage.py migrate djcelery
 
+>>>>>>> master
 
 --------------------------------------------------------------------------------
 ** DEPLOYED 6 April 2014 - celery tasks are preset but not enabled

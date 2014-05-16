@@ -180,6 +180,64 @@ class MatterUpdateViewTest(BaseScenarios, TestCase):
         self.assertEqual(response['Location'], 'http://testserver/start/?next=/matters/lawpal-test/edit/')
 
 
+class MatterArchiveViewTest(BaseScenarios, TestCase):
+    def setUp(self):
+        super(MatterArchiveViewTest, self).setUp()
+        self.basic_workspace()
+
+    def test_valid_form(self):
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        url = reverse('matter:archive', kwargs={'matter_slug': self.workspace.slug})
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(url, {})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['Location'], 'http://testserver/matters/')
+
+        # test the matter is archived
+        workspace = Workspace.objects.get(pk=self.workspace.pk)
+        self.assertTrue(workspace.is_archived)
+
+    def test_redirects_to_login_if_not_logged_in(self):
+        # User not logged in
+        response = self.client.get(reverse('matter:archive', kwargs={'matter_slug': self.workspace.slug}))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['Location'], 'http://testserver/start/?next=/matters/lawpal-test/archive/')
+
+
+class MatterUnarchiveViewTest(BaseScenarios, TestCase):
+    def setUp(self):
+        super(MatterUnarchiveViewTest, self).setUp()
+        self.basic_workspace()
+
+        self.workspace.archive()
+
+    def test_valid_form(self):
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        url = reverse('matter:unarchive', kwargs={'matter_slug': self.workspace.slug})
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(url, {})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['Location'], 'http://testserver/matters/')
+
+        # test the matter is archived
+        workspace = Workspace.objects.get(pk=self.workspace.pk)
+        self.assertFalse(workspace.is_archived)
+
+    def test_redirects_to_login_if_not_logged_in(self):
+        # User not logged in
+        response = self.client.get(reverse('matter:unarchive', kwargs={'matter_slug': self.workspace.slug}))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['Location'], 'http://testserver/start/?next=/matters/lawpal-test/unarchive/')
+
+
 class MatterDeleteViewTest(BaseScenarios, TestCase):
     def setUp(self):
         super(MatterDeleteViewTest, self).setUp()

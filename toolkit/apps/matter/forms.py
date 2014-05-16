@@ -76,8 +76,28 @@ class MatterForm(ModalForm, forms.ModelForm):
             Field('template', css_class='select-block') if self.is_new is True else None
         )
 
+        # Only show matters that I'm a participant in
+        self.fields['template'].queryset = Workspace.objects.mine(self.user)
+
         if self.instance.pk:
-            self.helper.inputs.insert(0, self.get_delete_button())
+            if self.instance.is_archived:
+
+                self.helper.inputs.insert(0, self.get_delete_button())
+                self.helper.inputs.insert(1, Button('unarchive', 'Unarchive', css_class='btn btn-info pull-left', **{
+                    'data-dismiss': 'modal',
+                    'data-remote': reverse('matter:unarchive', kwargs={'matter_slug': self.instance.slug}),
+                    'data-target': '#matter-unarchive-%s' % self.instance.slug,
+                    'data-toggle': 'modal',
+                }))
+
+            else:
+                self.helper.inputs.insert(0, Button('archive', 'Archive', css_class='btn btn-info pull-left', **{
+                    'data-dismiss': 'modal',
+                    'data-remote': reverse('matter:archive', kwargs={'matter_slug': self.instance.slug}),
+                    'data-target': '#matter-archive-%s' % self.instance.slug,
+                    'data-toggle': 'modal',
+                }))
+
 
         if self.instance.client:
             self.initial['client_name'] = self.instance.client.name

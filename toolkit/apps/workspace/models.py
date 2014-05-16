@@ -58,6 +58,8 @@ class Workspace(IsDeletedMixin,
 
     data = JSONField(default={})
 
+    is_archived = models.BooleanField(default=False)
+
     date_created = models.DateTimeField(auto_now=False, auto_now_add=True, db_index=True)
     date_modified = models.DateTimeField(auto_now=True, auto_now_add=True, db_index=True)
 
@@ -96,6 +98,11 @@ class Workspace(IsDeletedMixin,
             return lawyer[0]
         except IndexError:
             return None
+
+    def archive(self, is_archived=True):
+        self.is_archived = is_archived
+        self.save(update_fields=['is_archived'])
+    archive.alters_data = True
 
     def get_absolute_url(self):
         """

@@ -70,7 +70,7 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
                   'comments', 'activity',
                   'current_user', 'current_user_todo',
                   'date_created', 'date_modified',
-                  'percent_complete')
+                  'percent_complete', 'is_archived')
 
     def get_closing_groups(self, obj):
         """
@@ -97,24 +97,12 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
         tmp method will eventually be replaced by getting all the latest
         comments form all items in a workspace @TODO cache this
         """
-        comments = {
-            'message': 'He said that she said that she was a S and a Y because of Z',
-            'url': '/api/v1/activity/:pk',
-            'date_of': datetime.datetime.utcnow()
-        }
-        #return [comments.copy() for i in xrange(0,5)]
         return []
 
     def get_activity(self, obj):
         """
         tmp method will eventually be replaced by matter.activity.all()
         """
-        activity = {
-            'message': 'X did a Y to a J because of G',
-            'url': '/api/v1/activity/:pk',
-            'date_of': datetime.datetime.utcnow()
-        }
-        #return [activity.copy() for i in xrange(0,5)]
         return []
 
     def get_current_user(self, obj):
@@ -153,6 +141,7 @@ class LiteMatterSerializer(MatterSerializer):
     class Meta(MatterSerializer.Meta):
         fields = ('url', 'base_url', 'name', 'slug', 'matter_code', 'client',
                   'lawyer', 'participants', 'date_created', 'date_modified',
+                  'is_archived',
                   'percent_complete', 'export_info', 'regular_url')
 
 
