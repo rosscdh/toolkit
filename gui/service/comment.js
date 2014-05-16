@@ -27,7 +27,8 @@ angular.module('toolkit-gui')
 		function commentResource() {
 			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/comment/:id', {}, {
 				'create': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'}},
-				'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'}}
+				'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'}},
+				'update': { 'method': 'PATCH', 'headers': { 'Content-Type': 'application/json'}}
 			});
 		}
 
@@ -70,7 +71,7 @@ angular.module('toolkit-gui')
 			 * @name				delete
 			 *
 			 * @example
-		 	 * commentService.delete( mySelectedMatter, myItem, myComment );
+		 	 * commentService.delete( mySelectedMatter, myItem, commentId );
 			 *
 			 * @public
 			 * @method				delete
@@ -78,12 +79,41 @@ angular.module('toolkit-gui')
 			 *
 			 * @return {Promise}
 		 	 */
-			'delete': function(matterSlug, itemSlug, comment) {
+			'delete': function(matterSlug, itemSlug, commentId) {
 				var api = commentResource();
 				var deferred = $q.defer();
-                $log.debug(comment);
 
-				api.delete({'matterSlug': matterSlug, 'itemSlug': itemSlug, 'id':comment.id},
+				api.delete({'matterSlug': matterSlug, 'itemSlug': itemSlug, 'id':commentId},
+					function success() {
+						deferred.resolve();
+					},
+					function error( err ) {
+						deferred.reject( err );
+					}
+				);
+
+				return deferred.promise;
+			},
+
+             /**
+			 * Saves the given comment
+			 *
+			 * @name				delete
+			 *
+			 * @example
+		 	 * commentService.update( mySelectedMatter, myItem, commentId, comment );
+			 *
+			 * @public
+			 * @method				update
+			 * @memberof			commentService
+			 *
+			 * @return {Promise}
+		 	 */
+			'update': function(matterSlug, itemSlug, commentId, comment) {
+				var api = commentResource();
+				var deferred = $q.defer();
+
+				api.update({'matterSlug': matterSlug, 'itemSlug': itemSlug, 'id':commentId}, {'comment': comment},
 					function success() {
 						deferred.resolve();
 					},

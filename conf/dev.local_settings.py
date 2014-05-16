@@ -62,6 +62,10 @@ ACTSTREAM_SETTINGS = {
     'USE_FOLLOWING': False,  # VERY importand; will break our system if this changes to True
 }
 
+# how long are users allowed to edit/delete their comments (in minutes)
+DELETE_COMMENTS_DURATION = 60
+EDIT_COMMENTS_DURATION = DELETE_COMMENTS_DURATION
+
 #
 # Abridge Integration
 #
