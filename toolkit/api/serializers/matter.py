@@ -26,7 +26,7 @@ class ExportInfoSerializer(serializers.Serializer):
 
     def get_download_url(self, obj):
         if obj.get('download_valid_until') is not None and datetime.datetime.utcnow().replace(tzinfo=pytz.utc) < obj.get('download_valid_until'):
-            return obj.get('download_valid_until')
+            return obj.get('download_url')
         return None
 
 
