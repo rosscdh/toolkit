@@ -8,6 +8,21 @@ Deployment actions by branch
 3. ./manage.py migrate hello_sign 0001 --fake
 4. ./manage.py migrate hello_sign
 
+
+[authy-integration]
+
+1. pip install -e git+https://github.com/rosscdh/django-authy.git#egg=django-authy
+2. ./manage.py syncdb --migrate
+
+--------------------------------------------------------------------------------
+** DEPLOYED 15 May 2014
+--------------------------------------------------------------------------------
+
+[feature/pusher-integration]
+
+1. pip install pusher
+2. pip install django -U # upgraded to https://www.djangoproject.com/weblog/2014/may/14/security-releases-issued/
+
 --------------------------------------------------------------------------------
 ** DEPLOYED 06 May 2014
 --------------------------------------------------------------------------------

@@ -12,6 +12,7 @@
   <script src="<!-- @echo staticBase -->ng/bower_components/jquery-ui/ui/jquery-ui.js" data-remove="exclude"></script>
   <script src="<!-- @echo staticBase -->ng/bower_components/bootstrap/dist/js/bootstrap.js" data-remove="exclude"></script>
   <script src="<!-- @echo staticBase -->ng/bower_components/angular/angular.js" data-remove="exclude"></script>
+  <script src="//d3dy5gmtp8yhk7.cloudfront.net/2.2/pusher.min.js" data-remove="exclude"></script>
   <script language="javascript" data-remove="exclude">
     /* File upload fallback for IE browsers */
     FileAPI = {
@@ -72,10 +73,12 @@
   <script src="<!-- @echo staticPath -->service/search.js"></script>
   <script src="<!-- @echo staticPath -->service/activity.js"></script>
   <script src="<!-- @echo staticPath -->service/comment.js"></script>
+  <script src="<!-- @echo staticPath -->service/pusher.js"></script>
   <!-- Add New Service JS Above -->
 
   <!-- Directive JS -->
   <script src="<!-- @echo staticPath -->directive/form.js"></script>
+  <script src="<!-- @echo staticPath -->directive/activity/activity.js"></script>
   <script src="<!-- @echo staticPath -->directive/filepicker.js"></script>
   <!-- Add New Directive JS Above -->
 
@@ -181,7 +184,7 @@
       </form>
       {% verbatim %}
       <ul class="nav navbar-nav navbar-right hidden-xs">
-        <li class="notifications"><a href="/notifications/" ng-class="matter.selected.current_user.has_notifications ? 'unread' : ''"><!-- <span ng-class="matter.selected.current_user.has_notifications ? 'fui-radio-checked animated pulse' : 'fui-radio-unchecked'"></span> --><span class="pe-7s-bell"></span></a></li>
+        <li class="notifications"><a href="/notifications/" ng-class="matter.selected.current_user.has_notifications ? 'unread' : ''"><!-- <span ng-class="matter.selected.current_user.has_notifications ? 'fui-radio-checked animated pulse' : 'fui-radio-unchecked'"></span> --><span ng-class="matter.selected.current_user.has_notifications ? 'swing' : ''" class="pe-7s-bell animated-slow"></span></a></li>
 
         <li><a href="/requests/">Requests</a></li>
         <li class="hidden-xs hidden-sm"><a href="#" class="intercom">Support</a></li>
@@ -211,6 +214,7 @@
     angular.module('toolkit-gui').constant('DEBUG_MODE', <!-- @echo DEBUG_MODE -->);
     angular.module('toolkit-gui').constant('SENTRY_PUBLIC_DSN', '<!-- @echo SENTRY_PUBLIC_DSN -->' );
     angular.module('toolkit-gui').constant('INTERCOM_APP_ID', '<!-- @echo INTERCOM_APP_ID -->' );
+    angular.module('toolkit-gui').constant('pusher_api_key', '<!-- @echo PUSHER_API_KEY -->' );
   </script>
 </body>
 </html>

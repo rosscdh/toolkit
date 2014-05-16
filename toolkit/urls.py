@@ -40,6 +40,9 @@ urlpatterns = patterns('',
     # signing events
     url(r'^sign/', include('toolkit.apps.sign.urls', namespace='sign')),
 
+    # Authy authentication
+    url(r'^authy/', include('dj_authy.urls', namespace='dj_authy')),
+
     # Payments
     url(r'^payments/', include('payments.urls')),
 

@@ -119,6 +119,7 @@ PROJECT_APPS = (
     # Lawpal Modules
     'hello_sign',
     'dj_crocodoc',
+    'dj_authy',
 )
 
 HELPER_APPS = (
@@ -181,6 +182,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # 'corsheaders.middleware.CorsMiddleware',  # not required yet
+    'dj_authy.middleware.AuthyAuthenticationRequiredMiddleware',
     'toolkit.apps.me.middleware.EnsureUserHasPasswordMiddleware',
     'django.middleware.gzip.GZipMiddleware',
     'pipeline.middleware.MinifyHTMLMiddleware',
@@ -407,6 +409,9 @@ BLEACH_ALLOWED_TAGS = ['blockquote', 'br', 'div', 'li', 'ol', 'span', 'ul']
 BLEACH_STRIP_COMMENTS = True
 BLEACH_STRIP_TAGS = True
 
+# how long are users allowed to edit/delete their comments (in minutes)
+DELETE_COMMENTS_DURATION = 60
+EDIT_COMMENTS_DURATION = DELETE_COMMENTS_DURATION
 
 INTERCOM_APP_ID = 'wkxzfou'
 INTERCOM_APP_SECRET = 'MZCesCDxkDrYdfX8HocAB2F6V5aZzCm-DuF7lyR5'
@@ -455,6 +460,9 @@ LAWPAL_ACTIVITY = {
                       'workspace-deleted',
                       'workspace-added-participant', 'workspace-removed-participant',
                       'workspace-stopped-participating',
+                      'workspace-export-started',
+                      'workspace-export-finished',
+                      'workspace-export-downloaded',
                       ]
     },
     "notifications": {
@@ -475,6 +483,9 @@ LAWPAL_ACTIVITY = {
                       'workspace-deleted',
                       'workspace-added-participant', 'workspace-removed-participant',
                       'workspace-stopped-participating',
+                      'workspace-export-started',
+                      'workspace-export-finished',
+                      'workspace-export-downloaded',
                       ]
     },
     "activity": {
@@ -494,6 +505,9 @@ LAWPAL_ACTIVITY = {
                       'workspace-created', 'workspace-deleted',
                       'workspace-added-participant', 'workspace-removed-participant',
                       'workspace-stopped-participating',
+                      'workspace-export-started',
+                      'workspace-export-finished',
+                      'workspace-export-downloaded',
                       ]
     },
 }
@@ -514,6 +528,7 @@ PAYMENTS_PLANS = {
     }
 }
 
+MATTER_EXPORT_DAYS_VALID = 3
 
 try:
     LOCAL_SETTINGS

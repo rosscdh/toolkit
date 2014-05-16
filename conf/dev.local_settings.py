@@ -48,7 +48,11 @@ DEBUG_TOOLBAR_CONFIG = {
 
 CROCDOC_API_KEY = '27FXmeRJ3StkMZGxi46UTwWH'
 
-AUTHY_API_KEY = 'e19afad3c1c207a03ef6a1dcb2adb0c3'
+#
+# Authy
+#
+AUTHY_KEY = 'bcdfb7ce5e6854dcfe65ce5dd0d568c7'
+AUTHY_IS_SANDBOXED = True
 
 #
 # ACTIVITY STREAM
@@ -61,6 +65,10 @@ ACTSTREAM_SETTINGS = {
     'USE_JSONFIELD': True,
     'USE_FOLLOWING': False,  # VERY importand; will break our system if this changes to True
 }
+
+# how long are users allowed to edit/delete their comments (in minutes)
+DELETE_COMMENTS_DURATION = 60
+EDIT_COMMENTS_DURATION = DELETE_COMMENTS_DURATION
 
 #
 # Abridge Integration
@@ -97,3 +105,9 @@ STRIPE_SECRET_KEY = 'pk_test_pVBXSHiazhp3b0EyGHQa8Dx2'
 #
 CELERY_DEFAULT_QUEUE = 'lawpal-local'
 ENABLE_CELERY_TASKS = True
+
+#
+# Authy
+#
+AUTHY_KEY = 'bcdfb7ce5e6854dcfe65ce5dd0d568c7'
+AUTHY_IS_SANDBOXED = True

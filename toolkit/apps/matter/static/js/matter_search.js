@@ -3,25 +3,138 @@
 * ReactJS Experiment
 *
 */
+var DownloadExportView = React.createClass({displayName: 'DownloadExportView',
+    render: function () {
+        if ( this.props.download_url ) {
+            return (
+                React.DOM.a( {href:this.props.download_url}, "Download")
+            );
+        } else {
+            return (React.DOM.span(null));
+        }
+    }
+});
+
+var LastExportRequestedView = React.createClass({displayName: 'LastExportRequestedView',
+    render: function () {
+        var last_export_requested = moment(this.props.export_info.last_export_requested).from(moment.utc());
+        var last_export_requested_by = this.props.export_info.last_export_requested_by;
+        var download = DownloadExportView( {download_url:this.props.export_info.download_url})
+        if (last_export_requested_by) {
+            return (
+                React.DOM.small(null,
+                    React.DOM.b(null, "Last Requested:"), " ", last_export_requested,", ", last_export_requested_by, " ", download
+                )
+            );
+        } else {
+            return (React.DOM.span(null));
+        }
+    }
+});
+// var LastExportedView = React.createClass({
+//     render: function () {
+//         var last_exported = moment(this.props.export_info.last_exported).from(moment.utc());
+//         var last_exported_by = this.props.export_info.last_exported_by
+//         if (last_exported_by) {
+//             return (
+//                 <small>
+//                     <b>Last Exported:</b> {last_exported}, {last_exported_by}
+//                 </small>
+//             )
+//         } else {
+//             return (<span/>);
+//         }
+//     }
+// });
+
+var ExportButtonInterface = React.createClass({displayName: 'ExportButtonInterface',
+    getInitialState: function() {
+        var is_pending_export = this.props.export_info.is_pending_export
+        var requested_by = this.props.export_info.last_export_requested_by
+
+        if (is_pending_export == true) {
+            return {
+                'show_export': false,
+                'export_message': 'Export requested by ' + requested_by,
+                'export_message_classname': null
+            }
+        } else {
+            return {
+                'show_export': true,
+                'export_message': null,
+                'export_message_classname': null
+            }
+        }
+    },
+    handleClick: function(event) {
+        var self = this;
+        var url = '/api/v1/matters/'+ this.props.matter_slug +'/export';
+
+        $.ajax({
+            type: 'POST',
+            url: url,
+            dataType: 'json',
+            headers: {'X-CSRFToken': $('input[name=csrfmiddlewaretoken]:first').val()},
+            success: function(data) {
+                self.setState({
+                    'show_export': false,
+                    'export_message': data.detail,
+                    'export_message_classname': 'palette-midnight-blue'
+                });
+            },
+            error: function(result, a, b) {
+                data = result.responseJSON
+                self.setState({
+                    'show_export': false,
+                    'export_message': data.detail,
+                    'export_message_classname': 'palette-pomegranate'
+                });
+            }.bind(this)
+        });
+    },
+    render: function() {
+        if (this.props.is_matter_owner === false) {
+            // is not the owner (matter.lawyer)
+            return (React.DOM.span(null));
+        }else{
+            // is the matter owner
+            var className = (this.state.show_export === true)? 'btn btn-sm btn-info' : 'btn btn-sm btn-default disabled';
+            var export_message = this.state.export_message;
+            //var LastExported = <LastExportedView export_info={this.props.export_info}/>
+            var LastExportRequested = LastExportRequestedView( {export_info:this.props.export_info})
+            return (
+                React.DOM.div(null,
+                React.DOM.button( {className:className, onClick:this.handleClick}, React.DOM.span( {className:"fui-check-inverted"}), " Export"
+                ),React.DOM.span( {className:"{this.state.export_message_classname}"}, React.DOM.small(null, export_message)),React.DOM.br(null),LastExportRequested
+                )
+            );
+        };
+    }
+});
+
 var MatterItem = React.createClass({displayName: 'MatterItem',
   render: function() {
+
+    var ExportButton = ExportButtonInterface( {is_matter_owner:this.props.is_matter_owner, matter_slug:this.props.key, export_info:this.props.export_info} )
+
     return (
-            React.DOM.article( {className:"col-md-4 matter"}, 
-                React.DOM.div( {className:"card"}, 
+            React.DOM.article( {className:"col-md-4 matter"},
+                React.DOM.div( {className:"card"},
 
-                     this.props.editMatterInterface, 
+                     this.props.editMatterInterface,
+                     ExportButton, 
 
-                    React.DOM.a( {href: this.props.detail_url,  title: this.props.name,  className:"content"}, 
-                        React.DOM.div( {className:"title"}, 
+                    React.DOM.a( {href: this.props.detail_url,  title: this.props.name,  className:"content"},
+                        React.DOM.div( {className:"title"},
                             React.DOM.h6(null,  this.props.lawyer_or_client_name ),
                             React.DOM.h5(null,  this.props.name )
                         ),
-                        React.DOM.div( {className:"meta clearfix"}, 
-                             this.props.lastupdated_or_complete, 
-                             this.props.participantList 
+                        React.DOM.div( {className:"meta clearfix"},
+                             this.props.lastupdated_or_complete,
+                             this.props.participantList
                         )
                     ),
-                    React.DOM.div( {className:"progress"}, 
+                    React.DOM.div( {className:"progress"},
                         React.DOM.div( {className:"progress-bar", style: this.props.percentStyle })
                     )
                 )
@@ -38,8 +151,8 @@ var Participants = React.createClass({displayName: 'Participants',
             });
 
             return (
-                React.DOM.div( {className:"people people-multi pull-right", 'data-toggle':"tooltip", title:userNames}, 
-                    React.DOM.div( {className:"avatar img-circle one"}, 
+                React.DOM.div( {className:"people people-multi pull-right", 'data-toggle':"tooltip", title:userNames},
+                    React.DOM.div( {className:"avatar img-circle one"},
                         React.DOM.span( {className:"initials"}, this.props.data.length)
                     ),
                     React.DOM.div( {className:"avatar img-circle two"}, React.DOM.span( {className:"initials"}, " ")),
@@ -49,14 +162,14 @@ var Participants = React.createClass({displayName: 'Participants',
         } else {
             var userNodes = this.props.data.map(function(user) {
                 return (
-                    React.DOM.div( {className:"avatar img-circle"}, 
+                    React.DOM.div( {className:"avatar img-circle"},
                         React.DOM.span( {className:"initials", title:user.name}, user.initials)
                     )
                 )
             });
 
             return (
-                React.DOM.div( {className:"people pull-right"}, 
+                React.DOM.div( {className:"people pull-right"},
                     userNodes
                 )
             );
@@ -64,11 +177,11 @@ var Participants = React.createClass({displayName: 'Participants',
     }
 });
 
-var LatUpdatedOrComplete = React.createClass({displayName: 'LatUpdatedOrComplete',
+var LastUpdatedOrComplete = React.createClass({displayName: 'LastUpdatedOrComplete',
     render: function() {
         var percent_complete = this.props.percent_complete;
         var date_modified = this.props.date_modified;
-        var date_modified_ago = moment(date_modified).fromNow();
+        var date_modified_ago = moment(date_modified).from(moment.utc());
 
         if (percent_complete === '100%') {
 
@@ -95,7 +208,7 @@ var EditMatterInterface = React.createClass({displayName: 'EditMatterInterface',
         if (can_edit === true) {
 
             return (
-                React.DOM.a( {href:edit_url, 'data-toggle':"modal", 'data-target':modal_target, className:"edit"}, 
+                React.DOM.a( {href:edit_url, 'data-toggle':"modal", 'data-target':modal_target, className:"edit"},
                     React.DOM.span( {className:"fui-gear"})
                 )
             );
@@ -111,7 +224,7 @@ var EditMatterInterface = React.createClass({displayName: 'EditMatterInterface',
 var NoResultsInterface = React.createClass({displayName: 'NoResultsInterface',
     render: function() {
         return (
-            React.DOM.div( {className:"col-md-12 text-center"}, 
+            React.DOM.div( {className:"col-md-12 text-center"},
                 React.DOM.h6( {className:"text-muted"}, "Could not find any matters.")
             )
         );
@@ -167,19 +280,24 @@ var MatterList = React.createClass({displayName: 'MatterList',
                 var lawyer_or_client_name = (UserData.is_lawyer) ? (matter.client !== null) ? matter.client.name : null : matter.lawyer.name ;
 
                 var participantList = Participants( {data:matter.participants} )
-                var lastupdatedOrComplete = LatUpdatedOrComplete( {percent_complete:matter.percent_complete,
+                var lastupdatedOrComplete = LastUpdatedOrComplete( {percent_complete:matter.percent_complete,
                                                                   date_modified:matter.date_modified} )
                 var editMatterInterface = EditMatterInterface( {key:matter.slug, can_edit:UserData.can_edit, edit_url:editUrl} )
+
+                var is_matter_owner = matter.lawyer.username == UserData.username
 
                 return MatterItem(
                         {key:matter.slug,
                         name:matter.name,
                         is_lawyer:UserData.is_lawyer,
+                        is_matter_owner:is_matter_owner,
                         lawyer_or_client_name:lawyer_or_client_name,
 
                         participantList:participantList,
                         lastupdated_or_complete:lastupdatedOrComplete,
                         editMatterInterface:editMatterInterface,
+
+                        export_info:matter.export_info,
 
                         percent_complete:matter.percent_complete,
                         percentStyle:percentStyle,
@@ -188,22 +306,22 @@ var MatterList = React.createClass({displayName: 'MatterList',
             });
         }
         return (
-            React.DOM.section( {className:"matters cards"}, 
-                React.DOM.header( {className:"page-header"}, 
+            React.DOM.section( {className:"matters cards"},
+                React.DOM.header( {className:"page-header"},
                     React.DOM.h4(null, "All Matters"),
-                    React.DOM.div( {className:"pull-right"}, 
+                    React.DOM.div( {className:"pull-right"},
                         createButton,
-    		            React.DOM.div( {className:"form-group pull-right"}, 
-                            React.DOM.div( {className:"input-group search-field"}, 
+    		            React.DOM.div( {className:"form-group pull-right"},
+                            React.DOM.div( {className:"input-group search-field"},
                                 React.DOM.input( {type:"text", className:"form-control", placeholder:"Search matters by name or client name...", name:"q", autocomplete:"off", onChange:this.handleSearch}),
-                                React.DOM.span( {className:"input-group-btn"}, 
+                                React.DOM.span( {className:"input-group-btn"},
                                     React.DOM.button( {type:"submit", className:"btn"}, React.DOM.span( {className:"fui-search"}))
                                 )
                             )
                         )
                     )
                 ),
-                React.DOM.div( {className:"row"}, 
+                React.DOM.div( {className:"row"},
                     matterNodes
                 )
             )

@@ -22,8 +22,9 @@
     "angular-markdown-directive": "latest",
     "angular-elastic": "latest",
     "angular-ui-router": "latest",
-    "angular-sanitize": "~1.2.16",
+    "angular-sanitize": "latest",
     "moment": "~2.5",
+    "moment-timezone": "~0.0.6",
     "less.js": "~1.5",
     "font-awesome": "~4.0",
     "angular-ui-sortable": "~0.12.1",
@@ -33,9 +34,5 @@
     "angular-intercom": "latest",
     "crypto-js": "http://crypto-js.googlecode.com/files/CryptoJS%20v3.1.2.zip",
     "jquery-ui-touch-punch": "*"
-  },
-  "resolutions": {
-    "angular": "~1.2.x",
-    "angular-sanitize": "~1.2.16"
   }
 }

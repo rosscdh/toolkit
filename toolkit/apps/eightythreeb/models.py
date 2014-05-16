@@ -1,16 +1,9 @@
 # -*- coding: utf-8 -*-
-import datetime
-
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 
-from storages.backends.s3boto import S3BotoStorage
-
-import os
-from uuidfield import UUIDField
-from jsonfield import JSONField
-from decimal import Decimal
+from toolkit.core import _managed_S3BotoStorage
 
 from rulez import registry as rulez_registry
 
@@ -28,6 +21,12 @@ from .mixins import (StatusMixin,
                      TransferAndFilingDatesMixin,
                      USPSReponseMixin)
 from .managers import EightyThreeBManager
+
+import os
+import datetime
+from uuidfield import UUIDField
+from jsonfield import JSONField
+from decimal import Decimal
 
 
 def _upload_file(instance, filename):
@@ -128,7 +127,7 @@ rulez_registry.register("can_delete", EightyThreeB)
 
 class Attachment(IsDeletedMixin, models.Model):
     eightythreeb = models.ForeignKey('eightythreeb.EightyThreeB')
-    attachment = models.FileField(upload_to=_upload_file, blank=True, storage=S3BotoStorage())
+    attachment = models.FileField(upload_to=_upload_file, blank=True, storage=_managed_S3BotoStorage())
 
     def can_delete(self, user):
         return user == self.eightythreeb.user
