@@ -27,22 +27,22 @@ class AppTestRunner(NyanCatDiscoverRunner, DjangoTestSuiteRunner):
 
         return super(AppTestRunner, self).build_suite(test_labels, *args, **kwargs)
 
-    def setup_test_environment(self, **kwargs):
-        # call_command('collectstatic', interactive=False)  # collect static so our casper tests break less
+    # def setup_test_environment(self, **kwargs):
+    #     # call_command('collectstatic', interactive=False)  # collect static so our casper tests break less
 
-        # copy the conf/production.local_settings.py to toolkit/production_settings.py
-        # so that we can test the various production settings *in mattters for eg
-        shutil.copyfile(PROD_SETTINGS_SRC, PROD_SETTINGS_DEST)
+    #     # copy the conf/production.local_settings.py to toolkit/production_settings.py
+    #     # so that we can test the various production settings *in mattters for eg
+    #     shutil.copyfile(PROD_SETTINGS_SRC, PROD_SETTINGS_DEST)
 
-        assert os.path.isfile(PROD_SETTINGS_DEST), 'Could not copy the conf/production.local_settings.py file'
+    #     assert os.path.isfile(PROD_SETTINGS_DEST), 'Could not copy the conf/production.local_settings.py file'
 
-        super(AppTestRunner, self).setup_test_environment(**kwargs)
+    #     super(AppTestRunner, self).setup_test_environment(**kwargs)
 
-    def teardown_test_environment(self, **kwargs):
-        #shutil.rmtree(settings.STATIC_ROOT)  # delete the static folder
+    # def teardown_test_environment(self, **kwargs):
+    #     #shutil.rmtree(settings.STATIC_ROOT)  # delete the static folder
 
-        # Remove the prod settings which are only present so we can test them
-        if os.path.exists(PROD_SETTINGS_DEST):
-            os.remove(PROD_SETTINGS_DEST)
+    #     # Remove the prod settings which are only present so we can test them
+    #     if os.path.exists(PROD_SETTINGS_DEST):
+    #         os.remove(PROD_SETTINGS_DEST)
 
-        super(AppTestRunner, self).teardown_test_environment(**kwargs)
+    #     super(AppTestRunner, self).teardown_test_environment(**kwargs)
