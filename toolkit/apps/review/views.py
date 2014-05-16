@@ -11,6 +11,8 @@ from .services import CrocodocLoaderService
 from .models import ReviewDocument
 
 import os
+import logging
+logger = logging.getLogger('django.request')
 
 
 def _authenticate(request, obj, matter, **kwargs):
@@ -80,12 +82,16 @@ class ReviewRevisionView(DetailView):
         kwargs = super(ReviewRevisionView, self).get_context_data(**kwargs)
 
         #
-        # Use the loader to get the crocodoc documet present and available
+        # Use the loader to get the crocodoc document present and available
         # service provides a dict with the appropriate variables includeing 
         # crocodoc_view_url
         #
-        kwarg_service = CrocodocLoaderService(user=self.request.user, reviewdocument=self.object)
-        kwargs.update(kwarg_service.process())
+        try:
+            kwarg_service = CrocodocLoaderService(user=self.request.user, reviewdocument=self.object)
+            kwargs.update(kwarg_service.process())
+
+        except Exception as e:
+            logger.critical(u'Could not use CrocodocLoaderService: %s' % e)
 
         return kwargs
 
