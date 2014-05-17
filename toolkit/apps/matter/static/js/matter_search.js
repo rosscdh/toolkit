@@ -22,7 +22,7 @@ var LastExportRequestedView = React.createClass({displayName: 'LastExportRequest
         var download = DownloadExportView( {download_url:this.props.export_info.download_url})
         if (last_export_requested_by) {
             return (
-                React.DOM.small(null,
+                React.DOM.small(null, 
                     React.DOM.b(null, "Last Requested:"), " ", last_export_requested,", ", last_export_requested_by, " ", download
                 )
             );
@@ -95,7 +95,7 @@ var ExportButtonInterface = React.createClass({displayName: 'ExportButtonInterfa
     render: function() {
         if (this.props.is_matter_owner === false) {
             // is not the owner (matter.lawyer)
-            return (React.DOM.span(null));
+            return (React.DOM.div( {className:"btn btn-sm btn-link"} ));
         }else{
             // is the matter owner
             var className = (this.state.show_export === true)? 'btn btn-sm btn-info' : 'btn btn-sm btn-default disabled';
@@ -103,7 +103,7 @@ var ExportButtonInterface = React.createClass({displayName: 'ExportButtonInterfa
             //var LastExported = <LastExportedView export_info={this.props.export_info}/>
             var LastExportRequested = LastExportRequestedView( {export_info:this.props.export_info})
             return (
-                React.DOM.div(null,
+                React.DOM.div(null, 
                 React.DOM.button( {className:className, onClick:this.handleClick}, React.DOM.span( {className:"fui-check-inverted"}), " Export"
                 ),React.DOM.span( {className:"{this.state.export_message_classname}"}, React.DOM.small(null, export_message)),React.DOM.br(null),LastExportRequested
                 )
@@ -118,23 +118,23 @@ var MatterItem = React.createClass({displayName: 'MatterItem',
     var ExportButton = ExportButtonInterface( {is_matter_owner:this.props.is_matter_owner, matter_slug:this.props.key, export_info:this.props.export_info} )
 
     return (
-            React.DOM.article( {className:"col-md-4 matter"},
-                React.DOM.div( {className:"card"},
+            React.DOM.article( {className:"col-md-4 matter"}, 
+                React.DOM.div( {className:"card"}, 
 
-                     this.props.editMatterInterface,
+                     this.props.editMatterInterface, 
                      ExportButton, 
 
-                    React.DOM.a( {href: this.props.detail_url,  title: this.props.name,  className:"content"},
-                        React.DOM.div( {className:"title"},
+                    React.DOM.a( {href: this.props.detail_url,  title: this.props.name,  className:"content"}, 
+                        React.DOM.div( {className:"title"}, 
                             React.DOM.h6(null,  this.props.lawyer_or_client_name ),
                             React.DOM.h5(null,  this.props.name )
                         ),
-                        React.DOM.div( {className:"meta clearfix"},
-                             this.props.lastupdated_or_complete,
-                             this.props.participantList
+                        React.DOM.div( {className:"meta clearfix"}, 
+                             this.props.lastupdated_or_complete, 
+                             this.props.participantList 
                         )
                     ),
-                    React.DOM.div( {className:"progress"},
+                    React.DOM.div( {className:"progress"}, 
                         React.DOM.div( {className:"progress-bar", style: this.props.percentStyle })
                     )
                 )
@@ -151,8 +151,8 @@ var Participants = React.createClass({displayName: 'Participants',
             });
 
             return (
-                React.DOM.div( {className:"people people-multi pull-right", 'data-toggle':"tooltip", title:userNames},
-                    React.DOM.div( {className:"avatar img-circle one"},
+                React.DOM.div( {className:"people people-multi pull-right", 'data-toggle':"tooltip", title:userNames}, 
+                    React.DOM.div( {className:"avatar img-circle one"}, 
                         React.DOM.span( {className:"initials"}, this.props.data.length)
                     ),
                     React.DOM.div( {className:"avatar img-circle two"}, React.DOM.span( {className:"initials"}, " ")),
@@ -162,14 +162,14 @@ var Participants = React.createClass({displayName: 'Participants',
         } else {
             var userNodes = this.props.data.map(function(user) {
                 return (
-                    React.DOM.div( {className:"avatar img-circle"},
+                    React.DOM.div( {className:"avatar img-circle"}, 
                         React.DOM.span( {className:"initials", title:user.name}, user.initials)
                     )
                 )
             });
 
             return (
-                React.DOM.div( {className:"people pull-right"},
+                React.DOM.div( {className:"people pull-right"}, 
                     userNodes
                 )
             );
@@ -208,7 +208,7 @@ var EditMatterInterface = React.createClass({displayName: 'EditMatterInterface',
         if (can_edit === true) {
 
             return (
-                React.DOM.a( {href:edit_url, 'data-toggle':"modal", 'data-target':modal_target, className:"edit"},
+                React.DOM.a( {href:edit_url, 'data-toggle':"modal", 'data-target':modal_target, className:"edit"}, 
                     React.DOM.span( {className:"fui-gear"})
                 )
             );
@@ -224,7 +224,7 @@ var EditMatterInterface = React.createClass({displayName: 'EditMatterInterface',
 var NoResultsInterface = React.createClass({displayName: 'NoResultsInterface',
     render: function() {
         return (
-            React.DOM.div( {className:"col-md-12 text-center"},
+            React.DOM.div( {className:"col-md-12 text-center"}, 
                 React.DOM.h6( {className:"text-muted"}, "Could not find any matters.")
             )
         );
@@ -306,22 +306,22 @@ var MatterList = React.createClass({displayName: 'MatterList',
             });
         }
         return (
-            React.DOM.section( {className:"matters cards"},
-                React.DOM.header( {className:"page-header"},
+            React.DOM.section( {className:"matters cards"}, 
+                React.DOM.header( {className:"page-header"}, 
                     React.DOM.h4(null, "All Matters"),
-                    React.DOM.div( {className:"pull-right"},
+                    React.DOM.div( {className:"pull-right"}, 
                         createButton,
-    		            React.DOM.div( {className:"form-group pull-right"},
-                            React.DOM.div( {className:"input-group search-field"},
+    		            React.DOM.div( {className:"form-group pull-right"}, 
+                            React.DOM.div( {className:"input-group search-field"}, 
                                 React.DOM.input( {type:"text", className:"form-control", placeholder:"Search matters by name or client name...", name:"q", autocomplete:"off", onChange:this.handleSearch}),
-                                React.DOM.span( {className:"input-group-btn"},
+                                React.DOM.span( {className:"input-group-btn"}, 
                                     React.DOM.button( {type:"submit", className:"btn"}, React.DOM.span( {className:"fui-search"}))
                                 )
                             )
                         )
                     )
                 ),
-                React.DOM.div( {className:"row"},
+                React.DOM.div( {className:"row"}, 
                     matterNodes
                 )
             )
