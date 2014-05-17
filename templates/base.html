@@ -1,4 +1,4 @@
-{% load cache i18n %}{% load url from future %}{% load django_bootstrap_breadcrumbs intercom_tags toolkit_tags %}
+{% load cache i18n %}{% load url from future %}{% load compressed django_bootstrap_breadcrumbs intercom_tags toolkit_tags %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -8,13 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Loading Bootstrap and Flat UI -->
-    <link href="{{ STATIC_URL }}bootstrap/css/bootstrap.css" rel="stylesheet">
-    <link href="{{ STATIC_URL }}css/flat-ui.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ STATIC_URL }}fonts/pe-icon-7-stroke/css/pe-icon-7-stroke.css">
-
-    <!-- Loading application specific styles -->
-    <link href="{{ STATIC_URL }}css/application.css" rel="stylesheet">
-    <link href="{{ STATIC_URL }}css/animate.css" rel="stylesheet">
+    {% compressed_css 'core' %}
 
     <link rel="shortcut icon" href="{{ STATIC_URL }}images/favicon.ico">
 
