@@ -25,6 +25,7 @@ angular.module('toolkit-gui')
 	'$state',
 	'$location',
     '$sce',
+    '$compile',
     '$route',
 	'smartRoutes',
 	'ezConfirm',
@@ -51,6 +52,7 @@ angular.module('toolkit-gui')
 			 $state,
 			 $location,
              $sce,
+             $compile,
              $route,
 			 smartRoutes,
 			 ezConfirm,
@@ -1649,57 +1651,6 @@ angular.module('toolkit-gui')
 
 			return template;
 		}
-
-        /**
-		 * Deletes the given activity stream item
-         *
-		 * @memberof			ChecklistCtrl
-		 * @private
-		 * @type {Object}
-		 */
-        $scope.deleteComment = function(comment) {
-			var matterSlug = $scope.data.slug;
-			var itemSlug = $scope.data.selectedItem.slug;
-
-			commentService.delete(matterSlug, itemSlug, comment).then(
-				 function success(){
-					$scope.activateActivityStream('item');
-				 },
-				 function error(/*err*/){
-					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to delete item comment.') {
-						toaster.pop('error', 'Error!', 'Unable to delete item comment.',5000);
-					}
-				 }
-			);
-		};
-
-
-        /**
-		 * Checks if the current user may delete the given comment item
-         *
-		 * @memberof			ChecklistCtrl
-		 * @private
-		 * @type {Object}
-		 */
-        $scope.deleteCommentIsEnabled = function(activity){
-            if (activity.data.comment) {
-                //if user is lawyer, he might delete all comments
-                if($scope.data.usdata.current.user_class==='lawyer'){
-                    return true;
-                } else if ($scope.data.selectedItem!=null) {
-                    var comments = jQuery.grep( $scope.data.activitystream, function( item ){ return item.comment!==null; } );
-                    var index = jQuery.inArray( activity, comments );
-
-                    //if the user is a client, then he might only delete his own comments if there is no newer comment
-                    if(activity.actor.username === $scope.data.usdata.current.username && index===0) {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        };
-
 
         /* END COMMENT HANDLING */
 }]);
