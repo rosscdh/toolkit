@@ -509,15 +509,15 @@ def update_env_conf():
 def deploy_settings():
     if env.SHA1_FILENAME is None:
         env.SHA1_FILENAME = get_sha1()
+
     version_path = '%sversions' % env.remote_project_path
     full_version_path = '%s/%s' % (version_path, env.SHA1_FILENAME)
     project_path = '%s%s' % (env.remote_project_path, env.project,)
 
     # note the removal of the envirnment name part
     put(local_path='%s/%s.local_settings.py' % (env.environment_settings_path, env.environment), remote_path='~/%s.local_settings.py' % (env.environment))
-    #virtualenv('cp ~/%s.local_settings.py %s/%s/local_settings.py' % (env.environment, full_version_path, env.project))
     sudo('cp /home/ubuntu/%s.local_settings.py %s/%s/local_settings.py' % (env.environment, full_version_path, env.project))
-    sudo('chown -R %s:%s %s' % (env.application_user, env.application_user, env.remote_project_path) )
+    sudo('chown -R %s:%s %s/%s/local_settings.py' % (env.application_user, env.application_user, full_version_path, env.project) )
 
 @task
 def unzip_archive():
