@@ -50,11 +50,11 @@ STATIC_URL = '/static/'
 # Additional locations of static files
 STATICFILES_DIRS = (
     # These are the dev files
-    ("ng", os.path.join(SITE_ROOT, 'gui')),
+    ("ng", os.path.join(SITE_ROOT, 'gui', 'dist')),
 )
 
-#STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
-STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
+STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+#STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 
 
 MEDIA_ROOT = os.path.join(SITE_ROOT, 'media')
