@@ -53,8 +53,8 @@ STATICFILES_DIRS = (
     ("ng", os.path.join(SITE_ROOT, 'gui')),
 )
 
-STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
-#STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
+#STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 
 
 MEDIA_ROOT = os.path.join(SITE_ROOT, 'media')
