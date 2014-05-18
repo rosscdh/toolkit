@@ -23,15 +23,17 @@ class MixpanelOnLawpal(object):
         if self.service is not None:
             try:
                 self.service.alias(alias_id=alias_id, original=original, **kwargs)
-            except MixpanelException:
-                logger.error('Mixpanel error: distinct_id, missing or empty: %s' % alias_id)
+            except Exception as e:
+                logger.error('Mixpanel error: distinct_id, missing or empty: %s :%s' % (alias_id, e))
 
     def mixpanel_track_charge(self, user, amount, time, distinct_id=None, **kwargs):
         if self.service is not None:
             if distinct_id is None:
                 distinct_id = user.pk
-
-            self.service.people_track_charge(distinct_id=distinct_id, amount=amount, properties={ '$time': time })
+            try:
+                self.service.people_track_charge(distinct_id=distinct_id, amount=amount, properties={ '$time': time })
+            except Exception as e:
+                logger.error('Mixpanel error: %s' % e)
 
     def event(self, key, user, distinct_id=None, **kwargs):
         if self.service is not None:
@@ -48,8 +50,10 @@ class MixpanelOnLawpal(object):
                 'via': 'web'
             }
             all_properties.update(kwargs)
-
-            self.service.track(distinct_id=distinct_id, event_name=key, properties=all_properties)
+            try:
+                self.service.track(distinct_id=distinct_id, event_name=key, properties=all_properties)
+            except Exception as e:
+                logger.error('Mixpanel error: %s' % e)
 
 
 class AtticusFinch(MixpanelOnLawpal):
