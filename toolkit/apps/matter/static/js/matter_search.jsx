@@ -95,7 +95,7 @@ var ExportButtonInterface = React.createClass({
     render: function() {
         if (this.props.is_matter_owner === false) {
             // is not the owner (matter.lawyer)
-            return (<span/>);
+            return (<div className="btn btn-sm btn-link" />);
         }else{
             // is the matter owner
             var className = (this.state.show_export === true)? 'btn btn-sm btn-info' : 'btn btn-sm btn-default disabled';

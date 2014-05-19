@@ -53,8 +53,8 @@ STATICFILES_DIRS = (
     ("ng", os.path.join(SITE_ROOT, 'gui')),
 )
 
-#STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
-STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
+STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+#STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 
 
 MEDIA_ROOT = os.path.join(SITE_ROOT, 'media')
@@ -307,7 +307,21 @@ REST_FRAMEWORK = {
 }
 
 
-#PIPELINE_CSS = {}
+PIPELINE_CSS = {
+  'core': {
+        'source_filenames': (
+            'bootstrap/css/bootstrap.css',
+            'css/flat-ui.css',
+            'fonts/pe-icon-7-stroke/css/pe-icon-7-stroke.css',
+            'css/application.css',
+            'css/animate.css',
+        ),
+        'output_filename': 'css/core.css',
+        'extra_context': {
+            'media': 'screen,projection',
+        },
+  }
+}
 PIPELINE_JS = {
     'reactjs': {
         'source_filenames': (

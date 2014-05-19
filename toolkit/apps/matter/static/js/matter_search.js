@@ -95,7 +95,7 @@ var ExportButtonInterface = React.createClass({displayName: 'ExportButtonInterfa
     render: function() {
         if (this.props.is_matter_owner === false) {
             // is not the owner (matter.lawyer)
-            return (React.DOM.span(null));
+            return (React.DOM.div( {className:"btn btn-sm btn-link"} ));
         }else{
             // is the matter owner
             var className = (this.state.show_export === true)? 'btn btn-sm btn-link export-button' : 'btn btn-sm btn-default disabled dis-export-button';
@@ -106,6 +106,7 @@ var ExportButtonInterface = React.createClass({displayName: 'ExportButtonInterfa
                 React.DOM.div(null,
                 React.DOM.button( {className:className, onClick:this.handleClick}, React.DOM.span( {className:"fui-exit "})
                 ),React.DOM.span( {className:"export-message"}, React.DOM.p(null, export_message)),React.DOM.br(null),LastExportRequested
+
                 )
             );
         };
@@ -121,8 +122,10 @@ var MatterItem = React.createClass({displayName: 'MatterItem',
             React.DOM.article( {className:"col-md-4 matter"},
                 React.DOM.div( {className:"card"},
 
+
                      this.props.editMatterInterface,
                      ExportButton,
+
 
                     React.DOM.a( {href: this.props.detail_url,  title: this.props.name,  className:"content"},
                         React.DOM.div( {className:"title"},

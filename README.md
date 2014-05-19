@@ -8,6 +8,22 @@ workspace.
 Requirements
 ------------
 
+1. mkvirtualenv toolkit (assume you have virtualenv and virtualenvwrapper installed)
+2. pip install -r requirements/dev.txt *
+3. copy dev.local_settings.py to /toolkit/local_setting.py
+4. fab rebuild_local (will download and install "stamp" - ruby rest api)
+5. honcho start (starts runserver_plus in threaded mode as well as the stamp service)
+
+*If you are running XCode 5.1 and run into errors such as
+  "Compile failed with error code 1 in /private/tmp/pip_build_root/"
+
+Update to the newest version, or run:
+
+ARCHFLAGS=-Wno-error=unused-command-line-argument-hard-error-in-future pip install NAME
+
+http://stackoverflow.com/questions/22716854/os-x-pillow-installation-error/22727537#22727537
+
+
 ```
 easy_isntall pip
 pip install virtualenvwrapper

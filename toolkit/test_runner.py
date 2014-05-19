@@ -8,10 +8,10 @@ from rainbowrunners.djrunner import NyanCatDiscoverRunner
 import os
 import shutil
 
-PROD_SETTINGS_SRC = os.path.join(settings.SITE_ROOT, 'conf', 'production.local_settings.py')
-PROD_SETTINGS_DEST = os.path.join(settings.SITE_ROOT, 'toolkit', 'production_settings.py')
+# PROD_SETTINGS_SRC = os.path.join(settings.SITE_ROOT, 'conf', 'production.local_settings.py')
+# PROD_SETTINGS_DEST = os.path.join(settings.SITE_ROOT, 'toolkit', 'production_settings.py')
 
-assert PROD_SETTINGS_SRC, 'Must have a conf/production.local_settings.py defined'
+# assert PROD_SETTINGS_SRC, 'Must have a conf/production.local_settings.py defined'
 
 
 class AppTestRunner(NyanCatDiscoverRunner, DjangoTestSuiteRunner):
