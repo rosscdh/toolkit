@@ -98,14 +98,14 @@ var ExportButtonInterface = React.createClass({displayName: 'ExportButtonInterfa
             return (React.DOM.div( {className:"btn btn-sm btn-link"} ));
         }else{
             // is the matter owner
-            var className = (this.state.show_export === true)? 'btn btn-sm btn-info' : 'btn btn-sm btn-default disabled';
+            var className = (this.state.show_export === true)? 'btn btn-sm btn-link export-button' : 'btn btn-sm btn-default disabled dis-export-button';
             var export_message = this.state.export_message;
             //var LastExported = <LastExportedView export_info={this.props.export_info}/>
             var LastExportRequested = LastExportRequestedView( {export_info:this.props.export_info})
             return (
                 React.DOM.div(null, 
-                React.DOM.button( {className:className, onClick:this.handleClick}, React.DOM.span( {className:"fui-check-inverted"}), " Export"
-                ),React.DOM.span( {className:"{this.state.export_message_classname}"}, React.DOM.small(null, export_message)),React.DOM.br(null),LastExportRequested
+                React.DOM.button( {className:className, 'data-toggle':"tooltip", 'data-placement':"left", title:"Export this Matter", onClick:this.handleClick}, React.DOM.span( {className:"fui-exit"})
+                ),React.DOM.span( {className:"export-message"}, React.DOM.p(null, export_message)),React.DOM.br(null),LastExportRequested
                 )
             );
         };
@@ -208,8 +208,8 @@ var EditMatterInterface = React.createClass({displayName: 'EditMatterInterface',
         if (can_edit === true) {
 
             return (
-                React.DOM.a( {href:edit_url, 'data-toggle':"modal", 'data-target':modal_target, className:"edit"}, 
-                    React.DOM.span( {className:"fui-gear"})
+                React.DOM.a( {href:edit_url, 'data-toggle':"modal", 'data-target':modal_target, className:"edit btn-sm"}, 
+                    React.DOM.span( {className:"fui-gear", 'data-toggle':"tooltip", 'data-placement':"left", title:"Edit this Matter"})
                 )
             );
 
