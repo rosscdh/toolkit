@@ -104,8 +104,8 @@ var ExportButtonInterface = React.createClass({
             var LastExportRequested = <LastExportRequestedView export_info={this.props.export_info}/>
             return (
                 <div>
-                <button className={className} data-toggle="tooltip" data-placement="left" title="Download this Matter" onClick={this.handleClick}><span className="fui-exit"></span>
-                </button><span className="{export-message}"><small>{export_message}</small></span><br/>{LastExportRequested}
+                <button className={className} data-toggle="tooltip" data-placement="left" title="Export this Matter" onClick={this.handleClick}><span className="fui-exit"></span>
+                </button><span className="export-message"><p>{export_message}</p></span><br/>{LastExportRequested}
                 </div>
             );
         };
