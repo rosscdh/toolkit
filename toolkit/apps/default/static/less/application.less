@@ -190,10 +190,22 @@ body.gui {
     position: absolute;
     top: 20px;
     right: 2px;
+    outline: none
   }
 
   .dis-export-button{
-    background-color: white;
+    transform:rotate(90deg);
+    -ms-transform:rotate(90deg); /* IE 9 */
+    -webkit-transform:rotate(90deg);
+    background-color: transparent;
+    margin-top: 5px;
+    position: absolute;
+    font-size: 16px;
+    top: 20px;
+    right: 2px;
+    color: @concrete;
+    opacity: 0.5;
+    outline: none;
   }
 
   .export-message p {
@@ -207,7 +219,7 @@ body.gui {
     padding: 5px;
     position: absolute;
     top: 10px;
-    left: 70px;
+    left: 12px;
     width: 74%%;
 
   }
@@ -261,8 +273,9 @@ body.gui {
     color: @concrete;
     display: block;
     position: absolute;
-    right: 14px;
-    top: 10px;
+    right: 3px;
+    top: 0px;
+    font-size: 16px
   }
   .progress {
     margin-bottom:0px;
