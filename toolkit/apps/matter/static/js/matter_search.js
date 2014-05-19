@@ -104,7 +104,7 @@ var ExportButtonInterface = React.createClass({displayName: 'ExportButtonInterfa
             var LastExportRequested = LastExportRequestedView( {export_info:this.props.export_info})
             return (
                 React.DOM.div(null,
-                React.DOM.button( {className:className, 'data-toggle':"tooltip", 'title':"Export this Matter", 'data-placement':'left', onClick:this.handleClick}, React.DOM.span( {className:"fui-exit "})
+                React.DOM.button( {className:className, 'data-toggle':"tooltip", 'title':"Export this Matter", 'data-placement':'left', onClick:this.handleClick}, React.DOM.span( {className:"fui-exit"})
                 ),React.DOM.span( {className:"export-message"}, React.DOM.p(null, export_message)),React.DOM.br(null),LastExportRequested
 
                 )
@@ -211,8 +211,8 @@ var EditMatterInterface = React.createClass({displayName: 'EditMatterInterface',
         if (can_edit === true) {
 
             return (
-                React.DOM.a( {href:edit_url, 'data-toggle':"modal", 'data-target':modal_target, className:"edit btn-sm", 'data-toggle':"tooltip", 'title':"Edit this Matter", 'data-placement':'left'},
-                    React.DOM.span( {className:"fui-gear"})
+                React.DOM.a( {href:edit_url, 'data-toggle':"modal", 'data-target':modal_target, className:"edit btn-sm"},
+                    React.DOM.span( {className:"fui-gear", 'data-toggle':"tooltip", 'title':"Edit this Matter", 'data-placement':'left'})
                 )
             );
 

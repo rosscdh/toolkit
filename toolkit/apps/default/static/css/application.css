@@ -912,6 +912,9 @@ body.gui .main-content {
   top: 0px;
   font-size: 16px;
 }
+.matter .card .edit .fui-gear {
+  padding-left: 10px;
+}
 .matter .card .progress {
   margin-bottom: 0px;
   border-radius: 0px;
