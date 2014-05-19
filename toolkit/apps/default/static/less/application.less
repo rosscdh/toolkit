@@ -180,17 +180,50 @@ body.gui {
   margin-bottom: 20px;
   position: relative;
 
+  .export-button  {
+    transform:rotate(90deg);
+    -ms-transform:rotate(90deg); /* IE 9 */
+    -webkit-transform:rotate(90deg);
+    font-size: 16px;
+    color: @concrete;
+    margin-top: 5px;
+    position: absolute;
+    top: 20px;
+    right: 2px;
+  }
+
+  .dis-export-button{
+    background-color: white;
+  }
+
+  .export-message p {
+    color: grey;
+    font-size: 12px;
+    font-style: italic;
+    line-height: 1.2s;
+    margin: 0;
+    padding: 0;
+    height: 40px;
+    padding: 5px;
+    position: absolute;
+    top: 10px;
+    left: 70px;
+    width: 74%%;
+
+  }
+
   .content {
     display: block;
-    padding: 16px 14px 10px;
+
+    padding: 35px 14px 10px;
 
     .title {
       display:table-cell;
-      height: 125px;
+      height: 80px;
       vertical-align: middle;
 
       h5, h6 {
-        margin: 0 0 3px;
+        margin: 0 0 5px;
       }
       h5 {
         color:@midnight-blue;
@@ -228,8 +261,8 @@ body.gui {
     color: @concrete;
     display: block;
     position: absolute;
-    right: 5px;
-    top: 5px;
+    right: 14px;
+    top: 10px;
   }
   .progress {
     margin-bottom:0px;
@@ -986,12 +1019,13 @@ body.gui {
 // -------------------------
 
 .avatar {
-  background-color: lighten(@wet-asphalt, 40%);
+  background-color: none;
+  border: 1px solid #ececec;
   display: inline-block;
   position: relative;
 
   .initials {
-    color: white;
+    color: #95a5a6;
     display: block;
     font-size: 14px;
     font-weight: bold;

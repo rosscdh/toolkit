@@ -98,14 +98,14 @@ var ExportButtonInterface = React.createClass({displayName: 'ExportButtonInterfa
             return (React.DOM.span(null));
         }else{
             // is the matter owner
-            var className = (this.state.show_export === true)? 'btn btn-sm btn-info' : 'btn btn-sm btn-default disabled';
+            var className = (this.state.show_export === true)? 'btn btn-sm btn-link export-button' : 'btn btn-sm btn-default disabled dis-export-button';
             var export_message = this.state.export_message;
             //var LastExported = <LastExportedView export_info={this.props.export_info}/>
             var LastExportRequested = LastExportRequestedView( {export_info:this.props.export_info})
             return (
                 React.DOM.div(null,
-                React.DOM.button( {className:className, onClick:this.handleClick}, React.DOM.span( {className:"fui-check-inverted"}), " Export"
-                ),React.DOM.span( {className:"{this.state.export_message_classname}"}, React.DOM.small(null, export_message)),React.DOM.br(null),LastExportRequested
+                React.DOM.button( {className:className, onClick:this.handleClick}, React.DOM.span( {className:"fui-exit "})
+                ),React.DOM.span( {className:"export-message"}, React.DOM.p(null, export_message)),React.DOM.br(null),LastExportRequested
                 )
             );
         };
@@ -122,7 +122,7 @@ var MatterItem = React.createClass({displayName: 'MatterItem',
                 React.DOM.div( {className:"card"},
 
                      this.props.editMatterInterface,
-                     ExportButton, 
+                     ExportButton,
 
                     React.DOM.a( {href: this.props.detail_url,  title: this.props.name,  className:"content"},
                         React.DOM.div( {className:"title"},
