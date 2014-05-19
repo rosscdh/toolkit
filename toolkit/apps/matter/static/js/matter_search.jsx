@@ -98,14 +98,14 @@ var ExportButtonInterface = React.createClass({
             return (<div className="btn btn-sm btn-link" />);
         }else{
             // is the matter owner
-            var className = (this.state.show_export === true)? 'btn btn-sm btn-info' : 'btn btn-sm btn-default disabled';
+            var className = (this.state.show_export === true)? 'btn btn-sm btn-link export-button' : 'btn btn-sm btn-default disabled dis-export-button';
             var export_message = this.state.export_message;
             //var LastExported = <LastExportedView export_info={this.props.export_info}/>
             var LastExportRequested = <LastExportRequestedView export_info={this.props.export_info}/>
             return (
                 <div>
-                <button className={className} onClick={this.handleClick}><span className="fui-check-inverted"></span> Export
-                </button><span className="{this.state.export_message_classname}"><small>{export_message}</small></span><br/>{LastExportRequested}
+                <button className={className} data-toggle="tooltip" data-placement="left" title="Download this Matter" onClick={this.handleClick}><span className="fui-exit"></span>
+                </button><span className="{export-message}"><small>{export_message}</small></span><br/>{LastExportRequested}
                 </div>
             );
         };
@@ -208,8 +208,8 @@ var EditMatterInterface = React.createClass({
         if (can_edit === true) {
 
             return (
-                <a href={edit_url} data-toggle="modal" data-target={modal_target} className="edit">
-                    <span className="fui-gear"></span>
+                <a href={edit_url} data-toggle="modal" data-target={modal_target} className="edit btn-sm">
+                    <span className="fui-gear" data-toggle="tooltip" data-placement="left" title="Edit this Matter"></span>
                 </a>
             );
 
