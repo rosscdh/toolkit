@@ -141,10 +141,33 @@
     </div>
 
     <ul class="revisions list-unstyled" ng-show="data.selectedItem.latest_revision.slug">
+
         <!-- Begin current revision -->
         <li class="header">Current</li>
         <li class="current">
             <div class="doc-wrap">
+                 <div class="btn-group pull-right participant-tab">
+                        <button type="button" class="btn btn-default btn-xs" data-toggle="dropdown">
+                            Visible to 2
+                        </button>
+                        <button class="btn btn-default btn-xs"
+                                data-toggle="dropdown" ng-show="data.usdata.current.user_class=='lawyer'">
+                          <span class="caret" ></span>
+                        </button>
+                        <ul class="dropdown-menu" ng-show="data.usdata.current.user_class=='lawyer'" >
+                          <li class="" ng-repeat="(key, status) in data.matter._meta.item.custom_status">
+                              <a href="javascript:;" ng-click="data.showRevisionStatusDropdown=false;data.selectedItem.latest_revision.status=key;saveLatestRevision();"
+                                 ng-hide="data.showEditRevisionTitles">
+                                  <span class="icon status-{{ key }}"></span> {{ status }}
+                              </a>
+                          </li>
+                          <li>
+                              <a href="javascript:;" ng-click="editRevisionStatusTitles()">
+                                  <span class="icon"></span> Change status titles...
+                              </a>
+                          </li>
+                        </ul>
+                </div>
                 <!-- <span class="version">{{ data.selectedItem.latest_revision.slug }}</span> -->
                 <h4><a href="javascript:;" ng-click="showRevisionDocument(data.selectedItem.latest_revision)"><span class="fui-document status-{{ data.selectedItem.latest_revision.status }}"></span> {{ data.selectedItem.latest_revision.name }}</a></h4>
                 <div class="desc" ng-hide="data.show_edit_revision_description||data.usdata.current.user_class!=='lawyer'">

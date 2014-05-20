@@ -1,6 +1,7 @@
 
 /* Hack to display the navbar at the top of the matter  */
 
+@import "../variables.less";
 html,body, div.full
 {
   height: 100%
@@ -279,6 +280,24 @@ html,body, div.full
 			}
 		}
 		ul.revisions {
+
+
+			.participant-tab{
+			        background-color: #eff0f1;
+			        position: absolute;
+			        border-bottom: 1px solid white;
+			        padding-left: 5px;
+			        border-radius: 3px;
+			        top: -24px;
+			        right: 0;
+			        .btn-xs {
+			        	background-color: #eff0f1;
+			        	color: #78848c;
+			        	.caret {
+			        		border-top-color: #78848c;
+			        	}
+			        }
+			  }
 			li {
 				padding:3px 0px 15px 0px;
 				&.toggle-previous {
@@ -288,6 +307,7 @@ html,body, div.full
 					background-color:darken(white, 2%);
 					padding:9px 10px 0px 10px;
 					min-height:40px;
+					position:relative;
 					h4 {
 						line-height:16px;
 						font-weight: bold;
@@ -457,7 +477,7 @@ html,body, div.full
 			}
 			li.header {
 				font-weight:bold;
-				font-size:12px;
+				font-size:20px;
 				padding-top:6px;
 				padding-left:0px;
 				padding-bottom:4px;
