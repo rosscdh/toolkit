@@ -324,7 +324,8 @@ PIPELINE_CSS = {
 PIPELINE_JS = {
     'reactjs': {
         'source_filenames': (
-            'js/matter_search.jsx',
+            'js/react-0.10.0.min.js',
+            'js/matter_list.jsx',
         ),
         'output_filename': 'js/jsx-all-compiled.js',
     }
