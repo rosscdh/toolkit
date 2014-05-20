@@ -170,7 +170,8 @@ module.exports = function (grunt) {
           {src: ['fonts/**'], dest: '<%= PRODUCTION_PATH %>'},
           {src: ['partial/**'], dest: '<%= PRODUCTION_PATH %>'},
           {src: ['directive/**'], dest: '<%= PRODUCTION_PATH %>'},
-          {src: ['bower_components/*/**'], dest: '<%= PRODUCTION_PATH %>'}
+          {src: ['bower_components/*/**'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['lib/**'], dest: '<%= PRODUCTION_PATH %>'}
         ]
       }
     },

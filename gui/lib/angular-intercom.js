@@ -46,12 +46,21 @@
       var _intercom = angular.isFunction($window.Intercom) ? $window.Intercom : angular.noop;
 
       if (_asyncLoading) {
+        var _try = 10; // wait 1sec max before aborting
         // Load client in the browser
-        var onScriptLoad = function(callback) {
+        var onScriptLoad = function tryF(callback) {
           $timeout(function() {
-            // Resolve the deferred promise
-            // as the Intercom object on the window
-            deferred.resolve($window.Intercom);
+            if(_try === 0){
+              return deferred.resolve($window.Intercom);
+            }
+
+            if($window.Intercom){
+              // Resolve the deferred promise
+              // as the Intercom object on the window
+              return deferred.resolve($window.Intercom);
+            }
+            _try--;
+            setTimeout(tryF.bind(null, callback), 100); // wait 100ms before next try
           });
         };
         createScript($document[0], onScriptLoad);

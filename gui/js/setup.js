@@ -120,22 +120,14 @@ angular.module('toolkit-gui').config(function($logProvider, DEBUG_MODE){
  *
  */
 
-// angular.module('toolkit-gui')
-//     .config(function (IntercomServiceProvider) {
-//         IntercomServiceProvider
-//             .asyncLoading(true)
-//             // manually set url since there is no local server running
-//             .scriptUrl('https://static.intercomcdn.com/intercom.v1.js');
-//     });
-// /*
-//     .run(['Intercom','$log', 'INTERCOM_API_KEY',function (Intercom, $log, INTERCOM_API_KEY) {
-//         $log.debug('booting');
-//         Intercom.boot({
-//             email: "john.doe@example.com",
-//             created_at: 1234567890,
-//             app_id: INTERCOM_API_KEY
-//         });
-//     }]);*/
+angular.module('toolkit-gui')
+  .config(function (IntercomServiceProvider) {
+     IntercomServiceProvider
+         .asyncLoading(true)
+         // manually set url since there is no local server running
+         .scriptUrl('https://static.intercomcdn.com/intercom.v1.js');
+});
+
 
 
 
