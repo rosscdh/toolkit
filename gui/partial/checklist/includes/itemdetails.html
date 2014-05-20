@@ -150,7 +150,7 @@
             <div class="doc-wrap">
                  <div class="btn-group pull-right participant-tab">
                         <button type="button" class="btn btn-default btn-xs" data-toggle="dropdown">
-                            Visible to <span style="font-weight: bold">40</span>
+                            Visible to <span style="font-weight: bold">{{ person.count }}</span>
                         </button>
                         <button class="btn btn-default btn-xs"
                                 data-toggle="dropdown" ng-show="data.usdata.current.user_class=='lawyer'">
@@ -165,7 +165,7 @@
                           </li>
                           <li>
                               <a href="javascript:;" ng-click="editRevisionStatusTitles()">
-                                  <span class="icon"></span> Change status titles...
+                                  <span class="icon"></span> Share with...
                               </a>
                           </li>
                         </ul>
