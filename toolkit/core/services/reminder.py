@@ -48,7 +48,7 @@ class ReminderService(object):
         }
         message = LawPalAbridgeService.render_reminder_template(**message_data)
         abridge_service = self.get_abridge_service(user)
-        abridge_service.create_event(content_group='important', content=message)
+        abridge_service.create_event(content_group='Important', content=message)
 
     def process(self):
         items_to_remind = self.collect_items()
