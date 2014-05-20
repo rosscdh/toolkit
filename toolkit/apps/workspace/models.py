@@ -52,7 +52,7 @@ class Workspace(IsDeletedMixin,
     lawyer = models.ForeignKey('auth.User', null=True, related_name='lawyer_workspace')  # Lawyer that created this workspace
     client = models.ForeignKey('client.Client', null=True, blank=True)
 
-    participants = models.ManyToManyField('auth.User', blank=True)
+    participants = models.ManyToManyField('auth.User', blank=True, related_name='participant_workspace')
 
     tools = models.ManyToManyField('workspace.Tool', blank=True)
 

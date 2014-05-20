@@ -103,6 +103,10 @@ class UserProfile(EmailIsValidatedMixin, models.Model):
             return ImageFile(firm_logo)
         return firm_logo
 
+    @property
+    def verified(self):
+        return self.data.get('validated_email', False)
+
 
 def _get_or_create_user_profile(user):
     # set the profile
