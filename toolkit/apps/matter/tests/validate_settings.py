@@ -20,7 +20,7 @@ class MatterProductionSettingsTest(unittest.TestCase):
     """
     expected_static_namespace = 'ng'
     expected_prod_relative_absolute_path = os.path.join(settings.SITE_ROOT, 'gui', 'dist')
-    expected_dev_relative_absolute_path = os.path.join(settings.SITE_ROOT, 'gui', 'dist')
+    expected_dev_relative_absolute_path = os.path.join(settings.SITE_ROOT, 'gui')
 
     # def test_production_static_path(self):
     #     self.assertEqual(production_settings.STATICFILES_DIRS, ((self.expected_static_namespace, self.expected_prod_relative_absolute_path),))
