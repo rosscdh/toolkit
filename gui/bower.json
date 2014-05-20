@@ -25,7 +25,7 @@
     "angular-sanitize": "~1.2.16",
     "AngularJS-Toaster": "~0.4.7",
     "ng-file-upload": "latest",
-    "angular-intercom": "latest",
+    "angular-intercom": "~1.0.9",
     "moment": "~2.5",
     "moment-timezone": "~0.0.6",
     "less.js": "~1.5",
