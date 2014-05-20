@@ -143,12 +143,14 @@
     <ul class="revisions list-unstyled" ng-show="data.selectedItem.latest_revision.slug">
 
         <!-- Begin current revision -->
+
+
         <li class="header">Current</li>
         <li class="current">
             <div class="doc-wrap">
                  <div class="btn-group pull-right participant-tab">
                         <button type="button" class="btn btn-default btn-xs" data-toggle="dropdown">
-                            Visible to 2
+                            Visible to <span style="font-weight: bold">40</span>
                         </button>
                         <button class="btn btn-default btn-xs"
                                 data-toggle="dropdown" ng-show="data.usdata.current.user_class=='lawyer'">
