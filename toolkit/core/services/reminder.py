@@ -17,12 +17,11 @@ class ReminderService(object):
 
     def __init__(self, reminding_limit=settings.REMIND_DUE_DATE_LIMIT):
         self.reminding_limit = reminding_limit
-        self.items_to_remind = Item.objects.none()
 
         self.abridge_services = {}
 
     def collect_items(self):
-        self.items_to_remind = Item.objects.filter(
+        return Item.objects.filter(
             is_complete=False,
             date_due__gt=timezone.now()-datetime.timedelta(days=settings.REMIND_DUE_DATE_LIMIT))
 
@@ -52,9 +51,9 @@ class ReminderService(object):
         abridge_service.create_event(content_group='important', content=message)
 
     def process(self):
-        self.collect_items()
+        items_to_remind = self.collect_items()
 
-        for item in self.items_to_remind:
+        for item in items_to_remind:
             # item.participants() seems to be ALWAYS empty. is there a possibility to set it (yet)?
             for participant in item.matter.participants.all():
                 self.send_message_to_abridge(participant, item)
