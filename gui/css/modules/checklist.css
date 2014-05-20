@@ -99,7 +99,8 @@ div.full {
   overflow-x: visible;
 }
 .checklist-wrapper #checklist-detail {
-  overflow: visible;
+  overflow-y: scroll;
+  border: 5px solid red;
 }
 .checklist-wrapper h5 {
   font-size: 20px;
@@ -244,12 +245,11 @@ div.full {
 }
 .checklist-wrapper div.item ul.revisions .participant-tab {
   background-color: #eff0f1;
-  position: absolute;
-  border-bottom: 1px solid white;
+  border-bottom: 1px solid  #fafafa;
   padding-left: 5px;
   border-radius: 3px;
-  top: -24px;
-  right: 0;
+  top: -33px;
+  right: -10px;
 }
 .checklist-wrapper div.item ul.revisions .participant-tab .btn-xs {
   background-color: #eff0f1;
