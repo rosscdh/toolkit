@@ -173,8 +173,6 @@
             'pk': '{{ user.pk }}',
             'Account Type': '{{ user.profile.account_type }}',
             {% if user.profile.firm_name %}'Firm Name': '{{ user.profile.firm_name }}',{% endif %}
-            'Matters Created': {{ user.lawyer_workspace.count }},
-            'Matters Participated': {{ user.participant_workspace.count }},
             'Plan': '{{ user.profile.plan }}',
             {% if user.profile.plan_interval %}'Plan Interval': '{{ user.profile.plan_interval }}',{% endif %}
             'Type': '{{ user.profile.type }}',
@@ -196,8 +194,6 @@
                 {% if user.profile.firm_name %}
                 firm: "{{user.profile.firm_name}}",
                 {% endif %}
-                matters_created: {{user.lawyer_workspace.count}},
-                matters_participated: {{user.participant_workspace.count}},
                 created_at: "{{ user.date_joined|date:"U" }}",
                 app_id: "{{ GLOBALS.INTERCOM_APP_ID }}",
                 user_hash: "{% intercom_user_hash user.username %}",
