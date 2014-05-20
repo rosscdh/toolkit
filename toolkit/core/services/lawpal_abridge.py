@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from abridge.services import AbridgeService
 from django import template
+from django.template.loader import get_template
 from toolkit.apps.notification.templatetags.notice_tags import get_notification_template, get_notification_context
 
 
@@ -27,7 +28,15 @@ class LawPalAbridgeService(object):
                                       content=content)
 
     @classmethod
+    def render_reminder_template(cls, **kwargs):
+        # used in ReminderService to create messages which are NOT also a notification
+        context = template.loader.Context(kwargs)
+        t = get_template('partials/reminder.html')
+        return t.render(context)
+
+    @classmethod
     def render_message_template(cls, user, **kwargs):
+        # used to render abridge-message with notification-templates
         verb_slug = kwargs.pop('verb_slug')
         message = kwargs.pop('message')
 
