@@ -10,10 +10,22 @@ DEBUG = True
 TEST_PREPROD = False  # set to true and DEBUG = False in order to test angular app
 
 if TEST_PREPROD is True:
+    #
+    # If in prod mode load from the gui/dist path (ie only the selected components)
+    # this implies that we need to manually specify the selected components in GruntFile
+    #
     STATICFILES_DIRS = (
         # These are the production files
         # not that static is in gui/dist/static *not to be confused with the django {{ STATIC_URL }}ng/ which will now point correctly
         ("ng", os.path.join(SITE_ROOT, 'gui', 'dist')),
+    )
+else:
+    #
+    # If in debug mode load from the gui path (ie all of the components)
+    #
+    STATICFILES_DIRS = (
+        # These are the dev files
+        ("ng", os.path.join(SITE_ROOT, 'gui')),
     )
 
 INSTALLED_APPS = INSTALLED_APPS + (

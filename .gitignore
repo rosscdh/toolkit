@@ -1,6 +1,12 @@
 *.diff
-/gui/index.html  # ignore the generated dev index.html
-gui/temp/*
+
+gui/index.html  # ignore the generated dev index.html
+gui/temp
+gui/bower_components
+gui/doc
+gui/node_modules
+gui/coverage
+
 toolkit/production_settings\.py # ignoring the test productions
 setup.cfg
 .sonar
@@ -38,4 +44,4 @@ composer.lock
 /log/*.log
 /MANIFEST
 /build
-gui/coverage
+
