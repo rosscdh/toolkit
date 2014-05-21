@@ -104,6 +104,10 @@ class UserProfile(EmailIsValidatedMixin, models.Model):
         return firm_logo
 
     @property
+    def matters_created(self):
+        return self.data.get('matters_created', 0)
+
+    @property
     def verified(self):
         return self.data.get('validated_email', False)
 
