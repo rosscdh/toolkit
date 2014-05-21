@@ -9,8 +9,8 @@
  */
 angular.module('toolkit-gui').filter('newlines', function () {
     return function(txt) {
-        txt = "" + txt;
         if (txt != null) {
+            txt = "" + txt;
             return txt.replace(/\n/g, '<br/>');
         } else {
             return '';
