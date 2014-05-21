@@ -169,11 +169,9 @@ module.exports = function (grunt) {
           {src: ['images/**'], dest: '<%= PRODUCTION_PATH %>'},
           {src: ['fonts/**'], dest: '<%= PRODUCTION_PATH %>'},
           {src: ['partial/**'], dest: '<%= PRODUCTION_PATH %>'},
-          {src: ['bower_components/jquery/**'], dest: '<%= PRODUCTION_PATH %>'},
-          {src: ['bower_components/jquery-ui/**'], dest: '<%= PRODUCTION_PATH %>'},
-          {src: ['bower_components/bootstrap/**'], dest: '<%= PRODUCTION_PATH %>'},
-          {src: ['bower_components/font-awesome/**'], dest: '<%= PRODUCTION_PATH %>'},
-          {src: ['bower_components/angular/**'], dest: '<%= PRODUCTION_PATH %>'}
+          {src: ['directive/**'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['bower_components/*/**'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['lib/**'], dest: '<%= PRODUCTION_PATH %>'}
         ]
       }
     },

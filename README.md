@@ -51,6 +51,8 @@ Getting started
 3. fab rebuild_local (will download and install "stamp" - ruby rest api)
 4. honcho start (starts runserver_plus in threaded mode as well as the stamp service)
 5. or just ./manage.py runserver_plus --threaded
+6. if you have problems (e.g. with missing css/core.css) you may need to install yuglify ('npm install -g yuglify')
+    and run './manage collectstatic --noinput' afterwards
 
 Testing
 -------

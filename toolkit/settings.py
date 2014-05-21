@@ -50,12 +50,11 @@ STATIC_URL = '/static/'
 # Additional locations of static files
 STATICFILES_DIRS = (
     # These are the dev files
-    ("ng", os.path.join(SITE_ROOT, 'gui')),
+    ("ng", os.path.join(SITE_ROOT, 'gui', 'dist')),
 )
 
-STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
-#STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
-
+#STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 
 MEDIA_ROOT = os.path.join(SITE_ROOT, 'media')
 MEDIA_URL = '/m/'
@@ -325,7 +324,8 @@ PIPELINE_CSS = {
 PIPELINE_JS = {
     'reactjs': {
         'source_filenames': (
-            'js/matter_search.jsx',
+            'js/react-0.10.0.min.js',
+            'js/matter_list.jsx',
         ),
         'output_filename': 'js/jsx-all-compiled.js',
     }
