@@ -166,7 +166,7 @@ def on_workspace_post_save(sender, instance, created, **kwargs):
 
         lawyer_profile = matter.lawyer.profile
         lawyer_profile.matters_created = matter.lawyer.lawyer_workspace.count()
-        lawyer_profile.save()
+        lawyer_profile.save(update_fields=['data'])
 
 
 def on_workspace_m2m_changed(sender, instance, action, pk_set, **kwargs):
