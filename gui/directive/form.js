@@ -44,4 +44,3 @@ angular.module('toolkit-gui').directive('dropdownKeepOpen', ['$log', function($l
       });
    };
 }]);
-

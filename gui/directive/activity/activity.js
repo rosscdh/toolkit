@@ -129,7 +129,6 @@ angular.module('toolkit-gui').directive('activity', ['$compile', '$log', '$sce',
                 };
             }],
         templateUrl: '/static/ng/directive/activity/event.html',
-
         link: function (scope, element, attrs) {
             var eventhtml = jQuery(scope.ngModel.event);
 
