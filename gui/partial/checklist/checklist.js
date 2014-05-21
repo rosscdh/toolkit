@@ -84,6 +84,7 @@ angular.module('toolkit-gui')
 		$scope.data = {
 			'slug': routeParams.matterSlug,
 			'matter': null,
+      'customers' : [],
 			'showAddForm': null,
 			'showItemDetailsOptions': false,
 			'selectedItem': null,
@@ -137,7 +138,7 @@ angular.module('toolkit-gui')
          * This function activates the following states inside the app by the URL params:
          * 1) Select a checklist item
          * 2) Show a review in the review modal window
-         * 
+         *
          * @private
 		 * @memberof			ChecklistCtrl
          * @method              handleUrlState
@@ -200,6 +201,13 @@ angular.module('toolkit-gui')
 					categories.push( { 'name': categoryName, 'items': items } );
 				});
 
+        jQuery.each( matter.participants, function( index, participant ) {
+          if (participant.user_class === 'customer'){
+            $scope.data.customers.push(participant);
+          }
+
+        });
+
 				$scope.data.matter = matter;
 				$scope.data.categories = categories;
 
@@ -210,6 +218,9 @@ angular.module('toolkit-gui')
 				toaster.pop('warning', 'Unable to load matter details',5000);
 			}
 		};
+
+
+
 
 
         /**
