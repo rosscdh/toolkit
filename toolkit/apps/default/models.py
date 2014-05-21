@@ -107,6 +107,11 @@ class UserProfile(EmailIsValidatedMixin, models.Model):
     def matters_created(self):
         return self.data.get('matters_created', 0)
 
+    @matters_created.setter
+    def matters_created(self, value):
+        if type(value) in [int]:
+            self.data['matters_created'] = value
+
     @property
     def verified(self):
         return self.data.get('validated_email', False)
