@@ -170,7 +170,10 @@ module.exports = function (grunt) {
           {src: ['fonts/**'], dest: '<%= PRODUCTION_PATH %>'},
           {src: ['partial/**'], dest: '<%= PRODUCTION_PATH %>'},
           {src: ['directive/**'], dest: '<%= PRODUCTION_PATH %>'},
-          {src: ['bower_components/*/**'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['bower_components/jquery/jquery.min.js'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['bower_components/jquery-ui/ui/minified/jquery-ui.min.js'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['bower_components/bootstrap/dist/js/bootstrap.min.js'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['bower_components/angular/angular.min.js'], dest: '<%= PRODUCTION_PATH %>'},
           {src: ['lib/**'], dest: '<%= PRODUCTION_PATH %>'}
         ]
       }
@@ -317,8 +320,8 @@ module.exports = function (grunt) {
 
     //djangoProd
     grunt.task.run('preprocess:djangoProd', 'gitinfo', 'jshint','clean:before','less','dom_munger:readcss','dom_munger:readscripts','ngtemplates','replace:template_paths','cssmin','concat','ngmin','uglify','copy','dom_munger:removecss','dom_munger:addcss','dom_munger:removescripts','dom_munger:addscript');
-
     grunt.task.run('htmlmin'/*,'imagemin'*//*,'clean:after'*/);
+
   });
 
   grunt.event.on('watch', function(action, filepath) {
