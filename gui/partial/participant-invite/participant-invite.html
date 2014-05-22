@@ -3,6 +3,9 @@
 		<h4 class="modal-title" id="myModalLabel"><span class="fui-user text-muted"></span> Matter Participants</h4>
 	</div>
 	<div class="modal-body">
+        <div class='participant-button-container'>
+            <button class="btn btn-info btn-wide btn-lg participant-btn">Add a Participant</button>
+        </div>
         <div ng-hide="data.showAddLawyer||data.showAddParticipant">
             <h5 ng-show="participants.length>0">Existing Participants</h5>
             <div class="row">
@@ -11,18 +14,38 @@
                     <li ng-repeat="person in participants">
                         <span class="user {{person.user_class}}" ng-bind="person | initials"></span>
                         <label ng-bind="person | fullname"></label>
-                        <small ng-show="person.user_class=='lawyer'">({{ person.user_class }}<span ng-show="person.username==currentUser.username">, you</span><span ng-show="person.username==matter.lawyer.username">, owner</span>)
+                        <small  class ="{{person.user_class}}" ng-show="person.user_class">({{ person.user_class }}<span ng-show="person.username==currentUser.username">, you</span><span ng-show="person.username==matter.lawyer.username" class="owner">, owner</span>)
                         </small>
-                        <a class="text-danger" ng-show="person.username!==currentUser.username&&currentUser.user_class==='lawyer'&&person.username!=matter.lawyer.username" href="javascript:;" ng-click="revoke(person)"><small>Revoke access</small></a>
+
                         <a class="text-danger" ng-show="person.username===currentUser.username&&currentUser.user_class!=='lawyer'" href="javascript:;" ng-click="revoke(person)"><small>Exit matter</small></a>
                     </li>
                 </ul>
             </div>
             <div class='col-sm-6'>
-                DETAILS
+                <a class="text-danger" ng-show="person.username!==currentUser.username&&currentUser.user_class==='lawyer'&&person.username!=matter.lawyer.username" href="javascript:;" ng-click="revoke(person)"><small>Revoke access</small></a>
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox"> Able to Review Shared Documents
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox"> Able to Sign  Shared Documents
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox"> Able to Comment on Shared Documents
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox"> Able to Add Other Clients to Matter
+                    </label>
+                </div>
             </div>
         </div>
-            <br />
+        <div class="new-participant">
             <h5>Add New Participant</h5>
             <div class="row">
                 <div class="col-sm-6">
@@ -38,6 +61,7 @@
                     </p>
                 </div>
             </div>
+        </div>
         </div>
 
 

@@ -712,10 +712,45 @@ html,body, div.full
 	.details{
 		border-right: 1px solid #ececec;
 	}
+
+	.modal-body{
+		padding-top: 10px;
+		input[type=checkbox]{
+			display: initial
+		}
+
+		h5 {
+			margin-top: -17px
+		}
+
+		.participant-button-container{
+			text-align:right;
+			.participant-btn {
+				background-color: #333c3c;
+				color: white;
+				opacity: 1;
+				font-weight: normal;
+			}
+		}
+		.new-participant {
+			opacity: 0
+		}
+	}
 	ul.participants {
 		li {
 			padding:10px 0px;
 			border-bottom:1px solid #ececec;
+
+			small.customer{
+				color: #6ebc70;
+				background-color: transparent;
+			}
+
+			small.lawyer {
+				color: #5cc7da;
+				background-color: transparent;
+			}
+
 
 			.user {
 				font-weight:bold;
@@ -728,6 +763,10 @@ html,body, div.full
 			}
 			.customer{
         background-color: #6ebc70;
+      }
+
+      .owner {
+
       }
 
     	.lawyer{
