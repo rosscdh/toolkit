@@ -656,20 +656,21 @@ def upload_gui():
     if not os.path.exists(env.gui_dist_path):
         sys.exit(colored("No gui/dist folder found at %s, perform a 'cd gui;grunt build --djangoProd'" % env.gui_dist_path, 'yellow'))
 
-    zip_filename = 'gui_dist.%s' % env.SHA1_FILENAME
-    zip_filename_with_ext = '%s.zip' % zip_filename
-    zip_gui_dist_path = '/tmp/%s' % zip_filename
-    zip_gui_dist_path_with_ext = '/tmp/%s' % zip_filename_with_ext
-    zip_gui_dist_remote_path = '%s%s' % (env.deploy_archive_path, zip_filename_with_ext)
-    zip_gui_dist_target_remote_path = '%stoolkit/gui/dist' % env.remote_project_path
-    # zip the dist folder
-    shutil.make_archive(zip_gui_dist_path, "zip", env.gui_dist_path)
-    # upload the zip
-    put(zip_gui_dist_path_with_ext, env.deploy_archive_path, use_sudo=True)
-    env_run('chown %s:%s %s' % (env.application_user, env.application_user, zip_gui_dist_remote_path))
-    #unzip to gui/dist
-    virtualenv('unzip %s -d %s' % (zip_gui_dist_remote_path, zip_gui_dist_target_remote_path,))
-    # can now run collectstatic
+    if prompt(colored("Have you compiled the GUI distribution? as we are about to upload it; i.e. cd gui;grunt build --djangoProd' [y,n]", 'cyan'), default="y").lower() in env.truthy:
+        zip_filename = 'gui_dist.%s' % env.SHA1_FILENAME
+        zip_filename_with_ext = '%s.zip' % zip_filename
+        zip_gui_dist_path = '/tmp/%s' % zip_filename
+        zip_gui_dist_path_with_ext = '/tmp/%s' % zip_filename_with_ext
+        zip_gui_dist_remote_path = '%s%s' % (env.deploy_archive_path, zip_filename_with_ext)
+        zip_gui_dist_target_remote_path = '%stoolkit/gui/dist' % env.remote_project_path
+        # zip the dist folder
+        shutil.make_archive(zip_gui_dist_path, "zip", env.gui_dist_path)
+        # upload the zip
+        put(zip_gui_dist_path_with_ext, env.deploy_archive_path, use_sudo=True)
+        env_run('chown %s:%s %s' % (env.application_user, env.application_user, zip_gui_dist_remote_path))
+        #unzip to gui/dist
+        virtualenv('unzip %s -d %s' % (zip_gui_dist_remote_path, zip_gui_dist_target_remote_path,))
+        # can now run collectstatic
 
 @task
 def conclude():
