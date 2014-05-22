@@ -5,16 +5,23 @@
 	<div class="modal-body">
         <div ng-hide="data.showAddLawyer||data.showAddParticipant">
             <h5 ng-show="participants.length>0">Existing Participants</h5>
-            <ul class="list-unstyled participants">
-                <li ng-repeat="person in participants">
-                    <span  ng-class="user {{person.user_class}}" ng-bind="person | initials"></span>
-                    <label ng-bind="person | fullname"></label>
-                    <small ng-show="person.user_class=='lawyer'">({{ person.user_class }}<span ng-show="person.username==currentUser.username">, you</span><span ng-show="person.username==matter.lawyer.username">, owner</span>)
-                    </small>
-                    <a class="text-danger" ng-show="person.username!==currentUser.username&&currentUser.user_class==='lawyer'&&person.username!=matter.lawyer.username" href="javascript:;" ng-click="revoke(person)"><small>Revoke access</small></a>
-                    <a class="text-danger" ng-show="person.username===currentUser.username&&currentUser.user_class!=='lawyer'" href="javascript:;" ng-click="revoke(person)"><small>Exit matter</small></a>
-                </li>
-            </ul>
+            <div class="row">
+            <div class="col-sm-6 details">
+                <ul class="list-unstyled participants">
+                    <li ng-repeat="person in participants">
+                        <span class="user {{person.user_class}}" ng-bind="person | initials"></span>
+                        <label ng-bind="person | fullname"></label>
+                        <small ng-show="person.user_class=='lawyer'">({{ person.user_class }}<span ng-show="person.username==currentUser.username">, you</span><span ng-show="person.username==matter.lawyer.username">, owner</span>)
+                        </small>
+                        <a class="text-danger" ng-show="person.username!==currentUser.username&&currentUser.user_class==='lawyer'&&person.username!=matter.lawyer.username" href="javascript:;" ng-click="revoke(person)"><small>Revoke access</small></a>
+                        <a class="text-danger" ng-show="person.username===currentUser.username&&currentUser.user_class!=='lawyer'" href="javascript:;" ng-click="revoke(person)"><small>Exit matter</small></a>
+                    </li>
+                </ul>
+            </div>
+            <div class='col-sm-6'>
+                DETAILS
+            </div>
+        </div>
             <br />
             <h5>Add New Participant</h5>
             <div class="row">
