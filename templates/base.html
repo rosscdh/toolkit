@@ -1,4 +1,4 @@
-{% load cache i18n %}{% load url from future %}{% load django_bootstrap_breadcrumbs intercom_tags toolkit_tags %}
+{% load cache i18n %}{% load url from future %}{% load compressed django_bootstrap_breadcrumbs intercom_tags toolkit_tags %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -8,13 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Loading Bootstrap and Flat UI -->
-    <link href="{{ STATIC_URL }}bootstrap/css/bootstrap.css" rel="stylesheet">
-    <link href="{{ STATIC_URL }}css/flat-ui.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ STATIC_URL }}fonts/pe-icon-7-stroke/css/pe-icon-7-stroke.css">
-
-    <!-- Loading application specific styles -->
-    <link href="{{ STATIC_URL }}css/application.css" rel="stylesheet">
-    <link href="{{ STATIC_URL }}css/animate.css" rel="stylesheet">
+    {% compressed_css 'core' %}
 
     <link rel="shortcut icon" href="{{ STATIC_URL }}images/favicon.ico">
 
@@ -160,7 +154,7 @@
     <script src="{{ STATIC_URL }}js/application.js"></script>
 
     <!-- Load page specific JS here =============================-->
-    {% block js %}{% endblock  %}
+    {% block js %}{% endblock %}
 
     {% if PROJECT_ENVIRONMENT == 'prod' %}
 
@@ -178,10 +172,11 @@
             '$last_login': '{{ user.last_login|date:"c" }}',
             'pk': '{{ user.pk }}',
             'Account Type': '{{ user.profile.account_type }}',
-            {% if user.profile.is_lawyer %}'Firm Name': '{{ user.profile.firm_name }}',{% endif %}
+            {% if user.profile.firm_name %}'Firm Name': '{{ user.profile.firm_name }}',{% endif %}
             'Plan': '{{ user.profile.plan }}',
             {% if user.profile.plan_interval %}'Plan Interval': '{{ user.profile.plan_interval }}',{% endif %}
-            'Type': '{{ user.profile.type }}'
+            'Type': '{{ user.profile.type }}',
+            'Verified': {{ user.profile.verified|lower }}
             });
     {% endif %}
         </script>
@@ -192,6 +187,9 @@
               window.intercomSettings = {
                 user_id: "{{user.username}}",
                 email: "{{user.email}}",
+                first_name: "{{user.first_name}}",
+                last_name: "{{user.last_name}}",
+                verified: {{user.profile.verified|lower}},
                 type: "{{user.profile.user_class}}",
                 {% if user.profile.firm_name %}
                 firm: "{{user.profile.firm_name}}",

@@ -4,7 +4,7 @@ import unittest
 from django.conf import settings
 # temporarily copied here in the toolkit.test_runner.setup_test_environment and teardown_test_environment
 # will be deleted after tests run
-from toolkit import production_settings
+#from toolkit import production_settings
 
 import os
 
@@ -20,10 +20,10 @@ class MatterProductionSettingsTest(unittest.TestCase):
     """
     expected_static_namespace = 'ng'
     expected_prod_relative_absolute_path = os.path.join(settings.SITE_ROOT, 'gui', 'dist')
-    expected_dev_relative_absolute_path = os.path.join(settings.SITE_ROOT, 'gui')  # THIS IS FOR DEV it should NOT have dist
+    expected_dev_relative_absolute_path = os.path.join(settings.SITE_ROOT, 'gui')
 
-    def test_production_static_path(self):
-        self.assertEqual(production_settings.STATICFILES_DIRS, ((self.expected_static_namespace, self.expected_prod_relative_absolute_path),))
+    # def test_production_static_path(self):
+    #     self.assertEqual(production_settings.STATICFILES_DIRS, ((self.expected_static_namespace, self.expected_prod_relative_absolute_path),))
 
     def test_dev_static_path(self):
         #

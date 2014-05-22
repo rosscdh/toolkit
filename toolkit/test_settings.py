@@ -9,7 +9,6 @@ import logging
 
 logging.disable(logging.CRITICAL)
 
-AWS_STORAGE_BUCKET_NAME = AWS_FILESTORE_BUCKET = 'dev-toolkit-lawpal-com'
 
 # Custom test runner for this project
 TEST_RUNNER = 'toolkit.test_runner.AppTestRunner'
@@ -33,6 +32,10 @@ SKIP_SOUTH_TESTS = True
 PASSWORD_HASHERS = (
     'django.contrib.auth.hashers.MD5PasswordHasher',
 )
+
+AWS_STORAGE_BUCKET_NAME = AWS_FILESTORE_BUCKET = 'dev-toolkit-lawpal-com'
+
+STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 
 HELLOSIGN_CLIENT_ID = '9bc892af173754698e3fa30dedee3826'
 HELLOSIGN_CLIENT_SECRET = '8d770244b9971abfe789f5224552239d'

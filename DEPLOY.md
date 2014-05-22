@@ -9,6 +9,10 @@ Deployment actions by branch
 4. ./manage.py migrate hello_sign
 
 
+--------------------------------------------------------------------------------
+** DEPLOYED 17 May 2014
+--------------------------------------------------------------------------------
+
 [authy-integration]
 
 1. pip install -e git+https://github.com/rosscdh/django-authy.git#egg=django-authy

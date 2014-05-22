@@ -114,8 +114,10 @@ def crocodoc_webhook_event_recieved(sender, verb, document, target, attachment_n
             if crocodoc_event in ['annotation.create', 'comment.create', 'comment.update']:
                 # user MUST be in document.source_object.primary_reviewdocument.reviewers
                 # otherwise he could not get to this point
-
-                reviewdocument = document.source_object.reviewdocument_set.get(crocodoc_uuid=document.uuid)
+                try:
+                    reviewdocument = document.source_object.reviewdocument_set.get(crocodoc_uuid=document.uuid)
+                except document.source_object.reviewdocument_set.model.DoesNotExist:
+                    reviewdocument = None                    
 
                 if reviewdocument:
 

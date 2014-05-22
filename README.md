@@ -5,6 +5,44 @@ Toolkit is a simplified interface for adding tools and users to a generic
 workspace.
 
 
+Requirements
+------------
+
+1. mkvirtualenv toolkit (assume you have virtualenv and virtualenvwrapper installed)
+2. pip install -r requirements/dev.txt *
+3. copy dev.local_settings.py to /toolkit/local_setting.py
+4. fab rebuild_local (will download and install "stamp" - ruby rest api)
+5. honcho start (starts runserver_plus in threaded mode as well as the stamp service)
+
+*If you are running XCode 5.1 and run into errors such as
+  "Compile failed with error code 1 in /private/tmp/pip_build_root/"
+
+Update to the newest version, or run:
+
+ARCHFLAGS=-Wno-error=unused-command-line-argument-hard-error-in-future pip install NAME
+
+http://stackoverflow.com/questions/22716854/os-x-pillow-installation-error/22727537#22727537
+
+
+```
+easy_isntall pip
+pip install virtualenvwrapper
+...
+$ export WORKON_HOME=~/.virtualenvs
+$ mkdir -p $WORKON_HOME
+$ source /usr/local/bin/virtualenvwrapper.sh
+$ mkvirtualenv toolkit
+```
+
+this line goes in your .bashrc .zshrc or whatever your flavour is:
+
+```
+source /usr/local/bin/virtualenvwrapper.sh
+```
+
+it gives you access to mkvirtualenv rmvirtualenv etc
+
+
 Getting started
 ---------------
 
@@ -12,23 +50,9 @@ Getting started
 2. pip install -r requirements/dev.txt
 3. fab rebuild_local (will download and install "stamp" - ruby rest api)
 4. honcho start (starts runserver_plus in threaded mode as well as the stamp service)
-
-
-Pandoc
-------
-
-__Installing__
-
-1. Mac: https://code.google.com/p/pandoc/downloads/detail?name=pandoc-1.12.3.pkg.zip&can=2&q= install the osx package
-2. Ubuntu: apt-get install pandoc should do it
-
-__PDF Latext__
-
-In order to use the pandoc conversion of html to pdf you need to install latex
-
-1. Mac: http://tug.org/mactex/
-2. Ubuntu: http://java.dzone.com/articles/installing-latex-ubuntu
-
+5. or just ./manage.py runserver_plus --threaded
+6. if you have problems (e.g. with missing css/core.css) you may need to install yuglify ('npm install -g yuglify')
+    and run './manage collectstatic --noinput' afterwards
 
 Testing
 -------
