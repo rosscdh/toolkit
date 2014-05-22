@@ -709,12 +709,40 @@ html,body, div.full
 
 
 .modal-content {
-	.details{
-		border-left: 1px solid #ececec;
 
-		.checkbox{
-			clear:both;
+
+	.save-perm-btn:hover{
+			background-color:  #6ebc70;
+
 		}
+
+	.lawyer{
+		background-color: #5cc7da;
+	}
+
+	.customer{
+		 background-color: #6ebc70;
+	}
+
+.details{
+	border-left: 1px solid #ececec;
+
+	.checkbox{
+		clear:both;
+		label{
+			font-size: 12px;
+			opacity: 0.75
+		}
+	}
+
+	.colleague-permissions{
+
+	}
+
+	.client-permissions{
+		display: none;
+	}
+
 
 	.revoke > small {
 		color: red;
@@ -723,6 +751,20 @@ html,body, div.full
 		font-size: 11px;
 		line-height: 1
 	}
+}
+
+	.modal-header {
+			.participant-button-container{
+			text-align:right;
+			float:right;
+			margin-top: -38px;
+			.participant-btn {
+				background-color: #333c3c;
+				color: white;
+				opacity: 1;
+				font-weight: normal;
+			}
+		}
 	}
 
 	.modal-body{
@@ -731,35 +773,36 @@ html,body, div.full
 			display: initial
 		}
 
-		h5 {
-			//margin-top: -17px
-		}
-
-		.participant-button-container{
-			text-align:right;
-			.participant-btn {
-				background-color: #333c3c;
-				color: white;
-				opacity: 1;
-				font-weight: normal;
+		.col-sm-6 {
+			.add-participant{
+				background-color: white;
+				color:#333c3c;
+				span {
+					padding-right: 5px;
+				}
 			}
 		}
+
+
 		.new-participant {
-			opacity: 0
+			display:none;
 		}
 
 		.user-large {
 			height: 100px;
 			width: 100px;
 			margin: 0 auto;
-			background-color: #6ebc70;
+			//background-color: #6ebc70;
 			border-radius: 50%;
-			font-size:34px;
-			padding-top: 25px;
+			font-size:46px;
+			padding-top: 16px;
 			text-align:center;
 			vertical-align: middle;
 			color: white;
-			margin-bottom: 10px;
+			margin-top: 10px;
+			margin-bottom: 40px;
+
+
 		}
 
 		.user-details{
@@ -770,21 +813,16 @@ html,body, div.full
 			margin: 0 auto;
 			padding-top: 5px;
 			padding-bottom: 5px;
-			border-bottom: 2px solid #ececec;
+
 		}
 	}
 	ul.participants {
-		li:first-child{
-			// background-color: #6B6A6A;
-			// color: white;
-		}
-
+		border-bottom: 1px solid #ececec;
+		padding-bottom: 10px;
 		li {
 			padding:10px 10px 10px 10px;
 			font-size: 15px;
 			border-radius: 6px;
-			webkit-transition: color 0.25s linear;
-			transition: color 0.25s linear;
 
 
 			small.customer{
@@ -840,13 +878,22 @@ html,body, div.full
 				font-weight:normal;
 
 			}
-		}
-		li:hover{
-			background-color: #6B6A6A;
-			color: white;
-			li:first-child{
-				background-color: #FFF;
-				color: #444444;
+
+			&:hover{
+				background-color: #6B6A6A;
+				color: white;
+				small.customer{
+				color: white;
+				background-color: transparent;
+				}
+
+				small.lawyer {
+					color: white;
+					background-color: transparent;
+					}
+
+
+
 			}
 		}
 	}

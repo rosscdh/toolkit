@@ -1,6 +1,7 @@
 <div class="modal-content" xmlns="http://www.w3.org/1999/html">
 	<div class="modal-header">
 		<h4 class="modal-title" id="myModalLabel"><span class="fui-user text-muted"></span> Matter Participants</h4>
+
 	</div>
 	<div class="modal-body">
 
@@ -17,37 +18,68 @@
                         <a class="text-danger" ng-show="person.username===currentUser.username&&currentUser.user_class!=='lawyer'" href="javascript:;" ng-click="revoke(person)"><small>Exit matter</small></a>
                     </li>
 
+
+
                 </ul>
-                <div class="participant-button-container">
-                    <button class="btn-lg participant-btn">Add Participant</button>
+                <div class="text-center">
+                     <a class="btn btn-sm btn-inverse">
+                        <span class="fui-user"></span> Add a Participant
+                    </a>
                 </div>
             </div>
             <div class='col-sm-6 details'>
+                <div class="client-permissions">
+                     <div class="user-details text-right">
+                         <a class="revoke" ng-show="person.username!==currentUser.username&&currentUser.user_class==='lawyer'&&person.username!=matter.lawyer.username" href="javascript:;" ng-click="revoke(person)"><small>Revoke access</small></a>
+                    </div>
+                    <div class="user-large customer">TC</div>
+                    <div class='permissions-checklist'>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox"> Able to Add Other Clients to Matter
+                            </label>
+                        </div>
+                    </div>
+                    <div class='text-center'>
+                       <a class="btn btn-sm save-perm-btn"><span class="fui-check"></span> Save Permissions</a>
+                    </div>
+                </div>
 
-                <div class="user-large">TC</div>
-                <div class="user-details">Last logged in 3.45 PM May 5 2014
-                     <a class="revoke" ng-show="person.username!==currentUser.username&&currentUser.user_class==='lawyer'&&person.username!=matter.lawyer.username" href="javascript:;" ng-click="revoke(person)"><small>Revoke access</small></a>
+                    <div class="colleague-permissions">
+                     <div class="user-details text-right">
+                         <a class="revoke" ng-show="person.username!==currentUser.username&&currentUser.user_class==='lawyer'&&person.username!=matter.lawyer.username" href="javascript:;" ng-click="revoke(person)"><small>Revoke access</small></a>
+                    </div>
+                    <div class="user-large lawyer">TL</div>
+                    <div class='permissions-checklist'>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox"> Able to Add & Delete Colleagues, Clients, and Third Parties
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox"> Able to Add, Complete and Destroy Requests for Review
+                            </label>
+                        </div>
+                         <div class="checkbox">
+                            <label>
+                                <input type="checkbox"> Able Add and Delete Items
+                            </label>
+                        </div>
+
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox"> Able to Sign and Send Documents for Signature.
+                            </label>
+                        </div>
+                    </div>
+                    <div class='text-center'>
+                       <a class="btn btn-sm save-perm-btn"><span class="fui-check"></span> Save Permissions</a>
+                    </div>
                 </div>
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox"> Able to Review Shared Documents
-                    </label>
-                </div>
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox"> Able to Sign  Shared Documents
-                    </label>
-                </div>
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox"> Able to Comment on Shared Documents
-                    </label>
-                </div>
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox"> Able to Add Other Clients to Matter
-                    </label>
-                </div>
+
+
+
             </div>
         </div>
         <div class="new-participant">
