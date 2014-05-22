@@ -1,6 +1,7 @@
 *.diff
 
 gui/index.html  # ignore the generated dev index.html
+gui/dist  # this dir is what gets deployed and gets rebuilt on every fab production rebuild, saves us storing huge amounts of compoenetnts in repo
 gui/temp
 gui/bower_components
 gui/doc
