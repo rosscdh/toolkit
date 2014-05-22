@@ -3,13 +3,10 @@
 		<h4 class="modal-title" id="myModalLabel"><span class="fui-user text-muted"></span> Matter Participants</h4>
 	</div>
 	<div class="modal-body">
-        <div class='participant-button-container'>
-            <button class="btn btn-info btn-wide btn-lg participant-btn">Add a Participant</button>
-        </div>
+
         <div ng-hide="data.showAddLawyer||data.showAddParticipant">
-            <h5 ng-show="participants.length>0">Existing Participants</h5>
             <div class="row">
-            <div class="col-sm-6 details">
+            <div class="col-sm-6 ">
                 <ul class="list-unstyled participants">
                     <li ng-repeat="person in participants">
                         <span class="user {{person.user_class}}" ng-bind="person | initials"></span>
@@ -19,10 +16,18 @@
 
                         <a class="text-danger" ng-show="person.username===currentUser.username&&currentUser.user_class!=='lawyer'" href="javascript:;" ng-click="revoke(person)"><small>Exit matter</small></a>
                     </li>
+
                 </ul>
+                <div class="participant-button-container">
+                    <button class="btn-lg participant-btn">Add Participant</button>
+                </div>
             </div>
-            <div class='col-sm-6'>
-                <a class="text-danger" ng-show="person.username!==currentUser.username&&currentUser.user_class==='lawyer'&&person.username!=matter.lawyer.username" href="javascript:;" ng-click="revoke(person)"><small>Revoke access</small></a>
+            <div class='col-sm-6 details'>
+
+                <div class="user-large">TC</div>
+                <div class="user-details">Last logged in 3.45 PM May 5 2014
+                     <a class="revoke" ng-show="person.username!==currentUser.username&&currentUser.user_class==='lawyer'&&person.username!=matter.lawyer.username" href="javascript:;" ng-click="revoke(person)"><small>Revoke access</small></a>
+                </div>
                 <div class="checkbox">
                     <label>
                         <input type="checkbox"> Able to Review Shared Documents
