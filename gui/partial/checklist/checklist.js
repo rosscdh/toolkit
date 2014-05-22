@@ -137,7 +137,7 @@ angular.module('toolkit-gui')
          * This function activates the following states inside the app by the URL params:
          * 1) Select a checklist item
          * 2) Show a review in the review modal window
-         * 
+         *
          * @private
 		 * @memberof			ChecklistCtrl
          * @method              handleUrlState
@@ -227,9 +227,14 @@ angular.module('toolkit-gui')
             Intercom.boot({
                 user_id: currUser.username,
                 email: currUser.email,
+                first_name: currUser.first_name,
+                last_name: currUser.last_name,
+                firm_name: currUser.firm_name,
+                verified: currUser.verified,
                 type: currUser.user_class,
                 app_id: INTERCOM_APP_ID,
                 created_at: (new Date(currUser.date_joined).getTime()/1000),
+                matters_created: currUser.matters_created,
                 user_hash: currUser.intercom_user_hash,
                 widget: {
                     activator: '.intercom',

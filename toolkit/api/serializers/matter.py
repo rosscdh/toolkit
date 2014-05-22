@@ -21,7 +21,7 @@ class ExportInfoSerializer(serializers.Serializer):
 
     last_exported_by = serializers.CharField(max_length=255, read_only=True, required=False)
     last_export_requested_by = serializers.CharField(max_length=255, read_only=True, required=False)
-    
+
     download_url = serializers.SerializerMethodField('get_download_url')
 
     def get_download_url(self, obj):
@@ -61,7 +61,7 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Workspace
-        fields = ('slug', 
+        fields = ('slug',
                   'url', 'regular_url',
                   'name', 'matter_code',
                   'client', 'lawyer', 'participants',
@@ -122,8 +122,12 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
         current_user = None
         if request:
             current_user = LiteUserSerializer(request.user, context={'request': request}).data
+            profile = request.user.profile
+
             current_user.update({
-                'has_notifications': request.user.profile.has_notifications
+                'firm_name': profile.firm_name,
+                'has_notifications': profile.has_notifications,
+                'matters_created': profile.matters_created,
             })
         return current_user
 
