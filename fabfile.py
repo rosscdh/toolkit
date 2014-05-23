@@ -616,30 +616,10 @@ def run_tests():
 
 @task
 @runs_once
-def build_gui():
+def prompt_build_gui():
     if prompt(colored("Build GUI app? [y,n]", 'green'), default="y").lower() in env.truthy:
 
-        # # move local_settings.py if present
-        # if os.path.exists('toolkit/local_settings.py'):
-        #     local('mv toolkit/local_settings.py /tmp/local_settings.py')
-
-        # # copy conf/production.local_settings.py
-        # # has the very important ("ng", os.path.join(SITE_ROOT, 'gui', 'dist')),
-        # # settings
-        # local('cp conf/production.local_settings.py toolkit/local_settings.py')
-
-        # move tmp/local_settings.py back
-        if os.path.exists('/tmp/local_settings.py'):
-            local('rm toolkit/local_settings.py')  # remove the production version local_settings so noone loses their mind
-            local('mv /tmp/local_settings.py toolkit/local_settings.py')
-        else:
-            if env.environment_class == 'local':
-                # copy the default dev localsettings
-                local('cp conf/dev.local_settings.py toolkit/local_settings.py')
-
-
-        # perform grunt build --djangoProd
-        local('cd gui;grunt build -djangoProd')
+        build_gui_dist()
 
         # collect static
         if env.environment_class == 'local':
@@ -650,8 +630,35 @@ def build_gui():
 
 @task
 @runs_once
-def build_gui():
-    local('cd gui;grunt build --djangoProd;cd %s' % env.local_project_path)
+def build_gui_dist():
+    # # move local_settings.py if present
+    if os.path.exists('toolkit/local_settings.py'):
+        local('mv toolkit/local_settings.py /tmp/local_settings.py')
+
+    # # copy conf/production.local_settings.py
+    # # has the very important ("ng", os.path.join(SITE_ROOT, 'gui', 'dist')),
+    # # settings
+    production_local_settings = '%s/production.local_settings.py' % env.environment_settings_path
+
+    if not os.path.exists(production_local_settings):
+        raise Exception('Production local_settings could not be found, cannot continue: %s' % production_local_settings)
+
+    local('cp %s toolkit/local_settings.py' % production_local_settings)
+
+    # 
+    # Perform the action
+    # perform grunt build --djangoProd
+    #
+    local('cd gui;grunt build -djangoProd')
+
+    # move tmp/local_settings.py back
+    if os.path.exists('/tmp/local_settings.py'):
+        local('rm toolkit/local_settings.py')  # remove the production version local_settings so noone loses their mind
+        local('mv /tmp/local_settings.py toolkit/local_settings.py')
+    else:
+        if env.environment_class == 'local':
+            # copy the default dev localsettings
+            local('cp conf/dev.local_settings.py toolkit/local_settings.py')
 
 @task
 def upload_gui():
@@ -662,7 +669,7 @@ def upload_gui():
         sys.exit(colored("No gui/dist folder found at %s, perform a 'cd gui;grunt build --djangoProd'" % env.gui_dist_path, 'yellow'))
 
     #if prompt(colored("Have you compiled the GUI distribution? as we are about to upload it; i.e. cd gui;grunt build --djangoProd' [y,n]", 'cyan'), default="y").lower() in env.truthy:
-    build_gui()
+    build_gui_dist()
     zip_filename = 'gui_dist.%s' % env.SHA1_FILENAME
     zip_filename_with_ext = '%s.zip' % zip_filename
     zip_gui_dist_path = '/tmp/%s' % zip_filename
@@ -721,7 +728,7 @@ def deploy(is_predeploy='False',full='False',db='False',search='False'):
     db = db.lower() in env.truthy
     search = search.lower() in env.truthy
 
-    build_gui()
+    prompt_build_gui()
     run_tests()
     diff()
     git_set_tag()
