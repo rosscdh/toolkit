@@ -4,6 +4,10 @@ from django import template
 from django.template.loader import get_template
 from toolkit.apps.notification.templatetags.notice_tags import get_notification_template, get_notification_context
 
+TEMPLATES = {
+    'reminder': get_template('partials/reminder.html')
+}
+
 
 class LawPalAbridgeService(object):
     """
@@ -31,7 +35,7 @@ class LawPalAbridgeService(object):
     def render_reminder_template(cls, **kwargs):
         # used in ReminderService to create messages which are NOT also a notification
         context = template.loader.Context(kwargs)
-        t = get_template('partials/reminder.html')
+        t = TEMPLATES.get('reminder')
         return t.render(context)
 
     @classmethod
