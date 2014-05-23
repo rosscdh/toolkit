@@ -106,9 +106,10 @@ class CustomerToolRedirectMixin(object):
         return tool_redirect_url
 
 
-class RedirectToNextMixin(object):
-    def redirect(self, next=None):
-        return HttpResponseRedirect(next) if next is not None else next
+# # not used?
+# class RedirectToNextMixin(object):
+#     def redirect(self, next=None):
+#         return HttpResponseRedirect(next) if next is not None else next
 
 
 class StartView(CustomerToolRedirectMixin, LogOutMixin, SaveNextUrlInSessionMixin, AuthenticateUserMixin, FormView):
@@ -128,6 +129,10 @@ class StartView(CustomerToolRedirectMixin, LogOutMixin, SaveNextUrlInSessionMixi
             tool_redirect_url = self.get_tool_redirect_url()
             if tool_redirect_url:
                 url = tool_redirect_url
+            else:
+                next = self.request.session.get('next')
+                if next is not None:
+                    url = next
 
         return url
 
@@ -193,7 +198,14 @@ class VerifyTwoFactorView(CustomerToolRedirectMixin, AuthenticateUserMixin, Form
 
         tool_redirect_url = self.get_tool_redirect_url()
 
-        return url if tool_redirect_url is None else tool_redirect_url
+        if tool_redirect_url:
+            url = tool_redirect_url
+        else:
+            next = self.request.session.get('next')
+            if next is not None:
+                url = next
+
+        return url
 
 
 class HomePageView(StartView):
