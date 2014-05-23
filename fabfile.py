@@ -650,6 +650,10 @@ def build_gui():
 
 @task
 @runs_once
+def build_gui():
+    local('cd gui;grunt build --djangoProd;cd %s' % env.local_project_path)
+
+@task
 def upload_gui():
     if not env.SHA1_FILENAME:
         env.SHA1_FILENAME = get_sha1()
@@ -658,7 +662,7 @@ def upload_gui():
         sys.exit(colored("No gui/dist folder found at %s, perform a 'cd gui;grunt build --djangoProd'" % env.gui_dist_path, 'yellow'))
 
     #if prompt(colored("Have you compiled the GUI distribution? as we are about to upload it; i.e. cd gui;grunt build --djangoProd' [y,n]", 'cyan'), default="y").lower() in env.truthy:
-    local('cd gui;grunt build --djangoProd;cd %s' % env.local_project_path)
+    build_gui()
     zip_filename = 'gui_dist.%s' % env.SHA1_FILENAME
     zip_filename_with_ext = '%s.zip' % zip_filename
     zip_gui_dist_path = '/tmp/%s' % zip_filename
