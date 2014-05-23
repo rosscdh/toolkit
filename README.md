@@ -48,18 +48,18 @@ Getting started
 
 1. mkvirtualenv toolkit (assume you have virtualenv and virtualenvwrapper installed)
 2. pip install -r requirements/dev.txt
-3. fab rebuild_local (will download and install "stamp" - ruby rest api)
-4. honcho start (starts runserver_plus in threaded mode as well as the stamp service)
-5. or just ./manage.py runserver_plus --threaded
-6. if you have problems (e.g. with missing css/core.css) you may need to install yuglify ('npm install -g yuglify')
-    and run './manage collectstatic --noinput' afterwards
+3. install yuglify ('npm install -g yuglify')
+4. fab rebuild_local (will download and install "stamp" - ruby rest api)
+5. honcho start (starts runserver_plus in threaded mode as well as the stamp service)
+6. or just ./manage.py runserver_plus --threaded
+
 
 Testing
 -------
 
 ### CasperJS && PhantomJS ###
 
-__currently we dont use phantom but once angularjs arrives this will change__
+__currently we dont use phantom but will do soon__
 
 __OSX__
 

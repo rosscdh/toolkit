@@ -75,3 +75,33 @@ def firstseen(context):
         'PROJECT_ENVIRONMENT': settings.PROJECT_ENVIRONMENT,
         'show': True if context['request'].GET.get('firstseen', '0') == '1' else False,
     }
+
+
+@register.inclusion_tag('partials/javascript/google-analytics.html', takes_context=True)
+def google_analytics(context):
+    return {
+        'user': context['request'].user
+    }
+
+
+@register.inclusion_tag('partials/javascript/intercom.html', takes_context=True)
+def intercom(context):
+    return {
+        'app_id': settings.INTERCOM_APP_ID,
+        'user': context['request'].user
+    }
+
+
+@register.inclusion_tag('partials/javascript/mixpanel.html', takes_context=True)
+def mixpanel(context):
+    return {
+        'api_token': settings.MIXPANEL_SETTINGS['token'],
+        'user': context['request'].user
+    }
+
+
+@register.inclusion_tag('partials/javascript/olark.html', takes_context=True)
+def olark(context):
+    return {
+        'user': context['request'].user
+    }

@@ -19,7 +19,6 @@ class ItemManagerTest(BaseScenarios, TestCase):
         # item, revisions: 0
         item1 = mommy.make('item.Item', matter=self.matter)
 
-
         # item, requested, revisions: 0, user: customer
         item2 = mommy.make('item.Item', matter=self.matter, slug=uuid.uuid4(), is_requested=True, responsible_party=self.user)
 
@@ -65,6 +64,19 @@ class ItemManagerTest(BaseScenarios, TestCase):
         item12 = mommy.make('item.Item', matter=self.matter, slug=uuid.uuid4())
         rev12a = mommy.make('attachment.Revision', item=item12)
         rev12b = mommy.make('attachment.Revision', item=item12, signers=[self.lawyer])
+
+        # item (completed), requested
+        item13 = mommy.make('item.Item', matter=self.matter, slug=uuid.uuid4(), is_complete=True, is_requested=True, responsible_party=self.user)
+
+        # item (completed), needs review
+        item14 = mommy.make('item.Item', matter=self.matter, slug=uuid.uuid4(), is_complete=True)
+        rev14a = mommy.make('attachment.Revision', item=item14)
+        rev14b = mommy.make('attachment.Revision', item=item14, reviewers=[self.user])
+
+        # item (completed), needs signature
+        item15 = mommy.make('item.Item', matter=self.matter, slug=uuid.uuid4(), is_complete=True)
+        rev15a = mommy.make('attachment.Revision', item=item15)
+        rev15b = mommy.make('attachment.Revision', item=item15, signers=[self.user])
 
         my_requests = Item.objects.my_requests(self.user)
 

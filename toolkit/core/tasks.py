@@ -89,8 +89,6 @@ def _abridge_send(verb_slug, actor, target, action_object, message=None, comment
 
                 message_for_abridge = LawPalAbridgeService.render_message_template(user, **message_data)
 
-
-
                 abridge_service.create_event(content_group=target.name,
                                              content=message_for_abridge)
 

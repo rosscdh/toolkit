@@ -1,6 +1,7 @@
 *.diff
 
-gui/index.html  # ignore the generated dev index.html
+gui/index.html
+gui/dist
 gui/temp
 gui/bower_components
 gui/doc
