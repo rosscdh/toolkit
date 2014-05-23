@@ -649,6 +649,7 @@ def build_gui():
 
 
 @task
+@runs_once
 def upload_gui():
     if not env.SHA1_FILENAME:
         env.SHA1_FILENAME = get_sha1()
@@ -671,7 +672,7 @@ def upload_gui():
     env_run('chown %s:%s %s' % (env.application_user, env.application_user, zip_gui_dist_remote_path))
     #unzip to gui/dist
     # -o overwrite
-    virtualenv('unzip %s -o -d %s' % (zip_gui_dist_remote_path, zip_gui_dist_target_remote_path,))
+    virtualenv('unzip -o %s -d %s' % (zip_gui_dist_remote_path, zip_gui_dist_target_remote_path,))
     # can now run collectstatic
 
 @task
