@@ -6,7 +6,7 @@
 	<div class="modal-body">
 
         <div ng-hide="data.showAddLawyer||data.showAddParticipant">
-            <div class="row">
+            <div class="row existing-participants">
             <div class="col-sm-6 ">
                 <ul class="list-unstyled participants">
                     <li ng-repeat="person in participants">
@@ -83,15 +83,15 @@
             </div>
         </div>
         <div class="new-participant">
-            <h5>Add New Participant</h5>
+            <h5>Add a Participant</h5>
             <div class="row">
                 <div class="col-sm-6">
-                    <a href="javascript:;" class="btn btn-primary" ng-click="data.showAddLawyer=true">Add a Lawyer</a>
+                    <a href="javascript:;" class="btn btn-primary lawyer" ng-click="data.showAddLawyer=true">Add a Colleague</a>
                     <br />
-                    <p class="note">Adding a lawyer to this matter will give them full access to modify the checklist, add files and manage the transaction.</p>
+                    <p class="note">Adding a colleague to this matter will give them full access to modify the checklist, add files and manage the transaction.</p>
                 </div>
                 <div class="col-sm-6">
-                    <a href="javascript:;" class="btn btn-info" ng-click="data.showAddParticipant=true">Add a Client</a>
+                    <a href="javascript:;" class="btn btn-info customer" ng-click="data.showAddParticipant=true">Add a Client</a>
                     <br />
                     <p class="note">
                     Adding a client to the checklist will give them access to view and annotate documents and discuss checklist items. They can not modify the checklist structure or view previous revisions of documents.
@@ -120,7 +120,7 @@
 		</form>
 
         <form class="form" ng-submit="invite()" ng-show="data.showAddParticipant">
-            <h5>Add a Client <a href="javascript:;" class="close" ng-click="data.showAddParticipant=false;">x</a></h5>
+            <h5>Add a Colleague <a href="javascript:;" class="close" ng-click="data.showAddParticipant=false;">x</a></h5>
             <p>Adding a client to this matter will give them access to view the checklist and the latest version of each document.</p>
 			<div ng-class="{'has-success': data.participant, 'has-warning': data.isNew, 'has-error': data.validationError }">
     		    <p class="bg-info" for="inviteeEmail" ng-show="data.participant">{{ data.participant | fullname }} found.</p>
