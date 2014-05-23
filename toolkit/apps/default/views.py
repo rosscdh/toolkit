@@ -106,12 +106,6 @@ class CustomerToolRedirectMixin(object):
         return tool_redirect_url
 
 
-# # not used?
-# class RedirectToNextMixin(object):
-#     def redirect(self, next=None):
-#         return HttpResponseRedirect(next) if next is not None else next
-
-
 class StartView(CustomerToolRedirectMixin, LogOutMixin, SaveNextUrlInSessionMixin, AuthenticateUserMixin, FormView):
     """
     sign in view
