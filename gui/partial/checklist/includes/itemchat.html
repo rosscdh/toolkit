@@ -1,21 +1,21 @@
     <h4 class="ng-scope">
             <a href="" style="margin-right:12px;">
-                <span class="fui-chat comments internal"></span>
+                <span class="fui-chat comments-tab internal"></span>
             </a>
             <a href="">
-                <span class="fui-chat comments global selected"><span class="iconbar-unread">6</span></span>
+                <span class="fui-chat comments-tab global not-active"><span class="iconbar-unread">+ 6</span></span>
             </a>
         </h4>
 
 <div class="new-message row">
 
-    <div class="col-xs-12 comment-wrapper">
-           <div class="comment-explanation">Leave a comment for your Colleagues</div>
+    <div class="col-xs-12 comment-wrapper colleague">
+           <div class="comment-explanation">Discuss with your <span class="expl-emphasis">Colleagues</span></div>
         <textarea class="form-control" rows="2" placeholder="Write a comment for your colleague and hit 'Enter'" ng-model="data.selectedItem.newcomment" required></textarea>
 
 
-     <!--Fill comment-explanation with this text for Internal comments tab:
-        Internal comments will only be visible to You and your Colleagues.
+     <!--Fill comment-explanation with :
+     Discuss with all participants.
      -->
     </div>
 </div>
