@@ -1,10 +1,45 @@
+    <h4 class="ng-scope">
+            <a href="javascript:;" ng-click="activateActivityStream('item')" ng-show="data.selectedItem"
+       ng-class="{'active':data.streamType=='item', 'inactive':data.streamType=='matter'}" style="margin-right:12px;">Internal Comments</a>
+            <a href="javascript:;" ng-click="activateActivityStream('matter')"
+       ng-class="{'active':data.streamType=='matter', 'inactive':data.streamType=='item'}">Global Comments</a>
+        </h4>
 
-<h4 class="ng-scope">
+<div class="new-message row">
+    <div class="col-xs-12">
+        <textarea class="form-control" rows="2" placeholder="Write a global comment and press enter..." ng-model="data.selectedItem.newcomment" required></textarea>
+
+     <div class="comment-explanation">Global comments will be visible to You, Colleagues, agnd any Participant who has access to this Matter.</div>
+     <!--Fill comment-explanation with this text for Internal comments tab:
+        Internal comments will only be visible to You and your Colleagues.
+     -->
+    </div>
+</div>
+
+    <ul class="list-unstyled activity-log">
+
+        <li ng-repeat="" ng-class="{ 'comment-faded': activity.status=='awaiting'}">
+            <div activity ng-model="activity" matter-slug="data.slug" item-slug="data.selectedItem.slug"
+                          user="data.usdata.current"></div>
+        </li>
+        <li ng-show="!data.activitystream.length"><small class="lead text-muted">Global comments will appear here.</small></li>
+         <!--Fill this li with for Internal comments tab:
+
+            Internal comments will appear here.
+         -->
+    </ul>
+
+
+
+
+<h4 class="ng-scope separator">
     <a href="javascript:;" ng-click="activateActivityStream('item')" ng-show="data.selectedItem"
        ng-class="{'active':data.streamType=='item', 'inactive':data.streamType=='matter'}" style="margin-right:12px;">Item Activity</a>
     <a href="javascript:;" ng-click="activateActivityStream('matter')"
        ng-class="{'active':data.streamType=='matter', 'inactive':data.streamType=='item'}">All Activity</a>
 </h4>
+
+
 <div class="new-message row" ng-show="data.selectedItem" ng-mouseenter="show = true">
     <div class="col-xs-12">
         <form ng-submit="submitComment()" >
@@ -14,9 +49,10 @@
     </div>
 </div>
 <ul class="list-unstyled activity-log">
+
     <li ng-repeat="activity in data.activitystream" ng-class="{ 'comment-faded': activity.status=='awaiting'}">
         <div activity ng-model="activity" matter-slug="data.slug" item-slug="data.selectedItem.slug"
                       user="data.usdata.current"></div>
     </li>
-    <li ng-show="!data.activitystream.length"><small class="lead text-muted">Discussion and activity will appear here.</small></li>
+    <li ng-show="!data.activitystream.length"><small class="lead text-muted">Discussion and all activity will appear here.</small></li>
 </ul>
