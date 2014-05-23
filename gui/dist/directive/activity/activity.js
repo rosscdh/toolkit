@@ -90,7 +90,6 @@ angular.module('toolkit-gui').directive('activity', ['$compile', '$log', '$sce',
                  */
                 $scope.deleteCommentIsEnabled = function () {
                     if ($scope.ngModel.type === "item-comment" && $scope.itemSlug) {
-                        $log.debug($scope.user.user_class);
                         //if user is lawyer, he might delete all comments
                         if ($scope.user.user_class === 'lawyer') {
                             return true;
@@ -115,8 +114,6 @@ angular.module('toolkit-gui').directive('activity', ['$compile', '$log', '$sce',
                  */
                 $scope.editCommentIsEnabled = function () {
                     if ($scope.ngModel.type === "item-comment" && $scope.itemSlug) {
-                        $log.debug($scope.user.user_class);
-
                         var timediff = moment().diff(moment($scope.ngModel.timestamp),'minutes');
 
                         //you can only delete your own comments if there are not older than 60minutes
