@@ -4,6 +4,6 @@
         <a class="close" href="javascript:;" ng-click="data.isContainerVisible=false">x</a>
     </div>
     <ul>
-        <li ng-repeat="p in data.filtered_participants" ng-click="selectParticipant(p)" ng-class="{'highlight': $index == data.focusIndex }">{{ p | fullname }}</li>
+        <li ng-repeat="p in data.filtered_participants" ng-click="selectParticipant(p)" ng-mouseover="data.focusIndex=$index" ng-class="{'highlight': $index == data.focusIndex }">{{ p | fullname }}</li>
     </ul>
 </div>

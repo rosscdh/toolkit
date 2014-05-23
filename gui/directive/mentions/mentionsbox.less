@@ -9,18 +9,25 @@
   font-size: 14px;
   top: 0;
   left: 0;
+  .box-shadow(2px);
 
   .header {
-    font-size: 16px;
+    font-size: 14px;
     font-weight:bold;
     text-align: center;
     border-bottom: 1px solid @gray-light;
-    padding: 5px 10px;
+    margin: 5px 10px;
+    color: @gray-light;
+
+    .close {
+      margin-top: 2px;
+      font-size: 14px;
+    }
   }
 
   ul {
     list-style: none;
-    padding: 5px 10px;
+    padding: 5px 10px 10px 10px;
     margin: 0;
 
     li {
@@ -30,7 +37,8 @@
       cursor: pointer;
 
       &.highlight {
-        background-color: @gray-light;
+        color: white;
+        background-color: @peter-river;
       }
     }
   }
