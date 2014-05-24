@@ -1,9 +1,11 @@
     <h4 class="ng-scope">
             <a href="" style="margin-right:12px;">
-                <span class="fui-chat comments-tab internal"></span>
+                <span class="pe-7s-comment comments-tab internal"></span>
             </a>
             <a href="">
-                <span class="fui-chat comments-tab global not-active"><span class="iconbar-unread">+ 6</span></span>
+
+                <span class="pe-7s-chat comments-tab global">
+                    </span>
             </a>
         </h4>
 
@@ -50,6 +52,6 @@
             <div activity ng-model="activity" matter-slug="data.slug" item-slug="data.selectedItem.slug"
                           user="data.usdata.current"></div>
         </li>
-        <li ng-show="!data.activitystream.length"><small class="lead text-muted">Discussion and all activity will appear here.</small></li>
+        <li ng-show="!data.activitystream.length"><small class="lead text-muted">All activity will appear here.</small></li>
     </ul>
 </div>
