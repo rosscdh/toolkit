@@ -1,9 +1,9 @@
-{% extends 'email/base.email' %}
+{% extends 'email/base.email' %}{% load toolkit_tags %}
 
 {% block subject_line %}{{ mentioned_by }} mentioned you in a comment{% endblock %}
 
 {% block html_content %}
 <p>{{ mentioned_by }} has mentioned you in a comment.</p>
 <blockquotes>{{ mention }}</blockquotes>
-{% if access_url %}<p>You can view this mention at: <a href="{{ access_url }}">{{ access_url }}</a></p>{% endif %}
+{% if access_url %}<p>You can view this mention at: <a href="{% ABSOLUTE_BASE_URL access_url %}">{% ABSOLUTE_BASE_URL access_url %}</a></p>{% endif %}
 {% endblock %}
