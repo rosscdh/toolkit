@@ -51,10 +51,11 @@ def _mentions_send(actor, action_object, text, **kwargs):
         except:
             logger.error('could not get action_object.get_absolute_url() in _mentions_send task: %s' %action_object)
 
-    service = MentionsService(mentioned_by=actor)
-    service.process(notify=True,
-                    text=text,
-                    access_url=access_url)
+    if type(text) in [str, unicode]:
+        service = MentionsService(mentioned_by=actor)
+        service.process(notify=True,
+                        text=text,
+                        access_url=access_url)
 
 @app.task
 def _activity_send(actor, target, action_object, message, **kwargs):
