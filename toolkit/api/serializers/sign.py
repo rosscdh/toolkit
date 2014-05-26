@@ -17,13 +17,9 @@ class SignatureSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = SignDocument
         fields = ('url',
-                  'sign_url',
                   'claim_url',
                   'signers',
                   'is_claimed',)
-
-    def get_sign_url(self, obj):
-        return obj.get_absolute_url()
 
     def get_claim_url(self, obj):
         return obj.get_claim_url()
@@ -37,5 +33,10 @@ class SignatureSerializer(serializers.HyperlinkedModelSerializer):
     def get_signers(self, obj):
         signers = []
         for signer in obj.document.signers.all():
-            signers.append(SimpleUserSerializer(signer).data)
+            singer_data = SimpleUserSerializer(signer).data
+            singer_data.update({
+                'sign_url': obj.get_absolute_url(signer=signer)
+            })
+
+            signers.append(singer_data)
         return signers

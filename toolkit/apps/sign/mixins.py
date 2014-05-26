@@ -51,7 +51,8 @@ class HelloSignOverridesMixin(object):
             'subject': self.hs_subject(),
             'message': self.hs_message()
         }
-        return HelloSignService(**hs_service_kwargs)
+        kwargs.update(hs_service_kwargs)
+        return HelloSignService(**kwargs)
 
     def hs_record_result(self, result):
         """
@@ -127,6 +128,7 @@ class HelloSignOverridesMixin(object):
 
     def create_unclaimed_draft(self, requester_email_address, **kwargs):
         hs_request_object = self.get_hs_request_object()
+
         if hs_request_object and hs_request_object.unclaimed_draft_guid is not None:
             return hs_request_object.data.get('unclaimed_draft', {})
         else:

@@ -1,48 +1,19 @@
 # -*- coding: utf-8 -*-
+from django.core import signing
 from django.http import Http404
+from django.conf import settings
+from django.contrib.auth.models import User
 from django.views.generic import DetailView
 from django.utils.safestring import mark_safe
-from django.core.exceptions import PermissionDenied
+from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate, login
+from django.core.exceptions import PermissionDenied
 from django.views.generic.edit import BaseUpdateView
 
 from .models import SignDocument
 
 import logging
 logger = logging.getLogger('django.request')
-
-
-def _authenticate(request, obj, matter, **kwargs):
-    #
-    # Log in using the review backend
-    # 'toolkit.apps.review.auth_backends.ReviewDocumentBackend'
-    #
-    requested_authenticated_user = authenticate(username=kwargs.get('slug'), password=kwargs.get('auth_slug'))
-
-    if requested_authenticated_user:
-        #
-        # if the request user is in the object.participants
-        # it means they are owners and should be able to view this regardless
-        #
-        if request.user in matter.participants.all():
-            #
-            # we are an owner its all allowed
-            #
-            pass
-        else:
-            #
-            # user is we are already logged in then check this guys mojo!
-            #
-            if request.user.is_authenticated():
-                if requested_authenticated_user != request.user:
-                    raise PermissionDenied
-
-            #
-            # We are indeed the reviewer and are reviewing the document
-            #
-            login(request, requested_authenticated_user)
-            # only for the reviewer, we dont do this for when participants view
-            obj.signer_has_viewed = True
 
 
 class SignRevisionView(DetailView):
@@ -70,19 +41,18 @@ class SignRevisionView(DetailView):
     def get_object(self):
         self.object = super(SignRevisionView, self).get_object()
         self.matter = self.object.document.item.matter
-
-        #
-        # Perform authentication of the user here
-        # not required for signing
-        # _authenticate(request=self.request, obj=self.object, matter=self.matter, **self.kwargs)
-
         return self.object
 
     def get_context_data(self, **kwargs):
         kwargs = super(SignRevisionView, self).get_context_data(**kwargs)
+
+        #signer_username = signing.loads(self.kwargs.get('username_token'), settings.SECRET_KEY)
+        signer_username = self.kwargs.get('username_token')
+        signer = get_object_or_404(User, username=signer_username)
+
         kwargs.update({
-            'sign_url': mark_safe(self.object.signing_request.get_absolute_url()),
-            'can_sign': self.request.user in self.object.document.signers.all(),
+            'sign_url': mark_safe(self.object.get_signer_signing_url(signer=signer)),
+            'can_sign': True #self.request.user in self.object.document.signers.all(),
         })
         return kwargs
 

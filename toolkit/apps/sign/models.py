@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from django.core import signing
+from django.conf import settings
 from django.core.urlresolvers import reverse
 
 from rulez import registry as rulez_registry
 
+from hellosign_sdk import HSClient
 
 # django wrapper hello_sign imports
 from hello_sign.mixins import ModelContentTypeMixin, HelloSignModelMixin
@@ -83,11 +86,27 @@ class SignDocument(IsDeletedMixin,
     def __unicode__(self):
         return u'%s' % str(self.slug)
 
-    def get_absolute_url(self):
-        return ABSOLUTE_BASE_URL(reverse('sign:sign_document', kwargs={'slug': self.slug}))
+    def get_absolute_url(self, signer):
+        #username_token = signing.dumps(signer.username, salt=settings.SECRET_KEY)
+        username_token = signer.username
+        return ABSOLUTE_BASE_URL(reverse('sign:sign_document', kwargs={'slug': self.slug, 'username_token': username_token}))
 
     def get_claim_url(self):
         return ABSOLUTE_BASE_URL(reverse('sign:claim_sign_document', kwargs={'slug': self.slug}))
+
+    def get_signer_signing_url(self, signer):
+        signatures = self.signing_request.data.get('signature_request', {}).get('signatures', [])
+        signer_email = signer.email
+
+        try:
+            signature_id = [s for s in signatures if s.get('signer_email_address') == signer_email][0].get('signature_id', None)
+        except IndexError:
+            return None
+
+        HS_CLIENT = HSClient(api_key=settings.HELLOSIGN_API_KEY)
+        embedded_signing_object = HS_CLIENT.get_embedded_object(signature_id)
+
+        return embedded_signing_object.sign_url
 
     def complete(self, is_complete=True):
         self.is_complete = is_complete
