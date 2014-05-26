@@ -1,0 +1,9 @@
+{% extends 'email/base.email' %}
+
+{% block subject_line %}{{ mentioned_by }} mentioned you in a comment{% endblock %}
+
+{% block html_content %}
+<p>{{ mentioned_by }} has mentioned you in a comment.</p>
+<blockquotes>{{ mention }}</blockquotes>
+{% if access_url %}<p>You can view this mention at: <a href="{{ access_url }}">{{ access_url }}</a></p>{% endif %}
+{% endblock %}
