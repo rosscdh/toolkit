@@ -1,4 +1,6 @@
-//
+.navbar-nav.navbar-right:last-child {
+  margin-right: 0
+}//
 // Navbar
 // --------------------------------------------------
 
@@ -16,7 +18,7 @@
     padding: 15px 28px 18px 12px;
     text-shadow: none;
     display: inline-block;
-    font-size:18px;  
+    font-size:18px;
     &:hover,
     &:focus {
       color: mix(@brand-primary, white, 5%);
@@ -107,14 +109,14 @@
           font-size: 24px;
           font-weight: normal;
         }
-        
+
         > [class*="fui-"] {
           font-size: 24px;
           margin: -4px 0 0;
           position: relative;
           top: 4px;
         }
-        
+
         > [class*="fui-"] + * {
           margin-left: 12px;
         }
@@ -233,7 +235,7 @@
 .navbar-inverse {
 	background: @brand-primary;
   font-size: ceil(@component-font-size-base * 1.133); // ~17px
-  
+
   .navbar-brand {
     border-bottom: 2px solid mix(@brand-primary, black, 85%);
     border-right: 2px solid mix(@brand-primary, black, 85%);
@@ -469,7 +471,7 @@
 		      background-color: mix(@brand-primary, black, 85%);
 	        color: lighten(@brand-primary, 13%) !important;
 	      }
-      }      
+      }
       .form-control {
         background-color: mix(@brand-primary, black, 85%);
         color: @inverse;
@@ -483,7 +485,7 @@
 		      .btn {
 			      background-color: mix(@brand-primary, black, 85%) !important;
 		      }
-				}  
+				}
       }
     }
   }
@@ -570,7 +572,7 @@
       .nav {
       	margin-left: 0;
       	margin-right: 0;
-      	
+
         > li {
           &.active {
             > a,
@@ -605,7 +607,7 @@
         &:focus {
           color: @inverse;
         }
-      }     
+      }
     }
     .navbar-brand {
       padding-left: 20px;
@@ -625,10 +627,10 @@
     .nav {
     	float: none !important;
     	display: block;
-    	margin-bottom: 10px;  
+    	margin-bottom: 10px;
     	margin-right: 0;
-    	margin-left: 0;  	
-    	
+    	margin-left: 0;
+
       > li,
       > li.dropdown {
         &:hover {
@@ -715,7 +717,7 @@
     .nav-collapse {
     	width: 100%;
       .clearfix();
-      
+
       .navbar-search {
         padding-left: 5px;
         float: none !important;

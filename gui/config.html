@@ -8,10 +8,10 @@
   <!-- App LESS -->
   <link href="<!-- @echo staticBase -->ng/css/app.less" type="text/css" rel="stylesheet/less">
   <link href="<!-- @echo staticBase -->fonts/pe-icon-7-stroke/css/pe-icon-7-stroke.css" rel="stylesheet" data-remove="exclude">
-  <script src="<!-- @echo staticBase -->ng/bower_components/jquery/jquery.js" data-remove="exclude"></script>
-  <script src="<!-- @echo staticBase -->ng/bower_components/jquery-ui/ui/jquery-ui.js" data-remove="exclude"></script>
-  <script src="<!-- @echo staticBase -->ng/bower_components/bootstrap/dist/js/bootstrap.js" data-remove="exclude"></script>
-  <script src="<!-- @echo staticBase -->ng/bower_components/angular/angular.js" data-remove="exclude"></script>
+  <script src="<!-- @echo staticBase -->ng/bower_components/jquery/jquery.min.js" data-remove="exclude"></script>
+  <script src="<!-- @echo staticBase -->ng/bower_components/jquery-ui/ui/minified/jquery-ui.min.js" data-remove="exclude"></script>
+  <script src="<!-- @echo staticBase -->ng/bower_components/bootstrap/dist/js/bootstrap.min.js" data-remove="exclude"></script>
+  <script src="<!-- @echo staticBase -->ng/bower_components/angular/angular.min.js" data-remove="exclude"></script>
   <script src="//d3dy5gmtp8yhk7.cloudfront.net/2.2/pusher.min.js" data-remove="exclude"></script>
   <script language="javascript" data-remove="exclude">
     /* File upload fallback for IE browsers */
@@ -49,11 +49,10 @@
   <script src="<!-- @echo staticPath -->bower_components/ng-file-upload/angular-file-upload.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/angular-ui-router/release/angular-ui-router.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/jquery-ui-touch-punch/jquery.ui.touch-punch.js"></script>
-  <script src="<!-- @echo staticPath -->bower_components/respond/dest/respond.src.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/raven-js/dist/raven.min.js"></script>
-  <script src="<!-- @echo staticPath -->bower_components/respond/dest/respond.src.js"></script>
-  <script src="<!-- @echo staticPath -->bower_components/angular-intercom/angular-intercom.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/crypto-js/rollups/hmac-sha256.js"></script>
+  
+  <script src="<!-- @echo staticBase -->ng/lib/angular-intercom.js" data-remove="exclude"></script>
   <script type="text/javascript" src="//api.filepicker.io/v1/filepicker.js" data-remove="exclude"></script>
 
   <!-- Main App JS -->
@@ -78,6 +77,7 @@
 
   <!-- Directive JS -->
   <script src="<!-- @echo staticPath -->directive/form.js"></script>
+  <script src="<!-- @echo staticPath -->directive/activity/activity.js"></script>
   <script src="<!-- @echo staticPath -->directive/filepicker.js"></script>
   <!-- Add New Directive JS Above -->
 

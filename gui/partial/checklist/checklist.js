@@ -25,6 +25,7 @@ angular.module('toolkit-gui')
 	'$state',
 	'$location',
     '$sce',
+    '$compile',
     '$route',
 	'smartRoutes',
 	'ezConfirm',
@@ -51,6 +52,7 @@ angular.module('toolkit-gui')
 			 $state,
 			 $location,
              $sce,
+             $compile,
              $route,
 			 smartRoutes,
 			 ezConfirm,
@@ -135,7 +137,7 @@ angular.module('toolkit-gui')
          * This function activates the following states inside the app by the URL params:
          * 1) Select a checklist item
          * 2) Show a review in the review modal window
-         * 
+         *
          * @private
 		 * @memberof			ChecklistCtrl
          * @method              handleUrlState
@@ -225,9 +227,14 @@ angular.module('toolkit-gui')
             Intercom.boot({
                 user_id: currUser.username,
                 email: currUser.email,
+                first_name: currUser.first_name,
+                last_name: currUser.last_name,
+                firm_name: currUser.firm_name,
+                verified: currUser.verified,
                 type: currUser.user_class,
                 app_id: INTERCOM_APP_ID,
                 created_at: (new Date(currUser.date_joined).getTime()/1000),
+                matters_created: currUser.matters_created,
                 user_hash: currUser.intercom_user_hash,
                 widget: {
                     activator: '.intercom',
@@ -1649,57 +1656,6 @@ angular.module('toolkit-gui')
 
 			return template;
 		}
-
-        /**
-		 * Deletes the given activity stream item
-         *
-		 * @memberof			ChecklistCtrl
-		 * @private
-		 * @type {Object}
-		 */
-        $scope.deleteComment = function(comment) {
-			var matterSlug = $scope.data.slug;
-			var itemSlug = $scope.data.selectedItem.slug;
-
-			commentService.delete(matterSlug, itemSlug, comment).then(
-				 function success(){
-					$scope.activateActivityStream('item');
-				 },
-				 function error(/*err*/){
-					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to delete item comment.') {
-						toaster.pop('error', 'Error!', 'Unable to delete item comment.',5000);
-					}
-				 }
-			);
-		};
-
-
-        /**
-		 * Checks if the current user may delete the given comment item
-         *
-		 * @memberof			ChecklistCtrl
-		 * @private
-		 * @type {Object}
-		 */
-        $scope.deleteCommentIsEnabled = function(activity){
-            if (activity.data.comment) {
-                //if user is lawyer, he might delete all comments
-                if($scope.data.usdata.current.user_class==='lawyer'){
-                    return true;
-                } else if ($scope.data.selectedItem!=null) {
-                    var comments = jQuery.grep( $scope.data.activitystream, function( item ){ return item.comment!==null; } );
-                    var index = jQuery.inArray( activity, comments );
-
-                    //if the user is a client, then he might only delete his own comments if there is no newer comment
-                    if(activity.actor.username === $scope.data.usdata.current.username && index===0) {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        };
-
 
         /* END COMMENT HANDLING */
 }]);

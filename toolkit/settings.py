@@ -50,12 +50,11 @@ STATIC_URL = '/static/'
 # Additional locations of static files
 STATICFILES_DIRS = (
     # These are the dev files
-    ("ng", os.path.join(SITE_ROOT, 'gui')),
+    ("ng", os.path.join(SITE_ROOT, 'gui', 'dist')),
 )
 
-#STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
-STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
-
+STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+#STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 
 MEDIA_ROOT = os.path.join(SITE_ROOT, 'media')
 MEDIA_URL = '/m/'
@@ -119,6 +118,7 @@ PROJECT_APPS = (
     # Lawpal Modules
     'hello_sign',
     'dj_crocodoc',
+    'dj_authy',
 )
 
 HELPER_APPS = (
@@ -179,6 +179,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # 'corsheaders.middleware.CorsMiddleware',  # not required yet
+    'dj_authy.middleware.AuthyAuthenticationRequiredMiddleware',
     'toolkit.apps.me.middleware.EnsureUserHasPasswordMiddleware',
     'django.middleware.gzip.GZipMiddleware',
     'pipeline.middleware.MinifyHTMLMiddleware',
@@ -305,11 +306,26 @@ REST_FRAMEWORK = {
 }
 
 
-#PIPELINE_CSS = {}
+PIPELINE_CSS = {
+  'core': {
+        'source_filenames': (
+            'bootstrap/css/bootstrap.css',
+            'css/flat-ui.css',
+            'fonts/pe-icon-7-stroke/css/pe-icon-7-stroke.css',
+            'css/application.css',
+            'css/animate.css',
+        ),
+        'output_filename': 'css/core.css',
+        'extra_context': {
+            'media': 'screen,projection',
+        },
+  }
+}
 PIPELINE_JS = {
     'reactjs': {
         'source_filenames': (
-            'js/matter_search.jsx',
+            'js/react-0.10.0.min.js',
+            'js/matter_list.jsx',
         ),
         'output_filename': 'js/jsx-all-compiled.js',
     }
@@ -405,6 +421,9 @@ BLEACH_ALLOWED_TAGS = ['blockquote', 'br', 'div', 'li', 'ol', 'span', 'ul']
 BLEACH_STRIP_COMMENTS = True
 BLEACH_STRIP_TAGS = True
 
+# how long are users allowed to edit/delete their comments (in minutes)
+DELETE_COMMENTS_DURATION = 60
+EDIT_COMMENTS_DURATION = DELETE_COMMENTS_DURATION
 
 INTERCOM_APP_ID = 'wkxzfou'
 INTERCOM_APP_SECRET = 'MZCesCDxkDrYdfX8HocAB2F6V5aZzCm-DuF7lyR5'
@@ -522,6 +541,8 @@ PAYMENTS_PLANS = {
 }
 
 MATTER_EXPORT_DAYS_VALID = 3
+
+REMIND_DUE_DATE_LIMIT = 7
 
 try:
     LOCAL_SETTINGS

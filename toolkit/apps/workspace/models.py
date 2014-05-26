@@ -10,6 +10,8 @@ from toolkit.core import _managed_S3BotoStorage
 from toolkit.core.mixins import IsDeletedMixin, ApiSerializerMixin
 from toolkit.apps.matter.mixins import MatterExportMixin
 
+from dj_authy.models import AuthyModelMixin
+
 from .signals import (ensure_workspace_slug,
                       ensure_workspace_matter_code,
                       # tool
@@ -30,6 +32,7 @@ from .mixins import ClosingGroupsMixin, CategoriesMixin, RevisionLabelMixin
 
 
 class Workspace(IsDeletedMixin,
+                AuthyModelMixin,
                 MatterExportMixin,
                 ClosingGroupsMixin,
                 CategoriesMixin,

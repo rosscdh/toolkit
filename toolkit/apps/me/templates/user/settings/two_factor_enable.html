@@ -1,0 +1,31 @@
+{% extends 'modal.html' %}
+
+{% load url from future %}
+
+{% block modal_title %}Enable two-factor authentication{% endblock %}
+
+{% block content %}
+    <form method="POST" action="{% url 'me:two-factor-enable' %}" data-remote="true" parsley-validate="true">
+        {% csrf_token %}
+        <div class="modal-body">
+            {% include "partials/form-errors.html" with form=form %}
+            <p>We will send a security code to this phone whenever you sign into the LawPal website.</p>
+            {{ form.as_p }}
+        </div>
+        <div class="modal-footer">
+            <a href="#" class="btn btn-default" data-dismiss="modal">Cancel</a>
+            <input type="submit" name="submit" value="Next" class="btn btn-danger btn-wide" id="submit-id-submit">
+        </div>
+    </form>
+{% endblock %}
+
+{% block js %}
+    {{ block.super }}
+    <script type="text/javascript">
+    // <![CDATA[
+    (function($) {
+        window.Authy.UI.instance().init();
+    })(jQuery);
+    // ]]>
+    </script>
+{% endblock %}

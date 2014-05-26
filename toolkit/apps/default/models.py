@@ -103,6 +103,19 @@ class UserProfile(EmailIsValidatedMixin, models.Model):
             return ImageFile(firm_logo)
         return firm_logo
 
+    @property
+    def matters_created(self):
+        return self.data.get('matters_created', 0)
+
+    @matters_created.setter
+    def matters_created(self, value):
+        if type(value) in [int]:
+            self.data['matters_created'] = value
+
+    @property
+    def verified(self):
+        return self.data.get('validated_email', False)
+
 
 def _get_or_create_user_profile(user):
     # set the profile

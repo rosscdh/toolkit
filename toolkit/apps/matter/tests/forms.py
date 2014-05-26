@@ -29,15 +29,15 @@ class MatterFormTest(BaseScenarios, TestCase):
         form = MatterForm(instance=self.matter, user=self.lawyer)
 
         # defaults to is_new=True
-        self.assertItemsEqual(form.helper.layout.get_field_names(), [[[0], 'name'], [[1], 'client_name'], [[2], 'matter_code'], [[3, 0], 'template']])
+        self.assertItemsEqual(form.helper.layout.get_field_names(), [[[0], 'name'], [[1], 'client_name'], [[2], 'matter_code'], [[3], 'is_secure'], [[4, 0], 'template']])
 
         # manual
         form = MatterForm(instance=self.matter, user=self.lawyer, is_new=True)
-        self.assertItemsEqual(form.helper.layout.get_field_names(), [[[0], 'name'], [[1], 'client_name'], [[2], 'matter_code'], [[3, 0], 'template']])
+        self.assertItemsEqual(form.helper.layout.get_field_names(), [[[0], 'name'], [[1], 'client_name'], [[2], 'matter_code'], [[3], 'is_secure'], [[4, 0], 'template']])
 
         form = MatterForm(instance=self.matter, user=self.lawyer, is_new=False)
 
-        self.assertItemsEqual(form.helper.layout.get_field_names(), [[[0], 'name'], [[1], 'client_name'], [[2], 'matter_code']])
+        self.assertItemsEqual(form.helper.layout.get_field_names(), [[[0], 'name'], [[1], 'client_name'], [[2], 'matter_code'], [[3], 'is_secure']])
 
     def test_user_can_modify(self):
         form = MatterForm(instance=self.matter, user=self.lawyer, is_new=True)

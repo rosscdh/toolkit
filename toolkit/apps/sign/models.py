@@ -112,7 +112,7 @@ class SignDocument(IsDeletedMixin,
             # get the common reviewer
             return signers.intersection(combined).pop()
         except:
-            logger.debug('no reviewer found for ReviewDocument: %s' % self)
+            logger.error('no reviewer found for ReviewDocument: %s' % self)
             return None
 
     def download_if_not_exists(self):

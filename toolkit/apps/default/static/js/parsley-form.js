@@ -59,6 +59,12 @@
                                     success: function(data) {
                                         if (data['redirect']) {
                                             window.location.href = data['url'];
+                                        } else if (data['modal']) {
+                                            $form.closest('.modal').modal('hide');
+
+                                            $(data['target']).modal({
+                                                remote: data['url']
+                                            });
                                         };
                                     }
                                 });
