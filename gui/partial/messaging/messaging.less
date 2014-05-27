@@ -84,6 +84,8 @@
 			border-bottom-width: 3px;
 		}
 	}
+
+
 	.messaging-col {
 		overflow-y:scroll;
 		margin-top:-55px;
@@ -92,6 +94,18 @@
 	#inbox {
 		background-color:#f1f1f1;
 		padding-top:25px;
+		.inbox-header{
+			position: fixed;
+			top: 55px;
+			padding-top: 15px;
+			padding-left: 15px;
+			z-index: 30;
+			//border: 1px solid red;
+			width: 433px;
+			background-color:  #f1f1f1;
+
+
+		}
 		ul.msg-list {
 			padding:20px;
 			li {
@@ -115,7 +129,7 @@
 						color: #8D8D8D;
 						margin-bottom:0px;
 						line-height: 1.3em;
-					}					
+					}
 				}
 				.meta {
 					clear:both;
@@ -131,6 +145,10 @@
 	}
 	#message-stage {
 		position:relative;
+		height: 100%;
+		.col-lg-10{
+			height: 100%;
+		};
 		.head {
 			h3 {
 				font-weight:normal;
@@ -173,7 +191,7 @@
 				padding:18px;
 				color:#666;
 				outline: none;
-				border-top:2px solid #efefef; 
+				border-top:2px solid #efefef;
 			}
 		}
 		.convo {
