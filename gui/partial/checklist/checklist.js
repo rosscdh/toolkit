@@ -1324,7 +1324,7 @@ angular.module('toolkit-gui')
 		 * @method				showReview
 		 * @memberof			ChecklistCtrl
 		 */
-		$scope.showSigning = function( revision ) {
+		$scope.showSigning = function( revision, signer ) {
 			var item = $scope.data.selectedItem;
 
 			var modalInstance = $modal.open({
@@ -1340,6 +1340,9 @@ angular.module('toolkit-gui')
 					},
 					'revision': function () {
 						return revision;
+					},
+                    'signer': function () {
+						return signer;
 					}
 				}
 			});

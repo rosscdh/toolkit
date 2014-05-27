@@ -166,7 +166,7 @@
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="requestReview(data.selectedItem.latest_revision)">Request Review</a>
                     <a href="javascript:;" class="btn btn-link btn-xs"
                        ng-click="requestSigning(data.selectedItem.latest_revision)"
-                       ng-hide="data.selectedItem.latest_revision.signing.sign_url">Request Signing</a>
+                       ng-hide="data.selectedItem.latest_revision.signing.is_claimed==true">Request Signing</a>
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="deleteLatestRevision()">Delete</a>
 
                     <div class="btn-group pull-right">
@@ -202,7 +202,7 @@
                 </a>
                 <div class="review-members">
                     <ul class="list-unstyled">
-                        <li ng-repeat="rev in data.selectedItem.latest_revision.reviewers" ng-class="{'complete': rev.is_complete==true }" class="{'complete': rev.is_complete==true }">
+                        <li ng-repeat="rev in data.selectedItem.latest_revision.reviewers" ng-class="{'complete': rev.is_complete==true }">
                             <a class="close" href="javascript:;" ng-click="deleteRevisionReviewRequest(data.selectedItem, rev)"
                                ng-hide="rev.is_complete">x</a>
                             <a href="javascript:;" ng-click="showReview(data.selectedItem.latest_revision, rev)" class="pull-right">
@@ -221,17 +221,24 @@
                 </div>
             </div>
 
-            <div class="signing in-progress" ng-show="data.selectedItem.latest_revision.signing.sign_url">
+            <div class="signing in-progress" ng-show="data.selectedItem.latest_revision.signing.url">
                 <span>Signing in progress</span>
-                <a class="btn btn-link btn-xs pull-right" href="javascript:;" ng-click="showSigning(data.selectedItem.latest_revision)">
+                <a class="btn btn-link btn-xs pull-right" href="javascript:;" ng-click="showSigning(data.selectedItem.latest_revision, null)">
                     View
                 </a>
-                <a class="btn btn-link btn-xs pull-right" href="javascript:;">
+                <!--<a class="btn btn-link btn-xs pull-right" href="javascript:;">
                     Remind
-                </a>
+                </a>-->
                 <a class="btn btn-link btn-xs pull-right" href="javascript:;" ng-click="deleteSigningRequest(data.selectedItem.latest_revision)">
                     Delete
                 </a>
+                <div class="review-members" ng-show="data.selectedItem.latest_revision.signing.is_claimed==true">
+                    <ul class="list-unstyled">
+                        <li ng-repeat="signer in data.selectedItem.latest_revision.signing.signers">
+                            <a href="javascript:;" ng-click="showSigning(data.selectedItem.latest_revision, signer)">{{ signer.name }}</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
             <div class="sub">{{ data.selectedItem.latest_revision.slug }} &middot; {{ data.selectedItem.latest_revision.uploaded_by.name }}, {{ data.selectedItem.latest_revision.date_created | timeago }}</div>

@@ -15,8 +15,9 @@ angular.module('toolkit-gui')
 	'matter',
 	'checklistItem',
 	'revision',
+	'signer',
 	'$log',
-	function($scope, $modalInstance, toaster, baseService, matter, checklistItem, revision, $log){
+	function($scope, $modalInstance, toaster, baseService, matter, checklistItem, revision, signer, $log){
 
 		/**
 		 * Close modal window
@@ -65,6 +66,8 @@ angular.module('toolkit-gui')
 		 */
 		$scope.revision = revision;
 
+        $scope.signer = signer;
+
          /**
          * Updates the signing process
          *
@@ -79,7 +82,11 @@ angular.module('toolkit-gui')
         $scope.getSigningUrl = function(){
             if ($scope.revision.signing.is_claimed === true){
                 $log.debug('signing is claimed');
-                return $scope.revision.signing.sign_url;
+                if ($scope.signer) {
+                    return $scope.signer.sign_url;
+                } else {
+                    return $scope.revision.signing.sign_url;
+                }
             } else {
                 return $scope.revision.signing.claim_url;
             }
