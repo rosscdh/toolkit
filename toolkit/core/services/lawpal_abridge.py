@@ -26,9 +26,10 @@ class LawPalAbridgeService(object):
         if self.ABRIDGE_ENABLED:  # check if enabled
             self.service = AbridgeService(user=user)
 
-    def create_event(self, content_group, content, **kwargs):
+    def create_event(self, content, content_group, content_block='default', **kwargs):
         if self.service is not None and self.ABRIDGE_ENABLED is True:
-            self.service.create_event(content_group=content_group,
+            self.service.create_event(content_block=content_block,
+                                      content_group=content_group,
                                       content=content)
 
     @classmethod

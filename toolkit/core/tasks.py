@@ -48,7 +48,7 @@ def _activity_send(actor, target, action_object, message, **kwargs):
 
 @app.task
 def _abridge_send(verb_slug, actor, target, action_object, message=None, comment=None, item=None,
-                  reviewdocument=None, send_to_all=False):
+                  reviewdocument=None, send_to_all=False, **kwargs):
     """
     Send activity data to abridge
     """
@@ -89,7 +89,8 @@ def _abridge_send(verb_slug, actor, target, action_object, message=None, comment
 
                 message_for_abridge = LawPalAbridgeService.render_message_template(user, **message_data)
 
-                abridge_service.create_event(content_group=target.name,
+                abridge_service.create_event(content_block=kwargs.get('content_block', 'default'),
+                                             content_group=target.name,
                                              content=message_for_abridge)
 
 
