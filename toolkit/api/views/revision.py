@@ -165,6 +165,17 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def update(self, request, *args, **kwargs):
+        old_object = self.get_object()
+        response = super(ItemCurrentRevisionView, self).update(request, *args, **kwargs)
+        new_object = self.get_object()
+        if old_object is not None:
+            if old_object.status != new_object.status:
+                self.matter.actions.revision_changed_status(user=self.request.user,
+                                                            revision=new_object,
+                                                            previous_status=old_object.get_status_display())
+        return response
+
     def destroy(self, request, **kwargs):
         resp = super(ItemCurrentRevisionView, self).destroy(request=request, **kwargs)
         self.matter.actions.deleted_revision(user=self.request.user,

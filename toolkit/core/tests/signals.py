@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import json
+from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.core.cache import cache
 from django.dispatch import receiver
@@ -36,7 +38,7 @@ expected_cache_keys = {
                                     "<class 'toolkit.core.services.matter_activity.MatterActivityEventService'>",
                                     "<class 'django.dispatch.dispatcher.Signal'>",
                                     "<type 'NoneType'>",
-                                    "<class 'django.contrib.auth.models.User'>",
+                                    "<class 'django.utils.functional.SimpleLazyObject'>",
                                     "<type 'NoneType'>",
                                     "<type 'NoneType'>",
                                     u'added participant',
@@ -151,8 +153,13 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         self.assertEqual(stream_item.actor, self.lawyer)
 
     def test_item_renamed(self):
-        self.item.name = 'New Name'
-        self.item.save()
+        self.client.login(username=self.lawyer.username, password=self.password)
+        resp = self.client.patch(
+            reverse('matter_item', kwargs={'matter_slug': self.workspace.slug, 'item_slug': self.item.slug}),
+            json.dumps({'name': u'New Name'}),
+            content_type='application/json')
+        self.assertEqual(resp.status_code, 200)  # ok
+
         stream = action_object_stream(self.item)
         self.assertEqual(len(stream), 2)
         stream_item = stream[0]
@@ -164,8 +171,13 @@ class ActivitySignalTest(BaseScenarios, TestCase):
                          u'Lawyër Tëst renamed Test Item #1 to New Name')
 
     def test_item_status_changed(self):
-        self.item.status = 2
-        self.item.save()
+        self.client.login(username=self.lawyer.username, password=self.password)
+        resp = self.client.patch(
+            reverse('matter_item', kwargs={'matter_slug': self.workspace.slug, 'item_slug': self.item.slug}),
+            json.dumps({'status': 2}),
+            content_type='application/json')
+        self.assertEqual(resp.status_code, 200)  # ok
+
         stream = action_object_stream(self.item)
         self.assertEqual(len(stream), 2)
         stream_item = stream[0]

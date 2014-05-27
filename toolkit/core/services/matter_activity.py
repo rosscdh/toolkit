@@ -128,6 +128,8 @@ class MatterActivityEventService(object):
     # Matter
     #
     def created_matter(self, lawyer):
+        # is called from matters post_save with matter.lawyer in toolkit/apps/workspace/signals.py
+        # because of toolkit.api.views.matter.MatterEndpoint#pre_save this MUST be the creating lawyer
         self._create_activity(actor=lawyer, verb=u'created', action_object=self.matter)
         self.analytics.event('matter.created', user=lawyer, **{
             'firm_name': lawyer.profile.firm_name,
@@ -135,6 +137,8 @@ class MatterActivityEventService(object):
         })
 
     def deleted_matter(self, lawyer):
+        # is called from matters post_delete with matter.lawyer in toolkit/apps/workspace/signals.py
+        # because of toolkit.apps.matter.services.matter_removal.MatterRemovalService#process this MUST be the deleting user
         override_message = u'%s deleted the %s matter' % (lawyer, self.matter)
         self._create_activity(actor=lawyer, verb=u'deleted',
                               action_object=self.matter,
@@ -145,6 +149,7 @@ class MatterActivityEventService(object):
         })
 
     def added_matter_participant(self, adding_user, added_user, **kwargs):
+        # is called from toolkit/apps/matter/signals.py#PARTICIPANT_ADDED
         if adding_user.pk != added_user.pk:
             override_message = u'%s added a new member to %s' % (adding_user, self.matter)
             self._create_activity(actor=adding_user, verb=u'added participant', action_object=self.matter,
@@ -156,26 +161,32 @@ class MatterActivityEventService(object):
             })
 
     def removed_matter_participant(self, removing_user, removed_user, **kwargs):
-        override_message = u'%s removed %s as a participant of %s' % (removing_user, removed_user, self.matter)
-        self._create_activity(actor=removing_user, verb=u'removed participant', action_object=self.matter,
-                              override_message=override_message, user=removed_user)
+        # is called from toolkit/apps/matter/signals.py#PARTICIPANT_DELETED
+        if removing_user != removed_user:
+            override_message = u'%s removed %s as a participant of %s' % (removing_user, removed_user, self.matter)
+            self._create_activity(actor=removing_user, verb=u'removed participant', action_object=self.matter,
+                                  override_message=override_message, user=removed_user)
 
     def user_stopped_participating(self, user):
+        # is called from toolkit/apps/matter/signals.py#USER_STOPPED_PARTICIPATING
         override_message = u'%s stopped participating in %s' % (user, self.matter)
         self._create_activity(actor=user, verb=u'stopped participating', action_object=self.matter,
                               override_message=override_message, user=user)
 
     def started_matter_export(self, user):
+        # toolkit.apps.matter.mixins.MatterExportMixin#export_matter
         override_message = u'%s started export of %s' % (user, self.matter)
         self._create_activity(actor=user, verb=u'export started', action_object=self.matter,
                               override_message=override_message)
 
     def matter_export_finished(self, user):
+        # toolkit.apps.matter.services.matter_export.MatterExportService#conclude
         override_message = u'The export of %s for %s has been completed' % (self.matter, user)
         self._create_activity(actor=user, verb=u'export finished', action_object=self.matter,
                               override_message=override_message)
 
     def user_downloaded_exported_matter(self, user):
+        # is called from toolkit/apps/matter/signals.py#USER_DOWNLOADED_EXPORTED_MATTER
         override_message = u'%s downloaded %s' % (user, self.matter)
         self._create_activity(actor=user, verb=u'export downloaded', action_object=self.matter,
                               override_message=override_message)
@@ -185,17 +196,20 @@ class MatterActivityEventService(object):
     # Item focused events
     #
     def item_created(self, user, item):
+        # toolkit.api.views.item.MatterItemsView#post_save
         self._create_activity(actor=user, verb=u'created', action_object=item)
         self.analytics.event('item.created', user=user, **{
             'matter_pk': self.matter.pk
         })
 
     def item_rename(self, user, item, previous_name):
+        # toolkit.api.views.item.MatterItemView#update
         override_message = u'%s renamed %s to %s' % (user, previous_name, item.name)
         self._create_activity(actor=user, verb=u'renamed', action_object=item, item=item,
                               override_message=override_message, previous_name=previous_name)
 
     def item_changed_status(self, user, item, previous_status):
+        # toolkit.api.views.item.MatterItemView#update
         current_status = item.display_status
         override_message = u'%s set %s to %s' % (user, item, current_status)
         # override_message = u'%s changed the status of %s from %s to %s' % (user, item, previous_status, current_status)
@@ -204,23 +218,28 @@ class MatterActivityEventService(object):
                               previous_status=previous_status)
 
     def item_closed(self, user, item):
+        # toolkit.api.views.item.MatterItemView#update
         override_message = u'%s closed %s' % (user, item)
         self._create_activity(actor=user, verb=u'closed', action_object=item, override_message=override_message)
 
     def item_reopened(self, user, item):
+        # toolkit.api.views.item.MatterItemView#update
         override_message = u'%s reopened %s' % (user, item)
         self._create_activity(actor=user, verb=u'reopened', action_object=item, override_message=override_message)
 
     def item_deleted(self, user, item):
+        # toolkit.api.views.item.MatterItemView#update
         override_message = u'%s deleted %s' % (user, item)
         self._create_activity(actor=user, verb=u'deleted', action_object=item, override_message=override_message)
 
     def add_item_comment(self, user, item, comment):
+        # toolkit.api.views.comment.ItemCommentEndpoint#create
         override_message = u'%s commented on %s "%s"' % (user, item, comment)
         self._create_activity(actor=user, verb=u'commented', action_object=item, override_message=override_message,
                               comment=comment)
 
     def delete_item_comment(self, user, item):
+        # unused
         override_message = u'%s deleted a comment on %s' % (user, item)
         self._create_activity(actor=user, verb=u'deleted comment', action_object=item,
                               override_message=override_message)
@@ -230,6 +249,7 @@ class MatterActivityEventService(object):
     #
 
     def created_revision(self, user, item, revision):
+        # toolkit.api.views.revision.ItemCurrentRevisionView#create
         override_message = u'%s added a file to %s' % (user, item)
         self._create_activity(actor=user, verb=u'created', action_object=revision, item=item,
                               override_message=override_message, filename=revision.name,
@@ -240,12 +260,14 @@ class MatterActivityEventService(object):
         })
 
     def deleted_revision(self, user, item, revision):
+        # toolkit.api.views.revision.ItemCurrentRevisionView#destroy
         override_message = u'%s destroyed a revision for %s' % (user, item)
         self._create_activity(actor=user, verb=u'deleted', action_object=revision, item=item,
                               override_message=override_message, filename=revision.name,
                               date_created=revision.date_created)
 
     def request_user_upload_revision(self, item, adding_user, added_user):
+        # toolkit.api.views.revision_request.ItemRequestRevisionView#post_save
         override_message = u'%s requested a file from %s for %s' % (adding_user, added_user, item)
         # override_message = u'%s requested %s provide a document on %s' % (adding_user, added_user, item)
         self._create_activity(actor=adding_user, verb=u'provide a document', action_object=item,
@@ -259,12 +281,16 @@ class MatterActivityEventService(object):
         })
 
     def cancel_user_upload_revision_request(self, item, removing_user, removed_user):
+        # toolkit.api.views.item.MatterItemView#update
+        # toolkit.api.views.review.ItemRevisionReviewerView#delete
+        # toolkit.api.views.sign.ItemRevisionSignerView#delete
         override_message = u'%s canceled their request for %s to provide a document on %s' % (removing_user,
                                                                                               removed_user, item)
         self._create_activity(actor=removing_user, verb=u'canceled their request for a document', action_object=item,
                               override_message=override_message, user=removed_user)
 
     def user_uploaded_revision(self, user, item, revision):
+        # toolkit.api.views.revision.ItemCurrentRevisionView#create
         override_message = u'%s uploaded a document named %s for %s' % (user, revision.name, item)
         self._create_activity(actor=user, verb=u'uploaded a document', action_object=item,
                               override_message=override_message, revision=revision, filename=revision.name,
@@ -274,6 +300,7 @@ class MatterActivityEventService(object):
         })
 
     def add_revision_comment(self, user, revision, comment, reviewdocument):
+        # toolkit/apps/matter/signals.py:103
         override_message = u'%s annotated %s in %s' % (user, revision.slug, revision.item)
         self._create_activity(actor=user, verb=u'added revision comment', action_object=revision,
                               override_message=override_message, comment=comment, item=revision.item,
@@ -284,6 +311,7 @@ class MatterActivityEventService(object):
         })
 
     def add_review_copy_comment(self, user, revision, comment, reviewdocument):
+        # toolkit/apps/matter/signals.py:103
         override_message = u'%s annotated %s (review comment) in %s' % (user, revision.slug, revision.item)
         self._create_activity(actor=user, verb=u'added review-session comment', action_object=revision,
                               override_message=override_message, comment=comment, item=revision.item,
@@ -294,11 +322,13 @@ class MatterActivityEventService(object):
         })
 
     def delete_revision_comment(self, user, revision):
+        # toolkit/apps/matter/signals.py:103
         override_message = u'%s deleted a comment on %s' % (user, revision)
         self._create_activity(actor=user, verb=u'deleted revision comment', action_object=revision,
                               override_message=override_message, item=revision.item)
 
     def revision_changed_status(self, user, revision, previous_status):
+        # toolkit.api.views.revision.ItemCurrentRevisionView#update
         current_status = revision.display_status
         override_message = u"%s changes %s %s's status to %s" % (user, revision.item, revision.slug, current_status)
         self._create_activity(actor=user, verb=u'changed the status', action_object=revision, item=revision.item,
@@ -310,6 +340,7 @@ class MatterActivityEventService(object):
     #
 
     def invite_user_as_reviewer(self, item, inviting_user, invited_user):
+        # toolkit.api.views.review.ItemRevisionReviewersView#create
         if inviting_user.pk != invited_user:
             override_message = u'%s invited %s to review %s of %s' % (inviting_user, invited_user, item.latest_revision, item)
             self._create_activity(actor=inviting_user, verb=u'invited reviewer', action_object=item,
@@ -334,6 +365,7 @@ class MatterActivityEventService(object):
     #                           user=removed_user)
 
     def user_viewed_revision(self, item, user, revision):
+        # toolkit.api.views.review.ReviewerHasViewedRevision#update
         override_message = u'%s viewed %s (%s) of %s' % (user, revision.name, revision.slug, item)
         self._create_activity(actor=user, verb=u'viewed revision', action_object=item,
                               override_message=override_message, revision=revision, filename=revision.name,
@@ -345,6 +377,7 @@ class MatterActivityEventService(object):
         })
 
     def user_downloaded_revision(self, item, user, revision):
+        # toolkit.apps.review.views.DownloadRevision#render_to_response
         override_message = u'%s downloaded %s (%s) of %s' % (user, revision.name, revision.slug, item)
         self._create_activity(actor=user, verb=u'downloaded revision', action_object=revision,
                               override_message=override_message, item=item, filename=revision.name,
@@ -356,6 +389,7 @@ class MatterActivityEventService(object):
         })
 
     def user_revision_review_complete(self, item, user, revision):
+        # toolkit.apps.review.views.ApproveRevisionView#approve
         override_message = u'%s completed their review of %s' % (user, revision)
         self._create_activity(actor=user, verb=u'completed review', action_object=item,
                               override_message=override_message, revision=revision, filename=revision.name,
@@ -367,6 +401,7 @@ class MatterActivityEventService(object):
         })
 
     def all_revision_reviews_complete(self, item, revision):
+        # toolkit.core.item.mixins.ReviewInProgressMixin#recalculate_review_percentage_complete
         override_message = u'All of the reviews of %s have been completed' % (item,)
         self._create_activity(actor=self.matter.lawyer, verb=u'completed all reviews', action_object=item,
                               override_message=override_message, revision=revision, filename=revision.name,
@@ -381,6 +416,7 @@ class MatterActivityEventService(object):
     # Signing
     #
     def invite_user_as_signer(self, item, inviting_user, invited_user):
+        # toolkit.api.views.sign.ItemRevisionSignersView#create
         message = u'%s invited %s as signer for %s' % (inviting_user, invited_user, item)
         self._create_activity(actor=inviting_user, verb=u'invited signer', action_object=item, message=message,
                               user=invited_user)
@@ -392,6 +428,7 @@ class MatterActivityEventService(object):
         })
 
     def user_viewed_signature_request(self, item, user, revision):
+        # toolkit.api.views.sign.ItemRevisionSignerView#retrieve
         message = u'%s viewed signature request %s (%s) for %s' % (user, revision.name, revision.slug, item)
         self._create_activity(actor=user, verb=u'viewed revision', action_object=item, message=message,
                               revision=revision, filename=revision.name, version=revision.slug,

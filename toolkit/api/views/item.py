@@ -108,6 +108,37 @@ class MatterItemView(generics.UpdateAPIView,
     def get_serializer_context(self):
         return {'request': self.request}
 
+    def update(self, request, *args, **kwargs):
+        old_object = self.get_object()
+        response = super(MatterItemView, self).update(request, *args, **kwargs)
+        new_object = self.get_object()
+
+        if old_object is not None:
+            if old_object.name != new_object.name:
+                self.matter.actions.item_rename(user=self.request.user, item=new_object, previous_name=old_object.name)
+
+            if old_object.status != new_object.status:
+                self.matter.actions.item_changed_status(user=self.request.user,
+                                                        item=new_object,
+                                                        previous_status=old_object.get_status_display())
+
+            if old_object.responsible_party != new_object.responsible_party and new_object.responsible_party is None:
+            #sign-app merge# if previous_instance.is_requested != instance.is_requested and instance.is_requested is False:
+                self.matter.actions.cancel_user_upload_revision_request(item=new_object,
+                                                                        removing_user=self.request.user,
+                                                                        removed_user=old_object.responsible_party)
+
+            if old_object.is_complete != new_object.is_complete:
+                if new_object.is_complete is True:
+                    self.matter.actions.item_closed(user=self.request.user, item=new_object)
+                else:
+                    self.matter.actions.item_reopened(user=self.request.user, item=new_object)
+
+            if not old_object.is_deleted and new_object.is_deleted:
+                self.matter.actions.item_deleted(user=self.request.user, item=new_object)
+
+        return response
+
     def can_read(self, user):
         return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
 
