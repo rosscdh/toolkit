@@ -128,9 +128,15 @@
     <div class="hidden-xs">
       <ul class="nav navbar-nav" ng-show="matter.selected">
         <!-- Hide for now, just taking up space -->
-        <!-- <li id="checklist-nav" ng-class="{'active': isActive('/checklist')}">
-          <a href="#/checklist">Checklist</a>
-        </li> -->
+        <li id="checklist-nav" ng-class="{'active': isActive('/checklist')}">
+          <a href="#/checklist"> <span class="fui-list"></span></a>
+        </li>
+        <li class="">
+          <a href="#/messaging">
+            <span class="fui-chat"></span>
+            <span class="navbar-new animated">1</span>
+          </a>
+        </li>
         <!-- Hide for now - discussed 2014-03-14
         <li id="closing-nav" ng-class="{'active': isActive('/closing')}">
           <a ng-href="#/closing">Closing</a>
@@ -147,13 +153,6 @@
             </span>
           </a>
         </li>
-        <!-- Hide for now - discussed 2014-03-14
-        <li class="">
-          <a href="#fakelink">
-            <span class="fui-chat"></span>
-            <span class="navbar-new animated">1</span>
-          </a>
-        </li>-->
       </ul>
       <!-- /nav -->
       <form class="navbar-form navbar-left hidden-xs" ng-show="matter.selected" ng-controller="SearchCtrl" ng-submit="startSearch()">
@@ -202,7 +201,6 @@
     </div>
     <!--/.navbar-collapse -->
   </div>
-
   <div ui-view class="full"></div>
   <span id="landmine"></span>
   <script language="javascript" data-remove="exclude">
