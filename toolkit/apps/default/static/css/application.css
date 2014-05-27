@@ -863,6 +863,7 @@ body.gui .main-content {
   top: 18px;
   left: 12px;
   width: 85%;
+  background-color: white;
 }
 .matter .card .content {
   display: block;
