@@ -53,23 +53,28 @@
                     <div class='permissions-checklist'>
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox"> Able to Manage Colleagues, Clients, and Third Parties
+                                <input type="checkbox"> Manage participants in this matter <div class='text-muted'>(including adding a removing colleagues and clients)</div>
                             </label>
                         </div>
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox"> Able to Add, Complete and Destroy Requests for Review
+                                <input type="checkbox"> Manage Matter checklist items and categories
                             </label>
                         </div>
                          <div class="checkbox">
                             <label>
-                                <input type="checkbox"> Manage Items
+                                <input type="checkbox"> Mark checklist items as complete
                             </label>
                         </div>
 
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox"> Manage Signatures & Send Documents for Signature.
+                                <input type="checkbox"> Manage Requests
+                            </label>
+                        </div>
+                          <div class="checkbox">
+                            <label>
+                                <input type="checkbox"> Manage signing and signature requests
                             </label>
                         </div>
                     </div>
@@ -116,7 +121,28 @@
 			<div >
 				<textarea class="form-control form-control-full-width" ng-model="data.invitee.message" placeholder="Add an optional message"></textarea>
 			</div>
-			<div >
+                   <div class="checkbox">
+                            <label>
+                                <input type="checkbox">Manage Participants in this Matter <span class="text-muted">(including adding a removing colleagues and clients)</span>
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox"> Able to Add, Complete and Destroy Requests for Review
+                            </label>
+                        </div>
+                         <div class="checkbox">
+                            <label>
+                                <input type="checkbox"> Manage Items
+                            </label>
+                        </div>
+
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox"> Manage Signatures & Send Documents for Signature
+                            </label>
+                        </div>
+			<div class="text-right">
 				<button class="btn btn-success btn-wide btn-sm" ng-disabled="invalid()">Add Lawyer</button>
 			</div>
 		</form>
@@ -139,7 +165,14 @@
 			<div class="">
 				<textarea class="form-control form-control-full-width" ng-model="data.invitee.message" placeholder="Add an optional message"></textarea>
 			</div>
-			<div >
+               <div class="checkbox">
+                            <label>
+                                <input type="checkbox">Manage clients in this matter
+
+                                <span class="text-muted">(user can add additional clients to this matter and remove those that they added)</span>
+                            </label>
+                        </div>
+			<div class='text-right'>
 				<button class="btn btn-info btn-wide btn-sm" ng-disabled="invalid()">Add a Client</button>
 			</div>
 		</form>
