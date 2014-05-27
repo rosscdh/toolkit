@@ -50,4 +50,4 @@ class ReminderServiceTest(BaseScenarios, TestCase):
         message = LawPalAbridgeService.render_reminder_template(**message_data)
 
         self.assertEqual(message,
-                         u'<p>Action required</p>\n<p style="color: red">Test Item #1 is not closed yet although it\'s due date is near: 2000-01-01</p>')
+                         u'<p>Action required</p>\n<p style="color: red">Test Item #1 has not been closed, and its due date is approaching: 2000-01-01</p>')
