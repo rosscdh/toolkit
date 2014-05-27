@@ -41,6 +41,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     initials = serializers.SerializerMethodField('get_initials')
     name = serializers.SerializerMethodField('get_full_name')
     user_class = serializers.SerializerMethodField('get_user_class')
+    verified = serializers.SerializerMethodField('get_verified')
     intercom_user_hash = serializers.SerializerMethodField('get_intercom_user_hash')
 
     class Meta:
@@ -56,6 +57,9 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     def get_user_class(self, obj):
         return obj.profile.user_class
 
+    def get_verified(self, obj):
+        return obj.profile.verified
+
     def get_intercom_user_hash(self, obj):
         return _get_intercom_user_hash(user_identifier=obj.username)
 
@@ -68,7 +72,7 @@ class LiteUserSerializer(UserSerializer):
     """
     class Meta(UserSerializer.Meta):
         fields = ('url', 'username', 'name', 'initials', 'first_name', 'last_name', 'email', 'user_class',
-                  'intercom_user_hash', 'date_joined')
+                  'intercom_user_hash', 'date_joined', 'verified',)
 
 
 class SimpleUserSerializer(UserSerializer):
