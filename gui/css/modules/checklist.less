@@ -836,12 +836,12 @@ html,body, div.full
 
 
 			small.customer{
-				color: #6ebc70;
+				color: @lp-secondary;
 				background-color: transparent;
 			}
 
 			small.lawyer {
-				color: #5cc7da;
+				color: @lp-primary;
 				background-color: transparent;
 			}
 
@@ -856,7 +856,7 @@ html,body, div.full
 				border-radius: 40px;
 			}
 			.customer{
-        background-color: #6ebc70;
+        background-color: @lp-secondary;
       }
 
       .owner {
@@ -864,7 +864,7 @@ html,body, div.full
       }
 
     	.lawyer{
-    		background-color: #5cc7da;
+    		background-color: @lp-primary;
 
     	}
 
@@ -889,13 +889,15 @@ html,body, div.full
 
 			}
 
-			&:hover{
+			&:hover, &:active{
 				background-color: #6B6A6A;
 				color: white;
 				small.customer{
 				color: white;
 				background-color: transparent;
 				}
+
+
 
 				small.lawyer {
 					color: white;
