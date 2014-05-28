@@ -7,7 +7,9 @@ var DownloadExportView = React.createClass({
     render: function () {
         if ( this.props.download_url ) {
             return (
-                <a href={this.props.download_url}>Download</a>
+                <span className='download-link'>
+                    <a href={this.props.download_url}>(Download)</a>
+                </span>
             );
         } else {
             return (<span/>);
@@ -22,9 +24,9 @@ var LastExportRequestedView = React.createClass({
         var download = <DownloadExportView download_url={this.props.export_info.download_url}/>
         if (last_export_requested_by) {
             return (
-                <small>
-                    <b>Last Requested:</b> {last_export_requested}, {last_export_requested_by} {download}
-                </small>
+                    <span className="export-message">
+                    <p><b>Last Requested:</b> {last_export_requested}, {last_export_requested_by} {download}</p>
+                    </span>
             );
         } else {
             return (<span/>);
@@ -90,7 +92,7 @@ var ExportButtonInterface = React.createClass({
             return (
                 <div>
                 <button className={className} data-toggle="tooltip" data-placement="left" title="Export this Matter" onClick={this.handleClick}><span className="fui-exit"></span>
-                </button><span className="export-message"><p>{export_message}</p></span><br/>{LastExportRequested}
+                </button><span className="export-message"><p><i>{export_message}</i></p></span><br/>{LastExportRequested}
                 </div>
             );
         };
