@@ -97,6 +97,7 @@ class ClaimSignRevisionView(SignRevisionView,
         object_signature_request.save(update_fields=['data'])
         #
         # Ok we have it all, now we can send it for signing
+        # @TODO make this async using run_task
         #
         self.object.send_for_signing(signature_request_id=signature_request_id)
 
