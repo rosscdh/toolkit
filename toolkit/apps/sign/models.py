@@ -83,6 +83,10 @@ class SignDocument(IsDeletedMixin,
     def signing_request(self):
         return self.hellosign_requests().first()
 
+    @property
+    def signatures(self):
+        return self.signing_request.data.get('signature_request', {}).get('signatures', []) if self.signing_request is not None else []
+
     def __unicode__(self):
         return u'%s' % str(self.slug)
 
@@ -91,10 +95,6 @@ class SignDocument(IsDeletedMixin,
 
     def get_claim_url(self):
         return ABSOLUTE_BASE_URL(reverse('sign:claim_sign_document', kwargs={'slug': self.slug}))
-
-    @property
-    def signatures(self):
-        return self.signing_request.data.get('signature_request', {}).get('signatures', []) if self.signing_request is not None else []
 
     def get_signer_signing_url(self, signer):
         signature_id = None
@@ -140,7 +140,6 @@ class SignDocument(IsDeletedMixin,
                 percentage_complete = round(percentage_complete * 100, 0)
 
         return percentage_complete
-
 
     def complete(self, is_complete=True):
         self.is_complete = is_complete

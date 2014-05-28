@@ -120,6 +120,9 @@ class ItemRevisionSignersView(generics.ListAPIView,
             if not sign_document:
                 raise Exception('Could not get Revision.primary_signdocument')
 
+            #
+            # @TODO make this async with run_task
+            #
             sign_document.create_unclaimed_draft(requester_email_address=request.user.email)
 
             # we have the user at this point
