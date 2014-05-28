@@ -93,19 +93,18 @@
 	}
 	#inbox {
 		background-color:#f1f1f1;
-		padding-top:25px;
+		padding-top:45px;
 		.inbox-header{
-			position: fixed;
-			top: 55px;
-			//position: absolute;
-			//width: 100%;
+			// position: fixed;
+			// top: 55px;
+			position: absolute;
+			width: 100%;
 			padding-top: 15px;
 			padding-left: 15px;
 			z-index: 30;
-			//border: 1px solid red;
-			//width: 427px;
+			top: 0;
 			height: 100px;
-			width: 433px;
+			// width: 433px;
 			background-color:  #f1f1f1;
 
 			#search-query-1{
@@ -131,6 +130,9 @@
 		}
 		ul.msg-list {
 			padding:20px;
+			height: 450px;
+			border: 1px solid green;
+			overflow-y: scroll;
 			li {
 				background-color:white;
 				padding-bottom:0px;
