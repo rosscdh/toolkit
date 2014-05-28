@@ -108,7 +108,7 @@ def reset_item_review_percentage_complete(sender, instance, created, **kwargs):
         # Set the recalculate_review_percentage_complete to False
         #
         instance.item.recalculate_review_percentage_complete()
-        instance.item.item.recalculate_signing_percentage_complete()
+        instance.item.recalculate_signing_percentage_complete()
 
 
 @receiver(post_save, sender=Revision, dispatch_uid='revision.ensure_revision_reviewdocument_object')
