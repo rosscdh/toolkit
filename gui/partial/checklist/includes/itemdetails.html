@@ -222,16 +222,24 @@
             </div>
 
             <div class="signing in-progress" ng-show="data.selectedItem.latest_revision.signing.url">
-                <span>Signing in progress</span>
-                <a class="btn btn-link btn-xs pull-right" href="javascript:;" ng-click="showSigning(data.selectedItem.latest_revision, null)">
-                    View
-                </a>
-                <!--<a class="btn btn-link btn-xs pull-right" href="javascript:;">
-                    Remind
-                </a>-->
                 <a class="btn btn-link btn-xs pull-right" href="javascript:;" ng-click="deleteSigningRequest(data.selectedItem.latest_revision)">
                     Delete
                 </a>
+
+                <span ng-hide="data.selectedItem.latest_revision.signing.is_claimed">
+                    <span>Please setup the document for signing</span>
+                    <a class="btn btn-link btn-xs pull-right" href="javascript:;" ng-click="showSigning(data.selectedItem.latest_revision, null)">
+                        Setup
+                    </a>
+                </span>
+
+                <span ng-show="data.selectedItem.latest_revision.signing.is_claimed">
+                    <span>Signing in progress</span>
+                </span>
+                <!--<a class="btn btn-link btn-xs pull-right" href="javascript:;">
+                    Remind
+                </a>-->
+
                 <div class="review-members" ng-show="data.selectedItem.latest_revision.signing.is_claimed==true">
                     <ul class="list-unstyled">
                         <li ng-repeat="signer in data.selectedItem.latest_revision.signing.signers">
