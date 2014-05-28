@@ -83,8 +83,8 @@ angular.module('toolkit-gui').directive('mentionsBox', ['$compile', '$log', '$sc
 
             scope.textListener = function () {
                 var offset = elem.offset();
-                scope.data.coords.x = offset.left - jQuery(window).scrollLeft();
-                scope.data.coords.y = offset.top - jQuery(window).scrollTop() + elem.height();
+                scope.data.coords.x = offset.left; //+ jQuery(window).scrollLeft();
+                scope.data.coords.y = offset.top  + elem.height();//+ jQuery(window).scrollTop();
 
                 scope.data.cursorpos = scope.getCursorPosition();
                 scope.transmitContent();

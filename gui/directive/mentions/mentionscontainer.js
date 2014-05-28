@@ -18,7 +18,7 @@ angular.module('toolkit-gui').directive('mentionsContainer', ['$compile', '$log'
                     'x': 0,
                     'y': 0
                 },
-                'width': 250,
+                'width': 300,
                 'mentiontag': null,
                 'searchtext': null,
                 'position': 'left',
@@ -87,6 +87,12 @@ angular.module('toolkit-gui').directive('mentionsContainer', ['$compile', '$log'
 
                         if (position === 'left') {
                             $scope.data.coords.x -= $scope.data.width + 10;
+
+                            //mobile view
+                            if ($scope.data.coords.x < 0) {
+                                $scope.data.coords.x = 10;
+                                $scope.data.coords.y += 20;
+                            }
                         }
 
                         if ($scope.data.focusIndex >= $scope.data.filtered_participants.length){
