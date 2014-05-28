@@ -47,6 +47,7 @@ decorator
 
 # Hellosign integration
 -e git+https://github.com/rosscdh/django-hello_sign.git#egg=django-hello_sign
+hellosign-python-sdk
 
 boto
 django-storages
