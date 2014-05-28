@@ -87,26 +87,27 @@ class SignDocument(IsDeletedMixin,
         return u'%s' % str(self.slug)
 
     def get_absolute_url(self, signer):
-        #username_token = signing.dumps(signer.username, salt=settings.SECRET_KEY)
-        username_token = signer.username
-        return ABSOLUTE_BASE_URL(reverse('sign:sign_document', kwargs={'slug': self.slug, 'username_token': username_token}))
+        return ABSOLUTE_BASE_URL(reverse('sign:sign_document', kwargs={'slug': self.slug, 'username': signer.username}))
 
     def get_claim_url(self):
         return ABSOLUTE_BASE_URL(reverse('sign:claim_sign_document', kwargs={'slug': self.slug}))
 
     def get_signer_signing_url(self, signer):
+        signature_id = None
         signatures = self.signing_request.data.get('signature_request', {}).get('signatures', [])
         signer_email = signer.email
 
         try:
             signature_id = [s for s in signatures if s.get('signer_email_address') == signer_email][0].get('signature_id', None)
         except IndexError:
-            return None
+            logger.error('Could not find signer: %s in %s' % (signer_email, signatures))
+            
+        if signature_id is not None:
+            HS_CLIENT = HSClient(api_key=settings.HELLOSIGN_API_KEY)
+            embedded_signing_object = HS_CLIENT.get_embedded_object(signature_id)
 
-        HS_CLIENT = HSClient(api_key=settings.HELLOSIGN_API_KEY)
-        embedded_signing_object = HS_CLIENT.get_embedded_object(signature_id)
-
-        return embedded_signing_object.sign_url
+            return embedded_signing_object.sign_url
+        return None
 
     def complete(self, is_complete=True):
         self.is_complete = is_complete

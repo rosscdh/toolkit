@@ -44,14 +44,15 @@ class SignRevisionView(DetailView):
         return self.object
 
     def get_context_data(self, **kwargs):
+        signer = get_object_or_404(User, username=self.kwargs.get('username'))
+        signer_url = self.object.get_signer_signing_url(signer=signer)
+
+        if signer_url is None:
+            raise Http404('Could not get signer_url')
+
         kwargs = super(SignRevisionView, self).get_context_data(**kwargs)
-
-        #signer_username = signing.loads(self.kwargs.get('username_token'), settings.SECRET_KEY)
-        signer_username = self.kwargs.get('username_token')
-        signer = get_object_or_404(User, username=signer_username)
-
         kwargs.update({
-            'sign_url': mark_safe(self.object.get_signer_signing_url(signer=signer)),
+            'sign_url': signer_url,
             'can_sign': True #self.request.user in self.object.document.signers.all(),
         })
         return kwargs
