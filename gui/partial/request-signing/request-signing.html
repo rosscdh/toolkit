@@ -9,7 +9,7 @@
         <div ng-hide="data.showAddSigner===true">
             <strong ng-show="participants.length>0">Existing participants</strong>
             <ul class="list-unstyled">
-                <li ng-repeat="person in participants" ng-hide="person.username==currentUser.username">
+                <li ng-repeat="person in participants">
                     <label class="checkbox" ng-class="{'checked':data.selectedUsers[person.username]!=null}"
                            ng-click="toggleUser(person)">
 						<span class="icons">
@@ -17,6 +17,7 @@
 							<span class="second-icon fui-checkbox-checked"></span>
 						</span>
                         <label ng-bind="person | fullname"></label>
+                        <label ng-show="person.username==currentUser.username"> (you)</label>
                     </label>
                 </li>
                 <li>
