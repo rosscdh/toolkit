@@ -14,7 +14,7 @@
 		background-color:@peter-river;
 		margin-left:-41px;
 		float:left;
-		border-radius:100px;
+		border-radius:4px;
 		margin-top:15px;
 		color:white;
 		font-family: 'Pe-icon-7-stroke';
@@ -66,8 +66,8 @@
 
 	span.user {
 		border:1px solid;
-		border-radius:4px;
-		padding:3px 4px 2px 3px;
+		border-radius:50%;
+		padding:8px;
 		font-size:13px;
 		margin-left:5px;
 		&.client {
@@ -79,9 +79,9 @@
 			color: @lp-blue;
 		}
 		&.last {
-			margin:-6px 0px 6px 5px;
+			//margin:-6px 0px 6px 5px;
 			font-weight:bold;
-			border-bottom-width: 3px;
+			//border-bottom-width: 3px;
 		}
 	}
 
@@ -101,9 +101,13 @@
 			padding-left: 15px;
 			z-index: 30;
 			//border: 1px solid red;
-			width: 433px;
+			width: 427px;
 			height: 100px;
 			background-color:  #f1f1f1;
+
+			#search-query-1{
+				height: 38px;
+			}
 
 			.active{
 				border-bottom: 3px solid;
@@ -132,12 +136,12 @@
 				border-left:3px solid #ddd;
 				border-bottom:1px solid #ddd;
 				.message {
-					padding:6px 10px 2px 7px;
+					padding:10px 10px 2px 7px;
 					h3 {
 						font-size:18px;
-						margin:4px 0px 0px 0px;
+						margin:4px 0px 5px 0px;
 						font-weight:normal;
-						line-height: 1.4em;
+						line-height: 1.0em;
 
 					}
 					p {
@@ -149,6 +153,7 @@
 				.meta {
 					clear:both;
 					height:35px;
+					margin-top: 10px;
 					.last-active {
 						font-size:12px;
 						color:#ccc;
