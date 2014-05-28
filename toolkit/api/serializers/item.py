@@ -22,6 +22,7 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
     status = serializers.ChoiceField(required=False, choices=Item.ITEM_STATUS.get_choices())
 
     review_percentage_complete = serializers.Field(source='review_percentage_complete')
+    signing_percentage_complete = serializers.Field(source='signing_percentage_complete')
 
     responsible_party = LiteUserSerializer(required=False)
 
@@ -42,6 +43,7 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
                   'status',
                   'responsible_party',
                   'review_percentage_complete',
+                  'signing_percentage_complete',
                   'name', 'description', 'matter',
                   'parent', 'children', 'closing_group', 'category',
                   'latest_revision',

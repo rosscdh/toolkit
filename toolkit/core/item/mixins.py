@@ -124,6 +124,37 @@ class ReviewInProgressMixin(object):
             self.save(update_fields=['data'])
 
 
+class SigningInProgressMixin(object):
+    """
+    """
+    @property
+    def signing_percentage_complete(self):
+        return self.data.get('signing_percentage_complete', None)
+
+    @signing_percentage_complete.setter
+    def signing_percentage_complete(self, value):
+        if type(value) not in [type(None), int, float]:
+            raise Exception('signing_percentage_complete must be None or a float was passed a: %s' % type(value))
+
+        logger.info('Item %s signing_percentage_complete set to %s' % (self, value))
+        self.data['signing_percentage_complete'] = value
+
+    def recalculate_signing_percentage_complete(self):
+        """
+        Sets the signing_percentage_complete status to False
+        called when
+        1. a new revision document is uploaded
+        2. the signature request is deleted
+        """
+        signing_percentage_complete = self.latest_revision.primary_signdocument.percentage_complete()
+
+        if signing_percentage_complete:
+            self.signing_percentage_complete = signing_percentage_complete
+
+            logger.info('Item %s signing_percentage_complete set to %s' % (self, signing_percentage_complete))
+            self.save(update_fields=['data'])
+
+
 class RequestedDocumentReminderEmailsMixin(object):
     def send_document_requested_emails(self, from_user, subject=None, **kwargs):
         #

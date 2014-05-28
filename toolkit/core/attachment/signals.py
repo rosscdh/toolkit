@@ -108,6 +108,7 @@ def reset_item_review_percentage_complete(sender, instance, created, **kwargs):
         # Set the recalculate_review_percentage_complete to False
         #
         instance.item.recalculate_review_percentage_complete()
+        instance.item.item.recalculate_signing_percentage_complete()
 
 
 @receiver(post_save, sender=Revision, dispatch_uid='revision.ensure_revision_reviewdocument_object')
@@ -169,6 +170,7 @@ def reset_item_review_percentage_complete_on_delete(sender, instance, **kwargs):
         item.latest_revision = None  # @BUSINESRULE very important for soft delete, as we no longer can rely on the model field on_delete auto set to null
         item.save(update_fields=['latest_revision'])
         item.recalculate_review_percentage_complete()
+        item.recalculate_signing_percentage_complete()
 
 
 @receiver(post_delete, sender=Revision, dispatch_uid='revision.set_previous_revision_is_current_on_delete')

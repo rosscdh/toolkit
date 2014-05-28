@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.dispatch import receiver
 from django.contrib.auth.models import User
-from django.db.models.signals import m2m_changed, post_save
+from django.db.models.signals import m2m_changed, post_save, post_delete
 
 from hello_sign.signals import hellosign_webhook_event_recieved
 
@@ -55,6 +55,18 @@ def ensure_matter_participants_are_in_signdocument_participants(sender, instance
     for pk in instance.auth.keys():
         if int(pk) not in authorised_user_pks:
             _remove_as_authorised(instance=instance, pk_set=[pk])
+
+
+@receiver(post_save, sender=SignDocument, dispatch_uid='sign.post_save.reset_recalculate_signing_percentage_complete')
+def reset_item_review_percentage_complete_on_complete(sender, instance, created, update_fields, **kwargs):
+    item = instance.document.item
+    item.recalculate_signing_percentage_complete()
+
+
+@receiver(post_delete, sender=SignDocument, dispatch_uid='sign.pre_delete.reset_recalculate_signing_percentage_complete')
+def reset_item_review_percentage_complete_on_delete(sender, instance, **kwargs):
+    item = instance.document.item
+    item.recalculate_signing_percentage_complete()
 
 
 """

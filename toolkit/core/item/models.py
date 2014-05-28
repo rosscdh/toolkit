@@ -17,6 +17,7 @@ from toolkit.utils import get_namedtuple_choices
 from .managers import ItemManager
 from .mixins import (RequestDocumentUploadMixin,
                      ReviewInProgressMixin,
+                     SigningInProgressMixin,
                      RequestedDocumentReminderEmailsMixin,
                      RevisionReviewReminderEmailsMixin,
                      RevisionSignReminderEmailsMixin)
@@ -36,6 +37,7 @@ class Item(IsDeletedMixin,
            ApiSerializerMixin,
            RequestDocumentUploadMixin,
            ReviewInProgressMixin,
+           SigningInProgressMixin,
            RequestedDocumentReminderEmailsMixin,
            RevisionReviewReminderEmailsMixin,
            RevisionSignReminderEmailsMixin,

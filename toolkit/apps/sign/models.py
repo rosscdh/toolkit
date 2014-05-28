@@ -94,7 +94,7 @@ class SignDocument(IsDeletedMixin,
 
     @property
     def signatures(self):
-        return self.signing_request.data.get('signature_request', {}).get('signatures', [])
+        return self.signing_request.data.get('signature_request', {}).get('signatures', []) if self.signing_request is not None else []
 
     def get_signer_signing_url(self, signer):
         signature_id = None
