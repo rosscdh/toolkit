@@ -70,6 +70,7 @@
 		padding:6px 5px;
 		font-size:11px;
 		margin-left:5px;
+
 		&.client {
 			border-color: lighten(@lp-secondary, 10%);
 			color: @lp-secondary;
@@ -181,13 +182,20 @@
 	#message-stage {
 		position:relative;
 		height: 100%;
-		.col-lg-10{
+		.col-lg-12{
 			height: 100%;
+			//width: 90%;
+			//margin: 0 auto;
 		};
+		.users-head {
+			float: right;
+		}
 		.head {
+
 			h3 {
-				font-weight:normal;
+				font-weight:bold;
 				font-size:20px;
+				padding-top: 5px;
 				color:#444;
 				margin-top:4px;
 			}
@@ -215,7 +223,7 @@
 		.compose {
 			position:absolute;
 			bottom:0;
-			height:200px;
+			height:180px;
 			width:100%;
 			.compose-message {
 				background-color: transparent;
@@ -232,7 +240,7 @@
 		}
 		.convo {
 			top:80px;
-			bottom:140px;
+			bottom:180px;
 			width:100%;
 			padding:18px;
 			position:absolute;
@@ -241,6 +249,11 @@
 			ul.convo-stream {
 				padding-top:20px;
 			}
+			ul.list-unstyled{
+				li {
+				padding: 1vh 3vh;
+				}
+			};
 			span.user {
 				margin-left:0px;
 				font-size:17px;
@@ -253,6 +266,13 @@
 				padding-bottom:14px;
 				font-weight: bold;
 				padding-top:5px;
+				border-bottom: 1px solid #efefef;
+				margin-bottom: 5px;
+
+				.text-muted {
+					padding-left: 10px;
+					font-weight: normal;
+				};
 			}
 
 		}
