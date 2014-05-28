@@ -5,7 +5,10 @@ from django.db.models.signals import m2m_changed, post_save, post_delete
 
 from hello_sign.signals import hellosign_webhook_event_recieved
 
+from toolkit.tasks import run_task
+
 from .models import SignDocument
+from .tasks import _download_signing_complete_document
 
 import logging
 logger = logging.getLogger('django.request')
@@ -23,6 +26,11 @@ def _remove_as_authorised(instance, pk_set):
         user = User.objects.filter(pk__in=pk_set).first()
         instance.deauthorise_user_access(user=user)
         instance.save(update_fields=['data'])
+
+
+def _update_signature_request(hellosign_request, data):
+    hellosign_request.data['signature_request'].update(data['signature_request'])
+    hellosign_request.save(update_fields=['data']) # save it # possible race condition here
 
 """
 When new SignDocument are created automatically the matter.participants are
@@ -114,12 +122,14 @@ def on_hellosign_webhook_event_recieved(sender, hellosign_log,
 
         if hellosign_log.event_type == 'signature_request_all_signed':
             logging.info('Recieved signature_request_all_signed from HelloSign, downloading file for attachment as final')
-            hellosign_request.data['signature_request'].update(data['signature_request'])
-            hellosign_request.save(update_fields=['data']) # save it # possible race condition here
+            _update_signature_request(hellosign_request=hellosign_request, data=data)
+            #
+            # Download the file and update the item.latest_revision
+            #
+            run_task(_download_signing_complete_document, hellosign_request=hellosign_request, data=data)
 
         if hellosign_log.event_type == 'signature_request_signed':
             logging.info('Recieved signature_request_signed from HelloSign, sending event notice')
             # update the signature_request data with our newly provided data
-            hellosign_request.data['signature_request'].update(data['signature_request'])
-            hellosign_request.save(update_fields=['data']) # save it # possible race condition here
+            _update_signature_request(hellosign_request=hellosign_request, data=data)
 
