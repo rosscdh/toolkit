@@ -203,13 +203,13 @@ class MatterActivityEventService(object):
         })
 
     def item_rename(self, user, item, previous_name):
-        # toolkit.api.views.item.MatterItemView#update
+        # toolkit.api.views.item.MatterItemView#pre_save
         override_message = u'%s renamed %s to %s' % (user, previous_name, item.name)
         self._create_activity(actor=user, verb=u'renamed', action_object=item, item=item,
                               override_message=override_message, previous_name=previous_name)
 
     def item_changed_status(self, user, item, previous_status):
-        # toolkit.api.views.item.MatterItemView#update
+        # toolkit.api.views.item.MatterItemView#pre_save
         current_status = item.display_status
         override_message = u'%s set %s to %s' % (user, item, current_status)
         # override_message = u'%s changed the status of %s from %s to %s' % (user, item, previous_status, current_status)
@@ -218,17 +218,17 @@ class MatterActivityEventService(object):
                               previous_status=previous_status)
 
     def item_closed(self, user, item):
-        # toolkit.api.views.item.MatterItemView#update
+        # toolkit.api.views.item.MatterItemView#pre_save
         override_message = u'%s closed %s' % (user, item)
         self._create_activity(actor=user, verb=u'closed', action_object=item, override_message=override_message)
 
     def item_reopened(self, user, item):
-        # toolkit.api.views.item.MatterItemView#update
+        # toolkit.api.views.item.MatterItemView#pre_save
         override_message = u'%s reopened %s' % (user, item)
         self._create_activity(actor=user, verb=u'reopened', action_object=item, override_message=override_message)
 
     def item_deleted(self, user, item):
-        # toolkit.api.views.item.MatterItemView#update
+        # toolkit.api.views.item.MatterItemView#pre_save
         override_message = u'%s deleted %s' % (user, item)
         self._create_activity(actor=user, verb=u'deleted', action_object=item, override_message=override_message)
 
@@ -281,7 +281,7 @@ class MatterActivityEventService(object):
         })
 
     def cancel_user_upload_revision_request(self, item, removing_user, removed_user):
-        # toolkit.api.views.item.MatterItemView#update
+        # toolkit.api.views.item.MatterItemView#pre_save
         # toolkit.api.views.review.ItemRevisionReviewerView#delete
         # toolkit.api.views.sign.ItemRevisionSignerView#delete
         override_message = u'%s canceled their request for %s to provide a document on %s' % (removing_user,
@@ -328,7 +328,7 @@ class MatterActivityEventService(object):
                               override_message=override_message, item=revision.item)
 
     def revision_changed_status(self, user, revision, previous_status):
-        # toolkit.api.views.revision.ItemCurrentRevisionView#update
+        # never used
         current_status = revision.display_status
         override_message = u"%s changes %s %s's status to %s" % (user, revision.item, revision.slug, current_status)
         self._create_activity(actor=user, verb=u'changed the status', action_object=revision, item=revision.item,
