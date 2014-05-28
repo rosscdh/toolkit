@@ -53,7 +53,7 @@ class SignRevisionView(DetailView):
         kwargs = super(SignRevisionView, self).get_context_data(**kwargs)
         kwargs.update({
             'sign_url': signer_url,
-            'can_sign': True #self.request.user in self.object.document.signers.all(),
+            'can_sign': self.request.user in self.object.document.signers.all(),
         })
         return kwargs
 

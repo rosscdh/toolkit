@@ -1,26 +1,51 @@
-{% if can_sign %}
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <script src="//s3.amazonaws.com/cdn.hellofax.com/js/embedded.js"></script>
-    <script type="text/javascript">
-    $(document).ready(function () {
-        'use strict';
-        HelloSign.init('{{ GLOBALS.HELLOSIGN_CLIENT_ID }}');
-        HelloSign.open({
-            url: '{{ sign_url }}',
-            allowCancel: false,
-            {% if DEBUG %}
-            debug: true,
-            skipDomainVerification: true,
-            {% endif %}
-            messageListener: function(eventData) {          // (optional) Called whenever the iFrame is messaging your page
-                if (eventData.event == HelloSign.EVENT_SIGNED) {
-                    document.location.reload();
-                };
-            }
+{% extends 'base-slim.html' %}
+
+{% block page_title %}Please sign this document{% endblock %}
+
+{% block body %}
+    {% if can_sign %}
+        <div id="user-message" class="page-header">
+          <h3>Please sign this document<br/><small>The document is ready for signing, please read it through and sign when ready.</small></h3>
+          <!-- <a href="javascript:;" onClick="openHelloSign();">Open</a> -->
+        </div>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="//s3.amazonaws.com/cdn.hellofax.com/js/embedded.js"></script>
+        <script type="text/javascript">
+        $(document).ready(function () {
+            'use strict';
+
+            function openHelloSign() {
+                HelloSign.open({
+                    url: '{{ sign_url }}',
+                    allowCancel: false,
+                    {% if DEBUG %}
+                    debug: true,
+                    skipDomainVerification: true,
+                    {% endif %}
+                    messageListener: function(eventData) {          // (optional) Called whenever the iFrame is messaging your page
+                        if (eventData.event == HelloSign.EVENT_ERROR) {
+                            var message_html = '<h3>Sorry, an error ocurred...<br/><small>We have recorded the event and or dev team will investigate.</small></h3>';
+                            $('#user-message').html(message_html);
+                        }
+
+                        if (eventData.event == HelloSign.EVENT_SIGNED) {
+                            // close this window and move right on
+                            var message_html = '<h3>Thanks for signing<br/><small>We wil notify all those involved.</small></h3>';
+                            $('#user-message').html(message_html);
+                        };
+                    }
+                });
+            };
+
+            HelloSign.init('{{ GLOBALS.HELLOSIGN_CLIENT_ID }}');
+            openHelloSign();
+
         });
-    });
-    </script>
-{% else %}
-<p>Sorry, you can not sign this document.</p>
-<p>You need to be one of the invited signers.</p>
-{% endif %}
+        </script>
+    {% else %}
+        <div id="user-message" class="page-header">
+          <h3>Sorry, you can not sign this document<br/><small>You need to be one of the invited signers.</small></h3>
+          <!-- <a href="javascript:;" onClick="openHelloSign();">Open</a> -->
+        </div>
+    {% endif %}
+{% endblock %}

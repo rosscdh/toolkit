@@ -77,6 +77,8 @@ class ItemRevisionSignersView(generics.ListAPIView,
 
         else:
 
+            self.revision.signers.clear() # remove existing signers
+
             for signer in signers:
 
                 first_name = signer.get('first_name')

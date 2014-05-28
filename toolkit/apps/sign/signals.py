@@ -101,7 +101,13 @@ def on_hellosign_webhook_event_recieved(sender, hellosign_log,
         logging.info('Recieved event: %s for request: %s' % (event_type, hellosign_request,))
 
         if hellosign_log.event_type == 'signature_request_all_signed':
-            logging.info('Recieved signature_request_all_signed from HelloSign')
+            logging.info('Recieved signature_request_all_signed from HelloSign, downloading file for attachment as final')
+            hellosign_request.data['signature_request'] = data
+            hellosign_request.save(update_fields=['data']) # save it # possible race condition here
 
-        elif hellosign_log.event_type == 'signature_request_signed':
-            logging.info('Recieved signature_request_signed from HelloSign')
+        if hellosign_log.event_type == 'signature_request_signed':
+            logging.info('Recieved signature_request_signed from HelloSign, sending event notice')
+            # update the signature_request data with our newly provided data
+            hellosign_request.data['signature_request'] = data
+            hellosign_request.save(update_fields=['data']) # save it # possible race condition here
+

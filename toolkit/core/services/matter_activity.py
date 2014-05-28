@@ -401,3 +401,9 @@ class MatterActivityEventService(object):
             'matter_pk': self.matter.pk,
             'revision_pk': revision.pk
         })
+
+    def user_has_signed(self, item, user, revision):
+        pass
+
+    def all_users_have_signed(self, item, user, revision):
+        pass
