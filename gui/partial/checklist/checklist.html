@@ -158,12 +158,13 @@
 					</div>
 					<div class="convo">
 						<ul class="list-unstyled">
-							<li class="experiment">
+							<li class="one-message">
 
 
 							 	<div class="author">
 									<span class="user coleg">AH</span> Alex Halliday <span class="text-muted">3 hours ago</span><br />
 								</div>
+								<div class="message-body">
 								Hi Yael,
 								<br />
 								Note sure where to discuss this on the platform, so…
@@ -186,10 +187,14 @@
 								<br /><br />
 								Thanks,
 								Adam
+							</div>
+							</li>
 
+							<li class="one-message">
 									<div class="author">
-									<span class="user coleg">YN</span> Ykat Novikova<span class="text-muted">3 hours ago</span><br />
-								</div>
+									<span class="user coleg">YN</span> Ykat Novikova<span class="text-muted">4 hours ago</span><br />
+									</div>
+								<div class="message-body">
 								Hi Yael,
 								<br />
 								Note sure where to discuss this on the platform, so…
@@ -212,6 +217,7 @@
 								<br /><br />
 								Thanks,
 								Adam
+							</div>
 
 
 							</li>
@@ -262,7 +268,7 @@ function stickyTitles(stickies) {
 					      prevSticky = stickies.eq(i-1),
 					      pos = jQuery.data(thisSticky[0], 'pos');
 
-				    if (pos <= ($('.convo').scrollTop() + 100 )) {
+				    if (pos <= ($('.convo').scrollTop() + 115 )) {
 
 					      thisSticky.addClass("fixed");
 
