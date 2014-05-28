@@ -202,7 +202,7 @@ var EditMatterInterface = React.createClass({
 
         } else {
 
-            return '';
+            return (<span/>);
         }
     }
 });
