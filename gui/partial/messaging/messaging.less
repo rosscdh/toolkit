@@ -189,6 +189,7 @@
 		};
 		.users-head {
 			float: right;
+			margin-right: 20px;
 		}
 		.head {
 
@@ -197,6 +198,7 @@
 				font-size:20px;
 				padding-top: 5px;
 				color:#444;
+				text-align: right;
 				margin-top:4px;
 			}
 			span.user {
@@ -214,7 +216,7 @@
 				margin-right:5px;
 			}
 			position:absolute;
-			top:22px;
+			top:10px;
 			padding-left:17px;
 			height:50px;
 			width:100%;
@@ -223,7 +225,7 @@
 		.compose {
 			position:absolute;
 			bottom:0;
-			height:180px;
+			height:130px;
 			width:100%;
 			.compose-message {
 				background-color: transparent;
@@ -239,13 +241,13 @@
 			}
 		}
 		.convo {
-			top:80px;
-			bottom:180px;
+			top:60px;
+			bottom:130px;
 			width:100%;
 			padding:18px;
 			position:absolute;
 			overflow-y:scroll;
-			padding-top:0px;
+			padding: 0 3vh;
 			ul.convo-stream {
 				padding-top:20px;
 			}
@@ -262,19 +264,58 @@
 				padding:5px 5px 5px 5px;
 				margin-right:3px;
 			}
-			div.author {
+			.author {
 				padding-bottom:14px;
 				font-weight: bold;
-				padding-top:5px;
 				border-bottom: 1px solid #efefef;
 				margin-bottom: 5px;
+				position: relative;
+				z-index: 1;
+				padding-top: 15px;
+				background-color: white;
 
 				.text-muted {
-					padding-left: 10px;
+					padding-right: 10px;
 					font-weight: normal;
+					text-align: right;
+					float: right;
 				};
 			}
+
+			.fixed {
+      position: fixed;
+      top: 115px;
+      width: 100%;
+      z-index: 13;
+    }
+
+    	.absolute {
+      position: absolute;
+    }
 
 		}
 	}
 }
+
+.followWrap {
+	border: 1px solid red;
+}
+
+  .followMeBar {
+      background: #222;
+      border-bottom: solid 1px #111;
+      border-top: solid 1px #444;
+      padding: 1%;
+      position: relative;
+      z-index: 10;
+    }
+
+
+
+
+
+
+#djDebug, #djDebugToolbarHandle, #djShowToolBarButton{
+	display: none !important;
+}
+
