@@ -7,7 +7,9 @@ var DownloadExportView = React.createClass({displayName: 'DownloadExportView',
     render: function () {
         if ( this.props.download_url ) {
             return (
-                React.DOM.a( {href:this.props.download_url}, "Download")
+                React.DOM.span( {className:"download-link"}, 
+                    React.DOM.a( {href:this.props.download_url}, "(Download)")
+                )
             );
         } else {
             return (React.DOM.span(null));
@@ -22,9 +24,9 @@ var LastExportRequestedView = React.createClass({displayName: 'LastExportRequest
         var download = DownloadExportView( {download_url:this.props.export_info.download_url})
         if (last_export_requested_by) {
             return (
-                React.DOM.small(null, 
-                    React.DOM.b(null, "Last Requested:"), " ", last_export_requested,", ", last_export_requested_by, " ", download
-                )
+                    React.DOM.span( {className:"export-message"}, 
+                    React.DOM.p(null, React.DOM.b(null, "Last Requested:"), " ", last_export_requested,", ", last_export_requested_by, " ", download)
+                    )
             );
         } else {
             return (React.DOM.span(null));
@@ -90,7 +92,7 @@ var ExportButtonInterface = React.createClass({displayName: 'ExportButtonInterfa
             return (
                 React.DOM.div(null, 
                 React.DOM.button( {className:className, 'data-toggle':"tooltip", 'data-placement':"left", title:"Export this Matter", onClick:this.handleClick}, React.DOM.span( {className:"fui-exit"})
-                ),React.DOM.span( {className:"export-message"}, React.DOM.p(null, export_message)),React.DOM.br(null),LastExportRequested
+                ),React.DOM.span( {className:"export-message"}, React.DOM.p(null, React.DOM.i(null, export_message))),React.DOM.br(null),LastExportRequested
                 )
             );
         };
