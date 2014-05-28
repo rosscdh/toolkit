@@ -92,9 +92,13 @@ class SignDocument(IsDeletedMixin,
     def get_claim_url(self):
         return ABSOLUTE_BASE_URL(reverse('sign:claim_sign_document', kwargs={'slug': self.slug}))
 
+    @property
+    def signatures(self):
+        return self.signing_request.data.get('signature_request', {}).get('signatures', [])
+
     def get_signer_signing_url(self, signer):
         signature_id = None
-        signatures = self.signing_request.data.get('signature_request', {}).get('signatures', [])
+        signatures = self.signatures
         signer_email = signer.email
 
         try:
@@ -108,6 +112,35 @@ class SignDocument(IsDeletedMixin,
 
             return embedded_signing_object.sign_url
         return None
+
+    def has_signed(self, signer):
+        signer_email = signer.email
+        #import pdb;pdb.set_trace()
+        return len([s for s in self.signatures if s.get('signer_email_address') == signer_email and s.get('signed_at') is not None]) == 1
+
+    def signed_at(self, signer):
+        signer_email = signer.email
+        signed_at = None
+        try:
+            signed_at = [s for s in self.signatures if s.get('signer_email_address') == signer_email and s.get('signed_at') is not None][0].get('signed_at')
+            signed_at = datetime.datetime.fromtimestamp(int(signed_at))
+        except IndexError:
+            pass
+        return signed_at
+
+    def percentage_complete(self):
+        num_signatures = len(self.signatures)
+        percentage_complete = 0
+
+        if num_signatures > 0:
+            num_complete = len([signature for signature in self.signatures if signature.get('signed_at', None) is not None])
+
+            if num_complete > 0:
+                percentage_complete = float(num_complete) / float(num_signatures)
+                percentage_complete = round(percentage_complete * 100, 0)
+
+        return percentage_complete
+
 
     def complete(self, is_complete=True):
         self.is_complete = is_complete
