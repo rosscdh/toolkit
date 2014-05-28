@@ -15,7 +15,7 @@
 		margin-left:-41px;
 		float:left;
 		border-radius:4px;
-		margin-top:15px;
+		margin-top:20px;
 		color:white;
 		font-family: 'Pe-icon-7-stroke';
 		speak: none;
@@ -67,8 +67,8 @@
 	span.user {
 		border:1px solid;
 		border-radius:50%;
-		padding:6px;
-		font-size:13px;
+		padding:6px 5px;
+		font-size:11px;
 		margin-left:5px;
 		&.client {
 			border-color: lighten(@lp-secondary, 10%);
@@ -94,6 +94,7 @@
 	#inbox {
 		background-color:#f1f1f1;
 		padding-top:45px;
+		padding-bottom: 0px;
 		.inbox-header{
 			// position: fixed;
 			// top: 55px;
@@ -126,12 +127,13 @@
 
 		.inbox-msgs{
 			margin-top: 50px;
+			padding-bottom: 0px;
+
 
 		}
 		ul.msg-list {
-			padding:20px;
-			height: 450px;
-			border: 1px solid green;
+			padding: 0 20px;
+			height: 470px;
 			overflow-y: scroll;
 			li {
 				background-color:white;
@@ -144,8 +146,8 @@
 				.message {
 					padding:10px 10px 2px 7px;
 					h3 {
-						font-size:18px;
-						margin:4px 0px 5px 0px;
+						font-size:16px;
+						margin:10px 0px 5px 0px;
 						font-weight:normal;
 						line-height: 1.0em;
 
@@ -153,17 +155,24 @@
 					p {
 						color: #8D8D8D;
 						margin-bottom:0px;
+						font-size: 13px;
 						line-height: 1.3em;
 					}
 				}
 				.meta {
 					clear:both;
 					height:35px;
+					position: relative;
 					margin-top: 10px;
 					.last-active {
 						font-size:12px;
 						color:#ccc;
 					}
+					.user-meta {
+							position: absolute;
+							bottom: 10px;
+							right: 0px;
+						}
 				}
 
 			}
