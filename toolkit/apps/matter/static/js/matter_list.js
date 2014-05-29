@@ -7,7 +7,9 @@ var DownloadExportView = React.createClass({displayName: 'DownloadExportView',
     render: function () {
         if ( this.props.download_url ) {
             return (
-                React.DOM.a( {href:this.props.download_url}, "Download")
+                React.DOM.span( {className:"download-link"}, 
+                    React.DOM.a( {href:this.props.download_url}, "(Download)")
+                )
             );
         } else {
             return (React.DOM.span(null));
@@ -22,30 +24,15 @@ var LastExportRequestedView = React.createClass({displayName: 'LastExportRequest
         var download = DownloadExportView( {download_url:this.props.export_info.download_url})
         if (last_export_requested_by) {
             return (
-                React.DOM.small(null, 
-                    React.DOM.b(null, "Last Requested:"), " ", last_export_requested,", ", last_export_requested_by, " ", download
-                )
+                    React.DOM.span( {className:"export-message"}, 
+                    React.DOM.p(null, React.DOM.b(null, "Last Requested:"), " ", last_export_requested,", ", last_export_requested_by, " ", download)
+                    )
             );
         } else {
             return (React.DOM.span(null));
         }
     }
 });
-// var LastExportedView = React.createClass({
-//     render: function () {
-//         var last_exported = moment(this.props.export_info.last_exported).from(moment.utc());
-//         var last_exported_by = this.props.export_info.last_exported_by
-//         if (last_exported_by) {
-//             return (
-//                 <small>
-//                     <b>Last Exported:</b> {last_exported}, {last_exported_by}
-//                 </small>
-//             )
-//         } else {
-//             return (<span/>);
-//         }
-//     }
-// });
 
 var ExportButtonInterface = React.createClass({displayName: 'ExportButtonInterface',
     getInitialState: function() {
@@ -93,7 +80,7 @@ var ExportButtonInterface = React.createClass({displayName: 'ExportButtonInterfa
         });
     },
     render: function() {
-        if (this.props.is_matter_owner === false) {
+        if (this.props.is_matter_lawyer_participant === false) {
             // is not the owner (matter.lawyer)
             return (React.DOM.div( {className:"btn btn-sm btn-link"} ));
         }else{
@@ -105,7 +92,7 @@ var ExportButtonInterface = React.createClass({displayName: 'ExportButtonInterfa
             return (
                 React.DOM.div(null, 
                 React.DOM.button( {className:className, 'data-toggle':"tooltip", 'data-placement':"left", title:"Export this Matter", onClick:this.handleClick}, React.DOM.span( {className:"fui-exit"})
-                ),React.DOM.span( {className:"export-message"}, React.DOM.p(null, export_message)),React.DOM.br(null),LastExportRequested
+                ),React.DOM.span( {className:"export-message"}, React.DOM.p(null, React.DOM.i(null, export_message))),React.DOM.br(null),LastExportRequested
                 )
             );
         };
@@ -115,7 +102,7 @@ var ExportButtonInterface = React.createClass({displayName: 'ExportButtonInterfa
 var MatterItem = React.createClass({displayName: 'MatterItem',
   render: function() {
 
-    var ExportButton = ExportButtonInterface( {is_matter_owner:this.props.is_matter_owner, matter_slug:this.props.key, export_info:this.props.export_info} )
+    var ExportButton = ExportButtonInterface( {is_matter_lawyer_participant:this.props.is_matter_lawyer_participant, matter_slug:this.props.key, export_info:this.props.export_info} )
 
     return (
             React.DOM.article( {className:"col-md-4 matter"}, 
@@ -215,7 +202,7 @@ var EditMatterInterface = React.createClass({displayName: 'EditMatterInterface',
 
         } else {
 
-            return '';
+            return (React.DOM.span(null));
         }
     }
 });
@@ -284,13 +271,13 @@ var MatterList = React.createClass({displayName: 'MatterList',
                                                                   date_modified:matter.date_modified} )
                 var editMatterInterface = EditMatterInterface( {key:matter.slug, can_edit:UserData.can_edit, edit_url:editUrl} )
 
-                var is_matter_owner = matter.lawyer.username == UserData.username
+                var is_matter_lawyer_participant = UserData.is_lawyer;
 
                 return MatterItem(
                         {key:matter.slug,
                         name:matter.name,
                         is_lawyer:UserData.is_lawyer,
-                        is_matter_owner:is_matter_owner,
+                        is_matter_lawyer_participant:is_matter_lawyer_participant,
                         lawyer_or_client_name:lawyer_or_client_name,
 
                         participantList:participantList,

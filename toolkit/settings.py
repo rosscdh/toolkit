@@ -53,8 +53,8 @@ STATICFILES_DIRS = (
     ("ng", os.path.join(SITE_ROOT, 'gui', 'dist')),
 )
 
-#STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
-STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
+STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+#STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 
 MEDIA_ROOT = os.path.join(SITE_ROOT, 'media')
 MEDIA_URL = '/m/'
@@ -326,7 +326,7 @@ PIPELINE_CSS = {
 PIPELINE_JS = {
     'reactjs': {
         'source_filenames': (
-            'js/react-0.10.0.min.js',
+            'js/react-0.10.0.js',
             'js/matter_list.jsx',
         ),
         'output_filename': 'js/jsx-all-compiled.js',
@@ -543,6 +543,8 @@ PAYMENTS_PLANS = {
 }
 
 MATTER_EXPORT_DAYS_VALID = 3
+
+REMIND_DUE_DATE_LIMIT = 7
 
 try:
     LOCAL_SETTINGS
