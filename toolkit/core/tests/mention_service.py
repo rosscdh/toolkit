@@ -58,8 +58,8 @@ class MentionsServiceTest(BaseScenarios, TestCase):
         self.assertEqual(email_a.subject, u'Lawyër Tëst mentioned you in a comment')
         self.assertEqual(email_b.subject, u'Lawyër Tëst mentioned you in a comment')
 
-        self.assertEqual(email_a.recipients(), [u'test+customer@lawpal.com'])
-        self.assertEqual(email_b.recipients(), [u'test+lawyer@lawpal.com'])
+        # handle ordering items issue in postgres vs sqlite
+        self.assertItemsEqual(email_a.recipients() + email_b.recipients(), [u'test+customer@lawpal.com', u'test+lawyer@lawpal.com'])
 
         self.assertTrue(u'<blockquotes>@test-customer I thought I saw you and @test-lawyer buying pineapples at the flea-market the other day?</blockquotes>' in email_a.body)
         self.assertTrue(u'<blockquotes>@test-customer I thought I saw you and @test-lawyer buying pineapples at the flea-market the other day?</blockquotes>' in email_b.body)
