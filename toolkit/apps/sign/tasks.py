@@ -59,4 +59,9 @@ def _download_signing_complete_document(hellosign_request, **kwargs):
             document_revision.is_executed = True
             document_revision.save(update_fields=['executed_file', 'is_executed', 'data'])
 
+            # set the item to complete
+            item = document_revision.item
+            item.is_complete = True
+            item.save(update_fields=['is_complete'])
+
             logger.info('Executed: %s on %s' % (document_revision, date_executed))
