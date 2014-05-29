@@ -114,6 +114,7 @@ angular.module('toolkit-gui').directive('activity', ['$compile', '$log', '$sce',
                  */
                 $scope.editCommentIsEnabled = function () {
                     if ($scope.ngModel.type === "item-comment" && $scope.itemSlug) {
+
                         var timediff = moment().diff(moment($scope.ngModel.timestamp),'minutes');
 
                         //you can only delete your own comments if there are not older than 60minutes
@@ -126,7 +127,6 @@ angular.module('toolkit-gui').directive('activity', ['$compile', '$log', '$sce',
                 };
             }],
         templateUrl: '/static/ng/directive/activity/event.html',
-
         link: function (scope, element, attrs) {
             var eventhtml = jQuery(scope.ngModel.event);
 
