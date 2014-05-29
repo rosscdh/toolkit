@@ -9,7 +9,7 @@
             <a href="javascript:;" ng-click="startEditingComment()" ng-show="editCommentIsEnabled()" class="edit fui-new"></a>
             <div ng-click="startEditingComment()" ng-hide="show_edit_comment" ng-bind-html="data.comment | newlines"></div>
             <div class="comment-description" ng-show="show_edit_comment">
-                <textarea class="form-control" ng-model="data.edit_comment" focus-on="event_edit_comment"></textarea>
+                <textarea mentions-box container-position="left" class="form-control" text="data.edit_comment" focus-on="event_edit_comment"></textarea>
                 <a href="javascript:;" class="btn btn-primary btn-xs"
                    ng-click="saveComment();show_edit_comment=false;">Save comment</a>
                 <a href="javascript:;" class="btn btn-inverse btn-xs item-description-cancel"
