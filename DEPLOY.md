@@ -8,6 +8,7 @@ Deployment actions by branch
 3. pip install hellosign-python-sdk
 4. ./manage.py migrate hello_sign 0001 --fake
 5. ./manage.py migrate hello_sign
+6. ./manage.py migrate attachment
 
 
 --------------------------------------------------------------------------------
