@@ -161,7 +161,7 @@ class AccountSettingsForm(BaseAccountSettingsFields, forms.ModelForm):
             m.process(user=self.user)
 
             messages.warning(self.request, 'For your security you have been logged out. Please check your email address "%s" and click the email address change confirmation validation link' % self.request.user.email)
-            logger.info('User: %s has requested a change of email address' % self.user)
+            logger.info(u'User: %s has requested a change of email address' % self.user)
 
             logout(self.request)
 
@@ -324,7 +324,7 @@ class ChangePasswordForm(ModalForm, SetPasswordForm):
         m.process(user=self.user)
 
         messages.warning(self.request, 'For your security you have been logged out. Please check your email address "%s" and click the change of password confirmation validation link' % self.request.user.email)
-        logger.info('User: %s has requested a change of password' % self.user)
+        logger.info(u'User: %s has requested a change of password' % self.user)
 
         logout(self.request)
 

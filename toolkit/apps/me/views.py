@@ -148,7 +148,7 @@ class ConfirmEmailValidationRequest(BaseConfirmValidationRequest):
         self.profile.save(update_fields=['data'])
 
         messages.success(self.request, 'Thanks. You have confirmed your email address.')
-        logger.info('User: %s has validated their email' % self.user)
+        logger.info(u'User: %s has validated their email' % self.user)
 
 
 class ConfirmEmailChangeRequest(BaseConfirmValidationRequest):
@@ -172,7 +172,7 @@ class ConfirmEmailChangeRequest(BaseConfirmValidationRequest):
             self.profile.save(update_fields=['data'])
 
         messages.success(self.request, 'Congratulations. Your email has been changed. Please login with your new email.')
-        logger.info('User: %s has confirmed their change of email address from: %s to: %s' % (self.user, original_email, self.user.email))
+        logger.info(u'User: %s has confirmed their change of email address from: %s to: %s' % (self.user, original_email, self.user.email))
 
 
 class ConfirmPasswordChangeRequest(BaseConfirmValidationRequest):
@@ -192,7 +192,7 @@ class ConfirmPasswordChangeRequest(BaseConfirmValidationRequest):
             self.profile.save(update_fields=['data'])
 
         messages.success(self.request, 'Congratulations. Your password has been changed. Please login with your new password.')
-        logger.info('User: %s has confirmed their change of password' % self.user)
+        logger.info(u'User: %s has confirmed their change of password' % self.user)
 
 # ----------------------------
 # End Confirmation Views
