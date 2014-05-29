@@ -144,7 +144,7 @@ class AccountSettingsForm(BaseAccountSettingsFields, forms.ModelForm):
 
         # @TODO turn this into a reuseable function as its used in SignupForm too
         temp_email = User.objects.normalize_email(self.cleaned_data.get('email'))
-        existing_user = User.objects.filter(email=temp_email).first()
+        existing_user = User.objects.exclude(pk=self.user.pk).filter(email=temp_email).first()
 
         if existing_user is not None:
             raise forms.ValidationError("An account with that email already exists.")
