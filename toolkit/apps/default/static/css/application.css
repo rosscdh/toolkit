@@ -820,7 +820,7 @@ body.gui .main-content {
   border-bottom: 2px solid #dadada;
   margin-bottom: 20px;
   position: relative;
-  max-height: 221px;
+  height: 221px;
 }
 .matter .card .export-button {
   transform: rotate(90deg);
@@ -857,7 +857,7 @@ body.gui .main-content {
   font-size: 12px;
   line-height: 1.2;
   margin: 0;
-  height: 40px;
+  height: 30px;
   padding: 3px;
   position: absolute;
   top: 18px;
