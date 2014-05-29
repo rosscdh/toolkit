@@ -54,7 +54,7 @@ class Revision(IsDeletedMixin,
 
     slug = models.SlugField(blank=True, null=True)  # stores the revision number v3..v2..v1
 
-    executed_file = models.FileField(upload_to=_upload_file, storage=_managed_S3BotoStorage(), null=True, blank=True)
+    executed_file = models.FileField(upload_to=_upload_file, max_length=255, storage=_managed_S3BotoStorage(), null=True, blank=True)
 
     item = models.ForeignKey('item.Item')
     uploaded_by = models.ForeignKey('auth.User')
@@ -68,6 +68,9 @@ class Revision(IsDeletedMixin,
 
     # True by default, so that on create of a new one, it's set as the current revision
     is_current = models.BooleanField(default=True)
+
+    # when the hellosign webhook calls back and sets the document to is_executed = True
+    is_executed = models.BooleanField(default=False)
 
     data = JSONField(default={}, blank=True)
 

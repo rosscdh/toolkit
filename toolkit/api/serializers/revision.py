@@ -221,6 +221,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
                   'url', 'regular_url',
                   'name', 'description',
                   'executed_file',
+                  'is_executed',
                   'status',
                   'item',
                   'uploaded_by',
