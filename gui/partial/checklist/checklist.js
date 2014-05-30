@@ -327,10 +327,12 @@ angular.module('toolkit-gui')
 
             $scope.data.selectedItem = item;
 			$scope.data.selectedCategory = category;
+            $scope.data.itemIsLoading = true;
 
 			$scope.activateActivityStream('item');
             $scope.loadItemDetails(item).then(function success(item){
                 deferred.resolve(item);
+                $scope.data.itemIsLoading = false;
                 $log.debug(item);
 		    });
 
@@ -1356,6 +1358,7 @@ angular.module('toolkit-gui')
 				function ok(obj) {
                     $log.debug(obj);
                     revision.signing = obj;
+                    item.signing_percentage_complete = obj.percentage_complete;
 				},
 				function cancel() {
 					// do nothing
@@ -1363,16 +1366,21 @@ angular.module('toolkit-gui')
 			);
 		};
 
-        $scope.deleteSigningRequest = function(revision){
-            if (revision.signing){
-                matterItemService.deleteSigningRequest(revision.signing).then(
-                    function success() {
-                        revision.signing = null;
-                    },
-                    function error(/*err*/) {
-                        if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to delete the signing request.') {
-                            toaster.pop('error', 'Error!', 'Unable to delete the signing request.', 5000);
-                        }
+        $scope.deleteSigningRequest = function (revision) {
+            if (revision.signing) {
+                ezConfirm.create('Delete Signing Request', 'Please confirm you would like to delete this signing request?',
+                    function yes() {
+                        // Confirmed- delete item
+                        matterItemService.deleteSigningRequest(revision.signing).then(
+                            function success() {
+                                revision.signing = null;
+                            },
+                            function error(/*err*/) {
+                                if (!toaster.toast || !toaster.toast.body || toaster.toast.body !== 'Unable to delete the signing request.') {
+                                    toaster.pop('error', 'Error!', 'Unable to delete the signing request.', 5000);
+                                }
+                            }
+                        );
                     }
                 );
             }

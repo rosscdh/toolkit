@@ -81,6 +81,7 @@ angular.module('toolkit-gui')
 			'selectedUsers': {},
 			'invitee': {},
 			'participant': null,
+			'requestLoading': false,
 			'request': {
 				'signers': [],
 				'message': null
@@ -228,6 +229,7 @@ angular.module('toolkit-gui')
 		 */
         $scope.request = function() {
             $scope.data.request.signers = [];
+            $scope.data.requestLoading = true;
 
             for (var key in $scope.data.selectedUsers) {
                 var usr = $scope.data.selectedUsers[key];
@@ -238,11 +240,13 @@ angular.module('toolkit-gui')
                     function success(response){
                         $log.debug(response);
                         $modalInstance.close( response );
+                        $scope.data.requestLoading = false;
                     },
                     function error(/*err*/){
                         if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== "Unable to request signers.") {
                             toaster.pop('error', "Error!", "Unable to request signers.");
                         }
+                        $scope.data.requestLoading = false;
                     }
             );
 
@@ -258,7 +262,7 @@ angular.module('toolkit-gui')
 		 * @memberof			RequestsigningCtrl
 		 */
 		$scope.invalid = function() {
-            return $scope.data.showAddSigner===true || jQuery.isEmptyObject($scope.data.selectedUsers);
+            return $scope.data.showAddSigner===true || jQuery.isEmptyObject($scope.data.selectedUsers) || $scope.data.requestLoading===true;
 		};
 
         /**
