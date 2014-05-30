@@ -6,7 +6,6 @@
   {% if can_claim %}
     <div id="user-message" class="page-header">
       <h3>Please wait...<br/><small>We are preparing your document so that you can set it up for signing.</small></h3>
-      <!-- <a href="javascript:;" onClick="openHelloSign();">Open</a> -->
     </div>
     {% csrf_token %}
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
@@ -16,6 +15,10 @@
         'use strict';
 
         function openHelloSign() {
+            // set width and height
+            HelloSign.DEFAULT_WIDTH = $(window).width() - ($(window).width()/98);
+            HelloSign.DEFAULT_HEIGHT = $(window).height();
+
             HelloSign.open({
                 url: '{{ claim_url }}',
                 allowCancel: false,
@@ -37,7 +40,6 @@
                         * need to send the event data to our own servers so we
                         * know whats happened and record the signature_id and other data
                         */
-                        console.log(eventData)
                         $.ajax({
                           type: 'POST',
                           url: '{% url "sign:claim_sign_document" slug=object.slug %}',
@@ -47,19 +49,20 @@
                               // Pull the token out of the DOM.
                               jqXHR.setRequestHeader('X-CSRFToken', $('input[name=csrfmiddlewaretoken]:first').val());
                               var message_html = '<h3>Processing Document...<br/><small>we are recording and finalizing the document.</small></h3>';
-                              $('#user-message').html(message_html);
                           },
                           success: function ( data ) {
-                            console.log(data)
-                              var message_html = '<h3>Sorry, an error ocurred...<br/><small>We have recorded the event and or dev team will investigate.</small></h3>';
-                              $('#user-message').html(message_html);
+                              var message_html = '<h3>Completed...<br/><small>Please wait while we redirect you.</small></h3>';
                           },
                           error: function ( data ) {
-                              var message_html = '<h3>Completed...<br/><small>Please wait while we redirect you.</small></h3>';
-                              $('#user-message').html(message_html);
+                              var message_html = '<h3>Sorry, an error ocurred...<br/><small>We have recorded the event and or dev team will investigate.</small></h3>';
                           },
                           complete: function ( data ) {
-
+                              $('#user-message').html(message_html);
+                              if (parent && parent.$('button#view-signing-close').length > 0 ) {
+                                parent.$('button#view-signing-close').trigger('click');
+                              } else {
+                                console.log('Could not find parent button#view-signing-close, are we in the iframe we should be in?');
+                              }
                           }
                         });
                     }

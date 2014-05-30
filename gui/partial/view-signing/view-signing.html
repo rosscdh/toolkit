@@ -5,9 +5,9 @@
         </h4>
 	</div>
 	<div class="modal-body">
-        <iframe ng-src="{{ getSigningUrl() }}" style="width: 100%;"></iframe>
+        <iframe id="signing-document" ng-src="{{ getSigningUrl() }}" style="width: 100%;"></iframe>
 	</div>
 	<div class="modal-footer">
-		<button class="btn btn-default" ng-click="ok()">Close</button>
+		<button id="view-signing-close" class="btn btn-default" ng-click="ok()">Close</button>
 	</div>
 </div>
