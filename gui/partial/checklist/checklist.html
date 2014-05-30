@@ -7,7 +7,7 @@
 		<div class="row full">
 			<div class="col-lg-4 full checklist-col" id="inbox" ng-class="{ 'zero': data.page!=='inbox' }">
 				<div class="text-right">
-					<button type="button" class="btn btn-default" data-behavior="toggle-inbox">	Toggle</button>
+					<div class="btn btn-default" data-behavior="toggle-inbox">	<span class="fui-arrow-left"></span></div>
 				</div>
 				<!-- start: Inbox //-->
 				<div class="row inbox-msgs checklist-col">
@@ -214,9 +214,11 @@ jQuery(document).ready(function(){
 		//toggle for left message inbox div
 		$('[data-behavior=toggle-inbox]').on('click', function(){
 			console.log('derp')
-				$('#inbox').css('left', '-25%');
-				$('#message-stage').css('margin-left', '0');
-				$('#message-stage').css('width', '100%');
+				// $('#inbox').css('left', '-25%');
+				// $('#message-stage').css('margin-left', '0');
+				// $('#message-stage').css('width', '100%');
+				$('#inbox').toggleClass('inbox-hidden');
+				$('#message-stage').toggleClass('message-full')
 
 		});
 
