@@ -114,6 +114,7 @@
 		width: 25%;
 		position: absolute;
 		top: 55px;
+		margin-bottom: 0px;
 		left: 0;
 		height: auto;
 		padding-bottom: 0px;
@@ -156,12 +157,13 @@
 
 		.inbox-msgs{
 			margin-top: 10px;
+			margin-bottom: 0px;
 			padding-bottom: 0px;
 
 
 		}
 		ul.msg-list {
-			padding: 0 20px;
+			padding: 0 20px 0 0px;
 			height: 531px;
 			overflow-y: scroll;
 			li {
@@ -170,13 +172,13 @@
 				margin-bottom:2px;
 				border-radius: 3px;
 				padding-left:0px;
-				border-left:3px solid #ddd;
+				border-right:3px solid #ddd;
 				border-bottom:1px solid #ddd;
 				&:first-child{
-					border-left:3px solid #42d0e5 !important;
+					border-right:3px solid #42d0e5 !important;
 					}
 				&:last-child{
-					border-left: 3px solid #5ccb6a !important;
+					border-right: 3px solid #5ccb6a !important;
 				}
 				&:hover{
 					// background-color: #444444;
@@ -415,9 +417,13 @@
 
     }
 
+  .author-full{
+  	width: 84.6%;
+  }
+
  .message-full{
  	margin-left: 10% !important;
- 	width: 90% !important;
+ 	width: 80% !important;
  }
 
 #djDebug, #djDebugToolbarHandle, #djShowToolBarButton{
