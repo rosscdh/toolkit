@@ -103,6 +103,17 @@ def on_item_post_save(sender, instance, created, **kwargs):
         profile = instance.responsible_party.profile
         profile.open_requests = profile.get_open_requests_count()
         profile.save(update_fields=['data'])
+
+    for reviewer in instance.latest_revision.reviewers.all():
+        profile = reviewer.profile
+        profile.open_requests = profile.get_open_requests_count()
+        profile.save(update_fields=['data'])
+
+    for signer in instance.latest_revision.signers.all():
+        profile = signer.profile
+        profile.open_requests = profile.get_open_requests_count()
+        profile.save(update_fields=['data'])
+
         #
         # The matter.actions.item_created activity event has moved to the
         # api endpoint view
