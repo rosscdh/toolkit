@@ -1337,7 +1337,7 @@ angular.module('toolkit-gui')
 			var modalInstance = $modal.open({
 				'templateUrl': '/static/ng/partial/view-signing/view-signing.html',
 				'controller': 'ViewSigningCtrl',
-				'windowClass': 'modal-full',
+				'windowClass': 'modal-hellosign',
 				'resolve': {
 					'matter': function () {
 						return $scope.data.matter;
