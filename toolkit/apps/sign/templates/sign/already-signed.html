@@ -5,7 +5,7 @@
 {% block body %}
     <div id="user-message" class="page-header">
       <h3>This document has already been signed<br/><small>Please download the document for your records.</small></h3>
-      <a href="{{ user_download_url }}">Download document</a>
-      <p>Document signed on: {{ signed_on }} by {{ signed_by }}</p>
+      <p><a href="{{ user_download_url }}">Download document</a></p>
+      <p>Document signed on: {{ signed_on }} by {{ signer }}</p>
     </div>
 {% endblock %}

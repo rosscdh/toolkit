@@ -57,6 +57,7 @@ class SignRevisionView(DetailView):
             # The signature has already been signed
             #
             self.template_name = 'sign/already-signed.html'
+            signer_url = False
 
         if signer_url is None:
             raise Http404('Could not get signer_url')
@@ -64,6 +65,8 @@ class SignRevisionView(DetailView):
         kwargs = super(SignRevisionView, self).get_context_data(**kwargs)
         kwargs.update({
             'sign_url': signer_url,
+            'signer': signer,
+            'signed_on': self.object.signed_at(signer=signer),
             'can_sign': self.is_authorised,
         })
         return kwargs
