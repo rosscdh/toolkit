@@ -85,7 +85,7 @@ class ReviewRevisionView(DetailView):
 
         split_file_name = os.path.split(file_name)[-1]
         filename_no_ext, ext = os.path.splitext(split_file_name)
-        ext = ext[1:]  # remove the . in the .pdf which comes in as ext
+        ext = 'pdf'
 
         try:
             #
@@ -100,7 +100,7 @@ class ReviewRevisionView(DetailView):
             resp = HttpResponse(self.object.document.executed_file.read(), content_type='application/{ext}'.format(ext=ext))
 
         if as_attachment is True:
-            resp['Content-Disposition'] = 'attachment; filename="{file_name}{ext}"'.format(file_name=filename_no_ext, ext=ext)
+            resp['Content-Disposition'] = 'attachment; filename="{file_name}.{ext}"'.format(file_name=filename_no_ext, ext=ext)
 
         return resp
 
