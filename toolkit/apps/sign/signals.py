@@ -31,6 +31,8 @@ def _remove_as_authorised(instance, pk_set):
 def _update_signature_request(hellosign_request, data):
     hellosign_request.data['signature_request'].update(data['signature_request'])
     hellosign_request.save(update_fields=['data']) # save it # possible race condition here
+    # Recalculate the percentage complete
+    hellosign_request.source_object.document.item.recalculate_signing_percentage_complete()
 
 """
 When new SignDocument are created automatically the matter.participants are
@@ -66,13 +68,13 @@ def ensure_matter_participants_are_in_signdocument_participants(sender, instance
 
 
 @receiver(post_save, sender=SignDocument, dispatch_uid='sign.post_save.reset_recalculate_signing_percentage_complete')
-def reset_item_review_percentage_complete_on_complete(sender, instance, created, update_fields, **kwargs):
+def reset_recalculate_signing_percentage_complete(sender, instance, created, update_fields, **kwargs):
     item = instance.document.item
     item.recalculate_signing_percentage_complete()
 
 
 @receiver(post_delete, sender=SignDocument, dispatch_uid='sign.pre_delete.reset_recalculate_signing_percentage_complete')
-def reset_item_review_percentage_complete_on_delete(sender, instance, **kwargs):
+def reset_recalculate_signing_percentage_complete(sender, instance, **kwargs):
     item = instance.document.item
     item.recalculate_signing_percentage_complete()
 

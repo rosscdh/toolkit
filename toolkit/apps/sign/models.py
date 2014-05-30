@@ -130,9 +130,10 @@ class SignDocument(IsDeletedMixin,
 
     def percentage_complete(self):
         num_signatures = len(self.signatures)
-        percentage_complete = 0
+        percentage_complete = None  # require None so that we can represent that there are no signatures
 
         if num_signatures > 0:
+            percentage_complete = 0  # reset it here
             num_complete = len([signature for signature in self.signatures if signature.get('signed_at', None) is not None])
 
             if num_complete > 0:

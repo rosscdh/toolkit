@@ -98,17 +98,16 @@ def ensure_revision_item_latest_revision_is_current(sender, instance, **kwargs):
         item.save(update_fields=['latest_revision'])
 
 
-@receiver(post_save, sender=Revision, dispatch_uid='revision.reset_item_review_percentage_complete')
-def reset_item_review_percentage_complete(sender, instance, created, **kwargs):
+@receiver(post_save, sender=Revision, dispatch_uid='revision.reset_item_percentages')
+def reset_item_percentages(sender, instance, created, **kwargs):
     """
     Ensure that the is_current=True revision is set to the item.latest_revision
     """
-    if created is True:
-        #
-        # Set the recalculate_review_percentage_complete to False
-        #
-        instance.item.recalculate_review_percentage_complete()
-        instance.item.recalculate_signing_percentage_complete()
+    #
+    # Set the recalculate_review_percentage_complete to False
+    #
+    instance.item.recalculate_review_percentage_complete()
+    instance.item.recalculate_signing_percentage_complete()
 
 
 @receiver(post_save, sender=Revision, dispatch_uid='revision.ensure_revision_reviewdocument_object')

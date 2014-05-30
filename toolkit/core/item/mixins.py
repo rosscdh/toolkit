@@ -151,7 +151,6 @@ class SigningInProgressMixin(object):
         if self.latest_revision and self.latest_revision.primary_signdocument:
             signing_percentage_complete = self.latest_revision.primary_signdocument.percentage_complete()
 
-        if signing_percentage_complete:
             self.signing_percentage_complete = signing_percentage_complete
 
             logger.info('Item %s signing_percentage_complete set to %s' % (self, signing_percentage_complete))
