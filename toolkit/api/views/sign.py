@@ -111,9 +111,9 @@ class ItemRevisionSignersView(generics.ListAPIView,
                     #
                     # add activity
                     #
-                    self.matter.actions.add_user_as_signer(item=self.item,
-                                                           inviting_user=request.user,
-                                                           invited_user=user)
+                    self.matter.actions.invite_user_as_signer(item=self.item,
+                                                              inviting_user=request.user,
+                                                              invited_user=user)
 
             sign_document = self.revision.primary_signdocument
 

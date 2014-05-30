@@ -18,6 +18,9 @@ logger = logging.getLogger('django.request')
 
 
 PARTICIPANT_ADDED = Signal(providing_args=['matter', 'participant', 'user', 'note'])
+PARTICIPANT_DELETED = Signal(providing_args=['matter', 'participant', 'user', 'note'])
+USER_STOPPED_PARTICIPATING = Signal(providing_args=['matter', 'participant'])
+USER_DOWNLOADED_EXPORTED_MATTER = Signal(providing_args=['matter', 'user'])
 
 
 @receiver(PARTICIPANT_ADDED)
@@ -49,6 +52,21 @@ def participant_added(sender, matter, participant, user, note, **kwargs):
                        action_url=ABSOLUTE_BASE_URL(invite.get_absolute_url()))
 
         matter.actions.added_matter_participant(adding_user=user, added_user=participant)
+
+
+@receiver(PARTICIPANT_DELETED)
+def participant_deleted(sender, matter, participant, user, **kwargs):
+    matter.actions.removed_matter_participant(removing_user=user, removed_user=participant)
+
+
+@receiver(USER_STOPPED_PARTICIPATING)
+def user_stopped_participating(sender, matter, participant, **kwargs):
+    matter.actions.user_stopped_participating(user=participant)
+
+
+@receiver(USER_DOWNLOADED_EXPORTED_MATTER)
+def user_stopped_participating(sender, matter, user, **kwargs):
+    matter.actions.user_downloaded_exported_matter(user=user)
 
 
 @receiver(m2m_changed, sender=Workspace.participants.through, dispatch_uid='matter.on_participant_added')
