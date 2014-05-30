@@ -11,6 +11,7 @@ class SignatureSerializer(serializers.HyperlinkedModelSerializer):
     """
     claim_url = serializers.SerializerMethodField('get_claim_url')
     is_claimed = serializers.SerializerMethodField('get_is_claimed')
+    requested_by = SimpleUserSerializer(source='requested_by', many=False)
     signers = serializers.SerializerMethodField('get_signers')
     percentage_complete = serializers.Field(source='percentage_complete')
 
@@ -18,9 +19,10 @@ class SignatureSerializer(serializers.HyperlinkedModelSerializer):
         model = SignDocument
         fields = ('url',
                   'claim_url',
+                  'is_claimed',
+                  'requested_by',
                   'signers',
-                  'percentage_complete',
-                  'is_claimed',)
+                  'percentage_complete')
 
     def get_claim_url(self, obj):
         return obj.get_claim_url()

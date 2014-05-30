@@ -116,6 +116,8 @@ class ItemRevisionSignersView(generics.ListAPIView,
                                                               invited_user=user)
 
             sign_document = self.revision.primary_signdocument
+            sign_document.requested_by = request.user
+            sign_document.save(update_fields=['requested_by'])
 
             if not sign_document:
                 raise Exception('Could not get Revision.primary_signdocument')
@@ -130,9 +132,8 @@ class ItemRevisionSignersView(generics.ListAPIView,
 
             headers = self.get_success_headers(serializer.data)
             status = http_status.HTTP_201_CREATED
-            data = serializer.data
 
-        return Response(data, status=status, headers=headers)
+        return Response(serializer.data, status=status, headers=headers)
 
     def can_read(self, user):
         return user.profile.user_class in ['lawyer', 'customer']
