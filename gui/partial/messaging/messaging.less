@@ -11,11 +11,11 @@
 		opacity:0.8;
 		width:36px;
 		height:36px;
-		background-color:@peter-river;
-		margin-left:-41px;
+		//background-color:@peter-river;
+		margin-left:10px;
 		float:left;
 		border-radius:4px;
-		margin-top:20px;
+		margin-top:10px;
 		color:white;
 		font-family: 'Pe-icon-7-stroke';
 		speak: none;
@@ -61,6 +61,22 @@
 			}
 		}
 
+		&.lock {
+			background-color: #42d0e5;
+			&:before {
+				content: "\e63f";
+				font-weight: bold;
+			}
+		}
+
+		&.unlock {
+			background-color: @lp-secondary;
+			&:before {
+				content: "\e64f";
+				font-weight: bold;
+			}
+		}
+
 	}
 
 
@@ -94,7 +110,12 @@
 	}
 	#inbox {
 		background-color:#f1f1f1;
-		padding-top:45px;
+		padding-top: 0px;
+		width: 25%;
+		position: absolute;
+		top: 55px;
+		left: 0;
+		height: auto;
 		padding-bottom: 0px;
 		.inbox-header{
 			// position: fixed;
@@ -141,14 +162,38 @@
 				padding-bottom:0px;
 				margin-bottom:2px;
 				border-radius: 3px;
-				padding-left:55px;
+				padding-left:0px;
 				border-left:3px solid #ddd;
 				border-bottom:1px solid #ddd;
+				&:first-child{
+					border-left:3px solid #42d0e5 !important;
+					}
+				&:last-child{
+					border-left: 3px solid #5ccb6a !important;
+				}
+				&:hover{
+					// background-color: #444444;
+					// color: white;
+					span.user.coleg {
+						background-color: white;
+						color: #42d0e5 !important;
+					}
+					span.user.client{
+						background-color: white;
+						color: 	#5ccb6a !important;
+					}
+
+
+				}
+
+
+
+
 				.message {
 					padding:10px 10px 2px 7px;
 					h3 {
 						font-size:16px;
-						margin:10px 0px 5px 0px;
+						margin:5px 0px 5px 50px;
 						font-weight:normal;
 						line-height: 1.0em;
 
@@ -157,11 +202,15 @@
 						color: #8D8D8D;
 						margin-bottom:0px;
 						font-size: 13px;
+						margin-left: 50px;
 						line-height: 1.3em;
 					}
 				}
 				.meta {
 					clear:both;
+					padding-left: 10px;
+					padding-right: 10px;
+					padding-top: 1px;
 					height:35px;
 					position: relative;
 					margin-top: 10px;
@@ -172,7 +221,7 @@
 					.user-meta {
 							position: absolute;
 							bottom: 10px;
-							right: 0px;
+							right: 10px;
 						}
 				}
 
@@ -182,6 +231,8 @@
 	#message-stage {
 		position:relative;
 		height: 100%;
+		width: 75%;
+		margin-left: 25%;
 		.col-lg-12{
 			height: 100%;
 			//width: 90%;
@@ -192,6 +243,14 @@
 		}
 		.head {
 
+			.heading{
+				margin: 0 auto;
+				text-align: center;
+				font-size: 20px;
+				font-weight: bold;
+				color: #444;
+				position:relative;
+			}
 			h3 {
 				font-weight:bold;
 				font-size:20px;
@@ -213,11 +272,18 @@
 			.type-icon {
 				margin-left:0px;
 				margin-top:0px;
-				margin-right:5px;
+				float: none;
+				height: 34px !important;
+				width: 34px !important;
+				margin-right:10px;
+				position: absolute;
+				left: 16.5%;
+				top: 0px;
 			}
 			position:absolute;
 			top:10px;
 			padding-left:17px;
+			padding-right:17px;
 			height:50px;
 			width:100%;
 			border-bottom:2px solid #efefef;
@@ -230,8 +296,8 @@
 			.compose-message {
 				background-color: transparent;
 				border:none;
-				width:80%;
-				height: 120px;
+				width:85%;
+				height: 154px;
 				font-size:14px;
 				line-height: 22px;
 				padding:18px;
@@ -296,7 +362,7 @@
       position: fixed;
       //border: 1px solid red;
       top: 115px;
-      width: 58.6%;
+      width: 67.6%;
       z-index: 1;
     }
 
@@ -311,15 +377,22 @@
 
 
 .message-options{
-	width: 18%;
-	border: 1px solid red
-	bottom: 90px;
-	right: 0px;
+	width: 15%;
+
+	bottom: 93px;
+	right: 10px;
+	padding-right: 10px;
+	border-top: 2px solid #efefef;
 	text-align: right;
 	position: absolute;
 	z-index: 30;
 	input[type=checkbox]{
 		display: block !important;
+	}
+	label.checkbox{
+		font-size: 13px;
+		font-weight: normal;
+
 	}
 	.button-container{
 		height: 39px;

@@ -6,157 +6,67 @@
 		</div>
 		<div class="row full">
 			<div class="col-lg-4 full checklist-col" id="inbox" ng-class="{ 'zero': data.page!=='inbox' }">
-				<!-- start: Inbox //-->
-				<div class="row inbox-header">
-					<div class="col-xs-7">
-						<input type="search" class="form-control flat" placeholder="Search Inbox" id="search-query-1">
-					</div>
-					<div class="col-xs-3 new-message">
-						<a href="#" class="btn btn-md btn-warning"><span class="fui-new"></span> New Thread</a>
-					</div>
-					<div class="inbox-toggle">
-						<div class="col-xs-6 text-center"><div class="active">Inbox <span class='text-muted'>(34)</span></div></div>
-						<div class="col-xs-6">Archive <span class='text-muted'>(56)</span></div>
-					</div>
+				<div class="text-right">
+					<button type="button" class="btn btn-default" data-behavior="toggle-inbox">	Toggle</button>
 				</div>
+				<!-- start: Inbox //-->
 				<div class="row inbox-msgs checklist-col">
 					<ul class="msg-list list-unstyled">
 						<li>
-							<div class="type-icon question"></div>
+							<div class="type-icon lock"></div>
 							<div class="message">
-								<h3>Stock option agreement</h3>
-								<p>We need to talk about this urgently. We need to talk about this urgently. </p>
+								<h3>Internal Discussion </h3>
+								<p>AH: Not sure where to discuss this on the platform, so…. </p>
+							</div>
 								<div class="meta">
 									<span class="last-active">Last active 29 mins ago</span>
 									<div class="user-meta">
 										<span class="user coleg">AH</span>
 										<span class="user coleg last">BC</span>
-										<span class="user client">YC</span>
+										<span class="user coleg">YC</span>
 									</div>
 								</div>
-							</div>
 						</li>
 						<li>
-							<div class="type-icon idea"></div>
+							<div class="type-icon unlock"></div>
 							<div class="message">
-								<h3>Relevent accountants for the company?</h3>
-								<p>Can we think about which accountant we should be using for the new inc?</p>
+								<h3>Global Discussion</h3>
+																<p>RM: "That sounds great, but I'm not sure that..."  </p>
+
+							</div>
 								<div class="meta">
 									<span class="last-active">Last active 29 mins ago</span>
 									<div class="user-meta">
 										<span class="user coleg">AH</span>
-										<span class="user coleg last">BC</span>
-										<span class="user client">YC</span>
+										<span class="user coleg">RG</span>
+										<span class="user client">RM</span>
 									</div>
 								</div>
-							</div>
-						</li>
-						<li>
-							<div class="type-icon question"></div>
-							<div class="message">
-								<h3>Relevant accountants for the company?</h3>
-								<p>Can we think about which accountant we should be using for the new inc?</p>
-								<div class="meta">
-									<span class="last-active">Last active 29 mins ago</span>
-									<div class="user-meta">
-										<span class="user coleg">AH</span>
-										<span class="user coleg last">BC</span>
-										<span class="user client">YC</span>
-									</div>
-								</div>
-							</div>
-						</li>
-						<li>
-							<div class="type-icon discussion"></div>
-							<div class="message">
-								<h3>Relevant accountants for the company?</h3>
-								<p>Can we think about which accountant we should be using for the new inc?</p>
-								<div class="meta">
-									<span class="last-active">Last active 29 mins ago</span>
-									<div class="user-meta">
-										<span class="user coleg">AH</span>
-										<span class="user coleg last">BC</span>
-										<span class="user client">YC</span>
-									</div>
-								</div>
-							</div>
-						</li>
-						<li>
-							<div class="type-icon urgent"></div>
-							<div class="message">
-								<h3>Relevant accountants for the company?</h3>
-								<p>Can we think about which accountant we should be using for the new inc?</p>
-								<div class="meta">
-									<span class="last-active">Last active 29 mins ago</span>
-									<div class="user-meta">
-										<span class="user coleg">AH</span>
-										<span class="user coleg last">BC</span>
-										<span class="user client">YC</span>
-									</div>
-								</div>
-							</div>
-						</li>
-						<li>
-							<div class="type-icon issue"></div>
-							<div class="message">
-								<h3>Relevent accountants for the company?</h3>
-								<p>Can we think about which accountant we should be using for the new inc?</p>
-								<div class="meta">
-									<span class="last-active">Last active 29 mins ago</span>
-									<div class="user-meta">
-										<span class="user coleg">AH</span>
-										<span class="user coleg last">BC</span>
-										<span class="user client">YC</span>
-									</div>
-								</div>
-							</div>
 						</li>
 					</ul>
 				</div>
 			</div>
 			<div class="col-lg-8 row full" id="message-stage">
-				<div class="col-lg-12">
-					<div class="head">
-						<div class="row">
-							<div class="col-sm-2">
-							<div class="dropdown">
+				<div class="row head">
+						<div class="col-sm-6 col-sm-offset-3 text-center">
+							<div class="heading">	<div class="type-icon lock">
+								</div>Internal Discussion</div>
 
-    					<div class="type-icon question dropdown-toggle" data-toggle="dropdown">
 
-							</div>
-						  <ul class="dropdown-menu" role="menu" aria-labelledby="">
-						    <li role="presentation"><a role="menuitem" tabindex="-1" href="#">
-						    	<div class="type-icon question"></div>
-						    	Question
-						    </a></li>
-						    <li role="presentation"><a role="menuitem" tabindex="-1" href="#">
-						    	<div class="type-icon idea"></div>
-						    	Idea
-
-						    </a>
-						    </li>
-						    <li role="presentation"><a role="menuitem" tabindex="-1" href="#"><div class="type-icon discussion"></div>
-						    	Discussion
-						    </a></li>
-						    <li role="presentation" class="divider"></li>
-						    <li role="presentation"><a role="menuitem" tabindex="-1" href="#"><div class="type-icon urgent"></div>Urgent </a>
-
-						    </li>
-						  </ul>
-						</div>
-					</div>
-					<div class="col-sm-7">
-						<h3>Stock purchase agreement <span class="text-muted">(4)</span></h3>
-					</div>
 					<!-- <div class="col-sm-6 text-left">
 						<h3>Stock purchase agreement <span class="text-muted">(4)</span></h3>
 					</div> -->
-							<div class="col-sm-3 users-head">
+
+					</div>
+
+					<div class="col-sm-3">
+
+
 								<span class="user coleg">AH</span>
 								<span class="user coleg last">BC</span>
-								<span class="user client">YC</span>
-							</div>
-						</div>
+								<span class="user coleg">YC</span>
+					</div>
+
 					</div>
 					<div class="convo">
 						<ul class="list-unstyled">
@@ -228,7 +138,7 @@
 					<div class="message-options">
 							<label class="checkbox" for="checkbox1">
 						  <input type="checkbox" value="1" id="sendEnter" data-toggle="checkbox" data-behavior="toggle-button">
-						  Send on Enter
+						  <span class="text-muted">Send on Enter</span>
 						</label>
 						<div class="button-container">
 							<button type="button" class="btn btn-default" data-behavior="send-button">Send</button>
@@ -315,10 +225,23 @@ jQuery(document).ready(function(){
 
 		});
 
+		//hides/unhides button to send message
+
 		$('[data-behavior=toggle-button]').on('click', function(){
 			$('[data-behavior=send-button]').toggleClass('hidden');
 
 		});
+
+		//toggle for left message inbox div
+		$('[data-behavior=toggle-inbox]').on('click', function(){
+			console.log('derp')
+				$('#inbox').css('left', '-25%');
+				$('#message-stage').css('margin-left', '0');
+				$('#message-stage').css('width', '100%');
+
+		});
+
+
 
 });
 
