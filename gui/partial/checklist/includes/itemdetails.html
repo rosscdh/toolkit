@@ -166,7 +166,7 @@
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="requestReview(data.selectedItem.latest_revision)">Request Review</a>
                     <a href="javascript:;" class="btn btn-link btn-xs"
                        ng-click="requestSigning(data.selectedItem.latest_revision)"
-                       ng-hide="data.selectedItem.latest_revision.signing.is_claimed==true">Request Signing</a>
+                       ng-show="data.selectedItem.latest_revision.signing.is_claimed!==true&&data.itemIsLoading!==true">Request Signing</a>
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="deleteLatestRevision()">Delete</a>
 
                     <div class="btn-group pull-right">
@@ -222,7 +222,8 @@
             </div>
 
             <div class="signing in-progress" ng-show="data.selectedItem.latest_revision.signing.url">
-                <a class="btn btn-link btn-xs pull-right" href="javascript:;" ng-click="deleteSigningRequest(data.selectedItem.latest_revision)">
+                <a class="btn btn-link btn-xs pull-right" href="javascript:;" ng-click="deleteSigningRequest(data.selectedItem.latest_revision)"
+                   ng-hide="data.selectedItem.latest_revision.is_executed||data.selectedItem.latest_revision.signing.percentage_complete===100">
                     Delete
                 </a>
 
@@ -233,8 +234,12 @@
                     </a>
                 </span>
 
-                <span ng-show="data.selectedItem.latest_revision.signing.is_claimed">
+                <span ng-show="data.selectedItem.latest_revision.signing.is_claimed && data.selectedItem.latest_revision.is_executed!==true && data.selectedItem.latest_revision.signing.percentage_complete<100">
                     <span>Signing in progress</span>
+                </span>
+
+                <span ng-show="data.selectedItem.latest_revision.is_executed===true || data.selectedItem.latest_revision.signing.percentage_complete===100">
+                    <span>Signing completed</span>
                 </span>
                 <!--<a class="btn btn-link btn-xs pull-right" href="javascript:;">
                     Remind
@@ -243,17 +248,25 @@
                 <div class="review-members" ng-show="data.selectedItem.latest_revision.signing.is_claimed==true">
                     <ul class="list-unstyled">
                         <li ng-repeat="signer in data.selectedItem.latest_revision.signing.signers">
-                            <a href="javascript:;" ng-click="showSigning(data.selectedItem.latest_revision, signer)" class="pull-right">
-                                <button class="btn btn-warning btn-xs" ng-hide="signer.is_complete"><span class="fui-time"></span> In progress</button>
-                                <button class="btn btn-success btn-xs" ng-show="signer.is_complete">
-                                    <span class="fui-check"></span> Complete
+                            <a href="javascript:;" ng-click="showSigning(data.selectedItem.latest_revision, signer)"
+                               class="pull-right" ng-hide="signer.has_signed">
+                                <button class="btn btn-warning btn-xs" ><span
+                                        class="fui-time"></span> In progress
                                 </button>
                             </a>
 
-                            <span ng-show="signer.signed_at">
-                                <a href="javascript:;" ng-click="showReview(data.selectedItem.latest_revision, signer)">{{ signer.initials }}</a> signed <span ng-bind="signer.signed_at | timeago"></span>
+                            <span ng-show="signer.has_signed" class="pull-right">
+                                <button class="btn btn-success btn-xs">
+                                    <span class="fui-check"></span> Complete
+                                </button>
                             </span>
-                            <a ng-hide="signer.signed_at" href="javascript:;" ng-click="showSigning(data.selectedItem.latest_revision, signer)">{{ signer.name }}</a>
+
+
+                            <span ng-show="signer.signed_at">
+                                {{ signer.initials }} signed <span ng-bind="signer.signed_at | timeago"></span>
+                            </span>
+                            <a ng-hide="signer.signed_at" href="javascript:;"
+                               ng-click="showSigning(data.selectedItem.latest_revision, signer)">{{ signer.name }} <span ng-show="signer.username===data.usdata.current.username">(you)</span></a>
                         </li>
                     </ul>
                 </div>
