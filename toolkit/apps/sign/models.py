@@ -40,6 +40,7 @@ class SignDocument(IsDeletedMixin,
     """
     slug = UUIDField(auto=True, db_index=True)
     document = models.ForeignKey('attachment.Revision')
+    requested_by = models.ForeignKey('auth.User', null=True, related_name='signatures_requested_by')
     signers = models.ManyToManyField('auth.User')
     is_complete = models.BooleanField(default=False)
     date_last_viewed = models.DateTimeField(blank=True, null=True)
