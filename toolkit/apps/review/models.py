@@ -205,5 +205,4 @@ from .signals import (#set_item_review_percentage_complete,
                       #reset_item_review_percentage_complete_on_delete,
                       ensure_matter_participants_are_in_reviewdocument_participants,
                       on_reviewer_add,
-                      on_reviewer_remove,
-                      reset_open_requests_count)
+                      on_reviewer_remove)

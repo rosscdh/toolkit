@@ -38,14 +38,6 @@ def reset_item_review_percentage_complete_on_delete(sender, instance, **kwargs):
     item.recalculate_review_percentage_complete()
 
 
-@receiver(post_save, sender=ReviewDocument, dispatch_uid='review.post_save.reset_open_requests_count')
-def reset_open_requests_count(sender, instance, created, update_fields, **kwargs):
-    for reviewer in instance.reviewers.all():
-        profile = reviewer.profile
-        profile.open_requests = profile.get_open_requests_count()
-        profile.save(update_fields=['data'])
-
-
 @receiver(post_save, sender=ReviewDocument, dispatch_uid='review.ensure_matter_participants_are_in_reviewdocument_participants')
 def ensure_matter_participants_are_in_reviewdocument_participants(sender, instance, **kwargs):
     """
