@@ -104,6 +104,7 @@ class SimpleItemSerializer(ItemSerializer):
                   'name', 'description',
                   'status',
                   'review_percentage_complete',
+                  'signing_percentage_complete',
                   'category',
                   'latest_revision',
                   'is_final', 'is_complete', 'is_requested',
