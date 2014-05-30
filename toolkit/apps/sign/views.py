@@ -32,6 +32,10 @@ class SignRevisionView(DetailView):
         """
         return self.request.user in self.matter.participants.all()
 
+    @property
+    def is_authorised(self):
+        return self.request.user in self.object.document.signers.all() or self.request.user == self.object.requested_by or self.request.user == self.matter.lawyer
+
     def get_template_names(self):
         if self.object.is_current is False:
             return ['sign/sign-nolongercurrent.html']
@@ -53,7 +57,7 @@ class SignRevisionView(DetailView):
         kwargs = super(SignRevisionView, self).get_context_data(**kwargs)
         kwargs.update({
             'sign_url': signer_url,
-            'can_sign': self.request.user in self.object.document.signers.all(),
+            'can_sign': self.is_authorised,
         })
         return kwargs
 
@@ -70,11 +74,15 @@ class ClaimSignRevisionView(SignRevisionView,
         else:
             return ['sign/claim.html']
 
+    @property
+    def is_authorised(self):
+        return self.request.user == self.object.requested_by or self.request.user == self.matter.lawyer
+
     def get_context_data(self, **kwargs):
         kwargs = super(SignRevisionView, self).get_context_data(**kwargs)
         kwargs.update({
             'claim_url': mark_safe(self.object.signing_request.data.get('unclaimed_draft', {}).get('claim_url')),
-            'can_claim': self.matter.lawyer == self.request.user,
+            'can_claim': self.is_authorised,
         })
         return kwargs
 
