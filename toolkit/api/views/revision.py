@@ -107,6 +107,19 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
                                                                    partial=partial)
 
 
+    def update(self, request, *args, **kwargs):
+        #
+        # Status change
+        #
+        new_status = request.DATA.get('status', None)
+        if new_status is not None:
+            if int(new_status) != self.revision.status:
+                self.matter.actions.revision_changed_status(user=self.request.user,
+                                                            revision=self.revision,
+                                                            previous_status=previous_instance.status)
+
+        return super(ItemCurrentRevisionView, self).update(request=request, *args, **kwargs)
+
     def create(self, request, *args, **kwargs):
         """
         Have had to copy directly the method from the base class
