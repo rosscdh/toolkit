@@ -8,7 +8,6 @@ def EXPOSED_GLOBALS(request):
     return {
         'DEBUG': settings.DEBUG,
         'PROJECT_ENVIRONMENT': settings.PROJECT_ENVIRONMENT,
-        'REQUESTS_COUNT': request.user.profile.open_requests,
 
         # @TODO remove this GLOBALS as its totally not necessary as a context processor
         # context processors ARE template globals by definition
@@ -39,6 +38,14 @@ def LAYOUT(request):
 
     return {
         'LAYOUT': u'%s.html' % profile.user_class if profile else 'base.html'
+    }
+
+
+def REQUESTS_COUNT(request):
+    count = request.user.profile.open_requests if request.user.is_authenticated else 0
+
+    return {
+        'REQUESTS_COUNT': count,
     }
 
 
