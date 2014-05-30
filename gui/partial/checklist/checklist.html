@@ -227,9 +227,12 @@
 					</div>
 					<div class="message-options">
 							<label class="checkbox" for="checkbox1">
-						  <input type="checkbox" value="" id="checkbox1" data-toggle="checkbox">
+						  <input type="checkbox" value="1" id="sendEnter" data-toggle="checkbox" data-behavior="toggle-button">
 						  Send on Enter
 						</label>
+						<div class="button-container">
+							<button type="button" class="btn btn-default" data-behavior="send-button">Send</button>
+						</div>
 					</div>
 
 					<div class="compose">
@@ -269,8 +272,6 @@ function stickyTitles(stickies) {
 		this.scroll = function() {
 
 			  stickies.each(function(i){
-
-			  	console.log('scroll function firing')
 
 				    var thisSticky = jQuery(this),
 					      nextSticky = stickies.eq(i+1),
@@ -313,6 +314,14 @@ jQuery(document).ready(function(){
 			  newStickies.scroll();
 
 		});
+
+		$('[data-behavior=toggle-button]').on('click', function(){
+			$('[data-behavior=send-button]').toggleClass('hidden');
+
+		});
+
 });
+
+
 
 </script>
