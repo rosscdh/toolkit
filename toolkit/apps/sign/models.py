@@ -116,7 +116,6 @@ class SignDocument(IsDeletedMixin,
 
     def has_signed(self, signer):
         signer_email = signer.email
-        #import pdb;pdb.set_trace()
         return len([s for s in self.signatures if s.get('signer_email_address') == signer_email and s.get('signed_at') is not None]) == 1
 
     def signed_at(self, signer):
