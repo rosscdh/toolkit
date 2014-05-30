@@ -330,7 +330,7 @@ class MatterActivityEventService(object):
     def revision_changed_status(self, user, revision, previous_status):
         # never used
         current_status = revision.display_status
-        override_message = u"%s changes %s %s's status to %s" % (user, revision.item, revision.slug, current_status)
+        override_message = u"%s changed %s %s's status to %s" % (user, revision.item, revision.slug, current_status)
         self._create_activity(actor=user, verb=u'changed the status', action_object=revision, item=revision.item,
                               override_message=override_message, current_status=current_status,
                               previous_status=previous_status)
