@@ -15,6 +15,10 @@
             'use strict';
 
             function openHelloSign() {
+                // set width and height
+                HelloSign.DEFAULT_WIDTH = $(window).width() - ($(window).width()/98);
+                HelloSign.DEFAULT_HEIGHT = $(window).height();
+
                 HelloSign.open({
                     url: '{{ sign_url }}',
                     allowCancel: false,
@@ -31,7 +35,12 @@
                         if (eventData.event == HelloSign.EVENT_SIGNED) {
                             // close this window and move right on
                             var message_html = '<h3>Thanks for signing<br/><small>We wil notify all those involved.</small></h3>';
-                            $('#user-message').html(message_html);
+
+                            if (parent && parent.$('button#view-signing-close').length > 0 ) {
+                                parent.$('button#view-signing-close').trigger('click');
+                            } else {
+                                console.log('Could not find parent button#view-signing-close, are we in the iframe we should be in?');
+                            }
                         };
                     }
                 });

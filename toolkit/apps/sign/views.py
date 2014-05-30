@@ -10,6 +10,7 @@ from django.contrib.auth import authenticate, login
 from django.core.exceptions import PermissionDenied
 from django.views.generic.edit import BaseUpdateView
 
+from hellosign_sdk.utils.exception import Conflict
 from .models import SignDocument
 
 import logging
@@ -40,7 +41,7 @@ class SignRevisionView(DetailView):
         if self.object.is_current is False:
             return ['sign/sign-nolongercurrent.html']
         else:
-            return ['sign/sign.html']
+            return [self.template_name]
 
     def get_object(self):
         self.object = super(SignRevisionView, self).get_object()
@@ -49,7 +50,13 @@ class SignRevisionView(DetailView):
 
     def get_context_data(self, **kwargs):
         signer = get_object_or_404(User, username=self.kwargs.get('username'))
-        signer_url = self.object.get_signer_signing_url(signer=signer)
+        try:
+            signer_url = self.object.get_signer_signing_url(signer=signer)
+        except Conflict as e:
+            #
+            # The signature has already been signed
+            #
+            self.template_name = 'sign/already-signed.html'
 
         if signer_url is None:
             raise Http404('Could not get signer_url')
