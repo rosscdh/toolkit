@@ -360,7 +360,7 @@ class TwoFactorEnableView(AjaxModelFormView, ProfileView):
         return self.render_to_json_response(data)
 
 
-class TwoFactorVerifyView(HoldingPageView):
+class TwoFactorVerifyView(AjaxFormView, HoldingPageView):
     template_name = 'user/settings/two_factor_verify.html'
 
     def form_valid(self, form):
@@ -368,7 +368,7 @@ class TwoFactorVerifyView(HoldingPageView):
         profile.data['two_factor_enabled'] = True
         profile.save(update_fields=['data'])
 
-        # messages.success(self.request, 'You have successfully set up two-step verification for your LawPal account.')
+        # messages.success(self.request, 'You have successfully enabled two-step verification for your LawPal account.')
 
         return super(TwoFactorVerifyView, self).form_valid(form)
 
