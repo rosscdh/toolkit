@@ -96,9 +96,13 @@ def on_item_post_save(sender, instance, created, **kwargs):
         matter = instance.matter
 
         if instance.sort_order in [None, '']:
-            instance.sort_order = matter.item_set.filter(category=instance.category).count() + 1 
+            instance.sort_order = matter.item_set.filter(category=instance.category).count() + 1
             instance.save(update_fields=['sort_order'])
 
+    if instance.responsible_party:
+        profile = instance.responsible_party.profile
+        profile.open_requests = profile.get_open_requests_count()
+        profile.save(update_fields=['data'])
         #
         # The matter.actions.item_created activity event has moved to the
         # api endpoint view
