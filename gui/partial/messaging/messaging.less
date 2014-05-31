@@ -1,3 +1,7 @@
+*, *:before, *:after {
+  -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
+ }
+
 
 @lp-primary: 	#42d0e5; //blue
 @lp-secondary: 	#5ccb6a; //green
@@ -304,9 +308,12 @@
 		.compose {
 			position:absolute;
 			bottom:0;
+			//border: 1px solid red;
 			height:180px;
 			width:100%;
 			.compose-message {
+
+
 				background-color: transparent;
 				border:none;
 				width:85%;
@@ -317,6 +324,7 @@
 				color:#666;
 				outline: none;
 				border-top:2px solid #efefef;
+				//border: 1px solid green;
 			}
 		}
 		.convo {
@@ -336,7 +344,7 @@
 				}
 
 				.message-body{
-					padding: 30px 45px;
+					padding: 30px 70px;
 				}
 			};
 			span.user {
@@ -351,7 +359,7 @@
 				padding-bottom:14px;
 
 				font-weight: bold;
-				border-bottom: 1px solid #efefef;
+				border-bottom: 2px solid #efefef;
 				margin-bottom: 5px;
 				position: relative;
 				z-index: 1;
@@ -377,6 +385,10 @@
       top: 55px;
       width: 67.6%;
       z-index: 1;
+    }
+
+    .large-fix{
+    	width: 80%;
     }
 
     	.absolute {
@@ -418,7 +430,7 @@
     }
 
   .author-full{
-  	width: 84.6%;
+  	width: 74.6% !important;
   }
 
  .message-full{
@@ -430,3 +442,12 @@
 	display: none !important;
 }
 
+
+.toggle-btn-wrapper{
+	.closed{
+		transform:rotate(180deg);
+    -ms-transform:rotate(180deg); /* IE 9 */
+    -webkit-transform:rotate(180deg); /* Opera, Chrome, and Safari */
+	}
+
+}
