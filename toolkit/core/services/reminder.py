@@ -40,6 +40,8 @@ class ReminderService(object):
         except Exception as e:
             # AbridgeService is not running.
             logger.critical('Abridge Service is not running because: %s' % e)
+            raise Exception(e)
+
         return abridge_service
 
     def send_message_to_abridge(self, user, item):
