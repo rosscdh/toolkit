@@ -76,12 +76,6 @@ class CrocodocLoaderService(object):
             self.service.generate()
 
     def process(self):
-        # if this is a brand new file, we now need to ensure its available lcoally
-        # and then if/when it is upload it to crocdoc
-        self.ensure_local_file()
-
-        
-
         # @TODO this should ideally be set in the service on init
         # and session automatically updated
         # https://crocodoc.com/docs/api/ for more info
@@ -103,10 +97,6 @@ class CrocodocLoaderService(object):
                 #
                 #"filter": self.get_filter_ids() # must be a comma seperated list
         }
-        #
-        # Set out session key based on params above
-        #
-        self.service.obj.crocodoc_service.session_key(**CROCODOC_PARAMS),
 
         return {
             'crocodoc': self.service.obj.crocodoc_service,
