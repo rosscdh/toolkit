@@ -12,9 +12,4 @@ class PermissionTest(BaseScenarios, TestCase):
         self.item = mommy.make('item.Item', matter=self.matter)
 
     def test_add_perm(self):
-        user1 = mommy.make('auth.User', username='user1')
-        user2 = mommy.make('auth.User', username='user2')
-
-        self.matter.participants.add(user1)
-        self.assertEqual(user1.has_perm('item.read_item', self.item), True)
-        self.assertEqual(user2.has_perm('item.read_item', self.item), False)
+        self.assertEqual(self.lawyer.has_perm('workspace.manage_participants', self.matter), True)

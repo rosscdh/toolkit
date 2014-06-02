@@ -2,6 +2,74 @@
 from permission.conf import settings
 from permission.logics.base import PermissionLogic
 from permission.utils.field_lookup import field_lookup
+from toolkit.apps.workspace.models import MatterUser
+
+
+class MatterPermissionLogic(PermissionLogic):
+    """
+    TODO:
+    load permissions from participants-through-m2m and it's data-json
+    """
+    def __init__(self):
+        pass
+
+    def has_perm(self, user_obj, perm, obj=None):
+        """
+        Check if user have permission (of object)
+
+        If the user_obj is not authenticated, it return ``False``.
+
+        If no object is specified, it return ``True`` when the corresponding
+        permission was specified to ``True`` (changed from v0.7.0).
+
+
+        If an object is specified, it will return ``True`` if the user is
+        permitted, based on WorkspaceUser-table.
+
+        Parameters
+        ----------
+        user_obj : django user model instance
+            A django user model instance which be checked
+        perm : string
+            `app_label.codename` formatted permission string
+        obj : None or django model instance
+            None or django model instance for object permission
+
+        Returns
+        -------
+        boolean
+            Wheter the specified user have specified permission (of specified
+            object).
+        """
+        if not user_obj.is_authenticated():
+            return False
+
+        permission_name = self.get_full_permission_string(perm)
+
+        if obj is None:
+            # object permission without obj should return True
+            # Ref: https://code.djangoproject.com/wiki/RowLevelPermissions
+            if self.any_permission:
+                return True
+            if self.change_permission and perm == permission_name:
+                return True
+            return False
+        elif user_obj.is_active:
+            try:
+                matter_user = MatterUser.objects.get(matter=obj, user=user_obj)
+            except MatterUser.DoesNotExist:
+                return False
+
+
+            import pdb;pdb.set_trace()
+
+            # TODO: finish and check several things.
+
+
+
+
+            return matter_user.data.get("permissions", {}).get(perm, False)
+        return False
 
 
 class AdvancedParticipantsPermissionLogic(PermissionLogic):

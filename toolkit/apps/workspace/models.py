@@ -30,6 +30,13 @@ from .managers import WorkspaceManager
 from .mixins import ClosingGroupsMixin, CategoriesMixin, RevisionLabelMixin
 
 
+class MatterUser(models.Model):
+    matter = models.ForeignKey('Workspace')
+    user = models.ForeignKey('auth.User')
+
+    data = JSONField(default={})
+
+
 class Workspace(IsDeletedMixin,
                 AuthyModelMixin,
                 MatterExportMixin,
@@ -51,7 +58,7 @@ class Workspace(IsDeletedMixin,
     lawyer = models.ForeignKey('auth.User', null=True, related_name='lawyer_workspace')  # Lawyer that created this workspace
     client = models.ForeignKey('client.Client', null=True, blank=True)
 
-    participants = models.ManyToManyField('auth.User', blank=True)
+    participants = models.ManyToManyField('auth.User', blank=True, through=MatterUser)
 
     tools = models.ManyToManyField('workspace.Tool', blank=True)
 
@@ -69,6 +76,13 @@ class Workspace(IsDeletedMixin,
         ordering = ['name', '-pk']
         verbose_name = 'Matter'
         verbose_name_plural = 'Matters'
+        permissions = (
+            ("manage_participants", u"Can manage participants"),
+            ("manage_requests", u"Can manage requests"),
+            ("manage_items", u"Can manage checklist items and categories"),
+            ("manage_signatures", u"Can manage signatures & send documents for signature"),
+            ("manage_clients", u"Can manage clients"),
+        )
 
     def __init__(self, *args, **kwargs):
         #

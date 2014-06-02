@@ -84,7 +84,7 @@ class Item(IsDeletedMixin,
 
     class Meta:
         ordering = ('sort_order',)
-        permissions = (("read_item", "Can read items"), )
+        # permissions = (("read_item", "Can read items"), )
 
     def __unicode__(self):
         return u'%s' % self.name
