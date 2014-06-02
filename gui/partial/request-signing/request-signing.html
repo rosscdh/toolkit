@@ -4,8 +4,7 @@
 	</div>
 	<form name="requestForm" ng-submit="request()">
 	<div class="modal-body">
-		<p>Here the description.</p>
-
+		<p>Select a signer from existing participants, or add 3rd party signers.</p>
         <div ng-hide="data.showAddSigner===true">
             <strong ng-show="participants.length>0">Existing participants</strong>
             <ul class="list-unstyled">
@@ -20,9 +19,9 @@
                         <label ng-show="person.username==currentUser.username"> (you)</label>
                     </label>
                 </li>
-                <li>
+<!--                 <li>
 				    <textarea class="form-control form-control-full-width" ng-model="data.request.message" placeholder="Add an optional message"></textarea>
-                </li>
+                </li> -->
             </ul>
             <h5>Add External Signer</h5>
 
