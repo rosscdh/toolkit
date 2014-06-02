@@ -3,8 +3,8 @@ from toolkit.core.permisson import AdvancedParticipantsPermissionLogic
 
 PERMISSION_LOGICS = (
     ('item.Item', AdvancedParticipantsPermissionLogic(field_name='matter__participants',
-                                                      any_permission=None,
-                                                      change_permission=None,
-                                                      read_permission=None,
-                                                      delete_permission=None)),
+                                                      any_permission=False,
+                                                      change_permission=False,
+                                                      read_permission=True,
+                                                      delete_permission=False)),
 )
