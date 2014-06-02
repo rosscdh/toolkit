@@ -69,6 +69,7 @@ class ItemRevisionSignersView(generics.ListAPIView,
         3. if not make them one
         """
         status = http_status.HTTP_400_BAD_REQUEST
+        headers = None
         message = request.DATA.get('message')
         signers = request.DATA.get('signers')
 
@@ -132,8 +133,9 @@ class ItemRevisionSignersView(generics.ListAPIView,
 
             headers = self.get_success_headers(serializer.data)
             status = http_status.HTTP_201_CREATED
+            data = serializer.data
 
-        return Response(serializer.data, status=status, headers=headers)
+        return Response(data, status=status, headers=headers)
 
     def can_read(self, user):
         return user.profile.user_class in ['lawyer', 'customer']
