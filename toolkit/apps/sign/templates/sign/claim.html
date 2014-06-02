@@ -16,7 +16,7 @@
 
         function openHelloSign() {
             // set width and height
-            HelloSign.DEFAULT_WIDTH = $(window).width() - ($(window).width()/98);
+            HelloSign.DEFAULT_WIDTH = $(window).width();// - ($(window).width()/98);
             HelloSign.DEFAULT_HEIGHT = $(window).height();
 
             HelloSign.open({
@@ -68,6 +68,10 @@
                     }
                 }
             });
+            // remove teh HelloSign styles that append a black box and shadow
+            if ($('#hsEmbeddedFrame').length > 0) {
+              $('#hsEmbeddedFrame').attr('style', null);
+            }
         };
 
         HelloSign.init('{{ GLOBALS.HELLOSIGN_CLIENT_ID }}');
