@@ -27,7 +27,7 @@ class ItemIndex(indexes.SearchIndex, indexes.Indexable):
         #
         # Note! No participants.all() here as item participants are a call to item.matter.particiapnts.all()
         #
-        return [participant.pk for participant in obj.participants()]
+        return [participant.pk for participant in obj.matter.participants.all()]
 
     def index_queryset(self, using=None):
         """

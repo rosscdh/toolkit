@@ -137,6 +137,7 @@
     // ]]>
     </script>
 
+
     <!-- Load JS here for greater good =============================-->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
@@ -152,6 +153,58 @@
     <script src="{{ STATIC_URL }}js/parsley-1.2.4.min.js"></script>
     <script src="{{ STATIC_URL }}js/parsley-form.js"></script>
     <script src="{{ STATIC_URL }}js/application.js"></script>
+
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/sugar/1.3.9/sugar.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.4/handlebars.min.js"></script>
+    <script src="{{ STATIC_URL }}js/elastic_search.js"></script>
+
+    <script type="text/javascript">
+    // <![CDATA[
+    {% verbatim %}
+    $(document).ready(function () {
+        'use strict';
+
+        var search_element = $('#search-q');
+
+        search_element.on('blur', function (event) {
+            search_element.popover('destroy');
+        });
+
+        search_element.elastic_search({
+            delay:200,
+            display_template: function () {
+                return '<a href="{{ url }}" class="list-group-item">' +
+                    '<span class="badge">{{ result_type }}</span>' +
+                    '<strong class="list-group-item-heading">{{ name }}<strong>' +
+                    '{{#if description}}<p class="list-group-item-text"><small>{{ description }}</small></p>{{/if}}' +
+                '</a>';
+            },
+            callback: function (data, html, self) {
+
+                html = '<div class="list-group">'+ html +'</div>'
+                search_element.popover('destroy');
+
+                if (data.length > 0) {
+
+                    search_element.popover({
+                        placement: 'bottom',
+                        trigger: 'manual',
+                        title: 'Search results...',
+                        html: true,
+                        content: html
+                    });
+                    search_element.popover('show');
+
+                } else {
+                    search_element.popover('destroy');
+                }
+            }
+        });
+
+    });
+    {% endverbatim %}
+    // ]]>
+    </script>
 
     <!-- Load page specific JS here =============================-->
     {% block js %}{% endblock %}

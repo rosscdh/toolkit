@@ -19,7 +19,8 @@ class SearchResultsView(generics.ListAPIView):
         """
         query = self.request.GET.get('q')
         return SearchQuerySet().filter(text=AutoQuery(query),
-                                       participants__in=[self.request.user.pk])
+                                       participants__in=[self.request.user.pk])  \
+                               .order_by('-date_modified')
 
     def get(self, request, format=None):
         """

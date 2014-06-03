@@ -97,6 +97,8 @@ PROJECT_APPS = (
     'toolkit.core.client',
     'toolkit.core.item',
     'toolkit.core.attachment',
+    #Search
+    'toolkit.core.search',
 
     # Module Apps
     'toolkit.apps.api',
