@@ -15,7 +15,7 @@ from toolkit.apps.workspace.services import EnsureCustomerService
 from toolkit.apps.workspace.models import InviteKey
 from toolkit.mixins import ModalForm
 
-from .models import Workspace
+from .models import Workspace, MatterUser
 from .mailers import InviteUserToToolEmail
 
 
@@ -58,7 +58,7 @@ class WorkspaceForm(ModalForm, forms.ModelForm):
         matter.save()
 
         # add user as participant
-        matter.participants.add(self.lawyer)
+        MatterUser.objects.create(matter=matter, user=self.lawyer)
         return matter
 
 

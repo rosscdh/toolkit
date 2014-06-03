@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.dispatch import Signal, receiver
 
 from toolkit.apps.matter.signals import PARTICIPANT_ADDED
-from toolkit.apps.workspace.models import Workspace
+from toolkit.apps.workspace.models import Workspace, MatterUser
 
 from . import BaseEndpointTest
 from ...serializers import ClientSerializer
@@ -190,7 +190,7 @@ class MatterParticipantTest(BaseEndpointTest):
         from the participants
         """
         # add new layer to participants
-        self.matter.participants.add(self.lawyer_to_add)
+        MatterUser.objects.create(matter=self.matter, user=self.lawyer_to_add)
         self.matter = Workspace.objects.get(pk=self.matter.pk)
 
         self.assertEqual(len(self.matter.participants.all()), 3)

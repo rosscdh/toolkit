@@ -2,8 +2,9 @@
 """
 Matter Participant endpoint
 """
+from django.contrib.contenttypes.models import ContentType
 from django.forms import EmailField
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
 from django.core.exceptions import PermissionDenied
 
 from rulez import registry as rulez_registry
@@ -14,7 +15,7 @@ from rest_framework.response import Response
 from rest_framework import status as http_status
 
 from toolkit.apps.matter.signals import PARTICIPANT_ADDED
-from toolkit.apps.workspace.models import Workspace
+from toolkit.apps.workspace.models import Workspace, MatterUser
 from toolkit.apps.workspace.services import EnsureCustomerService
 from toolkit.apps.matter.services import MatterParticipantRemovalService
 
@@ -75,7 +76,13 @@ class MatterParticipant(generics.CreateAPIView,
             is_new, new_participant, profile = service.process()
 
         if new_participant not in self.matter.participants.all():
-            self.matter.participants.add(new_participant)
+            matter_user_object = MatterUser(matter=self.matter, user=new_participant)
+            for key, value in data.get('permissions', {}):
+                model_name, permission_name = key.split('.')[0], key.split('.')[1]
+                permission = Permission.objects.get(codename=permission_name,
+                                                    content_type=ContentType.objects.get_for_model(model_name))
+                matter_user_object.data['permissions'][key] = value
+            # matter_user_object.save()
             PARTICIPANT_ADDED.send(sender=self,
                                    matter=self.matter,
                                    participant=new_participant,

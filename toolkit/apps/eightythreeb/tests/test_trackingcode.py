@@ -13,7 +13,7 @@ import httpretty
 
 from model_mommy import mommy
 
-from toolkit.apps.workspace.models import Tool
+from toolkit.apps.workspace.models import Tool, MatterUser
 from toolkit.apps.eightythreeb.models import EightyThreeB
 from toolkit.apps.eightythreeb.management.commands.eightythreeb_usps_track_response import Command as USPSEightyThreeBTracking
 
@@ -50,8 +50,8 @@ class BaseUSPSTrackingCode(TestCase):
 
         self.workspace = mommy.make('workspace.Workspace', name='Lawpal (test)', lawyer=self.lawyer)
         self.workspace.tools.add(Tool.objects.get(slug='83b-election-letters'))
-        self.workspace.participants.add(self.user)
-        self.workspace.participants.add(self.lawyer)
+        MatterUser.objects.create(matter=self.workspace, user=self.user)
+        MatterUser.objects.create(matter=self.workspace, user=self.lawyer)
 
         self.eightythreeb = mommy.make('eightythreeb.EightyThreeB',
                                        slug='e0c545082d1241849be039e338e47a0f',

@@ -61,7 +61,7 @@ class MatterPermissionLogic(PermissionLogic):
                 return False
 
 
-            import pdb;pdb.set_trace()
+            # import pdb;pdb.set_trace()
 
             # TODO: finish and check several things.
 

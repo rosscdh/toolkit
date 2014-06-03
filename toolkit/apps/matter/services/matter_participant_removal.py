@@ -3,6 +3,7 @@ import logging
 from django.core.exceptions import PermissionDenied
 
 from toolkit.apps.matter.signals import PARTICIPANT_DELETED, USER_STOPPED_PARTICIPATING
+from toolkit.apps.workspace.models import MatterUser
 
 
 logger = logging.getLogger('django.request')
@@ -34,7 +35,7 @@ class MatterParticipantRemovalService(object):
 
             elif self.removing_user.profile.is_lawyer and self.matter.lawyer != user_to_remove:
 
-                self.matter.participants.remove(user_to_remove)
+                MatterUser.objects.get(matter=self.matter, user=user_to_remove).delete()
                 PARTICIPANT_DELETED.send(sender=self,
                                          matter=self.matter,
                                          participant=user_to_remove,
