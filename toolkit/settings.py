@@ -341,9 +341,6 @@ PIPELINE_JS = {
             'js/parsley-1.2.4.min.js',
             'js/parsley-form.js',
             'js/application.js',
-
-            'js/elastic_search.js',
-            'js/elastic_search.js',
         ),
         'output_filename': 'js/core.js',
     },
