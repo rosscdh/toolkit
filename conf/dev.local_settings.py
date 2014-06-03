@@ -143,3 +143,15 @@ AUTHY_IS_SANDBOXED = True
 PUSHER_APP_ID = 44301
 PUSHER_KEY = '514360ee427ceb00cd8d'
 PUSHER_SECRET = '8fa687dde7e745e8f9d7'
+
+#
+# Search
+#
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': 'http://127.0.0.1:9200/',
+        'INDEX_NAME': 'toolkit-search',
+    },
+}
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
