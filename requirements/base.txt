@@ -101,3 +101,4 @@ django-stripe-payments==2.0b34
 # Search
 -e git+https://github.com/lawpal/django-haystack.git@lawpal#egg=django-haystack
 pyelasticsearch
+PyPDF2

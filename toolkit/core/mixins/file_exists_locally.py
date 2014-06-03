@@ -35,7 +35,8 @@ class FileExistsLocallyMixin(object):
             file_name = self.get_document_name()
             logger.info('File.DoesNotExistLocally: %s downloading' % file_name)
             return self.download_file(file_name=file_name)
-        return False
+        else:
+            return True
 
     @property
     def file_exists_locally(self):
@@ -48,9 +49,12 @@ class FileExistsLocallyMixin(object):
             logger.error('File does not exist locally: %s raised exception %s' % (self.get_document(), e))
         return False
 
+    def open_local_file(self):
+        return default_storage.open(self.get_document())
+
     def read_local_file(self):
         if self.file_exists_locally is True:
-            return default_storage.open(self.get_document()).read()
+            return self.open_local_file().read()
         return False
 
     def download_file(self, file_name, storage=None):

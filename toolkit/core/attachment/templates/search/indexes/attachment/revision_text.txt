@@ -1,0 +1,3 @@
+{% for page_content in object.document_contents %}
+{{ page_content }}
+{% endfor %}

@@ -8,6 +8,7 @@ from toolkit.core.mixins import (ApiSerializerMixin, IsDeletedMixin, FileExistsL
 from toolkit.utils import get_namedtuple_choices
 
 from jsonfield import JSONField
+from PyPDF2 import PdfFileReader
 
 from .managers import RevisionManager
 from .mixins import StatusLabelsMixin
@@ -90,6 +91,19 @@ class Revision(IsDeletedMixin,
     # override for FileExistsLocallyMixin:
     def get_document(self):
         return self.executed_file
+
+    @property
+    def document_contents(self):
+        try:
+            if self.ensure_file():
+                pdf = PdfFileReader(self.open_local_file())
+                print pdf.numPages
+                for page_num in xrange(0, pdf.numPages):
+                    content = pdf.getPage(page_num).extractText()
+                    print content
+                    yield content
+        except Exception as e:
+            pass
 
     @property
     def revisions(self):
