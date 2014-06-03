@@ -2,6 +2,7 @@
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.dispatch import Signal, receiver
+from toolkit.apps.matter.services.matter_permission import MatterUserPermissionService
 
 from toolkit.apps.matter.signals import PARTICIPANT_ADDED
 from toolkit.apps.workspace.models import Workspace, MatterUser
@@ -36,6 +37,13 @@ class MatterParticipantTest(BaseEndpointTest):
 
     def setUp(self):
         super(MatterParticipantTest, self).setUp()
+
+        MatterUserPermissionService(matter=self.matter,
+                                    changed_user=self.lawyer,
+                                    changing_user=self.lawyer,
+                                    permissions='{"workspace.manage_participants": true}',
+                                    # permissions='{"workspace.manage_participants_workspace": true}',
+                                    override=True).process()
 
         self.lawyer_to_add = mommy.make('auth.User', username='New Lawyer', email='newlawyer@lawpal.com')
         self.lawyer_to_add.set_password(self.password)

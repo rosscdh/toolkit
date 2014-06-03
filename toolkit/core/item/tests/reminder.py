@@ -30,8 +30,8 @@ class ReminderServiceTest(BaseScenarios, TestCase):
     def test_reminder_negative(self):
         # create item out of reminding period
         mommy.make('item.Item',
-                          matter=self.matter,
-                          date_due=timezone.now() + datetime.timedelta(days=settings.REMIND_DUE_DATE_LIMIT + 1))
+                   matter=self.matter,
+                   date_due=timezone.now() + datetime.timedelta(days=settings.REMIND_DUE_DATE_LIMIT + 1))
 
         reminder_service = ReminderService()
         items_to_remind = reminder_service.collect_items()

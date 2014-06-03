@@ -1,8 +1,21 @@
 # -*- coding: utf-8 -*-
+
+import logging
+import re
+
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import PermissionDenied
+
 from permission.conf import settings
 from permission.logics.base import PermissionLogic
 from permission.utils.field_lookup import field_lookup
+
 from toolkit.apps.workspace.models import MatterUser
+
+
+logger = logging.getLogger('django.request')
+permission_pattern = re.compile('^(\w*)\.([a-zA-Z_]*)_([a-zA-Z]*)$')
 
 
 class MatterPermissionLogic(PermissionLogic):
@@ -60,15 +73,23 @@ class MatterPermissionLogic(PermissionLogic):
             except MatterUser.DoesNotExist:
                 return False
 
+            return matter_user.data.get('permissions', {}).get(perm, False)
 
-            # import pdb;pdb.set_trace()
-
-            # TODO: finish and check several things.
-
-
-
-
-            return matter_user.data.get("permissions", {}).get(perm, False)
+            # # key has this scheme: "%s.%s_%s" % (app_label, perm, model_name)
+            # m = re.search(permission_pattern, permission_name)
+            #
+            # app_label = m.group(1)
+            # perm = m.group(2)
+            # model_name = m.group(3)
+            # try:
+            #     permission = Permission.objects.get(
+            #         codename=perm,
+            #         content_type=ContentType.objects.get(app_label=app_label, model=model_name)
+            #     )
+            # except Permission.DoesNotExist:
+            #     logger.critical(u'Permission used which does not exist: %s' % permission_name)
+            #     raise PermissionDenied('You are using a broken permission: %s' % permission_name)
+            #
         return False
 
 
