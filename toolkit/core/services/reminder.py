@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-import datetime
-import logging
 from django.conf import settings
 from django.utils import timezone
 from toolkit.core.item.models import Item
 from toolkit.core.services.lawpal_abridge import LawPalAbridgeService
 
-
+import logging
+import datetime
 logger = logging.getLogger('django.request')
 
 
@@ -59,4 +58,6 @@ class ReminderService(object):
         for item in self.collect_items().iterator():
             # item.participants() seems to be ALWAYS empty. is there a possibility to set it (yet)?
             for participant in item.matter.participants.all():
+                logger.info('Sending reminder to %s for matter item: %s:%s' % (participant, item.matter, item))
+                print 'Sending reminder to %s for matter item: %s:%s' % (participant, item.matter, item)
                 self.send_message_to_abridge(participant, item)
