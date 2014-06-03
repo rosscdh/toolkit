@@ -25,7 +25,7 @@ class RevisionIndex(indexes.SearchIndex, indexes.Indexable):
         """
         Name is actually the :name - v:slug to allow for nice searching
         """
-        return '%s - %s' % (obj.name, obj.slug)
+        return '(%s) %s' % (obj.slug, obj.name)
 
     def prepare_participants(self, obj):
         # Since we're using a M2M relationship with a complex lookup,
