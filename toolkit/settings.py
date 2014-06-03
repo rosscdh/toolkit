@@ -255,6 +255,8 @@ AUTHENTICATION_BACKENDS = (
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 TEMPLATED_EMAIL_BACKEND = 'templated_email.backends.vanilla_django'
 
+COMMENTS_APP = 'threadedcomments'
+
 AWS_STORAGE_BUCKET_NAME = AWS_FILESTORE_BUCKET = 'dev-toolkit-lawpal-com'
 
 AWS_ACCESS_KEY_ID = AWS_UPLOAD_CLIENT_KEY = 'AKIAIRFGFTRB4LRLWC3A'

@@ -64,6 +64,9 @@ python-memcached
 pytz
 -e git+https://github.com/lawpal/django-activity-stream.git@lawpal#egg=django-activity-stream
 
+# Comments
+django-threadedcomments==0.9.0
+
 # Notfications
 -e git+https://github.com/rosscdh/django-stored-messages.git@lawpal#egg=django-stored-messages
 -e git+https://github.com/GoodCloud/django-ajax-uploader.git#egg=django-ajax-uploader
