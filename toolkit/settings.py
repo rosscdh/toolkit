@@ -167,6 +167,10 @@ HELPER_APPS = (
     'south',
     # jenkins
     'django_jenkins',
+
+    # threadedcomments app needs to be above the django.contrib.comments app
+    'threadedcomments',
+    'django.contrib.comments'
 )
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + HELPER_APPS
