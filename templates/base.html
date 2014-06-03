@@ -158,6 +158,12 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.4/handlebars.min.js"></script>
     <script src="{{ STATIC_URL }}js/elastic_search.js"></script>
 
+    <style>
+    .popover{
+        width:412px;
+        min-height:250px;
+    }
+    </style>
     <script type="text/javascript">
     // <![CDATA[
     {% verbatim %}
@@ -171,12 +177,12 @@
         });
 
         search_element.elastic_search({
-            delay:200,
+            delay: 600,
             display_template: function () {
                 return '<a href="{{ url }}" class="list-group-item">' +
                     '<span class="badge">{{ result_type }}</span>' +
-                    '<strong class="list-group-item-heading">{{ name }}<strong>' +
-                    '{{#if description}}<p class="list-group-item-text"><small>{{ description }}</small></p>{{/if}}' +
+                    '<h6 class="list-group-item-heading">{{ name }}</h6>' +
+                    '{{#if description}}<p class="list-group-item-text">{{ description }}</p>{{/if}}' +
                 '</a>';
             },
             callback: function (data, html, self) {
