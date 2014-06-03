@@ -160,6 +160,9 @@ HELPER_APPS = (
     # Api helpers
     #'corsheaders',  # not required yet
 
+    # Search
+    'haystack',
+
     # Asset pipeline
     'pipeline',
 

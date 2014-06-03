@@ -1,0 +1,17 @@
+{{ object.get_absolute_url }}
+{{ object.name }}
+{{ object.description }}
+{{ object.slug }}
+{{ object.matter_code }}
+{{ object.date_created }}
+{{ object.date_modified }}
+
+{{ object.categories }}
+
+{% for s in object.status_labels %}
+    {{ s }}
+{% endfor %}
+
+{% for p in object.participants.all %}
+    {{ p.get_full_name }}
+{% endfor %}

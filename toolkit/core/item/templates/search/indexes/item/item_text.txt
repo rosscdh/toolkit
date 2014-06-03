@@ -1,0 +1,23 @@
+{{ object.slug }}
+{{ object.get_absolute_url }}
+{{ object.name }}
+{{ object.description }}
+{{ object.matter }}
+{{ object.responsible_party }}
+{{ object.client }}
+{{ object.display_status }}
+{{ object.sort_order }}
+{{ object.closing_group }}
+{{ object.category }}
+{{ object.latest_revision }}
+{{ object.is_final }}
+{{ object.is_complete }}
+{{ object.is_requested }}
+{{ object.data }}
+{{ object.date_due }}
+{{ object.date_created }}
+{{ object.date_modified }}
+
+{% for r in object.reviewers.all %}
+    {{ r }}
+{% endfor %}
