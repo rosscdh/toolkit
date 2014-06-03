@@ -6,7 +6,9 @@ from django.core.urlresolvers import reverse
 from django.utils.html import strip_spaces_between_tags as minify_html
 
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
+from toolkit.apps.matter.services.matter_permission import MightyMatterUserPermissionService
 from toolkit.apps.notification.templatetags.notice_tags import get_notification_template
+from toolkit.apps.workspace.models import ROLES
 from toolkit.casper.workflow_case import BaseScenarios
 
 from stored_messages.models import Inbox
@@ -126,6 +128,11 @@ class NotificationEventsListTest(BaseListViewTest):
 
     def test_removed_matter_participant(self):
         self.client.login(username=self.lawyer.username, password=self.password)
+
+        MightyMatterUserPermissionService(matter=self.matter,
+                                          role=ROLES.lawyer,
+                                          user=self.lawyer,
+                                          changing_user=self.lawyer).process(permissions={'workspace.manage_participants': True})
 
         endpoint_url = reverse('matter_participant', kwargs={'matter_slug': self.matter.slug})
         """

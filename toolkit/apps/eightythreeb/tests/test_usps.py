@@ -8,6 +8,7 @@ import httpretty
 from model_mommy import mommy
 from usps.api import USPS_CONNECTION
 from usps.api.tracking import TrackConfirmWithFields
+from toolkit.apps.matter.services.matter_permission import MightyMatterUserPermissionService
 from toolkit.casper.prettify import httprettify_methods, mock_http_requests  # must import directly
 from toolkit.apps.workspace.services import USPSTrackingService, USPSResponse
 
@@ -16,7 +17,7 @@ from .usps_trackfield_response import TRACK_UNDELIVERED_RESPONSE_XML_BODY
 
 from toolkit.core.mixins.query import IsDeletedQuerySet
 
-from toolkit.apps.workspace.models import Tool, MatterUser
+from toolkit.apps.workspace.models import Tool, MatterParticipant, ROLES
 from toolkit.apps.eightythreeb.models import EightyThreeB
 from toolkit.apps.eightythreeb.management.commands.eightythreeb_usps_track_response import Command as USPSEightyThreeBTracking
 
@@ -44,8 +45,15 @@ class BaseUSPSTrackingCode(TestCase):
 
         self.workspace = mommy.make('workspace.Workspace', name='Lawpal (test)', lawyer=self.lawyer)
         self.workspace.tools.add(Tool.objects.get(slug='83b-election-letters'))
-        MatterUser.objects.create(matter=self.workspace, user=self.user)
-        MatterUser.objects.create(matter=self.workspace, user=self.lawyer)
+
+        MightyMatterUserPermissionService(matter=self.workspace,
+                                          role=ROLES.customer,
+                                          user=self.user,
+                                          changing_user=self.lawyer).process()
+        MightyMatterUserPermissionService(matter=self.workspace,
+                                          role=ROLES.lawyer,
+                                          user=self.lawyer,
+                                          changing_user=self.lawyer).process()
 
         self.eightythreeb = mommy.make('eightythreeb.EightyThreeB',
                                        slug='e0c545082d1241849be039e338e47a0f',

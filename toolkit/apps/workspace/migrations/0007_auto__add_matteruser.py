@@ -8,22 +8,22 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding model 'MatterUser'
-        db.create_table(u'workspace_matteruser', (
+        # Adding model 'MatterParticipant'
+        db.create_table(u'workspace_MatterParticipant', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('matter', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['workspace.Workspace'])),
             ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
             ('data', self.gf('jsonfield.fields.JSONField')(default={})),
         ))
-        db.send_create_signal(u'workspace', ['MatterUser'])
+        db.send_create_signal(u'workspace', ['MatterParticipant'])
 
         # Removing M2M table for field participants on 'Workspace'
         db.delete_table(db.shorten_name(u'workspace_workspace_participants'))
 
 
     def backwards(self, orm):
-        # Deleting model 'MatterUser'
-        db.delete_table(u'workspace_matteruser')
+        # Deleting model 'MatterParticipant'
+        db.delete_table(u'workspace_MatterParticipant')
 
         # Adding M2M table for field participants on 'Workspace'
         m2m_table_name = db.shorten_name(u'workspace_workspace_participants')
@@ -92,8 +92,8 @@ class Migration(SchemaMigration):
             'tool': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['workspace.Tool']", 'null': 'True', 'blank': 'True'}),
             'tool_object_id': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'})
         },
-        u'workspace.matteruser': {
-            'Meta': {'object_name': 'MatterUser'},
+        u'workspace.MatterParticipant': {
+            'Meta': {'object_name': 'MatterParticipant'},
             'data': ('jsonfield.fields.JSONField', [], {'default': '{}'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'matter': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['workspace.Workspace']"}),
@@ -118,7 +118,7 @@ class Migration(SchemaMigration):
             'lawyer': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'lawyer_workspace'", 'null': 'True', 'to': u"orm['auth.User']"}),
             'matter_code': ('django.db.models.fields.SlugField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'participants': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.User']", 'symmetrical': 'False', 'through': u"orm['workspace.MatterUser']", 'blank': 'True'}),
+            'participants': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.User']", 'symmetrical': 'False', 'through': u"orm['workspace.MatterParticipant']", 'blank': 'True'}),
             'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'blank': 'True'}),
             'tools': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['workspace.Tool']", 'symmetrical': 'False', 'blank': 'True'})
         }

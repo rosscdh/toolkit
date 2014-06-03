@@ -5,10 +5,11 @@ from model_mommy import mommy
 from pyquery import PyQuery as pq
 
 from .base import BaseCasperJs
+from toolkit.apps.matter.services.matter_permission import MightyMatterUserPermissionService
+from toolkit.apps.workspace.models import ROLES
 
 from toolkit.core.item.models import Item
 from toolkit.api.serializers import MatterSerializer
-from toolkit.apps.workspace.models import MatterUser
 
 import json
 import mock
@@ -65,8 +66,14 @@ class BaseScenarios(object):
         for tool in Tool.objects.all():
             self.workspace.tools.add(tool)
 
-        MatterUser.objects.create(matter=self.workspace, user=self.user)
-        MatterUser.objects.create(matter=self.workspace, user=self.lawyer)
+        MightyMatterUserPermissionService(matter=self.workspace,
+                                          role=ROLES.customer,
+                                          user=self.user,
+                                          changing_user=self.lawyer).process()
+        MightyMatterUserPermissionService(matter=self.workspace,
+                                          user=self.lawyer,
+                                          role=ROLES.lawyer,
+                                          changing_user=self.lawyer).process()
 
         eightythreeb_data = BASE_EIGHTYTHREEB_DATA
         eightythreeb_data['markers'] = {}  # set the markers to nothing

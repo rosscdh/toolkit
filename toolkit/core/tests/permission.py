@@ -10,6 +10,6 @@ class PermissionTest(BaseScenarios, TestCase):
         super(PermissionTest, self).setUp()
         self.basic_workspace()
         self.item = mommy.make('item.Item', matter=self.matter)
-
-    def test_add_perm(self):
-        self.assertEqual(self.lawyer.has_perm('workspace.manage_participants', self.matter), True)
+    #
+    # def test_add_perm(self):
+    #     self.assertEqual(self.lawyer.has_perm('workspace.manage_participants', self.matter), True)

@@ -3,7 +3,7 @@ import logging
 from django.core.exceptions import PermissionDenied
 
 from toolkit.apps.matter.signals import PARTICIPANT_DELETED, USER_STOPPED_PARTICIPATING
-from toolkit.apps.workspace.models import MatterUser
+from toolkit.apps.workspace.models import MatterParticipant
 
 
 logger = logging.getLogger('django.request')
@@ -27,20 +27,17 @@ class MatterParticipantRemovalService(object):
             # all participants can remove themselves; laywers can remove other participants but not the primary lawyer
             #
             if self.removing_user == user_to_remove:
-
-                self.matter.participants.remove(user_to_remove)
+                MatterParticipant.objects.get(matter=self.matter, user=user_to_remove).delete()
                 USER_STOPPED_PARTICIPATING.send(sender=self,
                                                 matter=self.matter,
                                                 participant=user_to_remove)
 
             elif self.removing_user.profile.is_lawyer and self.matter.lawyer != user_to_remove:
-
-                MatterUser.objects.get(matter=self.matter, user=user_to_remove).delete()
+                MatterParticipant.objects.get(matter=self.matter, user=user_to_remove).delete()
                 PARTICIPANT_DELETED.send(sender=self,
                                          matter=self.matter,
                                          participant=user_to_remove,
                                          user=self.removing_user)
-
             else:
                 logger.error(u'User %s tried to remove the participant: %s in the matter: %s but were not the primary lawyer' %
                              (self.current_user, user_to_remove, self.matter))

@@ -11,7 +11,7 @@ from permission.conf import settings
 from permission.logics.base import PermissionLogic
 from permission.utils.field_lookup import field_lookup
 
-from toolkit.apps.workspace.models import MatterUser
+from toolkit.apps.workspace.models import MatterParticipant
 
 
 logger = logging.getLogger('django.request')
@@ -69,11 +69,11 @@ class MatterPermissionLogic(PermissionLogic):
             return False
         elif user_obj.is_active:
             try:
-                matter_user = MatterUser.objects.get(matter=obj, user=user_obj)
-            except MatterUser.DoesNotExist:
+                matter_participant = MatterParticipant.objects.get(matter=obj, user=user_obj)
+            except MatterParticipant.DoesNotExist:
                 return False
 
-            return matter_user.data.get('permissions', {}).get(perm, False)
+            return matter_participant.data.get('permissions', {}).get(perm, False)
 
             # # key has this scheme: "%s.%s_%s" % (app_label, perm, model_name)
             # m = re.search(permission_pattern, permission_name)

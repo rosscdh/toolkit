@@ -15,7 +15,7 @@ from rest_framework import status as http_status
 from toolkit.apps.matter.services.matter_permission import MatterUserPermissionService
 
 from toolkit.apps.matter.signals import PARTICIPANT_ADDED
-from toolkit.apps.workspace.models import Workspace
+from toolkit.apps.workspace.models import Workspace, ROLES
 from toolkit.apps.workspace.services import EnsureCustomerService
 from toolkit.apps.matter.services import MatterParticipantRemovalService
 
@@ -78,16 +78,17 @@ class MatterParticipant(generics.CreateAPIView,
 
         if new_participant not in self.matter.participants.all():
             MatterUserPermissionService(matter=self.matter,
-                                        changing_user=self.request.user,
-                                        changed_user=new_participant,
-                                        permissions=permissions).process()
+                                        role=ROLES.get_value_by_name(user_class),
+                                        user=new_participant,
+                                        changing_user=self.request.user).process(permissions=permissions)
             PARTICIPANT_ADDED.send(sender=self,
                                    matter=self.matter,
                                    participant=new_participant,
                                    user=request.user,
                                    note=message)
 
-        return Response(SimpleUserSerializer(new_participant, context={'request': self.request}).data, status=http_status.HTTP_202_ACCEPTED)
+        return Response(SimpleUserSerializer(new_participant, context={'request': self.request}).data,
+                        status=http_status.HTTP_202_ACCEPTED)
 
     def delete(self, request, **kwargs):
         status = http_status.HTTP_202_ACCEPTED
@@ -105,7 +106,7 @@ class MatterParticipant(generics.CreateAPIView,
             service = MatterParticipantRemovalService(matter=self.matter, removing_user=request.user)
             service.process(participant_to_remove)
 
-        except PermissionDenied:
+        except PermissionDenied, e:
             status = http_status.HTTP_403_FORBIDDEN
 
         return Response(status=status)

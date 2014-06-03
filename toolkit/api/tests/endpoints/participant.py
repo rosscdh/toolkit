@@ -2,10 +2,10 @@
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.dispatch import Signal, receiver
-from toolkit.apps.matter.services.matter_permission import MatterUserPermissionService
+from toolkit.apps.matter.services.matter_permission import MightyMatterUserPermissionService
 
 from toolkit.apps.matter.signals import PARTICIPANT_ADDED
-from toolkit.apps.workspace.models import Workspace, MatterUser
+from toolkit.apps.workspace.models import Workspace, MatterParticipant, ROLES
 
 from . import BaseEndpointTest
 from ...serializers import ClientSerializer
@@ -38,12 +38,11 @@ class MatterParticipantTest(BaseEndpointTest):
     def setUp(self):
         super(MatterParticipantTest, self).setUp()
 
-        MatterUserPermissionService(matter=self.matter,
-                                    changed_user=self.lawyer,
-                                    changing_user=self.lawyer,
-                                    permissions='{"workspace.manage_participants": true}',
-                                    # permissions='{"workspace.manage_participants_workspace": true}',
-                                    override=True).process()
+        MightyMatterUserPermissionService(matter=self.matter,
+                                          user=self.lawyer,
+                                          changing_user=self.lawyer,
+                                          role=ROLES.customer)\
+            .process(permissions={"workspace.manage_participants": True})
 
         self.lawyer_to_add = mommy.make('auth.User', username='New Lawyer', email='newlawyer@lawpal.com')
         self.lawyer_to_add.set_password(self.password)
@@ -198,7 +197,10 @@ class MatterParticipantTest(BaseEndpointTest):
         from the participants
         """
         # add new layer to participants
-        MatterUser.objects.create(matter=self.matter, user=self.lawyer_to_add)
+        MightyMatterUserPermissionService(matter=self.matter,
+                                          role=ROLES.lawyer,
+                                          user=self.lawyer_to_add,
+                                          changing_user=self.lawyer).process()
         self.matter = Workspace.objects.get(pk=self.matter.pk)
 
         self.assertEqual(len(self.matter.participants.all()), 3)
