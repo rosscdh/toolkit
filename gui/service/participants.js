@@ -15,6 +15,7 @@ angular.module('toolkit-gui').factory('participantService', [
 				'list': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }, 'isArray': true },
 				'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } },
 				'invite': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } },
+				'update': { 'method': 'PATCH', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } },
 				'revoke': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } }
 			});
 		}
@@ -198,6 +199,34 @@ angular.module('toolkit-gui').factory('participantService', [
 				api.revoke( { 'matterSlug': matterSlug, 'id': details.email },
 					function success() {
 						deferred.resolve();
+					},
+					function error( err ) {
+						deferred.reject( err );
+					}
+				);
+
+				return deferred.promise;
+			},
+
+             /**
+			 * Updates the participant object.
+			 *
+			 * @name				update
+			 *
+			 * @example
+		 	 * participantService.update( {} );
+			 *
+			 * @public
+			 * @method				update
+			 * @memberof			participantService
+		 	 */
+			'update': function( matterSlug, person ) {
+				var deferred = $q.defer();
+				var api = participantAPI();
+
+				api.update( { 'matterSlug': matterSlug, 'id': person.email }, person,
+					function success( response ) {
+						deferred.resolve( response );
 					},
 					function error( err ) {
 						deferred.reject( err );
