@@ -16,7 +16,7 @@ class MatterUserPermissionService(object):
     MatterUserPermissionService(matter=self.matter,
                                 changed_user=self.lawyer,
                                 changing_user=self.lawyer,
-                                permissions='{"workspace.manage_participants_workspace": true}'  # only given permissions are changed
+                                permissions='{"workspace.manage_participants": true}'  # only given permissions are changed
                                 ).process()
 
     override is ONLY used for initialisation
