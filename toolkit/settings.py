@@ -97,6 +97,8 @@ PROJECT_APPS = (
     'toolkit.core.client',
     'toolkit.core.item',
     'toolkit.core.attachment',
+    #Search
+    'toolkit.core.search',
 
     # Module Apps
     'toolkit.apps.api',
@@ -159,6 +161,9 @@ HELPER_APPS = (
 
     # Api helpers
     #'corsheaders',  # not required yet
+
+    # Search
+    'haystack',
 
     # Asset pipeline
     'pipeline',
@@ -322,6 +327,35 @@ PIPELINE_CSS = {
   }
 }
 PIPELINE_JS = {
+    'core': {
+        'source_filenames': (
+            'js/jquery.ui.touch-punch.min.js',
+            'js/bootstrap.min.js',
+            'js/bootstrap-select.js',
+            'js/bootstrap-switch.js',
+            'js/flatui-checkbox.js',
+            'js/flatui-radio.js',
+            'js/jquery.tagsinput.js',
+            'js/jquery.placeholder.js',
+            'js/bootstrap-typeahead.js',
+            'js/parsley-1.2.4.min.js',
+            'js/parsley-form.js',
+            'js/application.js',
+
+            'js/elastic_search.js',
+            'js/elastic_search.js',
+        ),
+        'output_filename': 'js/core.js',
+    },
+
+    'lawpal_search': {
+        'source_filenames': (
+            'js/elastic_search.js',
+            'js/lawpal_search.js',
+        ),
+        'output_filename': 'js/lawpal_search.js',
+    },
+
     'reactjs': {
         'source_filenames': (
             'js/react-0.10.0.js',

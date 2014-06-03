@@ -16,7 +16,6 @@ class ReminderService(object):
 
     def __init__(self, reminding_limit=settings.REMIND_DUE_DATE_LIMIT):
         self.reminding_limit = reminding_limit
-
         self.abridge_services = {}
 
     def collect_items(self):

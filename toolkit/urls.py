@@ -49,6 +49,9 @@ urlpatterns = patterns('',
 
     url(r'^favicon\.ico$', RedirectView.as_view(url='%simages/favicon.ico' % settings.STATIC_URL)),
 
+    # search
+    url(r'^s/', include('toolkit.core.search.urls')),
+
     # home default terminator
     url(r'^', include('toolkit.apps.default.urls', namespace='public')),
 )
