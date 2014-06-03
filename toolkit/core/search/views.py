@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
-from django.shortcuts import render
-
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
-from rest_framework.renderers import UnicodeJSONRenderer
 
 from haystack.inputs import AutoQuery
 from haystack.query import SearchQuerySet
@@ -21,7 +18,8 @@ class SearchResultsView(generics.ListAPIView):
         SearchQuerySet().filter(text=AutoQuery('crawford -date_created'))
         """
         query = self.request.GET.get('q')
-        return SearchQuerySet().filter(text=AutoQuery(query))
+        return SearchQuerySet().filter(text=AutoQuery(query),
+                                       participants__in=[self.request.user.pk])
 
     def get(self, request, format=None):
         """
