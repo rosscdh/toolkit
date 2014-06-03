@@ -9,88 +9,82 @@
             <div class="row existing-participants">
             <div class="col-sm-6 ">
                 <ul class="list-unstyled participants">
-                    <li ng-repeat="person in participants">
+                    <li ng-repeat="person in participants" ng-click="data.selectedUser=person">
                         <span class="user {{person.user_class}}" ng-bind="person | initials"></span>
                         <label ng-bind="person | fullname"></label>
                         <small  class ="{{person.user_class}}" ng-show="person.user_class">({{ person.user_class }}<span ng-show="person.username==currentUser.username">, you</span><span ng-show="person.username==matter.lawyer.username" class="owner">, owner</span>)
                         </small>
-
-                        <a class="text-danger" ng-show="person.username===currentUser.username&&currentUser.user_class!=='lawyer'" href="javascript:;" ng-click="revoke(person)"><small>Exit matter</small></a>
                     </li>
-
-
-
                 </ul>
+                <!--
                 <div class="text-center">
                      <a class="btn btn-sm btn-inverse">
                         <span class="fui-user"></span> Add a Participant
                     </a>
                 </div>
+                -->
             </div>
-            <div class='col-sm-6 details'>
-                <div class="client-permissions">
+
+            <div class='col-sm-6 details' ng-show="data.selectedUser">
+                <div class="client-permissions" ng-show="data.selectedUser.user_class!=='lawyer'">
                      <div class="user-details text-right">
-                         <a class="revoke" ng-show="person.username!==currentUser.username&&currentUser.user_class==='lawyer'&&person.username!=matter.lawyer.username" href="javascript:;" ng-click="revoke(person)"><small>Revoke access</small></a>
+                         <a class="revoke" ng-show="data.selectedUser.username!==currentUser.username&&currentUser.user_class==='lawyer'&&person.username!=matter.lawyer.username" href="javascript:;" ng-click="revoke(data.selectedUser)"><small>Revoke access</small></a>
+                         <a class="revoke" ng-show="data.selectedUser.username===currentUser.username&&currentUser.user_class!=='lawyer'" href="javascript:;" ng-click="revoke(data.selectedUser)"><small>Exit matter</small></a>
                     </div>
-                    <div class="user-large customer">TC</div>
+                    <div class="user-large customer" ng-bind="data.selectedUser.initials"></div>
                     <div class='permissions-checklist'>
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox"> Able to Add Clients to Matter
+                                <input type="checkbox" ng-model="data.selectedUser.permissions.1"> Able to Add Clients to Matter
                             </label>
                         </div>
                     </div>
                     <div class='text-center'>
-                       <a class="btn btn-sm save-perm-btn"><span class="fui-check"></span> Save Permissions</a>
+                       <a class="btn btn-sm save-perm-btn" ng-click="update(data.selectedUser)"><span class="fui-check"></span> Save Permissions</a>
                     </div>
                 </div>
 
-                    <div class="colleague-permissions">
+                <div class="colleague-permissions" ng-show="data.selectedUser.user_class==='lawyer'">
                      <div class="user-details text-right">
-                         <a class="revoke" ng-show="person.username!==currentUser.username&&currentUser.user_class==='lawyer'&&person.username!=matter.lawyer.username" href="javascript:;" ng-click="revoke(person)"><small>Revoke access</small></a>
+                         <a class="revoke" ng-show="person.username!==currentUser.username&&currentUser.user_class==='lawyer'&&person.username!=matter.lawyer.username" href="javascript:;" ng-click="revoke(data.selectedUser)"><small>Revoke access</small></a>
                     </div>
                     <div class="user-large lawyer">TL</div>
                     <div class='permissions-checklist'>
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox"> Manage participants in this matter <div class='text-muted'>(including adding a removing colleagues and clients)</div>
+                                <input type="checkbox" ng-model="data.selectedUser.permissions.1"> Manage participants in this matter <div class='text-muted'>(including adding a removing colleagues and clients)</div>
                             </label>
                         </div>
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox"> Manage Matter checklist items and categories
+                                <input type="checkbox" ng-model="data.selectedUser.permissions.2"> Manage Matter checklist items and categories
                             </label>
                         </div>
                          <div class="checkbox">
                             <label>
-                                <input type="checkbox"> Mark checklist items as complete
+                                <input type="checkbox" ng-model="data.selectedUser.permissions.3"> Mark checklist items as complete
                             </label>
                         </div>
 
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox"> Manage Requests
+                                <input type="checkbox" ng-model="data.selectedUser.permissions.4"> Manage Requests
                             </label>
                         </div>
                           <div class="checkbox">
                             <label>
-                                <input type="checkbox"> Manage signing and signature requests
+                                <input type="checkbox" ng-model="data.selectedUser.permissions.5"> Manage signing and signature requests
                             </label>
                         </div>
                     </div>
                     <div class='text-center'>
-                       <a class="btn btn-sm save-perm-btn"><span class="fui-check"></span> Save Permissions</a>
+                       <a class="btn btn-sm save-perm-btn" ng-click="update(data.selectedUser)"><span class="fui-check"></span> Save Permissions</a>
                     </div>
                 </div>
-
-
-
             </div>
         </div>
         <div class="new-participant">
-            <h5>Add a Participant
-                <a href="javascript:;" class="close" ng-click="">x</a>
-            </h5>
+            <h5>Add a Participant<!--<a href="javascript:;" class="close" ng-click="">x</a>--></h5>
             <div class="row">
                 <div class="col-sm-6">
                     <a href="javascript:;" class="btn btn-primary lawyer" ng-click="data.showAddLawyer=true">Add a Colleague</a>
@@ -114,30 +108,32 @@
             <p>Adding a colleague to this matter will give them access to edit the checklist, download documents and assign tasks. </p>
 			<div ng-class="{'has-success': data.participant, 'has-warning': data.isNew, 'has-error': data.validationError }">
 				<p class="bg-info" for="inviteeEmail" ng-show="data.participant">Lawyer {{ data.participant | fullname }} found. </p>
-                <p class="bg-danger" for="inviteeEmail" ng-show="data.isNew">Lawyer must be a registered LawPal user. Please ask them to signup at LawPal.com</p>
-                <p class="bg-danger" for="inviteeEmail" ng-show="data.isParticipant">This user is not registered as a lawyer on LawPal. Please contact support@lawpal.com. </p>
-				<input type="email" id="inviteeEmail" class="form-control form-control-full-width" ng-model="data.invitee.email" placeholder="rob.s@gmail.com" required ng-blur="checkIfUserExists(true)" autocomplete="off"/>
+        		<input type="email" id="inviteeEmail" class="form-control form-control-full-width" ng-model="data.invitee.email" placeholder="rob.s@gmail.com" required ng-blur="checkIfUserExists(true)" autocomplete="off"/>
 			</div>
+            <div class="">
+                <input type="text" class="form-control input-sm" ng-model="data.invitee.first_name" placeholder="First name" ng-show="data.isNew" />
+                <input type="text" class="form-control input-sm" ng-model="data.invitee.last_name" placeholder="Last name" ng-show="data.isNew" />
+            </div>
 			<div >
 				<textarea class="form-control form-control-full-width" ng-model="data.invitee.message" placeholder="Add an optional message"></textarea>
 			</div>
                    <div class="checkbox">
                             <label>
-                                <input type="checkbox">Manage Participants in this Matter <span class="text-muted">(including adding a removing colleagues and clients)</span>
+                                <input type="checkbox" ng-model="data.invitee.permissions.1">Manage Participants in this Matter <span class="text-muted">(including adding a removing colleagues and clients)</span>
                             </label>
                         </div>
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox"> Able to Add, Complete and Destroy Requests for Review
+                                <input type="checkbox" ng-model="data.invitee.permissions.2"> Able to Add, Complete and Destroy Requests for Review
                             </label>
                         </div>
                          <div class="checkbox">
                             <label>
-                                <input type="checkbox"> Manage Items
+                                <input type="checkbox" ng-model="data.invitee.permissions.3"> Manage Items
                             </label>
                         </div>
 
-                        <div class="checkbox">
+                        <div class="checkbox" ng-model="data.invitee.permissions.4">
                             <label>
                                 <input type="checkbox"> Manage Signatures & Send Documents for Signature
                             </label>
@@ -167,7 +163,7 @@
 			</div>
                <div class="checkbox">
                             <label>
-                                <input type="checkbox">Manage clients in this matter
+                                <input type="checkbox" ng-model="data.invitee.permissions.1">Manage clients in this matter
 
                                 <span class="text-muted">(user can add additional clients to this matter and remove those that they added)</span>
                             </label>
