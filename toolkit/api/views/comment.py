@@ -8,14 +8,16 @@ from django.utils import timezone
 from rulez import registry as rulez_registry
 
 from actstream.models import Action
+from threadedcomments.models import ThreadedComment
 
 from rest_framework import generics
 from rest_framework import status as http_status
 from rest_framework.response import Response
 from rest_framework import permissions
 
-from toolkit.api.serializers import ItemActivitySerializer
+from toolkit.api.serializers import (ItemActivitySerializer, MatterCommentSerializer)
 from toolkit.api.views.mixins import MatterItemsQuerySetMixin
+from toolkit.apps.workspace.models import Workspace
 
 
 class ItemCommentEndpoint(MatterItemsQuerySetMixin,
@@ -103,3 +105,23 @@ class ItemCommentEndpoint(MatterItemsQuerySetMixin,
         return user.profile.user_class in ['lawyer', 'customer']
 
 rulez_registry.register("can_edit", ItemCommentEndpoint)
+
+
+class MatterCommentEndpoint(generics.ListAPIView,
+                            generics.CreateAPIView,
+                            generics.UpdateAPIView,
+                            generics.DestroyAPIView):
+    lookup_field = 'matter_slug'
+    model = Workspace
+    serializer_class = MatterCommentSerializer
+
+    def initialize_request(self, request, *args, **kwargs):
+        # provide the matter object
+        self.matter = get_object_or_404(Workspace, slug=kwargs.get('matter_slug'))
+        return super(MatterCommentEndpoint, self).initialize_request(request, *args, **kwargs)
+
+    def get_queryset(self):
+        return ThreadedComment.objects.for_model(self.matter)
+
+    def can_read(self, user):
+        return user.profile.user_class in ['lawyer', 'customer']
