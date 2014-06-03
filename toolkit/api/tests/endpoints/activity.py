@@ -37,7 +37,7 @@ class MatterActivityEndpointTest(BaseEndpointTest):
 
         events = json_data['results']
 
-        self.assertEqual(len(events), 3)  # create matter, create item, added participant; we dont record the participant add because participant add where the adding user is teh same as the added user is skipped
+        self.assertEqual(len(events), 2)  # create matter, create item
         self.assertGreater(len(events[0]['event']), 10)  # just to see if event-text contains information. username is not fix.
 
         stream_event = Action.objects.filter(action_object_object_id=self.item.id,

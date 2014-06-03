@@ -38,14 +38,19 @@
             </div>
 
             <form method="POST" action="{{ approve_url }}" class="modal-footer">
-                <div class="pull-left">
+                <div class="row">
+                <div class="col-lg-3 pull-left">
                     <div class="padlock"><span class="fui-lock" title=""></span> Visible to:</div>
                     {% for p in review.participants %}{% avatar p %}{% endfor %}
                 </div>
-                <span class="text-muted" style="padding-right:20px;"><small>Press Review Complete once you have finished making comments on the document or Close to keep the review open.</small></span>  
-                <input type="submit" name="submit" value="Review Complete" class="btn btn-primary" id="submit-id-submit">
-                <a href="javascript:;" name="cancel" value="Close" data-dismiss="modal" class="btn btn-default">Close</a>
-
+                    <div class="col-lg-6 text-left">
+                        <span class="text-muted" style="padding-right:20px;"><small>Press Review Complete once you have finished making comments on the document or Close to keep the review open.</small></span>
+                    </div>
+                    <div class="col-lg-3">
+                        <input type="submit" name="submit" value="Review Complete" class="btn btn-primary" id="submit-id-submit">
+                        <a href="javascript:;" name="cancel" value="Close" data-dismiss="modal" class="btn btn-default">Close</a>
+                    </div>
+                </div>
             </form>
         </div>
     </div>

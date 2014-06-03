@@ -135,3 +135,46 @@ fab :environment celery_stop:name='custom_name.1'
 
 fab :environment celery_restart:name='custom_name.1'
 ```
+
+
+Development Process
+-------------------
+
+__"The most important thing in communication is hearing what isn't said."__ - *Peter Drucker*
+
+With that in mind, please adhere to the following subtle-communication requirements.
+
+
+### Trello ###
+
+Ensure that you put guistimates in all of your tickets.. (0, 0.5, 1, 2, 3, 5, 8, 13, ...) __fibonacci sequence__
+
+**Required Name Format:**
+
+```
+(:guesstimate) [:branch_name] Short Description
+```
+
+Install this chrome extension as it makes the guestimates look better: 
+
+[Scrum for Trello plugin](https://chrome.google.com/webstore/detail/scrum-for-trello/jdbcdblgjdpmfninkoogcfpnkjmndgje?hl=en)
+
+
+
+### Github ###
+
+Ensure that you create Pull Requests for every branch that you work on. At the beginning not the end (this allows everyone a birds eye view of whats going on)
+
+**Required Name Format:**
+
+When working on it.
+
+```
+[WIP] Short Name
+```
+
+When ready for review.
+
+```
+[REVIEW] Short Name
+```

@@ -179,6 +179,13 @@ body.gui {
   border-bottom: 2px solid mix(@brand-primary, white, 20);
   margin-bottom: 20px;
   position: relative;
+  height: 221px;
+
+
+  .download-link{
+    //margin-left: 5px;
+  }
+
 
   .export-button  {
     transform:rotate(90deg);
@@ -192,6 +199,7 @@ body.gui {
     right: 2px;
     outline: none
   }
+
 
   .dis-export-button{
     transform:rotate(90deg);
@@ -208,26 +216,26 @@ body.gui {
     outline: none;
   }
 
-  .export-message p {
+  .export-message
+    p {
     color: grey;
     font-size: 12px;
-    font-style: italic;
-    line-height: 1.2s;
+    //font-style: italic;
+    line-height: 1.2;
     margin: 0;
-    padding: 0;
-    height: 40px;
-    padding: 5px;
+    height: 30px;
+    padding: 3px;
     position: absolute;
-    top: 10px;
+    top: 18px;
     left: 12px;
-    width: 74%%;
-
-  }
+    width: 85%;
+    background-color: white;
+    };
 
   .content {
-    display: block;
 
-    padding: 35px 14px 10px;
+    display: block;
+    padding: 25px 14px 10px;
 
     .title {
       display:table-cell;

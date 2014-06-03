@@ -820,6 +820,7 @@ body.gui .main-content {
   border-bottom: 2px solid #dadada;
   margin-bottom: 20px;
   position: relative;
+  height: 221px;
 }
 .matter .card .export-button {
   transform: rotate(90deg);
@@ -854,20 +855,19 @@ body.gui .main-content {
 .matter .card .export-message p {
   color: grey;
   font-size: 12px;
-  font-style: italic;
-  line-height: 1.2s;
+  line-height: 1.2;
   margin: 0;
-  padding: 0;
-  height: 40px;
-  padding: 5px;
+  height: 30px;
+  padding: 3px;
   position: absolute;
-  top: 10px;
+  top: 18px;
   left: 12px;
-  width: 74%%;
+  width: 85%;
+  background-color: white;
 }
 .matter .card .content {
   display: block;
-  padding: 35px 14px 10px;
+  padding: 25px 14px 10px;
 }
 .matter .card .content .title {
   display: table-cell;

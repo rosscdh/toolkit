@@ -10,8 +10,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.views.generic import TemplateView, RedirectView, FormView
 
-from dj_authy.views import HoldingPageView
-
 from .forms import SignUpForm, SignInForm, VerifyTwoFactorForm
 
 from toolkit.apps.workspace.forms import InviteKeyForm
@@ -21,7 +19,7 @@ from toolkit.apps.me.mailers import ValidateEmailMailer
 from toolkit.core.services.analytics import AtticusFinch
 
 import logging
-LOGGER = logging.getLogger('django.request')
+logger = logging.getLogger('django.request')
 
 
 def handler500(request, *args, **kwargs):
@@ -50,16 +48,16 @@ class AuthenticateUserMixin(object):
 
     def login(self, user=None):
         if user is not None:
-            LOGGER.info('user is authenticated: %s' % user)
+            logger.info('user is authenticated: %s' % user)
 
             if user.is_active:
-                LOGGER.info('user is active: %s' % user)
+                logger.info('user is active: %s' % user)
                 login(self.request, user)
             else:
-                LOGGER.info('user is not active: %s' % user)
+                logger.info('user is not active: %s' % user)
                 raise UserInactiveException
         else:
-            LOGGER.info('User not authenticated')
+            logger.info('User not authenticated')
             raise UserNotFoundException
 
 
@@ -93,20 +91,7 @@ class SaveNextUrlInSessionMixin(object):
             self.request.session['next'] = next
 
 
-class CustomerToolRedirectMixin(object):
-    def get_tool_redirect_url(self):
-        tool_redirect_url = None
-
-        if self.request.user.profile.is_customer is True:
-            # Redirect the user to the current invite workspace
-            invite_key = InviteKey.objects.filter(invited_user=self.request.user).first()
-            if invite_key is not None:
-                tool_redirect_url = invite_key.get_tool_instance_absolute_url()
-
-        return tool_redirect_url
-
-
-class StartView(CustomerToolRedirectMixin, LogOutMixin, SaveNextUrlInSessionMixin, AuthenticateUserMixin, FormView):
+class StartView(LogOutMixin, SaveNextUrlInSessionMixin, AuthenticateUserMixin, FormView):
     """
     sign in view
     """
@@ -120,22 +105,21 @@ class StartView(CustomerToolRedirectMixin, LogOutMixin, SaveNextUrlInSessionMixi
         if self.authenticated_user.profile.data.get('two_factor_enabled', False):
             url = reverse('public:signin-two-factor')
         else:
-            tool_redirect_url = self.get_tool_redirect_url()
-            if tool_redirect_url:
-                url = tool_redirect_url
-            else:
-                next = self.request.session.get('next')
-                if next is not None:
-                    url = next
+            next = self.request.session.get('next')
+            if next is not None:
+                url = next
 
         return url
 
     def form_valid(self, form):
         # user a valid form log them in
         try:
-            LOGGER.info('authenticating user: %s' % form.cleaned_data.get('email'))
+
+            logger.info('authenticating user: %s' % form.cleaned_data.get('email'))
             self.authenticated_user = self.get_auth(form=form)
-        except UserNotFoundException, UserInactiveException:
+
+        except (UserNotFoundException, UserInactiveException):
+
             return self.form_invalid(form=form)
 
         if self.authenticated_user.profile.data.get('two_factor_enabled', False):
@@ -149,7 +133,7 @@ class StartView(CustomerToolRedirectMixin, LogOutMixin, SaveNextUrlInSessionMixi
         return super(StartView, self).form_valid(form)
 
 
-class VerifyTwoFactorView(CustomerToolRedirectMixin, AuthenticateUserMixin, FormView):
+class VerifyTwoFactorView(AuthenticateUserMixin, FormView):
     form_class = VerifyTwoFactorForm
     template_name = 'public/verify_two_factor.html'
 
@@ -179,7 +163,8 @@ class VerifyTwoFactorView(CustomerToolRedirectMixin, AuthenticateUserMixin, Form
     def form_valid(self, form):
         try:
             self.login(user=self.authenticated_user)
-        except UserNotFoundException, UserInactiveException:
+
+        except (UserNotFoundException, UserInactiveException):
             return self.form_invalid(form=form)
 
         analytics = AtticusFinch()
@@ -190,14 +175,9 @@ class VerifyTwoFactorView(CustomerToolRedirectMixin, AuthenticateUserMixin, Form
     def get_success_url(self):
         url = reverse('matter:list')
 
-        tool_redirect_url = self.get_tool_redirect_url()
-
-        if tool_redirect_url:
-            url = tool_redirect_url
-        else:
-            next = self.request.session.get('next')
-            if next is not None:
-                url = next
+        next = self.request.session.get('next')
+        if next is not None:
+            url = next
 
         return url
 
@@ -248,7 +228,7 @@ class InviteKeySignInView(StartView):
                 return HttpResponseRedirect(invite.next)
         return None
 
-    def get_auth(self, form=None,  invite_key=None):
+    def get_auth(self, form=None, invite_key=None):
         if invite_key is not None:
             return authenticate(username=invite_key, password=None)
 
