@@ -73,7 +73,13 @@ class BaseScenarios(object):
         MightyMatterUserPermissionService(matter=self.workspace,
                                           user=self.lawyer,
                                           role=ROLES.lawyer,
-                                          changing_user=self.lawyer).process()
+                                          changing_user=self.lawyer).process(permissions={
+            "workspace.manage_participants": True,
+            "workspace.manage_requests": True,
+            "workspace.manage_items": True,
+            "workspace.manage_signatures": True,
+            "workspace.manage_clients": True
+        })
 
         eightythreeb_data = BASE_EIGHTYTHREEB_DATA
         eightythreeb_data['markers'] = {}  # set the markers to nothing

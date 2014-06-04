@@ -1,11 +1,12 @@
 Deployment actions by branch
 ----------------------------
 
-[granular-permissions-poc]
+[feature/matter-permissions-global]
 
 1. pip install django-permission
 2. ./manage.py syncdb migrate
-3. TODO: check if custom permissions are created
+3. fab rebuild_local (new permissions for testlawyer. you cannot do many things without them.)
+4. TODO: check if custom permissions are created
 
 --------------------------------------------------------------------------------
 ** DEPLOYED 17 May 2014

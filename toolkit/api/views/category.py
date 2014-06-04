@@ -79,10 +79,12 @@ class CategoryView(SpecificAttributeMixin,
         return user.profile.user_class in ['lawyer', 'customer']
 
     def can_edit(self, user):
-        return user.profile.is_lawyer
+        self.get_object()  # needed so self.object is set. self.get_object() returns category-list which we can't use here
+        return user.has_perm('workspace.manage_items', self.object)
 
     def can_delete(self, user):
-        return user.profile.is_lawyer
+        self.get_object()  # needed so self.object is set. self.get_object() returns category-list which we can't use here
+        return user.has_perm('workspace.manage_items', self.object)
 
 
 rulez_registry.register("can_read", CategoryView)

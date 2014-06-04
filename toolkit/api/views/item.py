@@ -36,13 +36,13 @@ class ItemEndpoint(viewsets.ModelViewSet):
     def can_edit(self, user):
         self.object = self.get_object_or_none()
         if self.object is not None:
-            return user.profile.is_lawyer and user in self.object.matter.participants.all()  # allow any lawyer who is a participant
+            return user.has_perm('workspace.manage_items', self.object.matter)
         return False
 
     def can_delete(self, user):
         self.object = self.get_object_or_none()
         if self.object is not None:
-            return user.profile.is_lawyer and user in self.object.matter.participants.all()  # allow any lawyer who is a participant
+            return user.has_perm('workspace.manage_items', self.object.matter)
         return False
 
 rulez_registry.register("can_read", ItemEndpoint)
@@ -53,6 +53,7 @@ rulez_registry.register("can_delete", ItemEndpoint)
 """
 Matter item endpoints
 """
+
 
 class MatterItemsView(MatterItemsQuerySetMixin,
                       generics.ListCreateAPIView):
@@ -82,9 +83,16 @@ class MatterItemsView(MatterItemsQuerySetMixin,
     def can_edit(self, user):
         return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
 
+        # TODO: fix
+        self.get_object()
+        return user.has_perm('workspace.manage_items', self.object.matter)
+
     def can_delete(self, user):
         return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
 
+        # TODO: fix
+        self.get_object()
+        return user.has_perm('workspace.manage_items', self.object.matter)
 
 rulez_registry.register("can_read", MatterItemsView)
 rulez_registry.register("can_edit", MatterItemsView)
@@ -147,8 +155,14 @@ class MatterItemView(generics.UpdateAPIView,
     def can_edit(self, user):
         return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
 
+        # TODO: fix
+        return user.has_perm('workspace.manage_items', self.get_object().matter)
+
     def can_delete(self, user):
         return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
+
+        # TODO: fix
+        return user.has_perm('workspace.manage_items', self.get_object().matter)
 
 
 rulez_registry.register("can_read", MatterItemView)

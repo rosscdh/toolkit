@@ -141,7 +141,8 @@
         "model": "workspace.matterparticipant",
         "fields": {
             "user": 1,
-            "matter": 1
+            "matter": 1,
+            "role": 1
         }
     },
     {
@@ -150,9 +151,14 @@
         "fields": {
             "user": 2,
             "matter": 1,
+            "role": 1,
             "data": {
                 "permissions": {
-                    "workspace.manage_participants": true
+                    "workspace.manage_participants": true,
+                    "workspace.manage_requests": true,
+                    "workspace.manage_items": true,
+                    "workspace.manage_signatures": true,
+                    "workspace.manage_clients": true
                 }
             }
         }
@@ -162,7 +168,8 @@
         "model": "workspace.matterparticipant",
         "fields": {
             "user": 3,
-            "matter": 1
+            "matter": 1,
+            "role": 1
         }
     },
     {

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from toolkit.core.permission_logic import AdvancedParticipantsPermissionLogic
 
 # PERMISSION_LOGICS = (
 #     ('item.Item', AdvancedParticipantsPermissionLogic(field_name='matter__participants',

@@ -27,8 +27,20 @@ class ClientEndpoint(viewsets.ModelViewSet):
     def can_edit(self, user):
         return user.profile.is_lawyer
 
+        # TODO: fix
+        obj = self.get_object_or_none()
+        if obj:
+            return user.has_perm('workspace.manage_clients', obj)
+        return False
+
     def can_delete(self, user):
         return user.profile.is_lawyer
+
+        # TODO: fix
+        obj = self.get_object_or_none()
+        if obj:
+            return user.has_perm('workspace.manage_clients', obj)
+        return False
 
 
 rulez_registry.register("can_read", ClientEndpoint)

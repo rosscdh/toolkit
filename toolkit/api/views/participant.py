@@ -2,6 +2,7 @@
 """
 Matter Participant endpoint
 """
+import json
 from django.forms import EmailField
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
@@ -62,7 +63,7 @@ class MatterParticipant(generics.CreateAPIView,
         first_name = data.get('first_name')
         last_name = data.get('last_name')
         message = data.get('message')
-        permissions = data.get('permissions')
+        permissions = data.get('permissions', '{}')
 
         try:
             new_participant = User.objects.get(email=email)
@@ -80,7 +81,7 @@ class MatterParticipant(generics.CreateAPIView,
             MatterUserPermissionService(matter=self.matter,
                                         role=ROLES.get_value_by_name(user_class),
                                         user=new_participant,
-                                        changing_user=self.request.user).process(permissions=permissions)
+                                        changing_user=self.request.user).process(permissions=json.loads(permissions))
             PARTICIPANT_ADDED.send(sender=self,
                                    matter=self.matter,
                                    participant=new_participant,
@@ -115,10 +116,10 @@ class MatterParticipant(generics.CreateAPIView,
         return user.profile.user_class in ['lawyer', 'customer']
 
     def can_edit(self, user):
-        return user.profile.is_lawyer
+        return user.has_perm('workspace.manage_participants', self.get_object())
 
     def can_delete(self, user):
-        return user.profile.user_class in ['lawyer', 'customer']
+        return user.has_perm('workspace.manage_participants', self.get_object())  # can I remove myself even without this permission?
 
 
 rulez_registry.register("can_read", MatterParticipant)
