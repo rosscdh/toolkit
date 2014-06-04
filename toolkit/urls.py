@@ -56,3 +56,10 @@ if settings.DEBUG is True or settings.TEST_PREPROD is True:
     # Add the MEDIA_URL to the dev environment
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+if settings.IS_TESTING is True:
+    #
+    # Have to manually append complicated sub urls included in sub apps here
+    # for test environment
+    #
+    urlpatterns += patterns('', url(r'^hellosign/', include('hello_sign.urls', namespace='hello_sign')))
