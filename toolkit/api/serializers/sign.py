@@ -25,7 +25,9 @@ class SignatureSerializer(serializers.HyperlinkedModelSerializer):
                   'percentage_complete')
 
     def get_claim_url(self, obj):
-        return obj.get_claim_url()
+        if obj.signing_request.data.get('is_claimed', False) is False:
+            return obj.get_claim_url()
+        return None
 
     def get_is_claimed(self, obj):
         signing_request = obj.signing_request
