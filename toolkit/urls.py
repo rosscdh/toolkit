@@ -62,4 +62,4 @@ if settings.IS_TESTING is True:
     # Have to manually append complicated sub urls included in sub apps here
     # for test environment
     #
-    urlpatterns += patterns('', url(r'^hellosign/', include('hello_sign.urls', namespace='hello_sign')))
+    urlpatterns += patterns('', url(r'^hellosign/', include('hello_sign.urls')))
