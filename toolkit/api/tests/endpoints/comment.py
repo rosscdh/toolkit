@@ -2,7 +2,7 @@
 from django.core import mail
 from django.conf import settings
 from django.utils import timezone
-from django.core.urlresolvers import reverse
+from rest_framework.reverse import reverse
 
 from actstream.models import Action
 from model_mommy import mommy

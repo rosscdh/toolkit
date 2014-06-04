@@ -2,8 +2,7 @@
 """
 Items are either todo items or document items
 """
-from django.core.urlresolvers import reverse
-
+from rest_framework.reverse import reverse
 from rest_framework import serializers
 
 from toolkit.core.item.models import Item

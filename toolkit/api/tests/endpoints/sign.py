@@ -1,13 +1,9 @@
 # -*- coding: utf-8 -*-
-from actstream.models import target_stream
 from django.core import mail
 from django.conf import settings
 from django.core.files import File
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
-from django.test.client import RequestFactory
 from django.core.validators import URLValidator
-from django.core.files.storage import FileSystemStorage
 
 from toolkit.apps.workspace.models import InviteKey
 from toolkit.casper.workflow_case import PyQueryMixin
@@ -15,12 +11,12 @@ from toolkit.casper.prettify import mock_http_requests
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 
 from . import BaseEndpointTest
-from ...serializers import LiteUserSerializer
 
 from model_mommy import mommy
+from actstream.models import target_stream
+from rest_framework.reverse import reverse
 
 import os
-import mock
 import json
 import random
 import urllib

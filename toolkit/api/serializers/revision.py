@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse
+from rest_framework.reverse import reverse
 
 from rest_framework import serializers
 from urlparse import urlparse
@@ -36,7 +36,7 @@ def _valid_filename_length(filename):
     ext = ext.lower()
 
     if ext not in EXT_WHITELIST:
-        raise ValidationError("Invalid filetype, is: %s should be in: %s" % (ext, self.ext_whitelist))
+        raise ValidationError("Invalid filetype, is: %s should be in: %s" % (ext, EXT_WHITELIST))
 
     if len(base_filename) > MAX_LENGTH_FILENAME:  # allow for 20 aspects to the name in addition ie. v1-etc
         base_filename = base_filename[0:MAX_LENGTH_FILENAME]
@@ -320,7 +320,6 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
     def get_signing(self, obj):
         data = None
         context = getattr(self, 'context', None)
-        request = context.get('request')
 
         sign_document = _get_user_sign(self=self, obj=obj, context=context)
         if sign_document is not None and sign_document.signing_request is not None:

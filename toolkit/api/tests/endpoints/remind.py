@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 from django.core import mail
-from django.core.urlresolvers import reverse
+from rest_framework.reverse import reverse
 
 from toolkit.apps.workspace.models import InviteKey
 from toolkit.casper.workflow_case import PyQueryMixin
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 
 from . import BaseEndpointTest
-from ...serializers import ClientSerializer
 
 from model_mommy import mommy
 

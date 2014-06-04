@@ -33,7 +33,7 @@ def _download_signing_complete_document(hellosign_request, **kwargs):
                                                    auth=settings.HELLOSIGN_AUTHENTICATION)
         except service.DownloadFinalCopyException as e:
 
-            logger.critical(u'Could not download Executd HelloSign Document: %s due to: %s' % (document_revision, e))
+            logger.critical(u'Could not download Executed HelloSign Document: %s due to: %s' % (document_revision, e))
 
         else:
             # update the doc revision object
