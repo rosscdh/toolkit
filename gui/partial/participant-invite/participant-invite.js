@@ -31,6 +31,8 @@ angular.module('toolkit-gui')
 		 * @private
 		 */
 		$scope.participants = participants;
+        $log.debug($scope.participants);
+
 		/**
 		 * In scope variable containing details about the current user. This is passed through from the originating controller.
 		 * @memberof ParticipantInviteCtrl
@@ -38,7 +40,8 @@ angular.module('toolkit-gui')
 		 * @private
 		 */
 		$scope.currentUser = currentUser;
-		/**
+
+        /**
 		 * In scope variable containing details about the matter. This is passed through from the originating controller.
 		 * @memberof ParticipantInviteCtrl
 		 * @type {Object}
@@ -54,7 +57,8 @@ angular.module('toolkit-gui')
 		 */
 		$scope.data = {
 			'invitee': { 'email': '', 'message': ''},
-            'isNew': false
+            'isNew': false,
+            'selectedUser': null
 		};
 
 
@@ -78,32 +82,18 @@ angular.module('toolkit-gui')
                             var p = response.results[0];
 
                             $scope.data.isNew = false;
-                            if (lawyerObligatory && p.user_class !== 'lawyer') {
-                                $scope.data.validationError = true;
-                                $scope.data.isParticipant = true;
-                                $scope.data.participant = null;
-                            } else if (lawyerObligatory==null && p.user_class === 'lawyer'){
-                                $scope.data.isLawyer = true;
-                                $scope.data.validationError = true;
-                                $scope.data.participant = null;
-                            } else {
-                                $scope.data.isParticipant = false;
-                                $scope.data.isLawyer = false;
+                            $scope.data.isParticipant = false;
+                            $scope.data.isLawyer = false;
 
-                                $scope.data.participant = p;
-                                $scope.data.invitee.first_name = p.first_name;
-                                $scope.data.invitee.last_name = p.last_name;
-                            }
+                            $scope.data.participant = p;
+                            $scope.data.invitee.first_name = p.first_name;
+                            $scope.data.invitee.last_name = p.last_name;
 
                         } else {
                             $scope.data.isParticipant = false;
                             $scope.data.isLawyer = false;
                             $scope.data.isNew = true;
                             $scope.data.participant = null;
-
-                            if(lawyerObligatory){
-                                $scope.data.validationError = true;
-                            }
                         }
                     },
                     function error() {
@@ -180,6 +170,7 @@ angular.module('toolkit-gui')
                     if( index>=0 ) {
                         // Remove user from in RAM array
                         $scope.participants.splice(index,1);
+                        $scope.data.selectedUser=null;
                     }
 
                     if(person.username===$scope.currentUser.username){
@@ -191,6 +182,18 @@ angular.module('toolkit-gui')
 				}
 			);
 		};
+
+
+        $scope.update = function( person ){
+            participantService.update( $scope.matter.slug, person ).then(
+				function success() {
+					toaster.pop('success', 'Success!', 'User was updated successfully',5000);
+				},
+				function error() {
+					toaster.pop('error', 'Error!', 'Unable to update the user',5000);
+				}
+			);
+        };
 
 		/**
 		 * Close dialog on afirmative user initiated event (.e.g. click's OK button).
