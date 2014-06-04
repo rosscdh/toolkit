@@ -94,7 +94,8 @@ angular.module('toolkit-gui')
 			'usdata': userService.data(),
             'streamType': 'matter',
             'history': {},
-            'page': 'checklist'
+            'page': 'checklist',
+            'knownSigners': []
 		};
 		//debugger;
 
@@ -1106,6 +1107,9 @@ angular.module('toolkit-gui')
 					},
 					'revision': function () {
 						return revision;
+					},
+                    'knownSigners': function () {
+						return $scope.data.knownSigners;
 					}
 				}
 			});
@@ -1114,6 +1118,18 @@ angular.module('toolkit-gui')
 				function ok(result) {
                     revision.signing = result;
                     revision.signers = result.signers;
+
+                    jQuery.each(result.signers, function(index,signer){
+                        var results = jQuery.grep($scope.data.knownSigners, function (s) {
+                            return s.username === signer.username;
+                        });
+
+					    if( results.length===0 ) {
+                             $scope.data.knownSigners.push(signer);
+                        }
+                    });
+
+                    $log.debug("Length known signers: " + $scope.data.knownSigners.length);
 				},
 				function cancel() {
 					//
@@ -1337,7 +1353,7 @@ angular.module('toolkit-gui')
 			var modalInstance = $modal.open({
 				'templateUrl': '/static/ng/partial/view-signing/view-signing.html',
 				'controller': 'ViewSigningCtrl',
-				'windowClass': 'modal-hellosign',
+				'windowClass': 'modal-full',
 				'resolve': {
 					'matter': function () {
 						return $scope.data.matter;
