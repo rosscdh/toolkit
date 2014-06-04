@@ -11,6 +11,7 @@
 
 <p>Please go to there, login and either sign the document or provide {{ from_name }} with your feedback.</p>
 
+<p>Warning: do not forward this email to others or else they will be able to access your document.</p>
 {% endblock %}
 
 {% block plain_content %}
@@ -22,4 +23,5 @@ You can find it at {{ action_url }}
 
 Please go to there, login and either sign the document or provide {{ from_name }} with your feedback.
 
+Warning: do not forward this email to others or else they will be able to access your document.
 {% endblock %}

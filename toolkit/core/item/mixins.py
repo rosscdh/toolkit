@@ -336,29 +336,27 @@ class RevisionSignReminderEmailsMixin(object):
                 if signdocument_object.has_signed(signer=signer) is False:
                     recipients_set.append(signer)
 
-        for u in recipients_set:
+        for signer in recipients_set:
 
-            mailer = SignerReminderEmail(recipients=((u.get_full_name(), u.email,),), from_tuple=(from_user.get_full_name(), from_user.email,))
+            mailer = SignerReminderEmail(recipients=((signer.get_full_name(), signer.email,),), from_tuple=(from_user.get_full_name(), from_user.email,))
 
-            #
+            
             # if we have one
             # @BUSINESSRULE ALWAYS redirect the invitee to the requests page
             # and not the specific object
+            
+            next_url = signdocument_object.get_absolute_url(signer=signer)
             #
-            # next_url = reverse('request:list')
-            # #
-            # # Create the invite key (it may already exist)
-            # #
-            # invite, is_new = InviteKey.objects.get_or_create(matter=self.matter,
-            #                                                  invited_user=u,
-            #                                                  next=next_url)
-            # invite.inviting_user = from_user
-            # invite.save(update_fields=['inviting_user'])
+            # Create the invite key (it may already exist)
+            #
+            invite, is_new = InviteKey.objects.get_or_create(matter=self.matter,
+                                                             invited_user=signer,
+                                                             next=next_url)
+            invite.inviting_user = from_user
+            invite.save(update_fields=['inviting_user'])
 
             # send the invite url
-            #action_url = ABSOLUTE_BASE_URL(invite.get_absolute_url())
-            action_url = 'https://hellosign.com'  # hellosign manages this whole process (more or less)
-            # and currently there is no way that we can actually get the signing urls for this document.
+            action_url = ABSOLUTE_BASE_URL(invite.get_absolute_url())
 
             mailer.process(subject=subject,
                            item=self,
@@ -366,4 +364,4 @@ class RevisionSignReminderEmailsMixin(object):
                            action_url=action_url, # please understsand the diff between action_url and next_url
                            **kwargs)
 
-            yield u
+            yield signer
