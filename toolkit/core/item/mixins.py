@@ -284,16 +284,19 @@ class RevisionReviewReminderEmailsMixin(object):
 
 
 class RevisionSignReminderEmailsMixin(object):
-    def send_invite_to_sign_emails(self, from_user, to, **kwargs):
-        """
-        Send the initial email to invite
-        but use the standard subject; which is an [ACTION REQUIRED]
-        """
-        assert type(to) is list, 'to must be a list [User]'
-        #
-        # Becase we are yield users need to call next on this to make it action
-        #
-        return [email for email in self.send_sign_emails(from_user=from_user, subject=SignerReminderEmail.subject, recipients=to, **kwargs)]
+    #
+    # Not used as the process is handled by HelloSign
+    #
+    # def send_invite_to_sign_emails(self, from_user, to, **kwargs):
+    #     """
+    #     Send the initial email to invite
+    #     but use the standard subject; which is an [ACTION REQUIRED]
+    #     """
+    #     assert type(to) is list, 'to must be a list [User]'
+    #     #
+    #     # Becase we are yield users need to call next on this to make it action
+    #     #
+    #     return [email for email in self.send_sign_emails(from_user=from_user, subject=SignerReminderEmail.subject, recipients=to, **kwargs)]
 
     def send_sign_reminder_emails(self, from_user, **kwargs):
         """
@@ -312,44 +315,55 @@ class RevisionSignReminderEmailsMixin(object):
 
         # send to the provided recipients if there are any
         # otherwise send to the reviewers
-        recipients_set = recipients if recipients else self.latest_revision.signers.all()
+        signdocument_object = self.latest_revision.signdocument_set.all().first()
+
+        #
+        # if we have none then do nothing
+        #
+        if signdocument_object is None:
+            logger.error('No signdocument_object found this is not right, cant sent reminder emails: %s' % self)
+            yield None
+
+        recipients_set = []
+
+        if recipients:
+            recipients_set = recipients
+        else:
+            #
+            # Extract signers who have not signed
+            #
+             for signer in self.latest_revision.signers.all():
+                if signdocument_object.has_signed(signer=signer) is False:
+                    recipients_set.append(signer)
 
         for u in recipients_set:
 
             mailer = SignerReminderEmail(recipients=((u.get_full_name(), u.email,),), from_tuple=(from_user.get_full_name(), from_user.email,))
 
             #
-            # Get the review document for this user
+            # if we have one
+            # @BUSINESSRULE ALWAYS redirect the invitee to the requests page
+            # and not the specific object
             #
-            sign_document = self.latest_revision.signdocument_set.filter(signers__in=[u]).first()
+            # next_url = reverse('request:list')
+            # #
+            # # Create the invite key (it may already exist)
+            # #
+            # invite, is_new = InviteKey.objects.get_or_create(matter=self.matter,
+            #                                                  invited_user=u,
+            #                                                  next=next_url)
+            # invite.inviting_user = from_user
+            # invite.save(update_fields=['inviting_user'])
 
-            if sign_document:
-                #
-                # if we have one
-                # @BUSINESSRULE ALWAYS redirect the invitee to the requests page
-                # and not the specific object
-                #
-                next_url = reverse('request:list')
-                #
-                # Create the invite key (it may already exist)
-                #
-                invite, is_new = InviteKey.objects.get_or_create(matter=self.matter,
-                                                                 invited_user=u,
-                                                                 next=next_url)
-                invite.inviting_user = from_user
-                invite.save(update_fields=['inviting_user'])
+            # send the invite url
+            #action_url = ABSOLUTE_BASE_URL(invite.get_absolute_url())
+            action_url = 'https://hellosign.com'  # hellosign manages this whole process (more or less)
+            # and currently there is no way that we can actually get the signing urls for this document.
 
-                # send the invite url
-                action_url = ABSOLUTE_BASE_URL(invite.get_absolute_url())
+            mailer.process(subject=subject,
+                           item=self,
+                           from_name=from_user.get_full_name(),
+                           action_url=action_url, # please understsand the diff between action_url and next_url
+                           **kwargs)
 
-                mailer.process(subject=subject,
-                               item=self,
-                               from_name=from_user.get_full_name(),
-                               action_url=action_url, # please understsand the diff between action_url and next_url
-                               **kwargs)
-
-                yield u
-
-            else:
-
-                yield None
+            yield u

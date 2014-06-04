@@ -110,6 +110,7 @@ angular.module('toolkit-gui')
 		function signerItemResource() {
 			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/revision/:type/:username:action', {}, {
 				'request': { 'method': 'POST', 'params' : { 'type': 'signers' }, 'headers': { 'Content-Type': 'application/json'}},
+				'remind': { 'method': 'POST', 'params': { 'type': 'signers', 'action':'remind'}, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'delete': { 'method': 'DELETE', 'params' : { 'type': 'signer' }, 'headers': { 'Content-Type': 'application/json'}}
 			});
 		}
@@ -664,7 +665,38 @@ angular.module('toolkit-gui')
 
 				return deferred.promise;
 			},
+            /**
+			 * Requests the API to send a reminder to all signers who have not signed the current revision yet.
+			 *
+			 * @name				remindRevisionSigners
+			 * @param {String}      matterSlug    Database slug, used as a unique identifier for a matter.
+			 * @param {String}      itemSlug      Database slug, used as a unique identifier for a checklist item.
+			 *
+			 * @example
+			 * matterItemService.remindRevisionSigners( 'myMatterName', 'myItemName' );
+			 *
+			 * @public
+			 * @method				remindRevisionSigners
+			 * @memberof			matterItemService
+			 *
+			 * @return {Promise}
+			 */
+            'remindRevisionSigners': function ( matterSlug, itemSlug ) {
+				var deferred = $q.defer();
 
+				var api = signerItemResource();
+
+				api.remind({'matterSlug': matterSlug, 'itemSlug': itemSlug }, {},
+					function success(){
+						deferred.resolve();
+					},
+					function error(err) {
+						deferred.reject( err );
+					}
+				);
+
+				return deferred.promise;
+			},
             'deleteSigningRequest': function ( signing ) {
 				var deferred = $q.defer();
 

@@ -1366,6 +1366,30 @@ angular.module('toolkit-gui')
 			);
 		};
 
+        /**
+        * Remind all review users who haven´t reviewed yet.
+        *
+        * @param {Object} The item with the current revision
+        *
+        * @private
+        * @method           remindRevisionReview
+        * @memberof         ChecklistCtrl
+        */
+        $scope.remindRevisionSigners = function( item ) {
+            var matterSlug = $scope.data.slug;
+
+            matterItemService.remindRevisionSigners(matterSlug, item.slug).then(
+                    function success(){
+                        toaster.pop('success', 'Success!', 'All outstanding signers have been reminded.');
+                    },
+                    function error(/*err*/){
+                        if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to remind the signers.') {
+                            toaster.pop('error', 'Error!', 'Unable to remind the signers.',5000);
+                        }
+                    }
+            );
+        };
+
         $scope.deleteSigningRequest = function (revision) {
             if (revision.signing) {
                 ezConfirm.create('Delete Signing Request', 'Please confirm you would like to delete this signing request?',

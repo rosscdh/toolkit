@@ -241,9 +241,10 @@
                 <span ng-show="data.selectedItem.latest_revision.is_executed===true || data.selectedItem.latest_revision.signing.percentage_complete===100">
                     <span>Signing completed</span>
                 </span>
-                <!--<a class="btn btn-link btn-xs pull-right" href="javascript:;">
+
+                <a class="btn btn-link btn-xs pull-right" href="javascript:;" ng-show="data.selectedItem.latest_revision.signing.is_claimed && data.selectedItem.latest_revision.is_executed!==true && data.selectedItem.latest_revision.signing.percentage_complete<100" ng-click="remindRevisionSigners(data.selectedItem)">
                     Remind
-                </a>-->
+                </a>
 
                 <div class="review-members" ng-show="data.selectedItem.latest_revision.signing.is_claimed==true">
                     <ul class="list-unstyled">
