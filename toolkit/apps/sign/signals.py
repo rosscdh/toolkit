@@ -122,7 +122,7 @@ def on_hellosign_webhook_event_recieved(sender, hellosign_log,
     if signature_doc.__class__.__name__ in ['SignDocument']:
         logging.info('Recieved event: %s for request: %s' % (event_type, hellosign_request,))
 
-        if hellosign_log.event_type == 'signature_request_all_signed':
+        if event_type == 'signature_request_all_signed':
             logging.info('Recieved signature_request_all_signed from HelloSign, downloading file for attachment as final')
             _update_signature_request(hellosign_request=hellosign_request, data=data)
             #
@@ -130,8 +130,11 @@ def on_hellosign_webhook_event_recieved(sender, hellosign_log,
             #
             run_task(_download_signing_complete_document, hellosign_request=hellosign_request, data=data)
 
-        if hellosign_log.event_type == 'signature_request_signed':
+        if event_type == 'signature_request_signed':
             logging.info('Recieved signature_request_signed from HelloSign, sending event notice')
             # update the signature_request data with our newly provided data
             _update_signature_request(hellosign_request=hellosign_request, data=data)
 
+        if event_type == 'signature_request_viewed':
+            # *sigh* HS dont really provide any info on.. WHO viewed...
+            pass
