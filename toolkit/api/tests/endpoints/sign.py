@@ -5,21 +5,24 @@ from django.core.files import File
 from django.contrib.auth.models import User
 from django.core.validators import URLValidator
 
-from toolkit.apps.workspace.models import InviteKey
 from toolkit.casper.workflow_case import PyQueryMixin
 from toolkit.casper.prettify import mock_http_requests
+
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
+
+from toolkit.apps.sign.models import SignDocument
+from toolkit.apps.workspace.models import InviteKey
 
 from . import BaseEndpointTest
 
 from model_mommy import mommy
-from actstream.models import target_stream
 from rest_framework.reverse import reverse
 
 import os
 import json
-import random
 import urllib
+
+TEST_PDF_PATH = os.path.join(settings.SITE_ROOT, 'toolkit', 'casper', 'test.pdf')
 
 
 class RevisionSignaturesTest(PyQueryMixin, BaseEndpointTest):
@@ -38,7 +41,12 @@ class RevisionSignaturesTest(PyQueryMixin, BaseEndpointTest):
 
         # setup the items for testing
         self.item = mommy.make('item.Item', matter=self.matter, name='Test Item with Revision', category=None)
-        self.revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
+        with open(TEST_PDF_PATH) as executed_file:
+            self.revision = mommy.make('attachment.Revision',
+                                        executed_file=File(executed_file),
+                                        slug=None,
+                                        item=self.item,
+                                        uploaded_by=self.lawyer)
 
     def test_endpoint_name(self):
         self.assertEqual(self.endpoint, '/api/v1/matters/%s/items/%s/revision/signers' % (self.matter.slug, self.item.slug))
@@ -53,11 +61,7 @@ class RevisionSignaturesTest(PyQueryMixin, BaseEndpointTest):
         self.assertEqual(resp.status_code, 200)
 
         json_data = json.loads(resp.content)
-
-        self.assertEqual(json_data['count'], 1)
-
-        self.assertEqual(json_data['results'][0]['signer'], None)
-        self.assertEqual(json_data['results'][0]['is_complete'], False)
+        self.assertItemsEqual(json_data.keys(), [u'is_claimed', u'claim_url', u'url', u'signers', u'requested_by', u'percentage_complete'])
 
     def test_lawyer_post(self):
         """
@@ -73,10 +77,12 @@ class RevisionSignaturesTest(PyQueryMixin, BaseEndpointTest):
 
         participant = mommy.make('auth.User', first_name='Participant', last_name='Number 1', email='participant+1@lawpal.com')
 
-        data = {
-            "username": participant.username
-        }
-        resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
+        resp = self.add_signers(data={'signers': [{
+            'email': participant.email,
+            'first_name': participant.first_name,
+            'last_name': participant.last_name,
+            'message': 'There should only be 1 created in total for this person',
+        }]})
 
         self.assertEqual(resp.status_code, 201)  # created
 
@@ -89,7 +95,7 @@ class RevisionSignaturesTest(PyQueryMixin, BaseEndpointTest):
         ## test the order by is workng order by newest first
         self.assertEqual(participant.signdocument_set.first(), self.revision.signdocument_set.first())
 
-        self.assertEqual(json_data['signer']['name'], participant.get_full_name())
+        self.assertEqual(json_data['signers'][0]['name'], participant.get_full_name())
         # test they are in the items signer set
         self.assertTrue(participant in self.item.latest_revision.signers.all())
 
@@ -101,45 +107,30 @@ class RevisionSignaturesTest(PyQueryMixin, BaseEndpointTest):
         self.assertEqual(resp.status_code, 200)
 
         json_data = json.loads(resp.content)
-        self.assertEqual(json_data['count'], 1)
 
-        self.assertEqual(json_data['results'][0]['signer']['name'], participant.get_full_name())
+        sign_document = self.item.latest_revision.signdocument_set.all().first()
+
+        self.assertEqual(len(json_data['signers']), 1)
+        self.assertEqual(json_data['signers'][0]['name'], participant.get_full_name())
 
         # user review url must be in it
-        self.assertTrue('user_review' in json_data['results'][0]['signer'].keys())
+        self.assertItemsEqual(json_data.keys(), [u'is_claimed', u'claim_url', u'url', u'signers', u'requested_by', u'percentage_complete'])
+        self.assertItemsEqual(json_data['signers'][0].keys(), [u'username', u'name', u'url', u'user_class', u'initials'])
+
+        self.assertEqual(json_data.get('is_claimed'), False)
+        self.assertEqual(json_data.get('claim_url'), sign_document.get_claim_url())
+        self.assertEqual(json_data.get('requested_by').get('name'), self.lawyer.get_full_name())
+        self.assertEqual(len(json_data['signers']), 1)        
 
         #
         # we expect the currently logged in users url to be returned;
         # as the view is relative to the user
         #
-        review_document = self.item.latest_revision.signdocument_set.all().first()
-        expected_url = review_document.get_absolute_url(user=self.lawyer)
-
-        self.assertEqual(json_data['results'][0]['signer']['user_review'], {
-            'url': expected_url,
-            'slug': str(review_document.slug)
-        })
-
+        #expected_url = sign_document.get_absolute_url(signer=self.lawyer)
+        self.assertTrue('sign_url' not in json_data['signers'][0])
+        
         outbox = mail.outbox
-        self.assertEqual(len(outbox), 1)
-
-        email = outbox[0]
-        self.assertEqual(email.subject, '[ACTION REQUIRED] Invitation to sign a document')
-
-        pq = self.pq(email.body)
-
-        review_document = self.item.latest_revision.signdocument_set.filter(signers__in=[participant]).first()
-
-        invite_key = InviteKey.objects.get(matter=self.matter, invited_user=participant)
-
-        expected_action_url = ABSOLUTE_BASE_URL(invite_key.get_absolute_url())
-
-        self.assertEqual(pq('a')[0].attrib.get('href'), expected_action_url)
-        self.assertEqual(invite_key.next, reverse('request:list'))
-
-        # test if activity shows in stream
-        stream = target_stream(self.matter)
-        self.assertEqual(stream[0].data['message'], u'Lawyër Tëst invited Participant Number 1 as signer for Test Item with Revision')
+        self.assertEqual(len(outbox), 0)  # No emails are sent
 
     def test_second_lawyer_post(self):
         """
@@ -151,16 +142,18 @@ class RevisionSignaturesTest(PyQueryMixin, BaseEndpointTest):
 
         participant = mommy.make('auth.User', first_name='Participant', last_name='Number 1', email='participant+1@lawpal.com')
 
-        data = {
-            "username": participant.username
-        }
-        resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
+        resp = self.add_signers(data={'signers': [{
+            'email': participant.email,
+            'first_name': participant.first_name,
+            'last_name': participant.last_name,
+            'message': 'There should only be 1 created in total for this person',
+        }]})
 
         self.assertEqual(resp.status_code, 201)  # created
 
         json_data = json.loads(resp.content)
 
-        self.assertEqual(json_data['signer']['name'], participant.get_full_name())
+        self.assertEqual(json_data['signers'][0]['name'], participant.get_full_name())
         # test they are in the items signer set
         self.assertTrue(participant in self.item.latest_revision.signers.all())
 
@@ -172,41 +165,17 @@ class RevisionSignaturesTest(PyQueryMixin, BaseEndpointTest):
         self.assertEqual(resp.status_code, 200)
 
         json_data = json.loads(resp.content)
-        self.assertEqual(json_data['count'], 1)
+        
+        self.assertEqual(len(json_data.get('signers')), 1)
 
-        self.assertEqual(json_data['results'][0]['signer']['name'], participant.get_full_name())
+        self.assertEqual(json_data['signers'][0]['name'], participant.get_full_name())
 
         # user review url must be in it
-        self.assertTrue('user_review' in json_data['results'][0]['signer'].keys())
-
-        #
-        # we expect the currently logged in users url to be returned;
-        # as the view is relative to the user
-        #
-        review_document = self.item.latest_revision.signdocument_set.all().first()
-        expected_url = review_document.get_absolute_url(user=self.lawyer)
-
-        self.assertEqual(json_data['results'][0]['signer']['user_review'], {
-            'url': expected_url,
-            'slug': str(review_document.slug)
-        })
+        self.assertTrue('sign_url' not in json_data['signers'][0].keys())
 
         outbox = mail.outbox
-        self.assertEqual(len(outbox), 1)
+        self.assertEqual(len(outbox), 0)
 
-        email = outbox[0]
-        self.assertEqual(email.subject, '[ACTION REQUIRED] Invitation to sign a document')
-
-        pq = self.pq(email.body)
-
-        review_document = self.item.latest_revision.signdocument_set.filter(signers__in=[participant]).first()
-
-        invite_key = InviteKey.objects.get(matter=self.matter, invited_user=participant)
-
-        expected_action_url = ABSOLUTE_BASE_URL(invite_key.get_absolute_url())
-
-        self.assertEqual(pq('a')[0].attrib.get('href'), expected_action_url)
-        self.assertEqual(invite_key.next, reverse('request:list'))
 
     def test_lawyer_patch(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -269,22 +238,15 @@ class ReviewObjectIncrementWithNewSignerTest(BaseEndpointTest):
 
         # setup the items for testing
         self.item = mommy.make('item.Item', matter=self.matter, name='Test Revision signer signobject_set count', category=None)
-        self.revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
+        with open(TEST_PDF_PATH) as executed_file:
+            self.revision = mommy.make('attachment.Revision',
+                                        executed_file=File(executed_file),
+                                        slug=None,
+                                        item=self.item,
+                                        uploaded_by=self.lawyer)
 
     def test_endpoint_name(self):
         self.assertEqual(self.endpoint, '/api/v1/matters/%s/items/%s/revision/signers' % (self.matter.slug, self.item.slug))
-
-    def add_signer(self, data=None):
-        if data is None:
-            rand_num = random.random()
-            data = {
-                'email': 'invited-signer-%s@lawpal.com' % rand_num,
-                'first_name': '%s' % rand_num,
-                'last_name': 'Invited Signer',
-                'message': 'Please sign this documnet',
-            }
-        # msut be logged in in order for this to work
-        return self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
 
     def test_new_signer_add_count_increment(self):
         """
@@ -297,18 +259,22 @@ class ReviewObjectIncrementWithNewSignerTest(BaseEndpointTest):
         self.assertEqual(self.revision.signdocument_set.all().count(), exected_num_signatures) # we should only have 1 at this point for the participants
 
         for i in range(1, expected_number_of_signdocuments):
-            resp = self.add_signer()
+            resp = self.add_signers()
             self.assertEqual(resp.status_code, 201)
 
             json_resp = json.loads(resp.content)
 
-            username = json_resp.get('signer').get('username')
+            self.assertEqual(type(json_resp.get('signers')), list)  # list of signers
+            self.assertEqual(len(json_resp.get('signers')), 1)  # only 1 signer
+
+            username = [s.get('username') for s in json_resp.get('signers')][0]
+
             signer = User.objects.get(username=username)
 
             # the revision has 2 signers now
             self.assertEqual(self.revision.signdocument_set.all().count(), exected_num_signatures)
             # but the signer only has 1
-            self.assertEqual(signer.signdocument_set.all().count(), 1) # has only 1
+            self.assertEqual(SignDocument.objects.filter(document=self.revision, signers__in=[signer]).count(), 1) # has only 1
 
     def test_signer_already_a_signer_add_count_no_increment(self):
         """
@@ -317,28 +283,33 @@ class ReviewObjectIncrementWithNewSignerTest(BaseEndpointTest):
         exected_num_signatures = 1
         exected_total_num_signatures = 1
         number_of_add_attempts = 5
+
         self.client.login(username=self.lawyer.username, password=self.password)
 
         self.assertEqual(self.revision.signdocument_set.all().count(), exected_num_signatures) # we should only have 1 at this point for the participants
 
         for i in range(1, number_of_add_attempts):
-            resp = self.add_signer(data={
+            resp = self.add_signers(data={'signers': [{
                 'email': 'single-invited-signer@lawpal.com',
                 'first_name': 'Single',
                 'last_name': 'Invited Signer',
                 'message': 'There should only be 1 created in total for this person',
-            })
+            }]})
+
             self.assertEqual(resp.status_code, 201)
 
             json_resp = json.loads(resp.content)
 
-            username = json_resp.get('signer').get('username')
+            self.assertEqual(type(json_resp.get('signers')), list)  # list of signers
+            self.assertEqual(len(json_resp.get('signers')), 1)  # only 1 signer
+
+            username = [s.get('username') for s in json_resp.get('signers')][0]
             signer = User.objects.get(username=username)
 
             # the revision has 2 signers now
             self.assertEqual(self.revision.signdocument_set.all().count(), exected_total_num_signatures)
             # but the signer only has 1
-            self.assertEqual(signer.signdocument_set.all().count(), 1) # has only 1
+            self.assertEqual(SignDocument.objects.filter(document=self.revision, signers__in=[signer]).count(), 1) # has only 1
 
 
 class RevisionSignerTest(BaseEndpointTest):
@@ -481,7 +452,6 @@ class RevisionSignerTest(BaseEndpointTest):
         self.assertEqual(resp.status_code, 200)  # ok
 
         json_data = json.loads(resp.content)
-        keys = json_data.keys()
         self.assertItemsEqual(self.EXPECTED_USER_SERIALIZER_FIELD_KEYS, json_data.keys())
 
         self.assertEqual(len(self.revision.signers.all()), 0)

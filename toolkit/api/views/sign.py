@@ -61,6 +61,11 @@ class ItemRevisionSignersView(generics.ListAPIView,
     def get_queryset_provider(self):
         return self.revision.signers
 
+    def list(self, request, *args, **kwargs):
+        sign_document = self.revision.primary_signdocument
+        serializer = self.get_serializer(sign_document)
+        return Response(serializer.data)
+
     def create(self, request, **kwargs):
         """
         we already have the matter item and revision we just need to
@@ -119,6 +124,8 @@ class ItemRevisionSignersView(generics.ListAPIView,
             sign_document = self.revision.primary_signdocument
             sign_document.requested_by = request.user
             sign_document.save(update_fields=['requested_by'])
+            sign_document.signers.clear() # remove existing signers from sign object
+            sign_document.signers = self.revision.signers.all()
 
             if not sign_document:
                 raise Exception('Could not get Revision.primary_signdocument')

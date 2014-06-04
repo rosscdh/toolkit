@@ -113,10 +113,17 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
         #
         new_status = request.DATA.get('status', None)
         if new_status is not None:
-            if int(new_status) != self.revision.status:
-                self.matter.actions.revision_changed_status(user=self.request.user,
-                                                            revision=self.revision,
-                                                            previous_status=previous_instance.status)
+            #
+            # if we have a current revision then test to see if the status is
+            # being changes from its previous revision
+            # TODO move into model?
+            #
+            if self.revision and int(new_status) != self.revision.status:
+                previous_instance = self.revision.previous()
+                if previous_instance is not None:
+                    self.matter.actions.revision_changed_status(user=self.request.user,
+                                                                revision=self.revision,
+                                                                previous_status=previous_instance.status)
 
         return super(ItemCurrentRevisionView, self).update(request=request, *args, **kwargs)
 

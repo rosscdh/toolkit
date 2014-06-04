@@ -77,8 +77,6 @@ class Revision(IsDeletedMixin,
     date_created = models.DateTimeField(auto_now=False, auto_now_add=True, db_index=True)
     date_modified = models.DateTimeField(auto_now=True, auto_now_add=True, db_index=True)
 
-    # status = models.IntegerField(choices=REVISION_STATUS.get_choices(), default=REVISION_STATUS.draft)
-
     objects = RevisionManager()
 
     _serializer = 'toolkit.api.serializers.RevisionSerializer'
