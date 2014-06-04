@@ -37,7 +37,8 @@ class ClientsTest(BaseEndpointTest):
 
         new_client = mommy.prepare('client.Client', lawyer=self.lawyer, name='A new Client for Test Lawyer')
 
-        resp = self.client.post(self.endpoint, json.dumps(ClientSerializer(new_client).data), content_type='application/json')
+        resp = self.client.post(self.endpoint,
+                                json.dumps(ClientSerializer(new_client).data), content_type='application/json')
 
         self.assertEqual(resp.status_code, 201)  # created
 
