@@ -1,4 +1,4 @@
-{% load cache i18n %}{% load url from future %}{% load compressed django_bootstrap_breadcrumbs intercom_tags toolkit_tags %}
+{% load cache i18n %}{% load url from future %}{% load compressed django_bootstrap_breadcrumbs toolkit_tags %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -140,102 +140,16 @@
     <!-- Load JS here for greater good =============================-->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-    <script src="{{ STATIC_URL }}js/jquery.ui.touch-punch.min.js"></script>
-    <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
-    <script src="{{ STATIC_URL }}js/bootstrap-select.js"></script>
-    <script src="{{ STATIC_URL }}js/bootstrap-switch.js"></script>
-    <script src="{{ STATIC_URL }}js/flatui-checkbox.js"></script>
-    <script src="{{ STATIC_URL }}js/flatui-radio.js"></script>
-    <script src="{{ STATIC_URL }}js/jquery.tagsinput.js"></script>
-    <script src="{{ STATIC_URL }}js/jquery.placeholder.js"></script>
-    <script src="{{ STATIC_URL }}js/bootstrap-typeahead.js"></script>
-    <script src="{{ STATIC_URL }}js/parsley-1.2.4.min.js"></script>
-    <script src="{{ STATIC_URL }}js/parsley-form.js"></script>
-    <script src="{{ STATIC_URL }}js/application.js"></script>
+    {% compressed_js 'core' %}
 
     <!-- Load page specific JS here =============================-->
     {% block js %}{% endblock %}
 
     {% if PROJECT_ENVIRONMENT == 'prod' %}
-
-        <!-- start Mixpanel -->
-        <script type="text/javascript">(function(e,b){if(!b.__SV){var a,f,i,g;window.mixpanel=b;b._i=[];b.init=function(a,e,d){function f(b,h){var a=h.split(".");2==a.length&&(b=b[a[0]],h=a[1]);b[h]=function(){b.push([h].concat(Array.prototype.slice.call(arguments,0)))}}var c=b;"undefined"!==typeof d?c=b[d]=[]:d="mixpanel";c.people=c.people||[];c.toString=function(b){var a="mixpanel";"mixpanel"!==d&&(a+="."+d);b||(a+=" (stub)");return a};c.people.toString=function(){return c.toString(1)+".people (stub)"};i="disable track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config people.set people.set_once people.increment people.append people.track_charge people.clear_charges people.delete_user".split(" ");
-    for(g=0;g<i.length;g++)f(c,i[g]);b._i.push([a,e,d])};b.__SV=1.2;a=e.createElement("script");a.type="text/javascript";a.async=!0;a.src=("https:"===e.location.protocol?"https:":"http:")+'//cdn.mxpnl.com/libs/mixpanel-2.2.min.js';f=e.getElementsByTagName("script")[0];f.parentNode.insertBefore(a,f)}})(document,window.mixpanel||[]);
-    mixpanel.init("{{ GLOBALS.MIXPANEL_API_TOKEN }}");
-    {% if user.is_authenticated %}
-        mixpanel.identify('{{ user.pk }}');
-        mixpanel.people.set({
-            '$email': '{{ user.email }}',
-            '$first_name': '{{ user.first_name }}',
-            '$last_name': '{{ user.last_name }}',
-            '$created': '{{ user.date_joined|date:"c" }}',
-            '$last_login': '{{ user.last_login|date:"c" }}',
-            'pk': '{{ user.pk }}',
-            'Account Type': '{{ user.profile.account_type }}',
-            {% if user.profile.firm_name %}'Firm Name': '{{ user.profile.firm_name }}',{% endif %}
-            'Plan': '{{ user.profile.plan }}',
-            {% if user.profile.plan_interval %}'Plan Interval': '{{ user.profile.plan_interval }}',{% endif %}
-            'Type': '{{ user.profile.type }}',
-            'Verified': {{ user.profile.verified|lower }}
-            });
-    {% endif %}
-        </script>
-        <!-- end Mixpanel -->
-
-        {% if user.is_authenticated %}
-            <script id="IntercomSettingsScriptTag">
-              window.intercomSettings = {
-                user_id: "{{user.username}}",
-                email: "{{user.email}}",
-                first_name: "{{user.first_name}}",
-                last_name: "{{user.last_name}}",
-                verified: {{user.profile.verified|lower}},
-                type: "{{user.profile.user_class}}",
-                {% if user.profile.firm_name %}
-                firm: "{{user.profile.firm_name}}",
-                {% endif %}
-                created_at: "{{ user.date_joined|date:"U" }}",
-                app_id: "{{ GLOBALS.INTERCOM_APP_ID }}",
-                user_hash: "{% intercom_user_hash user.username %}",
-                widget: {
-                    activator: '.intercom',
-                    use_counter: true
-                }
-              };
-            </script>
-            <script>(function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://static.intercomcdn.com/intercom.v1.js';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})()
-            </script>
-        {% else %}
-            <!-- begin olark code -->
-            <script data-cfasync="false" type='text/javascript'>/*<![CDATA[*/window.olark||(function(c){var f=window,d=document,l=f.location.protocol=="https:"?"https:":"http:",z=c.name,r="load";var nt=function(){
-            f[z]=function(){
-            (a.s=a.s||[]).push(arguments)};var a=f[z]._={
-            },q=c.methods.length;while(q--){(function(n){f[z][n]=function(){
-            f[z]("call",n,arguments)}})(c.methods[q])}a.l=c.loader;a.i=nt;a.p={
-            0:+new Date};a.P=function(u){
-            a.p[u]=new Date-a.p[0]};function s(){
-            a.P(r);f[z](r)}f.addEventListener?f.addEventListener(r,s,false):f.attachEvent("on"+r,s);var ld=function(){function p(hd){
-            hd="head";return["<",hd,"></",hd,"><",i,' onl' + 'oad="var d=',g,";d.getElementsByTagName('head')[0].",j,"(d.",h,"('script')).",k,"='",l,"//",a.l,"'",'"',"></",i,">"].join("")}var i="body",m=d[i];if(!m){
-            return setTimeout(ld,100)}a.P(1);var j="appendChild",h="createElement",k="src",n=d[h]("div"),v=n[j](d[h](z)),b=d[h]("iframe"),g="document",e="domain",o;n.style.display="none";m.insertBefore(n,m.firstChild).id=z;b.frameBorder="0";b.id=z+"-loader";if(/MSIE[ ]+6/.test(navigator.userAgent)){
-            b.src="javascript:false"}b.allowTransparency="true";v[j](b);try{
-            b.contentWindow[g].open()}catch(w){
-            c[e]=d[e];o="javascript:var d="+g+".open();d.domain='"+d.domain+"';";b[k]=o+"void(0);"}try{
-            var t=b.contentWindow[g];t.write(p());t.close()}catch(x){
-            b[k]=o+'d.write("'+p().replace(/"/g,String.fromCharCode(92)+'"')+'");d.close();'}a.P(2)};ld()};nt()})({
-            loader: "static.olark.com/jsclient/loader0.js",name:"olark",methods:["configure","extend","declare","identify"]});
-            /* custom configuration goes here (www.olark.com/documentation) */
-            olark.identify('6244-448-10-1282');/*]]>*/</script><noscript><a href="https://www.olark.com/site/6244-448-10-1282/contact" title="Contact us" target="_blank">Questions? Feedback?</a> powered by <a href="http://www.olark.com?welcome" title="Olark live chat software">Olark live chat software</a></noscript>
-            <!-- end olark code -->
-            <script>
-            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-              })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-              ga('create', 'UA-36042667-2', 'lawpal.com');
-              ga('send', 'pageview');
-            </script>
-        {% endif %}
+        {% google_analytics %}
+        {% intercom %}
+        {% mixpanel %}
+        {% olark %}
     {% endif %}
 
     {% firstseen %}

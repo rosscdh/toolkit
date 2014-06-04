@@ -1,0 +1,47 @@
+
+#mentions-container {
+  position: absolute;
+  height: auto;
+  background-color: white;
+  border: 2px solid @gray-light;
+  border-radius: 10px;
+  z-index: 99;
+  font-size: 14px;
+  top: 0;
+  left: 0;
+  .box-shadow(2px);
+
+  .header {
+    font-size: 14px;
+    font-weight:bold;
+    text-align: center;
+    border-bottom: 1px solid @gray-light;
+    margin: 5px 10px;
+    color: @gray-light;
+
+    .close {
+      margin-top: 2px;
+      font-size: 14px;
+    }
+  }
+
+  ul {
+    list-style: none;
+    padding: 5px 10px 10px 10px;
+    margin: 0;
+
+    li {
+      padding: 2px 5px;
+      margin: 0;
+      border-radius: 2px;
+      cursor: pointer;
+
+      &.highlight {
+        color: white;
+        background-color: @peter-river;
+      }
+    }
+  }
+
+
+}

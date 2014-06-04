@@ -108,6 +108,39 @@ class MatterItemView(generics.UpdateAPIView,
     def get_serializer_context(self):
         return {'request': self.request}
 
+    def pre_save(self, obj):
+        # create activity if status was changed:
+        try:
+            previous_object = Item.objects.get(pk=obj.pk)
+        except Item.DoesNotExist:
+            previous_object = None
+
+        if previous_object is not None:
+            if previous_object.name != obj.name:
+                self.matter.actions.item_rename(user=self.request.user, item=obj, previous_name=previous_object.name)
+
+            if previous_object.status != obj.status:
+                self.matter.actions.item_changed_status(user=self.request.user,
+                                                        item=obj,
+                                                        previous_status=previous_object.get_status_display())
+
+            if previous_object.responsible_party != obj.responsible_party and obj.responsible_party is None:
+            #sign-app merge# if previous_instance.is_requested != instance.is_requested and instance.is_requested is False:
+                self.matter.actions.cancel_user_upload_revision_request(item=obj,
+                                                                        removing_user=self.request.user,
+                                                                        removed_user=previous_object.responsible_party)
+
+            if previous_object.is_complete != obj.is_complete:
+                if obj.is_complete is True:
+                    self.matter.actions.item_closed(user=self.request.user, item=obj)
+                else:
+                    self.matter.actions.item_reopened(user=self.request.user, item=obj)
+
+            if not previous_object.is_deleted and obj.is_deleted:
+                self.matter.actions.item_deleted(user=self.request.user, item=obj)
+
+        super(MatterItemView, self).pre_save(obj=obj)
+
     def can_read(self, user):
         return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
 

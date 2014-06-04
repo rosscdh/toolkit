@@ -53,8 +53,8 @@ STATICFILES_DIRS = (
     ("ng", os.path.join(SITE_ROOT, 'gui', 'dist')),
 )
 
-#STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
-STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
+STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+#STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 
 MEDIA_ROOT = os.path.join(SITE_ROOT, 'media')
 MEDIA_URL = '/m/'
@@ -130,6 +130,9 @@ HELPER_APPS = (
     'django_extensions',
     'django_bootstrap_breadcrumbs',
     'email_obfuscator',
+
+    # django-permission
+    'permission',
 
     # getsentry.com
     'raven.contrib.django.raven_compat',
@@ -246,6 +249,7 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'toolkit.auth_backends.SecretKeyBackend',
     'toolkit.apps.review.auth_backends.ReviewDocumentBackend',  # allow users to log in via review urls
+    'permission.backends.PermissionBackend',  # use django-permission
 )
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -322,9 +326,27 @@ PIPELINE_CSS = {
   }
 }
 PIPELINE_JS = {
+    'core': {
+        'source_filenames': (
+            'js/jquery.ui.touch-punch.min.js',
+            'js/bootstrap.min.js',
+            'js/bootstrap-select.js',
+            'js/bootstrap-switch.js',
+            'js/flatui-checkbox.js',
+            'js/flatui-radio.js',
+            'js/jquery.tagsinput.js',
+            'js/jquery.placeholder.js',
+            'js/bootstrap-typeahead.js',
+            'js/parsley-1.2.4.min.js',
+            'js/parsley-form.js',
+            'js/application.js',
+        ),
+        'output_filename': 'js/core.js',
+    },
+
     'reactjs': {
         'source_filenames': (
-            'js/react-0.10.0.min.js',
+            'js/react-0.10.0.js',
             'js/matter_list.jsx',
         ),
         'output_filename': 'js/jsx-all-compiled.js',
@@ -541,6 +563,8 @@ PAYMENTS_PLANS = {
 }
 
 MATTER_EXPORT_DAYS_VALID = 3
+
+REMIND_DUE_DATE_LIMIT = 7
 
 try:
     LOCAL_SETTINGS

@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
+import json
 from django.template import loader
 from django.test import TestCase, Client
 from django.core.urlresolvers import reverse
 from django.utils.html import strip_spaces_between_tags as minify_html
 
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
+from toolkit.apps.matter.services.matter_permission import MightyMatterUserPermissionService
 from toolkit.apps.notification.templatetags.notice_tags import get_notification_template
+from toolkit.apps.workspace.models import ROLES
 from toolkit.casper.workflow_case import BaseScenarios
 
 from stored_messages.models import Inbox
@@ -121,24 +124,48 @@ class NotificationEventsListTest(BaseListViewTest):
                                  target_name=target.get('name') if target else None,
                                  client_name=client.get('name') if client else None,
                                  action_object_name=action_object_name,
-                                 action_object_url=action_object_url,
-                                 )
+                                 action_object_url=action_object_url)
 
     def test_removed_matter_participant(self):
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        MightyMatterUserPermissionService(matter=self.matter,
+                                          role=ROLES.lawyer,
+                                          user=self.lawyer,
+                                          changing_user=self.lawyer).process(permissions={'workspace.manage_participants': True})
+
+        endpoint_url = reverse('matter_participant', kwargs={'matter_slug': self.matter.slug})
         """
         when you remove a user, obviously they dont get a notification; so we need to create another user
         and make them part of the matter
         """
-        matter_participant = mommy.make('auth.User', first_name='Matter', last_name='Participant', username='matter-participant', email='matterparticipant@lawpal.com')
+        matter_participant = mommy.make('auth.User', first_name='Matter', last_name='Participant',
+                                        username='matter-participant', email='matterparticipant@lawpal.com')
         matter_participant.set_password(self.password)
         matter_participant.save()
         matter_participant_profile = matter_participant.profile
         matter_participant_profile.validated_email = True
         matter_participant_profile.save(update_fields=['data'])
 
-        self.matter.participants.add(matter_participant)
-        self.matter.participants.remove(self.user)
-        #self.matter.actions.removed_matter_participant(matter=self.matter, removing_user=self.lawyer, removed_user=self.user)
+        # add the user
+        data = {
+            'email': matter_participant.email,
+            'first_name': 'Bob',
+            'last_name': 'Crockett',
+            'message': 'Bob you are being added here please do something',
+        }
+
+        resp = self.client.post(endpoint_url,
+                                json.dumps(data),
+                                content_type='application/json')
+
+        self.assertEqual(resp.status_code, 202)  # accepted
+
+        # remove it again:
+        # append the email to the url for DELETE
+        endpoint = '%s/%s' % (endpoint_url, matter_participant.email)
+        resp = self.client.delete(endpoint, None)
+        self.assertEqual(resp.status_code, 202)  # accepted
 
         inbox = self.get_inbox(user=self.user)
 
@@ -146,11 +173,11 @@ class NotificationEventsListTest(BaseListViewTest):
         # for i in inbox:
         #     print i.__unicode__()
         self.assertTrue(all(i.__unicode__() in [u'[Customër Tëst] Lawyër Tëst added a new member to Lawpal (test)',
-                                                u'[Customër Tëst] Lawyër Tëst removed Customër Tëst as a participant of Lawpal (test)'] for i in inbox))
+                                                u'[Customër Tëst] Lawyër Tëst removed Matter Participant as a participant of Lawpal (test)'] for i in inbox))
 
         inbox = self.get_inbox(user=matter_participant)
 
-        self.assertEqual(inbox.count(), 2)  # should get the notification about adding matter_participant to matter
+        self.assertEqual(inbox.count(), 1)  # should get the notification about adding matter_participant to matter
         notice = inbox.first()
 
         test_html = self.get_html(for_user=matter_participant)
@@ -176,5 +203,4 @@ class NotificationEventsListTest(BaseListViewTest):
                                  target_name=target.get('name') if target else None,
                                  client_name=client.get('name') if client else None,
                                  action_object_name=action_object_name,
-                                 action_object_url=action_object_url,
-                                 )
+                                 action_object_url=action_object_url)

@@ -7,15 +7,17 @@ from django.template.defaultfilters import slugify
 
 from parsley.decorators import parsleyfy
 
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, ButtonHolder, Submit, Div
 
 from toolkit.apps.default.fields import HTMLField
+from toolkit.apps.matter.services.matter_permission import MightyMatterUserPermissionService
 from toolkit.apps.workspace.services import EnsureCustomerService
 from toolkit.apps.workspace.models import InviteKey
 from toolkit.mixins import ModalForm
 
-from .models import Workspace
+from .models import Workspace, ROLES
 from .mailers import InviteUserToToolEmail
 
 
@@ -58,7 +60,11 @@ class WorkspaceForm(ModalForm, forms.ModelForm):
         matter.save()
 
         # add user as participant
-        matter.participants.add(self.lawyer)
+
+        MightyMatterUserPermissionService(matter=matter,
+                                          role=ROLES.lawyer,
+                                          user=self.lawyer,
+                                          changing_user=self.lawyer).process()
         return matter
 
 

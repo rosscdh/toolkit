@@ -6,8 +6,9 @@ from django.core.urlresolvers import reverse
 from crispy_forms.layout import Button, Field, Layout
 
 from parsley.decorators import parsleyfy
+from toolkit.apps.matter.services.matter_permission import MightyMatterUserPermissionService
 
-from toolkit.apps.workspace.models import Workspace
+from toolkit.apps.workspace.models import Workspace, MatterParticipant, ROLES
 from toolkit.core.client.models import Client
 from toolkit.mixins import ModalForm
 
@@ -138,7 +139,10 @@ class MatterForm(ModalForm, forms.ModelForm):
         matter.save()
 
         # add user as participant
-        matter.participants.add(self.user)
+        MightyMatterUserPermissionService(matter=matter,
+                                          role=ROLES.lawyer,
+                                          user=self.user,
+                                          changing_user=self.user).process()
 
         if created and self.cleaned_data['template'] is not None:
             service = MatterCloneService(source_matter=self.cleaned_data['template'], target_matter=matter)

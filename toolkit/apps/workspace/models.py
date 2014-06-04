@@ -3,9 +3,7 @@ import os
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.db.models.loading import get_model
-from django.db.models.signals import pre_save, post_save, post_delete, m2m_changed
-from django.template.defaultfilters import slugify
-from toolkit.core import _managed_S3BotoStorage
+from django.db.models.signals import pre_save, post_save, post_delete
 
 from toolkit.core.mixins import IsDeletedMixin, ApiSerializerMixin
 from toolkit.apps.matter.mixins import MatterExportMixin
@@ -17,10 +15,9 @@ from .signals import (ensure_workspace_slug,
                       # tool
                       ensure_tool_slug,
                       on_workspace_post_delete,
-                      on_workspace_post_save,
-                      on_workspace_m2m_changed,)
+                      on_workspace_post_save)
 
-from toolkit.utils import _class_importer
+from toolkit.utils import _class_importer, get_namedtuple_choices
 
 from rulez import registry as rulez_registry
 
@@ -29,6 +26,20 @@ from jsonfield import JSONField
 
 from .managers import WorkspaceManager
 from .mixins import ClosingGroupsMixin, CategoriesMixin, RevisionLabelMixin
+
+
+ROLES = get_namedtuple_choices('ROLES', (
+    (1, 'customer', 'Customer'),
+    (2, 'lawyer', 'Lawyer'),
+))
+
+
+class MatterParticipant(models.Model):
+    matter = models.ForeignKey('workspace.Workspace')
+    user = models.ForeignKey('auth.User')
+
+    data = JSONField(default={})
+    role = models.IntegerField(choices=ROLES.get_choices(), db_index=True)
 
 
 class Workspace(IsDeletedMixin,
@@ -52,7 +63,7 @@ class Workspace(IsDeletedMixin,
     lawyer = models.ForeignKey('auth.User', null=True, related_name='lawyer_workspace')  # Lawyer that created this workspace
     client = models.ForeignKey('client.Client', null=True, blank=True)
 
-    participants = models.ManyToManyField('auth.User', blank=True)
+    participants = models.ManyToManyField('auth.User', blank=True, through=MatterParticipant)
 
     tools = models.ManyToManyField('workspace.Tool', blank=True)
 
@@ -70,6 +81,13 @@ class Workspace(IsDeletedMixin,
         ordering = ['name', '-pk']
         verbose_name = 'Matter'
         verbose_name_plural = 'Matters'
+        permissions = (
+            ("manage_participants", u"Can manage participants"),
+            ("manage_requests", u"Can manage requests"),
+            ("manage_items", u"Can manage checklist items and categories"),
+            ("manage_signatures", u"Can manage signatures & send documents for signature"),
+            ("manage_clients", u"Can manage clients"),
+        )
 
     def __init__(self, *args, **kwargs):
         #
@@ -141,8 +159,6 @@ pre_save.connect(ensure_workspace_matter_code, sender=Workspace, dispatch_uid='w
 
 post_delete.connect(on_workspace_post_delete, sender=Workspace, dispatch_uid='workspace.post_delete.on_workspace_post_delete')
 post_save.connect(on_workspace_post_save, sender=Workspace, dispatch_uid='workspace.post_save.on_workspace_post_save')
-
-m2m_changed.connect(on_workspace_m2m_changed, sender=Workspace.participants.through, dispatch_uid='workspace.m2m_changed.on_workspace_m2m_changed')
 
 
 rulez_registry.register("can_read", Workspace)

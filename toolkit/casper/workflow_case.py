@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 from django.core.urlresolvers import reverse
-from django.core.files.storage import FileSystemStorage
 
 from model_mommy import mommy
 from pyquery import PyQuery as pq
 
 from .base import BaseCasperJs
+from toolkit.apps.matter.services.matter_permission import MightyMatterUserPermissionService
+from toolkit.apps.workspace.models import ROLES
 
 from toolkit.core.item.models import Item
 from toolkit.api.serializers import MatterSerializer
@@ -36,7 +37,8 @@ class BaseScenarios(object):
         from toolkit.apps.eightythreeb.models import EightyThreeB
         from toolkit.apps.eightythreeb.tests.data import EIGHTYTHREEB_DATA as BASE_EIGHTYTHREEB_DATA
 
-        self.user = mommy.make('auth.User', username='test-customer', first_name='Customër', last_name='Tëst', email='test+customer@lawpal.com')
+        self.user = mommy.make('auth.User', username='test-customer', first_name='Customër', last_name='Tëst',
+                               email='test+customer@lawpal.com')
         self.user.set_password(self.password)
         self.user.save()
 
@@ -44,7 +46,8 @@ class BaseScenarios(object):
         user_profile.validated_email = True
         user_profile.save(update_fields=['data'])
 
-        self.lawyer = mommy.make('auth.User', username='test-lawyer', first_name='Lawyër', last_name='Tëst', email='test+lawyer@lawpal.com')
+        self.lawyer = mommy.make('auth.User', username='test-lawyer', first_name='Lawyër', last_name='Tëst',
+                                 email='test+lawyer@lawpal.com')
         self.lawyer.set_password(self.password)
         self.lawyer.save()
 
@@ -56,14 +59,21 @@ class BaseScenarios(object):
         self.workspace_client = mommy.make('client.Client', name='Test Client Namë', lawyer=self.lawyer)
         # have to set worksace as well as matter
         # @TODO remove tests using workspace and use matter instead
-        self.workspace = self.matter = mommy.make('workspace.Workspace', name='Lawpal (test)', lawyer=self.lawyer, client=self.workspace_client)
+        self.workspace = self.matter = mommy.make('workspace.Workspace', name='Lawpal (test)', lawyer=self.lawyer,
+                                                  client=self.workspace_client)
 
         # Add all the toolks to the workspace
         for tool in Tool.objects.all():
             self.workspace.tools.add(tool)
 
-        self.workspace.participants.add(self.user)
-        self.workspace.participants.add(self.lawyer)
+        MightyMatterUserPermissionService(matter=self.workspace,
+                                          role=ROLES.customer,
+                                          user=self.user,
+                                          changing_user=self.lawyer).process()
+        MightyMatterUserPermissionService(matter=self.workspace,
+                                          user=self.lawyer,
+                                          role=ROLES.lawyer,
+                                          changing_user=self.lawyer).process()
 
         eightythreeb_data = BASE_EIGHTYTHREEB_DATA
         eightythreeb_data['markers'] = {}  # set the markers to nothing
