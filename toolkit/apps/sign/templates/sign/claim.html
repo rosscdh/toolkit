@@ -1,4 +1,4 @@
-{% extends 'base-slim.html' %}
+{% extends 'base-slim.html' %}{% load url from future %}
 
 {% block page_title %}Setup Document for Signing{% endblock %}
 
@@ -61,7 +61,8 @@
                               if (parent && parent.$('button#view-signing-close').length > 0 ) {
                                 parent.$('button#view-signing-close').trigger('click');
                               } else {
-                                console.log('Could not find parent button#view-signing-close, are we in the iframe we should be in?');
+                                // redirect to requests
+                                window.location = "{% url 'request:list' %}";
                               }
                           }
                         });
