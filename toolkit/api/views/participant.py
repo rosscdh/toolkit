@@ -81,7 +81,7 @@ class MatterParticipant(generics.CreateAPIView,
             MatterUserPermissionService(matter=self.matter,
                                         role=ROLES.get_value_by_name(user_class),
                                         user=new_participant,
-                                        changing_user=self.request.user).process(permissions=json.loads(permissions))
+                                        changing_user=self.request.user).process(permissions=permissions)
             PARTICIPANT_ADDED.send(sender=self,
                                    matter=self.matter,
                                    participant=new_participant,
