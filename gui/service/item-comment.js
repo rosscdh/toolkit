@@ -6,7 +6,7 @@ angular.module('toolkit-gui')
  * @param  {Function} $resource           Provides access to close and cancel methods
  * @param  {Function} anon                Controller function
  */
-.factory('commentService',[
+.factory('itemCommentService',[
 	'$q',
 	'$resource',
 	'API_BASE_URL',
@@ -16,15 +16,15 @@ angular.module('toolkit-gui')
 		/**
 		 * Returns a key/value object containing $resource methods to access comment API end-points
 		 *
-		 * @name				commentResource
+		 * @name				itemCommentResource
 		 *
 		 * @private
-		 * @method				commentResource
-		 * @memberof			commentService
+		 * @method				itemCommentResource
+		 * @memberof			itemCommentService
 		 *
 		 * @return {Function}   $resource
 		 */
-		function commentResource() {
+		function itemCommentResource() {
 			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/comment/:id', {}, {
 				'create': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'}},
 				'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'}},
@@ -41,16 +41,16 @@ angular.module('toolkit-gui')
 			 * @name				create
 			 *
 			 * @example
-		 	 * commentService.create( mySelectedMatter, myItem, myComment );
+		 	 * itemCommentService.create( mySelectedMatter, myItem, myComment );
 			 *
 			 * @public
 			 * @method				create
-			 * @memberof			commentService
+			 * @memberof			itemCommentService
 			 *
 			 * @return {Promise}
 		 	 */
 			'create': function(matterSlug, itemSlug, comment) {
-				var api = commentResource();
+				var api = itemCommentResource();
 				var deferred = $q.defer();
 
 				api.create({'matterSlug': matterSlug, 'itemSlug': itemSlug}, {'comment': comment},
@@ -71,16 +71,16 @@ angular.module('toolkit-gui')
 			 * @name				delete
 			 *
 			 * @example
-		 	 * commentService.delete( mySelectedMatter, myItem, commentId );
+		 	 * itemCommentService.delete( mySelectedMatter, myItem, commentId );
 			 *
 			 * @public
 			 * @method				delete
-			 * @memberof			commentService
+			 * @memberof			itemCommentService
 			 *
 			 * @return {Promise}
 		 	 */
 			'delete': function(matterSlug, itemSlug, commentId) {
-				var api = commentResource();
+				var api = itemCommentResource();
 				var deferred = $q.defer();
 
 				api.delete({'matterSlug': matterSlug, 'itemSlug': itemSlug, 'id':commentId},
@@ -101,16 +101,16 @@ angular.module('toolkit-gui')
 			 * @name				delete
 			 *
 			 * @example
-		 	 * commentService.update( mySelectedMatter, myItem, commentId, comment );
+		 	 * itemCommentService.update( mySelectedMatter, myItem, commentId, comment );
 			 *
 			 * @public
 			 * @method				update
-			 * @memberof			commentService
+			 * @memberof			itemCommentService
 			 *
 			 * @return {Promise}
 		 	 */
 			'update': function(matterSlug, itemSlug, commentId, comment) {
-				var api = commentResource();
+				var api = itemCommentResource();
 				var deferred = $q.defer();
 
 				api.update({'matterSlug': matterSlug, 'itemSlug': itemSlug, 'id':commentId}, {'comment': comment},

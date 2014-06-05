@@ -19,6 +19,35 @@ from toolkit.api.views.mixins import MatterItemsQuerySetMixin
 from toolkit.apps.workspace.models import Workspace
 
 
+class MatterCommentEndpoint(generics.ListAPIView,
+                            generics.RetrieveUpdateDestroyAPIView):
+    lookup_field = 'pk'
+    model = Workspace
+    serializer_class = MatterCommentSerializer
+
+    def initialize_request(self, request, *args, **kwargs):
+        # provide the matter object
+        self.matter = get_object_or_404(Workspace, slug=kwargs.get('matter_slug'))
+        return super(MatterCommentEndpoint, self).initialize_request(request, *args, **kwargs)
+
+    def get_queryset(self):
+        return ThreadedComment.objects.for_model(self.matter).filter(parent=None)
+
+    def can_read(self, user):
+        return user.profile.user_class in ['lawyer', 'customer']
+
+    def can_edit(self, user):
+        return user.profile.user_class in ['lawyer', 'customer']
+
+    def can_delete(self, user):
+        return user.profile.user_class in ['lawyer', 'customer']
+
+
+rulez_registry.register("can_read", MatterCommentEndpoint)
+rulez_registry.register("can_edit", MatterCommentEndpoint)
+rulez_registry.register("can_delete", MatterCommentEndpoint)
+
+
 class ItemCommentEndpoint(MatterItemsQuerySetMixin,
                           generics.CreateAPIView,
                           generics.UpdateAPIView,
@@ -104,20 +133,3 @@ class ItemCommentEndpoint(MatterItemsQuerySetMixin,
         return user.profile.user_class in ['lawyer', 'customer']
 
 rulez_registry.register("can_edit", ItemCommentEndpoint)
-
-
-class MatterCommentEndpoint(generics.RetrieveUpdateDestroyAPIView):
-    lookup_field = 'matter_slug'
-    model = Workspace
-    serializer_class = MatterCommentSerializer
-
-    def initialize_request(self, request, *args, **kwargs):
-        # provide the matter object
-        self.matter = get_object_or_404(Workspace, slug=kwargs.get('matter_slug'))
-        return super(MatterCommentEndpoint, self).initialize_request(request, *args, **kwargs)
-
-    def get_queryset(self):
-        return ThreadedComment.objects.for_model(self.matter)
-
-    def can_read(self, user):
-        return user.profile.user_class in ['lawyer', 'customer']

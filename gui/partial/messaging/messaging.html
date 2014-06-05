@@ -1,0 +1,143 @@
+
+<div id="messaging" class="checklist-wrapper full">
+    <div class="container-fluid full">
+        <div class="row mobile" ng-show="data.page!=='checklist'">
+            <button type="button" class="btn btn-link btn-transparent" ng-click="displayChecklist()">&lt; Inbox</button>
+        </div>
+        <div class="row full">
+            <div class="col-lg-4 full checklist-col" id="inbox" ng-class="{ 'zero': data.page!=='inbox' }">
+                <div class="toggle-btn-wrapper text-right">
+                    <div class="btn btn-default" data-behavior="toggle-inbox">  <span class="fui-arrow-left"></span></div>
+                </div>
+                <!-- start: Inbox //-->
+                <div class="row inbox-msgs checklist-col">
+
+                    <ul class="msg-list list-unstyled">
+                        <li ng-repeat="message in data.comment_list">
+                            <span ng-include="'/static/ng/partial/messaging/includes/list-header.html'"></span>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+            <div class="col-lg-8 row full" id="message-stage">
+                    <div class="convo">
+
+                        <ul class="list-unstyled">
+                            <li class="one-message" ng-repeat="message in thread.messages">
+                                <span ng-include="'/static/ng/partial/messaging/includes/thread.html'"></span>
+                            </div>
+                            </li>
+                        </ul>
+
+                    </div>
+                    <span ng-include="'/static/ng/partial/messaging/includes/form-comment.html'"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="upload-bar" ng-repeat="cat in data.categories" ng-show="data.uploading">
+        <div class="progress progress-striped active" ng-repeat="item in cat.items | filter: { uploading: true }">
+            <div class="progress-bar progress-bar-info" ng-style="{'width': item.uploadingPercent + '%'}">Uploading to <font ng-bind="item.name"></font></div>
+        </div>
+    </div>
+</div>
+<div intercom user-id="{{ data.usdata.current.id }}" user-email="{{ data.usdata.current.email }}"></div>
+<toaster-container toaster-options="{'position-class': 'toast-bottom-right'}"></toaster-container>
+<div mentions-container participants="data.matter.participants" curr-user="data.usdata.current"></div>
+<!--<input type="filepicker" data-fp-apikey="A4Ly2eCpkR72XZVBKwJ06z" data-fp-mimetypes="*/*" data-fp-container="modal" onchange="alert(event.fpfile.url)">//-->
+
+<script>
+function stickyTitles(stickies) {
+
+    this.load = function() {
+
+              stickies.each(function(){
+
+                    var thisSticky = jQuery(this).wrap('<div class="followWrap" />');
+                        thisSticky.parent().height(thisSticky.outerHeight());
+
+                    jQuery.data(thisSticky[0], 'pos', thisSticky.offset().top);
+
+              });
+        }
+
+        this.scroll = function() {
+
+              stickies.each(function(i){
+
+                    var thisSticky = jQuery(this),
+                          nextSticky = stickies.eq(i+1),
+                          prevSticky = stickies.eq(i-1),
+                          pos = jQuery.data(thisSticky[0], 'pos');
+
+                    if (pos <= ($('.convo').scrollTop() + 115 )) {
+
+                          thisSticky.addClass("fixed");
+
+                          if (nextSticky.length > 0 && thisSticky.offset().top >= jQuery.data(nextSticky[0], 'pos') - thisSticky.outerHeight()) {
+
+                                thisSticky.addClass("absolute").css("top", jQuery.data(nextSticky[0], 'pos') - thisSticky.outerHeight());
+
+                          }
+
+                    } else {
+
+                          thisSticky.removeClass("fixed");
+
+                          if (prevSticky.length > 0 && jQuery(window).scrollTop() <= jQuery.data(thisSticky[0], 'pos')  - prevSticky.outerHeight()) {
+
+                                prevSticky.removeClass("absolute").removeAttr("style");
+
+                          }
+
+                    }
+            });
+    }
+}
+
+jQuery(document).ready(function(){
+
+        var newStickies = new stickyTitles(jQuery(".author"));
+
+        newStickies.load();
+
+        $(".convo").on("scroll", function() {
+
+              newStickies.scroll();
+
+        });
+
+        //hides/unhides button to send message
+
+        $('[data-behavior=toggle-button]').on('click', function(){
+            $('[data-behavior=send-button]').toggleClass('hidden');
+
+        });
+
+        //toggle for left message inbox div
+        $('[data-behavior=toggle-inbox]').on('click', function(){
+                // $('#inbox').css('left', '-25%');
+                // $('#message-stage').css('margin-left', '0');
+                // $('#message-stage').css('width', '100%');
+                $('[data-behavior=toggle-inbox]').toggleClass('closed');
+                $('#inbox').toggleClass('inbox-hidden');
+                $('#message-stage').toggleClass('message-full');
+
+
+                $("#messaging #message-stage .convo .fixed").toggleClass('large-fix');
+                // $('.convo .author .fixed').css('width', '75%');
+
+
+
+
+        });
+
+
+
+});
+
+
+
+</script>
