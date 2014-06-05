@@ -38,19 +38,19 @@
 						<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-customer.html'"></span>
 					</div>
 				</span>
-				<!-- end: CUSTOMER checklist //-->				
+				<!-- end: CUSTOMER checklist //-->
 			</div>
 			<div class="col-sm-7 item spa full" id="checklist-detail-container" ng-class="{ 'zero': data.page==='checklist' }">
 				<div class="row full">
 
 					<!-- begin item details //-->
 					<!-- @TODO Make the URL dynamic -->
-					<div class="col-sm-7 full checklist-col" id="checklist-detail" ng-include="'/static/ng/partial/checklist/includes/itemdetails.html'" ng-class="{ 'zero': data.page!=='details' }">&nbsp;</div>
+					<div class="col-sm-6 full checklist-col" id="checklist-detail" ng-include="'/static/ng/partial/checklist/includes/itemdetails.html'" ng-class="{ 'zero': data.page!=='details' }">&nbsp;</div>
 					<!-- end item details //-->
 
 					<!-- chat //-->
 					<!-- @TODO Make the URL dynamic -->
-					<div class="col-sm-5 chat full checklist-col" id="checklist-activity" ng-include="'/static/ng/partial/checklist/includes/itemchat.html'" ng-class="{ 'zero': data.page!=='activity'}">&nbsp;</div>
+					<div class="col-sm-6 chat full checklist-col" id="checklist-activity" ng-include="'/static/ng/partial/checklist/includes/itemchat.html'" ng-class="{ 'zero': data.page!=='activity'}">&nbsp;</div>
 					<!-- end: chat //-->
 				</div>
 			</div>

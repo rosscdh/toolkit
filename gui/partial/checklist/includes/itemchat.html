@@ -1,10 +1,23 @@
 
-<h4 class="ng-scope">
-    <a href="javascript:;" ng-click="activateActivityStream('item')" ng-show="data.selectedItem"
-       ng-class="{'active':data.streamType=='item', 'inactive':data.streamType=='matter'}" style="margin-right:12px;">Item Activity</a>
-    <a href="javascript:;" ng-click="activateActivityStream('matter')"
-       ng-class="{'active':data.streamType=='matter', 'inactive':data.streamType=='item'}">All Activity</a>
-</h4>
+<div class="item-comments">
+    <h4 class="ng-scope">
+        <a href="javascript:;" ng-click="activateActivityStream('item')" ng-show="data.selectedItem"
+           ng-class="{'active':data.streamType=='item', 'inactive':data.streamType=='matter'}" style="margin-right:12px;" class="discussion-tab">Internal Discussion</a>
+        <a href="javascript:;" ng-click="activateActivityStream('matter')"
+           ng-class="{'active':data.streamType=='matter', 'inactive':data.streamType=='item'}">Global Discussion (3)</a>
+    </h4>
+
+    <ul class="list-unstyled activity-log comment-thread">
+       <!--  <li ng-repeat="activity in data.activitystream" ng-class="{ 'comment-faded': activity.status=='awaiting'}">
+            <div activity ng-model="activity" matter-slug="data.slug" item-slug="data.selectedItem.slug"
+                          user="data.usdata.current"></div>
+        </li>
+        <li ng-show="!data.activitystream.length"><small class="lead text-muted">Discussion and activity will appear here.</small></li> -->
+        <li>
+        </li>
+    </ul>
+</div>
+
 <div class="new-message row" ng-show="data.selectedItem" ng-mouseenter="show = true">
     <div class="col-xs-12">
         <form ng-submit="submitComment()" >
@@ -13,10 +26,3 @@
         </form>
     </div>
 </div>
-<ul class="list-unstyled activity-log">
-    <li ng-repeat="activity in data.activitystream" ng-class="{ 'comment-faded': activity.status=='awaiting'}">
-        <div activity ng-model="activity" matter-slug="data.slug" item-slug="data.selectedItem.slug"
-                      user="data.usdata.current"></div>
-    </li>
-    <li ng-show="!data.activitystream.length"><small class="lead text-muted">Discussion and activity will appear here.</small></li>
-</ul>

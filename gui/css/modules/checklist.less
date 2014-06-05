@@ -472,6 +472,7 @@ html,body, div.full
 	}
 	div.chat {
 		background-color:lighten(@silver, 25%);
+
 		h4 {
 			margin:0px -15px 0px -15px;
 			padding: 22px 15px 12px 15px;
@@ -481,7 +482,7 @@ html,body, div.full
 				font-size:12px;
 			}
 			a {
-				padding-bottom:10px;
+				padding-bottom:15px;
 			}
 		}
 		div.new-message {
@@ -847,6 +848,26 @@ html,body, div.full
 			.btn {
 				background-color:@signature;
 			}
+		}
+	}
+}
+
+.item-comments{
+
+	height: 30%;
+	background-color: #F6F6F6;
+
+	.ng-scope{
+		background-color: #F0F0F0;
+
+
+		a {
+			background-color: #F6F6F6;
+			border-bottom: none;
+			padding: 15px
+		}
+		a.active{
+			border-bottom: 0px;
 		}
 	}
 }
