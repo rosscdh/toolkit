@@ -1,7 +1,6 @@
 # -*- coding: UTF-8 -*-
 import datetime
 from django.conf import settings
-from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
@@ -107,10 +106,7 @@ class ItemCommentEndpoint(MatterItemsQuerySetMixin,
 rulez_registry.register("can_edit", ItemCommentEndpoint)
 
 
-class MatterCommentEndpoint(generics.ListAPIView,
-                            generics.CreateAPIView,
-                            generics.UpdateAPIView,
-                            generics.DestroyAPIView):
+class MatterCommentEndpoint(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = 'matter_slug'
     model = Workspace
     serializer_class = MatterCommentSerializer

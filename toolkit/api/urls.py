@@ -82,7 +82,7 @@ urlpatterns = router.urls + patterns('',
 
     url(r'^matters/(?P<matter_slug>[\w-]+)/activity/?$', MatterActivityEndpoint.as_view(), name='matter_activity'),
 
-    url(r'^matters/(?P<matter_slug>[\w-]+)/comment/(?P<id>\d+)/?$', MatterCommentEndpoint.as_view(), name='matter_comment'),
+    url(r'^matters/(?P<matter_slug>[\w-]+)/comment/(?P<id>\d+)/?$', MatterCommentEndpoint.as_view(), name='matter_comment_edit'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/comment/?$', MatterCommentEndpoint.as_view(), name='matter_comment'),
 
     url(r'^matters/(?P<matter_slug>[\w-]+)/export/?$', MatterExportView.as_view(), name='matter_export'),
