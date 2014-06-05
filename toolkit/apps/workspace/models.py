@@ -17,8 +17,7 @@ from .signals import (ensure_workspace_slug,
                       # tool
                       ensure_tool_slug,
                       on_workspace_post_delete,
-                      on_workspace_post_save,
-                      on_workspace_m2m_changed,)
+                      on_workspace_post_save)
 
 from toolkit.utils import _class_importer
 
@@ -141,8 +140,6 @@ pre_save.connect(ensure_workspace_matter_code, sender=Workspace, dispatch_uid='w
 
 post_delete.connect(on_workspace_post_delete, sender=Workspace, dispatch_uid='workspace.post_delete.on_workspace_post_delete')
 post_save.connect(on_workspace_post_save, sender=Workspace, dispatch_uid='workspace.post_save.on_workspace_post_save')
-
-m2m_changed.connect(on_workspace_m2m_changed, sender=Workspace.participants.through, dispatch_uid='workspace.m2m_changed.on_workspace_m2m_changed')
 
 
 rulez_registry.register("can_read", Workspace)

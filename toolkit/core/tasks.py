@@ -3,9 +3,13 @@ from django.conf import settings
 
 from toolkit.celery import app
 from toolkit.tasks import run_task
+
 from toolkit.core.services.lawpal_abridge import LawPalAbridgeService
+from toolkit.core.services.mentions import MentionsService
+
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 from toolkit.apps.notification.tasks import youve_got_notifications
+
 
 import logging
 logger = logging.getLogger('django.request')
@@ -33,6 +37,25 @@ def _serialize_kwargs(kwargs):
             kwargs[key] = item.api_serializer(item, context={'request': None}).data
     return kwargs
 
+
+@app.task
+def _mentions_send(actor, action_object, text, **kwargs):
+    """
+    Send @username mentions to the specific mentioned user(s)
+    """
+    access_url = None
+
+    if action_object and hasattr(action_object, 'get_absolute_url'):
+        try:
+            access_url = action_object.get_absolute_url()
+        except:
+            logger.error('could not get action_object.get_absolute_url() in _mentions_send task: %s' %action_object)
+
+    if type(text) in [str, unicode]:
+        service = MentionsService(mentioned_by=actor)
+        service.process(notify=True,
+                        text=text,
+                        access_url=access_url)
 
 @app.task
 def _activity_send(actor, target, action_object, message, **kwargs):

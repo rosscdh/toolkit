@@ -630,6 +630,15 @@ def prompt_build_gui():
 
 @task
 @runs_once
+def gui_clean():
+    local('rm -Rf gui/bower_components')
+    local('rm -Rf gui/node_modules')
+    local('cd gui;npm install')
+    local('cd gui;bower install')
+
+
+@task
+@runs_once
 def build_gui_dist():
     # # move local_settings.py if present
     if os.path.exists('toolkit/local_settings.py'):
@@ -712,8 +721,7 @@ def rebuild_local():
     local('python manage.py migrate')
     local('python manage.py loaddata %s' % fixtures())
     local('python manage.py createsuperuser')  #manually as we rely on the dev-fixtures
-    local('cd gui;npm install')
-    local('cd gui;bower install')
+    gui_clean()
 
 
 

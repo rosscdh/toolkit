@@ -148,7 +148,7 @@ class ConfirmEmailValidationRequest(BaseConfirmValidationRequest):
         self.profile.save(update_fields=['data'])
 
         messages.success(self.request, 'Thanks. You have confirmed your email address.')
-        logger.info('User: %s has validated their email' % self.user)
+        logger.info(u'User: %s has validated their email' % self.user)
 
 
 class ConfirmEmailChangeRequest(BaseConfirmValidationRequest):
@@ -172,7 +172,7 @@ class ConfirmEmailChangeRequest(BaseConfirmValidationRequest):
             self.profile.save(update_fields=['data'])
 
         messages.success(self.request, 'Congratulations. Your email has been changed. Please login with your new email.')
-        logger.info('User: %s has confirmed their change of email address from: %s to: %s' % (self.user, original_email, self.user.email))
+        logger.info(u'User: %s has confirmed their change of email address from: %s to: %s' % (self.user, original_email, self.user.email))
 
 
 class ConfirmPasswordChangeRequest(BaseConfirmValidationRequest):
@@ -192,7 +192,7 @@ class ConfirmPasswordChangeRequest(BaseConfirmValidationRequest):
             self.profile.save(update_fields=['data'])
 
         messages.success(self.request, 'Congratulations. Your password has been changed. Please login with your new password.')
-        logger.info('User: %s has confirmed their change of password' % self.user)
+        logger.info(u'User: %s has confirmed their change of password' % self.user)
 
 # ----------------------------
 # End Confirmation Views
@@ -360,7 +360,7 @@ class TwoFactorEnableView(AjaxModelFormView, ProfileView):
         return self.render_to_json_response(data)
 
 
-class TwoFactorVerifyView(HoldingPageView):
+class TwoFactorVerifyView(AjaxFormView, HoldingPageView):
     template_name = 'user/settings/two_factor_verify.html'
 
     def form_valid(self, form):
@@ -368,7 +368,7 @@ class TwoFactorVerifyView(HoldingPageView):
         profile.data['two_factor_enabled'] = True
         profile.save(update_fields=['data'])
 
-        # messages.success(self.request, 'You have successfully set up two-step verification for your LawPal account.')
+        # messages.success(self.request, 'You have successfully enabled two-step verification for your LawPal account.')
 
         return super(TwoFactorVerifyView, self).form_valid(form)
 
