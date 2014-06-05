@@ -43,7 +43,9 @@ class SignRevisionView(DetailView):
         self.object = super(SignRevisionView, self).get_object()
         self.matter = self.object.document.item.matter
 
-        self.signer = get_object_or_404(User, username=self.kwargs.get('username'))
+        self.signer = None
+        if self.kwargs.get('username', None) is not None:
+            self.signer = get_object_or_404(User, username=self.kwargs.get('username'))
 
         return self.object
 

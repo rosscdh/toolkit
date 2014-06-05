@@ -454,7 +454,7 @@ LAWPAL_ACTIVITY = {
 
                       # Signing
                       'item-sent-for-signing', 'item-completed-signing-setup',
-                      'item-viewed-signature-request',
+                      #'item-viewed-signature-request', # removed due to it being overkill
                       'item-signed',
 
                       # activate nearly everything for testing;
@@ -483,7 +483,7 @@ LAWPAL_ACTIVITY = {
         "whitelist": [
                       # Signing
                       'item-sent-for-signing', 'item-completed-signing-setup',
-                      'item-viewed-signature-request',
+                      #'item-viewed-signature-request', # removed due to it being overkill
                       'item-signed',
 
                       'item-reopened', 'item-closed',
@@ -511,7 +511,7 @@ LAWPAL_ACTIVITY = {
         "whitelist": [
                       # Signing
                       'item-sent-for-signing', 'item-completed-signing-setup',
-                      'item-viewed-signature-request',
+                      'item-viewed-signature-request',  # kept for record reasons
                       'item-signed',
 
                       'item-created', 'item-edited', 'item-commented', 'item-changed-the-status', 'item-renamed',

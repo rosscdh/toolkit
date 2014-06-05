@@ -410,7 +410,7 @@ class MatterActivityEventService(object):
         # toolkit.apps.sign.views#ClaimSignRevisionView.post
         revision = sign_object.document
         item = revision.item
-        message = u'%s sent %s (%s) for signing (HelloSign claim_url)' % (user, item, revision)
+        message = u'%s sent %s (%s) for signing' % (user, item, revision)
         self._create_activity(actor=user, verb=u'sent for signing', action_object=item, message=message,
                               user=user)
         self.analytics.event('sign.sent_doc_for_signing', user=user, **{
@@ -427,7 +427,7 @@ class MatterActivityEventService(object):
         # toolkit.apps.sign.views#ClaimSignRevisionView.post
         revision = sign_object.document
         item = revision.item
-        message = u'%s completed signing setup (HelloSign claim_url) %s (%s) for signing' % (user, item, revision)
+        message = u'%s completed signing setup %s (%s) for signing' % (user, item, revision)
         self._create_activity(actor=user, verb=u'completed signing setup', action_object=item, message=message,
                               user=user)
         self.analytics.event('sign.completed_signing_setup', user=user, **{
