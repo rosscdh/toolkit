@@ -1,13 +1,9 @@
 # -*- coding: utf-8 -*-
-from django.core import signing
 from django.http import Http404
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.views.generic import DetailView
 from django.utils.safestring import mark_safe
 from django.shortcuts import get_object_or_404
-from django.contrib.auth import authenticate, login
-from django.core.exceptions import PermissionDenied
 from django.views.generic.edit import BaseUpdateView
 
 from hellosign_sdk.utils.exception import Conflict
@@ -46,12 +42,15 @@ class SignRevisionView(DetailView):
     def get_object(self):
         self.object = super(SignRevisionView, self).get_object()
         self.matter = self.object.document.item.matter
+
+        self.signer = get_object_or_404(User, username=self.kwargs.get('username'))
+
         return self.object
 
     def get_context_data(self, **kwargs):
-        signer = get_object_or_404(User, username=self.kwargs.get('username'))
         try:
-            signer_url = self.object.get_signer_signing_url(signer=signer)
+            signer_url = self.object.get_signer_signing_url(signer=self.signer)
+
         except Conflict as e:
             #
             # The signature has already been signed
@@ -65,11 +64,20 @@ class SignRevisionView(DetailView):
         kwargs = super(SignRevisionView, self).get_context_data(**kwargs)
         kwargs.update({
             'sign_url': signer_url,
-            'signer': signer,
-            'signed_on': self.object.signed_at(signer=signer),
+            'signer': self.signer,
+            'signed_on': self.object.signed_at(signer=self.signer),
             'can_sign': self.is_authorised,
         })
         return kwargs
+
+    def get(self, request, *args, **kwargs):
+        resp = super(SignRevisionView, self).get(request=request, *args, **kwargs)
+
+        # create event
+        self.matter.actions.user_viewed_signature_request(user=request.user,
+                                                          signer=self.signer,
+                                                          sign_document=self.object)
+        return resp
 
 
 class ClaimSignRevisionView(SignRevisionView,
@@ -89,12 +97,21 @@ class ClaimSignRevisionView(SignRevisionView,
         return self.request.user == self.object.requested_by or self.request.user == self.matter.lawyer
 
     def get_context_data(self, **kwargs):
-        kwargs = super(SignRevisionView, self).get_context_data(**kwargs)
+        kwargs = super(SignRevisionView, self).get_context_data(**kwargs)  # NB! we call SignRevisionView so we dont get the user checking that takes place in SignRevisionView
         kwargs.update({
             'claim_url': mark_safe(self.object.signing_request.data.get('unclaimed_draft', {}).get('claim_url')),
             'can_claim': self.is_authorised,
+            'requested_by': self.object.requested_by
         })
         return kwargs
+
+    def get(self, request, *args, **kwargs):
+        resp = super(ClaimSignRevisionView, self).get(request=request, *args, **kwargs)
+
+        # send log event
+        self.matter.actions.sent_setup_for_signing(user=request.user, sign_object=self.object)
+
+        return resp
 
     def post(self, request, *args, **kwargs):
         """
@@ -119,5 +136,7 @@ class ClaimSignRevisionView(SignRevisionView,
         #
         self.object.send_for_signing(signature_request_id=signature_request_id)
 
-        return super(ClaimSignRevisionView, self).post(request=request, *args, **kwargs)
+        # send log event
+        self.matter.actions.completed_setup_for_signing(user=request.user, sign_object=self.object)
 
+        return super(ClaimSignRevisionView, self).post(request=request, *args, **kwargs)

@@ -403,8 +403,42 @@ class MatterActivityEventService(object):
     #
     # Signing
     #
+    def sent_setup_for_signing(self, user, sign_object):
+        """
+        HelloSign claim_url event
+        """
+        # toolkit.apps.sign.views#ClaimSignRevisionView.post
+        revision = sign_object.document
+        item = revision.item
+        message = u'%s sent %s (%s) for signing (HelloSign claim_url)' % (user, item, revision)
+        self._create_activity(actor=user, verb=u'sent for signing', action_object=item, message=message,
+                              user=user)
+        self.analytics.event('sign.sent_doc_for_signing', user=user, **{
+            'sign_object': str(sign_object.slug),
+            'revision_pk': str(item.slug),
+            'item_pk': item.pk,
+            'matter_pk': self.matter.pk
+        })
+
+    def completed_setup_for_signing(self, user, sign_object):
+        """
+        Completed the HelloSign claim_url event
+        """
+        # toolkit.apps.sign.views#ClaimSignRevisionView.post
+        revision = sign_object.document
+        item = revision.item
+        message = u'%s completed signing setup (HelloSign claim_url) %s (%s) for signing' % (user, item, revision)
+        self._create_activity(actor=user, verb=u'completed signing setup', action_object=item, message=message,
+                              user=user)
+        self.analytics.event('sign.completed_signing_setup', user=user, **{
+            'sign_object': str(sign_object.slug),
+            'revision_pk': str(item.slug),
+            'item_pk': item.pk,
+            'matter_pk': self.matter.pk
+        })
+
     def invite_user_as_signer(self, item, inviting_user, invited_user):
-        # toolkit.api.views.sign.ItemRevisionSignersView#create
+        # toolkit.apps.sign.views#ClaimSignRevisionView.post
         message = u'%s invited %s as signer for %s' % (inviting_user, invited_user, item)
         self._create_activity(actor=inviting_user, verb=u'invited signer', action_object=item, message=message,
                               user=invited_user)
@@ -415,10 +449,13 @@ class MatterActivityEventService(object):
             'matter_pk': self.matter.pk
         })
 
-    def user_viewed_signature_request(self, item, user, revision):
-        # toolkit.api.views.sign.ItemRevisionSignerView#retrieve
-        message = u'%s viewed signature request %s (%s) for %s' % (user, revision.name, revision.slug, item)
-        self._create_activity(actor=user, verb=u'viewed revision', action_object=item, message=message,
+    def user_viewed_signature_request(self, user, signer, sign_document):
+        # toolkit.apps.sign.views
+        revision = sign_document.document
+        item = revision.item
+
+        message = u'%s viewed signature request %s for %s on item %s' % (user, revision.name, signer, item)
+        self._create_activity(actor=user, verb=u'viewed signature request', action_object=item, message=message,
                               revision=revision, filename=revision.name, version=revision.slug,
                               date_created=datetime.datetime.utcnow())
         self.analytics.event('sign.request.viewed', user=user, **{
@@ -427,8 +464,30 @@ class MatterActivityEventService(object):
             'revision_pk': revision.pk
         })
 
-    def user_has_signed(self, item, user, revision):
-        pass
+    def user_signed(self, user, sign_object):
+        # toolkit.apps.sign.signals
+        revision = sign_object.document
+        item = revision.item
+        message = u'%s signed %s (%s)' % (user, item, revision)
+        self._create_activity(actor=user, verb=u'signed', action_object=item, message=message,
+                              user=user)
+        self.analytics.event('sign.user_signed', user=user, **{
+            'sign_object': str(sign_object.slug),
+            'revision_pk': str(item.slug),
+            'item_pk': item.pk,
+            'matter_pk': self.matter.pk
+        })
 
-    def all_users_have_signed(self, item, user, revision):
-        pass
+    def all_users_have_signed(self, sign_object):
+        # toolkit.apps.sign.signals
+        revision = sign_object.document
+        item = revision.item
+        message = u'Signing Complete - All invitees have signed %s (%s)' % (item, revision)
+        self._create_activity(actor=self.matter.lawyer, verb=u'signing complete', action_object=item, message=message,
+                              user=self.matter.lawyer)
+        self.analytics.event('sign.signing_complete', user=self.matter.lawyer, **{
+            'sign_object': str(sign_object.slug),
+            'revision_pk': str(item.slug),
+            'item_pk': item.pk,
+            'matter_pk': self.matter.pk
+        })

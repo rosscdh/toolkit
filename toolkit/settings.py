@@ -452,6 +452,11 @@ LAWPAL_ACTIVITY = {
                       # 'revision-added-revision-comment',
                       # 'workspace-added-participant', 'workspace-removed-participant'
 
+                      # Signing
+                      'item-sent-for-signing', 'item-completed-signing-setup',
+                      'item-viewed-signature-request',
+                      'item-signed',
+
                       # activate nearly everything for testing;
                       'item-reopened', 'item-closed',
                       'item-commented', 'item-comment-created', 'item-comment-deleted',
@@ -476,6 +481,11 @@ LAWPAL_ACTIVITY = {
     },
     "notifications": {
         "whitelist": [
+                      # Signing
+                      'item-sent-for-signing', 'item-completed-signing-setup',
+                      'item-viewed-signature-request',
+                      'item-signed',
+
                       'item-reopened', 'item-closed',
                       'item-commented', 'item-comment-created', 'item-comment-deleted',
                       'item-invited-reviewer',
@@ -498,7 +508,13 @@ LAWPAL_ACTIVITY = {
                       ]
     },
     "activity": {
-        "whitelist": ['item-created', 'item-edited', 'item-commented', 'item-changed-the-status', 'item-renamed',
+        "whitelist": [
+                      # Signing
+                      'item-sent-for-signing', 'item-completed-signing-setup',
+                      'item-viewed-signature-request',
+                      'item-signed',
+
+                      'item-created', 'item-edited', 'item-commented', 'item-changed-the-status', 'item-renamed',
                       'item-provide-a-document', 'item-invited-reviewer', 'item-canceled-their-request-for-a-document',
                       'item-closed', 'item-reopened', 'item-added-revision-comment', 'item-deleted-revision-comment',
                       'item-completed-review', 'item-viewed-revision',

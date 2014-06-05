@@ -205,16 +205,7 @@ class ItemRevisionSignerView(generics.RetrieveAPIView,
             # Should never have more than 1
             #
             status = http_status.HTTP_406_NOT_ACCEPTABLE
-            logger.critical('A revision %s for a user %s has more than 1 signdocument they should only have 1 per revision' % (self.revision, user))
-
-        # TODO: MOVE
-        # After move we don't have the user any more!
-
-        # create event
-        self.revision.item.matter.actions.user_viewed_signature_request(item=self.revision.item,
-                                                                        user=user,
-                                                                        revision=self.revision)
-        
+            logger.critical('A revision %s for a user %s has more than 1 signdocument they should only have 1 per revision' % (self.revision, user))        
 
         # TODO: check if this was the last user to review the document.
         # if so: user_revision_review_complete()

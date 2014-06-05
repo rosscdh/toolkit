@@ -82,7 +82,7 @@
     </script>
   {% else %}
     <div class="page-header">
-      <h3>Sorry, you can not send this document for signing. <br/><small>Only the matter owner ({{ view.matter.lawyer }}) can perform this action.</small></h3>
+      <h3>Sorry, you can not send this document for signing. <br/><small>Only the matter owner ({{ view.matter.lawyer }}) or the person that sent the document for signing ({{ requested_by }}) can perform this action.</small></h3>
     </div>
   {% endif %}
 {% endblock %}
