@@ -5,6 +5,8 @@ from rest_framework import generics
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from rulez import registry as rulez_registry
+
 from ..serializers import AccountSerializer, PasswordSerializer
 
 
@@ -52,3 +54,17 @@ class AccountEndpoint(generics.RetrieveUpdateAPIView):
         else:
             return Response(serializer.errors,
                             status=status.HTTP_400_BAD_REQUEST)
+
+    def can_read(self, user):
+        return user == self.get_object() or user.is_staff is True or user.is_superuser is True
+
+    def can_edit(self, user):
+        return user == self.get_object() or user.is_staff is True or user.is_superuser is True
+
+    def can_delete(self, user):
+        return user == self.get_object() or user.is_staff is True or user.is_superuser is True
+
+
+rulez_registry.register("can_read", AccountEndpoint)
+rulez_registry.register("can_edit", AccountEndpoint)
+rulez_registry.register("can_delete", AccountEndpoint)

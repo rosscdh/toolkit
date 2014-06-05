@@ -158,7 +158,7 @@ HELPER_APPS = (
     'abridge',
 
     # Api helpers
-    #'corsheaders',  # not required yet
+    'corsheaders',  # not required yet
 
     # Asset pipeline
     'pipeline',
@@ -178,7 +178,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'corsheaders.middleware.CorsMiddleware',  # not required yet
+    'corsheaders.middleware.CorsMiddleware',  # not required yet
     'dj_authy.middleware.AuthyAuthenticationRequiredMiddleware',
     'toolkit.apps.me.middleware.EnsureUserHasPasswordMiddleware',
     'django.middleware.gzip.GZipMiddleware',
@@ -274,7 +274,7 @@ HELLOSIGN_CLIENT_ID = '9bc892af173754698e3fa30dedee3826'
 HELLOSIGN_CLIENT_SECRET = '8d770244b9971abfe789f5224552239d'
 
 CORS_ORIGIN_WHITELIST = (
-    'localhost:9000'
+    'localhost:8004'
 )
 
 REST_FRAMEWORK = {
@@ -288,7 +288,7 @@ REST_FRAMEWORK = {
         'rest_framework.serializers.HyperlinkedModelSerializer',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        #'rest_framework.authentication.BasicAuthentication', # Here Temporarily for dev
+        # 'rest_framework.authentication.BasicAuthentication', # Here Temporarily for dev
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
     ),
