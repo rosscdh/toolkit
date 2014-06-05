@@ -10,8 +10,6 @@ angular.module('toolkit-gui')
  * @param  {Function} toaster             A directive that provides the ability to show status messages to the end user
  * @param  {Function} $modal              A directive that provides a wrapper for displaying and managing dialogs
  * @param  {Object} matterService         An angular service designed to work with MATTER API end-points
- * @param  {Object} matterItemService     A custom angular service designed to work with MATTER ITEM API end-points
- * @param  {Object} matterCategoryService A custom angular service designed to work with MATTER CATEGORY end-points
  * @param  {Object} participantService    A custom angular service designed to work with USER end-points
  * @param  {Object} activityService       A custom angular service designed to work with ACTIVITY end-points
  * @param  {Object} userService           A custom angular service designed to work with USER end-points
@@ -33,8 +31,6 @@ angular.module('toolkit-gui')
     '$modal',
     'baseService',
     'matterService',
-    'matterItemService',
-    'matterCategoryService',
     'participantService',
     'userService',
     'matterCommentService',
@@ -58,8 +54,6 @@ angular.module('toolkit-gui')
              $modal,
              baseService,
              matterService,
-             matterItemService,
-             matterCategoryService,
              participantService,
              userService,
              matterCommentService,
