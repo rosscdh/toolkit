@@ -1,11 +1,20 @@
 *.diff
-gui/temp/*
+
+gui/index.html
+gui/dist
+gui/temp
+gui/bower_components
+gui/doc
+gui/node_modules
+gui/coverage
+
 toolkit/production_settings\.py # ignoring the test productions
 setup.cfg
 .sonar
 hellosign
 hello_sign
 actstream
+dj_crocodoc
 *_valid.html
 *_invalid.html
 \.coverage
@@ -36,3 +45,4 @@ composer.lock
 /log/*.log
 /MANIFEST
 /build
+

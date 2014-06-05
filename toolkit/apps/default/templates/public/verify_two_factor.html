@@ -1,0 +1,25 @@
+{% extends 'gui.html' %}
+
+{% load url from future %}{% load crispy_forms_tags %}
+
+{% block page_title %}Sign in — {{ block.super }}{% endblock %}
+
+{% block body_class %}entry-pages{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-lg-4 col-lg-offset-4 col-sm-8 col-sm-offset-2 col-xs-12">
+            <div class="signup-wrap">
+                <div class="logo-wrap">
+                    <h4>Verification Code</h4>
+                </div>
+                {% block form %}
+                    {% crispy form %}
+                {% endblock %}
+            </div>
+            <div class="text-center links">
+                <a href="{% url 'password_reset_recover' %}" class="text-muted">Forgot your password?</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

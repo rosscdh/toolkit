@@ -2,7 +2,7 @@
 from django.db import transaction
 from django.dispatch import receiver
 from django.db import IntegrityError
-from django.db.models.signals import pre_save, post_save, post_delete, m2m_changed
+from django.db.models.signals import pre_save, post_save, pre_delete, post_delete, m2m_changed
 
 from toolkit.apps.workspace import _model_slug_exists
 
@@ -41,6 +41,29 @@ def ensure_revision_slug(sender, instance, **kwargs):
                 instance.slug = final_slug
 
 
+@receiver(pre_save, sender=Revision, dispatch_uid='revision.changed_content')
+def on_revision_save_changed_content(sender, instance, **kwargs):
+    matter = instance.item.matter
+
+    try:
+        # get the current
+        previous_instance = sender.objects.get(pk=instance.pk)
+
+    except sender.DoesNotExist:
+        #
+        # Do nothing as the previous object does not exist
+        #
+        previous_instance = None
+
+    if previous_instance:
+        if previous_instance.status != instance.status:
+            matter.actions.revision_changed_status(user=matter.lawyer,  # WHO is allowed to change status?
+                                                   revision=instance,
+                                                   previous_status=previous_instance.status)
+
+    logger.debug('Recieved revision.pre_save:changed_content event: %s' % sender)
+
+
 @receiver(post_save, sender=Revision, dispatch_uid='revision.set_item_is_requested_false')
 def set_item_is_requested_false(sender, instance, **kwargs):
     """
@@ -73,6 +96,18 @@ def ensure_revision_item_latest_revision_is_current(sender, instance, **kwargs):
         item = instance.item
         item.latest_revision = instance
         item.save(update_fields=['latest_revision'])
+
+
+@receiver(post_save, sender=Revision, dispatch_uid='revision.reset_item_review_percentage_complete')
+def reset_item_review_percentage_complete(sender, instance, created, **kwargs):
+    """
+    Ensure that the is_current=True revision is set to the item.latest_revision
+    """
+    if created is True:
+        #
+        # Set the recalculate_review_percentage_complete to False
+        #
+        instance.item.recalculate_review_percentage_complete()
 
 
 @receiver(post_save, sender=Revision, dispatch_uid='revision.ensure_revision_reviewdocument_object')
@@ -123,6 +158,19 @@ can talk
 """
 
 
+@receiver(pre_delete, sender=Revision, dispatch_uid='revision.pre_delete.reset_item_review_percentage_complete')
+def reset_item_review_percentage_complete_on_delete(sender, instance, **kwargs):
+    """
+    On Delete of a revision we want to reset the recalculate_review_percentage_complete setting for the item
+    """
+    if instance.is_current is True:  # only reset it if its the most recent document one
+        # i.e. we have only 1 (or less) reviewdocument then set the item recalculate_review_percentage_complete
+        item = instance.item
+        item.latest_revision = None  # @BUSINESRULE very important for soft delete, as we no longer can rely on the model field on_delete auto set to null
+        item.save(update_fields=['latest_revision'])
+        item.recalculate_review_percentage_complete()
+
+
 @receiver(post_delete, sender=Revision, dispatch_uid='revision.set_previous_revision_is_current_on_delete')
 def set_previous_revision_is_current_on_delete(sender, instance, **kwargs):
     """
@@ -130,6 +178,7 @@ def set_previous_revision_is_current_on_delete(sender, instance, **kwargs):
     is_current = True
     """
     previous_revision = instance.__class__.objects.filter(item=instance.item).last()
+
     if previous_revision:
         previous_revision.is_current = True
         previous_revision.save(update_fields=['is_current'])

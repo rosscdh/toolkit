@@ -8,13 +8,37 @@ PROJECT_ENVIRONMENT = 'dev'
 
 DEBUG = True
 TEST_PREPROD = False  # set to true and DEBUG = False in order to test angular app
-COMPRESSION_ENABLED = False
 
 if TEST_PREPROD is True:
+    #
+    # If in prod mode load from the gui/dist path (ie only the selected components)
+    # this implies that we need to manually specify the selected components in GruntFile
+    #
     STATICFILES_DIRS = (
         # These are the production files
         # not that static is in gui/dist/static *not to be confused with the django {{ STATIC_URL }}ng/ which will now point correctly
         ("ng", os.path.join(SITE_ROOT, 'gui', 'dist')),
+    )
+    #
+    # NB! note the .min use here for react
+    #
+    PIPELINE_JS = {
+        'reactjs': {
+            'source_filenames': (
+                'js/react-0.10.0.min.js',
+                'js/matter_list.jsx',
+            ),
+            'output_filename': 'js/jsx-all-compiled.js',
+        }
+    }
+
+else:
+    #
+    # If in debug mode load from the gui path (ie all of the components)
+    #
+    STATICFILES_DIRS = (
+        # These are the dev files
+        ("ng", os.path.join(SITE_ROOT, 'gui')),
     )
 
 INSTALLED_APPS = INSTALLED_APPS + (
@@ -49,7 +73,11 @@ DEBUG_TOOLBAR_CONFIG = {
 
 CROCDOC_API_KEY = '27FXmeRJ3StkMZGxi46UTwWH'
 
-AUTHY_API_KEY = 'e19afad3c1c207a03ef6a1dcb2adb0c3'
+#
+# Authy
+#
+AUTHY_KEY = 'bcdfb7ce5e6854dcfe65ce5dd0d568c7'
+AUTHY_IS_SANDBOXED = True
 
 #
 # ACTIVITY STREAM
@@ -62,6 +90,10 @@ ACTSTREAM_SETTINGS = {
     'USE_JSONFIELD': True,
     'USE_FOLLOWING': False,  # VERY importand; will break our system if this changes to True
 }
+
+# how long are users allowed to edit/delete their comments (in minutes)
+DELETE_COMMENTS_DURATION = 60
+EDIT_COMMENTS_DURATION = DELETE_COMMENTS_DURATION
 
 #
 # Abridge Integration
@@ -77,6 +109,9 @@ ABRIDGE_SECRET_ACCESS_KEY = ''
 ABRIDGE_USERNAME = ''
 ABRIDGE_PASSWORD = ''
 
+INTERCOM_APP_ID = 'wkxzfou'
+INTERCOM_APP_SECRET = 'MZCesCDxkDrYdfX8HocAB2F6V5aZzCm-DuF7lyR5'
+
 #
 # Mixpanel Analytics
 #
@@ -85,8 +120,26 @@ MIXPANEL_SETTINGS = {
 }
 
 #
+# Payments
+#
+STRIPE_PUBLIC_KEY = 'sk_test_8Po9Bh0rj12nISHPFsOQz46Q'
+STRIPE_SECRET_KEY = 'pk_test_pVBXSHiazhp3b0EyGHQa8Dx2'
+
+#
 # Celery SQS Tasks
 #
 CELERY_DEFAULT_QUEUE = 'lawpal-local'
-RUN_TASKS = True
-ENABLE_CELERY_TASKS = True
+ENABLE_CELERY_TASKS = False
+
+#
+# Authy
+#
+AUTHY_KEY = 'bcdfb7ce5e6854dcfe65ce5dd0d568c7'
+AUTHY_IS_SANDBOXED = True
+
+#
+# Pusher
+#
+PUSHER_APP_ID = 44301
+PUSHER_KEY = '514360ee427ceb00cd8d'
+PUSHER_SECRET = '8fa687dde7e745e8f9d7'

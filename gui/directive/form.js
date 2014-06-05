@@ -27,3 +27,19 @@ angular.module('toolkit-gui').directive('focusOn', ['$log', function($log) {
       });
    };
 }]);
+
+
+angular.module('toolkit-gui').directive('dropdownKeepOpen', ['$log', function($log) {
+   return function(scope, element, attrs) {
+      jQuery(element).on({
+            "click":             function() { $log.debug("clicked");  },
+            "hide.bs.dropdown":  function() {
+                if(scope.data.showRevisionStatusDropdown===true) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+      });
+   };
+}]);

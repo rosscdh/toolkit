@@ -42,7 +42,6 @@
 
                                         var count = $(payload['errors']).length;
                                         if (count > 1) {
-                                            alert('> 1');
                                             $errorContainer.find('p').html('There were ' + count + ' errors with this:');
                                         } else if (count == 1) {
                                             $errorContainer.find('p').html('There was 1 error with this:');
@@ -59,6 +58,12 @@
                                     success: function(data) {
                                         if (data['redirect']) {
                                             window.location.href = data['url'];
+                                        } else if (data['modal']) {
+                                            $form.closest('.modal').modal('hide');
+
+                                            $(data['target']).modal({
+                                                remote: data['url']
+                                            });
                                         };
                                     }
                                 });

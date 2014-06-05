@@ -98,9 +98,7 @@ def on_hellosign_webhook_event_recieved(sender, hellosign_log,
         logging.info('Recieved event: %s for request: %s' % (event_type, hellosign_request,))
 
         if hellosign_log.event_type == 'signature_request_all_signed':
-            #import pdb;pdb.set_trace()
             logging.info('Recieved signature_request_all_signed from HelloSign')
 
         elif hellosign_log.event_type == 'signature_request_signed':
-            #import pdb;pdb.set_trace()
             logging.info('Recieved signature_request_signed from HelloSign')

@@ -25,7 +25,9 @@
         "it": true,
         "expect": true,
         "filepicker": true,
-        "TimeSpan": true
+        "TimeSpan": true,
+        "Raven": true,
+        "Pusher": true
     },
     "-W083": false,
     "-W099": false

@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
-from mixpanel import Mixpanel
+from mixpanel import Mixpanel, MixpanelException
+
+import logging
+logger = logging.getLogger('django.request')
 
 
 MIXPANEL_SETTINGS = getattr(settings, 'MIXPANEL_SETTINGS', {
@@ -16,24 +19,41 @@ class MixpanelOnLawpal(object):
         if self.token is not None:
             self.service = Mixpanel(self.token)
 
-    def alias(self, alias_id, original, meta={}):
+    def mixpanel_alias(self, alias_id, original, **kwargs):
         if self.service is not None:
-            self.service.alias(alias_id=alias_id, original=original, meta=meta)
+            try:
+                self.service.alias(alias_id=alias_id, original=original, **kwargs)
+            except Exception as e:
+                logger.error('Mixpanel error: distinct_id, missing or empty: %s :%s' % (alias_id, e))
+
+    def mixpanel_track_charge(self, user, amount, time, distinct_id=None, **kwargs):
+        if self.service is not None:
+            if distinct_id is None:
+                distinct_id = user.pk
+            try:
+                self.service.people_track_charge(distinct_id=distinct_id, amount=amount, properties={ '$time': time })
+            except Exception as e:
+                logger.error('Mixpanel error: %s' % e)
 
     def event(self, key, user, distinct_id=None, **kwargs):
         if self.service is not None:
             if distinct_id is None:
                 distinct_id = user.pk
 
+            user_profile = user.profile
             all_properties = {
-                'account_type': user.profile.account_type,
+                'account_type': user_profile.account_type,
+                'plan': user_profile.plan,
+                'plan_interval': user_profile.plan_interval,
                 'user': user.get_full_name(),
-                'user_type': user.profile.type,
+                'user_type': user_profile.type,
                 'via': 'web'
             }
             all_properties.update(kwargs)
-
-            self.service.track(distinct_id=distinct_id, event_name=key, properties=kwargs)
+            try:
+                self.service.track(distinct_id=distinct_id, event_name=key, properties=all_properties)
+            except Exception as e:
+                logger.error('Mixpanel error: %s' % e)
 
 
 class AtticusFinch(MixpanelOnLawpal):

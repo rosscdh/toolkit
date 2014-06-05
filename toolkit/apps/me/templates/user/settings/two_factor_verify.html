@@ -1,0 +1,43 @@
+{% extends 'modal.html' %}
+
+{% load url from future %}
+
+{% block modal_title %}Getting started{% endblock %}
+
+{% block content %}
+    <form method="POST" action="{% url 'me:two-factor-verify' %}" data-remote="true" parsley-validate="true">
+        {% csrf_token %}
+        <div class="modal-body">
+            {% if user.authy_profile.is_smartphone %}
+                <h6>Set up Authy on your phone</h6>
+                <p>Download the Authy app for your <a href="https://itunes.apple.com/us/app/authy/id494168017">iOS</a> or <a href="https://play.google.com/store/apps/details?id=com.authy.authy">Android</a> device.</p>
+                <p>Open the app, and follow the simple steps, including verifying your phone number.</p>
+                <hr>
+            {% endif %}
+
+            <h6>Enter verification code</h6>
+            <p>Enter the verification code sent to your phone number ending in <strong>{{ user.authy_profile.cellphone|make_list|slice:'-2:'|join:'' }}</strong>.</p>
+            {% include "partials/form-errors.html" with form=form %}
+            {{ form.token }}
+            {% if user.authy_profile.is_smartphone %}
+                <p><strong>Please Note:</strong> The verification code will be displayed under the LawPal tab.</p>
+            {% endif %}
+        </div>
+        <div class="modal-footer">
+            <a href="#" class="btn btn-default" data-dismiss="modal">Cancel</a>
+            <input type="submit" name="submit" value="Next" class="btn btn-danger btn-wide" id="submit-id-submit">
+        </div>
+    </form>
+{% endblock %}
+
+{% block js %}
+    {{ block.super }}
+    <script type="text/javascript">
+    // <![CDATA[
+    (function($) {
+        // Re-bind our overloaded version of parsley to any forms
+        $('.modal#verify-two-factor [parsley-validate]').parsley();
+    })(jQuery);
+    // ]]>
+    </script>
+{% endblock %}

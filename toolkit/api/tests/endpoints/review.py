@@ -31,13 +31,12 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
     /matters/:matter_slug/items/:item_slug/revision/reviewers/ (GET,POST)
         [lawyer,customer] to list, create reviewers
     """
-    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review_url', u'url', u'initials', u'user_class', u'name',]
+    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review', u'url', u'initials', u'user_class', u'name',]
 
     @property
     def endpoint(self):
         return reverse('item_revision_reviewers', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug})
 
-    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def setUp(self):
         super(RevisionReviewsTest, self).setUp()
 
@@ -50,7 +49,7 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
 
     def test_lawyer_get_no_participants(self):
         """
-        We shoudl get a reviewdocument but with None reviewers (only the participants, can view this reviewdocument object)
+        We should get a reviewdocument but with None reviewers (only the participants, can view this reviewdocument object)
         """
         self.client.login(username=self.lawyer.username, password=self.password)
 
@@ -113,15 +112,19 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
         self.assertEqual(json_data['results'][1]['reviewer'], None)
 
         # user review url must be in it
-        self.assertTrue('user_review_url' in json_data['results'][0]['reviewer'].keys())
+        self.assertTrue('user_review' in json_data['results'][0]['reviewer'].keys())
 
         #
         # we expect the currently logged in users url to be returned;
         # as the view is relative to the user
         #
-        expected_url = self.item.latest_revision.reviewdocument_set.all().first().get_absolute_url(user=self.lawyer)
+        review_document = self.item.latest_revision.reviewdocument_set.all().first()
+        expected_url = review_document.get_absolute_url(user=self.lawyer)
 
-        self.assertEqual(json_data['results'][0]['reviewer']['user_review_url'], expected_url)
+        self.assertEqual(json_data['results'][0]['reviewer']['user_review'], {
+            'url': expected_url,
+            'slug': str(review_document.slug)
+        })
 
         outbox = mail.outbox
         self.assertEqual(len(outbox), 1)
@@ -142,7 +145,8 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
 
         # test if activity shows in stream
         stream = target_stream(self.matter)
-        self.assertEqual(stream[0].data['message'], u'Lawyer Test invited Participant Number 1 as reviewer for Test Item with Revision')
+        self.assertEqual(stream[0].data['override_message'],
+                         u'Lawyër Tëst invited Participant Number 1 to review Revision v1 of Test Item with Revision')
 
     def test_second_lawyer_post(self):
         """
@@ -182,15 +186,19 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
         self.assertEqual(json_data['results'][1]['reviewer'], None)
 
         # user review url must be in it
-        self.assertTrue('user_review_url' in json_data['results'][0]['reviewer'].keys())
+        self.assertTrue('user_review' in json_data['results'][0]['reviewer'].keys())
 
         #
         # we expect the currently logged in users url to be returned;
         # as the view is relative to the user
         #
-        expected_url = self.item.latest_revision.reviewdocument_set.all().first().get_absolute_url(user=self.lawyer)
+        review_document = self.item.latest_revision.reviewdocument_set.all().first()
+        expected_url = review_document.get_absolute_url(user=self.lawyer)
 
-        self.assertEqual(json_data['results'][0]['reviewer']['user_review_url'], expected_url)
+        self.assertEqual(json_data['results'][0]['reviewer']['user_review'], {
+            'url': expected_url,
+            'slug': str(review_document.slug)
+        })
 
         outbox = mail.outbox
         self.assertEqual(len(outbox), 1)
@@ -210,15 +218,19 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
         self.assertEqual(invite_key.next, reverse('request:list'))
 
         # user review url must be in it
-        self.assertTrue('user_review_url' in json_data['results'][0]['reviewer'].keys())
+        self.assertTrue('user_review' in json_data['results'][0]['reviewer'].keys())
 
         #
         # we expect the currently logged in users url to be returned;
         # as the view is relative to the user
         #
-        expected_url = self.item.latest_revision.reviewdocument_set.all().first().get_absolute_url(user=self.lawyer)
+        review_document = self.item.latest_revision.reviewdocument_set.all().first()
+        expected_url = review_document.get_absolute_url(user=self.lawyer)
 
-        self.assertEqual(json_data['results'][0]['reviewer']['user_review_url'], expected_url)
+        self.assertEqual(json_data['results'][0]['reviewer']['user_review'], {
+            'url': expected_url,
+            'slug': str(review_document.slug)
+        })
 
         outbox = mail.outbox
         self.assertEqual(len(outbox), 1)
@@ -239,7 +251,8 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
 
         # test if activity shows in stream
         stream = target_stream(self.matter)
-        self.assertEqual(stream[0].data['message'], u'Lawyer Test invited Participant Number 1 as reviewer for Test Item with Revision')
+        self.assertEqual(stream[0].data['override_message'],
+                         u'Lawyër Tëst invited Participant Number 1 to review Revision v1 of Test Item with Revision')
 
 
 class ReviewObjectIncrementWithNewReviewerTest(BaseEndpointTest):
@@ -251,7 +264,6 @@ class ReviewObjectIncrementWithNewReviewerTest(BaseEndpointTest):
     def endpoint(self):
         return reverse('item_revision_reviewers', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug})
 
-    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def setUp(self):
         super(ReviewObjectIncrementWithNewReviewerTest, self).setUp()
 
@@ -337,13 +349,12 @@ class RevisionReviewerTest(BaseEndpointTest):
     /matters/:matter_slug/items/:item_slug/revision/reviewer/:username (GET,DELETE)
         [lawyer,customer] to view, delete reviewers
     """
-    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review_url', u'url', u'initials', u'user_class', u'name',]
+    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review', u'url', u'initials', u'user_class', u'name',]
 
     @property
     def endpoint(self):
         return reverse('item_revision_reviewer', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug, 'username': self.participant.username})
 
-    @mock.patch('storages.backends.s3boto.S3BotoStorage', FileSystemStorage)
     def setUp(self):
         super(RevisionReviewerTest, self).setUp()
 
@@ -407,14 +418,14 @@ class RevisionReviewerTest(BaseEndpointTest):
         # Test the auth for the new reviewer
         #
         url = urllib.unquote_plus(reviewdocument.get_absolute_url(user=self.participant))
-        self.assertEqual(url, '/review/%s/%s/' % (reviewdocument.slug, reviewdocument.make_user_auth_key(user=self.participant)))
+        self.assertEqual(url, ABSOLUTE_BASE_URL('/review/%s/%s/' % (reviewdocument.slug, reviewdocument.make_user_auth_key(user=self.participant))))
         #
         # Test the auth urls for the matter.participants
         # test that they cant log in when logged in already (as the lawyer above)
         #
         for u in self.matter.participants.all():
             url = urllib.unquote_plus(reviewdocument.get_absolute_url(user=u))
-            self.assertEqual(url, '/review/%s/%s/' % (reviewdocument.slug, reviewdocument.get_user_auth(user=u)))
+            self.assertEqual(url, ABSOLUTE_BASE_URL('/review/%s/%s/' % (reviewdocument.slug, reviewdocument.get_user_auth(user=u))))
             # Test that permission is denied when logged in as a user that is not the auth_token user
             resp = self.client.get(url)
             self.assertTrue(resp.status_code, 403) # denied
@@ -430,7 +441,8 @@ class RevisionReviewerTest(BaseEndpointTest):
             self.assertTrue(resp.status_code, 200) # ok logged in
 
             context_data = resp.context_data
-            self.assertEqual(context_data.keys(), ['crocodoc_view_url', 'reviewdocument', u'object', 'CROCDOC_PARAMS', 'crocodoc', u'view'])
+
+            self.assertEqual(context_data.keys(), ['crocodoc_view_url', 'CROCODOC_PARAMS', 'reviewdocument', u'object', 'crocodoc', u'view'])
             # is a valid url for crocodoc
             self.assertTrue(validate_url(context_data.get('crocodoc_view_url')) is None)
             self.assertTrue('https://crocodoc.com/view/' in context_data.get('crocodoc_view_url'))
@@ -442,7 +454,7 @@ class RevisionReviewerTest(BaseEndpointTest):
                                         'copyprotected': False,
                                         'sidebar': 'auto'}
 
-            self.assertEqual(context_data.get('CROCDOC_PARAMS'), expected_crocodoc_params)
+            self.assertEqual(context_data.get('CROCODOC_PARAMS'), expected_crocodoc_params)
 
     def test_lawyer_post(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -490,7 +502,7 @@ class RevisionReviewerTest(BaseEndpointTest):
 
     def test_customer_delete(self):
         self.client.login(username=self.user.username, password=self.password)
-        resp = self.client.patch(self.endpoint, {}, content_type='application/json')
+        resp = self.client.delete(self.endpoint, {}, content_type='application/json')
         self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_get(self):
@@ -517,7 +529,11 @@ class RevisionRequestedDocumentTest(BaseEndpointTest):
     and
     item.responsible_party must be a User
     """
-    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'status', u'category', u'is_complete', u'closing_group', u'description', u'parent', u'date_modified', u'url', u'is_requested', u'children', u'matter', u'date_due', u'responsible_party', u'is_final', u'date_created', u'latest_revision', u'request_document_meta', u'slug', u'name']
+    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'status', u'category', u'is_complete', u'closing_group', u'description',
+                                           u'parent', u'date_modified', u'url', u'regular_url', u'is_requested', u'children', u'matter',
+                                           u'date_due', u'responsible_party', u'is_final', u'date_created',
+                                           u'latest_revision', u'request_document_meta', u'slug', u'name',
+                                           u'review_percentage_complete']
 
     @property
     def endpoint(self):
@@ -567,10 +583,11 @@ class RevisionRequestedDocumentTest(BaseEndpointTest):
 
         inviteduploader_user = User.objects.get(username='inviteduploader')
         invited_uploader = LiteUserSerializer(inviteduploader_user,
-                                              context={'request': self.request_factory.get(self.endpoint)})  ## should exist as we jsut created him in the patch
+                                              context={'request': self.request_factory.get(self.endpoint)}).data  ## should exist as we jsut created him in the patch
 
         self.assertTrue(json_data.get('is_requested') is True)
-        self.assertEqual(json_data.get('responsible_party'), invited_uploader.data)
+        self.assertItemsEqual(json_data.get('responsible_party').keys(), invited_uploader.keys())
+
 
         #
         # now upload a document and ensure
@@ -605,7 +622,127 @@ class RevisionRequestedDocumentTest(BaseEndpointTest):
 
     def test_customer_delete(self):
         self.client.login(username=self.user.username, password=self.password)
+        resp = self.client.delete(self.endpoint, {}, content_type='application/json')
+        self.assertEqual(resp.status_code, 403)  # forbidden
+
+    def test_anon_get(self):
+        resp = self.client.get(self.endpoint)
+        self.assertEqual(resp.status_code, 403)  # forbidden
+
+    def test_anon_post(self):
+        resp = self.client.post(self.endpoint, {}, content_type='application/json')
+        self.assertEqual(resp.status_code, 403)  # forbidden
+
+    def test_anon_patch(self):
+        resp = self.client.patch(self.endpoint, {})
+        self.assertEqual(resp.status_code, 403)  # forbidden
+
+    def test_anon_delete(self):
+        resp = self.client.delete(self.endpoint, {})
+        self.assertEqual(resp.status_code, 403)  # forbidden
+
+
+
+class ReviewerHasViewedRevisionTest(BaseEndpointTest):
+    """
+    When an invited reviewer actually views a documnet
+    when they close the crocodoc modal window we issue an ajax request
+    this is to ensure the user has actuall viewed it and not some programatic preloading 
+    """
+    @property
+    def endpoint(self):
+        return reverse('matter_item_specific_revision_user_viewed', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug, 'reviewdocument_slug': self.reviewdocument.slug})
+
+    def setUp(self):
+        super(ReviewerHasViewedRevisionTest, self).setUp()
+
+        self.request_factory = RequestFactory()
+
+        self.item = mommy.make('item.Item', matter=self.matter, name='Test Item with Revision', category=None)
+        self.revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
+
+        self.reviewer = mommy.make('auth.User', first_name='Reviewer', last_name='Number 1', email='reviewer+1@lawpal.com')
+        self.reviewer.set_password(self.password)
+        self.reviewer.save()
+
+        self.revision.reviewers.add(self.reviewer)
+        self.reviewdocument = self.revision.reviewdocument_set.all().first()  # the new invited reviewers document
+
+    def test_endpoint_name(self):
+        self.assertEqual(self.endpoint, '/api/v1/matters/%s/items/%s/reviewdocument/%s/viewed' % (self.matter.slug, self.item.slug, self.reviewdocument.slug))
+
+    def test_lawyer_get(self):
+        self.client.login(username=self.lawyer.username, password=self.password)
+        resp = self.client.get(self.endpoint)
+
+        self.assertEqual(resp.status_code, 405) # method not allowed
+
+    def test_lawyer_post(self):
+        self.client.login(username=self.lawyer.username, password=self.password)
+        resp = self.client.post(self.endpoint, {}, content_type='application/json')
+        self.assertEqual(resp.status_code, 405)  # method not allowed
+
+    def test_lawyer_patch(self):
+        
+        self.assertEqual(self.reviewdocument.date_last_viewed, None)
+        self.assertEqual(self.reviewdocument.reviewer_has_viewed, False)
+
+        self.client.login(username=self.lawyer.username, password=self.password)
+        data = {}
+        resp = self.client.patch(self.endpoint, json.dumps(data), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+
+        json_data = json.loads(resp.content)
+
+        # refresh
+        self.reviewdocument = self.reviewdocument.__class__.objects.get(pk=self.reviewdocument.pk)
+
+        # now the item should be is_requested = False
+        self.assertEqual(self.item.is_requested, False)
+        self.assertEqual(self.reviewdocument.reviewer_has_viewed, True)
+        self.assertTrue(self.reviewdocument.date_last_viewed is not None)
+
+    def test_customer_get(self):
+        self.client.login(username=self.user.username, password=self.password)
+        resp = self.client.get(self.endpoint)
+        self.assertEqual(resp.status_code, 405)  # method not allowed
+
+    def test_customer_post(self):
+        self.client.login(username=self.user.username, password=self.password)
+        resp = self.client.post(self.endpoint, {}, content_type='application/json')
+        self.assertEqual(resp.status_code, 405)  # method not allowed
+
+    def test_customer_patch(self):
+        self.client.login(username=self.user.username, password=self.password)
         resp = self.client.patch(self.endpoint, {}, content_type='application/json')
+        self.assertEqual(resp.status_code, 200)  # ok
+
+    def test_customer_delete(self):
+        self.client.login(username=self.user.username, password=self.password)
+        resp = self.client.delete(self.endpoint, {}, content_type='application/json')
+        self.assertEqual(resp.status_code, 403)  # forbidden
+
+    #
+    # REVIEWER is the primary important user here
+    #
+    def test_reviewer_get(self):
+        self.client.login(username=self.reviewer.username, password=self.password)
+        resp = self.client.get(self.endpoint)
+        self.assertEqual(resp.status_code, 405)  # method not allowed
+
+    def test_reviewer_post(self):
+        self.client.login(username=self.reviewer.username, password=self.password)
+        resp = self.client.post(self.endpoint, {}, content_type='application/json')
+        self.assertEqual(resp.status_code, 405)  # method not allowed
+
+    def test_reviewer_patch(self):
+        self.client.login(username=self.reviewer.username, password=self.password)
+        resp = self.client.patch(self.endpoint, {}, content_type='application/json')
+        self.assertEqual(resp.status_code, 200)  # ok
+
+    def test_reviewer_delete(self):
+        self.client.login(username=self.reviewer.username, password=self.password)
+        resp = self.client.delete(self.endpoint, {}, content_type='application/json')
         self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_anon_get(self):

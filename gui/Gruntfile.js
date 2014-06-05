@@ -23,6 +23,14 @@ module.exports = function (grunt) {
       }
     },
     /**
+    * Git information
+    */
+    gitinfo: {
+        options: {
+            cwd: '../' //# back to the main toolkit dir
+        },
+    },
+    /**
     * Constants for the Gruntfile so we can easily change the path for our environments.
     */
     // where to find our data provider
@@ -51,7 +59,9 @@ module.exports = function (grunt) {
                     staticPath : '<%= APP_STATIC_PATH %>',
                     apiBaseUrl : '/api/v1/',
                     DEBUG_MODE : true,
-                    SENTRY_PUBLIC_DSN : 'http://5584db708b75400fb439d4592c29fc9a@sentry.ambient-innovation.com/24'
+                    SENTRY_PUBLIC_DSN : 'http://5584db708b75400fb439d4592c29fc9a@sentry.ambient-innovation.com/24',
+                    INTERCOM_APP_ID : 'wkxzfou',
+                    PUSHER_API_KEY: '60281f610bbf5370aeaa'
                 }
             }
         },
@@ -64,7 +74,9 @@ module.exports = function (grunt) {
                     staticPath : '',
                     apiBaseUrl : '/api/v1/',
                     DEBUG_MODE : false,
-                    SENTRY_PUBLIC_DSN : 'https://b5a6429d03e2418cbe71cd5a4c9faca6@app.getsentry.com/6287'
+                    SENTRY_PUBLIC_DSN : 'https://b5a6429d03e2418cbe71cd5a4c9faca6@app.getsentry.com/6287',
+                    INTERCOM_APP_ID : 'ooqtbx99',
+                    PUSHER_API_KEY: '60281f610bbf5370aeaa'
                 }
             }
         },
@@ -77,7 +89,9 @@ module.exports = function (grunt) {
                     staticPath : '/static/',
                     apiBaseUrl : '/api/v1/',
                     DEBUG_MODE : true,
-                    SENTRY_PUBLIC_DSN : ''
+                    SENTRY_PUBLIC_DSN : '',
+                    INTERCOM_APP_ID : 'wkxzfou',
+                    PUSHER_API_KEY: '60281f610bbf5370aeaa'
                 }
             }
         }
@@ -140,26 +154,30 @@ module.exports = function (grunt) {
       template_paths: {
         src: ['temp/templates.js'],
         overwrite: true,                 // overwrite matched source files
-        replacements: [{
-          from: 'partial/',
-          to: '<%= PRODUCTION_PATH %>' + 'partial/'
-        }]
+        replacements: [
+          {
+          from: '$templateCache.put(\'partial/',
+          to: '$templateCache.put(\'<%= APP_STATIC_PATH %>partial/'
+          }
+        ]
       }
     },
     copy: {
       main: {
         files: [
           {src: ['index.html'], dest: '<%= PRODUCTION_PATH %>'},
-          {src: ['img/**'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['images/**'], dest: '<%= PRODUCTION_PATH %>'},
           {src: ['fonts/**'], dest: '<%= PRODUCTION_PATH %>'},
           {src: ['partial/**'], dest: '<%= PRODUCTION_PATH %>'},
-          {src: ['bower_components/jquery/**'], dest: '<%= PRODUCTION_PATH %>'},
-          {src: ['bower_components/jquery-ui/**'], dest: '<%= PRODUCTION_PATH %>'},
-          {src: ['bower_components/bootstrap/**'], dest: '<%= PRODUCTION_PATH %>'},
-          {src: ['bower_components/font-awesome/**'], dest: '<%= PRODUCTION_PATH %>'},
-          {src: ['bower_components/angular/**'], dest: '<%= PRODUCTION_PATH %>'}
-          // {src: ['bower_components/select2/*.png','bower_components/select2/*.gif'], dest:'dist/css/',flatten:true,expand:true},
-          // {src: ['bower_components/angular-mocks/angular-mocks.js'], dest: 'dist/'}
+          {src: ['directive/**'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['bower_components/jquery/jquery.min.js'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['bower_components/jquery/jquery.min.map'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['bower_components/jquery-ui/ui/minified/jquery-ui.min.js'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['bower_components/bootstrap/dist/js/bootstrap.min.js'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['bower_components/angular/angular.min.js'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['bower_components/angular/angular.min.js.map'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['bower_components/font-awesome/fonts/**'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['lib/**'], dest: '<%= PRODUCTION_PATH %>'}
         ]
       }
     },
@@ -179,17 +197,17 @@ module.exports = function (grunt) {
       removescripts: {
         options:{
           remove:'script[data-remove!="exclude"]',
-          append:{selector:'head',html:'<script src="' + '<%= APP_STATIC_PATH %>' + 'app.full.min.js"></script>'}
+          append:{selector:'head',html:'<script src="' + '<%= APP_STATIC_PATH %>' + 'app.full.min.js?<%= gitinfo.local.branch.current.shortSHA %>"></script>'}
         },
         src:'<%= PRODUCTION_PATH %>' + 'index.html'
       },
-      //add verbatim and endverbatim to prohibit conflicts with the django template tags
       addscript: {
         options:{
-              append:{selector:'#landmine',html:'<script src="' + '<%= DJANGO_PRODUCTION_ASSET_SERVER %><%= APP_STATIC_PATH %>' + 'app.full.min.js"></script>'}
-            },/* <%= DJANGO_PRODUCTION_ASSET_SERVER => */
-            src:'<%= PRODUCTION_PATH %>' + 'index.html'
+              append:{selector:'#landmine',html:'<script src="' + '<%= DJANGO_PRODUCTION_ASSET_SERVER %><%= APP_STATIC_PATH %>' + 'app.full.min.js?<%= gitinfo.local.branch.current.shortSHA %>"></script>'},
+          },
+          src:'<%= PRODUCTION_PATH %>' + 'index.html'
       },
+      //add verbatim and endverbatim to prohibit conflicts with the django template tags
       addverbatimprod:{
         options:{
           prepend:{selector:'body',html:'{% verbatim %}'},
@@ -206,14 +224,14 @@ module.exports = function (grunt) {
       },
       removecss: {
         options:{
-          remove:'link',
-          append:{selector:'head',html:'<link rel="stylesheet" href="' + '<%= DJANGO_PRODUCTION_ASSET_SERVER %><%= APP_STATIC_PATH %>' + 'css/app.full.min.css">'}
+          remove:'link[data-remove!="exclude"]',
+          append:{selector:'head',html:'<link rel="stylesheet" href="' + '<%= DJANGO_PRODUCTION_ASSET_SERVER %><%= APP_STATIC_PATH %>' + 'css/app.full.min.css?<%= gitinfo.local.branch.current.shortSHA %>">'}
         },
         src:'<%= PRODUCTION_PATH %>' + 'index.html'
       },
       addcss: {
         options:{
-          append:{selector:'head',html:'<link rel="stylesheet" href="' + '<%= DJANGO_PRODUCTION_ASSET_SERVER %><%= APP_STATIC_PATH %>' + 'css/app.full.min.css">'}
+          append:{selector:'head',html:'<link rel="stylesheet" href="' + '<%= DJANGO_PRODUCTION_ASSET_SERVER %><%= APP_STATIC_PATH %>' + 'css/app.full.min.css?<%= gitinfo.local.branch.current.shortSHA %>">'}
         },
         src:'<%= PRODUCTION_PATH %>' + 'index.html'
       }
@@ -289,12 +307,13 @@ module.exports = function (grunt) {
     }
   });
 
+  grunt.loadNpmTasks('grunt-gitinfo');
+
   grunt.registerTask('django', ['preprocess:django','dom_munger:readscripts', 'jshint', 'watch']);
   grunt.registerTask('server', ['preprocess:gruntserver','dom_munger:readscripts','jshint','connect', 'watch']);
   grunt.registerTask('makedoc', ['jsdoc']);
   grunt.registerTask('validate', ['jshint']);
   grunt.registerTask('test',['dom_munger:readscripts','jasmine']);
-
 
   grunt.registerTask('build', 'Deploys the app in the dist folder. Target django as option.', function(n) {
     var target = grunt.option('target');
@@ -303,9 +322,9 @@ module.exports = function (grunt) {
 
 
     //djangoProd
-    grunt.task.run('preprocess:djangoProd','jshint','clean:before','less','dom_munger:readcss','dom_munger:readscripts','ngtemplates','replace:template_paths','cssmin','concat','ngmin','uglify','copy','dom_munger:removecss','dom_munger:addcss','dom_munger:removescripts','dom_munger:addscript');
-
+    grunt.task.run('preprocess:djangoProd', 'gitinfo', 'jshint','clean:before','less','dom_munger:readcss','dom_munger:readscripts','ngtemplates','replace:template_paths','cssmin','concat','ngmin','uglify','copy','dom_munger:removecss','dom_munger:addcss','dom_munger:removescripts','dom_munger:addscript');
     grunt.task.run('htmlmin'/*,'imagemin'*//*,'clean:after'*/);
+
   });
 
   grunt.event.on('watch', function(action, filepath) {

@@ -1,0 +1,19 @@
+<div class="annotation" ng-show="activity.data.comment">
+    <strong>{{ actor_name }}</strong> annotated {{ revision_slug }} of {{ item_name }}
+    {% block review_information %}{% endblock %}<span class="since">{{ timesince }}</span>
+    <blockquote>
+        <span class="fui-document"></span>
+        <div>{{ comment }}<br/>
+            {% if action_object_url %}<small><a href="{{ action_object_url }}">View annotation</a></small>{% endif %}
+        </div>
+    </blockquote>
+</div>
+
+{% comment %}
+If you need different formatting for the timestamp, you can customise it with the following parameters:
+https://docs.djangoproject.com/en/dev/ref/templates/builtins/#date
+
+{% block review_information %}{% endblock %}
+The block review_information contains "(XY's review copy) " or nothing and is used by review_session_comment.html just to
+add this information.
+{% endcomment %}

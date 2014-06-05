@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 from django.db import models
-from django.db import IntegrityError
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 
 from .mixins import EmailIsValidatedMixin
 from .managers import CustomUserManager
 
 from jsonfield import JSONField
 from sorl.thumbnail.images import ImageFile
+
+import logging
+logger = logging.getLogger('django.request')
 
 
 class UserProfile(EmailIsValidatedMixin, models.Model):
@@ -62,7 +65,28 @@ class UserProfile(EmailIsValidatedMixin, models.Model):
 
     @property
     def account_type(self):
-        return 'Free'
+        return 'Paid' if self.subscription else 'Free'
+        # return 'Complimentary'
+
+    @property
+    def plan(self):
+        if self.subscription:
+            plan, interval = self.subscription.plan.rsplit('-', 1)
+            return plan
+        return 'trial'
+
+    @property
+    def plan_interval(self):
+        if self.subscription:
+            plan, interval = self.subscription.plan.rsplit('-', 1)
+            return interval
+
+    @property
+    def subscription(self):
+        try:
+            return self.user.customer.current_subscription
+        except ObjectDoesNotExist:
+            pass
 
     @property
     def type(self):
@@ -79,6 +103,19 @@ class UserProfile(EmailIsValidatedMixin, models.Model):
             return ImageFile(firm_logo)
         return firm_logo
 
+    @property
+    def matters_created(self):
+        return self.data.get('matters_created', 0)
+
+    @matters_created.setter
+    def matters_created(self, value):
+        if type(value) in [int]:
+            self.data['matters_created'] = value
+
+    @property
+    def verified(self):
+        return self.data.get('validated_email', False)
+
 
 def _get_or_create_user_profile(user):
     # set the profile
@@ -86,13 +123,17 @@ def _get_or_create_user_profile(user):
     try:
         profile, is_new = UserProfile.objects.get_or_create(user=user)  # added like this so django noobs can see the result of get_or_create
         return (profile, is_new,)
-    except IntegrityError as e:
+
+    except Exception as e:
         logger.critical('transaction.atomic() integrity error: %s' % e)
+
     return (None, None,)
+
 
 # used to trigger profile creation by accidental refernce. Rather use the _create_user_profile def above
 User.profile = property(lambda u: _get_or_create_user_profile(user=u)[0])
 User.add_to_class('objects', CustomUserManager())
+
 
 """
 Overide the user __unicode__ method to actually return somethign useful.

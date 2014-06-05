@@ -4,8 +4,9 @@ Test the user can signup with a crazy none RFC valid email address
 Test the user can signin with the same crazy email address
 Note that the DB will save as valid ie.. Crap@NortyStuff.com will be saved as Crap@nortystuff.com
 """
+import mock
+
 from django.core import mail
-from django.test import TestCase
 from django.core.urlresolvers import reverse
 
 from model_mommy import mommy
@@ -34,7 +35,7 @@ class CustomerSignUpTest(BaseProjectCaseMixin):
             'last_name': 'Tester',
             'email': 'MySillyUserName@BadlyFormatedEmailNonRFCDomain.com',
             'password': 'password',
-            'password_confirm':'password',
+            'password_confirm': 'password',
             't_and_c': True,
             'csrfmiddlewaretoken': unicode(resp.context['csrf_token']),
         })
@@ -66,6 +67,71 @@ class CustomerSignUpTest(BaseProjectCaseMixin):
         self.assertEqual(email.from_email, 'support@lawpal.com')
         self.assertEqual(email.subject, 'Please confirm your email address')
         self.assertTrue(re.search(r'http://localhost:8000/me/email_confirmed/(?P<token>.*)/', email.body))
+
+    @mock.patch('toolkit.core.services.analytics.AtticusFinch.mixpanel_alias')
+    def test_signup_with_blank_mpid(self, mock_mixpanel_alias):
+        url = reverse('public:signup')
+        resp = self.client.get(url)
+
+        form_data = resp.context_data.get('form').initial
+        form_data.update({
+            'username': None,
+            'firm_name': 'Test Firm Inc.',
+            'first_name': 'Monkey',
+            'last_name': 'Tester',
+            'email': 'test@example.com',
+            'password': 'password',
+            'password_confirm':'password',
+            't_and_c': True,
+            'csrfmiddlewaretoken': unicode(resp.context['csrf_token']),
+        })
+
+        form_resp = self.client.post(url, form_data, follow=True)
+        self.assertFalse(mock_mixpanel_alias.called)
+
+    @mock.patch('toolkit.core.services.analytics.AtticusFinch.mixpanel_alias')
+    def test_signup_with_invalid_mpid(self, mock_mixpanel_alias):
+        url = reverse('public:signup')
+        resp = self.client.get(url)
+
+        form_data = resp.context_data.get('form').initial
+        form_data.update({
+            'username': None,
+            'firm_name': 'Test Firm Inc.',
+            'first_name': 'Monkey',
+            'last_name': 'Tester',
+            'email': 'test@example.com',
+            'password': 'password',
+            'password_confirm':'password',
+            't_and_c': True,
+            'csrfmiddlewaretoken': unicode(resp.context['csrf_token']),
+            'mpid': '',
+        })
+
+        form_resp = self.client.post(url, form_data, follow=True)
+        self.assertFalse(mock_mixpanel_alias.called)
+
+    @mock.patch('toolkit.core.services.analytics.AtticusFinch.mixpanel_alias')
+    def test_signup_with_mpid(self, mock_mixpanel_alias):
+        url = reverse('public:signup')
+        resp = self.client.get(url)
+
+        form_data = resp.context_data.get('form').initial
+        form_data.update({
+            'username': None,
+            'firm_name': 'Test Firm Inc.',
+            'first_name': 'Monkey',
+            'last_name': 'Tester',
+            'email': 'test@example.com',
+            'password': 'password',
+            'password_confirm':'password',
+            't_and_c': True,
+            'csrfmiddlewaretoken': unicode(resp.context['csrf_token']),
+            'mpid': 'foobar',
+        })
+
+        form_resp = self.client.post(url, form_data, follow=True)
+        self.assertTrue(mock_mixpanel_alias.called)
 
 
 class CustomerSignInTest(BaseProjectCaseMixin):

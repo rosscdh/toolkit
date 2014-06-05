@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -*-
+import urllib
+
 from django.shortcuts import render
 from django.contrib import messages
-from django.http import HttpResponseRedirect
+from django.conf import settings
+from django.http import Http404, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.views.generic import TemplateView, RedirectView, FormView
 
-from .forms import SignUpForm, SignInForm
+from .forms import SignUpForm, SignInForm, VerifyTwoFactorForm
 
 from toolkit.apps.workspace.forms import InviteKeyForm
 from toolkit.apps.workspace.models import InviteKey
@@ -15,7 +19,7 @@ from toolkit.apps.me.mailers import ValidateEmailMailer
 from toolkit.core.services.analytics import AtticusFinch
 
 import logging
-LOGGER = logging.getLogger('django.request')
+logger = logging.getLogger('django.request')
 
 
 def handler500(request, *args, **kwargs):
@@ -44,16 +48,16 @@ class AuthenticateUserMixin(object):
 
     def login(self, user=None):
         if user is not None:
-            LOGGER.info('user is authenticated: %s' % user)
+            logger.info('user is authenticated: %s' % user)
 
             if user.is_active:
-                LOGGER.info('user is active: %s' % user)
+                logger.info('user is active: %s' % user)
                 login(self.request, user)
             else:
-                LOGGER.info('user is not active: %s' % user)
+                logger.info('user is not active: %s' % user)
                 raise UserInactiveException
         else:
-            LOGGER.info('User not authenticated')
+            logger.info('User not authenticated')
             raise UserNotFoundException
 
 
@@ -87,44 +91,95 @@ class SaveNextUrlInSessionMixin(object):
             self.request.session['next'] = next
 
 
-class RedirectToNextMixin(object):
-    def redirect(self, next=None):
-        return HttpResponseRedirect(next) if next is not None else next
-
-
 class StartView(LogOutMixin, SaveNextUrlInSessionMixin, AuthenticateUserMixin, FormView):
     """
     sign in view
     """
-    template_name = 'public/start.html'
+    authenticated_user = None
     form_class = SignInForm
+    template_name = 'public/start.html'
 
     def get_success_url(self):
         url = reverse('matter:list')
-        tool_redirect_url = None
-        if self.request.user.profile.is_customer is True:
-            #
-            # Redirect the user to the current invite workspace
-            #
-            invite_key = InviteKey.objects.filter(invited_user=self.request.user).first()
-            if invite_key is not None:
-                tool_redirect_url = invite_key.get_tool_instance_absolute_url()
 
-        return url if tool_redirect_url is None else tool_redirect_url
+        if self.authenticated_user.profile.data.get('two_factor_enabled', False):
+            url = reverse('public:signin-two-factor')
+        else:
+            next = self.request.session.get('next')
+            if next is not None:
+                url = next
+
+        return url
 
     def form_valid(self, form):
         # user a valid form log them in
         try:
-            LOGGER.info('authenticating user: %s' % form.cleaned_data.get('email'))
-            self.authenticate(form=form)
 
-        except UserNotFoundException, UserInactiveException:
+            logger.info('authenticating user: %s' % form.cleaned_data.get('email'))
+            self.authenticated_user = self.get_auth(form=form)
+
+        except (UserNotFoundException, UserInactiveException):
+
+            return self.form_invalid(form=form)
+
+        if self.authenticated_user.profile.data.get('two_factor_enabled', False):
+            self.request.session['user'] = self.authenticated_user.username
+        else:
+            self.login(user=self.authenticated_user)
+
+            analytics = AtticusFinch()
+            analytics.event('user.login', user=self.authenticated_user)
+
+        return super(StartView, self).form_valid(form)
+
+
+class VerifyTwoFactorView(AuthenticateUserMixin, FormView):
+    form_class = VerifyTwoFactorForm
+    template_name = 'public/verify_two_factor.html'
+
+    def get(self, request, *args, **kwargs):
+        self.authenticated_user = self.get_user()
+        return super(VerifyTwoFactorView, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.authenticated_user = self.get_user()
+        return super(VerifyTwoFactorView, self).post(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super(VerifyTwoFactorView, self).get_form_kwargs()
+        kwargs.update({
+            'user': self.authenticated_user,
+        })
+        return kwargs
+
+    def get_user(self):
+        try:
+            user = User.objects.get(username=self.request.session['user'])
+            user.backend = settings.AUTHENTICATION_BACKENDS[0]
+            return user
+        except KeyError:
+            raise Http404('No user found in the session')
+
+    def form_valid(self, form):
+        try:
+            self.login(user=self.authenticated_user)
+
+        except (UserNotFoundException, UserInactiveException):
             return self.form_invalid(form=form)
 
         analytics = AtticusFinch()
-        analytics.event('user.login', user=self.request.user)
+        analytics.event('user.login', user=self.authenticated_user)
 
-        return super(StartView, self).form_valid(form)
+        return super(VerifyTwoFactorView, self).form_valid(form)
+
+    def get_success_url(self):
+        url = reverse('matter:list')
+
+        next = self.request.session.get('next')
+        if next is not None:
+            url = next
+
+        return url
 
 
 class HomePageView(StartView):
@@ -173,7 +228,7 @@ class InviteKeySignInView(StartView):
                 return HttpResponseRedirect(invite.next)
         return None
 
-    def get_auth(self, form=None,  invite_key=None):
+    def get_auth(self, form=None, invite_key=None):
         if invite_key is not None:
             return authenticate(username=invite_key, password=None)
 
@@ -191,7 +246,9 @@ class SignUpView(LogOutMixin, AuthenticateUserMixin, FormView):
     form_class = SignUpForm
 
     def get_success_url(self):
-        return reverse('matter:list')
+        return reverse('matter:list') + '?' + urllib.urlencode({
+            'firstseen': 1
+        })
 
     def form_valid(self, form):
         # user a valid form log them in

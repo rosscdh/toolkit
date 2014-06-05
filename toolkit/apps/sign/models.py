@@ -15,7 +15,7 @@ from toolkit.apps.review.mixins import UserAuthMixin
 from .managers import SignDocumentManager
 from .mailers import SignerReminderEmail
 
-from storages.backends.s3boto import S3BotoStorage
+from toolkit.core import _managed_S3BotoStorage
 
 from itertools import chain
 from uuidfield import UUIDField
@@ -122,7 +122,7 @@ class SignDocument(IsDeletedMixin,
         """
         file_name = self.document.executed_file.name
 
-        b = S3BotoStorage()
+        b = _managed_S3BotoStorage()
 
         if b.exists(file_name) is False:
             raise Exception('File does not exist on s3: %s' % file_name)

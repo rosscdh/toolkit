@@ -1,0 +1,11 @@
+<div id="mentions-container" ng-show="data.isContainerVisible" style="width: {{ data.width }}px; left: {{ data.coords.x }}px; top: {{ data.coords.y }}px;">
+    <div class="header">
+        Mention ...
+        <a class="close" href="javascript:;" ng-click="data.isContainerVisible=false">x</a>
+    </div>
+    <ul>
+        <li ng-repeat="p in data.filtered_participants" ng-click="selectParticipant(p)" ng-mouseover="data.focusIndex=$index" ng-class="{'highlight': $index == data.focusIndex }">
+            {{ p | fullname }} ({{ p.username }})
+        </li>
+    </ul>
+</div>

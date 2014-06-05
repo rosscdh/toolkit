@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 from abridge.services import AbridgeService
+from django import template
+from django.template.loader import get_template
+from toolkit.apps.notification.templatetags.notice_tags import get_notification_template, get_notification_context
+
+TEMPLATES = {
+    'reminder': get_template('partials/reminder.html')
+}
 
 
 class LawPalAbridgeService(object):
@@ -19,7 +26,32 @@ class LawPalAbridgeService(object):
         if self.ABRIDGE_ENABLED:  # check if enabled
             self.service = AbridgeService(user=user)
 
-    def create_event(self, content_group, content, **kwargs):
+    def create_event(self, content, content_group, content_block='default', **kwargs):
         if self.service is not None and self.ABRIDGE_ENABLED is True:
-            self.service.create_event(content_group=content_group,
+            self.service.create_event(content_block=content_block,
+                                      content_group=content_group,
                                       content=content)
+
+    @classmethod
+    def render_reminder_template(cls, **kwargs):
+        # used in ReminderService to create messages which are NOT also a notification
+        context = template.loader.Context(kwargs)
+        t = TEMPLATES.get('reminder')
+        return t.render(context)
+
+    @classmethod
+    def render_message_template(cls, user, **kwargs):
+        # used to render abridge-message with notification-templates
+        verb_slug = kwargs.pop('verb_slug')
+        message = kwargs.pop('message')
+
+        t = get_notification_template(verb_slug)
+        ctx = get_notification_context(kwargs, user)
+        ctx.update({
+            # 'notice_pk': notice.pk,
+            # 'date': notice.message.date,
+            'message': message,
+        })
+
+        context = template.loader.Context(ctx)
+        return t.render(context)

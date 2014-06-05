@@ -1,109 +1,30 @@
-{% extends 'gui.html' %}
+{% extends 'gui.html' %}{% load url from future %}{% load compressed %}
 
-{% load url from future %}{% load user_tags widont %}
+{% block page_title %}Your Matters{% endblock %}
 
 {% block body %}
-    <div id="matter-list" class="content col-lg-12">
-        <section class="matters cards">
-            <header class="page-header">
-                <h4>All Matters</h4>
-                <div class="pull-right">
-                    {% if can_create %}
-                        <a href="{% url 'matter:create' %}" data-toggle="modal" data-target="#matter-create" class="btn btn-success btn-embossed"><i class="fui-plus"></i> New Matter</a>
-                    {% endif %}
-                </div>
-            </header>
 
-            <div class="row">
-                {% for m in object_list %}
-                    <article class="col-md-4 matter">
-                        <div class="card">
-                            {% if can_edit %}
-                                <a href="{% url 'matter:edit' matter_slug=m.slug %}" data-toggle="modal" data-target="#matter-edit-{{ m.slug }}" class="edit">
-                                    <span class="fui-gear"></span>
-                                </a>
-                            {% endif %}
-                            <a href="{% url 'matter:detail' matter_slug=m.slug %}#/checklist" title="{{ m.name }}" class="content">
-                                <div class="title">
-                                    {% if user.profile.is_lawyer %}
-                                        <h6>{{ m.client.name }}</h6>
-                                    {% else %}
-                                        <h6>{{ m.lawyer.name }}</h6>
-                                    {% endif %}
-                                    <h5>{{ m.name|widont|safe }}</h5>
-                                </div>
-                                <div class="meta clearfix">
-                                    {% if m.percent_complete == '100%' %}
-                                        <p class="small pull-left done"><span class="fui-check-inverted"></span> Complete</p>
-                                    {% else %}
-                                        <p class="small pull-left">Last updated <time datetime="{{ m.date_modified|timesince }}">{{ m.date_modified|timesince }} ago</time></p>
-                                    {% endif %}
-                                    <div class="people pull-right">
-                                        {% for user in m.participants %}
-                                            {% avatar user %}
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </a>
-                            <div class="progress">
-                                <div class="progress-bar" style="width: {{m.percent_complete}}%;"></div>
-                            </div>
-                        </div>
-                    </article>
-                {% empty %}
-                <div class="col-md-8 col-md-offset-2 text-center welcome-block">
-                    <p class="lead">Welcome to LawPal. Take a quick tour or create your first matter.</p>
-                        <ul id="tourTab" class="nav nav-tabs">
-                          <li class="active">
-                            <a href="#matter-overview"  data-toggle="tab">
-                                <span class="pe-7s-look"></span> Matter Overview</a>
-                          </li>
-                          <li class="">
-                            <a href="#checklist-overview" data-toggle="tab">
-                                <span class="pe-7s-menu"></span>
-                                Checklist
-                            </a>
-                         </li>
-                         <li class="">                                
-                            <a href="#requests" data-toggle="tab">
-                                <span class="pe-7s-check"></span>
-                                Client View
-                            </a>
-                         </li>
-                         <li  class="">
-                            <a href="#markup" data-toggle="tab">
-                                <span class="pe-7s-comment"></span> 
-                                Annotation
-                            </a>
-                          </li>
-                        </ul>
-                    </div>
-                    <div class="col-md-10 col-md-offset-1 text-center welcome-block">
-                        <div id="tab-content" class="tab-content">
-                          <div class="tab-pane active" id="matter-overview">
-                                <div class="note">View all your projects at a glance including progress, who is participating and when they were last active. Access your Notifications in the top right of your screen. </div>
-                               <img src="{{STATIC_URL}}images/screenies/dashboard.png" class="animated fadeIn">
-                          </div>
-                          <div class="tab-pane " id="checklist-overview">
-                                <div class="note">Create a shared, collaborative checklist for your deal. Assign tasks, request documents from clients or third parties, upload documents for review and keep your client up to date. </div>
-                                <img src="{{STATIC_URL}}images/screenies/checklist.png">
-                          </div>
-                          <div class="tab-pane " id="requests">
-                                <div class="note">Your clients get a simple list of things they need to do whether it is uploading a file, reviewing a document or e-signing. Email is great for many things, but for complex projects it falls short.</div>
-                                <img src="{{STATIC_URL}}images/screenies/client-requests.png">
-                          </div>
-                          <div class="tab-pane " id="markup">
-                                <div class="note">Enjoy easy centralized markup with our built-in annotation tools. Clients will love the simplicity. </div>
+    <!-- needed for react -->
+    {% csrf_token %}
 
-                                <img src="{{STATIC_URL}}images/screenies/document-markup.png">
-                          </div>
-                        </div>
+    {% if object_list %}
+        <div id="matter-list" class="content col-lg-12"></div>
+    {% else %}
+        <div id="matter-list-none" class="content col-lg-12">
+            <section class="matters cards">
+                <header class="page-header">
+                    <h4>All Matters</h4>
+                    <div class="pull-right">
+                        {% if can_create %}
+                            <a href="{% url 'matter:create' %}" data-toggle="modal" data-target="#matter-create" class="btn btn-success btn-embossed"><i class="fui-plus"></i> New Matter</a>
+                        {% endif %}
                     </div>
-                </div>
-                {% endfor %}
-            </div>
-        </section>
-    </div>
+                </header>
+
+                <div id="overview" class="row">{% include 'matter/partials/intro.html' %}</div>
+            </section>
+        </div>
+    {% endif %}
 {% endblock %}
 
 {% block modals %}
@@ -118,4 +39,38 @@
             <div class="modal" id="matter-delete-{{ m.slug }}"></div>
         {% endif %}
     {% endfor %}
+{% endblock %}
+
+{% block js %}
+<script src="{{ STATIC_URL }}js/moment.2.6.0.min.js"></script>
+<script src="{{ STATIC_URL }}js/moment-timezone.0.0.6.js"></script>
+<script src="{{ STATIC_URL }}js/fuse.min.js"></script>
+
+<script>
+'use strict';
+
+moment.tz.add({
+    "zones": {
+        "Etc/UTC": [
+            "0 - UTC"
+        ]
+    },
+    "rules": {},
+    "links": {}
+});
+
+var UserData = {
+    'is_lawyer': {{ user.profile.is_lawyer|lower }},
+    'name': "{{ user.get_full_name }}",
+    'username': "{{ user.username }}",
+    'can_create': {{ can_create|lower }},
+    'can_edit': {{ can_edit|lower }}
+};
+var create_url = "{% url 'matter:create' %}";
+var edit_url = "{% url 'matter:edit' matter_slug='lp-react-name' %}";
+var MatterListData = {{ object_list_json|safe }};
+</script>
+
+{% compressed_js 'reactjs' %}
+{% if DEBUG %}<script src="{{ STATIC_URL }}js/JSXTransformer-0.10.0.js"></script>{% endif %}
 {% endblock %}

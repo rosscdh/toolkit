@@ -50,8 +50,11 @@ STATIC_URL = '/static/'
 # Additional locations of static files
 STATICFILES_DIRS = (
     # These are the dev files
-    ("ng", os.path.join(SITE_ROOT, 'gui')),
+    ("ng", os.path.join(SITE_ROOT, 'gui', 'dist')),
 )
+
+STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+#STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 
 MEDIA_ROOT = os.path.join(SITE_ROOT, 'media')
 MEDIA_URL = '/m/'
@@ -61,7 +64,10 @@ MEDIA_URL = '/m/'
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'compressor.finders.CompressorFinder',
+    'pipeline.finders.FileSystemFinder',
+    'pipeline.finders.AppDirectoriesFinder',
+    'pipeline.finders.PipelineFinder',
+    'pipeline.finders.CachedFileFinder',
 )
 
 
@@ -112,6 +118,7 @@ PROJECT_APPS = (
     # Lawpal Modules
     'hello_sign',
     'dj_crocodoc',
+    'dj_authy',
 )
 
 HELPER_APPS = (
@@ -126,6 +133,9 @@ HELPER_APPS = (
 
     # getsentry.com
     'raven.contrib.django.raven_compat',
+
+    # Payments
+    'payments',
 
     # api
     'rest_framework',
@@ -150,6 +160,9 @@ HELPER_APPS = (
     # Api helpers
     #'corsheaders',  # not required yet
 
+    # Asset pipeline
+    'pipeline',
+
     # db migrations
     'south',
     # jenkins
@@ -166,7 +179,10 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # 'corsheaders.middleware.CorsMiddleware',  # not required yet
+    'dj_authy.middleware.AuthyAuthenticationRequiredMiddleware',
     'toolkit.apps.me.middleware.EnsureUserHasPasswordMiddleware',
+    'django.middleware.gzip.GZipMiddleware',
+    'pipeline.middleware.MinifyHTMLMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -247,6 +263,9 @@ AWS_HEADERS = {
     'x-amz-acl': 'public-read',
 }
 
+CELERY_ACCEPT_CONTENT = ['json', 'pickle', ]
+#CELERY_ACKS_LATE = True  # as we want to to be acknowledged after its completed; http://celery.readthedocs.org/en/latest/configuration.html#celery-acks-late
+
 FILEPICKER_API_KEY = 'A4Ly2eCpkR72XZVBKwJ06z'
 
 HELLOSIGN_AUTHENTICATION = ("founders@lawpal.com", "test2007")
@@ -284,6 +303,53 @@ REST_FRAMEWORK = {
     ],
     'PAGINATE_BY': 10,
 }
+
+
+PIPELINE_CSS = {
+  'core': {
+        'source_filenames': (
+            'bootstrap/css/bootstrap.css',
+            'css/flat-ui.css',
+            'fonts/pe-icon-7-stroke/css/pe-icon-7-stroke.css',
+            'css/application.css',
+            'css/animate.css',
+        ),
+        'output_filename': 'css/core.css',
+        'extra_context': {
+            'media': 'screen,projection',
+        },
+  }
+}
+PIPELINE_JS = {
+    'core': {
+        'source_filenames': (
+            'js/jquery.ui.touch-punch.min.js',
+            'js/bootstrap.min.js',
+            'js/bootstrap-select.js',
+            'js/bootstrap-switch.js',
+            'js/flatui-checkbox.js',
+            'js/flatui-radio.js',
+            'js/jquery.tagsinput.js',
+            'js/jquery.placeholder.js',
+            'js/bootstrap-typeahead.js',
+            'js/parsley-1.2.4.min.js',
+            'js/parsley-form.js',
+            'js/application.js',
+        ),
+        'output_filename': 'js/core.js',
+    },
+
+    'reactjs': {
+        'source_filenames': (
+            'js/react-0.10.0.js',
+            'js/matter_list.jsx',
+        ),
+        'output_filename': 'js/jsx-all-compiled.js',
+    }
+}
+PIPELINE_COMPILERS = [
+  'react.utils.pipeline.JSXCompiler',
+]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
@@ -324,7 +390,7 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'django.utils.log.NullHandler',
         },
-        'console':{
+        'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'medium'
@@ -359,11 +425,6 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': False,
-        },
-        'django.test': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
         }
     }
 }
@@ -377,6 +438,12 @@ BLEACH_ALLOWED_TAGS = ['blockquote', 'br', 'div', 'li', 'ol', 'span', 'ul']
 BLEACH_STRIP_COMMENTS = True
 BLEACH_STRIP_TAGS = True
 
+# how long are users allowed to edit/delete their comments (in minutes)
+DELETE_COMMENTS_DURATION = 60
+EDIT_COMMENTS_DURATION = DELETE_COMMENTS_DURATION
+
+INTERCOM_APP_ID = 'wkxzfou'
+INTERCOM_APP_SECRET = 'MZCesCDxkDrYdfX8HocAB2F6V5aZzCm-DuF7lyR5'
 
 #
 # ACTIVITY STREAM
@@ -390,6 +457,10 @@ ACTSTREAM_SETTINGS = {
     'USE_FOLLOWING': False,  # VERY importand; will break our system if this changes to True
 }
 
+#
+# Any change to the LAWPAL_ACTIVITY elements below needs to affect the
+# test_notices.py
+#
 LAWPAL_ACTIVITY = {
     "abridge": {
         "whitelist": [
@@ -397,33 +468,98 @@ LAWPAL_ACTIVITY = {
                       # 'item-commented', 'item-comment-created', 'item-comment-deleted',
                       # 'item-invited-reviewer',
                       # 'item-provide-a-document',
-                      # 'revision-created', 'revision-comment-created', 'item-added-revision-comment', 
+                      # 'revision-created', 'revision-comment-created', 'item-added-revision-comment',
                       # 'revision-added-revision-comment',
                       # 'workspace-added-participant', 'workspace-removed-participant'
+
+                      # activate nearly everything for testing;
+                      'item-reopened', 'item-closed',
+                      'item-commented', 'item-comment-created', 'item-comment-deleted',
+                      'item-invited-reviewer',
+                      'item-provide-a-document',
+                      'item-invited-signer',
+                      'item-completed-review',
+                      'item-completed-all-reviews',
+
+                      'revision-created', 'revision-comment-created', 'item-added-revision-comment',
+                      'revision-added-revision-comment',
+                      'revision-added-review-session-comment',
+                      'revision-changed-the-status',
+
+                      'workspace-deleted',
+                      'workspace-added-participant', 'workspace-removed-participant',
+                      'workspace-stopped-participating',
+                      'workspace-export-started',
+                      'workspace-export-finished',
+                      'workspace-export-downloaded',
                       ]
     },
     "notifications": {
         "whitelist": [
                       'item-reopened', 'item-closed',
                       'item-commented', 'item-comment-created', 'item-comment-deleted',
-                      'item-provide-a-document',
                       'item-invited-reviewer',
+                      'item-provide-a-document',
                       'item-invited-signer',
-                      'revision-created', 'revision-comment-created', 'item-added-revision-comment', 
+                      'item-completed-review',
+                      'item-completed-all-reviews',
+
+                      'revision-created', 'revision-comment-created', 'item-added-revision-comment',
                       'revision-added-revision-comment',
-                      'workspace-added-participant', 'workspace-removed-participant'
+                      'revision-added-review-session-comment',
+                      'revision-changed-the-status',
+
+                      'workspace-deleted',
+                      'workspace-added-participant', 'workspace-removed-participant',
+                      'workspace-stopped-participating',
+                      'workspace-export-started',
+                      'workspace-export-finished',
+                      'workspace-export-downloaded',
                       ]
     },
     "activity": {
         "whitelist": ['item-created', 'item-edited', 'item-commented', 'item-changed-the-status', 'item-renamed',
                       'item-provide-a-document', 'item-invited-reviewer', 'item-canceled-their-request-for-a-document',
                       'item-closed', 'item-reopened', 'item-added-revision-comment', 'item-deleted-revision-comment',
-                      'revision-created', 'revision-deleted',
+                      'item-completed-review', 'item-viewed-revision',
+                      'item-completed-all-reviews',
                       'item-invited-signer',
                       'itemrequestrevisionview-provide-a-document',
-                      'workspace-created', 'workspace-added-participant', 'workspace-removed-participant']  # create so many activities to keep tests running for now
+
+                      'revision-created', 'revision-deleted',
+                      'revision-added-review-session-comment',
+                      'revision-added-revision-comment',
+                      'revision-changed-the-status',
+
+                      'workspace-created', 'workspace-deleted',
+                      'workspace-added-participant', 'workspace-removed-participant',
+                      'workspace-stopped-participating',
+                      'workspace-export-started',
+                      'workspace-export-finished',
+                      'workspace-export-downloaded',
+                      ]
     },
 }
+
+
+#
+# Payments
+#
+PAYMENTS_PLANS = {
+    "early-bird-monthly": {
+        "stripe_plan_id": "early-bird-monthly",
+        "name": "Early Bird",
+        "description": "Signup for LawPal's Early Bird plan and save! <br />Create unlimited projects with unlimited collaborators.<br /> Available for a limited time only.",
+        "features": "Unlimited Projects<br/> Unlimited Collaborators<br/> E-Signing<br/> Priority Support<br/> No long-term commitment",
+        "price": 25,
+        "currency": "usd",
+        "interval": "month"
+    }
+}
+
+MATTER_EXPORT_DAYS_VALID = 3
+
+REMIND_DUE_DATE_LIMIT = 7
 
 try:
     LOCAL_SETTINGS

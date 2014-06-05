@@ -44,6 +44,15 @@ def on_item_save_category(sender, instance, **kwargs):
     logger.debug('Recieved item.pre_save:category event: %s' % sender)
 
 
+def on_item_save_manual_latest_item_delete(sender, instance, **kwargs):
+    """
+    due to softdelete we need to manually ensure self.latest_revision is set to None
+    if self.latest_revision.is_deleted is True
+    """
+    if instance.latest_revision is not None and instance.latest_revision.is_deleted is True:
+        instance.latest_revision = None
+
+
 def on_item_save_closing_group(sender, instance, **kwargs):
     """
     Update and modify matter closing_group when item is changes
@@ -77,53 +86,12 @@ def on_item_save_closing_group(sender, instance, **kwargs):
     logger.debug('Recieved item.pre_save:closing_group event: %s' % sender)
 
 
-def on_item_save_changed_content(sender, instance, **kwargs):
-    """
-    Update and modify matter closing_group when item is changes
-    """
-    matter = instance.matter
-
-    try:
-        # get the current
-        previous_instance = sender.objects.get(pk=instance.pk)
-
-    except sender.DoesNotExist:
-        #
-        # Do nothing as the previous object does not exist
-        #
-        previous_instance = None
-
-    if previous_instance:
-        if previous_instance.status != instance.status:
-            matter.actions.item_changed_status(user=matter.lawyer,  # WHO is allowed to change status?
-                                               item=instance,
-                                               previous_status=previous_instance.get_status_display())
-
-        if previous_instance.name != instance.name:
-            matter.actions.item_rename(user=matter.lawyer,  # WHO is allowed?
-                                       item=instance,
-                                       previous_name=previous_instance.name)
-
-        if previous_instance.responsible_party != instance.responsible_party and instance.responsible_party is None:
-        #sign-app merge# if previous_instance.is_requested != instance.is_requested and instance.is_requested is False:
-
-            matter.actions.cancel_user_upload_revision_request(item=instance,
-                                                               removing_user=matter.lawyer,
-                                                               removed_user=previous_instance.responsible_party)
-
-        if previous_instance.is_complete != instance.is_complete:
-            if instance.is_complete is True:
-                matter.actions.item_closed(user=matter.lawyer, item=instance)
-            else:
-                matter.actions.item_reopened(user=matter.lawyer, item=instance)
-
-    logger.debug('Recieved item.pre_save:changed_content event: %s' % sender)
-
-
 def on_item_post_save(sender, instance, created, **kwargs):
     """
         At this moment only the layer can edit items. So this is possible.
     """
+    #print kwargs
+    #print instance.latest_revision
     if created:
         matter = instance.matter
 
@@ -131,5 +99,7 @@ def on_item_post_save(sender, instance, created, **kwargs):
             instance.sort_order = matter.item_set.filter(category=instance.category).count() + 1 
             instance.save(update_fields=['sort_order'])
 
-        matter.actions.item_created(user=matter.lawyer, item=instance)
+        #
+        # The matter.actions.item_created activity event has moved to the
+        # api endpoint view
 

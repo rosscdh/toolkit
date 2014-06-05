@@ -9,6 +9,7 @@ from git import *
 import os
 import sys
 import time
+import shutil
 import getpass
 import requests
 from termcolor import colored
@@ -16,6 +17,8 @@ from termcolor import colored
 debug = True
 
 env.local_project_path = os.path.dirname(os.path.realpath(__file__))
+env.gui_dist_path = '%s/gui/dist' % env.local_project_path
+env.environment_settings_path = os.path.dirname(os.path.realpath(__file__)) + '/../lawpal-chef/uwsgi-app/files/default/conf'
 # default to local override in env
 env.remote_project_path = env.local_project_path
 
@@ -100,9 +103,10 @@ def production():
 #
 env.roledefs.update({
     'db': ['ec2-50-18-97-221.us-west-1.compute.amazonaws.com'], # the actual db host
-    'db-actor': ['ec2-54-241-224-100.us-west-1.compute.amazonaws.com'], # database action host
+    'db-actor': ['ec2-184-169-191-190.us-west-1.compute.amazonaws.com'], # database action host
     # 'search': ['ec2-54-241-224-100.us-west-1.compute.amazonaws.com'], # elastic search action host
-    # 'web': ['ec2-184-169-191-190.us-west-1.compute.amazonaws.com', 'ec2-184-72-21-48.us-west-1.compute.amazonaws.com'],
+    'web': ['ec2-184-169-191-190.us-west-1.compute.amazonaws.com',
+            'ec2-184-72-21-48.us-west-1.compute.amazonaws.com'],
     'worker': ['ec2-54-241-222-221.us-west-1.compute.amazonaws.com'],
 })
 
@@ -133,7 +137,7 @@ def virtualenv(cmd, **kwargs):
 
 @task
 def pip_install():
-    virtualenv('pip install django-sslify')
+    virtualenv('pip install -e git+https://github.com/rosscdh/django-authy.git#egg=django-authy')
 
 @task
 def cron():
@@ -152,7 +156,6 @@ def clean_all():
         virtualenv(cmd='python %s%s/manage.py clean_nonces' % (env.remote_project_path, env.project))
         virtualenv(cmd='python %s%s/manage.py clean_associations' % (env.remote_project_path, env.project))
         #virtualenv(cmd='python %s%s/manage.py clear_cache' % (env.remote_project_path, env.project))
-        virtualenv(cmd='python %s%s/manage.py clean_pyc' % (env.remote_project_path, env.project))
         virtualenv(cmd='python %s%s/manage.py compile_pyc' % (env.remote_project_path, env.project))
 
 @task
@@ -258,21 +261,24 @@ def diff_outgoing_with_current():
 
 @task
 @roles('worker')
+@runs_once
 def celery_restart(name='worker.1'):
     with settings(warn_only=True): # only warning as we will often have errors importing
-        cmd = "celery multi restart {name}@%h -A {app_name} --pidfile='/tmp/celery.{name}.pid'".format(name=name, app_name=env.celery_app_name)
-        if env.hosts:
-            #run(cmd)
-            virtualenv(cmd='cd %s%s;%s' % (env.remote_project_path, env.project, cmd))
-        else:
-            local(cmd)
+        celery_stop()
+        celery_start()
+        # cmd = "celery multi restart {name}@%h -A {app_name}  --uid=app --pidfile='/var/run/celery/{name}.%n.pid'  --logfile='/var/log/celery/{name}.%n.log'".format(name=name, app_name=env.celery_app_name)
+        # if env.hosts:
+        #     #run(cmd)
+        #     virtualenv(cmd='cd %s%s;%s' % (env.remote_project_path, env.project, cmd))
+        # else:
+        #     local(cmd)
 
 @task
 @roles('worker')
 def celery_start(name='worker.1', loglevel='INFO', concurrency=5):
     with settings(warn_only=True): # only warning as we will often have errors importing
-        #cmd = "celery worker --app=toolkit --loglevel={loglevel} --concurrency={concurrency} -n worker{name}.%h".format(name=name, loglevel=loglevel, concurrency=concurrency)
-        cmd = "celery multi start {name}@%h -A {app_name} --loglevel={loglevel} --pidfile='/tmp/celery.{name}.pid' --logfile='/tmp/celery.{name}.log' --concurrency={concurrency}".format(name=name, loglevel=loglevel, concurrency=concurrency, app_name=env.celery_app_name)
+        #cmd = "celery worker -A {app_name} --loglevel={loglevel} --pidfile='/var/run/celery/{name}.%n.pid' --logfile='/var/log/celery/{name}.%n.log' --concurrency={concurrency} --detach".format(name=name, loglevel=loglevel, concurrency=concurrency, app_name=env.celery_app_name)
+        cmd = 'celery multi start {name} -A {app_name} --loglevel={loglevel} --logfile="/tmp/celery.%n.log" --pidfile="/tmp/celery.%n.pid"'.format(name=name, loglevel=loglevel, concurrency=concurrency, app_name=env.celery_app_name)
         if env.hosts:
             #run(cmd)
             virtualenv(cmd='cd %s%s;%s' % (env.remote_project_path, env.project, cmd))
@@ -283,7 +289,9 @@ def celery_start(name='worker.1', loglevel='INFO', concurrency=5):
 @roles('worker')
 def celery_stop(name='worker.1'):
     with settings(warn_only=True): # only warning as we will often have errors importing
-        cmd = "celery multi stopwait {name}@%h -A {app_name} --pidfile='/tmp/celery.{name}.pid'".format(name=name, app_name=env.celery_app_name)
+        #cmd = "celery multi stopwait {name}@%h -A {app_name} --uid=app --pidfile='/var/run/celery/{name}.%n.pid'".format(name=name, app_name=env.celery_app_name)
+        #cmd = "ps aux | grep 'celery worker' | grep -v grep | awk '{print $2}' | xargs kill -9"
+        cmd = 'celery multi stopwait {name} --pidfile="/tmp/celery.%n.pid"'.format(name=name)
         if env.hosts:
             #run(cmd)
             virtualenv(cmd='cd %s%s;%s' % (env.remote_project_path, env.project, cmd))
@@ -301,11 +309,15 @@ def celery_cmd(cmd=None):
             else:
                 local(cmd)
 
+#
+#  ps aux | grep 'celery worker' | grep -v grep | awk '{print $2}' | xargs kill -9
+#
+
 # @task
 # @roles('worker')
 # def celery_force_kill():
 #     with settings(warn_only=True): # only warning as we will often have errors importing
-#         cmd = "ps auxww | grep 'celery worker' | awk '{print $2}' | xargs kill -9"
+#         cmd = "ps auxww | grep 'celery worker' |   | xargs kill -9"
 #         if env.hosts:
 #             run(cmd)
 #         else:
@@ -341,7 +353,7 @@ def migrate():
 @roles('db-actor')
 def syncdb():
     with settings():
-        virtualenv('python %s%s/manage.py syncdb' % (env.remote_project_path, env.project))
+        virtualenv('python %s%s/manage.py syncdb --migrate' % (env.remote_project_path, env.project))
 
 @task
 def clean_versions(delete=False, except_latest=3):
@@ -372,26 +384,31 @@ def supervisord_restart():
             sudo('supervisorctl restart uwsgi')
 
 @task
+@roles('web')
 def restart_lite():
     with settings(warn_only=True):
         sudo(env.light_restart)
 
 @task
+@roles('web')
 def stop_nginx():
     with settings(warn_only=True):
         sudo('service nginx stop')
 
 @task
+@roles('web')
 def start_nginx():
     with settings(warn_only=True):
         sudo('service nginx start')
 
 @task
+@roles('web')
 def restart_nginx():
     with settings(warn_only=True):
         sudo('service nginx restart')
 
 @task
+@roles('web')
 def restart_service(heavy_handed=False):
     with settings(warn_only=True):
         if env.environment_class not in ['celery']: # dont restart celery nginx services
@@ -446,10 +463,9 @@ def relink():
 @task
 def clean_start():
     stop_service()
-    clean_pyc()
     #clear_cache()
     clean_pyc()
-    #precompile_pyc()
+    precompile_pyc()
     start_service()
     clean_zip()
 
@@ -486,9 +502,24 @@ def update_env_conf():
     if not env.is_predeploy:
         # copy the live local_settings
         with cd(project_path):
-            virtualenv('cp %s/conf/%s.local_settings.py %s/%s/local_settings.py' % (full_version_path, env.environment, full_version_path, env.project))
+            #virtualenv('cp %s/conf/%s.local_settings.py %s/%s/local_settings.py' % (full_version_path, env.environment, full_version_path, env.project))
             virtualenv('cp %s/conf/%s.wsgi.py %s/%s/wsgi.py' % (full_version_path, env.environment, full_version_path, env.project))
             virtualenv('cp %s/conf/%s.newrelic.ini %s/%s/newrelic.ini' % (full_version_path, env.environment, full_version_path, env.project))
+        deploy_settings()
+
+@task
+def deploy_settings():
+    if env.SHA1_FILENAME is None:
+        env.SHA1_FILENAME = get_sha1()
+
+    version_path = '%sversions' % env.remote_project_path
+    full_version_path = '%s/%s' % (version_path, env.SHA1_FILENAME)
+    project_path = '%s%s' % (env.remote_project_path, env.project,)
+
+    # note the removal of the envirnment name part
+    put(local_path='%s/%s.local_settings.py' % (env.environment_settings_path, env.environment), remote_path='~/%s.local_settings.py' % (env.environment))
+    sudo('cp /home/ubuntu/%s.local_settings.py %s/%s/local_settings.py' % (env.environment, full_version_path, env.project))
+    sudo('chown -R %s:%s %s/%s/local_settings.py' % (env.application_user, env.application_user, full_version_path, env.project) )
 
 @task
 def unzip_archive():
@@ -511,9 +542,10 @@ def fixtures():
 
 @task
 def assets():
-    # Activate virtualenv
+    # upload the gui
+    upload_gui()
+    # collect static components
     virtualenv('python %s%s/manage.py collectstatic --noinput' % (env.remote_project_path, env.project,))
-    #virtualenv('python %s%s/manage.py compress --force' % (env.remote_project_path, env.project,))
 
 @task
 def requirements():
@@ -582,36 +614,12 @@ def run_tests():
         if result not in ['', 1, True]:
             error(colored('You may not proceed as the tests are not passing', 'orange'))
 
-
 @task
 @runs_once
-def build_gui():
+def prompt_build_gui():
     if prompt(colored("Build GUI app? [y,n]", 'green'), default="y").lower() in env.truthy:
 
-        # move local_settings.py if present
-        if os.path.exists('toolkit/local_settings.py'):
-            local('mv toolkit/local_settings.py /tmp/local_settings.py')
-
-        # copy conf/production.local_settings.py
-        # has the very important ("ng", os.path.join(SITE_ROOT, 'gui', 'dist')),
-        # settings
-        local('cp conf/production.local_settings.py toolkit/local_settings.py')
-
-        # move tmp/local_settings.py back
-        if os.path.exists('/tmp/local_settings.py'):
-            local('rm toolkit/local_settings.py')  # remove the production version local_settings so noone loses their mind
-            local('mv /tmp/local_settings.py toolkit/local_settings.py')
-        else:
-            if env.environment_class == 'local':
-                # copy the default dev localsettings
-                local('cp conf/dev.local_settings.py toolkit/local_settings.py')
-
-
-        # perform grunt build --djangoProd
-        for repeater in range(0,2):
-            # we have to build it twice because sometimes... it does not work *tadaaaah*
-            #
-            local('cd gui;grunt build -djangoProd')
+        build_gui_dist()
 
         # collect static
         if env.environment_class == 'local':
@@ -619,6 +627,73 @@ def build_gui():
 
         sys.exit(colored("You must now run: git add gui;git commit -m'Updated production gui'", 'yellow'))
 
+
+@task
+@runs_once
+def gui_clean():
+    local('rm -Rf gui/bower_components')
+    local('rm -Rf gui/node_modules')
+    local('cd gui;npm install')
+    local('cd gui;bower install')
+
+
+@task
+@runs_once
+def build_gui_dist():
+    # # move local_settings.py if present
+    if os.path.exists('toolkit/local_settings.py'):
+        local('mv toolkit/local_settings.py /tmp/local_settings.py')
+
+    # # copy conf/production.local_settings.py
+    # # has the very important ("ng", os.path.join(SITE_ROOT, 'gui', 'dist')),
+    # # settings
+    production_local_settings = '%s/production.local_settings.py' % env.environment_settings_path
+
+    if not os.path.exists(production_local_settings):
+        raise Exception('Production local_settings could not be found, cannot continue: %s' % production_local_settings)
+
+    local('cp %s toolkit/local_settings.py' % production_local_settings)
+
+    # 
+    # Perform the action
+    # perform grunt build --djangoProd
+    #
+    local('cd gui;grunt build -djangoProd')
+
+    # move tmp/local_settings.py back
+    if os.path.exists('/tmp/local_settings.py'):
+        local('rm toolkit/local_settings.py')  # remove the production version local_settings so noone loses their mind
+        local('mv /tmp/local_settings.py toolkit/local_settings.py')
+    else:
+        if env.environment_class == 'local':
+            # copy the default dev localsettings
+            local('cp conf/dev.local_settings.py toolkit/local_settings.py')
+
+@task
+def upload_gui():
+    if not env.SHA1_FILENAME:
+        env.SHA1_FILENAME = get_sha1()
+    # ensure we have the dist folder
+    if not os.path.exists(env.gui_dist_path):
+        sys.exit(colored("No gui/dist folder found at %s, perform a 'cd gui;grunt build --djangoProd'" % env.gui_dist_path, 'yellow'))
+
+    #if prompt(colored("Have you compiled the GUI distribution? as we are about to upload it; i.e. cd gui;grunt build --djangoProd' [y,n]", 'cyan'), default="y").lower() in env.truthy:
+    build_gui_dist()
+    zip_filename = 'gui_dist.%s' % env.SHA1_FILENAME
+    zip_filename_with_ext = '%s.zip' % zip_filename
+    zip_gui_dist_path = '/tmp/%s' % zip_filename
+    zip_gui_dist_path_with_ext = '/tmp/%s' % zip_filename_with_ext
+    zip_gui_dist_remote_path = '%s%s' % (env.deploy_archive_path, zip_filename_with_ext)
+    zip_gui_dist_target_remote_path = '%stoolkit/gui/dist' % env.remote_project_path
+    # zip the dist folder
+    shutil.make_archive(zip_gui_dist_path, "zip", env.gui_dist_path)
+    # upload the zip
+    put(zip_gui_dist_path_with_ext, env.deploy_archive_path, use_sudo=True)
+    env_run('chown %s:%s %s' % (env.application_user, env.application_user, zip_gui_dist_remote_path))
+    #unzip to gui/dist
+    # -o overwrite
+    virtualenv('unzip -o %s -d %s' % (zip_gui_dist_remote_path, zip_gui_dist_target_remote_path,))
+    # can now run collectstatic
 
 @task
 def conclude():
@@ -646,8 +721,7 @@ def rebuild_local():
     local('python manage.py migrate')
     local('python manage.py loaddata %s' % fixtures())
     local('python manage.py createsuperuser')  #manually as we rely on the dev-fixtures
-    local('cd gui;npm install')
-    local('cd gui;bower install')
+    gui_clean()
 
 
 
@@ -662,7 +736,7 @@ def deploy(is_predeploy='False',full='False',db='False',search='False'):
     db = db.lower() in env.truthy
     search = search.lower() in env.truthy
 
-    build_gui()
+    prompt_build_gui()
     run_tests()
     diff()
     git_set_tag()
@@ -678,4 +752,5 @@ def deploy(is_predeploy='False',full='False',db='False',search='False'):
     relink()
     assets()
     clean_start()
+    celery_restart()
     conclude()
