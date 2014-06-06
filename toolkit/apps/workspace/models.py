@@ -81,6 +81,11 @@ class WorkspaceParticipants(models.Model):
     # ROLES are simply for the GUI as ideally all of our users would
     # simple have 1 or more of a set of permission
     ROLES = ROLES
+    PERMISSIONS = MATTER_OWNER_PERMISSIONS.keys()  # as the MATTER_OWNER_PERMISSIONS always has ALL of them
+    MATTER_OWNER_PERMISSIONS = MATTER_OWNER_PERMISSIONS
+    PRIVILEGED_USER_PERMISSIONS = PRIVILEGED_USER_PERMISSIONS
+    UNPRIVILEGED_USER_PERMISSIONS = UNPRIVILEGED_USER_PERMISSIONS
+    ANONYMOUS_USER_PERMISSIONS = ANONYMOUS_USER_PERMISSIONS
 
     matter = models.ForeignKey('workspace.Workspace', db_column='workspace_id')
     user = models.ForeignKey('auth.User', db_column='user_id')
@@ -91,6 +96,10 @@ class WorkspaceParticipants(models.Model):
 
     class Meta:
         db_table = 'workspace_workspace_participants'  # Original django m2m table
+
+    @property
+    def display_role(self):
+        return self.ROLES.get_desc_by_value(self.role)
 
     def default_permissions(self, user_class=None):
         """
@@ -121,6 +130,15 @@ class WorkspaceParticipants(models.Model):
         if type(value) not in [dict] and len(value.keys()) > 0:
             raise Exception('WorkspaceParticipants.permissions must be a dict of permissions %s' % self.default_permissions())
         self.data['permissions'] = value
+
+    def reset_permissions(self):
+        self.permissions = self.default_permissions()
+
+    def update_permissions(self, **kwargs):
+        current_permissions = self.permissions
+        for permission in kwargs:
+            if permission in self.PERMISSIONS:
+                current_permissions[permission] = kwargs.get(permission, False) # set to passed in value, default to false
 
 
 class Workspace(IsDeletedMixin,
