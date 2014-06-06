@@ -145,7 +145,7 @@ class Workspace(IsDeletedMixin,
     # NB! We have not had to assigne the custom through-table
     # WorkspaceParticipants, instead simply hijacked the default django table
     # for participants
-    participants = models.ManyToManyField('auth.User', blank=True)
+    participants = models.ManyToManyField('auth.User', blank=True, through='workspace.WorkspaceParticipants')
 
     tools = models.ManyToManyField('workspace.Tool', blank=True)
 
