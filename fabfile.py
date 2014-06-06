@@ -700,7 +700,7 @@ def conclude():
     newrelic_deploynote()
 
 @task
-def rebuild_local():
+def rebuild_local(gui_clean=False):
     if not os.path.exists('../Stamp'):
         #
         # Clone the Stamp PDF application
@@ -722,7 +722,8 @@ def rebuild_local():
     local('python manage.py migrate')
     local('python manage.py loaddata %s' % fixtures())
     local('python manage.py createsuperuser')  #manually as we rely on the dev-fixtures
-    gui_clean()
+    if gui_clean is True:
+        gui_clean()
 
 @task
 def deploy(is_predeploy='False',full='False',db='False',search='False'):
