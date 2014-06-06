@@ -2,7 +2,7 @@
 from django.core.exceptions import PermissionDenied
 
 import logging
-from toolkit.apps.workspace.models import MatterParticipant
+from toolkit.apps.workspace.models import WorkspaceParticipants
 
 logger = logging.getLogger('django.request')
 
@@ -21,8 +21,10 @@ class MatterUserPermissionService(object):
     override is ONLY used for initialisation
 
     permissions need to be in this structure:
-    {'Model.permission': true}
-    {'Workspace.manage_participants': false}
+    {
+        'Model.permission': true,
+        'Workspace.manage_participants': False
+    }
     """
     matter = None
     changed_user = None
@@ -39,10 +41,12 @@ class MatterUserPermissionService(object):
     def get_matter_participant(self):
         # returns unsaved MatterUser
         try:
-            matter_participant = MatterParticipant.objects.get(matter=self.matter, user=self.changed_user)
+            matter_participant = WorkspaceParticipants.objects.get(matter=self.matter,
+                                                               user=self.changed_user)
             matter_participant.role = self.role
-        except MatterParticipant.DoesNotExist:
-            matter_participant = MatterParticipant(matter=self.matter,
+
+        except WorkspaceParticipants.DoesNotExist:
+            matter_participant = WorkspaceParticipants(matter=self.matter,
                                                    user=self.changed_user,
                                                    role=self.role)
         return matter_participant
@@ -56,10 +60,12 @@ class MatterUserPermissionService(object):
     @property
     def is_allowed(self):
         necessary_permission = 'workspace.manage_participants'
+
         if not self.changing_user.has_perm(necessary_permission, self.matter):
             logger.error(u'User %s does not have permission: %s in matter: %s' %
                          (self.changing_user, necessary_permission, self.matter))
             raise PermissionDenied('You are missing a permission: %s' % necessary_permission)
+
         return True
 
     def reset_permissions(self, permissions):
@@ -80,6 +86,7 @@ class MatterUserPermissionService(object):
 
             if matter_participant.pk:
                 matter_participant.save(update_fields=['data', 'role'])
+
             else:
                 matter_participant.save()
 
@@ -89,6 +96,10 @@ class MatterUserPermissionService(object):
 
 
 class MightyMatterUserPermissionService(MatterUserPermissionService):
+    """
+    Mighty class that allows the user or service to override and set any
+    permissions by default
+    """
     @property
     def is_allowed(self):
         return True

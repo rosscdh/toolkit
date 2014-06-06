@@ -718,12 +718,11 @@ def rebuild_local():
         local('rm ./dev.db')
 
     local('python manage.py syncdb  --noinput')
+    local('python manage.py update_permissions')
     local('python manage.py migrate')
     local('python manage.py loaddata %s' % fixtures())
     local('python manage.py createsuperuser')  #manually as we rely on the dev-fixtures
     gui_clean()
-
-
 
 @task
 def deploy(is_predeploy='False',full='False',db='False',search='False'):

@@ -8,31 +8,31 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding model 'MatterParticipant'
-        db.create_table(u'workspace_MatterParticipant', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('matter', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['workspace.Workspace'])),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
-            ('data', self.gf('jsonfield.fields.JSONField')(default={})),
-        ))
-        db.send_create_signal(u'workspace', ['MatterParticipant'])
+        # Adding field 'WorkspaceParticipants.is_matter_owner'
+        db.add_column('workspace_workspace_participants', 'is_matter_owner',
+                      self.gf('django.db.models.fields.BooleanField')(default=False, db_index=True),
+                      keep_default=False)
 
-        # Removing M2M table for field participants on 'Workspace'
-        db.delete_table(db.shorten_name(u'workspace_workspace_participants'))
+        # Adding field 'WorkspaceParticipants.data'
+        db.add_column('workspace_workspace_participants', 'data',
+                      self.gf('jsonfield.fields.JSONField')(default={}),
+                      keep_default=False)
+
+        # Adding field 'WorkspaceParticipants.role'
+        db.add_column('workspace_workspace_participants', 'role',
+                      self.gf('django.db.models.fields.IntegerField')(default=1, db_index=True),
+                      keep_default=False)
 
 
     def backwards(self, orm):
-        # Deleting model 'MatterParticipant'
-        db.delete_table(u'workspace_MatterParticipant')
+        # Deleting field 'WorkspaceParticipants.is_matter_owner'
+        db.delete_column('workspace_workspace_participants', 'is_matter_owner')
 
-        # Adding M2M table for field participants on 'Workspace'
-        m2m_table_name = db.shorten_name(u'workspace_workspace_participants')
-        db.create_table(m2m_table_name, (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('workspace', models.ForeignKey(orm[u'workspace.workspace'], null=False)),
-            ('user', models.ForeignKey(orm[u'auth.user'], null=False))
-        ))
-        db.create_unique(m2m_table_name, ['workspace_id', 'user_id'])
+        # Deleting field 'WorkspaceParticipants.data'
+        db.delete_column('workspace_workspace_participants', 'data')
+
+        # Deleting field 'WorkspaceParticipants.role'
+        db.delete_column('workspace_workspace_participants', 'role')
 
 
     models = {
@@ -92,13 +92,6 @@ class Migration(SchemaMigration):
             'tool': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['workspace.Tool']", 'null': 'True', 'blank': 'True'}),
             'tool_object_id': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'})
         },
-        u'workspace.MatterParticipant': {
-            'Meta': {'object_name': 'MatterParticipant'},
-            'data': ('jsonfield.fields.JSONField', [], {'default': '{}'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'matter': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['workspace.Workspace']"}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"})
-        },
         u'workspace.tool': {
             'Meta': {'ordering': "['name']", 'object_name': 'Tool'},
             'data': ('jsonfield.fields.JSONField', [], {'default': '{}', 'blank': 'True'}),
@@ -118,9 +111,18 @@ class Migration(SchemaMigration):
             'lawyer': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'lawyer_workspace'", 'null': 'True', 'to': u"orm['auth.User']"}),
             'matter_code': ('django.db.models.fields.SlugField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'participants': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.User']", 'symmetrical': 'False', 'through': u"orm['workspace.MatterParticipant']", 'blank': 'True'}),
+            'participants': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.User']", 'symmetrical': 'False', 'through': u"orm['workspace.WorkspaceParticipants']", 'blank': 'True'}),
             'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'blank': 'True'}),
             'tools': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['workspace.Tool']", 'symmetrical': 'False', 'blank': 'True'})
+        },
+        u'workspace.workspaceparticipants': {
+            'Meta': {'object_name': 'WorkspaceParticipants', 'db_table': "'workspace_workspace_participants'"},
+            'data': ('jsonfield.fields.JSONField', [], {'default': '{}'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'is_matter_owner': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'db_index': 'True'}),
+            'matter': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['workspace.Workspace']", 'db_column': "'workspace_id'"}),
+            'role': ('django.db.models.fields.IntegerField', [], {'default': '1', 'db_index': 'True'}),
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'db_column': "'user_id'"})
         }
     }
 

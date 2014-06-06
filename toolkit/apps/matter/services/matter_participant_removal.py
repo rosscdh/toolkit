@@ -3,7 +3,7 @@ import logging
 from django.core.exceptions import PermissionDenied
 
 from toolkit.apps.matter.signals import PARTICIPANT_DELETED, USER_STOPPED_PARTICIPATING
-from toolkit.apps.workspace.models import MatterParticipant
+from toolkit.apps.workspace.models import WorkspaceParticipants
 
 
 logger = logging.getLogger('django.request')

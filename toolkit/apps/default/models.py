@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
 from django.core.exceptions import ObjectDoesNotExist
 
 from .mixins import EmailIsValidatedMixin
@@ -194,3 +194,8 @@ def user_can_delete(self, **kwargs):
 User.add_to_class('can_read', user_can_read)
 User.add_to_class('can_edit', user_can_edit)
 User.add_to_class('can_delete', user_can_delete)
+
+"""
+Upgrade the Permission class .name to be longer
+"""
+Permission._meta.get_field('name').max_length = 128

@@ -6,6 +6,8 @@ from .item import MatterItemView
 
 import datetime
 
+from rulez import registry as rulez_registry
+
 
 class ItemRequestRevisionView(MatterItemView):
     """
@@ -78,3 +80,17 @@ class ItemRequestRevisionView(MatterItemView):
                                                                  added_user=user)
 
         super(ItemRequestRevisionView, self).post_save(obj=obj, **kwargs)
+
+    def can_read(self, user):
+        return user in self.matter.participants.all()
+
+    def can_edit(self, user):
+        return user.has_perm('workspace.manage_requests', self.matter)
+
+    def can_delete(self, user):
+        return user.has_perm('workspace.manage_requests', self.matter)
+
+
+rulez_registry.register("can_read", ItemRequestRevisionView)
+rulez_registry.register("can_edit", ItemRequestRevisionView)
+rulez_registry.register("can_delete", ItemRequestRevisionView)

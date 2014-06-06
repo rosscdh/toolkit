@@ -49,8 +49,6 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
     closing_groups = serializers.SerializerMethodField('get_closing_groups')
 
     items = serializers.SerializerMethodField('get_items')
-    comments = serializers.SerializerMethodField('get_comments')
-    activity = serializers.SerializerMethodField('get_activity')
 
     current_user_todo = serializers.SerializerMethodField('get_current_user_todo')
     current_user = serializers.SerializerMethodField('get_current_user')
@@ -67,7 +65,6 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
                   'client', 'lawyer', 'participants',
                   'closing_groups', 'categories',
                   'items',
-                  'comments', 'activity',
                   'current_user', 'current_user_todo',
                   'date_created', 'date_modified',
                   'percent_complete')
@@ -90,32 +87,7 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
         """
         tmp method will eventually be replaced by matter.items_set.all()
         """
-        return [SimpleItemSerializer(i, context=self.context).data for i in obj.item_set.filter(parent=None)]
-
-    def get_comments(self, obj):
-        """
-        tmp method will eventually be replaced by getting all the latest
-        comments form all items in a workspace @TODO cache this
-        """
-        comments = {
-            'message': 'He said that she said that she was a S and a Y because of Z',
-            'url': '/api/v1/activity/:pk',
-            'date_of': datetime.datetime.utcnow()
-        }
-        #return [comments.copy() for i in xrange(0,5)]
-        return []
-
-    def get_activity(self, obj):
-        """
-        tmp method will eventually be replaced by matter.activity.all()
-        """
-        activity = {
-            'message': 'X did a Y to a J because of G',
-            'url': '/api/v1/activity/:pk',
-            'date_of': datetime.datetime.utcnow()
-        }
-        #return [activity.copy() for i in xrange(0,5)]
-        return []
+        return SimpleItemSerializer(obj.item_set.filter(parent=None), context=self.context, many=True).data
 
     def get_current_user(self, obj):
         request = self.context.get('request')
@@ -128,6 +100,7 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
                 'firm_name': profile.firm_name,
                 'has_notifications': profile.has_notifications,
                 'matters_created': profile.matters_created,
+                'permissions': [],
             })
         return current_user
 

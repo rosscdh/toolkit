@@ -1,40 +1,32 @@
 # -*- coding: utf-8 -*-
 from south.utils import datetime_utils as datetime
 from south.db import db
-from south.v2 import SchemaMigration
+from south.v2 import DataMigration
 from django.db import models
 
-
-class Migration(SchemaMigration):
+class Migration(DataMigration):
 
     def forwards(self, orm):
-        # Deleting model 'MatterParticipant'
-        db.delete_table(u'workspace_matterparticipant')
+        "Write your forwards methods here."
+        from toolkit.apps.workspace.models import WorkspaceParticipants
 
-        # Adding model 'MatterParticipant'
-        db.create_table(u'workspace_matterparticipant', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('matter', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['workspace.Workspace'])),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
-            ('data', self.gf('jsonfield.fields.JSONField')(default={})),
-            ('role', self.gf('django.db.models.fields.IntegerField')(db_index=True)),
-        ))
-        db.send_create_signal(u'workspace', ['MatterParticipant'])
+        for w in orm['workspace.Workspace'].objects.all():
+            for u in w.participants.all():
+                through = WorkspaceParticipants.objects.get(user=u, matter=w)
+                profile = orm['default.UserProfile'].objects.get(user=u)
 
+                is_matter_owner = w.lawyer == u
+                role = 2 if profile.data.get('user_class') == 'lawyer' else 1
+
+                through.is_matter_owner = is_matter_owner
+                through.role = role
+                # set the permissions to be the default permissions
+                # for that user role
+                through.permissions = through.default_permissions()
+                through.save(update_fields=['is_matter_owner', 'role', 'data'])
 
     def backwards(self, orm):
-        # Adding model 'MatterParticipant'
-        db.create_table(u'workspace_matterparticipant', (
-            ('matter', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['workspace.Workspace'])),
-            ('data', self.gf('jsonfield.fields.JSONField')(default={})),
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
-        ))
-        db.send_create_signal(u'workspace', ['MatterParticipant'])
-
-        # Deleting model 'MatterParticipant'
-        db.delete_table(u'workspace_matterparticipant')
-
+        "Write your backwards methods here."
 
     models = {
         u'auth.group': {
@@ -80,6 +72,13 @@ class Migration(SchemaMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
+        u'default.userprofile': {
+            'Meta': {'object_name': 'UserProfile'},
+            'data': ('jsonfield.fields.JSONField', [], {'default': "{'user_class': 'customer'}"}),
+            'has_notifications': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'user': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'profile'", 'unique': 'True', 'to': u"orm['auth.User']"})
+        },
         u'workspace.invitekey': {
             'Meta': {'object_name': 'InviteKey'},
             'data': ('jsonfield.fields.JSONField', [], {'default': '{}'}),
@@ -92,14 +91,6 @@ class Migration(SchemaMigration):
             'next': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'tool': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['workspace.Tool']", 'null': 'True', 'blank': 'True'}),
             'tool_object_id': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'})
-        },
-        u'workspace.matterparticipant': {
-            'Meta': {'object_name': 'MatterParticipant'},
-            'data': ('jsonfield.fields.JSONField', [], {'default': '{}'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'matter': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['workspace.Workspace']"}),
-            'role': ('django.db.models.fields.IntegerField', [], {'db_index': 'True'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"})
         },
         u'workspace.tool': {
             'Meta': {'ordering': "['name']", 'object_name': 'Tool'},
@@ -120,10 +111,20 @@ class Migration(SchemaMigration):
             'lawyer': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'lawyer_workspace'", 'null': 'True', 'to': u"orm['auth.User']"}),
             'matter_code': ('django.db.models.fields.SlugField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'participants': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.User']", 'symmetrical': 'False', 'through': u"orm['workspace.MatterParticipant']", 'blank': 'True'}),
+            'participants': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.User']", 'symmetrical': 'False', 'through': u"orm['workspace.WorkspaceParticipants']", 'blank': 'True'}),
             'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'blank': 'True'}),
             'tools': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['workspace.Tool']", 'symmetrical': 'False', 'blank': 'True'})
+        },
+        u'workspace.workspaceparticipants': {
+            'Meta': {'object_name': 'WorkspaceParticipants', 'db_table': "'workspace_workspace_participants'"},
+            'data': ('jsonfield.fields.JSONField', [], {'default': '{}'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'is_matter_owner': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'db_index': 'True'}),
+            'matter': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['workspace.Workspace']", 'db_column': "'workspace_id'"}),
+            'role': ('django.db.models.fields.IntegerField', [], {'default': '1', 'db_index': 'True'}),
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'db_column': "'user_id'"})
         }
     }
 
-    complete_apps = ['workspace']
+    complete_apps = ['default', 'workspace']
+    symmetrical = True
