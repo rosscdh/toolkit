@@ -1,5 +1,5 @@
  <div ng-show="data.selectedItem" ng-file-drop="onFileDropped($files, data.selectedItem);">
-    <h3 ng-show="data.usdata.current.user_class=='lawyer'">
+    <h3 ng-show="data.usdata.current.permissions.manage_items">
         <a href="javascript:;" ng-click="data.editItemTitle=data.selectedItem.name;data.showEditItemTitleForm=!data.showEditItemTitleForm;focus('eventEditItemTitle')"
                 ng-hide="data.showEditItemTitleForm">
             <span ng-bind="data.selectedItem.name"></span>
@@ -35,7 +35,7 @@
         </div>
     </h3>
 
-    <h3 ng-show="data.usdata.current.user_class!=='lawyer'">
+    <h3 ng-show="!data.usdata.current.permissions.manage_items">
         <span ng-bind="data.selectedItem.name"></span>
 
         <div class="item-description-toggle" ng-hide="data.showEditItemDescriptionForm">
@@ -61,7 +61,7 @@
             </ul>
         </div>
 
-        <div class="btn-group" ng-show="data.usdata.current.user_class=='lawyer'">
+        <div class="btn-group" ng-show="data.usdata.current.permissions.manage_items">
             <a href="javascript:;" class="btn btn-sm btn-silver btn-embossed dropdown-toggle" data-toggle="dropdown">Options</a>
             <ul class="dropdown-menu dropdown-small dropdown-inverse" >
                 <li><a href="javascript:;" ng-click="toggleDueDateCalendar( data.selectedItem );saveSelectedItem();data.showItemDetailsOptions=!data.showItemDetailsOptions;">
@@ -80,24 +80,24 @@
             <span class="fui-calendar"></span>{{ data.selectedItem.date_due | date:'dd MMMM' }}
         </a>
         //-->
-        <span class="calendar-group" ng-show="(data.showDateDueInput||data.selectedItem.date_due)&&data.usdata.current.user_class==='lawyer'" ng-click="data.showDateDuePicker=true">
+        <span class="calendar-group" ng-show="(data.showDateDueInput||data.selectedItem.date_due)&&data.usdata.current.permissions.manage_items" ng-click="data.showDateDuePicker=true">
             <input type="text" id="dateduepicker-input" datepicker-popup="dd-MMMM" ng-model="data.dueDatePickerDate"
                    datepicker-options="dateOptions" is-open="data.showDateDuePicker" class="btn-embossed btn-sm btn-silver" />
             <label class="fui-calendar" for="dateduepicker-input"></label>
         </span>
 
-        <span ng-show="data.selectedItem.date_due&&data.usdata.current.user_class!=='lawyer'">
+        <span ng-show="data.selectedItem.date_due&&!data.usdata.current.permissions.manage_items">
             <span class="fui-calendar"></span> {{ data.selectedItem.date_due | date:'dd MMMM' }}
         </span>
 
         <a href="javascript:;" ng-click="data.selectedItem.is_complete=!data.selectedItem.is_complete;saveSelectedItem();"
            class="btn btn-sm pull-right" ng-class="{ 'btn-success': !data.selectedItem.is_complete, 'btn-default': data.selectedItem.is_complete}"
-           ng-show="data.usdata.current.user_class=='lawyer'"
+           ng-show="data.usdata.current.permissions.manage_items"
         >
             <span class="fui-checkbox-checked"></span> <span ng-hide="data.selectedItem.is_complete">Close item</span><span ng-show="data.selectedItem.is_complete">Reopen item</span>
         </a>
 
-        <a ng-show="data.usdata.current.user_class!=='lawyer'"
+        <a ng-show="!data.usdata.current.permissions.manage_items"
            class="label status-label pull-right" ng-class="{ 'label-primary': !data.selectedItem.is_complete, 'label-default': data.selectedItem.is_complete}" disabled>
             <span class="fui-checkbox"></span> <span ng-hide="data.selectedItem.is_complete">Open</span><span ng-show="data.selectedItem.is_complete">Closed</span>
         </a>
@@ -188,7 +188,7 @@
                 </div>
                 <div class="tools status-{{ data.selectedItem.latest_revision.status }}">
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="showRevisionDocument(data.selectedItem.latest_revision)">View</a>  <a href="{{ data.selectedItem.latest_revision.user_download_url }}" class="btn btn-link btn-xs" target="_blank">Download</a>
-                    <a href="javascript:;" class="btn btn-link btn-xs" ng-click="requestReview(data.selectedItem.latest_revision)">Request Review</a>
+                    <a href="javascript:;" class="btn btn-link btn-xs" ng-show="data.usdata.current.permissions.manage_reviews" ng-click="requestReview(data.selectedItem.latest_revision)">Request Review</a>
 <!--                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="requestSigning(data.selectedItem.latest_revision)">Request Signing</a> -->
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="deleteLatestRevision()">Delete</a>
                     <div class="btn-group pull-right">
@@ -219,14 +219,14 @@
             <div class="review in-progress" ng-show="data.selectedItem.latest_revision.reviewers.length>0">
                 <span ng-show="data.selectedItem.review_percentage_complete<100">Review in progress</span>
                 <span ng-show="data.selectedItem.review_percentage_complete==100">Review complete</span>
-                <a class="btn btn-link btn-xs pull-right" href="javascript:;" ng-click="remindRevisionReview(data.selectedItem)">
+                <a class="btn btn-link btn-xs pull-right" href="javascript:;" ng-click="remindRevisionReview(data.selectedItem)" ng-show="data.usdata.current.permissions.manage_reviews">
                     Remind
                 </a>
                 <div class="review-members">
                     <ul class="list-unstyled">
-                        <li ng-repeat="rev in data.selectedItem.latest_revision.reviewers" ng-class="{'complete': rev.is_complete==true }" class="{'complete': rev.is_complete==true }">
+                        <li ng-repeat="rev in data.selectedItem.latest_revision.reviewers" ng-class="{'complete': rev.is_complete==true }">
                             <a class="close" href="javascript:;" ng-click="deleteRevisionReviewRequest(data.selectedItem, rev)"
-                               ng-hide="rev.is_complete">x</a>
+                               ng-hide="rev.is_complete||!data.usdata.current.permissions.manage_reviews">x</a>
                             <a href="javascript:;" ng-click="showReview(data.selectedItem.latest_revision, rev)" class="pull-right">
                                 <button class="btn btn-warning btn-xs" ng-hide="rev.is_complete"><span class="fui-time"></span> In progress</button>
                                 <button class="btn btn-success btn-xs" ng-show="rev.is_complete">

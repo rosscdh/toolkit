@@ -26,11 +26,17 @@ angular.module('toolkit-gui').factory('userService',[
 		 * @param  {Object} user   User object, representing the current user
 		 * @param  {Object} lawyer User object, representing the lawyer who created this workspace
 		 */
-		function calculatePermissions( user, lawyer ) {
+		function calculatePermissions( user ) {
 			var permissions = {
 				'category': { 'post': false, 'put': false, 'delete': false },
 				'matterItem': { 'post': false, 'put': false, 'delete': false },
+				'manage_reviews': false,
+				'manage_items': false,
+                'manage_participants': true
 			};
+
+
+            /*
 
 			if( user.url===lawyer.url ) {
 				permissions.category = { 'post': true, 'put': true, 'delete': true };
@@ -38,7 +44,7 @@ angular.module('toolkit-gui').factory('userService',[
 
 			if( user.user_class === "lawyer" ) {
 				permissions.matterItem = { 'post': true, 'put': true, 'delete': true };
-			}
+			}*/
 
 			return permissions;
 		}
@@ -48,11 +54,12 @@ angular.module('toolkit-gui').factory('userService',[
 				return user;
 			},
 
-			'setCurrent': function( userData, lawyerData ) {
+			'setCurrent': function( userData ) {
 				user.current = userData;
 
 				if( user && user.current ) {
-					user.current.permissions = calculatePermissions( userData, lawyerData );
+					user.current.permissions = calculatePermissions( userData );
+                    $rootScope.$broadcast('permissionsSet');
 				}
 
 				if(Raven) {
@@ -97,6 +104,12 @@ angular.module('toolkit-gui').factory('userService',[
 
 			'invite': function( /*details*/ ) {
 				// Send invitation
+			},
+
+            'hasPermission': function( user, permission) {
+				user.permissions =  calculatePermissions( user );
+
+                return user.permissions[permission];
 			}
 		};
 	}

@@ -28,28 +28,28 @@
             <div class='col-sm-6 details' ng-show="data.selectedUser">
                 <div class="client-permissions" ng-show="data.selectedUser.user_class!=='lawyer'">
                      <div class="user-details text-right">
-                         <a class="revoke" ng-show="data.selectedUser.username!==currentUser.username&&currentUser.user_class==='lawyer'&&person.username!=matter.lawyer.username" href="javascript:;" ng-click="revoke(data.selectedUser)"><small>Revoke access</small></a>
-                         <a class="revoke" ng-show="data.selectedUser.username===currentUser.username&&currentUser.user_class!=='lawyer'" href="javascript:;" ng-click="revoke(data.selectedUser)"><small>Exit matter</small></a>
+                         <a class="revoke" ng-show="data.selectedUser.username!==currentUser.username&&currentUser.permissions.manage_participants&&person.username!=matter.lawyer.username" href="javascript:;" ng-click="revoke(data.selectedUser)"><small>Revoke access</small></a>
+                         <a class="revoke" ng-show="data.selectedUser.username===currentUser.username" href="javascript:;" ng-click="revoke(data.selectedUser)"><small>Exit matter</small></a>
                     </div>
                     <div class="user-large customer" ng-bind="data.selectedUser.initials"></div>
-                    <div class='permissions-checklist'>
+                    <div class='permissions-checklist' ng-show="currentUser.permissions.manage_participants">
                         <div class="checkbox">
                             <label>
                                 <input type="checkbox" ng-model="data.selectedUser.permissions['workspace.manage_clients']"> Able to Add Clients to Matter
                             </label>
                         </div>
                     </div>
-                    <div class='text-center'>
+                    <div class='text-center' ng-show="currentUser.permissions.manage_participants">
                        <a class="btn btn-sm save-perm-btn" ng-click="update(data.selectedUser)"><span class="fui-check"></span> Save Permissions</a>
                     </div>
                 </div>
 
                 <div class="colleague-permissions" ng-show="data.selectedUser.user_class==='lawyer'">
                      <div class="user-details text-right">
-                         <a class="revoke" ng-show="person.username!==currentUser.username&&currentUser.user_class==='lawyer'&&person.username!=matter.lawyer.username" href="javascript:;" ng-click="revoke(data.selectedUser)"><small>Revoke access</small></a>
+                         <a class="revoke" ng-show="person.username!==currentUser.username&&currentUser.permissions.manage_participants&&person.username!=matter.lawyer.username" href="javascript:;" ng-click="revoke(data.selectedUser)"><small>Revoke access</small></a>
                     </div>
                     <div class="user-large lawyer">TL</div>
-                    <div class='permissions-checklist'>
+                    <div class='permissions-checklist' ng-show="currentUser.permissions.manage_participants">
                         <div class="checkbox">
                             <label>
                                 <input type="checkbox" ng-model="data.selectedUser.permissions['workspace.manage_participants']"> Manage participants in this matter <div class='text-muted'>(including adding a removing colleagues and clients)</div>
@@ -71,13 +71,13 @@
                             </label>
                         </div>
                     </div>
-                    <div class='text-center'>
+                    <div class='text-center' ng-show="currentUser.permissions.manage_participants">
                        <a class="btn btn-sm save-perm-btn" ng-click="update(data.selectedUser)"><span class="fui-check"></span> Save Permissions</a>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="new-participant">
+        <div class="new-participant" ng-show="currentUser.permissions.manage_participants">
             <h5>Add a Participant<!--<a href="javascript:;" class="close" ng-click="">x</a>--></h5>
             <div class="row">
                 <div class="col-sm-6">
