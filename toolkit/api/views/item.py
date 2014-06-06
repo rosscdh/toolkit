@@ -78,21 +78,16 @@ class MatterItemsView(MatterItemsQuerySetMixin,
             self.matter.actions.item_created(user=self.request.user, item=obj)
 
     def can_read(self, user):
-        return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
+        return user in self.matter.participants.all()
 
     def can_edit(self, user):
-        return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
-
-        # TODO: fix
-        self.get_object()
-        return user.has_perm('workspace.manage_items', self.object.matter)
+        return user.has_perm('workspace.manage_items', self.matter)
+        # return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
 
     def can_delete(self, user):
-        return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
+        return user.has_perm('workspace.manage_items', self.matter)
+        # return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
 
-        # TODO: fix
-        self.get_object()
-        return user.has_perm('workspace.manage_items', self.object.matter)
 
 rulez_registry.register("can_read", MatterItemsView)
 rulez_registry.register("can_edit", MatterItemsView)
@@ -153,16 +148,10 @@ class MatterItemView(generics.UpdateAPIView,
         return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
 
     def can_edit(self, user):
-        return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
-
-        # TODO: fix
-        return user.has_perm('workspace.manage_items', self.get_object().matter)
+        return user.has_perm('workspace.manage_items', self.matter)
 
     def can_delete(self, user):
-        return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
-
-        # TODO: fix
-        return user.has_perm('workspace.manage_items', self.get_object().matter)
+        return user.has_perm('workspace.manage_items', self.matter)
 
 
 rulez_registry.register("can_read", MatterItemView)

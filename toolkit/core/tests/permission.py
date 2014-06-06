@@ -23,6 +23,9 @@ class PermissionTest(BaseScenarios, TestCase):
         # prepare user without permission
         self.prepare_user({'workspace.manage_participants': False})
 
+        # self.assertRaises(PermissionDenied,
+        #                   MatterUserPermissionService(matter=self.matter, user=self.user, role=ROLES.customer,
+        #                                               changing_user=self.lawyer).process())
         try:
             MatterUserPermissionService(matter=self.matter, user=self.user, role=ROLES.customer,
                                         changing_user=self.lawyer).process()
@@ -36,6 +39,7 @@ class PermissionTest(BaseScenarios, TestCase):
         # prepare user without permission
         self.prepare_user({'workspace.manage_participants': True})
 
+        # self.assertRaises
         try:
             MatterUserPermissionService(matter=self.matter, user=self.user, role=ROLES.customer,
                                         changing_user=self.lawyer).process()
@@ -46,6 +50,12 @@ class PermissionTest(BaseScenarios, TestCase):
         self.assertTrue(success)
         # import pdb;pdb.set_trace()
 
-    #
-    # def test_add_perm(self):
-    #     self.assertEqual(self.lawyer.has_perm('workspace.manage_participants', self.matter), True)
+    def _test_permission(self, perm):
+        permission_to_check = perm
+        self.prepare_user({permission_to_check: True})
+        self.assertTrue(self.lawyer.has_perm(permission_to_check, self.matter))
+        self.prepare_user({permission_to_check: False})
+        self.assertFalse(self.lawyer.has_perm(permission_to_check, self.matter))
+
+    def test_matter_manage_items(self):
+        self._test_permission('workspace.manage_items')

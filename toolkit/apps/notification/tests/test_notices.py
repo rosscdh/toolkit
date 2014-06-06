@@ -132,7 +132,8 @@ class NotificationEventsListTest(BaseListViewTest):
         MightyMatterUserPermissionService(matter=self.matter,
                                           role=ROLES.lawyer,
                                           user=self.lawyer,
-                                          changing_user=self.lawyer).process(permissions={'workspace.manage_participants': True})
+                                          changing_user=self.lawyer)\
+            .process(permissions={'workspace.manage_participants': True})
 
         endpoint_url = reverse('matter_participant', kwargs={'matter_slug': self.matter.slug})
         """

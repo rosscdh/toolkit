@@ -102,7 +102,6 @@ class ItemsTest(BaseEndpointTest):
         self.assertEqual(resp.status_code, 403)  # forbidden
 
 
-
 class ItemDetailTest(BaseEndpointTest):
     """
     /matters/:matter_slug/items/:item_slug/ (GET,PATCH,DELETE)

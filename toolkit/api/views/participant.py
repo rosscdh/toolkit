@@ -62,7 +62,7 @@ class MatterParticipant(generics.CreateAPIView,
         first_name = data.get('first_name')
         last_name = data.get('last_name')
         message = data.get('message')
-        permissions = data.get('permissions', '{}')
+        permissions = data.get('permissions', {})
 
         try:
             new_participant = User.objects.get(email=email)
