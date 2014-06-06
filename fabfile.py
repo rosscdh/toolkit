@@ -699,6 +699,22 @@ def upload_gui():
 def conclude():
     newrelic_deploynote()
 
+#
+# Permissions names length problem migrating django apps is not fun/possible
+#
+@task
+def setup_manual_django_contrib_auth_migrations():
+    import django
+    DJANGO_PATH = os.path.dirname(django.__file__)
+    SOURCE_MIGRATIONS_PATH = os.path.join(os.path.dirname(os.path.abspath('./__init__.py')), 'toolkit', 'apps', 'default', 'migrations', 'django_contrib_auth_migrations')
+    TARGET_MIGRATIONS_PATH = os.path.join(DJANGO_PATH, 'contrib', 'auth', 'migrations')
+    try:
+        shutil.rmtree(TARGET_MIGRATIONS_PATH)
+    except Exception as e:
+        print e
+        pass
+    shutil.copytree(SOURCE_MIGRATIONS_PATH, TARGET_MIGRATIONS_PATH)
+
 @task
 def rebuild_local():
     if not os.path.exists('../Stamp'):
@@ -709,6 +725,8 @@ def rebuild_local():
 
     if not os.path.exists('toolkit/local_settings.py'):
         local('cp conf/dev.local_settings.py toolkit/local_settings.py')
+
+    # setup_manual_django_contrib_auth_migrations()
 
     if os.path.exists('./dev.db'):
         new_db_name = '/tmp/dev.%s.db.bak' % env.timestamp

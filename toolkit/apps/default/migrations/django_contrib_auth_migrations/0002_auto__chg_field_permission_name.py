@@ -8,10 +8,14 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+
+        # Changing field 'Permission.name'
         db.alter_column(u'auth_permission', 'name', self.gf('django.db.models.fields.CharField')(max_length=128))
 
     def backwards(self, orm):
-        db.alter_column(u'auth_permission', 'name', self.gf('django.db.models.fields.CharField')(max_length=128))
+
+        # Changing field 'Permission.name'
+        db.alter_column(u'auth_permission', 'name', self.gf('django.db.models.fields.CharField')(max_length=50))
 
     models = {
         u'auth.group': {
@@ -25,7 +29,7 @@ class Migration(SchemaMigration):
             'codename': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contenttypes.ContentType']"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '128'})
         },
         u'auth.user': {
             'Meta': {'object_name': 'User'},
@@ -49,14 +53,7 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
-        },
-        u'default.userprofile': {
-            'Meta': {'object_name': 'UserProfile'},
-            'data': ('jsonfield.fields.JSONField', [], {'default': "{'user_class': 'customer'}"}),
-            'has_notifications': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'user': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'profile'", 'unique': 'True', 'to': u"orm['auth.User']"})
         }
     }
 
-    complete_apps = ['auth', 'default']
+    complete_apps = ['auth']

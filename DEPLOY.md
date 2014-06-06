@@ -6,7 +6,7 @@ Deployment actions by branch
 1. pip install django-permission
 2. ./manage.py syncdb  # add the permissions tables
 3. ./manage.py migrate default  # extend the max_length of auth_permission.name(50) to (128) for our long assed permission names
-4. ./manage.py update_permissions # add our set of permissions
+4. ./manage.py update_permissions  # add our set of permissions
 5. ./manage.py migrate workspace  # migrate the through table and its settings
 
 
