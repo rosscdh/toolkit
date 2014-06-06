@@ -183,6 +183,7 @@ html,body, div.full
 			padding-bottom:16px;
 			background-color: lighten(@silver, 13%);
 			margin-bottom:0px;
+
 			margin:4px -15px 4px -15px;
 			padding: 18px 15px 16px 15px;
 			.title-save {
@@ -471,21 +472,29 @@ html,body, div.full
 		}
 	}
 	div.chat {
-		background-color:lighten(@silver, 25%);
+		background-color: #F0F0F0;
 
 		h4 {
-			margin:0px -15px 0px -15px;
-			padding: 22px 15px 12px 15px;
+			padding-top: 15px;
+			padding-bottom: 15px;
+			background-color: #F0F0F0;
+			margin-top: 0px;
+			margin-bottom: 15px;
 			font-size:15px;
 			color:darken(@silver, 15%);
 			span {
 				font-size:12px;
 			}
 			a {
+				padding-left: 15px;
+				padding-right: 15px;
 				padding-bottom:15px;
+				padding-top: 15px;
+
 			}
 		}
 		div.new-message {
+
 			background-color:lighten(@silver, 17%);
 			z-index: 3;
 			clear:both;
@@ -504,8 +513,87 @@ html,body, div.full
 				margin-top:-10px;
 			}
 		}
+
+			.item-comments{
+		margin-top: 20px;
+		height: 60%;
+		overflow-y: scroll;
+		background-color: #F6F6F6;
+		border-left: 2px solid #4A90E2;
+
+		.ng-scope{
+
+
+
+			a {
+
+				border-bottom: none;
+				//padding: 15px;
+				padding-top: 15px;
+				//margin-left: -2px;
+
+			}
+			a.active{
+				border-bottom: 0px;
+				color: #4A90E2;
+				background-color: #F6F6F6;
+			}
+
+			a.inactive{
+				backround-color: red;
+			}
+		}
+		.user-initials {
+			color: #4A90E2;
+			font-weight: bold;
+		}
+		.meta-message{
+			color: #929394;
+			font-size: 11px;
+			width: 100%;
+			overflow: hidden;
+			padding-bottom: 10px;
+			border-bottom: 1px solid #DEDEDE;
+
+		}
+		li{
+			padding: 5px 20px;
+			font-size: 12px;
+			.message-content{
+				margin-bottom: 5px;
+			}
+
+			.meta-date, .meta-seen{
+				float: right;
+				padding-right: 10px;
+			}
+
+
+		}
+
+
+
+		}
+
+	.avatar {
+		  background-color: #98afc6;
+		  display: inline-block;
+		  position: relative;
+		}
+	.avatar .initials {
+		  color: white;
+		  display: block;
+		  font-size: 14px;
+		  font-weight: bold;
+		  height: 40px;
+		  overflow: hidden;
+		  line-height: 40px;
+		  text-align: center;
+		  width: 40px;
+	}
+
 		ul.activity-log {
-			margin-top: 10px;
+			margin-top: 20px;
 			li {
 				font-size:12px;
 				line-height: 17px;
@@ -852,42 +940,6 @@ html,body, div.full
 	}
 }
 
-.item-comments{
-
-	height: 30%;
-	background-color: #F6F6F6;
-
-	.ng-scope{
-		background-color: #F0F0F0;
-
-
-		a {
-			background-color: #F6F6F6;
-			border-bottom: none;
-			padding: 15px
-		}
-		a.active{
-			border-bottom: 0px;
-		}
-	}
-}
-
-.avatar {
-	  background-color: #98afc6;
-	  display: inline-block;
-	  position: relative;
-	}
-.avatar .initials {
-	  color: white;
-	  display: block;
-	  font-size: 14px;
-	  font-weight: bold;
-	  height: 40px;
-	  overflow: hidden;
-	  line-height: 40px;
-	  text-align: center;
-	  width: 40px;
-}
 
 
 @media (max-width: 1199px) {
