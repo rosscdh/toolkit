@@ -42,6 +42,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     name = serializers.SerializerMethodField('get_full_name')
     user_class = serializers.SerializerMethodField('get_user_class')
     verified = serializers.SerializerMethodField('get_verified')
+    permissions = serializers.SerializerMethodField('get_permissions')
     intercom_user_hash = serializers.SerializerMethodField('get_intercom_user_hash')
 
     class Meta:
@@ -60,6 +61,12 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     def get_verified(self, obj):
         return obj.profile.verified
 
+    def get_permissions(self, obj):
+        matter = self.context.get('matter', None)
+        if matter is not None:
+            return obj.matter_permissions(matter=matter).permissions
+        return None  # need to pass matter in via context
+
     def get_intercom_user_hash(self, obj):
         return _get_intercom_user_hash(user_identifier=obj.username)
 
@@ -71,7 +78,11 @@ class LiteUserSerializer(UserSerializer):
     Used when a user is referenced in other API objects.
     """
     class Meta(UserSerializer.Meta):
-        fields = ('url', 'username', 'name', 'initials', 'first_name', 'last_name', 'email', 'user_class',
+        fields = ('url',
+                  'username', 'name', 'initials',
+                  'first_name', 'last_name',
+                  'email', 'user_class',
+                  'permissions',
                   'intercom_user_hash', 'date_joined', 'verified',)
 
 

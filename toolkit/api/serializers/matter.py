@@ -43,14 +43,13 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
 
     client = LiteClientSerializer(required=False)
     lawyer = LiteUserSerializer(required=False)
-    participants = LiteUserSerializer(many=True, required=False)
+    participants = serializers.SerializerMethodField('get_participants')
 
     categories = serializers.SerializerMethodField('get_categories')
     closing_groups = serializers.SerializerMethodField('get_closing_groups')
 
     items = serializers.SerializerMethodField('get_items')
 
-    current_user_todo = serializers.SerializerMethodField('get_current_user_todo')
     current_user = serializers.SerializerMethodField('get_current_user')
 
     percent_complete = serializers.SerializerMethodField('get_percent_complete')
@@ -65,7 +64,7 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
                   'client', 'lawyer', 'participants',
                   'closing_groups', 'categories',
                   'items',
-                  'current_user', 'current_user_todo',
+                  'current_user',
                   'date_created', 'date_modified',
                   'percent_complete')
 
@@ -89,31 +88,30 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
         """
         return SimpleItemSerializer(obj.item_set.filter(parent=None), context=self.context, many=True).data
 
+    def get_participants(self, obj):
+        # context = self.context.copy()
+        # context.update({'matter': obj})
+        return LiteUserSerializer(obj.participants.all(), context=self.context, many=True).data
+
     def get_current_user(self, obj):
         request = self.context.get('request')
+
+        context = self.context.copy()
+        context.update({'matter': obj})
+
         current_user = None
+
         if request:
-            current_user = LiteUserSerializer(request.user, context={'request': request}).data
+            current_user = LiteUserSerializer(request.user, context=context).data
             profile = request.user.profile
 
             current_user.update({
                 'firm_name': profile.firm_name,
                 'has_notifications': profile.has_notifications,
                 'matters_created': profile.matters_created,
-                'permissions': [],
             })
-        return current_user
 
-    def get_current_user_todo(self, obj):
-        """
-        tmp method will eventually be replaced by matter.todo.filter(user=request.user)
-        """
-        todo = {
-            'url': '/api/v1/todo/:pk',
-            'message': 'You need to X, Y, and Z this mattter'
-        }
-        #return [todo.copy() for i in xrange(0,5)]
-        return []
+        return current_user
 
     def get_percent_complete(self, obj):
         return obj.get_percent_complete
