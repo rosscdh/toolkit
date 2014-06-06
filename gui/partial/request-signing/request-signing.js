@@ -138,9 +138,11 @@ angular.module('toolkit-gui')
             $scope.checkIfUserExists = function () {
                 if ($scope.data.invitee.email != null && $scope.data.invitee.email.length > 0) {
                     $scope.data.validationError = false;
+                    $scope.data.requestLoading = true;
 
                     participantService.getByEmail($scope.data.invitee.email).then(
                         function success(response) {
+                            $scope.data.requestLoading = false;
                             if (response.count === 1) {
                                 $scope.data.isNew = false;
                                 $scope.data.participant = response.results[0];
@@ -150,6 +152,7 @@ angular.module('toolkit-gui')
                             }
                         },
                         function error() {
+                            $scope.data.requestLoading = true;
                             toaster.pop('error', 'Error!', 'Unable to load participant', 5000);
                         }
                     );
@@ -206,7 +209,9 @@ angular.module('toolkit-gui')
 
                 //wait till all former signers are initiated to avoid duplicates
                 $scope.$watch('iterator', function () {
+                    $log.debug("i: " + $scope.iterator + ", length: " + len);
                     if (($scope.iterator > 1 && $scope.iterator >= len + 1) || len <= 1) {
+                        $log.debug("starting");
                         //add known external signers from this session
                         if ($scope.knownSigners) {
                             jQuery.each($scope.knownSigners, function (index, signer) {

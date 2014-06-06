@@ -195,7 +195,7 @@
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="requestReview(data.selectedItem.latest_revision)">Request Review</a>
                     <a href="javascript:;" class="btn btn-link btn-xs"
                        ng-click="requestSigning(data.selectedItem.latest_revision)"
-                       ng-show="data.selectedItem.latest_revision.signing.is_claimed!==true&&data.itemIsLoading!==true">Send for Signing</a>
+                       ng-show="data.selectedItem.latest_revision.signing===null&&data.itemIsLoading!==true">Send for Signing</a>
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="deleteLatestRevision()">Delete</a>
                 </div>
             </div>
