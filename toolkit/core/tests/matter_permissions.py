@@ -50,7 +50,7 @@ class MatterPermissionTest(BaseScenarios, TestCase):
         self.assertTrue('monkey' not in perm.permissions.keys())
         self.assertTrue(perm.permissions.get('manage_participants') is True)
 
-    def test_update_permissions(self):
+    def test_reset_permissions(self):
         perm = self.user.matter_permissions(matter=self.matter)
         self.assertTrue(perm.permissions.get('manage_participants') is False)
 
