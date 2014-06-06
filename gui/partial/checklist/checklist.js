@@ -112,7 +112,7 @@ angular.module('toolkit-gui')
 					$scope.initialiseMatter( singleMatter );
 					$scope.initializeActivityStream( singleMatter );
 
-					userService.setCurrent( singleMatter.current_user, singleMatter.lawyer );
+					userService.setCurrent( singleMatter.current_user);
 
                     $scope.initialiseIntercom(singleMatter.current_user);
 				},
@@ -741,7 +741,7 @@ angular.module('toolkit-gui')
 
 			var user = userService.data().current;
 
-			if( user.user_class === 'lawyer' ) {
+			if( user.permissions.manage_items) {
 				item.uploading = true;
 				$scope.data.uploading = true;
 
@@ -1170,6 +1170,9 @@ angular.module('toolkit-gui')
 					},
 					'review': function () {
 						return review;
+					},
+                    'currentUser': function () {
+						return $scope.data.usdata.current;
 					}
 				}
 			});
