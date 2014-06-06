@@ -67,6 +67,7 @@ UNPRIVILEGED_USER_PERMISSIONS = {
 ANONYMOUS_USER_PERMISSIONS = dict.fromkeys([key for key, value in GRANULAR_PERMISSIONS], False)
 
 ROLES = get_namedtuple_choices('ROLES', (
+    (0, 'noone', 'No Access'),
     (1, 'owner', 'Owner'),
     (2, 'client', 'Client'),
     (3, 'colleague', 'Colleague'),
@@ -92,7 +93,7 @@ class WorkspaceParticipants(models.Model):
     is_matter_owner = models.BooleanField(default=False, db_index=True)  # is this user a matter owner
 
     data = JSONField(default={})
-    role = models.IntegerField(choices=ROLES.get_choices(), default=ROLES.client, db_index=True)
+    role = models.IntegerField(choices=ROLES.get_choices(), default=ROLES.noone, db_index=True)
 
     class Meta:
         db_table = 'workspace_workspace_participants'  # Original django m2m table
@@ -114,12 +115,24 @@ class WorkspaceParticipants(models.Model):
             if self.role == self.ROLES.colleague or user_class == 'colleague':
                 # Lawyers currently can do everythign the owner cane except clients and participants
                 return PRIVILEGED_USER_PERMISSIONS
+
             elif self.role == self.ROLES.client or user_class == 'client':
                 # Clients by deafult can currently see all items (allow by default)
                 return UNPRIVILEGED_USER_PERMISSIONS
+
             else:
                 # Anon permissions
                 return ANONYMOUS_USER_PERMISSIONS
+
+    def clean_permissions(self, **kwargs):
+        current_permissions = self.permissions
+        test_kwargs = kwargs.copy()  # clone the kwargs dict so we can pop on it
+
+        for permission in kwargs:
+            if permission not in self.PERMISSIONS:
+                test_kwargs.pop(permission)
+                # @TODO ? need to check for boolean value?
+        return test_kwargs
 
     @property
     def permissions(self):
@@ -129,16 +142,13 @@ class WorkspaceParticipants(models.Model):
     def permissions(self, value):
         if type(value) not in [dict] and len(value.keys()) > 0:
             raise Exception('WorkspaceParticipants.permissions must be a dict of permissions %s' % self.default_permissions())
-        self.data['permissions'] = value
+        self.data['permissions'] = self.clean_permissions(**value)
 
     def reset_permissions(self):
         self.permissions = self.default_permissions()
 
     def update_permissions(self, **kwargs):
-        current_permissions = self.permissions
-        for permission in kwargs:
-            if permission in self.PERMISSIONS:
-                current_permissions[permission] = kwargs.get(permission, False) # set to passed in value, default to false
+        self.permissions = self.clean_permissions(**kwargs)
 
 
 class Workspace(IsDeletedMixin,
