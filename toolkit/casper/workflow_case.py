@@ -71,7 +71,7 @@ class BaseScenarios(object):
                                           changing_user=self.lawyer).process()
         MightyMatterUserPermissionService(matter=self.workspace,
                                           user=self.lawyer,
-                                          role=WorkspaceParticipants.ROLES.colleague,
+                                          role=WorkspaceParticipants.ROLES.owner,
                                           changing_user=self.lawyer).process()
         self.set_user_permissions_all(self.lawyer)
 

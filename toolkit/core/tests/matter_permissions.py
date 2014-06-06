@@ -61,3 +61,10 @@ class MatterPermissionTest(BaseScenarios, TestCase):
 
         self.assertTrue(perm.permissions.get('manage_participants') is False)
         self.assertItemsEqual(perm.permissions.keys(), WorkspaceParticipants.UNPRIVILEGED_USER_PERMISSIONS.keys())
+
+    def test_display_role(self):
+        perm = self.user.matter_permissions(matter=self.matter)
+        self.assertEqual(perm.display_role, WorkspaceParticipants.ROLES.get_desc_by_value(WorkspaceParticipants.ROLES.client))
+
+        perm = self.lawyer.matter_permissions(matter=self.matter)
+        self.assertEqual(perm.display_role, WorkspaceParticipants.ROLES.get_desc_by_value(WorkspaceParticipants.ROLES.owner))
