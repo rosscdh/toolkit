@@ -67,8 +67,10 @@ UNPRIVILEGED_USER_PERMISSIONS = {
 ANONYMOUS_USER_PERMISSIONS = dict.fromkeys([key for key, value in GRANULAR_PERMISSIONS], False)
 
 ROLES = get_namedtuple_choices('ROLES', (
-    (1, 'client', 'Client'),
-    (2, 'colleague', 'Colleague'),
+    (1, 'owner', 'Owner'),
+    (2, 'client', 'Client'),
+    (3, 'colleague', 'Colleague'),
+    (4, 'thirdparty', '3rd Party'),
 ))
 
 
