@@ -17,7 +17,7 @@ from .usps_trackfield_response import TRACK_UNDELIVERED_RESPONSE_XML_BODY
 
 from toolkit.core.mixins.query import IsDeletedQuerySet
 
-from toolkit.apps.workspace.models import Tool, MatterParticipant, ROLES
+from toolkit.apps.workspace.models import Tool, ROLES
 from toolkit.apps.eightythreeb.models import EightyThreeB
 from toolkit.apps.eightythreeb.management.commands.eightythreeb_usps_track_response import Command as USPSEightyThreeBTracking
 

@@ -8,7 +8,7 @@ from crispy_forms.layout import Button, Field, Layout
 from parsley.decorators import parsleyfy
 from toolkit.apps.matter.services.matter_permission import MightyMatterUserPermissionService
 
-from toolkit.apps.workspace.models import Workspace, MatterParticipant, ROLES
+from toolkit.apps.workspace.models import Workspace, ROLES
 from toolkit.core.client.models import Client
 from toolkit.mixins import ModalForm
 
@@ -60,7 +60,7 @@ class MatterForm(ModalForm, forms.ModelForm):
     )
 
     class Meta:
-        fields = ['matter_code', 'name',]
+        fields = ['matter_code', 'name']
         model = Workspace
 
     def __init__(self, *args, **kwargs):

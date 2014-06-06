@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import os
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.db.models.loading import get_model
@@ -27,19 +26,99 @@ from jsonfield import JSONField
 from .managers import WorkspaceManager
 from .mixins import ClosingGroupsMixin, CategoriesMixin, RevisionLabelMixin
 
+#
+# These are the master permissions set
+# 1. Any change to this must be cascaded in the following permission dicts
+#
+GRANULAR_PERMISSIONS = (
+    ("manage_participants", u"Can manage participants"),
+    ("manage_requests", u"Can manage requests"),
+    ("manage_items", u"Can manage checklist items and categories"),
+    ("manage_signatures", u"Can manage signatures & send documents for signature"),
+    ("manage_clients", u"Can manage clients"),  # not used, see https://trello.com/c/IocNs94W/545-8-feature-matter-permissions-global-matter-level-permissions
+)
+#
+# Matter.owner (Workspace.lawyer)
+#
+MATTER_OWNER_PERMISSIONS = dict.fromkeys([key for key, value in GRANULAR_PERMISSIONS], True)  # Grant the owner all permissions by default
+#
+# Matter.participants.user_class == 'lawyer'
+#
+PRIVILEGED_USER_PERMISSIONS = {
+    "manage_participants": False,
+    "manage_requests": True,
+    "manage_items": True,
+    "manage_signatures": True,
+    "manage_clients": False,
+}
+#
+# Matter.participants.user_class == 'customer'|'client'
+#
+UNPRIVILEGED_USER_PERMISSIONS = {
+    "manage_participants": False,
+    "manage_requests": False,
+    "manage_items": True,
+    "manage_signatures": False,
+    "manage_clients": False,
+}
+#
+# Not logged in or random user permissions
+#
+ANONYMOUS_USER_PERMISSIONS = dict.fromkeys([key for key, value in GRANULAR_PERMISSIONS], False)
 
 ROLES = get_namedtuple_choices('ROLES', (
-    (1, 'customer', 'Customer'),
-    (2, 'lawyer', 'Lawyer'),
+    (1, 'client', 'Client'),
+    (2, 'colleague', 'Colleague'),
 ))
 
 
-class MatterParticipant(models.Model):
-    matter = models.ForeignKey('workspace.Workspace')
-    user = models.ForeignKey('auth.User')
+class WorkspaceParticipants(models.Model):
+    """
+    Model to store the Users permissions with regards to a matter
+    """
+    # ROLES are simply for the GUI as ideally all of our users would
+    # simple have 1 or more of a set of permission
+    ROLES = ROLES
+
+    matter = models.ForeignKey('workspace.Workspace', db_column='workspace_id')
+    user = models.ForeignKey('auth.User', db_column='user_id')
+    is_matter_owner = models.BooleanField(default=False, db_index=True)  # is this user a matter owner
 
     data = JSONField(default={})
-    role = models.IntegerField(choices=ROLES.get_choices(), db_index=True)
+    role = models.IntegerField(choices=ROLES.get_choices(), default=ROLES.client, db_index=True)
+
+    class Meta:
+        db_table = 'workspace_workspace_participants'  # Original django m2m table
+
+    def default_permissions(self, user_class=None):
+        """
+        Class to provide a wrapper for user permissions
+        The default permissions here MUST be kept up-to-date with the Workspace.Meta.permissions tuple
+        """
+        if self.is_matter_owner is True or user_class == 'owner':
+            return MATTER_OWNER_PERMISSIONS
+
+        else:
+            # cater to lawyer and client roles
+            if self.role == self.ROLES.colleague or user_class == 'colleague':
+                # Lawyers currently can do everythign the owner cane except clients and participants
+                return PRIVILEGED_USER_PERMISSIONS
+            elif self.role == self.ROLES.client or user_class == 'client':
+                # Clients by deafult can currently see all items (allow by default)
+                return UNPRIVILEGED_USER_PERMISSIONS
+            else:
+                # Anon permissions
+                return ANONYMOUS_USER_PERMISSIONS
+
+    @property
+    def permissions(self):
+        return self.data.get('permissions', self.default_permissions())
+
+    @permissions.setter
+    def permissions(self, value):
+        if type(value) not in [dict] and len(value.keys()) > 0:
+            raise Exception('WorkspaceParticipants.permissions must be a dict of permissions %s' % self.default_permissions())
+        self.data['permissions'] = value
 
 
 class Workspace(IsDeletedMixin,
@@ -63,7 +142,10 @@ class Workspace(IsDeletedMixin,
     lawyer = models.ForeignKey('auth.User', null=True, related_name='lawyer_workspace')  # Lawyer that created this workspace
     client = models.ForeignKey('client.Client', null=True, blank=True)
 
-    participants = models.ManyToManyField('auth.User', blank=True, through=MatterParticipant)
+    # NB! We have not had to assigne the custom through-table
+    # WorkspaceParticipants, instead simply hijacked the default django table
+    # for participants
+    participants = models.ManyToManyField('auth.User', blank=True)
 
     tools = models.ManyToManyField('workspace.Tool', blank=True)
 
@@ -81,13 +163,7 @@ class Workspace(IsDeletedMixin,
         ordering = ['name', '-pk']
         verbose_name = 'Matter'
         verbose_name_plural = 'Matters'
-        permissions = (
-            ("manage_participants", u"Can manage participants"),
-            ("manage_requests", u"Can manage requests"),
-            ("manage_items", u"Can manage checklist items and categories"),
-            ("manage_signatures", u"Can manage signatures & send documents for signature"),
-            ("manage_clients", u"Can manage clients"),  # not used, see https://trello.com/c/IocNs94W/545-8-feature-matter-permissions-global-matter-level-permissions
-        )
+        permissions = GRANULAR_PERMISSIONS
 
     def __init__(self, *args, **kwargs):
         #
