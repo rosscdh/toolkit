@@ -59,5 +59,5 @@ angular.module('toolkit-gui').directive('auth', [
                     }
                 });
             }
-        }
+        };
     }]);
