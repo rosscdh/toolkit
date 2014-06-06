@@ -23,8 +23,13 @@ class MatterPermissionLogic(PermissionLogic):
     TODO:
     load permissions from participants-through-m2m and it's data-json
     """
-    def __init__(self):
-        pass
+    def __init__(self,
+                 any_permission=None,
+                 change_permission=None,
+                 delete_permission=None):
+        self.any_permission = any_permission
+        self.change_permission = change_permission
+        self.delete_permission = delete_permission
 
     def has_perm(self, user_obj, perm, obj=None):
         """
@@ -72,22 +77,5 @@ class MatterPermissionLogic(PermissionLogic):
                 matter_participant = MatterParticipant.objects.get(matter=obj, user=user_obj)
             except MatterParticipant.DoesNotExist:
                 return False
-
             return matter_participant.data.get('permissions', {}).get(perm, False)
-
-            # # key has this scheme: "%s.%s_%s" % (app_label, perm, model_name)
-            # m = re.search(permission_pattern, permission_name)
-            #
-            # app_label = m.group(1)
-            # perm = m.group(2)
-            # model_name = m.group(3)
-            # try:
-            #     permission = Permission.objects.get(
-            #         codename=perm,
-            #         content_type=ContentType.objects.get(app_label=app_label, model=model_name)
-            #     )
-            # except Permission.DoesNotExist:
-            #     logger.critical(u'Permission used which does not exist: %s' % permission_name)
-            #     raise PermissionDenied('You are using a broken permission: %s' % permission_name)
-            #
         return False

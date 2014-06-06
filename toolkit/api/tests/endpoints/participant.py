@@ -5,15 +5,13 @@ from django.dispatch import Signal, receiver
 from toolkit.apps.matter.services.matter_permission import MightyMatterUserPermissionService
 
 from toolkit.apps.matter.signals import PARTICIPANT_ADDED
-from toolkit.apps.workspace.models import Workspace, MatterParticipant, ROLES
+from toolkit.apps.workspace.models import Workspace, ROLES
 
 from . import BaseEndpointTest
-from ...serializers import ClientSerializer
 
 from model_mommy import mommy
 
 import json
-import random
 
 
 
@@ -164,9 +162,27 @@ class MatterParticipantTest(BaseEndpointTest):
 
     def test_lawyer_patch(self):
         self.client.login(username=self.lawyer.username, password=self.password)
-        resp = self.client.patch(self.endpoint, {}, content_type='application/json')
 
-        self.assertEqual(resp.status_code, 405)  # method not allowed
+        # create user to be modified after:
+        user = mommy.make('auth.User', email='test+monkey@lawyer.com')
+        MightyMatterUserPermissionService(matter=self.matter,
+                                          role=ROLES.customer,
+                                          user=user,
+                                          changing_user=user).process()
+        self.assertFalse(user.has_perm('workspace.manage_items'), self.matter)
+        self.assertFalse(user.has_perm('workspace.manage_participants'), self.matter)
+
+        data = {
+            'email': 'test+monkey@lawyer.com',
+            'permissions': {'workspace.manage_items': True, 'workspace.manage_participants': False},
+            'role': ROLES.lawyer
+        }
+        resp = self.client.patch(self.endpoint, json.dumps(data), content_type='application/json')
+        self.assertEqual(resp.status_code, 202)  # accepted
+
+        user = User.objects.get(email=data['email'])
+        self.assertTrue(user.has_perm('workspace.manage_items', self.matter))
+        self.assertFalse(user.has_perm('workspace.manage_participants', self.matter))
 
     def test_lawyer_delete(self):
         """
