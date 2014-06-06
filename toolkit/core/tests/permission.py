@@ -23,32 +23,16 @@ class PermissionTest(BaseScenarios, TestCase):
         # prepare user without permission
         self.prepare_user({'workspace.manage_participants': False})
 
-        # self.assertRaises(PermissionDenied,
-        #                   MatterUserPermissionService(matter=self.matter, user=self.user, role=ROLES.customer,
-        #                                               changing_user=self.lawyer).process())
-        try:
+        with self.assertRaises(PermissionDenied):
             MatterUserPermissionService(matter=self.matter, user=self.user, role=ROLES.customer,
                                         changing_user=self.lawyer).process()
-            success = True
-        except PermissionDenied:
-            success = False
-
-        self.assertFalse(success)
 
     def test_matter_manage_participants_true(self):
-        # prepare user without permission
+        # prepare user with permission
         self.prepare_user({'workspace.manage_participants': True})
 
-        # self.assertRaises
-        try:
-            MatterUserPermissionService(matter=self.matter, user=self.user, role=ROLES.customer,
-                                        changing_user=self.lawyer).process()
-            success = True
-        except PermissionDenied:
-            success = False
-
-        self.assertTrue(success)
-        # import pdb;pdb.set_trace()
+        MatterUserPermissionService(matter=self.matter, user=self.user, role=ROLES.customer,
+                                    changing_user=self.lawyer).process()
 
     def _test_permission(self, perm):
         permission_to_check = perm
