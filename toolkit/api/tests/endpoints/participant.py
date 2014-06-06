@@ -38,7 +38,7 @@ class MatterParticipantTest(BaseEndpointTest):
         MightyMatterUserPermissionService(matter=self.matter,
                                           user=self.lawyer,
                                           changing_user=self.lawyer,
-                                          role=ROLES.customer)\
+                                          role=ROLES.client)\
             .process(permissions={"workspace.manage_participants": True})
 
         self.lawyer_to_add = mommy.make('auth.User', username='New Lawyer', email='newlawyer@lawpal.com')
@@ -165,7 +165,7 @@ class MatterParticipantTest(BaseEndpointTest):
         # create user to be modified after:
         user = mommy.make('auth.User', email='test+monkey@lawyer.com')
         MightyMatterUserPermissionService(matter=self.matter,
-                                          role=ROLES.customer,
+                                          role=ROLES.client,
                                           user=user,
                                           changing_user=user).process()
         self.assertFalse(user.has_perm('workspace.manage_items'), self.matter)
@@ -174,7 +174,7 @@ class MatterParticipantTest(BaseEndpointTest):
         data = {
             'email': 'test+monkey@lawyer.com',
             'permissions': {'workspace.manage_items': True, 'workspace.manage_participants': False},
-            'role': ROLES.lawyer
+            'role': ROLES.colleague
         }
         resp = self.client.patch(self.endpoint, json.dumps(data), content_type='application/json')
         self.assertEqual(resp.status_code, 202)  # accepted
@@ -213,7 +213,7 @@ class MatterParticipantTest(BaseEndpointTest):
         """
         # add new layer to participants
         MightyMatterUserPermissionService(matter=self.matter,
-                                          role=ROLES.lawyer,
+                                          role=ROLES.colleague,
                                           user=self.lawyer_to_add,
                                           changing_user=self.lawyer).process()
         self.matter = Workspace.objects.get(pk=self.matter.pk)

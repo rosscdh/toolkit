@@ -66,13 +66,13 @@ class MatterParticipantTest(BaseEndpointTest):
         # create user to be modified after:
         user = mommy.make('auth.User', email='test+monkey@lawyer.com')
         MightyMatterUserPermissionService(matter=self.matter,
-                                          role=ROLES.customer,
+                                          role=ROLES.client,
                                           user=user,
                                           changing_user=user).process()
         data = {
             'email': 'test+monkey@lawyer.com',
             'permissions': {'workspace.manage_items': True, 'workspace.manage_participants': False},
-            'role': ROLES.lawyer
+            'role': ROLES.colleague
         }
 
         self.set_user_permissions(self.lawyer, {'workspace.manage_participants': False})

@@ -140,7 +140,7 @@ class MatterForm(ModalForm, forms.ModelForm):
 
         # add user as participant
         MightyMatterUserPermissionService(matter=matter,
-                                          role=ROLES.lawyer,
+                                          role=ROLES.colleague,
                                           user=self.user,
                                           changing_user=self.user).process()
 

@@ -130,7 +130,7 @@ class NotificationEventsListTest(BaseListViewTest):
         self.client.login(username=self.lawyer.username, password=self.password)
 
         MightyMatterUserPermissionService(matter=self.matter,
-                                          role=ROLES.lawyer,
+                                          role=ROLES.colleague,
                                           user=self.lawyer,
                                           changing_user=self.lawyer)\
             .process(permissions={'workspace.manage_participants': True})

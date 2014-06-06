@@ -47,11 +47,11 @@ class BaseUSPSTrackingCode(TestCase):
         self.workspace.tools.add(Tool.objects.get(slug='83b-election-letters'))
 
         MightyMatterUserPermissionService(matter=self.workspace,
-                                          role=ROLES.customer,
+                                          role=ROLES.client,
                                           user=self.user,
                                           changing_user=self.lawyer).process()
         MightyMatterUserPermissionService(matter=self.workspace,
-                                          role=ROLES.lawyer,
+                                          role=ROLES.colleague,
                                           user=self.lawyer,
                                           changing_user=self.lawyer).process()
 

@@ -66,12 +66,12 @@ class BaseScenarios(object):
             self.workspace.tools.add(tool)
 
         MightyMatterUserPermissionService(matter=self.workspace,
-                                          role=WorkspaceParticipants.ROLES.customer,
+                                          role=WorkspaceParticipants.ROLES.client,
                                           user=self.user,
                                           changing_user=self.lawyer).process()
         MightyMatterUserPermissionService(matter=self.workspace,
                                           user=self.lawyer,
-                                          role=WorkspaceParticipants.ROLES.lawyer,
+                                          role=WorkspaceParticipants.ROLES.colleague,
                                           changing_user=self.lawyer).process()
         self.set_user_permissions_all(self.lawyer)
 
@@ -94,7 +94,7 @@ class BaseScenarios(object):
     def set_user_permissions(self, user, permissions={}):
         MightyMatterUserPermissionService(matter=self.workspace,
                                           user=user,
-                                          role=WorkspaceParticipants.ROLES.lawyer,
+                                          role=WorkspaceParticipants.ROLES.colleague,
                                           changing_user=self.lawyer).process(permissions=permissions)
 
     def set_user_permissions_all(self, user):

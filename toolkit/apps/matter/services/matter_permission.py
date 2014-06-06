@@ -41,12 +41,12 @@ class MatterUserPermissionService(object):
     def get_matter_participant(self):
         # returns unsaved MatterUser
         try:
-            matter_participant = MatterParticipant.objects.get(matter=self.matter,
+            matter_participant = WorkspaceParticipants.objects.get(matter=self.matter,
                                                                user=self.changed_user)
             matter_participant.role = self.role
 
-        except MatterParticipant.DoesNotExist:
-            matter_participant = MatterParticipant(matter=self.matter,
+        except WorkspaceParticipants.DoesNotExist:
+            matter_participant = WorkspaceParticipants(matter=self.matter,
                                                    user=self.changed_user,
                                                    role=self.role)
         return matter_participant

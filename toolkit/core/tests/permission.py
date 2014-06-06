@@ -18,14 +18,14 @@ class PermissionTest(BaseScenarios, TestCase):
         self.prepare_user({'workspace.manage_participants': False})
 
         with self.assertRaises(PermissionDenied):
-            MatterUserPermissionService(matter=self.matter, user=self.user, role=ROLES.customer,
+            MatterUserPermissionService(matter=self.matter, user=self.user, role=ROLES.client,
                                         changing_user=self.lawyer).process()
 
     def test_matter_manage_participants_true(self):
         # prepare user with permission
         self.set_user_permissions(self.lawyer, {'workspace.manage_participants': True})
 
-        MatterUserPermissionService(matter=self.matter, user=self.user, role=ROLES.customer,
+        MatterUserPermissionService(matter=self.matter, user=self.user, role=ROLES.client,
                                     changing_user=self.lawyer).process()
 
     def _test_permission(self, perm):
