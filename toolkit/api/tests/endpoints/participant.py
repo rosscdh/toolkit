@@ -1,20 +1,17 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.dispatch import Signal, receiver
+from django.dispatch import receiver
 from toolkit.apps.matter.services.matter_permission import MightyMatterUserPermissionService
 
 from toolkit.apps.matter.signals import PARTICIPANT_ADDED
-from toolkit.apps.workspace.models import Workspace, MatterParticipant, ROLES
+from toolkit.apps.workspace.models import Workspace, WorkspaceParticipants, ROLES
 
 from . import BaseEndpointTest
-from ...serializers import ClientSerializer
 
 from model_mommy import mommy
 
 import json
-import random
-
 
 
 class MatterParticipantTest(BaseEndpointTest):

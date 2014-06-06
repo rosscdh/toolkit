@@ -1,18 +1,10 @@
 # -*- coding: utf-8 -*-
-
-import logging
-import re
-
-from django.contrib.auth.models import Permission
-from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import PermissionDenied
-
-from permission.conf import settings
 from permission.logics.base import PermissionLogic
-from permission.utils.field_lookup import field_lookup
 
-from toolkit.apps.workspace.models import MatterParticipant
+from toolkit.apps.workspace.models import WorkspaceParticipants
 
+import re
+import logging
 
 logger = logging.getLogger('django.request')
 permission_pattern = re.compile('^(\w*)\.([a-zA-Z_]*)_([a-zA-Z]*)$')
@@ -69,11 +61,11 @@ class MatterPermissionLogic(PermissionLogic):
             return False
         elif user_obj.is_active:
             try:
-                matter_participant = MatterParticipant.objects.get(matter=obj, user=user_obj)
-            except MatterParticipant.DoesNotExist:
+                matter_participant = WorkspaceParticipants.objects.get(matter=obj, user=user_obj)
+            except WorkspaceParticipants.DoesNotExist:
                 return False
 
-            return matter_participant.data.get('permissions', {}).get(perm, False)
+            return matter_participant.permissions.get(perm, False)
 
             # # key has this scheme: "%s.%s_%s" % (app_label, perm, model_name)
             # m = re.search(permission_pattern, permission_name)

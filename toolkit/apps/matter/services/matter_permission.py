@@ -2,7 +2,7 @@
 from django.core.exceptions import PermissionDenied
 
 import logging
-from toolkit.apps.workspace.models import MatterParticipant
+from toolkit.apps.workspace.models import WorkspaceParticipants
 
 logger = logging.getLogger('django.request')
 
@@ -21,8 +21,10 @@ class MatterUserPermissionService(object):
     override is ONLY used for initialisation
 
     permissions need to be in this structure:
-    {'Model.permission': true}
-    {'Workspace.manage_participants': false}
+    {
+        'Model.permission': true,
+        'Workspace.manage_participants': False
+    }
     """
     matter = None
     changed_user = None
