@@ -14,6 +14,10 @@ class CrocodocLoaderService(object):
     reviewdocument = None
     service = None
 
+    @property
+    def crocodoc_uuid_recorded(self):
+        return self.reviewdocument.crocodoc_uuid not in [None, '']
+
     def __init__(self, user, reviewdocument):
         self.user = user
         self.reviewdocument = reviewdocument
@@ -21,7 +25,7 @@ class CrocodocLoaderService(object):
         self.service = CrocoDocConnectService(document_object=self.reviewdocument.document,
                                               app_label='attachment',
                                               field_name='executed_file',
-                                              upload_immediately=True,  # this is handled by the ensure_local_file method
+                                              upload_immediately=self.crocodoc_uuid_recorded,  # this is handled by the ensure_local_file method
                                               # important for sandboxing the view to the specified reviewer
                                               reviewer=self.reviewdocument.reviewer)
 
@@ -32,7 +36,7 @@ class CrocodocLoaderService(object):
         self.ensure_reset_copied_reviewdocument()
 
         # if the crocodoc has not been saved to lawpal yet, save it's uuid:
-        if self.service.is_new is True or self.reviewdocument.crocodoc_uuid in [None, '']:
+        if self.service.is_new is True or self.crocodoc_uuid_recorded is False:
             if self.service.obj.uuid:
                 #
                 # Save the uuid field so we can do lookups
@@ -72,12 +76,6 @@ class CrocodocLoaderService(object):
             self.service.generate()
 
     def process(self):
-        # if this is a brand new file, we now need to ensure its available lcoally
-        # and then if/when it is upload it to crocdoc
-        self.ensure_local_file()
-
-        
-
         # @TODO this should ideally be set in the service on init
         # and session automatically updated
         # https://crocodoc.com/docs/api/ for more info
@@ -99,10 +97,6 @@ class CrocodocLoaderService(object):
                 #
                 #"filter": self.get_filter_ids() # must be a comma seperated list
         }
-        #
-        # Set out session key based on params above
-        #
-        self.service.obj.crocodoc_service.session_key(**CROCODOC_PARAMS),
 
         return {
             'crocodoc': self.service.obj.crocodoc_service,
