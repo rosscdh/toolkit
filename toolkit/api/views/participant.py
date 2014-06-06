@@ -24,6 +24,7 @@ from .mixins import (MatterMixin,)
 
 
 class MatterParticipant(generics.CreateAPIView,
+                        generics.UpdateAPIView,
                         generics.DestroyAPIView,
                         MatterMixin):
     """
@@ -58,7 +59,7 @@ class MatterParticipant(generics.CreateAPIView,
         self.validate_data(data=data, expected_keys=['email', 'first_name', 'last_name', 'message'])
 
         email = data.get('email')
-        user_class = data.get('user_class', 'customer')  # @TODO need to review
+        role = data.get('user_class', 'customer')  # @TODO need to review
         first_name = data.get('first_name')
         last_name = data.get('last_name')
         message = data.get('message')
@@ -78,7 +79,7 @@ class MatterParticipant(generics.CreateAPIView,
 
         if new_participant not in self.matter.participants.all():
             MatterUserPermissionService(matter=self.matter,
-                                        role=ROLES.get_value_by_name(user_class),
+                                        role=ROLES.get_value_by_name(role),
                                         user=new_participant,
                                         changing_user=self.request.user).process(permissions=permissions)
             PARTICIPANT_ADDED.send(sender=self,
@@ -88,6 +89,26 @@ class MatterParticipant(generics.CreateAPIView,
                                    note=message)
 
         return Response(SimpleUserSerializer(new_participant, context={'request': self.request}).data,
+                        status=http_status.HTTP_202_ACCEPTED)
+
+    def update(self, request, *args, **kwargs):
+        """
+        used for updating permissions/role of user in matter
+        """
+        data = request.DATA.copy()
+
+        email = data.get('email')
+        role = data.get('user_class')
+        permissions = data.get('permissions')
+
+        participant = User.objects.get(email=email)
+
+        MatterUserPermissionService(matter=self.matter,
+                                    user=participant,
+                                    role=ROLES.get_value_by_name(role),
+                                    changing_user=self.request.user).process(permissions=permissions)
+
+        return Response(SimpleUserSerializer(participant, context={'request': self.request}).data,
                         status=http_status.HTTP_202_ACCEPTED)
 
     def delete(self, request, **kwargs):
