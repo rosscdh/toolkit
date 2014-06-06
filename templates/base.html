@@ -140,18 +140,7 @@
     <!-- Load JS here for greater good =============================-->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-    <script src="{{ STATIC_URL }}js/jquery.ui.touch-punch.min.js"></script>
-    <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
-    <script src="{{ STATIC_URL }}js/bootstrap-select.js"></script>
-    <script src="{{ STATIC_URL }}js/bootstrap-switch.js"></script>
-    <script src="{{ STATIC_URL }}js/flatui-checkbox.js"></script>
-    <script src="{{ STATIC_URL }}js/flatui-radio.js"></script>
-    <script src="{{ STATIC_URL }}js/jquery.tagsinput.js"></script>
-    <script src="{{ STATIC_URL }}js/jquery.placeholder.js"></script>
-    <script src="{{ STATIC_URL }}js/bootstrap-typeahead.js"></script>
-    <script src="{{ STATIC_URL }}js/parsley-1.2.4.min.js"></script>
-    <script src="{{ STATIC_URL }}js/parsley-form.js"></script>
-    <script src="{{ STATIC_URL }}js/application.js"></script>
+    {% compressed_js 'core' %}
 
     <!-- Load page specific JS here =============================-->
     {% block js %}{% endblock %}
