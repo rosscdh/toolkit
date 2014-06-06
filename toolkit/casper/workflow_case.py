@@ -73,13 +73,8 @@ class BaseScenarios(object):
         MightyMatterUserPermissionService(matter=self.workspace,
                                           user=self.lawyer,
                                           role=ROLES.lawyer,
-                                          changing_user=self.lawyer).process(permissions={
-            "workspace.manage_participants": True,
-            "workspace.manage_requests": True,
-            "workspace.manage_items": True,
-            "workspace.manage_signatures": True,
-            "workspace.manage_clients": True
-        })
+                                          changing_user=self.lawyer).process()
+        self.set_user_permissions_all(self.lawyer)
 
         eightythreeb_data = BASE_EIGHTYTHREEB_DATA
         eightythreeb_data['markers'] = {}  # set the markers to nothing
@@ -95,6 +90,28 @@ class BaseScenarios(object):
 
         # endpoint for api cretion via the api
         self.item_create_endpoint = reverse('matter_items', kwargs={'matter_slug': self.matter.slug})
+
+    # helper functions for testing permissions
+    def set_user_permissions(self, user, permissions={}):
+        MightyMatterUserPermissionService(matter=self.workspace,
+                                          user=user,
+                                          role=ROLES.lawyer,
+                                          changing_user=self.lawyer).process(permissions=permissions)
+
+    def set_user_permissions_all(self, user):
+        permissions = {
+            "workspace.manage_participants": True,
+            "workspace.manage_requests": True,
+            "workspace.manage_items": True,
+            "workspace.manage_signatures": True,
+            "workspace.manage_clients": True
+        }  # load from MatterUserPermission-class
+        self.set_user_permissions(user, permissions)
+
+    def set_user_permissions_default(self, user):
+        permissions = {}  # load from MatterUserPermission-class
+        self.set_user_permissions(user, permissions)
+    # end helper functions for testing permissions
 
     def _api_create_item(self, **kwargs):
         """

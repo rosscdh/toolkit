@@ -138,7 +138,7 @@
     },
     {
         "pk": 1,
-        "model": "workspace.matterparticipant",
+        "model": "workspace.workspaceparticipants",
         "fields": {
             "user": 1,
             "matter": 1,
@@ -147,7 +147,7 @@
     },
     {
         "pk": 2,
-        "model": "workspace.matterparticipant",
+        "model": "workspace.workspaceparticipants",
         "fields": {
             "user": 2,
             "matter": 1,
@@ -165,7 +165,7 @@
     },
     {
         "pk": 3,
-        "model": "workspace.matterparticipant",
+        "model": "workspace.workspaceparticipants",
         "fields": {
             "user": 3,
             "matter": 1,
