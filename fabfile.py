@@ -6,6 +6,9 @@ from fabric.contrib import files
 
 from git import *
 
+import django
+DJANGO_PATH = os.path.dirname(django.__file__)
+
 import os
 import sys
 import time
@@ -704,16 +707,14 @@ def conclude():
 #
 @task
 def setup_manual_django_contrib_auth_migrations():
-    import django
-    DJANGO_PATH = os.path.dirname(django.__file__)
     SOURCE_MIGRATIONS_PATH = os.path.join(os.path.dirname(os.path.abspath('./__init__.py')), 'toolkit', 'apps', 'default', 'migrations', 'django_contrib_auth_migrations')
-    TARGET_MIGRATIONS_PATH = os.path.join(DJANGO_PATH, 'contrib', 'auth', 'migrations')
+    AUTH_TARGET_MIGRATIONS_PATH = os.path.join(DJANGO_PATH, 'contrib', 'auth', 'migrations')
     try:
-        shutil.rmtree(TARGET_MIGRATIONS_PATH)
+        shutil.rmtree(AUTH_TARGET_MIGRATIONS_PATH)
     except Exception as e:
         print e
         pass
-    shutil.copytree(SOURCE_MIGRATIONS_PATH, TARGET_MIGRATIONS_PATH)
+    shutil.copytree(SOURCE_MIGRATIONS_PATH, AUTH_TARGET_MIGRATIONS_PATH)
 
 @task
 def rebuild_local():
@@ -726,7 +727,7 @@ def rebuild_local():
     if not os.path.exists('toolkit/local_settings.py'):
         local('cp conf/dev.local_settings.py toolkit/local_settings.py')
 
-    # setup_manual_django_contrib_auth_migrations()
+    setup_manual_django_contrib_auth_migrations()
 
     if os.path.exists('./dev.db'):
         new_db_name = '/tmp/dev.%s.db.bak' % env.timestamp
@@ -736,12 +737,11 @@ def rebuild_local():
         local('rm ./dev.db')
 
     local('python manage.py syncdb  --noinput')
+    local('python manage.py update_permissions')
     local('python manage.py migrate')
     local('python manage.py loaddata %s' % fixtures())
     local('python manage.py createsuperuser')  #manually as we rely on the dev-fixtures
     gui_clean()
-
-
 
 @task
 def deploy(is_predeploy='False',full='False',db='False',search='False'):
