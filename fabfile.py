@@ -6,9 +6,6 @@ from fabric.contrib import files
 
 from git import *
 
-import django
-DJANGO_PATH = os.path.dirname(django.__file__)
-
 import os
 import sys
 import time
@@ -707,6 +704,8 @@ def conclude():
 #
 @task
 def setup_manual_django_contrib_auth_migrations():
+    import django
+    DJANGO_PATH = os.path.dirname(django.__file__)
     SOURCE_MIGRATIONS_PATH = os.path.join(os.path.dirname(os.path.abspath('./__init__.py')), 'toolkit', 'apps', 'default', 'migrations', 'django_contrib_auth_migrations')
     AUTH_TARGET_MIGRATIONS_PATH = os.path.join(DJANGO_PATH, 'contrib', 'auth', 'migrations')
     try:
