@@ -4,10 +4,13 @@
 
 {% block body %}
     {% if can_sign %}
-        <div id="user-message" class="page-header">
-          <h3>Please sign this document<br/><small>The document is ready for signing, please read it through and sign when ready.</small></h3>
-          <!-- <a href="javascript:;" onClick="openHelloSign();">Open</a> -->
+     <div class="row col-sm-8 col-sm-offset-2">
+        <div id="user-message" class="page-header text-center">
+          <h3>Please wait...<br/>
+            <br />
+            <p class="lead text-muted">We are preparing your documents.</p></h3>
         </div>
+      </div>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script src="//s3.amazonaws.com/cdn.hellofax.com/js/embedded.js"></script>
         <script type="text/javascript">

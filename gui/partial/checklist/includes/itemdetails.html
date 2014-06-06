@@ -146,7 +146,36 @@
         <li class="current">
             <div class="doc-wrap">
                 <!-- <span class="version">{{ data.selectedItem.latest_revision.slug }}</span> -->
-                <h4><a href="javascript:;" ng-click="showRevisionDocument(data.selectedItem.latest_revision)"><span class="fui-document status-{{ data.selectedItem.latest_revision.status }}"></span> {{ data.selectedItem.latest_revision.name }}</a></h4>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="btn-group pull-right">
+                            <button type="button" class="btn btn-default btn-xs status-{{ data.selectedItem.latest_revision.status }}" data-toggle="dropdown">
+                              {{ data.matter._meta.item.custom_status[data.selectedItem.latest_revision.status] }}
+                            </button>
+                            <button class="btn btn-default btn-xs status-{{ data.selectedItem.latest_revision.status }}"
+                                    data-toggle="dropdown" ng-show="data.usdata.current.user_class=='lawyer'">
+                              <span class="caret" ></span>
+                            </button>
+                            <ul class="dropdown-menu" ng-show="data.usdata.current.user_class=='lawyer'" >
+                              <li class="" ng-repeat="(key, status) in data.matter._meta.item.custom_status">
+                                  <a href="javascript:;" ng-click="data.showRevisionStatusDropdown=false;data.selectedItem.latest_revision.status=key;saveLatestRevision();"
+                                     ng-hide="data.showEditRevisionTitles">
+                                      <span class="icon status-{{ key }}"></span> {{ status }}
+                                  </a>
+                              </li>
+                              <li>
+                                  <a href="javascript:;" ng-click="editRevisionStatusTitles()">
+                                      <span class="icon"></span> Change status titles...
+                                  </a>
+                              </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <h4 class=""><a href="javascript:;" ng-click="showRevisionDocument(data.selectedItem.latest_revision)"><span class="fui-document status-{{ data.selectedItem.latest_revision.status }}"></span> {{ data.selectedItem.latest_revision.name }}</a></h4>
+                    </div>
+
+                </div>
                 <div class="desc" ng-hide="data.show_edit_revision_description||data.usdata.current.user_class!=='lawyer'">
                      <a href="javascript:;" class="link"
                         ng-click="editTextattribute(data.selectedItem.latest_revision, 'revision', 'description')">
@@ -162,35 +191,12 @@
                     <a href="javascript:;" class="btn btn-link btn-xs pull-right" title="Markdown help" onclick="alert('Markdown help popup like trello');">Formatting Help</a>
                 </div>
                 <div class="tools status-{{ data.selectedItem.latest_revision.status }}">
-                    <a href="javascript:;" class="btn btn-link btn-xs" ng-click="showRevisionDocument(data.selectedItem.latest_revision)">View</a>  <a href="{{ data.selectedItem.latest_revision.user_download_url }}" class="btn btn-link btn-xs" target="_blank">Download</a>
+                    <a href="javascript:;" class="btn btn-link btn-xs" ng-click="showRevisionDocument(data.selectedItem.latest_revision)">View</a>  <a href="{{ data.selectedItem.latest_revision.user_download_url }}" class="btn btn-link btn-xs" target="_blank">Save</a>
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="requestReview(data.selectedItem.latest_revision)">Request Review</a>
                     <a href="javascript:;" class="btn btn-link btn-xs"
                        ng-click="requestSigning(data.selectedItem.latest_revision)"
-                       ng-show="data.selectedItem.latest_revision.signing.is_claimed!==true&&data.itemIsLoading!==true">Request Signing</a>
+                       ng-show="data.selectedItem.latest_revision.signing.is_claimed!==true&&data.itemIsLoading!==true">Send for Signing</a>
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="deleteLatestRevision()">Delete</a>
-
-                    <div class="btn-group pull-right">
-                        <button type="button" class="btn btn-default btn-xs status-{{ data.selectedItem.latest_revision.status }}" data-toggle="dropdown">
-                          {{ data.matter._meta.item.custom_status[data.selectedItem.latest_revision.status] }}
-                        </button>
-                        <button class="btn btn-default btn-xs status-{{ data.selectedItem.latest_revision.status }}"
-                                data-toggle="dropdown" ng-show="data.usdata.current.user_class=='lawyer'">
-                          <span class="caret" ></span>
-                        </button>
-                        <ul class="dropdown-menu" ng-show="data.usdata.current.user_class=='lawyer'" >
-                          <li class="" ng-repeat="(key, status) in data.matter._meta.item.custom_status">
-                              <a href="javascript:;" ng-click="data.showRevisionStatusDropdown=false;data.selectedItem.latest_revision.status=key;saveLatestRevision();"
-                                 ng-hide="data.showEditRevisionTitles">
-                                  <span class="icon status-{{ key }}"></span> {{ status }}
-                              </a>
-                          </li>
-                          <li>
-                              <a href="javascript:;" ng-click="editRevisionStatusTitles()">
-                                  <span class="icon"></span> Change status titles...
-                              </a>
-                          </li>
-                        </ul>
-                    </div>
                 </div>
             </div>
 
@@ -224,13 +230,13 @@
             <div class="signing in-progress" ng-show="data.selectedItem.latest_revision.signing.url">
                 <a class="btn btn-link btn-xs pull-right" href="javascript:;" ng-click="deleteSigningRequest(data.selectedItem.latest_revision)"
                    ng-hide="data.selectedItem.latest_revision.is_executed||data.selectedItem.latest_revision.signing.percentage_complete===100">
-                    Delete
+                    Cancel Signing
                 </a>
 
-                <span ng-hide="data.selectedItem.latest_revision.signing.is_claimed">
+                <span ng-hide="data.selectedItem.latest_revision.signing.is_claimed" class="text-center">
                     <span>Please setup the document for signing</span>
-                    <a class="btn btn-link btn-xs pull-right" href="javascript:;" ng-click="showSigning(data.selectedItem.latest_revision, null)">
-                        Setup
+                    <a class="btn  btn-sm btn-primary" href="javascript:;" ng-click="showSigning(data.selectedItem.latest_revision, null)">
+                        Set up signing
                     </a>
                 </span>
 
