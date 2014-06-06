@@ -174,10 +174,10 @@ angular.module('toolkit-gui')
             $scope.init = function () {
                 $scope.data.requestLoading = true;
                 $scope.iterator = 1;
-                var len = 1;
+                var len = -1;
 
                 //preload/preselect old requested signers
-                if ($scope.revision.signers) {
+                if ($scope.revision.signers && $scope.revision.signers.length > 0) {
                     len = $scope.revision.signers.length;
                     jQuery.each($scope.revision.signers, function (index, signer) {
                         var users = jQuery.grep($scope.participants, function (p) {
@@ -203,6 +203,7 @@ angular.module('toolkit-gui')
                         }
                     });
                 } else {
+                    len = 0;
                     $scope.iterator = 2;
                 }
 
@@ -210,7 +211,7 @@ angular.module('toolkit-gui')
                 //wait till all former signers are initiated to avoid duplicates
                 $scope.$watch('iterator', function () {
                     $log.debug("i: " + $scope.iterator + ", length: " + len);
-                    if (($scope.iterator > 1 && $scope.iterator >= len + 1) || len <= 1) {
+                    if (($scope.iterator > 1 && $scope.iterator >= len + 1) || len == 0) {
                         $log.debug("starting");
                         //add known external signers from this session
                         if ($scope.knownSigners) {
@@ -261,6 +262,7 @@ angular.module('toolkit-gui')
                 });
                 if (results.length === 0) {
                     $scope.participants.push(invitee);
+                    $scope.toggleUser(invitee);
                 }
 
                 //reset form

@@ -747,11 +747,13 @@ angular.module('toolkit-gui')
 						$scope.data.showPreviousRevisions = false;
 						item.uploadingPercent = 0;
 						item.uploading = false;
+						$scope.data.uploading = false;
 						toaster.pop('success', 'Success!', 'File added successfully',3000);
 					},
 					function error(/*err*/) {
 						toaster.pop('error', 'Error!', 'Unable to upload revision',5000);
 						item.uploading = false;
+                        $scope.data.uploading = false;
 					},
 					function progress( num ) {
 						/* IE-Fix, timeout and force GUI update */
