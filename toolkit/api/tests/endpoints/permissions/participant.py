@@ -52,11 +52,11 @@ class MatterParticipantTest(BaseEndpointTest):
             'message': 'Bob you are being added here please do something',
         }
 
-        self.set_user_permissions(self.lawyer, {'workspace.manage_participants': False})
+        self.set_user_permissions(self.lawyer, {'manage_participants': False})
         resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
         self.assertEqual(resp.status_code, 403)  # forbidden
 
-        self.set_user_permissions(self.lawyer, {'workspace.manage_participants': True})
+        self.set_user_permissions(self.lawyer, {'manage_participants': True})
         resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
         self.assertEqual(resp.status_code, 202)  # accepted
 
@@ -71,15 +71,15 @@ class MatterParticipantTest(BaseEndpointTest):
                                           changing_user=user).process()
         data = {
             'email': 'test+monkey@lawyer.com',
-            'permissions': {'workspace.manage_items': True, 'workspace.manage_participants': False},
+            'permissions': {'manage_items': True, 'manage_participants': False},
             'role': ROLES.colleague
         }
 
-        self.set_user_permissions(self.lawyer, {'workspace.manage_participants': False})
+        self.set_user_permissions(self.lawyer, {'manage_participants': False})
         resp = self.client.patch(self.endpoint, json.dumps(data), content_type='application/json')
         self.assertEqual(resp.status_code, 403)  # forbidden
 
-        self.set_user_permissions(self.lawyer, {'workspace.manage_participants': True})
+        self.set_user_permissions(self.lawyer, {'manage_participants': True})
         resp = self.client.patch(self.endpoint, json.dumps(data), content_type='application/json')
         self.assertEqual(resp.status_code, 202)  # accepted
 
@@ -96,10 +96,10 @@ class MatterParticipantTest(BaseEndpointTest):
         # append the email to the url for DELETE
         endpoint = '%s/%s' % (self.endpoint, user_to_delete.email)
 
-        self.set_user_permissions(self.lawyer, {'workspace.manage_participants': False})
+        self.set_user_permissions(self.lawyer, {'manage_participants': False})
         resp = self.client.delete(endpoint, None)
         self.assertEqual(resp.status_code, 403)  # accepted
 
-        self.set_user_permissions(self.lawyer, {'workspace.manage_participants': True})
+        self.set_user_permissions(self.lawyer, {'manage_participants': True})
         resp = self.client.delete(endpoint, None)
         self.assertEqual(resp.status_code, 202)  # accepted

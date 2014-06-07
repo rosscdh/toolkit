@@ -39,13 +39,13 @@ class MatterCategoryPermissionTest(BaseEndpointTest):
         endpoint = reverse('matter_category', kwargs={"matter_slug": self.matter.slug, "category": expected_category})
         self.client.login(username=self.lawyer.username, password=self.password)
 
-        self.set_user_permissions(self.lawyer, {'workspace.manage_items': False})
+        self.set_user_permissions(self.lawyer, {'manage_items': False})
         # dont send any data
         # just the endpoint defines the category name to add list or delete
         resp = self.client.post(endpoint, json.dumps({}), content_type='application/json')
         self.assertEqual(resp.status, 403)
 
-        self.set_user_permissions(self.lawyer, {'workspace.manage_items': True})
+        self.set_user_permissions(self.lawyer, {'manage_items': True})
         # dont send any data
         # just the endpoint defines the category name to add list or delete
         resp = self.client.post(endpoint, json.dumps({}), content_type='application/json')

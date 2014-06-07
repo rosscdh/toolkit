@@ -28,11 +28,11 @@ class ItemsPermissionTest(BaseEndpointTest):
         self.client.login(username=self.lawyer.username, password=self.password)
         new_item = mommy.prepare('item.Item', matter=self.workspace, name='New Test Item No. 2')
 
-        self.set_user_permissions(self.lawyer, {'workspace.manage_items': False})
+        self.set_user_permissions(self.lawyer, {'manage_items': False})
         resp = self.client.post(self.endpoint, json.dumps(ItemSerializer(new_item).data), content_type='application/json')
         self.assertEqual(resp.status_code, 403)  # forbidden
 
-        self.set_user_permissions(self.lawyer, {'workspace.manage_items': True})
+        self.set_user_permissions(self.lawyer, {'manage_items': True})
         resp = self.client.post(self.endpoint, json.dumps(ItemSerializer(new_item).data), content_type='application/json')
         self.assertEqual(resp.status_code, 202)  # created
 
@@ -57,11 +57,15 @@ class ItemDetailTest(BaseEndpointTest):
 
         self.client.login(username=self.lawyer.username, password=self.password)
 
-        self.set_user_permissions(self.lawyer, {'workspace.manage_items': False})
+        # set the permissions
+        self.set_user_matter_perms(user=self.lawyer, matter=self.matter, manage_items=False)
+
         resp = self.client.patch(self.endpoint, json.dumps({'name': expected_name}), content_type='application/json')
         self.assertEqual(resp.status_code, 403)
 
-        self.set_user_permissions(self.lawyer, {'workspace.manage_items': True})
+        # set the permissions
+        self.set_user_matter_perms(user=self.lawyer, matter=self.matter, manage_items=True)
+
         resp = self.client.patch(self.endpoint, json.dumps({'name': expected_name}), content_type='application/json')
         self.assertEqual(resp.status_code, 200)
 
@@ -71,10 +75,13 @@ class ItemDetailTest(BaseEndpointTest):
         """
         self.client.login(username=self.lawyer.username, password=self.password)
 
-        self.set_user_permissions(self.lawyer, {'workspace.manage_items': False})
+        # set the permissions
+        self.set_user_matter_perms(user=self.lawyer, matter=self.matter, manage_items=False)
+
         resp = self.client.delete(self.endpoint, {}, content_type='application/json')
         self.assertEqual(resp.status_code, 403)  # forbidden
 
-        self.set_user_permissions(self.lawyer, {'workspace.manage_items': True})
+        # set the permissions
+        self.set_user_matter_perms(user=self.lawyer, matter=self.matter, manage_items=True)
         resp = self.client.delete(self.endpoint, {}, content_type='application/json')
         self.assertEqual(resp.status_code, 204)  # no content but 2** success

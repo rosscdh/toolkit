@@ -78,7 +78,6 @@ class BaseScenarios(object):
         # endpoint for api cretion via the api
         self.item_create_endpoint = reverse('matter_items', kwargs={'matter_slug': self.matter.slug})
 
-
     def _api_create_item(self, **kwargs):
         """
         Create items via the api (to get the activity)
@@ -94,6 +93,12 @@ class BaseScenarios(object):
         json_resp = json.loads(resp.content)
 
         return Item.objects.get(slug=json_resp.get('slug'))
+
+    def set_user_matter_perms(self, user, matter, **kwargs):
+        user_perms = user.matter_permissions(matter=matter)
+        user_perms.update_permissions(**kwargs)
+        user_perms.save(update_fields=['data'])
+        return user_perms.permissions
 
 
 class BaseProjectCaseMixin(BaseScenarios, BaseCasperJs):

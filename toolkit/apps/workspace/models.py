@@ -98,6 +98,7 @@ class WorkspaceParticipants(models.Model):
     class Meta:
         db_table = 'workspace_workspace_participants'  # Original django m2m table
 
+
     @property
     def display_role(self):
         return self.ROLES.get_desc_by_value(self.role)
@@ -265,12 +266,14 @@ class Workspace(IsDeletedMixin,
         perm, is_new = WorkspaceParticipants.objects.get_or_create(user=user, workspace=self)
 
         if is_new:
+            # only do this if new
             perm.is_matter_owner = False
             update_fields.append('is_matter_owner')
 
             if user == self.lawyer:
                 perm.is_matter_owner = True
                 perm.role = WorkspaceParticipants.ROLES.owner
+                update_fields.append('role')
 
         if update_fields:
             perm.save(update_fields=update_fields)

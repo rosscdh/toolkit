@@ -133,7 +133,7 @@ class NotificationEventsListTest(BaseListViewTest):
                                           role=ROLES.colleague,
                                           user=self.lawyer,
                                           changing_user=self.lawyer)\
-            .process(permissions={'workspace.manage_participants': True})
+            .process(permissions={'manage_participants': True})
 
         endpoint_url = reverse('matter_participant', kwargs={'matter_slug': self.matter.slug})
         """

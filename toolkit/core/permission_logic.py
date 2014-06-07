@@ -53,8 +53,11 @@ class MatterPermissionLogic(PermissionLogic):
             object).
         """
         if not user_obj.is_authenticated():
-            return False
+            return False  # Always return false if we are not logged in
 
+        # replace the passed in models app_label 'workspace.' as the following line adds it back
+        # note the additions of the . seperator
+        perm = perm.replace('%s.' %WorkspaceParticipants._meta.app_label, '')
         permission_name = self.get_full_permission_string(perm)
 
         if obj is None:
@@ -62,6 +65,7 @@ class MatterPermissionLogic(PermissionLogic):
             # Ref: https://code.djangoproject.com/wiki/RowLevelPermissions
             if self.any_permission:
                 return True
+
             if self.change_permission and perm == permission_name:
                 return True
             return False

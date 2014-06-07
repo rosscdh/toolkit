@@ -173,7 +173,7 @@ class MatterParticipantTest(BaseEndpointTest):
 
         data = {
             'email': 'test+monkey@lawyer.com',
-            'permissions': {'workspace.manage_items': True, 'workspace.manage_participants': False},
+            'permissions': {'manage_items': True, 'manage_participants': False},
             'role': ROLES.colleague
         }
         resp = self.client.patch(self.endpoint, json.dumps(data), content_type='application/json')
