@@ -12,7 +12,7 @@ class Migration(DataMigration):
 
         for w in orm['workspace.Workspace'].objects.all():
             for u in w.participants.all():
-                through = WorkspaceParticipants.objects.get(user=u, matter=w)
+                through = WorkspaceParticipants.objects.get(user=u, workspace=w)
                 profile = orm['default.UserProfile'].objects.get(user=u)
 
                 is_matter_owner = w.lawyer == u

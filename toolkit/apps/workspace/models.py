@@ -88,8 +88,8 @@ class WorkspaceParticipants(models.Model):
     UNPRIVILEGED_USER_PERMISSIONS = UNPRIVILEGED_USER_PERMISSIONS
     ANONYMOUS_USER_PERMISSIONS = ANONYMOUS_USER_PERMISSIONS
 
-    matter = models.ForeignKey('workspace.Workspace', db_column='workspace_id')
-    user = models.ForeignKey('auth.User', db_column='user_id')
+    workspace = models.ForeignKey('workspace.Workspace')
+    user = models.ForeignKey('auth.User')
     is_matter_owner = models.BooleanField(default=False, db_index=True)  # is this user a matter owner
 
     data = JSONField(default={})
@@ -244,6 +244,12 @@ class Workspace(IsDeletedMixin,
             value = round(value * 100, 0)
         self.data['percent_complete'] = "{0:.0f}%".format(value)
         self.save(update_fields=['data'])
+
+    def add_participant(self, user):
+        return WorkspaceParticipants.objects.get_or_create(user=user, workspace=self)
+
+    def remove_participant(self, user):
+        return WorkspaceParticipants.objects.filter(user=user, workspace=self).delete()
 
     def get_percent_complete(self):
         return self.data.get('percent_complete', "{0:.0f}%".format(0))

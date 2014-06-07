@@ -120,7 +120,7 @@ class Migration(SchemaMigration):
             'data': ('jsonfield.fields.JSONField', [], {'default': '{}'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_matter_owner': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'db_index': 'True'}),
-            'matter': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['workspace.Workspace']", 'db_column': "'workspace_id'"}),
+            'workspace': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['workspace.Workspace']", 'db_column': "'workspace_id'"}),
             'role': ('django.db.models.fields.IntegerField', [], {'default': '1', 'db_index': 'True'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'db_column': "'user_id'"})
         }
