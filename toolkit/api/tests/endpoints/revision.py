@@ -451,6 +451,9 @@ class InvalidFileTypeAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerTestCa
         resp = self.client.patch(self.endpoint, json.dumps(data), content_type='application/json')
         resp_json = json.loads(resp.content)
 
+        # import pdb;pdb.set_trace()
+        # self.lawyer.matter_permissions(matter=self.matter).permissions
+
         self.assertEqual(resp.status_code, 400)  # error
         self.assertEqual(resp_json.get('executed_file'), [u"Invalid filetype, is: .png should be in: ['.pdf', '.docx', '.doc', '.ppt', '.pptx', '.xls', '.xlsx']"])  # error
 

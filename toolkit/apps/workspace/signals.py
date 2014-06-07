@@ -85,6 +85,17 @@ def _update_marker(marker_name, next_status, actor_name, instance, **kwargs):
 # End Marker Signals
 #
 
+def ensure_workspace_owner_in_participants(sender, instance, **kwargs):
+    """
+    Ensure matter.owner is part of participants
+    """
+    owner = instance.lawyer
+
+    # when we have a new one
+    if owner not in instance.participants.all():
+        instance.add_participant(owner)
+
+
 def ensure_workspace_slug(sender, **kwargs):
     """
     signal to handle creating the workspace slug

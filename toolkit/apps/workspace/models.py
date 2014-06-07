@@ -12,6 +12,7 @@ from dj_authy.models import AuthyModelMixin
 from .signals import (ensure_workspace_slug,
                       ensure_workspace_matter_code,
                       # tool
+                      ensure_workspace_owner_in_participants,
                       ensure_tool_slug,
                       on_workspace_post_delete,
                       on_workspace_post_save)
@@ -93,7 +94,7 @@ class WorkspaceParticipants(models.Model):
     is_matter_owner = models.BooleanField(default=False, db_index=True)  # is this user a matter owner
 
     data = JSONField(default={})
-    role = models.IntegerField(choices=ROLES.get_choices(), default=ROLES.noone, db_index=True)
+    role = models.IntegerField(choices=ROLES.get_choices(), default=ROLES.client, db_index=True)  # default to client to meet the original requirements
 
     class Meta:
         db_table = 'workspace_workspace_participants'  # Original django m2m table
@@ -150,6 +151,12 @@ class WorkspaceParticipants(models.Model):
 
     def update_permissions(self, **kwargs):
         self.permissions = self.clean_permissions(**kwargs)
+
+    def has_permission(self, **kwargs):
+        """
+        .has_permission(manage_items=True)
+        """
+        return all(req_perm in permissions and permissions[req_perm] == value for req_perm, value in kwargs.iteritems())
 
 
 class Workspace(IsDeletedMixin,
@@ -260,10 +267,16 @@ class Workspace(IsDeletedMixin,
             # if an invalid role is passed in then except
             if role not in WorkspaceParticipants.ROLES.get_values():
                 raise Exception('Role is not a valid value must be in: %s see WorkspaceParticipants.ROLES' % (WorkspaceParticipants.ROLES.get_values()))
-            update_fields.append('role')
 
         # Get the object
         perm, is_new = WorkspaceParticipants.objects.get_or_create(user=user, workspace=self)
+
+        if role is not None:
+            perm.role = role
+            update_fields.append('role')
+        #
+        # if role is None it will default to the WorkspaceParticipants.role default (currently .client)
+        #
 
         if is_new:
             # only do this if new
@@ -299,6 +312,8 @@ class Workspace(IsDeletedMixin,
 """
 Connect signals
 """
+post_save.connect(ensure_workspace_owner_in_participants, sender=Workspace, dispatch_uid='workspace.post_save.ensure_workspace_owner_in_participants')
+
 pre_save.connect(ensure_workspace_slug, sender=Workspace, dispatch_uid='workspace.pre_save.ensure_workspace_slug')
 pre_save.connect(ensure_workspace_matter_code, sender=Workspace, dispatch_uid='workspace.pre_save.ensure_workspace_matter_code')
 
