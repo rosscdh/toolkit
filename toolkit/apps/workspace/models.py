@@ -250,8 +250,32 @@ class Workspace(IsDeletedMixin,
     # of a custom through model for particiapnts instead of the generic relation
     # nevessary for permissions
     #
-    def add_participant(self, user):
-        return WorkspaceParticipants.objects.get_or_create(user=user, workspace=self)
+    def add_participant(self, user, **kwargs):
+        update_fields = []
+
+        role = kwargs.get('role', None)  # default to thirdparty
+
+        if role is not None:
+            # if an invalid role is passed in then except
+            if role not in WorkspaceParticipants.ROLES.get_values():
+                raise Exception('Role is not a valid value must be in: %s see WorkspaceParticipants.ROLES' % (WorkspaceParticipants.ROLES.get_values()))
+            update_fields.append('role')
+
+        # Get the object
+        perm, is_new = WorkspaceParticipants.objects.get_or_create(user=user, workspace=self)
+
+        if is_new:
+            perm.is_matter_owner = False
+            update_fields.append('is_matter_owner')
+
+            if user == self.lawyer:
+                perm.is_matter_owner = True
+                perm.role = WorkspaceParticipants.ROLES.owner
+
+        if update_fields:
+            perm.save(update_fields=update_fields)
+
+        return perm
 
     def remove_participant(self, user):
         return WorkspaceParticipants.objects.filter(user=user, workspace=self).delete()
