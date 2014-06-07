@@ -5,8 +5,6 @@ from model_mommy import mommy
 from pyquery import PyQuery as pq
 
 from .base import BaseCasperJs
-from toolkit.apps.matter.services.matter_permission import MightyMatterUserPermissionService
-from toolkit.apps.workspace.models import MATTER_OWNER_PERMISSIONS, WorkspaceParticipants
 
 from toolkit.core.item.models import Item
 from toolkit.api.serializers import MatterSerializer
@@ -65,16 +63,6 @@ class BaseScenarios(object):
         for tool in Tool.objects.all():
             self.workspace.tools.add(tool)
 
-        MightyMatterUserPermissionService(matter=self.workspace,
-                                          role=WorkspaceParticipants.ROLES.client,
-                                          user=self.user,
-                                          changing_user=self.lawyer).process()
-        MightyMatterUserPermissionService(matter=self.workspace,
-                                          user=self.lawyer,
-                                          role=WorkspaceParticipants.ROLES.owner,
-                                          changing_user=self.lawyer).process()
-        self.set_user_permissions_all(self.lawyer)
-
         eightythreeb_data = BASE_EIGHTYTHREEB_DATA
         eightythreeb_data['markers'] = {}  # set the markers to nothing
 
@@ -90,22 +78,6 @@ class BaseScenarios(object):
         # endpoint for api cretion via the api
         self.item_create_endpoint = reverse('matter_items', kwargs={'matter_slug': self.matter.slug})
 
-    # helper functions for testing permissions
-    def set_user_permissions(self, user, permissions={}):
-        MightyMatterUserPermissionService(matter=self.workspace,
-                                          user=user,
-                                          role=WorkspaceParticipants.ROLES.colleague,
-                                          changing_user=self.lawyer).process(permissions=permissions)
-
-    def set_user_permissions_all(self, user):
-        self.set_user_permissions(user, MATTER_OWNER_PERMISSIONS)
-
-    def set_user_permissions_default(self, user, user_class=None):
-        # user_class CAN be used to override default permissions for user in self.matter
-        workspace_participant = WorkspaceParticipants.objects.get(user=user, matter=self.matter)
-        permissions = workspace_participant.default_permissions(user_class)
-        self.set_user_permissions(user, permissions)
-    # end helper functions for testing permissions
 
     def _api_create_item(self, **kwargs):
         """

@@ -69,7 +69,7 @@ class MatterPermissionLogic(PermissionLogic):
         elif user_obj.is_active:
 
             try:
-                matter_participant = WorkspaceParticipants.objects.get(matter=obj, user=user_obj)
+                matter_participant = WorkspaceParticipants.objects.get(workspace=obj, user=user_obj)
             except WorkspaceParticipants.DoesNotExist:
                 return False
 
