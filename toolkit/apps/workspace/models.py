@@ -245,11 +245,17 @@ class Workspace(IsDeletedMixin,
         self.data['percent_complete'] = "{0:.0f}%".format(value)
         self.save(update_fields=['data'])
 
+    # --------------------------------------------------------------------------
+    # @NOTE: add_participant and remove_participant were added to cater for the use
+    # of a custom through model for particiapnts instead of the generic relation
+    # nevessary for permissions
+    #
     def add_participant(self, user):
         return WorkspaceParticipants.objects.get_or_create(user=user, workspace=self)
 
     def remove_participant(self, user):
         return WorkspaceParticipants.objects.filter(user=user, workspace=self).delete()
+    # --------------------------------------------------------------------------
 
     def get_percent_complete(self):
         return self.data.get('percent_complete', "{0:.0f}%".format(0))
