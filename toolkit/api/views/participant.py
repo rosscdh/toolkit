@@ -2,6 +2,7 @@
 """
 Matter Participant endpoint
 """
+from django.http import Http404
 from django.forms import EmailField
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
@@ -12,7 +13,6 @@ from rest_framework import generics
 from rest_framework import exceptions
 from rest_framework.response import Response
 from rest_framework import status as http_status
-from toolkit.apps.matter.services.matter_permission import MatterUserPermissionService
 
 from toolkit.apps.matter.signals import PARTICIPANT_ADDED
 from toolkit.apps.workspace.models import Workspace, ROLES
@@ -56,10 +56,11 @@ class MatterParticipant(generics.CreateAPIView,
     def create(self, request, **kwargs):
         data = request.DATA.copy()
 
-        self.validate_data(data=data, expected_keys=['email', 'first_name', 'last_name', 'message'])
+        self.validate_data(data=data, expected_keys=['email', 'first_name', 'last_name', 'message', 'role'])
 
         email = data.get('email')
-        role = data.get('user_class', 'customer')  # @TODO need to review
+        #role = data.get('user_class', 'customer')  # @TODO need to review
+        role = data.get('role', 'client')  # @TODO need to review
         first_name = data.get('first_name')
         last_name = data.get('last_name')
         message = data.get('message')
@@ -77,11 +78,14 @@ class MatterParticipant(generics.CreateAPIView,
             service = EnsureCustomerService(email=email, full_name='%s %s' % (first_name, last_name))
             is_new, new_participant, profile = service.process()
 
-        if new_participant not in self.matter.participants.all():
-            MatterUserPermissionService(matter=self.matter,
-                                        role=ROLES.get_value_by_name(role),
-                                        user=new_participant,
-                                        changing_user=self.request.user).process(permissions=permissions)
+        if new_participant in self.matter.participants.all():
+            # if they are already a participant they must update not create
+            status = http_status.HTTP_304_NOT_MODIFIED
+
+        else:
+            status = http_status.HTTP_202_ACCEPTED
+            self.matter.add_participant(user=new_participant, role=ROLES.get_value_by_name(role), **permissions)
+
             PARTICIPANT_ADDED.send(sender=self,
                                    matter=self.matter,
                                    participant=new_participant,
@@ -89,7 +93,7 @@ class MatterParticipant(generics.CreateAPIView,
                                    note=message)
 
         return Response(SimpleUserSerializer(new_participant, context={'request': self.request}).data,
-                        status=http_status.HTTP_202_ACCEPTED)
+                        status=status)
 
     def update(self, request, *args, **kwargs):
         """
@@ -98,15 +102,21 @@ class MatterParticipant(generics.CreateAPIView,
         data = request.DATA.copy()
 
         email = data.get('email')
-        role = data.get('user_class')
+        role = data.get('role', None)
         permissions = data.get('permissions')
 
         participant = User.objects.get(email=email)
 
-        MatterUserPermissionService(matter=self.matter,
-                                    user=participant,
-                                    role=ROLES.get_value_by_name(role),
-                                    changing_user=self.request.user).process(permissions=permissions)
+        perms = participant.matter_permissions(matter=self.matter)
+        if perms.pk is None:
+            # user is not a participant of this matter yet
+            raise Http404
+
+        if role is not None:
+            perms.role = ROLES.get_value_by_name(role)
+
+        perms.update_permissions(**permissions)
+        perms.save()
 
         return Response(SimpleUserSerializer(participant, context={'request': self.request}).data,
                         status=http_status.HTTP_202_ACCEPTED)

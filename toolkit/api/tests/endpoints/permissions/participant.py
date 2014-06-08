@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.dispatch import receiver
 
-from toolkit.apps.matter.services.matter_permission import MightyMatterUserPermissionService
 from toolkit.apps.matter.signals import PARTICIPANT_ADDED
 from toolkit.apps.workspace.models import Workspace, ROLES
 

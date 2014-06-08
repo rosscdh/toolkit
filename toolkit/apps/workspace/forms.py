@@ -9,13 +9,13 @@ from parsley.decorators import parsleyfy
 
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, ButtonHolder, Submit, Div
+from crispy_forms.layout import Layout, ButtonHolder, Submit
 
-from toolkit.apps.default.fields import HTMLField
-from toolkit.apps.matter.services.matter_permission import MightyMatterUserPermissionService
-from toolkit.apps.workspace.services import EnsureCustomerService
-from toolkit.apps.workspace.models import InviteKey
 from toolkit.mixins import ModalForm
+from toolkit.apps.default.fields import HTMLField
+from toolkit.apps.workspace.models import InviteKey
+from toolkit.apps.workspace.services import EnsureCustomerService
+
 
 from .models import Workspace, ROLES
 from .mailers import InviteUserToToolEmail

@@ -4,9 +4,7 @@ from django import forms
 from django.core.urlresolvers import reverse
 
 from crispy_forms.layout import Button, Field, Layout
-
 from parsley.decorators import parsleyfy
-from toolkit.apps.matter.services.matter_permission import MightyMatterUserPermissionService
 
 from toolkit.apps.workspace.models import Workspace, ROLES
 from toolkit.core.client.models import Client

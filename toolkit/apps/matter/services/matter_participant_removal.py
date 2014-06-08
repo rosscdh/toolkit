@@ -27,13 +27,13 @@ class MatterParticipantRemovalService(object):
             # all participants can remove themselves; laywers can remove other participants but not the primary lawyer
             #
             if self.removing_user == user_to_remove:
-                MatterParticipant.objects.get(matter=self.matter, user=user_to_remove).delete()
+                self.matter.remove_participant(user=user_to_remove)
                 USER_STOPPED_PARTICIPATING.send(sender=self,
                                                 matter=self.matter,
                                                 participant=user_to_remove)
 
             elif self.removing_user.profile.is_lawyer and self.matter.lawyer != user_to_remove:
-                MatterParticipant.objects.get(matter=self.matter, user=user_to_remove).delete()
+                self.matter.remove_participant(user=user_to_remove)
                 PARTICIPANT_DELETED.send(sender=self,
                                          matter=self.matter,
                                          participant=user_to_remove,

@@ -8,7 +8,6 @@ import httpretty
 from model_mommy import mommy
 from usps.api import USPS_CONNECTION
 from usps.api.tracking import TrackConfirmWithFields
-from toolkit.apps.matter.services.matter_permission import MightyMatterUserPermissionService
 from toolkit.casper.prettify import httprettify_methods, mock_http_requests  # must import directly
 from toolkit.apps.workspace.services import USPSTrackingService, USPSResponse
 

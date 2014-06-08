@@ -1,7 +1,6 @@
 from django.core.exceptions import PermissionDenied
 from django.test import TestCase
 
-from toolkit.apps.matter.services.matter_permission import MatterUserPermissionService
 from toolkit.apps.workspace.models import ROLES
 
 from toolkit.casper.workflow_case import BaseScenarios

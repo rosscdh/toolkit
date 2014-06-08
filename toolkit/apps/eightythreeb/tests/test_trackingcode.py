@@ -5,12 +5,7 @@ from django.core.files import File
 from django.core.urlresolvers import reverse
 from django.utils import simplejson as json
 
-import os
-import datetime
-import httpretty
-
 from model_mommy import mommy
-from toolkit.apps.matter.services.matter_permission import MightyMatterUserPermissionService
 
 from toolkit.apps.workspace.models import Tool, ROLES
 from toolkit.apps.eightythreeb.models import EightyThreeB
@@ -20,6 +15,10 @@ from .data import EIGHTYTHREEB_TRACKINGCODE_DATA
 
 from .usps_trackfield_response import TRACK_UNDELIVERED_RESPONSE_XML_BODY
 from .test_usps import TRACKING_CODE
+
+import os
+import datetime
+import httpretty
 
 FILE_BASE_PATH = os.path.dirname(__file__)
 

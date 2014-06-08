@@ -6,7 +6,6 @@ from django.core.urlresolvers import reverse
 from django.utils.html import strip_spaces_between_tags as minify_html
 
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
-from toolkit.apps.matter.services.matter_permission import MightyMatterUserPermissionService
 from toolkit.apps.notification.templatetags.notice_tags import get_notification_template
 from toolkit.apps.workspace.models import ROLES
 from toolkit.casper.workflow_case import BaseScenarios

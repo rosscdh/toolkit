@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.dispatch import receiver
 
-from toolkit.apps.matter.services.matter_permission import MightyMatterUserPermissionService
 from toolkit.apps.matter.signals import PARTICIPANT_ADDED
 from toolkit.apps.workspace.models import Workspace, ROLES
 
@@ -35,21 +34,18 @@ class MatterParticipantTest(BaseEndpointTest):
     def setUp(self):
         super(MatterParticipantTest, self).setUp()
 
-        MightyMatterUserPermissionService(matter=self.matter,
-                                          user=self.lawyer,
-                                          changing_user=self.lawyer,
-                                          role=ROLES.client)\
-            .process(permissions={"workspace.manage_participants": True})
-
         self.lawyer_to_add = mommy.make('auth.User', username='New Lawyer', email='newlawyer@lawpal.com')
         self.lawyer_to_add.set_password(self.password)
         self.lawyer_to_add.save(update_fields=['password'])
+
+        self.matter.add_participant(user=self.lawyer_to_add, role=ROLES.colleague)
 
         profile = self.lawyer_to_add.profile
         profile.user_class = 'lawyer'
         profile.save(update_fields=['data'])
 
-        self.user_to_add = mommy.make('auth.User', username='New Person', email='username@example.com')
+
+        self.user_to_add = mommy.make('auth.User', first_name='Gorilla', last_name='Boots', username='New Person', email='username@example.com')
 
     def test_endpoint_name(self):
         self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/participant')
@@ -73,13 +69,16 @@ class MatterParticipantTest(BaseEndpointTest):
         def f(matter, participant, user, **kwargs):
             self.signal_called = True
 
+        new_lawyer_to_add = mommy.make('auth.User', first_name='Bob', last_name='Crockett', username='another-new-lawyer', email='anothernewlawyer@lawpal.com')
+
         #
         # Add the new Lawyer (Signal gets called)
         #
         data = {
-            'email': self.lawyer_to_add.email,
-            'first_name': 'Bob',
-            'last_name': 'Crockett',
+            'email': new_lawyer_to_add.email,
+            'first_name': new_lawyer_to_add.first_name,
+            'last_name': new_lawyer_to_add.last_name,
+            'role': ROLES.get_name_by_value(ROLES.colleague),
             'message': 'Bob you are being added here please do something',
         }
 
@@ -96,18 +95,19 @@ class MatterParticipantTest(BaseEndpointTest):
             'email': self.lawyer_to_add.email,
             'first_name': 'Bob',
             'last_name': 'Crockett',
+            'role': ROLES.get_name_by_value(ROLES.colleague),
             'message': 'Bob you are being added here please do something',
         }
 
         self.signal_called = False
         resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
-        self.assertEqual(resp.status_code, 202)  # accepted
+        self.assertEqual(resp.status_code, 304)  # not modified
         self.assertFalse(self.signal_called)
 
         # refresh
         self.matter = Workspace.objects.get(pk=self.matter.pk)
         participants = self.matter.participants.all()
-        self.assertEqual(len(participants), 3)  # we have 2 users and a lawyer
+        self.assertEqual(len(participants), 4)  # we have 3 users and a matter owner (lawyer)
         self.assertTrue(self.lawyer in participants)
 
         #
@@ -115,8 +115,9 @@ class MatterParticipantTest(BaseEndpointTest):
         #
         data = {
             'email': self.user_to_add.email,
-            'first_name': 'Gorila',
-            'last_name': 'Boots',
+            'first_name': self.user_to_add.first_name,
+            'last_name': self.user_to_add.last_name,
+            'role': ROLES.get_name_by_value(ROLES.thirdparty),
             'message': 'Boots you are being added here please do something',
         }
 
@@ -128,7 +129,7 @@ class MatterParticipantTest(BaseEndpointTest):
         # refresh
         self.matter = Workspace.objects.get(pk=self.matter.pk)
         participants = self.matter.participants.all()
-        self.assertEqual(len(participants), 4)  # we have 3 users and a lawyer
+        self.assertEqual(len(participants), 5)  # we have 4 users and a matter owner (lawyer)
         self.assertTrue(self.user_to_add in participants)
 
     def test_lawyer_post_new_user_who_does_not_yet_exist(self):
@@ -144,6 +145,7 @@ class MatterParticipantTest(BaseEndpointTest):
             'email': 'test+monkey@lawyer.com',
             'first_name': 'Test',
             'last_name': 'Monkey',
+            'role': ROLES.get_name_by_value(ROLES.thirdparty),
             'message': 'Test Monkey you are being added here please do something',
         }
 
@@ -162,20 +164,12 @@ class MatterParticipantTest(BaseEndpointTest):
     def test_lawyer_patch(self):
         self.client.login(username=self.lawyer.username, password=self.password)
 
-        # create user to be modified after:
-        user = mommy.make('auth.User', email='test+monkey@lawyer.com')
-        MightyMatterUserPermissionService(matter=self.matter,
-                                          role=ROLES.client,
-                                          user=user,
-                                          changing_user=user).process()
-        self.assertFalse(user.has_perm('workspace.manage_items'), self.matter)
-        self.assertFalse(user.has_perm('workspace.manage_participants'), self.matter)
-
         data = {
-            'email': 'test+monkey@lawyer.com',
+            'email': self.lawyer_to_add.email,
             'permissions': {'manage_items': True, 'manage_participants': False},
-            'role': ROLES.colleague
+            'role': ROLES.get_name_by_value(ROLES.colleague)
         }
+
         resp = self.client.patch(self.endpoint, json.dumps(data), content_type='application/json')
         self.assertEqual(resp.status_code, 202)  # accepted
 
@@ -192,7 +186,7 @@ class MatterParticipantTest(BaseEndpointTest):
         #
         # Test the primary lawyer can delete other lawyers/users
         #
-        user_to_delete = self.matter.participants.all().first()
+        user_to_delete = self.matter.participants.get(username='test-customer')
         # append the email to the url for DELETE
         endpoint = '%s/%s' % (self.endpoint, user_to_delete.email)
 
@@ -203,19 +197,16 @@ class MatterParticipantTest(BaseEndpointTest):
         self.matter = Workspace.objects.get(pk=self.matter.pk)
 
         participants = self.matter.participants.all()
-        self.assertEqual(len(participants), 1)  # we have 0 users and a lawyer
+
+        self.assertEqual(len(participants), 2)  # we have 1 users (the additional lawyer user ) and the primary matter owner
         self.assertTrue(self.lawyer in participants)
+        self.assertTrue(self.lawyer_to_add in participants)
 
     def test_lawyer_cant_delete_main_lawyer(self):
         """
         Prevent another lawyer that has been added from deleteing the main lawyer
         from the participants
         """
-        # add new layer to participants
-        MightyMatterUserPermissionService(matter=self.matter,
-                                          role=ROLES.colleague,
-                                          user=self.lawyer_to_add,
-                                          changing_user=self.lawyer).process()
         self.matter = Workspace.objects.get(pk=self.matter.pk)
 
         self.assertEqual(len(self.matter.participants.all()), 3)
@@ -238,7 +229,7 @@ class MatterParticipantTest(BaseEndpointTest):
         self.matter = Workspace.objects.get(pk=self.matter.pk)
 
         participants = self.matter.participants.all()
-        self.assertEqual(len(participants), 3)  # we have 0 users and a lawyer
+        self.assertEqual(len(participants), 3)  # we have 0 users and a matter owner (lawyer)
         # make sure he is still in there
         self.assertTrue(self.matter.lawyer in participants)
 

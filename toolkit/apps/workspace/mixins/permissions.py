@@ -21,12 +21,12 @@ class MatterParticipantPermissionMixin(object):
     def add_participant(self, user, **kwargs):
         update_fields = []
 
-        role = kwargs.get('role', None)  # default to thirdparty
+        role = kwargs.pop('role', None)  # default to thirdparty
 
         if role is not None:
             # if an invalid role is passed in then except
             if role not in self.permissions_model.ROLES.get_values():
-                raise Exception('Role is not a valid value must be in: %s see WorkspaceParticipants.ROLES' % (WorkspaceParticipants.ROLES.get_values()))
+                raise Exception('Role is not a valid value must be in: %s see WorkspaceParticipants.ROLES' % (self.permissions_model.ROLES.get_values()))
 
         # Get the object
         perm, is_new = self.permissions_model.objects.get_or_create(user=user, workspace=self)
@@ -48,13 +48,22 @@ class MatterParticipantPermissionMixin(object):
                 perm.role = self.permissions_model.ROLES.owner
                 update_fields.append('role')
 
+        # Allow override of permissions
+        if kwargs:
+            permissions = self.permissions_model.clean_permissions(**kwargs)
+            perm.permissions = permissions
+            update_fields.append('data')
+
         if update_fields:
             perm.save(update_fields=update_fields)
 
         return perm
 
     def remove_participant(self, user):
-        return WorkspaceParticipants.objects.filter(user=user, workspace=self).delete()
+        """
+        Remove a participant from the set
+        """
+        return self.permissions_model.objects.filter(user=user, workspace=self).delete()
 
     def participant_has_permission(self, user, **kwargs):
         """
