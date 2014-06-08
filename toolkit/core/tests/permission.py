@@ -23,7 +23,7 @@ class PermissionTest(BaseScenarios, TestCase):
 
     def test_matter_manage_participants_true(self):
         # prepare user with permission
-        self.set_user_permissions(self.lawyer, {'manage_participants': True})
+        self.set_user_matter_perms(user=self.lawyer, manage_participants=True)
 
         MatterUserPermissionService(matter=self.matter, user=self.user, role=ROLES.client,
                                     changing_user=self.lawyer).process()

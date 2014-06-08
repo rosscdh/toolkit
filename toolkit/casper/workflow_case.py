@@ -94,7 +94,8 @@ class BaseScenarios(object):
 
         return Item.objects.get(slug=json_resp.get('slug'))
 
-    def set_user_matter_perms(self, user, matter, **kwargs):
+    def set_user_matter_perms(self, user, matter=None, **kwargs):
+        matter = self.matter if matter is None else matter
         user_perms = user.matter_permissions(matter=matter)
         user_perms.update_permissions(**kwargs)
         user_perms.save(update_fields=['data'])

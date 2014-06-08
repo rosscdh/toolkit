@@ -72,18 +72,21 @@ class ItemsTest(BaseEndpointTest):
 
     def test_customer_post(self):
         self.client.login(username=self.user.username, password=self.password)
-        resp = self.client.post(self.endpoint)
-        self.assertEqual(resp.status_code, 403)
+
+        new_item = mommy.prepare('item.Item', matter=self.workspace, name='New Test Item No. 2')
+
+        resp = self.client.post(self.endpoint, json.dumps(ItemSerializer(new_item).data), content_type='application/json')
+        self.assertEqual(resp.status_code, 201)
 
     def test_customer_patch(self):
         self.client.login(username=self.user.username, password=self.password)
         resp = self.client.patch(self.endpoint, {}, content_type='application/json')
-        self.assertEqual(resp.status_code, 403)  # method forbidden
+        self.assertEqual(resp.status_code, 405)  # method forbidden
 
     def test_customer_delete(self):
         self.client.login(username=self.user.username, password=self.password)
         resp = self.client.delete(self.endpoint, {})
-        self.assertEqual(resp.status_code, 403)  # method forbidden
+        self.assertEqual(resp.status_code, 405)  # method forbidden
 
     def test_anon_get(self):
         resp = self.client.get(self.endpoint)

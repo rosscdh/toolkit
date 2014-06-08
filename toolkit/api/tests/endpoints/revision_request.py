@@ -199,8 +199,7 @@ class ItemsRequestDocumentReminderTest(BaseEndpointTest):
     def test_customer_get(self):
         self.client.login(username=self.user.username, password=self.password)
         resp = self.client.get(self.endpoint)
-
-        self.assertEqual(resp.status_code, 403)  # forbidden
+        self.assertEqual(resp.status_code, 405)  # method not allowed
 
     def test_customer_post(self):
         self.client.login(username=self.user.username, password=self.password)
