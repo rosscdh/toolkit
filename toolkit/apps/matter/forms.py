@@ -136,12 +136,6 @@ class MatterForm(ModalForm, forms.ModelForm):
 
         matter.save()
 
-        # add user as participant
-        MightyMatterUserPermissionService(matter=matter,
-                                          role=ROLES.colleague,
-                                          user=self.user,
-                                          changing_user=self.user).process()
-
         if created and self.cleaned_data['template'] is not None:
             service = MatterCloneService(source_matter=self.cleaned_data['template'], target_matter=matter)
             service.process()

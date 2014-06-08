@@ -47,15 +47,6 @@ class BaseUSPSTrackingCode(TestCase):
         self.workspace = mommy.make('workspace.Workspace', name='Lawpal (test)', lawyer=self.lawyer)
         self.workspace.tools.add(Tool.objects.get(slug='83b-election-letters'))
 
-        MightyMatterUserPermissionService(matter=self.workspace,
-                                          role=ROLES.client,
-                                          user=self.user,
-                                          changing_user=self.lawyer).process()
-        MightyMatterUserPermissionService(matter=self.workspace,
-                                          role=ROLES.colleague,
-                                          user=self.lawyer,
-                                          changing_user=self.lawyer).process()
-
         self.eightythreeb = mommy.make('eightythreeb.EightyThreeB',
                                        slug='e0c545082d1241849be039e338e47a0f',
                                        workspace=self.workspace,
@@ -138,19 +129,11 @@ class TestTrackingCodeEmail(BaseUSPSTrackingCode):
 
         num_attachments = self.eightythreeb.attachment_set.all().count()
 
-        email = mail.outbox[0]
+        for email in mail.outbox:
+            self.assertEqual(email.subject, u'83b Tracking Code entered for Customër Tëst')
+            self.assertEqual(len(email.attachments), num_attachments)  # test we have the attachments
 
-        self.assertEqual(email.subject, u'83b Tracking Code entered for Customër Tëst')
-        self.assertEqual(len(email.attachments), num_attachments)  # test we have the attachments
-        self.assertEqual(len(email.to), 1)
-        self.assertEqual(email.to, ['test+customer@lawpal.com'])
-        self.assertEqual(email.from_email, 'support@lawpal.com')
-        self.assertEqual(email.extra_headers, {'Reply-To': 'support@lawpal.com'})
-
-        email = mail.outbox[1]
-        self.assertEqual(email.subject, u'83b Tracking Code entered for Customër Tëst')
-        self.assertEqual(len(email.attachments), num_attachments)  # test we have the attachments
-        self.assertEqual(len(email.to), 1)
-        self.assertEqual(email.to, ['test+lawyer@lawpal.com'])
-        self.assertEqual(email.from_email, 'support@lawpal.com')
-        self.assertEqual(email.extra_headers, {'Reply-To': 'support@lawpal.com'})
+            self.assertEqual(len(email.to), 1)
+            self.assertTrue(any(e in ['test+customer@lawpal.com', 'test+lawyer@lawpal.com'] for e in email.to))
+            self.assertEqual(email.from_email, 'support@lawpal.com')
+            self.assertEqual(email.extra_headers, {'Reply-To': 'support@lawpal.com'})

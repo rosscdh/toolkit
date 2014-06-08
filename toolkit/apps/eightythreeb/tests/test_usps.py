@@ -45,15 +45,6 @@ class BaseUSPSTrackingCode(TestCase):
         self.workspace = mommy.make('workspace.Workspace', name='Lawpal (test)', lawyer=self.lawyer)
         self.workspace.tools.add(Tool.objects.get(slug='83b-election-letters'))
 
-        MightyMatterUserPermissionService(matter=self.workspace,
-                                          role=ROLES.client,
-                                          user=self.user,
-                                          changing_user=self.lawyer).process()
-        MightyMatterUserPermissionService(matter=self.workspace,
-                                          role=ROLES.colleague,
-                                          user=self.lawyer,
-                                          changing_user=self.lawyer).process()
-
         self.eightythreeb = mommy.make('eightythreeb.EightyThreeB',
                                        slug='e0c545082d1241849be039e338e47a0f',
                                        workspace=self.workspace,
