@@ -183,8 +183,10 @@ User.add_to_class('get_initials', get_initials)
 Permissions: Get or create a permissions object for this user
 """
 def get_matter_permissions(self, matter):
-    permission, is_new = self.workspaceparticipants_set.get_or_create(user=self, workspace=matter)
-    return permission
+    if self in matter.participants.all():
+        permission, is_new = self.workspaceparticipants_set.get_or_create(user=self, workspace=matter)
+        return permission
+    return self.workspaceparticipants_set.model(user=self, workspace=matter)
 
 User.add_to_class('matter_permissions', get_matter_permissions)
 

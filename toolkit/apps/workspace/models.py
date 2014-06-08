@@ -25,7 +25,10 @@ from uuidfield import UUIDField
 from jsonfield import JSONField
 
 from .managers import WorkspaceManager
-from .mixins import ClosingGroupsMixin, CategoriesMixin, RevisionLabelMixin
+from .mixins import (ClosingGroupsMixin,
+                     CategoriesMixin,
+                     RevisionLabelMixin,
+                     MatterParticipantPermissionMixin,)
 
 #
 # These are the master permissions set
@@ -109,32 +112,37 @@ class WorkspaceParticipants(models.Model):
         Class to provide a wrapper for user permissions
         The default permissions here MUST be kept up-to-date with the Workspace.Meta.permissions tuple
         """
-        if self.is_matter_owner is True or user_class == 'owner':
-            return MATTER_OWNER_PERMISSIONS
-
-        else:
-            # cater to lawyer and client roles
-            if self.role == self.ROLES.colleague or user_class == 'colleague':
-                # Lawyers currently can do everythign the owner cane except clients and participants
-                return PRIVILEGED_USER_PERMISSIONS
-
-            elif self.role == self.ROLES.client or user_class == 'client':
-                # Clients by deafult can currently see all items (allow by default)
-                return UNPRIVILEGED_USER_PERMISSIONS
+        # check the user is a participant
+        if self.user in self.workspace.participants.all():
+            # they are! so continue evaluation
+            if self.is_matter_owner is True or user_class == 'owner':
+                return MATTER_OWNER_PERMISSIONS
 
             else:
-                # Anon permissions
-                return ANONYMOUS_USER_PERMISSIONS
+                # cater to lawyer and client roles
+                if self.role == self.ROLES.colleague or user_class == 'colleague':
+                    # Lawyers currently can do everythign the owner cane except clients and participants
+                    return PRIVILEGED_USER_PERMISSIONS
+
+                elif self.role == self.ROLES.client or user_class == 'client':
+                    # Clients by deafult can currently see all items (allow by default)
+                    return UNPRIVILEGED_USER_PERMISSIONS
+
+        # Anon permissions, for anyone else that does not match
+        return ANONYMOUS_USER_PERMISSIONS
 
     def clean_permissions(self, **kwargs):
-        current_permissions = self.permissions
-        test_kwargs = kwargs.copy()  # clone the kwargs dict so we can pop on it
+        """
+        Pass in a set of permissions and remove those that do not exist in
+        the base set of permissions
+        """
+        kwargs_to_test = kwargs.copy()  # clone the kwargs dict so we can pop on it
 
         for permission in kwargs:
             if permission not in self.PERMISSIONS:
-                test_kwargs.pop(permission)
+                kwargs_to_test.pop(permission)
                 # @TODO ? need to check for boolean value?
-        return test_kwargs
+        return kwargs_to_test
 
     @property
     def permissions(self):
@@ -161,12 +169,13 @@ class WorkspaceParticipants(models.Model):
 
 
 class Workspace(IsDeletedMixin,
+                CategoriesMixin,
                 AuthyModelMixin,
                 MatterExportMixin,
                 ClosingGroupsMixin,
-                CategoriesMixin,
                 ApiSerializerMixin,
                 RevisionLabelMixin,
+                MatterParticipantPermissionMixin,
                 models.Model):
     """
     Workspaces are areas that allow multiple tools
@@ -253,50 +262,6 @@ class Workspace(IsDeletedMixin,
             value = round(value * 100, 0)
         self.data['percent_complete'] = "{0:.0f}%".format(value)
         self.save(update_fields=['data'])
-
-    # --------------------------------------------------------------------------
-    # @NOTE: add_participant and remove_participant were added to cater for the use
-    # of a custom through model for particiapnts instead of the generic relation
-    # nevessary for permissions
-    #
-    def add_participant(self, user, **kwargs):
-        update_fields = []
-
-        role = kwargs.get('role', None)  # default to thirdparty
-
-        if role is not None:
-            # if an invalid role is passed in then except
-            if role not in WorkspaceParticipants.ROLES.get_values():
-                raise Exception('Role is not a valid value must be in: %s see WorkspaceParticipants.ROLES' % (WorkspaceParticipants.ROLES.get_values()))
-
-        # Get the object
-        perm, is_new = WorkspaceParticipants.objects.get_or_create(user=user, workspace=self)
-
-        if role is not None:
-            perm.role = role
-            update_fields.append('role')
-        #
-        # if role is None it will default to the WorkspaceParticipants.role default (currently .client)
-        #
-
-        if is_new:
-            # only do this if new
-            perm.is_matter_owner = False
-            update_fields.append('is_matter_owner')
-
-            if user == self.lawyer:
-                perm.is_matter_owner = True
-                perm.role = WorkspaceParticipants.ROLES.owner
-                update_fields.append('role')
-
-        if update_fields:
-            perm.save(update_fields=update_fields)
-
-        return perm
-
-    def remove_participant(self, user):
-        return WorkspaceParticipants.objects.filter(user=user, workspace=self).delete()
-    # --------------------------------------------------------------------------
 
     def get_percent_complete(self):
         return self.data.get('percent_complete', "{0:.0f}%".format(0))

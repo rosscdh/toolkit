@@ -68,3 +68,12 @@ class MatterPermissionTest(BaseScenarios, TestCase):
 
         perm = self.lawyer.matter_permissions(matter=self.matter)
         self.assertEqual(perm.display_role, WorkspaceParticipants.ROLES.get_desc_by_value(WorkspaceParticipants.ROLES.owner))
+
+    def test_has_permission(self):
+        perm = self.user.matter_permissions(matter=self.matter)
+        self.assertTrue(perm.has_permission(manage_items=True))
+        # clients do not by default have manage_participants permissions
+        self.assertFalse(perm.has_permission(manage_participants=True))
+        self.assertTrue(perm.has_permission(manage_participants=False))
+
+
