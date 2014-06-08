@@ -156,6 +156,7 @@ class WorkspaceParticipants(models.Model):
         """
         .has_permission(manage_items=True)
         """
+        permissions = self.permissions
         return all(req_perm in permissions and permissions[req_perm] == value for req_perm, value in kwargs.iteritems())
 
 
