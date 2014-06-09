@@ -100,7 +100,6 @@ angular.module('toolkit-gui')
 		//debugger;
 		// Basic checklist item format, used for placeholder checklist items
 		var CHECKLISTITEMSKELETON = {
-			"GUID": null,
 			"status": -1,
 			"responsible_party": null,
 			"review_percentage_complete": null,
@@ -329,7 +328,7 @@ angular.module('toolkit-gui')
 
 				matterItemService.create(matterSlug, itemName, category.name).then(
 				function success(item){
-					placeholderItem.loading = false;
+					updateObject(placeholderItem /*originalItem*/, item /*item recieved from API*/);
 					/* category.items.push(item); */
 					/* $scope.data.newItemName = ''; */
 
