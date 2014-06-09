@@ -107,6 +107,10 @@ class WorkspaceParticipants(models.Model):
     def display_role(self):
         return self.ROLES.get_desc_by_value(self.role)
 
+    @property
+    def role_name(self):
+        return self.ROLES.get_name_by_value(self.role)
+
     def default_permissions(self, user_class=None):
         """
         Class to provide a wrapper for user permissions

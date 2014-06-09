@@ -40,7 +40,8 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     #account = serializers.HyperlinkedRelatedField(source='profile', many=False, view_name='account-detail', lookup_field='username')
     initials = serializers.SerializerMethodField('get_initials')
     name = serializers.SerializerMethodField('get_full_name')
-    user_class = serializers.SerializerMethodField('get_user_class')
+    user_class = serializers.SerializerMethodField('get_user_class')  # @TODO depreciate this
+    role = serializers.SerializerMethodField('get_role')
     verified = serializers.SerializerMethodField('get_verified')
     permissions = serializers.SerializerMethodField('get_permissions')
     intercom_user_hash = serializers.SerializerMethodField('get_intercom_user_hash')
@@ -60,6 +61,12 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_verified(self, obj):
         return obj.profile.verified
+
+    def get_role(self, obj):
+        matter = self.context.get('matter', None)
+        if matter is not None:
+            return obj.matter_permissions(matter=matter).role_name
+        return None  # need to pass matter in via context
 
     def get_permissions(self, obj):
         matter = self.context.get('matter', None)
@@ -81,14 +88,15 @@ class LiteUserSerializer(UserSerializer):
         fields = ('url',
                   'username', 'name', 'initials',
                   'first_name', 'last_name',
-                  'email', 'user_class',
+                  'email',
+                  'user_class', 'role',
                   'permissions',
                   'intercom_user_hash', 'date_joined', 'verified',)
 
 
 class SimpleUserSerializer(UserSerializer):
     class Meta(UserSerializer.Meta):
-        fields = ('url', 'username', 'name', 'initials', 'user_class')
+        fields = ('url', 'username', 'name', 'initials', 'user_class', 'role')
 
 
 class SimpleUserWithReviewUrlSerializer(SimpleUserSerializer):
