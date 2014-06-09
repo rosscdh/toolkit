@@ -474,25 +474,25 @@ html,body, div.full
 	div.chat {
 		background-color: #F0F0F0;
 		position: relative;
-		h4 {
-			padding-top: 15px;
-			padding-bottom: 15px;
-			background-color: #F0F0F0;
-			margin-top: 0px;
-			margin-bottom: 15px;
-			font-size:15px;
-			color:darken(@silver, 15%);
-			span {
-				font-size:12px;
-			}
-			a {
-				padding-left: 15px;
-				padding-right: 15px;
-				padding-bottom:15px;
-				padding-top: 15px;
+		// h4 {
+		// 	padding-top: 15px;
+		// 	padding-bottom: 15px;
+		// 	background-color: #F0F0F0;
+		// 	margin-top: 0px;
+		// 	margin-bottom: 15px;
+		// 	font-size:15px;
+		// 	color:darken(@silver, 15%);
+		// 	span {
+		// 		font-size:12px;
+		// 	}
+		// 	a {
+		// 		padding-left: 15px;
+		// 		padding-right: 15px;
+		// 		padding-bottom:15px;
+		// 		padding-top: 15px;
 
-			}
-		}
+		// 	}
+		// }
 		div.new-message {
 
 			background-color:lighten(@silver, 17%);
@@ -521,12 +521,20 @@ html,body, div.full
 		background-color: #F6F6F6;
 		border-left: 2px solid #4A90E2;
 
-		.ng-scope{
-			position: absolute;
-			top: 0;
-			bottom: 0;
 
-			a {
+
+			.message-tabs {
+				z-index: 5;
+				margin-top: 15px;
+				position: absolute;
+				padding: 15px;
+				top: 0px;
+				right: 0;
+				width: 100%;
+				height: 50px;
+				background-color: #F0F0F0;
+				a {
+				height: 50px;
 
 				border-bottom: none;
 				//padding: 15px;
@@ -536,14 +544,24 @@ html,body, div.full
 			}
 			a.active{
 				border-bottom: 0px;
-				color: #4A90E2;
-				background-color: #F6F6F6;
+				color: white;
+				padding-left: 15px;
+				padding-right: 15px;
+				padding-bottom: 15px;
+				margin-right: -1px;
+				border-right: 2px solid #4A90E2;
+				background-color: #4A90E2;
+
 			}
 
 			a.inactive{
-				backround-color: red;
+
 			}
-		}
+
+
+			}
+
+
 		.user-initials {
 			color: #4A90E2;
 			font-weight: bold;
@@ -594,7 +612,7 @@ html,body, div.full
 	}
 
 		ul.activity-log {
-			margin-top: 20px;
+			margin-top: 70px;
 			li {
 				font-size:12px;
 				line-height: 17px;

@@ -1,11 +1,13 @@
 
 <div class="item-comments">
-    <h4 class="ng-scope">
-        <a href="javascript:;" ng-click="activateActivityStream('item')" ng-show="data.selectedItem"
-           ng-class="{'active':data.streamType=='item', 'inactive':data.streamType=='matter'}" style="margin-right:12px;" class="discussion-tab">Internal Discussion</a>
-        <a href="javascript:;" ng-click="activateActivityStream('matter')"
-           ng-class="{'active':data.streamType=='matter', 'inactive':data.streamType=='item'}">Global Discussion (3)</a>
-    </h4>
+
+        <div class="message-tabs">
+            <a href="javascript:;" ng-click="activateActivityStream('item')" ng-show="data.selectedItem"
+               ng-class="{'active':data.streamType=='item', 'inactive':data.streamType=='matter'}" style="margin-right:12px;" class="discussion-tab">Internal Discussion</a>
+            <a href="javascript:;" ng-click="activateActivityStream('matter')"
+               ng-class="{'active':data.streamType=='matter', 'inactive':data.streamType=='item'}">Global Discussion (3)</a>
+        </div>
+
 
     <ul class="list-unstyled activity-log comment-thread">
        <!--  <li ng-repeat="activity in data.activitystream" ng-class="{ 'comment-faded': activity.status=='awaiting'}">
