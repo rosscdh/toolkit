@@ -2,11 +2,11 @@
 from .account import (AccountSerializer, PasswordSerializer)
 from .activity import (MatterActivitySerializer, ItemActivitySerializer,)
 from .client import (ClientSerializer, LiteClientSerializer)
+from .discussion import (DiscussionCommentSerializer, DiscussionSerializer, LiteDiscussionSerializer)
 from .matter import (MatterSerializer, LiteMatterSerializer, SimpleMatterSerializer)
 from .item import (ItemSerializer, LiteItemSerializer,)
 from .revision import (RevisionSerializer,)
 from .review import (ReviewSerializer,)
-from .comment import (MatterCommentSerializer,)
 
 from .sign import (SignatureSerializer,)
 

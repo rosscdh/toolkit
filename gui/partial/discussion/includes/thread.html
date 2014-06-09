@@ -1,0 +1,46 @@
+<div ng-show="data.selectedThread">
+    <div>
+        <ul class="list-unstyled">
+            <li class="one-message">
+                <div class="author">
+                    <span class="user coleg" ng-bind="data.selectedThread.user.initials"></span>
+                    <span ng-bind="data.selectedThread.user.name"></span>
+                    <span class="text-muted">{{ data.selectedThread.date_created | timeago }}</span>
+                </div>
+                <div class="message-body">
+                    <p ng-bind="data.selectedThread.excerpt"></p>
+                </div>
+            </li>
+            <li class="one-message" ng-repeat="message in data.selectedThread.comments">
+                <div class="author">
+                    <span class="user coleg" ng-bind="message.user.initials"></span>
+                    <span ng-bind="message.user.name"></span>
+                    <span class="text-muted">{{ message.date_created | timeago }}</span>
+                </div>
+                <div class="message-body">
+                    <p ng-bind="message.comment"></p>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <br><br><br><br><br><br><br><br><br>
+
+    <form name="requestForm" ng-submit="request()">
+        <div class="message-options">
+            <div class="button-container">
+                <button class="btn btn-default" type="submit">Send</button>
+            </div>
+        </div>
+
+        <div class="compose">
+            <div class="compose-wrapper">
+                <textarea class="compose-message" rows=2 placeholder="Type your message here and press enter" ng-model="data.request.message"></textarea>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div ng-show="!data.selectedThread">
+    <p>Please select a discussion from the list</p>
+</div>

@@ -1,0 +1,21 @@
+<div id="messaging" class="discussion-wrapper">
+    <div class="container-fluid full">
+        <div class="row full">
+            <div class="col-lg-4 full checklist-col" id="inbox">
+                <div class="row inbox-msgs checklist-col">
+                    <ul class="msg-list list-unstyled">
+                        <li ng-repeat="thread in data.threads"
+                            ng-class="{ 'selected': thread.id===data.selectedThread.id }"
+                            ui-sref="discussion.thread({ 'threadId': thread.id })">
+                            <div ng-include="'/static/ng/partial/discussion/includes/thread-line-item.html'"></div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-lg-8 row full" id="message-stage">
+                <div ng-include="'/static/ng/partial/discussion/includes/thread.html'"></div>
+            </div>
+        </div>
+    </div>
+</div>

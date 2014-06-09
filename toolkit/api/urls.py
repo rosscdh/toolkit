@@ -40,7 +40,8 @@ from .views import (ReviewerHasViewedRevision,
 from .views import ItemEndpoint
 from .views import RevisionEndpoint
 from .views import ItemCommentEndpoint
-from .views import MatterCommentEndpoint
+# from .views import MatterCommentEndpoint
+from .views import DiscussionEndpoint, DiscussionCommentEndpoint
 from .views import ReviewEndpoint
 from .views import SignatureEndpoint
 #from .views import WorkflowEndpoint
@@ -59,6 +60,9 @@ router.register(r'items', ItemEndpoint)
 router.register(r'revisions', RevisionEndpoint)
 router.register(r'reviews', ReviewEndpoint)
 router.register(r'signatures', SignatureEndpoint)
+
+router.register(r'^matters/(?P<matter_slug>[\w-]+)/discussions', DiscussionEndpoint, 'discussion')
+router.register(r'^matters/(?P<matter_slug>[\w-]+)/discussions/(?P<thread_id>[\d\w-]+)/comments', DiscussionCommentEndpoint, 'discussion_comment')
 
 """
 Generics
@@ -81,9 +85,6 @@ urlpatterns = router.urls + patterns('',
     url(r'^matters/(?P<matter_slug>[\w-]+)/participant(/(?P<email>.+))?/?$', MatterParticipant.as_view(), name='matter_participant'),
 
     url(r'^matters/(?P<matter_slug>[\w-]+)/activity/?$', MatterActivityEndpoint.as_view(), name='matter_activity'),
-
-    url(r'^matters/(?P<matter_slug>[\w-]+)/comment/(?P<id>\d+)/?$', MatterCommentEndpoint.as_view(), name='matter_comment_edit'),
-    url(r'^matters/(?P<matter_slug>[\w-]+)/comment/?$', MatterCommentEndpoint.as_view(), name='matter_comment'),
 
     url(r'^matters/(?P<matter_slug>[\w-]+)/export/?$', MatterExportView.as_view(), name='matter_export'),
 

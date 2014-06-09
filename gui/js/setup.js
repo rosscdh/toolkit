@@ -17,11 +17,11 @@ angular.module('toolkit-gui', [
 ]);
 
 angular.module('toolkit-gui').config(function($stateProvider, $urlRouterProvider) {
-   
+
    $stateProvider
     /**
-    * Checklist Main App
-    */
+     * Matter: Checklist
+     */
     .state('checklist', {
       'url': "/checklist",
       'controller': 'ChecklistCtrl',
@@ -41,20 +41,25 @@ angular.module('toolkit-gui').config(function($stateProvider, $urlRouterProvider
       'controller': function($scope) {}
     })
     /**
-    * Checklist Messaging
-    */
-    .state('messaging', {
-      'url': "/messaging",
-      'controller': 'MessagingCtrl',
-      'templateUrl': '/static/ng/partial/messaging/messaging.html'
+     * Matter: Discussion
+     */
+    .state('discussion', {
+      'url': "/discussion",
+      'controller': 'DiscussionCtrl',
+      'templateUrl': '/static/ng/partial/discussion/discussion.html'
+    })
+    .state('discussion.thread', {
+      'url': "/:threadId",
+      'controller': function($scope) {},
+      'templateUrl': '/static/ng/partial/discussion/includes/thread.html'
     });
 
     /*
     $routeSegmentProvider.within('checklist').segment('itemInfo', {
     'templateUrl': '/static/ng/partial/checklist/includes/itemdetails.html'});
     */
-   
-    $urlRouterProvider.otherwise('/checklist'); 
+
+    $urlRouterProvider.otherwise('/checklist');
 });
 
 /**

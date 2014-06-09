@@ -45,4 +45,5 @@ from .reminder import (RemindReviewers,
 from .revision import RevisionEndpoint
 # from .workflow import WorkflowEndpoint
 
-from .comment import (ItemCommentEndpoint, MatterCommentEndpoint)
+from .comment import ItemCommentEndpoint
+from .discussion import DiscussionEndpoint, DiscussionCommentEndpoint
