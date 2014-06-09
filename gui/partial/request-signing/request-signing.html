@@ -23,17 +23,19 @@
 				    <textarea class="form-control form-control-full-width" ng-model="data.request.message" placeholder="Add an optional message"></textarea>
                 </li> -->
             </ul>
+                    <br />
+
             <h5>Add External Signer</h5>
 
             <div class="row">
-                <div class="col-sm-6">
+                <div class="col-sm-12">
+
                     <a href="javascript:;" class="btn btn-info" ng-click="data.showAddSigner=true">
-                        Add an external Signer
+                        Add external signer
                     </a>
-                    <br/>
 
                     <p class="note">
-                       Adding an external signer 
+                       Adding an external signer will invite them to LawPal to sign this one document. They will not have access to the any part of this matter. 
                     </p>
                 </div>
             </div>
@@ -61,7 +63,7 @@
 	</div>
 	<div class="modal-footer">
 		<button class="btn btn-default" ng-click="cancel()">Cancel</button>
-		<button class="btn btn-primary" type="submit" ng-disabled="invalid()">Request signing</button>
+		<button class="btn btn-primary" type="submit" ng-disabled="invalid()">Continue</button>
 	</div>
 	</form>
 </div>
