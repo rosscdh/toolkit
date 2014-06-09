@@ -59,5 +59,23 @@
 				</li>
 			</ul>
 		</div>
+
+		<!-- filter //-->
+		<div class="btn-group pull-right">
+			<button
+				class="btn btn-default dropdown-toggle btn-xs"
+				type="button"
+				data-toggle="dropdown">
+				<span class="fa fa-filter"></span>
+			</button>
+			<ul class="dropdown-menu dropdown-inverse dropdown-small">
+				<li ng-repeat="(key, status) in data.matter._meta.item.custom_status">
+					<a href="javascript:;" ng-click="applyStatusFilter( { 'status': key } );" ng-bind="status"></a>
+				</li>
+				<li>
+					<a href="javascript:;" ng-click="applyStatusFilter( null );">Clear filter</a>
+				</li>
+			</ul>
+		</div>
 	</div>
 </div>
