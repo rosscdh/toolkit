@@ -51,6 +51,7 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
     items = serializers.SerializerMethodField('get_items')
 
     current_user = serializers.SerializerMethodField('get_current_user')
+    roles = serializers.SerializerMethodField('get_roles')
 
     percent_complete = serializers.SerializerMethodField('get_percent_complete')
 
@@ -64,7 +65,7 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
                   'client', 'lawyer', 'participants',
                   'closing_groups', 'categories',
                   'items',
-                  'current_user',
+                  'current_user', 'roles',
                   'date_created', 'date_modified',
                   'percent_complete')
 
@@ -112,6 +113,10 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
             })
 
         return current_user
+
+    def get_roles(self, obj):
+        request = self.context.get('request')
+        return {name: desc for value, name, desc in request.user.matter_permissions(matter=obj).ROLES.get_all()}
 
     def get_percent_complete(self, obj):
         return obj.get_percent_complete
