@@ -58,7 +58,7 @@ class MatterPermissionLogic(PermissionLogic):
         # replace the passed in models app_label 'workspace.' as the following line adds it back
         # note the additions of the . seperator
         perm = perm.replace('%s.' %WorkspaceParticipants._meta.app_label, '')
-        permission_name = self.get_full_permission_string(perm)
+        #permission_name = self.get_full_permission_string(perm)
 
         if obj is None:
             # object permission without obj should return True
