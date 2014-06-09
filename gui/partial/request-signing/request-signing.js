@@ -211,7 +211,7 @@ angular.module('toolkit-gui')
                 //wait till all former signers are initiated to avoid duplicates
                 $scope.$watch('iterator', function () {
                     $log.debug("i: " + $scope.iterator + ", length: " + len);
-                    if (($scope.iterator > 1 && $scope.iterator >= len + 1) || len == 0) {
+                    if (($scope.iterator > 1 && $scope.iterator >= len + 1) || len === 0) {
                         $log.debug("starting");
                         //add known external signers from this session
                         if ($scope.knownSigners) {
