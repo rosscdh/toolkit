@@ -12,7 +12,7 @@ angular.module('ez.confirm').run(['$templateCache', function($templateCache) {
     "  </div>\n" +
     "  <div class=\"modal-footer\">\n" +
     "    <a class=\"btn btn-default\" ng-click=\"cancel()\">Cancel</a>\n" +
-    "    <button ng-click=\"ok()\" class=\"btn btn-lg btn-primary\">Confirm</button>\n" +
+    "    <button ng-click=\"ok()\" class=\"btn btn-inverse\">Confirm</button>\n" +
     "  </div>\n" +
     "</div>\n"
   );
