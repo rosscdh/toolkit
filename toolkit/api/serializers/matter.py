@@ -42,7 +42,7 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
     date_modified = serializers.DateTimeField(read_only=True)
 
     client = LiteClientSerializer(required=False)
-    lawyer = LiteUserSerializer(required=False)
+    lawyer = serializers.SerializerMethodField('get_lawyer')
     participants = serializers.SerializerMethodField('get_participants')
 
     categories = serializers.SerializerMethodField('get_categories')
@@ -88,6 +88,11 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
         tmp method will eventually be replaced by matter.items_set.all()
         """
         return SimpleItemSerializer(obj.item_set.filter(parent=None), context=self.context, many=True).data
+
+    def get_lawyer(self, obj):
+        context = self.context
+        context.update({'matter': obj})
+        return LiteUserSerializer(obj.lawyer, context=context, many=False).data
 
     def get_participants(self, obj):
         context = self.context

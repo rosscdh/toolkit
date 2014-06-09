@@ -143,7 +143,7 @@ class MatterParticipant(generics.CreateAPIView,
         return Response(status=status)
 
     def can_read(self, user):
-        return user.profile.user_class in ['lawyer', 'customer']
+        return user in self.get_object().participants.all() or user == self.get_object().lawyer
 
     def can_edit(self, user):
         return user.has_perm('workspace.manage_participants', self.get_object())

@@ -116,13 +116,12 @@ class WorkspaceParticipants(models.Model):
         Class to provide a wrapper for user permissions
         The default permissions here MUST be kept up-to-date with the Workspace.Meta.permissions tuple
         """
+        if self.is_matter_owner is True or user_class == 'owner':
+            return MATTER_OWNER_PERMISSIONS
+
         # check the user is a participant
         if self.user in self.workspace.participants.all():
             # they are! so continue evaluation
-            if self.is_matter_owner is True or user_class == 'owner':
-                return MATTER_OWNER_PERMISSIONS
-
-            else:
                 # cater to lawyer and client roles
                 if self.role == self.ROLES.colleague or user_class == 'colleague':
                     # Lawyers currently can do everythign the owner cane except clients and participants
