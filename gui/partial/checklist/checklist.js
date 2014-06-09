@@ -246,7 +246,6 @@ angular.module('toolkit-gui')
         };
 
 
-
         $scope.editTextattribute = function(obj, context, attr) {
             $scope.data['show_edit_'+ context + '_' + attr] = true;
 
@@ -705,7 +704,10 @@ angular.module('toolkit-gui')
 					revision.uploaded_by = matterService.data().selected.current_user;
 					item.latest_revision = revision;
 
-					$scope.data.uploading = false;
+					// Update uploading status
+					item.uploading = false;
+					$scope.data.uploading = uploadingStatus( $scope.data.matter.items );
+
 					//Reset previous revisions
 					item.previousRevisions = null;
 					$scope.data.showPreviousRevisions = false;
@@ -713,11 +715,24 @@ angular.module('toolkit-gui')
                     toaster.pop('success', 'Success!', 'Document added successfully', 3000);
 				},
 				function error(/*err*/) {
-					$scope.data.uploading = false;
+					// Update uploading status
+					item.uploading = false;
+					$scope.data.uploading = uploadingStatus( $scope.data.matter.items );
+					//$scope.data.uploading = false;
 					toaster.pop('error', 'Error!', 'Unable to upload revision', 5000);
 				}
 			);
 		};
+
+		function uploadingStatus( allItems ) {
+			for(var i=0;i<allItems.length;i++) {
+				if(allItems[i].uploading) {
+					return true;
+				}
+			}
+
+			return false;
+		}
 
 		/**
 		 * Initiate the file upload process
@@ -739,16 +754,22 @@ angular.module('toolkit-gui')
 						revision.uploaded_by = matterService.data().selected.current_user;
 						item.latest_revision = revision;
 
-						//Reset previous revisions
+						// Reset previous revisions
 						item.previousRevisions = null;
 						$scope.data.showPreviousRevisions = false;
+
+						// Update uploading status
 						item.uploadingPercent = 0;
 						item.uploading = false;
+						$scope.data.uploading = uploadingStatus( $scope.data.matter.items );
 						toaster.pop('success', 'Success!', 'File added successfully',3000);
 					},
 					function error(/*err*/) {
-						toaster.pop('error', 'Error!', 'Unable to upload revision',5000);
+						// Update uploading status
 						item.uploading = false;
+						$scope.data.uploading = uploadingStatus( $scope.data.matter.items );
+
+						toaster.pop('error', 'Error!', 'Unable to upload revision',5000);
 					},
 					function progress( num ) {
 						/* IE-Fix, timeout and force GUI update */
