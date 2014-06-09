@@ -342,6 +342,11 @@ angular.module('toolkit-gui')
 			}
 		};
 
+		/**
+		 * updateObject: given a checklist item placeholder, update properties given updated details from the API
+		 * @param  {Object} originalItem placeholder checklist item
+		 * @param  {Object} updatedItem  update object from API
+		 */
 		function updateObject( originalItem, updatedItem ) {
 			delete originalItem.loading;
 
