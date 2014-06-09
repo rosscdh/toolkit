@@ -718,7 +718,7 @@ angular.module('toolkit-gui')
 					// Update uploading status
 					item.uploading = false;
 					$scope.data.uploading = uploadingStatus( $scope.data.matter.items );
-					//$scope.data.uploading = false;
+					
 					toaster.pop('error', 'Error!', 'Unable to upload revision', 5000);
 				}
 			);
@@ -744,12 +744,17 @@ angular.module('toolkit-gui')
 			var itemSlug = item.slug;
 
 			var user = userService.data().current;
+			var promise;
 
 			if( user.user_class === 'lawyer' ) {
 				item.uploading = true;
 				$scope.data.uploading = true;
 
-				matterItemService.uploadRevisionFile( matterSlug, itemSlug, $files ).then(
+				promise = matterItemService.uploadRevisionFile( matterSlug, itemSlug, $files );
+
+				item.uploadHandle = promise.uploadHandle;
+
+				promise.then(
 					function success( revision ) {
 						revision.uploaded_by = matterService.data().selected.current_user;
 						item.latest_revision = revision;
@@ -764,12 +769,15 @@ angular.module('toolkit-gui')
 						$scope.data.uploading = uploadingStatus( $scope.data.matter.items );
 						toaster.pop('success', 'Success!', 'File added successfully',3000);
 					},
-					function error(/*err*/) {
+					function error(err) {
 						// Update uploading status
 						item.uploading = false;
 						$scope.data.uploading = uploadingStatus( $scope.data.matter.items );
 
-						toaster.pop('error', 'Error!', 'Unable to upload revision',5000);
+						var msg = err&&err.message?err.message:'Unable to upload revision';
+						var title = err&&err.title?err.title:'Error';
+
+						toaster.pop('error', title, msg, 5000);
 					},
 					function progress( num ) {
 						/* IE-Fix, timeout and force GUI update */
@@ -780,6 +788,13 @@ angular.module('toolkit-gui')
 					}
 				);
 			}
+		};
+
+		//
+		//
+		$scope.cancelRevisionUpload = function(item) {
+			item.uploadHandle.canceled = true;
+			item.uploadHandle.abort();
 		};
 
 		/**
