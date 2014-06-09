@@ -35,7 +35,7 @@
                     <div class='permissions-checklist' ng-show="currentUser.permissions.manage_participants">
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" ng-model="data.selectedUser.permissions['workspace.manage_clients']"> Manage Clients (including adding and removing Clients)
+                                <input type="checkbox" ng-model="data.selectedUser.permissions.manage_clients"> Manage Clients (including adding and removing Clients)
                             </label>
                         </div>
                     </div>
@@ -52,23 +52,23 @@
                     <div class='permissions-checklist' ng-show="currentUser.permissions.manage_participants">
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" ng-model="data.selectedUser.permissions['workspace.manage_participants']"> Manage Participants <div class='text-muted'>(including adding and removing Colleagues and Clients)</div>
+                                <input type="checkbox" ng-model="data.selectedUser.permissions.manage_participants"> Manage Participants <div class='text-muted'>(including adding and removing Colleagues and Clients)</div>
                             </label>
                         </div>
 
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" ng-model="data.selectedUser.permissions['workspace.manage_items']"> Manage Checklist Items and Categories
+                                <input type="checkbox" ng-model="data.selectedUser.permissions.manage_items"> Manage Checklist Items and Categories
                             </label>
                         </div>
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" ng-model="data.selectedUser.permissions['workspace.manage_requests']"> Manage Requests
+                                <input type="checkbox" ng-model="data.selectedUser.permissions.manage_requests"> Manage Requests
                             </label>
                         </div>
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" ng-model="data.selectedUser.permissions['workspace.manage_signatures']"> Manage Signing and Signature Requests
+                                <input type="checkbox" ng-model="data.selectedUser.permissions.manage_signatures"> Manage Signing and Signature Requests
                             </label>
                         </div>
                     </div>
@@ -116,21 +116,21 @@
 			</div>
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" ng-model="data.invitee.permissions['workspace.manage_participants']">Manage Participants in this Matter <span class="text-muted">(including adding a removing colleagues and clients)</span>
+                                <input type="checkbox" ng-model="data.invitee.permissions.manage_participants">Manage Participants in this Matter <span class="text-muted">(including adding a removing colleagues and clients)</span>
                             </label>
                         </div>
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" ng-model="data.invitee.permissions['workspace.manage_requests']"> Able to Add, Complete and Destroy Requests for Review
+                                <input type="checkbox" ng-model="data.invitee.permissions.manage_requests"> Able to Add, Complete and Destroy Requests for Review
                             </label>
                         </div>
                          <div class="checkbox">
                             <label>
-                                <input type="checkbox" ng-model="data.invitee.permissions['workspace.manage_items']"> Manage Matter checklist items and categories
+                                <input type="checkbox" ng-model="data.invitee.permissions.manage_items"> Manage Matter checklist items and categories
                             </label>
                         </div>
 
-                        <div class="checkbox" ng-model="data.invitee.permissions['workspace.manage_signatures']">
+                        <div class="checkbox" ng-model="data.invitee.permissions.manage_signatures">
                             <label>
                                 <input type="checkbox"> Manage Signatures & Send Documents for Signature
                             </label>
@@ -160,7 +160,7 @@
 			</div>
                <div class="checkbox">
                             <label>
-                                <input type="checkbox" ng-model="data.invitee.permissions['manage_clients']">Manage clients in this matter
+                                <input type="checkbox" ng-model="data.invitee.permissions.manage_clients">Manage clients in this matter
 
                                 <span class="text-muted">(user can add additional clients to this matter and remove those that they added)</span>
                             </label>

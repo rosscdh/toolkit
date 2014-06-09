@@ -57,11 +57,11 @@ angular.module('toolkit-gui')
 		 */
 		$scope.data = {
 			'invitee': { 'email': '', 'message': '', permissions: {
-                'workspace.manage_participants': false,
-                'workspace.manage_requests': false,
-                'workspace.manage_items': false,
-                'workspace.manage_signatures': false,
-                'workspace.manage_clients': false
+                'manage_participants': false,
+                'manage_requests': false,
+                'manage_items': false,
+                'manage_signatures': false,
+                'manage_clients': false
             }},
             'isNew': false,
             'selectedUser': null
