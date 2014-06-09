@@ -90,14 +90,14 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
         return SimpleItemSerializer(obj.item_set.filter(parent=None), context=self.context, many=True).data
 
     def get_participants(self, obj):
-        # context = self.context.copy()
-        # context.update({'matter': obj})
-        return LiteUserSerializer(obj.participants.all(), context=self.context, many=True).data
+        context = self.context
+        context.update({'matter': obj})
+        return LiteUserSerializer(obj.participants.all(), context=context, many=True).data
 
     def get_current_user(self, obj):
         request = self.context.get('request')
 
-        context = self.context.copy()
+        context = self.context
         context.update({'matter': obj})
 
         current_user = None
