@@ -474,6 +474,7 @@ html,body, div.full
 	div.chat {
 		background-color: #F0F0F0;
 		position: relative;
+		border-bottom: 2px solid #E4E6E8;
 		// h4 {
 		// 	padding-top: 15px;
 		// 	padding-bottom: 15px;
@@ -495,14 +496,20 @@ html,body, div.full
 		// }
 		div.new-message {
 
-			background-color:lighten(@silver, 17%);
+			background-color: #F2F2F2;
+
 			z-index: 3;
 			clear:both;
+			padding-left: 15px;
+			margin-left: 0px;
+			padding-right: 15px;
+			border-left: 2px solid #4A90E2;
 			padding-top:10px;
 			padding-bottom:10px;
 			textarea {
 				font-size:12px;
-				border:0px;
+				background-color: #F6F6F6;
+				border:2px solid #E4E6E8;
 				margin-top:3px;
 				&:focus {
 					border:inherit;
@@ -554,6 +561,9 @@ html,body, div.full
 			}
 
 
+		}
+
+		.comment-thread{
 		}
 
 
