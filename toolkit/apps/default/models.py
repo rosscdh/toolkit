@@ -8,6 +8,7 @@ from .managers import CustomUserManager
 
 from jsonfield import JSONField
 from sorl.thumbnail.images import ImageFile
+from threadedcomments.models import ThreadedComment
 
 import logging
 logger = logging.getLogger('django.request')
@@ -194,3 +195,28 @@ def user_can_delete(self, **kwargs):
 User.add_to_class('can_read', user_can_read)
 User.add_to_class('can_edit', user_can_edit)
 User.add_to_class('can_delete', user_can_delete)
+
+
+"""
+Returns the matter associated with the comment.
+"""
+def _get_threadedcomments_matter(self):
+    return self.content_object
+
+ThreadedComment.matter = property(lambda u: _get_threadedcomments_matter(u))
+
+"""
+Add our api permission handler methods to the ThreadedComment class
+"""
+def threadedcomment_can_read(self, user, **kwargs):
+    return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
+
+def threadedcomment_can_edit(self, user, **kwargs):
+    return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
+
+def threadedcomment_can_delete(self, user, **kwargs):
+    return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
+
+ThreadedComment.add_to_class('can_read', threadedcomment_can_read)
+ThreadedComment.add_to_class('can_edit', threadedcomment_can_edit)
+ThreadedComment.add_to_class('can_delete', threadedcomment_can_delete)

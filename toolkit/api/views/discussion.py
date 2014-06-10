@@ -42,6 +42,7 @@ class DiscussionCommentEndpoint(MatterMixin,
         obj.object_pk = self.matter.pk
         obj.parent = self.model.objects.get(pk=self.kwargs.get('thread_id'))
         obj.site_id = settings.SITE_ID
+        obj.user = self.request.user
 
         return super(DiscussionCommentEndpoint, self).pre_save(obj=obj)
 
