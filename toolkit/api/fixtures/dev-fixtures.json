@@ -151,16 +151,7 @@
         "fields": {
             "user": 2,
             "workspace": 1,
-            "role": 1,
-            "data": {
-                "permissions": {
-                    "workspace.manage_participants": true,
-                    "workspace.manage_requests": true,
-                    "workspace.manage_items": true,
-                    "workspace.manage_signatures": true,
-                    "workspace.manage_clients": true
-                }
-            }
+            "role": 2
         }
     },
     {
@@ -169,7 +160,7 @@
         "fields": {
             "user": 3,
             "workspace": 1,
-            "role": 1
+            "role": 3
         }
     },
     {
