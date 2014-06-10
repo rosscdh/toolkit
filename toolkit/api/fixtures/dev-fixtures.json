@@ -142,7 +142,7 @@
         "fields": {
             "user": 1,
             "workspace": 1,
-            "role": 1
+            "role": 2
         }
     },
     {
@@ -151,7 +151,8 @@
         "fields": {
             "user": 2,
             "workspace": 1,
-            "role": 2
+            "role": 1,
+            "is_matter_owner": true
         }
     },
     {

@@ -74,6 +74,7 @@ class MatterPermissionLogic(PermissionLogic):
 
             try:
                 matter_participant = WorkspaceParticipants.objects.get(workspace=obj, user=user_obj)
+
             except WorkspaceParticipants.DoesNotExist:
                 return False
 
