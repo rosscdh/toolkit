@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+
 class MatterParticipantPermissionMixin(object):
     """
     Helper mixin since adding manual through table for matter.participants to
@@ -15,8 +16,8 @@ class MatterParticipantPermissionMixin(object):
 
     # --------------------------------------------------------------------------
     # @NOTE: add_participant and remove_participant were added to cater for the use
-    # of a custom through model for particiapnts instead of the generic relation
-    # nevessary for permissions
+    # of a custom through model for participants instead of the generic relation
+    # necessary for permissions
     #
     def add_participant(self, user, **kwargs):
         update_fields = []
@@ -26,7 +27,8 @@ class MatterParticipantPermissionMixin(object):
         if role is not None:
             # if an invalid role is passed in then except
             if role not in self.permissions_model.ROLES.get_values():
-                raise Exception('Role is not a valid value must be in: %s see WorkspaceParticipants.ROLES' % (self.permissions_model.ROLES.get_values()))
+                raise Exception('Role is not a valid value must be in: %s see WorkspaceParticipants.ROLES' %
+                                (self.permissions_model.ROLES.get_values()))
 
         # Get the object
         perm, is_new = self.permissions_model.objects.get_or_create(user=user, workspace=self)

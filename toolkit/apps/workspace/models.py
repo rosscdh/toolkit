@@ -122,14 +122,14 @@ class WorkspaceParticipants(models.Model):
         # check the user is a participant
         if self.user in self.workspace.participants.all():
             # they are! so continue evaluation
-                # cater to lawyer and client roles
-                if self.role == self.ROLES.colleague or user_class == 'colleague':
-                    # Lawyers currently can do everythign the owner cane except clients and participants
-                    return PRIVILEGED_USER_PERMISSIONS
+            # cater to lawyer and client roles
+            if self.role == self.ROLES.colleague or user_class == 'colleague':
+                # Lawyers currently can do everythign the owner cane except clients and participants
+                return PRIVILEGED_USER_PERMISSIONS
 
-                elif self.role == self.ROLES.client or user_class == 'client':
-                    # Clients by deafult can currently see all items (allow by default)
-                    return UNPRIVILEGED_USER_PERMISSIONS
+            elif self.role == self.ROLES.client or user_class == 'client':
+                # Clients by default can currently see all items (allow by default)
+                return UNPRIVILEGED_USER_PERMISSIONS
 
         # Anon permissions, for anyone else that does not match
         return ANONYMOUS_USER_PERMISSIONS
@@ -157,7 +157,8 @@ class WorkspaceParticipants(models.Model):
     @permissions.setter
     def permissions(self, value):
         if type(value) not in [dict] and len(value.keys()) > 0:
-            raise Exception('WorkspaceParticipants.permissions must be a dict of permissions %s' % self.default_permissions())
+            raise Exception('WorkspaceParticipants.permissions must be a dict of permissions %s' %
+                            self.default_permissions())
         self.data['permissions'] = self.clean_permissions(**value)
 
     def reset_permissions(self):
