@@ -1,6 +1,10 @@
 Deployment actions by branch
 ----------------------------
 
+--------------------------------------------------------------------------------
+** DEPLOYED 10 June 2014
+--------------------------------------------------------------------------------
+
 [signing-unclaimed-draft]
 
 1. pip install -e git+https://github.com/rosscdh/django-hello_sign.git#egg=django-hello_sign -U
