@@ -1,6 +1,7 @@
 
 /* Hack to display the navbar at the top of the matter  */
 
+@import "../variables.less";
 html,body, div.full
 {
   height: 100%
@@ -125,7 +126,8 @@ html,body, div.full
 	}
 
 	#checklist-detail{
-			overflow: visible;
+		overflow-y: scroll;
+		overflow-x: hidden;
 		}
 
 	h5 {
@@ -279,6 +281,23 @@ html,body, div.full
 			}
 		}
 		ul.revisions {
+
+
+			.participant-tab{
+			        background-color: #eff0f1;
+			        border-bottom: 1px solid  #fafafa;
+			        padding-left: 5px;
+			        border-radius: 3px;
+			        top: -33px;
+			        right: -10px;
+			        .btn-xs {
+			        	background-color: #eff0f1;
+			        	color: #78848c;
+			        	.caret {
+			        		border-top-color: #78848c;
+			        	}
+			        }
+			  }
 			li {
 				padding:3px 0px 15px 0px;
 				&.toggle-previous {
@@ -471,7 +490,7 @@ html,body, div.full
 			}
 			li.header {
 				font-weight:bold;
-				font-size:12px;
+				font-size:20px;
 				padding-top:6px;
 				padding-left:0px;
 				padding-bottom:4px;

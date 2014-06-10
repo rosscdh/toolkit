@@ -142,7 +142,7 @@ tr.item-heading.file-drag-over td:nth-child(2):before {
 	}
 }
 
-.dropdown-menu, .doc-wrap {
+.dropdown-menu{
 	z-index: 9997 !important;
 }
 
@@ -151,15 +151,22 @@ tr.item-heading.file-drag-over td:nth-child(2):before {
 	position: relative;
 }
 .calendar-group .dropdown-menu {
+	z-index: 9997 !important;
+	position: absolute;
+	width: 304px;
+	top: 30px !important;
+	left: -74px  !important;
+	overflow: visible;
 	opacity: 1;
 	visibility: visible;
-	width: 288px;
+	width: 304px;
 	background-color: #f2f2f2;
 	border-radius: 0;
 	border-color: #c5cbce;
 	border-width: 0 1px 1px 1px;
 	border-style: solid;
 	margin-top:0;
+	border: 2px solid white;
 	th, em { font-size: 12px; font-weight: bold; }
 	th, th { width: 30px; button { width:100%; } }
 	button.btn-default {
