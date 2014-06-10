@@ -154,11 +154,11 @@
             "role": 1,
             "data": {
                 "permissions": {
-                    "workspace.manage_participants": true,
-                    "workspace.manage_requests": true,
-                    "workspace.manage_items": true,
-                    "workspace.manage_signatures": true,
-                    "workspace.manage_clients": true
+                    "manage_participants": true,
+                    "manage_requests": true,
+                    "manage_items": true,
+                    "manage_signatures": true,
+                    "manage_clients": true
                 }
             }
         }
