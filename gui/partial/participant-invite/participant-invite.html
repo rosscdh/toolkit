@@ -9,7 +9,7 @@
             <div class="row existing-participants">
             <div class="col-sm-6 ">
                 <ul class="list-unstyled participants">
-                    <li ng-repeat="person in participants" ng-click="data.selectedUser=person">
+                    <li ng-repeat="person in participants" ng-click="data.selectedUser=person" ng-class="{'selected': data.selectedUser==person }">
                         <span class="user {{person.user_class}}" ng-bind="person | initials"></span>
                         <label ng-bind="person | fullname"></label>
                         <small  class ="{{person.user_class}}" ng-show="person.user_class">({{ person.user_class }}<span ng-show="person.username==currentUser.username">, you</span><span ng-show="person.username==matter.lawyer.username" class="owner">, owner</span>)
@@ -26,12 +26,15 @@
             </div>
 
             <div class='col-sm-6 details' ng-show="data.selectedUser">
+
                 <div class="client-permissions" ng-show="data.selectedUser.user_class!=='lawyer'">
                      <div class="user-details text-right">
                          <a class="revoke" ng-show="data.selectedUser.username!==currentUser.username&&currentUser.permissions.manage_participants&&person.username!=matter.lawyer.username" href="javascript:;" ng-click="revoke(data.selectedUser)"><small>Revoke access</small></a>
                          <a class="revoke" ng-show="data.selectedUser.username===currentUser.username" href="javascript:;" ng-click="revoke(data.selectedUser)"><small>Exit matter</small></a>
                     </div>
                     <div class="user-large customer" ng-bind="data.selectedUser.initials"></div>
+                    <p>{{ data.selectedUser.name }}</p>
+                    <p>{{ data.selectedUser.email }}</p>
                     <div class='permissions-checklist' ng-show="currentUser.permissions.manage_participants">
                         <div class="checkbox">
                             <label>
@@ -49,6 +52,8 @@
                          <a class="revoke" ng-show="data.selectedUser.username!==currentUser.username&&currentUser.permissions.manage_participants&&data.selectedUser.username!=matter.lawyer.username" href="javascript:;" ng-click="revoke(data.selectedUser)"><small>Revoke access</small></a>
                     </div>
                     <div class="user-large lawyer" ng-bind="data.selectedUser.initials"></div>
+                    <p>{{ data.selectedUser.name }}</p>
+                    <p>{{ data.selectedUser.email }}</p>
                     <div class='permissions-checklist' ng-show="currentUser.permissions.manage_participants&&data.selectedUser.username!=matter.lawyer.username">
                         <div class="checkbox">
                             <label>
