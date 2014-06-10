@@ -31,6 +31,9 @@ logger = logging.getLogger('django.request')
 class ReviewEndpoint(viewsets.ModelViewSet):
     """
     Primary Matter ViewSet
+
+    no direct access to endpoint via GUI.
+    no permission-check for manage_document_reviews needed.
     """
     model = ReviewDocument
     serializer_class = ReviewSerializer
@@ -159,10 +162,10 @@ class ItemRevisionReviewersView(generics.ListAPIView,
         return user.profile.user_class in ['lawyer', 'customer']
 
     def can_edit(self, user):
-        return user.profile.is_lawyer
+        return user.has_perm('workspace.manage_document_reviews', self.matter)
 
     def can_delete(self, user):
-        return user.profile.is_lawyer
+        return user.has_perm('workspace.manage_document_reviews', self.matter)
 
 
 rulez_registry.register("can_read", ItemRevisionReviewersView)
@@ -260,10 +263,10 @@ class ItemRevisionReviewerView(generics.RetrieveAPIView,
         return user.profile.user_class in ['lawyer', 'customer']
 
     def can_edit(self, user):
-        return user.profile.is_lawyer
+        return user.has_perm('workspace.manage_document_reviews', self.matter)
 
     def can_delete(self, user):
-        return user.profile.is_lawyer
+        return user.has_perm('workspace.manage_document_reviews', self.matter)
 
 
 rulez_registry.register("can_read", ItemRevisionReviewerView)

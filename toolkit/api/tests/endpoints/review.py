@@ -41,10 +41,12 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
 
         # setup the items for testing
         self.item = mommy.make('item.Item', matter=self.matter, name='Test Item with Revision', category=None)
-        self.revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
+        self.revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item,
+                                   uploaded_by=self.lawyer)
 
     def test_endpoint_name(self):
-        self.assertEqual(self.endpoint, '/api/v1/matters/%s/items/%s/revision/reviewers' % (self.matter.slug, self.item.slug))
+        self.assertEqual(self.endpoint, '/api/v1/matters/%s/items/%s/revision/reviewers' %
+                         (self.matter.slug, self.item.slug))
 
     def test_lawyer_get_no_participants(self):
         """

@@ -58,7 +58,7 @@ angular.module('toolkit-gui')
 		$scope.data = {
 			'invitee': { 'email': '', 'message': '', permissions: {
                 'manage_participants': false,
-                'manage_requests': false,
+                'manage_document_reviews': false,
                 'manage_items': false,
                 'manage_signatures': false,
                 'manage_clients': false

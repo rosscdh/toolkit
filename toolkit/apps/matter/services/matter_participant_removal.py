@@ -32,7 +32,8 @@ class MatterParticipantRemovalService(object):
                                                 matter=self.matter,
                                                 participant=user_to_remove)
 
-            elif self.removing_user.profile.is_lawyer and self.matter.lawyer != user_to_remove:
+            elif self.removing_user.has_perm('workspace.manage_participants', self.matter) and \
+                            self.matter.lawyer != user_to_remove:
                 self.matter.remove_participant(user=user_to_remove)
                 PARTICIPANT_DELETED.send(sender=self,
                                          matter=self.matter,

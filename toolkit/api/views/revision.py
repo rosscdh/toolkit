@@ -106,7 +106,6 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
                                                                    many=many,
                                                                    partial=partial)
 
-
     def update(self, request, *args, **kwargs):
         #
         # Status change

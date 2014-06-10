@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.core import mail
 from django.core.urlresolvers import reverse
-from actstream.models import action_object_stream, target_stream
 
 from toolkit.core.item.models import Item
 
@@ -47,11 +45,11 @@ class ItemsRequestDocumentTest(BaseEndpointTest):
             'message': 'Bob you are being added here please provide me with a monkey!',
         }
 
-        self.set_user_matter_perms(user=self.lawyer, manage_requests=False)
+        self.set_user_matter_perms(user=self.lawyer, manage_document_reviews=False)
         resp = self.client.patch(self.endpoint, json.dumps(data), content_type='application/json')
         self.assertEqual(resp.status_code, 403)  # forbidden
 
-        self.set_user_matter_perms(user=self.lawyer, manage_requests=True)
+        self.set_user_matter_perms(user=self.lawyer, manage_document_reviews=True)
         resp = self.client.patch(self.endpoint, json.dumps(data), content_type='application/json')
         self.assertEqual(resp.status_code, 200)  # ok patch accepted
 
@@ -80,10 +78,10 @@ class ItemsRequestDocumentReminderTest(BaseEndpointTest):
     def test_lawyer_post(self):
         self.client.login(username=self.lawyer.username, password=self.password)
 
-        self.set_user_matter_perms(user=self.lawyer, manage_requests=True)
-        resp = self.client.post(self.endpoint, {}, content_type='application/json')
-        self.assertEqual(resp.status_code, 202)  # accepted
-
-        self.set_user_matter_perms(user=self.lawyer, manage_requests=False)
+        self.set_user_matter_perms(user=self.lawyer, manage_document_reviews=False)
         resp = self.client.post(self.endpoint, {}, content_type='application/json')
         self.assertEqual(resp.status_code, 403)  # forbidden
+
+        self.set_user_matter_perms(user=self.lawyer, manage_document_reviews=True)
+        resp = self.client.post(self.endpoint, {}, content_type='application/json')
+        self.assertEqual(resp.status_code, 202)  # accepted

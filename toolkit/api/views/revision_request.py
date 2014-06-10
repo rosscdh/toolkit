@@ -85,10 +85,10 @@ class ItemRequestRevisionView(MatterItemView):
         return user in self.matter.participants.all()
 
     def can_edit(self, user):
-        return user.has_perm('workspace.manage_requests', self.matter)
+        return user.has_perm('workspace.manage_document_reviews', self.matter)
 
     def can_delete(self, user):
-        return user.has_perm('workspace.manage_requests', self.matter)
+        return user.has_perm('workspace.manage_document_reviews', self.matter)
 
 
 rulez_registry.register("can_read", ItemRequestRevisionView)
