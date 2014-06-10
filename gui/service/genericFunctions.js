@@ -5,5 +5,5 @@ angular.module('toolkit-gui')
    'cleanHTML': function( str ) {
 		return str.replace(/(<([^>]+)>)/ig, '');
     }
- }
+ };
 }]);
