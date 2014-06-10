@@ -188,6 +188,15 @@ angular.module('toolkit-gui')
 
 			// Items with blank category name
 			items = jQuery.grep( matter.items, function( item ){ return item.category===categoryName; } );
+
+			// REMOVE !!
+			/*
+			for(var i=0;i<items.length;i++) {
+				items[i].signing_percentage_complete = parseInt( Math.random() * 100 );
+			}
+			*/
+			// end REMOVE
+					
 			categories.push(
 				{ 'name': categoryName, 'items': items }
 			);

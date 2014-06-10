@@ -35,16 +35,21 @@
 							<span ng-bind="item.responsible_party | initials:true"></span>
 					</button>
 
-                     <button disabled="" class="btn btn-warning btn-xs"
+					<!-- REVIEW STATUS //-->
+					<!--
+                    <button disabled="" class="btn btn-warning btn-xs"
                         ng-show="!item.is_requested&&item.review_percentage_complete==0">
                         <span class="fui-time"></span> Review in progress
                     </button>
+                    //-->
                     <button disabled="" class="btn btn-warning btn-xs"
-                            ng-show="!item.is_requested&&item.review_percentage_complete>0&&item.review_percentage_complete<100">
+                            ng-show="!item.is_requested&&item.review_percentage_complete>0&&item.review_percentage_complete<=100">
                         <span class="fui-user"></span> Review {{ item.review_percentage_complete }}%
                     </button>
+
+                    <!-- SIGNING STATUS //-->
                     <button disabled="" class="btn btn-warning btn-xs"
-                            ng-show="!item.is_requested&&item.signing_percentage_complete>0&&item.signing_percentage_complete<100">
+                            ng-show="item.signing_percentage_complete&&item.signing_percentage_complete>=0&&item.signing_percentage_complete<=100">
                         <span class="fui-user"></span> Signing {{ item.signing_percentage_complete }}%
                     </button>
 				</span>
