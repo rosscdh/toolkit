@@ -185,7 +185,7 @@
       </form>
       {% verbatim %}
       <ul class="nav navbar-nav navbar-right hidden-xs">
-        <li ng-if="notificationPermissionLevel=='default'"><a onclick="notify.requestPermission();">Get desktop notifications</a></li>
+        <li ng-if="notificationPermissionLevel=='default'"><a ng-click="requestNotifyPermission()">Get desktop notifications</a></li>
         <li class="notifications"><a href="/notifications/" ng-class="matter.selected.current_user.has_notifications ? 'unread' : ''"><!-- <span ng-class="matter.selected.current_user.has_notifications ? 'fui-radio-checked animated pulse' : 'fui-radio-unchecked'"></span> --><span ng-class="matter.selected.current_user.has_notifications ? 'swing' : ''" class="pe-7s-bell animated-slow"></span></a></li>
 
         <li><a href="/requests/">Requests</a></li>

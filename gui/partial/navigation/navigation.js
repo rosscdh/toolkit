@@ -150,7 +150,9 @@ angular.module('toolkit-gui')
 		}
 
 		$scope.requestNotifyPermission = function() {
-			notify.requestPermission();
+			notify.requestPermission(function(){
+				console.log( '', notify.permissionLevel());
+			});
 		};
 	}
 ]);

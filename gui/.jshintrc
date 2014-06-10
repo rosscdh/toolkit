@@ -27,7 +27,8 @@
         "filepicker": true,
         "TimeSpan": true,
         "Raven": true,
-        "Pusher": true
+        "Pusher": true,
+        "notify": true
     },
     "-W083": false,
     "-W099": false
