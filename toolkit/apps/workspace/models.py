@@ -124,7 +124,7 @@ class WorkspaceParticipants(models.Model):
             # they are! so continue evaluation
             # cater to lawyer and client roles
             if self.role == self.ROLES.colleague or user_class == 'colleague':
-                # Lawyers currently can do everythign the owner cane except clients and participants
+                # Lawyers currently can do everything the owner can except clients and participants
                 return PRIVILEGED_USER_PERMISSIONS
 
             elif self.role == self.ROLES.client or user_class == 'client':
