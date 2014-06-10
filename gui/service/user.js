@@ -27,7 +27,7 @@ angular.module('toolkit-gui').factory('userService',[
 		 * @param  {Object} lawyer User object, representing the lawyer who created this workspace
 		 */
 		function calculatePermissions( user ) {
-			var permissions = {
+			/*var permissions = {
 				'category': { 'post': false, 'put': false, 'delete': false },
 				'matterItem': { 'post': false, 'put': false, 'delete': false },
 				'manage_reviews': false,
@@ -36,7 +36,7 @@ angular.module('toolkit-gui').factory('userService',[
 			};
 
 
-            /*
+
 
 			if( user.url===lawyer.url ) {
 				permissions.category = { 'post': true, 'put': true, 'delete': true };
@@ -46,7 +46,7 @@ angular.module('toolkit-gui').factory('userService',[
 				permissions.matterItem = { 'post': true, 'put': true, 'delete': true };
 			}*/
 
-			return permissions;
+			return user.permissions;
 		}
 
 		return {
