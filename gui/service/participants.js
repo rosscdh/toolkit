@@ -6,7 +6,8 @@ angular.module('toolkit-gui').factory('participantService', [
 
         function userAPI() {
             return $resource( API_BASE_URL + 'users/:username', {}, {
-				'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } }
+				'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } },
+				'create': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } }
 			});
         }
 
@@ -234,7 +235,35 @@ angular.module('toolkit-gui').factory('participantService', [
 				);
 
 				return deferred.promise;
-			}
+			},
+
+             /**
+			 * Requests the API to create or update a user with the given user dict.
+			 *
+			 * @name				createUser
+			 *
+			 * @example
+		 	 * participantService.createUser( {} );
+			 *
+			 * @public
+			 * @method				createUser
+			 * @memberof			participantService
+		 	 */
+            'createUser': function(userdata) {
+                var deferred = $q.defer();
+				var api = userAPI();
+
+				api.create({}, userdata,
+					function success( response ) {
+						deferred.resolve( response );
+					},
+					function error( err ) {
+						deferred.reject( err );
+					}
+				);
+
+				return deferred.promise;
+            }
 		};
 	}
 ]);

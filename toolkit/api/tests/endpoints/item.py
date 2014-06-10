@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from actstream.models import model_stream
-from django.core.urlresolvers import reverse
+from rest_framework.reverse import reverse
 
 from toolkit.core.item.models import Item
 

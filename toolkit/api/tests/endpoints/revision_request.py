@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.core import mail
-from django.core.urlresolvers import reverse
 from django.test.client import RequestFactory
 from actstream.models import action_object_stream, target_stream
 
@@ -9,8 +8,8 @@ from toolkit.core.item.models import Item
 from . import BaseEndpointTest
 from ...serializers import ItemSerializer
 
-
 from model_mommy import mommy
+from rest_framework.reverse import reverse
 
 import json
 

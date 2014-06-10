@@ -63,7 +63,7 @@ class HelloSignWebhookEventsTest(BaseScenarios, TestCase):
         return { 'json': json.dumps(HELLOSIGN_WEBHOOK_EVENT_DATA[name]) }
 
     def get_hellosign_post_response(self, name):
-        return self.client.post(reverse('hellosign:hellosign_webhook_event'), self.get_webhook_event_post_data(name=name))
+        return self.client.post(reverse('hellosign_webhook_event'), self.get_webhook_event_post_data(name=name))
 
     def test_webhook_events_are_logged(self):
         """
@@ -81,11 +81,11 @@ class HelloSignWebhookEventsTest(BaseScenarios, TestCase):
 
             # post response
             resp = self.get_hellosign_post_response(name=key)
-
             hs_logs = self.request.hellosignlog_set.all()
             #
             # Test that each log is recorded and present
             #
+            # print key, hs_logs.count(), (i + 1)
             self.assertEqual(hs_logs.count(), (i + 1))
 
             #

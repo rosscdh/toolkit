@@ -115,11 +115,11 @@ class ModalForm(BaseForm):
 
     @property
     def action_url(self):
-        raise NotImplemented
+        raise NotImplementedError
 
     @property
     def title(self):
-        raise NotImplemented
+        raise NotImplementedError
 
 
 class ModalView(View):

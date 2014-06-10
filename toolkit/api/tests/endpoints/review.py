@@ -4,10 +4,9 @@ from django.core import mail
 from django.conf import settings
 from django.core.files import File
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from rest_framework.reverse import reverse
 from django.test.client import RequestFactory
 from django.core.validators import URLValidator
-from django.core.files.storage import FileSystemStorage
 
 from toolkit.apps.workspace.models import InviteKey
 from toolkit.casper.workflow_case import PyQueryMixin
@@ -20,7 +19,6 @@ from ...serializers import LiteUserSerializer
 from model_mommy import mommy
 
 import os
-import mock
 import json
 import random
 import urllib
@@ -533,7 +531,8 @@ class RevisionRequestedDocumentTest(BaseEndpointTest):
                                            u'parent', u'date_modified', u'url', u'regular_url', u'is_requested', u'children', u'matter',
                                            u'date_due', u'responsible_party', u'is_final', u'date_created',
                                            u'latest_revision', u'request_document_meta', u'slug', u'name',
-                                           u'review_percentage_complete']
+                                           u'review_percentage_complete',
+                                           u'signing_percentage_complete']
 
     @property
     def endpoint(self):

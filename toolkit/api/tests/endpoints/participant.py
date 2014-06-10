@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from rest_framework.reverse import reverse
+
 from django.dispatch import receiver
 
 from toolkit.apps.matter.signals import PARTICIPANT_ADDED

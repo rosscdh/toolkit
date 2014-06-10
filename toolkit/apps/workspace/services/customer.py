@@ -39,7 +39,6 @@ class EnsureCustomerService(object):
             user = User.objects.create(username=username,
                                        email=email,
                                        **kwargs)
-
             is_new = True
 
         profile = user.profile

@@ -137,7 +137,7 @@ def virtualenv(cmd, **kwargs):
 
 @task
 def pip_install():
-    virtualenv('pip install -e git+https://github.com/rosscdh/django-authy.git#egg=django-authy')
+    virtualenv('pip install django-jsonify')
 
 @task
 def cron():
