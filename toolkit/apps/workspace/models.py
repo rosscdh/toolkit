@@ -102,7 +102,6 @@ class WorkspaceParticipants(models.Model):
     class Meta:
         db_table = 'workspace_workspace_participants'  # Original django m2m table
 
-
     @property
     def display_role(self):
         return self.ROLES.get_desc_by_value(self.role)
@@ -142,9 +141,6 @@ class WorkspaceParticipants(models.Model):
         kwargs_to_test = kwargs.copy()  # clone the kwargs dict so we can pop on it
 
         for permission in kwargs:
-            # remove "workspace.":permission_name
-            permission = permission.replace('%s.' % self._meta.app_label, '')
-
             if permission not in self.PERMISSIONS:
                 kwargs_to_test.pop(permission)
                 # @TODO ? need to check for boolean value?
