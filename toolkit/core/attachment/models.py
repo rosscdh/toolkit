@@ -54,7 +54,7 @@ class Revision(IsDeletedMixin,
 
     slug = models.SlugField(blank=True, null=True)  # stores the revision number v3..v2..v1
 
-    executed_file = models.FileField(upload_to=_upload_file, storage=_managed_S3BotoStorage(), null=True, blank=True)
+    executed_file = models.FileField(upload_to=_upload_file, max_length=255, storage=_managed_S3BotoStorage(), null=True, blank=True)
 
     item = models.ForeignKey('item.Item')
     uploaded_by = models.ForeignKey('auth.User')
@@ -69,12 +69,13 @@ class Revision(IsDeletedMixin,
     # True by default, so that on create of a new one, it's set as the current revision
     is_current = models.BooleanField(default=True)
 
+    # when the hellosign webhook calls back and sets the document to is_executed = True
+    is_executed = models.BooleanField(default=False)
+
     data = JSONField(default={}, blank=True)
 
     date_created = models.DateTimeField(auto_now=False, auto_now_add=True, db_index=True)
     date_modified = models.DateTimeField(auto_now=True, auto_now_add=True, db_index=True)
-
-    # status = models.IntegerField(choices=REVISION_STATUS.get_choices(), default=REVISION_STATUS.draft)
 
     objects = RevisionManager()
 
@@ -95,6 +96,22 @@ class Revision(IsDeletedMixin,
     def revisions(self):
         return self.item.revision_set.all()
 
+    @property
+    def primary_reviewdocument(self):
+        # is this *really* only the case for a NEW reviewdocument/revision?
+        return self.reviewdocument_set.filter(reviewers=None).last() 
+
+    @property
+    def primary_signdocument(self):
+        # there is only ever 1 of these, per revision (document)
+        sign_document, is_new = self.signdocument_set.model.objects.get_or_create(document=self)
+        if is_new is True:
+            #
+            # set the sign_doc signers to the current object signers
+            #
+            sign_document.signers = self.signers.all()
+        return sign_document
+
     def get_absolute_url(self):
         """
         @TODO currently there is no GUI route to handle linking directly to a revision
@@ -113,11 +130,18 @@ class Revision(IsDeletedMixin,
         Try to provide an initial review url from the base review_document obj
         for the currently logged in user
         """
-        if user is not None:
-            if review_document is None:
-                review_document = self.reviewdocument_set.all().last()
-            return review_document.get_absolute_url(user=user, use_absolute=False) if review_document is not None else None
-        return None
+        if review_document is None:
+            review_document = self.primary_reviewdocument
+        return review_document.get_absolute_url(user=user, use_absolute=False) if review_document is not None else None
+
+    def get_user_sign_url(self, user, sign_document=None):
+        """
+        Try to provide an initial signing url from the base sign_document obj
+        for the currently logged in user
+        """
+        if sign_document is None:
+            sign_document = self.primary_signdocument
+        return sign_document.get_absolute_url(user=user, use_absolute=False) if sign_document is not None else None
 
     def get_revision_label(self):
         """
@@ -152,11 +176,6 @@ class Revision(IsDeletedMixin,
 
     def previous(self):
         return self.revisions.filter(pk__lt=self.pk).first()
-
-    @property
-    def primary_reviewdocument(self):
-        # is this *really* only the case for a NEW reviewdocument/revision?
-        return self.reviewdocument_set.filter(reviewers=None).last()
 
 
 from .signals import (ensure_revision_slug,

@@ -51,7 +51,8 @@ class FileExistsLocallyMixin(object):
     def read_local_file(self):
         if self.file_exists_locally is True:
             return default_storage.open(self.get_document()).read()
-        return False
+        else:
+            raise Exception('File not found locally')
 
     def download_file(self, file_name, storage=None):
         """

@@ -13,5 +13,6 @@ from .sign import (SignatureSerializer,)
 from .user import (UserSerializer,
                    LiteUserSerializer,
                    SimpleUserSerializer,
-                   SimpleUserWithReviewUrlSerializer)
+                   SimpleUserWithReviewUrlSerializer,
+                   SimpleUserWithSignUrlSerializer)
 # from .workflow import WorkflowSerializer

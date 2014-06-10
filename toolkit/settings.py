@@ -154,6 +154,8 @@ HELPER_APPS = (
     # notifications
     'stored_messages',
 
+    'jsonify',
+
     # integration for abridge; django-abridge
     'abridge',
 
@@ -273,11 +275,6 @@ CELERY_ACCEPT_CONTENT = ['json', 'pickle', ]
 #CELERY_ACKS_LATE = True  # as we want to to be acknowledged after its completed; http://celery.readthedocs.org/en/latest/configuration.html#celery-acks-late
 
 FILEPICKER_API_KEY = 'A4Ly2eCpkR72XZVBKwJ06z'
-
-HELLOSIGN_AUTHENTICATION = ("founders@lawpal.com", "test2007")
-HELLOSIGN_API_KEY = '0ea9011ce33b5de3b58af3b3f6d449f8f3f72e2ac06c14c6319439af39fe32f6'
-HELLOSIGN_CLIENT_ID = '9bc892af173754698e3fa30dedee3826'
-HELLOSIGN_CLIENT_SECRET = '8d770244b9971abfe789f5224552239d'
 
 CORS_ORIGIN_WHITELIST = (
     'localhost:9000'
@@ -479,12 +476,17 @@ LAWPAL_ACTIVITY = {
                       # 'revision-added-revision-comment',
                       # 'workspace-added-participant', 'workspace-removed-participant'
 
+                      # Signing
+                      'item-sent-for-signing', 'item-completed-signing-setup',
+                      #'item-viewed-signature-request', # removed due to it being overkill
+                      'item-signed',
+
                       # activate nearly everything for testing;
                       'item-reopened', 'item-closed',
                       'item-commented', 'item-comment-created', 'item-comment-deleted',
                       'item-invited-reviewer',
                       'item-provide-a-document',
-                      'item-invited-signer',
+                      'item-added-signer',
                       'item-completed-review',
                       'item-completed-all-reviews',
 
@@ -503,11 +505,16 @@ LAWPAL_ACTIVITY = {
     },
     "notifications": {
         "whitelist": [
+                      # Signing
+                      'item-sent-for-signing', 'item-completed-signing-setup',
+                      #'item-viewed-signature-request', # removed due to it being overkill
+                      'item-signed',
+
                       'item-reopened', 'item-closed',
                       'item-commented', 'item-comment-created', 'item-comment-deleted',
                       'item-invited-reviewer',
                       'item-provide-a-document',
-                      'item-invited-signer',
+                      'item-added-signer',
                       'item-completed-review',
                       'item-completed-all-reviews',
 
@@ -525,12 +532,18 @@ LAWPAL_ACTIVITY = {
                       ]
     },
     "activity": {
-        "whitelist": ['item-created', 'item-edited', 'item-commented', 'item-changed-the-status', 'item-renamed',
+        "whitelist": [
+                      # Signing
+                      'item-sent-for-signing', 'item-completed-signing-setup',
+                      'item-viewed-signature-request',  # kept for record reasons
+                      'item-signed',
+
+                      'item-created', 'item-edited', 'item-commented', 'item-changed-the-status', 'item-renamed',
                       'item-provide-a-document', 'item-invited-reviewer', 'item-canceled-their-request-for-a-document',
                       'item-closed', 'item-reopened', 'item-added-revision-comment', 'item-deleted-revision-comment',
                       'item-completed-review', 'item-viewed-revision',
                       'item-completed-all-reviews',
-                      'item-invited-signer',
+                      'item-added-signer',
                       'itemrequestrevisionview-provide-a-document',
 
                       'revision-created', 'revision-deleted',
