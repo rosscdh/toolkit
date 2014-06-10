@@ -3,7 +3,7 @@
 {% block subject_line %}{{ mentioned_by }} mentioned you in a comment{% endblock %}
 
 {% block html_content %}
-<p>{{ mentioned_by }} has mentioned you in a comment.</p>
+{% if action_object and matter %}<p>{{ mentioned_by }} has mentioned you in a comment on "{{ action_object }}" in "{{ matter }}".</p>{% else %}<p>{{ mentioned_by }} has mentioned you in a comment.</p>{% endif %}
 <blockquotes>{{ mention }}</blockquotes>
 {% if access_url %}<p>You can view this mention at: <a href="{% ABSOLUTE_BASE_URL access_url %}">{% ABSOLUTE_BASE_URL access_url %}</a></p>{% endif %}
 {% endblock %}
