@@ -10,10 +10,9 @@
             <div class="col-sm-6 ">
                 <ul class="list-unstyled participants">
                     <li ng-repeat="person in participants" ng-click="data.selectedUser=person" ng-class="{'selected': data.selectedUser==person }">
-                        <span class="user {{person.user_class}}" ng-bind="person | initials"></span>
+                        <span class="user {{person.role}}" ng-bind="person | initials"></span>
                         <label ng-bind="person | fullname"></label>
-                        <small  class ="{{person.user_class}}" ng-show="person.user_class">({{ person.user_class }}<span ng-show="person.username==currentUser.username">, you</span><span ng-show="person.username==matter.lawyer.username" class="owner">, owner</span>)
-                        </small>
+                        <small class="{{person.role}}">({{ person.role }}<span ng-show="person.username==currentUser.username">, you</span>)</small>
                     </li>
                 </ul>
                 <!--
@@ -27,7 +26,7 @@
 
             <div class='col-sm-6 details' ng-show="data.selectedUser">
 
-                <div class="client-permissions" ng-show="data.selectedUser.user_class!=='lawyer'">
+                <div class="client-permissions" ng-show="data.selectedUser.role==='client'">
                      <div class="user-details text-right">
                          <a class="revoke" ng-show="data.selectedUser.username!==currentUser.username&&currentUser.permissions.manage_participants&&person.username!=matter.lawyer.username" href="javascript:;" ng-click="revoke(data.selectedUser)"><small>Revoke access</small></a>
                          <a class="revoke" ng-show="data.selectedUser.username===currentUser.username" href="javascript:;" ng-click="revoke(data.selectedUser)"><small>Exit matter</small></a>
@@ -47,14 +46,14 @@
                     </div>
                 </div>
 
-                <div class="colleague-permissions" ng-show="data.selectedUser.user_class==='lawyer'">
+                <div class="colleague-permissions" ng-show="data.selectedUser.role==='colleague'">
                      <div class="user-details text-right">
-                         <a class="revoke" ng-show="data.selectedUser.username!==currentUser.username&&currentUser.permissions.manage_participants&&data.selectedUser.username!=matter.lawyer.username" href="javascript:;" ng-click="revoke(data.selectedUser)"><small>Revoke access</small></a>
+                         <a class="revoke" ng-show="data.selectedUser.username!==currentUser.username&&currentUser.permissions.manage_participants" href="javascript:;" ng-click="revoke(data.selectedUser)"><small>Revoke access</small></a>
                     </div>
                     <div class="user-large lawyer" ng-bind="data.selectedUser.initials"></div>
                     <p>{{ data.selectedUser.name }}</p>
                     <p>{{ data.selectedUser.email }}</p>
-                    <div class='permissions-checklist' ng-show="currentUser.permissions.manage_participants&&data.selectedUser.username!=matter.lawyer.username">
+                    <div class='permissions-checklist' ng-show="currentUser.permissions.manage_participants">
                         <div class="checkbox">
                             <label>
                                 <input type="checkbox" ng-model="data.selectedUser.permissions.manage_participants"> Manage Participants <div class='text-muted'>(including adding and removing Colleagues and Clients)</div>
@@ -80,6 +79,12 @@
                     <div class='text-center' ng-show="currentUser.permissions.manage_participants&&data.selectedUser.username!=matter.lawyer.username">
                        <a class="btn btn-sm save-perm-btn" ng-click="update(data.selectedUser)"><span class="fui-check"></span> Save Permissions</a>
                     </div>
+                </div>
+
+                <div class="colleague-permissions" ng-show="data.selectedUser.role==='owner'">
+                    <div class="user-large lawyer" ng-bind="data.selectedUser.initials"></div>
+                    <p>{{ data.selectedUser.name }}</p>
+                    <p>{{ data.selectedUser.email }}</p>
                 </div>
             </div>
         </div>

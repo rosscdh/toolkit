@@ -125,8 +125,10 @@ angular.module('toolkit-gui')
 		$scope.invite = function () {
             if($scope.data.showAddLawyer===true){
                 $scope.data.invitee.user_class='lawyer';
+                $scope.data.invitee.role='colleague';
             } else {
                 $scope.data.invitee.user_class='customer';
+                $scope.data.invitee.role='client';
             }
 
 			participantService.invite( $scope.matter.slug, $scope.data.invitee ).then(
