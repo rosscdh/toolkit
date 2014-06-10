@@ -95,7 +95,8 @@ angular.module('toolkit-gui')
 			'streamType': 'matter',
 			'history': {},
 			'page': 'checklist',
-			'filter': null
+			'statusFilter': null,
+			'itemFilter': null
 		};
 		//debugger;
 
@@ -1668,20 +1669,60 @@ angular.module('toolkit-gui')
 		|_|   |_|_|\__\___|_|  |___/
 									
 		 */
+		/**
+		 * applyStatusFilter  filters for checklist based on status 0-4
+		 * @param  {Object} filter Filter to apply to latest_revision
+		 */
 		$scope.applyStatusFilter = function( filter ) {
-			$scope.data.filter = $scope.data.filter||{};
+			// Initialise status filter
+			$scope.data.statusFilter = $scope.data.statusFilter||{};
+
+			// Clear other filters
+			$scope.data.itemFilter = null;
+
 			if( filter ) {
 				for(var key in filter) {
 					// Convert { "0": "Draft" } to { "status": 0 }
-					$scope.data.filter[key] = parseInt(filter[key]);
+					$scope.data.statusFilter[key] = parseInt(filter[key]);
 				}
 			} else {
-				// Clear filters
-				$scope.data.filter = null; // Clear all filters
+				// Clear all filters
+				$scope.data.itemFilter = null;
+				$scope.data.statusFilter = null;
 			}
-			
 		};
-}]).filter('itemStatusFilter', function() {
+
+		/**
+		 * applyItemFilter  filters for checklist item properties such as is_complete
+		 * @param  {Object} filter Filter to apply to base o checklsit item object
+		 */
+		$scope.applyItemFilter = function( filter ) {
+			// Initialise item filter
+			$scope.data.itemFilter = $scope.data.itemFilter||{};
+
+			// Clear other filters
+			$scope.data.statusFilter = null;
+
+			if( filter ) {
+				for(var key in filter) {
+					$scope.data.itemFilter[key] = filter[key];
+				}
+			} else {
+				// Clear all filters
+				$scope.data.itemFilter = null;
+				$scope.data.statusFilter = null;
+			}
+		};
+}])
+
+/**
+ * itemStatusFilter
+ * 		apply an item status filter to the array of checklist items within a matter
+ * @param  {Array}  items    Array of checklist items
+ * @param  {Object} filter   JSON object containing filters
+ * @return {Array}  Filtered list of checklist items
+ */
+.filter('itemStatusFilter', function() {
 	'use strict';
 	return function(items, filter) {
 		var tempClients = [];
@@ -1693,6 +1734,35 @@ angular.module('toolkit-gui')
 		angular.forEach(items, function (item) {
 			for(var key in filter) {
 				if( item.latest_revision && angular.equals( filter[key], item.latest_revision[key] ) ) {
+					tempClients.push(item);
+				}
+			}
+		});
+
+		
+		return tempClients;
+	};
+})
+
+/**
+ * itemFilter
+ * 		apply an item filter to the array of checklist items within a matter (does not apply filter to nested properties)
+ * @param  {Array}  items    Array of checklist items
+ * @param  {Object} filter   JSON object containing filters
+ * @return {Array}  Filtered list of checklist items
+ */
+.filter('itemFilter', function() {
+	'use strict';
+	return function(items, filter) {
+		var tempClients = [];
+
+		if(!filter) {
+			return items;
+		}
+
+		angular.forEach(items, function (item) {
+			for(var key in filter) {
+				if( angular.equals( filter[key], item[key] ) ) {
 					tempClients.push(item);
 				}
 			}
