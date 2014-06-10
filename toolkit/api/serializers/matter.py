@@ -121,7 +121,7 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_roles(self, obj):
         request = self.context.get('request')
-        return {name: desc for value, name, desc in request.user.matter_permissions(matter=obj).ROLES.get_all()}
+        return {name: desc for value, name, desc in request.user.matter_permissions(matter=obj).ROLES.get_all()} if request else {}
 
     def get_percent_complete(self, obj):
         return obj.get_percent_complete

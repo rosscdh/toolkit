@@ -30,7 +30,8 @@ class RevisionSignaturesTest(PyQueryMixin, BaseEndpointTest):
     /matters/:matter_slug/items/:item_slug/revision/signers/ (GET,POST)
         [lawyer,customer] to list, create signers
     """
-    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review', u'url', u'initials', u'user_class', u'name',]
+    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review', u'url', u'initials', u'user_class', u'name',
+                                           u'role']
 
     @property
     def endpoint(self):
@@ -115,7 +116,8 @@ class RevisionSignaturesTest(PyQueryMixin, BaseEndpointTest):
 
         # user review url must be in it
         self.assertItemsEqual(json_data.keys(), [u'is_claimed', u'claim_url', u'url', u'signers', u'requested_by', u'percentage_complete'])
-        self.assertItemsEqual(json_data['signers'][0].keys(), [u'username', u'name', u'url', u'user_class', u'initials'])
+        self.assertItemsEqual(json_data['signers'][0].keys(), [u'username', u'name', u'url', u'user_class', u'initials',
+                                                               u'role'])
 
         self.assertEqual(json_data.get('is_claimed'), False)
         self.assertEqual(json_data.get('claim_url'), sign_document.get_claim_url())
@@ -317,7 +319,8 @@ class RevisionSignerTest(BaseEndpointTest):
     /matters/:matter_slug/items/:item_slug/revision/signer/:username (GET,DELETE)
         [lawyer,customer] to view, delete signers
     """
-    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review', u'url', u'initials', u'user_class', u'name',]
+    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review', u'url', u'initials', u'user_class', u'name',
+                                           u'role']
 
     @property
     def endpoint(self):
