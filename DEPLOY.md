@@ -10,11 +10,12 @@ Deployment actions by branch
 1. pip install -e git+https://github.com/rosscdh/django-hello_sign.git#egg=django-hello_sign -U
 2. pip install -e git+https://github.com/rosscdh/hellosign.git#egg=hellosign -U
 3. pip install hellosign-python-sdk -U
-4. ./manage.py migrate hello_sign 0001 --fake
-5. ./manage.py migrate hello_sign
-6. ./manage.py migrate attachment
-7. ./manage.py migrate sign 0001 --fake
-8. ./manage.py migrate sign
+4. pip install django-jsonify
+5. ./manage.py migrate hello_sign 0001 --fake
+6. ./manage.py migrate hello_sign
+7. ./manage.py migrate attachment
+8. ./manage.py migrate sign 0001 --fake
+9. ./manage.py migrate sign
 
 
 --------------------------------------------------------------------------------
