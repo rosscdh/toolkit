@@ -66,7 +66,7 @@ class MatterPermissionLogic(PermissionLogic):
             if self.any_permission:
                 return True
 
-            if self.change_permission and perm == permission_name:
+            if self.change_permission and perm == self.get_full_permission_string('change'):
                 return True
             return False
 
