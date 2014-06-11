@@ -102,4 +102,3 @@ def on_item_post_save(sender, instance, created, **kwargs):
         #
         # The matter.actions.item_created activity event has moved to the
         # api endpoint view
-

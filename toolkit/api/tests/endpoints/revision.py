@@ -2,12 +2,9 @@
 from django.conf import settings
 from django.db.models import SET_NULL
 from django.test import LiveServerTestCase
-from django.core.urlresolvers import reverse
-from django.core.files.storage import FileSystemStorage
+from rest_framework.reverse import reverse
 from django.test.client import MULTIPART_CONTENT
 from actstream.models import target_stream
-
-from toolkit.core.item.models import Item
 
 from . import BaseEndpointTest
 from ...serializers import ItemSerializer, UserSerializer, SimpleUserSerializer
@@ -16,7 +13,6 @@ from ...serializers.revision import MAX_LENGTH_FILENAME
 from model_mommy import mommy
 
 import os
-import mock
 import json
 import urllib
 

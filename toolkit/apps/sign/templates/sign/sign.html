@@ -1,8 +1,73 @@
-{% extends 'review/base.html' %}
+{% extends 'base-slim.html' %}{% load url from future %}
 
+{% block page_title %}Please sign this document{% endblock %}
 
-{% block main %}
+{% block body %}
+    {% if can_sign %}
+     <div class="row col-sm-8 col-sm-offset-2">
+        <div id="user-message" class="page-header text-center">
+          <h3>Please wait...<br/>
+            <br />
+            <p class="lead text-muted">We are preparing your documents.</p></h3>
+        </div>
+      </div>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="//s3.amazonaws.com/cdn.hellofax.com/js/embedded.js"></script>
+        <script type="text/javascript">
+        $(document).ready(function () {
+            'use strict';
 
-<iframe id="hellosign-viewer-iframe" src="{{ hellosign_view_url }}" width="100%" height="550px" frameborder="none" style="margin-top:5px;"></iframe>
+            function openHelloSign() {
+                // set width and height
+                HelloSign.DEFAULT_WIDTH = $(window).width();// - ($(window).width()/98);
+                HelloSign.DEFAULT_HEIGHT = $(window).height();
 
+                HelloSign.open({
+                    url: '{{ sign_url }}',
+                    allowCancel: false,
+                    {% if DEBUG %}
+                    debug: true,
+                    skipDomainVerification: true,
+                    {% endif %}
+                    messageListener: function(eventData) {          // (optional) Called whenever the iFrame is messaging your page
+                        if (eventData.event == HelloSign.EVENT_ERROR) {
+                            var message_html = '<h3>Sorry, an error ocurred...<br/><small>We have recorded the event and or dev team will investigate.</small></h3>';
+                            $('#user-message').html(message_html);
+                        }
+
+                        if (eventData.event == HelloSign.EVENT_SIGNED) {
+                            // close this window and move right on
+                            var message_html = '<h3>Thanks for signing<br/><small>We wil notify all those involved.</small></h3>';
+
+                            if (parent && parent.$('button#view-signing-close').length > 0 ) {
+                                parent.$('button#view-signing-close').trigger('click');
+                            } else {
+                                // redirect to requests
+                                window.location = "{% url 'request:list' %}";
+                            }
+                        };
+                    }
+                });
+                // remove the HelloSign styles that append a black box and shadow
+                if ($('#hsEmbeddedWrapper').length > 0) {
+                  $('#hsEmbeddedWrapper').attr('style', 'position: absolute; top: 0px; bottom: 0px; left: 0px; z-index: 9998;'); // we need top to be 0
+                }
+                if ($('#hsEmbeddedFrame').length > 0) {
+                  $('#hsEmbeddedFrame').attr('style', null);
+                  $('#hsEmbeddedFrame').attr('height', $(window).height());
+                }
+                
+            };
+
+            HelloSign.init('{{ GLOBALS.HELLOSIGN_CLIENT_ID }}');
+            openHelloSign();
+
+        });
+        </script>
+    {% else %}
+        <div id="user-message" class="page-header">
+          <h3>Sorry, you can not sign this document<br/><small>You need to be one of the invited signers.</small></h3>
+          <!-- <a href="javascript:;" onClick="openHelloSign();">Open</a> -->
+        </div>
+    {% endif %}
 {% endblock %}

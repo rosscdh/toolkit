@@ -2,11 +2,10 @@
 from django.core import mail
 from django.conf import settings
 from django.core.files import File
-from django.core.urlresolvers import reverse
+from rest_framework.reverse import reverse
 
-from toolkit.core.attachment.models import Revision
 from toolkit.apps.workspace.models import Workspace
-from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
+from toolkit.core.attachment.models import Revision
 from toolkit.apps.matter.services import MatterExportService
 
 from . import BaseEndpointTest
