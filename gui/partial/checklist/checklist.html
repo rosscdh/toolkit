@@ -57,9 +57,10 @@
 		</div>
 	</div>
 
-    <div class="upload-bar" ng-repeat="cat in data.categories" ng-show="data.uploading">
-		<div class="progress progress-striped active" ng-repeat="item in cat.items | filter: { uploading: true }">
+    <div class="upload-bar" ng-show="data.uploading">
+		<div class="progress progress-striped active" ng-repeat="item in data.matter.items | filter: { uploading: true }">
 			<div class="progress-bar progress-bar-info" ng-style="{'width': item.uploadingPercent + '%'}">Uploading to <font ng-bind="item.name"></font></div>
+			<button ng-click="cancelRevisionUpload(item)" class="btn btn-danger pull-right">Cancel</button>
 		</div>
 	</div>
 </div>
