@@ -146,10 +146,17 @@ class MatterParticipant(generics.CreateAPIView,
         return user in self.get_object().participants.all() or user == self.get_object().lawyer
 
     def can_edit(self, user):
-        return user.has_perm('workspace.manage_participants', self.get_object())
+        role = self.request.DATA.get('role', False)
+        if not role:
+            return Response("You need to submit a 'role'!", status=http_status.HTTP_204_NO_CONTENT)
+        return user.has_perm('workspace.manage_clients', self.get_object()) if role == 'client' else user.has_perm('workspace.manage_participants', self.get_object())
 
     def can_delete(self, user):
-        return user.has_perm('workspace.manage_participants', self.get_object())  # can I remove myself even without this permission?
+        role = self.request.DATA.get('role', False)
+        if not role:
+            return Response("You need to submit a 'role'!", status=http_status.HTTP_204_NO_CONTENT)
+        return user.has_perm('workspace.manage_clients', self.get_object()) if role == 'client' else user.has_perm('workspace.manage_participants', self.get_object())
+        # can I remove myself even without this permission?
 
 
 rulez_registry.register("can_read", MatterParticipant)
