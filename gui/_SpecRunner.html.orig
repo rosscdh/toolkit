@@ -16,11 +16,23 @@
   
   <script src="bower_components/jquery/jquery.js"></script>
   
+<<<<<<< HEAD
   <script src="bower_components/jquery-ui/ui/jquery-ui.js"></script>
+=======
+  <script src="partial/authentication-required/authentication-required-spec.js"></script>
+  
+  <script src="partial/checklist/checklist-spec.js"></script>
+>>>>>>> master
   
   <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
   
+<<<<<<< HEAD
   <script src="bower_components/angular/angular.js"></script>
+=======
+  <script src="partial/edit-revision-status/edit-revision-status-spec.js"></script>
+  
+  <script src="partial/home/home-spec.js"></script>
+>>>>>>> master
   
   <script src="bower_components/underscore/underscore.js"></script>
   
@@ -76,11 +88,31 @@
   
   <script src="service/mattercategory.js"></script>
   
+<<<<<<< HEAD
   <script src="service/participants.js"></script>
   
   <script src="service/smartRoutes.js"></script>
   
   <script src="service/search.js"></script>
+=======
+  <script src="partial/request-review/request-review-spec.js"></script>
+  
+  <script src="partial/request-revision/request-revision-spec.js"></script>
+  
+  <script src="partial/request-signing/request-signing-spec.js"></script>
+  
+  <script src="partial/searchCtrl/searchCtrl-spec.js"></script>
+  
+  <script src="partial/view-document/view-document-spec.js"></script>
+  
+  <script src="partial/view-review/view-review-spec.js"></script>
+  
+  <script src="service/activity-spec.js"></script>
+  
+  <script src="service/comment-spec.js"></script>
+  
+  <script src="service/matter-spec.js"></script>
+>>>>>>> master
   
   <script src="service/activity.js"></script>
   
@@ -136,7 +168,15 @@
   
   <script src="partial/request-signing/request-signing-spec.js"></script>
   
+<<<<<<< HEAD
   <script src="service/activity-spec.js"></script>
+=======
+  <script src="service/search-spec.js"></script>
+  
+  <script src="service/smartRoutes-spec.js"></script>
+  
+  <script src="service/user-spec.js"></script>
+>>>>>>> master
   
   <script src="service/comment-spec.js"></script>
   
