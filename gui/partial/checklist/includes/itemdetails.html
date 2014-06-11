@@ -216,10 +216,11 @@
                 </div>
                 <div class="tools status-{{ data.selectedItem.latest_revision.status }}">
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="showRevisionDocument(data.selectedItem.latest_revision)">View</a>  <a href="{{ data.selectedItem.latest_revision.user_download_url }}" class="btn btn-link btn-xs" target="_blank">Save</a>
-                    <a href="javascript:;" class="btn btn-link btn-xs" ng-click="requestReview(data.selectedItem.latest_revision)">Request Review</a>
+                    <a href="javascript:;" class="btn btn-link btn-xs" ng-click="requestReview(data.selectedItem.latest_revision)"
+                       ng-show="data.usdata.current.permissions.manage_document_reviews">Request Review</a>
                     <a href="javascript:;" class="btn btn-link btn-xs"
                        ng-click="requestSigning(data.selectedItem.latest_revision)"
-                       ng-show="data.selectedItem.latest_revision.signing===null&&data.itemIsLoading!==true">Send for Signing</a>
+                       ng-show="data.selectedItem.latest_revision.signing===null&&data.itemIsLoading!==true&&data.usdata.current.permissions.manage_signature_requests">Send for Signing</a>
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="deleteLatestRevision()">Delete</a>
                 </div>
             </div>
@@ -227,14 +228,14 @@
             <div class="review in-progress" ng-show="data.selectedItem.latest_revision.reviewers.length>0">
                 <span ng-show="data.selectedItem.review_percentage_complete<100">Review in progress</span>
                 <span ng-show="data.selectedItem.review_percentage_complete==100">Review complete</span>
-                <a class="btn btn-link btn-xs pull-right" href="javascript:;" ng-click="remindRevisionReview(data.selectedItem)" ng-show="data.usdata.current.permissions.manage_reviews">
+                <a class="btn btn-link btn-xs pull-right" href="javascript:;" ng-click="remindRevisionReview(data.selectedItem)" ng-show="data.usdata.current.permissions.manage_document_reviews">
                     Remind
                 </a>
                 <div class="review-members">
                     <ul class="list-unstyled">
                         <li ng-repeat="rev in data.selectedItem.latest_revision.reviewers" ng-class="{'complete': rev.is_complete==true }">
                             <a class="close" href="javascript:;" ng-click="deleteRevisionReviewRequest(data.selectedItem, rev)"
-                               ng-hide="rev.is_complete||!data.usdata.current.permissions.manage_reviews">x</a>
+                               ng-hide="rev.is_complete||!data.usdata.current.permissions.manage_document_reviews">x</a>
                             <a href="javascript:;" ng-click="showReview(data.selectedItem.latest_revision, rev)" class="pull-right">
                                 <button class="btn btn-warning btn-xs" ng-hide="rev.is_complete"><span class="fui-time"></span> In progress</button>
                                 <button class="btn btn-success btn-xs" ng-show="rev.is_complete">
@@ -253,13 +254,14 @@
 
             <div class="signing in-progress" ng-show="data.selectedItem.latest_revision.signing.url">
                 <a class="btn btn-link btn-xs pull-right" href="javascript:;" ng-click="deleteSigningRequest(data.selectedItem.latest_revision)"
-                   ng-hide="data.selectedItem.latest_revision.is_executed||data.selectedItem.latest_revision.signing.percentage_complete===100">
+                   ng-hide="data.selectedItem.latest_revision.is_executed||data.selectedItem.latest_revision.signing.percentage_complete===100||!data.usdata.current.permissions.manage_signature_requests">
                     Cancel Signing
                 </a>
 
                 <span ng-hide="data.selectedItem.latest_revision.signing.is_claimed" class="text-center">
                     <span>Please set up the document for signing</span>
-                    <a class="btn  btn-sm btn-primary btn-embossed" href="javascript:;" ng-click="showSigning(data.selectedItem.latest_revision, null)" style="margin-top:7px;">
+                    <a class="btn  btn-sm btn-primary btn-embossed" href="javascript:;" ng-click="showSigning(data.selectedItem.latest_revision, null)" style="margin-top:7px;"
+                       ng-show="data.usdata.current.permissions.manage_signature_requests">
                         Setup signature locations
                     </a>
                 </span>
@@ -272,7 +274,9 @@
                     <span>Signing completed</span>
                 </span>
 
-                <a class="btn btn-link btn-xs pull-right" href="javascript:;" ng-show="data.selectedItem.latest_revision.signing.is_claimed && data.selectedItem.latest_revision.is_executed!==true && data.selectedItem.latest_revision.signing.percentage_complete<100" ng-click="remindRevisionSigners(data.selectedItem)">
+                <a class="btn btn-link btn-xs pull-right" href="javascript:;"
+                   ng-show="data.selectedItem.latest_revision.signing.is_claimed && data.selectedItem.latest_revision.is_executed!==true && data.selectedItem.latest_revision.signing.percentage_complete<100 && data.usdata.current.permissions.manage_signature_requests"
+                   ng-click="remindRevisionSigners(data.selectedItem)">
                     Remind
                 </a>
 
