@@ -8,8 +8,12 @@ from rulez import registry as rulez_registry
 from threadedcomments.models import ThreadedComment
 
 from toolkit.api.serializers import DiscussionCommentSerializer, DiscussionSerializer, LiteDiscussionSerializer
+from toolkit.apps.workspace.models import Workspace
 
 from .mixins import MatterMixin
+
+
+MATTER_CONTENT_TYPE = ContentType.objects.get_for_model(Workspace).pk
 
 
 class DiscussionEndpoint(MatterMixin, viewsets.ModelViewSet):
@@ -38,7 +42,7 @@ class DiscussionCommentEndpoint(MatterMixin,
         return self.model.objects.for_model(self.matter).filter(parent=self.kwargs.get('thread_id'))
 
     def pre_save(self, obj):
-        obj.content_type_id = ContentType.objects.get_for_model(self.matter).pk
+        obj.content_type_id = MATTER_CONTENT_TYPE
         obj.object_pk = self.matter.pk
         obj.parent = self.model.objects.get(pk=self.kwargs.get('thread_id'))
         obj.site_id = settings.SITE_ID
