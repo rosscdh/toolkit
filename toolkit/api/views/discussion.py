@@ -27,14 +27,26 @@ class DiscussionEndpoint(MatterMixin, viewsets.ModelViewSet):
             return LiteDiscussionSerializer
         return DiscussionSerializer
 
+    def pre_save(self, obj):
+        obj.content_type_id = MATTER_CONTENT_TYPE
+        obj.object_pk = self.matter.pk
+        obj.parent = None
+        obj.site_id = settings.SITE_ID
+        obj.user = self.request.user
+
+        return super(DiscussionEndpoint, self).pre_save(obj=obj)
+
     def can_read(self, user):
         return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
 
+    def can_edit(self, user):
+        return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
+
 rulez_registry.register("can_read", DiscussionEndpoint)
+rulez_registry.register("can_edit", DiscussionEndpoint)
 
 
-class DiscussionCommentEndpoint(MatterMixin,
-                                viewsets.ModelViewSet):
+class DiscussionCommentEndpoint(MatterMixin, viewsets.ModelViewSet):
     model = ThreadedComment
     serializer_class = DiscussionCommentSerializer
 
@@ -53,4 +65,8 @@ class DiscussionCommentEndpoint(MatterMixin,
     def can_read(self, user):
         return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
 
+    def can_edit(self, user):
+        return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
+
 rulez_registry.register("can_read", DiscussionCommentEndpoint)
+rulez_registry.register("can_edit", DiscussionCommentEndpoint)
