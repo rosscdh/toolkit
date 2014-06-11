@@ -1,8 +1,9 @@
 
 describe('Controller: Checklist', function() {
+	'use strict';
     function doPromiseResolve(msg){
 	    return  function(){
-		   var deferred = $q.defer();							
+		   var deferred = $q.defer();
 		   deferred.resolve(msg);           
 		   return deferred.promise;
         };
@@ -10,7 +11,7 @@ describe('Controller: Checklist', function() {
 	function makeFake(fkname, methods){
 	    var msg  = { message: "This is so great!" };
 	    var fk = jasmine.createSpyObj(fkname,methods);
-	    angular.forEach(methods, function(func, key){
+	    angular.forEach(methods, function(func){
 			fk[func].andCallFake(doPromiseResolve(msg));
         });
 	    return 	fk;	
@@ -48,7 +49,7 @@ describe('Controller: Checklist', function() {
 	$modal,
 	searchService,
 	userService, 
-	AuthenticationRequiredCtrl,
+	/*AuthenticationRequiredCtrl,*/
 	$modalInstance,	
     matterService;
 
@@ -56,11 +57,11 @@ describe('Controller: Checklist', function() {
     beforeEach(inject(function($injector) {
 	  
 	  $rootScope = $injector.get('$rootScope');
-	  $controller = $injector.get('$controller');
+	  var $controller = $injector.get('$controller');
 	  $q = $injector.get('$q');
-	  $timeout = $injector.get('$timeout');
-      $scope = $rootScope.$new();
-	  //AuthenticationRequiredCtrl = $injector.get('AuthenticationRequiredCtrl');
+	  //var $timeout = $injector.get('$timeout');
+      var $scope = $rootScope.$new();
+	  var AuthenticationRequiredCtrl = $injector.get('AuthenticationRequiredCtrl');
 	  //MOCKS
 	  var msg  = { message: "This is so great!" };
 	  //mocking smartRoutes		
@@ -98,7 +99,7 @@ describe('Controller: Checklist', function() {
 	  matterCategoryService = makeFake('matterCategoryService',['create','delete','update']); 
 
 	  matterService = makeFake('matterService',['get','selectMatter','data']);	  	 
-	  matterService.data.andCallFake(function(param){           
+	  matterService.data.andCallFake(function(/*param*/){           
 		   return {selected:{current_user:''}};	
 	  });	
 
@@ -123,12 +124,12 @@ describe('Controller: Checklist', function() {
 		
 		
 	    return {
-		 result: (function(){
+		 'result': function(){
 		   var deferred = $q.defer();							
 		   deferred.resolve({ responsible_party: "This is great!" });	           
 		   return deferred.promise;	  		 
-		 })
-		}
+		 }
+		};
 	  }); 
 	  
 	  userService = {data:function(){return { current:{user_class:'lawyer'}};},setCurrent:function(p){return {};}};
@@ -202,13 +203,13 @@ describe('Controller: Checklist', function() {
 	
 	//$scope.submitNewItem
 	it('$scope.submitNewItem should return result as exected',function() {
-	    $scope.data.newItemName = 'newItem'
+	    $scope.data.newItemName = 'newItem';
 		var category = {name:'ooo',items:[]};
 		expect(angular.equals([],category.items)).toBeTruthy();
 		$scope.submitNewItem(category);
 		$scope.$apply();
 		expect(angular.equals([{message: 'This is so great!'}],category.items)).toBeTruthy();
-	})
+	});
 	
 	//deleteCommentIsEnabled
 	it('should determine comment enabled', inject(function() {
@@ -264,7 +265,7 @@ describe('Controller: Checklist', function() {
 	//on 2
 	it('after itemSelected event fired, $scope.selectItem should called with found category',function() {
 	   spyOn($scope,'selectItem');
-	   $scope.data.categories.push({name:'someCategory'})
+	   $scope.data.categories.push({name:'someCategory'});
 	   $scope.$broadcast('itemSelected',{category:'someCategory'});
 	   expect($scope.selectItem).toHaveBeenCalledWith({category:'someCategory'},{ name : 'someCategory' });	
 	});
@@ -293,7 +294,7 @@ describe('Controller: Checklist', function() {
 		expect(ezConfirm.create).toHaveBeenCalled();
 		expect(matterItemService.delete).toHaveBeenCalled();
 		$scope.$apply();
-		expect($scope.data.selectedItem).toBe(null)
+		expect($scope.data.selectedItem).toBe(null);
 	});	
 	
 	//$scope.showAddItemForm
@@ -301,13 +302,13 @@ describe('Controller: Checklist', function() {
 	    $scope.data.showAddForm = 2;
 		$scope.showAddItemForm(1);
 		expect($scope.data.showAddForm).toBe(1)
-	})
+	});
 	
 	it(' $scope.data.showAddForm is equal to index parameter $scope.data.showAddForm should become NULL',function(){
 	    $scope.data.showAddForm = 1;
 		$scope.showAddItemForm(1);
 		expect($scope.data.showAddForm).toBe(null)
-	})	
+	});
 	
 	//$scope.saveSelectedItem
 	it('$scope.saveSelectedItem',function(){
@@ -340,15 +341,15 @@ describe('Controller: Checklist', function() {
    
     //$scope.submitNewCategory
 	it('$scope.submitNewCategory',function(){
-	    $scope.data.categories = ['something']
+	    $scope.data.categories = ['something'];
 	    $scope.data.newCatName = 'shlomo';
 		$scope.submitNewCategory();
 		$scope.$apply();
 		expect(angular.equals($scope.data.categories[1],{name: 'shlomo', items: []})).toBeTruthy();
-	})
+	});
 	
 	it('$scope.deleteCategory',function(){
-	    $scope.data.categories = ['shlomo','momo']
+	    $scope.data.categories = ['shlomo','momo'];
 		$scope.deleteCategory('shlomo');
 		$scope.$apply();
 		expect(angular.equals($scope.data.categories,['momo'])).toBeTruthy();
@@ -401,7 +402,7 @@ describe('Controller: Checklist', function() {
 		$scope.$apply();
 		
 		expect(matterItemService.loadRevision).not.toHaveBeenCalled();
-		expect($scope.data.selectedItem.latest_revision).toBe(null)
+		expect($scope.data.selectedItem.latest_revision).toBe(null);
 	});	
 	
     //$scope.deleteLatestRevision -matterItemService.loadRevision faliure
@@ -478,8 +479,9 @@ describe('Controller: Checklist', function() {
 				   return deferred.promise;	  		 
 				}()
 			}
-	    }); 	
-	    var item  ={responsible_party:'some responsible_party'}
+	    });
+
+	    var item  ={responsible_party:'some responsible_party'};
 		$scope.requestRevision(item);
 		$scope.$apply();
 		expect(item.responsible_party).toBe('This is great!')
@@ -509,7 +511,7 @@ describe('Controller: Checklist', function() {
 	    var item = {slug:{},is_requested:''};
 	    $scope.deleteRevisionRequest(item);
 		$scope.$apply();
-        expect(item.is_requested).toBe('This is so great!')		
+        expect(item.is_requested).toBe('This is so great!');
 	});
 
 	it('$scope.deleteRevisionRequest error'	,function(){
@@ -555,7 +557,7 @@ describe('Controller: Checklist', function() {
 				   deferred.resolve({ responsible_party: "This is great!" });	           
 				   return deferred.promise;	  		 
 				}()
-			}
+			};
 	    }); 	
 	    $scope.data.selectedItem = {};
 		$scope.showRevisionDocument();
@@ -591,13 +593,13 @@ describe('Controller: Checklist', function() {
 				   deferred.resolve(new_reviewer);	           
 				   return deferred.promise;	  		 
 				}()
-			}
-	    }); 	
-	    
+			};
+	    });
+
 		$scope.requestReview(revision);
 		expect( $modal.open).toHaveBeenCalled();
 		$scope.$apply();	        
-		expect(angular.equals(revision.reviewers,[{reviewer:{username:'vasia'}},new_reviewer])).toBeTruthy()
+		expect(angular.equals(revision.reviewers,[{reviewer:{username:'vasia'}},new_reviewer])).toBeTruthy();
 	});
 
 	it('$scope.requestReview -  if  "reviewers" inside revision is  null it should became empty array',function(){
@@ -630,8 +632,8 @@ describe('Controller: Checklist', function() {
 				   deferred.resolve(new_reviewer);	           
 				   return deferred.promise;	  		 
 				}()
-			}
-	    }); 	
+			};
+	    });
 	    
 		$scope.requestReview(revision);
 		expect( $modal.open).toHaveBeenCalled();
@@ -641,7 +643,7 @@ describe('Controller: Checklist', function() {
 	});
 	
 	it('$scope.remindRevisionReview - success',function(){
-		$scope.remindRevisionReview({slug:{}})
+		$scope.remindRevisionReview({slug:{}});
 	    $scope.$apply();
 		expect(toaster.pop.mostRecentCall.args[2]).toBe("All reviewers have been successfully informed.");
 	});
@@ -652,7 +654,7 @@ describe('Controller: Checklist', function() {
 		   deferred.reject({ is_requested: "This is so great!" });	           
 		   return deferred.promise;		  
 	    });	
-		$scope.remindRevisionReview({slug:{}})
+		$scope.remindRevisionReview({slug:{}});
 	    $scope.$apply();
 		expect(toaster.pop.mostRecentCall.args[2]).toBe("Unable to remind the participant.");
 	});
@@ -671,7 +673,7 @@ describe('Controller: Checklist', function() {
 		   var deferred = $q.defer();							
 		   deferred.reject({ is_requested: "This is so great!" });	           
 		   return deferred.promise;			
-		})	
+		});
 	    var $files = [], item = {slug:{}};
 		$scope.onFileDropped($files, item);
 		$scope.$apply();
@@ -690,7 +692,7 @@ describe('Controller: Checklist', function() {
 		   var deferred = $q.defer();							
 		   deferred.reject({ is_requested: "This is not so great!" });	           
 		   return deferred.promise;
-		})
+		});
 		$scope.deleteRevisionReviewRequest({slug:{}});
 		$scope.$apply();
 		expect(toaster.pop.mostRecentCall.args[2]).toBe('Unable to delete the revision review request.');
@@ -704,20 +706,20 @@ describe('Controller: Checklist', function() {
 	it('$scope.getReviewPercentageComplete - if 50% completed must return 50',function(){
 	    var  item = {slug:{},latest_revision:{reviewers:[{name:'some',is_complete:false},{name:'other',is_complete:true}]}}
 		var res = $scope.calculateReviewPercentageComplete(item);
-	    expect(item.review_percentage_complete).toBe(50)
+	    expect(item.review_percentage_complete).toBe(50);
 	});
 	
 	it('$scope.getReviewPercentageComplete - must return 0',function(){
 	    var  item = {slug:{},latest_revision:{reviewers:null}};
 		var res = $scope.calculateReviewPercentageComplete(item);
-	    expect(item.review_percentage_complete).toBe(null)
+	    expect(item.review_percentage_complete).toBe(null);
 	});
 
     it('$scope.focus',function(){
 	    spyOn($scope,'$broadcast');
 		$scope.focus('shlomo');
 		$timeout.flush();
-		expect($scope.$broadcast).toHaveBeenCalledWith('focusOn','shlomo')
+		expect($scope.$broadcast).toHaveBeenCalledWith('focusOn','shlomo');
 	});
 	
 	it('$rootScope.$on  after getting the result -  $scope.data.authenticationModalOpened should be false',function(){
@@ -741,8 +743,8 @@ describe('Controller: Checklist', function() {
 				   deferred.resolve({ responsible_party: "This is great!" });	           
 				   return deferred.promise;	  		 
 				}()
-			}
-	    }); 	    
+			};
+	    });
 	    $scope.$emit('authenticationRequired',true);			
 		expect($modal.open).toHaveBeenCalled();
 		$scope.$apply();
@@ -765,7 +767,7 @@ describe('Controller: Checklist', function() {
 describe('ChecklistCtrl', function() {
     function doPromiseReject(msg){
 	    return  function(){
-		   var deferred = $q.defer();							
+		   var deferred = $q.defer();
 		   deferred.reject(msg);           
 		   return deferred.promise;
         }		   
