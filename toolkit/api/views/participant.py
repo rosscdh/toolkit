@@ -157,7 +157,6 @@ class MatterParticipant(generics.CreateAPIView,
         role = self.request.DATA.get('role')
         if not role:
             return False
-
         return user.has_perm('workspace.manage_clients', self.matter) if ROLES.get_value_by_name(role.lower()) == ROLES.client \
             else user.has_perm('workspace.manage_participants', self.matter)
 
