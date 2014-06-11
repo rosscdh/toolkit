@@ -63,7 +63,7 @@ print p.permissions
 _please note:_ will not add permissions that dont exist in the main p.PERMISSIONS list
 
 ```
-p.update_permissions(manage_signatures=True, manage_clients=False, made_up_permission_that_does_not_exist=True)
+p.update_permissions(manage_signature_requests=True, manage_clients=False, made_up_permission_that_does_not_exist=True)
 print p.permissions  # note that "made_up_permission_that_does_not_exist" is not present
 ```
 

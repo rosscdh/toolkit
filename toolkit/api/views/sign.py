@@ -37,11 +37,11 @@ class SignatureEndpoint(viewsets.ModelViewSet):
 
     def can_edit(self, user):
         obj = self.get_object()
-        return user in obj.document.item.matter.participants.all()
+        return user.has_perm('workspace.manage_signature_requests', obj.matter)
 
     def can_delete(self, user):
         obj = self.get_object()
-        return user in obj.document.item.matter.participants.all()
+        return user.has_perm('workspace.manage_signature_requests', obj.matter)
 
 
 rulez_registry.register("can_read", SignatureEndpoint)
@@ -92,7 +92,7 @@ class ItemRevisionSignersView(generics.ListAPIView,
                 email = signer.get('email')
 
                 if email is None:
-                    raise exceptions.APIException('You must provide a list of signers and they must have an email attribute  {"signers": [{"email": "me@example.com"},]}')
+                    raise exceptions.APIException('You must provide a list of signers and they must have an email attribute {"signers": [{"email": "me@example.com"},]}')
 
                 try:
                     user = User.objects.get(email=email)
@@ -148,10 +148,10 @@ class ItemRevisionSignersView(generics.ListAPIView,
         return user.profile.user_class in ['lawyer', 'customer']
 
     def can_edit(self, user):
-        return user.profile.is_lawyer
+        return user.has_perm('workspace.manage_signature_requests', self.matter)
 
     def can_delete(self, user):
-        return user.profile.is_lawyer
+        return user.has_perm('workspace.manage_signature_requests', self.matter)
 
 
 rulez_registry.register("can_read", ItemRevisionSignersView)
@@ -240,10 +240,10 @@ class ItemRevisionSignerView(generics.RetrieveAPIView,
         return user.profile.user_class in ['lawyer', 'customer']
 
     def can_edit(self, user):
-        return user.profile.is_lawyer
+        return user.has_perm('workspace.manage_signature_requests', self.matter)
 
     def can_delete(self, user):
-        return user.profile.is_lawyer
+        return user.has_perm('workspace.manage_signature_requests', self.matter)
 
 
 rulez_registry.register("can_read", ItemRevisionSignerView)

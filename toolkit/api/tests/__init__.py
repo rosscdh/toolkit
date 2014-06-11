@@ -11,6 +11,7 @@ from .endpoints.review import *
 from .endpoints.permissions.review import *
 
 from .endpoints.sign import *
+from .endpoints.permissions.sign import *
 
 from .endpoints.item import *
 from .endpoints.permissions.item import *
