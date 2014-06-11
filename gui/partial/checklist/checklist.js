@@ -24,9 +24,10 @@ angular.module('toolkit-gui')
 	'$routeParams',
 	'$state',
 	'$location',
-	'$sce',
-	'$compile',
-	'$route',
+    '$sce',
+    '$sanitize',
+    '$compile',
+    '$route',
 	'smartRoutes',
 	'ezConfirm',
 	'toaster',
@@ -40,6 +41,7 @@ angular.module('toolkit-gui')
 	'activityService',
 	'userService',
 	'commentService',
+	'genericFunctions',
 	'$timeout',
 	'$log',
 	'$window',
@@ -51,9 +53,10 @@ angular.module('toolkit-gui')
 			 $routeParams,
 			 $state,
 			 $location,
-			 $sce,
-			 $compile,
-			 $route,
+             $sce,
+             $sanitize,
+             $compile,
+             $route,
 			 smartRoutes,
 			 ezConfirm,
 			 toaster,
@@ -67,6 +70,7 @@ angular.module('toolkit-gui')
 			 activityService,
 			 userService,
 			 commentService,
+			 genericFunctions,
 			 $timeout,
 			 $log,
 			 $window,
@@ -531,8 +535,14 @@ angular.module('toolkit-gui')
 		 */
 		$scope.saveSelectedItem = function () {
 			var matterSlug = $scope.data.slug;
+			var selectedItem = $scope.data.selectedItem;
 
-			if ($scope.data.selectedItem) {
+			if (selectedItem) {
+				selectedItem.name = genericFunctions.cleanHTML(selectedItem.name);
+				selectedItem.description = genericFunctions.cleanHTML(selectedItem.description);
+
+				selectedItem.edit_item_description = selectedItem.description;
+
 				matterItemService.update(matterSlug, $scope.data.selectedItem).then(
 					function success(/*item*/){
 						//do nothing
@@ -543,6 +553,19 @@ angular.module('toolkit-gui')
 				);
 			}
 		};
+
+		/**
+		 * cleanHTML
+		 * @param  {String} str Text string to be cleaned
+		 * @return {String}     Text string that has been cleaned
+		 */
+		function cleanHTML( str ) {
+			try {
+				return $sanitize(str);
+			} catch(e) {
+				return str.replace(/(<([^>]+)>)/ig, '');
+			}
+		}
 
 
 		/**
@@ -1171,7 +1194,7 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
 		$scope.requestSigning = function( revision ) {
-			var matterSlug = $scope.data.slug;
+			//var matterSlug = $scope.data.slug;
 			var item = $scope.data.selectedItem;
 
 			var modalInstance = $modal.open({
@@ -1827,6 +1850,8 @@ angular.module('toolkit-gui')
 		$scope.submitComment = function() {
 			var matterSlug = $scope.data.slug;
 			var item = $scope.data.selectedItem;
+
+			item.newcomment = genericFunctions.cleanHTML(item.newcomment);
 
 			// Show activity straight away
 			appendActivity('item.comment', item.newcomment, item);
