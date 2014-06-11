@@ -133,8 +133,8 @@ class WorkspaceParticipants(models.Model):
         # Anon permissions, for anyone else that does not match
         return ANONYMOUS_USER_PERMISSIONS
 
-    @staticmethod
-    def clean_permissions(**kwargs):
+    @classmethod
+    def clean_permissions(cls, **kwargs):
         """
         Pass in a set of permissions and remove those that do not exist in
         the base set of permissions
@@ -142,7 +142,7 @@ class WorkspaceParticipants(models.Model):
         kwargs_to_test = kwargs.copy()  # clone the kwargs dict so we can pop on it
 
         for permission in kwargs:
-            if permission not in self.PERMISSIONS:
+            if permission not in cls.PERMISSIONS:
                 kwargs_to_test.pop(permission)
                 # @TODO ? need to check for boolean value?
         return kwargs_to_test
