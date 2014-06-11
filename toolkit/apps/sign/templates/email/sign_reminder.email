@@ -8,20 +8,8 @@
 <p>{{ from_name }} has asked you to sign the document: {{ item.name }}.</p>
 
 <p>You can find it at {{ action_url }}</p>
-
+{% if message %}<p>{{ message }}</p>{% endif %}
 <p>Please go to there, login and either sign the document or provide {{ from_name }} with your feedback.</p>
 
 <p>Warning: do not forward this email to others or else they will be able to access your document.</p>
-{% endblock %}
-
-{% block plain_content %}
-Hi {{ to_name }},
-
-{{ from_name }} has asked you to sign the document: {{ item.name }}.
-
-You can find it at {{ action_url }}
-
-Please go to there, login and either sign the document or provide {{ from_name }} with your feedback.
-
-Warning: do not forward this email to others or else they will be able to access your document.
 {% endblock %}

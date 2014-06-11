@@ -68,13 +68,13 @@ def ensure_matter_participants_are_in_signdocument_participants(sender, instance
 
 
 @receiver(post_save, sender=SignDocument, dispatch_uid='sign.post_save.reset_recalculate_signing_percentage_complete')
-def reset_recalculate_signing_percentage_complete(sender, instance, created, update_fields, **kwargs):
+def reset_recalculate_signing_percentage_complete_post_save(sender, instance, created, update_fields, **kwargs):
     item = instance.document.item
     item.recalculate_signing_percentage_complete()
 
 
 @receiver(post_delete, sender=SignDocument, dispatch_uid='sign.pre_delete.reset_recalculate_signing_percentage_complete')
-def reset_recalculate_signing_percentage_complete(sender, instance, **kwargs):
+def reset_recalculate_signing_percentage_complete_post_delete(sender, instance, **kwargs):
     item = instance.document.item
     item.recalculate_signing_percentage_complete()
 
@@ -107,7 +107,6 @@ def on_signer_remove(sender, instance, action, pk_set, **kwargs):
 HelloSign webhook
 """
 def _get_user_from_event_data(event_data):
-    base_data = event_data.copy()
     signature_request = event_data.get('signature_request', {})
     event_data = event_data.get('event', {})
     event_metadata = event_data.get('event_metadata', {})
@@ -128,6 +127,7 @@ def _get_user_from_event_data(event_data):
         user = User.objects.get(email=related_email_address)
 
     return user
+
 
 @receiver(hellosign_webhook_event_recieved)
 def on_hellosign_webhook_event_recieved(sender, hellosign_log,

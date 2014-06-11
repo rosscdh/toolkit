@@ -27,6 +27,7 @@
         "filepicker": true,
         "TimeSpan": true,
         "Raven": true,
+        "jasmine": true,
         "Pusher": true
     },
     "-W083": false,

@@ -137,6 +137,25 @@ fab :environment celery_restart:name='custom_name.1'
 ```
 
 
+GUI Unit Tests
+--------------
+
+## Runnig the tests
+
+__If karma not installed:__
+
+```js
+npm install
+npm install -g karma-cli
+```
+
+__to run Karma:__
+
+```js
+karma start karma.conf.js
+```
+
+
 Development Process
 -------------------
 
