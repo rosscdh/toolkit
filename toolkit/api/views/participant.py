@@ -47,37 +47,6 @@ class MatterParticipant(generics.CreateAPIView,
     lookup_field = 'slug'
     lookup_url_kwarg = 'matter_slug'
 
-    # def dispatch(self, request, *args, **kwargs):
-    #     resp = super(MatterParticipant, self).dispatch(request, *args, **kwargs)
-    #     # in edit-case the role is set. in delete-case it is NOT set and needs to be loaded from the database.
-    #     if request.method == 'DELETE':
-    #         workspace_participant_object = get_object_or_404(WorkspaceParticipants,
-    #                                                          user__email=kwargs.get('email'),
-    #                                                          workspace__slug=kwargs.get('matter_slug'))
-    #         self.role = ROLES.get_name_by_value(workspace_participant_object.role)
-    #     else:
-    #         self.role = self.request.DATA.get('role', False)
-    #
-    #     if not resp.role:
-    #         raise exceptions.PermissionDenied("You need to submit a 'role'!")
-    #
-    #     return resp
-    #
-    # def initialize_request(self, request, *args, **kwargs):
-    #     import pdb;pdb.set_trace()
-    #     if request.method == 'DELETE':
-    #         workspace_participant_object = get_object_or_404(WorkspaceParticipants,
-    #                                                          user__email=kwargs.get('email'),
-    #                                                          workspace__slug=kwargs.get('matter_slug'))
-    #         self.role = ROLES.get_name_by_value(workspace_participant_object.role)
-    #     else:
-    #         self.role = request.DATA.get('role', False)
-    #
-    #     if not self.role:
-    #         raise exceptions.PermissionDenied("You need to submit a 'role'!")
-    #
-    #     return super(MatterParticipant, self).dispatch(request, *args, **kwargs)
-
     @staticmethod
     def validate_data(data, expected_keys=[]):
         if all(k in data.keys() for k in expected_keys) is False:
@@ -185,11 +154,16 @@ class MatterParticipant(generics.CreateAPIView,
         return user in self.get_object().participants.all() or user == self.get_object().lawyer
 
     def can_edit(self, user):
-        return user.has_perm('workspace.manage_clients', self.matter) if self.role == 'client' \
+        role = self.request.DATA.get('role')
+        if not role:
+            return False
+
+        return user.has_perm('workspace.manage_clients', self.matter) if ROLES.get_value_by_name(role.lower()) == ROLES.client \
             else user.has_perm('workspace.manage_participants', self.matter)
 
     def can_delete(self, user):
-        return user.has_perm('workspace.manage_clients', self.matter) if self.role == 'client' \
+        user_to_work_on = User.objects.get(email=self.kwargs.get('email'))
+        return user.has_perm('workspace.manage_clients', self.matter) if user_to_work_on.matter_permissions(matter=self.matter).role == ROLES.client \
             else user.has_perm('workspace.manage_participants', self.matter)
         # can I remove myself even without this permission?
 
