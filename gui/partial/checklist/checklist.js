@@ -81,6 +81,7 @@ angular.module('toolkit-gui')
 		 * @type {Object}
 		 */
 		var routeParams = smartRoutes.params();
+
 		$scope.data = {
 			'slug': routeParams.matterSlug,
 			'matter': null,
@@ -100,6 +101,24 @@ angular.module('toolkit-gui')
 			'knownSigners': []
 		};
 		//debugger;
+		// Basic checklist item format, used for placeholder checklist items
+		var CHECKLISTITEMSKELETON = {
+			"status": -1,
+			"responsible_party": null,
+			"review_percentage_complete": null,
+			"name": "",
+			"description": null,
+			"parent": null,
+			"children": [],
+			"closing_group": null,
+			"category": null,
+			"latest_revision": null,
+			"is_final": false,
+			"is_complete": false,
+			"is_requested": false,
+			"date_due": null,
+			"loading": true
+		};
 
 
 		if( $scope.data.slug && $scope.data.slug!=='' && $scope.data.matterCalled==null) {
@@ -295,13 +314,25 @@ angular.module('toolkit-gui')
 
 		$scope.submitNewItem = function(category) {
 			var matterSlug = $scope.data.slug;
+			var placeholderItem = angular.copy(CHECKLISTITEMSKELETON);
+			var itemName = $scope.data.newItemName;
 
 			if ($scope.data.newItemName) {
-				matterItemService.create(matterSlug, $scope.data.newItemName, category.name).then(
+
+				placeholderItem.name = itemName;
+				placeholderItem.category = category.name;
+
+				// Add placeholder item
+				category.items.push(placeholderItem);
+
+				// Clean up GUI
+				$scope.data.newItemName = '';
+
+				matterItemService.create(matterSlug, itemName, category.name).then(
 				function success(item){
-					/*category.items.unshift(item);*/
-					category.items.push(item);
-					$scope.data.newItemName = '';
+					updateObject(placeholderItem /*originalItem*/, item /*item recieved from API*/);
+					/* category.items.push(item); */
+					/* $scope.data.newItemName = ''; */
 
 					// Display item that has just been added
 					$scope.selectItem( item, category );
@@ -312,6 +343,20 @@ angular.module('toolkit-gui')
 			);
 			}
 		};
+
+		/**
+		 * updateObject: given a checklist item placeholder, update properties given updated details from the API
+		 * @param  {Object} originalItem placeholder checklist item
+		 * @param  {Object} updatedItem  update object from API
+		 */
+		function updateObject( originalItem, updatedItem ) {
+			delete originalItem.loading;
+
+			// Updating the object this way does not interupt the referenced object in the array
+			for(var key in updatedItem) {
+				originalItem[key] = updatedItem[key];
+			}
+		}
 
 
 		/**
