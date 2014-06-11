@@ -5,7 +5,7 @@ describe('Controller: Checklist', function() {
 		   var deferred = $q.defer();							
 		   deferred.resolve(msg);           
 		   return deferred.promise;
-        }		   
+        };
 	}
 	function makeFake(fkname, methods){
 	    var msg  = { message: "This is so great!" };
@@ -46,7 +46,6 @@ describe('Controller: Checklist', function() {
 	participantService,
 	matterCategoryService,
 	$modal,
-	userService,
 	searchService,
 	userService, 
 	AuthenticationRequiredCtrl,
@@ -65,8 +64,7 @@ describe('Controller: Checklist', function() {
 	  //MOCKS
 	  var msg  = { message: "This is so great!" };
 	  //mocking smartRoutes		
-	  smartRoutes = {'params': function() { return { 'matterSlug': 'test-matter', itemSlug:'123' }; }}
-	  //mocking matterService       
+	  smartRoutes = {'params': function() { return { 'matterSlug': 'test-matter', itemSlug:'123' }; }};
   
 	  
 	  matterItemService  = makeFake('matterItemService',[
@@ -85,15 +83,15 @@ describe('Controller: Checklist', function() {
 	  ]);	  
 	  matterItemService.deleteRevisionRequest.andCallFake(doPromiseResolve({ is_requested: "This is so great!" }));
 	  
-	  baseService = makeFake('baseService',['loadObjectByUrl']);	  
+	  var baseService = makeFake('baseService',['loadObjectByUrl']);	  
 	  
 	  
-	  toaster = makeFake('toaster',['pop']);
+	  var toaster = makeFake('toaster',['pop']);
 	  
 	  
-	  ezConfirm = jasmine.createSpyObj('ezConfirm',['create']);
+	  var ezConfirm = jasmine.createSpyObj('ezConfirm',['create']);
 	  ezConfirm.create.andCallFake(function(param,param1,callbck){           
-		   callbck()	  
+		   callbck();
 	  });
 	  
 	  participantService = makeFake('participantService',['getByURL']);	  
@@ -113,7 +111,7 @@ describe('Controller: Checklist', function() {
         }
       };	  
 
-	  $modal = jasmine.createSpyObj('$modal',['open'])
+	  $modal = jasmine.createSpyObj('$modal',['open']);
 	  $modal.open.andCallFake(function(param){	  
 	    /*
 	    'templateUrl': '/static/ng/partial/authentication-required/authentication-required.html',
@@ -125,11 +123,11 @@ describe('Controller: Checklist', function() {
 		
 		
 	    return {
-		 result: function(){
+		 result: (function(){
 		   var deferred = $q.defer();							
 		   deferred.resolve({ responsible_party: "This is great!" });	           
 		   return deferred.promise;	  		 
-		 }()
+		 })
 		}
 	  }); 
 	  

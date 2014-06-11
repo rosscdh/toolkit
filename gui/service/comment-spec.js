@@ -2,6 +2,7 @@ describe('commentService', function() {
   beforeEach(module('toolkit-gui'));
 
   var checker;
+  var commentService;
   beforeEach(inject(function (_commentService_) {
     commentService = _commentService_;
   }));

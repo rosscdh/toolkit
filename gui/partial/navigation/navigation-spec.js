@@ -1,10 +1,12 @@
 describe('NavigationCtrl', function() {
+	var $controller;
+
     function doPromiseResolve(msg){
 	    return  function(){
 		   var deferred = $q.defer();							
 		   deferred.resolve(msg);     
 		   return deferred.promise;
-        }		   
+        };
 	}
 	function makeFake(fkname, methods){
 	    var msg  = { message: "This is so great!" };
@@ -19,7 +21,7 @@ describe('NavigationCtrl', function() {
 		   var deferred = $q.defer();							
 		   deferred.reject(msg);           
 		   return deferred.promise;
-        }		   
+        };
 	}	
 	function createContrl(){
 	
@@ -87,21 +89,21 @@ describe('NavigationCtrl', function() {
 	   createContrl();
 	   expect(matterService.list).toHaveBeenCalled();
 	   $scope.$apply();
-	   expect(angular.equals({message: 'This is so great!'},$scope.data.matterlist)).toBeTruthy()
+	   expect(angular.equals({message: 'This is so great!'},$scope.data.matterlist)).toBeTruthy();
 	});
 	
 	it('matterService.list failure',function(){
-	   matterService.list.andCallFake(doPromiseReject({message:'This is NOT great!'}))	   
+	   matterService.list.andCallFake(doPromiseReject({message:'This is NOT great!'}));
 	   createContrl();
 	   expect(matterService.list).toHaveBeenCalled();
 	   $scope.$apply();
-	   expect(toaster.pop).toHaveBeenCalled()
+	   expect(toaster.pop).toHaveBeenCalled();
 	});
 	
 	it('$scope.isActive should call location.path',function(){
-	    $location.path.andReturn('some')
+	    $location.path.andReturn('some');
 	    createContrl();
 		$scope.isActive();
-		expect($location.path).toHaveBeenCalled()
+		expect($location.path).toHaveBeenCalled();
 	});
 });

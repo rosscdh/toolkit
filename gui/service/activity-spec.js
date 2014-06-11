@@ -2,6 +2,9 @@ describe('activityService', function() {
   beforeEach(module('toolkit-gui'));
 
   var checker;
+  var activityService;
+  var $httpBackend;
+  var $q;
   beforeEach(inject(function (_activityService_, _$httpBackend_, _$q_) {
     activityService = _activityService_;
     $httpBackend = _$httpBackend_;
