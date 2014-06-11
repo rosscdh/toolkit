@@ -147,12 +147,12 @@ class SignDocument(IsDeletedMixin,
         self.save(update_fields=['is_complete'])
     complete.alters_data = True
 
-    def send_invite_email(self, from_user, users=[]):
+    def send_invite_email(self, from_user, **kwargs):
         """
         @BUSINESSRULE requested users must be in the signers object
         """
-        if type(users) not in [list]:
-            raise Exception('users must be of type list: users=[<User>]')
+        subject = kwargs.get('subject', SignerReminderEmail.subject)
+        message = kwargs.get('message', None)
 
         for u in self.signers.all():
             #
@@ -169,7 +169,8 @@ class SignDocument(IsDeletedMixin,
                           item=self.document.item,
                           document=self.document,
                           from_name=from_user.get_full_name(),
-                          action_url=ABSOLUTE_BASE_URL(path=self.get_absolute_url(user=u)))
+                          action_url=ABSOLUTE_BASE_URL(path=self.get_absolute_url(user=u)),
+                          message=message)
 
     def can_read(self, user):
         return user in set(self.signers.all() | self.document.item.matter.participants.all())
