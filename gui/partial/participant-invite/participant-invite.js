@@ -60,7 +60,7 @@ angular.module('toolkit-gui')
                 'manage_participants': false,
                 'manage_document_reviews': false,
                 'manage_items': false,
-                'manage_signatures': false,
+                'manage_signature_requests': false,
                 'manage_clients': false
             }},
             'isNew': false,

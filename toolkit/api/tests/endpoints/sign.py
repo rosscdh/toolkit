@@ -116,8 +116,7 @@ class RevisionSignaturesTest(PyQueryMixin, BaseEndpointTest):
 
         # user review url must be in it
         self.assertItemsEqual(json_data.keys(), [u'is_claimed', u'claim_url', u'url', u'signers', u'requested_by', u'percentage_complete'])
-        self.assertItemsEqual(json_data['signers'][0].keys(), [u'username', u'name', u'url', u'user_class', u'initials',
-                                                               u'role'])
+        self.assertItemsEqual(json_data['signers'][0].keys(), [u'username', u'name', u'url', u'user_class', u'initials'])
 
         self.assertEqual(json_data.get('is_claimed'), False)
         self.assertEqual(json_data.get('claim_url'), sign_document.get_claim_url())
@@ -177,7 +176,6 @@ class RevisionSignaturesTest(PyQueryMixin, BaseEndpointTest):
 
         outbox = mail.outbox
         self.assertEqual(len(outbox), 0)
-
 
     def test_lawyer_patch(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -319,7 +317,7 @@ class RevisionSignerTest(BaseEndpointTest):
     /matters/:matter_slug/items/:item_slug/revision/signer/:username (GET,DELETE)
         [lawyer,customer] to view, delete signers
     """
-    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review', u'url', u'initials', u'user_class', u'name',
+    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_sign', u'url', u'initials', u'user_class', u'name',
                                            u'role']
 
     @property
@@ -333,7 +331,7 @@ class RevisionSignerTest(BaseEndpointTest):
         # @NOTICE take note ye heathens; when we go live with signing this
         # gets removed
         #
-        self.skipTest('Skiping Sign Tests until its ready')
+        # self.skipTest('Skiping Sign Tests until its ready')
         #
         #
         #
@@ -353,7 +351,8 @@ class RevisionSignerTest(BaseEndpointTest):
             self.revision.executed_file.save('test.pdf', File(filename))
             self.revision.save(update_fields=['executed_file'])
 
-        self.participant = mommy.make('auth.User', username='authorised-signer', first_name='Participant', last_name='Number 1', email='participant+1@lawpal.com')
+        self.participant = mommy.make('auth.User', username='authorised-signer', first_name=u'Pärticipant',
+                                      last_name=u'Nümber 1', email='participant+1@lawpal.com')
         self.participant.set_password(self.password)
         #
         # NB! by using the signdocument.signals and attachment.signals we are able to ensure that
@@ -458,7 +457,7 @@ class RevisionSignerTest(BaseEndpointTest):
         self.assertItemsEqual(self.EXPECTED_USER_SERIALIZER_FIELD_KEYS, json_data.keys())
 
         self.assertEqual(len(self.revision.signers.all()), 0)
-        self.assertEqual(len(self.revision.signdocument_set.all()), 1) # should be 1 because of the template one created for the participants
+        self.assertEqual(len(self.revision.signdocument_set.all()), 1)  # should be 1 because of the template one created for the participants
         self.assertEqual(len(self.revision.signdocument_set.all().first().signers.all()), 1)
 
     def test_customer_get(self):
