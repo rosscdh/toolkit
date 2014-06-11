@@ -28,21 +28,24 @@
 
                 <div class="client-permissions" ng-show="data.selectedUser.role==='client'">
                      <div class="user-details text-right">
-                         <a class="revoke" ng-show="data.selectedUser.username!==currentUser.username&&currentUser.permissions.manage_participants&&person.username!=matter.lawyer.username" href="javascript:;" ng-click="revoke(data.selectedUser)"><small>Revoke access</small></a>
+                         <a class="revoke" ng-show="data.selectedUser.username!==currentUser.username&&(currentUser.permissions.manage_participants||currentUser.permissions.manage_clients)&&person.username!=matter.lawyer.username"
+                            href="javascript:;" ng-click="revoke(data.selectedUser)"><small>Revoke access</small></a>
                          <a class="revoke" ng-show="data.selectedUser.username===currentUser.username" href="javascript:;" ng-click="revoke(data.selectedUser)"><small>Exit matter</small></a>
                     </div>
                     <div class="user-large customer" ng-bind="data.selectedUser.initials"></div>
                     <p>{{ data.selectedUser.name }}</p>
                     <p>{{ data.selectedUser.email }}</p>
-                    <div class='permissions-checklist' ng-show="currentUser.permissions.manage_participants">
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" ng-model="data.selectedUser.permissions.manage_clients"> Manage Clients (including adding and removing Clients)
-                            </label>
+                    <div ng-show="currentUser.permissions.manage_clients||currentUser.permissions.manage_participants">
+                        <div class='permissions-checklist'>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" ng-model="data.selectedUser.permissions.manage_clients"> Manage Clients (including adding and removing Clients)
+                                </label>
+                            </div>
                         </div>
-                    </div>
-                    <div class='text-center' ng-show="currentUser.permissions.manage_participants">
-                       <a class="btn btn-sm save-perm-btn" ng-click="update(data.selectedUser)"><span class="fui-check"></span> Save Permissions</a>
+                        <div class='text-center'>
+                           <a class="btn btn-sm save-perm-btn" ng-click="update(data.selectedUser)"><span class="fui-check"></span> Save Permissions</a>
+                        </div>
                     </div>
                 </div>
 
@@ -88,17 +91,17 @@
                 </div>
             </div>
         </div>
-        <div class="new-participant" ng-show="currentUser.permissions.manage_participants">
+        <div class="new-participant" ng-show="currentUser.permissions.manage_clients||currentUser.permissions.manage_participants">
             <h5>Add a Participant<!--<a href="javascript:;" class="close" ng-click="">x</a>--></h5>
             <div class="row">
-                <div class="col-sm-6">
+                <div class="col-sm-6" ng-show="currentUser.permissions.manage_participants">
                     <a href="javascript:;" class="btn btn-primary lawyer" ng-click="data.showAddLawyer=true">Add a Colleague</a>
                     <br />
                     <p class="note">
                         Adding a Colleague to this Matter will give them access to Modify the Checklist, its Categories, and the overall Matter.They will be able to discuss Checklist items with Colleagues and Clients.
                     </p>
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-6" ng-show="currentUser.permissions.manage_clients||currentUser.permissions.manage_participants">
                     <a href="javascript:;" class="btn btn-info customer" ng-click="data.showAddParticipant=true">Add a Client</a>
                     <br />
                     <p class="note">
