@@ -107,9 +107,9 @@ describe('Controller: Checklist', function() {
         close: jasmine.createSpy('modalInstance.close'),
         dismiss: jasmine.createSpy('modalInstance.dismiss'),
         result: {
-          then: jasmine.createSpy('modalInstance.result.then')
-        }
-      };	  
+          then: jasmine.createSpy('modalInstance.result.then');
+        };
+      }
 
 	  $modal = jasmine.createSpyObj('$modal',['open']);
 	  $modal.open.andCallFake(function(param){	  
@@ -119,7 +119,7 @@ describe('Controller: Checklist', function() {
         'backdrop': 'static',
         'resolve'	  
 	    */
-		//$controller(param.controller,{$scope: $scope, $modalInstance:$modalInstance, matter:{},toaster:{}})
+		//$controller(param.controller,{$scope: $scope, $modalInstance:$modalInstance, matter:{},toaster:{}});
 		
 		
 	    return {
@@ -127,7 +127,7 @@ describe('Controller: Checklist', function() {
 		   var deferred = $q.defer();							
 		   deferred.resolve({ responsible_party: "This is great!" });	           
 		   return deferred.promise;	  		 
-		 })
+		 });
 		};
 	  }); 
 	  
@@ -476,7 +476,7 @@ describe('Controller: Checklist', function() {
 				   var deferred = $q.defer();							
 				   deferred.resolve({ responsible_party: "This is great!" });	           
 				   return deferred.promise;	  		 
-				}()
+				}();
 			};
 	    }); 	
 	    var item  ={responsible_party:'some responsible_party'};
@@ -629,7 +629,7 @@ describe('Controller: Checklist', function() {
 				   var deferred = $q.defer();							
 				   deferred.resolve(new_reviewer);	           
 				   return deferred.promise;	  		 
-				}()
+				}();
 			}
 	    }); 	
 	    
@@ -637,11 +637,11 @@ describe('Controller: Checklist', function() {
 		expect( $modal.open).toHaveBeenCalled();
 		$scope.$apply();	        
 		
-		expect(angular.equals(revision.reviewers,[new_reviewer])).toBeTruthy()
+		expect(angular.equals(revision.reviewers,[new_reviewer])).toBeTruthy();
 	});
 	
 	it('$scope.remindRevisionReview - success',function(){
-		$scope.remindRevisionReview({slug:{}})
+		$scope.remindRevisionReview({slug:{}});
 	    $scope.$apply();
 		expect(toaster.pop.mostRecentCall.args[2]).toBe("All reviewers have been successfully informed.");
 	});
@@ -652,7 +652,7 @@ describe('Controller: Checklist', function() {
 		   deferred.reject({ is_requested: "This is so great!" });	           
 		   return deferred.promise;		  
 	    });	
-		$scope.remindRevisionReview({slug:{}})
+		$scope.remindRevisionReview({slug:{}});
 	    $scope.$apply();
 		expect(toaster.pop.mostRecentCall.args[2]).toBe("Unable to remind the participant.");
 	});
@@ -690,7 +690,7 @@ describe('Controller: Checklist', function() {
 		   var deferred = $q.defer();							
 		   deferred.reject({ is_requested: "This is not so great!" });	           
 		   return deferred.promise;
-		})
+		});
 		$scope.deleteRevisionReviewRequest({slug:{}});
 		$scope.$apply();
 		expect(toaster.pop.mostRecentCall.args[2]).toBe('Unable to delete the revision review request.');
@@ -704,20 +704,20 @@ describe('Controller: Checklist', function() {
 	it('$scope.getReviewPercentageComplete - if 50% completed must return 50',function(){
 	    var  item = {slug:{},latest_revision:{reviewers:[{name:'some',is_complete:false},{name:'other',is_complete:true}]}}
 		var res = $scope.calculateReviewPercentageComplete(item);
-	    expect(item.review_percentage_complete).toBe(50)
+	    expect(item.review_percentage_complete).toBe(50);
 	});
 	
 	it('$scope.getReviewPercentageComplete - must return 0',function(){
 	    var  item = {slug:{},latest_revision:{reviewers:null}};
 		var res = $scope.calculateReviewPercentageComplete(item);
-	    expect(item.review_percentage_complete).toBe(null)
+	    expect(item.review_percentage_complete).toBe(null);
 	});
 
     it('$scope.focus',function(){
 	    spyOn($scope,'$broadcast');
 		$scope.focus('shlomo');
 		$timeout.flush();
-		expect($scope.$broadcast).toHaveBeenCalledWith('focusOn','shlomo')
+		expect($scope.$broadcast).toHaveBeenCalledWith('focusOn','shlomo');
 	});
 	
 	it('$rootScope.$on  after getting the result -  $scope.data.authenticationModalOpened should be false',function(){
@@ -740,13 +740,13 @@ describe('Controller: Checklist', function() {
 				   var deferred = $q.defer();							
 				   deferred.resolve({ responsible_party: "This is great!" });	           
 				   return deferred.promise;	  		 
-				}()
-			}
+				}();
+			};
 	    }); 	    
 	    $scope.$emit('authenticationRequired',true);			
 		expect($modal.open).toHaveBeenCalled();
 		$scope.$apply();
-		expect($scope.data.authenticationModalOpened).toBe(false)
+		expect($scope.data.authenticationModalOpened).toBe(false);
 	});
 	
 	it('watch after data.dueDatePickerDate',function(){
@@ -759,7 +759,7 @@ describe('Controller: Checklist', function() {
 	    $scope.$apply();
 		expect(jQuery.datepicker.formatDate).toHaveBeenCalled();
 		expect($scope.saveSelectedItem).toHaveBeenCalled();
-	})
+	});
 });
 //matterService.get failure
 describe('ChecklistCtrl', function() {
