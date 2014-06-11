@@ -47,7 +47,7 @@
 
     <!-- Begin option toolbar -->
     <div class="add-new clearfix">
-        <div class="btn-group" ng-show="data.usdata.current.user_class=='lawyer'">
+        <div class="btn-group" ng-show="data.usdata.current.permissions.manage_items">
             <button class="btn btn-sm btn-info btn-embossed btn-add" filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)" extensions=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx"><span class="fui-upload"></span>
                 Add File
             </button>
