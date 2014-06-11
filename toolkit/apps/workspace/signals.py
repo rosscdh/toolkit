@@ -164,23 +164,6 @@ def on_workspace_post_save(sender, instance, created, **kwargs):
         matter = instance
         matter.actions.created_matter(lawyer=matter.lawyer)
 
-
-def on_workspace_m2m_changed(sender, instance, action, pk_set, **kwargs):
-    """
-    pre_add case is handled in another signal: PARTICIPANT_ADDED
-    """
-    if action == 'post_add':
-        for pk in pk_set:
-            adding_user = instance.lawyer
-            added_user = User.objects.get(pk=pk)
-            if adding_user != added_user:
-                instance.actions.added_matter_participant(adding_user=adding_user,
-                                                          added_user=added_user)  # assumption: only the creating lawyer can edit participants
-
-    if action == 'pre_remove':
-        for pk in pk_set:
-            removing_user = instance.lawyer
-            removed_user = User.objects.get(pk=pk)
-            if removing_user != removed_user:
-                instance.actions.removed_matter_participant(removing_user=removing_user,
-                                                            removed_user=removed_user)  # assumption: only the creating lawyer can edit participants
+        lawyer_profile = matter.lawyer.profile
+        lawyer_profile.matters_created = matter.lawyer.lawyer_workspace.count()
+        lawyer_profile.save(update_fields=['data'])

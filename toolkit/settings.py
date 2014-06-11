@@ -50,12 +50,11 @@ STATIC_URL = '/static/'
 # Additional locations of static files
 STATICFILES_DIRS = (
     # These are the dev files
-    ("ng", os.path.join(SITE_ROOT, 'gui')),
+    ("ng", os.path.join(SITE_ROOT, 'gui', 'dist')),
 )
 
-#STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
-STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
-
+STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+#STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 
 MEDIA_ROOT = os.path.join(SITE_ROOT, 'media')
 MEDIA_URL = '/m/'
@@ -154,6 +153,8 @@ HELPER_APPS = (
     'actstream',
     # notifications
     'stored_messages',
+
+    'jsonify',
 
     # integration for abridge; django-abridge
     'abridge',
@@ -269,11 +270,6 @@ CELERY_ACCEPT_CONTENT = ['json', 'pickle', ]
 
 FILEPICKER_API_KEY = 'A4Ly2eCpkR72XZVBKwJ06z'
 
-HELLOSIGN_AUTHENTICATION = ("founders@lawpal.com", "test2007")
-HELLOSIGN_API_KEY = '0ea9011ce33b5de3b58af3b3f6d449f8f3f72e2ac06c14c6319439af39fe32f6'
-HELLOSIGN_CLIENT_ID = '9bc892af173754698e3fa30dedee3826'
-HELLOSIGN_CLIENT_SECRET = '8d770244b9971abfe789f5224552239d'
-
 CORS_ORIGIN_WHITELIST = (
     'localhost:9000'
 )
@@ -307,11 +303,44 @@ REST_FRAMEWORK = {
 }
 
 
-#PIPELINE_CSS = {}
+PIPELINE_CSS = {
+  'core': {
+        'source_filenames': (
+            'bootstrap/css/bootstrap.css',
+            'css/flat-ui.css',
+            'fonts/pe-icon-7-stroke/css/pe-icon-7-stroke.css',
+            'css/application.css',
+            'css/animate.css',
+        ),
+        'output_filename': 'css/core.css',
+        'extra_context': {
+            'media': 'screen,projection',
+        },
+  }
+}
 PIPELINE_JS = {
+    'core': {
+        'source_filenames': (
+            'js/jquery.ui.touch-punch.min.js',
+            'js/bootstrap.min.js',
+            'js/bootstrap-select.js',
+            'js/bootstrap-switch.js',
+            'js/flatui-checkbox.js',
+            'js/flatui-radio.js',
+            'js/jquery.tagsinput.js',
+            'js/jquery.placeholder.js',
+            'js/bootstrap-typeahead.js',
+            'js/parsley-1.2.4.min.js',
+            'js/parsley-form.js',
+            'js/application.js',
+        ),
+        'output_filename': 'js/core.js',
+    },
+
     'reactjs': {
         'source_filenames': (
-            'js/matter_search.jsx',
+            'js/react-0.10.0.js',
+            'js/matter_list.jsx',
         ),
         'output_filename': 'js/jsx-all-compiled.js',
     }
@@ -441,12 +470,17 @@ LAWPAL_ACTIVITY = {
                       # 'revision-added-revision-comment',
                       # 'workspace-added-participant', 'workspace-removed-participant'
 
+                      # Signing
+                      'item-sent-for-signing', 'item-completed-signing-setup',
+                      #'item-viewed-signature-request', # removed due to it being overkill
+                      'item-signed',
+
                       # activate nearly everything for testing;
                       'item-reopened', 'item-closed',
                       'item-commented', 'item-comment-created', 'item-comment-deleted',
                       'item-invited-reviewer',
                       'item-provide-a-document',
-                      'item-invited-signer',
+                      'item-added-signer',
                       'item-completed-review',
                       'item-completed-all-reviews',
 
@@ -465,11 +499,16 @@ LAWPAL_ACTIVITY = {
     },
     "notifications": {
         "whitelist": [
+                      # Signing
+                      'item-sent-for-signing', 'item-completed-signing-setup',
+                      #'item-viewed-signature-request', # removed due to it being overkill
+                      'item-signed',
+
                       'item-reopened', 'item-closed',
                       'item-commented', 'item-comment-created', 'item-comment-deleted',
                       'item-invited-reviewer',
                       'item-provide-a-document',
-                      'item-invited-signer',
+                      'item-added-signer',
                       'item-completed-review',
                       'item-completed-all-reviews',
 
@@ -487,12 +526,18 @@ LAWPAL_ACTIVITY = {
                       ]
     },
     "activity": {
-        "whitelist": ['item-created', 'item-edited', 'item-commented', 'item-changed-the-status', 'item-renamed',
+        "whitelist": [
+                      # Signing
+                      'item-sent-for-signing', 'item-completed-signing-setup',
+                      'item-viewed-signature-request',  # kept for record reasons
+                      'item-signed',
+
+                      'item-created', 'item-edited', 'item-commented', 'item-changed-the-status', 'item-renamed',
                       'item-provide-a-document', 'item-invited-reviewer', 'item-canceled-their-request-for-a-document',
                       'item-closed', 'item-reopened', 'item-added-revision-comment', 'item-deleted-revision-comment',
                       'item-completed-review', 'item-viewed-revision',
                       'item-completed-all-reviews',
-                      'item-invited-signer',
+                      'item-added-signer',
                       'itemrequestrevisionview-provide-a-document',
 
                       'revision-created', 'revision-deleted',
@@ -527,6 +572,8 @@ PAYMENTS_PLANS = {
 }
 
 MATTER_EXPORT_DAYS_VALID = 3
+
+REMIND_DUE_DATE_LIMIT = 7
 
 try:
     LOCAL_SETTINGS

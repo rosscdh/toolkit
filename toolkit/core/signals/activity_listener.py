@@ -10,7 +10,8 @@ from django.dispatch.dispatcher import Signal
 from toolkit.tasks import run_task
 from toolkit.core.tasks import (_activity_send,
                                 _abridge_send,
-                                _notifications_send)
+                                _notifications_send,
+                                _mentions_send,)
 import logging
 logger = logging.getLogger('django.request')
 
@@ -82,6 +83,10 @@ def on_activity_received(sender, **kwargs):
         run_task(_abridge_send, verb_slug=verb_slug, actor=actor, target=target, action_object=action_object,
                  message=message, comment=kwargs.get('comment', None), item=kwargs.get('item', None),
                  reviewdocument=reviewdocument, send_to_all=send_to_all)
+
+        # send the @username mentions
+        run_task(_mentions_send, actor=actor, action_object=action_object, text=kwargs.get('comment', message))
+
     else:
         logger.error('One or more or actor: {actor} action_object: {action_object} target: {target} verb_slug: {verb_slug} where not provided'.format(actor=actor, action_object=action_object, target=target, verb_slug=verb_slug))
 

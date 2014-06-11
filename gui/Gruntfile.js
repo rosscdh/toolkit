@@ -50,6 +50,9 @@ module.exports = function (grunt) {
     preprocess : {
         // Task to create the index.html file that will be used during development.
         // Passes the app version and creates the /index.html
+        /**
+        * Development build settings
+        */
         django : {
             src : 'config.html',
             dest : 'index.html',
@@ -59,12 +62,34 @@ module.exports = function (grunt) {
                     staticPath : '<%= APP_STATIC_PATH %>',
                     apiBaseUrl : '/api/v1/',
                     DEBUG_MODE : true,
-                    SENTRY_PUBLIC_DSN : 'http://5584db708b75400fb439d4592c29fc9a@sentry.ambient-innovation.com/24',
+                    SENTRY_PUBLIC_DSN : 'https://5584db708b75400fb439d4592c29fc9a@sentry.ambient-innovation.com/24',
                     INTERCOM_APP_ID : 'wkxzfou',
                     PUSHER_API_KEY: '60281f610bbf5370aeaa'
                 }
             }
         },
+        /**
+        * Local testign with prod settings
+        * sentry adn intercom ids must be different here
+        */
+        djangoTestProd : {
+            src : 'config.html',
+            dest : 'index.html',
+            options : {
+                context : {
+                    staticBase : '<%= DJANGO_STATIC_BASE_PATH %>',
+                    staticPath : '',
+                    apiBaseUrl : '/api/v1/',
+                    DEBUG_MODE : false,
+                    SENTRY_PUBLIC_DSN : 'https://4caf829e14084f4ebfd8e4820b821364@app.getsentry.com/25296',
+                    INTERCOM_APP_ID : 'wkxzfou',
+                    PUSHER_API_KEY: '60281f610bbf5370aeaa'
+                }
+            }
+        },
+        /**
+        * Production build settings
+        */
         djangoProd : {
             src : 'config.html',
             dest : 'index.html',
@@ -175,11 +200,15 @@ module.exports = function (grunt) {
           {src: ['images/**'], dest: '<%= PRODUCTION_PATH %>'},
           {src: ['fonts/**'], dest: '<%= PRODUCTION_PATH %>'},
           {src: ['partial/**'], dest: '<%= PRODUCTION_PATH %>'},
-          {src: ['bower_components/jquery/**'], dest: '<%= PRODUCTION_PATH %>'},
-          {src: ['bower_components/jquery-ui/**'], dest: '<%= PRODUCTION_PATH %>'},
-          {src: ['bower_components/bootstrap/**'], dest: '<%= PRODUCTION_PATH %>'},
-          {src: ['bower_components/font-awesome/**'], dest: '<%= PRODUCTION_PATH %>'},
-          {src: ['bower_components/angular/**'], dest: '<%= PRODUCTION_PATH %>'}
+          {src: ['directive/**'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['bower_components/jquery/jquery.min.js'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['bower_components/jquery/jquery.min.map'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['bower_components/jquery-ui/ui/minified/jquery-ui.min.js'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['bower_components/bootstrap/dist/js/bootstrap.min.js'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['bower_components/angular/angular.min.js'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['bower_components/angular/angular.min.js.map'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['bower_components/font-awesome/fonts/**'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['lib/**'], dest: '<%= PRODUCTION_PATH %>'}
         ]
       }
     },
@@ -333,8 +362,8 @@ module.exports = function (grunt) {
 
     //djangoProd
     grunt.task.run('preprocess:djangoProd', 'gitinfo', 'jshint','clean:before','less','dom_munger:readcss','dom_munger:readscripts','ngtemplates','replace:template_paths','cssmin','concat','ngmin','uglify','copy','dom_munger:removecss','dom_munger:addcss','dom_munger:removescripts','dom_munger:addscript');
-
     grunt.task.run('htmlmin'/*,'imagemin'*//*,'clean:after'*/);
+
   });
 
   grunt.event.on('watch', function(action, filepath) {

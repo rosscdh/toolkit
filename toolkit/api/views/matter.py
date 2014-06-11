@@ -120,7 +120,7 @@ class MatterExportView(generics.CreateAPIView, MatterMixin):
         """
         Only the matter.lawyer can access this functionality
         """
-        return user == self.matter.lawyer
+        return user.profile.is_lawyer is True and user in self.matter.participants.all()
 
 rulez_registry.register("can_edit", MatterExportView)
 

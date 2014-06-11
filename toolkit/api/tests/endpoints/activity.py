@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.template import loader
-from django.core.urlresolvers import reverse
+from rest_framework.reverse import reverse
 from django.contrib.contenttypes.models import ContentType
 
 from actstream.models import Action
@@ -8,7 +8,6 @@ from actstream.models import Action
 from model_mommy import mommy
 
 from toolkit.api.tests import BaseEndpointTest
-from toolkit.api.serializers import ItemSerializer
 
 import json
 
@@ -37,7 +36,7 @@ class MatterActivityEndpointTest(BaseEndpointTest):
 
         events = json_data['results']
 
-        self.assertEqual(len(events), 3)  # create matter, create item, added participant; we dont record the participant add because participant add where the adding user is teh same as the added user is skipped
+        self.assertEqual(len(events), 2)  # create matter, create item
         self.assertGreater(len(events[0]['event']), 10)  # just to see if event-text contains information. username is not fix.
 
         stream_event = Action.objects.filter(action_object_object_id=self.item.id,

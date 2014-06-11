@@ -6,6 +6,7 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.auth.decorators import user_passes_test
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden, HttpResponseNotFound
 from django.views.generic import CreateView, DeleteView, ListView, TemplateView, UpdateView, DetailView
+from toolkit.apps.matter.signals import USER_DOWNLOADED_EXPORTED_MATTER
 
 from toolkit.core import _managed_S3BotoStorage
 
@@ -72,7 +73,6 @@ class MatterDownloadExportView(DetailView):
                 #
                 # File was not found
                 #
-                import pdb;pdb.set_trace()
                 return HttpResponseNotFound('%s was not found on s3' % zip_filename)
 
             else:
@@ -89,7 +89,7 @@ class MatterDownloadExportView(DetailView):
                 #
                 # Record this event
                 #
-                self.object.actions.user_downloaded_exported_matter(user=request.user)
+                USER_DOWNLOADED_EXPORTED_MATTER.send(sender=self, matter=self.object, user=request.user)
 
                 return response
 

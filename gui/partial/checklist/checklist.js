@@ -94,7 +94,8 @@ angular.module('toolkit-gui')
 			'usdata': userService.data(),
             'streamType': 'matter',
             'history': {},
-            'page': 'checklist'
+            'page': 'checklist',
+            'knownSigners': []
 		};
 		//debugger;
 
@@ -137,7 +138,7 @@ angular.module('toolkit-gui')
          * This function activates the following states inside the app by the URL params:
          * 1) Select a checklist item
          * 2) Show a review in the review modal window
-         * 
+         *
          * @private
 		 * @memberof			ChecklistCtrl
          * @method              handleUrlState
@@ -227,9 +228,14 @@ angular.module('toolkit-gui')
             Intercom.boot({
                 user_id: currUser.username,
                 email: currUser.email,
+                first_name: currUser.first_name,
+                last_name: currUser.last_name,
+                firm_name: currUser.firm_name,
+                verified: currUser.verified,
                 type: currUser.user_class,
                 app_id: INTERCOM_APP_ID,
                 created_at: (new Date(currUser.date_joined).getTime()/1000),
+                matters_created: currUser.matters_created,
                 user_hash: currUser.intercom_user_hash,
                 widget: {
                     activator: '.intercom',
@@ -239,7 +245,6 @@ angular.module('toolkit-gui')
 
             //Intercom.show();
         };
-
 
 
         $scope.editTextattribute = function(obj, context, attr) {
@@ -322,10 +327,12 @@ angular.module('toolkit-gui')
 
             $scope.data.selectedItem = item;
 			$scope.data.selectedCategory = category;
+            $scope.data.itemIsLoading = true;
 
 			$scope.activateActivityStream('item');
             $scope.loadItemDetails(item).then(function success(item){
                 deferred.resolve(item);
+                $scope.data.itemIsLoading = false;
                 $log.debug(item);
 		    });
 
@@ -700,7 +707,10 @@ angular.module('toolkit-gui')
 					revision.uploaded_by = matterService.data().selected.current_user;
 					item.latest_revision = revision;
 
-					$scope.data.uploading = false;
+					// Update uploading status
+					item.uploading = false;
+					$scope.data.uploading = uploadingStatus( $scope.data.matter.items );
+
 					//Reset previous revisions
 					item.previousRevisions = null;
 					$scope.data.showPreviousRevisions = false;
@@ -708,11 +718,24 @@ angular.module('toolkit-gui')
                     toaster.pop('success', 'Success!', 'Document added successfully', 3000);
 				},
 				function error(/*err*/) {
-					$scope.data.uploading = false;
+					// Update uploading status
+					item.uploading = false;
+					$scope.data.uploading = uploadingStatus( $scope.data.matter.items );
+					
 					toaster.pop('error', 'Error!', 'Unable to upload revision', 5000);
 				}
 			);
 		};
+
+		function uploadingStatus( allItems ) {
+			for(var i=0;i<allItems.length;i++) {
+				if(allItems[i].uploading) {
+					return true;
+				}
+			}
+
+			return false;
+		}
 
 		/**
 		 * Initiate the file upload process
@@ -724,26 +747,41 @@ angular.module('toolkit-gui')
 			var itemSlug = item.slug;
 
 			var user = userService.data().current;
+			var promise;
 
 			if( user.user_class === 'lawyer' ) {
 				item.uploading = true;
 				$scope.data.uploading = true;
 
-				matterItemService.uploadRevisionFile( matterSlug, itemSlug, $files ).then(
+				promise = matterItemService.uploadRevisionFile( matterSlug, itemSlug, $files );
+
+				item.uploadHandle = promise.uploadHandle;
+
+				promise.then(
 					function success( revision ) {
 						revision.uploaded_by = matterService.data().selected.current_user;
 						item.latest_revision = revision;
 
-						//Reset previous revisions
+						// Reset previous revisions
 						item.previousRevisions = null;
 						$scope.data.showPreviousRevisions = false;
+
+						// Update uploading status
 						item.uploadingPercent = 0;
 						item.uploading = false;
+						$scope.data.uploading = uploadingStatus( $scope.data.matter.items );
 						toaster.pop('success', 'Success!', 'File added successfully',3000);
 					},
-					function error(/*err*/) {
-						toaster.pop('error', 'Error!', 'Unable to upload revision',5000);
+					function error(err) {
+						// Update uploading status
 						item.uploading = false;
+
+						$scope.data.uploading = uploadingStatus( $scope.data.matter.items );
+
+						var msg = err&&err.message?err.message:'Unable to upload revision';
+						var title = err&&err.title?err.title:'Error';
+
+						toaster.pop('error', title, msg, 5000);
 					},
 					function progress( num ) {
 						/* IE-Fix, timeout and force GUI update */
@@ -754,6 +792,13 @@ angular.module('toolkit-gui')
 					}
 				);
 			}
+		};
+
+		//
+		//
+		$scope.cancelRevisionUpload = function(item) {
+			item.uploadHandle.canceled = true;
+			item.uploadHandle.abort();
 		};
 
 		/**
@@ -1068,6 +1113,66 @@ angular.module('toolkit-gui')
 			);
 		};
 
+        /**
+		 * Initiate the process of requesting signing from existing participants or new participants
+		 *
+		 * @param {Object} Revision object to perform action upon
+		 *
+		 * @private
+		 * @method				requestSigning
+		 * @memberof			ChecklistCtrl
+		 */
+		$scope.requestSigning = function( revision ) {
+			var matterSlug = $scope.data.slug;
+			var item = $scope.data.selectedItem;
+
+			var modalInstance = $modal.open({
+				'templateUrl': '/static/ng/partial/request-signing/request-signing.html',
+				'controller': 'RequestsigningCtrl',
+				'resolve': {
+					'participants': function () {
+						return $scope.data.matter.participants;
+					},
+					'currentUser': function () {
+						return $scope.data.matter.current_user;
+					},
+					'matter': function () {
+						return $scope.data.matter;
+					},
+					'checklistItem': function () {
+						return item;
+					},
+					'revision': function () {
+						return revision;
+					},
+                    'knownSigners': function () {
+						return $scope.data.knownSigners;
+					}
+				}
+			});
+
+			modalInstance.result.then(
+				function ok(result) {
+                    revision.signing = result;
+                    revision.signers = result.signers;
+
+                    jQuery.each(result.signers, function(index,signer){
+                        var results = jQuery.grep($scope.data.knownSigners, function (s) {
+                            return s.username === signer.username;
+                        });
+
+					    if( results.length===0 ) {
+                             $scope.data.knownSigners.push(signer);
+                        }
+                    });
+
+                    $log.debug("Length known signers: " + $scope.data.knownSigners.length);
+				},
+				function cancel() {
+					//
+				}
+			);
+		};
 
 		/**
 		* Remind all review users who haven´t reviewed yet.
@@ -1171,6 +1276,7 @@ angular.module('toolkit-gui')
 			);
 		};
 
+
         $scope.showReviewBySlug = function (revisionSlug, reviewSlug) {
             var matterSlug = $scope.data.slug;
             var item = $scope.data.selectedItem;
@@ -1266,6 +1372,95 @@ angular.module('toolkit-gui')
                     $scope.data.matter._meta.item.custom_status = result;
                 }
             );
+        };
+
+        /**
+		 * Initiates the view for signing as modal window.
+		 *
+		 * @param {Object} revision object to view
+		 * @param {Object} signing object
+		 *
+		 * @private
+		 * @method				showReview
+		 * @memberof			ChecklistCtrl
+		 */
+		$scope.showSigning = function( revision, signer ) {
+			var item = $scope.data.selectedItem;
+
+			var modalInstance = $modal.open({
+				'templateUrl': '/static/ng/partial/view-signing/view-signing.html',
+				'controller': 'ViewSigningCtrl',
+				'windowClass': 'modal-full',
+				'resolve': {
+					'matter': function () {
+						return $scope.data.matter;
+					},
+					'checklistItem': function () {
+						return $scope.data.selectedItem;
+					},
+					'revision': function () {
+						return revision;
+					},
+                    'signer': function () {
+						return signer;
+					}
+				}
+			});
+
+			modalInstance.result.then(
+				function ok(obj) {
+                    $log.debug(obj);
+                    revision.signing = obj;
+                    item.signing_percentage_complete = obj.percentage_complete;
+				},
+				function cancel() {
+					// do nothing
+				}
+			);
+		};
+
+        /**
+        * Remind all review users who haven´t reviewed yet.
+        *
+        * @param {Object} The item with the current revision
+        *
+        * @private
+        * @method           remindRevisionReview
+        * @memberof         ChecklistCtrl
+        */
+        $scope.remindRevisionSigners = function( item ) {
+            var matterSlug = $scope.data.slug;
+
+            matterItemService.remindRevisionSigners(matterSlug, item.slug).then(
+                    function success(){
+                        toaster.pop('success', 'Success!', 'All outstanding signers have been reminded.');
+                    },
+                    function error(/*err*/){
+                        if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to remind the signers.') {
+                            toaster.pop('error', 'Error!', 'Unable to remind the signers.',5000);
+                        }
+                    }
+            );
+        };
+
+        $scope.deleteSigningRequest = function (revision) {
+            if (revision.signing) {
+                ezConfirm.create('Delete Signing Request', 'Please confirm you would like to delete this signing request?',
+                    function yes() {
+                        // Confirmed- delete item
+                        matterItemService.deleteSigningRequest(revision.signing).then(
+                            function success() {
+                                revision.signing = null;
+                            },
+                            function error(/*err*/) {
+                                if (!toaster.toast || !toaster.toast.body || toaster.toast.body !== 'Unable to delete the signing request.') {
+                                    toaster.pop('error', 'Error!', 'Unable to delete the signing request.', 5000);
+                                }
+                            }
+                        );
+                    }
+                );
+            }
         };
 		/* End revision handling */
 

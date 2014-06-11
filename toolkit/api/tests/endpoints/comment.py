@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
-import datetime
+from django.core import mail
 from django.conf import settings
 from django.utils import timezone
+from rest_framework.reverse import reverse
+
 from actstream.models import Action
-from django.core.urlresolvers import reverse
-
-from . import BaseEndpointTest
-
 from model_mommy import mommy
 
+from . import BaseEndpointTest
+from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
+
 import json
+import datetime
 
 
 class CommentTest(BaseEndpointTest):
@@ -120,45 +122,6 @@ class CommentTest(BaseEndpointTest):
                                  json.dumps({"comment": "The rain in france, falls mainly on a baguette."}),
                                  content_type='application/json')
         self.assertEqual(resp.status_code, 403)
-    # def test_lawyer_patch_not_allowed(self):
-    #     # create comment and patch as other user which should not be allowed
-    #     self.client.login(username=self.user.username, password=self.password)
-    #
-    #     comment1 = mommy.make('actstream.Action',
-    #                           actor=self.lawyer,
-    #                           verb=u'commented',
-    #                           action_object=self.item,
-    #                           target=self.matter,
-    #                           data={'comment': u'I"m a test comment by lawyer'})
-    #
-    #     # patch comment1 should not be allowed because it is not mine
-    #     resp = self.client.patch(reverse('item_comment', kwargs={'matter_slug': self.matter.slug,
-    #                                                              'item_slug': self.item.slug,
-    #                                                              'id': comment1.id}),
-    #                              json.dumps({"comment": "The rain in france, falls mainly on a baguette."}),
-    #                              content_type='application/json')
-    #     self.assertEqual(resp.status_code, 403)
-    #
-    #     comment2 = mommy.make('actstream.Action',
-    #                           actor=self.user,
-    #                           verb=u'commented',
-    #                           action_object=self.item,
-    #                           target=self.matter,
-    #                           data={'comment': u'I"m a test comment #2 by user'})
-    #     comment3 = mommy.make('actstream.Action',
-    #                           actor=self.user,
-    #                           verb=u'commented',
-    #                           action_object=self.item,
-    #                           target=self.matter,
-    #                           data={'comment': u'I"m a test comment #3 by user'})
-    #
-    #     # patch comment2 should not be allowed because it is not my newest
-    #     resp = self.client.patch(reverse('item_comment', kwargs={'matter_slug': self.matter.slug,
-    #                                                              'item_slug': self.item.slug,
-    #                                                              'id': comment2.id}),
-    #                              json.dumps({"comment": "The rain in france, falls mainly on a baguette."}),
-    #                              content_type='application/json')
-    #     self.assertEqual(resp.status_code, 403)
 
     def test_lawyer_delete(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -266,3 +229,45 @@ class CommentTest(BaseEndpointTest):
         resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
 
         self.assertEqual(resp.status_code, 403)  # forbidden
+
+
+class UserMentionsInCommentTest(BaseEndpointTest):
+    """
+    Test that the user gets notified when @username is in the comment text
+    """
+    def setUp(self):
+        super(UserMentionsInCommentTest, self).setUp()
+        self.item = mommy.make('item.Item', matter=self.workspace, name='Comment Test Item #1')
+
+    @property
+    def endpoint(self):
+        return reverse('item_comment', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug})
+
+    def test_endpoint_name(self):
+        self.assertEqual(self.endpoint, '/api/v1/matters/%(matter_slug)s/items/%(item_slug)s/comment' % {
+            'matter_slug': self.matter.slug,
+            'item_slug': self.item.slug,
+        })
+
+    def test_lawyer_mentions_user(self):
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        expected_comment = "The rain in spain, falls mainly on a @%s." % self.user.username
+
+        data = {
+            "comment": expected_comment
+        }
+        resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
+
+        self.assertEqual(resp.status_code, 201)  # created
+
+        # test that the user will get a mention email
+        outbox = mail.outbox
+        self.assertEqual(len(outbox), 1)
+        email = outbox[0]
+        self.assertEqual(email.subject, u'Lawyër Tëst mentioned you in a comment')
+        self.assertEqual(email.recipients(), [u'test+customer@lawpal.com'])
+        self.assertTrue('<blockquotes>%s</blockquotes>' % expected_comment in email.body)
+        expected_access_url = '<p>You can view this mention at: <a href="{url}">{url}</a></p>'.format(url=ABSOLUTE_BASE_URL(self.item.get_absolute_url()))
+        self.assertTrue(expected_access_url in email.body)
+

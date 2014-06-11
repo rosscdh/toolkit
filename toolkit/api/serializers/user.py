@@ -26,9 +26,33 @@ def _get_user_review(self, obj, context):
             #
             # The bast one will have 0 reviewers! and be the last in the set (because it was added first)
             #
-            review_document = obj.reviewdocument_set.all().last()
+            review_document = getattr(obj, 'primary_reviewdocument', getattr(self, 'primary_reviewdocument', None))
 
         return review_document
+
+    return None
+
+
+def _get_user_sign(self, obj, context):
+    """
+    Try to provide an initial sign url from the base review_document obj
+    for the currently logged in user
+    """
+    request = context.get('request')
+    sign_document = context.get('sign_document', None)
+
+    if request is not None:
+        #
+        # if we have a sign_document present in the context
+        #
+        if sign_document is None:
+            # we have none, then try find the reviewdocument object that has all the matter participants in it
+            #
+            # The bast one will have 0 reviewers! and be the last in the set (because it was added first)
+            #
+            sign_document = getattr(obj, 'primary_signdocument', getattr(self, 'primary_signdocument', None))
+
+        return sign_document
 
     return None
 
@@ -41,6 +65,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     initials = serializers.SerializerMethodField('get_initials')
     name = serializers.SerializerMethodField('get_full_name')
     user_class = serializers.SerializerMethodField('get_user_class')
+    verified = serializers.SerializerMethodField('get_verified')
     intercom_user_hash = serializers.SerializerMethodField('get_intercom_user_hash')
 
     class Meta:
@@ -56,6 +81,9 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     def get_user_class(self, obj):
         return obj.profile.user_class
 
+    def get_verified(self, obj):
+        return obj.profile.verified
+
     def get_intercom_user_hash(self, obj):
         return _get_intercom_user_hash(user_identifier=obj.username)
 
@@ -68,7 +96,7 @@ class LiteUserSerializer(UserSerializer):
     """
     class Meta(UserSerializer.Meta):
         fields = ('url', 'username', 'name', 'initials', 'first_name', 'last_name', 'email', 'user_class',
-                  'intercom_user_hash', 'date_joined')
+                  'intercom_user_hash', 'date_joined', 'verified',)
 
 
 class SimpleUserSerializer(UserSerializer):
@@ -84,7 +112,7 @@ class SimpleUserWithReviewUrlSerializer(SimpleUserSerializer):
     user_review = serializers.SerializerMethodField('get_user_review')
 
     class Meta(SimpleUserSerializer.Meta):
-        fields = SimpleUserSerializer.Meta.fields +('user_review',)
+        fields = SimpleUserSerializer.Meta.fields + ('user_review',)
 
     def get_user_review(self, obj):
         """
@@ -99,6 +127,34 @@ class SimpleUserWithReviewUrlSerializer(SimpleUserSerializer):
             return {
                 'url': review_document.get_absolute_url(user=request.user),
                 'slug': review_document.slug
+            }
+
+        return None
+
+
+class SimpleUserWithSignUrlSerializer(SimpleUserSerializer):
+    """
+    User serilizer to provide a user object with the very important
+    user_sign_url
+    """
+    user_sign = serializers.SerializerMethodField('get_user_sign')
+
+    class Meta(SimpleUserSerializer.Meta):
+        fields = SimpleUserSerializer.Meta.fields + ('user_sign',)
+
+    def get_user_sign(self, obj):
+        """
+        Try to provide an initial reivew url from the base sign_document obj
+        """
+        context = getattr(self, 'context', None)
+        request = context.get('request')
+
+        sign_document = _get_user_sign(self=self, obj=obj, context=context)
+
+        if sign_document is not None:
+            return {
+                'url': sign_document.get_absolute_url(user=request.user),
+                'slug': sign_document.slug
             }
 
         return None

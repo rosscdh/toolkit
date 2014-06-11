@@ -120,7 +120,14 @@ html,body, div.full
 	padding-top:55px;
 	.checklist-col {
 		overflow-y:scroll;
+		overflow-x:visible;
+
 	}
+
+	#checklist-detail{
+			overflow: visible;
+		}
+
 	h5 {
 		font-size:20px;
 		text-transform: uppercase;
@@ -281,6 +288,26 @@ html,body, div.full
 					background-color:darken(white, 2%);
 					padding:9px 10px 0px 10px;
 					min-height:40px;
+					.btn-group {
+						margin-top:-33px;
+						margin-right:-10px;
+						button {
+							border-radius: 0px 0px 0px 0px;
+							font-size:11px;
+						}
+						ul.dropdown-menu {
+							opacity:1;
+							border:2px solid white;
+							li {
+								a {
+									padding:6px 8px 6px;
+								}
+								padding:0px 0px 0px 0px;
+								font-size:11px;
+								overflow:hidden;
+							}
+						}
+					}
 					h4 {
 						line-height:16px;
 						font-weight: bold;
@@ -339,17 +366,6 @@ html,body, div.full
 								padding-left:0;
 							}
 						}
-						ul.dropdown-menu {
-							opacity:1;
-							border:2px solid white;
-							li {
-								a {
-									padding:6px 8px 6px;
-								}
-								padding:0px 0px 0px 0px;
-								font-size:12px;
-							}
-						}
 					}
 
 					.status-0 {background-color:@doc-status-0;}
@@ -391,15 +407,19 @@ html,body, div.full
 						margin-bottom:3px
 					}
 				}
-				.review {
+				.review, .signing {
 					padding:9px 3px 9px 8px;
 					color:darken(@silver, 25%);
 					font-size:15px;
 					font-weight:normal;
 					background-color:white;
-					a {
+					a.btn {
+						color:white;
+					}
+					a, a.btn.btn-link {
 						color:darken(@silver, 35%);
 					}
+
 					&.in-progress {
 						background-color:lighten(@silver, 18%);
 					}
@@ -412,6 +432,7 @@ html,body, div.full
 							background-color:white;
 							a {
 								color: @orange;
+								font-size:13px;
 							}
 							a.btn {
 								opacity:0.8;
@@ -594,7 +615,7 @@ html,body, div.full
 						opacity:1;
 					}
 				}
-			}			
+			}
 		}
 
 		/*ul {
@@ -679,6 +700,9 @@ html,body, div.full
 
 
 .modal-content {
+	iframe {
+		border:1px solid #ccc;
+	}
 	ul.participants {
 		li {
 			margin:10px 0px;

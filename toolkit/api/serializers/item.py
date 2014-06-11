@@ -2,8 +2,7 @@
 """
 Items are either todo items or document items
 """
-from django.core.urlresolvers import reverse
-
+from rest_framework.reverse import reverse
 from rest_framework import serializers
 
 from toolkit.core.item.models import Item
@@ -22,6 +21,7 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
     status = serializers.ChoiceField(required=False, choices=Item.ITEM_STATUS.get_choices())
 
     review_percentage_complete = serializers.Field(source='review_percentage_complete')
+    signing_percentage_complete = serializers.Field(source='signing_percentage_complete')
 
     responsible_party = LiteUserSerializer(required=False)
 
@@ -42,6 +42,7 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
                   'status',
                   'responsible_party',
                   'review_percentage_complete',
+                  'signing_percentage_complete',
                   'name', 'description', 'matter',
                   'parent', 'children', 'closing_group', 'category',
                   'latest_revision',
@@ -102,6 +103,7 @@ class SimpleItemSerializer(ItemSerializer):
                   'name', 'description',
                   'status',
                   'review_percentage_complete',
+                  'signing_percentage_complete',
                   'category',
                   'latest_revision',
                   'is_final', 'is_complete', 'is_requested',

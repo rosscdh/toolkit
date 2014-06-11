@@ -5,29 +5,53 @@ Toolkit is a simplified interface for adding tools and users to a generic
 workspace.
 
 
+Requirements
+------------
+
+1. mkvirtualenv toolkit (assume you have virtualenv and virtualenvwrapper installed)
+2. pip install -r requirements/dev.txt *
+3. copy dev.local_settings.py to /toolkit/local_setting.py
+4. fab rebuild_local (will download and install "stamp" - ruby rest api)
+5. honcho start (starts runserver_plus in threaded mode as well as the stamp service)
+
+*If you are running XCode 5.1 and run into errors such as
+  "Compile failed with error code 1 in /private/tmp/pip_build_root/"
+
+Update to the newest version, or run:
+
+ARCHFLAGS=-Wno-error=unused-command-line-argument-hard-error-in-future pip install NAME
+
+http://stackoverflow.com/questions/22716854/os-x-pillow-installation-error/22727537#22727537
+
+
+```
+easy_isntall pip
+pip install virtualenvwrapper
+...
+$ export WORKON_HOME=~/.virtualenvs
+$ mkdir -p $WORKON_HOME
+$ source /usr/local/bin/virtualenvwrapper.sh
+$ mkvirtualenv toolkit
+```
+
+this line goes in your .bashrc .zshrc or whatever your flavour is:
+
+```
+source /usr/local/bin/virtualenvwrapper.sh
+```
+
+it gives you access to mkvirtualenv rmvirtualenv etc
+
+
 Getting started
 ---------------
 
 1. mkvirtualenv toolkit (assume you have virtualenv and virtualenvwrapper installed)
 2. pip install -r requirements/dev.txt
-3. fab rebuild_local (will download and install "stamp" - ruby rest api)
-4. honcho start (starts runserver_plus in threaded mode as well as the stamp service)
-
-
-Pandoc
-------
-
-__Installing__
-
-1. Mac: https://code.google.com/p/pandoc/downloads/detail?name=pandoc-1.12.3.pkg.zip&can=2&q= install the osx package
-2. Ubuntu: apt-get install pandoc should do it
-
-__PDF Latext__
-
-In order to use the pandoc conversion of html to pdf you need to install latex
-
-1. Mac: http://tug.org/mactex/
-2. Ubuntu: http://java.dzone.com/articles/installing-latex-ubuntu
+3. install yuglify ('npm install -g yuglify')
+4. fab rebuild_local (will download and install "stamp" - ruby rest api)
+5. honcho start (starts runserver_plus in threaded mode as well as the stamp service)
+6. or just ./manage.py runserver_plus --threaded
 
 
 Testing
@@ -35,7 +59,7 @@ Testing
 
 ### CasperJS && PhantomJS ###
 
-__currently we dont use phantom but once angularjs arrives this will change__
+__currently we dont use phantom but will do soon__
 
 __OSX__
 
@@ -112,19 +136,64 @@ fab :environment celery_stop:name='custom_name.1'
 fab :environment celery_restart:name='custom_name.1'
 ```
 
-# Unit Tests
+
+GUI Unit Tests
+--------------
 
 ## Runnig the tests
 
-# If karma not installed:
+__If karma not installed:__
 
 ```js
 npm install
 npm install -g karma-cli
 ```
 
-# to run Karma:
+__to run Karma:__
 
 ```js
 karma start karma.conf.js
+```
+
+
+Development Process
+-------------------
+
+__"The most important thing in communication is hearing what isn't said."__ - *Peter Drucker*
+
+With that in mind, please adhere to the following subtle-communication requirements.
+
+
+### Trello ###
+
+Ensure that you put guistimates in all of your tickets.. (0, 0.5, 1, 2, 3, 5, 8, 13, ...) __fibonacci sequence__
+
+**Required Name Format:**
+
+```
+(:guesstimate) [:branch_name] Short Description
+```
+
+Install this chrome extension as it makes the guestimates look better: 
+
+[Scrum for Trello plugin](https://chrome.google.com/webstore/detail/scrum-for-trello/jdbcdblgjdpmfninkoogcfpnkjmndgje?hl=en)
+
+
+
+### Github ###
+
+Ensure that you create Pull Requests for every branch that you work on. At the beginning not the end (this allows everyone a birds eye view of whats going on)
+
+**Required Name Format:**
+
+When working on it.
+
+```
+[WIP] Short Name
+```
+
+When ready for review.
+
+```
+[REVIEW] Short Name
 ```

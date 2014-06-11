@@ -1,0 +1,92 @@
+{% extends 'base-slim.html' %}{% load url from future %}
+
+{% block page_title %}Setup Document for Signing{% endblock %}
+
+{% block body %}
+  {% if can_claim %}
+   <div class="row col-sm-8 col-sm-offset-2">
+    <div id="user-message" class="page-header text-center">
+      <h3>Please wait...<br/>
+        <br />
+        <p class="lead text-muted">We are preparing your documents.</p></h3>
+    </div>
+  </div>
+    {% csrf_token %}
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="//s3.amazonaws.com/cdn.hellofax.com/js/embedded.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function () {
+        'use strict';
+
+        function openHelloSign() {
+            // set width and height
+            HelloSign.DEFAULT_WIDTH = $(window).width();// - ($(window).width()/98);
+            HelloSign.DEFAULT_HEIGHT = $(window).height();
+
+            HelloSign.open({
+                url: '{{ claim_url }}',
+                allowCancel: false,
+                {% if DEBUG %}
+                debug: true,
+                skipDomainVerification: true,
+                {% endif %}
+                messageListener: function(eventData) {
+                    var self = this;
+
+                    if (eventData.event == HelloSign.EVENT_ERROR) {
+                        var message_html = '<h3>Sorry, an error ocurred...<br/><small>We have recorded the event and or dev team will investigate.</small></h3>';
+                        $('#user-message').html(message_html);
+                    }
+
+                    if (eventData.event == HelloSign.EVENT_SENT) {
+                        /**
+                        * Capture the event sent request and its here that we
+                        * need to send the event data to our own servers so we
+                        * know whats happened and record the signature_id and other data
+                        */
+                        $.ajax({
+                          type: 'POST',
+                          url: '{% url "sign:claim_sign_document" slug=object.slug %}',
+                          data: eventData,
+                          dataType: 'json',
+                          beforeSend: function (jqXHR, settings) {
+                              // Pull the token out of the DOM.
+                              jqXHR.setRequestHeader('X-CSRFToken', $('input[name=csrfmiddlewaretoken]:first').val());
+                              var message_html = '<h3>Processing Document...<br/><small>we are recording and finalizing the document.</small></h3>';
+                          },
+                          success: function ( data ) {
+                              var message_html = '<h3>Completed...<br/><small>Please wait while we redirect you.</small></h3>';
+                          },
+                          error: function ( data ) {
+                              var message_html = '<h3>Sorry, an error ocurred...<br/><small>We have recorded the event and or dev team will investigate.</small></h3>';
+                          },
+                          complete: function ( data ) {
+                              $('#user-message').html(message_html);
+                              if (parent && parent.$('button#view-signing-close').length > 0 ) {
+                                parent.$('button#view-signing-close').trigger('click');
+                              } else {
+                                // redirect to requests
+                                window.location = "{% url 'request:list' %}";
+                              }
+                          }
+                        });
+                    }
+                }
+            });
+            // remove the HelloSign styles that append a black box and shadow
+            if ($('#hsEmbeddedFrame').length > 0) {
+              $('#hsEmbeddedFrame').attr('style', null);
+            }
+        };
+
+        HelloSign.init('{{ GLOBALS.HELLOSIGN_CLIENT_ID }}');
+        openHelloSign();
+
+    });
+    </script>
+  {% else %}
+    <div class="page-header">
+      <h3>Sorry, you can not send this document for signing. <br/><small>Only the matter owner ({{ view.matter.lawyer }}) or the person that sent the document for signing ({{ requested_by }}) can perform this action.</small></h3>
+    </div>
+  {% endif %}
+{% endblock %}

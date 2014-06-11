@@ -71,6 +71,8 @@ class TwoFactorVerifyViewTest(BaseScenarios, TestCase):
 
         response = self.client.post(reverse('me:two-factor-verify'), {'token': '0000000'})
         self.assertEqual(verify_token_mock.call_count, 1)
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['Location'], 'http://testserver/me/settings/')
+        self.assertEqual(response.status_code, 200)
+        # json response for popup window
+        self.assertEqual(response.content, '{"redirect": true, "url": "/me/settings/"}')
+
         self.assertTrue(self.lawyer.profile.data.get('two_factor_enabled'))

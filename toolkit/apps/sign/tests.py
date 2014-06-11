@@ -116,6 +116,12 @@ class SignDocumentModelTest(BaseDataProvider, TestCase):
         key = self.sign_document.make_user_auth_key(user=non_authed_user)
         self.assertEqual(self.sign_document.get_auth(auth_key=key), None)
 
+    def test_get_hs_service(self):
+        """
+        Test we are using the right hellosign endpoint
+        """
+        self.assertEqual(self.sign_document.get_hs_service().HelloSignSignatureClass.__class__.__name__, 'HelloSignUnclaimedDraftDocumentSignature')
+
 
 class SignerAuthorisationTest(BaseDataProvider, TestCase):
     def test_authorise_user(self):
