@@ -1,7 +1,7 @@
 from django.contrib import admin
 from toolkit.admin import SimpleTabularInline
 
-from .models import Workspace, Tool
+from .models import Workspace, Tool, InviteKey
 from toolkit.core.item.models import Item
 
 class ItemInline(SimpleTabularInline):
@@ -14,4 +14,4 @@ class WorkspaceAdmin(admin.ModelAdmin):
     inlines = [ItemInline, ]
 
 admin.site.register(Workspace, WorkspaceAdmin)
-admin.site.register([Tool])
+admin.site.register([Tool, InviteKey])

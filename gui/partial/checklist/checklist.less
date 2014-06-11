@@ -92,7 +92,19 @@ tr.item-heading.file-drag-over td:nth-child(2):before {
 		height: 24px;
 		margin: 0 10px 10px 0;
 		padding: 0;
-		width: 250px;
+		width: 230px;
+		position: relative;
+		padding-right: 80px; /* make room for cancel button */
+	}
+
+	button {
+		position: absolute;
+		left: 150px;
+		z-index: 997;
+		padding: 0.2em 0.5em;
+		height: 24px;
+		border-radius: 0;
+		width: 80px;
 	}
 }
 

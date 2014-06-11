@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.template import loader
-from django.core.urlresolvers import reverse
+from rest_framework.reverse import reverse
 from django.contrib.contenttypes.models import ContentType
 
 from actstream.models import Action
@@ -8,7 +8,6 @@ from actstream.models import Action
 from model_mommy import mommy
 
 from toolkit.api.tests import BaseEndpointTest
-from toolkit.api.serializers import ItemSerializer
 
 import json
 
