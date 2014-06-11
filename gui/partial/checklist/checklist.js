@@ -97,12 +97,9 @@ angular.module('toolkit-gui')
             'page': 'checklist',
             'knownSigners': []
 		};
-		//debugger;
+		
 
-
-		if( $scope.data.slug && $scope.data.slug!=='' && $scope.data.matterCalled==null) {
-			$scope.data.matterCalled = true;
-
+		function loadMatter() {
 			matterService.get( $scope.data.slug ).then(
 				function success( singleMatter ){
 					$scope.data.matter = singleMatter;
@@ -113,14 +110,19 @@ angular.module('toolkit-gui')
 					$scope.initializeActivityStream( singleMatter );
 
 					userService.setCurrent( singleMatter.current_user, singleMatter.lawyer );
-
-                    $scope.initialiseIntercom(singleMatter.current_user);
+                	$scope.initialiseIntercom(singleMatter.current_user);
 				},
 				function error(/*err*/){
 					toaster.pop('error', 'Error!', 'Unable to load matter',5000);
 					// @TODO: redirect user maybe?
 				}
 			);
+		}
+
+
+		if( $scope.data.slug && $scope.data.slug!=='' && $scope.data.matterCalled==null) {
+			$scope.data.matterCalled = true;
+			loadMatter();
 		}
 
         /**
@@ -1176,6 +1178,9 @@ angular.module('toolkit-gui')
                     });
 
                     $log.debug("Length known signers: " + $scope.data.knownSigners.length);
+
+                    // Reload matter
+                    loadMatter();
 				},
 				function cancel() {
 					//
