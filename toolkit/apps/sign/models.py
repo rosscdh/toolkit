@@ -130,15 +130,15 @@ class SignDocument(IsDeletedMixin,
 
     def percentage_complete(self):
         num_signatures = len(self.signatures)
-        percentage_complete = None  # require None so that we can represent that there are no signatures
+        percentage_complete = 0  # reset it here
 
-        if num_signatures > 0:
-            percentage_complete = 0  # reset it here
+        if num_signatures is not None and num_signatures > 0:
             num_complete = len([signature for signature in self.signatures if signature.get('signed_at', None) is not None])
 
             if num_complete > 0:
                 percentage_complete = float(num_complete) / float(num_signatures)
-                percentage_complete = round(percentage_complete * 100, 0)
+
+        percentage_complete = round(percentage_complete * 100, 0)
 
         return percentage_complete
 
@@ -147,12 +147,12 @@ class SignDocument(IsDeletedMixin,
         self.save(update_fields=['is_complete'])
     complete.alters_data = True
 
-    def send_invite_email(self, from_user, users=[]):
+    def send_invite_email(self, from_user, **kwargs):
         """
         @BUSINESSRULE requested users must be in the signers object
         """
-        if type(users) not in [list]:
-            raise Exception('users must be of type list: users=[<User>]')
+        subject = kwargs.get('subject', SignerReminderEmail.subject)
+        message = kwargs.get('message', None)
 
         for u in self.signers.all():
             #
@@ -169,7 +169,8 @@ class SignDocument(IsDeletedMixin,
                           item=self.document.item,
                           document=self.document,
                           from_name=from_user.get_full_name(),
-                          action_url=ABSOLUTE_BASE_URL(path=self.get_absolute_url(user=u)))
+                          action_url=ABSOLUTE_BASE_URL(path=self.get_absolute_url(user=u)),
+                          message=message)
 
     def can_read(self, user):
         return user in set(self.signers.all() | self.document.item.matter.participants.all())

@@ -120,6 +120,9 @@ class ClaimSignRevisionView(SignRevisionView,
         Handle the claim_url postback when the user has completed the claim setup
         """
         signature_request_id = request.POST.get('signature_request_id')
+        message = request.POST.get('message', None)  # HS to rpovide these, currently missing
+        subject = request.POST.get('subject', None)  # HS to rpovide these, currently missing
+
         logger.info('found signature_request_id: %s' % signature_request_id)
 
         self.object = self.get_object()
@@ -132,13 +135,18 @@ class ClaimSignRevisionView(SignRevisionView,
         # set the is_claimed property
         object_signature_request.data['is_claimed'] = True
         object_signature_request.save(update_fields=['data'])
+
         #
         # Ok we have it all, now we can send it for signing
         # @TODO make this async using run_task
         #
-        self.object.send_for_signing(signature_request_id=signature_request_id)
-
-        # send log event
-        self.matter.actions.completed_setup_for_signing(user=request.user, sign_object=self.object)
+        resp = self.object.send_for_signing(signature_request_id=signature_request_id)
+    
+        if resp.get('date_sent', None) is not None:
+            self.object.send_invite_email(from_user=request.user,
+                                          subject=subject,
+                                          message=message)
+            # send log event
+            self.matter.actions.completed_setup_for_signing(user=request.user, sign_object=self.object)
 
         return super(ClaimSignRevisionView, self).post(request=request, *args, **kwargs)
