@@ -306,6 +306,7 @@ angular.module('toolkit-gui')
 			 */
 			'uploadRevisionFile': function( matterSlug, itemSlug, $files ) {
 				var deferred = $q.defer(), /*files,*/ url;
+				var uploadHandle;
 
 				//var api = revisionItemResource();
 
@@ -313,7 +314,7 @@ angular.module('toolkit-gui')
 					url = API_BASE_URL + 'matters/'+matterSlug+'/items/'+itemSlug+'/revision';
 					var file = $files[0];
 
-					$upload.upload({
+					uploadHandle = $upload.upload({
 						'url': url, //upload.php script, node.js route, or servlet url
 						'file': file,
 						'fileFormDataName': 'executed_file',
@@ -326,7 +327,15 @@ angular.module('toolkit-gui')
 						deferred.resolve(data);
 						//console.log(data);
 					}).error(function(){
-						deferred.reject('Unable to upload file');
+						var err = new Error('Unable to upload file');
+						if( uploadHandle.canceled ) {
+							err = new Error('Upload canceled');
+							err.title = 'Canceled';
+							deferred.reject(err);
+						} else {
+							deferred.reject(err);
+						}
+						
 					});
 				} else {
 					setTimeout(
@@ -335,6 +344,8 @@ angular.module('toolkit-gui')
 						},
 					1);
 				}
+
+				deferred.promise.uploadHandle = uploadHandle;
 
 				return deferred.promise;
 			},

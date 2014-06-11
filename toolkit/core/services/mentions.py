@@ -53,11 +53,19 @@ class MentionsService(object):
         access_url = kwargs.get('access_url', None)
         mentioned_by = kwargs.get('mentioned_by', self.mentioned_by)
 
+        action_object = kwargs.get('action_object', None)
+        matter = kwargs.get('matter', None)
+
+        if matter is None:
+            matter = getattr(action_object, 'matter', None)
+
         subject = kwargs.get('subject', YouWereMentionedEmail.subject)
 
         kwargs.update({
             'users': users,
             'access_url': access_url,
+            'matter': matter,
+            'action_object': action_object,
             'mentioned_by': mentioned_by,
             'mention': mention
         })
