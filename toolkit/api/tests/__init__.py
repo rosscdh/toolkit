@@ -24,6 +24,7 @@ from .endpoints.category import *
 from .endpoints.permissions.category import *
 
 from .endpoints.revision import *
+from .endpoints.permissions.revision import *
 
 from .endpoints.user import *
 

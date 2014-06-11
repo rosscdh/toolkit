@@ -69,11 +69,9 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
         but return the Revision object as self.object
         """
         if self.request.method in ['POST']:
-
             self.revision = Revision(uploaded_by=self.request.user, item=self.item) if self.request.user.is_authenticated() else None
 
         else:
-
             # get,patch
             self.revision = self.get_latest_revision()
 
@@ -213,12 +211,14 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
         """
         the lawyer the customer as well as the latest_revision reviewers can read
         """
-        return user in self.matter.participants.all() and user.matter_permissions(matter=self.matter).has_permission(manage_items=True) is True
+        return user in self.matter.participants.all() or user in self.item.latest_revision.reviewers.all()
         # return (user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all() \
         #     or user in self.item.latest_revision.reviewers.all())
 
     def can_edit(self, user):
-        return user in self.matter.participants.all() and user.matter_permissions(matter=self.matter).has_permission(manage_items=True) is True
+        return (user in self.matter.participants.all() \
+               or (self.item.latest_revision is not None and user in self.item.latest_revision.reviewers.all())
+               or user == self.item.responsible_party)
         # return (user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all() \
         #     or (self.item.latest_revision is not None and user in self.item.latest_revision.reviewers.all())
         #     or user == self.item.responsible_party)
