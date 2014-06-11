@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse
+from rest_framework.reverse import reverse
 
 from rest_framework import serializers
 from urlparse import urlparse
@@ -9,10 +9,11 @@ from toolkit.core.attachment.models import Revision
 from toolkit.core.attachment.tasks import _download_file
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 
-from toolkit.api.serializers.user import _get_user_review
+from toolkit.api.serializers.user import _get_user_review, _get_user_sign
 
 from .user import SimpleUserSerializer
 from .review import ReviewSerializer
+from .sign import SignatureSerializer
 
 import os
 import logging
@@ -35,7 +36,7 @@ def _valid_filename_length(filename):
     ext = ext.lower()
 
     if ext not in EXT_WHITELIST:
-        raise ValidationError("Invalid filetype, is: %s should be in: %s" % (ext, self.ext_whitelist))
+        raise ValidationError("Invalid filetype, is: %s should be in: %s" % (ext, EXT_WHITELIST))
 
     if len(base_filename) > MAX_LENGTH_FILENAME:  # allow for 20 aspects to the name in addition ie. v1-etc
         base_filename = base_filename[0:MAX_LENGTH_FILENAME]
@@ -202,9 +203,9 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
     item = serializers.HyperlinkedRelatedField(many=False, view_name='item-detail')
 
     reviewers = serializers.SerializerMethodField('get_reviewers')
-    signers = serializers.HyperlinkedRelatedField(many=True, view_name='user-detail', lookup_field='username')
+    signers = SimpleUserSerializer(source='signers.all', many=True, required=False)
+    signing = serializers.SerializerMethodField('get_signing')
 
-    # "user" <— the currently logged in user.. "review_url" because the url is relative to the current user
     user_review = serializers.SerializerMethodField('get_user_review')
     user_download_url = serializers.SerializerMethodField('get_user_download_url')
 
@@ -220,10 +221,12 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
                   'url', 'regular_url',
                   'name', 'description',
                   'executed_file',
+                  'is_executed',
                   'status',
                   'item',
                   'uploaded_by',
                   'reviewers', 'signers',
+                  'signing',
                   'revisions',
                   'user_review', 'user_download_url',
                   'date_created',)
@@ -278,10 +281,8 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
     def get_reviewers(self, obj):
         reviewers = []
         if getattr(obj, 'pk', None) is not None:  # it has not been deleted when pk is None
-            for u in obj.reviewers.all():
-                reviewdoc = obj.reviewdocument_set.filter(reviewers__in=[u]).first()
-                if reviewdoc is not None:
-                    reviewers.append(ReviewSerializer(reviewdoc, context={'request': self.context.get('request')}).data)
+            for reviewdoc in obj.reviewdocument_set.filter(reviewers__in=obj.reviewers.all()):
+                reviewers.append(ReviewSerializer(reviewdoc, context={'request': self.context.get('request')}).data)
 
         return reviewers
 
@@ -315,6 +316,16 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
             return review_document.get_download_url(user=request.user)
 
         return None
+
+    def get_signing(self, obj):
+        data = None
+        context = getattr(self, 'context', None)
+
+        sign_document = _get_user_sign(self=self, obj=obj, context=context)
+        if sign_document is not None and sign_document.signing_request is not None:
+            data = SignatureSerializer(sign_document, context=context).data
+        return data
+
 
     def get_revisions(self, obj):
         return [ABSOLUTE_BASE_URL(reverse('matter_item_specific_revision', kwargs={

@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from django.core import signing
+from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.core.files.storage import default_storage
 
 from rulez import registry as rulez_registry
 
+from hellosign_sdk import HSClient
+
+# django wrapper hello_sign imports
 from hello_sign.mixins import ModelContentTypeMixin, HelloSignModelMixin
 
 from toolkit.core.mixins import IsDeletedMixin
@@ -14,10 +18,8 @@ from toolkit.apps.review.mixins import UserAuthMixin
 
 from .managers import SignDocumentManager
 from .mailers import SignerReminderEmail
+from .mixins import HelloSignOverridesMixin
 
-from toolkit.core import _managed_S3BotoStorage
-
-from itertools import chain
 from uuidfield import UUIDField
 from jsonfield import JSONField
 
@@ -28,6 +30,7 @@ logger = logging.getLogger('django.request')
 
 class SignDocument(IsDeletedMixin,
                    UserAuthMixin,
+                   HelloSignOverridesMixin,
                    HelloSignModelMixin,
                    ModelContentTypeMixin,
                    models.Model):
@@ -37,6 +40,7 @@ class SignDocument(IsDeletedMixin,
     """
     slug = UUIDField(auto=True, db_index=True)
     document = models.ForeignKey('attachment.Revision')
+    requested_by = models.ForeignKey('auth.User', null=True, related_name='signatures_requested_by')
     signers = models.ManyToManyField('auth.User')
     is_complete = models.BooleanField(default=False)
     date_last_viewed = models.DateTimeField(blank=True, null=True)
@@ -47,17 +51,6 @@ class SignDocument(IsDeletedMixin,
     class Meta:
         # @BUSINESS RULE always return the newest to oldest
         ordering = ('-id',)
-
-    def get_absolute_url(self, user):
-        auth_key = self.get_user_auth(user=user)
-        if auth_key is not None:
-            return reverse('sign:sign_document', kwargs={'slug': self.slug, 'auth_slug': auth_key})
-        return None
-
-    def complete(self, is_complete=True):
-        self.is_complete = is_complete
-        self.save(update_fields=['is_complete'])
-    complete.alters_data = True
 
     @property
     def signer_has_viewed(self):
@@ -80,17 +73,6 @@ class SignDocument(IsDeletedMixin,
         return self.document.item.latest_revision == self.document
 
     @property
-    def file_exists_locally(self):
-        """
-        Used to determine if we should download the file locally
-        """
-        try:
-            return default_storage.exists(self.document.executed_file)
-        except Exception as e:
-            logger.critical('Crocodoc file does not exist locally: %s raised exception %s' % (self.document.executed_file, e))
-        return False
-
-    @property
     def matter(self):
         return self.document.item.matter
 
@@ -99,60 +81,71 @@ class SignDocument(IsDeletedMixin,
         return set(self.signers.all() | self.matter.participants.all())
 
     @property
-    def signer(self):
-        """
-        return the reviewer: the person in self.signers that is not in self.participants
-        """
+    def signing_request(self):
+        return self.hellosign_requests().first()
+
+    @property
+    def signatures(self):
+        return self.signing_request.data.get('signature_request', {}).get('signatures', []) if self.signing_request is not None else []
+
+    def __unicode__(self):
+        return u'%s' % str(self.slug)
+
+    def get_absolute_url(self, signer):
+        return ABSOLUTE_BASE_URL(reverse('sign:sign_document', kwargs={'slug': self.slug, 'username': signer.username}))
+
+    def get_claim_url(self):
+        return ABSOLUTE_BASE_URL(reverse('sign:claim_sign_document', kwargs={'slug': self.slug}))
+
+    def get_signer_signing_url(self, signer):
+        signature_id = None
+        signatures = self.signatures
+        signer_email = signer.email
+
         try:
-            # combine signers and participants
-            # this is necessary as a participant may be a reviewer by request
-            signers = set(self.signers.all())
-            participants = set(self.matter.participants.all())
-            combined = signers.union(participants)
-            # get the common reviewer
-            return signers.intersection(combined).pop()
-        except:
-            logger.error('no reviewer found for ReviewDocument: %s' % self)
-            return None
+            signature_id = [s for s in signatures if s.get('signer_email_address') == signer_email][0].get('signature_id', None)
+        except IndexError:
+            logger.error('Could not find signer: %s in %s' % (signer_email, signatures))
+            
+        if signature_id is not None:
+            HS_CLIENT = HSClient(api_key=settings.HELLOSIGN_API_KEY)
+            embedded_signing_object = HS_CLIENT.get_embedded_object(signature_id)
 
-    def download_if_not_exists(self):
-        """
-        Its necessary to download the file from s3 locally as we have restrictive s3
-        permissions (adds time but necessary for security)
-        """
-        file_name = self.document.executed_file.name
+            return embedded_signing_object.sign_url
+        return None
 
-        b = _managed_S3BotoStorage()
+    def has_signed(self, signer):
+        signer_email = signer.email
+        return len([s for s in self.signatures if s.get('signer_email_address') == signer_email and s.get('signed_at') is not None]) == 1
 
-        if b.exists(file_name) is False:
-            raise Exception('File does not exist on s3: %s' % file_name)
+    def signed_at(self, signer):
+        signer_email = signer.email
+        signed_at = None
+        try:
+            signed_at = [s for s in self.signatures if s.get('signer_email_address') == signer_email and s.get('signed_at') is not None][0].get('signed_at')
+            signed_at = datetime.datetime.fromtimestamp(int(signed_at))
+        except IndexError:
+            pass
+        return signed_at
 
-        else:
-            #
-            # download from s3 and save the file locally
-            #
-            file_object = b._open(file_name)
-            return default_storage.save(file_name, file_object)
+    def percentage_complete(self):
+        num_signatures = len(self.signatures)
+        percentage_complete = None  # require None so that we can represent that there are no signatures
 
+        if num_signatures > 0:
+            percentage_complete = 0  # reset it here
+            num_complete = len([signature for signature in self.signatures if signature.get('signed_at', None) is not None])
 
-    def hs_document_title(self):
-        """
-        Method to set the document title, displayed in the HelloSign Interface
-        """
-        return self.__unicode__()
+            if num_complete > 0:
+                percentage_complete = float(num_complete) / float(num_signatures)
+                percentage_complete = round(percentage_complete * 100, 0)
 
-    def hs_document(self):
-        """
-        Return the document to be sent for signing
-        Ties in with HelloSignModelMixin method
-        """
-        return self.document.executed_file
+        return percentage_complete
 
-    def hs_signers(self):
-        """
-        Return a list of invitees to sign
-        """
-        return [{'name': u.get_full_name(), 'email': u.email} for u in [self.signers.all()]]
+    def complete(self, is_complete=True):
+        self.is_complete = is_complete
+        self.save(update_fields=['is_complete'])
+    complete.alters_data = True
 
     def send_invite_email(self, from_user, users=[]):
         """
