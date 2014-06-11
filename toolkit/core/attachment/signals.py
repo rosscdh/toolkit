@@ -41,27 +41,27 @@ def ensure_revision_slug(sender, instance, **kwargs):
                 instance.slug = final_slug
 
 
-@receiver(pre_save, sender=Revision, dispatch_uid='revision.changed_content')
-def on_revision_save_changed_content(sender, instance, **kwargs):
-    matter = instance.item.matter
+# @receiver(pre_save, sender=Revision, dispatch_uid='revision.changed_content')
+# def on_revision_save_changed_content(sender, instance, **kwargs):
+#     matter = instance.item.matter
 
-    try:
-        # get the current
-        previous_instance = sender.objects.get(pk=instance.pk)
+#     try:
+#         # get the current
+#         previous_instance = sender.objects.get(pk=instance.pk)
 
-    except sender.DoesNotExist:
-        #
-        # Do nothing as the previous object does not exist
-        #
-        previous_instance = None
+#     except sender.DoesNotExist:
+#         #
+#         # Do nothing as the previous object does not exist
+#         #
+#         previous_instance = None
 
-    if previous_instance:
-        if previous_instance.status != instance.status:
-            matter.actions.revision_changed_status(user=matter.lawyer,  # WHO is allowed to change status?
-                                                   revision=instance,
-                                                   previous_status=previous_instance.status)
+#     if previous_instance:
+#         if previous_instance.status != instance.status:
+#             matter.actions.revision_changed_status(user=matter.lawyer,  # WHO is allowed to change status?
+#                                                    revision=instance,
+#                                                    previous_status=previous_instance.status)
 
-    logger.debug('Recieved revision.pre_save:changed_content event: %s' % sender)
+#     logger.debug('Recieved revision.pre_save:changed_content event: %s' % sender)
 
 
 @receiver(post_save, sender=Revision, dispatch_uid='revision.set_item_is_requested_false')
@@ -98,16 +98,16 @@ def ensure_revision_item_latest_revision_is_current(sender, instance, **kwargs):
         item.save(update_fields=['latest_revision'])
 
 
-@receiver(post_save, sender=Revision, dispatch_uid='revision.reset_item_review_percentage_complete')
-def reset_item_review_percentage_complete(sender, instance, created, **kwargs):
+@receiver(post_save, sender=Revision, dispatch_uid='revision.reset_item_percentages')
+def reset_item_percentages(sender, instance, created, **kwargs):
     """
     Ensure that the is_current=True revision is set to the item.latest_revision
     """
-    if created is True:
-        #
-        # Set the recalculate_review_percentage_complete to False
-        #
-        instance.item.recalculate_review_percentage_complete()
+    #
+    # Set the recalculate_review_percentage_complete to False
+    #
+    instance.item.recalculate_review_percentage_complete()
+    instance.item.recalculate_signing_percentage_complete()
 
 
 @receiver(post_save, sender=Revision, dispatch_uid='revision.ensure_revision_reviewdocument_object')
@@ -169,6 +169,7 @@ def reset_item_review_percentage_complete_on_delete(sender, instance, **kwargs):
         item.latest_revision = None  # @BUSINESRULE very important for soft delete, as we no longer can rely on the model field on_delete auto set to null
         item.save(update_fields=['latest_revision'])
         item.recalculate_review_percentage_complete()
+        item.recalculate_signing_percentage_complete()
 
 
 @receiver(post_delete, sender=Revision, dispatch_uid='revision.set_previous_revision_is_current_on_delete')
@@ -245,29 +246,3 @@ def on_upload_set_item_is_requested_false(sender, instance, **kwargs):
             item.is_requested = False
             item.save(update_fields=['is_requested'])
             # @TODO issue activity here?
-
-"""
-Signers
-Unlike reviewrs, signdocuments have only 1 object per set of signature invitees
-"""
-
-
-@receiver(m2m_changed, sender=Revision.signers.through, dispatch_uid='revision.on_signatory_add')
-def on_signatory_add(sender, instance, action, model, pk_set, **kwargs):
-    """
-    when a signatory is added from the m2m then authorise them
-    for access
-    """
-    if action in ['post_add'] and pk_set:
-        user_pk = next(iter(pk_set))  # get the first item in the set should only ever be 1 anyway
-        user = model.objects.get(pk=user_pk)
-        #
-        # Get the base sign documnet; created to alow the participants to access
-        # and sign a documnet
-        #
-        signdocument = instance.signdocument_set.all().first()
-
-        #
-        # 1 signing document for this document; as we only sign the final document
-        #
-        signdocument.signers.add(user)  # add the reviewer

@@ -5,6 +5,9 @@ from model_mommy import mommy
 
 from toolkit.casper.workflow_case import BaseScenarios
 
+import json
+import random
+
 
 class BaseEndpointTest(BaseScenarios, TestCase):
     """
@@ -35,3 +38,15 @@ class BaseEndpointTest(BaseScenarios, TestCase):
 
     def test_endpoint_name(self):
         self.assertEqual(self.endpoint, None)
+
+    def add_signers(self, data=None):
+        if data is None:
+            rand_num = random.random()
+            data = {'signers': [{
+                'email': 'invited-signer-%s@lawpal.com' % rand_num,
+                'first_name': '%s' % rand_num,
+                'last_name': 'Invited Signer',
+                'message': 'Please sign this documnet'}]
+            }
+        # must be logged in in order for this to work
+        return self.client.post(self.endpoint, json.dumps(data), content_type='application/json')

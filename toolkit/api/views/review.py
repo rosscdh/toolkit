@@ -51,7 +51,7 @@ rulez_registry.register("can_edit", ReviewEndpoint)
 rulez_registry.register("can_delete", ReviewEndpoint)
 
 
-class BaseReviewerSignatoryMixin(generics.GenericAPIView):
+class BaseReviewerOrSignerMixin(generics.GenericAPIView):
     """
     Provides the object to access .signers or .reviewers
     and their required functionality
@@ -68,7 +68,7 @@ class BaseReviewerSignatoryMixin(generics.GenericAPIView):
 
     def initial(self, request, *args, **kwargs):
         self.get_objects(**kwargs)
-        super(BaseReviewerSignatoryMixin, self).initial(request, *args, **kwargs)
+        super(BaseReviewerOrSignerMixin, self).initial(request, *args, **kwargs)
 
     def get_queryset_provider(self):
         raise NotImplementedError
@@ -88,7 +88,7 @@ class BaseReviewerSignatoryMixin(generics.GenericAPIView):
 
 class ItemRevisionReviewersView(generics.ListAPIView,
                                 generics.CreateAPIView,
-                                BaseReviewerSignatoryMixin):
+                                BaseReviewerOrSignerMixin):
     """
     /matters/:matter_slug/items/:item_slug/revision/reviewers/ (GET,POST)
         [lawyer,customer] to list, create reviewers
@@ -173,7 +173,7 @@ rulez_registry.register("can_delete", ItemRevisionReviewersView)
 # singular looking at a specific
 class ItemRevisionReviewerView(generics.RetrieveAPIView,
                                generics.DestroyAPIView,
-                               BaseReviewerSignatoryMixin):
+                               BaseReviewerOrSignerMixin):
     """
     Singular
     /matters/:matter_slug/items/:item_slug/revision/reviewer/:username (GET,DELETE)
@@ -272,7 +272,7 @@ rulez_registry.register("can_delete", ItemRevisionReviewerView)
 
 
 class ReviewerHasViewedRevision(generics.UpdateAPIView,
-                                BaseReviewerSignatoryMixin):
+                                BaseReviewerOrSignerMixin):
     """
     Called when the invited user views the revision
     via ajax event of closing the crocodoc modal window

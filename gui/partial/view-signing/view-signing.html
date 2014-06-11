@@ -1,0 +1,13 @@
+<div class="modal-content">
+	<div class="modal-header">
+		<h4 class="modal-title">
+            Signing of {{ revision.name }}
+        </h4>
+	</div>
+	<div class="modal-body">
+        <iframe id="signing-document" ng-src="{{ getSigningUrl() }}" style="width: 100%;"></iframe>
+	</div>
+	<div class="modal-footer">
+		<button id="view-signing-close" class="btn btn-sm btn-default" ng-click="ok()" style="opacity:0.7">Cancel</button>
+	</div>
+</div>

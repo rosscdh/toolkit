@@ -55,7 +55,8 @@ def _mentions_send(actor, action_object, text, **kwargs):
         service = MentionsService(mentioned_by=actor)
         service.process(notify=True,
                         text=text,
-                        access_url=access_url)
+                        access_url=access_url,
+                        action_object=action_object)
 
 @app.task
 def _activity_send(actor, target, action_object, message, **kwargs):

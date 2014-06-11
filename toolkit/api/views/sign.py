@@ -15,10 +15,10 @@ from toolkit.apps.sign.models import SignDocument
 
 from toolkit.apps.workspace.services import EnsureCustomerService
 
-from ..serializers import SimpleUserWithReviewUrlSerializer
+from ..serializers import SimpleUserWithSignUrlSerializer
 from ..serializers import SignatureSerializer
 
-from .review import BaseReviewerSignatoryMixin
+from .review import BaseReviewerOrSignerMixin
 
 import logging
 logger = logging.getLogger('django.request')
@@ -30,16 +30,18 @@ class SignatureEndpoint(viewsets.ModelViewSet):
     """
     model = SignDocument
     serializer_class = SignatureSerializer
-    lookup_field = 'pk'
+    lookup_field = 'slug'
 
     def can_read(self, user):
         return user.profile.user_class in ['lawyer', 'customer']
 
     def can_edit(self, user):
-        return user.profile.is_lawyer
+        obj = self.get_object()
+        return user in obj.document.item.matter.participants.all()
 
     def can_delete(self, user):
-        return user.profile.is_lawyer
+        obj = self.get_object()
+        return user in obj.document.item.matter.participants.all()
 
 
 rulez_registry.register("can_read", SignatureEndpoint)
@@ -49,15 +51,20 @@ rulez_registry.register("can_delete", SignatureEndpoint)
 
 class ItemRevisionSignersView(generics.ListAPIView,
                               generics.CreateAPIView,
-                              BaseReviewerSignatoryMixin):
+                              BaseReviewerOrSignerMixin):
     """
     /matters/:matter_slug/items/:item_slug/revision/signers/ (GET,POST)
         [lawyer,customer] to list, create signers
     """
-    serializer_class = SignatureSerializer
+    serializer_class = SignatureSerializer  # as we are returning the revision and not the item
 
     def get_queryset_provider(self):
-        return self.revision.signdocument_set
+        return self.revision.signers
+
+    def list(self, request, *args, **kwargs):
+        sign_document = self.revision.primary_signdocument
+        serializer = self.get_serializer(sign_document)
+        return Response(serializer.data)
 
     def create(self, request, **kwargs):
         """
@@ -66,57 +73,76 @@ class ItemRevisionSignersView(generics.ListAPIView,
         2. is the user already a signer for this revision
         3. if not make them one
         """
-        username = request.DATA.get('username')
-        first_name = request.DATA.get('first_name')
-        last_name = request.DATA.get('last_name')
-        email = request.DATA.get('email')
-        note = request.DATA.get('note')
+        status = http_status.HTTP_400_BAD_REQUEST
+        headers = None
+        message = request.DATA.get('message')
+        signers = request.DATA.get('signers')
 
-        if username is None and email is None:
-            raise exceptions.APIException('You must provide a username or email')
+        if not signers:
+            data = {'detail': 'You need to provide at least 1 signer: You provided: %s' % signers}
 
-        try:
-            if username is not None:
-                user = User.objects.get(username=username)
+        else:
 
-            elif email is not None:
-                user = User.objects.get(email=email)
+            self.revision.signers.clear() # remove existing signers
 
-        except User.DoesNotExist:
+            for signer in signers:
 
-            if email is None:
-                raise Http404
+                first_name = signer.get('first_name')
+                last_name = signer.get('last_name')
+                email = signer.get('email')
 
-            else:
-                # we have a new user here
-                user_service = EnsureCustomerService(email=email, full_name='%s %s' % (first_name, last_name))
-                is_new, user, profile = user_service.process()
+                if email is None:
+                    raise exceptions.APIException('You must provide a list of signers and they must have an email attribute  {"signers": [{"email": "me@example.com"},]}')
 
-        if user not in self.get_queryset():
-            # add to the join if not there already
-            # add the user to the purpose of this endpoint object review||signature
-            self.revision.signers.add(user)
+                try:
+                    user = User.objects.get(email=email)
+
+                except User.DoesNotExist:
+
+                    # we have a new user here
+                    user_service = EnsureCustomerService(email=email, full_name='%s %s' % (first_name, last_name))
+                    is_new, user, profile = user_service.process()
+
+                if user not in self.get_queryset():
+                    # add to the join if not there already
+                    # add the user to the purpose of this endpoint object review||signature
+                    self.revision.signers.add(user)
+
+                    #
+                    # Send invite to review Email
+                    #
+                    # self.item.send_invite_to_sign_emails(from_user=request.user, to=[user], message=message)
+                    # @NB Dont invite them to sign yet, as we ahve to setup the document for signing first
+
+                    #
+                    # add activity
+                    #
+                    self.matter.actions.invite_user_as_signer(item=self.item,
+                                                              inviting_user=request.user,
+                                                              invited_user=user)
+
+            sign_document = self.revision.primary_signdocument
+            sign_document.requested_by = request.user
+            sign_document.save(update_fields=['requested_by'])
+            sign_document.signers.clear() # remove existing signers from sign object
+            sign_document.signers = self.revision.signers.all()
+
+            if not sign_document:
+                raise Exception('Could not get Revision.primary_signdocument')
 
             #
-            # Send invite to review Email
+            # @TODO make this async with run_task
             #
-            self.item.send_invite_to_sign_emails(from_user=request.user, to=[user], note=note)
+            sign_document.create_unclaimed_draft(requester_email_address=request.user.email)
 
-            #
-            # add activity
-            #
-            self.matter.actions.invite_user_as_signer(item=self.item,
-                                                      inviting_user=request.user,
-                                                      invited_user=user)
+            # we have the user at this point
+            serializer = self.get_serializer(sign_document)
 
-        sign_document = self.revision.signdocument_set.filter(signers__in=[user]).first()
+            headers = self.get_success_headers(serializer.data)
+            status = http_status.HTTP_201_CREATED
+            data = serializer.data
 
-        # we have the user at this point
-        serializer = self.get_serializer(sign_document)
-
-        headers = self.get_success_headers(serializer.data)
-
-        return Response(serializer.data, status=http_status.HTTP_201_CREATED, headers=headers)
+        return Response(data, status=status, headers=headers)
 
     def can_read(self, user):
         return user.profile.user_class in ['lawyer', 'customer']
@@ -136,19 +162,19 @@ rulez_registry.register("can_delete", ItemRevisionSignersView)
 # singular looking at a specific
 class ItemRevisionSignerView(generics.RetrieveAPIView,
                              generics.DestroyAPIView,
-                             BaseReviewerSignatoryMixin):
+                             BaseReviewerOrSignerMixin):
     """
     Singular
     /matters/:matter_slug/items/:item_slug/revision/signer/:username (GET,DELETE)
         [lawyer,customer] to view, delete signers
     """
     model = User  # to allow us to use get_object generically
-    serializer_class = SimpleUserWithReviewUrlSerializer  # as we are returning the revision and not the item
+    serializer_class = SimpleUserWithSignUrlSerializer  # as we are returning the revision and not the item
     lookup_field = 'username'
     lookup_url_kwarg = 'username'
 
     def get_queryset_provider(self):
-        return self.revision.signers
+        return self.revision.signing_request.signers
 
     def get_object(self):
         return get_object_or_404(User, username=self.kwargs.get('username'))
@@ -179,16 +205,7 @@ class ItemRevisionSignerView(generics.RetrieveAPIView,
             # Should never have more than 1
             #
             status = http_status.HTTP_406_NOT_ACCEPTABLE
-            logger.critical('A revision %s for a user %s has more than 1 signdocument they should only have 1 per revision' % (self.revision, user))
-
-        # TODO: MOVE
-        # After move we don't have the user any more!
-
-        # create event
-        self.revision.item.matter.actions.user_viewed_signature_request(item=self.revision.item,
-                                                                        user=user,
-                                                                        revision=self.revision)
-        
+            logger.critical('A revision %s for a user %s has more than 1 signdocument they should only have 1 per revision' % (self.revision, user))        
 
         # TODO: check if this was the last user to review the document.
         # if so: user_revision_review_complete()

@@ -330,7 +330,7 @@ class MatterActivityEventService(object):
     def revision_changed_status(self, user, revision, previous_status):
         # never used
         current_status = revision.display_status
-        override_message = u"%s changes %s %s's status to %s" % (user, revision.item, revision.slug, current_status)
+        override_message = u"%s changed %s %s's status to %s" % (user, revision.item, revision.slug, current_status)
         self._create_activity(actor=user, verb=u'changed the status', action_object=revision, item=revision.item,
                               override_message=override_message, current_status=current_status,
                               previous_status=previous_status)
@@ -351,18 +351,6 @@ class MatterActivityEventService(object):
                 'item_pk': item.pk,
                 'matter_pk': self.matter.pk
             })
-
-    # instead of this we now use the newly created invite_user_as_reviewer
-    # def added_user_as_reviewer(self, item, adding_user, added_user):
-    #     override_message = u'%s added %s as reviewer for %s' % (adding_user, added_user, item)
-    #     self._create_activity(actor=adding_user, verb=u'added reviewer', action_object=item, override_message=override_message,
-    #                           user=added_user)
-    #
-    # instead of this we now use cancel_user_upload_revision_request() above
-    # def removed_user_as_reviewer(self, item, removing_user, removed_user):
-    #     override_message = u'%s removed %s as reviewer for %s' % (removing_user, removed_user, item)
-    #     self._create_activity(actor=removing_user, verb=u'removed reviewer', action_object=item, override_message=override_message,
-    #                           user=removed_user)
 
     def user_viewed_revision(self, item, user, revision):
         # toolkit.api.views.review.ReviewerHasViewedRevision#update
@@ -415,8 +403,42 @@ class MatterActivityEventService(object):
     #
     # Signing
     #
+    def sent_setup_for_signing(self, user, sign_object):
+        """
+        HelloSign claim_url event
+        """
+        # toolkit.apps.sign.views#ClaimSignRevisionView.post
+        revision = sign_object.document
+        item = revision.item
+        message = u'%s sent %s (%s) for signing' % (user, item, revision)
+        self._create_activity(actor=user, verb=u'sent for signing', action_object=item, message=message,
+                              user=user)
+        self.analytics.event('sign.sent_doc_for_signing', user=user, **{
+            'sign_object': str(sign_object.slug),
+            'revision_pk': str(item.slug),
+            'item_pk': item.pk,
+            'matter_pk': self.matter.pk
+        })
+
+    def completed_setup_for_signing(self, user, sign_object):
+        """
+        Completed the HelloSign claim_url event
+        """
+        # toolkit.apps.sign.views#ClaimSignRevisionView.post
+        revision = sign_object.document
+        item = revision.item
+        message = u'%s completed signing setup %s (%s) for signing' % (user, item, revision)
+        self._create_activity(actor=user, verb=u'completed signing setup', action_object=item, message=message,
+                              user=user)
+        self.analytics.event('sign.completed_signing_setup', user=user, **{
+            'sign_object': str(sign_object.slug),
+            'revision_pk': str(item.slug),
+            'item_pk': item.pk,
+            'matter_pk': self.matter.pk
+        })
+
     def invite_user_as_signer(self, item, inviting_user, invited_user):
-        # toolkit.api.views.sign.ItemRevisionSignersView#create
+        # toolkit.apps.sign.views#ClaimSignRevisionView.post
         message = u'%s invited %s as signer for %s' % (inviting_user, invited_user, item)
         self._create_activity(actor=inviting_user, verb=u'invited signer', action_object=item, message=message,
                               user=invited_user)
@@ -427,14 +449,45 @@ class MatterActivityEventService(object):
             'matter_pk': self.matter.pk
         })
 
-    def user_viewed_signature_request(self, item, user, revision):
-        # toolkit.api.views.sign.ItemRevisionSignerView#retrieve
-        message = u'%s viewed signature request %s (%s) for %s' % (user, revision.name, revision.slug, item)
-        self._create_activity(actor=user, verb=u'viewed revision', action_object=item, message=message,
+    def user_viewed_signature_request(self, user, signer, sign_document):
+        # toolkit.apps.sign.views
+        revision = sign_document.document
+        item = revision.item
+
+        message = u'%s viewed signature request %s for %s on item %s' % (user, revision.name, signer, item)
+        self._create_activity(actor=user, verb=u'viewed signature request', action_object=item, message=message,
                               revision=revision, filename=revision.name, version=revision.slug,
                               date_created=datetime.datetime.utcnow())
         self.analytics.event('sign.request.viewed', user=user, **{
             'item_pk': item.pk,
             'matter_pk': self.matter.pk,
             'revision_pk': revision.pk
+        })
+
+    def user_signed(self, user, sign_object):
+        # toolkit.apps.sign.signals
+        revision = sign_object.document
+        item = revision.item
+        message = u'%s signed %s (%s)' % (user, item, revision)
+        self._create_activity(actor=user, verb=u'signed', action_object=item, message=message,
+                              user=user)
+        self.analytics.event('sign.user_signed', user=user, **{
+            'sign_object': str(sign_object.slug),
+            'revision_pk': str(item.slug),
+            'item_pk': item.pk,
+            'matter_pk': self.matter.pk
+        })
+
+    def all_users_have_signed(self, sign_object):
+        # toolkit.apps.sign.signals
+        revision = sign_object.document
+        item = revision.item
+        message = u'Signing Complete - All invitees have signed %s (%s)' % (item, revision)
+        self._create_activity(actor=self.matter.lawyer, verb=u'signing complete', action_object=item, message=message,
+                              user=self.matter.lawyer)
+        self.analytics.event('sign.signing_complete', user=self.matter.lawyer, **{
+            'sign_object': str(sign_object.slug),
+            'revision_pk': str(item.slug),
+            'item_pk': item.pk,
+            'matter_pk': self.matter.pk
         })
