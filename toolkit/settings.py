@@ -319,23 +319,23 @@ PIPELINE_CSS = {
   }
 }
 PIPELINE_JS = {
-    'core': {
-        'source_filenames': (
-            'js/jquery.ui.touch-punch.min.js',
-            'js/bootstrap.min.js',
-            'js/bootstrap-select.js',
-            'js/bootstrap-switch.js',
-            'js/flatui-checkbox.js',
-            'js/flatui-radio.js',
-            'js/jquery.tagsinput.js',
-            'js/jquery.placeholder.js',
-            'js/bootstrap-typeahead.js',
-            'js/parsley-1.2.4.min.js',
-            'js/parsley-form.js',
-            'js/application.js',
-        ),
-        'output_filename': 'js/core.js',
-    },
+    # 'core': {
+    #     'source_filenames': (
+    #         'js/jquery.ui.touch-punch.min.js',
+    #         'js/bootstrap.min.js',
+    #         'js/bootstrap-select.js',
+    #         'js/bootstrap-switch.js',
+    #         'js/flatui-checkbox.js',
+    #         'js/flatui-radio.js',
+    #         'js/jquery.tagsinput.js',
+    #         'js/jquery.placeholder.js',
+    #         'js/bootstrap-typeahead.js',
+    #         'js/parsley-1.2.4.min.js',
+    #         'js/parsley-form.js',
+    #         'js/application.js',
+    #     ),
+    #     'output_filename': 'js/core.js',
+    # },
 
     'reactjs': {
         'source_filenames': (
