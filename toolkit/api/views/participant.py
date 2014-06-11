@@ -47,21 +47,21 @@ class MatterParticipant(generics.CreateAPIView,
     lookup_field = 'slug'
     lookup_url_kwarg = 'matter_slug'
 
-    def dispatch(self, request, *args, **kwargs):
-        resp = super(MatterParticipant, self).dispatch(request, *args, **kwargs)
-        # in edit-case the role is set. in delete-case it is NOT set and needs to be loaded from the database.
-        if request.method == 'DELETE':
-            workspace_participant_object = get_object_or_404(WorkspaceParticipants,
-                                                             user__email=kwargs.get('email'),
-                                                             workspace__slug=kwargs.get('matter_slug'))
-            self.role = ROLES.get_name_by_value(workspace_participant_object.role)
-        else:
-            self.role = self.request.DATA.get('role', False)
-
-        if not resp.role:
-            raise exceptions.PermissionDenied("You need to submit a 'role'!")
-
-        return resp
+    # def dispatch(self, request, *args, **kwargs):
+    #     resp = super(MatterParticipant, self).dispatch(request, *args, **kwargs)
+    #     # in edit-case the role is set. in delete-case it is NOT set and needs to be loaded from the database.
+    #     if request.method == 'DELETE':
+    #         workspace_participant_object = get_object_or_404(WorkspaceParticipants,
+    #                                                          user__email=kwargs.get('email'),
+    #                                                          workspace__slug=kwargs.get('matter_slug'))
+    #         self.role = ROLES.get_name_by_value(workspace_participant_object.role)
+    #     else:
+    #         self.role = self.request.DATA.get('role', False)
+    #
+    #     if not resp.role:
+    #         raise exceptions.PermissionDenied("You need to submit a 'role'!")
+    #
+    #     return resp
     #
     # def initialize_request(self, request, *args, **kwargs):
     #     import pdb;pdb.set_trace()
