@@ -175,17 +175,21 @@
             {% verbatim %}
             <span class="input-group-btn custom-btn-round">
               <button
-                class="btn btn-default dropdown-toggle btn-xs"
+                class="btn btn-default dropdown-toggle btn-xs doc-outline-status-{{matter.selectedStatusFilter}}"
                 type="button"
                 data-toggle="dropdown">
                 <span class="fa fa-filter"></span>
+                <span ng-if="matter.selectedStatusFilter!==null" class="status-dot status-{{matter.selectedStatusFilter}}"></span>
               </button>
               <ul class="dropdown-menu dropdown-inverse dropdown-small status-list">
                 <li ng-repeat="(key, status) in matter.selected._meta.item.custom_status">
-                  <a href="javascript:;" ng-click="applyStatusFilter( { 'status': key } );"> <span class="icon status-{{ key }}"></span> {{ status }}</a>
+                  <a href="javascript:;" ng-click="applyStatusFilter( { 'status': key }, key );"> <span class="icon status-{{ key }}"></span> {{ status }}</a>
                 </li>
                 <li>
-                  <a href="javascript:;" ng-click="applyItemFilter( { 'is_complete': true } );"> <span class="icon status-closed"></span> Closed</a>
+                  <a href="javascript:;" ng-click="applyItemFilter( { 'is_complete': false }, 'open' );"> <span class="icon status-open"></span> Open</a>
+                </li>
+                <li>
+                  <a href="javascript:;" ng-click="applyItemFilter( { 'is_complete': true }, 'closed' );"> <span class="icon status-closed"></span> Closed</a>
                 </li>
                 <li>
                   <a href="javascript:;" ng-click="applyStatusFilter( null );"> <span class="icon status-placeholder"></span> Clear filter</a>
