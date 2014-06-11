@@ -1,57 +1,135 @@
-<div id="checklist" class="checklist-wrapper">
+
+<div id="messaging" class="checklist-wrapper full">
 	<div class="container-fluid full">
 		<div class="row mobile" ng-show="data.page!=='checklist'">
-			<button type="button" class="btn btn-link btn-transparent" ng-click="displayChecklist()">&lt; Checklist</button>
-			<button type="button" class="btn btn-default pull-right btn-square btn-white" ng-click="displayActivity()" ng-class="{ 'active': data.page==='activity' }"> Activity and Discussion</button>
-			<button type="button" class="btn btn-default pull-right btn-square btn-light" ng-click="displayDetails()" ng-class="{ 'active': data.page==='details' }"> Files</button>
+			<button type="button" class="btn btn-link btn-transparent" ng-click="displayChecklist()">&lt; Inbox</button>
 		</div>
 		<div class="row full">
-			<div class="col-sm-5 checklist-col full" id="checklist-items" ng-class="{ 'zero': data.page!=='checklist' }">
+			<div class="col-lg-4 full checklist-col" id="inbox" ng-class="{ 'zero': data.page!=='inbox' }">
+				<div class="toggle-btn-wrapper text-right">
+					<div class="btn btn-default" data-behavior="toggle-inbox">	<span class="fui-arrow-left"></span></div>
+				</div>
+				<!-- start: Inbox //-->
+				<div class="row inbox-msgs checklist-col">
+					<ul class="msg-list list-unstyled">
+						<li>
+							<div class="type-icon lock"></div>
+							<div class="message">
+								<h3>Internal Discussion </h3>
+								<p>AH: Not sure where to discuss this on the platform, so…. </p>
+							</div>
+								<div class="meta">
+									<span class="last-active">Last active 29 mins ago</span>
+									<div class="user-meta">
+										<span class="user coleg">AH</span>
+										<span class="user coleg last">BC</span>
+										<span class="user coleg">YC</span>
+									</div>
+								</div>
+						</li>
+						<li>
+							<div class="type-icon unlock"></div>
+							<div class="message">
+								<h3>Global Discussion</h3>
+																<p>RM: "That sounds great, but I'm not sure that..."  </p>
 
-				<!-- start: LAWYER checklist //-->
-				<span ng-if="data.usdata.current.user_class=='lawyer'">
-					<div>
-						<div ng-repeat="cat in data.categories | filter: {name:'!'}">
-							<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-header.html'"></span>
-							<!-- Checklist //-->
-							<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-lawyer.html'"></span>
-							<!-- checklist footer //-->
-							<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-footer.html'"></span>
-						</div>
-					</div>
-					<div ui-sortable="checklistCategorySortableOptions" ng-model="data.categories" class="categories-list">
-						<div ng-repeat="cat in data.categories" ng-show="cat.name!==null">
-							<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-header.html'"></span>
-							<!-- Checklist //-->
-							<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-lawyer.html'"></span>
-							<!-- checklist footer //-->
-							<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-footer.html'"></span>
-						</div>
-					</div>
-				</span>
-				<!-- end: LAWYER checklist //-->
-				<!-- start: CUSTOMER checklist //-->
-				<span ng-if="data.usdata.current.user_class=='customer'" class="categories-list">
-					<div ng-repeat="cat in data.categories">
-						<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-header.html'"></span>
-						<!-- Checklist //-->
-						<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-customer.html'"></span>
-					</div>
-				</span>
-				<!-- end: CUSTOMER checklist //-->				
+							</div>
+								<div class="meta">
+									<span class="last-active">Last active 2 days ago</span>
+									<div class="user-meta">
+										<span class="user coleg">AH</span>
+										<span class="user coleg">RG</span>
+										<span class="user client">RM</span>
+									</div>
+								</div>
+						</li>
+					</ul>
+				</div>
 			</div>
-			<div class="col-sm-7 item spa full" id="checklist-detail-container" ng-class="{ 'zero': data.page==='checklist' }">
-				<div class="row full">
+			<div class="col-lg-8 row full" id="message-stage">
+					<div class="convo">
+						<ul class="list-unstyled">
+							<li class="one-message">
 
-					<!-- begin item details //-->
-					<!-- @TODO Make the URL dynamic -->
-					<div class="col-sm-7 full checklist-col" id="checklist-detail" ng-include="'/static/ng/partial/checklist/includes/itemdetails.html'" ng-class="{ 'zero': data.page!=='details' }">&nbsp;</div>
-					<!-- end item details //-->
 
-					<!-- chat //-->
-					<!-- @TODO Make the URL dynamic -->
-					<div class="col-sm-5 chat full checklist-col" id="checklist-activity" ng-include="'/static/ng/partial/checklist/includes/itemchat.html'" ng-class="{ 'zero': data.page!=='activity'}">&nbsp;</div>
-					<!-- end: chat //-->
+							 	<div class="author">
+									<span class="user coleg">AH</span> Alex Halliday <span class="text-muted">3 hours ago</span><br />
+								</div>
+								<div class="message-body">
+								Hi Yael,
+								<br />
+								Note sure where to discuss this on the platform, so…
+								<br /><br />
+								We need to determine the size of the stock pool.
+								<br /><br />
+								[Edited below to recalculate numbers because eshares has a serious bug in cap table calculation—it (double) counts cancelled certificates.]
+								<br /><br />
+								As we discussed, you agreed with Ben to set it at 15% of the fully diluted capitalization, measured, presumably (it’s ambiguous), at the time of the stockholder agreement, which would have meant 141,177 shares (equal to 14.2% of the current fully diluted capitalization). I’m not sure why he wanted this provision in there, as it arguably acts as a floor to his own dilution, but it’s in there—so that’s your minimum.
+								<br /><br />
+								And your agreement with him also sets a cap of 20% (inclusive of non-pool grants) issuable to employees and consults without his approval, which would be 200,000 shares minus the 25,000 shares already issued to Richard and Ling = 175,000 shares (equal to 17.5% of the current fully diluted capitalization). So that’s your max.
+								<br /><br />
+								The other factor here is the capitalization reps in the note purchase agreement—originally you rep’d a fixed 20% pool. I’m not sure why this was necessary, as the conversion mechanism makes the company’s existing capitalization—at least with respect to common—irrelevant, but that was in there. In the first amended purchase agreement, you’ve replaced that rep with a “company expects” rep for up to 150,000 shares, which, given that the new language is basically meaningless, is definitely an improvement.
+								<br /><br />
+								So what shall we pick? 141,177 shares (roughly 14.2%), an even 150,000 shares (which will be roughly 15.4%), an even 175,000 shares (which will be exactly 17.5%), or something else between 141,177 and 175,000?
+								<br /><br />
+								Also, before I finalize this I want to be sure there’s been no further change to the capitalization reps in the second amended purchase agreement (adopted for the Kima Ventures investment), which I don’t have. Can you please send it my way ASAP?
+								<br /><br />
+								Finally, FYI, the rep in the amended version of 3(c)(ii) of the purchase agreement, regarding issued and outstanding shares as of the initial closing, while probably not material due to the conversion mechanism, is also incorrect—as of the *initial* closing, only 800,000 shares were outstanding, and this number shouldn’t be updated over time without clarifying the measurement date. If we get a chance to amend this again, we should strike that whole rep.
+								<br /><br />
+								Thanks,
+								Adam
+							</div>
+							</li>
+
+							<li class="one-message">
+									<div class="author">
+									<span class="user coleg">YN</span> Ykat Novikova<span class="text-muted">4 hours ago</span><br />
+									</div>
+								<div class="message-body">
+								Hi Yael,
+								<br />
+								Note sure where to discuss this on the platform, so…
+								<br /><br />
+								We need to determine the size of the stock pool.
+								<br /><br />
+								[Edited below to recalculate numbers because eshares has a serious bug in cap table calculation—it (double) counts cancelled certificates.]
+								<br /><br />
+								As we discussed, you agreed with Ben to set it at 15% of the fully diluted capitalization, measured, presumably (it’s ambiguous), at the time of the stockholder agreement, which would have meant 141,177 shares (equal to 14.2% of the current fully diluted capitalization). I’m not sure why he wanted this provision in there, as it arguably acts as a floor to his own dilution, but it’s in there—so that’s your minimum.
+								<br /><br />
+								And your agreement with him also sets a cap of 20% (inclusive of non-pool grants) issuable to employees and consults without his approval, which would be 200,000 shares minus the 25,000 shares already issued to Richard and Ling = 175,000 shares (equal to 17.5% of the current fully diluted capitalization). So that’s your max.
+								<br /><br />
+								The other factor here is the capitalization reps in the note purchase agreement—originally you rep’d a fixed 20% pool. I’m not sure why this was necessary, as the conversion mechanism makes the company’s existing capitalization—at least with respect to common—irrelevant, but that was in there. In the first amended purchase agreement, you’ve replaced that rep with a “company expects” rep for up to 150,000 shares, which, given that the new language is basically meaningless, is definitely an improvement.
+								<br /><br />
+								So what shall we pick? 141,177 shares (roughly 14.2%), an even 150,000 shares (which will be roughly 15.4%), an even 175,000 shares (which will be exactly 17.5%), or something else between 141,177 and 175,000?
+								<br /><br />
+								Also, before I finalize this I want to be sure there’s been no further change to the capitalization reps in the second amended purchase agreement (adopted for the Kima Ventures investment), which I don’t have. Can you please send it my way ASAP?
+								<br /><br />
+								Finally, FYI, the rep in the amended version of 3(c)(ii) of the purchase agreement, regarding issued and outstanding shares as of the initial closing, while probably not material due to the conversion mechanism, is also incorrect—as of the *initial* closing, only 800,000 shares were outstanding, and this number shouldn’t be updated over time without clarifying the measurement date. If we get a chance to amend this again, we should strike that whole rep.
+								<br /><br />
+								Thanks,
+								Adam
+							</div>
+
+
+							</li>
+						</ul>
+					</div>
+					<div class="message-options">
+							<label class="checkbox" for="checkbox1">
+						  <input type="checkbox" value="1" id="sendEnter" data-toggle="checkbox" data-behavior="toggle-button">
+						  <span class="text-muted">Send on Enter</span>
+						</label>
+						<div class="button-container">
+							<button type="button" class="btn btn-default" data-behavior="send-button">Send</button>
+						</div>
+					</div>
+
+					<div class="compose">
+						<div class="compose-wrapper">
+							<textarea class="compose-message" rows=2 placeholder="Type your message here and press enter"></textarea>
+						</div>
+					</div>
+
 				</div>
 			</div>
 		</div>
@@ -68,3 +146,97 @@
 <toaster-container toaster-options="{'position-class': 'toast-bottom-right'}"></toaster-container>
 <div mentions-container participants="data.matter.participants" curr-user="data.usdata.current"></div>
 <!--<input type="filepicker" data-fp-apikey="A4Ly2eCpkR72XZVBKwJ06z" data-fp-mimetypes="*/*" data-fp-container="modal" onchange="alert(event.fpfile.url)">//-->
+
+<script>
+function stickyTitles(stickies) {
+
+    this.load = function() {
+
+			  stickies.each(function(){
+
+				    var thisSticky = jQuery(this).wrap('<div class="followWrap" />');
+				        thisSticky.parent().height(thisSticky.outerHeight());
+
+				    jQuery.data(thisSticky[0], 'pos', thisSticky.offset().top);
+
+			  });
+		}
+
+		this.scroll = function() {
+
+			  stickies.each(function(i){
+
+				    var thisSticky = jQuery(this),
+					      nextSticky = stickies.eq(i+1),
+					      prevSticky = stickies.eq(i-1),
+					      pos = jQuery.data(thisSticky[0], 'pos');
+
+				    if (pos <= ($('.convo').scrollTop() + 115 )) {
+
+					      thisSticky.addClass("fixed");
+
+					      if (nextSticky.length > 0 && thisSticky.offset().top >= jQuery.data(nextSticky[0], 'pos') - thisSticky.outerHeight()) {
+
+						        thisSticky.addClass("absolute").css("top", jQuery.data(nextSticky[0], 'pos') - thisSticky.outerHeight());
+
+					      }
+
+				    } else {
+
+					      thisSticky.removeClass("fixed");
+
+					      if (prevSticky.length > 0 && jQuery(window).scrollTop() <= jQuery.data(thisSticky[0], 'pos')  - prevSticky.outerHeight()) {
+
+						        prevSticky.removeClass("absolute").removeAttr("style");
+
+					      }
+
+				    }
+		    });
+    }
+}
+
+jQuery(document).ready(function(){
+
+		var newStickies = new stickyTitles(jQuery(".author"));
+
+		newStickies.load();
+
+		$(".convo").on("scroll", function() {
+
+			  newStickies.scroll();
+
+		});
+
+		//hides/unhides button to send message
+
+		$('[data-behavior=toggle-button]').on('click', function(){
+			$('[data-behavior=send-button]').toggleClass('hidden');
+
+		});
+
+		//toggle for left message inbox div
+		$('[data-behavior=toggle-inbox]').on('click', function(){
+				// $('#inbox').css('left', '-25%');
+				// $('#message-stage').css('margin-left', '0');
+				// $('#message-stage').css('width', '100%');
+				$('[data-behavior=toggle-inbox]').toggleClass('closed');
+				$('#inbox').toggleClass('inbox-hidden');
+				$('#message-stage').toggleClass('message-full');
+
+
+				$("#messaging #message-stage .convo .fixed").toggleClass('large-fix');
+				// $('.convo .author .fixed').css('width', '75%');
+
+
+
+
+		});
+
+
+
+});
+
+
+
+</script>
