@@ -82,6 +82,14 @@ angular.module('toolkit-gui')
 		 */
 		var routeParams = smartRoutes.params();
 
+		/**
+		 * In scope variable containing containing the currently selected matter
+		 * @memberof ChecklistCtrl
+		 * @type {Object}
+		 * @private
+		 */
+		$scope.matter = matterService.data(); // Used to communicate between controllers
+
 		$scope.data = {
 			'slug': routeParams.matterSlug,
 			'matter': null,
@@ -1894,60 +1902,13 @@ angular.module('toolkit-gui')
 			return template;
 		}
 
+		$scope.clearFilters = function() {
+			$scope.matter.itemFilter = null;
+			$scope.matter.statusFilter = null;
+			$scope.matter.selectedStatusFilter = null;
+		};
+
 		/* END COMMENT HANDLING */
-
-		/*
-		 _____ _ _ _                
-		|  ___(_) | |_ ___ _ __ ___ 
-		| |_  | | | __/ _ \ '__/ __|
-		|  _| | | | ||  __/ |  \__ \
-		|_|   |_|_|\__\___|_|  |___/
-									
-		 */
-		/**
-		 * applyStatusFilter  filters for checklist based on status 0-4
-		 * @param  {Object} filter Filter to apply to latest_revision
-		 */
-		$scope.applyStatusFilter = function( filter ) {
-			// Initialise status filter
-			$scope.data.statusFilter = $scope.data.statusFilter||{};
-
-			// Clear other filters
-			$scope.data.itemFilter = null;
-
-			if( filter ) {
-				for(var key in filter) {
-					// Convert { "0": "Draft" } to { "status": 0 }
-					$scope.data.statusFilter[key] = parseInt(filter[key]);
-				}
-			} else {
-				// Clear all filters
-				$scope.data.itemFilter = null;
-				$scope.data.statusFilter = null;
-			}
-		};
-
-		/**
-		 * applyItemFilter  filters for checklist item properties such as is_complete
-		 * @param  {Object} filter Filter to apply to base o checklsit item object
-		 */
-		$scope.applyItemFilter = function( filter ) {
-			// Initialise item filter
-			$scope.data.itemFilter = $scope.data.itemFilter||{};
-
-			// Clear other filters
-			$scope.data.statusFilter = null;
-
-			if( filter ) {
-				for(var key in filter) {
-					$scope.data.itemFilter[key] = filter[key];
-				}
-			} else {
-				// Clear all filters
-				$scope.data.itemFilter = null;
-				$scope.data.statusFilter = null;
-			}
-		};
 }])
 
 /**
