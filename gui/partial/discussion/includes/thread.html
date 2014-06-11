@@ -8,7 +8,7 @@
                     <span class="text-muted">{{ data.selectedThread.date_created | timeago }}</span>
                 </div>
                 <div class="message-body">
-                    <p ng-bind="data.selectedThread.excerpt"></p>
+                    <p ng-bind="data.selectedThread.comment"></p>
                 </div>
             </li>
             <li class="one-message" ng-repeat="message in data.selectedThread.comments">
@@ -35,7 +35,7 @@
 
         <div class="compose">
             <div class="compose-wrapper">
-                <textarea class="compose-message" rows=2 placeholder="Type your message here and press enter" ng-model="data.request.message"></textarea>
+                <textarea class="compose-message" rows="2" placeholder="Type your message here and press enter" ng-model="data.request.message"></textarea>
             </div>
         </div>
     </form>

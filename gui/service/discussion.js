@@ -55,21 +55,21 @@ angular.module('toolkit-gui').factory('discussionService', [
                 return deferred.promise;
             },
 
-            // 'create': function(matterSlug, comment) {
-                // var api = discussionResource();
-                // var deferred = $q.defer();
+            'create': function(matterSlug, comment, title) {
+                var api = discussionResource();
+                var deferred = $q.defer();
 
-                // api.create({'matterSlug': matterSlug}, {'comment': comment},
-                    // function success() {
-                        // deferred.resolve();
-                    // },
-                    // function error(err) {
-                        // deferred.reject(err);
-                    // }
-                // );
+                api.create({ 'matterSlug': matterSlug }, { 'comment': comment, 'title': title },
+                    function success(thread) {
+                        deferred.resolve(thread);
+                    },
+                    function error(err) {
+                        deferred.reject(err);
+                    }
+                );
 
-                // return deferred.promise;
-            // }
+                return deferred.promise;
+            },
 
             // 'delete': function(matterSlug, itemSlug, commentId) {
                 // var api = commentResource();
