@@ -240,12 +240,11 @@ class MatterParticipantTest(BaseEndpointTest):
 
         user_to_delete = self.matter.participants.all().last()
 
-        # self.set_user_matter_perms(self.user, matter=self.matter, manage_participants=False, manage_clients=False)
+        self.set_user_matter_perms(self.user, matter=self.matter, manage_participants=False, manage_clients=False)
+        self.set_user_matter_role(self.user, role=ROLES.client, matter=self.matter)
 
         for event, status_code in [('get', 405), ('post', 403), ('patch', 403), ('delete', 403)]:
-
             endpoint = '%s/%s' % (self.endpoint, user_to_delete.email) if event == 'delete' else self.endpoint
-
             resp = getattr(self.client, event)(endpoint, {}, content_type='application/json')
             self.assertEqual(resp.status_code, status_code)
 

@@ -47,7 +47,8 @@ class MatterParticipant(generics.CreateAPIView,
     lookup_field = 'slug'
     lookup_url_kwarg = 'matter_slug'
 
-    def validate_data(self, data, expected_keys=[]):
+    @staticmethod
+    def validate_data(data, expected_keys=[]):
         if all(k in data.keys() for k in expected_keys) is False:
             raise exceptions.ParseError('request.DATA must have the following keys: %s' % ', '.join(expected_keys))
 
@@ -61,7 +62,6 @@ class MatterParticipant(generics.CreateAPIView,
         self.validate_data(data=data, expected_keys=['email', 'first_name', 'last_name', 'message', 'role'])
 
         email = data.get('email')
-        #role = data.get('user_class', 'customer')  # @TODO need to review
         role = data.get('role', 'client')  # @TODO need to review
         first_name = data.get('first_name')
         last_name = data.get('last_name')
@@ -107,7 +107,10 @@ class MatterParticipant(generics.CreateAPIView,
         role = data.get('role', None)
         permissions = data.get('permissions')
 
-        participant = User.objects.get(email=email)
+        try:
+            participant = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({'details': 'User does not exist (email=%s)' % email})
 
         perms = participant.matter_permissions(matter=self.matter)
         if perms.pk is None:
@@ -152,7 +155,7 @@ class MatterParticipant(generics.CreateAPIView,
         role = self.request.DATA.get('role', False)
 
         if not role:
-            return Response("You need to submit a 'role'!", status=http_status.HTTP_204_NO_CONTENT)
+            raise exceptions.PermissionDenied("You need to submit a 'role'!")
 
         return user.has_perm('workspace.manage_clients', self.matter) if role == 'client' \
             else user.has_perm('workspace.manage_participants', self.matter)
