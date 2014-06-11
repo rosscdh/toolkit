@@ -19,6 +19,7 @@ from .endpoints.permissions.item import *
 from .endpoints.sort import *
 
 from .endpoints.participant import *
+from .endpoints.permissions.participant import *
 
 from .endpoints.category import *
 from .endpoints.permissions.category import *

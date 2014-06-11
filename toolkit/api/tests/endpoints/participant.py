@@ -45,8 +45,8 @@ class MatterParticipantTest(BaseEndpointTest):
         profile.user_class = 'lawyer'
         profile.save(update_fields=['data'])
 
-
-        self.user_to_add = mommy.make('auth.User', first_name='Gorilla', last_name='Boots', username='New Person', email='username@example.com')
+        self.user_to_add = mommy.make('auth.User', first_name='Gorilla', last_name='Boots', username='New Person',
+                                      email='username@example.com')
 
     def test_endpoint_name(self):
         self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/participant')
@@ -70,7 +70,8 @@ class MatterParticipantTest(BaseEndpointTest):
         def f(matter, participant, user, **kwargs):
             self.signal_called = True
 
-        new_lawyer_to_add = mommy.make('auth.User', first_name='Bob', last_name='Crockett', username='another-new-lawyer', email='anothernewlawyer@lawpal.com')
+        new_lawyer_to_add = mommy.make('auth.User', first_name='Bob', last_name='Crockett',
+                                       username='another-new-lawyer', email='anothernewlawyer@lawpal.com')
 
         #
         # Add the new Lawyer (Signal gets called)
@@ -79,8 +80,8 @@ class MatterParticipantTest(BaseEndpointTest):
             'email': new_lawyer_to_add.email,
             'first_name': new_lawyer_to_add.first_name,
             'last_name': new_lawyer_to_add.last_name,
-            'role': ROLES.get_name_by_value(ROLES.colleague),
             'message': 'Bob you are being added here please do something',
+            'role': ROLES.get_name_by_value(ROLES.colleague),
         }
 
         self.signal_called = False
@@ -96,8 +97,8 @@ class MatterParticipantTest(BaseEndpointTest):
             'email': self.lawyer_to_add.email,
             'first_name': 'Bob',
             'last_name': 'Crockett',
-            'role': ROLES.get_name_by_value(ROLES.colleague),
             'message': 'Bob you are being added here please do something',
+            'role': ROLES.get_name_by_value(ROLES.colleague),
         }
 
         self.signal_called = False
@@ -118,8 +119,8 @@ class MatterParticipantTest(BaseEndpointTest):
             'email': self.user_to_add.email,
             'first_name': self.user_to_add.first_name,
             'last_name': self.user_to_add.last_name,
-            'role': ROLES.get_name_by_value(ROLES.thirdparty),
             'message': 'Boots you are being added here please do something',
+            'role': ROLES.get_name_by_value(ROLES.thirdparty),
         }
 
         self.signal_called = False
@@ -146,8 +147,8 @@ class MatterParticipantTest(BaseEndpointTest):
             'email': 'test+monkey@lawyer.com',
             'first_name': 'Test',
             'last_name': 'Monkey',
-            'role': ROLES.get_name_by_value(ROLES.thirdparty),
             'message': 'Test Monkey you are being added here please do something',
+            'role': ROLES.get_name_by_value(ROLES.thirdparty),
         }
 
         resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
@@ -238,6 +239,8 @@ class MatterParticipantTest(BaseEndpointTest):
         self.client.login(username=self.user.username, password=self.password)
 
         user_to_delete = self.matter.participants.all().last()
+
+        # self.set_user_matter_perms(self.user, matter=self.matter, manage_participants=False, manage_clients=False)
 
         for event, status_code in [('get', 405), ('post', 403), ('patch', 403), ('delete', 403)]:
 

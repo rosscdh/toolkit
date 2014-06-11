@@ -6,6 +6,8 @@ from django.http import Http404
 from django.forms import EmailField
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
+from django.shortcuts import get_object_or_404
+from rest_framework.exceptions import UnsupportedMediaType
 
 from rulez import registry as rulez_registry
 
@@ -15,7 +17,7 @@ from rest_framework.response import Response
 from rest_framework import status as http_status
 
 from toolkit.apps.matter.signals import PARTICIPANT_ADDED
-from toolkit.apps.workspace.models import Workspace, ROLES
+from toolkit.apps.workspace.models import Workspace, ROLES, WorkspaceParticipants
 from toolkit.apps.workspace.services import EnsureCustomerService
 from toolkit.apps.matter.services import MatterParticipantRemovalService
 
@@ -146,16 +148,30 @@ class MatterParticipant(generics.CreateAPIView,
         return user in self.get_object().participants.all() or user == self.get_object().lawyer
 
     def can_edit(self, user):
+        # in edit-case the role is always set.
         role = self.request.DATA.get('role', False)
+
         if not role:
             return Response("You need to submit a 'role'!", status=http_status.HTTP_204_NO_CONTENT)
-        return user.has_perm('workspace.manage_clients', self.get_object()) if role == 'client' else user.has_perm('workspace.manage_participants', self.get_object())
+
+        return user.has_perm('workspace.manage_clients', self.matter) if role == 'client' \
+            else user.has_perm('workspace.manage_participants', self.matter)
 
     def can_delete(self, user):
-        role = self.request.DATA.get('role', False)
+        # in edit-case the role is NOT set.
+        try:
+            role = self.request.DATA.get('role', False)
+        except UnsupportedMediaType:
+            workspace_participant_object = get_object_or_404(WorkspaceParticipants,
+                                                             user=User.objects.get(email=self.kwargs.get('email')),
+                                                             workspace=self.matter)
+            role = ROLES.get_name_by_value(workspace_participant_object.role)
+
         if not role:
             return Response("You need to submit a 'role'!", status=http_status.HTTP_204_NO_CONTENT)
-        return user.has_perm('workspace.manage_clients', self.get_object()) if role == 'client' else user.has_perm('workspace.manage_participants', self.get_object())
+
+        return user.has_perm('workspace.manage_clients', self.matter) if role == 'client' \
+            else user.has_perm('workspace.manage_participants', self.matter)
         # can I remove myself even without this permission?
 
 

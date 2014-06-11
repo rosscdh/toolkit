@@ -39,7 +39,7 @@ GRANULAR_PERMISSIONS = (
     ("manage_document_reviews", u"Can manage document reviews"),
     ("manage_items", u"Can manage checklist items and categories"),
     ("manage_signature_requests", u"Can manage signatures & send documents for signature"),
-    ("manage_clients", u"Can manage clients"),  # not used, see https://trello.com/c/IocNs94W/545-8-feature-matter-permissions-global-matter-level-permissions
+    ("manage_clients", u"Can manage clients"),
 )
 #
 # Matter.owner (Workspace.lawyer)

@@ -101,6 +101,13 @@ class BaseScenarios(object):
         user_perms.save(update_fields=['data'])
         return user_perms.permissions
 
+    def set_user_matter_role(self, user, role, matter=None):
+        matter = self.matter if matter is None else matter
+        user_perms = user.matter_permissions(matter=matter)
+        user_perms.role = role
+        user_perms.save(update_fields=['role'])
+        return user_perms.role
+
 
 class BaseProjectCaseMixin(BaseScenarios, BaseCasperJs):
     """
