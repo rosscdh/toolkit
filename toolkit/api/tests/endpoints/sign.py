@@ -332,7 +332,7 @@ class RevisionSignerTest(BaseEndpointTest):
         # @NOTICE take note ye heathens; when we go live with signing this
         # gets removed
         #
-        # self.skipTest('Skiping Sign Tests until its ready')
+        self.skipTest('Skiping Sign Tests until its ready')
         #
         #
         #

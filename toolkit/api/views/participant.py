@@ -143,6 +143,9 @@ class MatterParticipant(generics.CreateAPIView,
             service.process(participant_to_remove)
 
         except PermissionDenied, e:
+
+            # fails because it just checks manage_participations in the service. probably need to put role into RemovalService
+
             status = http_status.HTTP_403_FORBIDDEN
 
         return Response(status=status)
@@ -171,10 +174,9 @@ class MatterParticipant(generics.CreateAPIView,
             role = ROLES.get_name_by_value(workspace_participant_object.role)
 
         if not role:
-            return Response("You need to submit a 'role'!", status=http_status.HTTP_204_NO_CONTENT)
+            raise exceptions.PermissionDenied("You need to submit a 'role'!")
 
-        return user.has_perm('workspace.manage_clients', self.matter) if role == 'client' \
-            else user.has_perm('workspace.manage_participants', self.matter)
+        return user.has_perm('workspace.manage_clients', self.matter) if role == 'client' else user.has_perm('workspace.manage_participants', self.matter)
         # can I remove myself even without this permission?
 
 

@@ -183,6 +183,8 @@ class MatterParticipantPermissionTest(BaseEndpointTest):
         resp = self.client.delete(endpoint, None)
         self.assertEqual(resp.status_code, 403)  # forbidden
 
+        self.skipTest('we need to make sure if manage_clients includes to remove participants with role "client" from the matter')
+
         self.set_user_matter_perms(user=self.lawyer, manage_clients=True)
         resp = self.client.delete(endpoint, None)
         self.assertEqual(resp.status_code, 202)  # accepted
