@@ -133,7 +133,8 @@ class WorkspaceParticipants(models.Model):
         # Anon permissions, for anyone else that does not match
         return ANONYMOUS_USER_PERMISSIONS
 
-    def clean_permissions(self, **kwargs):
+    @staticmethod
+    def clean_permissions(**kwargs):
         """
         Pass in a set of permissions and remove those that do not exist in
         the base set of permissions
