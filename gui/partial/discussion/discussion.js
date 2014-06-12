@@ -1,4 +1,5 @@
 angular.module('toolkit-gui').controller('DiscussionCtrl', [
+    '$modal',
     '$rootScope',
     '$scope',
     '$state',
@@ -8,7 +9,7 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
     'toaster',
     '$log',
     '$q',
-    function($rootScope, $scope, $state, discussionService, matterService, smartRoutes, toaster, $log, $q) {
+    function($modal, $rootScope, $scope, $state, discussionService, matterService, smartRoutes, toaster, $log, $q) {
         'use strict';
 
         var routeParams = smartRoutes.params();
@@ -71,6 +72,28 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
                 function error(/*err*/) {
                     toaster.pop('error', 'Error!', 'Unable to read discussion list.', 5000);
                 }
+            );
+        };
+
+        $scope.createThread = function() {
+            var modalInstance = $modal.open({
+                'templateUrl': '/static/ng/partial/discussion/includes/create-thread.html',
+                'controller': 'CreateThreadCtrl',
+                'resolve': {
+                    'currentUser': function() {
+                        return $scope.data.matter.current_user;
+                    },
+                    'matter': function() {
+                        return $scope.data.matter;
+                    }
+                }
+            });
+
+            modalInstance.result.then(
+                function ok() {
+                    $scope.initializeDiscussion($scope.data.matter);
+                },
+                function cancel() {}
             );
         };
 

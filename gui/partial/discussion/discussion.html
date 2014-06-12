@@ -2,6 +2,7 @@
     <div class="container-fluid full">
         <div class="row full">
             <div class="col-lg-4 full checklist-col" id="inbox">
+                <button class="btn btn-default" ng-click="createThread()">New Thread</button>
                 <div class="row inbox-msgs checklist-col">
                     <ul class="msg-list list-unstyled">
                         <li ng-repeat="thread in data.threads"
