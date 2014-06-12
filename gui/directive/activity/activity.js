@@ -3,7 +3,7 @@
  * @classdesc                             Directive for handling activity events
  *
  * @param  {Object} $scope                Contains the scope of this controller
- * @param  {Object} itemCommentService        An angular service designed to work with the COMMENT end-point
+ * @param  {Object} commentService        An angular service designed to work with the COMMENT end-point
  * @param  {Object} ngModel               The activity event object
  * @param  {Object} matterSlug            The slug of the matter
  * @param  {Object} itemSlug              The slug of the currently selected item
@@ -18,8 +18,8 @@ angular.module('toolkit-gui').directive('activity', ['$compile', '$log', '$sce',
 			user: '='
 		},
 		replace: true,
-		controller: ['$scope', '$http', '$log', 'itemCommentService', 'toaster', '$timeout',
-			function ($scope, $http, $log, itemCommentService, toaster, $timeout) {
+		controller: ['$scope', '$http', '$log', 'commentService', 'toaster', '$timeout',
+			function ($scope, $http, $log, commentService, toaster, $timeout) {
 
 				$scope.data = {
 					'edit_comment': '',
@@ -35,7 +35,7 @@ angular.module('toolkit-gui').directive('activity', ['$compile', '$log', '$sce',
                  */
                 $scope.deleteComment = function () {
                     //TODO itemSlug shouldnt be necessary
-                    itemCommentService.delete($scope.matterSlug, $scope.itemSlug, $scope.ngModel.id).then(
+                    commentService.delete($scope.matterSlug, $scope.itemSlug, $scope.ngModel.id).then(
                         function success() {
                             $scope.isDeleted = true;
                         },
@@ -54,7 +54,7 @@ angular.module('toolkit-gui').directive('activity', ['$compile', '$log', '$sce',
                  */
                 $scope.saveComment = function () {
                     $scope.data.comment = genericFunctions.cleanHTML($scope.data.edit_comment);
-                    itemCommentService.update($scope.matterSlug, $scope.itemSlug, $scope.ngModel.id, $scope.data.comment).then(
+                    commentService.update($scope.matterSlug, $scope.itemSlug, $scope.ngModel.id, $scope.data.comment).then(
                         function success() {
                         },
                         function error(/*err*/) {

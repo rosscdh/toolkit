@@ -1,4 +1,4 @@
-describe('itemCommentService', function() {
+describe('commentService', function() {
   beforeEach(module('toolkit-gui'));
 
   var checker;

@@ -15,7 +15,7 @@ angular.module('toolkit-gui')
  * @param  {Object} participantService    A custom angular service designed to work with USER end-points
  * @param  {Object} activityService       A custom angular service designed to work with ACTIVITY end-points
  * @param  {Object} userService           A custom angular service designed to work with USER end-points
- * @param  {Object} itemCommentService        A custom angular service designed to work with COMMENT end-points
+ * @param  {Object} commentService        A custom angular service designed to work with COMMENT end-points
  * @param  {Function} $timeout            An angular wrapper for setTimeout that allows angular to keep track of when to update views
  */
 .controller('ChecklistCtrl', [
@@ -40,7 +40,7 @@ angular.module('toolkit-gui')
 	'searchService',
 	'activityService',
 	'userService',
-	'itemCommentService',
+	'commentService',
 	'genericFunctions',
 	'$timeout',
 	'$log',
@@ -69,7 +69,7 @@ angular.module('toolkit-gui')
 			 searchService,
 			 activityService,
 			 userService,
-			 itemCommentService,
+			 commentService,
 			 genericFunctions,
 			 $timeout,
 			 $log,
@@ -1865,7 +1865,7 @@ angular.module('toolkit-gui')
 			appendActivity('item.comment', item.newcomment, item);
 
 			// Post activity
-			itemCommentService.create(matterSlug, item.slug, item.newcomment).then(
+			commentService.create(matterSlug, item.slug, item.newcomment).then(
 				 function success( /*activityItem*/ ){
 					// please note: do not refresh activity stream as the new item may not exist yet
 					// clear form
