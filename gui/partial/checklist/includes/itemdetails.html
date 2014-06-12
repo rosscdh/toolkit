@@ -117,7 +117,8 @@
 
     <div class="waiting-revision text-center" ng-show="data.selectedItem.is_requested&&data.selectedItem.responsible_party.username!=data.usdata.current.username">
         <span class="fui-time"></span> Waiting for a document from <span ng-bind="data.selectedItem.responsible_party | fullname"></span>.
-        <a href="javascript:;" ng-click="remindRevisionRequest(data.selectedItem)">Remind</a> <a class="close" href="javascript:;" ng-click="deleteRevisionRequest(data.selectedItem)">x</a>
+        <a href="javascript:;" ng-click="remindRevisionRequest(data.selectedItem)" ng-show="data.usdata.current.permissions.manage_items">Remind</a>&nbsp;
+        <a class="close" href="javascript:;" ng-click="deleteRevisionRequest(data.selectedItem)" ng-show="data.usdata.current.permissions.manage_items">x</a>
     </div>
 
     <div class="waiting-revision text-center" ng-show="data.selectedItem.is_requested&&data.selectedItem.responsible_party.username==data.usdata.current.username">
@@ -132,7 +133,7 @@
         <i class="fa fa-spinner fa-3x fa-spin"></i>
     </div>
 
-    <div ng-show="data.usdata.current.user_class=='lawyer'">
+    <div ng-show="data.usdata.current.permissions.manage_items">
         <div class="drop-area show-on-drag" ng-file-drop="onFileDropped($files, data.selectedItem);"  ng-show="data.selectedItem.latest_revision">
             <span class="fui-upload"></span>
             <h4>Upload a document</h4>
@@ -153,10 +154,10 @@
                             Visible to <span style="font-weight: bold">{{data.customers.length}}</span>
                         </button>
                         <button class="btn btn-default btn-xs"
-                                data-toggle="dropdown" ng-show="data.usdata.current.user_class=='lawyer'">
+                                data-toggle="dropdown" ng-show="data.usdata.current.permissions.manage_items">
                           <span class="caret" ></span>
                         </button>
-                        <ul class="dropdown-menu" ng-show="data.usdata.current.user_class=='lawyer'" >
+                        <ul class="dropdown-menu" ng-show="data.usdata.current.permissions.manage_items">
                           <li class="" ng-repeat="customer in data.customers">
                               <a href="javascript:;">
                                   {{ customer.first_name }} {{ customer.last_name }}
@@ -177,10 +178,10 @@
                               {{ data.matter._meta.item.custom_status[data.selectedItem.latest_revision.status] }}
                             </button>
                             <button class="btn btn-default btn-xs status-{{ data.selectedItem.latest_revision.status }}"
-                                    data-toggle="dropdown" ng-show="data.usdata.current.user_class=='lawyer'">
+                                    data-toggle="dropdown" ng-show="data.usdata.current.permissions.manage_items">
                               <span class="caret" ></span>
                             </button>
-                            <ul class="dropdown-menu" ng-show="data.usdata.current.user_class=='lawyer'" >
+                            <ul class="dropdown-menu" ng-show="data.usdata.current.permissions.manage_items">
                               <li class="" ng-repeat="(key, status) in data.matter._meta.item.custom_status">
                                   <a href="javascript:;" ng-click="data.showRevisionStatusDropdown=false;data.selectedItem.latest_revision.status=key;saveLatestRevision();"
                                      ng-hide="data.showEditRevisionTitles">
@@ -200,13 +201,17 @@
                     </div>
 
                 </div>
-                <div class="desc" ng-hide="data.show_edit_revision_description||data.usdata.current.user_class!=='lawyer'">
+                <div class="desc" ng-hide="data.show_edit_revision_description||!data.usdata.current.permissions.manage_items">
                      <a href="javascript:;" class="link"
                         ng-click="editTextattribute(data.selectedItem.latest_revision, 'revision', 'description')">
                         <div btf-markdown="data.selectedItem.latest_revision.description | newlines"></div>
                         <span ng-hide="data.selectedItem.latest_revision.description">Enter description</span>
                     </a>
                 </div>
+                <div class="desc" ng-hide="data.usdata.current.permissions.manage_items">
+                        <div btf-markdown="data.selectedItem.latest_revision.description | newlines"></div>
+                </div>
+
                 <div class="item-description" ng-show="data.show_edit_revision_description">
                     <textarea class="form-control" mentions-box container-position="left" msd-elastic placeholder="Enter a description for this revision"
                               text="data.selectedItem.latest_revision.edit_revision_description" focus-on="event_edit_revision_description"></textarea>
@@ -221,7 +226,7 @@
                     <a href="javascript:;" class="btn btn-link btn-xs"
                        ng-click="requestSigning(data.selectedItem.latest_revision)"
                        ng-show="data.selectedItem.latest_revision.signing===null&&data.itemIsLoading!==true&&data.usdata.current.permissions.manage_signature_requests">Send for Signing</a>
-                    <a href="javascript:;" class="btn btn-link btn-xs" ng-click="deleteLatestRevision()">Delete</a>
+                    <a href="javascript:;" class="btn btn-link btn-xs" ng-click="deleteLatestRevision()" ng-show="data.usdata.current.permissions.manage_items">Delete</a>
                 </div>
             </div>
 
