@@ -118,7 +118,9 @@ class HelloSignOverridesMixin(object):
         Return the document to be sent for signing
         Ties in with HelloSignModelMixin method
         """
-        return default_storage.open(self.document.executed_file)
+        if self.ensure_file():
+            return default_storage.open(self.document.executed_file)
+        return None
 
     def hs_signers(self):
         """

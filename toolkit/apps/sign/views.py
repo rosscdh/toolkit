@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
 from django.http import Http404
 from django.contrib.auth.models import User
 from django.views.generic import DetailView
@@ -7,10 +8,30 @@ from django.shortcuts import get_object_or_404
 from django.views.generic.edit import BaseUpdateView
 
 from hellosign_sdk.utils.exception import Conflict
+from hellosign.hellosign import HelloSignSignature
+
 from .models import SignDocument
 
 import logging
 logger = logging.getLogger('django.request')
+
+
+def _hellosign_signature_subject_and_message(request_id):
+    """
+    We need to query the HS api to get the subject and message for the signature
+    as they do not currently send it back in the javascript callback; have raised
+    and they are assessing impact.
+    """
+    auth = getattr(settings, 'HELLOSIGN_AUTHENTICATION', None)
+    client = HelloSignSignature()
+    resp = client.detail(auth=auth, signature_request_id=request_id)
+    # parse json
+    resp_json = resp.json().get('signature_request',{})
+    # get needed info
+    subject = resp_json.get('subject', None)
+    message = resp_json.get('message', None)
+    # return tuple
+    return subject, message
 
 
 class SignRevisionView(DetailView):
@@ -120,8 +141,11 @@ class ClaimSignRevisionView(SignRevisionView,
         Handle the claim_url postback when the user has completed the claim setup
         """
         signature_request_id = request.POST.get('signature_request_id')
-        message = request.POST.get('message', None)  # HS to rpovide these, currently missing
         subject = request.POST.get('subject', None)  # HS to rpovide these, currently missing
+        message = request.POST.get('message', None)  # HS to rpovide these, currently missing
+
+        if subject is None and message is None:
+            subject, message = _hellosign_signature_subject_and_message(request_id=signature_request_id)
 
         logger.info('found signature_request_id: %s' % signature_request_id)
 
@@ -143,6 +167,9 @@ class ClaimSignRevisionView(SignRevisionView,
         resp = self.object.send_for_signing(signature_request_id=signature_request_id)
     
         if resp.get('date_sent', None) is not None:
+            # Recalculate the percentage
+            self.object.document.item.recalculate_signing_percentage_complete()
+
             self.object.send_invite_email(from_user=request.user,
                                           subject=subject,
                                           message=message)

@@ -7,7 +7,7 @@
 
 <p>{{ from_name }} has asked you to sign the document: {{ item.name }}.</p>
 
-<p>You can find it at {{ action_url }}</p>
+<p>You can find it at <a href="{{ action_url }}">{{ action_url }}</a></p>
 {% if message %}<p>{{ message }}</p>{% endif %}
 <p>Please go to there, login and either sign the document or provide {{ from_name }} with your feedback.</p>
 
