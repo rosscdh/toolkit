@@ -113,6 +113,7 @@ angular.module('toolkit-gui')
 			'knownSigners': [],
             'showPreviousRevisions': false
 		};
+
 		//debugger;
 		// Basic checklist item format, used for placeholder checklist items
 		var CHECKLISTITEMSKELETON = {
@@ -133,10 +134,7 @@ angular.module('toolkit-gui')
 			"loading": true
 		};
 
-
-		if( $scope.data.slug && $scope.data.slug!=='' && $scope.data.matterCalled==null) {
-			$scope.data.matterCalled = true;
-
+		function loadMatter() {
 			matterService.get( $scope.data.slug ).then(
 				function success( singleMatter ){
 					$scope.data.matter = singleMatter;
@@ -147,7 +145,6 @@ angular.module('toolkit-gui')
 					$scope.initializeActivityStream( singleMatter );
 
 					userService.setCurrent( singleMatter.current_user, singleMatter.lawyer );
-
 					$scope.initialiseIntercom(singleMatter.current_user);
 				},
 				function error(/*err*/){
@@ -155,6 +152,11 @@ angular.module('toolkit-gui')
 					// @TODO: redirect user maybe?
 				}
 			);
+		}
+
+		if( $scope.data.slug && $scope.data.slug!=='' && $scope.data.matterCalled==null) {
+			$scope.data.matterCalled = true;
+			loadMatter();
 		}
 
 		/**
@@ -222,6 +224,15 @@ angular.module('toolkit-gui')
 
 			// Items with blank category name
 			items = jQuery.grep( matter.items, function( item ){ return item.category===categoryName; } );
+
+			// REMOVE !!
+			/*
+			for(var i=0;i<items.length;i++) {
+				items[i].signing_percentage_complete = parseInt( Math.random() * 100 );
+			}
+			*/
+			// end REMOVE
+					
 			categories.push(
 				{ 'name': categoryName, 'items': items }
 			);
@@ -256,27 +267,26 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 * @method			initialiseIntercom
 		 */
-		$scope.initialiseIntercom = function(currUser){
-			$log.debug(currUser);
+        $scope.initialiseIntercom = function(currUser){
+            $log.debug(currUser);
 
-			Intercom.boot({
-				user_id: currUser.username,
-				email: currUser.email,
-				first_name: currUser.first_name,
-				last_name: currUser.last_name,
-				firm_name: currUser.firm_name,
-				verified: currUser.verified,
-				type: currUser.user_class,
-				app_id: INTERCOM_APP_ID,
-				created_at: (new Date(currUser.date_joined).getTime()/1000),
-				matters_created: currUser.matters_created,
-				user_hash: currUser.intercom_user_hash,
-				widget: {
-					activator: '.intercom',
-					use_counter: true
-				}
-			});
-
+            Intercom.boot({
+                'user_id': currUser.username,
+                'email': currUser.email,
+                'first_name': currUser.first_name,
+                'last_name': currUser.last_name,
+                'firm_name': currUser.firm_name,
+                'verified': currUser.verified,
+                'type': currUser.user_class,
+                'app_id': INTERCOM_APP_ID,
+                'created_at': (new Date(currUser.date_joined).getTime()/1000),
+                'matters_created': currUser.matters_created,
+                'user_hash': currUser.intercom_user_hash,
+                'widget': {
+                    'activator': '.intercom',
+                    'use_counter': true
+                }
+            });
 			//Intercom.show();
 		};
 
@@ -564,20 +574,6 @@ angular.module('toolkit-gui')
 		};
 
 		/**
-		 * cleanHTML
-		 * @param  {String} str Text string to be cleaned
-		 * @return {String}     Text string that has been cleaned
-		 */
-		function cleanHTML( str ) {
-			try {
-				return $sanitize(str);
-			} catch(e) {
-				return str.replace(/(<([^>]+)>)/ig, '');
-			}
-		}
-
-
-		/**
 		 * Receives the user object from the API by the given URL and returns his full name if existing or
 		 * the email address. When showOnlyInitials is set, then it just returns the initials of the user.
 		 *
@@ -815,7 +811,7 @@ angular.module('toolkit-gui')
 			}
 
 			return false;
-		}
+		};
 
 		/**
 		 * Initiate the file upload process
@@ -1929,7 +1925,7 @@ angular.module('toolkit-gui')
 		}
 
 	    $scope.showMarkDownInfo = function() {
-	      var modalInstance = $modal.open({
+	      $modal.open({
 	        'templateUrl': '/static/ng/partial/markdown/markdown-info.html',
 	        'controller': 'MarkdownInfoCtrl'
 	      });

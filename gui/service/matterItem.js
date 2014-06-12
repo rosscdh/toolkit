@@ -11,9 +11,10 @@ angular.module('toolkit-gui')
 	'$resource',
 	'$rootScope',
 	'$upload',
+	'$timeout',
 	'matterService',
 	'API_BASE_URL',
-	function( $q, $resource, $rootScope, $upload, matterService, API_BASE_URL) {
+	function( $q, $resource, $rootScope, $upload, $timeout, matterService, API_BASE_URL) {
 		'use strict';
 		/**
 		 * TBC: this variable will contain the JWT token required to make authenticated requests
@@ -338,7 +339,7 @@ angular.module('toolkit-gui')
 						
 					});
 				} else {
-					setTimeout(
+					$timeout(
 						function(){
 							deferred.reject();
 						},
