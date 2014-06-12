@@ -1,6 +1,11 @@
 Deployment actions by branch
 ----------------------------
 
+[feature/matter-discussions]
+
+1. pip install django-threadedcomments==0.9.0
+2. ./manage.py syncdb --migrate
+
 --------------------------------------------------------------------------------
 ** DEPLOYED 10 June 2014
 --------------------------------------------------------------------------------
