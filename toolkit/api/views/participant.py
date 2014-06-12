@@ -143,9 +143,6 @@ class MatterParticipant(generics.CreateAPIView,
             service.process(participant_to_remove)
 
         except PermissionDenied, e:
-
-            # fails because it just checks manage_participations in the service. probably need to put role into RemovalService
-
             status = http_status.HTTP_403_FORBIDDEN
 
         return Response(status=status)
@@ -157,14 +154,22 @@ class MatterParticipant(generics.CreateAPIView,
         role = self.request.DATA.get('role')
         if not role:
             return False
-        return user.has_perm('workspace.manage_clients', self.matter) if ROLES.get_value_by_name(role.lower()) == ROLES.client \
-            else user.has_perm('workspace.manage_participants', self.matter)
+
+        # manage_participants overrides manage_clients
+        if user.has_perm('workspace.manage_participants', self.matter):
+            return True
+        elif ROLES.get_value_by_name(role.lower()) == ROLES.client:
+            return user.has_perm('workspace.manage_clients', self.matter)
 
     def can_delete(self, user):
         user_to_work_on = User.objects.get(email=self.kwargs.get('email'))
-        return user.has_perm('workspace.manage_clients', self.matter) if user_to_work_on.matter_permissions(matter=self.matter).role == ROLES.client \
-            else user.has_perm('workspace.manage_participants', self.matter)
-        # can I remove myself even without this permission?
+
+        # manage_participants overrides manage_clients
+        if user.has_perm('workspace.manage_participants', self.matter) \
+                or user_to_work_on == self.request.user:
+            return True
+        elif user_to_work_on.matter_permissions(matter=self.matter).role == ROLES.client:
+            return user.has_perm('workspace.manage_clients', self.matter)
 
 
 rulez_registry.register("can_read", MatterParticipant)

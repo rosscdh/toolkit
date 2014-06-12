@@ -71,13 +71,10 @@ class MatterPermissionLogic(PermissionLogic):
             return False
 
         elif user_obj.is_active:
-
             try:
                 matter_participant = WorkspaceParticipants.objects.get(workspace=obj, user=user_obj)
-
             except WorkspaceParticipants.DoesNotExist:
                 return False
-
             return matter_participant.permissions.get(perm, False)
 
         return False

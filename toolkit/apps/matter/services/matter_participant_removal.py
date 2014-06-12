@@ -3,7 +3,7 @@ import logging
 from django.core.exceptions import PermissionDenied
 
 from toolkit.apps.matter.signals import PARTICIPANT_DELETED, USER_STOPPED_PARTICIPATING
-from toolkit.apps.workspace.models import WorkspaceParticipants
+from toolkit.apps.workspace.models import WorkspaceParticipants, ROLES
 
 
 logger = logging.getLogger('django.request')
@@ -32,8 +32,12 @@ class MatterParticipantRemovalService(object):
                                                 matter=self.matter,
                                                 participant=user_to_remove)
 
-            elif self.removing_user.has_perm('workspace.manage_participants', self.matter) and \
-                            self.matter.lawyer != user_to_remove:
+            # either user has manage_participants or he removes a client and has manage_clients.
+            # additionaly he cannot remove the primary lawyer (last 'and')
+            elif (self.removing_user.has_perm('workspace.manage_participants', self.matter)
+                    or user_to_remove.matter_permissions(matter=self.matter).role == ROLES.client
+                       and self.removing_user.has_perm('workspace.manage_clients', self.matter)) \
+                    and self.matter.lawyer != user_to_remove:
                 self.matter.remove_participant(user=user_to_remove)
                 PARTICIPANT_DELETED.send(sender=self,
                                          matter=self.matter,
