@@ -1178,9 +1178,6 @@ angular.module('toolkit-gui')
                     });
 
                     $log.debug("Length known signers: " + $scope.data.knownSigners.length);
-
-                    // Reload matter
-                    loadMatter();
 				},
 				function cancel() {
 					//
