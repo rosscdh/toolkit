@@ -1,8 +1,8 @@
 <ul ui:sortable="checklistItemSortableOptions" ng:model="cat.items" class="group list-unstyled checklist-items">
 	<li
-		ng-repeat="item in cat.items"
+		ng-repeat="item in cat.items | itemStatusFilter: matter.statusFilter | itemFilter: matter.itemFilter"
 		ng-click="selectItem(item, cat)"
-		ng-class="{ 'item-closed': item.is_complete, 'item-open': !item.is_complete, 'selected': item.slug===data.selectedItem.slug}"
+		ng-class="{ 'item-closed': item.is_complete, 'item-open': !item.is_complete, 'selected': item.slug===data.selectedItem.slug }"
 		ng-file-drop="onFileDropped($files, item, this);selectItem(item, cat);"
 		ng-file-drag-over-class="file-drag-over"
 		ui-sref="checklist.item({ 'itemSlug': item.slug })"
@@ -10,7 +10,7 @@
 		<div class="row">
 			<div class="col-xs-6 item-title">
 				<span class="fui-list-columned"></span>
-				<span ng-bind="item.name"></span>
+				<span ng-bind="item.name" ng-class="{'loading': item.loading}"></span>
 			</div>
 			<div class="col-xs-6">
 				<span ng-hide="item.is_complete" class="pull-right status">
@@ -54,6 +54,9 @@
                     </button>
 				</span>
 				<span class="pe-7s-check pull-right" ng-show="item.is_complete"></span>
+				<span ng-if="item.loading">
+					<i class="fa fa-spinner fa-spin pull-right fapad"></i>
+				</span>
 			</div>
 		</div>
 	</li>

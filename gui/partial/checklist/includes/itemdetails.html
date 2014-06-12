@@ -31,7 +31,7 @@
                       mentions-box container-position="left" text="data.selectedItem.edit_item_description" focus-on="event_edit_item_description"></textarea>
             <a href="javascript:;" class="btn btn-primary btn-xs" ng-click="data.selectedItem.description=data.selectedItem.edit_item_description;saveSelectedItem();data.show_edit_item_description=false;">Save description</a>
             <a href="javascript:;" class="btn btn-inverse btn-xs item-description-cancel" ng-click="data.selectedItem.edit_item_description='';data.show_edit_item_description=false;">Cancel</a>
-            <a href="javascript:;" class="btn btn-link btn-xs pull-right" title="Markdown help" onclick="alert('LawPal supports markdown.');">Formatting Help</a>
+            <a href="javascript:;" class="btn btn-link btn-xs pull-right" title="Markdown help" ng-click="showMarkDownInfo()">Formatting Help</a>
         </div>
     </h3>
 
