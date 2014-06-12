@@ -130,7 +130,7 @@ class SignDocument(IsDeletedMixin,
 
     def percentage_complete(self):
         num_signatures = len(self.signatures)
-        percentage_complete = 0  # reset it here
+        percentage_complete = 0 if self.signing_request and self.signing_request.is_claimed is True else None  # if we have not claimed the signature then still show None
 
         if num_signatures is not None and num_signatures > 0:
             num_complete = len([signature for signature in self.signatures if signature.get('signed_at', None) is not None])
@@ -138,7 +138,7 @@ class SignDocument(IsDeletedMixin,
             if num_complete > 0:
                 percentage_complete = float(num_complete) / float(num_signatures)
 
-        percentage_complete = round(percentage_complete * 100, 0)
+            percentage_complete = round(percentage_complete * 100, 0)
 
         return percentage_complete
 
