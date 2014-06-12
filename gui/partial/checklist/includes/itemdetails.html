@@ -111,7 +111,7 @@
     </div>
     <!-- End option toolbar -->
 
-    <div class="no-revisions text-center" ng-show="data.usdata.current.user_class!=='lawyer'&&!data.selectedItem.latest_revision">
+    <div class="no-revisions text-center" ng-show="!data.usdata.current.permissions.manage_items&&!data.selectedItem.latest_revision">
         <span class="fui-document"></span> No files added yet.
     </div>
 
@@ -316,7 +316,7 @@
         </li>
         <!-- End current revision -->
 
-        <li class="toggle-previous text-center" ng-show="data.selectedItem.latest_revision.revisions.length>0&&!data.showPreviousRevisions&&data.usdata.current.user_class=='lawyer'">
+        <li class="toggle-previous text-center" ng-show="data.selectedItem.latest_revision.revisions.length>0&&!data.showPreviousRevisions&&data.usdata.current.permissions.manage_items">
             <a class="btn btn-sm btn-silver" href="javascript:;" ng-click="loadPreviousRevisions()">
                 <span ng-show="data.selectedItem.latest_revision.revisions.length==1">Show Previous Revision</span>
                 <span ng-show="data.selectedItem.latest_revision.revisions.length>1">Show {{ data.selectedItem.latest_revision.revisions.length }} Previous Revisions</span>
@@ -359,7 +359,7 @@
         </li>
     </ul>
 
-    <div ng-show="data.usdata.current.user_class=='lawyer'">
+    <div ng-show="data.usdata.current.permissions.manage_items">
         <div class="item-help border-on-dragover" ng-hide="data.selectedItem.latest_revision||data.uploading||data.selectedItem.is_requested">
             <span class="fui-upload"></span>
             <h4>Upload a document</h4>
