@@ -24,9 +24,10 @@ angular.module('toolkit-gui')
 	'$routeParams',
 	'$state',
 	'$location',
-	'$sce',
-	'$compile',
-	'$route',
+    '$sce',
+    '$sanitize',
+    '$compile',
+    '$route',
 	'smartRoutes',
 	'ezConfirm',
 	'toaster',
@@ -40,6 +41,7 @@ angular.module('toolkit-gui')
 	'activityService',
 	'userService',
 	'commentService',
+	'genericFunctions',
 	'$timeout',
 	'$log',
 	'$window',
@@ -51,9 +53,10 @@ angular.module('toolkit-gui')
 			 $routeParams,
 			 $state,
 			 $location,
-			 $sce,
-			 $compile,
-			 $route,
+             $sce,
+             $sanitize,
+             $compile,
+             $route,
 			 smartRoutes,
 			 ezConfirm,
 			 toaster,
@@ -67,6 +70,7 @@ angular.module('toolkit-gui')
 			 activityService,
 			 userService,
 			 commentService,
+			 genericFunctions,
 			 $timeout,
 			 $log,
 			 $window,
@@ -539,8 +543,14 @@ angular.module('toolkit-gui')
 		 */
 		$scope.saveSelectedItem = function () {
 			var matterSlug = $scope.data.slug;
+			var selectedItem = $scope.data.selectedItem;
 
-			if ($scope.data.selectedItem) {
+			if (selectedItem) {
+				selectedItem.name = genericFunctions.cleanHTML(selectedItem.name);
+				selectedItem.description = genericFunctions.cleanHTML(selectedItem.description);
+
+				selectedItem.edit_item_description = selectedItem.description;
+
 				matterItemService.update(matterSlug, $scope.data.selectedItem).then(
 					function success(/*item*/){
 						//do nothing
@@ -551,6 +561,19 @@ angular.module('toolkit-gui')
 				);
 			}
 		};
+
+		/**
+		 * cleanHTML
+		 * @param  {String} str Text string to be cleaned
+		 * @return {String}     Text string that has been cleaned
+		 */
+		function cleanHTML( str ) {
+			try {
+				return $sanitize(str);
+			} catch(e) {
+				return str.replace(/(<([^>]+)>)/ig, '');
+			}
+		}
 
 
 		/**
@@ -1179,7 +1202,7 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
 		$scope.requestSigning = function( revision ) {
-			var matterSlug = $scope.data.slug;
+			//var matterSlug = $scope.data.slug;
 			var item = $scope.data.selectedItem;
 
 			var modalInstance = $modal.open({
@@ -1836,6 +1859,8 @@ angular.module('toolkit-gui')
 			var matterSlug = $scope.data.slug;
 			var item = $scope.data.selectedItem;
 
+			item.newcomment = genericFunctions.cleanHTML(item.newcomment);
+
 			// Show activity straight away
 			appendActivity('item.comment', item.newcomment, item);
 
@@ -1902,6 +1927,45 @@ angular.module('toolkit-gui')
 			return template;
 		}
 
+	    $scope.showMarkDownInfo = function() {
+	      var modalInstance = $modal.open({
+	        'templateUrl': '/static/ng/partial/markdown/markdown-info.html',
+	        'controller': 'MarkdownInfoCtrl'
+	      });
+
+	    };
+		/* END COMMENT HANDLING */
+
+		/*
+		 _____ _ _ _                
+		|  ___(_) | |_ ___ _ __ ___ 
+		| |_  | | | __/ _ \ '__/ __|
+		|  _| | | | ||  __/ |  \__ \
+		|_|   |_|_|\__\___|_|  |___/
+									
+		 */
+		/**
+		 * applyStatusFilter  filters for checklist based on status 0-4
+		 * @param  {Object} filter Filter to apply to latest_revision
+		 */
+		$scope.applyStatusFilter = function( filter ) {
+			// Initialise status filter
+			$scope.data.statusFilter = $scope.data.statusFilter||{};
+
+			// Clear other filters
+			$scope.data.itemFilter = null;
+
+			if( filter ) {
+				for(var key in filter) {
+					// Convert { "0": "Draft" } to { "status": 0 }
+					$scope.data.statusFilter[key] = parseInt(filter[key]);
+				}
+			} else {
+				// Clear all filters
+				$scope.data.itemFilter = null;
+				$scope.data.statusFilter = null;
+			}
+		};
 		$scope.clearFilters = function() {
 			$scope.matter.itemFilter = null;
 			$scope.matter.statusFilter = null;
