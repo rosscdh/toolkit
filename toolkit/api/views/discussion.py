@@ -42,8 +42,12 @@ class DiscussionEndpoint(MatterMixin, viewsets.ModelViewSet):
     def can_edit(self, user):
         return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
 
+    def can_delete(self, user):
+        return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
+
 rulez_registry.register("can_read", DiscussionEndpoint)
 rulez_registry.register("can_edit", DiscussionEndpoint)
+rulez_registry.register("can_delete", DiscussionEndpoint)
 
 
 class DiscussionCommentEndpoint(MatterMixin, viewsets.ModelViewSet):
@@ -68,5 +72,9 @@ class DiscussionCommentEndpoint(MatterMixin, viewsets.ModelViewSet):
     def can_edit(self, user):
         return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
 
+    def can_delete(self, user):
+        return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
+
 rulez_registry.register("can_read", DiscussionCommentEndpoint)
 rulez_registry.register("can_edit", DiscussionCommentEndpoint)
+rulez_registry.register("can_delete", DiscussionCommentEndpoint)

@@ -7,6 +7,7 @@
                     <span ng-bind="data.selectedThread.user.name"></span>
                     <span class="text-muted">{{ data.selectedThread.date_created | timeago }}</span>
                 </div>
+                <a href="javascript:;" ng-click="deleteThread(data.selectedThread)" class="btn btn-sm pull-right btn-default">Delete thread</a>
                 <div class="message-body">
                     <p ng-bind="data.selectedThread.comment"></p>
                 </div>

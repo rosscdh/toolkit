@@ -71,37 +71,37 @@ angular.module('toolkit-gui').factory('discussionService', [
                 return deferred.promise;
             },
 
-            // 'delete': function(matterSlug, itemSlug, commentId) {
-                // var api = commentResource();
-                // var deferred = $q.defer();
+            'delete': function(matterSlug, threadId) {
+                var api = discussionResource();
+                var deferred = $q.defer();
 
-                // api.delete({'matterSlug': matterSlug, 'itemSlug': itemSlug, 'id':commentId},
-                    // function success() {
-                        // deferred.resolve();
-                    // },
-                    // function error( err ) {
-                        // deferred.reject( err );
-                    // }
-                // );
+                api.delete({ 'matterSlug': matterSlug, 'threadId': threadId },
+                    function success() {
+                        deferred.resolve();
+                    },
+                    function error(err) {
+                        deferred.reject(err);
+                    }
+                );
 
-                // return deferred.promise;
-            // },
+                return deferred.promise;
+            },
 
-            // 'update': function(matterSlug, itemSlug, commentId, comment) {
-                // var api = commentResource();
-                // var deferred = $q.defer();
+            'update': function(matterSlug, threadId, comment, title) {
+                var api = discussionResource();
+                var deferred = $q.defer();
 
-                // api.update({'matterSlug': matterSlug, 'itemSlug': itemSlug, 'id':commentId}, {'comment': comment},
-                    // function success() {
-                        // deferred.resolve();
-                    // },
-                    // function error( err ) {
-                        // deferred.reject( err );
-                    // }
-                // );
+                api.update({ 'matterSlug': matterSlug, 'threadId': threadId}, { 'comment': comment, 'title': title },
+                    function success(thread) {
+                        deferred.resolve(thread);
+                    },
+                    function error(err) {
+                        deferred.reject(err);
+                    }
+                );
 
-                // return deferred.promise;
-            // }
+                return deferred.promise;
+            },
 
             'comment': function(matterSlug, threadId, comment) {
                 var api = threadResource();

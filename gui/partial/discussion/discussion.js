@@ -4,12 +4,13 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
     '$scope',
     '$state',
     'discussionService',
+    'ezConfirm',
     'matterService',
     'smartRoutes',
     'toaster',
     '$log',
     '$q',
-    function($modal, $rootScope, $scope, $state, discussionService, matterService, smartRoutes, toaster, $log, $q) {
+    function($modal, $rootScope, $scope, $state, discussionService, ezConfirm, matterService, smartRoutes, toaster, $log, $q) {
         'use strict';
 
         var routeParams = smartRoutes.params();
@@ -94,6 +95,22 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
                     $scope.initializeDiscussion($scope.data.matter);
                 },
                 function cancel() {}
+            );
+        };
+
+        $scope.deleteThread = function(thread) {
+            ezConfirm.create('Delete Thread', 'Please confirm you would like to delete this thread?',
+                function yes() {
+                    var matterSlug = $scope.data.matterSlug;
+                    discussionService.delete(matterSlug, thread.id).then(
+                        function success() {
+                            $scope.initializeDiscussion();
+                        },
+                        function error(/*err*/) {
+                            toaster.pop('error', 'Error!', 'Unable to delete thread.', 5000);
+                        }
+                    );
+                }
             );
         };
 
