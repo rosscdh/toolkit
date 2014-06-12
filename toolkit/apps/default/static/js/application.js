@@ -1,4 +1,4 @@
-  // Some general UI pack related JS
+// Some general UI pack related JS
 
 // Extend JS Date with month name methods
 // @TODO @Jamie shoudl really be using moment.js http://momentjs.com/docs/#/get-set/month/
@@ -22,9 +22,7 @@ String.prototype.repeat = function(num) {
 };
 
 (function($) {
-
   $(function() {
-
     // Custom Selects
     $("select[name='state']").selectpicker({ size: 7, style: 'btn-lg btn-primary', menuStyle: 'dropdown-inverse' });
 

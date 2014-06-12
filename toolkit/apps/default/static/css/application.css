@@ -867,7 +867,7 @@ body.gui .main-content {
 }
 .matter .card .content {
   display: block;
-  padding: 25px 14px 10px;
+  padding: 25px 14px 30px;
 }
 .matter .card .content .title {
   display: table-cell;
