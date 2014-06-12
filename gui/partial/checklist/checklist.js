@@ -110,7 +110,8 @@ angular.module('toolkit-gui')
 			'page': 'checklist',
 			'statusFilter': null,
 			'itemFilter': null,
-			'knownSigners': []
+			'knownSigners': [],
+            'showPreviousRevisions': false
 		};
 		//debugger;
 		// Basic checklist item format, used for placeholder checklist items
@@ -788,7 +789,7 @@ angular.module('toolkit-gui')
 
 					// Update uploading status
 					item.uploading = false;
-					$scope.data.uploading = uploadingStatus( $scope.data.matter.items );
+					$scope.data.uploading = $scope.uploadingStatus( $scope.data.matter.items );
 
 					//Reset previous revisions
 					item.previousRevisions = null;
@@ -799,14 +800,14 @@ angular.module('toolkit-gui')
 				function error(/*err*/) {
 					// Update uploading status
 					item.uploading = false;
-					$scope.data.uploading = uploadingStatus( $scope.data.matter.items );
+					$scope.data.uploading = $scope.uploadingStatus( $scope.data.matter.items );
 					
 					toaster.pop('error', 'Error!', 'Unable to upload revision', 5000);
 				}
 			);
 		};
 
-		function uploadingStatus( allItems ) {
+		$scope.uploadingStatus = function( allItems ) {
 			for(var i=0;i<allItems.length;i++) {
 				if(allItems[i].uploading) {
 					return true;
@@ -848,14 +849,14 @@ angular.module('toolkit-gui')
 						// Update uploading status
 						item.uploadingPercent = 0;
 						item.uploading = false;
-						$scope.data.uploading = uploadingStatus( $scope.data.matter.items );
+						$scope.data.uploading = $scope.uploadingStatus( $scope.data.matter.items );
 						toaster.pop('success', 'Success!', 'File added successfully',3000);
 					},
 					function error(err) {
 						// Update uploading status
 						item.uploading = false;
 
-						$scope.data.uploading = uploadingStatus( $scope.data.matter.items );
+						$scope.data.uploading = $scope.uploadingStatus( $scope.data.matter.items );
 
 						var msg = err&&err.message?err.message:'Unable to upload revision';
 						var title = err&&err.title?err.title:'Error';

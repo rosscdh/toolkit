@@ -22,9 +22,8 @@ describe('Controller: Checklist', function() {
             $provide.constant('DEBUG_MODE', false);
             $provide.constant('SENTRY_PUBLIC_DSN', 'https://b5a6429d03e2418cbe71cd5a4c9faca6@app.getsentry.com/6287' );
             $provide.constant('INTERCOM_APP_ID', 'ooqtbx99' );
-			
+            $provide.constant('pusher_api_key', '44301' );
 
-			
 			$provide.constant('matterCategoryService',{});
 			$provide.constant('matterItemService',{});
 			$provide.constant('baseService',{});
@@ -47,11 +46,14 @@ describe('Controller: Checklist', function() {
 	matterItemService,
 	participantService,
 	matterCategoryService,
+	genericFunctions,
 	$modal,
 	searchService,
-	userService, 
+	userService,
+	baseService,
 	activityService,
 	AuthenticationRequiredCtrl,
+    PusherService,
 	$modalInstance,	
     matterService;
 
@@ -85,17 +87,17 @@ describe('Controller: Checklist', function() {
 	  'uploadRevisionFile'	  
 	  ]);	  
 	  matterItemService.deleteRevisionRequest.andCallFake(doPromiseResolve({ is_requested: "This is so great!" }));
-	  
-	  var baseService = makeFake('baseService',['loadObjectByUrl']);	  
-	  
-	  
-	  var toaster = makeFake('toaster',['pop']);
-	  
-	  
-	  var ezConfirm = jasmine.createSpyObj('ezConfirm',['create']);
+
+	  baseService = makeFake('baseService',['loadObjectByUrl']);
+
+	  toaster = makeFake('toaster',['pop']);
+
+	  ezConfirm = jasmine.createSpyObj('ezConfirm',['create']);
 	  ezConfirm.create.andCallFake(function(param,param1,callbck){           
 		   callbck();
 	  });
+
+      genericFunctions = makeFake('genericFunctions',['cleanHTML']);
 	  
 	  participantService = makeFake('participantService',['getByURL']);	  
 	  matterCategoryService = makeFake('matterCategoryService',['create','delete','update']); 
@@ -152,10 +154,11 @@ describe('Controller: Checklist', function() {
 		  matterService:matterService,
 		  matterItemService:matterItemService,
 		  matterCategoryService:matterCategoryService,
-		  participantService:participantService,		  
+		  participantService:participantService,
 		  searchService:searchService,
 		  activityService:activityService,
-		  userService:userService		  
+		  genericFunctions:genericFunctions,
+		  userService:userService
 	  });
     }));	
 
@@ -210,21 +213,9 @@ describe('Controller: Checklist', function() {
 		expect(angular.equals([],category.items)).toBeTruthy();
 		$scope.submitNewItem(category);
 		$scope.$apply();
-		expect(angular.equals([{message: 'This is so great!'}],category.items)).toBeTruthy();
+		expect(angular.equals('newItem',category.items[0].name)).toBeTruthy();
 	});
 	
-	//deleteCommentIsEnabled
-	it('should determine comment enabled', inject(function() {
-		//data.comment
-		$scope.data.usdata.current= { 'user_class': 'lawyer' };
-		var enabled = $scope.deleteCommentIsEnabled( { 'data': {'comment': 'Hello' } } );
-		expect(enabled).toEqual(true); // 2 because of the null category
-		
-		$scope.data.usdata.current= { 'user_class': 'customer' };
-		enabled = $scope.deleteCommentIsEnabled( { 'data': {'comment': {}} } );
-		expect(enabled).toEqual(false); // 2 because of the null category
-	}));
-
 	// new date selected
 	it('should change selected item`s date', inject(function() {
 		var dte = new Date();
@@ -250,27 +241,27 @@ describe('Controller: Checklist', function() {
 	
 	//matterService.get success
 	it('if matterService.get performed successfully -$scope.initialiseMatter should called', inject(function() {
-        jasmine.createSpyObj($scope, 'initialiseMatter');
-	    //spyOn($scope,'initialiseMatter');
-		//spyOn($scope,'initializeActivityStream');
+        //jasmine.createSpyObj('$scope', ['initialiseMatter']);
+        spyOn($scope,'initialiseMatter');
+		spyOn($scope,'initializeActivityStream');
 	    $scope.$apply();//makes promise.resolve to fire
 
         //expect(configServiceSpy.get).toHaveBeenCalled();
 
         expect($scope.initialiseMatter).toHaveBeenCalled();
-		//expect($scope.initializeActivityStream).toHaveBeenCalled();
+		expect($scope.initializeActivityStream).toHaveBeenCalled();
 	}));
 	
 	//on
 	it('after itemSelected event fired, $scope.selectItem should called',function() {
-	   //spyOn($scope,'selectItem');
+	   spyOn($scope,'selectItem');
 	   $scope.$broadcast('itemSelected',{category:'someCategory'});
 	   expect($scope.selectItem).toHaveBeenCalled();
 	});
 	
 	//on 2
 	it('after itemSelected event fired, $scope.selectItem should called with found category',function() {
-	   //spyOn($scope,'selectItem');
+	   spyOn($scope,'selectItem');
 	   $scope.data.categories.push({name:'someCategory'});
 	   $scope.$broadcast('itemSelected',{category:'someCategory'});
 	   expect($scope.selectItem).toHaveBeenCalledWith({category:'someCategory'},{ name : 'someCategory' });	
@@ -278,9 +269,9 @@ describe('Controller: Checklist', function() {
 	
 	//$scope.loadItemDetails KKKK 
 	it('$scope.loadItemDetails "item.latest_revision" must be populated with response data',function(){
-	    var item = {latest_revision:{url:'somerevision'}};
-		$scope.loadItemDetails(item);
-		expect(participantService.loadObjectByUrl).toHaveBeenCalled();
+        var item = {latest_revision:{url:'somerevision'}};
+        $scope.loadItemDetails(item);
+		expect(baseService.loadObjectByUrl).toHaveBeenCalled();
 		$scope.$apply();
 		expect(item.latest_revision).toEqual({ message: "This is so great!" });
 	});
@@ -385,7 +376,7 @@ describe('Controller: Checklist', function() {
 	   expect($scope.data.showPreviousRevisions).toBe(false);
 	});
 	
-	it('$scope.saveLatestRevision sholud call "matterItemService.updateRevision"', function(){
+	it('$scope.saveLatestRevision should call "matterItemService.updateRevision"', function(){
 		$scope.data.selectedItem = {latest_revision:'something'};
 		$scope.saveLatestRevision();
 		expect(matterItemService.updateRevision).toHaveBeenCalled();
@@ -675,14 +666,20 @@ describe('Controller: Checklist', function() {
 	
 	it('$scope.onFileDropped - failure',function(){	
 	    matterItemService.uploadRevisionFile.andCallFake(function(param){
-		   var deferred = $q.defer();							
-		   deferred.reject({ is_requested: "This is so great!" });	           
-		   return deferred.promise;			
+		   var deferred = $q.defer();
+           var err = new Error('Upload canceled');
+		   err.title = 'Canceled';
+		   deferred.reject(err);
+		   return deferred.promise;
 		});
+
+        spyOn($scope, 'uploadingStatus').andReturn(true);
+
 	    var $files = [], item = {slug:{}};
 		$scope.onFileDropped($files, item);
 		$scope.$apply();
-		expect(toaster.pop.mostRecentCall.args[2]).toBe('Unable to upload revision');
+
+		expect(toaster.pop.mostRecentCall.args[2]).toBe('Upload canceled');
 	});	
 
     it('$scope.deleteRevisionReviewRequest' ,function(){
@@ -721,7 +718,7 @@ describe('Controller: Checklist', function() {
 	});
 
     it('$scope.focus',function(){
-	    //spyOn($scope,'$broadcast');
+	    spyOn($scope,'$broadcast');
 		$scope.focus('shlomo');
 		$timeout.flush();
 		expect($scope.$broadcast).toHaveBeenCalledWith('focusOn','shlomo');
@@ -758,7 +755,7 @@ describe('Controller: Checklist', function() {
 	
 	it('watch after data.dueDatePickerDate',function(){
 	    $scope.data.selectedItem = {date_due:{}};
-        //spyOn($scope,'saveSelectedItem');
+        spyOn($scope,'saveSelectedItem');
 		jQuery.datepicker= jasmine.createSpyObj(jQuery.datepicker ,['formatDate']);					
 		$scope.data.dueDatePickerDate = new  Date();
 		
@@ -768,6 +765,8 @@ describe('Controller: Checklist', function() {
 		expect($scope.saveSelectedItem).toHaveBeenCalled();
 	});
 });
+
+
 //matterService.get failure
 describe('ChecklistCtrl', function() {
     function doPromiseReject(msg){
@@ -792,6 +791,7 @@ describe('ChecklistCtrl', function() {
             $provide.constant('DEBUG_MODE', false);
             $provide.constant('SENTRY_PUBLIC_DSN', 'https://b5a6429d03e2418cbe71cd5a4c9faca6@app.getsentry.com/6287' );
             $provide.constant('INTERCOM_APP_ID', 'ooqtbx99' );
+            $provide.constant('pusher_api_key', '44301' );
     		$provide.constant('matterCategoryService',{});
 			$provide.constant('matterItemService',{});
 			$provide.constant('baseService',{});
@@ -809,8 +809,10 @@ describe('ChecklistCtrl', function() {
 	toaster,
     matterService,
 	baseService,
+	genericFunctions,
 	ezConfirm,
 	participantService,
+    PusherService,
 	matterCategoryService,
 	matterItemService;
 
@@ -849,9 +851,17 @@ describe('ChecklistCtrl', function() {
 	  ezConfirm.create.andCallFake(function(param,param1,callbck){           
 		   callbck();
 	  });
-	  
+
+      PusherService = makeFake('PusherService',['subscribe']);
+      PusherService.subscribe.andCallFake(function(param){
+		   return true;
+	  });
+
 	  participantService = jasmine.createSpyObj('participantService',['getByURL']);
 	  participantService.getByURL.andCallFake(doPromiseReject({ message: "This is bad!" }));
+
+
+      genericFunctions = makeFake('genericFunctions',['cleanHTML']);
 
 	  matterCategoryService = makeFake('matterCategoryService',['create','delete','update']);
 
@@ -867,6 +877,7 @@ describe('ChecklistCtrl', function() {
 		  toaster:toaster,
 		  $modal:{},
 		  baseService:baseService,
+		  genericFunctions:genericFunctions,
 		  matterService:matterService,
 		  matterItemService:matterItemService,
 		  matterCategoryService:matterCategoryService,		  
