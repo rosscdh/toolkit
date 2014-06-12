@@ -136,6 +136,7 @@ class SignDocument(IsDeletedMixin,
 
     def percentage_complete(self):
         num_signatures = len(self.signatures)
+
         percentage_complete = 0 if self.signing_request and self.signing_request.is_claimed is True else None  # if we have not claimed the signature then still show None
 
         if num_signatures is not None and num_signatures > 0:
