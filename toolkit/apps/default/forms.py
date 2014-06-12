@@ -234,6 +234,9 @@ class VerifyTwoFactorForm(forms.Form):
 
         self.user = user
 
+        self.authy_service = AuthyService(user=self.user)
+        self.authy_service.request_sms_token()
+
         self.helper = FormHelper()
         self.helper.attrs = {
             'autocomplete': 'off',
@@ -255,6 +258,5 @@ class VerifyTwoFactorForm(forms.Form):
     def clean_token(self):
         token = self.cleaned_data.get('token')
 
-        authy_service = AuthyService(user=self.user)
-        if authy_service.verify_token(token) is False:
+        if self.authy_service.verify_token(token) is False:
             raise forms.ValidationError('Sorry, that Authy Token is not valid: %s' % authy_service.errors.get('message', 'Unknown Error'))
