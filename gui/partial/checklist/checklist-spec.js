@@ -113,7 +113,7 @@ describe('Controller: Checklist', function() {
       };	  
 
 	  $modal = jasmine.createSpyObj('$modal',['open']);
-	  $modal.open.andCallFake(function(param){	  
+	  $modal.open.andCallFake(function(/*param*/){	  
 	    /*
 	    'templateUrl': '/static/ng/partial/authentication-required/authentication-required.html',
         'controller': 'AuthenticationRequiredCtrl',
@@ -132,28 +132,28 @@ describe('Controller: Checklist', function() {
 		};
 	  }); 
 	  
-	  userService = {data:function(){return { current:{user_class:'lawyer'}};},setCurrent:function(p){return {};}};
+	  userService = {data:function(){return { current:{user_class:'lawyer'}};},setCurrent:function(/*p*/){return {};}};
 	  searchService = {data:function(){return {};}};
-	  activityService = makeFake('matterCategoryService',['itemstream']);
+	  var activityService = makeFake('matterCategoryService',['itemstream']);
 	 
 	  
       ctrl = $controller('ChecklistCtrl', {
-		  $scope: $scope,
-		  $rootScope:$rootScope,
-		  $routeParams:{},
-		  $location:{},
-		  smartRoutes:smartRoutes,
-		  ezConfirm:ezConfirm,
-		  toaster:toaster,
-		  $modal:$modal,
-		  baseService: baseService,
-		  matterService:matterService,
-		  matterItemService:matterItemService,
-		  matterCategoryService:matterCategoryService,
-		  participantService:participantService,		  
-		  searchService:searchService,
-		  activityService:activityService,
-		  userService:userService		  
+		  '$scope': $scope,
+		  '$rootScope':$rootScope,
+		  '$routeParams':{},
+		  '$location':{},
+		  'smartRoutes':smartRoutes,
+		  'ezConfirm':ezConfirm,
+		  'toaster':toaster,
+		  '$modal':$modal,
+		  'baseService': baseService,
+		  'matterService':matterService,
+		  'matterItemService':matterItemService,
+		  'matterCategoryService':matterCategoryService,
+		  'participantService':participantService,		  
+		  'searchService':searchService,
+		  'activityService':activityService,
+		  'userService':userService		  
 	  });
     }));	
 
@@ -301,13 +301,13 @@ describe('Controller: Checklist', function() {
 	it('$scope.data.showAddForm NOT equal to index parameter, $scope.data.showAddForm  should upadted respectviely',function(){
 	    $scope.data.showAddForm = 2;
 		$scope.showAddItemForm(1);
-		expect($scope.data.showAddForm).toBe(1)
+		expect($scope.data.showAddForm).toBe(1);
 	});
 	
 	it(' $scope.data.showAddForm is equal to index parameter $scope.data.showAddForm should become NULL',function(){
 	    $scope.data.showAddForm = 1;
 		$scope.showAddItemForm(1);
-		expect($scope.data.showAddForm).toBe(null)
+		expect($scope.data.showAddForm).toBe(null);
 	});
 	
 	//$scope.saveSelectedItem
@@ -408,7 +408,7 @@ describe('Controller: Checklist', function() {
     //$scope.deleteLatestRevision -matterItemService.loadRevision faliure
 	
 	it('$scope.deleteLatestRevision "matterItemService.loadRevision" failed',function(){
-        matterItemService.loadRevision.andCallFake(function(param){	  
+        matterItemService.loadRevision.andCallFake(function(/*param*/){	  
 		   var deferred = $q.defer();							
 		   deferred.reject({ message: "This is disgusting!" });	           
 		   return deferred.promise;		
@@ -461,8 +461,7 @@ describe('Controller: Checklist', function() {
 			var currentUser = param.resolve.currentUser();
 			var participants = param.resolve.participants();
 			var checklistItem = param.resolve.checklistItem();			
-			$controller(param.controller,//RequestrevisionCtrl
-			{
+			var $controller(param.controller, {
 				$scope: $scope,
 				$modalInstance:$modalInstance,
 				participants:participants,
@@ -471,20 +470,19 @@ describe('Controller: Checklist', function() {
 				checklistItem:checklistItem
 			});
 		    
-		    
 			return {
 				result: function(){
 				   var deferred = $q.defer();							
 				   deferred.resolve({ responsible_party: "This is great!" });	           
 				   return deferred.promise;	  		 
 				}()
-			}
+			};
 	    });
 
 	    var item  ={responsible_party:'some responsible_party'};
 		$scope.requestRevision(item);
 		$scope.$apply();
-		expect(item.responsible_party).toBe('This is great!')
+		expect(item.responsible_party).toBe('This is great!');
 	});
 
 	it('$scope.remindRevisionRequest success should trigger toaster',function(){
@@ -496,7 +494,7 @@ describe('Controller: Checklist', function() {
 
 
 	it('$scope.remindRevisionRequest error should also trigger toaster',function(){
-	    matterItemService.remindRevisionRequest.andCallFake(function(param){
+	    matterItemService.remindRevisionRequest.andCallFake(function(/*param*/){
 		   var deferred = $q.defer();							
 		   deferred.reject({ message: "This is not so great!" });	           
 		   return deferred.promise;	   
@@ -515,7 +513,7 @@ describe('Controller: Checklist', function() {
 	});
 
 	it('$scope.deleteRevisionRequest error'	,function(){
-	    matterItemService.deleteRevisionRequest.andCallFake(function(param){
+	    matterItemService.deleteRevisionRequest.andCallFake(function(/*param*/){
 		   var deferred = $q.defer();							
 		   deferred.reject({ is_requested: "This is not so great!" });	           
 		   return deferred.promise;	  
@@ -649,7 +647,7 @@ describe('Controller: Checklist', function() {
 	});
 	
 	it('$scope.remindRevisionReview - failure',function(){
-	    matterItemService.remindRevisionReview.andCallFake(function(param){
+	    matterItemService.remindRevisionReview.andCallFake(function(/*param*/){
 		   var deferred = $q.defer();							
 		   deferred.reject({ is_requested: "This is so great!" });	           
 		   return deferred.promise;		  
@@ -669,7 +667,7 @@ describe('Controller: Checklist', function() {
 	});
 	
 	it('$scope.onFileDropped - failure',function(){	
-	    matterItemService.uploadRevisionFile.andCallFake(function(param){
+	    matterItemService.uploadRevisionFile.andCallFake(function(/*param*/){
 		   var deferred = $q.defer();							
 		   deferred.reject({ is_requested: "This is so great!" });	           
 		   return deferred.promise;			
@@ -688,7 +686,7 @@ describe('Controller: Checklist', function() {
 	});
 
 	it('$scope.deleteRevisionReviewRequest',function(){
-	    matterItemService.deleteRevisionReviewRequest.andCallFake(function(param){
+	    matterItemService.deleteRevisionReviewRequest.andCallFake(function(/*param*/){
 		   var deferred = $q.defer();							
 		   deferred.reject({ is_requested: "This is not so great!" });	           
 		   return deferred.promise;
@@ -742,13 +740,13 @@ describe('Controller: Checklist', function() {
 				   var deferred = $q.defer();							
 				   deferred.resolve({ responsible_party: "This is great!" });	           
 				   return deferred.promise;	  		 
-				}()
+				}();
 			};
 	    });
 	    $scope.$emit('authenticationRequired',true);			
 		expect($modal.open).toHaveBeenCalled();
 		$scope.$apply();
-		expect($scope.data.authenticationModalOpened).toBe(false)
+		expect($scope.data.authenticationModalOpened).toBe(false);
 	});
 	
 	it('watch after data.dueDatePickerDate',function(){
@@ -761,16 +759,17 @@ describe('Controller: Checklist', function() {
 	    $scope.$apply();
 		expect(jQuery.datepicker.formatDate).toHaveBeenCalled();
 		expect($scope.saveSelectedItem).toHaveBeenCalled();
-	})
+	});
 });
 //matterService.get failure
 describe('ChecklistCtrl', function() {
+	'use strict';
     function doPromiseReject(msg){
 	    return  function(){
 		   var deferred = $q.defer();
 		   deferred.reject(msg);           
 		   return deferred.promise;
-        }		   
+        };
 	}
 	function makeFake(fkname, methods){
 	    var msg  = { message: "This is not so great!" };
@@ -818,10 +817,10 @@ describe('ChecklistCtrl', function() {
 	  
       $scope = $rootScope.$new();
 	  //mocking smartRoutes		
-	  smartRoutes = {'params': function() { return { 'matterSlug': 'test-matter' }; }}
+	  smartRoutes = {'params': function() { return { 'matterSlug': 'test-matter' }; }};
 	  //mocking matterService       
 	  matterService = makeFake('matterService',['get','selectMatter','data']);
-	  matterService.data.andCallFake(function(param){           
+	  matterService.data.andCallFake(function(/*param*/){           
 		   return {selected:{current_user:''}};		
 	  });
       var msg  = { message: "This is not so great!" }; 	  
@@ -842,7 +841,7 @@ describe('ChecklistCtrl', function() {
 	  
 	  ezConfirm = jasmine.createSpyObj('ezConfirm',['create']);
 	  ezConfirm.create.andCallFake(function(param,param1,callbck){           
-		   callbck()	  
+		   callbck();	  
 	  });
 	  
 	  participantService = jasmine.createSpyObj('participantService',['getByURL']);
@@ -872,14 +871,13 @@ describe('ChecklistCtrl', function() {
 	
 	//matterService.get failure
 	it('if matterService.get performed successfully -$scope.initialiseMatter should called', inject(function() {
-        
 	    $scope.$apply();//makes promise.resolve to fire
         expect(toaster.pop.mostRecentCall.args[0]).toBe('error');
 	}));
 	
 	//$scope.submitNewItem  failure
 	it('should',function() {
-	    $scope.data.newItemName = 'newItem'
+	    $scope.data.newItemName = 'newItem';
 		var category = {name:'ooo',items:[]};
 		expect(angular.equals([],category.items)).toBeTruthy();
 		$scope.submitNewItem(category);
@@ -919,7 +917,7 @@ describe('ChecklistCtrl', function() {
 	});	
     //$scope.submitNewCategory failure
 	it('$scope.submitNewCategory',function(){
-	    $scope.data.categories = ['something']
+	    $scope.data.categories = ['something'];
 	    $scope.data.newCatName = 'shlomo';
 		$scope.submitNewCategory();
 		$scope.$apply();
