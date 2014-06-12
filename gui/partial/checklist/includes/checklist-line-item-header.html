@@ -36,6 +36,7 @@
 		 />
 	</div>
 	<div class="col-xs-4">
+		
 		<!-- category actions //-->
 		<div class="btn-group pull-right" ng-show="data.usdata.current.user_class=='lawyer'">
 			<button
@@ -60,25 +61,9 @@
 			</ul>
 		</div>
 
-		<!-- filter //-->
-		<div class="btn-group pull-right">
-			<button
-				class="btn btn-default dropdown-toggle btn-xs"
-				type="button"
-				data-toggle="dropdown">
-				<span class="fa fa-filter"></span>
-			</button>
-			<ul class="dropdown-menu dropdown-inverse dropdown-small status-list">
-				<li ng-repeat="(key, status) in data.matter._meta.item.custom_status">
-					<a href="javascript:;" ng-click="applyStatusFilter( { 'status': key } );"> <span class="icon status-{{ key }}"></span> {{ status }}</a>
-				</li>
-				<li>
-					<a href="javascript:;" ng-click="applyItemFilter( { 'is_complete': true } );"> <span class="icon status-5"></span> Closed</a>
-				</li>
-				<li>
-					<a href="javascript:;" ng-click="applyStatusFilter( null );"> <span class="icon status-placeholder"></span> Clear filter</a>
-				</li>
-			</ul>
+		<!-- clear filter //-->
+		<div class="btn-group pull-right" ng-hide="data.showEditCategoryForm==$index||cat.name||matter.selectedStatusFilter===null||data.showAddCategoryForm==$index">
+			<button class="btn btn-default dropdown-toggle  btn-xs" ng-click="clearFilters()">Clear filter</button>
 		</div>
 	</div>
 </div>

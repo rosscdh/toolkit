@@ -86,6 +86,14 @@ angular.module('toolkit-gui')
 		 */
 		var routeParams = smartRoutes.params();
 
+		/**
+		 * In scope variable containing containing the currently selected matter
+		 * @memberof ChecklistCtrl
+		 * @type {Object}
+		 * @private
+		 */
+		$scope.matter = matterService.data(); // Used to communicate between controllers
+
 		$scope.data = {
 			'slug': routeParams.matterSlug,
 			'matter': null,
@@ -1958,28 +1966,13 @@ angular.module('toolkit-gui')
 				$scope.data.statusFilter = null;
 			}
 		};
-
-		/**
-		 * applyItemFilter  filters for checklist item properties such as is_complete
-		 * @param  {Object} filter Filter to apply to base o checklsit item object
-		 */
-		$scope.applyItemFilter = function( filter ) {
-			// Initialise item filter
-			$scope.data.itemFilter = $scope.data.itemFilter||{};
-
-			// Clear other filters
-			$scope.data.statusFilter = null;
-
-			if( filter ) {
-				for(var key in filter) {
-					$scope.data.itemFilter[key] = filter[key];
-				}
-			} else {
-				// Clear all filters
-				$scope.data.itemFilter = null;
-				$scope.data.statusFilter = null;
-			}
+		$scope.clearFilters = function() {
+			$scope.matter.itemFilter = null;
+			$scope.matter.statusFilter = null;
+			$scope.matter.selectedStatusFilter = null;
 		};
+
+		/* END COMMENT HANDLING */
 }])
 
 /**
