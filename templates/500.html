@@ -7,13 +7,23 @@
 {% block prebody %}
   <style>
   body{
-    background-color: white;
-    border: 1px solid red;
-  }
+    background-image: -webkit-gradient(
+  linear,
+  left top,
+  left bottom,
+  color-stop(0, #FFFFFF),
+  color-stop(1, #E6E6E6)
+);
+background-image: -o-linear-gradient(bottom, #FFFFFF 0%, #E6E6E6 100%);
+background-image: -moz-linear-gradient(bottom, #FFFFFF 0%, #E6E6E6 100%);
+background-image: -webkit-linear-gradient(bottom, #FFFFFF 0%, #E6E6E6 100%);
+background-image: -ms-linear-gradient(bottom, #FFFFFF 0%, #E6E6E6 100%);
+background-image: linear-gradient(to bottom, #FFFFFF 0%, #E6E6E6 100%);
+}
     .container{
       width: 60%;
+      padding-bottom: 30px;
       margin: 0 auto;
-      background-color: #f2f2f2;
     }
 
 
@@ -49,13 +59,23 @@
 
     #file{
       border-radius: 10px 60px 10px 10px;
-      background-color: white;
-   }
-
+     background-image: -webkit-gradient(
+  linear,
+  right top,
+  right bottom,
+  color-stop(0, #FFFFFF),
+  color-stop(1, #E6E6E6)
+);
+background-image: -o-linear-gradient(bottom, #FFFFFF 0%, #E6E6E6 100%);
+background-image: -moz-linear-gradient(bottom, #FFFFFF 0%, #E6E6E6 100%);
+background-image: -webkit-linear-gradient(bottom, #FFFFFF 0%, #E6E6E6 100%);
+background-image: -ms-linear-gradient(bottom, #FFFFFF 0%, #E6E6E6 100%);
+background-image: linear-gradient(to bottom, #FFFFFF 0%, #E6E6E6 100%);
+}
 
   </style>
 
-<div>
+
     <div class="container text-center">
 
               <span class="fa-stack fa-lg">
@@ -70,5 +90,5 @@
                 </p>
               </div>
         </div>
-</div>
+
 {% endblock %}
