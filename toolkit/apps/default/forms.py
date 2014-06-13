@@ -229,13 +229,14 @@ class VerifyTwoFactorForm(forms.Form):
         })
     )
 
-    def __init__(self, user, *args, **kwargs):
+    def __init__(self, request, user, *args, **kwargs):
         super(VerifyTwoFactorForm, self).__init__(*args, **kwargs)
 
         self.user = user
 
         self.authy_service = AuthyService(user=self.user)
-        self.authy_service.request_sms_token()
+        if request.method in ['GET']:
+            self.authy_service.request_sms_token()
 
         self.helper = FormHelper()
         self.helper.attrs = {
