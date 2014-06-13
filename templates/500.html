@@ -6,37 +6,26 @@
 
 {% block prebody %}
   <style>
+  body{
+    background-color: #f2f2f2;
+  }
     .container{
       width: 60%;
       margin: 0 auto;
     }
-    body {
 
-    background-image: -webkit-gradient(
-    linear,
-    left top,
-    left bottom,
-    color-stop(0, #42CFE5),
-    color-stop(1, #37A3B3)
-    );
-    background-image: -o-linear-gradient(bottom, #42CFE5 0%, #37A3B3 100%);
-    background-image: -moz-linear-gradient(bottom, #42CFE5 0%, #37A3B3 100%);
-    background-image: -webkit-linear-gradient(bottom, #42CFE5 0%, #37A3B3 100%);
-    background-image: -ms-linear-gradient(bottom, #42CFE5 0%, #37A3B3 100%);
-    background-image: linear-gradient(to bottom, #42CFE5 0%, #37A3B3 100%);
-    color: white;
-      }
 
    .fa-stack{
     position:relative;
     font-size: 150px;
     font-weight: normal;
    }
+
    #frown{
     position: absolute;
-    top: 122px;
-    font-size: 88px;
-    left: 110px;
+    top: 132px;
+    font-size: 68px;
+    left: 118px;
    }
    .error-explanation{
 
@@ -48,8 +37,12 @@
     font-size: 16px;
    }
    a{
-    color: white;
+    color: #42CFE5;
     text-decoration: underline;
+   }
+
+   h4{
+    color: #42CFE5;
    }
 
 
@@ -65,8 +58,8 @@
               <div class='error-explanation'>
                 <h4>
                   <b>Sorry, we could not proccess your last request.</b></h4>
-                <p>An error occurred in the application and your page could not be served. Our dev team was notified. Please try again in a few moments.</p>
-                <p><b>Need to get in touch? </b> Email us at <a href="mailto:'all@lawpal.com'">all@lawpal.com</a>
+                <p>An error occurred in the application and your request could not be completed. Our team has been notified.</p>
+                <p><b>Need to get in touch? </b> Email us at <a href="mailto:'all@lawpal.com'">support@lawpal.com</a>.
                 </p>
               </div>
         </div>
