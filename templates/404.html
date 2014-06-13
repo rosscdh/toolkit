@@ -3,97 +3,21 @@
 {% block page_title %}404 Page does not exist{% endblock %}
 
 {% block prebody %}
-  <style>
-  body{
-    background-image: -webkit-gradient(
-  linear,
-  left top,
-  left bottom,
-  color-stop(0, #FFFFFF),
-  color-stop(1, #E6E6E6)
-);
-background-image: -o-linear-gradient(bottom, #FFFFFF 0%, #E6E6E6 100%);
-background-image: -moz-linear-gradient(bottom, #FFFFFF 0%, #E6E6E6 100%);
-background-image: -webkit-linear-gradient(bottom, #FFFFFF 0%, #E6E6E6 100%);
-background-image: -ms-linear-gradient(bottom, #FFFFFF 0%, #E6E6E6 100%);
-background-image: linear-gradient(to bottom, #FFFFFF 0%, #E6E6E6 100%);
-}
-    .container{
-      width: 60%;
-      padding-bottom: 30px;
-      margin: 0 auto;
-    }
 
 
-   .fa-stack{
-    position:relative;
-    font-size: 150px;
-    font-weight: normal;
-   }
+<div class="container error-page text-center">
 
-   #frown{
-    position: absolute;
-    top: 132px;
-    font-size: 68px;
-    left: 118px;
-   }
-   .error-explanation{
-
-    width: 80%;
-    margin: -30px auto;
-
-   }
-   p {
-    font-size: 16px;
-   }
-   a{
-    color: #42CFE5;
-    text-decoration: underline;
-   }
-
-   h4{
-    color: #42CFE5;
-   }
-
-   #question {
-    position: absolute;
-    top: 133px;
-    font-size: 68px;
-    left: 125px;
-   }
-
-  #file{
-      border-radius: 10px 60px 10px 10px;
-     background-image: -webkit-gradient(
-  linear,
-  right top,
-  right bottom,
-  color-stop(0, #FFFFFF),
-  color-stop(1, #E6E6E6)
-);
-background-image: -o-linear-gradient(bottom, #FFFFFF 0%, #E6E6E6 100%);
-background-image: -moz-linear-gradient(bottom, #FFFFFF 0%, #E6E6E6 100%);
-background-image: -webkit-linear-gradient(bottom, #FFFFFF 0%, #E6E6E6 100%);
-background-image: -ms-linear-gradient(bottom, #FFFFFF 0%, #E6E6E6 100%);
-background-image: linear-gradient(to bottom, #FFFFFF 0%, #E6E6E6 100%);
-}
-
-  </style>
-
-
-    <div class="container text-center">
-
-              <span class="fa-stack fa-lg">
-                <i class="fa fa-file-o" id="file"></i>
-                <i class="fa fa-question" id="question"></i>
-              </span>
-              <div class='error-explanation'>
-                <h4>
-                  <b>Sorry, the page you requested was not found.</b></h4>
-                <p>The page you were looking for doesn't exist. You may have mistyped the address or the page may have moved.</p>
-                <p><b>Need to get in touch? </b> Email us at <a href="mailto:'all@lawpal.com'">support@lawpal.com</a>.
-                </p>
-              </div>
-        </div>
+          <span class="fa-stack fa-lg">
+            <i class="fa fa-file-o" id="file"></i>
+            <i class="fa fa-question" id="question"></i>
+          </span>
+          <div class='error-explanation'>
+            <h4>
+              <b>Sorry, the page you requested was not found.</b></h4>
+            <p>The page you were looking for doesn't exist. You may have mistyped the address or the page may have moved.</p>
+            <p><b>Need to get in touch? </b> Email us at <a href="mailto:'all@lawpal.com'">support@lawpal.com</a>.
+            </p>
+          </div>
+    </div>
 
 {% endblock %}
