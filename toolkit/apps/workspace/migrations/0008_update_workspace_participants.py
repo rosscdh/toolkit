@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from toolkit.apps.workspace.models import ROLES
+
 from south.utils import datetime_utils as datetime
 from south.db import db
 from south.v2 import DataMigration
@@ -16,7 +18,11 @@ class Migration(DataMigration):
                 profile = orm['default.UserProfile'].objects.get(user=u)
 
                 is_matter_owner = w.lawyer == u
-                role = 2 if profile.data.get('user_class') == 'lawyer' else 1
+
+                if is_matter_owner is True:
+                    role = ROLES.owner
+                else:
+                    role = ROLES.colleague if profile.data.get('user_class') == 'lawyer' else ROLES.client
 
                 through.is_matter_owner = is_matter_owner
                 through.role = role
