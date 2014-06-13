@@ -867,7 +867,7 @@ body.gui .main-content {
 }
 .matter .card .content {
   display: block;
-  padding: 25px 14px 30px;
+  padding: 25px 14px 30px !important;
 }
 .matter .card .content .title {
   display: table-cell;
@@ -1704,4 +1704,39 @@ body.entry-pages input:-webkit-autofill {
 }
 .search-field input {
   margin-top: -5px;
+}
+.error-page {
+  padding-bottom: 30px;
+  margin: 0 auto;
+}
+.error-page .fa-stack {
+  position: relative;
+  font-size: 80px;
+  opacity: 0.5;
+  font-weight: normal;
+}
+.error-page .fa-stack #file {
+  border-radius: 10px 60px 10px 10px;
+}
+.error-page .fa-stack #frown {
+  position: absolute;
+  top: 69px;
+  font-size: 40px;
+  left: 62px;
+}
+.error-page .fa-stack #question {
+  position: absolute;
+  top: 70px;
+  font-size: 40px;
+  left: 67px;
+}
+.error-page p {
+  font-size: 16px;
+}
+.error-page a {
+  text-decoration: underline;
+  color: #444444;
+}
+.error-page h4 {
+  color: #42CFE5;
 }
