@@ -160,5 +160,30 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
                 }
             );
         };
+
+        $scope.addThreadParticipant = function(thread) {
+            var modalInstance = $modal.open({
+                'templateUrl': '/static/ng/partial/discussion/includes/add-thread-participant.html',
+                'controller': 'AddThreadParticipantCtrl',
+                'resolve': {
+                    'currentUser': function() {
+                        return $scope.data.matter.current_user;
+                    },
+                    'matter': function() {
+                        return $scope.data.matter;
+                    },
+                    'thread': function() {
+                        return thread;
+                    }
+                }
+            });
+
+            modalInstance.result.then(
+                function ok() {
+                    $scope.selectThread(thread.id);
+                },
+                function cancel() {}
+            );
+        };
     }
 ]);
