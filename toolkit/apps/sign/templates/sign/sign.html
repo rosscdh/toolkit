@@ -43,7 +43,7 @@
                                 parent.$('button#view-signing-close').trigger('click');
                             } else {
                                 // redirect to requests
-                                window.location = "{% url 'request:list' %}";
+                                window.location = "{% url 'request:list' %}?signed-{{ object.pk }}=true";
                             }
                         };
                     }

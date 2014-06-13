@@ -4,54 +4,53 @@
 module.exports = function(config) {
   config.set({
     // base path, that will be used to resolve files and exclude
-    basePath: '',
+    'basePath': '',
 
     // testing framework to use (jasmine/mocha/qunit/...)
-    frameworks: ['jasmine'],
+    'frameworks': ['jasmine'],
 
     // list of files / patterns to load in the browser
-    files: [
-	   //components
-	  'bower_components/jquery/jquery.js', 
+    'files': [
+      //components
+      'bower_components/jquery/jquery.js', 
       'bower_components/angular/angular.js',
-	  'bower_components/angular-!(scenario)/angular-!(.min).js',
+      'bower_components/angular-!(scenario)/angular-!(.min).js',
       'bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
-	  'bower_components/angular-ui-utils/ui-utils.js',
-	  'bower_components/angular-ui-sortable/sortable.js',
+      'bower_components/angular-ui-utils/ui-utils.js',
+      'bower_components/angular-ui-sortable/sortable.js',
       'bower_components/ez-confirm/src/ez-confirm.js',
-	  'bower_components/AngularJS-Toaster/toaster.js',	 
-	  'bower_components/angular-ui-router/release/angular-ui-router.js',
-	  'bower_components/ng-file-upload/angular-file-upload.js',
-	  'bower_components/angular-markdown-directive/markdown.js',
-	  'bower_components/angular-elastic/elastic.js',	  
-	  
-	  //templates
-	  'bower_components/ez-confirm/src/ez-confirm-tpl.html',
-	  
-	  //main app file
-	  'js/setup.js',
-	  
-	  //services
-	  'service/!(*spec).js',
-	  
-	  //controllers
-	  'partial/**/!(*spec).js',
-	  
+      'bower_components/AngularJS-Toaster/toaster.js',	 
+      'bower_components/angular-ui-router/release/angular-ui-router.js',
+      'bower_components/ng-file-upload/angular-file-upload.js',
+      'bower_components/angular-markdown-directive/markdown.js',
+      'bower_components/angular-elastic/elastic.js',	  
+
+      //templates
+      'bower_components/ez-confirm/src/ez-confirm-tpl.html',
+
+      //main app file
+      'js/setup.js',
+
+      //services
+      'service/!(*spec).js',
+
+      //controllers
+      'partial/**/!(*spec).js',
+
       //test ->controllers
       'partial/**/*-spec.js'
-
     ],
     // coverage reporter generates the coverage
-    reporters: ['progress', 'coverage'],
+    'reporters': ['progress', 'coverage'],
 
     // optionally, configure the reporter
-    coverageReporter: {
-      type : 'html',
-      dir : 'coverage/'
+    'coverageReporter': {
+      'type' : 'html',
+      'dir' : 'coverage/'
     },
     // list of files / patterns to exclude
-    exclude: [],
-    preprocessors: {
+    'exclude': [],
+    'preprocessors': {
 	  'partial/**/!(*spec).js': ['coverage'],
       'bower_components/ez-confirm/src/ez-confirm-tpl.html': ['ng-html2js']
     },
@@ -62,15 +61,15 @@ module.exports = function(config) {
     },*/
 
     // web server port
-    port: 8080,
+    'port': 8080,
 
     // level of logging
     // possible values: LOG_DISABLE || LOG_ERROR || LOG_WARN || LOG_INFO || LOG_DEBUG
-    logLevel: config.LOG_INFO,
+    'logLevel': config.LOG_INFO,
 
 
     // enable / disable watching file and executing tests whenever any file changes
-    autoWatch: true,
+    'autoWatch': true,
 
 
     // Start these browsers, currently available:
@@ -81,9 +80,9 @@ module.exports = function(config) {
     // - Safari (only Mac)
     // - PhantomJS
     // - IE (only Windows)
-    browsers: ['Chrome'],
+    'browsers': ['Chrome'],
 
-    plugins : [        
+    'plugins' : [        
             'karma-chrome-launcher',
             'karma-firefox-launcher',
             'karma-jasmine',
