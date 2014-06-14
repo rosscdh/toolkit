@@ -234,10 +234,7 @@
                 </a>
 
                 <span ng-hide="data.selectedItem.latest_revision.signing.is_claimed" class="text-center">
-                    <span>Please set up the document for signing</span>
-                    <a class="btn  btn-sm btn-primary btn-embossed" href="javascript:;" ng-click="showSigning(data.selectedItem.latest_revision, null)" style="margin-top:7px;">
-                        Setup signature locations
-                    </a>
+                 <a class="signing-setup-link" href="javascript:;" ng-click="showSigning(data.selectedItem.latest_revision, null)" style="margin-top:7px; margin-left:14px;"><div class="notice-me animated-slow flash">!</div>Please set up the document for signing</a>
                 </span>
 
                 <span ng-show="data.selectedItem.latest_revision.signing.is_claimed && data.selectedItem.latest_revision.is_executed!==true && data.selectedItem.latest_revision.signing.percentage_complete<100">
