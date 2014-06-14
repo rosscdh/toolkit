@@ -1,5 +1,14 @@
 describe('Controller: Checklist', function() {
 	'use strict';
+
+	/*
+	 _   _ _   _ _ _ _   _          __                  _   _                 
+	| | | | |_(_) (_) |_(_)_   _   / _|_   _ _ __   ___| |_(_) ___  _ __  ___ 
+	| | | | __| | | | __| | | | | | |_| | | | '_ \ / __| __| |/ _ \| '_ \/ __|
+	| |_| | |_| | | | |_| | |_| | |  _| |_| | | | | (__| |_| | (_) | | | \__ \
+	 \___/ \__|_|_|_|\__|_|\__, | |_|  \__,_|_| |_|\___|\__|_|\___/|_| |_|___/
+	                       |___/             
+	 */
 	function doPromiseResolve(msg){
 		return  function(){
 		   var deferred = $q.defer();
@@ -17,15 +26,49 @@ describe('Controller: Checklist', function() {
 		return 	fk;
 	}
 
+	var fakeModalPromise = {
+            'result' : {
+              'then': function(callback) {
+                  callback("item1");
+              }
+            }
+    };
+
+    var fakeLog = {
+		'log' : function(message){ console.log(message);},
+		'debug' : function(message){ console.log(message);}
+	};
+
+	/*
+	  ____                _              _       
+	 / ___|___  _ __  ___| |_ __ _ _ __ | |_ ___ 
+	| |   / _ \| '_ \/ __| __/ _` | '_ \| __/ __|
+	| |__| (_) | | | \__ \ || (_| | | | | |_\__ \
+	 \____\___/|_| |_|___/\__\__,_|_| |_|\__|___/
+	 */
 	beforeEach(function() {
-		module(function($provide) {            
+		module(function($provide) {
+			// CONSTANTS        
 			$provide.constant('API_BASE_URL', '/api/v1/');
 			$provide.constant('STATUS_LEVEL', {'OK':0,'WARNING':1,'ERROR':2} );
 			$provide.constant('DEBUG_MODE', false);
 			$provide.constant('SENTRY_PUBLIC_DSN', 'https://b5a6429d03e2418cbe71cd5a4c9faca6@app.getsentry.com/6287' );
 			$provide.constant('INTERCOM_APP_ID', 'ooqtbx99' );
 			$provide.constant('pusher_api_key', '60281f610bbf5370aeaa' );
-			
+		});
+	});
+
+	/*
+	 ____                   ____                  _               
+	| __ )  __ _ ___  ___  / ___|  ___ _ ____   _(_) ___ ___  ___ 
+	|  _ \ / _` / __|/ _ \ \___ \ / _ \ '__\ \ / / |/ __/ _ \/ __|
+	| |_) | (_| \__ \  __/  ___) |  __/ |   \ V /| | (_|  __/\__ \
+	|____/ \__,_|___/\___| |____/ \___|_|    \_/ |_|\___\___||___/
+	                                                              
+	 */
+	beforeEach(function() {
+		module(function($provide) {
+			// SERVICES
 			$provide.constant('matterCategoryService',{});
 			$provide.constant('matterItemService',{});
 			$provide.constant('baseService',{});
@@ -34,60 +77,46 @@ describe('Controller: Checklist', function() {
 
 	beforeEach(module('toolkit-gui'));
 
-	var 
-	$scope,
-	ctrl,
-	$rootScope,
-	$controller,
-	smartRoutes,
-	$location,
-	$q,
-	toaster,
-	ezConfirm,
-	baseService,
-	matterItemService,
-	participantService,
-	matterCategoryService,
-	$modal,
-	searchService,
-	userService, 
-	commentService,
-	/*AuthenticationRequiredCtrl,*/
-	$modalInstance,
-	$timeout,
-	$log,
-	Intercom,
-	INTERCOM_APP_ID = 'MYINTERCOMID',
-	matterService;
-
-	var fakeModal = {
-            'result' : {
-              'then': function(callback) {
-                  callback("item1");
-              }
-            }
-    };
+	var $scope,
+		ctrl,
+		$rootScope,
+		$controller,
+		smartRoutes,
+		$location,
+		$q,
+		toaster,
+		ezConfirm,
+		baseService,
+		matterItemService,
+		participantService,
+		matterCategoryService,
+		$modal,
+		searchService,
+		userService, 
+		commentService,
+		activityService,
+		/*AuthenticationRequiredCtrl,*/
+		$modalInstance,
+		$timeout,
+		$log,
+		Intercom,
+		INTERCOM_APP_ID = 'MYINTERCOMID',
+		matterService;
 
 	beforeEach(inject(function($injector) {
+		// SETUP SCOPE, CONTROLLER and third party libraries such as q and bootstrap.ui
 		$rootScope = $injector.get('$rootScope');
+		$scope = $rootScope.$new();
 		$controller = $injector.get('$controller');
 		$location = $injector.get('$location');
 
 		$timeout = $injector.get('$timeout');
 		$q = $injector.get('$q');
-		$modal = $injector.get('$modal');
-		$scope = $rootScope.$new();
-		$log = {
-			'log' : function(message){ console.log(message);},
-			'debug' : function(message){ console.log(message);}
-		};
+		$modal = $injector.get('$modal'); // Bootstrap ui (angular bootstrap ui)
+		$log = fakeLog;
 
-		//var AuthenticationRequiredCtrl = $injector.get('AuthenticationRequiredCtrl');
-		//MOCKS
-		//var msg  = { message: "This is so great!" };
-		//mocking smartRoutes		
-		smartRoutes = {'params': function() { return { 'matterSlug': 'test-matter', itemSlug:'123' }; }};
-
+		//AuthenticationRequiredCtrl = $injector.get('AuthenticationRequiredCtrl');		
+		smartRoutes = {'params': function() { return { 'matterSlug': 'test-matter', 'itemSlug':'123' }; }}; //mocking smartRoutes, custom route parser
 
 		matterItemService  = makeFake('matterItemService',[
 			'create',
@@ -102,29 +131,32 @@ describe('Controller: Checklist', function() {
 			'remindRevisionReview',
 			'deleteRevisionReviewRequest',	  
 			'uploadRevisionFile'
-		]);	  
-		matterItemService.deleteRevisionRequest.andCallFake(doPromiseResolve({ 'is_requested': "This is so great!" }));
+		]);
 
+		// Custom services
+		matterService = makeFake('matterService',['get','selectMatter','data']);	  	 
+		matterService.data.andCallFake(function(/*param*/){        
+		   return {'selected':{'current_user':''}};
+		});
+		matterItemService.deleteRevisionRequest.andCallFake(doPromiseResolve({ 'is_requested': "This is so great!" }));
 		baseService = makeFake('baseService',['loadObjectByUrl']);
 		toaster = makeFake('toaster',['pop']);
+		userService = {data:function(){return { 'current':{'user_class':'lawyer'}};},setCurrent:function(/*p*/){return {};}};
+		searchService = {data:function(){return {};}};
+		activityService = makeFake('matterCategoryService',['itemstream']);
+		participantService = makeFake('participantService',['getByURL']);	  
+		matterCategoryService = makeFake('matterCategoryService',['create','delete','update']);
+		commentService = makeFake('commentService',[ 'create', 'delete', 'update' ]);
 
 		ezConfirm = jasmine.createSpyObj('ezConfirm',['create']);
 		ezConfirm.create.andCallFake(function(param,param1,callbck){           
 		   callbck();
 		});
 
-		participantService = makeFake('participantService',['getByURL']);	  
-		matterCategoryService = makeFake('matterCategoryService',['create','delete','update']);
-		commentService = makeFake('commentService',[ 'create', 'delete', 'update' ]);
-		Intercom = makeFake('Intercom', [ 'boot' ]);
+		Intercom = makeFake('Intercom', [ 'boot' ]);	
 
-		matterService = makeFake('matterService',['get','selectMatter','data']);	  	 
-		matterService.data.andCallFake(function(/*param*/){           
-		   return {selected:{current_user:''}};
-		});	
-
-
-		$modalInstance = {                    // Create a mock object using spies
+		// Create a mock object using spies
+		$modalInstance = {
 			'close': jasmine.createSpy('modalInstance.close'),
 			'dismiss': jasmine.createSpy('modalInstance.dismiss'),
 			'result': {
@@ -132,14 +164,8 @@ describe('Controller: Checklist', function() {
 			}
 		};
 
-		spyOn($modal, 'open').andReturn(fakeModal);
-
-		//$modal = jasmine.createSpyObj('$modal',['open']);
-
-		userService = {data:function(){return { 'current':{'user_class':'lawyer'}};},setCurrent:function(/*p*/){return {};}};
-		searchService = {data:function(){return {};}};
-		var activityService = makeFake('matterCategoryService',['itemstream']);
-
+		// Basic modal spy
+		spyOn($modal, 'open').andReturn( fakeModalPromise );
 
 		ctrl = $controller('ChecklistCtrl', {
 		  '$scope': $scope,
@@ -169,36 +195,6 @@ describe('Controller: Checklist', function() {
 		  'INTERCOM_APP_ID': INTERCOM_APP_ID
 		});
 	}));
-
-/**
- * '$scope',
-	'$rootScope',
-	'$routeParams',
-	'$state',
-	'$location',
-	'$sce',
-	'$compile',
-	'$route',
-	'smartRoutes',
-	'ezConfirm',
-	'toaster',
-	'$modal',
-	'baseService',
-	'matterService',
-	'matterItemService',
-	'matterCategoryService',
-	'participantService',
-	'searchService',
-	'activityService',
-	'userService',
-	'commentService',
-	'$timeout',
-	'$log',
-	'$window',
-	'$q',
-	'Intercom',
-	'INTERCOM_APP_ID',
- */
 	  
 	// Check objects
 	it('should have usdata and call "matterService.get"', function () {
@@ -751,7 +747,6 @@ describe('Controller: Checklist', function() {
 	});
 	
 	it('$scope.showReview ',function(){
-		// why is this broken
 		$scope.data.selectedItem = {};
 
 		$scope.showReview();
