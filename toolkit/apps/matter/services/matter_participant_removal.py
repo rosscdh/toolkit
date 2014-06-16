@@ -34,9 +34,9 @@ class MatterParticipantRemovalService(object):
 
             # either user has manage_participants or he removes a client and has manage_clients.
             # additionaly he cannot remove the primary lawyer (last 'and')
-            elif (self.removing_user.has_perm('workspace.manage_participants', self.matter)
+            elif (self.removing_user.matter_permissions(matter=self.matter).has_permission(manage_participants=True) is True
                     or user_to_remove.matter_permissions(matter=self.matter).role == ROLES.client
-                       and self.removing_user.has_perm('workspace.manage_clients', self.matter)) \
+                       and self.removing_user.matter_permissions(matter=self.matter).has_permission(manage_clients=True)) \
                     and self.matter.lawyer != user_to_remove:
                 self.matter.remove_participant(user=user_to_remove)
                 PARTICIPANT_DELETED.send(sender=self,

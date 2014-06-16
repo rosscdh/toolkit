@@ -13,8 +13,14 @@ our core architecture.
 
 
 
+CONTENT
+------------------
+1. Permissions API
+2. Matter Permissions and implications 
 
-Matter Permissions
+
+
+1. Permissions API
 ------------------
 
 
@@ -37,6 +43,7 @@ p.PRIVILEGED_USER_PERMISSIONS
 p.UNPRIVILEGED_USER_PERMISSIONS
 p.ANONYMOUS_USER_PERMISSIONS
 ```
+
 ### view users permissions
 ```
 current_permissions = p.permissions 
@@ -61,7 +68,6 @@ print p.permissions
 
 ### Update a specific permission for the set
 _please note:_ will not add permissions that dont exist in the main p.PERMISSIONS list
-
 ```
 p.update_permissions(manage_signature_requests=True, manage_clients=False, made_up_permission_that_does_not_exist=True)
 print p.permissions  # note that "made_up_permission_that_does_not_exist" is not present
@@ -69,7 +75,6 @@ print p.permissions  # note that "made_up_permission_that_does_not_exist" is no
 
 ### Reset permissions
 _resets to the default for whatever their role is_
-
 ```
 p.reset_permissions()
 print p.permissions
@@ -77,7 +82,6 @@ print p.permissions
 
 ### Roles
 _see the users role for that matter_
-
 ```
 print p.role
 print p.display_role
@@ -87,3 +91,33 @@ print p.display_role
 ```
 p.save(update_fields=['data'])
 ```
+
+
+
+2. Matter Permissions and implications
+------------------
+
+### workspace.manage_document_reviews
+Can manage document reviews:
+- invite participant to upload a document
+- delete invitation to upload a document which is not mine
+- remind user to upload a document
+
+### workspace.manage_items
+Can manage checklist items and categories:
+- crud categories
+- crud items
+- delete revisions
+
+### workspace.manage_signature_requests
+Can manage signatures & send documents for signature:
+- create and delete signing requests
+
+### workspace.manage_clients
+Can manage clients:
+- crud participants of type 'client'
+
+### workspace.manage_participants
+Can manage clients:
+- crud participants of any type
+-- includes workspace.manage_clients

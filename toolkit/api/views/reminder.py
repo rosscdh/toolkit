@@ -119,10 +119,10 @@ class RemindRequestedRevisionInvitee(BaseReminderMixin):
         return user in self.matter.participants.all()
 
     def can_edit(self, user):
-        return user.has_perm('workspace.manage_document_reviews', self.matter)
+        return user.matter_permissions(matter=self.matter).has_permission(manage_document_reviews=True) is True
 
     def can_delete(self, user):
-        return user.has_perm('workspace.manage_document_reviews', self.matter)
+        return user.matter_permissions(matter=self.matter).has_permission(manage_document_reviews=True) is True
 
 
 rulez_registry.register("can_read", RemindRequestedRevisionInvitee)

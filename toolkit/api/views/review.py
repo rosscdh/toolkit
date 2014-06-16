@@ -162,10 +162,10 @@ class ItemRevisionReviewersView(generics.ListAPIView,
         return user.profile.user_class in ['lawyer', 'customer']
 
     def can_edit(self, user):
-        return user.has_perm('workspace.manage_document_reviews', self.matter)
+        return user.matter_permissions(matter=self.matter).has_permission(manage_document_reviews=True) is True
 
     def can_delete(self, user):
-        return user.has_perm('workspace.manage_document_reviews', self.matter)
+        return user.matter_permissions(matter=self.matter).has_permission(manage_document_reviews=True) is True
 
 
 rulez_registry.register("can_read", ItemRevisionReviewersView)
@@ -243,11 +243,17 @@ class ItemRevisionReviewerView(generics.RetrieveAPIView,
         serializer = self.get_serializer(user)
         data = serializer.data
 
-        if user in self.revision.reviewers.all():
+        if user in self.revision.reviewers.all() \
+                and (request.user == user or
+                         request.user.matter_permissions(matter=self.matter).has_permission(manage_document_reviews=True)):
             #
             # the user is in the reviewers set
             # remove them. This will (via the signals) remove them from the
             # reviewdocument object too
+            #
+            # and
+            #
+            # I want to remove myself OR I have the permission to delete every invitation
             #
             self.revision.reviewers.remove(user)
 
@@ -263,10 +269,12 @@ class ItemRevisionReviewerView(generics.RetrieveAPIView,
         return user.profile.user_class in ['lawyer', 'customer']
 
     def can_edit(self, user):
-        return user.has_perm('workspace.manage_document_reviews', self.matter)
+        return user.matter_permissions(matter=self.matter).has_permission(manage_document_reviews=True) is True
 
     def can_delete(self, user):
-        return user.has_perm('workspace.manage_document_reviews', self.matter)
+        # probably the user wants to delete himself
+        return user.matter_permissions(matter=self.matter).has_permission(manage_document_reviews=True) is True or \
+               user in self.revision.reviewers.all()
 
 
 rulez_registry.register("can_read", ItemRevisionReviewerView)

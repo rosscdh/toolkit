@@ -224,7 +224,8 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
         #     or user == self.item.responsible_party)
 
     def can_delete(self, user):
-        return user in self.matter.participants.all() and user.matter_permissions(matter=self.matter).has_permission(manage_items=True) is True
+        return user in self.matter.participants.all() and \
+               user.matter_permissions(matter=self.matter).has_permission(manage_items=True) is True
         # return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
 
 

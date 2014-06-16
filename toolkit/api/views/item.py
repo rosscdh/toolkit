@@ -35,13 +35,13 @@ class ItemEndpoint(viewsets.ModelViewSet):
     def can_edit(self, user):
         self.object = self.get_object_or_none()
         if self.object is not None:
-            return user.has_perm('workspace.manage_items', self.object.matter)
+            return user.matter_permissions(matter=self.object.matter).has_permission(manage_items=True) is True
         return False
 
     def can_delete(self, user):
         self.object = self.get_object_or_none()
         if self.object is not None:
-            return user.has_perm('workspace.manage_items', self.object.matter)
+            return user.matter_permissions(matter=self.object.matter).has_permission(manage_items=True) is True
         return False
 
 rulez_registry.register("can_read", ItemEndpoint)
@@ -80,11 +80,11 @@ class MatterItemsView(MatterItemsQuerySetMixin,
         return user in self.matter.participants.all()
 
     def can_edit(self, user):
-        return user.has_perm('workspace.manage_items', self.matter)
+        return user.matter_permissions(matter=self.matter).has_permission(manage_items=True) is True
         # return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
 
     def can_delete(self, user):
-        return user.has_perm('workspace.manage_items', self.matter)
+        return user.matter_permissions(matter=self.matter).has_permission(manage_items=True) is True
         # return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
 
 
@@ -147,10 +147,10 @@ class MatterItemView(generics.UpdateAPIView,
         return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
 
     def can_edit(self, user):
-        return user.has_perm('workspace.manage_items', self.matter)
+        return user.matter_permissions(matter=self.matter).has_permission(manage_items=True) is True
 
     def can_delete(self, user):
-        return user.has_perm('workspace.manage_items', self.matter)
+        return user.matter_permissions(matter=self.matter).has_permission(manage_items=True) is True
 
 
 rulez_registry.register("can_read", MatterItemView)

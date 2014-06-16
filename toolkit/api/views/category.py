@@ -80,11 +80,11 @@ class CategoryView(SpecificAttributeMixin,
 
     def can_edit(self, user):
         self.get_object()  # needed so self.object is set. self.get_object() returns category-list which we can't use here
-        return user.has_perm('workspace.manage_items', self.object)
+        return user.matter_permissions(matter=self.object).has_permission(manage_items=True) is True
 
     def can_delete(self, user):
         self.get_object()  # needed so self.object is set. self.get_object() returns category-list which we can't use here
-        return user.has_perm('workspace.manage_items', self.object)
+        return user.matter_permissions(matter=self.object).has_permission(manage_items=True) is True
 
 
 rulez_registry.register("can_read", CategoryView)

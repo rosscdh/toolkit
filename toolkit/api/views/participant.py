@@ -156,20 +156,20 @@ class MatterParticipant(generics.CreateAPIView,
             return False
 
         # manage_participants overrides manage_clients
-        if user.has_perm('workspace.manage_participants', self.matter):
+        if user.matter_permissions(matter=self.matter).has_permission(manage_participants=True) is True:
             return True
         elif ROLES.get_value_by_name(role.lower()) == ROLES.client:
-            return user.has_perm('workspace.manage_clients', self.matter)
+            return user.matter_permissions(matter=self.matter).has_permission(manage_clients=True) is True
 
     def can_delete(self, user):
         user_to_work_on = User.objects.get(email=self.kwargs.get('email'))
 
         # manage_participants overrides manage_clients
-        if user.has_perm('workspace.manage_participants', self.matter) \
+        if user.matter_permissions(matter=self.matter).has_permission(manage_participants=True) is True \
                 or user_to_work_on == self.request.user:
             return True
         elif user_to_work_on.matter_permissions(matter=self.matter).role == ROLES.client:
-            return user.has_perm('workspace.manage_clients', self.matter)
+            return user.matter_permissions(matter=self.matter).has_permission(manage_clients=True) is True
 
 
 rulez_registry.register("can_read", MatterParticipant)

@@ -37,11 +37,11 @@ class SignatureEndpoint(viewsets.ModelViewSet):
 
     def can_edit(self, user):
         obj = self.get_object()
-        return user.has_perm('workspace.manage_signature_requests', obj.matter)
+        return user.matter_permissions(matter=obj.matter).has_permission(manage_signature_requests=True) is True
 
     def can_delete(self, user):
         obj = self.get_object()
-        return user.has_perm('workspace.manage_signature_requests', obj.matter)
+        return user.matter_permissions(matter=obj.matter).has_permission(manage_signature_requests=True) is True
 
 
 rulez_registry.register("can_read", SignatureEndpoint)
@@ -148,10 +148,10 @@ class ItemRevisionSignersView(generics.ListAPIView,
         return user.profile.user_class in ['lawyer', 'customer']
 
     def can_edit(self, user):
-        return user.has_perm('workspace.manage_signature_requests', self.matter)
+        return user.matter_permissions(matter=self.matter).has_permission(manage_signature_requests=True) is True
 
     def can_delete(self, user):
-        return user.has_perm('workspace.manage_signature_requests', self.matter)
+        return user.matter_permissions(matter=self.matter).has_permission(manage_signature_requests=True) is True
 
 
 rulez_registry.register("can_read", ItemRevisionSignersView)
@@ -240,10 +240,10 @@ class ItemRevisionSignerView(generics.RetrieveAPIView,
         return user.profile.user_class in ['lawyer', 'customer']
 
     def can_edit(self, user):
-        return user.has_perm('workspace.manage_signature_requests', self.matter)
+        return user.matter_permissions(matter=self.matter).has_permission(manage_signature_requests=True) is True
 
     def can_delete(self, user):
-        return user.has_perm('workspace.manage_signature_requests', self.matter)
+        return user.matter_permissions(matter=self.matter).has_permission(manage_signature_requests=True) is True
 
 
 rulez_registry.register("can_read", ItemRevisionSignerView)
