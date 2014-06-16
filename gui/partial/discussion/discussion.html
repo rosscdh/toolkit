@@ -1,7 +1,7 @@
 <div id="messaging" class="discussion-wrapper">
-    <div class="container-fluid full">
+    <div class="container-fluid">
         <div class="row full">
-            <div class="col-lg-4 full checklist-col" id="inbox">
+            <div class="col-sm-4" id="inbox">
                 <button class="btn btn-default" ng-click="createThread()">New Thread</button>
                 <div class="row inbox-msgs checklist-col">
                     <ul class="msg-list list-unstyled">
@@ -14,7 +14,7 @@
                 </div>
             </div>
 
-            <div class="col-lg-8 row full" id="message-stage">
+            <div class="col-lg-8 row" id="message-stage">
                 <div ng-include="'/static/ng/partial/discussion/includes/thread.html'"></div>
             </div>
         </div>
