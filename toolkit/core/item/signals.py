@@ -88,10 +88,8 @@ def on_item_save_closing_group(sender, instance, **kwargs):
 
 def on_item_post_save(sender, instance, created, **kwargs):
     """
-        At this moment only the layer can edit items. So this is possible.
+    At this moment only the lawyer can edit items. So this is possible.
     """
-    #print kwargs
-    #print instance.latest_revision
     if created:
         matter = instance.matter
 
@@ -104,16 +102,13 @@ def on_item_post_save(sender, instance, created, **kwargs):
         profile.open_requests = profile.get_open_requests_count()
         profile.save(update_fields=['data'])
 
-    for reviewer in instance.latest_revision.reviewers.all():
-        profile = reviewer.profile
-        profile.open_requests = profile.get_open_requests_count()
-        profile.save(update_fields=['data'])
+    if instance.latest_revision:
+        for reviewer in instance.latest_revision.reviewers.all():
+            profile = reviewer.profile
+            profile.open_requests = profile.get_open_requests_count()
+            profile.save(update_fields=['data'])
 
-    for signer in instance.latest_revision.signers.all():
-        profile = signer.profile
-        profile.open_requests = profile.get_open_requests_count()
-        profile.save(update_fields=['data'])
-
-        #
-        # The matter.actions.item_created activity event has moved to the
-        # api endpoint view
+        for signer in instance.latest_revision.signers.all():
+            profile = signer.profile
+            profile.open_requests = profile.get_open_requests_count()
+            profile.save(update_fields=['data'])
