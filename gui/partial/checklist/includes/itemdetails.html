@@ -233,8 +233,8 @@
                     Cancel Signing
                 </a>
 
-                <div ng-hide="data.selectedItem.latest_revision.signing.is_claimed">
-                 <a class="signing-setup-link" href="javascript:;" ng-click="showSigning(data.selectedItem.latest_revision, null)" style="margin-top:7px; margin-left:14px;"><div class="notice-me animated-slow pulse"><i class="fa fa-exclamation-circle"></i></div>
+                <div ng-hide="data.selectedItem.latest_revision.signing.is_claimed" class="">
+                 <a class="signing-setup-link" href="javascript:;" ng-click="showSigning(data.selectedItem.latest_revision, null)"><div class="notice-me animated-slow shake"><i class="fa fa-exclamation-circle"></i></div>
                     <div>Please set up the document for signing</div></a>
                 </div>
 
