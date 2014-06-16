@@ -7,6 +7,10 @@ Deployment actions by branch
 2. ./manage.py syncdb --migrate
 
 
+--------------------------------------------------------------------------------
+** DEPLOYED 12 June 2014
+--------------------------------------------------------------------------------
+
 [feature/signing-progress-indicator]
 
 1. pip install -e git+https://github.com/rosscdh/django-hello_sign.git#egg=django-hello_sign -U # upgrade the HelloSign object
