@@ -181,9 +181,17 @@ def get_sha1():
   return local('git rev-parse --short --verify HEAD', capture=True)
 
 @task
-def db_backup(db='toolkit_production'):
+def db_backup(db='toolkit_production', data_only=False):
+    """
+    -Fp plain text sql
+    -Fc compressed .bak file
+    """
+    data_only = True if data_only in env.truthy else False
     db_backup_name = '%s.bak' % db
-    sudo('pg_dump --no-owner --no-acl -Fc %s > /tmp/%s' % (db, db_backup_name,), user='postgres')
+    if data_only:
+        sudo('pg_dump --no-owner --no-acl --data-only -Fc %s > /tmp/%s' % (db, db_backup_name,), user='postgres')
+    else:
+        sudo('pg_dump --no-owner --no-acl -Fc %s > /tmp/%s' % (db, db_backup_name,), user='postgres')
     local('scp -i %s %s@%s:/tmp/%s /tmp/' % (env.key_filename, env.user, env.host, db_backup_name,))
 
 @task
@@ -198,7 +206,7 @@ def db_restore(db='toolkit_production', db_file=None):
                 if go in env.truthy:
                     local('echo "DROP DATABASE %s;" | psql -h localhost -U %s' % (db, env.local_user,))
                     local('echo "CREATE DATABASE %s WITH OWNER %s ENCODING \'UTF8\';" | psql -h localhost -U %s' % (db, env.local_user, env.local_user,))
-                    local('pg_restore -U %s -h localhost -d %s -Fc %s' % (env.local_user, db, db_file,))
+                    local('pg_restore --disable-triggers -U %s -h localhost -d %s -Fc %s' % (env.local_user, db, db_file,))
 
 @task
 def git_tags():
