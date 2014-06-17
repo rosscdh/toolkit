@@ -18,19 +18,20 @@
 
             <div class="col-sm-9" id="message-stage">
                 <div ng-include="'/static/ng/partial/discussion/includes/thread.html'"></div>
-            <div class="compose">
-                <form name="requestForm" ng-submit="request()">
-                <div class="message-options">
-                 <div class="button-container">
-                <button class="btn btn-default" type="submit">Send</button>
-                <br><br>
-                <a href="javascript:;" ng-click="addThreadParticipant(data.selectedThread)" class="btn btn-sm pull-right btn-default">Add participant</a>
+
+
+
+            <div class="compose row">
+                <div class="col-sm-10">
+                    <div class="compose-wrapper">
+                    <textarea class="compose-message" rows="2" placeholder="Type your message here and press enter" ng-model="data.request.message"></textarea>
+                    </div>
+
                 </div>
-                </form>
+                <div class="col-sm-2">
+
             </div>
-            <div class="compose-wrapper">
-                <textarea class="compose-message" rows="2" placeholder="Type your message here and press enter" ng-model="data.request.message"></textarea>
-            </div>
+        </div>
         </div>
         </div>
     </div>
