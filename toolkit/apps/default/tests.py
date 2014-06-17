@@ -41,9 +41,10 @@ class TwoFactorSignInTest(BaseProjectCaseMixin):
         self.user.set_password('password')
         self.user.save()
 
-    @mock.patch('dj_authy.services.AuthyService.verify_token')
     @mock.patch('dj_authy.services.AuthyService.ensure_user_registered')
-    def test_signin_with_two_factor_enabled(self, verify_token_mock, ensure_user_mock):
+    @mock.patch('dj_authy.services.AuthyService.request_sms_token')
+    @mock.patch('dj_authy.services.AuthyService.verify_token')
+    def test_signin_with_two_factor_enabled(self, verify_token_mock, request_sms_token_mock, ensure_user_mock):
         profile = self.user.profile
         profile.data['two_factor_enabled'] = True
         profile.save(update_fields=['data'])
@@ -56,6 +57,7 @@ class TwoFactorSignInTest(BaseProjectCaseMixin):
         url = reverse('public:signin')
         resp = self.client.get(url)
 
+        request_sms_token_mock.return_value = True
         verify_token_mock.return_value = True
 
         form_data = resp.context_data.get('form').initial
@@ -66,11 +68,15 @@ class TwoFactorSignInTest(BaseProjectCaseMixin):
         form_resp = self.client.post(url, form_data, follow=True)
         self.assertEqual(type(form_resp.context_data.get('view')), VerifyTwoFactorView)
 
+        self.assertEqual(request_sms_token_mock.call_count, 1)
+        self.assertEqual(verify_token_mock.call_count, 0)
+
         form_data = resp.context_data.get('form').initial
         form_data.update({
             'token': '0000000',
         })
         form_resp = self.client.post(reverse('public:signin-two-factor'), form_data, follow=True)
+        self.assertEqual(request_sms_token_mock.call_count, 1)
         self.assertEqual(verify_token_mock.call_count, 1)
         self.assertEqual(form_resp.context['user'].is_authenticated(), True)
         self.assertEqual(form_resp.context['user'].username, 'testuser')
