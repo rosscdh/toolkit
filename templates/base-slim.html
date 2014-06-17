@@ -7,16 +7,20 @@
     <meta name="keywords" content="{% block meta_keywords %}{% endblock %}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+
     <!-- Loading Bootstrap and Flat UI -->
     <link href="{{ STATIC_URL }}bootstrap/css/bootstrap.css" rel="stylesheet">
-    <link href="{{ STATIC_URL }}bootstrap/css/prettify.css" rel="stylesheet">
+     <link href="{{ STATIC_URL }}bootstrap/css/font-awesome.css" rel="stylesheet">
     <link href="{{ STATIC_URL }}css/flat-ui.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}css/font-awesome.min.css" rel="stylesheet">
+
 
     <!-- Loading application specific styles -->
     <link href="{{ STATIC_URL }}css/application.css" rel="stylesheet">
 
     <link rel="shortcut icon" href="{{ STATIC_URL }}images/favicon.ico">
-    {% block css %}{% endblock %}
+    {% block css %}
+    {% endblock %}
 
     {% block extrahead %}{% endblock %}
 
