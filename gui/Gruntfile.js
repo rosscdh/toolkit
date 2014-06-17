@@ -207,6 +207,7 @@ module.exports = function (grunt) {
           {src: ['bower_components/bootstrap/dist/js/bootstrap.min.js'], dest: '<%= PRODUCTION_PATH %>'},
           {src: ['bower_components/angular/angular.min.js'], dest: '<%= PRODUCTION_PATH %>'},
           {src: ['bower_components/angular/angular.min.js.map'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['bower_components/intro.js/minified/introjs.min.css'], dest: '<%= PRODUCTION_PATH %>'},
           {src: ['bower_components/font-awesome/fonts/**'], dest: '<%= PRODUCTION_PATH %>'},
           {src: ['lib/**'], dest: '<%= PRODUCTION_PATH %>'}
         ]
