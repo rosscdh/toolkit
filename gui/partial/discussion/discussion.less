@@ -120,16 +120,15 @@
 	}
 	#inbox {
 		background-color:#f1f1f1;
-		padding-top: 0px;
-		width: 25%;
-		position: absolute;
-		top: 55px;
-		margin-bottom: 0px;
-		left: 0;
-		height: auto;
-		padding-bottom: 0px;
-		-webkit-transition: all 1s;
-    transition: all 1s;
+		// padding-top: 0px;
+		// width: 25%;
+		// position: absolute;
+		// top: 55px;
+		// margin-bottom: 0px;
+		// left: 0;
+		// height: auto;
+		// padding-bottom: 0px;
+
 
 
 		.inbox-header{
@@ -173,23 +172,18 @@
 
 		}
 		ul.msg-list {
-			padding: 0 20px 0 0px;
-			height: 531px;
+			padding: 10px;
 			overflow-y: scroll;
+			clear: right;
 			li {
 				background-color:white;
+				position: relative;
 				padding-bottom:0px;
-				margin-bottom:2px;
+				margin-bottom:10px;
 				border-radius: 3px;
+				height: 100px;
 				padding-left:0px;
-				border-right:3px solid #ddd;
-				border-bottom:1px solid #ddd;
-				&:first-child{
-					border-right:3px solid #42d0e5 !important;
-					}
-				&:last-child{
-					border-right: 3px solid #5ccb6a !important;
-				}
+				border: 1px solid #e4e6e8;
 				&:hover{
 					// background-color: #444444;
 					// color: white;
@@ -205,34 +199,37 @@
 
 				}
                 &.selected {
-                    background-color: #409ad5;
+                		border-right: 3px solid #409ad5;
+                    border-bottom: 3px solid #409ad5;
                 }
 				.message {
 					padding:10px 10px 2px 7px;
 					h3 {
 						font-size:16px;
-						margin:5px 0px 10px 35px;
+						margin:5px 0px 15px 35px;
 						font-weight:normal;
 						line-height: 1.0em;
+						color: #807f7f;
 
 					}
 					p {
 						color: #8D8D8D;
 						margin-bottom:0px;
-						font-size: 13px;
+						font-size: 12px;
 						margin-left: 5px;
 						line-height: 1.3em;
-						float:left;
+						float: left;
 					}
 				}
 				.meta {
-					clear:both;
-					padding-left: 10px;
-					padding-right: 10px;
-					padding-top: 1px;
-					height:26px;
-					position: relative;
-					margin-top: 0px;
+				clear: both;
+				position: absolute;
+				bottom: 5px;
+				width: 100%;
+				padding-left: 10px;
+				padding-right: 10px;
+				height: 26px;
+
 					.last-active {
 						font-size:12px;
 						color:#ccc;
@@ -250,11 +247,11 @@
 	}
 	#message-stage {
 		position:relative;
-		height: 550px;
-		width: 75%;
-		margin-left: 25%;
-		-webkit-transition: all 1s;
-    transition: all 1s;
+		// height: 550px;
+		// width: 75%;
+		// margin-left: 25%;
+		// -webkit-transition: all 1s;
+  //   transition: all 1s;
 		.col-lg-12{
 			height: 100%;
 			//width: 90%;
@@ -341,26 +338,7 @@
 				padding:5px 5px 5px 5px;
 				margin-right:3px;
 			}
-			.author {
-				padding-bottom:14px;
-				font-weight: bold;
-				border-bottom: 2px solid #efefef;
-				margin-bottom: 5px;
-				position: relative;
-				z-index: 1;
-				padding-top: 15px;
-				background-color: white;
-				.text-muted {
-					padding-right: 10px;
-					font-weight: normal;
-					text-align: right;
-					float: right;
-				};
 
-				.user{
-					font-size: 11px;
-				}
-			}
 
 			.fixed {
       position: fixed;
@@ -435,8 +413,7 @@
 
 .compose {
 			position:absolute;
-			bottom:0;
-			//border: 1px solid red;
+			right: 0;
 			height:180px;
 			width:100%;
 
@@ -456,8 +433,7 @@
 		}
 
 .read-message{
-	margin-top: 20px;
-	height: 350px;
+	height: 390px;
 	overflow-y: scroll;
 }
 
@@ -473,4 +449,52 @@
 .sticky-fixed {
 	position: fixed;
 	top: 57px;
+}
+
+.author {
+				padding-bottom:14px;
+				font-weight: bold;
+				border-bottom: 2px solid #efefef;
+				margin-bottom: 5px;
+				position: relative;
+				z-index: 1;
+				padding-top: 15px;
+				background-color: white;
+				.text-muted {
+					padding-right: 10px;
+					font-weight: normal;
+					text-align: right;
+					float: right;
+				};
+
+				.user{
+					font-size: 12px;
+				}
+			}
+
+
+
+#messaging{
+	.container-flud{
+		margin-top: 55px;
+		padding-top: 55px;
+	}
+}
+
+
+.one-message{
+	margin: 0 20px;
+
+}
+
+
+.new-thread-btn {
+	background-color: @lp-blue;
+	font-family: open sans;
+	font-weight: normal;
+	margin-top: 5px;
+	float: right;
+	margin-right: 10px;
+	margin-bottom: 5px;
+
 }

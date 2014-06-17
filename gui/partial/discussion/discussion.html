@@ -1,9 +1,10 @@
 <div id="messaging" class="discussion-wrapper">
-    <div class="container-fluid">
+    <div class="container-fluid full">
         <div class="row full">
-            <div class="col-sm-4" id="inbox">
-                <button class="btn btn-default" ng-click="createThread()">New Thread</button>
-                <div class="row inbox-msgs checklist-col">
+            <div class="col-sm-3 full" id="inbox">
+
+                <div class="inbox-msgs checklist-col">
+                       <button class="btn btn-default new-thread-btn" ng-click="createThread()">New Thread</button>
                     <ul class="msg-list list-unstyled">
                         <li ng-repeat="thread in data.threads"
                             ng-class="{ 'selected': thread.id===data.selectedThread.id }"
@@ -11,10 +12,11 @@
                             <div ng-include="'/static/ng/partial/discussion/includes/thread-line-item.html'"></div>
                         </li>
                     </ul>
+
                 </div>
             </div>
 
-            <div class="col-lg-8 row" id="message-stage">
+            <div class="col-sm-9" id="message-stage">
                 <div ng-include="'/static/ng/partial/discussion/includes/thread.html'"></div>
             <div class="compose">
                 <form name="requestForm" ng-submit="request()">
@@ -26,14 +28,10 @@
                 </div>
                 </form>
             </div>
-
-
             <div class="compose-wrapper">
                 <textarea class="compose-message" rows="2" placeholder="Type your message here and press enter" ng-model="data.request.message"></textarea>
             </div>
-
-
-            </div>
+        </div>
         </div>
     </div>
 </div>
