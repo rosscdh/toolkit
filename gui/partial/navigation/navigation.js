@@ -15,9 +15,9 @@ angular.module('toolkit-gui')
 	'smartRoutes',
 	'$location',
 	'$modal',
-    '$log',
-    '$timeout',
-    'toaster',
+	'$log',
+	'$timeout',
+	'toaster',
 	'userService',
 	'matterService',
 	function( $scope, $routeParams, smartRoutes, $location, $modal, $log, $timeout, toaster, userService, matterService ){
@@ -52,15 +52,15 @@ angular.module('toolkit-gui')
 			'id': routeParams.id
 		};
 
-        //load all other matters from the current user
-        matterService.list().then(
-             function success(response){
-                $scope.data.matterlist = response;
-             },
-             function error(/*err*/){
-                toaster.pop('error', 'Error!', 'Unable to other matters.',5000);
-             }
-        );
+		//load all other matters from the current user
+		matterService.list().then(
+			 function success(response){
+				$scope.data.matterlist = response;
+			 },
+			 function error(/*err*/){
+				toaster.pop('error', 'Error!', 'Unable to other matters.',5000);
+			 }
+		);
 
 		/**
 		 * This method is used by navigation items to determine ifthey should be highlighted (i.e. .active)
