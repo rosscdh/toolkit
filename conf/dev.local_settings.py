@@ -110,8 +110,8 @@ MIXPANEL_SETTINGS = {
 #
 # Payments
 #
-STRIPE_PUBLIC_KEY = 'sk_test_8Po9Bh0rj12nISHPFsOQz46Q'
-STRIPE_SECRET_KEY = 'pk_test_pVBXSHiazhp3b0EyGHQa8Dx2'
+STRIPE_PUBLIC_KEY = 'pk_test_pVBXSHiazhp3b0EyGHQa8Dx2'
+STRIPE_SECRET_KEY = 'sk_test_8Po9Bh0rj12nISHPFsOQz46Q'
 
 #
 # Celery SQS Tasks
