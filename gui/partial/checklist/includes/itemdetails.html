@@ -132,8 +132,8 @@
         <i class="fa fa-spinner fa-3x fa-spin"></i>
     </div>
 
-    <div ng-show="data.usdata.current.user_class=='lawyer'">
-        <div class="drop-area show-on-drag" ng-file-drop="onFileDropped($files, data.selectedItem);"  ng-show="data.selectedItem.latest_revision">
+    <div ng-if="data.usdata.current.user_class=='lawyer'&&data.selectedItem.latest_revision&&!data.itemIsLoading" class="ng-cloak">
+        <div class="drop-area show-on-drag" ng-file-drop="onFileDropped($files, data.selectedItem);">
             <span class="fui-upload"></span>
             <h4>Upload a document</h4>
             <p>To upload a new document drop file here</p>
@@ -324,7 +324,7 @@
         </li>
     </ul>
 
-    <div ng-show="data.usdata.current.user_class=='lawyer'">
+    <div ng-if="data.usdata.current.user_class=='lawyer'&&!data.itemIsLoading">
         <div class="item-help border-on-dragover" ng-hide="data.selectedItem.latest_revision||data.selectedItem.uploading||data.selectedItem.is_requested">
             <span class="fui-upload"></span>
             <h4>Upload a document</h4>
