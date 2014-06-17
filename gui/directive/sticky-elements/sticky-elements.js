@@ -22,22 +22,21 @@ angular.module('toolkit-gui').directive("sticky", [ '$window', function($window)
 			var parent = element.parent();
 			var tolerance = scope.tolerance||57;
 
+			//console.log(element.css('padding-top'));
+
 			angular.element(scrollerNode).bind("scroll", function() {
-				var elementHeight = element.height();
-				var parentHeight = parent.height();
+				var elementHeight = element.height() + parseInt(element.css('padding-top')) + parseInt(element.css('padding-bottom'));
+				var parentHeight = parent.height() + parseInt(parent.css('padding-top')) + parseInt(parent.css('padding-bottom'));
 				var currentParentOffset = parent.offset().top - elementHeight;
 				var elementOffset = element.offset().top;
-				var zero = tolerance;
+				var zero = elementHeight*2;
 
-				scope.data = {
-					'element': { 'offset': elementOffset },
-					'parent': { 'offset': currentParentOffset, 'height': parentHeight },
-					'tolerance': tolerance
-				};
+				//console.log(elementHeight, parentHeight);
 
 				// If parent within the height of the top then stick element to top
 				if( currentParentOffset > (-1 * parentHeight) && (currentParentOffset) < zero ) {
 					element.addClass('sticky-fixed');
+
 					parent.css('padding-top', elementHeight + 'px');
 				} else {
 					element.removeClass('sticky-fixed');
