@@ -49,7 +49,7 @@ angular.module('toolkit-gui').directive("sticky", [ '$window', function($window)
 			scope.$on('$destroy', function() {
 				angular.element(scrollerNode).unbind("scroll");
 			});
-			
+
 		}
 	};
 }]);
