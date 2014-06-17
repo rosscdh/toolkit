@@ -148,6 +148,7 @@ class VerifyTwoFactorView(AuthenticateUserMixin, FormView):
     def get_form_kwargs(self):
         kwargs = super(VerifyTwoFactorView, self).get_form_kwargs()
         kwargs.update({
+            'request': self.request,
             'user': self.authenticated_user,
         })
         return kwargs
