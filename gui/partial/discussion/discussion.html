@@ -28,9 +28,15 @@
                     </div>
 
                 </div>
-                <div class="col-sm-2">
+                <div class="col-sm-2 text-right">
+                    <form name="requestForm" ng-submit="request()">
+                        <a href="javascript:;" ng-click="addThreadParticipant(data.selectedThread)" class="btn btn-sm pull-right btn-default">Add participant</a>
+                           <br><br>
 
-            </div>
+                        <button class="btn btn-default send-btn" type="submit">Send</button>
+
+                    </form>
+                </div>
         </div>
         </div>
         </div>
