@@ -250,7 +250,7 @@
 	}
 	#message-stage {
 		position:relative;
-		height: 100%;
+		height: 550px;
 		width: 75%;
 		margin-left: 25%;
 		-webkit-transition: all 1s;
@@ -310,29 +310,10 @@
 			width:100%;
 			border-bottom:2px solid #efefef;
 		}
-		.compose {
-			position:absolute;
-			bottom:0;
-			//border: 1px solid red;
-			height:180px;
-			width:100%;
 
-			.compose-message {
-				border: 1px solid red;
-
-				background-color: transparent;
-				border:none;
-				width:85%;
-				height: 154px;
-				font-size:14px;
-				line-height: 22px;
-				padding:18px;
-				color:#666;
-				outline: none;
-				border-top:2px solid #efefef;
-				//border: 1px solid green;
-			}
-		}
+		.message-body{
+					padding: 30px 70px;
+				}
 		.convo {
 			top:0px;
 
@@ -350,9 +331,7 @@
 				padding: 0vh 3vh;
 				}
 
-				.message-body{
-					padding: 30px 70px;
-				}
+
 			};
 			span.user {
 				margin-left:0px;
@@ -364,7 +343,6 @@
 			}
 			.author {
 				padding-bottom:14px;
-
 				font-weight: bold;
 				border-bottom: 2px solid #efefef;
 				margin-bottom: 5px;
@@ -372,8 +350,6 @@
 				z-index: 1;
 				padding-top: 15px;
 				background-color: white;
-				//border: 1px solid green;
-
 				.text-muted {
 					padding-right: 10px;
 					font-weight: normal;
@@ -388,7 +364,6 @@
 
 			.fixed {
       position: fixed;
-      //border: 1px solid red;
       top: 55px;
       width: 67.6%;
       z-index: 1;
@@ -456,4 +431,34 @@
 
 .compose-wrapper{
 	margin-left: 90px;
+}
+
+.compose {
+			position:absolute;
+			bottom:0;
+			//border: 1px solid red;
+			height:180px;
+			width:100%;
+			border: 1px solid red;
+
+			.compose-message {
+				border: 1px solid red;
+
+				background-color: transparent;
+				border:none;
+				width:85%;
+				height: 154px;
+				font-size:14px;
+				line-height: 22px;
+				padding:18px;
+				color:#666;
+				outline: none;
+				border-top:2px solid #efefef;
+				//border: 1px solid green;
+			}
+		}
+
+.read-message{
+	height: 550px;
+	overflow-y: scroll;
 }

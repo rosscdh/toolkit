@@ -1,5 +1,5 @@
-<div ng-show="data.selectedThread">
-    <div class="one-message">
+<div ng-show="data.selectedThread" class='read-message'>
+    <div class="single-message">
         <ul class="list-unstyled">
             <li class="one-message">
                 <div class="author">
@@ -7,7 +7,6 @@
                     <span ng-bind="data.selectedThread.user.name"></span>
                     <span class="text-muted">{{ data.selectedThread.date_created | timeago }}</span>
                 </div>
-                <a href="javascript:;" ng-click="deleteThread(data.selectedThread)" class="btn btn-sm pull-right btn-default">Delete thread</a>
                 <div class="message-body">
                     <p ng-bind="data.selectedThread.comment"></p>
                 </div>
@@ -24,24 +23,6 @@
             </li>
         </ul>
     </div>
-
-    <br><br><br><br><br><br><br><br><br>
-
-    <form name="requestForm" ng-submit="request()">
-        <div class="message-options">
-            <div class="button-container">
-                <button class="btn btn-default" type="submit">Send</button>
-                <br><br>
-                <a href="javascript:;" ng-click="addThreadParticipant(data.selectedThread)" class="btn btn-sm pull-right btn-default">Add participant</a>
-            </div>
-        </div>
-
-        <div class="compose">
-            <div class="compose-wrapper">
-                <textarea class="compose-message" rows="2" placeholder="Type your message here and press enter" ng-model="data.request.message"></textarea>
-            </div>
-        </div>
-    </form>
 </div>
 
 <div ng-show="!data.selectedThread">
