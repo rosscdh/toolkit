@@ -46,6 +46,7 @@ angular.module('toolkit-gui')
 	'$log',
 	'$window',
 	'$q',
+	'IntroService',
 	'Intercom',
 	'INTERCOM_APP_ID',
 	function($scope,
@@ -75,6 +76,7 @@ angular.module('toolkit-gui')
 			 $log,
 			 $window,
 			 $q,
+			 IntroService,
 			 Intercom,
 			 INTERCOM_APP_ID){
 		'use strict';
@@ -1986,6 +1988,51 @@ angular.module('toolkit-gui')
 		};
 
 		/* END COMMENT HANDLING */
+
+		/*
+		 ___       _             
+		|_ _|_ __ | |_ _ __ ___  
+		 | || '_ \| __| '__/ _ \ 
+		 | || | | | |_| | | (_) |
+		|___|_| |_|\__|_|  \___/ 
+		                         
+		 */
+		IntroService.show({
+			'steps': [
+				{
+					'element': '#step1',
+					'intro': "Checklist items are organised into categories"
+				},
+				{
+					'element': '#step1 .dropdown-toggle',
+					'intro': "Add new categories"
+				},
+				{
+					'element': '#step1 .btn-new-item',
+					'intro': "Create new checklist items"
+				},
+				{
+					'element': '.checklist-members',
+					'intro': "Invite people to participate in your workspace"
+				},
+				{
+					'element': '.navbar input[type=search]',
+					'intro': "Find checklist items quickly with search"
+				},
+				{
+					'element': '.navbar .doc-outline-status-',
+					'intro': "Filter checklist items by status"
+				},
+				{
+					'element': '.navbar .notifications span',
+					'intro': "See when things change"
+				},
+				{
+					'element': '#checklist-activity h4',
+					'intro': "Chat with participants about items, documents and revisions"
+				}
+			]
+		});
 }])
 
 /**
