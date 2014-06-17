@@ -5,7 +5,7 @@
                 <div class="author">
                     <span class="user coleg" ng-bind="data.selectedThread.user.initials"></span>
                     <span ng-bind="data.selectedThread.user.name"></span>
-                    <span class="text-muted">{{ data.selectedThread.date_created | timeago }}</span>
+                    <span class="text-muted time">{{ data.selectedThread.date_created | timeago }}</span>
                 </div>
                 <div class="message-body">
                     <p ng-bind="data.selectedThread.comment"></p>
