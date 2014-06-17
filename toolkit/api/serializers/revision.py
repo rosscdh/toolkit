@@ -245,7 +245,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
             request = kwargs['context'].get('request')
             if request:
                 #
-                # set the executed_file field to be a seriallizer.FileField and behave like one of those
+                # set the executed_file field to be a serializer.FileField and behave like one of those
                 #
                 if request.method in ['PATCH', 'POST']:
 
@@ -258,7 +258,8 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
 
         super(RevisionSerializer, self).__init__(*args, **kwargs)
 
-    def validate_executed_file(self, attrs, source):
+    @staticmethod
+    def validate_executed_file(attrs, source):
         """
         Ensure is valid length filename 100 is the max length
         """
@@ -269,7 +270,8 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
 
         return attrs
 
-    def get_custom_api_url(self, obj):
+    @staticmethod
+    def get_custom_api_url(obj):
         return ABSOLUTE_BASE_URL(reverse('matter_item_specific_revision',
                                          kwargs={'matter_slug': obj.item.matter.slug,
                                                  'item_slug': obj.item.slug,
@@ -326,13 +328,13 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
             data = SignatureSerializer(sign_document, context=context).data
         return data
 
-
-    def get_revisions(self, obj):
+    @staticmethod
+    def get_revisions(obj):
         return [ABSOLUTE_BASE_URL(reverse('matter_item_specific_revision', kwargs={
-                    'matter_slug': obj.item.matter.slug,
-                    'item_slug': obj.item.slug,
-                    'version': c + 1
-                })) for c, revision in enumerate(obj.revisions) if revision.pk != obj.pk]
+            'matter_slug': obj.item.matter.slug,
+            'item_slug': obj.item.slug,
+            'version': c + 1
+        })) for c, revision in enumerate(obj.revisions) if revision.pk != obj.pk]
 
 
 class SimpleRevisionSerializer(RevisionSerializer):

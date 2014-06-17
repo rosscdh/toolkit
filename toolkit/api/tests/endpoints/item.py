@@ -28,6 +28,7 @@ class ItemsTest(BaseEndpointTest):
     def test_endpoint_name(self):
         self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/items')
 
+    # lawyer
     def test_lawyer_get(self):
         self.client.login(username=self.lawyer.username, password=self.password)
         resp = self.client.get(self.endpoint)
@@ -59,7 +60,7 @@ class ItemsTest(BaseEndpointTest):
         resp = self.client.delete(self.endpoint, {})
         self.assertEqual(resp.status_code, 405)  # not allowed
 
-
+    #customer
     def test_customer_get(self):
         self.client.login(username=self.user.username, password=self.password)
         resp = self.client.get(self.endpoint)
@@ -88,6 +89,7 @@ class ItemsTest(BaseEndpointTest):
         resp = self.client.delete(self.endpoint, {})
         self.assertEqual(resp.status_code, 405)  # method forbidden
 
+    # anon
     def test_anon_get(self):
         resp = self.client.get(self.endpoint)
         self.assertEqual(resp.status_code, 403)  # forbidden

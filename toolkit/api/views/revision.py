@@ -11,15 +11,13 @@ from rest_framework.response import Response
 
 from toolkit.core.attachment.models import Revision
 
-from toolkit.tasks import run_task
-from toolkit.apps.review.tasks import crocodoc_upload_task
-
 from .mixins import (MatterItemsQuerySetMixin,)
 
 from ..serializers import RevisionSerializer
 from ..serializers import ItemSerializer
 from ..serializers import UserSerializer
 
+from toolkit.apps.workspace.models import ROLES
 
 import logging
 logger = logging.getLogger('django.request')
@@ -168,8 +166,6 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
                                                  item=self.item,
                                                  revision=self.revision)
 
-
-
             # see if there is a previous request for this revision
             # TODO: check if this works! absolutely not sure!
             if self.item.requested_by is not None:
@@ -209,8 +205,10 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
 
     def can_read(self, user):
         """
-        the lawyer the customer as well as the latest_revision reviewers can read
+        the participants, the latest_revision reviewers and the users which were activated can read
         """
+        if user.matter_permissions(matter=self.matter).role == ROLES.client:
+            return user.share_revision_service(revision=self.get_object()).is_shared
         return user in self.matter.participants.all() or user in self.item.latest_revision.reviewers.all()
         # return (user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all() \
         #     or user in self.item.latest_revision.reviewers.all())

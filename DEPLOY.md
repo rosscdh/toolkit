@@ -9,6 +9,10 @@ Deployment actions by branch
 4. ./manage.py update_permissions  # add our set of permissions
 5. ./manage.py migrate workspace  # migrate the through table and its settings
 
+[feature/item-permissions]
+
+1. ./manage.py migrate attachment
+
 
 --------------------------------------------------------------------------------
 ** DEPLOYED 10 June 2014
