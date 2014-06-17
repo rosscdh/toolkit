@@ -7,7 +7,11 @@ from django.shortcuts import get_object_or_404
 from django.views.generic.edit import BaseUpdateView
 
 from hellosign_sdk.utils.exception import Conflict
+
+from toolkit.tasks import run_task
+
 from .models import SignDocument
+from .tasks import _send_for_signing
 
 import logging
 logger = logging.getLogger('django.request')
@@ -57,6 +61,8 @@ class SignRevisionView(DetailView):
             #
             # The signature has already been signed
             #
+            logger.error('Conflict: %s' % e)
+
             self.template_name = 'sign/already-signed.html'
             signer_url = False
 
@@ -120,6 +126,9 @@ class ClaimSignRevisionView(SignRevisionView,
         Handle the claim_url postback when the user has completed the claim setup
         """
         signature_request_id = request.POST.get('signature_request_id')
+        subject = request.POST.get('subject', None)  # HS to rpovide these, currently missing
+        message = request.POST.get('message', None)  # HS to rpovide these, currently missing
+
         logger.info('found signature_request_id: %s' % signature_request_id)
 
         self.object = self.get_object()
@@ -132,11 +141,16 @@ class ClaimSignRevisionView(SignRevisionView,
         # set the is_claimed property
         object_signature_request.data['is_claimed'] = True
         object_signature_request.save(update_fields=['data'])
+
         #
-        # Ok we have it all, now we can send it for signing
-        # @TODO make this async using run_task
+        # Perform the document send for signing and the email process async
         #
-        self.object.send_for_signing(signature_request_id=signature_request_id)
+        run_task(_send_for_signing,
+                 from_user=request.user,
+                 sign_object=self.object,
+                 signature_request_id=signature_request_id,
+                 subject=subject,
+                 message=message)
 
         # send log event
         self.matter.actions.completed_setup_for_signing(user=request.user, sign_object=self.object)

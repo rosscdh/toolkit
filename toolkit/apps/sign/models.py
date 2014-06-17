@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.db import models
-from django.core import signing
 from django.conf import settings
 from django.core.urlresolvers import reverse
 
@@ -11,10 +10,12 @@ from hellosign_sdk import HSClient
 # django wrapper hello_sign imports
 from hello_sign.mixins import ModelContentTypeMixin, HelloSignModelMixin
 
-from toolkit.core.mixins import IsDeletedMixin
+from toolkit.core.mixins import (IsDeletedMixin,
+                                 FileExistsLocallyMixin)
 
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 from toolkit.apps.review.mixins import UserAuthMixin
+from toolkit.apps.workspace.models import InviteKey
 
 from .managers import SignDocumentManager
 from .mailers import SignerReminderEmail
@@ -32,6 +33,7 @@ class SignDocument(IsDeletedMixin,
                    UserAuthMixin,
                    HelloSignOverridesMixin,
                    HelloSignModelMixin,
+                   FileExistsLocallyMixin,
                    ModelContentTypeMixin,
                    models.Model):
     """
@@ -128,17 +130,24 @@ class SignDocument(IsDeletedMixin,
             pass
         return signed_at
 
+    # override for FileExistsLocallyMixin:
+    def get_document(self):
+        return self.document.get_document()
+
     def percentage_complete(self):
         num_signatures = len(self.signatures)
-        percentage_complete = None  # require None so that we can represent that there are no signatures
 
-        if num_signatures > 0:
-            percentage_complete = 0  # reset it here
+        percentage_complete = 0 if self.signing_request and self.signing_request.is_claimed is True else None  # if we have not claimed the signature then still show None
+
+        if num_signatures is not None and num_signatures > 0:
             num_complete = len([signature for signature in self.signatures if signature.get('signed_at', None) is not None])
 
             if num_complete > 0:
                 percentage_complete = float(num_complete) / float(num_signatures)
-                percentage_complete = round(percentage_complete * 100, 0)
+
+        if percentage_complete >= 0:
+            # formats the percentage_complete as 0.0
+            percentage_complete = round(percentage_complete * 100, 0)
 
         return percentage_complete
 
@@ -147,29 +156,43 @@ class SignDocument(IsDeletedMixin,
         self.save(update_fields=['is_complete'])
     complete.alters_data = True
 
-    def send_invite_email(self, from_user, users=[]):
+    def send_invite_email(self, from_user, **kwargs):
         """
         @BUSINESSRULE requested users must be in the signers object
         """
-        if type(users) not in [list]:
-            raise Exception('users must be of type list: users=[<User>]')
+        subject = kwargs.get('subject', SignerReminderEmail.subject)
+        message = kwargs.get('message', None)
 
-        for u in self.signers.all():
+        for signer in self.signers.all():
             #
-            # @BUSINESSRULE if no users passed in then send to all of the signers
+            # send email
             #
-            if users == [] or u in users:
-                #
-                # send email
-                #
-                logger.info('Sending Sign Document invite email to: %s' % u)
+            logger.info('Sending Sign Document invite email to: %s' % signer)
 
-                m = SignerReminderEmail(recipients=((u.get_full_name(), u.email,),))
-                m.process(subject=m.subject,
-                          item=self.document.item,
-                          document=self.document,
-                          from_name=from_user.get_full_name(),
-                          action_url=ABSOLUTE_BASE_URL(path=self.get_absolute_url(user=u)))
+            # if we have one
+            # @BUSINESSRULE ALWAYS redirect the invitee to the requests page
+            # and not the specific object
+            
+            next_url = self.get_absolute_url(signer=signer)
+            #
+            # Create the invite key (it may already exist)
+            #
+            invite, is_new = InviteKey.objects.get_or_create(matter=self.document.item.matter,
+                                                             invited_user=signer,
+                                                             next=next_url)
+            invite.inviting_user = from_user
+            invite.save(update_fields=['inviting_user'])
+
+            # send the invite url
+            action_url = ABSOLUTE_BASE_URL(invite.get_absolute_url())
+
+            m = SignerReminderEmail(recipients=((signer.get_full_name(), signer.email,),))
+            m.process(subject=subject,
+                      message=message,
+                      item=self.document.item,
+                      document=self.document,
+                      from_name=from_user.get_full_name(),
+                      action_url=action_url)
 
     def can_read(self, user):
         return user in set(self.signers.all() | self.document.item.matter.participants.all())

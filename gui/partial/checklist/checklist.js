@@ -24,9 +24,10 @@ angular.module('toolkit-gui')
 	'$routeParams',
 	'$state',
 	'$location',
-	'$sce',
-	'$compile',
-	'$route',
+    '$sce',
+    '$sanitize',
+    '$compile',
+    '$route',
 	'smartRoutes',
 	'ezConfirm',
 	'toaster',
@@ -40,6 +41,7 @@ angular.module('toolkit-gui')
 	'activityService',
 	'userService',
 	'commentService',
+	'genericFunctions',
 	'$timeout',
 	'$log',
 	'$window',
@@ -51,9 +53,10 @@ angular.module('toolkit-gui')
 			 $routeParams,
 			 $state,
 			 $location,
-			 $sce,
-			 $compile,
-			 $route,
+             $sce,
+             $sanitize,
+             $compile,
+             $route,
 			 smartRoutes,
 			 ezConfirm,
 			 toaster,
@@ -67,6 +70,7 @@ angular.module('toolkit-gui')
 			 activityService,
 			 userService,
 			 commentService,
+			 genericFunctions,
 			 $timeout,
 			 $log,
 			 $window,
@@ -81,6 +85,14 @@ angular.module('toolkit-gui')
 		 * @type {Object}
 		 */
 		var routeParams = smartRoutes.params();
+
+		/**
+		 * In scope variable containing containing the currently selected matter
+		 * @memberof ChecklistCtrl
+		 * @type {Object}
+		 * @private
+		 */
+		$scope.matter = matterService.data(); // Used to communicate between controllers
 
 		$scope.data = {
 			'slug': routeParams.matterSlug,
@@ -98,8 +110,10 @@ angular.module('toolkit-gui')
 			'page': 'checklist',
 			'statusFilter': null,
 			'itemFilter': null,
-			'knownSigners': []
+			'knownSigners': [],
+            'showPreviousRevisions': false
 		};
+
 		//debugger;
 		// Basic checklist item format, used for placeholder checklist items
 		var CHECKLISTITEMSKELETON = {
@@ -120,10 +134,7 @@ angular.module('toolkit-gui')
 			"loading": true
 		};
 
-
-		if( $scope.data.slug && $scope.data.slug!=='' && $scope.data.matterCalled==null) {
-			$scope.data.matterCalled = true;
-
+		function loadMatter() {
 			matterService.get( $scope.data.slug ).then(
 				function success( singleMatter ){
 					$scope.data.matter = singleMatter;
@@ -134,7 +145,6 @@ angular.module('toolkit-gui')
 					$scope.initializeActivityStream( singleMatter );
 
 					userService.setCurrent( singleMatter.current_user, singleMatter.lawyer );
-
 					$scope.initialiseIntercom(singleMatter.current_user);
 				},
 				function error(/*err*/){
@@ -142,6 +152,11 @@ angular.module('toolkit-gui')
 					// @TODO: redirect user maybe?
 				}
 			);
+		}
+
+		if( $scope.data.slug && $scope.data.slug!=='' && $scope.data.matterCalled==null) {
+			$scope.data.matterCalled = true;
+			loadMatter();
 		}
 
 		/**
@@ -209,6 +224,15 @@ angular.module('toolkit-gui')
 
 			// Items with blank category name
 			items = jQuery.grep( matter.items, function( item ){ return item.category===categoryName; } );
+
+			// REMOVE !!
+			/*
+			for(var i=0;i<items.length;i++) {
+				items[i].signing_percentage_complete = parseInt( Math.random() * 100 );
+			}
+			*/
+			// end REMOVE
+					
 			categories.push(
 				{ 'name': categoryName, 'items': items }
 			);
@@ -243,27 +267,26 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 * @method			initialiseIntercom
 		 */
-		$scope.initialiseIntercom = function(currUser){
-			$log.debug(currUser);
+        $scope.initialiseIntercom = function(currUser){
+            $log.debug(currUser);
 
-			Intercom.boot({
-				user_id: currUser.username,
-				email: currUser.email,
-				first_name: currUser.first_name,
-				last_name: currUser.last_name,
-				firm_name: currUser.firm_name,
-				verified: currUser.verified,
-				type: currUser.user_class,
-				app_id: INTERCOM_APP_ID,
-				created_at: (new Date(currUser.date_joined).getTime()/1000),
-				matters_created: currUser.matters_created,
-				user_hash: currUser.intercom_user_hash,
-				widget: {
-					activator: '.intercom',
-					use_counter: true
-				}
-			});
-
+            Intercom.boot({
+                'user_id': currUser.username,
+                'email': currUser.email,
+                'first_name': currUser.first_name,
+                'last_name': currUser.last_name,
+                'firm_name': currUser.firm_name,
+                'verified': currUser.verified,
+                'type': currUser.user_class,
+                'app_id': INTERCOM_APP_ID,
+                'created_at': (new Date(currUser.date_joined).getTime()/1000),
+                'matters_created': currUser.matters_created,
+                'user_hash': currUser.intercom_user_hash,
+                'widget': {
+                    'activator': '.intercom',
+                    'use_counter': true
+                }
+            });
 			//Intercom.show();
 		};
 
@@ -531,8 +554,14 @@ angular.module('toolkit-gui')
 		 */
 		$scope.saveSelectedItem = function () {
 			var matterSlug = $scope.data.slug;
+			var selectedItem = $scope.data.selectedItem;
 
-			if ($scope.data.selectedItem) {
+			if (selectedItem) {
+				selectedItem.name = genericFunctions.cleanHTML(selectedItem.name);
+				selectedItem.description = genericFunctions.cleanHTML(selectedItem.description);
+
+				selectedItem.edit_item_description = selectedItem.description;
+
 				matterItemService.update(matterSlug, $scope.data.selectedItem).then(
 					function success(/*item*/){
 						//do nothing
@@ -543,7 +572,6 @@ angular.module('toolkit-gui')
 				);
 			}
 		};
-
 
 		/**
 		 * Receives the user object from the API by the given URL and returns his full name if existing or
@@ -749,6 +777,7 @@ angular.module('toolkit-gui')
 			var matterSlug = $scope.data.slug;
 			var itemSlug = item.slug;
 			$scope.data.uploading = true;
+			item.uploading = true;
 
 			matterItemService.uploadRevision( matterSlug, itemSlug, files ).then(
 				function success( revision ) {
@@ -757,7 +786,7 @@ angular.module('toolkit-gui')
 
 					// Update uploading status
 					item.uploading = false;
-					$scope.data.uploading = uploadingStatus( $scope.data.matter.items );
+					$scope.data.uploading = $scope.uploadingStatus( $scope.data.matter.items );
 
 					//Reset previous revisions
 					item.previousRevisions = null;
@@ -768,14 +797,14 @@ angular.module('toolkit-gui')
 				function error(/*err*/) {
 					// Update uploading status
 					item.uploading = false;
-					$scope.data.uploading = uploadingStatus( $scope.data.matter.items );
+					$scope.data.uploading = $scope.uploadingStatus( $scope.data.matter.items );
 					
 					toaster.pop('error', 'Error!', 'Unable to upload revision', 5000);
 				}
 			);
 		};
 
-		function uploadingStatus( allItems ) {
+		$scope.uploadingStatus = function( allItems ) {
 			for(var i=0;i<allItems.length;i++) {
 				if(allItems[i].uploading) {
 					return true;
@@ -783,7 +812,7 @@ angular.module('toolkit-gui')
 			}
 
 			return false;
-		}
+		};
 
 		/**
 		 * Initiate the file upload process
@@ -817,14 +846,14 @@ angular.module('toolkit-gui')
 						// Update uploading status
 						item.uploadingPercent = 0;
 						item.uploading = false;
-						$scope.data.uploading = uploadingStatus( $scope.data.matter.items );
+						$scope.data.uploading = $scope.uploadingStatus( $scope.data.matter.items );
 						toaster.pop('success', 'Success!', 'File added successfully',3000);
 					},
 					function error(err) {
 						// Update uploading status
 						item.uploading = false;
 
-						$scope.data.uploading = uploadingStatus( $scope.data.matter.items );
+						$scope.data.uploading = $scope.uploadingStatus( $scope.data.matter.items );
 
 						var msg = err&&err.message?err.message:'Unable to upload revision';
 						var title = err&&err.title?err.title:'Error';
@@ -1171,7 +1200,7 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
 		$scope.requestSigning = function( revision ) {
-			var matterSlug = $scope.data.slug;
+			//var matterSlug = $scope.data.slug;
 			var item = $scope.data.selectedItem;
 
 			var modalInstance = $modal.open({
@@ -1828,6 +1857,8 @@ angular.module('toolkit-gui')
 			var matterSlug = $scope.data.slug;
 			var item = $scope.data.selectedItem;
 
+			item.newcomment = genericFunctions.cleanHTML(item.newcomment);
+
 			// Show activity straight away
 			appendActivity('item.comment', item.newcomment, item);
 
@@ -1894,6 +1925,13 @@ angular.module('toolkit-gui')
 			return template;
 		}
 
+	    $scope.showMarkDownInfo = function() {
+	      $modal.open({
+	        'templateUrl': '/static/ng/partial/markdown/markdown-info.html',
+	        'controller': 'MarkdownInfoCtrl'
+	      });
+
+	    };
 		/* END COMMENT HANDLING */
 
 		/*
@@ -1926,28 +1964,13 @@ angular.module('toolkit-gui')
 				$scope.data.statusFilter = null;
 			}
 		};
-
-		/**
-		 * applyItemFilter  filters for checklist item properties such as is_complete
-		 * @param  {Object} filter Filter to apply to base o checklsit item object
-		 */
-		$scope.applyItemFilter = function( filter ) {
-			// Initialise item filter
-			$scope.data.itemFilter = $scope.data.itemFilter||{};
-
-			// Clear other filters
-			$scope.data.statusFilter = null;
-
-			if( filter ) {
-				for(var key in filter) {
-					$scope.data.itemFilter[key] = filter[key];
-				}
-			} else {
-				// Clear all filters
-				$scope.data.itemFilter = null;
-				$scope.data.statusFilter = null;
-			}
+		$scope.clearFilters = function() {
+			$scope.matter.itemFilter = null;
+			$scope.matter.statusFilter = null;
+			$scope.matter.selectedStatusFilter = null;
 		};
+
+		/* END COMMENT HANDLING */
 }])
 
 /**

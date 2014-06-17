@@ -18,6 +18,7 @@
         "$": true,
         "_": true,
         "moment": true,
+        "spyOn": true,
         "describe": true,
         "beforeEach": true,
         "module": true,
@@ -28,7 +29,8 @@
         "TimeSpan": true,
         "Raven": true,
         "jasmine": true,
-        "Pusher": true
+        "Pusher": true,
+        "spyOn": true
     },
     "-W083": false,
     "-W099": false

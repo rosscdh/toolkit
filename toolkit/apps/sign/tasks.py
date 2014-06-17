@@ -4,6 +4,7 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 
 from hellosign.hellosign import HelloSignFinalCopy
+from hellosign.hellosign import HelloSignSignature
 
 from toolkit.celery import app
 
@@ -11,6 +12,53 @@ import os
 import logging
 import datetime
 logger = logging.getLogger('django.request')
+
+
+def _hellosign_signature_subject_and_message(request_id):
+    """
+    We need to query the HS api to get the subject and message for the signature
+    as they do not currently send it back in the javascript callback; have raised
+    and they are assessing impact.
+    """
+    auth = getattr(settings, 'HELLOSIGN_AUTHENTICATION', None)
+    client = HelloSignSignature()
+    resp = client.detail(auth=auth, signature_request_id=request_id)
+    # parse json
+    resp_json = resp.json().get('signature_request',{})
+    # get needed info
+    subject = resp_json.get('subject', None)
+    message = resp_json.get('message', None)
+    # return tuple
+    logger.info(u'Got subject, message from HS request_id: %s' % request_id)
+    return subject, message
+
+
+@app.task
+def _send_for_signing(from_user, sign_object, signature_request_id, **kwargs):
+    """
+    Task takes a request_id and sends it for signing and then sends the
+    invite email to appropriate users
+    """
+    subject = kwargs.get('subject', None)
+    message = kwargs.get('message', None)
+
+    if subject is None and message is None:
+        logger.info(u'subject, message not passed into task HS request_id: %s' % signature_request_id)
+        subject, message = _hellosign_signature_subject_and_message(request_id=signature_request_id)
+
+    resp = sign_object.send_for_signing(signature_request_id=signature_request_id)
+
+    if resp.get('date_sent', None) is None:
+        logger.error(u'Sent %s for signing but got unexpected response (date_sent not present): %s' % (signature_request_id, resp))
+
+    else:
+        logger.info(u'Sent %s for signing and got response' % signature_request_id)
+        # Recalculate the percentage
+        sign_object.document.item.recalculate_signing_percentage_complete()
+
+        sign_object.send_invite_email(from_user=from_user,
+                                      subject=subject,
+                                      message=message)
 
 
 @app.task

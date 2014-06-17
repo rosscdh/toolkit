@@ -50,7 +50,7 @@
   <script src="<!-- @echo staticPath -->bower_components/jquery-ui-touch-punch/jquery.ui.touch-punch.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/raven-js/dist/raven.min.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/crypto-js/rollups/hmac-sha256.js"></script>
-  
+
   <script src="<!-- @echo staticBase -->ng/lib/angular-intercom.js" data-remove="exclude"></script>
   <script type="text/javascript" src="//api.filepicker.io/v1/filepicker.js" data-remove="exclude"></script>
 
@@ -75,6 +75,7 @@
   <script src="<!-- @echo staticPath -->service/activity.js"></script>
   <script src="<!-- @echo staticPath -->service/comment.js"></script>
   <script src="<!-- @echo staticPath -->service/pusher.js"></script>
+  <script src="<!-- @echo staticPath -->service/genericFunctions.js"></script>
   <!-- Add New Service JS Above -->
 
   <!-- Directive JS -->
@@ -95,6 +96,8 @@
 
   <!-- Partial JS -->
   <script src="<!-- @echo staticPath -->partial/home/home.js"></script>
+    <script src="<!-- @echo staticPath -->partial/markdown/markdown-info.js"></script>
+
   <script src="<!-- @echo staticPath -->partial/checklist/checklist.js"></script>
   <script src="<!-- @echo staticPath -->partial/closing/closing.js"></script>
   <script src="<!-- @echo staticPath -->partial/navigation/navigation.js"></script>
@@ -170,6 +173,35 @@
             <span class="input-group-btn">
               <button type="submit" class="btn"><span class="fui-search"></span></button>
             </span>
+
+            <!-- filter //-->
+            {% verbatim %}
+            <span class="input-group-btn custom-btn-round">
+              <button
+                class="btn btn-default dropdown-toggle btn-xs doc-outline-status-{{matter.selectedStatusFilter}}"
+                type="button"
+                data-toggle="dropdown">
+                <span class="fa fa-filter"></span>
+                <span ng-if="matter.selectedStatusFilter!==null" class="status-dot status-{{matter.selectedStatusFilter}}"></span>
+              </button>
+              <ul class="dropdown-menu dropdown-inverse dropdown-small status-list">
+                <li ng-repeat="(key, status) in matter.selected._meta.item.custom_status">
+                  <a href="javascript:;" ng-click="applyStatusFilter( { 'status': key }, key );"> <span class="icon status-{{ key }}"></span> {{ status }}</a>
+                </li>
+                <li>
+                  <a href="javascript:;" ng-click="applyItemFilter( { 'is_complete': false }, 'open' );"> <span class="icon status-open"></span> Open</a>
+                </li>
+                <li>
+                  <a href="javascript:;" ng-click="applyItemFilter( { 'is_complete': true }, 'closed' );"> <span class="icon status-closed"></span> Closed</a>
+                </li>
+                <li>
+                  <a href="javascript:;" ng-click="applyStatusFilter( null );"> <span class="icon status-placeholder"></span> Clear filter</a>
+                </li>
+              </ul>
+            </span>
+            {% endverbatim %}
+
+
           </div>
         </div>
         <div class="search-container">

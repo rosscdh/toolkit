@@ -33,7 +33,7 @@ class SignatureSerializer(serializers.HyperlinkedModelSerializer):
         if obj is not None:
             signing_request = obj.signing_request
             if signing_request:
-                return obj.signing_request.data.get('is_claimed', False)
+                return obj.signing_request.is_claimed
         return False
 
     def get_signers(self, obj):
