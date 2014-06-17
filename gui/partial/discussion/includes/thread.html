@@ -1,8 +1,8 @@
-<div ng-show="data.selectedThread" class='read-message'>
+<div ng-show="data.selectedThread" class='read-message' id="message-scroll">
     <div class="single-message">
         <ul class="list-unstyled">
             <li class="one-message">
-                <div class="author">
+                <div class="author" sticky scrollelement="'message-scroll'">
                     <span class="user coleg" ng-bind="data.selectedThread.user.initials"></span>
                     <span ng-bind="data.selectedThread.user.name"></span>
                     <span class="text-muted time">{{ data.selectedThread.date_created | timeago }}</span>
@@ -12,7 +12,7 @@
                 </div>
             </li>
             <li class="one-message" ng-repeat="message in data.selectedThread.comments">
-                <div class="author">
+                <div class="author"  sticky scrollelement="'message-scroll'">
                     <span class="user coleg" ng-bind="message.user.initials"></span>
                     <span ng-bind="message.user.name"></span>
                     <span class="text-muted">{{ message.date_created | timeago }}</span>
