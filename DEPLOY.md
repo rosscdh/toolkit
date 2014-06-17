@@ -1,9 +1,14 @@
 Deployment actions by branch
 ----------------------------
 
+--------------------------------------------------------------------------------
+** DEPLOYED 17 June 2014
+--------------------------------------------------------------------------------
+
 [two-factor-sms]
 
 1. pip install -e git+https://github.com/rosscdh/django-authy.git#egg=django-authy -U
+
 
 [feature/signing-progress-indicator]
 
