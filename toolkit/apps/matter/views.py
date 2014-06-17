@@ -116,7 +116,7 @@ class MatterListView(ListView):
             #'object_list': object_list,
             'object_list_json': UnicodeJSONRenderer().render(object_list),
         })
-        assert False
+
         return context
 
     def get_serializer(self, instance=None, data=None,
