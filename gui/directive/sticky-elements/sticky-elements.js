@@ -10,30 +10,44 @@
  * @param  {Object} user                  The current user object
  */
 angular.module('toolkit-gui').directive("sticky", [ '$window', function($window){
+	'use strict';
 	return {
 		'scope': {
-			'scrollelement': '='
+			'scrollelement': '=',
+			'tolerance': '='
 		},
 		'restrict': "A",
-		'link': function(scope, element, attrs) {
+		'link': function(scope, element/*, attrs*/) {
 			var scrollerNode = document.getElementById(scope.scrollelement)||$window;
 			var parent = element.parent();
-			var tolerance = 20;
-			var parentOffset = parent.offset().top;
-
-			var scollerOffset = scrollerNode.offsetTop;
+			var tolerance = scope.tolerance||57;
 
 			angular.element(scrollerNode).bind("scroll", function() {
 				var elementHeight = element.height();
 				var parentHeight = parent.height();
-				var currentParentOffset = parent.offset().top - elementHeight - tolerance;
+				var currentParentOffset = parent.offset().top - elementHeight;
+				var elementOffset = element.offset().top;
+				var zero = tolerance;
+
+				scope.data = {
+					'element': { 'offset': elementOffset },
+					'parent': { 'offset': currentParentOffset, 'height': parentHeight },
+					'tolerance': tolerance
+				};
 
 				// If parent within the height of the top then stick element to top
-				if( currentParentOffset > (-1 * parentHeight + elementHeight) && currentParentOffset < 0 ) {
+				if( currentParentOffset > (-1 * parentHeight) && (currentParentOffset) < zero ) {
 					element.addClass('sticky-fixed');
+					parent.css('padding-top', elementHeight + 'px');
 				} else {
 					element.removeClass('sticky-fixed');
+					parent.css('padding-top', 0);
 				}
+			});
+
+			// Remove event bindings on scroll
+			scope.$on('$destroy', function() {
+				angular.element(scrollerNode).unbind("scroll");
 			});
 			
 		}
