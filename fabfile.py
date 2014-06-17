@@ -197,9 +197,9 @@ def db_backup(db='toolkit_production', user='lawpal', data_only=False):
 
     db_backup_name = '%s.bak' % db
     if data_only:
-        local('pg_dump --no-owner --no-privileges --no-acl --data-only -h %s -U %s -xFc %s > /tmp/%s' % (host, user, db, db_backup_name,))
+        local('pg_dump --no-owner --no-privileges --no-acl --data-only -h %s -Fc -U %s -d %s > /tmp/%s' % (host, user, db, db_backup_name,))
     else:
-        local('pg_dump --no-owner --no-privileges --no-acl -h %s -U %s -Fc %s > /tmp/%s' % (host, user, db, db_backup_name,))
+        local('pg_dump --no-owner --no-privileges --no-acl -h %s -Fc -U %s -d %s > /tmp/%s' % (host, user, db, db_backup_name,))
     #local('scp -i %s %s@%s:/tmp/%s /tmp/' % (env.key_filename, env.user, env.host, db_backup_name,))
 
 @task
