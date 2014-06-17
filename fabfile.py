@@ -214,7 +214,7 @@ def db_restore(db='toolkit_production', db_file=None):
                 if go in env.truthy:
                     #local('echo "DROP DATABASE %s;" | psql -h localhost -U %s' % (db, env.local_user,))
                     #local('echo "CREATE DATABASE %s WITH OWNER %s ENCODING \'UTF8\';" | psql -h localhost -U %s' % (db, env.local_user, env.local_user,))
-                    local('pg_restore --disable-triggers -U %s -h localhost -d %s -Fc %s' % (env.local_user, db, db_file,))
+                    local('pg_restore --disable-triggers --no-owner --clean -U %s -h localhost -d %s -Fc %s' % (env.local_user, db, db_file,))
 
 @task
 def git_tags():
