@@ -22,14 +22,12 @@ angular.module('toolkit-gui').directive("sticky", [ '$window', function($window)
 			var parent = element.parent();
 			var tolerance = scope.tolerance||57;
 
-			//console.log(element.css('padding-top'));
-
-			angular.element(scrollerNode).bind("scroll", function() {
+			function processPositions() {
 				var elementHeight = element.height() + parseInt(element.css('padding-top')) + parseInt(element.css('padding-bottom'));
 				var parentHeight = parent.height() + parseInt(parent.css('padding-top')) + parseInt(parent.css('padding-bottom'));
 				var currentParentOffset = parent.offset().top - elementHeight;
 				var elementOffset = element.offset().top;
-				var zero = elementHeight*2;
+				var zero = elementHeight;
 
 				//console.log(elementHeight, parentHeight);
 
@@ -42,7 +40,13 @@ angular.module('toolkit-gui').directive("sticky", [ '$window', function($window)
 					element.removeClass('sticky-fixed');
 					parent.css('padding-top', 0);
 				}
+			}
+
+			angular.element(scrollerNode).bind("scroll", function() {
+				processPositions();
 			});
+
+			processPositions();
 
 			// Remove event bindings on scroll
 			scope.$on('$destroy', function() {
