@@ -1,7 +1,7 @@
 <ul ui:sortable="checklistItemSortableOptions" ng:model="cat.items" class="group list-unstyled checklist-items">
 	<li
 		ng-repeat="item in cat.items | itemStatusFilter: matter.statusFilter | itemFilter: matter.itemFilter"
-		ng-click="selectItem(item, cat)"
+		ng-click="delayselectItem(item, cat)"
 		ng-class="{ 'item-closed': item.is_complete, 'item-open': !item.is_complete, 'selected': item.slug===data.selectedItem.slug }"
 		ng-file-drop="onFileDropped($files, item, this);selectItem(item, cat);"
 		ng-file-drag-over-class="file-drag-over"
