@@ -2,7 +2,7 @@
 from django.conf import settings
 from django.conf.urls import patterns, include, url
 from django.views.generic.base import RedirectView
-
+from django.views.generic import TemplateView
 from toolkit.static import static
 
 from django.contrib import admin
@@ -12,6 +12,7 @@ handler500 = 'toolkit.apps.default.views.handler500'
 
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^500\.html$', TemplateView.as_view(template_name='500.html')),
 
     url(r'^api/v1/', include('toolkit.api.urls')),
     url(r'^api/', include('toolkit.apps.api.urls', namespace='api')),

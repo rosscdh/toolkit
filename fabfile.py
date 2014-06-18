@@ -63,7 +63,8 @@ def prod_db():
     env.user = 'ubuntu'
     env.application_user = 'app'
     # connect to the port-forwarded ssh
-    env.hosts = ['ec2-50-18-97-221.us-west-1.compute.amazonaws.com'] if not env.hosts else env.hosts
+    #env.hosts = ['ec2-50-18-97-221.us-west-1.compute.amazonaws.com'] if not env.hosts else env.hosts
+    env.hosts = ['toolkit-production.cumwjxmxjqfz.us-west-1.rds.amazonaws.com']  # This is not a EC2 machine its RDS
     env.key_filename = '%s/../lawpal-chef/chef-machines.pem' % env.local_project_path
 
     env.start_service = None
@@ -89,6 +90,7 @@ def production():
     # connect to the port-forwarded ssh
     env.hosts = ['ec2-184-169-191-190.us-west-1.compute.amazonaws.com',
                  'ec2-184-72-21-48.us-west-1.compute.amazonaws.com',
+                 'ec2-50-18-33-186.us-west-1.compute.amazonaws.com',
                  'ec2-54-241-222-221.us-west-1.compute.amazonaws.com',] if not env.hosts else env.hosts
     env.celery_name = 'celery-production' # taken from chef cookbook
 
@@ -102,11 +104,12 @@ def production():
 # Update the roles
 #
 env.roledefs.update({
-    'db': ['ec2-50-18-97-221.us-west-1.compute.amazonaws.com'], # the actual db host
-    'db-actor': ['ec2-184-169-191-190.us-west-1.compute.amazonaws.com'], # database action host
+    #'db': ['ec2-50-18-97-221.us-west-1.compute.amazonaws.com'], # the actual db host
+    #'db-actor': ['ec2-184-169-191-190.us-west-1.compute.amazonaws.com'], # database action host
     # 'search': ['ec2-54-241-224-100.us-west-1.compute.amazonaws.com'], # elastic search action host
     'web': ['ec2-184-169-191-190.us-west-1.compute.amazonaws.com',
-            'ec2-184-72-21-48.us-west-1.compute.amazonaws.com'],
+            'ec2-184-72-21-48.us-west-1.compute.amazonaws.com',
+            'ec2-50-18-33-186.us-west-1.compute.amazonaws.com'],
     'worker': ['ec2-54-241-222-221.us-west-1.compute.amazonaws.com'],
 })
 
@@ -181,10 +184,23 @@ def get_sha1():
   return local('git rev-parse --short --verify HEAD', capture=True)
 
 @task
-def db_backup(db='toolkit_production'):
+def db_backup(db='toolkit_production', user='lawpal', data_only=False):
+    """
+    -Fp plain text sql
+    -Fc compressed .bak file
+    Remember to:
+    export PGPASSWORD="$put_here_the_password"
+    """
+    data_only = True if data_only in env.truthy else False
+
+    host = env.hosts[0]
+
     db_backup_name = '%s.bak' % db
-    sudo('pg_dump --no-owner --no-acl -Fc %s > /tmp/%s' % (db, db_backup_name,), user='postgres')
-    local('scp -i %s %s@%s:/tmp/%s /tmp/' % (env.key_filename, env.user, env.host, db_backup_name,))
+    if data_only:
+        local('pg_dump --no-owner --no-privileges --no-acl --data-only -h %s -Fc -U %s -d %s > /tmp/%s' % (host, user, db, db_backup_name,))
+    else:
+        local('pg_dump --no-owner --no-privileges --no-acl -h %s -Fc -U %s -d %s > /tmp/%s' % (host, user, db, db_backup_name,))
+    #local('scp -i %s %s@%s:/tmp/%s /tmp/' % (env.key_filename, env.user, env.host, db_backup_name,))
 
 @task
 def db_restore(db='toolkit_production', db_file=None):
@@ -196,9 +212,9 @@ def db_restore(db='toolkit_production', db_file=None):
             else:
                 go = prompt(colored('Restore "%s" DB from a file entitled: "%s" in the "%s" environment: Proceed? (y,n)' % (db, db_file, env.environment,), 'yellow'))
                 if go in env.truthy:
-                    local('echo "DROP DATABASE %s;" | psql -h localhost -U %s' % (db, env.local_user,))
-                    local('echo "CREATE DATABASE %s WITH OWNER %s ENCODING \'UTF8\';" | psql -h localhost -U %s' % (db, env.local_user, env.local_user,))
-                    local('pg_restore -U %s -h localhost -d %s -Fc %s' % (env.local_user, db, db_file,))
+                    #local('echo "DROP DATABASE %s;" | psql -h localhost -U %s' % (db, env.local_user,))
+                    #local('echo "CREATE DATABASE %s WITH OWNER %s ENCODING \'UTF8\';" | psql -h localhost -U %s' % (db, env.local_user, env.local_user,))
+                    local('pg_restore --disable-triggers --no-owner --clean -U %s -h localhost -d %s -Fc %s' % (env.local_user, db, db_file,))
 
 @task
 def git_tags():

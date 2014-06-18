@@ -381,7 +381,6 @@ angular.module('toolkit-gui')
 			}
 		}
 
-
 		/**
 		 * Sets the currently selected item to the one passed through to this method
 		 *
@@ -395,16 +394,16 @@ angular.module('toolkit-gui')
 		$scope.selectItem = function(item, category) {
 			var deferred = $q.defer();
 
+			$scope.data.itemIsLoading = true;
 			$scope.data.selectedItem = item;
 			$scope.data.selectedCategory = category;
-            $scope.data.itemIsLoading = true;
 
 			$scope.activateActivityStream('item');
 
             $scope.loadItemDetails(item).then(function success(item){
                 deferred.resolve(item);
                 $scope.data.itemIsLoading = false;
-                $log.debug(item);
+                //$log.debug(item);
 		    });
 
 			//Reset controls
@@ -415,10 +414,26 @@ angular.module('toolkit-gui')
 			$scope.data.show_edit_item_description = false;
 			$scope.data.show_edit_revision_description = false;
 
-			$log.debug(item);
+			//$log.debug(item);
 			$scope.displayDetails();	// @mobile
 
 			return deferred.promise;
+		};
+
+		/**
+		 * Allows the GUI some time to update before incepting the request to load item details
+		 * @param  {Object} item     Checklist item being loaded
+		 * @param  {Object} category Category that the checklist item belongs to
+		 * @private
+		 * @method						delayselectItem
+		 * @memberof					ChecklistCtrl
+		 */
+		$scope.delayselectItem = function(item, category) {
+			$scope.data.itemIsLoading = true;
+
+			$timeout(function(){
+				$scope.selectItem(item, category);
+			},10);
 		};
 
 		$scope.displayChecklist = function() {
@@ -777,6 +792,7 @@ angular.module('toolkit-gui')
 			var matterSlug = $scope.data.slug;
 			var itemSlug = item.slug;
 			$scope.data.uploading = true;
+			item.uploading = true;
 
 			matterItemService.uploadRevision( matterSlug, itemSlug, files ).then(
 				function success( revision ) {
