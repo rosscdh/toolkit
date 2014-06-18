@@ -6,8 +6,6 @@ from django.http import Http404
 from django.forms import EmailField
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
-from django.shortcuts import get_object_or_404
-from rest_framework.exceptions import UnsupportedMediaType
 
 from rulez import registry as rulez_registry
 
@@ -17,7 +15,7 @@ from rest_framework.response import Response
 from rest_framework import status as http_status
 
 from toolkit.apps.matter.signals import PARTICIPANT_ADDED
-from toolkit.apps.workspace.models import Workspace, ROLES, WorkspaceParticipants
+from toolkit.apps.workspace.models import Workspace, ROLES
 from toolkit.apps.workspace.services import EnsureCustomerService
 from toolkit.apps.matter.services import MatterParticipantRemovalService
 
@@ -94,7 +92,8 @@ class MatterParticipant(generics.CreateAPIView,
                                    user=request.user,
                                    note=message)
 
-        return Response(SimpleUserSerializer(new_participant, context={'request': self.request}).data,
+        return Response(SimpleUserSerializer(new_participant, context={'request': self.request,
+                                                                       'matter': self.matter}).data,
                         status=status)
 
     def update(self, request, *args, **kwargs):
@@ -123,7 +122,8 @@ class MatterParticipant(generics.CreateAPIView,
         perms.update_permissions(**permissions)
         perms.save()
 
-        return Response(SimpleUserSerializer(participant, context={'request': self.request}).data,
+        return Response(SimpleUserSerializer(participant, context={'request': self.request,
+                                                                   'matter': self.matter}).data,
                         status=http_status.HTTP_202_ACCEPTED)
 
     def delete(self, request, **kwargs):
