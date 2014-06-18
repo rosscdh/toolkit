@@ -15,14 +15,14 @@
                         <small class="{{person.role}}">({{ person.role }}<span ng-show="person.username==currentUser.username">, you</span>)</small>
                     </li>
                 </ul>
-                <button type="btn btn-default add-user" ng-click="showaddbutton=true" ng-show="!showaddbutton">Add participant</button>
-                <!--
+
+
                 <div class="text-center">
-                     <a class="btn btn-sm btn-inverse">
+                     <a class="btn btn-sm btn-inverse" ng-click="showaddbutton=true" ng-show="!showaddbutton">
                         <span class="fui-user"></span> Add a Participant
                     </a>
                 </div>
-                -->
+
             </div>
 
             <div class='col-sm-6 details' ng-show="data.selectedUser">
