@@ -214,20 +214,22 @@ angular.module('toolkit-gui')
 		};
 
         $scope.handleMatterEvents = function () {
-            PusherService.subscribeMatterEvents('client-someeventname', function (data) {
-                $log.debug("signal received");
+            PusherService.subscribeMatterEvents($scope.data.slug, function (data) {
+                $log.debug(data);
+
+                if (data.is_global === true || data.from_id !== $scope.data.usdata.current.username) {
+                    if (data.model === 'item') {
+                        toaster.pop('warning', 'Item has been updated.', 'Click here to refresh the page.', 5000, null, function () {
+                            window.location.reload();
+                        });
+                    } else if (data.model === 'matter') {
+                        toaster.pop('warning', 'Matter has been updated.', 'Click here to refresh the page.', 5000, null, function () {
+                            window.location.reload();
+                        });
+                    }
+                }
             });
         };
-
-        $scope.testPusher = function(){
-           $log.debug("send signal");
-           PusherService.triggertest(1);
-
-           $timeout(function(){
-               $scope.testPusher();
-           }, 5000);
-        };
-
 
 		/**
 		 * Splits the matter items into seperate arrays for the purpose of displaying seperate sortable lists, where items can be dragged

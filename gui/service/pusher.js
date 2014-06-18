@@ -40,8 +40,9 @@ angular.module('toolkit-gui')
 
 		},
 
-        subscribeMatterEvents: function(events,callbacks){
-            eventchannel = pusher.subscribe('private-matterevents');
+        subscribeMatterEvents: function(matterSlug, callback){
+            pusher = pusher||new Pusher(pusher_api_key); // Initialise pusher if not already
+            eventchannel = pusher.subscribe(matterSlug);
 
             /**
 			 * connectionError - called if unable to bind to channel
@@ -56,17 +57,26 @@ angular.module('toolkit-gui')
 			 * @memberof			PusherService
 			 */
 			eventchannel.bind('pusher:subscription_succeeded', function eventCaptured() {
-				console.log('success to subscribe to eventchannel...');
-                channel.bind(event, function(msg) {
+				console.log('success to subscribe to eventchannel for matter: ' + matterSlug);
+                eventchannel.bind('create', function(msg) {
+					$rootScope.$apply(function (){
+                        $log.debug("received pusher signal for create");
+						callback(msg);
+					});
+				});
+                eventchannel.bind('update', function(msg) {
+					$rootScope.$apply(function (){
+                        $log.debug("received pusher signal for update");
+						callback(msg);
+					});
+				});
+                eventchannel.bind('delete', function(msg) {
+                    $log.debug("received pusher signal for delete");
 					$rootScope.$apply(function (){
 						callback(msg);
 					});
 				});
 			});
-        },
-
-        triggertest: function(val){
-            var trigggered = eventchannel.trigger("client-someeventname", {val:"aa"});
         }
 	};
 }]);
