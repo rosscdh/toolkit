@@ -41,4 +41,6 @@
     {% for p in object_list %}
         <div class="modal" id="confirm-{{ p.stripe_plan_id }}"></div>
     {% endfor %}
+
+    <script src="//checkout.stripe.com/checkout.js"></script>
 {% endblock %}
