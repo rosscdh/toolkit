@@ -56,7 +56,8 @@ class ItemRequestRevisionView(MatterItemView):
         obj.data.update({
             'request_document': {
                 'message': self.message,
-                'requested_by': SimpleUserSerializer(self.request.user, context={'request': self.request}).data,
+                'requested_by': SimpleUserSerializer(self.request.user, context={'request': self.request,
+                                                                                 'matter': self.matter}).data,
                 'date_requested': datetime.datetime.utcnow()
             }
         })

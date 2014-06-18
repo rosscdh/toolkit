@@ -156,7 +156,7 @@ class MatterParticipantTest(BaseEndpointTest):
 
         new_user = User.objects.get(email=data.get('email'))
 
-        self.assertTrue(new_user) # exists
+        self.assertTrue(new_user)  # exists
         self.assertEqual(new_user.first_name, 'Test')
         self.assertEqual(new_user.last_name, 'Monkey')
         self.assertTrue(new_user.profile.is_customer)
