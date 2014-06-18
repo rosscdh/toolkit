@@ -19,7 +19,7 @@ from toolkit.apps.workspace.models import Workspace, ROLES
 from toolkit.apps.workspace.services import EnsureCustomerService
 from toolkit.apps.matter.services import MatterParticipantRemovalService
 
-from ..serializers import MatterSerializer, SimpleUserSerializer
+from ..serializers import MatterSerializer, SimpleUserSerializer, LiteUserSerializer
 from .mixins import (MatterMixin,)
 
 
@@ -92,8 +92,8 @@ class MatterParticipant(generics.CreateAPIView,
                                    user=request.user,
                                    note=message)
 
-        return Response(SimpleUserSerializer(new_participant, context={'request': self.request,
-                                                                       'matter': self.matter}).data,
+        return Response(LiteUserSerializer(new_participant, context={'request': self.request,
+                                                                     'matter': self.matter}).data,
                         status=status)
 
     def update(self, request, *args, **kwargs):
@@ -122,8 +122,8 @@ class MatterParticipant(generics.CreateAPIView,
         perms.update_permissions(**permissions)
         perms.save()
 
-        return Response(SimpleUserSerializer(participant, context={'request': self.request,
-                                                                   'matter': self.matter}).data,
+        return Response(LiteUserSerializer(participant, context={'request': self.request,
+                                                                 'matter': self.matter}).data,
                         status=http_status.HTTP_202_ACCEPTED)
 
     def delete(self, request, **kwargs):
