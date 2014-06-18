@@ -768,6 +768,8 @@ html, body, div.full {
   }
 }
 
+///PARTCIPANTS MODAL
+
 .modal-content {
 
   .existing-participants {
@@ -841,7 +843,7 @@ html, body, div.full {
   .new-participant {
     .col-sm-6 {
       .btn-primary, .btn-info {
-        font-weight: normal;
+        font-weight: bold;
       }
     }
 
@@ -859,8 +861,18 @@ html, body, div.full {
     vertical-align: middle;
     color: white;
     margin-top: 10px;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
 
+  }
+
+  .user-meta + .user-meta{
+  	padding-bottom: 20px;
+  	font-size: 12px;
+  }
+
+  .user-meta{
+  	color: #888;
+  	margin-bottom: 0px;
   }
 
   .user-details {
@@ -877,7 +889,6 @@ html, body, div.full {
     border: 1px solid #ccc;
   }
   ul.participants {
-    border-bottom: 1px solid #ececec;
     padding-bottom: 10px;
     li {
       padding: 10px 10px 10px 10px;
@@ -965,6 +976,10 @@ html, body, div.full {
   }
 }
 
+.permissions-checklist{
+	margin-bottom: 10px;
+	border-bottom: 1px solid #ececec;
+}
 /* #closing {
 	background-color:lighten(@silver, 18%);
 	table {

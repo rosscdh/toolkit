@@ -33,8 +33,8 @@
                          <a class="revoke" ng-show="data.selectedUser.username===currentUser.username" href="javascript:;" ng-click="revoke(data.selectedUser)"><small>Exit matter</small></a>
                     </div>
                     <div class="user-large customer" ng-bind="data.selectedUser.initials"></div>
-                    <p>{{ data.selectedUser.name }}</p>
-                    <p>{{ data.selectedUser.email }}</p>
+                    <p class="user-meta text-center">{{ data.selectedUser.name }}</p>
+                    <p class="user-meta text-center">{{ data.selectedUser.email }}</p>
                     <div ng-show="currentUser.permissions.manage_clients||currentUser.permissions.manage_participants">
                         <div class='permissions-checklist'>
                             <div class="checkbox">
@@ -54,8 +54,8 @@
                          <a class="revoke" ng-show="data.selectedUser.username!==currentUser.username&&currentUser.permissions.manage_participants" href="javascript:;" ng-click="revoke(data.selectedUser)"><small>Revoke access</small></a>
                     </div>
                     <div class="user-large lawyer" ng-bind="data.selectedUser.initials"></div>
-                    <p>{{ data.selectedUser.name }}</p>
-                    <p>{{ data.selectedUser.email }}</p>
+                    <p class="text-center user-meta">{{ data.selectedUser.name }}</p>
+                    <p class="text-center user-meta">{{ data.selectedUser.email }}</p>
                     <div class='permissions-checklist' ng-show="currentUser.permissions.manage_participants">
                         <div class="checkbox">
                             <label>
@@ -86,8 +86,8 @@
 
                 <div class="colleague-permissions" ng-show="data.selectedUser.role==='owner'">
                     <div class="user-large lawyer" ng-bind="data.selectedUser.initials"></div>
-                    <p>{{ data.selectedUser.name }}</p>
-                    <p>{{ data.selectedUser.email }}</p>
+                    <p class="text-center user-meta">{{ data.selectedUser.name }}</p>
+                    <p class="text-center user-meta">{{ data.selectedUser.email }}</p>
                 </div>
             </div>
         </div>
