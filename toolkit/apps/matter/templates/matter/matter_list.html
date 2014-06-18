@@ -56,19 +56,23 @@
             },
             {
                 'element': 'article:first-child .card .fui-gear',
-                'intro': 'Need to change the matter name? edit details by clicking on this gear icon'
-            },
-            {
-                'element': 'article:first-child .card .people',
-                'intro': 'Collegues and other participants'
+                'intro': 'Need to change the matter name? edit details by clicking on this gear icon',
+                'position': 'right'
             },
             {
                 'element': 'article:first-child .card .fui-exit',
-                'intro': 'Download all final documents, these are compressed and emailed to your inbox for your convenience'
+                'intro': 'Download all final documents, these are compressed and emailed to your inbox for your convenience',
+                'position': 'right'
+            },
+            {
+                'element': 'article:first-child .card .people',
+                'intro': 'Collegues and other participants',
+                'position': 'right'
             },
             {
                 'element': 'header a.btn-success',
-                'intro': 'Create a new matter here'
+                'intro': 'Create a new matter here',
+                'position': 'left'
             }
         ]
     };
@@ -76,13 +80,14 @@
     intro.setOptions( steps );
 
     $( document ).ready( function() {
-        /*
-        intro.onbeforechange(function(){
-            debugger;
+        intro.onchange(function(){
+            if(intro._currentStep===1) {
+                $('article:first-child .progress .progress-bar').css('width', '30%');
+            } else {
+                $('article:first-child .progress .progress-bar').css('width', '0%');
+            }
         });
-        */
         intro.start();
-        $('article:first-child .progress .progress-bar').css('width', '30%');
     });
 </script>
 
