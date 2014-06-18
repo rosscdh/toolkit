@@ -48,6 +48,7 @@ angular.module('toolkit-gui')
 	'$q',
 	'Intercom',
 	'INTERCOM_APP_ID',
+	'PusherService',
 	function($scope,
 			 $rootScope,
 			 $routeParams,
@@ -76,7 +77,8 @@ angular.module('toolkit-gui')
 			 $window,
 			 $q,
 			 Intercom,
-			 INTERCOM_APP_ID){
+			 INTERCOM_APP_ID,
+             PusherService){
 		'use strict';
 		/**
 		 * Scope based data for the checklist controller
@@ -146,6 +148,7 @@ angular.module('toolkit-gui')
 
 					userService.setCurrent( singleMatter.current_user, singleMatter.lawyer );
 					$scope.initialiseIntercom(singleMatter.current_user);
+                    $scope.handleMatterEvents();
 				},
 				function error(/*err*/){
 					toaster.pop('error', 'Error!', 'Unable to load matter',5000);
@@ -210,6 +213,21 @@ angular.module('toolkit-gui')
 			}
 		};
 
+        $scope.handleMatterEvents = function () {
+            PusherService.subscribeMatterEvents('client-someeventname', function (data) {
+                $log.debug("signal received");
+            });
+        };
+
+        $scope.testPusher = function(){
+           $log.debug("send signal");
+           PusherService.triggertest(1);
+
+           $timeout(function(){
+               $scope.testPusher();
+           }, 5000);
+        };
+
 
 		/**
 		 * Splits the matter items into seperate arrays for the purpose of displaying seperate sortable lists, where items can be dragged
@@ -256,7 +274,6 @@ angular.module('toolkit-gui')
 				toaster.pop('warning', 'Unable to load matter details',5000);
 			}
 		};
-
 
 		/**
 		 * Inits the intercom interface
