@@ -149,28 +149,22 @@
         <li class="header">Current</li>
         <li class="current">
             <div class="doc-wrap">
-                <!--
                  <div class="btn-group pull-right participant-tab">
                         <button type="button" class="btn btn-default btn-xs" data-toggle="dropdown">
-                            Visible to <span style="font-weight: bold">{{data.customers.length}}</span>
+                            Visible to <span style="font-weight: bold">{{data.colleagues.length}}</span>
                         </button>
                         <button class="btn btn-default btn-xs"
                                 data-toggle="dropdown" ng-show="data.usdata.current.permissions.manage_items">
                           <span class="caret" ></span>
                         </button>
                         <ul class="dropdown-menu" ng-show="data.usdata.current.permissions.manage_items">
-                          <li class="" ng-repeat="customer in data.customers">
+                          <li class="" ng-repeat="customer in data.clients">
                               <a href="javascript:;">
-                                  {{ customer.first_name }} {{ customer.last_name }}
-                              </a>
-                          </li>
-                          <li>
-                              <a href="javascript:;" ng-click="editRevisionStatusTitles()">
-                                  <span class="icon"></span> Share with...
+                                  <span>{{ customer.first_name }} {{ customer.last_name }}</span>
                               </a>
                           </li>
                         </ul>
-                </div>-->
+                </div>
                 
                 <!-- <span class="version">{{ data.selectedItem.latest_revision.slug }}</span> -->
                 <div class="row">

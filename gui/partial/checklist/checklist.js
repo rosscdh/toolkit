@@ -84,7 +84,8 @@ angular.module('toolkit-gui')
 		$scope.data = {
 			'slug': routeParams.matterSlug,
 			'matter': null,
-      'customers' : [],
+            'clients' : [],
+            'colleagues' : [],
 			'showAddForm': null,
 			'showItemDetailsOptions': false,
 			'selectedItem': null,
@@ -202,12 +203,13 @@ angular.module('toolkit-gui')
 					categories.push( { 'name': categoryName, 'items': items } );
 				});
 
-        jQuery.each( matter.participants, function( index, participant ) {
-          if (participant.user_class === 'customer'){
-            $scope.data.customers.push(participant);
-          }
-
-        });
+                jQuery.each( matter.participants, function( index, participant ) {
+                  if (participant.role === 'client'){
+                    $scope.data.clients.push(participant);
+                  } else if (participant.role === 'colleague'){
+                    $scope.data.colleagues.push(participant);
+                  }
+                });
 
 				$scope.data.matter = matter;
 				$scope.data.categories = categories;
