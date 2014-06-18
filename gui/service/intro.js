@@ -23,7 +23,7 @@ angular.module('toolkit-gui')
 					intro.setOptions( steps );
           			intro.start();
 				});
-			},5000);
+			},2000);
 		}
 	};
 }]);

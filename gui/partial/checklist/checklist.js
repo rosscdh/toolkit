@@ -1997,7 +1997,7 @@ angular.module('toolkit-gui')
 		|___|_| |_|\__|_|  \___/ 
 		                         
 		 */
-		IntroService.show({
+		var steps={
 			'steps': [
 				{
 					'element': '#step1',
@@ -2032,7 +2032,19 @@ angular.module('toolkit-gui')
 					'intro': "Chat with participants about items, documents and revisions"
 				}
 			]
-		});
+		};
+		IntroService.show(steps);
+
+		$scope.reloadingLess = false;
+
+		$scope.showIntro = function() {
+			$scope.reloadingLess = true;
+			IntroService.show(steps);
+			$timeout(function(){
+				less.refresh();
+				$scope.reloadingLess = false;
+			},100);
+		};
 }])
 
 /**
