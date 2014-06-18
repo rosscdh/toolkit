@@ -30,7 +30,8 @@ from .category import (CategoryView as MatterCategoryView,)
 from .participant import (MatterParticipant,)
 
 from .revision import (ItemCurrentRevisionView as MatterItemCurrentRevisionView,
-                       ItemSpecificReversionView as MatterItemSpecificReversionView,)
+                       ItemSpecificReversionView as MatterItemSpecificReversionView,
+                       ShareCurrentRevisionView)
 
 from .revision_request import (ItemRequestRevisionView as MatterItemRequestRevisionView,)
 

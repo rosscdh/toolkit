@@ -6,8 +6,9 @@ from rulez import registry as rulez_registry
 
 from rest_framework import viewsets
 from rest_framework import generics
-from rest_framework import status
+from rest_framework import status as http_status
 from rest_framework.response import Response
+from toolkit.apps.me.views import User
 
 from toolkit.core.attachment.models import Revision
 
@@ -173,10 +174,10 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
                                                            item=self.item,
                                                            revision=self.revision)
 
-            return Response(serializer.data, status=status.HTTP_201_CREATED,
+            return Response(serializer.data, status=http_status.HTTP_201_CREATED,
                             headers=headers)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=http_status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, **kwargs):
         resp = super(ItemCurrentRevisionView, self).destroy(request=request, **kwargs)
@@ -214,9 +215,9 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
         #     or user in self.item.latest_revision.reviewers.all())
 
     def can_edit(self, user):
-        return (user in self.matter.participants.all() \
-               or (self.item.latest_revision is not None and user in self.item.latest_revision.reviewers.all())
-               or user == self.item.responsible_party)
+        return (user in self.matter.participants.all()
+                or (self.item.latest_revision is not None and user in self.item.latest_revision.reviewers.all())
+                or user == self.item.responsible_party)
         # return (user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all() \
         #     or (self.item.latest_revision is not None and user in self.item.latest_revision.reviewers.all())
         #     or user == self.item.responsible_party)
@@ -238,8 +239,74 @@ class ItemSpecificReversionView(ItemCurrentRevisionView):
         revision = None
 
         try:
-            revision = self.item.revision_set.filter(slug='v%d'%version).first()
+            revision = self.item.revision_set.filter(slug='v%d' % version).first()
         except:
             logger.info('Could not find attachment.Revision v%d for matter: %s' % (version, self.matter))
 
         return revision
+
+
+class ShareCurrentRevisionView(generics.CreateAPIView,
+                         generics.DestroyAPIView,
+                         MatterItemsQuerySetMixin):
+    #
+    # model = Workspace
+    # serializer_class = MatterSerializer
+    # lookup_field = 'slug'
+    # lookup_url_kwarg = 'matter_slug'
+    model = User
+    # serializer_class = SimpleUserSerializer  # hopefully we don't need it because we override everything
+    lookup_field = 'username'
+    lookup_url_kwarg = 'email'
+
+    def initial(self, request, *args, **kwargs):
+        self.item = get_object_or_404(self.matter.item_set.all(), slug=kwargs.get('item_slug'))
+        self.revision = self.item.latest_revision
+        super(ShareCurrentRevisionView, self).initial(request, *args, **kwargs)
+
+    def create(self, request, **kwargs):
+        data = request.DATA.copy()
+
+        username = data.get('username')
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response(status=http_status.HTTP_400_BAD_REQUEST)
+
+        if user.matter_permissions(matter=self.matter).role == ROLES.client:
+            if user in self.revision.shared_with.all():
+                status = http_status.HTTP_304_NOT_MODIFIED
+            else:
+                status = http_status.HTTP_200_OK
+                self.revision.shared_with.add(user)
+        else:
+            status = http_status.HTTP_400_BAD_REQUEST
+
+        return Response(status=status)
+
+    def delete(self, request, **kwargs):
+        data = request.DATA.copy()
+
+        username = data.get('username')
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response(status=http_status.HTTP_400_BAD_REQUEST)
+
+        if user not in self.revision.shared_with.all():
+            status = http_status.HTTP_304_NOT_MODIFIED
+        else:
+            status = http_status.HTTP_200_OK
+            self.revision.shared_with.remove(user)
+
+        return Response(status=status)
+
+    def can_edit(self, user):
+        return user.matter_permissions(matter=self.matter).has_permission(manage_items=True) is True
+
+    def can_delete(self, user):
+        return user.matter_permissions(matter=self.matter).has_permission(manage_items=True) is True
+
+
+rulez_registry.register("can_edit", ShareCurrentRevisionView)
+rulez_registry.register("can_delete", ShareCurrentRevisionView)

@@ -205,6 +205,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
     reviewers = serializers.SerializerMethodField('get_reviewers')
     signers = SimpleUserSerializer(source='signers.all', many=True, required=False)
     signing = serializers.SerializerMethodField('get_signing')
+    shared_with = SimpleUserSerializer(source='shared_with.all', many=True, required=False)
 
     user_review = serializers.SerializerMethodField('get_user_review')
     user_download_url = serializers.SerializerMethodField('get_user_download_url')
@@ -225,7 +226,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
                   'status',
                   'item',
                   'uploaded_by',
-                  'reviewers', 'signers',
+                  'reviewers', 'signers', 'shared_with',
                   'signing',
                   'revisions',
                   'user_review', 'user_download_url',
@@ -290,7 +291,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_user_review(self, obj):
         """
-        Try to provide an initial reivew url from the base review_document obj
+        Try to provide an initial review url from the base review_document obj
         for the currently logged in user
         """
         context = getattr(self, 'context', None)
@@ -330,6 +331,8 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
 
     @staticmethod
     def get_revisions(obj):
+        # TODO: add context and filter by client
+
         return [ABSOLUTE_BASE_URL(reverse('matter_item_specific_revision', kwargs={
             'matter_slug': obj.item.matter.slug,
             'item_slug': obj.item.slug,
