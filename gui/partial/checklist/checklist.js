@@ -213,17 +213,54 @@ angular.module('toolkit-gui')
 			}
 		};
 
+        /**
+         * Handles all pusher notifications
+         *
+		 * @private
+		 * @memberof			ChecklistCtrl
+		 * @method              handleMatterEvents
+         */
         $scope.handleMatterEvents = function () {
             PusherService.subscribeMatterEvents($scope.data.slug, function (data) {
                 $log.debug(data);
 
                 if (data.is_global === true || data.from_id !== $scope.data.usdata.current.username) {
                     if (data.model === 'item') {
-                        toaster.pop('warning', 'Item has been updated.', 'Click here to refresh the page.', 5000, null, function () {
-                            window.location.reload();
-                        });
+
+                        if(data.event === 'update'){
+                            $log.debug("loading item");
+                            matterItemService.load($scope.data.slug, data.id).then(
+                                function success(item){
+                                    var category = findCategory( item.category );
+                                    var i = -1;
+                                    jQuery.each(category.items, function(index, olditem){
+                                       if (olditem.slug === item.slug){
+                                           i = index;
+                                       }
+                                    });
+                                    if(i>-1){
+                                        category.items[i] = item;
+                                    }
+
+                                    if (item.slug !== $scope.data.selectedItem.slug) {
+                                        toaster.pop('warning', 'Item '+ item.name + ' has been updated.', 'Click here to load the item.', 5000, null, function () {
+                                            $scope.selectItem(item, category);
+                                        });
+                                    }
+                                }
+                            );
+                        } else if(data.event === 'delete'){
+                            toaster.pop('warning', 'An item has been deleted.', 'Click here to refresh the matter.', 5000, null, function () {
+                                window.location.reload();
+                            });
+                        } else if(data.event === 'create') {
+                             toaster.pop('warning', 'A new item has been created.', 'Click here to refresh the matter.', 5000, null, function () {
+                                window.location.reload();
+                            });
+                        }
+
                     } else if (data.model === 'matter') {
-                        toaster.pop('warning', 'Matter has been updated.', 'Click here to refresh the page.', 5000, null, function () {
+                        toaster.pop('warning', 'Matter has been updated.', 'Click here to refresh the matter.', 5000, null, function () {
                             window.location.reload();
                         });
                     }
