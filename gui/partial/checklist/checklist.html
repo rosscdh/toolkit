@@ -11,7 +11,7 @@
 				<!-- start: LAWYER checklist //-->
 				<span ng-if="data.usdata.current.user_class=='lawyer'">
 					<div>
-						<div ng-repeat="cat in data.categories | filter: {name:'!'}">
+						<div ng-repeat="cat in data.categories | filter: {name:'!'}" id="step1">
 							<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-header.html'"></span>
 							<!-- Checklist //-->
 							<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-lawyer.html'"></span>

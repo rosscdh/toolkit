@@ -30,7 +30,8 @@
         "Raven": true,
         "jasmine": true,
         "Pusher": true,
-        "spyOn": true
+        "spyOn": true,
+        "introJs": true
     },
     "-W083": false,
     "-W099": false
