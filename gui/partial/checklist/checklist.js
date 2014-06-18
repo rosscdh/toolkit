@@ -856,6 +856,51 @@ angular.module('toolkit-gui')
 			}
 		};
 
+
+        $scope.toggleSharingRevision = function (client) {
+            var matterSlug = $scope.data.slug;
+            var item = $scope.data.selectedItem;
+
+            if (item && item.latest_revision) {
+                if (!$scope.isRevisionSharedTo(client.username)) {
+                    matterItemService.shareRevision(matterSlug, item.slug, client.username).then(
+                        function success() {
+                            item.latest_revision.shared_with.push(client);
+                        },
+                        function error(/*err*/) {
+                            toaster.pop('error', 'Error!', 'Unable to share revision', 5000);
+                        }
+                    );
+                } else {
+                    matterItemService.removeSharingRevision(matterSlug, item.slug, client.username).then(
+                        function success() {
+                            var index = jQuery.inArray(client, item.latest_revision.shared_with);
+                            if (index >= 0) {
+                                // Remove client from list in RAM array
+                                item.latest_revision.shared_with.splice(index, 1);
+                            }
+                        },
+                        function error(/*err*/) {
+                            toaster.pop('error', 'Error!', 'Unable to remove the sharing', 5000);
+                        }
+                    );
+                }
+            }
+        };
+
+        $scope.isRevisionSharedTo = function (username) {
+            var matterSlug = $scope.data.slug;
+            var item = $scope.data.selectedItem;
+
+
+            if (item && item.latest_revision && item.latest_revision.shared_with) {
+                var results = jQuery.grep(item.latest_revision.shared_with, function (obj) { return obj.username === username; });
+                $log.debug("User: " + username + " found " + results.length);
+                return results.length > 0;
+            }
+            return false;
+        };
+
 		/**
 		 * Request API to get all previous revisions of the item
 		 *

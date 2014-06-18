@@ -68,11 +68,13 @@ angular.module('toolkit-gui')
 		 * @return {Function}   $resource
 		 */
 		function revisionItemResource() {
-			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/revision/:version', {}, {
+			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/revision/:version/:action/:username', {}, {
 				'create': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'update': { 'method': 'PATCH', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
-				'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
+				'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
+				'share': { 'method': 'POST', params:{'action': 'share'},'headers': { 'Content-Type': 'application/json' }},
+				'removesharing': { 'method': 'DELETE', params:{'action': 'share'}, 'headers': { 'Content-Type': 'application/json' }}
 			});
 		}
 
@@ -401,6 +403,40 @@ angular.module('toolkit-gui')
 				var api = revisionItemResource();
 
 				api.delete({'matterSlug': matterSlug, 'itemSlug': itemSlug }, revisionItem,
+					function success(){
+						deferred.resolve();
+					},
+					function error(err) {
+						deferred.reject( err );
+					}
+				);
+
+				return deferred.promise;
+			},
+
+            'shareRevision': function ( matterSlug, itemSlug, username) {
+				var deferred = $q.defer();
+
+				var api = revisionItemResource();
+
+				api.share({'matterSlug': matterSlug, 'itemSlug': itemSlug }, {'username': username},
+					function success(){
+						deferred.resolve();
+					},
+					function error(err) {
+						deferred.reject( err );
+					}
+				);
+
+				return deferred.promise;
+			},
+
+            'removeSharingRevision': function ( matterSlug, itemSlug, username) {
+				var deferred = $q.defer();
+
+				var api = revisionItemResource();
+
+				api.removesharing({'matterSlug': matterSlug, 'itemSlug': itemSlug, 'username': username },
 					function success(){
 						deferred.resolve();
 					},
