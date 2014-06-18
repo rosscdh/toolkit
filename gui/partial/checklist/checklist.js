@@ -49,6 +49,7 @@ angular.module('toolkit-gui')
 	'IntroService',
 	'Intercom',
 	'INTERCOM_APP_ID',
+	'DEBUG_MODE',
 	function($scope,
 			 $rootScope,
 			 $routeParams,
@@ -78,8 +79,11 @@ angular.module('toolkit-gui')
 			 $q,
 			 IntroService,
 			 Intercom,
-			 INTERCOM_APP_ID){
+			 INTERCOM_APP_ID,
+			 DEBUG_MODE){
 		'use strict';
+
+		$scope.DEBUG_MODE = DEBUG_MODE;
 		/**
 		 * Scope based data for the checklist controller
 		 * @memberof			ChecklistCtrl

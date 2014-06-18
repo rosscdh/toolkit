@@ -133,7 +133,7 @@ module.exports = function (grunt) {
             livereload: true,
             spawn: false
         },
-        files: ['js/**/*','css/**/*','img/**/*','partial/**/*','service/**/*','filter/**/*','directive/**/*','index.html'],
+        files: ['js/**/*','x-css/**/*','img/**/*','partial/**/*','service/**/*','filter/**/*','directive/**/*','index.html'],
         tasks: [] //all the tasks are run dynamically during the watch event handler
       }
     },

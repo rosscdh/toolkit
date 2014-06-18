@@ -67,7 +67,7 @@
 <div intercom user-id="{{ data.usdata.current.id }}" user-email="{{ data.usdata.current.email }}"></div>
 <toaster-container toaster-options="{'position-class': 'toast-bottom-right'}"></toaster-container>
 <div mentions-container participants="data.matter.participants" curr-user="data.usdata.current"></div>
-<button type="button" style="position:absolute;top:60px;right:60px;z-index:99999" class="btn btn-primary" ng-click="showIntro()" ng-disabled="reloadingLess">
-	Refresh less
+<button type="button" class="btn btn-primary refresh-less-button bounceInLeft" ng-click="showIntro()" ng-disabled="reloadingLess" ng-if="DEBUG_MODE">
+	Less&nbsp;&nbsp;<i class="fa fa-refresh"></i> 
 </button>
 <!--<input type="filepicker" data-fp-apikey="A4Ly2eCpkR72XZVBKwJ06z" data-fp-mimetypes="*/*" data-fp-container="modal" onchange="alert(event.fpfile.url)">//-->

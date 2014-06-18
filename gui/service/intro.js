@@ -14,11 +14,13 @@ angular.module('toolkit-gui')
 		show: function (steps) {
 			setTimeout(function(){
 				$.when(
+					// Retrieve intro script
 					$.getScript( "//cdnjs.cloudflare.com/ajax/libs/intro.js/0.5.0/intro.min.js" ),
 					$.Deferred(function( deferred ){
 					    $( deferred.resolve );
 					})
 				).done(function(){
+					// Start intro
 					var intro = introJs();
 					intro.setOptions( steps );
           			intro.start();
