@@ -247,18 +247,8 @@ class ItemSpecificReversionView(ItemCurrentRevisionView):
 
 
 class ShareCurrentRevisionView(generics.CreateAPIView,
-                         generics.DestroyAPIView,
-                         MatterItemsQuerySetMixin):
-    #
-    # model = Workspace
-    # serializer_class = MatterSerializer
-    # lookup_field = 'slug'
-    # lookup_url_kwarg = 'matter_slug'
-    model = User
-    # serializer_class = SimpleUserSerializer  # hopefully we don't need it because we override everything
-    lookup_field = 'username'
-    lookup_url_kwarg = 'email'
-
+                               generics.DestroyAPIView,
+                               MatterItemsQuerySetMixin):
     def initial(self, request, *args, **kwargs):
         self.item = get_object_or_404(self.matter.item_set.all(), slug=kwargs.get('item_slug'))
         self.revision = self.item.latest_revision
