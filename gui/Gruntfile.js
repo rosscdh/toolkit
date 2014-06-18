@@ -336,7 +336,7 @@ module.exports = function (grunt) {
     },
      jsdoc : {
         dist : {
-            src: ['partial/**/*.js', '!partial/**/*-spec.js', 'filter/**/*.js', '!filter/**/*-spec.js', 'service/**/*.js', '!service/**/*-spec.js', 'README.md'], 
+            src: ['partial/**/*.js', '!partial/**/*-spec.js', 'filter/**/*.js', '!filter/**/*-spec.js', 'service/**/*.js', '!service/**/*-spec.js', 'README.md'],
             options: {
                 destination: 'doc',
                 template: "node_modules/ink-docstrap/template",
