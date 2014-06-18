@@ -12,13 +12,14 @@
                     <li ng-repeat="person in participants" ng-click="data.selectedUser=person" ng-class="{'selected': data.selectedUser==person }">
                         <span class="user {{person.role}}" ng-bind="person | initials"></span>
                         <label ng-bind="person | fullname"></label>
-                        <small class="{{person.role}}">({{ person.role }}<span ng-show="person.username==currentUser.username">, you</span>)</small>
+                        <small class="{{person.role}} padding">
+                            ({{ person.role }} <span ng-show="person.username==currentUser.username">, you</span>)</small>
                     </li>
                 </ul>
 
 
                 <div class="text-center">
-                     <a class="btn btn-sm btn-inverse" ng-click="showaddbutton=true" ng-show="!showaddbutton">
+                     <a class="btn btn-sm add-p-btn" ng-click="showaddbutton=true" ng-show="!showaddbutton">
                         <span class="fui-user"></span> Add a Participant
                     </a>
                 </div>
@@ -93,20 +94,19 @@
             </div>
         </div>
         <div class="new-participant" ng-show="currentUser.permissions.manage_clients||currentUser.permissions.manage_participants" ng-class="{'existing-collapse':showaddbutton == false }">
-            <h5>Add a Participant<!--<a href="javascript:;" class="close" ng-click="">x</a>--></h5>
+            <h5>Add a Participant <a href="javascript:;" ng-click="showaddbutton=false">x</a> </h5>
             <div class="row">
-                <div class="col-sm-6" ng-show="currentUser.permissions.manage_participants">
+                <div class="col-sm-6 text-center" ng-show="currentUser.permissions.manage_participants">
                     <a href="javascript:;" class="btn btn-primary lawyer" ng-click="data.showAddLawyer=true">Add a Colleague</a>
-                    <br />
-                    <p class="note">
-                        Adding a Colleague to this Matter will give them access to Modify the Checklist, its Categories, and the overall Matter.They will be able to discuss Checklist items with Colleagues and Clients.
+                    <p class="note text-left">
+                        Adding a Colleague will let them manage documents, the Checklist, its Categories, and the overall Matter.
+                        They will be able to discuss Checklist items with Colleagues and Clients.
                     </p>
                 </div>
-                <div class="col-sm-6" ng-show="currentUser.permissions.manage_clients||currentUser.permissions.manage_participants">
+                <div class="col-sm-6 text-center" ng-show="currentUser.permissions.manage_clients||currentUser.permissions.manage_participants">
                     <a href="javascript:;" class="btn btn-info customer" ng-click="data.showAddParticipant=true">Add a Client</a>
-                    <br />
-                    <p class="note">
-                    Adding a Client to the Matter will give them access to view and annotate documents and discuss Checklist Items. They can not modify the Checklist structure or view previous versions of Documents, but .
+                    <p class="note text-left">
+                    Adding a Client to the Matter will give them access to view and annotate Documents and discuss Checklist Items. They can not modify the Checklist structure or view previous versions of Documents.
                     </p>
                 </div>
             </div>
