@@ -31,7 +31,8 @@
         "jasmine": true,
         "Pusher": true,
         "spyOn": true,
-        "introJs": true
+        "introJs": true,
+        "less": true
     },
     "-W083": false,
     "-W099": false
