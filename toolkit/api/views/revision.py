@@ -208,7 +208,7 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
         the participants, the latest_revision reviewers and the users which were activated can read
         """
         if user.matter_permissions(matter=self.matter).role == ROLES.client:
-            return user.share_revision_service(revision=self.get_object()).is_shared
+            return user in self.get_object().shared_with.all()
         return user in self.matter.participants.all() or user in self.item.latest_revision.reviewers.all()
         # return (user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all() \
         #     or user in self.item.latest_revision.reviewers.all())

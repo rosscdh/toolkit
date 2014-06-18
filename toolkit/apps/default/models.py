@@ -10,7 +10,6 @@ from jsonfield import JSONField
 from sorl.thumbnail.images import ImageFile
 
 import logging
-from toolkit.core.services.share_revision import ShareRevisionService
 
 logger = logging.getLogger('django.request')
 
@@ -191,15 +190,6 @@ def get_matter_permissions(self, matter):
     return self.workspaceparticipants_set.model(user=self, workspace=matter)
 
 User.add_to_class('matter_permissions', get_matter_permissions)
-
-
-"""
-Permissions: Get revision-share-service for this user/revision
-"""
-def get_share_revision_service(self, revision):
-    return ShareRevisionService(user=self, revision=revision)
-
-User.add_to_class('share_revision_service', get_share_revision_service)
 
 
 """

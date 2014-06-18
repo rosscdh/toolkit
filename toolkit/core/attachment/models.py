@@ -25,16 +25,6 @@ BASE_REVISION_STATUS = get_namedtuple_choices('REVISION_STATUS', (
 ))
 
 
-class RevisionParticipants(models.Model):
-    """
-    Model to store which clients may see which revisions
-    """
-    revision = models.ForeignKey('attachment.Revision')
-    user = models.ForeignKey('auth.User', related_name='shared_revision_set')
-
-    data = JSONField(default={})
-
-
 def _upload_file(instance, filename):
     full_file_name = None
 
@@ -73,6 +63,7 @@ class Revision(IsDeletedMixin,
 
     reviewers = models.ManyToManyField('auth.User', related_name='revision_reviewers', blank=True, null=True)
     signers = models.ManyToManyField('auth.User', related_name='revision_signers', blank=True, null=True)
+    shared_with = models.ManyToManyField('auth.User', related_name='visible_revisions', blank=True, null=True)
 
     # allow reviewers to upload alternatives to the current
     # these alternatives may be set as the "current" if the lawyer approves

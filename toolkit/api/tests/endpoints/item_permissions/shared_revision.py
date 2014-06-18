@@ -53,12 +53,9 @@ class ItemDetailTest(BaseEndpointTest):
         resp = self.client.get(self.endpoint)
         self.assertEqual(resp.status_code, 403)
 
-        # share revision. client should get this one revision
-        service = user.share_revision_service(revision=self.revision)
-        self.assertFalse(service.is_shared)
-        service.process()
-        self.assertTrue(service.is_shared)
+        # share revision.
+        self.revision.shared_with.add(user)
 
+        # client should now get this one revision
         resp = self.client.get(self.endpoint)
-
         self.assertEqual(resp.status_code, 200)
