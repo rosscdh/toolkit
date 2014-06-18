@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.template.defaultfilters import slugify
 
-from toolkit.apps.notification.services import RealTimeMatterEvent
+from toolkit.tasks import run_task
+from toolkit.apps.notification.tasks import realtime_matter_event
 
 from .analytics import AtticusFinch
 from ..signals.activity_listener import send_activity_log
@@ -132,9 +133,13 @@ class MatterActivityEventService(object):
         Send a realtime pusher event
         """
         from_ident = from_user.username
-        realtime = RealTimeMatterEvent(matter=self.matter)
-        realtime.process(event=event, obj=obj, ident=ident, from_ident=from_ident, **kwargs)
-
+        #
+        # Run async realtime_matter_event pusher
+        #
+        run_task(realtime_matter_event, matter=self.matter,
+                                        event=event, obj=obj, ident=ident,
+                                        from_ident=from_ident
+                                        **kwargs)
     #
     # Matter
     #
