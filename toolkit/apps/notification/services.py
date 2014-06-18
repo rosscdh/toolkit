@@ -54,7 +54,6 @@ class PusherPublisherService(object):
                 self.data.update({
                     'channel': channel,
                 })
-
                 self.pusher[channel].trigger(self.event, self.data)
 
 
@@ -80,7 +79,7 @@ class RealTimeMatterEvent(object):
         model = obj.__class__.__name__.lower()
 
         kwargs.update({
-            'is_global': False
+            'is_global': False  # affects all currently viewing users of a matter
         })
 
         # if we have no from_ident it means its a global level event like all user signed

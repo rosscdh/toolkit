@@ -138,7 +138,7 @@ class MatterActivityEventService(object):
         #
         run_task(realtime_matter_event, matter=self.matter,
                                         event=event, obj=obj, ident=ident,
-                                        from_ident=from_ident
+                                        from_ident=from_ident,
                                         **kwargs)
     #
     # Matter
