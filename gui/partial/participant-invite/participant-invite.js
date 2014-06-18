@@ -24,6 +24,7 @@ angular.module('toolkit-gui')
 	'$window',
 	function($scope, $modalInstance, participants, currentUser, matter, participantService, toaster, $location, $log, $window){
 		'use strict';
+    $scope.showaddbutton = false;
 		/**
 		 * In scope variable containing a list of participants within this matter. This is passed through from the originating controller.
 		 * @memberof ParticipantInviteCtrl
@@ -32,6 +33,7 @@ angular.module('toolkit-gui')
 		 */
 		$scope.participants = participants;
         $log.debug($scope.participants);
+
 
 		/**
 		 * In scope variable containing details about the current user. This is passed through from the originating controller.
@@ -66,6 +68,10 @@ angular.module('toolkit-gui')
             'isNew': false,
             'selectedUser': null
 		};
+
+     if (angular.isArray(participants) && (participants.length > 0)) {
+          $scope.data.selectedUser = participants[0];
+        }
 
 
         /**
@@ -117,7 +123,7 @@ angular.module('toolkit-gui')
 		 * Initiates request to API to invite a person or an already registered user
 		 *
 		 * @name				invite
-		 * 
+		 *
 		 * @private
 		 * @method				invite
 		 * @memberof			ParticipantInviteCtrl
@@ -158,7 +164,7 @@ angular.module('toolkit-gui')
 		 * Initiates request to API to revoke access for an already registered user
 		 *
 		 * @name				revoke
-		 * 
+		 *
 		 * @param  {Object} person	User object
 		 * @private
 		 * @method				revoke
@@ -201,7 +207,7 @@ angular.module('toolkit-gui')
 		 * Returns updated participants array.
 		 *
 		 * @name				ok
-		 * 
+		 *
 		 * @private
 		 * @method				ok
 		 * @memberof			ParticipantInviteCtrl
@@ -215,7 +221,7 @@ angular.module('toolkit-gui')
 		 * Returns nothing
 		 *
 		 * @name				cancel
-		 * 
+		 *
 		 * @private
 		 * @method				cancel
 		 * @memberof			ParticipantInviteCtrl

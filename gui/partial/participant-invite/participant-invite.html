@@ -6,7 +6,7 @@
 	<div class="modal-body">
 
         <div ng-hide="data.showAddLawyer||data.showAddParticipant">
-            <div class="row existing-participants">
+            <div class="row existing-participants" ng-class="{'existing-collapse':showaddbutton == true }">
             <div class="col-sm-6 ">
                 <ul class="list-unstyled participants">
                     <li ng-repeat="person in participants" ng-click="data.selectedUser=person" ng-class="{'selected': data.selectedUser==person }">
@@ -15,6 +15,7 @@
                         <small class="{{person.role}}">({{ person.role }}<span ng-show="person.username==currentUser.username">, you</span>)</small>
                     </li>
                 </ul>
+                <button type="btn btn-default add-user" ng-click="showaddbutton=true" ng-show="!showaddbutton">Add participant</button>
                 <!--
                 <div class="text-center">
                      <a class="btn btn-sm btn-inverse">
@@ -91,7 +92,7 @@
                 </div>
             </div>
         </div>
-        <div class="new-participant" ng-show="currentUser.permissions.manage_clients||currentUser.permissions.manage_participants">
+        <div class="new-participant" ng-show="currentUser.permissions.manage_clients||currentUser.permissions.manage_participants" ng-class="{'existing-collapse':showaddbutton == false }">
             <h5>Add a Participant<!--<a href="javascript:;" class="close" ng-click="">x</a>--></h5>
             <div class="row">
                 <div class="col-sm-6" ng-show="currentUser.permissions.manage_participants">
