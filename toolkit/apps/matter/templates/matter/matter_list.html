@@ -7,24 +7,8 @@
     <!-- needed for react -->
     {% csrf_token %}
 
-    {% if object_list %}
-        <div id="matter-list" class="content col-lg-12"></div>
-    {% else %}
-        <div id="matter-list-none" class="content col-lg-12">
-            <section class="matters cards">
-                <header class="page-header">
-                    <h4>All Matters</h4>
-                    <div class="pull-right">
-                        {% if can_create %}
-                            <a href="{% url 'matter:create' %}" data-toggle="modal" data-target="#matter-create" class="btn btn-success btn-embossed"><i class="fui-plus"></i> New Matter</a>
-                        {% endif %}
-                    </div>
-                </header>
+    <div id="matter-list" class="content col-lg-12"></div>
 
-                <div id="overview" class="row">{% include 'matter/partials/intro.html' %}</div>
-            </section>
-        </div>
-    {% endif %}
 {% endblock %}
 
 {% block modals %}
@@ -45,6 +29,62 @@
 <script src="{{ STATIC_URL }}js/moment.2.6.0.min.js"></script>
 <script src="{{ STATIC_URL }}js/moment-timezone.0.0.6.js"></script>
 <script src="{{ STATIC_URL }}js/fuse.min.js"></script>
+
+<!-- should only be loaded if a new user //-->
+<script src="{{ STATIC_URL }}js/intro.min.js"></script>
+<link href="{{ STATIC_URL }}css/introjs.min.css" type="text/css" rel="stylesheet" />
+<!-- start intro //-->
+<script language="javaScript">
+    var intro = introJs();
+    /*
+     ___       _             
+    |_ _|_ __ | |_ _ __ ___  
+     | || '_ \| __| '__/ _ \ 
+     | || | | | |_| | | (_) |
+    |___|_| |_|\__|_|  \___/ 
+                             
+     */
+    var steps = {
+        'steps': [
+            {
+                'element': 'article:first-child .card',
+                'intro': 'Here is a matter card, it contains a summary of what is going on in this matter'
+            },
+            {
+                'element': 'article:first-child .progress',
+                'intro': 'As documents are finalised you will see the progress of this matter'
+            },
+            {
+                'element': 'article:first-child .card .fui-gear',
+                'intro': 'Need to change the matter name? edit details by clicking on this gear icon'
+            },
+            {
+                'element': 'article:first-child .card .people',
+                'intro': 'Collegues and other participants'
+            },
+            {
+                'element': 'article:first-child .card .fui-exit',
+                'intro': 'Download all final documents, these are compressed and emailed to your inbox for your convenience'
+            },
+            {
+                'element': 'header a.btn-success',
+                'intro': 'Create a new matter here'
+            }
+        ]
+    };
+
+    intro.setOptions( steps );
+
+    $( document ).ready( function() {
+        /*
+        intro.onbeforechange(function(){
+            debugger;
+        });
+        */
+        intro.start();
+        $('article:first-child .progress .progress-bar').css('width', '30%');
+    });
+</script>
 
 <script>
 'use strict';
