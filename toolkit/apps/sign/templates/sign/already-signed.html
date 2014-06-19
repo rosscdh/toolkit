@@ -1,0 +1,11 @@
+{% extends 'base-slim.html' %}
+
+{% block page_title %}This document has already been signed{% endblock %}
+
+{% block body %}
+    <div id="user-message" class="page-header text-center">
+      <h3>This document has already been signed<br/><p class="lead">Please download the document from within LawPal.com.</small></p>
+      <br />
+      <p class="text-muted">Document signed on: {{ signed_on }} by {{ signer }}</p>
+    </div>
+{% endblock %}

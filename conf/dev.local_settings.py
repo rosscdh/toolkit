@@ -19,18 +19,6 @@ if TEST_PREPROD is True:
         # not that static is in gui/dist/static *not to be confused with the django {{ STATIC_URL }}ng/ which will now point correctly
         ("ng", os.path.join(SITE_ROOT, 'gui', 'dist')),
     )
-    #
-    # NB! note the .min use here for react
-    #
-    PIPELINE_JS = {
-        'reactjs': {
-            'source_filenames': (
-                'js/react-0.10.0.min.js',
-                'js/matter_list.jsx',
-            ),
-            'output_filename': 'js/jsx-all-compiled.js',
-        }
-    }
 
 else:
     #
@@ -122,8 +110,8 @@ MIXPANEL_SETTINGS = {
 #
 # Payments
 #
-STRIPE_PUBLIC_KEY = 'sk_test_8Po9Bh0rj12nISHPFsOQz46Q'
-STRIPE_SECRET_KEY = 'pk_test_pVBXSHiazhp3b0EyGHQa8Dx2'
+STRIPE_PUBLIC_KEY = 'pk_test_pVBXSHiazhp3b0EyGHQa8Dx2'
+STRIPE_SECRET_KEY = 'sk_test_8Po9Bh0rj12nISHPFsOQz46Q'
 
 #
 # Celery SQS Tasks
@@ -143,3 +131,10 @@ AUTHY_IS_SANDBOXED = True
 PUSHER_APP_ID = 44301
 PUSHER_KEY = '514360ee427ceb00cd8d'
 PUSHER_SECRET = '8fa687dde7e745e8f9d7'
+
+
+HELLOSIGN_AUTHENTICATION = ("ross@lawpal.com", "test2007")
+HELLOSIGN_API_KEY = '75dd93222c11eb4483a98ddc7898022bb86d4b9e6d11113b2b9214b90daa3160'
+HELLOSIGN_CLIENT_ID = '2dc64896447085fa63b1bbcade5ee393'
+HELLOSIGN_CLIENT_SECRET = '6d79f33435069f9cd0d1de7d4eb4424b'
+HELLOSIGN_TEST_MODE = 1

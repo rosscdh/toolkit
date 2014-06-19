@@ -50,6 +50,9 @@ module.exports = function (grunt) {
     preprocess : {
         // Task to create the index.html file that will be used during development.
         // Passes the app version and creates the /index.html
+        /**
+        * Development build settings
+        */
         django : {
             src : 'config.html',
             dest : 'index.html',
@@ -59,12 +62,34 @@ module.exports = function (grunt) {
                     staticPath : '<%= APP_STATIC_PATH %>',
                     apiBaseUrl : '/api/v1/',
                     DEBUG_MODE : true,
-                    SENTRY_PUBLIC_DSN : 'http://5584db708b75400fb439d4592c29fc9a@sentry.ambient-innovation.com/24',
+                    SENTRY_PUBLIC_DSN : 'https://5584db708b75400fb439d4592c29fc9a@sentry.ambient-innovation.com/24',
                     INTERCOM_APP_ID : 'wkxzfou',
                     PUSHER_API_KEY: '60281f610bbf5370aeaa'
                 }
             }
         },
+        /**
+        * Local testign with prod settings
+        * sentry adn intercom ids must be different here
+        */
+        djangoTestProd : {
+            src : 'config.html',
+            dest : 'index.html',
+            options : {
+                context : {
+                    staticBase : '<%= DJANGO_STATIC_BASE_PATH %>',
+                    staticPath : '',
+                    apiBaseUrl : '/api/v1/',
+                    DEBUG_MODE : false,
+                    SENTRY_PUBLIC_DSN : 'https://4caf829e14084f4ebfd8e4820b821364@app.getsentry.com/25296',
+                    INTERCOM_APP_ID : 'wkxzfou',
+                    PUSHER_API_KEY: '60281f610bbf5370aeaa'
+                }
+            }
+        },
+        /**
+        * Production build settings
+        */
         djangoProd : {
             src : 'config.html',
             dest : 'index.html',
@@ -96,6 +121,12 @@ module.exports = function (grunt) {
             }
         }
     },
+	karma: {
+	  unit: {
+		configFile: 'karma.conf.js',
+		autoWatch: true
+	  }
+	},
     watch: {
       main: {
         options: {
@@ -111,7 +142,7 @@ module.exports = function (grunt) {
         options: {
             jshintrc: '.jshintrc'
         },
-        src: ['js/**/*.js','partial/**/*.js','service/**/*.js','filter/**/*.js','directive/**/*.js']
+        src: ['js/**/*.js','partial/**/*.js','service/**/*.js','filter/**/*.js','directive/**/*.js', '!partial/**/*.spec.js']
       }
     },
     clean: {
@@ -187,6 +218,12 @@ module.exports = function (grunt) {
           read:{selector:'script[data-build!="exclude"]',attribute:'src',writeto:'appjs'}
         },
         src:'index.html'
+      },
+      testscripts: {
+        options: {
+          read:{selector:'script[data-build!="exclude"]',attribute:'src',writeto:'appjs'}
+        },
+        src:'test.html'
       },
       readcss: {
         options: {
@@ -288,10 +325,11 @@ module.exports = function (grunt) {
     },
     jasmine: {
       unit: {
-        src: ['<%= dom_munger.data.appjs %>','bower_components/angular-mocks/angular-mocks.js'],
+        src: ['<%= dom_munger.data.appjs %>','js/constant-mocks.js','bower_components/angular-mocks/angular-mocks.js'],
         options: {
           keepRunner: true,
-          specs: ['js/**/*-spec.js','partial/**/*-spec.js','service/**/*-spec.js','filter/**/*-spec.js','directive/**/*-spec.js']
+          specs: ['partial/**/*-spec.js', 'service/**/*-spec.js'],
+          x: ['js/**/*-spec.js','partial/**/*-spec.js','service/**/*-spec.js','filter/**/*-spec.js','directive/**/*-spec.js']
         }
       }
     },
@@ -313,7 +351,8 @@ module.exports = function (grunt) {
   grunt.registerTask('server', ['preprocess:gruntserver','dom_munger:readscripts','jshint','connect', 'watch']);
   grunt.registerTask('makedoc', ['jsdoc']);
   grunt.registerTask('validate', ['jshint']);
-  grunt.registerTask('test',['dom_munger:readscripts','jasmine']);
+  grunt.registerTask('test',['dom_munger:testscripts','jasmine']);
+  grunt.loadNpmTasks('grunt-karma');
 
   grunt.registerTask('build', 'Deploys the app in the dist folder. Target django as option.', function(n) {
     var target = grunt.option('target');

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html ng-app="toolkit-gui">
 <head>
-  <title></title>
+  <title>{{ object.name }} - Lawpal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta charset="utf-8">
 
@@ -45,7 +45,6 @@
   <script src="<!-- @echo staticPath -->bower_components/showdown/compressed/showdown.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/AngularJS-Toaster/toaster.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/ez-confirm/dist/ez-confirm.min.js"></script>
-  <script src="<!-- @echo staticPath -->bower_components/ez-confirm/dist/ez-confirm-tpl.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/ng-file-upload/angular-file-upload-shim.min.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/ng-file-upload/angular-file-upload.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/angular-ui-router/release/angular-ui-router.js"></script>
@@ -53,9 +52,11 @@
   <script src="<!-- @echo staticPath -->bower_components/raven-js/dist/raven.min.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/crypto-js/rollups/hmac-sha256.js"></script>
   <script src="<!-- @echo staticPath -->bower_components/html5-desktop-notifications/desktop-notify.js"></script>
-  
   <script src="<!-- @echo staticBase -->ng/lib/angular-intercom.js" data-remove="exclude"></script>
   <script type="text/javascript" src="//api.filepicker.io/v1/filepicker.js" data-remove="exclude"></script>
+
+  <!-- Ez-Confirm custom template -->
+  <script src="<!-- @echo staticPath -->js/ez-confirm-custom-tpl.js"></script>
 
   <!-- Main App JS -->
   <script src="<!-- @echo staticPath -->js/setup.js"></script>
@@ -75,6 +76,7 @@
   <script src="<!-- @echo staticPath -->service/activity.js"></script>
   <script src="<!-- @echo staticPath -->service/comment.js"></script>
   <script src="<!-- @echo staticPath -->service/pusher.js"></script>
+  <script src="<!-- @echo staticPath -->service/genericFunctions.js"></script>
   <!-- Add New Service JS Above -->
 
   <!-- Directive JS -->
@@ -83,6 +85,7 @@
   <script src="<!-- @echo staticPath -->directive/mentions/mentionsbox.js"></script>
   <script src="<!-- @echo staticPath -->directive/mentions/mentionscontainer.js"></script>
   <script src="<!-- @echo staticPath -->directive/filepicker.js"></script>
+  <script src="<!-- @echo staticPath -->directive/modal.js"></script>
   <!-- Add New Directive JS Above -->
 
   <!-- Filter JS -->
@@ -94,14 +97,18 @@
 
   <!-- Partial JS -->
   <script src="<!-- @echo staticPath -->partial/home/home.js"></script>
+    <script src="<!-- @echo staticPath -->partial/markdown/markdown-info.js"></script>
+
   <script src="<!-- @echo staticPath -->partial/checklist/checklist.js"></script>
   <script src="<!-- @echo staticPath -->partial/closing/closing.js"></script>
   <script src="<!-- @echo staticPath -->partial/navigation/navigation.js"></script>
   <script src="<!-- @echo staticPath -->partial/participant-invite/participant-invite.js"></script>
   <script src="<!-- @echo staticPath -->partial/request-revision/request-revision.js"></script>
   <script src="<!-- @echo staticPath -->partial/request-review/request-review.js"></script>
+  <script src="<!-- @echo staticPath -->partial/request-signing/request-signing.js"></script>
   <script src="<!-- @echo staticPath -->partial/view-document/view-document.js"></script>
   <script src="<!-- @echo staticPath -->partial/view-review/view-review.js"></script>
+  <script src="<!-- @echo staticPath -->partial/view-signing/view-signing.js"></script>
   <script src="<!-- @echo staticPath -->partial/searchCtrl/searchCtrl.js"></script>
   <script src="<!-- @echo staticPath -->partial/authentication-required/authentication-required.js"></script>
   <script src="<!-- @echo staticPath -->partial/edit-revision-status/edit-revision-status.js"></script>
@@ -167,6 +174,35 @@
             <span class="input-group-btn">
               <button type="submit" class="btn"><span class="fui-search"></span></button>
             </span>
+
+            <!-- filter //-->
+            {% verbatim %}
+            <span class="input-group-btn custom-btn-round">
+              <button
+                class="btn btn-default dropdown-toggle btn-xs doc-outline-status-{{matter.selectedStatusFilter}}"
+                type="button"
+                data-toggle="dropdown">
+                <span class="fa fa-filter"></span>
+                <span ng-if="matter.selectedStatusFilter!==null" class="status-dot status-{{matter.selectedStatusFilter}}"></span>
+              </button>
+              <ul class="dropdown-menu dropdown-inverse dropdown-small status-list">
+                <li ng-repeat="(key, status) in matter.selected._meta.item.custom_status">
+                  <a href="javascript:;" ng-click="applyStatusFilter( { 'status': key }, key );"> <span class="icon status-{{ key }}"></span> {{ status }}</a>
+                </li>
+                <li>
+                  <a href="javascript:;" ng-click="applyItemFilter( { 'is_complete': false }, 'open' );"> <span class="icon status-open"></span> Open</a>
+                </li>
+                <li>
+                  <a href="javascript:;" ng-click="applyItemFilter( { 'is_complete': true }, 'closed' );"> <span class="icon status-closed"></span> Closed</a>
+                </li>
+                <li>
+                  <a href="javascript:;" ng-click="applyStatusFilter( null );"> <span class="icon status-placeholder"></span> Clear filter</a>
+                </li>
+              </ul>
+            </span>
+            {% endverbatim %}
+
+
           </div>
         </div>
         <div class="search-container">
@@ -197,7 +233,8 @@
           </a>
           <ul class="dropdown-menu">
             <li><a href="/me/settings/">Account</a></li>
-
+            <li><a href="/me/plans">Billing</a></li>
+            <li><a href="/me/payments">Payments</a></li>
             <li><a href="/end/">Sign out</a></li>
           </ul>
         </li>

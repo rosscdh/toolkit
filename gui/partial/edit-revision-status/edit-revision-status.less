@@ -8,7 +8,32 @@
 .status-7 {background-color:@doc-status-7;}
 .status-8 {background-color:@doc-status-8;}
 .status-9 {background-color:@doc-status-9;}
- span.icon {
+.status-open { background-color: #fff; }
+.status-closed { background-color: @emerland; }
+
+.status-dot {
+	display: block;
+	position: absolute;
+	right: -0.25em;
+	top: -0.25em;
+	width: 1em;
+	height: 1em;
+	border-radius: 100%;
+	&.status-0 { background-color:@doc-status-0; }
+	&.status-1 { background-color:@doc-status-1; }
+	&.status-2 { background-color:@doc-status-2; }
+	&.status-3 { background-color:@doc-status-3; }
+	&.status-4 { background-color:@doc-status-4; }
+	&.status-5 { background-color:@doc-status-5; }
+	&.status-6 { background-color:@doc-status-6; }
+	&.status-7 { background-color:@doc-status-7; }
+	&.status-8 { background-color:@doc-status-8; }
+	&.status-9 { background-color:@doc-status-9; }
+	&.status-open { background-color: #fff; }
+	&.status-closed { background-color: @emerland; }
+}
+
+span.icon {
     display:block;
     float:left;
     width:20px;

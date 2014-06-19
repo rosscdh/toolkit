@@ -29,13 +29,13 @@ class FileExistsLocallyMixin(object):
         eventually should have django-storages syncing all the filestores with
         these files
         """
+        file_name = self.get_document_name()
         if self.file_exists_locally is False:
             # Download the file
             #
-            file_name = self.get_document_name()
             logger.info('File.DoesNotExistLocally: %s downloading' % file_name)
             return self.download_file(file_name=file_name)
-        return False
+        return file_name
 
     @property
     def file_exists_locally(self):
@@ -51,7 +51,8 @@ class FileExistsLocallyMixin(object):
     def read_local_file(self):
         if self.file_exists_locally is True:
             return default_storage.open(self.get_document()).read()
-        return False
+        else:
+            raise Exception('File not found locally')
 
     def download_file(self, file_name, storage=None):
         """

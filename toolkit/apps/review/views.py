@@ -76,18 +76,54 @@ class ReviewRevisionView(DetailView):
 
         return self.object
 
+    def get_file_object_contents_response(self, as_attachment=True):
+        #
+        # Use our localised filename so the user has info about which version
+        # etc that it came from
+        #
+        file_name = self.object.get_document().name
+
+        split_file_name = os.path.split(file_name)[-1]
+        filename_no_ext, ext = os.path.splitext(split_file_name)
+        ext = 'pdf'
+
+        try:
+            #
+            # Try read it from the local file first
+            #
+            resp = HttpResponse(self.object.read_local_file(), content_type='application/{ext}'.format(ext=ext))
+
+        except:
+            #
+            # If we dont have it locally then read it from s3
+            #
+            resp = HttpResponse(self.object.document.executed_file.read(), content_type='application/{ext}'.format(ext=ext))
+
+        if as_attachment is True:
+            resp['Content-Disposition'] = 'attachment; filename="{file_name}.{ext}"'.format(file_name=filename_no_ext, ext=ext)
+
+        return resp
+
     def get_context_data(self, **kwargs):
         kwargs = super(ReviewRevisionView, self).get_context_data(**kwargs)
 
-        #
-        # Use the loader to get the crocodoc documet present and available
-        # service provides a dict with the appropriate variables includeing 
-        # crocodoc_view_url
-        #
-        kwarg_service = CrocodocLoaderService(user=self.request.user, reviewdocument=self.object)
-        kwargs.update(kwarg_service.process())
+        if self.object.document.is_executed is False:
+            #
+            # Use the loader to get the crocodoc documet present and available
+            # service provides a dict with the appropriate variables includeing 
+            # crocodoc_view_url
+            #
+            kwarg_service = CrocodocLoaderService(user=self.request.user, reviewdocument=self.object)
+            kwargs.update(kwarg_service.process())
 
         return kwargs
+
+    def render_to_response(self, context, **response_kwargs):
+        if self.object.document.is_executed is True:
+            # as the file has been execued we no longer use crocodoc
+            return self.get_file_object_contents_response(as_attachment=False)
+        else:
+            return super(ReviewRevisionView, self).render_to_response(context=context, **response_kwargs)
 
 
 class DownloadRevision(ReviewRevisionView):
@@ -100,32 +136,12 @@ class DownloadRevision(ReviewRevisionView):
         self.object.ensure_file()
 
     def render_to_response(self, context, **response_kwargs):
-        #
-        # Use our localised filename so the user has info about which version
-        # etc that it came from
-        #
-        file_name = self.object.get_document().name
+        resp = self.get_file_object_contents_response(as_attachment=True)
 
-        split_file_name = os.path.split(file_name)[-1]
-        filename_no_ext, ext = os.path.splitext(split_file_name)
-
-        self.object.document.item.matter.actions.user_downloaded_revision(item=self.object.document.item,
-                                                                          user=self.request.user,
-                                                                          revision=self.object.document)
-
-        try:
-            #
-            # Try read it from the local file first
-            #
-            resp = HttpResponse(self.object.read_local_file(), content_type='application/{ext}'.format(ext=ext))
-        except:
-            #
-            # If we dont have it locally then read it from s3
-            #
-            resp = HttpResponse(self.object.document.executed_file.read(), content_type='application/{ext}'.format(ext=ext))
-
-        resp['Content-Disposition'] = 'attachment; filename="{file_name}{ext}"'.format(file_name=filename_no_ext, ext=ext)
-
+        if self.object.document.is_executed is False:
+            self.object.document.item.matter.actions.user_downloaded_revision(item=self.object.document.item,
+                                                                              user=self.request.user,
+                                                                              revision=self.object.document)
         return resp
 
 #

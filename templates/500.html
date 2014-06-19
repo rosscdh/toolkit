@@ -1,17 +1,26 @@
+
+
 {% extends 'base-slim.html' %}
 
 {% block page_title %}500 An error occurred{% endblock %}
 
 {% block prebody %}
-<div id="hero">
-    <div class="container">
-        <!-- starts carousel -->
-        <div class="jumbotron">
-            <div class="span12">
-                <h1><b>500:</b> An internal error occurred.</h1>
-                <p>Sorry an error occurred with your last request. Our dev team has been notified.</p>
-            </div>
-        </div>
+
+
+
+  <div class="container error-page text-center">
+    <div class="col-sm-10 col-sm-offset-1">
+    <span class="fa-stack fa-lg">
+      <i class="fa fa-file-o" id="file"></i>
+      <i class="fa fa-frown-o" id="frown"></i>
+    </span>
+    <div class='error-explanation'>
+      <h4>
+        <b>Sorry, we could not proccess your last request.</b></h4>
+      <p>An error occurred in the application and your request could not be completed. Our team has been notified.</p>
+      <p><b>Need to get in touch? </b> Email us at <a href="mailto:'all@lawpal.com'">support@lawpal.com</a>.
+      </p>
     </div>
+  </div>
 </div>
 {% endblock %}

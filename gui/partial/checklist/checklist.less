@@ -92,7 +92,19 @@ tr.item-heading.file-drag-over td:nth-child(2):before {
 		height: 24px;
 		margin: 0 10px 10px 0;
 		padding: 0;
-		width: 250px;
+		width: 230px;
+		position: relative;
+		padding-right: 80px; /* make room for cancel button */
+	}
+
+	button {
+		position: absolute;
+		left: 150px;
+		z-index: 997;
+		padding: 0.2em 0.5em;
+		height: 24px;
+		border-radius: 0;
+		width: 80px;
 	}
 }
 
@@ -335,6 +347,9 @@ tr.item-heading.file-drag-over td:nth-child(2):before {
 		margin-top:10px;
 	}
 
+	.btn-group.pull-right {
+		margin-left: 13px;
+	}
 }
 
 
@@ -404,37 +419,7 @@ ul.checklist-items {
 				opacity:1;
 			}
 		}
-		.status {
-			padding-top:3px;
-			margin-right:-2px;
-			padding-bottom:0px;
-			text-align:right;
-			.fui-check-inverted  {
-				padding-top:2px;
-			}
-			a {
-				text-decoration:underline;
-			}
-			button {
-				padding:5px 5px;
-				font-size:11px;
-				margin-right:02px;
-				&[class*="doc-status"] {
-					background-color:transparent;
-					border:1px solid white;
-				}
-				&.doc-status-0 { border-color:@doc-status-0;color:@doc-status-0; }
-				&.doc-status-1 { border-color:@doc-status-1;color:@doc-status-1; }
-				&.doc-status-2 { border-color:@doc-status-2;color:@doc-status-2; }
-				&.doc-status-3 { border-color:@doc-status-3;color:@doc-status-3; }
-				&.doc-status-4 { border-color:@doc-status-4;color:@doc-status-4; }
-				&.doc-status-5 { border-color:@doc-status-5;color:@doc-status-5; }
-				&.doc-status-6 { border-color:@doc-status-6;color:@doc-status-6; }
-				&.doc-status-7 { border-color:@doc-status-7;color:@doc-status-7; }
-				&.doc-status-8 { border-color:@doc-status-8;color:@doc-status-8; }
-				&.doc-status-9 { border-color:@doc-status-9;color:@doc-status-9;}
-			}
-		}
+		
 		// The selection state
 		&.selected {
 			background-color: lighten(@belize-hole, 10%);
@@ -497,6 +482,14 @@ ul.checklist-items {
 			.text-muted;
 			margin-left: -0.25em;
 		}
+	}
+
+	.loading {
+		opacity: 0.75;
+	}
+		
+	.fapad {
+		padding: 0.5em;
 	}
 }
 
@@ -623,7 +616,48 @@ ul.checklist-items {
 		}
 
 	}
+}
 
+.status {
+	padding-top:3px;
+	margin-right:-2px;
+	padding-bottom:0px;
+	text-align:right;
+	.fui-check-inverted  {
+		padding-top:2px;
+	}
+	a {
+		text-decoration:underline;
+	}
+	button {
+		padding:5px 5px;
+		font-size:11px;
+		margin-right:02px;
+		&[class*="doc-status"] {
+			background-color:transparent;
+			border:1px solid white;
+		}
+		&.doc-status-0 { border-color:@doc-status-0;color:@doc-status-0; }
+		&.doc-status-1 { border-color:@doc-status-1;color:@doc-status-1; }
+		&.doc-status-2 { border-color:@doc-status-2;color:@doc-status-2; }
+		&.doc-status-3 { border-color:@doc-status-3;color:@doc-status-3; }
+		&.doc-status-4 { border-color:@doc-status-4;color:@doc-status-4; }
+		&.doc-status-5 { border-color:@doc-status-5;color:@doc-status-5; }
+		&.doc-status-6 { border-color:@doc-status-6;color:@doc-status-6; }
+		&.doc-status-7 { border-color:@doc-status-7;color:@doc-status-7; }
+		&.doc-status-8 { border-color:@doc-status-8;color:@doc-status-8; }
+		&.doc-status-9 { border-color:@doc-status-9;color:@doc-status-9;}
+		&.doc-status-closed { border-color:lighten(@emerland, 15%);color:lighten(@emerland, 15%);}
+	}
 
+}
 
+ul.status-list a {
+	padding: 6px 8px 6px;
+	span.icon {margin-top:0;}
+}
+
+.custom-btn-round button {
+	border-bottom-left-radius: 6px !important;
+	border-top-left-radius: 6px !important;
 }

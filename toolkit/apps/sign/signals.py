@@ -1,11 +1,18 @@
 # -*- coding: utf-8 -*-
 from django.dispatch import receiver
 from django.contrib.auth.models import User
-from django.db.models.signals import m2m_changed, post_save
+from django.db.models.signals import m2m_changed, post_save, post_delete
 
 from hello_sign.signals import hellosign_webhook_event_recieved
 
+from toolkit.tasks import run_task
+
 from .models import SignDocument
+from .tasks import _download_signing_complete_document
+
+import json
+import logging
+logger = logging.getLogger('django.request')
 
 
 def _add_as_authorised(instance, pk_set):
@@ -20,6 +27,44 @@ def _remove_as_authorised(instance, pk_set):
         user = User.objects.filter(pk__in=pk_set).first()
         instance.deauthorise_user_access(user=user)
         instance.save(update_fields=['data'])
+
+
+def _update_signature_request(hellosign_request, data):
+    """
+    @NB this is a very dangerous method; we need to get the data from hellosign
+    and then update the local hellosign_request.data object with that sent data.
+    if signing requests are being reset and the user is seeing the setup signing
+    it means the json is being overwritten here
+    """
+    model_data = hellosign_request.data
+
+    if not model_data:  # if its an empty dict
+        logger.error('hellosign_request.data is empty HelloSign is broken again: %s' % hellosign_request.pk)
+        logger.critical('HelloSign empty webhook json data: %s' % json.dumps(data))
+
+    if 'signature_request' in data.keys():
+        # Ensure we are actioning the correct objects
+        data_signature_request_id = data.get('signature_request').get('signature_request_id', None)
+
+        if str(hellosign_request.signature_request_id) != str(data_signature_request_id):
+            logger.critical('hellosign_request.signature_request_id: %s is not equal to the passed in data_signature_request_id: %s HelloSign is broken again' % (hellosign_request.signature_request_id, data_signature_request_id))
+            logger.critical('HelloSign webhook non-matching signature_request_id\'s json data: %s' % json.dumps(data))
+        else:
+            #
+            # We have a matching signature_request_id
+            #
+            logger.info('HelloSign webhook _update_signature_request processing hellosign_request: %s' % hellosign_request.pk)
+
+            # update the model with the data we got from HS
+            model_data.update(data)
+            # udpate the main model data
+            hellosign_request.data = model_data
+
+            hellosign_request.save(update_fields=['data']) # save it # possible race condition here
+
+            # Recalculate the percentage complete
+            hellosign_request.source_object.document.item.recalculate_signing_percentage_complete()
+
 
 """
 When new SignDocument are created automatically the matter.participants are
@@ -54,6 +99,18 @@ def ensure_matter_participants_are_in_signdocument_participants(sender, instance
             _remove_as_authorised(instance=instance, pk_set=[pk])
 
 
+@receiver(post_save, sender=SignDocument, dispatch_uid='sign.post_save.reset_recalculate_signing_percentage_complete')
+def reset_recalculate_signing_percentage_complete_post_save(sender, instance, created, update_fields, **kwargs):
+    item = instance.document.item
+    item.recalculate_signing_percentage_complete()
+
+
+@receiver(post_delete, sender=SignDocument, dispatch_uid='sign.pre_delete.reset_recalculate_signing_percentage_complete')
+def reset_recalculate_signing_percentage_complete_post_delete(sender, instance, **kwargs):
+    item = instance.document.item
+    item.recalculate_signing_percentage_complete()
+
+
 """
 Handle when a signer is added to the object
 """
@@ -81,6 +138,28 @@ def on_signer_remove(sender, instance, action, pk_set, **kwargs):
 """
 HelloSign webhook
 """
+def _get_user_from_event_data(event_data):
+    signature_request = event_data.get('signature_request', {})
+    event_data = event_data.get('event', {})
+    event_metadata = event_data.get('event_metadata', {})
+    user = None
+
+    # Send event
+    related_signature_id = event_metadata.get('related_signature_id', None)
+    related_email_address = None
+
+    try:
+        signer = [signer for signer in signature_request.get('signatures', []) if related_signature_id == signer.get('signature_id')][0]
+        related_email_address = signer.get('signer_email_address')
+
+    except IndexError:
+        logging.error('Could not related signer in HelloSign event.signature_request.signatures')
+
+    if related_email_address:
+        user = User.objects.get(email=related_email_address)
+
+    return user
+
 
 @receiver(hellosign_webhook_event_recieved)
 def on_hellosign_webhook_event_recieved(sender, hellosign_log,
@@ -97,8 +176,48 @@ def on_hellosign_webhook_event_recieved(sender, hellosign_log,
     if signature_doc.__class__.__name__ in ['SignDocument']:
         logging.info('Recieved event: %s for request: %s' % (event_type, hellosign_request,))
 
-        if hellosign_log.event_type == 'signature_request_all_signed':
-            logging.info('Recieved signature_request_all_signed from HelloSign')
+        #
+        # ALL HAVE SIGNED
+        #
+        if event_type == 'signature_request_all_signed':
+            logging.info('Recieved signature_request_all_signed from HelloSign, downloading file for attachment as final')
+            # update request
+            _update_signature_request(hellosign_request=hellosign_request, data=data)
 
-        elif hellosign_log.event_type == 'signature_request_signed':
-            logging.info('Recieved signature_request_signed from HelloSign')
+            # Send event
+            hellosign_request.source_object.document.item.matter.actions.all_users_have_signed(sign_object=hellosign_request.source_object)
+
+            #
+            # Download the file and update the item.latest_revision
+            #
+            run_task(_download_signing_complete_document, hellosign_request=hellosign_request, data=data)
+
+        #
+        # USER SIGNED
+        #
+        if event_type == 'signature_request_signed':
+            logging.info('Recieved signature_request_signed from HelloSign, sending event notice')
+            # update the signature_request data with our newly provided data
+            _update_signature_request(hellosign_request=hellosign_request, data=data)
+
+            # Send event
+            user = _get_user_from_event_data(event_data=data)
+            if user:
+                hellosign_request.source_object.document.item.matter.actions.user_signed(user=user, sign_object=hellosign_request.source_object)
+
+        if event_type == 'signature_request_viewed':
+            #
+            # NOT HANDLED HERE rather in toolkit.api.views.sign
+            # REASON: because the lawyer can view signature requests at their
+            # distinct urls and may not actually be the invited signer
+            #
+
+            # user = _get_user_from_event_data(event_data=data)
+            # if user:
+            #     revision = hellosign_request.source_object.document
+            #     item = revision.item
+            #     matter = item.matter
+            #     matter.actions.user_viewed_signature_request(item=revision.item,
+            #                                                  user=user,
+            #                                                  revision=revision)
+            pass

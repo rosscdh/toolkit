@@ -11,9 +11,10 @@ angular.module('toolkit-gui')
 	'$resource',
 	'$rootScope',
 	'$upload',
+	'$timeout',
 	'matterService',
 	'API_BASE_URL',
-	function( $q, $resource, $rootScope, $upload, matterService, API_BASE_URL) {
+	function( $q, $resource, $rootScope, $upload, $timeout, matterService, API_BASE_URL) {
 		'use strict';
 		/**
 		 * TBC: this variable will contain the JWT token required to make authenticated requests
@@ -77,11 +78,41 @@ angular.module('toolkit-gui')
 		}
 
 
+         /**
+		 * Returns a key/value object containing $resource methods to access review API end-points
+		 *
+		 * @name				reviewerItemResource
+		 *
+		 * @private
+		 * @method				reviewerItemResource
+		 * @memberof			matterItemService
+		 *
+		 * @return {Function}   $resource
+		 */
 		function reviewerItemResource() {
 			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/revision/:type/:username:action', {}, {
 				'request': { 'method': 'POST', 'params' : { 'type': 'reviewers' }, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
                 'remind': { 'method': 'POST', 'params': { 'type': 'reviewers', 'action':'remind'}, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'delete': { 'method': 'DELETE', 'params' : { 'type': 'reviewer' }, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
+			});
+		}
+
+        /**
+		 * Returns a key/value object containing $resource methods to access signatory API end-points
+		 *
+		 * @name				signerItemResource
+		 *
+		 * @private
+		 * @method				signerItemResource
+		 * @memberof			matterItemService
+		 *
+		 * @return {Function}   $resource
+		 */
+		function signerItemResource() {
+			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/revision/:type/:username:action', {}, {
+				'request': { 'method': 'POST', 'params' : { 'type': 'signers' }, 'headers': { 'Content-Type': 'application/json'}},
+				'remind': { 'method': 'POST', 'params': { 'type': 'signers', 'action':'remind'}, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
+				'delete': { 'method': 'DELETE', 'params' : { 'type': 'signer' }, 'headers': { 'Content-Type': 'application/json'}}
 			});
 		}
 
@@ -276,6 +307,7 @@ angular.module('toolkit-gui')
 			 */
 			'uploadRevisionFile': function( matterSlug, itemSlug, $files ) {
 				var deferred = $q.defer(), /*files,*/ url;
+				var uploadHandle;
 
 				//var api = revisionItemResource();
 
@@ -283,7 +315,7 @@ angular.module('toolkit-gui')
 					url = API_BASE_URL + 'matters/'+matterSlug+'/items/'+itemSlug+'/revision';
 					var file = $files[0];
 
-					$upload.upload({
+					uploadHandle = $upload.upload({
 						'url': url, //upload.php script, node.js route, or servlet url
 						'file': file,
 						'fileFormDataName': 'executed_file',
@@ -296,15 +328,25 @@ angular.module('toolkit-gui')
 						deferred.resolve(data);
 						//console.log(data);
 					}).error(function(){
-						deferred.reject('Unable to upload file');
+						var err = new Error('Unable to upload file');
+						if( uploadHandle.canceled ) {
+							err = new Error('Upload canceled');
+							err.title = 'Canceled';
+							deferred.reject(err);
+						} else {
+							deferred.reject(err);
+						}
+						
 					});
 				} else {
-					setTimeout(
+					$timeout(
 						function(){
 							deferred.reject();
 						},
 					1);
 				}
+
+				deferred.promise.uploadHandle = uploadHandle;
 
 				return deferred.promise;
 			},
@@ -608,6 +650,73 @@ angular.module('toolkit-gui')
 				var api = reviewerItemResource();
 
 				api.delete({'matterSlug': matterSlug, 'itemSlug': itemSlug, 'username': review.reviewer.username },
+					function success(){
+						deferred.resolve();
+					},
+					function error(err) {
+						deferred.reject( err );
+					}
+				);
+
+				return deferred.promise;
+			},
+
+             'requestSigner': function ( matterSlug, itemSlug, signer ) {
+				var deferred = $q.defer();
+
+				var api = signerItemResource();
+
+				api.request({'matterSlug': matterSlug, 'itemSlug': itemSlug }, signer,
+					function success(response){
+						deferred.resolve(response);
+					},
+					function error(err) {
+						deferred.reject( err );
+					}
+				);
+
+				return deferred.promise;
+			},
+            /**
+			 * Requests the API to send a reminder to all signers who have not signed the current revision yet.
+			 *
+			 * @name				remindRevisionSigners
+			 * @param {String}      matterSlug    Database slug, used as a unique identifier for a matter.
+			 * @param {String}      itemSlug      Database slug, used as a unique identifier for a checklist item.
+			 *
+			 * @example
+			 * matterItemService.remindRevisionSigners( 'myMatterName', 'myItemName' );
+			 *
+			 * @public
+			 * @method				remindRevisionSigners
+			 * @memberof			matterItemService
+			 *
+			 * @return {Promise}
+			 */
+            'remindRevisionSigners': function ( matterSlug, itemSlug ) {
+				var deferred = $q.defer();
+
+				var api = signerItemResource();
+
+				api.remind({'matterSlug': matterSlug, 'itemSlug': itemSlug }, {},
+					function success(){
+						deferred.resolve();
+					},
+					function error(err) {
+						deferred.reject( err );
+					}
+				);
+
+				return deferred.promise;
+			},
+            'deleteSigningRequest': function ( signing ) {
+				var deferred = $q.defer();
+
+				var api = $resource( signing.url, {}, {
+                        'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'} }
+                });
+
+				api.delete({},
 					function success(){
 						deferred.resolve();
 					},
