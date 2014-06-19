@@ -309,6 +309,8 @@ def celery_stop(name='worker.1'):
         else:
             local(cmd)
 
+        clean_pyc()
+
 @task
 @roles('worker')
 def celery_cmd(cmd=None):
