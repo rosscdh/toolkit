@@ -55,7 +55,7 @@ angular.module('toolkit-gui').config(function($stateProvider, $urlRouterProvider
       'data': {
         'defaultFilter': { 'filter': {'is_complete': true}, 'statusCode': 'closed' }
       },
-      'templateUrl': '/static/ng/partial/checklist/checklist.html'
+      'templateUrl': '/static/ng/partial/checklist/closing.html'
     })
     .state('closing.item', {
       'url': "/:itemSlug",

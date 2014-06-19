@@ -272,6 +272,27 @@ angular.module('toolkit-gui')
 			}
 		};
 
+		/**
+		 * Starts to process of downloading all documents within the matter
+		 * @name	exportMatter
+		 * @private
+		 * @memberof			ChecklistCtrl
+		 * @method			exportMatter
+		 */
+		$scope.exportMatter = function() {
+			$scope.downloadingDocuments = true;
+			matterService.exportMatter( $scope.data.matter ).then(
+				function success() {
+					toaster.pop('success', 'Documents will be emailed to you soon.',5000);
+					$scope.downloadingDocuments = false;
+				},
+				function error() {
+					toaster.pop('error', 'Unable to download all documents',5000);
+					$scope.downloadingDocuments = false;
+				}
+			);
+		};
+
 
 		/**
 		 * Inits the intercom interface

@@ -11,16 +11,18 @@ angular.module('toolkit-gui')
  */
 .controller('NavigationCtrl',[
 	'$scope',
+	'$rootScope',
 	'$routeParams',
 	'smartRoutes',
 	'$location',
 	'$modal',
 	'$log',
 	'$timeout',
+	'$state',
 	'toaster',
 	'userService',
 	'matterService',
-	function( $scope, $routeParams, smartRoutes, $location, $modal, $log, $timeout, toaster, userService, matterService ){
+	function( $scope, $rootScope, $routeParams, smartRoutes, $location, $modal, $log, $timeout, $state, toaster, userService, matterService ){
 		'use strict';
 		var routeParams = smartRoutes.params();
 		$scope.selectedStatusFilter = null;
@@ -168,6 +170,18 @@ angular.module('toolkit-gui')
 			}
 		};
 
+		
+
+		/**
+		 * Handles the event when the URL params changes inside the ng app
+		 *
+		 * @private
+		 * @memberof			ChecklistCtrl
+		 */
+		$rootScope.$on('$stateChangeSuccess', function () {
+			$scope.baseRoute = $state.current.name.indexOf('closing')>=0?'closing':'checklist';
+		});
+
 		/**
 		 * Update in scope variable that tracks the current matter ID
 		 * @name				updateNavigationID
@@ -179,6 +193,7 @@ angular.module('toolkit-gui')
 		$scope.$on('$routeChangeSuccess', function updateNavigationID() {
 			var routeParams = smartRoutes.params(); 
 			$scope.data.id = routeParams.id;
+			$scope.baseRoute = $state.current.name.indexOf('closing')>=0?'closing':'checklist';
 		});
 
 		/**

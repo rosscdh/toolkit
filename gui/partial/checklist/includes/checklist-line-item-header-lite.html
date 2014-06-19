@@ -1,0 +1,11 @@
+<div class="row checklist-header">
+	<div class="col-xs-12">
+		<h5
+			ng-bind="cat.name"
+			ng-hide="data.showEditCategoryForm==$index||!cat.name||data.showAddCategoryForm==$index">
+		</h5>
+		<h5
+			ng-hide="data.showEditCategoryForm==$index||cat.name||data.showAddCategoryForm==$index">UNCATEGORIZED
+		</h5>
+	</div>
+</div>

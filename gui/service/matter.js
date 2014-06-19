@@ -56,6 +56,7 @@ angular.module('toolkit-gui')
 				'list': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } },
 				'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } },
 				'sort': { 'method': 'PATCH', 'params': {'action': 'sort'}, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } },
+				'export': { 'method': 'POST', 'params': {'action': 'export'}, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } },
 				'revisionstatus': { 'method': 'POST', 'params': {'action': 'revision_label'}, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } }
 			});
 		}
@@ -94,6 +95,34 @@ angular.module('toolkit-gui')
 		 	 */
 			'selectMatter': function( objMatter ) {
 				matter.selected = objMatter;
+			},
+
+			/**
+			 * Sets the selected matter to one passed in.
+			 *
+			 * @name				exportMatter
+			 *
+			 * @example
+		 	 * matterService.exportMatter( mySelectedMatter );
+			 * 
+			 * @public
+			 * @method				exportMatter
+			 * @memberof			matterService
+		 	 */
+			'exportMatter': function( objMatter ) {
+				var api = matterResource();
+				var deferred = $q.defer();
+
+				api.export( { 'matterSlug': objMatter.slug }, {},
+					function success( result ) {
+						deferred.resolve( result.results );
+					},
+					function error( err ) {
+						deferred.reject( err );
+					}
+				);
+
+				return deferred.promise;
 			},
 
 			/**
