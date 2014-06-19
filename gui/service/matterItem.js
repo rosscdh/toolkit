@@ -767,7 +767,7 @@ angular.module('toolkit-gui')
 					// Invalid url provided
 					$timeout( function(){
 						deferred.reject( new Error('Unable to update revision') );
-					}, 1)
+					}, 1);
 				}
 
 				return deferred.promise;
