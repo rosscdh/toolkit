@@ -58,8 +58,13 @@ def get_notification_context(message_data, user):
                 action_object_url = reviewdocument_object.get_regular_url() if reviewdocument_object else None
             else:
                 # it's a link on an item -> show item-link
-                target_object = item_queryset.get(slug=action_object.get('slug'))
-                action_object_url = target_object.get_regular_url()
+                try:
+                    target_object = item_queryset.get(slug=action_object.get('slug'))
+                    action_object_url = target_object.get_regular_url()
+
+                except item_queryset.model.DoesNotExist:
+                    # item doesnt exist as its been deleted or some such
+                    pass
 
     #
     # UGLY HACK

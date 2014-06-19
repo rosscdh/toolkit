@@ -151,7 +151,7 @@ class MatterActivityEventService(object):
     def added_matter_participant(self, adding_user, added_user, **kwargs):
         # is called from toolkit/apps/matter/signals.py#PARTICIPANT_ADDED
         if adding_user.pk != added_user.pk:
-            override_message = u'%s added a new member to %s' % (adding_user, self.matter)
+            override_message = u'%s added %s as a new member to %s' % (adding_user, added_user, self.matter)
             self._create_activity(actor=adding_user, verb=u'added participant', action_object=self.matter,
                                   override_message=override_message, user=added_user)
             self.analytics.event('matter.participant.added', user=adding_user, **{
