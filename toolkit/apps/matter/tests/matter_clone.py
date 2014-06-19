@@ -122,6 +122,7 @@ class DemoMatterCloneServiceTest(BaseMatterClone):
         self.assertEqual(self.item2.revision_set.all().count(), 1)
 
         # test the self.target_matter matter has the cloned dict
+        self.assertTrue(type(self.target_matter.data.get('is_demo')), True)
         self.assertTrue(type(self.target_matter.data.get('cloned')), dict)
         self.assertEqual(self.target_matter.data.get('cloned').keys(), ['date_cloned', 'num_items'])
         self.assertEqual(type(self.target_matter.data.get('cloned').get('date_cloned')), datetime.datetime)
