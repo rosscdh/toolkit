@@ -29,10 +29,21 @@ def _remove_as_authorised(instance, pk_set):
 
 
 def _update_signature_request(hellosign_request, data):
-    hellosign_request.data['signature_request'].update(data['signature_request'])
+    model_data = hellosign_request.data.get('signature_request', {})  # it may not be set yet? # this is weird if it is the case
+
+    if not model_data:  # if its an empty dict
+        logger.error('hellosign_request.data is empty this is a bit weird: %s' % hellosign_request.pk)
+
+    # update the model with the data we got from HS
+    model_data.update(data['signature_request'])
+    # udpate the main model data
+    hellosign_request.data = model_data
+
     hellosign_request.save(update_fields=['data']) # save it # possible race condition here
+
     # Recalculate the percentage complete
     hellosign_request.source_object.document.item.recalculate_signing_percentage_complete()
+
 
 """
 When new SignDocument are created automatically the matter.participants are
