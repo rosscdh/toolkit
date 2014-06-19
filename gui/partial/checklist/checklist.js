@@ -92,6 +92,8 @@ angular.module('toolkit-gui')
 		 */
 		var routeParams = smartRoutes.params();
 
+		var steps;
+
 		/**
 		 * In scope variable containing containing the currently selected matter
 		 * @memberof ChecklistCtrl
@@ -268,6 +270,11 @@ angular.module('toolkit-gui')
 			} else {
 				// Display error
 				toaster.pop('warning', 'Unable to load matter details',5000);
+			}
+
+			// Guided tour (show only if demo project)
+			if( matter && matter._meta && matter._meta.matter && matter._meta.matter['is_demo']) {
+				IntroService.show(steps);
 			}
 		};
 
@@ -2009,7 +2016,7 @@ angular.module('toolkit-gui')
 		|___|_| |_|\__|_|  \___/ 
 		                         
 		 */
-		var steps={
+		steps={
 			'steps': [
 				{
 					'element': '#step1',
@@ -2045,7 +2052,6 @@ angular.module('toolkit-gui')
 				}
 			]
 		};
-		IntroService.show(steps);
 
 		$scope.reloadingLess = false;
 
