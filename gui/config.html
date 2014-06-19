@@ -112,7 +112,6 @@
   <script src="<!-- @echo staticPath -->partial/searchCtrl/searchCtrl.js"></script>
   <script src="<!-- @echo staticPath -->partial/authentication-required/authentication-required.js"></script>
   <script src="<!-- @echo staticPath -->partial/edit-revision-status/edit-revision-status.js"></script>
-  <script src="<!-- @echo staticPath -->partial/personal-settings/personal-settings.js"></script>
   <!-- Add New Partial JS Above -->
 
   <div class="navbar navbar-inverse checklist-nav" ng-controller="NavigationCtrl">
@@ -224,20 +223,7 @@
       <ul class="nav navbar-nav navbar-right hidden-xs">
 
         <!-- start: desktop notifications / notifications //-->
-        <li class="dropdown seperate-toggle" ng-if="notificationPermissionLevel=='default'">
-          <a href="/notifications/" ng-class="matter.selected.current_user.has_notifications ? 'unread' : ''">
-            <span ng-class="matter.selected.current_user.has_notifications ? 'swing' : ''" class="pe-7s-bell animated-slow"></span>
-          </a>
-          <span class="dropdown-toggle" data-toggle="dropdown">
-            <b class="caret"></b>
-          </span>
-          <ul class="dropdown-menu">
-            <li><a href="/notifications/">View notifications</a></li>
-            <li><a href="javascript:;" ng-click="requestNotifyPermission()">Desktop notifications</a></li>
-          </ul>
-        </li>
-
-        <li class="notifications" ng-if="notificationPermissionLevel!=='default'">
+        <li class="notifications">
           <a href="/notifications/" ng-class="matter.selected.current_user.has_notifications ? 'unread' : ''">
             <span ng-class="matter.selected.current_user.has_notifications ? 'swing' : ''" class="pe-7s-bell animated-slow"></span>
           </a>
