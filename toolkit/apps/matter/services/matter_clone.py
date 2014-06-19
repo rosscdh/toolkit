@@ -38,6 +38,14 @@ class MatterCloneService(object):
         item.save()
         return item
 
+    def update_matter_data(self, matter, **kwargs):
+        matter.data['cloned'] = {
+            'date_cloned': datetime.datetime.utcnow(),
+            'num_items': kwargs.get('num_items'),
+        }
+        return matter
+
+
     def process(self):
         num_items = self.source_matter.item_set.all().count()
 
@@ -53,11 +61,7 @@ class MatterCloneService(object):
 
         # clone the categories via the mixin attribs to preserve order
         self.target_matter.categories = self.source_matter.categories
-
-        self.target_matter.data['cloned'] = {
-            'date_cloned': datetime.datetime.utcnow(),
-            'num_items': num_items,
-        }
+        self.target_matter = self.update_matter_data(matter=self.target_matter, num_items=num_items)
         self.target_matter.save(update_fields=['data'])
 
 
@@ -96,3 +100,10 @@ class DemoMatterCloneService(MatterCloneService):
 
             rev.save()
 
+    def update_matter_data(self, matter, **kwargs):
+        """
+        set is_demo = True so we can show the intro js tutorial on it
+        """
+        matter = super(DemoMatterCloneService, self).update_matter_data(matter=matter, **kwargs)
+        matter.data['is_demo'] = True
+        return matter
