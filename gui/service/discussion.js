@@ -59,7 +59,7 @@ angular.module('toolkit-gui').factory('discussionService', [
                 var api = discussionResource();
                 var deferred = $q.defer();
 
-                api.create({ 'matterSlug': matterSlug }, { 'comment': comment, 'title': title },
+                api.create({ 'matterSlug': matterSlug }, { 'content': comment, 'title': title },
                     function success(thread) {
                         deferred.resolve(thread);
                     },
@@ -91,7 +91,7 @@ angular.module('toolkit-gui').factory('discussionService', [
                 var api = discussionResource();
                 var deferred = $q.defer();
 
-                api.update({ 'matterSlug': matterSlug, 'threadId': threadId}, { 'comment': comment, 'title': title },
+                api.update({ 'matterSlug': matterSlug, 'threadId': threadId}, { 'content': comment, 'title': title },
                     function success(thread) {
                         deferred.resolve(thread);
                     },
@@ -107,7 +107,7 @@ angular.module('toolkit-gui').factory('discussionService', [
                 var api = threadResource();
                 var deferred = $q.defer();
 
-                api.create({'matterSlug': matterSlug, 'threadId': threadId}, {'comment': comment},
+                api.create({ 'matterSlug': matterSlug, 'threadId': threadId }, { 'content': comment },
                     function success() {
                         deferred.resolve();
                     },

@@ -102,6 +102,7 @@ PROJECT_APPS = (
     'toolkit.apps.api',
     'toolkit.apps.default',
     'toolkit.apps.dash',
+    'toolkit.apps.discussion',
     'toolkit.apps.matter',
     'toolkit.apps.me',
     'toolkit.apps.request',
@@ -257,7 +258,7 @@ AUTHENTICATION_BACKENDS = (
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 TEMPLATED_EMAIL_BACKEND = 'templated_email.backends.vanilla_django'
 
-COMMENTS_APP = 'threadedcomments'
+COMMENTS_APP = 'toolkit.apps.discussion'
 
 AWS_STORAGE_BUCKET_NAME = AWS_FILESTORE_BUCKET = 'dev-toolkit-lawpal-com'
 

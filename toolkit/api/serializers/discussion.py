@@ -1,26 +1,31 @@
 # -*- coding: utf-8 -*-
 from rest_framework import serializers
-from threadedcomments.models import ThreadedComment
+
+from toolkit.apps.discussion.models import DiscussionComment
 
 from .user import SimpleUserSerializer
 
 
 class DiscussionSerializer(serializers.HyperlinkedModelSerializer):
+    author = SimpleUserSerializer(read_only=True, source='user')
     comments = serializers.SerializerMethodField('get_comments')
+    content = serializers.WritableField(source='comment')
     date_created = serializers.DateTimeField(source='submit_date', read_only=True)
     date_updated = serializers.SerializerMethodField('get_last_updated')
-    user = SimpleUserSerializer(required=False)
+    participants = SimpleUserSerializer(many=True, read_only=True)
 
     class Meta:
         fields = ('id',
-                  'comment',
-                  'comments',
                   'title',
-                  'user',
+                  'content',
+                  'is_archived',
+                  'comments',
+                  'author',
+                  'participants',
                   'date_created',
                   'date_updated',)
         lookup_field = 'id'
-        model = ThreadedComment
+        model = DiscussionComment
 
     def get_comments(self, obj):
         return DiscussionCommentSerializer(obj.children.all(), context=self.context, many=True).data
@@ -35,9 +40,11 @@ class DiscussionSerializer(serializers.HyperlinkedModelSerializer):
 class LiteDiscussionSerializer(DiscussionSerializer):
     class Meta(DiscussionSerializer.Meta):
         fields = ('id',
-                  'comment',
                   'title',
-                  'user',
+                  'content',
+                  'is_archived',
+                  'author',
+                  'participants',
                   'date_created',
                   'date_updated',)
 
@@ -45,6 +52,6 @@ class LiteDiscussionSerializer(DiscussionSerializer):
 class DiscussionCommentSerializer(DiscussionSerializer):
     class Meta(DiscussionSerializer.Meta):
         fields = ('id',
-                  'comment',
-                  'user',
+                  'content',
+                  'author',
                   'date_created',)
