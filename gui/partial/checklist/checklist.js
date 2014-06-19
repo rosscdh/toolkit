@@ -228,34 +228,42 @@ angular.module('toolkit-gui')
 		 */
 		$scope.initialiseMatter = function( matter ) {
 			var /*i, */categoryName = null, categories = [], items = [];
+			var firstItem, category;
 
 			// Items with blank category name
 			items = jQuery.grep( matter.items, function( item ){ return item.category===categoryName; } );
-
-			// REMOVE !!
-			/*
-			for(var i=0;i<items.length;i++) {
-				items[i].signing_percentage_complete = parseInt( Math.random() * 100 );
-			}
-			*/
-			// end REMOVE
+			category = { 'name': categoryName, 'items': items };
 					
-			categories.push(
-				{ 'name': categoryName, 'items': items }
-			);
+			categories.push(category);
+
+			// First item if available, this will be used to open the first available checklist item by default
+			if(items && items.length>0) {
+				firstItem = { 'item': items[0], 'category': category };
+			}
 
 			if( matter && matter.categories ) {
 				// Allocate items to specific categories to make multiple arrays
 				jQuery.each( matter.categories, function( index, cat ) {
-					var categoryName = cat;
+					var categoryName = cat, category;
 					var items = jQuery.grep( matter.items, function( item ){ return item.category===categoryName; } );
 
-					categories.push( { 'name': categoryName, 'items': items } );
+					category = { 'name': categoryName, 'items': items };
+
+					categories.push( category );
+
+					// First item if available, this will be used to open the first available checklist item by default
+					if(!firstItem) {
+						firstItem = { 'item': items[0], 'category': category };
+					}
 				});
 
 				$scope.data.matter = matter;
 				$scope.data.categories = categories;
 
+				// If there is no state then select the first available item
+				if(!$state.params.itemSlug && firstItem) {
+					$location.path('/checklist/' + firstItem.item.slug);
+				}
 				$scope.handleUrlState();
 
 			} else {

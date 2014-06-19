@@ -88,9 +88,8 @@ def production():
     env.user = 'ubuntu'
     env.application_user = 'app'
     # connect to the port-forwarded ssh
-    env.hosts = ['ec2-184-169-191-190.us-west-1.compute.amazonaws.com',
-                 'ec2-184-72-21-48.us-west-1.compute.amazonaws.com',
-                 'ec2-50-18-33-186.us-west-1.compute.amazonaws.com',
+    env.hosts = ['ec2-50-18-33-186.us-west-1.compute.amazonaws.com',
+                 'ec2-54-176-88-70.us-west-1.compute.amazonaws.com',
                  'ec2-54-241-222-221.us-west-1.compute.amazonaws.com',] if not env.hosts else env.hosts
     env.celery_name = 'celery-production' # taken from chef cookbook
 
@@ -104,12 +103,8 @@ def production():
 # Update the roles
 #
 env.roledefs.update({
-    #'db': ['ec2-50-18-97-221.us-west-1.compute.amazonaws.com'], # the actual db host
-    #'db-actor': ['ec2-184-169-191-190.us-west-1.compute.amazonaws.com'], # database action host
-    # 'search': ['ec2-54-241-224-100.us-west-1.compute.amazonaws.com'], # elastic search action host
-    'web': ['ec2-184-169-191-190.us-west-1.compute.amazonaws.com',
-            'ec2-184-72-21-48.us-west-1.compute.amazonaws.com',
-            'ec2-50-18-33-186.us-west-1.compute.amazonaws.com'],
+    'web': ['ec2-50-18-33-186.us-west-1.compute.amazonaws.com',
+            'ec2-54-176-88-70.us-west-1.compute.amazonaws.com',],
     'worker': ['ec2-54-241-222-221.us-west-1.compute.amazonaws.com'],
 })
 
@@ -123,7 +118,7 @@ def chores():
     # GEO
     sudo('aptitude --assume-yes install libgeos-dev')
 
-    sudo('easy_install pip')
+    #sudo('easy_install pip')
     sudo('pip install virtualenv pillow')
 
     #put('conf/.bash_profile', '~/.bash_profile')
@@ -140,7 +135,7 @@ def virtualenv(cmd, **kwargs):
 
 @task
 def pip_install():
-    virtualenv('pip install django-jsonify')
+    virtualenv('pip install -e git+https://github.com/rosscdh/django-authy.git#egg=django-authy -U')
 
 @task
 def cron():
@@ -313,6 +308,8 @@ def celery_stop(name='worker.1'):
             virtualenv(cmd='cd %s%s;%s' % (env.remote_project_path, env.project, cmd))
         else:
             local(cmd)
+
+        clean_pyc()
 
 @task
 @roles('worker')
