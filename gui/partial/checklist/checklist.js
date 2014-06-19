@@ -261,8 +261,8 @@ angular.module('toolkit-gui')
 				$scope.data.categories = categories;
 
 				// If there is no state then select the first available item
-				if(!$state.params.itemSlug && firstItem) {
-					$location.path('/checklist/' + firstItem.item.slug);
+				if(!$state.params.itemSlug && firstItem && baseRoute==='checklist') {
+					$location.path('/'+baseRoute+'/' + firstItem.item.slug);
 				}
 				$scope.handleUrlState();
 
