@@ -3,22 +3,22 @@
         <ul class="list-unstyled">
             <li class="one-message">
                 <div class="author" sticky scrollelement="'message-scroll'" offset="55">
-                    <span class="user coleg" ng-bind="data.selectedThread.author.initials"></span>
-                    <span ng-bind="data.selectedThread.author.name"></span>
+                    <span class="user coleg" ng-bind="data.selectedThread.user.initials"></span>
+                    <span ng-bind="data.selectedThread.user.name"></span>
                     <span class="text-muted time">{{ data.selectedThread.date_created | timeago }}</span>
                 </div>
                 <div class="message-body">
-                    <p ng-bind="data.selectedThread.content"></p>
+                    <p ng-bind="data.selectedThread.comment"></p>
                 </div>
             </li>
             <li class="one-message" ng-repeat="message in data.selectedThread.comments">
-                <div class="author" sticky scrollelement="'message-scroll'" offset="55">
-                    <span class="user coleg" ng-bind="message.author.initials"></span>
-                    <span ng-bind="message.author.name"></span>
+                <div class="author"  sticky scrollelement="'message-scroll'" offset="55">
+                    <span class="user coleg" ng-bind="message.user.initials"></span>
+                    <span ng-bind="message.user.name"></span>
                     <span class="text-muted">{{ message.date_created | timeago }}</span>
                 </div>
                 <div class="message-body">
-                    <p ng-bind="message.content"></p>
+                    <p ng-bind="message.comment"></p>
                 </div>
             </li>
         </ul>
