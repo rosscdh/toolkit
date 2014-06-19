@@ -725,6 +725,20 @@
   display: inline-block;
   font-size: 18px;
   padding: 5px;
+}
 
+.navbar .nav li.dropdown.seperate-toggle {
+  position: relative;
+  border-radius: 0;
+  &> .dropdown-toggle .caret {
+    margin-left: -4px;
+    margin-top: -8px;
+    margin-right: 8px;
+  }
 
+  &.open {
+    background-color: #6bdb7e;
+    border-bottom-color: #5bba6b;
+    a.transparent { background-color: transparent; }
+  }
 }

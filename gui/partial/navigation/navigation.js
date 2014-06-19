@@ -209,9 +209,30 @@ angular.module('toolkit-gui')
 		}
 
 		$scope.requestNotifyPermission = function() {
-			notify.requestPermission(function(){
-				console.log( '', notify.permissionLevel());
+			var modalInstance = $modal.open({
+				'templateUrl': '/static/ng/partial/personal-settings/personal-settings.html',
+				'controller': 'PersonalSettingsCtrl',
+				'resolve': {
+					participants: function () {
+						return $scope.matter.selected.participants;
+					},
+					currentUser: function () {
+						return $scope.matter.selected.current_user;
+					},
+					matter: function () {
+						return $scope.matter.selected;
+					}
+				}
 			});
+
+			modalInstance.result.then(
+				function ok( settings ) {
+					$scope.notificationPermissionLevel = settings.notificationPermissionLevel;
+				},
+				function cancel() {
+					//
+				}
+			);
 		};
 	}
 ]);

@@ -29,7 +29,7 @@
         "TimeSpan": true,
         "Raven": true,
         "Pusher": true,
-        "notify": true
+        "notify": true,
         "jasmine": true
     },
     "-W083": false,
