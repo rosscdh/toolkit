@@ -52,6 +52,7 @@ class MatterEndpoint(viewsets.ModelViewSet):
         return {
                 'matter': {
                     'status': None,
+                    'is_demo': self.object.data.get('is_demo', False)
                 },
                 'item': {
                     'default_status': default_status_labels,
