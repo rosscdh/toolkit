@@ -17,6 +17,19 @@
 
         <div class="container">
             <div class="row">
+                <div class="col-sm-8 col-sm-offset-2 hidden" id="requestNotifyPermission">
+                    <div class="alert">
+                        <p>
+                            We strongly recommend enabling Desktop Notifications. 
+                            <button type="button" class="btn btn-success"><i class="fa fa-bell small_right_margin"></i> Enable desktop notifications</button>
+                        </p>
+                    </div>
+                </div>
+                <div class="col-sm-8 col-sm-offset-2 hidden" id="requestNotifyInstructions">
+                    <p class="alert">Your browser should now be presenting you with the option to enable notifications, probably at the top or bottom of this window. Click <strong>Enable</strong> or <strong>Allow</strong> or <strong>Yes</strong> or <strong>OK</strong> or whatever the right button is!</p>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-sm-8 col-sm-offset-2" role="main">
                     {% for item in object_list %}
                         {% render_notice item request %}
@@ -121,6 +134,35 @@ $(document).ready(function () {
             }
         });
     });
+
+    // Load desktop notify
+    $.when(
+        // Retrieve intro script
+        $.getScript( "/static/js/desktop-notify-min.js" ),
+        $.Deferred(function( deferred ){
+            $( deferred.resolve );
+        })
+    ).done(function(){
+        processNotificationPermissionLevel();
+    });
+
+    function processNotificationPermissionLevel() {
+        var permissionLevel = notify.permissionLevel();
+        if(permissionLevel==='default') {
+            $('#requestNotifyPermission').removeClass('hidden');
+            $('#requestNotifyPermission button.btn-success').click(function(){
+                $('#requestNotifyPermission').addClass('hidden');
+                $('#requestNotifyInstructions').removeClass('hidden');
+                requestNotifyPermission();
+            });
+        }
+    }
+
+    function requestNotifyPermission() {
+      notify.requestPermission(function(){
+        $('#requestNotifyInstructions').addClass('hidden');
+      });
+    };
 
 });
 </script>
