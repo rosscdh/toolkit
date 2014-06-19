@@ -88,6 +88,10 @@ angular.module('toolkit-gui').config(['$httpProvider', function($httpProvider) {
     $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';    }
 ]);
 
+angular.module('toolkit-gui').filter('escape', function() {
+  return window.escape;
+});
+
 
 
 /**
