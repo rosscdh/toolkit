@@ -33,6 +33,8 @@ PASSWORD_HASHERS = (
     'django.contrib.auth.hashers.MD5PasswordHasher',
 )
 
+EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
+
 AWS_STORAGE_BUCKET_NAME = AWS_FILESTORE_BUCKET = 'dev-toolkit-lawpal-com'
 
 STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
