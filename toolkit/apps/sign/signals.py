@@ -10,6 +10,7 @@ from toolkit.tasks import run_task
 from .models import SignDocument
 from .tasks import _download_signing_complete_document
 
+import json
 import logging
 logger = logging.getLogger('django.request')
 
@@ -39,6 +40,7 @@ def _update_signature_request(hellosign_request, data):
 
     if not model_data:  # if its an empty dict
         logger.error('hellosign_request.data is empty HelloSign is broken again: %s' % hellosign_request.pk)
+        logger.critical('HelloSign empty webhook json data: %s' % json.dumps(data))
 
     if 'signature_request' in data.keys():
         # Ensure we are actioning the correct objects
@@ -46,6 +48,7 @@ def _update_signature_request(hellosign_request, data):
 
         if str(hellosign_request.signature_request_id) != str(data_signature_request_id):
             logger.critical('hellosign_request.signature_request_id: %s is not equal to the passed in data_signature_request_id: %s HelloSign is broken again' % (hellosign_request.signature_request_id, data_signature_request_id))
+            logger.critical('HelloSign webhook non-matching signature_request_id\'s json data: %s' % json.dumps(data))
         else:
             #
             # We have a matching signature_request_id
