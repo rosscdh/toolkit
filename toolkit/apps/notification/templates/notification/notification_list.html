@@ -4,16 +4,16 @@
     <div id="notifications" class="content">
         <div class="content-header notifications-header clearfix">
               <div class="row">
-                <div class="col-sm-12  hidden" id="requestNotifyPermission">
+                <div class="col-sm-12" id="requestNotifyPermission">
                     <div class="alert text-center">
                         <p>
-                            <a href="#"> <i class="fa fa-exclamation-triangle"></i> We strongly recommend enabling Desktop Notifications.</a>
+                            <a href="#" class="notification-link"> <i class="fa fa-exclamation-triangle"></i>We strongly recommend enabling Desktop Notifications.</a>
                             <!-- <button type="button" class="btn btn-success"><i class="fa fa-bell"></i> Enable desktop notifications</button> -->
                         </p>
                     </div>
                 </div>
-                <div class="col-sm-12" id="requestNotifyInstructions">
-                    <p class="alert">Your browser should now be presenting you with the option to enable notifications, probably at the top or bottom of this window. Click <strong>Enable</strong> or <strong>Allow</strong> or <strong>Yes</strong> or <strong>OK</strong> or whatever the right button is!</p>
+                <div class="col-sm-12 hidden" id="requestNotifyInstructions">
+                    <p class="alert text-center">Your browser should now be presenting you with the option to enable notifications. Click <strong>Enable</strong> or <strong>Allow</strong> or <strong>Yes</strong> or <strong>OK</strong>.</p>
                 </div>
             </div>
             <div class="container">
@@ -150,7 +150,7 @@ $(document).ready(function () {
         var permissionLevel = notify.permissionLevel();
         if(permissionLevel==='default') {
             $('#requestNotifyPermission').removeClass('hidden');
-            $('#requestNotifyPermission button.btn-success').click(function(){
+            $('.notification-link').click(function(){
                 $('#requestNotifyPermission').addClass('hidden');
                 $('#requestNotifyInstructions').removeClass('hidden');
                 requestNotifyPermission();
