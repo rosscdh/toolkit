@@ -82,15 +82,29 @@ class MatterActivityEventService(object):
     revision-deleted
 
     """
+    serializers = {}  # due to cyclic imports we have to be sneaky here
+
     def __init__(self, matter, **kwargs):
         self.matter = matter
         self.analytics = AtticusFinch()
 
-    def _create_activity(self, actor, verb, action_object, **kwargs):
-        from toolkit.api.serializers import ItemSerializer  # must be imported due to cyclic with this class being imported in Workspace.models
-        from toolkit.api.serializers.user import LiteUserSerializer  # must be imported due to cyclic with this class being imported in Workspace.models
-        from toolkit.api.serializers import ReviewSerializer
+        #
+        # Cleverly store serializers at the class level
+        # to avoid the crappy cyclic import errors
+        #
+        if not self.serializers: # if we have not set them already
+            from toolkit.api.serializers import ItemSerializer  # must be imported due to cyclic with this class being imported in Workspace.models
+            from toolkit.api.serializers.user import LiteUserSerializer  # must be imported due to cyclic with this class being imported in Workspace.models
+            from toolkit.api.serializers import ReviewSerializer
 
+            self.serializers['ItemSerializer'] = ItemSerializer
+            self.serializers['LiteUserSerializer'] = LiteUserSerializer
+            self.serializers['ReviewSerializer'] = ReviewSerializer
+
+    def _create_activity(self, actor, verb, action_object, **kwargs):
+        """
+        Primary collated objects to be sent for processing
+        """
         activity_kwargs = {
             'actor': actor,
             'verb': verb,
@@ -99,9 +113,9 @@ class MatterActivityEventService(object):
             'target': self.matter,
             'message': kwargs.get('message', None),
             'override_message': kwargs.get('override_message', None),
-            'user': None if not kwargs.get('user', None) else LiteUserSerializer(kwargs.get('user')).data,
-            'item': None if not kwargs.get('item', None) else ItemSerializer(kwargs.get('item')).data,
-            'reviewdocument': None if not kwargs.get('reviewdocument', None) else ReviewSerializer(kwargs.get('reviewdocument')).data,
+            'user': None if not kwargs.get('user', None) else self.serializers.get('LiteUserSerializer')(kwargs.get('user')).data,
+            'item': None if not kwargs.get('item', None) else self.serializers.get('ItemSerializer')(kwargs.get('item')).data,
+            'reviewdocument': None if not kwargs.get('reviewdocument', None) else self.serializers.get('ReviewSerializer')(kwargs.get('reviewdocument')).data,
             'comment': kwargs.get('comment', None),
             'previous_name': kwargs.get('previous_name', None),
             'current_status': kwargs.get('previous_name', None),
@@ -128,17 +142,23 @@ class MatterActivityEventService(object):
         self.matter.__class__.objects.filter(pk=self.matter.pk).update(date_modified=datetime.datetime.utcnow())
 
 
-    def realtime_event(self, event, obj, ident, from_user, **kwargs):
+    def realtime_event(self, event, obj, ident, from_user=None, **kwargs):
         """
         Send a realtime pusher event
+        Semi-ironic as we need to have a fake delay to ensure that the update gets through
+        can perhaps be solved with chaining http://docs.celeryproject.org/en/latest/userguide/canvas.html#chains
         """
-        from_ident = from_user.username
+        from_ident = None
+        # only set it if we have a from_user
+        if from_user:
+            from_ident = from_user.username
         #
         # Run async realtime_matter_event pusher
         #
         run_task(realtime_matter_event, matter=self.matter,
                                         event=event, obj=obj, ident=ident,
                                         from_ident=from_ident,
+                                        countdown=5,  # Delay by set 5 seconds before sending event
                                         **kwargs)
     #
     # Matter
@@ -435,7 +455,7 @@ class MatterActivityEventService(object):
             'matter_pk': self.matter.pk,
             'revision_pk': revision.pk
         })
-        self.realtime_event(event='update', obj=item, ident=item.slug, detail='revision review completed')
+        self.realtime_event(event='update', obj=item, ident=item.slug, from_user=None, detail='revision review completed')
 
     #
     # Signing
@@ -531,4 +551,4 @@ class MatterActivityEventService(object):
             'item_pk': item.pk,
             'matter_pk': self.matter.pk
         })
-        self.realtime_event(event='update', obj=item, ident=item.slug, detail='signing completed')
+        self.realtime_event(event='update', obj=item, ident=item.slug, from_user=None, detail='signing completed')
