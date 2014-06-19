@@ -48,6 +48,19 @@ angular.module('toolkit-gui').config(function($stateProvider, $urlRouterProvider
     .state('checklist.item.revision.review', {
       'url': "/review/:reviewSlug",
       'controller': function($scope) {}
+    })
+    .state('closing', {
+      'url': "/closing",
+      'controller': 'ChecklistCtrl',
+      'data': {
+        'defaultFilter': { 'filter': {'is_complete': true}, 'statusCode': 'closed' }
+      },
+      'templateUrl': '/static/ng/partial/checklist/checklist.html'
+    })
+    .state('closing.item', {
+      'url': "/:itemSlug",
+      'templateUrl': '/static/ng/partial/checklist/includes/itemdetails.html',
+      'controller': function($scope) {}
     });
 
     /*
