@@ -10,6 +10,7 @@ from jsonfield import JSONField
 from sorl.thumbnail.images import ImageFile
 
 import logging
+from toolkit.apps.workspace.models import ROLES
 
 logger = logging.getLogger('django.request')
 
@@ -180,6 +181,7 @@ def get_initials(self):
 
 User.add_to_class('get_initials', get_initials)
 
+
 """
 Permissions: Get or create a permissions object for this user
 """
@@ -190,6 +192,22 @@ def get_matter_permissions(self, matter):
     return self.workspaceparticipants_set.model(user=self, workspace=matter)
 
 User.add_to_class('matter_permissions', get_matter_permissions)
+
+
+"""
+Revision sharing: check if user is allowed to see a specific revision
+return True if:
+- user is not a client
+- revision is shared with the user
+"""
+def can_read(self, matter, revision):
+    if self.matter_permissions(matter).role != ROLES.client:
+        return True
+    if self in revision.shared_with.all():
+        return True
+    return False
+
+User.add_to_class('can_read_revision', can_read)
 
 
 """

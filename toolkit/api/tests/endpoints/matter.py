@@ -13,6 +13,8 @@ from ...serializers import LiteClientSerializer
 
 from model_mommy import mommy
 
+from types import NoneType
+
 import os
 import json
 import datetime
@@ -349,6 +351,9 @@ class MatterDetailProvidedDataTest(BaseEndpointTest):
 
     def test_endpoint_data_customer(self):
         self.client.login(username=self.user.username, password=self.password)
+
+        self.item.latest_revision.shared_with.add(self.user)
+
         resp = self.client.get(self.endpoint)
         resp_data = json.loads(resp.content)
         self.assertTrue(resp_data.get('url') is not None)
@@ -357,6 +362,18 @@ class MatterDetailProvidedDataTest(BaseEndpointTest):
         self.confirm_participants(participants=resp_data.get('participants'))
         # revisions
         self.confirm_item_latest_revision(items=resp_data.get('items'))
+
+    def test_endpoint_data_client_not_shared(self):
+        self.client.login(username=self.user.username, password=self.password)
+
+        # if customer is CLIENT and the revision is not shared with him, its latest_revision must be empty
+        resp = self.client.get(self.endpoint)
+        resp_data = json.loads(resp.content)
+        items = resp_data.get('items')
+        self.assertEqual(type(items), list)
+
+        latest_revision = items[0].get('latest_revision')
+        self.assertEqual(type(latest_revision), NoneType)
 
 
 class MatterRevisionLabelTest(BaseEndpointTest):

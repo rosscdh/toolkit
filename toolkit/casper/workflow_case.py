@@ -5,6 +5,7 @@ from model_mommy import mommy
 from pyquery import PyQuery as pq
 
 from .base import BaseCasperJs
+from toolkit.apps.workspace.models import ROLES
 
 from toolkit.core.item.models import Item
 from toolkit.api.serializers import MatterSerializer
@@ -77,6 +78,8 @@ class BaseScenarios(object):
 
         # endpoint for api cretion via the api
         self.item_create_endpoint = reverse('matter_items', kwargs={'matter_slug': self.matter.slug})
+
+        self.set_user_matter_role(self.user, ROLES.client, self.workspace)
 
     def _api_create_item(self, **kwargs):
         """

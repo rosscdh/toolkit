@@ -25,7 +25,7 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
 
     responsible_party = LiteUserSerializer(required=False)
 
-    latest_revision = SimpleRevisionSerializer(read_only=True)
+    latest_revision = serializers.SerializerMethodField('get_latest_revision')
 
     matter = serializers.HyperlinkedRelatedField(many=False, required=True, view_name='workspace-detail', lookup_field='slug')
 
@@ -60,11 +60,6 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
         """
         return []
 
-    def get_latest_revision(self, obj):
-        if obj.latest_revision is not None:
-            return ABSOLUTE_BASE_URL(reverse('matter_item_revision', kwargs={'matter_slug': obj.matter.slug, 'item_slug': obj.slug}))
-        return None
-
     def get_reviewers(self, obj):
         """
         placeholder
@@ -81,6 +76,15 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
         if getattr(obj.latest_revision, 'pk', None) is not None:
             return [SimpleUserWithReviewUrlSerializer(u, context=self.context).data for u in obj.latest_revision.signers.all()]
         return []
+
+    def get_latest_revision(self, obj):
+        if obj.latest_revision:
+            request = self.context.get('request')
+            matter = self.context.get('matter')
+            if request and matter:
+                if request.user.can_read_revision(matter, obj.latest_revision):
+                    return SimpleRevisionSerializer(obj.latest_revision, read_only=True).data
+        return None
 
     def get_children(self, obj):
         return [ItemSerializer(i, context=self.context).data for i in obj.item_set.all()]
