@@ -772,10 +772,12 @@ html, body, div.full {
   }
 }
 
+///PARTCIPANTS MODAL
+
 .modal-content {
 
   .existing-participants {
-    //display:none;
+    	transition: all 1s;
   }
 
   .save-perm-btn:hover {
@@ -843,9 +845,13 @@ html, body, div.full {
   }
 
   .new-participant {
+  	transition: all 1s;
+  	h5{
+  		margin-bottom: 20px;
+  	}
     .col-sm-6 {
       .btn-primary, .btn-info {
-        font-weight: normal;
+        font-weight: bold;
       }
     }
 
@@ -863,8 +869,18 @@ html, body, div.full {
     vertical-align: middle;
     color: white;
     margin-top: 10px;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
 
+  }
+
+  .user-meta + .user-meta{
+  	padding-bottom: 20px;
+  	font-size: 12px;
+  }
+
+  .user-meta{
+  	color: #888;
+  	margin-bottom: 0px;
   }
 
   .user-details {
@@ -881,22 +897,18 @@ html, body, div.full {
     border: 1px solid #ccc;
   }
   ul.participants {
-    border-bottom: 1px solid #ececec;
     padding-bottom: 10px;
+    border-bottom: 1px solid #ececec;
+
+
     li {
       padding: 10px 10px 10px 10px;
       font-size: 15px;
       border-radius: 6px;
+      border: 2px solid #f5f5f5;
 
-      small.customer {
-        color: @lp-secondary;
-        background-color: transparent;
-      }
 
-      small.lawyer {
-        color: @lp-primary;
-        background-color: transparent;
-      }
+
 
       .user {
 
@@ -910,18 +922,29 @@ html, body, div.full {
 
       .client {
         background-color: @lp-secondary;
+        color: white;
+
       }
 
       .owner {
         background-color: @lp-blue;
+        color: white;
+
       }
 
       .colleague {
         background-color: @lp-primary;
+        color: white;
       }
 
       .third-party {
         background-color: #f8ce59;
+        color: white;
+      }
+
+      .padding{
+      	padding: 3px;
+      	border-radius: 2px;
       }
 
       .add-user {
@@ -957,7 +980,8 @@ html, body, div.full {
       }
 
       &.selected {
-        background-color: @silver;
+        background-color: #6B6A6A;
+        color: white;
       }
     }
   }
@@ -965,9 +989,37 @@ html, body, div.full {
     font-size: 13px;
     line-height: 17px;
     color: #888;
-    margin: 10px 0px;
+    margin: 20px 0px;
   }
 }
+
+.permissions-checklist{
+	margin-bottom: 10px;
+	border-bottom: 1px solid #ececec;
+}
+
+.existing-collapse{
+	height: 0px;
+  overflow: hidden;
+
+}
+
+.add-p-btn{
+	background-color: #6B6A6A;
+	color: white;
+}
+
+h5{
+	margin-bottom: 20px;
+	padding-left: 25px;
+	margin-top: 0px;
+	a{
+		float: right;
+		color: #bdc3c7;
+		font-size: 28px;
+	}
+}
+
 
 /* #closing {
 	background-color:lighten(@silver, 18%);

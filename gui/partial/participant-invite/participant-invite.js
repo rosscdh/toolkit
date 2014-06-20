@@ -24,6 +24,7 @@ angular.module('toolkit-gui')
 	'$window',
 	function($scope, $modalInstance, participants, currentUser, matter, participantService, toaster, $location, $log, $window){
 		'use strict';
+    $scope.showaddbutton = false;
 		/**
 		 * In scope variable containing a list of participants within this matter. This is passed through from the originating controller.
 		 * @memberof ParticipantInviteCtrl
@@ -32,6 +33,7 @@ angular.module('toolkit-gui')
 		 */
 		$scope.participants = participants;
         $log.debug($scope.participants);
+
 
 		/**
 		 * In scope variable containing details about the current user. This is passed through from the originating controller.
@@ -66,6 +68,10 @@ angular.module('toolkit-gui')
             'isNew': false,
             'selectedUser': null
 		};
+
+     if (angular.isArray(participants) && (participants.length > 0)) {
+          $scope.data.selectedUser = participants[0];
+        }
 
 
         /**
@@ -117,7 +123,7 @@ angular.module('toolkit-gui')
 		 * Initiates request to API to invite a person or an already registered user
 		 *
 		 * @name				invite
-		 * 
+		 *
 		 * @private
 		 * @method				invite
 		 * @memberof			ParticipantInviteCtrl
@@ -132,28 +138,21 @@ angular.module('toolkit-gui')
             }
 
 			participantService.invite( $scope.matter.slug, $scope.data.invitee ).then(
-				function success(response) {
-                    participantService.getByURL(response.url).then(
-                        function success(participant){
-                            var results = jQuery.grep( $scope.participants, function( p ){ return p.username===participant.username; } );
-                            if( results.length===0 ) {
-                                $scope.participants.push(participant);
-                            }
+				function success(participant) {
+                    var results = jQuery.grep( $scope.participants, function( p ){ return p.username===participant.username; } );
+                    if( results.length===0 ) {
+                        $scope.participants.push(participant);
+                    }
 
-                            //reset form
-                            $scope.data.invitee= {'email':'','first_name':'', 'last_name':'', 'message':''};
-                            $scope.data.isNew = false;
-                            $scope.data.isParticipant = false;
-                            $scope.data.isLawyer = false;
-                            $scope.data.participant = null;
-                            $scope.data.validationError = false;
-                            $scope.data.showAddLawyer=false;
-                            $scope.data.showAddParticipant=false;
-                        },
-                        function error(/*err*/){
-                            toaster.pop('error', 'Error!', 'Unable to load participant',5000);
-                        }
-                    );
+                    //reset form
+                    $scope.data.invitee= {'email':'','first_name':'', 'last_name':'', 'message':''};
+                    $scope.data.isNew = false;
+                    $scope.data.isParticipant = false;
+                    $scope.data.isLawyer = false;
+                    $scope.data.participant = null;
+                    $scope.data.validationError = false;
+                    $scope.data.showAddLawyer=false;
+                    $scope.data.showAddParticipant=false;
 				},
 				function error() {
 					toaster.pop('error', 'Error!', 'Unable to invite this person to particpate, please try again in a few moments',5000);
@@ -165,7 +164,7 @@ angular.module('toolkit-gui')
 		 * Initiates request to API to revoke access for an already registered user
 		 *
 		 * @name				revoke
-		 * 
+		 *
 		 * @param  {Object} person	User object
 		 * @private
 		 * @method				revoke
@@ -208,7 +207,7 @@ angular.module('toolkit-gui')
 		 * Returns updated participants array.
 		 *
 		 * @name				ok
-		 * 
+		 *
 		 * @private
 		 * @method				ok
 		 * @memberof			ParticipantInviteCtrl
@@ -222,7 +221,7 @@ angular.module('toolkit-gui')
 		 * Returns nothing
 		 *
 		 * @name				cancel
-		 * 
+		 *
 		 * @private
 		 * @method				cancel
 		 * @memberof			ParticipantInviteCtrl
