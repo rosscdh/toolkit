@@ -97,8 +97,6 @@ class ShareRevisionPermissionTest(BaseEndpointTest):
                                    uploaded_by=self.lawyer)
 
         self.username_to_work_with = 'test-customer'
-        self.user = User.objects.get(username=self.username_to_work_with)
-        self.user_permissions = self.user.matter_permissions(matter=self.matter)
 
     def test_endpoint_name(self):
         self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/items/%s/revision' % self.item.slug)
@@ -137,15 +135,12 @@ class ShareRevisionPermissionTest(BaseEndpointTest):
         self.client.login(username=self.lawyer.username, password=self.password)
 
         # test if lawyer needs permissions to add someone
-        lawyer_permissions = self.lawyer.matter_permissions(matter=self.matter)
-        lawyer_permissions.update_permissions(manage_items=False)
-        lawyer_permissions.save(update_fields=['data'])
+        self.set_user_matter_perms(self.lawyer, manage_items=False)
         resp_post = self._share_with_user()
         self.assertEqual(resp_post.status_code, 403)
 
         # set required permissions to test the rest
-        lawyer_permissions.update_permissions(manage_items=True)
-        lawyer_permissions.save(update_fields=['data'])
+        self.set_user_matter_perms(self.lawyer, manage_items=True)
 
         # POST again to see if new permissions work
         resp_post = self._share_with_user()
@@ -156,15 +151,12 @@ class ShareRevisionPermissionTest(BaseEndpointTest):
         self._share_with_user()
 
         # test if lawyer needs permissions to delete someone
-        lawyer_permissions = self.lawyer.matter_permissions(matter=self.matter)
-        lawyer_permissions.update_permissions(manage_items=False)
-        lawyer_permissions.save(update_fields=['data'])
+        self.set_user_matter_perms(self.lawyer, manage_items=False)
         resp_post = self._delete_user_from_shared()
         self.assertEqual(resp_post.status_code, 403)
 
         # set required permissions to test the rest
-        lawyer_permissions.update_permissions(manage_items=True)
-        lawyer_permissions.save(update_fields=['data'])
+        self.set_user_matter_perms(self.lawyer, manage_items=True)
 
         # DELETE again to see if new permissions work
         resp_post = self._delete_user_from_shared()
@@ -174,14 +166,12 @@ class ShareRevisionPermissionTest(BaseEndpointTest):
         self.client.login(username=self.lawyer.username, password=self.password)
 
         # check endpoint does NOT accept non-client-user
-        self.user_permissions.role = ROLES.colleague
-        self.user_permissions.save(update_fields=['role'])
+        self.set_user_matter_role(self.user, ROLES.colleague)
         resp_post = self._share_with_user()
         self.assertEqual(resp_post.status_code, 400)
 
         # check endpoint accepts new client
-        self.user_permissions.role = ROLES.client
-        self.user_permissions.save(update_fields=['role'])
+        self.set_user_matter_role(self.user, ROLES.client)
         resp_post = self._share_with_user()
         self.assertEqual(resp_post.status_code, 200)
 
@@ -213,8 +203,7 @@ class ShareRevisionPermissionTest(BaseEndpointTest):
         self._share_with_user()
 
         # check endpoint accepts client to delete
-        self.user_permissions.role = ROLES.client
-        self.user_permissions.save(update_fields=['role'])
+        self.set_user_matter_role(self.user, ROLES.client)
         resp_post = self._delete_user_from_shared()
         self.assertEqual(resp_post.status_code, 200)
 
