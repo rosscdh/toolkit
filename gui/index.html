@@ -175,7 +175,7 @@
 
             <!-- filter //-->
             {% verbatim %}
-            <span class="input-group-btn custom-btn-round">
+            <span class="input-group-btn custom-btn-round" ng-if="baseRoute=='checklist'">
               <button
                 class="btn btn-default dropdown-toggle btn-xs doc-outline-status-{{matter.selectedStatusFilter}}"
                 type="button"
