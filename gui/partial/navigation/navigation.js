@@ -191,6 +191,7 @@ angular.module('toolkit-gui')
 		 * @memberof			NavigationCtrl
 		 */
 		$scope.$on('notification', function recievePusherNotification( evt, message ){
+			debugger;
 			var msgText = (message&&message.detail)?message.detail:'Lawpal has a notification for you';
 			// Remove notification styles
 			$scope.matter.selected.current_user.has_notifications = false;
@@ -198,6 +199,8 @@ angular.module('toolkit-gui')
 			$timeout(function(){
 				$scope.matter.selected.current_user.has_notifications = true;
 			},100);
+
+			$scope.notificationPermissionLevel = notify.permissionLevel();
 
 			if( notify ) {
 				notify.createNotification("Notification", { 'body':msgText, 'icon': '/static/images/favicon.ico' });
