@@ -33,7 +33,7 @@
                         <a href="javascript:;" ng-click="addThreadParticipant(data.selectedThread)" class="btn btn-sm pull-right btn-default">Add participant</a>
                            <br><br>
 
-                        <button class="btn btn-default send-btn" type="submit">Send</button>
+                        <button class="btn btn-default send-btn" type="submit" ng-disabled="sendingMessage">Send <i class="fa fa-spinner fa-spin" ng-if="sendingMessage"></i></button>
 
                     </form>
                 </div>

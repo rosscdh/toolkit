@@ -3,6 +3,8 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
     '$rootScope',
     '$scope',
     '$state',
+    '$location',
+    '$anchorScroll',
     'discussionService',
     'ezConfirm',
     'matterService',
@@ -10,7 +12,7 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
     'toaster',
     '$log',
     '$q',
-    function($modal, $rootScope, $scope, $state, discussionService, ezConfirm, matterService, smartRoutes, toaster, $log, $q) {
+    function($modal, $rootScope, $scope, $state, $location, $anchorScroll, discussionService, ezConfirm, matterService, smartRoutes, toaster, $log, $q) {
         'use strict';
 
         var routeParams = smartRoutes.params();
@@ -149,14 +151,21 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
 
             var matterSlug = $scope.data.matterSlug;
             var threadId = $scope.data.selectedThread.id;
+
+            $scope.sendingMessage = true;
+
             discussionService.comment(matterSlug, threadId, $scope.data.request.message).then(
                 function success(response) {
                     deferred.resolve(response);
-
                     $scope.selectThread(threadId);
+
+                    // Clear message in GUI
+                    $scope.data.request.message = '';
+                    $scope.sendingMessage = false;                    
                 },
                 function error(/*err*/) {
                     toaster.pop('error', 'Error!', 'Unable to comment on discussion.', 5000);
+                    $scope.sendingMessage = false;
                 }
             );
         };
