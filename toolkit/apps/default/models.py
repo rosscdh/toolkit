@@ -197,13 +197,14 @@ User.add_to_class('matter_permissions', get_matter_permissions)
 """
 Revision sharing: check if user is allowed to see a specific revision
 return True if:
+- user uploaded the revision
 - user is not a client
 - revision is shared with the user
 """
 def can_read(self, matter, revision):
-    if self.matter_permissions(matter).role != ROLES.client:
-        return True
-    if self in revision.shared_with.all():
+    if self == revision.uploaded_by \
+            or self.matter_permissions(matter).role != ROLES.client \
+            or self in revision.shared_with.all():
         return True
     return False
 

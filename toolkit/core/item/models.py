@@ -8,6 +8,7 @@ from .signals import (on_item_save_category,
                       on_item_save_closing_group,
                       on_item_save_manual_latest_item_delete,
                       on_item_post_save)
+from toolkit.apps.workspace.models import ROLES
 
 from toolkit.core.mixins import IsDeletedMixin, ApiSerializerMixin
 
@@ -116,6 +117,11 @@ class Item(IsDeletedMixin,
         else:
             revision = self.latest_revision
         return revision.get_user_sign_url(user=user)
+
+    def latest_revision_by_user(self, user, matter):
+        if user.matter_permissions(matter=matter).role != ROLES.client:
+            return self.latest_revision
+        return user.visible_revisions.filter(item=self).last()
 
     @property
     def client(self):

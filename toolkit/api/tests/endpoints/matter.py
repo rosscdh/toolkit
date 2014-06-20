@@ -13,8 +13,6 @@ from ...serializers import LiteClientSerializer
 
 from model_mommy import mommy
 
-from types import NoneType
-
 import os
 import json
 import datetime
@@ -45,7 +43,8 @@ class MattersTest(BaseEndpointTest):
 
         new_client = mommy.prepare('client.Client', lawyer=self.lawyer, name='A new Client for Test Lawyer')
 
-        resp = self.client.post(self.endpoint, json.dumps(LiteClientSerializer(new_client).data), content_type='application/json')
+        resp = self.client.post(self.endpoint, json.dumps(LiteClientSerializer(new_client).data),
+                                content_type='application/json')
 
         self.assertEqual(resp.status_code, 201)  # created
 
@@ -334,7 +333,8 @@ class MatterDetailProvidedDataTest(BaseEndpointTest):
         latest_revision = items[0].get('latest_revision')
         self.assertEqual(type(latest_revision), dict)
 
-        self.assertItemsEqual(latest_revision.keys(), ['url', 'regular_url', 'status', 'date_created', 'slug', 'name'])
+        self.assertItemsEqual(latest_revision.keys(),
+                              ['url', 'regular_url', 'status', 'date_created', 'slug', 'name', 'is_current'])
 
     def test_endpoint_data_lawyer(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -362,18 +362,6 @@ class MatterDetailProvidedDataTest(BaseEndpointTest):
         self.confirm_participants(participants=resp_data.get('participants'))
         # revisions
         self.confirm_item_latest_revision(items=resp_data.get('items'))
-
-    def test_endpoint_data_client_not_shared(self):
-        self.client.login(username=self.user.username, password=self.password)
-
-        # if customer is CLIENT and the revision is not shared with him, its latest_revision must be empty
-        resp = self.client.get(self.endpoint)
-        resp_data = json.loads(resp.content)
-        items = resp_data.get('items')
-        self.assertEqual(type(items), list)
-
-        latest_revision = items[0].get('latest_revision')
-        self.assertEqual(type(latest_revision), NoneType)
 
 
 class MatterRevisionLabelTest(BaseEndpointTest):

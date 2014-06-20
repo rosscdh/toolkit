@@ -211,6 +211,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
     user_download_url = serializers.SerializerMethodField('get_user_download_url')
 
     revisions = serializers.SerializerMethodField('get_revisions')
+    is_current = serializers.SerializerMethodField('is_current')
 
     uploaded_by = serializers.SerializerMethodField('get_uploaded_by')
 
@@ -227,6 +228,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
                   'item',
                   'uploaded_by',
                   'reviewers', 'signers', 'shared_with',
+                  'is_current',
                   'signing',
                   'revisions',
                   'user_review', 'user_download_url',
@@ -329,6 +331,11 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
             data = SignatureSerializer(sign_document, context=context).data
         return data
 
+    def is_current(self, obj):
+        if self.item.latest_revision == self:
+            return True
+        return False
+
     @staticmethod
     def get_revisions(obj):
         # TODO: add context and filter by client
@@ -343,8 +350,9 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
 class SimpleRevisionSerializer(RevisionSerializer):
     class Meta(RevisionSerializer.Meta):
         fields = ('slug',
-                  'url', 'regular_url',
+                  'url',
+                  'regular_url',
                   'name',
                   'status',
-                  'date_created',)
-
+                  'date_created',
+                  'is_current')

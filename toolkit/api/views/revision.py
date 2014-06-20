@@ -206,11 +206,11 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
 
     def can_read(self, user):
         """
+        only participants which are not clients override the rest
         the participants, the latest_revision reviewers and the users which were activated can read
         """
-        if user.matter_permissions(matter=self.matter).role == ROLES.client:
-            return user in self.get_object().shared_with.all()
-        return user in self.matter.participants.all() or user in self.item.latest_revision.reviewers.all()
+        return user in self.item.latest_revision.reviewers.all() or user.can_read(matter=self.matter,
+                                                                                  revision=self.get_object())
         # return (user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all() \
         #     or user in self.item.latest_revision.reviewers.all())
 
