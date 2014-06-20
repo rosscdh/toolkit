@@ -1266,7 +1266,10 @@ angular.module('toolkit-gui')
                         }
                     });
 
-                    $log.debug("Length known signers: " + $scope.data.knownSigners.length);
+                    //$log.debug("Length known signers: " + $scope.data.knownSigners.length);
+
+                    // Open signing dialog
+                    $scope.showSigning(revision, null);
 				},
 				function cancel() {
 					//
