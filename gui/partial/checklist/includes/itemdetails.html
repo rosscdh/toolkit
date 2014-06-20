@@ -201,16 +201,22 @@
             </div>
 
             <div class="review in-progress" ng-show="data.selectedItem.latest_revision.reviewers.length>0">
+
+                <div class="pull-right">
+                    <a class="btn btn-link btn-xs" href="javascript:;" ng-click="remindRevisionReview(data.selectedItem)" ng-if="data.selectedItem.review_percentage_complete!==100">
+                    Remind
+                    </a>
+
+                    <a class="btn btn-link btn-xs" href="javascript:;" ng-click="deleteRevisionReviewRequest(data.selectedItem, rev)"
+                               ng-hide="rev.is_complete">Cancel Review</a>
+
+                </div>
                 <span ng-show="data.selectedItem.review_percentage_complete<100">Review in progress</span>
                 <span ng-show="data.selectedItem.review_percentage_complete==100">Review complete</span>
-                <a class="btn btn-link btn-xs pull-right" href="javascript:;" ng-click="remindRevisionReview(data.selectedItem)" ng-if="data.selectedItem.review_percentage_complete!==100">
-                    Remind
-                </a>
+
                 <div class="review-members">
                     <ul class="list-unstyled">
                         <li ng-repeat="rev in data.selectedItem.latest_revision.reviewers" ng-class="{'complete': rev.is_complete==true }">
-                            <a class="close" href="javascript:;" ng-click="deleteRevisionReviewRequest(data.selectedItem, rev)"
-                               ng-hide="rev.is_complete">x</a>
                             <a href="javascript:;" ng-click="showReview(data.selectedItem.latest_revision, rev)" class="pull-right">
                                 <button class="btn btn-warning btn-xs" ng-hide="rev.is_complete"><span class="fui-time"></span> In progress</button>
                                 <button class="btn btn-success btn-xs" ng-show="rev.is_complete">
@@ -228,10 +234,17 @@
             </div>
 
             <div class="signing in-progress" ng-show="data.selectedItem.latest_revision.signing.url">
-                <a class="btn btn-link btn-xs pull-right" href="javascript:;" ng-click="deleteSigningRequest(data.selectedItem.latest_revision)"
+                <div class="pull-right">
+                   <a class="btn btn-link btn-xs" href="javascript:;" ng-show="data.selectedItem.latest_revision.signing.is_claimed && data.selectedItem.latest_revision.is_executed!==true && data.selectedItem.latest_revision.signing.percentage_complete<100" ng-click="remindRevisionSigners(data.selectedItem)">
+                    Remind
+                </a>
+                <a class="btn btn-link btn-xs" href="javascript:;" ng-click="deleteSigningRequest(data.selectedItem.latest_revision)"
                    ng-hide="data.selectedItem.latest_revision.is_executed||data.selectedItem.latest_revision.signing.percentage_complete===100">
                     Cancel Signing
                 </a>
+                </div>
+
+
 
                 <div ng-hide="data.selectedItem.latest_revision.signing.is_claimed" class="">
                  <a class="signing-setup-link" href="javascript:;" ng-click="showSigning(data.selectedItem.latest_revision, null)"><div class="notice-me animated-slow shake"><i class="fa fa-exclamation-circle"></i></div>
@@ -246,9 +259,6 @@
                     <span>Signing completed</span>
                 </span>
 
-                <a class="btn btn-link btn-xs pull-right" href="javascript:;" ng-show="data.selectedItem.latest_revision.signing.is_claimed && data.selectedItem.latest_revision.is_executed!==true && data.selectedItem.latest_revision.signing.percentage_complete<100" ng-click="remindRevisionSigners(data.selectedItem)">
-                    Remind
-                </a>
 
                 <div class="review-members" ng-show="data.selectedItem.latest_revision.signing.is_claimed==true">
                     <ul class="list-unstyled">
