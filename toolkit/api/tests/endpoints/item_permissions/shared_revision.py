@@ -74,6 +74,14 @@ class ShareRevisionPermissionTest(BaseEndpointTest):
     def endpoint(self):
         return reverse('matter_item_revision', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug})
 
+    @property
+    def share_endpoint(self):
+        return reverse('matter_share_revision', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug})
+
+    @property
+    def delete_endpoint(self):
+        return '%s/%s' % (self.share_endpoint, self.username_to_work_with)
+
     def setUp(self):
         super(ShareRevisionPermissionTest, self).setUp()
 
@@ -88,8 +96,15 @@ class ShareRevisionPermissionTest(BaseEndpointTest):
                                    item=self.item,
                                    uploaded_by=self.lawyer)
 
+        self.username_to_work_with = 'test-customer'
+        self.user = User.objects.get(username=self.username_to_work_with)
+        self.user_permissions = self.user.matter_permissions(matter=self.matter)
+
     def test_endpoint_name(self):
         self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/items/%s/revision' % self.item.slug)
+        self.assertEqual(self.share_endpoint, '/api/v1/matters/lawpal-test/items/%s/revision/share' % self.item.slug)
+        self.assertEqual(self.delete_endpoint, '/api/v1/matters/lawpal-test/items/%s/revision/share/%s' %
+                         (self.item.slug, self.username_to_work_with))
 
     def test_revision_get(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -110,89 +125,99 @@ class ShareRevisionPermissionTest(BaseEndpointTest):
         resp_content = json.loads(resp.content)
         self.assertEqual(resp_content.get('shared_with')[0]['username'], SimpleUserSerializer(user).data['username'])
 
-    def test_revision_sharing_endpoint(self):
+    def _share_with_user(self):
+        return self.client.post(self.share_endpoint, json.dumps({'username': self.username_to_work_with}),
+                                content_type='application/json')
+
+    def _delete_user_from_shared(self):
+        return self.client.delete(self.delete_endpoint)
+
+    # test the sharing endpoint
+    def test_post_permissions(self):
         self.client.login(username=self.lawyer.username, password=self.password)
 
-        share_endpoint = reverse('matter_share_revision', kwargs={'matter_slug': self.matter.slug,
-                                                                  'item_slug': self.item.slug})
-        self.assertEqual(share_endpoint, '/api/v1/matters/lawpal-test/items/%s/revision/share' % self.item.slug)
-
-        username_to_work_with = 'test-customer'
-        user = User.objects.get(username=username_to_work_with)
-        user_permissions = user.matter_permissions(matter=self.matter)
-
-        # test POST to endpoint
-        #
         # test if lawyer needs permissions to add someone
         lawyer_permissions = self.lawyer.matter_permissions(matter=self.matter)
         lawyer_permissions.update_permissions(manage_items=False)
         lawyer_permissions.save(update_fields=['data'])
-        resp_post = self.client.post(share_endpoint, json.dumps({'username': username_to_work_with}),
-                                     content_type='application/json')
+        resp_post = self._share_with_user()
         self.assertEqual(resp_post.status_code, 403)
 
         # set required permissions to test the rest
         lawyer_permissions.update_permissions(manage_items=True)
         lawyer_permissions.save(update_fields=['data'])
 
+        # POST again to see if new permissions work
+        resp_post = self._share_with_user()
+        self.assertEqual(resp_post.status_code, 200)
+
+    def test_delete_permissions(self):
+        self.client.login(username=self.lawyer.username, password=self.password)
+        self._share_with_user()
+
+        # test if lawyer needs permissions to delete someone
+        lawyer_permissions = self.lawyer.matter_permissions(matter=self.matter)
+        lawyer_permissions.update_permissions(manage_items=False)
+        lawyer_permissions.save(update_fields=['data'])
+        resp_post = self._delete_user_from_shared()
+        self.assertEqual(resp_post.status_code, 403)
+
+        # set required permissions to test the rest
+        lawyer_permissions.update_permissions(manage_items=True)
+        lawyer_permissions.save(update_fields=['data'])
+
+        # DELETE again to see if new permissions work
+        resp_post = self._delete_user_from_shared()
+        self.assertEqual(resp_post.status_code, 200)
+
+    def test_post_only_client(self):
+        self.client.login(username=self.lawyer.username, password=self.password)
+
         # check endpoint does NOT accept non-client-user
-        user_permissions.role = ROLES.colleague
-        user_permissions.save(update_fields=['role'])
-        resp_post = self.client.post(share_endpoint, json.dumps({'username': username_to_work_with}),
-                                     content_type='application/json')
+        self.user_permissions.role = ROLES.colleague
+        self.user_permissions.save(update_fields=['role'])
+        resp_post = self._share_with_user()
         self.assertEqual(resp_post.status_code, 400)
 
         # check endpoint accepts new client
-        user_permissions.role = ROLES.client
-        user_permissions.save(update_fields=['role'])
-        resp_post = self.client.post(share_endpoint, json.dumps({'username': username_to_work_with}),
-                                     content_type='application/json')
+        self.user_permissions.role = ROLES.client
+        self.user_permissions.save(update_fields=['role'])
+        resp_post = self._share_with_user()
         self.assertEqual(resp_post.status_code, 200)
 
         # check endpoint accepts new user - ONE TIME
-        resp_post = self.client.post(share_endpoint, json.dumps({'username': username_to_work_with}),
-                                     content_type='application/json')
+        resp_post = self._share_with_user()
         self.assertEqual(resp_post.status_code, 304)
 
+    def test_post_only_existing_user(self):
+        self.client.login(username=self.lawyer.username, password=self.password)
+
         # check endpoint does NOT accept non-existing client
-        resp_post = self.client.post(share_endpoint, json.dumps({'username': username_to_work_with}),
+        resp_post = self.client.post(self.share_endpoint, json.dumps({'username': 'fake_username'}),
                                      content_type='application/json')
-        self.assertEqual(resp_post.status_code, 304)
+        self.assertEqual(resp_post.status_code, 400)
+
+    # test the get-endpoint for shared_with-users
+    def test_shared_with_in_item(self):
+        self.client.login(username=self.lawyer.username, password=self.password)
+        self._share_with_user()
 
         # check user is in shared_with
         resp = self.client.get(self.endpoint)
         self.assertEqual(resp.status_code, 200)
         resp_content = json.loads(resp.content)
-        self.assertEqual(resp_content.get('shared_with')[0]['username'], username_to_work_with)
+        self.assertEqual(resp_content.get('shared_with')[0]['username'], self.username_to_work_with)
 
-        # test DELETE to endpoint
-        #
-        # test if lawyer needs permissions to delete someone
-        lawyer_permissions = self.lawyer.matter_permissions(matter=self.matter)
-        lawyer_permissions.update_permissions(manage_items=False)
-        lawyer_permissions.save(update_fields=['data'])
-        resp_post = self.client.post(share_endpoint, json.dumps({'username': username_to_work_with}),
-                                     content_type='application/json')
-        self.assertEqual(resp_post.status_code, 403)
-
-        # set required permissions to test the rest
-        lawyer_permissions.update_permissions(manage_items=True)
-        lawyer_permissions.save(update_fields=['data'])
+    def test_delete_client(self):
+        self.client.login(username=self.lawyer.username, password=self.password)
+        self._share_with_user()
 
         # check endpoint accepts client to delete
-        user_permissions.role = ROLES.client
-        user_permissions.save(update_fields=['role'])
-        resp_post = self.client.delete(share_endpoint, json.dumps({'username': username_to_work_with}),
-                                       content_type='application/json')
+        self.user_permissions.role = ROLES.client
+        self.user_permissions.save(update_fields=['role'])
+        resp_post = self._delete_user_from_shared()
         self.assertEqual(resp_post.status_code, 200)
 
         # check endpoint accepts client to delete - ONE TIME
-        resp_post = self.client.delete(share_endpoint, json.dumps({'username': username_to_work_with}),
-                                       content_type='application/json')
+        resp_post = self._delete_user_from_shared()
         self.assertEqual(resp_post.status_code, 304)
-
-        # check user is NOT in shared_with
-        resp = self.client.get(self.endpoint)
-        self.assertEqual(resp.status_code, 200)
-        resp_content = json.loads(resp.content)
-        self.assertEqual(resp_content.get('shared_with'), [])

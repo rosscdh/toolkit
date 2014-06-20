@@ -99,7 +99,8 @@ urlpatterns = router.urls + patterns('',
     #
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/?$', MatterItemCurrentRevisionView.as_view(), name='matter_item_revision'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/v(?P<version>[\d]+)/?$', MatterItemSpecificReversionView.as_view(), name='matter_item_specific_revision'),
-    url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/share/?$', ShareCurrentRevisionView.as_view(), name='matter_share_revision'),
+    url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/share(/(?P<username>.+))?/?$', ShareCurrentRevisionView.as_view(), name='matter_share_revision'),
+    # url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/share/?$', ShareCurrentRevisionView.as_view(), name='matter_share_revision'),
     # reviewer reviewed document
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/reviewdocument/(?P<reviewdocument_slug>[\d\w-]+)/viewed/?$', ReviewerHasViewedRevision.as_view(), name='matter_item_specific_revision_user_viewed'),
 

@@ -275,9 +275,7 @@ class ShareCurrentRevisionView(generics.CreateAPIView,
         return Response(status=status)
 
     def delete(self, request, **kwargs):
-        data = request.DATA.copy()
-
-        username = data.get('username')
+        username = kwargs.pop('username')
         try:
             user = User.objects.get(username=username)
         except User.DoesNotExist:
