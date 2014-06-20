@@ -311,6 +311,7 @@ PIPELINE_CSS = {
             'fonts/pe-icon-7-stroke/css/pe-icon-7-stroke.css',
             'css/application.css',
             'css/animate.css',
+            'less/introjs-custom.less'
         ),
         'output_filename': 'css/core.css',
         'extra_context': {
