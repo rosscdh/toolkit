@@ -248,7 +248,7 @@
 
                 <div ng-hide="data.selectedItem.latest_revision.signing.is_claimed" class="">
                  <a class="signing-setup-link" href="javascript:;" ng-click="showSigning(data.selectedItem.latest_revision, null)"><div class="notice-me animated-slow shake"><i class="fa fa-exclamation-circle"></i></div>
-                    <div>Please set up the document for signing (Do not select the "sign now" option)</div></a>
+                    <div>Please set up the document for signing</div></a>
                 </div>
 
                 <span ng-show="data.selectedItem.latest_revision.signing.is_claimed && data.selectedItem.latest_revision.is_executed!==true && data.selectedItem.latest_revision.signing.percentage_complete<100">
