@@ -245,7 +245,8 @@ angular.module('toolkit-gui')
 					categories.push( category );
 
 					// First item if available, this will be used to open the first available checklist item by default
-					if(!firstItem) {
+
+					if(!firstItem && items[0] !== undefined) {
 						firstItem = { 'item': items[0], 'category': category };
 					}
 				});
