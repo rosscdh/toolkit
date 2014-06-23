@@ -68,7 +68,8 @@ angular.module('toolkit-gui')
             'isNew': false,
             'selectedUser': null,
             'requestLoading': false,
-            'showaddbutton': false
+            'showAddButton': false
+
 		};
 
      if (angular.isArray(participants) && (participants.length > 0)) {
@@ -265,6 +266,7 @@ angular.module('toolkit-gui')
             return $scope.data.validationError ||
                 !($scope.data.invitee.email&&$scope.data.invitee.first_name&&$scope.data.invitee.last_name);
 		};
+
 
 	}
 ]);

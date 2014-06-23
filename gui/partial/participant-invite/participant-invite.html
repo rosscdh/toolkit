@@ -6,7 +6,7 @@
 	<div class="modal-body" modal-loading="data.requestLoading">
 
         <div ng-hide="data.showAddLawyer||data.showAddParticipant">
-            <div class="row existing-participants" ng-hide="data.showaddbutton">
+            <div class="row existing-participants" ng-hide="data.showAddButton">
             <div class="col-sm-6 ">
                 <ul class="list-unstyled participants">
                     <li ng-repeat="person in participants" ng-click="data.selectedUser=person" ng-class="{'selected': data.selectedUser==person }">
@@ -19,7 +19,7 @@
 
 
                 <div class="text-center">
-                     <a class="btn btn-sm add-p-btn" ng-click="data.showaddbutton=true" ng-show="(currentUser.permissions.manage_clients||currentUser.permissions.manage_participants)&&!data.showaddbutton">
+                     <a class="btn btn-sm add-p-btn" ng-click="data.showAddButton=true" ng-show="(currentUser.permissions.manage_clients||currentUser.permissions.manage_participants)&&!data.showAddbButton">
                         <span class="fui-user"></span> Add a Participant
                     </a>
                 </div>
@@ -93,8 +93,8 @@
                 </div>
             </div>
         </div>
-        <div class="new-participant" ng-show="data.showaddbutton">
-            <h5>Add a Participant <a href="javascript:;" ng-click="data.showaddbutton=false" class="close">x</a> </h5>
+        <div class="new-participant ng-cloak" ng-show="data.showaddbutton">
+            <h5>Add a Participant <a href="javascript:;" ng-click="data.showAddButton=false" class="close">x</a> </h5>
             <div class="row">
                 <div class="col-sm-6 text-center" ng-show="currentUser.permissions.manage_participants">
                     <a href="javascript:;" class="btn btn-primary lawyer" ng-click="data.showAddLawyer=true">Add a Colleague</a>
