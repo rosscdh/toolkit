@@ -9,18 +9,20 @@
  * @param  {Object} itemSlug              The slug of the currently selected item
  * @param  {Object} user                  The current user object
  */
-angular.module('toolkit-gui').directive("sticky", [ '$window', function($window){
+angular.module('toolkit-gui').directive("sticky", [ '$window', '$timeout', function($window,$timeout){
 	'use strict';
 	return {
 		'scope': {
 			'scrollelement': '=',
 			'offset': '=',
-			'debug': '='
+			'debug': '=',
+			'last': '='
 		},
 		'restrict': "A",
 		'link': function(scope, element/*, attrs*/) {
 			var scrollerNode = document.getElementById(scope.scrollelement)||$window;
 			var parent = element.parent();
+			var container = parent.parent();
 			var offset = scope.offset||55;
 
 			function processPositions() {
@@ -59,6 +61,13 @@ angular.module('toolkit-gui').directive("sticky", [ '$window', function($window)
 				processPositions();
 			});
 
+			if(scope.last) {
+				$timeout(function(){
+					$(scrollerNode).scrollTop($(container).height());
+				},100);
+				
+			}
+			
 			processPositions();
 		}
 	};
