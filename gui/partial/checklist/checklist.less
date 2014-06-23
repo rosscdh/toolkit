@@ -668,4 +668,28 @@ iframe.fit-container, object, embed {
 	border:0;
 	padding:0;
 	margin:0;
+	.transition( all 1s linear );
+}
+
+iframe.loading {
+	opacity: 0.05;
+	.transition( all 1s linear );
+}
+
+div.iframe-loader::after {
+	content: "\f110";
+	font-family: FontAwesome;
+	font-style: normal;
+	font-weight: normal;
+	text-decoration: inherit;
+	position: absolute;
+	font-size: 40px;
+	color: rgba(0,0,0,0.25);
+	top: 50%;
+	left: 50%;
+	margin: -20px 0 0 -20px;
+	-webkit-animation: spin 2s infinite linear;
+	-moz-animation: spin 2s infinite linear;
+	-o-animation: spin 2s infinite linear;
+	animation: spin 2s infinite linear;
 }
