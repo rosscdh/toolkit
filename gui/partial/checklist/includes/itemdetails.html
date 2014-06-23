@@ -48,7 +48,7 @@
     <!-- Begin option toolbar -->
     <div class="add-new clearfix">
         <div class="btn-group" ng-show="data.usdata.current.user_class=='lawyer'">
-            <button class="btn btn-sm btn-info btn-embossed btn-add" filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)" extensions=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx"><span class="fui-upload"></span>
+            <button class="btn btn-sm btn-info btn-embossed btn-add" ng-click="showAddFile=true"><span class="fui-upload"></span>
                 Add File
             </button>
             <button class="btn btn-info btn-sm btn-embossed dropdown-toggle" data-toggle="dropdown">
@@ -133,7 +133,7 @@
     </div>
 
     <div ng-if="data.usdata.current.user_class=='lawyer'&&data.selectedItem.latest_revision&&!data.itemIsLoading" class="ng-cloak">
-        <div class="drop-area show-on-drag" ng-file-drop="onFileDropped($files, data.selectedItem);">
+        <div class="drop-area show-on-drag" ng-file-drop="onFileDropped($files, data.selectedItem);" ng-class="{ 'show': showAddFile }">
             <span class="fui-upload"></span>
             <h4>Upload a document</h4>
             <p>To upload a new document drop file here</p>
