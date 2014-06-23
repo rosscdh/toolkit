@@ -119,5 +119,9 @@ angular.module('toolkit-gui').factory('discussionService', [
                 return deferred.promise;
             }
         };
+
+
     }]
 );
+
+
