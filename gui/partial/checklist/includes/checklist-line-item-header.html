@@ -36,6 +36,7 @@
 		 />
 	</div>
 	<div class="col-xs-4">
+		
 		<!-- category actions //-->
 		<div class="btn-group pull-right" ng-show="data.usdata.current.permissions.manage_items">
 			<button
@@ -58,6 +59,11 @@
 					<a href="javascript:;" ng-click="showAddCategoryForm($index);">Add Category</a>
 				</li>
 			</ul>
+		</div>
+
+		<!-- clear filter //-->
+		<div class="btn-group pull-right" ng-hide="data.showEditCategoryForm==$index||cat.name||matter.selectedStatusFilter===null||data.showAddCategoryForm==$index">
+			<button class="btn btn-default dropdown-toggle  btn-xs" ng-click="clearFilters()">Clear filter</button>
 		</div>
 	</div>
 </div>

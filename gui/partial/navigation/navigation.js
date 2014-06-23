@@ -15,14 +15,16 @@ angular.module('toolkit-gui')
 	'smartRoutes',
 	'$location',
 	'$modal',
-    '$log',
-    '$timeout',
-    'toaster',
+	'$log',
+	'$timeout',
+	'toaster',
 	'userService',
 	'matterService',
 	function( $scope, $routeParams, smartRoutes, $location, $modal, $log, $timeout, toaster, userService, matterService ){
 		'use strict';
-		var routeParams = smartRoutes.params(); 
+		var routeParams = smartRoutes.params();
+		$scope.selectedStatusFilter = null;
+
 		/**
 		 * In scope variable containing containing a list of participants
 		 * @memberof NavigationCtrl
@@ -50,15 +52,15 @@ angular.module('toolkit-gui')
 			'id': routeParams.id
 		};
 
-        //load all other matters from the current user
-        matterService.list().then(
-             function success(response){
-                $scope.data.matterlist = response;
-             },
-             function error(/*err*/){
-                toaster.pop('error', 'Error!', 'Unable to other matters.',5000);
-             }
-        );
+		//load all other matters from the current user
+		matterService.list().then(
+			 function success(response){
+				$scope.data.matterlist = response;
+			 },
+			 function error(/*err*/){
+				toaster.pop('error', 'Error!', 'Unable to other matters.',5000);
+			 }
+		);
 
 		/**
 		 * This method is used by navigation items to determine ifthey should be highlighted (i.e. .active)
@@ -107,6 +109,63 @@ angular.module('toolkit-gui')
 					//
 				}
 			);
+		};
+
+		/*
+		 _____ _ _ _                
+		|  ___(_) | |_ ___ _ __ ___ 
+		| |_  | | | __/ _ \ '__/ __|
+		|  _| | | | ||  __/ |  \__ \
+		|_|   |_|_|\__\___|_|  |___/
+									
+		 */
+		/**
+		 * applyStatusFilter  filters for checklist based on status 0-4
+		 * @param  {Object} filter Filter to apply to latest_revision
+		 */
+		$scope.applyStatusFilter = function( filter, statusCode ) {
+			// Initialise status filter
+			$scope.matter.statusFilter = $scope.matter.statusFilter||{};
+			$scope.matter.selectedStatusFilter = statusCode;
+
+			// Clear other filters
+			$scope.matter.itemFilter = null;
+
+			if( filter ) {
+				for(var key in filter) {
+					// Convert { "0": "Draft" } to { "status": 0 }
+					$scope.matter.statusFilter[key] = parseInt(filter[key]);
+				}
+			} else {
+				// Clear all filters
+				$scope.matter.itemFilter = null;
+				$scope.matter.statusFilter = null;
+				$scope.matter.selectedStatusFilter = null;
+			}
+		};
+
+		/**
+		 * applyItemFilter  filters for checklist item properties such as is_complete
+		 * @param  {Object} filter Filter to apply to base o checklsit item object
+		 */
+		$scope.applyItemFilter = function( filter, label ) {
+			// Initialise item filter
+			$scope.matter.itemFilter = $scope.data.itemFilter||{};
+
+			// Clear other filters
+			$scope.matter.statusFilter = null;
+			$scope.matter.selectedStatusFilter = label;
+
+			if( filter ) {
+				for(var key in filter) {
+					$scope.matter.itemFilter[key] = filter[key];
+				}
+			} else {
+				// Clear all filters
+				$scope.matter.itemFilter = null;
+				$scope.matter.statusFilter = null;
+				$scope.matter.selectedStatusFilter = null;
+			}
 		};
 
 		/**

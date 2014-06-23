@@ -32,6 +32,12 @@ class SignatureEndpoint(viewsets.ModelViewSet):
     serializer_class = SignatureSerializer
     lookup_field = 'slug'
 
+    def pre_delete(self, obj, **kwargs):
+        obj.signers.clear()
+        obj.document.signers.clear()
+
+        return super(SignatureEndpoint, self).pre_delete(obj=obj, **kwargs)
+
     def can_read(self, user):
         return user.profile.user_class in ['lawyer', 'customer']
 

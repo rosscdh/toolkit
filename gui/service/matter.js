@@ -34,7 +34,10 @@ angular.module('toolkit-gui')
 		 */
 		var matter = {
 			'items': [],
-			'selected': null
+			'selected': null,
+			'statusFilter': null,
+			'itemFilter': null,
+			'selectedStatusFilter': null
 		};
 
 		/**

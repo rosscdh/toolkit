@@ -2,13 +2,16 @@ Django==1.6.5
 django-extensions>=1.3
 south
 
+# Newrelic
+newrelic
+
 # Procfile service management
 honcho
 
 Werkzeug
 
 # REST framework
-djangorestframework==2.3.13  ## to have access to the is_success from status
+djangorestframework==2.3.13  ## fixed at .13 until we can test .14 which gave errors in production when trying to upgrade
 # djangorestframework-jwt  ## not required yet
 # django-cors-headers  ## not required yet
 

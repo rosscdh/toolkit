@@ -101,7 +101,7 @@ angular.module('toolkit-gui')
             var participants = matter.participants;
             var usersWithAccess = [];
             var reviewers = [];
-
+            
             if ($scope.item.latest_revision.slug === $scope.revision.slug){
                 reviewers.push(review.reviewer);
                 /*

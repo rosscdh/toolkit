@@ -19,18 +19,6 @@ if TEST_PREPROD is True:
         # not that static is in gui/dist/static *not to be confused with the django {{ STATIC_URL }}ng/ which will now point correctly
         ("ng", os.path.join(SITE_ROOT, 'gui', 'dist')),
     )
-    #
-    # NB! note the .min use here for react
-    #
-    PIPELINE_JS = {
-        'reactjs': {
-            'source_filenames': (
-                'js/react-0.10.0.min.js',
-                'js/matter_list.jsx',
-            ),
-            'output_filename': 'js/jsx-all-compiled.js',
-        }
-    }
 
 else:
     #
@@ -122,8 +110,8 @@ MIXPANEL_SETTINGS = {
 #
 # Payments
 #
-STRIPE_PUBLIC_KEY = 'sk_test_8Po9Bh0rj12nISHPFsOQz46Q'
-STRIPE_SECRET_KEY = 'pk_test_pVBXSHiazhp3b0EyGHQa8Dx2'
+STRIPE_PUBLIC_KEY = 'pk_test_pVBXSHiazhp3b0EyGHQa8Dx2'
+STRIPE_SECRET_KEY = 'sk_test_8Po9Bh0rj12nISHPFsOQz46Q'
 
 #
 # Celery SQS Tasks
