@@ -188,7 +188,9 @@
                               text="data.selectedItem.latest_revision.edit_revision_description" focus-on="event_edit_revision_description"></textarea>
                     <a href="javascript:;" class="btn btn-primary btn-xs" ng-click="data.selectedItem.latest_revision.description=data.selectedItem.latest_revision.edit_revision_description;saveLatestRevision();data.show_edit_revision_description=false;">Save description</a>
                     <a href="javascript:;" class="btn btn-inverse btn-xs item-description-cancel" ng-click="data.selectedItem.latest_revision.edit_revision_description='';data.show_edit_revision_description=false;">Cancel</a>
-                    <a href="javascript:;" class="btn btn-link btn-xs pull-right" title="Markdown help" onclick="alert('Markdown help popup like trello');">Formatting Help</a>
+                    <a href="javascript:;" class="btn btn-link btn-xs pull-right" title="Markdown help" ng-click="showMarkDownInfo()">Formatting Help</a>
+
+
                 </div>
                 <div class="tools status-{{ data.selectedItem.latest_revision.status }}">
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="showRevisionDocument(data.selectedItem.latest_revision)">View</a>  <a href="{{ data.selectedItem.latest_revision.user_download_url }}" class="btn btn-link btn-xs" target="_blank">Save</a>
