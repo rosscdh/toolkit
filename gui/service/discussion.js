@@ -31,11 +31,11 @@ angular.module('toolkit-gui').factory('discussionService', [
         }
 
         return {
-            'create': function(matterSlug, comment, title) {
+            'create': function(matterSlug, content, title) {
                 var api = discussionResource();
                 var deferred = $q.defer();
 
-                api.create({ 'matterSlug': matterSlug }, { 'content': comment, 'title': title },
+                api.create({ 'matterSlug': matterSlug }, { 'content': content, 'title': title },
                     function success(thread) {
                         deferred.resolve(thread);
                     },
@@ -95,11 +95,11 @@ angular.module('toolkit-gui').factory('discussionService', [
                 return deferred.promise;
             },
 
-            'update': function(matterSlug, threadId, comment, title) {
+            'update': function(matterSlug, threadId, content, title) {
                 var api = discussionResource();
                 var deferred = $q.defer();
 
-                api.update({ 'matterSlug': matterSlug, 'threadId': threadId}, { 'content': comment, 'title': title },
+                api.update({ 'matterSlug': matterSlug, 'threadId': threadId}, { 'content': content, 'title': title },
                     function success(thread) {
                         deferred.resolve(thread);
                     },
@@ -111,11 +111,11 @@ angular.module('toolkit-gui').factory('discussionService', [
                 return deferred.promise;
             },
 
-            'addComment': function(matterSlug, threadId, comment) {
+            'addComment': function(matterSlug, threadId, content) {
                 var api = discussionCommentsResource();
                 var deferred = $q.defer();
 
-                api.create({ 'matterSlug': matterSlug, 'threadId': threadId }, { 'content': comment },
+                api.create({ 'matterSlug': matterSlug, 'threadId': threadId }, { 'content': content },
                     function success() {
                         deferred.resolve();
                     },
