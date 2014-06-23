@@ -230,9 +230,7 @@ angular.module('toolkit-gui')
 			categories.push(category);
 
 			// First item if available, this will be used to open the first available checklist item by default
-			if(items && items.length>0) {
-				firstItem = { 'item': items[0], 'category': category };
-			}
+			firstItem = genericFunctions.selectFirstitem( firstItem, items, category );
 
 			if( matter && matter.categories ) {
 				// Allocate items to specific categories to make multiple arrays
@@ -241,14 +239,10 @@ angular.module('toolkit-gui')
 					var items = jQuery.grep( matter.items, function( item ){ return item.category===categoryName; } );
 
 					category = { 'name': categoryName, 'items': items };
-
 					categories.push( category );
 
 					// First item if available, this will be used to open the first available checklist item by default
-
-					if(!firstItem && items[0] !== undefined) {
-						firstItem = { 'item': items[0], 'category': category };
-					}
+					firstItem = genericFunctions.selectFirstitem( firstItem, items, category );
 				});
 
 				$scope.data.matter = matter;
