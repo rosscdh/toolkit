@@ -194,5 +194,13 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
                 function cancel() {}
             );
         };
+
+         $scope.showMarkDownInfo = function() {
+          $modal.open({
+            'templateUrl': '/static/ng/partial/markdown/markdown-info.html',
+            'controller': 'MarkdownInfoCtrl'
+          });
+
+        };
     }
 ]);
