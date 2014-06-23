@@ -5,9 +5,9 @@
 
 <form name="createForm" ng-submit="create()">
     <div class="modal-body">
-        <h5 ng-show="matter.participants.length > 0">Existing Participants</h5>
+        <h5 ng-show="data.selectedThread.participants.length > 0">Existing Participants</h5>
         <ul class="list-unstyled participants">
-            <li ng-repeat="person in matter.participants">
+            <li ng-repeat="person in data.selectedThread.participants">
                 <span class="user" ng-bind="person | initials"></span>
                 <label ng-bind="person | fullname"></label>
             </li>
@@ -16,7 +16,9 @@
         <h5>Add New Participant</h5>
         <div class="row">
             <div class="col-sm-6">
-                <a href="javascript:;" class="btn btn-primary">Add a Participant</a>
+                <a class="btn btn-primary" ng-click="addParticipant()">Add a Participant</a>
+                <br />
+                <a class="btn btn-primary" ng-click="removeParticipant()">Remove Participant</a>
                 <br />
                 <p class="note">Adding a user to this thread will give them full access to every comment.</p>
             </div>
@@ -26,7 +28,7 @@
     <div class="modal-footer">
         <div class="controls">
             <input type="button" name="cancel" value="Cancel" class="btn btn btn-default" id="button-id-cancel" ng-click="cancel()">
-            <input type="button" name="submit" value="Submit" class="btn btn-primary btn-wide" id="submit-id-submit" ng-click="cancel()">
+            <input type="button" name="submit" value="Submit" class="btn btn-primary btn-wide" id="submit-id-submit" ng-click="ok()">
         </div>
     </div>
 

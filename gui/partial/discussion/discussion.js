@@ -154,14 +154,14 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
 
             $scope.sendingMessage = true;
 
-            discussionService.comment(matterSlug, threadId, $scope.data.request.message).then(
+            discussionService.addComment(matterSlug, threadId, $scope.data.request.message).then(
                 function success(response) {
                     deferred.resolve(response);
                     $scope.selectThread(threadId);
 
                     // Clear message in GUI
                     $scope.data.request.message = '';
-                    $scope.sendingMessage = false;                    
+                    $scope.sendingMessage = false;
                 },
                 function error(/*err*/) {
                     toaster.pop('error', 'Error!', 'Unable to comment on discussion.', 5000);
