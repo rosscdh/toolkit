@@ -25,7 +25,8 @@
 			</div>
 			<div class="col-sm-8 item spa full" id="checklist-detail-container" ng-class="{ 'zero': data.page==='checklist' }">
 				<div class="row full" ng-if="data.selectedItem.latest_revision">
-					<iframe ng-src="{{data.selectedItem.latest_revision.user_review.url}}" class="fit-container"></iframe>
+					<!--<iframe ng-src="{{data.selectedItem.latest_revision.user_review.url}}" class="fit-container"></iframe>//-->
+					<iframe ng-src="{{data.selectedItem.latest_revision.user_download_url}}" class="fit-container"></iframe>
 					<!--<iframe src="http://docs.google.com/gview?url={{data.selectedItem.latest_revision.user_review.url|escape}}&embedded=true" class="fit-container"></iframe>//-->
 					<!--
 					<object data="{{data.selectedItem.latest_revision.user_download_url}}" type="application/pdf">
