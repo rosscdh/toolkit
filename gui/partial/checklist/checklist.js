@@ -230,7 +230,7 @@ angular.module('toolkit-gui')
 			categories.push(category);
 
 			// First item if available, this will be used to open the first available checklist item by default
-			firstItem = genericFunctions.selectFirstitem( firstItem, items, category );
+			firstItem = matterService.selectFirstitem( firstItem, items, category );
 
 			if( matter && matter.categories ) {
 				// Allocate items to specific categories to make multiple arrays
@@ -242,7 +242,7 @@ angular.module('toolkit-gui')
 					categories.push( category );
 
 					// First item if available, this will be used to open the first available checklist item by default
-					firstItem = genericFunctions.selectFirstitem( firstItem, items, category );
+					firstItem = matterService.selectFirstitem( firstItem, items, category );
 				});
 
 				$scope.data.matter = matter;
