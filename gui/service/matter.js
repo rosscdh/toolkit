@@ -244,7 +244,7 @@ angular.module('toolkit-gui')
 			 * @return	{Object}					either the selected object or null
 			 */
 			'selectFirstitem': function( existingItem, items, category ) {
-				if(typeof(existingItem)==='object') {
+				if(typeof(existingItem)==='object' && existingItem!== null) {
 					return existingItem;
 				} else if( angular.isArray(items) && items.length > 0 ) {
 					return { 'item': items[0], 'category': category };
