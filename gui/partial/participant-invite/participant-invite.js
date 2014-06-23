@@ -24,7 +24,7 @@ angular.module('toolkit-gui')
 	'$window',
 	function($scope, $modalInstance, participants, currentUser, matter, participantService, toaster, $location, $log, $window){
 		'use strict';
-    $scope.showaddbutton = false;
+
 		/**
 		 * In scope variable containing a list of participants within this matter. This is passed through from the originating controller.
 		 * @memberof ParticipantInviteCtrl
@@ -66,7 +66,9 @@ angular.module('toolkit-gui')
                 'manage_clients': false
             }},
             'isNew': false,
-            'selectedUser': null
+            'selectedUser': null,
+            'requestLoading': false,
+            'showaddbutton': false
 		};
 
      if (angular.isArray(participants) && (participants.length > 0)) {
@@ -87,9 +89,12 @@ angular.module('toolkit-gui')
         $scope.checkIfUserExists = function (lawyerObligatory) {
             if ($scope.data.invitee.email != null && $scope.data.invitee.email.length>0) {
                 $scope.data.validationError = false;
+                $scope.data.requestLoading = true;
 
                 participantService.getByEmail( $scope.data.invitee.email ).then(
                     function success(response) {
+                        $scope.data.requestLoading = false;
+
                         if (response.count===1){
                             var p = response.results[0];
 
@@ -109,6 +114,7 @@ angular.module('toolkit-gui')
                         }
                     },
                     function error() {
+                        $scope.data.requestLoading = false;
                         toaster.pop('error', 'Error!', 'Unable to load participant', 3000);
                     }
                 );
@@ -136,9 +142,11 @@ angular.module('toolkit-gui')
                 $scope.data.invitee.user_class='customer';
                 $scope.data.invitee.role='client';
             }
+            $scope.data.requestLoading = true;
 
 			participantService.invite( $scope.matter.slug, $scope.data.invitee ).then(
 				function success(participant) {
+                    $scope.data.requestLoading = false;
                     var results = jQuery.grep( $scope.participants, function( p ){ return p.username===participant.username; } );
                     if( results.length===0 ) {
                         $scope.participants.push(participant);
@@ -153,8 +161,13 @@ angular.module('toolkit-gui')
                     $scope.data.validationError = false;
                     $scope.data.showAddLawyer=false;
                     $scope.data.showAddParticipant=false;
+                    $scope.data.selectedUser=null;
+                    $scope.data.showaddbutton = false;
+
+                    toaster.pop('success', 'Success!', 'User was added successfully',5000);
 				},
 				function error() {
+                    $scope.data.requestLoading = false;
 					toaster.pop('error', 'Error!', 'Unable to invite this person to particpate, please try again in a few moments',5000);
 				}
 			);
@@ -171,8 +184,11 @@ angular.module('toolkit-gui')
 		 * @memberof			ParticipantInviteCtrl
 		 */
 		$scope.revoke = function ( person ) {
+            $scope.data.requestLoading = true;
+
 			participantService.revoke( $scope.matter.slug, person ).then(
 				function success() {
+                    $scope.data.requestLoading = false;
 					var index = jQuery.inArray( person, $scope.participants );
                     if( index>=0 ) {
                         // Remove user from in RAM array
@@ -185,6 +201,7 @@ angular.module('toolkit-gui')
                     }
 				},
 				function error() {
+                    $scope.data.requestLoading = false;
 					toaster.pop('error', 'Error!', 'Unable to revoke the access of this person',5000);
 				}
 			);
@@ -192,11 +209,14 @@ angular.module('toolkit-gui')
 
 
         $scope.update = function( person ){
+            $scope.data.requestLoading = true;
             participantService.update( $scope.matter.slug, person ).then(
 				function success() {
+                    $scope.data.requestLoading = false;
 					toaster.pop('success', 'Success!', 'User was updated successfully',5000);
 				},
 				function error() {
+                    $scope.data.requestLoading = false;
 					toaster.pop('error', 'Error!', 'Unable to update the user',5000);
 				}
 			);
