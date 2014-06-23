@@ -47,3 +47,29 @@ class DiscussionComment(ThreadedComment, models.Model):
 rulez_registry.register("can_read", DiscussionComment)
 rulez_registry.register("can_edit", DiscussionComment)
 rulez_registry.register("can_delete", DiscussionComment)
+
+
+"""
+Returns the matter associated with the comment.
+"""
+def _get_subscribed_to_matter(self):
+    return self.discussioncomment.matter
+
+DiscussionComment.subscribers.through.matter = property(lambda u: _get_subscribed_to_matter(u))
+
+
+"""
+Add our api permission handler methods to the DiscussionComment.subscribers model.
+"""
+def subscriber_can_read(self, user, **kwargs):
+    return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
+
+def subscriber_can_edit(self, user, **kwargs):
+    return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
+
+def subscriber_can_delete(self, user, **kwargs):
+    return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
+
+DiscussionComment.subscribers.through.add_to_class('can_read', subscriber_can_read)
+DiscussionComment.subscribers.through.add_to_class('can_edit', subscriber_can_edit)
+DiscussionComment.subscribers.through.add_to_class('can_delete', subscriber_can_delete)

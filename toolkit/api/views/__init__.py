@@ -46,4 +46,4 @@ from .revision import RevisionEndpoint
 # from .workflow import WorkflowEndpoint
 
 from .comment import ItemCommentEndpoint
-from .discussion import DiscussionEndpoint, DiscussionCommentEndpoint
+from .discussion import DiscussionEndpoint, DiscussionCommentEndpoint, DiscussionParticipantEndpoint
