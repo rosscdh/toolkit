@@ -5,9 +5,9 @@
 
 <form name="createForm" ng-submit="create()">
     <div class="modal-body">
-        <h5 ng-show="data.selectedThread.participants.length > 0">Existing Participants</h5>
+        <h5 ng-show="thread.participants.length > 0">Existing Participants</h5>
         <ul class="list-unstyled participants">
-            <li ng-repeat="person in data.selectedThread.participants">
+            <li ng-repeat="person in thread.participants">
                 <span class="user" ng-bind="person | initials"></span>
                 <label ng-bind="person | fullname"></label>
             </li>
