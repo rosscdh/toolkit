@@ -27,6 +27,10 @@ tr .dropable-area {
 		font-size: 40px;
 		color: #d9dcde;
 	}
+
+	h4 {
+		margin-bottom: 6px;
+	}
 }
 
 .checklist-wrapper table.ui-drag-disabled tr.ui-drag-disabled {
@@ -50,6 +54,10 @@ div.dragover {
 		padding: 3em;
 		margin: 1em 0;
 		color: #acb4b9;
+
+		.btn {
+			display: none;
+		}
 	}
 	.border-on-dragover {
 		border: 1px dashed #c5cbce;
@@ -65,6 +73,10 @@ div.dragover {
 	text-align: center;
 	margin: 1em 0;
 	color: #acb4b9;
+
+	.btn {
+		display: none;
+	}
 }
 
 tr.item-heading.file-drag-over {
@@ -663,10 +675,38 @@ ul.status-list a {
 }
 
 div.show-on-drag.show {
-	display: block;
-	height: auto;
-	max-height: 20em;
-	h4, p {
-		color: #acb4b9;
+	max-height: 17em;
+	border: 1px dashed #d9dcde;
+	padding: 3em;
+	text-align: center;
+	margin: 1em 0;
+	color: #acb4b9;
+}
+
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 999px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+
+.file-upload-options {
+	margin: 1.5em 0 1em 0;
+	span.btn-file, button {
+		font-size: 14px;
+		color: #fff;
 	}
 }

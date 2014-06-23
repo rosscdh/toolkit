@@ -48,7 +48,7 @@
     <!-- Begin option toolbar -->
     <div class="add-new clearfix">
         <div class="btn-group" ng-show="data.usdata.current.user_class=='lawyer'">
-            <button class="btn btn-sm btn-info btn-embossed btn-add" ng-click="showAddFile=true"><span class="fui-upload"></span>
+            <button class="btn btn-sm btn-info btn-embossed btn-add" ng-click="data.showAddFileOptions=!data.showAddFileOptions"><span class="fui-upload"></span>
                 Add File
             </button>
             <button class="btn btn-info btn-sm btn-embossed dropdown-toggle" data-toggle="dropdown">
@@ -132,11 +132,24 @@
         <i class="fa fa-spinner fa-3x fa-spin"></i>
     </div>
 
-    <div ng-if="data.usdata.current.user_class=='lawyer'&&data.selectedItem.latest_revision&&!data.itemIsLoading" class="ng-cloak">
-        <div class="drop-area show-on-drag" ng-file-drop="onFileDropped($files, data.selectedItem);" ng-class="{ 'show': showAddFile }">
+    <div ng-if="data.usdata.current.user_class=='lawyer'&&data.selectedItem.latest_revision&&!data.itemIsLoading&&!data.selectedItem.uploading" class="ng-cloak">
+        <div class="drop-area show-on-drag" ng-file-drop="onFileDropped($files, data.selectedItem);" ng-class="{ 'show': data.showAddFileOptions }">
             <span class="fui-upload"></span>
             <h4>Upload a document</h4>
             <p>To upload a new document drop file here</p>
+            <div class="row file-upload-options">
+                <div class="col-sm-6">
+                    <span class="btn btn-default btn-sm btn-file btn-block">
+                        From my desktop
+                        <input type="file" ng-file-select="onFileDropped($files, data.selectedItem);" multiple />
+                    </span>
+                </div>
+                <div class="col-sm-6">
+                    <button type="button" class="btn btn-default btn-sm btn-block" filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)">
+                        From the cloud
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
