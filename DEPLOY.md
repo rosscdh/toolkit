@@ -1,6 +1,13 @@
 Deployment actions by branch
 ----------------------------
 
+--------------------------------------------------------------------------------
+** DEPLOYED 24 June 2014 - allow owners to assign granular permissions to matters
+*NOTES* had to ensure that existing flows are not iterrupted but setting clients by default
+to have manage_items permission; all new matters do not have this permission and if the user
+is updated in the matter they will lose the permission.
+--------------------------------------------------------------------------------
+
 [feature/matter-permissions-global]
 
 1. pip install django-permission

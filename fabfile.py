@@ -135,7 +135,7 @@ def virtualenv(cmd, **kwargs):
 
 @task
 def pip_install():
-    virtualenv('pip install -e git+https://github.com/rosscdh/django-authy.git#egg=django-authy -U')
+    virtualenv('pip install django-permission')
 
 @task
 def cron():
