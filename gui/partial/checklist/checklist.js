@@ -849,7 +849,7 @@ angular.module('toolkit-gui')
 		 * @param  {Array} $files HTML5 files object
 		 * @param  {Object} item   Matter checklist item object
 		 */
-		$scope.onFileDropped = function( $files, item, evt ) {
+		$scope.onFileDropped = function( $files, item ) {
 			var matterSlug = $scope.data.slug;
 			var itemSlug = item.slug;
 
@@ -898,10 +898,6 @@ angular.module('toolkit-gui')
 						},10);
 					}
 				);
-			}
-
-			if(evt.target) {
-				evt.target.value = '';
 			}
 		};
 

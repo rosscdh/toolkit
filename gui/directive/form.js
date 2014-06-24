@@ -43,3 +43,19 @@ angular.module('toolkit-gui').directive('dropdownKeepOpen', ['$log', function($l
       });
    };
 }]);
+
+/**
+ * Used to clear the contents of an input control on click, this is typically used for file inputs so that a change is registered if the user selects the same file mutiple times
+ * @param  {Function} $timeout
+ * @return {Function}          Driective
+ */
+angular.module('toolkit-gui').directive('clearOnClick', [ '$timeout', function($timeout) {
+  return function(scope, elem, attr) {
+    elem.bind('click', function(evt) {
+      try{
+        // reset value
+        elem.val('');
+      } catch(e) {}
+  });
+  };
+} ]);
