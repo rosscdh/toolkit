@@ -900,7 +900,9 @@ angular.module('toolkit-gui')
 				);
 			}
 
-			evt.target.value = '';
+			if(evt.target) {
+				evt.target.value = '';
+			}
 		};
 
 		//
