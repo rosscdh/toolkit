@@ -32,7 +32,9 @@ class UserEndpoint(viewsets.ModelViewSet,
             return get_object_or_404(User, username=username)
         return queryset.none()
 
-    def list(self, request):
+    def list(self, request, **kwargs):
+        if request.GET.get('search', None) is not None:
+            return super(UserEndpoint, self).list(request=request, **kwargs)
         return Response(None, status=http_status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def get_serializer_context(self):
