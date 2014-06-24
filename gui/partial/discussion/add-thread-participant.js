@@ -25,16 +25,32 @@ angular.module('toolkit-gui').controller('AddThreadParticipantCtrl', [
             $modalInstance.close();
         };
 
-        $scope.addParticipant = function() {
+        $scope.isParticipant = function(person) {
+            var isParticipant = false;
+            angular.forEach($scope.thread.participants, function(participant, key) {
+                if (participant.username === person.username) {
+                    isParticipant = true;
+                }
+            });
+
+            return isParticipant;
+        };
+
+        $scope.isColleague = function(person) {
+            if (person.role === 'owner' || person.role === 'colleague') {
+                return true;
+            }
+
+            return false;
+        };
+
+        $scope.addParticipant = function(person) {
             var deferred = $q.defer();
 
             var matterSlug = $scope.matter.slug;
             var threadId = $scope.thread.id;
 
-            var details = {
-                'email': 'testlawyer@lawpal.com'
-                // 'username': 'testlawyer'
-            };
+            var details = { 'username': person.username };
 
             discussionService.addParticipant(matterSlug, threadId, details).then(
                 function success(response) {
@@ -50,13 +66,13 @@ angular.module('toolkit-gui').controller('AddThreadParticipantCtrl', [
             return deferred.promise;
         };
 
-        $scope.removeParticipant = function() {
+        $scope.removeParticipant = function(person) {
             var deferred = $q.defer();
 
             var matterSlug = $scope.matter.slug;
             var threadId = $scope.thread.id;
 
-            var username = 'testlawyer';
+            var username = person.username;
 
             discussionService.removeParticipant(matterSlug, threadId, username).then(
                 function success(response) {
