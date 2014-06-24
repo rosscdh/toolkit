@@ -7,8 +7,9 @@
                 <div class="col-sm-12 hidden" id="requestNotifyPermission">
                     <div class="alert text-center">
                         <p>
-                            <a href="#" class="notification-link"> <i class="fa fa-exclamation-triangle"></i>We strongly recommend enabling Desktop Notifications.</a>
-                            <!-- <button type="button" class="btn btn-success"><i class="fa fa-bell"></i> Enable desktop notifications</button> -->
+                            <a href="#" class="notification-link">
+                                We encourage you to enable Desktop Notifications.
+                            </a>
                         </p>
                     </div>
                 </div>
@@ -138,7 +139,7 @@ $(document).ready(function () {
     // Load desktop notify
     $.when(
         // Retrieve intro script
-        $.getScript( "/static/ng/bower_components/html5-desktop-notifications/desktop-notify.js" ), 
+        $.getScript( "/static/ng/bower_components/html5-desktop-notifications/desktop-notify.js" ),
         $.Deferred(function( deferred ){
             $( deferred.resolve );
         })
