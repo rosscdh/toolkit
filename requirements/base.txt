@@ -106,3 +106,6 @@ pusher
 
 # Payments
 django-stripe-payments==2.0b34
+
+# permissions
+django-permission

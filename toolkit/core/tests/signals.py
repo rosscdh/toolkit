@@ -32,25 +32,29 @@ expected_cache_keys = {
                           "<type 'NoneType'>",
                           "<type 'NoneType'>",
                           "<class 'toolkit.apps.workspace.models.Workspace'>"],
-    'workspace-added-participant': ["<type 'NoneType'>",
-                                    u'workspace-added-participant',
-                                    u'Lawyër Tëst added a new member to Lawpal (test)',
-                                    "<class 'toolkit.core.services.matter_activity.MatterActivityEventService'>",
-                                    "<class 'django.dispatch.dispatcher.Signal'>",
-                                    "<type 'NoneType'>",
-                                    "<class 'django.utils.functional.SimpleLazyObject'>",
-                                    "<type 'NoneType'>",
-                                    "<type 'NoneType'>",
-                                    u'added participant',
-                                    "<class 'rest_framework.serializers.SortedDictWithMetadata'>",
-                                    "<type 'NoneType'>",
-                                    "<class 'toolkit.apps.workspace.models.Workspace'>",
-                                    "<type 'NoneType'>",
-                                    "<type 'NoneType'>",
-                                    "<type 'NoneType'>",
-                                    "<type 'NoneType'>",
-                                    "<type 'NoneType'>",
-                                    "<class 'toolkit.apps.workspace.models.Workspace'>"],
+    #
+    # Removed as we no longer automatically send the participant added signal on participants.add
+    # needs to be sent manually for more control over the sent data and messaging
+    #
+    # 'workspace-added-participant': ["<type 'NoneType'>",
+    #                                 u'workspace-added-participant',
+    #                                 u'Lawyër Tëst added (.+) as a new member to Lawpal (test)',
+    #                                 "<class 'toolkit.core.services.matter_activity.MatterActivityEventService'>",
+    #                                 "<class 'django.dispatch.dispatcher.Signal'>",
+    #                                 "<type 'NoneType'>",
+    #                                 "<class 'django.utils.functional.SimpleLazyObject'>",
+    #                                 "<type 'NoneType'>",
+    #                                 "<type 'NoneType'>",
+    #                                 u'added participant',
+    #                                 "<class 'rest_framework.serializers.SortedDictWithMetadata'>",
+    #                                 "<type 'NoneType'>",
+    #                                 "<class 'toolkit.apps.workspace.models.Workspace'>",
+    #                                 "<type 'NoneType'>",
+    #                                 "<type 'NoneType'>",
+    #                                 "<type 'NoneType'>",
+    #                                 "<type 'NoneType'>",
+    #                                 "<type 'NoneType'>",
+    #                                 "<class 'toolkit.apps.workspace.models.Workspace'>"],
     'item-created': ["<type 'NoneType'>",
                      u'item-created',
                      "<type 'NoneType'>",
@@ -97,8 +101,9 @@ def on_activity_received(**kwargs):
     Test signal listener to handle the signal fired event
     """
     cache_key = kwargs.get('verb_slug')
+
     for i in kwargs:
-        if type(kwargs[i]) not in [str, unicode, ]:
+        if type(kwargs[i]) not in [str, unicode,]:
             kwargs[i] = str(type(kwargs[i]))
 
     cache.set(cache_key, kwargs)
@@ -119,6 +124,8 @@ class ActivitySignalTest(BaseScenarios, TestCase):
             # in setUp the workspace was created which
             # should have reached on_activity_received above:
             cache_obj = cache.get(cache_key)
+
+            self.assertTrue(cache_obj is not None) # expected an obj if none then there is a bug
 
             self.assertItemsEqual(cache_obj.keys(), ['sender', 'signal', 'actor', 'verb', 'verb_slug', 'action_object',
                                                      'target', 'item', 'user', 'override_message', 'comment',

@@ -10,6 +10,7 @@ from toolkit.tasks import run_task
 from .models import SignDocument
 from .tasks import _download_signing_complete_document
 
+import json
 import logging
 logger = logging.getLogger('django.request')
 
@@ -29,10 +30,41 @@ def _remove_as_authorised(instance, pk_set):
 
 
 def _update_signature_request(hellosign_request, data):
-    hellosign_request.data['signature_request'].update(data['signature_request'])
-    hellosign_request.save(update_fields=['data']) # save it # possible race condition here
-    # Recalculate the percentage complete
-    hellosign_request.source_object.document.item.recalculate_signing_percentage_complete()
+    """
+    @NB this is a very dangerous method; we need to get the data from hellosign
+    and then update the local hellosign_request.data object with that sent data.
+    if signing requests are being reset and the user is seeing the setup signing
+    it means the json is being overwritten here
+    """
+    model_data = hellosign_request.data
+
+    if not model_data:  # if its an empty dict
+        logger.error('hellosign_request.data is empty HelloSign is broken again: %s' % hellosign_request.pk)
+        logger.critical('HelloSign empty webhook json data: %s' % json.dumps(data))
+
+    if 'signature_request' in data.keys():
+        # Ensure we are actioning the correct objects
+        data_signature_request_id = data.get('signature_request').get('signature_request_id', None)
+
+        if str(hellosign_request.signature_request_id) != str(data_signature_request_id):
+            logger.critical('hellosign_request.signature_request_id: %s is not equal to the passed in data_signature_request_id: %s HelloSign is broken again' % (hellosign_request.signature_request_id, data_signature_request_id))
+            logger.critical('HelloSign webhook non-matching signature_request_id\'s json data: %s' % json.dumps(data))
+        else:
+            #
+            # We have a matching signature_request_id
+            #
+            logger.info('HelloSign webhook _update_signature_request processing hellosign_request: %s' % hellosign_request.pk)
+
+            # update the model with the data we got from HS
+            model_data.update(data)
+            # udpate the main model data
+            hellosign_request.data = model_data
+
+            hellosign_request.save(update_fields=['data']) # save it # possible race condition here
+
+            # Recalculate the percentage complete
+            hellosign_request.source_object.document.item.recalculate_signing_percentage_complete()
+
 
 """
 When new SignDocument are created automatically the matter.participants are

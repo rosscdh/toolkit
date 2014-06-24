@@ -1,53 +1,155 @@
-<div class="modal-content" xmlns="http://www.w3.org/1999/html">
+<div class="modal-content participants-invite" xmlns="http://www.w3.org/1999/html">
 	<div class="modal-header">
 		<h4 class="modal-title" id="myModalLabel"><span class="fui-user text-muted"></span> Matter Participants</h4>
+
 	</div>
-	<div class="modal-body">
+	<div class="modal-body" modal-loading="data.requestLoading">
+
         <div ng-hide="data.showAddLawyer||data.showAddParticipant">
-            <h5 ng-show="participants.length>0">Existing Participants</h5>
-            <ul class="list-unstyled participants">
-                <li ng-repeat="person in participants">
-                    <span class="user" ng-bind="person | initials"></span>
-                    <label ng-bind="person | fullname"></label>
-                    <small ng-show="person.user_class=='lawyer'">({{ person.user_class }}<span ng-show="person.username==currentUser.username">, you</span><span ng-show="person.username==matter.lawyer.username">, owner</span>)
-                    </small>
-                    <a class="text-danger" ng-show="person.username!==currentUser.username&&currentUser.user_class==='lawyer'&&person.username!=matter.lawyer.username" href="javascript:;" ng-click="revoke(person)"><small>Revoke access</small></a>
-                    <a class="text-danger" ng-show="person.username===currentUser.username&&currentUser.user_class!=='lawyer'" href="javascript:;" ng-click="revoke(person)"><small>Exit matter</small></a>
-                </li>
-            </ul>
-            <br />
-            <h5>Add New Participant</h5>
-            <div class="row">
-                <div class="col-sm-6">
-                    <a href="javascript:;" class="btn btn-primary" ng-click="data.showAddLawyer=true">Add a Lawyer</a>
-                    <br />
-                    <p class="note">Adding a lawyer to this matter will give them full access to modify the checklist, add files and manage the transaction.</p>
+            <div class="row existing-participants" ng-if="!data.showAddButton">
+            <div class="col-sm-6 ">
+                <ul class="list-unstyled participants">
+                    <li ng-repeat="person in participants" ng-click="data.selectedUser=person" ng-class="{'selected': data.selectedUser==person }">
+                        <span class="user {{person.role}}" ng-bind="person | initials"></span>
+                        <label ng-bind="person | fullname"></label>
+                        <small class="{{person.role}} padding">
+                            ({{ person.role }} <span ng-show="person.username==currentUser.username">, you</span>)</small>
+                    </li>
+                </ul>
+
+                <div class="text-center">
+                     <a class="btn btn-sm add-p-btn" ng-click="data.showAddButton=true" ng-show="(currentUser.permissions.manage_clients||currentUser.permissions.manage_participants)&&!data.showAddbButton">
+                        <span class="fui-user"></span> Add a Participant
+                    </a>
                 </div>
-                <div class="col-sm-6">
-                    <a href="javascript:;" class="btn btn-info" ng-click="data.showAddParticipant=true">Add a Client</a>
-                    <br />
-                    <p class="note">
-                    Adding a client to the checklist will give them access to view and annotate documents and discuss checklist items. They can not modify the checklist structure or view previous revisions of documents.
+
+            </div>
+
+            <div class='col-sm-6 details' ng-show="data.selectedUser">
+
+                <div class="client-permissions" ng-show="data.selectedUser.role==='client'">
+                     <div class="user-details text-right">
+                         <a class="revoke" ng-show="data.selectedUser.username!==currentUser.username&&(currentUser.permissions.manage_participants||currentUser.permissions.manage_clients)&&person.username!=matter.lawyer.username"
+                            href="javascript:;" ng-click="revoke(data.selectedUser)"><small>Revoke access</small></a>
+                         <a class="revoke" ng-show="data.selectedUser.username===currentUser.username" href="javascript:;" ng-click="revoke(data.selectedUser)"><small>Exit matter</small></a>
+                    </div>
+                    <div class="user-large customer" ng-bind="data.selectedUser.initials"></div>
+                    <p class="user-meta text-center">{{ data.selectedUser.name }}</p>
+                    <p class="user-meta text-center">{{ data.selectedUser.email }}</p>
+                    <div ng-show="currentUser.permissions.manage_clients||currentUser.permissions.manage_participants">
+                        <div class='permissions-checklist'>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" ng-model="data.selectedUser.permissions.manage_clients"> Manage Clients in this matter (including adding and removing Clients)
+                                </label>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                           <a class="btn btn-xs btn-success" ng-click="update(data.selectedUser)"><span class="fui-check"></span> Save Permissions</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="colleague-permissions" ng-show="data.selectedUser.role==='colleague'">
+                     <div class="user-details text-right">
+                         <a class="revoke" ng-show="data.selectedUser.username!==currentUser.username&&currentUser.permissions.manage_participants" href="javascript:;" ng-click="revoke(data.selectedUser)"><small>Revoke access</small></a>
+                    </div>
+                    <div class="user-large lawyer" ng-bind="data.selectedUser.initials"></div>
+                    <p class="text-center user-meta">{{ data.selectedUser.name }}</p>
+                    <p class="text-center user-meta">{{ data.selectedUser.email }}</p>
+                    <div class='permissions-checklist' ng-show="currentUser.permissions.manage_participants">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" ng-model="data.selectedUser.permissions.manage_participants"> Manage Participants in this matter <span class='text-muted'>(including adding and removing Colleagues and Clients)</span>
+                            </label>
+                        </div>
+
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" ng-model="data.selectedUser.permissions.manage_items"> Manage Checklist Items and Categories
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" ng-model="data.selectedUser.permissions.manage_document_reviews"> Able to Add, Complete and Destroy Requests for Review
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" ng-model="data.selectedUser.permissions.manage_signature_requests"> Manage Signing and Signature Requests
+                            </label>
+                        </div>
+                    </div>
+                    <div class='text-center' ng-show="currentUser.permissions.manage_participants&&data.selectedUser.username!=matter.lawyer.username">
+                       <a class="btn btn-sm save-perm-btn" ng-click="update(data.selectedUser)"><span class="fui-check"></span> Save Permissions</a>
+                    </div>
+                </div>
+
+                <div class="colleague-permissions" ng-show="data.selectedUser.role==='owner'">
+                    <div class="user-large lawyer" ng-bind="data.selectedUser.initials"></div>
+                    <p class="text-center user-meta">{{ data.selectedUser.name }}</p>
+                    <p class="text-center user-meta">{{ data.selectedUser.email }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="new-participant" ng-if="data.showAddButton">
+            <h5>Add a Participant <a href="javascript:;" ng-click="data.showAddButton=false" class="close">x</a> </h5>
+            <div class="row">
+                <div class="col-sm-6 text-center" ng-show="currentUser.permissions.manage_participants">
+                    <a href="javascript:;" class="btn btn-primary lawyer" ng-click="data.showAddLawyer=true">Add a Colleague</a>
+                    <p class="note text-left">
+                        Adding a Colleague will let them manage documents, the checklist and the overall matter. They will be able to discuss Checklist items with Colleagues and Clients.
+                    </p>
+                </div>
+                <div class="col-sm-6 text-center" ng-show="currentUser.permissions.manage_clients||currentUser.permissions.manage_participants">
+                    <a href="javascript:;" class="btn btn-info customer" ng-click="data.showAddParticipant=true">Add a Client</a>
+                    <p class="note text-left">
+                    Adding a Client will give them access to view and annotate documents and discuss checklist items. They can not modify the checklist structure or view documents in the checklist, other than the current one.
                     </p>
                 </div>
             </div>
         </div>
+        </div>
 
 
 		<form class="form" ng-submit="invite()" ng-show="data.showAddLawyer">
-            <h5>Add a Lawyer <a href="javascript:;" class="close" ng-click="data.showAddLawyer=false;">x</a></h5>
-            <p>Adding a lawyer to this matter will give them access to edit the checklist, download documents and assign tasks. </p>
+            <h5>Add a Colleague <a href="javascript:;" class="close" ng-click="data.showAddLawyer=false;">x</a></h5>
+            <p>Adding a colleague to this matter will give them access to edit the checklist, download documents and assign tasks. </p>
 			<div ng-class="{'has-success': data.participant, 'has-warning': data.isNew, 'has-error': data.validationError }">
 				<p class="bg-info" for="inviteeEmail" ng-show="data.participant">Lawyer {{ data.participant | fullname }} found. </p>
-                <p class="bg-danger" for="inviteeEmail" ng-show="data.isNew">Lawyer must be a registered LawPal user. Please ask them to signup at LawPal.com</p>
-                <p class="bg-danger" for="inviteeEmail" ng-show="data.isParticipant">This user is not registered as a lawyer on LawPal. Please contact support@lawpal.com. </p>
-				<input type="email" id="inviteeEmail" class="form-control form-control-full-width" ng-model="data.invitee.email" placeholder="rob.s@gmail.com" required ng-blur="checkIfUserExists(true)" autocomplete="off"/>
+        		<input type="email" id="inviteeEmail" class="form-control form-control-full-width" ng-model="data.invitee.email" placeholder="rob.s@gmail.com" required ng-blur="checkIfUserExists(true)" autocomplete="off"/>
 			</div>
+            <div class="">
+                <input type="text" class="form-control input-sm" ng-model="data.invitee.first_name" placeholder="First name" ng-show="data.isNew" />
+                <input type="text" class="form-control input-sm" ng-model="data.invitee.last_name" placeholder="Last name" ng-show="data.isNew" />
+            </div>
 			<div >
 				<textarea class="form-control form-control-full-width" ng-model="data.invitee.message" placeholder="Add an optional message"></textarea>
 			</div>
-			<div >
-				<button class="btn btn-success btn-wide btn-sm" ng-disabled="invalid()">Add Lawyer</button>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" ng-model="data.invitee.permissions.manage_participants">Manage Participants in this matter <span class='text-muted'>(including adding and removing Colleagues and Clients)</span>
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" ng-model="data.invitee.permissions.manage_items"> Manage Checklist Items and Categories
+                            </label>
+                        </div>
+
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" ng-model="data.invitee.permissions.manage_document_reviews"> Able to Add, Complete and Destroy Requests for Review
+                            </label>
+                        </div>
+
+                        <div class="checkbox" ng-model="data.invitee.permissions.manage_signature_requests">
+                            <label>
+                                <input type="checkbox"> Manage Signing and Signature Requests
+                            </label>
+                        </div>
+			<div class="text-right">
+				<button class="btn btn-success btn-wide btn-sm" ng-disabled="invalid()">Add a Colleague</button>
 			</div>
 		</form>
 
@@ -69,7 +171,13 @@
 			<div class="">
 				<textarea class="form-control form-control-full-width" ng-model="data.invitee.message" placeholder="Add an optional message"></textarea>
 			</div>
-			<div >
+               <div class="checkbox">
+                            <label>
+                                <input type="checkbox" ng-model="data.invitee.permissions.manage_clients">Manage clients in this matter
+                                <span class="text-muted">(including adding and removing Clients)</span>
+                            </label>
+                        </div>
+			<div class='text-right'>
 				<button class="btn btn-info btn-wide btn-sm" ng-disabled="invalid()">Add a Client</button>
 			</div>
 		</form>

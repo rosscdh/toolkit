@@ -1,93 +1,867 @@
-/* Checklist stuff */
-/*
-.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td { padding: 5px 10px; font-size:14px;border-left-width:0px!important;border-right-width:0px!important;}
-th {background-color: #f1f1f1;}
-.icon {font-size:17px;}
-h5 {font-size:20px;}
-h6 {font-size:18px;}
-td {-webkit-touch-callout: none; -webkit-user-select: none;-khtml-user-select: none;-moz-user-select: none;-ms-user-select: none; user-select: none;}
-td ul li {font-size:13px;}
-td ul li a {color:#666;}
-
-.fui-document {font-size:14px;padding-left:4px;}
-.checklist {overflow:scroll!important}
-.document-drawer{display:none;}
-.doc-list {margin-bottom:3px;}
-.doc-list li {font-size:13px;padding:5px 0px 5px 0px;border-top:1px solid #ddd!important;}
-.doc-list li.action {border-top:1px solid #ddd;padding-top:6px;margin-top:3px;} 
-.doc-list li a {color:#777;}
-.dropdown-menu li {border-top:none!important;}
-.dropdown-menu li a {color:white;}
-.table [class*="fui-"] {font-size:22px;}
-td .tools {font-size:10px;}
-.dropdown-inverse li > a {
-	padding:3px 3px 3px 3px;
+/* Hack to display the navbar at the top of the matter  */
+html,
+body,
+div.full {
+  height: 100%;
 }
-.dropdown-inverse li > a:hover {
-	color:white;
+/* Navbar - this is the top of sthe matter  */
+.navbar.checklist-nav li a {
+  font-size: 14px;
 }
-.acme-inc {
-	border:1px solid #9b59b6;
-	padding:0px 10px 10px 10px;
-	color:#9b59b6;
-	margin-bottom:20px;
-	margin-top:20px;
+.navbar.checklist-nav li a [class*="fui-"] {
+  font-size: 17px;
+  margin-top: -2px;
 }
-.founders-fund {
-	border:1px solid #e67e22;
-	color:#e67e22;
-	padding:0px 10px 10px 10px;
+.navbar.checklist-nav li a .navbar-new {
+  top: 18px;
+  right: 3px;
+  font-size: 11px;
+  padding-top: 1px;
 }
-.veddis-ventures {
-	border:1px solid #2ecc71;
-	color:#2ecc71;
-	padding:0px 10px 10px 10px;
-	margin-top:20px;
+.navbar.checklist-nav li span {
+  margin-right: 3px;
+  font-size: 14px;
 }
-.veddis-ventures h5, .founders-fund h5, .acme-inc h5 {
-	font-size: 16px;
-	margin-top:8px;
+.navbar.checklist-nav li img.user {
+  width: 26px;
+  border-radius: 15px;
+  margin-top: -9px;
+  margin-bottom: -5px;
+  opacity: 0.6;
 }
-.connectedSortable {
-	min-height:20px;
+.navbar.checklist-nav li span.user {
+  font-weight: normal;
+  color: #bbb;
+  border: none;
+  background-color: #3a3a3a;
+  padding: 8px;
+  font-size: 12px;
+  border-radius: 40px;
 }
-.table .tools, .table .tools [class*="fui-"] {
-	font-size:12px;
-	margin-right:2px;
-	cursor: pointer;
+.navbar.checklist-nav .navbar-form .form-control {
+  border: 0px solid transparent;
 }
-.drop-zone {display:none;color:#aaa!important;text-align: center;border:1px dashed #ccc;font-size:14px!important;}
-.hover-wrap {position:relative;}
-.hover-tools { z-index:500;float:right;text-align:center;width:90px; font-size:12px;padding:5px;top:0px;background-color:#999;color:white;border-radius:5px;}
-
-.hover-tools a {color:white;}
-.hover-tools-assign { display:none;z-index:500;position:absolute;text-align:left;right:-160px;width:200px; font-size:12px;padding:10px;top:30px;background-color:#efefef; color:#222;border-radius:5px; box-shadow: 0px 0px 10px #666}
-
-.hover-tools-assign label {font-weight: bold; }
-
-.hover-wrap:hover .hover-tools {display:block;}
-.ui-sortable li {color:#222;}
-
-.item-view {background-color:#eee;min-height:700px;}*/
-/* New stuff */
-.checklist-switch-wrap {
-  padding: 10px 0px 0px 0px;
+.navbar.checklist-nav .input-group .btn {
+  border: none!important;
 }
-.checklist-switch-wrap .filter-title {
+.navbar a.navbar-brand {
   font-size: 13px;
-  color: #ccc;
+  padding: 12px 18px 11px 18px;
+  border-bottom: none;
+  max-width: 240px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.checklist-switch .btn {
-  opacity: 0.65;
+.navbar .logo-mark {
+  float: left;
+  border-right: 0px solid #373737;
+  padding: 14px 12px 15px 17px;
 }
-.checklist-switch .btn.active {
+.navbar .logo-mark img {
+  width: 30px;
+}
+.navbar .matter-name {
+  max-width: 270px;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-bottom: -10px;
+}
+.navbar .nav.navbar-matters .dropdown-menu {
+  margin-top: 0px!important;
+  width: 350px!important;
+  border-bottom: 2px solid #6bdb7e;
+  border-radius: 0px 0px 0px 0px;
+}
+.navbar .nav.navbar-matters .dropdown-menu li {
+  border-radius: 0px 0px 0px 0px;
+  text-overflow: ellipsis;
+  width: 350px!important;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.navbar .nav.navbar-matters .dropdown-menu a {
+  border-radius: 0px 0px 0px 0px;
+  font-size: 12px;
+  padding: 4px 0px 4px 4px;
+  text-overflow: ellipsis;
+  width: 350px!important;
+}
+.checklist-wrapper {
+  background-color: #f2f2f2;
+  height: 100%;
+  margin-top: -55px;
+  padding-top: 55px;
+}
+.checklist-wrapper .checklist-col {
+  overflow-y: scroll;
+  overflow-x: visible;
+}
+.checklist-wrapper #checklist-detail {
+  overflow-y: scroll;
+  border: 5px solid red;
+}
+.checklist-wrapper h5 {
+  font-size: 20px;
+  text-transform: uppercase;
+  color: #666;
+}
+.checklist-wrapper img.user {
+  width: 30px;
+  border-radius: 15px;
+  margin-top: -4px;
+  margin-bottom: -5px;
+}
+.checklist-wrapper div.item {
+  background-color: #e4e6e8;
+  border-left: 1px solid #dee1e3;
+  height: 100%;
+  color: #3d4448;
+}
+.checklist-wrapper div.item hr {
+  border-color: #d9dcde;
+}
+.checklist-wrapper div.item .text-muted {
+  opacity: 0.5;
+}
+.checklist-wrapper div.item a.link {
+  color: #a1aab0;
+  font-size: 12px;
+}
+.checklist-wrapper div.item a.link:hover {
+  text-decoration: underline;
+}
+.checklist-wrapper div.item small {
+  font-size: 13px;
+}
+.checklist-wrapper div.item .item-help {
+  margin: 50px 35px;
+  text-align: center;
+  color: #acb4b9;
+  font-size: 13px;
+  line-height: 18px;
+}
+.checklist-wrapper div.item .item-help .fui-upload,
+.checklist-wrapper div.item .item-help .fui-time,
+.checklist-wrapper div.item .item-help .fui-arrow-left {
+  font-size: 40px;
+  color: #d9dcde;
+}
+.checklist-wrapper div.item .item-help h4 {
+  font-size: 20px;
+}
+.checklist-wrapper div.item h3 {
+  font-size: 19px;
+  padding-bottom: 16px;
+  background-color: #e1e4e5;
+  margin-bottom: 0px;
+  margin: 4px -15px 4px -15px;
+  padding: 18px 15px 16px 15px;
+}
+.checklist-wrapper div.item h3 .title-save {
+  font-size: 13px;
+  text-align: right;
+  color: #666;
+  padding-bottom: 6px;
+}
+.checklist-wrapper div.item h3 a {
+  color: #444;
+}
+.checklist-wrapper div.item h3 a:hover {
+  text-decoration: underline;
+}
+.checklist-wrapper div.item h3 a.btn {
+  color: white;
+}
+.checklist-wrapper div.item h3 .btn-silver {
+  color: #606a71;
+  padding: 5px 6px;
+  background-color: transparent;
+  font-size: 11px;
+}
+.checklist-wrapper div.item h3 .item-description-toggle {
+  padding-top: 5px;
+}
+.checklist-wrapper div.item h3 .item-description-toggle a.link {
+  font-size: 13px;
+}
+.checklist-wrapper div.item h3 .item-description-toggle p {
+  margin-bottom: 0px;
+}
+.checklist-wrapper div.item h3 .item-description textarea {
+  margin-top: 10px;
+  margin-bottom: 3px;
+  font-size: 12px;
+}
+.checklist-wrapper div.item .add-new {
+  border-top: 1px solid #d9dcde;
+  border-bottom: 1px solid #d9dcde;
+  margin-left: -15px;
+  margin-right: -15px;
+  padding: 12px 15px 12px 15px;
+}
+.checklist-wrapper div.item .add-new .btn-info {
+  font-weight: bold;
+}
+.checklist-wrapper div.item .add-new .dropdown-toggle {
+  padding-left: 7px;
+  padding-right: 7px;
+}
+.checklist-wrapper div.item .add-new .dropdown-toggle .caret {
+  border-width: 5px 4px;
+}
+.checklist-wrapper div.item .no-revisions {
+  color: #ccd4d5;
+  padding: 10px;
+  text-align: center;
+}
+.checklist-wrapper div.item .waiting-revision {
+  text-align: center;
+  background-color: #f5d657;
+  margin-left: -15px;
+  margin-right: -15px;
+  padding: 10px;
+  color: #ffffff;
+  border-top: 2px solid #f1c40f;
+  font-size: 14px;
+}
+.checklist-wrapper div.item .waiting-revision .close {
+  color: white;
+  opacity: 0.7;
+  font-size: 14px;
+}
+.checklist-wrapper div.item .waiting-revision a {
+  color: #ffffff;
+}
+.checklist-wrapper div.item .waiting-revision .user {
+  font-weight: normal;
+  color: #FFF;
+  border: none;
+  background-color: #f1c40f;
+  padding: 8px;
+  font-size: 12px;
+  border-radius: 40px;
+}
+.checklist-wrapper div.item ul.revisions .participant-tab {
+  background-color: #eff0f1;
+  border-bottom: 1px solid  #fafafa;
+  padding-left: 5px;
+  border-radius: 3px;
+  top: -33px;
+  right: -10px;
+}
+.checklist-wrapper div.item ul.revisions .participant-tab .btn-xs {
+  background-color: #eff0f1;
+  color: #78848c;
+}
+.checklist-wrapper div.item ul.revisions .participant-tab .btn-xs .caret {
+  border-top-color: #78848c;
+}
+.checklist-wrapper div.item ul.revisions li {
+  padding: 3px 0px 15px 0px;
+}
+.checklist-wrapper div.item ul.revisions li.toggle-previous {
+  padding-left: 0px;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap {
+  background-color: #fafafa;
+  padding: 9px 10px 0px 10px;
+  min-height: 40px;
+  position: relative;
+  /* the close button on the revision */
+
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap h4 {
+  line-height: 16px;
+  font-weight: bold;
+  margin: -3px 0px 7px 0px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap h4 a {
+  font-size: 13px;
+  color: #606a71;
+  margin-bottom: 4px;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap h4 a span.fui-document {
+  display: block;
+  float: left;
+  margin: 5px 3px 0px 0px;
+  font-size: 13px;
+  opacity: 0.75;
+  background-color: white;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap h4 a span.fui-document.status-0 {
+  color: #f4d03f;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap h4 a span.fui-document.status-1 {
+  color: #ff6a07;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap h4 a span.fui-document.status-2 {
+  color: #b07cc6;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap h4 a span.fui-document.status-3 {
+  color: #7ee2a8;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap h4 a span.fui-document.status-4 {
+  color: #3e5771;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap h4 a span.fui-document.status-5 {
+  color: #3c3c3c;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap h4 a span.fui-document.status-6 {
+  color: #b07cc6;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap h4 a span.fui-document.status-7 {
+  color: #b1bdbd;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap h4 a span.fui-document.status-8 {
+  color: #ed7669;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap h4 a span.fui-document.status-9 {
+  color: #b1bdbd;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap .desc {
+  color: #869198;
+  font-weight: normal;
+  padding: 0px 0px 5px 0px;
+  font-size: 12px;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap .desc p {
+  font-size: 12px;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap .item-description {
+  margin-bottom: 10px;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap .tools {
+  background-color: #f4d03f;
+  padding: 1px 3px 2px 4px;
+  margin-right: -10px;
+  margin-left: -10px;
   opacity: 1;
 }
-.checklist-switch .btn.first {
-  border-radius: 15px 0px 0px 15px;
-  margin-right: 1px;
+.checklist-wrapper div.item ul.revisions li .doc-wrap .tools a.btn-link {
+  color: white;
+  font-size: 11px;
 }
-.checklist-switch .btn.last {
-  border-radius: 0px 15px 15px 0px;
-  margin-right: 1px;
+.checklist-wrapper div.item ul.revisions li .doc-wrap .tools .pull-right .btn-xs {
+  padding-right: 5px;
+  padding-left: 0;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap .tools ul.dropdown-menu {
+  opacity: 1;
+  border: 2px solid white;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap .tools ul.dropdown-menu li {
+  padding: 0px 0px 0px 0px;
+  font-size: 12px;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap .tools ul.dropdown-menu li a {
+  padding: 6px 8px 6px;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap .status-0 {
+  background-color: #f4d03f;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap .status-1 {
+  background-color: #ff6a07;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap .status-2 {
+  background-color: #b07cc6;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap .status-3 {
+  background-color: #7ee2a8;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap .status-4 {
+  background-color: #3e5771;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap .status-5 {
+  background-color: #3c3c3c;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap .status-6 {
+  background-color: #b07cc6;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap .status-7 {
+  background-color: #b1bdbd;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap .status-8 {
+  background-color: #ed7669;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap .status-9 {
+  background-color: #b1bdbd;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap span.icon {
+  display: block;
+  float: left;
+  width: 17px;
+  height: 17px;
+  border-radius: 10px;
+  margin: 0px 5px 0px -3px;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap .close {
+  font-size: 15px;
+  display: none;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: white;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap:hover .close {
+  display: block;
+}
+.checklist-wrapper div.item ul.revisions li .doc-wrap .sub {
+  margin-top: 5px;
+  font-size: 11px;
+  color: #ccd4d5;
+  text-align: right;
+  margin-bottom: 3px;
+}
+.checklist-wrapper div.item ul.revisions li .review {
+  padding: 9px 3px 9px 8px;
+  color: #78848c;
+  font-size: 15px;
+  font-weight: normal;
+  background-color: white;
+}
+.checklist-wrapper div.item ul.revisions li .review a {
+  color: #606a71;
+}
+.checklist-wrapper div.item ul.revisions li .review.in-progress {
+  background-color: #eff0f1;
+}
+.checklist-wrapper div.item ul.revisions li .review ul li {
+  margin-bottom: 5px;
+  margin-top: 5px;
+  padding: 5px 5px 5px 5px;
+  background-color: white;
+}
+.checklist-wrapper div.item ul.revisions li .review ul li a {
+  color: #f39c12;
+}
+.checklist-wrapper div.item ul.revisions li .review ul li a.btn {
+  opacity: 0.8;
+}
+.checklist-wrapper div.item ul.revisions li .review ul li span {
+  font-size: 16px;
+  opacity: 1;
+}
+.checklist-wrapper div.item ul.revisions li .review ul li.complete a {
+  color: #2ecc71;
+}
+.checklist-wrapper div.item ul.revisions li .review ul li [class*="fui-"] {
+  float: right;
+  margin-top: -6px;
+}
+.checklist-wrapper div.item ul.revisions li .review ul li button [class*="fui-"] {
+  font-size: inherit;
+  margin-top: 0px;
+  float: none;
+}
+.checklist-wrapper div.item ul.revisions li .review ul li .close {
+  font-size: 14px;
+  padding-left: 4px;
+}
+.checklist-wrapper div.item ul.revisions li .sub {
+  font-size: 12px;
+  color: #bdc3c7;
+  text-align: right;
+  margin-top: 3px;
+}
+.checklist-wrapper div.item ul.revisions li.header {
+  font-weight: bold;
+  font-size: 20px;
+  padding-top: 6px;
+  padding-left: 0px;
+  padding-bottom: 4px;
+  margin-top: 15px;
+  text-transform: uppercase;
+  color: #a1aab0;
+}
+.checklist-wrapper div.item ul.revisions li.previous-toggle {
+  display: none;
+}
+.checklist-wrapper div.chat {
+  background-color: #ffffff;
+  /*ul {
+			padding-top:15px;
+			li {
+				.media {
+					padding-bottom:0px;
+				}
+				&.message {
+					margin-bottom:0px;
+					padding: 3px 0px 1px 0px;
+						.user-icon {
+							 float:left;
+							 padding-right:5px;
+							 background-color: @asbestos;
+							 padding:4px 6px;
+							 color:white;
+							 font-size:12px;
+							 border-radius:25px;
+							 margin-right:4px;
+							 margin-top:2px;
+						}
+					.media-body {
+						.msg-body {
+							font-size:12px;
+							line-height:1.45em;
+							margin-bottom:0px;
+							background-color:#f1f1f1;
+							padding:8px 10px;
+							color:darken(@asbestos, 0%);
+							text-rendering: optimizeLegibility;
+							border-radius:4px;
+						}
+						.msg-meta {
+							font-size: 11px;
+							color: @silver;
+							line-height: 15px;
+							margin-top: 2px;
+							margin-bottom: 6px;
+							a {
+								color:@silver;
+							}
+						}
+					}
+					&.me {
+						.user-icon {
+							 float:right;
+							 color: lighten(@peter-river, 50%);
+							 background-color:lighten(@peter-river, 10%);
+							 margin-left:4px;
+							 margin-right:0px;
+						}
+						.msg-body{
+							color:darken(@peter-river, 10%);
+							background-color:mix(@peter-river, white, 10%);
+							text-rendering: optimizeLegibility;
+							border-radius:4px;
+						}
+						.msg-meta {
+							text-align:right;
+							color: lighten(@peter-river, 25%);
+							a {
+								color:lighten(@peter-river, 25%);
+							}
+						}
+					}
+				}
+				&.action {
+					padding:3px 0px;
+					color: lighten(@asbestos, 20%);
+					font-size:12px;
+					margin-bottom:0px;
+					a {
+						color:lighten(@asbestos, 15%);
+
+					}
+				}
+			}
+		}*/
+
+}
+.checklist-wrapper div.chat h4 {
+  margin: 0px -15px 0px -15px;
+  padding: 22px 15px 12px 15px;
+  font-size: 15px;
+  color: #949da4;
+}
+.checklist-wrapper div.chat h4 span {
+  font-size: 12px;
+}
+.checklist-wrapper div.chat h4 a {
+  padding-bottom: 10px;
+}
+.checklist-wrapper div.chat div.new-message {
+  background-color: #eceeef;
+  z-index: 3;
+  clear: both;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.checklist-wrapper div.chat div.new-message textarea {
+  font-size: 12px;
+  border: 0px;
+  margin-top: 3px;
+}
+.checklist-wrapper div.chat div.new-message textarea:focus {
+  border: inherit;
+}
+.checklist-wrapper div.chat div.new-message .btn-textarea {
+  float: right;
+  margin-top: -10px;
+}
+.checklist-wrapper div.chat ul.activity-log {
+  margin-top: 10px;
+}
+.checklist-wrapper div.chat ul.activity-log li {
+  font-size: 12px;
+  line-height: 17px;
+  margin-bottom: 4px;
+  color: #777;
+  position: relative;
+}
+.checklist-wrapper div.chat ul.activity-log li a {
+  border-bottom: 1px dotted #ccc;
+  color: #999;
+}
+.checklist-wrapper div.chat ul.activity-log li .comment,
+.checklist-wrapper div.chat ul.activity-log li .annotation {
+  margin-top: 10px;
+  margin-bottom: 12px;
+}
+.checklist-wrapper div.chat ul.activity-log li .btn {
+  color: white;
+}
+.checklist-wrapper div.chat ul.activity-log li .edit {
+  float: right;
+  font-weight: normal;
+  line-height: 1;
+  text-shadow: 0 1px 0 #FFFFFF;
+  font-size: 8px;
+  margin-right: 5px;
+  margin-top: 1px;
+}
+.checklist-wrapper div.chat ul.activity-log li blockquote {
+  margin-top: 2px;
+  margin-bottom: 0px;
+  border-left: none;
+  position: relative;
+  font-size: 13px;
+  color: #2980b9;
+  padding: 4px 6px 4px 26px;
+  background-color: #f4f9fc;
+  border-radius: 4px;
+}
+.checklist-wrapper div.chat ul.activity-log li blockquote div {
+  line-height: 17px;
+  padding: 4px;
+}
+.checklist-wrapper div.chat ul.activity-log li blockquote a {
+  font-style: normal;
+  color: inherit;
+  font-size: 11px;
+  opacity: 0.6;
+}
+.checklist-wrapper div.chat ul.activity-log li blockquote span {
+  border-radius: 4px 0px 0px 4px;
+  display: block;
+  position: absolute;
+  font-weight: bold;
+  left: 0;
+  color: #f9fbfd;
+  padding: 8px 3px 0px 4px;
+  font-size: 11px;
+  text-align: center;
+  width: 23px;
+  top: 0;
+  height: 100%;
+  background-color: #a9d1ec;
+}
+.checklist-wrapper div.chat ul.activity-log li blockquote span.fui-document {
+  margin-top: -1px;
+  padding-left: 7px;
+}
+.checklist-wrapper div.chat ul.activity-log li .annotation blockquote {
+  color: #f39c12;
+  background-color: #fefaf3;
+}
+.checklist-wrapper div.chat ul.activity-log li .annotation blockquote span {
+  color: #fffcf8;
+  background-color: #fce3bc;
+}
+.checklist-wrapper div.chat ul.activity-log li div.basic {
+  color: #aaa;
+}
+.checklist-wrapper div.chat ul.activity-log li span.since {
+  color: #ccc;
+}
+.checklist-wrapper div.chat ul.activity-log li span.pe-7s-clock {
+  color: #aaa;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+.checklist-wrapper div.chat ul.activity-log li:hover span.pe-7s-clock {
+  opacity: 1;
+}
+.modal-content ul.participants li {
+  margin: 10px 0px;
+}
+.modal-content ul.participants li .user {
+  font-weight: normal;
+  color: #aaa;
+  border: none;
+  background-color: #FFF;
+  padding: 8px;
+  font-size: 12px;
+  border-radius: 40px;
+}
+.modal-content ul.participants li label {
+  font-weight: normal;
+}
+.modal-content p.note {
+  font-size: 13px;
+  line-height: 17px;
+  color: #888;
+  margin: 10px 0px;
+}
+/* #closing {
+	background-color:lighten(@silver, 18%);
+	table {
+		width:80%;
+		margin:0 auto;
+		th{
+			background-color: transparent;
+		}
+		tr {
+			border-top-color: lighten(@silver, 18%);
+			td {
+				&.item-title {
+					padding-left:10px;
+					padding-top:10px;
+				}
+				.closing-title {
+					padding-top:40px;
+				}
+				&.closing-group-title {
+					line-height:38px;
+					font-size:18px;
+					color:@gray;
+					vertical-align:bottom;
+					.progress {
+						margin:4px 30px 4px 30px;
+						border-radius:0px;
+						height: 7px;
+					}
+				}
+				div[class*="group-"] {
+					font-size:17px;
+					margin-top:-25px;
+					text-align:center;
+					color: @amethyst;
+					padding-right:45px;
+					.disc{
+						font-size:25px;
+						margin:0 auto;
+						width:55px;
+						border:1px solid darken(@amethyst, 5%);
+						text-align:center;
+						padding:5px 10px 5px 11px;
+						background-color: @amethyst;
+						color:white;
+						border-radius:100px;
+						display:inline;
+						text-align:center;
+					}
+					&.complete {
+						padding-right:33px;
+					}
+				}
+				div.group-b {
+					color:@alizarin;
+					.disc {
+						border-color:darken(@alizarin, 5%);
+						background-color:@alizarin;
+					}
+				}
+				&.check {
+					text-align:center;
+				}
+			}
+		}
+	}
+}
+*/
+#requests .requests-header {
+  background-color: #ffffff;
+  margin-bottom: 20px;
+}
+#requests .requests-header h3 {
+  color: #545e64;
+  font-size: 24px;
+  margin: 50px 0px 30px 0px;
+  vertical-align: center;
+  position: relative;
+}
+#requests .requests-header h3 span.lg {
+  background-color: #e74c3c;
+  color: white;
+  padding: 8px 15px;
+  border-radius: 40px;
+  margin-right: 3px;
+}
+#requests .requests-inner {
+  background-color: white;
+}
+#requests h5 {
+  font-size: 19px;
+  margin-bottom: 8px;
+}
+#requests p.lead {
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+#requests .req-wrap {
+  background-color: white;
+  padding: 20px 20px;
+  color: #20638f;
+  font-size: 18px;
+  line-height: 20px;
+  border: 1px solid #e8ecec;
+}
+#requests .req-wrap .fui-document {
+  color: #2980b9;
+  font-size: 38px;
+  line-height: 40px;
+  margin-right: 7px;
+  line-height: 100%;
+}
+#requests .req-wrap .sub {
+  font-size: 13px;
+  line-height: 12px;
+  color: #99a2a9;
+}
+#requests .req-wrap .btn {
+  margin-top: 4px;
+}
+#requests ul.signature .req-wrap {
+  color: #1b557a;
+}
+#requests ul.signature .req-wrap .fui-document {
+  color: #1b557a;
+}
+#requests ul.signature .req-wrap .btn {
+  background-color: #1b557a;
+}
+.avatar {
+  background-color: #98afc6;
+  display: inline-block;
+  position: relative;
+}
+.avatar .initials {
+  color: white;
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+  height: 40px;
+  overflow: hidden;
+  line-height: 40px;
+  text-align: center;
+  width: 40px;
+}
+@media (max-width: 1199px) {
+  .item.full {
+    height: 65%;
+  }
+  .chat.full {
+    position: absolute;
+    bottom: 0;
+    height: 35%;
+  }
+  .chat.full div.new-message textarea:focus {
+    height: 60px!important;
+  }
 }

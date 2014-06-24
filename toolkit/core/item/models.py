@@ -86,6 +86,7 @@ class Item(IsDeletedMixin,
 
     class Meta:
         ordering = ('sort_order',)
+        # permissions = (("read_item", "Can read items"), )
 
     def __unicode__(self):
         return u'%s' % self.name
@@ -168,6 +169,12 @@ class Item(IsDeletedMixin,
     def can_delete(self, user):
         return user.profile.is_lawyer and user in self.matter.participants.all()
 
+#
+# rulez_registry.register("can_read", Item)
+# rulez_registry.register("can_edit", Item)
+# rulez_registry.register("can_delete", Item)
+
+
 """
 Connect signals
 """
@@ -175,8 +182,3 @@ pre_save.connect(on_item_save_category, sender=Item, dispatch_uid='item.pre_save
 pre_save.connect(on_item_save_closing_group, sender=Item, dispatch_uid='item.pre_save.closing_group')
 pre_save.connect(on_item_save_manual_latest_item_delete, sender=Item, dispatch_uid='item.pre_save.on_item_save_manual_latest_item_delete')
 post_save.connect(on_item_post_save, sender=Item, dispatch_uid='item.post_save.category')
-
-
-rulez_registry.register("can_read", Item)
-rulez_registry.register("can_edit", Item)
-rulez_registry.register("can_delete", Item)

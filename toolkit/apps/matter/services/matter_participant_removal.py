@@ -3,6 +3,7 @@ import logging
 from django.core.exceptions import PermissionDenied
 
 from toolkit.apps.matter.signals import PARTICIPANT_DELETED, USER_STOPPED_PARTICIPATING
+from toolkit.apps.workspace.models import WorkspaceParticipants, ROLES
 
 
 logger = logging.getLogger('django.request')
@@ -26,20 +27,22 @@ class MatterParticipantRemovalService(object):
             # all participants can remove themselves; laywers can remove other participants but not the primary lawyer
             #
             if self.removing_user == user_to_remove:
-
-                self.matter.participants.remove(user_to_remove)
+                self.matter.remove_participant(user=user_to_remove)
                 USER_STOPPED_PARTICIPATING.send(sender=self,
                                                 matter=self.matter,
                                                 participant=user_to_remove)
 
-            elif self.removing_user.profile.is_lawyer and self.matter.lawyer != user_to_remove:
-
-                self.matter.participants.remove(user_to_remove)
+            # either user has manage_participants or he removes a client and has manage_clients.
+            # additionaly he cannot remove the primary lawyer (last 'and')
+            elif (self.removing_user.matter_permissions(matter=self.matter).has_permission(manage_participants=True) is True
+                    or user_to_remove.matter_permissions(matter=self.matter).role == ROLES.client
+                       and self.removing_user.matter_permissions(matter=self.matter).has_permission(manage_clients=True)) \
+                    and self.matter.lawyer != user_to_remove:
+                self.matter.remove_participant(user=user_to_remove)
                 PARTICIPANT_DELETED.send(sender=self,
                                          matter=self.matter,
                                          participant=user_to_remove,
                                          user=self.removing_user)
-
             else:
                 logger.error(u'User %s tried to remove the participant: %s in the matter: %s but were not the primary lawyer' %
                              (self.current_user, user_to_remove, self.matter))

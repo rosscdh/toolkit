@@ -97,6 +97,7 @@ angular.module('toolkit-gui')
 		$scope.data = {
 			'slug': routeParams.matterSlug,
 			'matter': null,
+      'customers' : [],
 			'showAddForm': null,
 			'showItemDetailsOptions': false,
 			'selectedItem': null,
@@ -221,34 +222,50 @@ angular.module('toolkit-gui')
 		 */
 		$scope.initialiseMatter = function( matter ) {
 			var /*i, */categoryName = null, categories = [], items = [];
+			var firstItem, category;
 
 			// Items with blank category name
 			items = jQuery.grep( matter.items, function( item ){ return item.category===categoryName; } );
+			category = { 'name': categoryName, 'items': items };
 
-			// REMOVE !!
-			/*
-			for(var i=0;i<items.length;i++) {
-				items[i].signing_percentage_complete = parseInt( Math.random() * 100 );
+			categories.push(category);
+
+			// First item if available, this will be used to open the first available checklist item by default
+			if(items && items.length>0) {
+				firstItem = { 'item': items[0], 'category': category };
 			}
-			*/
-			// end REMOVE
-
-			categories.push(
-				{ 'name': categoryName, 'items': items }
-			);
 
 			if( matter && matter.categories ) {
 				// Allocate items to specific categories to make multiple arrays
 				jQuery.each( matter.categories, function( index, cat ) {
-					var categoryName = cat;
+					var categoryName = cat, category;
 					var items = jQuery.grep( matter.items, function( item ){ return item.category===categoryName; } );
 
-					categories.push( { 'name': categoryName, 'items': items } );
+					category = { 'name': categoryName, 'items': items };
+
+					categories.push( category );
+
+					// First item if available, this will be used to open the first available checklist item by default
+
+					if(!firstItem && items[0] !== undefined) {
+						firstItem = { 'item': items[0], 'category': category };
+					}
 				});
+
+        jQuery.each( matter.participants, function( index, participant ) {
+          if (participant.user_class === 'customer'){
+            $scope.data.customers.push(participant);
+          }
+
+        });
 
 				$scope.data.matter = matter;
 				$scope.data.categories = categories;
 
+				// If there is no state then select the first available item
+				if(!$state.params.itemSlug && firstItem) {
+					$location.path('/checklist/' + firstItem.item.slug);
+				}
 				$scope.handleUrlState();
 
 			} else {
@@ -394,7 +411,6 @@ angular.module('toolkit-gui')
 		$scope.selectItem = function(item, category) {
 			var deferred = $q.defer();
 
-			$scope.data.itemIsLoading = true;
 			$scope.data.selectedItem = item;
 			$scope.data.selectedCategory = category;
 
@@ -403,8 +419,18 @@ angular.module('toolkit-gui')
             $scope.loadItemDetails(item).then(function success(item){
                 deferred.resolve(item);
                 $scope.data.itemIsLoading = false;
-                //$log.debug(item);
 		    });
+
+		    resetScopeState();
+
+			$scope.displayDetails();	// @mobile
+
+			return deferred.promise;
+		};
+
+		function resetScopeState() {
+			$scope.data.itemIsLoading = true;
+			$scope.data.showAddFileOptions = false;
 
 			//Reset controls
 			$scope.data.dueDatePickerDate = $scope.data.selectedItem.date_due;
@@ -413,12 +439,7 @@ angular.module('toolkit-gui')
 
 			$scope.data.show_edit_item_description = false;
 			$scope.data.show_edit_revision_description = false;
-
-			//$log.debug(item);
-			$scope.displayDetails();	// @mobile
-
-			return deferred.promise;
-		};
+		}
 
 		/**
 		 * Allows the GUI some time to update before incepting the request to load item details
@@ -813,7 +834,7 @@ angular.module('toolkit-gui')
 					// Update uploading status
 					item.uploading = false;
 					$scope.data.uploading = $scope.uploadingStatus( $scope.data.matter.items );
-					
+
 					toaster.pop('error', 'Error!', 'Unable to upload revision', 5000);
 				}
 			);
@@ -841,7 +862,7 @@ angular.module('toolkit-gui')
 			var user = userService.data().current;
 			var promise;
 
-			if( user.user_class === 'lawyer' ) {
+			if( user.permissions.manage_items) {
 				item.uploading = true;
 				$scope.data.uploading = true;
 
@@ -1258,7 +1279,10 @@ angular.module('toolkit-gui')
                         }
                     });
 
-                    $log.debug("Length known signers: " + $scope.data.knownSigners.length);
+                    //$log.debug("Length known signers: " + $scope.data.knownSigners.length);
+
+                    // Open signing dialog
+                    $scope.showSigning(revision, null);
 				},
 				function cancel() {
 					//
@@ -1351,6 +1375,9 @@ angular.module('toolkit-gui')
 					},
 					'review': function () {
 						return review;
+					},
+                    'currentUser': function () {
+						return $scope.data.usdata.current;
 					}
 				}
 			});

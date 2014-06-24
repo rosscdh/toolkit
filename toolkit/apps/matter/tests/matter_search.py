@@ -21,7 +21,7 @@ class MatterSearchClientSideTest(BaseScenarios, BaseCasperJs, LiveServerTestCase
 
         for i in range(0,5):
             matter = mommy.make('workspace.Workspace', name='Lawpal (test) %d' % i, lawyer=self.lawyer, client=self.workspace_client)
-            matter.participants.add(self.lawyer)
+            matter.add_participant(self.lawyer)
 
         url = reverse('matter:list')
         self.assertTrue(self.load_casper_file(js_file='matter_list_basic.js', test_label='Basic Tests of the matter list for a lawyer', url=url))

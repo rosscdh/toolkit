@@ -8,6 +8,22 @@ Deployment actions by branch
 
 
 --------------------------------------------------------------------------------
+** DEPLOYED 24 June 2014 - allow owners to assign granular permissions to matters
+*NOTES* had to ensure that existing flows are not iterrupted but setting clients by default
+to have manage_items permission; all new matters do not have this permission and if the user
+is updated in the matter they will lose the permission.
+--------------------------------------------------------------------------------
+
+[feature/matter-permissions-global]
+
+1. pip install django-permission
+2. ./manage.py syncdb  # add the permissions tables
+3. ./manage.py migrate default  # extend the max_length of auth_permission.name(50) to (128) for our long assed permission names
+4. ./manage.py update_permissions  # add our set of permissions
+5. ./manage.py migrate workspace  # migrate the through table and its settings
+
+
+--------------------------------------------------------------------------------
 ** DEPLOYED 17 June 2014
 --------------------------------------------------------------------------------
 
