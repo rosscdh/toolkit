@@ -5,7 +5,7 @@
 			<button type="button" class="btn btn-default pull-right btn-square btn-white" ng-click="displayActivity()" ng-class="{ 'active': data.page==='activity' }"> Activity and Discussion</button>
 			<button type="button" class="btn btn-default pull-right btn-square btn-light" ng-click="displayDetails()" ng-class="{ 'active': data.page==='details' }"> Files</button>
 		</div>
-		<div class="row">
+		<div class="row document-view-tools">
 			<div class="col-sm-12 text-right closing-header">
 				<button type="button" class="btn btn-default" ng-click="exportMatter()" ng-disabled="downloadingDocuments">Download All <i class="fa fa-spinner fa-spin" ng-if="downloadingDocuments"></i></button>
 			</div>
@@ -24,8 +24,7 @@
 				<!-- end: checklist //-->
 			</div>
 			<div class="col-sm-8 item spa full" id="checklist-detail-container" ng-class="{ 'zero': data.page==='checklist' }">
-				<div class="row full" ng-if="data.selectedItem.latest_revision">
-					{{data.selectedItem.documentLoading}}
+				<div class="row full document-container" ng-if="data.selectedItem.latest_revision">
 					<iframe ng-src="{{data.selectedItem.latest_revision.user_review.url}}" class="fit-container" iframe-events></iframe>
 					<!--<iframe ng-src="{{data.selectedItem.latest_revision.user_download_url}}" class="fit-container"></iframe>//-->
 					<!--<iframe src="http://docs.google.com/gview?url={{data.selectedItem.latest_revision.user_review.url|escape}}&embedded=true" class="fit-container"></iframe>//-->
