@@ -73,6 +73,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
         lookup_field = 'username'
+        exclude = ('password', 'last_login', 'groups', 'is_superuser', 'is_staff')
 
     def get_full_name(self, obj):
         return obj.get_full_name()
