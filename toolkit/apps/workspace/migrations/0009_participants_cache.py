@@ -32,9 +32,12 @@ class Migration(DataMigration):
     def backwards(self, orm):
         for m in orm.Workspace.objects.all():
             data = m.data
-            data.pop('participants')
-            m.data = data
-            m.save(update_fields=['data'])
+            try:
+                data.pop('participants')
+                m.data = data
+                m.save(update_fields=['data'])
+            except KeyError:
+                pass
 
     models = {
         u'auth.group': {
