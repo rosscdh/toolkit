@@ -163,7 +163,7 @@ angular.module('toolkit-gui')
                     $scope.data.showAddLawyer=false;
                     $scope.data.showAddParticipant=false;
                     $scope.data.selectedUser=null;
-                    $scope.data.showaddbutton = false;
+                    $scope.data.showAddButton = false;
 
                     toaster.pop('success', 'Success!', 'User was added successfully',5000);
 				},
