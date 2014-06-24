@@ -7,6 +7,7 @@ from django.utils.html import strip_spaces_between_tags as minify_html
 
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 from toolkit.apps.notification.templatetags.notice_tags import get_notification_template
+from toolkit.apps.workspace.models import ROLES
 from toolkit.casper.workflow_case import BaseScenarios
 
 from stored_messages.models import Inbox
@@ -126,7 +127,6 @@ class NotificationEventsListTest(BaseListViewTest):
 
     def test_removed_matter_participant(self):
         self.client.login(username=self.lawyer.username, password=self.password)
-
         endpoint_url = reverse('matter_participant', kwargs={'matter_slug': self.matter.slug})
         """
         when you remove a user, obviously they dont get a notification; so we need to create another user
@@ -143,15 +143,15 @@ class NotificationEventsListTest(BaseListViewTest):
         # add the user
         data = {
             'email': matter_participant.email,
-            'first_name': 'Bob',
-            'last_name': 'Crockett',
+            'first_name': matter_participant.first_name,
+            'last_name': matter_participant.last_name,
+            'role': ROLES.get_name_by_value(ROLES.thirdparty),
             'message': 'Bob you are being added here please do something',
         }
 
         resp = self.client.post(endpoint_url,
                                 json.dumps(data),
                                 content_type='application/json')
-
         self.assertEqual(resp.status_code, 202)  # accepted
 
         # remove it again:
@@ -165,7 +165,7 @@ class NotificationEventsListTest(BaseListViewTest):
         self.assertEqual(inbox.count(), 2)  # should get the notification about adding matter_participant to matter
         # for i in inbox:
         #     print i.__unicode__()
-        self.assertTrue(all(i.__unicode__() in [u'[Customër Tëst] Lawyër Tëst added a new member to Lawpal (test)',
+        self.assertTrue(all(i.__unicode__() in [u'[Customër Tëst] Lawyër Tëst added Matter Participant as a new member to Lawpal (test)',
                                                 u'[Customër Tëst] Lawyër Tëst removed Matter Participant as a participant of Lawpal (test)'] for i in inbox))
 
         inbox = self.get_inbox(user=matter_participant)

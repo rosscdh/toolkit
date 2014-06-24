@@ -8,7 +8,7 @@
 		<div class="row full">
 			<div class="col-sm-5 checklist-col full" id="checklist-items" ng-class="{ 'zero': data.page!=='checklist' }">
 				<!-- start: LAWYER checklist //-->
-				<span ng-if="data.usdata.current.user_class=='lawyer'">
+				<span ng-show="data.usdata.current.permissions.manage_items">
 					<div>
 						<div ng-repeat="cat in data.categories | filter: {name:'!'}">
 							<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-header.html'"></span>
@@ -29,26 +29,27 @@
 					</div>
 				</span>
 				<!-- end: LAWYER checklist //-->
+
+
 				<!-- start: CUSTOMER checklist //-->
-				<span ng-if="data.usdata.current.user_class=='customer'" class="categories-list">
+				<span ng-show="!data.usdata.current.permissions.manage_items">
 					<div ng-repeat="cat in data.categories">
 						<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-header.html'"></span>
 						<!-- Checklist //-->
 						<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-customer.html'"></span>
 					</div>
 				</span>
-				<!-- end: CUSTOMER checklist //-->				
+				<!-- end: CUSTOMER checklist //-->
 			</div>
 			<div class="col-sm-7 item spa full" id="checklist-detail-container" ng-class="{ 'zero': data.page==='checklist' }">
 				<div class="row full">
 
 					<!-- begin item details //-->
 					<!-- @TODO Make the URL dynamic -->
-					<div class="col-sm-7 full checklist-col" id="checklist-detail" ng-include="'/static/ng/partial/checklist/includes/itemdetails.html'" ng-class="{ 'zero': data.page!=='details' }">&nbsp;</div>
+					<div class="col-md-7 full checklist-col" id="checklist-detail" ng-include="'/static/ng/partial/checklist/includes/itemdetails.html'" ng-class="{ 'zero': data.page!=='details' }">&nbsp;</div>
 					<!-- end item details //-->
 
 					<!-- chat //-->
-					<!-- @TODO Make the URL dynamic -->
 					<div class="col-sm-5 chat full checklist-col" id="checklist-activity" ng-include="'/static/ng/partial/checklist/includes/itemchat.html'" ng-class="{ 'zero': data.page!=='activity'}">&nbsp;</div>
 					<!-- end: chat //-->
 				</div>

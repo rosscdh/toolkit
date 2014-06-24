@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
-import os
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.db.models.loading import get_model
-from django.db.models.signals import pre_save, post_save, post_delete, m2m_changed
-from django.template.defaultfilters import slugify
-from toolkit.core import _managed_S3BotoStorage
+from django.db.models.signals import pre_save, post_save, post_delete
 
 from toolkit.core.mixins import IsDeletedMixin, ApiSerializerMixin
 from toolkit.apps.matter.mixins import MatterExportMixin
@@ -15,11 +12,12 @@ from dj_authy.models import AuthyModelMixin
 from .signals import (ensure_workspace_slug,
                       ensure_workspace_matter_code,
                       # tool
+                      ensure_workspace_owner_in_participants,
                       ensure_tool_slug,
                       on_workspace_post_delete,
                       on_workspace_post_save)
 
-from toolkit.utils import _class_importer
+from toolkit.utils import _class_importer, get_namedtuple_choices
 
 from rulez import registry as rulez_registry
 
@@ -27,16 +25,161 @@ from uuidfield import UUIDField
 from jsonfield import JSONField
 
 from .managers import WorkspaceManager
-from .mixins import ClosingGroupsMixin, CategoriesMixin, RevisionLabelMixin
+from .mixins import (ClosingGroupsMixin,
+                     CategoriesMixin,
+                     RevisionLabelMixin,
+                     MatterParticipantPermissionMixin,)
+
+#
+# These are the master permissions set
+# 1. Any change to this must be cascaded in the following permission dicts
+#
+GRANULAR_PERMISSIONS = (
+    ("manage_participants", u"Can manage participants"),
+    ("manage_document_reviews", u"Can manage document reviews"),
+    ("manage_items", u"Can manage checklist items and categories"),
+    ("manage_signature_requests", u"Can manage signatures & send documents for signature"),
+    ("manage_clients", u"Can manage clients"),
+)
+#
+# Matter.owner (Workspace.lawyer)
+#
+MATTER_OWNER_PERMISSIONS = dict.fromkeys([key for key, value in GRANULAR_PERMISSIONS], True)  # Grant the owner all permissions by default
+#
+# Matter.participants.user_class == 'lawyer'
+#
+PRIVILEGED_USER_PERMISSIONS = {
+    "manage_participants": False,
+    "manage_document_reviews": True,
+    "manage_items": True,
+    "manage_signature_requests": True,
+    "manage_clients": False,
+}
+#
+# Matter.participants.user_class == 'customer'|'client'
+#
+UNPRIVILEGED_USER_PERMISSIONS = {
+    "manage_participants": False,
+    "manage_document_reviews": False,
+    "manage_items": True,
+    "manage_signature_requests": False,
+    "manage_clients": False,
+}
+#
+# Not logged in or random user permissions
+#
+ANONYMOUS_USER_PERMISSIONS = dict.fromkeys([key for key, value in GRANULAR_PERMISSIONS], False)
+
+ROLES = get_namedtuple_choices('ROLES', (
+    (0, 'noone', 'No Access'),
+    (1, 'owner', 'Owner'),
+    (2, 'client', 'Client'),
+    (3, 'colleague', 'Colleague'),
+    (4, 'thirdparty', '3rd Party'),
+))
+
+
+class WorkspaceParticipants(models.Model):
+    """
+    Model to store the Users permissions with regards to a matter
+    """
+    # ROLES are simply for the GUI as ideally all of our users would
+    # simple have 1 or more of a set of permission
+    ROLES = ROLES
+    PERMISSIONS = MATTER_OWNER_PERMISSIONS.keys()  # as the MATTER_OWNER_PERMISSIONS always has ALL of them
+    MATTER_OWNER_PERMISSIONS = MATTER_OWNER_PERMISSIONS
+    PRIVILEGED_USER_PERMISSIONS = PRIVILEGED_USER_PERMISSIONS
+    UNPRIVILEGED_USER_PERMISSIONS = UNPRIVILEGED_USER_PERMISSIONS
+    ANONYMOUS_USER_PERMISSIONS = ANONYMOUS_USER_PERMISSIONS
+
+    workspace = models.ForeignKey('workspace.Workspace')
+    user = models.ForeignKey('auth.User')
+    is_matter_owner = models.BooleanField(default=False, db_index=True)  # is this user a matter owner
+
+    data = JSONField(default={})
+    role = models.IntegerField(choices=ROLES.get_choices(), default=ROLES.client, db_index=True)  # default to client to meet the original requirements
+
+    class Meta:
+        db_table = 'workspace_workspace_participants'  # Original django m2m table
+
+    @property
+    def display_role(self):
+        return self.ROLES.get_desc_by_value(self.role)
+
+    @property
+    def role_name(self):
+        return self.ROLES.get_name_by_value(self.role)
+
+    def default_permissions(self, user_class=None):
+        """
+        Class to provide a wrapper for user permissions
+        The default permissions here MUST be kept up-to-date with the Workspace.Meta.permissions tuple
+        """
+        if self.is_matter_owner is True or self.role == self.ROLES.owner or user_class == 'owner':
+            return MATTER_OWNER_PERMISSIONS
+
+        # check the user is a participant
+        if self.user in self.workspace.participants.all():
+            # they are! so continue evaluation
+            # cater to lawyer and client roles
+            if self.role == self.ROLES.colleague or user_class == 'colleague':
+                # Lawyers currently can do everything the owner can except clients and participants
+                return PRIVILEGED_USER_PERMISSIONS
+
+            elif self.role == self.ROLES.client or user_class == 'client':
+                # Clients by default can currently see all items (allow by default)
+                return UNPRIVILEGED_USER_PERMISSIONS
+
+        # Anon permissions, for anyone else that does not match
+        return ANONYMOUS_USER_PERMISSIONS
+
+    @classmethod
+    def clean_permissions(cls, **kwargs):
+        """
+        Pass in a set of permissions and remove those that do not exist in
+        the base set of permissions
+        """
+        kwargs_to_test = kwargs.copy()  # clone the kwargs dict so we can pop on it
+
+        for permission in kwargs:
+            if permission not in cls.PERMISSIONS:
+                kwargs_to_test.pop(permission)
+                # @TODO ? need to check for boolean value?
+        return kwargs_to_test
+
+    @property
+    def permissions(self):
+        return self.data.get('permissions', self.default_permissions())
+
+    @permissions.setter
+    def permissions(self, value):
+        if type(value) not in [dict] and len(value.keys()) > 0:
+            raise Exception('WorkspaceParticipants.permissions must be a dict of permissions %s' %
+                            self.default_permissions())
+        self.data['permissions'] = self.clean_permissions(**value)
+
+    def reset_permissions(self):
+        self.permissions = self.default_permissions()
+
+    def update_permissions(self, **kwargs):
+        self.permissions = kwargs
+
+    def has_permission(self, **kwargs):
+        """
+        .has_permission(manage_items=True)
+        """
+        permissions = self.permissions
+        return all(req_perm in permissions and permissions[req_perm] == value for req_perm, value in kwargs.iteritems())
 
 
 class Workspace(IsDeletedMixin,
+                CategoriesMixin,
                 AuthyModelMixin,
                 MatterExportMixin,
                 ClosingGroupsMixin,
-                CategoriesMixin,
                 ApiSerializerMixin,
                 RevisionLabelMixin,
+                MatterParticipantPermissionMixin,
                 models.Model):
     """
     Workspaces are areas that allow multiple tools
@@ -51,7 +194,10 @@ class Workspace(IsDeletedMixin,
     lawyer = models.ForeignKey('auth.User', null=True, related_name='lawyer_workspace')  # Lawyer that created this workspace
     client = models.ForeignKey('client.Client', null=True, blank=True)
 
-    participants = models.ManyToManyField('auth.User', blank=True)
+    # NB! We have not had to assigne the custom through-table
+    # WorkspaceParticipants, instead simply hijacked the default django table
+    # for participants
+    participants = models.ManyToManyField('auth.User', blank=True, through='workspace.WorkspaceParticipants')
 
     tools = models.ManyToManyField('workspace.Tool', blank=True)
 
@@ -69,6 +215,7 @@ class Workspace(IsDeletedMixin,
         ordering = ['name', '-pk']
         verbose_name = 'Matter'
         verbose_name_plural = 'Matters'
+        permissions = GRANULAR_PERMISSIONS
 
     def __init__(self, *args, **kwargs):
         #
@@ -135,6 +282,8 @@ class Workspace(IsDeletedMixin,
 """
 Connect signals
 """
+post_save.connect(ensure_workspace_owner_in_participants, sender=Workspace, dispatch_uid='workspace.post_save.ensure_workspace_owner_in_participants')
+
 pre_save.connect(ensure_workspace_slug, sender=Workspace, dispatch_uid='workspace.pre_save.ensure_workspace_slug')
 pre_save.connect(ensure_workspace_matter_code, sender=Workspace, dispatch_uid='workspace.pre_save.ensure_workspace_matter_code')
 

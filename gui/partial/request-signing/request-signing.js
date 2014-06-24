@@ -292,10 +292,10 @@ angular.module('toolkit-gui')
                     var usr = $scope.data.selectedUsers[key];
                     $scope.data.request.signers.push({'email': usr.email, 'first_name': usr.first_name, 'last_name': usr.last_name});
                 }
-                $log.debug($scope.data.request);
+                // $log.debug($scope.data.request);
                 matterItemService.requestSigner($scope.matter.slug, $scope.checklistItem.slug, $scope.data.request).then(
                     function success(response) {
-                        $log.debug(response);
+                        // $log.debug('hs response', response);
                         $modalInstance.close(response);
                         $scope.data.requestLoading = false;
                     },

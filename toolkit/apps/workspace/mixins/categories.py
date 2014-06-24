@@ -94,9 +94,7 @@ class CategoriesMixin(object):
                 #
                 instance_pk = instance.pk if instance is not None else None
                 # exclude the instance if present
-                items_using_category = self.item_set  \
-                                               .exclude(pk=instance_pk)  \
-                                               .filter(category=value)
+                items_using_category = self.item_set.exclude(pk=instance_pk).filter(category=value)
 
                 if items_using_category.count() > 0:
                     #
