@@ -23,12 +23,16 @@ class CrocodocLoaderService(object):
         self.reviewdocument = reviewdocument
         self.ensure_reviewer()
 
-        self.reviewdocument.ensure_file() ## ensure we have a local copy of the file
+        upload_immediately = False
+        if self.crocodoc_uuid_recorded is False:  # if we have no uuid then try to get it
+            upload_immediately = True
+            # need to ensure that we have the file locally
+            self.reviewdocument.ensure_file() ## ensure we have a local copy of the file
 
         self.service = CrocoDocConnectService(document_object=self.reviewdocument.document,
                                               app_label='attachment',
                                               field_name='executed_file',
-                                              upload_immediately=self.crocodoc_uuid_recorded is False,  # this is handled by the ensure_local_file method
+                                              upload_immediately=upload_immediately,  # this is handled by the ensure_local_file method
                                               # important for sandboxing the view to the specified reviewer
                                               reviewer=self.reviewdocument.reviewer)
 

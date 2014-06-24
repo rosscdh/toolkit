@@ -40,13 +40,14 @@
 						<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-customer.html'"></span>
 					</div>
 				</span>
-				<!-- end: CUSTOMER checklist //-->				
+				<!-- end: CUSTOMER checklist //-->
 			</div>
 			<div class="col-sm-7 item spa full" id="checklist-detail-container" ng-class="{ 'zero': data.page==='checklist' }">
 				<div class="row full">
 
 					<!-- begin item details //-->
-					<div class="col-sm-7 full checklist-col" id="checklist-detail" ng-include="'/static/ng/partial/checklist/includes/itemdetails.html'" ng-class="{ 'zero': data.page!=='details' }">&nbsp;</div>
+					<!-- @TODO Make the URL dynamic -->
+					<div class="col-md-7 full checklist-col" id="checklist-detail" ng-include="'/static/ng/partial/checklist/includes/itemdetails.html'" ng-class="{ 'zero': data.page!=='details' }">&nbsp;</div>
 					<!-- end item details //-->
 
 					<!-- chat //-->

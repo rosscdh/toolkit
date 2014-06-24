@@ -48,18 +48,22 @@
     <!-- Begin option toolbar -->
     <div class="add-new clearfix">
         <div class="btn-group" ng-show="data.usdata.current.permissions.manage_items">
-            <button class="btn btn-sm btn-info btn-embossed btn-add" filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)" extensions=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx"><span class="fui-upload"></span>
-                Add File
-            </button>
+            <span class="btn btn-sm btn-info btn-file btn-embossed btn-add">
+                <span class="fui-upload"></span> Upload File
+                <input type="file" ng-file-select="onFileDropped($files, data.selectedItem);" multiple />
+            </span>
             <button class="btn btn-info btn-sm btn-embossed dropdown-toggle" data-toggle="dropdown">
             <span class="caret"></span>
             </button>
             <span class="dropdown-arrow dropdown-arrow-inverse dropdown-small"></span>
             <ul class="dropdown-menu dropdown-inverse">
-                <li><a href="javascript:;" filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)" extensions=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx">Upload File</a></li>
+                <li><a href="javascript:;" filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)" extensions=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx">From cloud service</a></li>
                 <li><a href="javascript:;" data-toggle="modal" data-target="#requestFileModal" ng-click="requestRevision(data.selectedItem)">Request File</a></li>
             </ul>
         </div>
+        <button class="btn btn-sm btn-info btn-file btn-embossed btn-add" data-toggle="modal" data-target="#requestFileModal" ng-click="requestRevision(data.selectedItem)">
+            Request File
+        </button>
 
         <div class="btn-group" ng-show="data.usdata.current.permissions.manage_items">
             <a href="javascript:;" class="btn btn-sm btn-silver btn-embossed dropdown-toggle" data-toggle="dropdown">Options</a>
@@ -133,8 +137,8 @@
         <i class="fa fa-spinner fa-3x fa-spin"></i>
     </div>
 
-    <div ng-if="data.usdata.current.permissions.manage_items&&data.selectedItem.latest_revision&&!data.itemIsLoading" class="ng-cloak">
-        <div class="drop-area show-on-drag" ng-file-drop="onFileDropped($files, data.selectedItem);">
+    <div ng-if="data.usdata.current.permissions.manage_items&&data.selectedItem.latest_revision&&!data.itemIsLoading&&!data.selectedItem.uploading" class="ng-cloak">
+        <div class="drop-area show-on-drag" ng-file-drop="onFileDropped($files, data.selectedItem);" ng-class="{ 'show': data.showAddFileOptions }">
             <span class="fui-upload"></span>
             <h4>Upload a document</h4>
             <p>To upload a new document drop file here</p>
@@ -219,7 +223,9 @@
                               text="data.selectedItem.latest_revision.edit_revision_description" focus-on="event_edit_revision_description"></textarea>
                     <a href="javascript:;" class="btn btn-primary btn-xs" ng-click="data.selectedItem.latest_revision.description=data.selectedItem.latest_revision.edit_revision_description;saveLatestRevision();data.show_edit_revision_description=false;">Save description</a>
                     <a href="javascript:;" class="btn btn-inverse btn-xs item-description-cancel" ng-click="data.selectedItem.latest_revision.edit_revision_description='';data.show_edit_revision_description=false;">Cancel</a>
-                    <a href="javascript:;" class="btn btn-link btn-xs pull-right" title="Markdown help" onclick="alert('Markdown help popup like trello');">Formatting Help</a>
+                    <a href="javascript:;" class="btn btn-link btn-xs pull-right" title="Markdown help" ng-click="showMarkDownInfo()">Formatting Help</a>
+
+
                 </div>
                 <div class="tools status-{{ data.selectedItem.latest_revision.status }}">
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="showRevisionDocument(data.selectedItem.latest_revision)">View</a>  <a href="{{ data.selectedItem.latest_revision.user_download_url }}" class="btn btn-link btn-xs" target="_blank">Save</a>
