@@ -10,6 +10,8 @@ from ..serializers import ClientSerializer
 
 class ClientEndpoint(viewsets.ModelViewSet):
     """
+    no GUI-interface available.
+    so no permission-check for workspace.manage_clients added yet.
     """
     model = Client
     lookup_field = 'slug'

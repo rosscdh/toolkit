@@ -24,6 +24,7 @@ angular.module('toolkit-gui')
 	'$window',
 	function($scope, $modalInstance, participants, currentUser, matter, participantService, toaster, $location, $log, $window){
 		'use strict';
+
 		/**
 		 * In scope variable containing a list of participants within this matter. This is passed through from the originating controller.
 		 * @memberof ParticipantInviteCtrl
@@ -31,6 +32,9 @@ angular.module('toolkit-gui')
 		 * @private
 		 */
 		$scope.participants = participants;
+        $log.debug($scope.participants);
+
+
 		/**
 		 * In scope variable containing details about the current user. This is passed through from the originating controller.
 		 * @memberof ParticipantInviteCtrl
@@ -38,7 +42,8 @@ angular.module('toolkit-gui')
 		 * @private
 		 */
 		$scope.currentUser = currentUser;
-		/**
+
+        /**
 		 * In scope variable containing details about the matter. This is passed through from the originating controller.
 		 * @memberof ParticipantInviteCtrl
 		 * @type {Object}
@@ -53,9 +58,23 @@ angular.module('toolkit-gui')
 		 * @type {Object}
 		 */
 		$scope.data = {
-			'invitee': { 'email': '', 'message': ''},
-            'isNew': false
+			'invitee': { 'email': '', 'message': '', permissions: {
+                'manage_participants': false,
+                'manage_document_reviews': false,
+                'manage_items': false,
+                'manage_signature_requests': false,
+                'manage_clients': false
+            }},
+            'isNew': false,
+            'selectedUser': null,
+            'requestLoading': false,
+            'showAddButton': false
+
 		};
+
+     if (angular.isArray(participants) && (participants.length > 0)) {
+          $scope.data.selectedUser = participants[0];
+        }
 
 
         /**
@@ -71,42 +90,32 @@ angular.module('toolkit-gui')
         $scope.checkIfUserExists = function (lawyerObligatory) {
             if ($scope.data.invitee.email != null && $scope.data.invitee.email.length>0) {
                 $scope.data.validationError = false;
+                $scope.data.requestLoading = true;
 
                 participantService.getByEmail( $scope.data.invitee.email ).then(
                     function success(response) {
+                        $scope.data.requestLoading = false;
+
                         if (response.count===1){
                             var p = response.results[0];
 
                             $scope.data.isNew = false;
-                            if (lawyerObligatory && p.user_class !== 'lawyer') {
-                                $scope.data.validationError = true;
-                                $scope.data.isParticipant = true;
-                                $scope.data.participant = null;
-                            } else if (lawyerObligatory==null && p.user_class === 'lawyer'){
-                                $scope.data.isLawyer = true;
-                                $scope.data.validationError = true;
-                                $scope.data.participant = null;
-                            } else {
-                                $scope.data.isParticipant = false;
-                                $scope.data.isLawyer = false;
+                            $scope.data.isParticipant = false;
+                            $scope.data.isLawyer = false;
 
-                                $scope.data.participant = p;
-                                $scope.data.invitee.first_name = p.first_name;
-                                $scope.data.invitee.last_name = p.last_name;
-                            }
+                            $scope.data.participant = p;
+                            $scope.data.invitee.first_name = p.first_name;
+                            $scope.data.invitee.last_name = p.last_name;
 
                         } else {
                             $scope.data.isParticipant = false;
                             $scope.data.isLawyer = false;
                             $scope.data.isNew = true;
                             $scope.data.participant = null;
-
-                            if(lawyerObligatory){
-                                $scope.data.validationError = true;
-                            }
                         }
                     },
                     function error() {
+                        $scope.data.requestLoading = false;
                         toaster.pop('error', 'Error!', 'Unable to load participant', 3000);
                     }
                 );
@@ -121,7 +130,7 @@ angular.module('toolkit-gui')
 		 * Initiates request to API to invite a person or an already registered user
 		 *
 		 * @name				invite
-		 * 
+		 *
 		 * @private
 		 * @method				invite
 		 * @memberof			ParticipantInviteCtrl
@@ -129,35 +138,37 @@ angular.module('toolkit-gui')
 		$scope.invite = function () {
             if($scope.data.showAddLawyer===true){
                 $scope.data.invitee.user_class='lawyer';
+                $scope.data.invitee.role='colleague';
             } else {
                 $scope.data.invitee.user_class='customer';
+                $scope.data.invitee.role='client';
             }
+            $scope.data.requestLoading = true;
 
 			participantService.invite( $scope.matter.slug, $scope.data.invitee ).then(
-				function success(response) {
-                    participantService.getByURL(response.url).then(
-                        function success(participant){
-                            var results = jQuery.grep( $scope.participants, function( p ){ return p.username===participant.username; } );
-                            if( results.length===0 ) {
-                                $scope.participants.push(participant);
-                            }
+				function success(participant) {
+                    $scope.data.requestLoading = false;
+                    var results = jQuery.grep( $scope.participants, function( p ){ return p.username===participant.username; } );
+                    if( results.length===0 ) {
+                        $scope.participants.push(participant);
+                    }
 
-                            //reset form
-                            $scope.data.invitee= {'email':'','first_name':'', 'last_name':'', 'message':''};
-                            $scope.data.isNew = false;
-                            $scope.data.isParticipant = false;
-                            $scope.data.isLawyer = false;
-                            $scope.data.participant = null;
-                            $scope.data.validationError = false;
-                            $scope.data.showAddLawyer=false;
-                            $scope.data.showAddParticipant=false;
-                        },
-                        function error(/*err*/){
-                            toaster.pop('error', 'Error!', 'Unable to load participant',5000);
-                        }
-                    );
+                    //reset form
+                    $scope.data.invitee= {'email':'','first_name':'', 'last_name':'', 'message':''};
+                    $scope.data.isNew = false;
+                    $scope.data.isParticipant = false;
+                    $scope.data.isLawyer = false;
+                    $scope.data.participant = null;
+                    $scope.data.validationError = false;
+                    $scope.data.showAddLawyer=false;
+                    $scope.data.showAddParticipant=false;
+                    $scope.data.selectedUser=null;
+                    $scope.data.showaddbutton = false;
+
+                    toaster.pop('success', 'Success!', 'User was added successfully',5000);
 				},
 				function error() {
+                    $scope.data.requestLoading = false;
 					toaster.pop('error', 'Error!', 'Unable to invite this person to particpate, please try again in a few moments',5000);
 				}
 			);
@@ -167,19 +178,23 @@ angular.module('toolkit-gui')
 		 * Initiates request to API to revoke access for an already registered user
 		 *
 		 * @name				revoke
-		 * 
+		 *
 		 * @param  {Object} person	User object
 		 * @private
 		 * @method				revoke
 		 * @memberof			ParticipantInviteCtrl
 		 */
 		$scope.revoke = function ( person ) {
+            $scope.data.requestLoading = true;
+
 			participantService.revoke( $scope.matter.slug, person ).then(
 				function success() {
+                    $scope.data.requestLoading = false;
 					var index = jQuery.inArray( person, $scope.participants );
                     if( index>=0 ) {
                         // Remove user from in RAM array
                         $scope.participants.splice(index,1);
+                        $scope.data.selectedUser=null;
                     }
 
                     if(person.username===$scope.currentUser.username){
@@ -187,17 +202,33 @@ angular.module('toolkit-gui')
                     }
 				},
 				function error() {
+                    $scope.data.requestLoading = false;
 					toaster.pop('error', 'Error!', 'Unable to revoke the access of this person',5000);
 				}
 			);
 		};
+
+
+        $scope.update = function( person ){
+            $scope.data.requestLoading = true;
+            participantService.update( $scope.matter.slug, person ).then(
+				function success() {
+                    $scope.data.requestLoading = false;
+					toaster.pop('success', 'Success!', 'User was updated successfully',5000);
+				},
+				function error() {
+                    $scope.data.requestLoading = false;
+					toaster.pop('error', 'Error!', 'Unable to update the user',5000);
+				}
+			);
+        };
 
 		/**
 		 * Close dialog on afirmative user initiated event (.e.g. click's OK button).
 		 * Returns updated participants array.
 		 *
 		 * @name				ok
-		 * 
+		 *
 		 * @private
 		 * @method				ok
 		 * @memberof			ParticipantInviteCtrl
@@ -211,7 +242,7 @@ angular.module('toolkit-gui')
 		 * Returns nothing
 		 *
 		 * @name				cancel
-		 * 
+		 *
 		 * @private
 		 * @method				cancel
 		 * @memberof			ParticipantInviteCtrl
@@ -235,6 +266,7 @@ angular.module('toolkit-gui')
             return $scope.data.validationError ||
                 !($scope.data.invitee.email&&$scope.data.invitee.first_name&&$scope.data.invitee.last_name);
 		};
+
 
 	}
 ]);

@@ -97,6 +97,7 @@ angular.module('toolkit-gui')
 		$scope.data = {
 			'slug': routeParams.matterSlug,
 			'matter': null,
+      'customers' : [],
 			'showAddForm': null,
 			'showItemDetailsOptions': false,
 			'selectedItem': null,
@@ -250,6 +251,13 @@ angular.module('toolkit-gui')
 						firstItem = { 'item': items[0], 'category': category };
 					}
 				});
+
+        jQuery.each( matter.participants, function( index, participant ) {
+          if (participant.user_class === 'customer'){
+            $scope.data.customers.push(participant);
+          }
+
+        });
 
 				$scope.data.matter = matter;
 				$scope.data.categories = categories;
@@ -854,7 +862,7 @@ angular.module('toolkit-gui')
 			var user = userService.data().current;
 			var promise;
 
-			if( user.user_class === 'lawyer' ) {
+			if( user.permissions.manage_items) {
 				item.uploading = true;
 				$scope.data.uploading = true;
 
@@ -1367,6 +1375,9 @@ angular.module('toolkit-gui')
 					},
 					'review': function () {
 						return review;
+					},
+                    'currentUser': function () {
+						return $scope.data.usdata.current;
 					}
 				}
 			});

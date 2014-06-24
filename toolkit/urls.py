@@ -8,6 +8,9 @@ from toolkit.static import static
 from django.contrib import admin
 admin.autodiscover()
 
+import permission
+permission.autodiscover()
+
 handler500 = 'toolkit.apps.default.views.handler500'
 
 urlpatterns = patterns('',

@@ -1,327 +1,350 @@
 [
-  {
-    "pk": 1,
-    "model": "auth.user",
-    "fields": {
-      "username": "testcustomer",
-      "first_name": "Tëst",
-      "last_name": "Customër",
-      "is_active": true,
-      "is_superuser": false,
-      "is_staff": false,
-      "last_login": "2014-02-27T09:20:21.691Z",
-      "groups": [],
-      "user_permissions": [],
-      "password": "pbkdf2_sha256$12000$VLQ0x5nWieuA$+PcDpNonflXGHvDCPk7XVIY1+8Ft5HQ0WhUfNOE4tr0=",
-      "email": "testcustomer@lawpal.com",
-      "date_joined": "2014-02-27T09:20:21.691Z"
+    {
+        "pk": 1,
+        "model": "auth.user",
+        "fields": {
+            "username": "testcustomer",
+            "first_name": "Tëst",
+            "last_name": "Customër",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2014-02-27T09:20:21.691Z",
+            "groups": [],
+            "user_permissions": [],
+            "password": "pbkdf2_sha256$12000$VLQ0x5nWieuA$+PcDpNonflXGHvDCPk7XVIY1+8Ft5HQ0WhUfNOE4tr0=",
+            "email": "testcustomer@lawpal.com",
+            "date_joined": "2014-02-27T09:20:21.691Z"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "auth.user",
+        "fields": {
+            "username": "testlawyer",
+            "first_name": "Tëst",
+            "last_name": "Lawyër",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2014-02-27T09:22:15.540Z",
+            "groups": [],
+            "user_permissions": [],
+            "password": "pbkdf2_sha256$12000$VLQ0x5nWieuA$+PcDpNonflXGHvDCPk7XVIY1+8Ft5HQ0WhUfNOE4tr0=",
+            "email": "testlawyer@lawpal.com",
+            "date_joined": "2014-02-27T09:22:15.540Z"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "auth.user",
+        "fields": {
+            "username": "testlawyerinproject",
+            "first_name": "Tëst",
+            "last_name": "Lawyër in Project",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2014-02-27T09:23:02.889Z",
+            "groups": [],
+            "user_permissions": [],
+            "password": "pbkdf2_sha256$12000$VLQ0x5nWieuA$+PcDpNonflXGHvDCPk7XVIY1+8Ft5HQ0WhUfNOE4tr0=",
+            "email": "testlawyerinproject@lawpal.com",
+            "date_joined": "2014-02-27T09:23:02.889Z"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "auth.user",
+        "fields": {
+            "username": "testlawyernotinproject",
+            "first_name": "Tëst",
+            "last_name": "Lawyër not in Project",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2014-02-27T09:23:24.978Z",
+            "groups": [],
+            "user_permissions": [],
+            "password": "pbkdf2_sha256$12000$VLQ0x5nWieuA$+PcDpNonflXGHvDCPk7XVIY1+8Ft5HQ0WhUfNOE4tr0=",
+            "email": "testlawyernotinproject@lawpal.com",
+            "date_joined": "2014-02-27T09:23:24.978Z"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "default.userprofile",
+        "fields": {
+            "data": {
+                "user_class": "lawyer"
+            },
+            "user": 2
+        }
+    },
+    {
+        "pk": 2,
+        "model": "default.userprofile",
+        "fields": {
+            "data": {
+                "user_class": "lawyer"
+            },
+            "user": 3
+        }
+    },
+    {
+        "pk": 3,
+        "model": "default.userprofile",
+        "fields": {
+            "data": {
+                "user_class": "lawyer"
+            },
+            "user": 4
+        }
+    },
+    {
+        "pk": 4,
+        "model": "default.userprofile",
+        "fields": {
+            "data": {
+                "user_class": "customer"
+            },
+            "user": 1
+        }
+    },
+    {
+        "pk": 1,
+        "model": "workspace.workspace",
+        "fields": {
+            "is_deleted": false,
+            "name": "Tëst Workspace",
+            "date_modified": "2014-02-27T09:40:41.635Z",
+            "tools": [
+                1
+            ],
+            "client": 1,
+            "lawyer": 2,
+            "date_created": "2014-02-27T09:31:38.345Z",
+            "matter_code": "00000-test-workspace",
+            "data": {
+                "categories": [
+                    "First category"
+                ],
+                "closing_groups": [
+                    "First Closing Group"
+                ]
+            },
+            "slug": "test-matter-1"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "workspace.workspaceparticipants",
+        "fields": {
+            "user": 1,
+            "workspace": 1,
+            "role": 2
+        }
+    },
+    {
+        "pk": 2,
+        "model": "workspace.workspaceparticipants",
+        "fields": {
+            "user": 2,
+            "workspace": 1,
+            "role": 1,
+            "is_matter_owner": true
+        }
+    },
+    {
+        "pk": 3,
+        "model": "workspace.workspaceparticipants",
+        "fields": {
+            "user": 3,
+            "workspace": 1,
+            "role": 3
+        }
+    },
+    {
+        "pk": 1,
+        "model": "client.client",
+        "fields": {
+            "name": "Lawpal (internal)",
+            "lawyer": 1,
+            "slug": "lawpal-internal"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "workspace.tool",
+        "fields": {
+            "data": {
+                "description": "A simple way of helping your clients get their 83(b) elections filed on time and correctly while giving you complete visibility on the process.",
+                "short_name": "Letter",
+                "markers": "toolkit.apps.eightythreeb.markers.EightyThreeBSignalMarkers",
+                "summary": "summary goes here",
+                "forms": {
+                    "customer": "toolkit.apps.eightythreeb.forms.CustomerEightyThreeBForm",
+                    "lawyer": "toolkit.apps.eightythreeb.forms.LawyerEightyThreeBForm"
+                },
+                "app_label": "eightythreeb",
+                "icon": "images/icons/mail.svg",
+                "model_name": "EightyThreeB",
+                "can_create": [
+                    "lawyer"
+                ]
+            },
+            "name": "83(b) Election Letters",
+            "slug": "83b-election-letters"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "workspace.tool",
+        "fields": {
+            "data": {
+                "description": "An app that provides a means of providing a client with your Engagement Letter and having it signed off on",
+                "short_name": "Letter",
+                "markers": "toolkit.apps.engageletter.markers.EngagementLetterMarkers",
+                "summary": "",
+                "forms": {
+                    "customer": "toolkit.apps.engageletter.forms.CustomerForm",
+                    "lawyer": "toolkit.apps.engageletter.forms.LawyerForm"
+                },
+                "app_label": "engageletter",
+                "icon": "images/icons/clipboard.svg",
+                "model_name": "EngagementLetter",
+                "can_create": [
+                    "lawyer"
+                ]
+            },
+            "name": "Engagement Letters",
+            "slug": "engagement-letters"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "item.item",
+        "fields": {
+            "status": 0,
+            "category": "First category",
+            "date_due": null,
+            "closing_group": null,
+            "description": "The 1st item in the set",
+            "parent": null,
+            "date_modified": "2014-02-27T09:36:31.715Z",
+            "is_complete": false,
+            "matter": 1,
+            "responsible_party": null,
+            "is_final": false,
+            "date_created": "2014-02-27T09:36:31.705Z",
+            "data": {},
+            "slug": "e591c201b94046f0957f198c6f824e13",
+            "name": "First Item"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "item.item",
+        "fields": {
+            "status": 0,
+            "category": "First category",
+            "date_due": null,
+            "closing_group": null,
+            "description": "The 2nd item in the set",
+            "parent": null,
+            "date_modified": "2014-02-27T09:36:42.146Z",
+            "is_complete": false,
+            "matter": 1,
+            "responsible_party": null,
+            "is_final": false,
+            "date_created": "2014-02-27T09:36:42.137Z",
+            "data": {},
+            "slug": "d777c6c9fbfb4e53baf3efa896111972",
+            "name": "2nd Item"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "item.item",
+        "fields": {
+            "status": 0,
+            "category": "First category",
+            "date_due": null,
+            "closing_group": null,
+            "description": "The 3rd item in the set",
+            "parent": null,
+            "date_modified": "2014-02-27T09:36:45.360Z",
+            "is_complete": false,
+            "matter": 1,
+            "responsible_party": null,
+            "is_final": false,
+            "date_created": "2014-02-27T09:36:45.352Z",
+            "data": {},
+            "slug": "b50d71e461a3417cb69b3e71ee4fae43",
+            "name": "3rd Item"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "item.item",
+        "fields": {
+            "status": 0,
+            "category": null,
+            "date_due": null,
+            "closing_group": "First Closing Group",
+            "description": "The 4th item in the set",
+            "parent": null,
+            "date_modified": "2014-02-27T09:36:47.970Z",
+            "is_complete": false,
+            "matter": 1,
+            "responsible_party": null,
+            "is_final": false,
+            "date_created": "2014-02-27T09:36:47.961Z",
+            "data": {},
+            "slug": "e89403f273a045cd8a0ca7e7dd2bc383",
+            "name": "4th Item"
+        }
+    },
+    {
+        "pk": 5,
+        "model": "item.item",
+        "fields": {
+            "status": 0,
+            "category": null,
+            "date_due": null,
+            "closing_group": null,
+            "description": "The 5th item in the set that is a child of the first item",
+            "parent": 1,
+            "date_modified": "2014-02-27T09:38:58.582Z",
+            "is_complete": false,
+            "matter": 1,
+            "responsible_party": null,
+            "is_final": false,
+            "date_created": "2014-02-27T09:38:58.574Z",
+            "data": {},
+            "slug": "0dbf8fcd72294394892752a76ded75d8",
+            "name": "5th Item child of 1st"
+        }
+    },
+    {
+        "pk": 6,
+        "model": "item.item",
+        "fields": {
+            "status": 0,
+            "category": null,
+            "date_due": null,
+            "closing_group": "First Closing Group",
+            "description": "The 6th item in the set but 2nd in Closing Group",
+            "parent": null,
+            "date_modified": "2014-02-27T09:40:32.061Z",
+            "is_complete": false,
+            "matter": 1,
+            "responsible_party": null,
+            "is_final": false,
+            "date_created": "2014-02-27T09:40:32.049Z",
+            "data": {},
+            "slug": "99b889e5697e44c990e7ab60e12f74a5",
+            "name": "6th Item 2nd in Closing Group"
+        }
     }
-  },
-  {
-    "pk": 2,
-    "model": "auth.user",
-    "fields": {
-      "username": "testlawyer",
-      "first_name": "Tëst",
-      "last_name": "Lawyër",
-      "is_active": true,
-      "is_superuser": false,
-      "is_staff": false,
-      "last_login": "2014-02-27T09:22:15.540Z",
-      "groups": [],
-      "user_permissions": [],
-      "password": "pbkdf2_sha256$12000$VLQ0x5nWieuA$+PcDpNonflXGHvDCPk7XVIY1+8Ft5HQ0WhUfNOE4tr0=",
-      "email": "testlawyer@lawpal.com",
-      "date_joined": "2014-02-27T09:22:15.540Z"
-    }
-  },
-  {
-    "pk": 3,
-    "model": "auth.user",
-    "fields": {
-      "username": "testlawyerinproject",
-      "first_name": "Tëst",
-      "last_name": "Lawyër in Project",
-      "is_active": true,
-      "is_superuser": false,
-      "is_staff": false,
-      "last_login": "2014-02-27T09:23:02.889Z",
-      "groups": [],
-      "user_permissions": [],
-      "password": "pbkdf2_sha256$12000$VLQ0x5nWieuA$+PcDpNonflXGHvDCPk7XVIY1+8Ft5HQ0WhUfNOE4tr0=",
-      "email": "testlawyerinproject@lawpal.com",
-      "date_joined": "2014-02-27T09:23:02.889Z"
-    }
-  },
-  {
-    "pk": 4,
-    "model": "auth.user",
-    "fields": {
-      "username": "testlawyernotinproject",
-      "first_name": "Tëst",
-      "last_name": "Lawyër not in Project",
-      "is_active": true,
-      "is_superuser": false,
-      "is_staff": false,
-      "last_login": "2014-02-27T09:23:24.978Z",
-      "groups": [],
-      "user_permissions": [],
-      "password": "pbkdf2_sha256$12000$VLQ0x5nWieuA$+PcDpNonflXGHvDCPk7XVIY1+8Ft5HQ0WhUfNOE4tr0=",
-      "email": "testlawyernotinproject@lawpal.com",
-      "date_joined": "2014-02-27T09:23:24.978Z"
-    }
-  },
-  {
-    "pk": 1,
-    "model": "default.userprofile",
-    "fields": {
-      "data": {
-        "user_class": "lawyer"
-      },
-      "user": 2
-    }
-  },
-  {
-    "pk": 2,
-    "model": "default.userprofile",
-    "fields": {
-      "data": {
-        "user_class": "lawyer"
-      },
-      "user": 3
-    }
-  },
-  {
-    "pk": 3,
-    "model": "default.userprofile",
-    "fields": {
-      "data": {
-        "user_class": "lawyer"
-      },
-      "user": 4
-    }
-  },
-  {
-    "pk": 4,
-    "model": "default.userprofile",
-    "fields": {
-      "data": {
-        "user_class": "customer"
-      },
-      "user": 1
-    }
-  },
-  {
-    "pk": 1,
-    "model": "workspace.workspace",
-    "fields": {
-      "is_deleted": false,
-      "name": "Tëst Workspace",
-      "date_modified": "2014-02-27T09:40:41.635Z",
-      "tools": [
-        1
-      ],
-      "participants": [
-        1,
-        2,
-        3
-      ],
-      "client": 1,
-      "lawyer": 2,
-      "date_created": "2014-02-27T09:31:38.345Z",
-      "matter_code": "00000-test-workspace",
-      "data": {
-        "categories": [
-          "First category"
-        ],
-        "closing_groups": [
-          "First Closing Group"
-        ]
-      },
-      "slug": "test-matter-1"
-    }
-  },
-  {
-    "pk": 1,
-    "model": "client.client",
-    "fields": {
-      "name": "Lawpal (internal)",
-      "lawyer": 1,
-      "slug": "lawpal-internal"
-    }
-  },
-  {
-    "pk": 1,
-    "model": "workspace.tool",
-    "fields": {
-      "data": {
-        "description": "A simple way of helping your clients get their 83(b) elections filed on time and correctly while giving you complete visibility on the process.",
-        "short_name": "Letter",
-        "markers": "toolkit.apps.eightythreeb.markers.EightyThreeBSignalMarkers",
-        "summary": "summary goes here",
-        "forms": {
-          "customer": "toolkit.apps.eightythreeb.forms.CustomerEightyThreeBForm",
-          "lawyer": "toolkit.apps.eightythreeb.forms.LawyerEightyThreeBForm"
-        },
-        "app_label": "eightythreeb",
-        "icon": "images/icons/mail.svg",
-        "model_name": "EightyThreeB",
-        "can_create": [
-          "lawyer"
-        ]
-      },
-      "name": "83(b) Election Letters",
-      "slug": "83b-election-letters"
-    }
-  },
-  {
-    "pk": 2,
-    "model": "workspace.tool",
-    "fields": {
-      "data": {
-        "description": "An app that provides a means of providing a client with your Engagement Letter and having it signed off on",
-        "short_name": "Letter",
-        "markers": "toolkit.apps.engageletter.markers.EngagementLetterMarkers",
-        "summary": "",
-        "forms": {
-          "customer": "toolkit.apps.engageletter.forms.CustomerForm",
-          "lawyer": "toolkit.apps.engageletter.forms.LawyerForm"
-        },
-        "app_label": "engageletter",
-        "icon": "images/icons/clipboard.svg",
-        "model_name": "EngagementLetter",
-        "can_create": [
-          "lawyer"
-        ]
-      },
-      "name": "Engagement Letters",
-      "slug": "engagement-letters"
-    }
-  },
-  {
-    "pk": 1,
-    "model": "item.item",
-    "fields": {
-      "status": 0,
-      "category": "First category",
-      "date_due": null,
-      "closing_group": null,
-      "description": "The 1st item in the set",
-      "parent": null,
-      "date_modified": "2014-02-27T09:36:31.715Z",
-      "is_complete": false,
-      "matter": 1,
-      "responsible_party": null,
-      "is_final": false,
-      "date_created": "2014-02-27T09:36:31.705Z",
-      "data": {},
-      "slug": "e591c201b94046f0957f198c6f824e13",
-      "name": "First Item"
-    }
-  },
-  {
-    "pk": 2,
-    "model": "item.item",
-    "fields": {
-      "status": 0,
-      "category": "First category",
-      "date_due": null,
-      "closing_group": null,
-      "description": "The 2nd item in the set",
-      "parent": null,
-      "date_modified": "2014-02-27T09:36:42.146Z",
-      "is_complete": false,
-      "matter": 1,
-      "responsible_party": null,
-      "is_final": false,
-      "date_created": "2014-02-27T09:36:42.137Z",
-      "data": {},
-      "slug": "d777c6c9fbfb4e53baf3efa896111972",
-      "name": "2nd Item"
-    }
-  },
-  {
-    "pk": 3,
-    "model": "item.item",
-    "fields": {
-      "status": 0,
-      "category": "First category",
-      "date_due": null,
-      "closing_group": null,
-      "description": "The 3rd item in the set",
-      "parent": null,
-      "date_modified": "2014-02-27T09:36:45.360Z",
-      "is_complete": false,
-      "matter": 1,
-      "responsible_party": null,
-      "is_final": false,
-      "date_created": "2014-02-27T09:36:45.352Z",
-      "data": {},
-      "slug": "b50d71e461a3417cb69b3e71ee4fae43",
-      "name": "3rd Item"
-    }
-  },
-  {
-    "pk": 4,
-    "model": "item.item",
-    "fields": {
-      "status": 0,
-      "category": null,
-      "date_due": null,
-      "closing_group": "First Closing Group",
-      "description": "The 4th item in the set",
-      "parent": null,
-      "date_modified": "2014-02-27T09:36:47.970Z",
-      "is_complete": false,
-      "matter": 1,
-      "responsible_party": null,
-      "is_final": false,
-      "date_created": "2014-02-27T09:36:47.961Z",
-      "data": {},
-      "slug": "e89403f273a045cd8a0ca7e7dd2bc383",
-      "name": "4th Item"
-    }
-  },
-  {
-    "pk": 5,
-    "model": "item.item",
-    "fields": {
-      "status": 0,
-      "category": null,
-      "date_due": null,
-      "closing_group": null,
-      "description": "The 5th item in the set that is a child of the first item",
-      "parent": 1,
-      "date_modified": "2014-02-27T09:38:58.582Z",
-      "is_complete": false,
-      "matter": 1,
-      "responsible_party": null,
-      "is_final": false,
-      "date_created": "2014-02-27T09:38:58.574Z",
-      "data": {},
-      "slug": "0dbf8fcd72294394892752a76ded75d8",
-      "name": "5th Item child of 1st"
-    }
-  },
-  {
-    "pk": 6,
-    "model": "item.item",
-    "fields": {
-      "status": 0,
-      "category": null,
-      "date_due": null,
-      "closing_group": "First Closing Group",
-      "description": "The 6th item in the set but 2nd in Closing Group",
-      "parent": null,
-      "date_modified": "2014-02-27T09:40:32.061Z",
-      "is_complete": false,
-      "matter": 1,
-      "responsible_party": null,
-      "is_final": false,
-      "date_created": "2014-02-27T09:40:32.049Z",
-      "data": {},
-      "slug": "99b889e5697e44c990e7ab60e12f74a5",
-      "name": "6th Item 2nd in Closing Group"
-    }
-  }
 ]
