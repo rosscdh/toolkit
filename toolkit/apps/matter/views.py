@@ -113,7 +113,7 @@ class MatterListView(ListView):
             'can_create': self.request.user.profile.is_lawyer,
             'can_delete': self.request.user.profile.is_lawyer,
             'can_edit': self.request.user.profile.is_lawyer,
-            #'object_list': object_list,
+            #'object_list': self.object_list,
             'object_list_json': UnicodeJSONRenderer().render(object_list),
         })
 
