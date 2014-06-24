@@ -4,7 +4,7 @@
     <div id="notifications" class="content">
         <div class="content-header notifications-header clearfix">
               <div class="row">
-                <div class="col-sm-12" id="requestNotifyPermission">
+                <div class="col-sm-12 hidden" id="requestNotifyPermission">
                     <div class="alert text-center">
                         <p>
                             <a href="#" class="notification-link"> <i class="fa fa-exclamation-triangle"></i>We strongly recommend enabling Desktop Notifications.</a>
@@ -138,7 +138,7 @@ $(document).ready(function () {
     // Load desktop notify
     $.when(
         // Retrieve intro script
-        $.getScript( "/static/js/desktop-notify-min.js" ),
+        $.getScript( "/static/ng/bower_components/html5-desktop-notifications/desktop-notify.js" ), 
         $.Deferred(function( deferred ){
             $( deferred.resolve );
         })
