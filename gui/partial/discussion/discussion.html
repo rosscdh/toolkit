@@ -10,7 +10,7 @@
                            <button class="btn btn-default new-thread-btn" ng-click="createThread()">New Thread</button>
                     </div>
 
-                    <div class="row">
+                <!--     <div class="row">
                         <div class="col-sm-6 text-center">
                             <a href="#" class='inbox-label selected'>Inbox</a>
                         </div>
@@ -18,7 +18,7 @@
                             <a href="#" class='inbox-label'>Archive</a>
                         </div>
 
-                    </div>
+                    </div> -->
 
                     <ul class="msg-list list-unstyled">
                         <li ng-repeat="thread in data.threads"
@@ -47,7 +47,7 @@
                 <div class="col-sm-2 text-right thread-controls">
                     <form name="requestForm" ng-submit="request()">
                         <a href="javascript:;" ng-click="addThreadParticipant(data.selectedThread)" class="btn btn-sm pull-right btn-default">Add participant</a>
-                         <a class ="btn btn-sm btn-default" ng-click="archvieThread()">Archive Thread</a>
+                        <!--  <a class ="btn btn-sm btn-default" ng-click="archvieThread()">Archive Thread</a> -->
 
                         <button class="btn btn-default send-btn" type="submit" ng-disabled="sendingMessage">Send <i class="fa fa-spinner fa-spin" ng-if="sendingMessage"></i></button>
 
