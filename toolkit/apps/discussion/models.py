@@ -33,7 +33,7 @@ class DiscussionComment(ThreadedComment, models.Model):
 
     @property
     def participants(self):
-        return set(self.subscribers.all() | self.matter.participants.all())
+        return set(self.subscribers.all() | self.matter.colleagues.all())
 
     def can_read(self, user):
         return user in self.participants

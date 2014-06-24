@@ -233,6 +233,10 @@ class Workspace(IsDeletedMixin,
         return self._actions
 
     @property
+    def colleagues(self):
+        return self.participants.filter(workspaceparticipants__role__in=[ROLES.colleague, ROLES.owner])
+
+    @property
     def get_lawyer(self):
         """
         if lawyer is not set then look in participants for it
