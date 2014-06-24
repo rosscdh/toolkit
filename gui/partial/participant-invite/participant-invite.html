@@ -44,8 +44,8 @@
                                 </label>
                             </div>
                         </div>
-                        <div class='text-center'>
-                           <a class="btn btn-sm save-perm-btn" ng-click="update(data.selectedUser)"><span class="fui-check"></span> Save Permissions</a>
+                        <div class="text-right">
+                           <a class="btn btn-xs btn-success" ng-click="update(data.selectedUser)"><span class="fui-check"></span> Save Permissions</a>
                         </div>
                     </div>
                 </div>
@@ -98,14 +98,13 @@
                 <div class="col-sm-6 text-center" ng-show="currentUser.permissions.manage_participants">
                     <a href="javascript:;" class="btn btn-primary lawyer" ng-click="data.showAddLawyer=true">Add a Colleague</a>
                     <p class="note text-left">
-                        Adding a Colleague will let them manage documents, the Checklist, its Categories, and the overall Matter.
-                        They will be able to discuss Checklist items with Colleagues and Clients.
+                        Adding a Colleague will let them manage documents, the checklist and the overall matter. They will be able to discuss Checklist items with Colleagues and Clients.
                     </p>
                 </div>
                 <div class="col-sm-6 text-center" ng-show="currentUser.permissions.manage_clients||currentUser.permissions.manage_participants">
                     <a href="javascript:;" class="btn btn-info customer" ng-click="data.showAddParticipant=true">Add a Client</a>
                     <p class="note text-left">
-                    Adding a Client to the Matter will give them access to view and annotate Documents and discuss Checklist Items. They can not modify the Checklist structure or view previous versions of Documents.
+                    Adding a Client will give them access to view and annotate documents and discuss checklist items. They can not modify the checklist structure or view documents in the checklist, other than the current one.
                     </p>
                 </div>
             </div>
