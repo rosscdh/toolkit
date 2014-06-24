@@ -6,6 +6,8 @@ from .item import MatterItemView
 
 import datetime
 
+from rulez import registry as rulez_registry
+
 
 class ItemRequestRevisionView(MatterItemView):
     """
@@ -54,7 +56,8 @@ class ItemRequestRevisionView(MatterItemView):
         obj.data.update({
             'request_document': {
                 'message': self.message,
-                'requested_by': SimpleUserSerializer(self.request.user, context={'request': self.request}).data,
+                'requested_by': SimpleUserSerializer(self.request.user, context={'request': self.request,
+                                                                                 'matter': self.matter}).data,
                 'date_requested': datetime.datetime.utcnow()
             }
         })
@@ -78,3 +81,17 @@ class ItemRequestRevisionView(MatterItemView):
                                                                  added_user=user)
 
         super(ItemRequestRevisionView, self).post_save(obj=obj, **kwargs)
+
+    def can_read(self, user):
+        return user in self.matter.participants.all()
+
+    def can_edit(self, user):
+        return user.matter_permissions(matter=self.matter).has_permission(manage_document_reviews=True) is True
+
+    def can_delete(self, user):
+        return user.matter_permissions(matter=self.matter).has_permission(manage_document_reviews=True) is True
+
+
+rulez_registry.register("can_read", ItemRequestRevisionView)
+rulez_registry.register("can_edit", ItemRequestRevisionView)
+rulez_registry.register("can_delete", ItemRequestRevisionView)

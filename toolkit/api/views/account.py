@@ -1,8 +1,7 @@
 # -*- coding: UTF-8 -*-
 from django.contrib.auth.models import User
 
-from rest_framework import generics
-from rest_framework.decorators import action
+from rest_framework import generics, status
 from rest_framework.response import Response
 
 from ..serializers import AccountSerializer, PasswordSerializer

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.core.urlresolvers import reverse
-from django.core.files.storage import FileSystemStorage
 
 from model_mommy import mommy
 from pyquery import PyQuery as pq
@@ -11,7 +10,6 @@ from toolkit.core.item.models import Item
 from toolkit.api.serializers import MatterSerializer
 
 import json
-import mock
 import logging
 import datetime
 logger = logging.getLogger('django.test')
@@ -36,7 +34,8 @@ class BaseScenarios(object):
         from toolkit.apps.eightythreeb.models import EightyThreeB
         from toolkit.apps.eightythreeb.tests.data import EIGHTYTHREEB_DATA as BASE_EIGHTYTHREEB_DATA
 
-        self.user = mommy.make('auth.User', username='test-customer', first_name='Customër', last_name='Tëst', email='test+customer@lawpal.com')
+        self.user = mommy.make('auth.User', username='test-customer', first_name='Customër', last_name='Tëst',
+                               email='test+customer@lawpal.com')
         self.user.set_password(self.password)
         self.user.save()
 
@@ -44,7 +43,8 @@ class BaseScenarios(object):
         user_profile.validated_email = True
         user_profile.save(update_fields=['data'])
 
-        self.lawyer = mommy.make('auth.User', username='test-lawyer', first_name='Lawyër', last_name='Tëst', email='test+lawyer@lawpal.com')
+        self.lawyer = mommy.make('auth.User', username='test-lawyer', first_name='Lawyër', last_name='Tëst',
+                                 email='test+lawyer@lawpal.com')
         self.lawyer.set_password(self.password)
         self.lawyer.save()
 
@@ -56,14 +56,12 @@ class BaseScenarios(object):
         self.workspace_client = mommy.make('client.Client', name='Test Client Namë', lawyer=self.lawyer)
         # have to set worksace as well as matter
         # @TODO remove tests using workspace and use matter instead
-        self.workspace = self.matter = mommy.make('workspace.Workspace', name='Lawpal (test)', lawyer=self.lawyer, client=self.workspace_client)
+        self.workspace = self.matter = mommy.make('workspace.Workspace', name='Lawpal (test)', lawyer=self.lawyer,
+                                                  client=self.workspace_client)
 
         # Add all the toolks to the workspace
         for tool in Tool.objects.all():
             self.workspace.tools.add(tool)
-
-        self.workspace.participants.add(self.user)
-        self.workspace.participants.add(self.lawyer)
 
         eightythreeb_data = BASE_EIGHTYTHREEB_DATA
         eightythreeb_data['markers'] = {}  # set the markers to nothing
@@ -95,6 +93,20 @@ class BaseScenarios(object):
         json_resp = json.loads(resp.content)
 
         return Item.objects.get(slug=json_resp.get('slug'))
+
+    def set_user_matter_perms(self, user, matter=None, **kwargs):
+        matter = self.matter if matter is None else matter
+        user_perms = user.matter_permissions(matter=matter)
+        user_perms.update_permissions(**kwargs)
+        user_perms.save(update_fields=['data'])
+        return user_perms.permissions
+
+    def set_user_matter_role(self, user, role, matter=None):
+        matter = self.matter if matter is None else matter
+        user_perms = user.matter_permissions(matter=matter)
+        user_perms.role = role
+        user_perms.save(update_fields=['role'])
+        return user_perms.role
 
 
 class BaseProjectCaseMixin(BaseScenarios, BaseCasperJs):
