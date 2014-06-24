@@ -97,7 +97,8 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
     def get_participants(self, obj):
         context = self.context
         context.update({'matter': obj})
-        return LiteUserSerializer(obj.participants.all(), context=context, many=True).data
+        #return LiteUserSerializer(obj.participants.all(), context=context, many=True).data
+        return obj.data.get('participants', LiteUserSerializer(obj.participants.all(), context=context, many=True).data)
 
     def get_current_user(self, obj):
         request = self.context.get('request')
