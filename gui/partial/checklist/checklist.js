@@ -403,7 +403,6 @@ angular.module('toolkit-gui')
 		$scope.selectItem = function(item, category) {
 			var deferred = $q.defer();
 
-			$scope.data.itemIsLoading = true;
 			$scope.data.selectedItem = item;
 			$scope.data.selectedCategory = category;
 
@@ -412,8 +411,18 @@ angular.module('toolkit-gui')
             $scope.loadItemDetails(item).then(function success(item){
                 deferred.resolve(item);
                 $scope.data.itemIsLoading = false;
-                //$log.debug(item);
 		    });
+
+		    resetScopeState();
+
+			$scope.displayDetails();	// @mobile
+
+			return deferred.promise;
+		};
+
+		function resetScopeState() {
+			$scope.data.itemIsLoading = true;
+			$scope.data.showAddFileOptions = false;
 
 			//Reset controls
 			$scope.data.dueDatePickerDate = $scope.data.selectedItem.date_due;
@@ -422,12 +431,7 @@ angular.module('toolkit-gui')
 
 			$scope.data.show_edit_item_description = false;
 			$scope.data.show_edit_revision_description = false;
-
-			//$log.debug(item);
-			$scope.displayDetails();	// @mobile
-
-			return deferred.promise;
-		};
+		}
 
 		/**
 		 * Allows the GUI some time to update before incepting the request to load item details
