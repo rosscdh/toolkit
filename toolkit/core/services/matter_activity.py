@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.utils import timezone
 from django.template.defaultfilters import slugify
 
 from .analytics import AtticusFinch
@@ -122,7 +123,15 @@ class MatterActivityEventService(object):
         @NB we use the .update() on a queryset here as this does not then fire
         the pre_save and post_save signals thus is more efficient
         """
-        self.matter.__class__.objects.filter(pk=self.matter.pk).update(date_modified=datetime.datetime.utcnow())
+        ## make utcnow timezone aware so we can compare dates
+        date_time = datetime.datetime.utcnow().replace(tzinfo=timezone.utc)
+        time_ago_rage = date_time - datetime.timedelta(minutes=-5)
+
+        date_last_modified = self.matter.date_modified.replace(tzinfo=timezone.utc)
+
+        # if the matter date_modified is older than 5 minutes ago perform this update
+        if date_last_modified < time_ago_rage:
+            self.matter.__class__.objects.filter(pk=self.matter.pk).update(date_modified=date_time)
 
     #
     # Matter
