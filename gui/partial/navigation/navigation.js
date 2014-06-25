@@ -88,6 +88,7 @@ angular.module('toolkit-gui')
 			var modalInstance = $modal.open({
 				'templateUrl': '/static/ng/partial/participant-invite/participant-invite.html',
 				'controller': 'ParticipantInviteCtrl',
+                'windowClass': 'modal-participants',
 				'resolve': {
 					participants: function () {
 						return $scope.matter.selected.participants;

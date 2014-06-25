@@ -1,5 +1,4 @@
 # -*- coding: UTF-8 -*-
-from actstream.models import Action
 from rest_framework import viewsets
 
 from rulez import registry as rulez_registry
@@ -36,13 +35,13 @@ class ItemEndpoint(viewsets.ModelViewSet):
     def can_edit(self, user):
         self.object = self.get_object_or_none()
         if self.object is not None:
-            return user.profile.is_lawyer and user in self.object.matter.participants.all()  # allow any lawyer who is a participant
+            return user.matter_permissions(matter=self.object.matter).has_permission(manage_items=True) is True
         return False
 
     def can_delete(self, user):
         self.object = self.get_object_or_none()
         if self.object is not None:
-            return user.profile.is_lawyer and user in self.object.matter.participants.all()  # allow any lawyer who is a participant
+            return user.matter_permissions(matter=self.object.matter).has_permission(manage_items=True) is True
         return False
 
 rulez_registry.register("can_read", ItemEndpoint)
@@ -53,6 +52,7 @@ rulez_registry.register("can_delete", ItemEndpoint)
 """
 Matter item endpoints
 """
+
 
 class MatterItemsView(MatterItemsQuerySetMixin,
                       generics.ListCreateAPIView):
@@ -77,13 +77,15 @@ class MatterItemsView(MatterItemsQuerySetMixin,
             self.matter.actions.item_created(user=self.request.user, item=obj)
 
     def can_read(self, user):
-        return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
+        return user in self.matter.participants.all()
 
     def can_edit(self, user):
-        return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
+        return user.matter_permissions(matter=self.matter).has_permission(manage_items=True) is True
+        # return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
 
     def can_delete(self, user):
-        return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
+        return user.matter_permissions(matter=self.matter).has_permission(manage_items=True) is True
+        # return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
 
 
 rulez_registry.register("can_read", MatterItemsView)
@@ -145,10 +147,10 @@ class MatterItemView(generics.UpdateAPIView,
         return user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all()
 
     def can_edit(self, user):
-        return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
+        return user.matter_permissions(matter=self.matter).has_permission(manage_items=True) is True
 
     def can_delete(self, user):
-        return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
+        return user.matter_permissions(matter=self.matter).has_permission(manage_items=True) is True
 
 
 rulez_registry.register("can_read", MatterItemView)

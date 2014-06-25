@@ -114,7 +114,7 @@ var MatterItem = React.createClass({
                     <a href={ this.props.detail_url } title={ this.props.name } className="content">
                         <div className="title">
                             <h6>{ this.props.lawyer_or_client_name }</h6>
-                            <h5>{ this.props.name }</h5>
+                            <h5>{ this.props.name }<small>{ this.props.currentUserRole }</small></h5>
                         </div>
                         <div className="meta clearfix">
                             { this.props.lastupdated_or_complete }
@@ -161,6 +161,22 @@ var Participants = React.createClass({
                 </div>
             );
         }
+    }
+});
+
+var CurrentUserRole = React.createClass({
+    render: function() {
+    
+        var role = null;
+        for (var i = 0; i < this.props.data.length; i++) {
+            if (this.props.data[i].username == UserData.username) {
+                role = this.props.data[i].role;
+            }
+        }
+
+        return (
+            <div>{ role }</div>
+        )
     }
 });
 
@@ -266,6 +282,7 @@ var MatterList = React.createClass({
                 var percentStyle = {'width': matter.percent_complete};
                 var lawyer_or_client_name = (UserData.is_lawyer) ? (matter.client !== null) ? matter.client.name : null : matter.lawyer.name ;
 
+                var currentUserRole = <CurrentUserRole data={matter.participants} />
                 var participantList = <Participants data={matter.participants} />
                 var lastupdatedOrComplete = <LastUpdatedOrComplete percent_complete={matter.percent_complete}
                                                                   date_modified={matter.date_modified} />
@@ -279,7 +296,7 @@ var MatterList = React.createClass({
                         is_lawyer={UserData.is_lawyer}
                         is_matter_lawyer_participant={is_matter_lawyer_participant}
                         lawyer_or_client_name={lawyer_or_client_name}
-
+                        currentUserRole={currentUserRole}
                         participantList={participantList}
                         lastupdated_or_complete={lastupdatedOrComplete}
                         editMatterInterface={editMatterInterface}
@@ -298,7 +315,7 @@ var MatterList = React.createClass({
                     <h4>All Matters</h4>
                     <div className="pull-right">
                         {createButton}
-    		            <div className="form-group pull-right">
+                        <div className="form-group pull-right">
                             <div className="input-group search-field">
                                 <input type="text" className="form-control" placeholder="Search matters by name or client name..." name="q" autocomplete="off" onChange={this.handleSearch}/>
                                 <span className="input-group-btn">

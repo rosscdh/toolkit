@@ -43,11 +43,11 @@ class SignatureEndpoint(viewsets.ModelViewSet):
 
     def can_edit(self, user):
         obj = self.get_object()
-        return user in obj.document.item.matter.participants.all()
+        return user.matter_permissions(matter=obj.matter).has_permission(manage_signature_requests=True) is True
 
     def can_delete(self, user):
         obj = self.get_object()
-        return user in obj.document.item.matter.participants.all()
+        return user.matter_permissions(matter=obj.matter).has_permission(manage_signature_requests=True) is True
 
 
 rulez_registry.register("can_read", SignatureEndpoint)
@@ -98,7 +98,7 @@ class ItemRevisionSignersView(generics.ListAPIView,
                 email = signer.get('email')
 
                 if email is None:
-                    raise exceptions.APIException('You must provide a list of signers and they must have an email attribute  {"signers": [{"email": "me@example.com"},]}')
+                    raise exceptions.APIException('You must provide a list of signers and they must have an email attribute {"signers": [{"email": "me@example.com"},]}')
 
                 try:
                     user = User.objects.get(email=email)
@@ -154,10 +154,10 @@ class ItemRevisionSignersView(generics.ListAPIView,
         return user.profile.user_class in ['lawyer', 'customer']
 
     def can_edit(self, user):
-        return user.profile.is_lawyer
+        return user.matter_permissions(matter=self.matter).has_permission(manage_signature_requests=True) is True
 
     def can_delete(self, user):
-        return user.profile.is_lawyer
+        return user.matter_permissions(matter=self.matter).has_permission(manage_signature_requests=True) is True
 
 
 rulez_registry.register("can_read", ItemRevisionSignersView)
@@ -246,10 +246,10 @@ class ItemRevisionSignerView(generics.RetrieveAPIView,
         return user.profile.user_class in ['lawyer', 'customer']
 
     def can_edit(self, user):
-        return user.profile.is_lawyer
+        return user.matter_permissions(matter=self.matter).has_permission(manage_signature_requests=True) is True
 
     def can_delete(self, user):
-        return user.profile.is_lawyer
+        return user.matter_permissions(matter=self.matter).has_permission(manage_signature_requests=True) is True
 
 
 rulez_registry.register("can_read", ItemRevisionSignerView)

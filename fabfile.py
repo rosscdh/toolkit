@@ -135,7 +135,7 @@ def virtualenv(cmd, **kwargs):
 
 @task
 def pip_install():
-    virtualenv('pip install -e git+https://github.com/rosscdh/django-authy.git#egg=django-authy -U')
+    virtualenv('pip install django-permission')
 
 @task
 def cron():
@@ -713,7 +713,7 @@ def conclude():
     newrelic_deploynote()
 
 @task
-def rebuild_local():
+def rebuild_local(gui_clean=False):
     if not os.path.exists('../Stamp'):
         #
         # Clone the Stamp PDF application
@@ -731,12 +731,13 @@ def rebuild_local():
         local('rm ./dev.db')
 
     local('python manage.py syncdb  --noinput')
+    local('python manage.py update_permissions')
     local('python manage.py migrate')
     local('python manage.py loaddata %s' % fixtures())
     local('python manage.py createsuperuser')  #manually as we rely on the dev-fixtures
-    gui_clean()
-
-
+    local('python manage.py update_permissions')
+    if gui_clean in env.truthy:
+        gui_clean()
 
 @task
 def deploy(is_predeploy='False',full='False',db='False',search='False'):

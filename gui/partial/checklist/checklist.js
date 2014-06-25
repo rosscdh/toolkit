@@ -97,6 +97,7 @@ angular.module('toolkit-gui')
 		$scope.data = {
 			'slug': routeParams.matterSlug,
 			'matter': null,
+      'customers' : [],
 			'showAddForm': null,
 			'showItemDetailsOptions': false,
 			'selectedItem': null,
@@ -230,9 +231,7 @@ angular.module('toolkit-gui')
 			categories.push(category);
 
 			// First item if available, this will be used to open the first available checklist item by default
-			if(items && items.length>0) {
-				firstItem = { 'item': items[0], 'category': category };
-			}
+			firstItem = matterService.selectFirstitem( firstItem, items, category );
 
 			if( matter && matter.categories ) {
 				// Allocate items to specific categories to make multiple arrays
@@ -241,14 +240,18 @@ angular.module('toolkit-gui')
 					var items = jQuery.grep( matter.items, function( item ){ return item.category===categoryName; } );
 
 					category = { 'name': categoryName, 'items': items };
-
 					categories.push( category );
 
 					// First item if available, this will be used to open the first available checklist item by default
-					if(!firstItem) {
-						firstItem = { 'item': items[0], 'category': category };
-					}
+					firstItem = matterService.selectFirstitem( firstItem, items, category );
 				});
+
+        jQuery.each( matter.participants, function( index, participant ) {
+          if (participant.user_class === 'customer'){
+            $scope.data.customers.push(participant);
+          }
+
+        });
 
 				$scope.data.matter = matter;
 				$scope.data.categories = categories;
@@ -402,7 +405,6 @@ angular.module('toolkit-gui')
 		$scope.selectItem = function(item, category) {
 			var deferred = $q.defer();
 
-			$scope.data.itemIsLoading = true;
 			$scope.data.selectedItem = item;
 			$scope.data.selectedCategory = category;
 
@@ -411,8 +413,18 @@ angular.module('toolkit-gui')
             $scope.loadItemDetails(item).then(function success(item){
                 deferred.resolve(item);
                 $scope.data.itemIsLoading = false;
-                //$log.debug(item);
 		    });
+
+		    resetScopeState();
+
+			$scope.displayDetails();	// @mobile
+
+			return deferred.promise;
+		};
+
+		function resetScopeState() {
+			$scope.data.itemIsLoading = true;
+			$scope.data.showAddFileOptions = false;
 
 			//Reset controls
 			$scope.data.dueDatePickerDate = $scope.data.selectedItem.date_due;
@@ -421,12 +433,7 @@ angular.module('toolkit-gui')
 
 			$scope.data.show_edit_item_description = false;
 			$scope.data.show_edit_revision_description = false;
-
-			//$log.debug(item);
-			$scope.displayDetails();	// @mobile
-
-			return deferred.promise;
-		};
+		}
 
 		/**
 		 * Allows the GUI some time to update before incepting the request to load item details
@@ -849,7 +856,7 @@ angular.module('toolkit-gui')
 			var user = userService.data().current;
 			var promise;
 
-			if( user.user_class === 'lawyer' ) {
+			if( user.permissions.manage_items) {
 				item.uploading = true;
 				$scope.data.uploading = true;
 
@@ -1362,6 +1369,9 @@ angular.module('toolkit-gui')
 					},
 					'review': function () {
 						return review;
+					},
+                    'currentUser': function () {
+						return $scope.data.usdata.current;
 					}
 				}
 			});
