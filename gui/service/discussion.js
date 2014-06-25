@@ -111,6 +111,22 @@ angular.module('toolkit-gui').factory('discussionService', [
                 return deferred.promise;
             },
 
+            'archive': function(matterSlug, threadId) {
+                var api = discussionResource();
+                var deferred = $q.defer();
+
+                api.update({ 'matterSlug': matterSlug, 'threadId': threadId}, { 'is_archived': true },
+                    function success(thread) {
+                        deferred.resolve(thread);
+                    },
+                    function error(err) {
+                        deferred.reject(err);
+                    }
+                );
+
+                return deferred.promise;
+            },
+
             'addComment': function(matterSlug, threadId, content) {
                 var api = discussionCommentsResource();
                 var deferred = $q.defer();
@@ -211,5 +227,3 @@ angular.module('toolkit-gui').factory('discussionService', [
 
     }]
 );
-
-

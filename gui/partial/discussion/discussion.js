@@ -104,6 +104,22 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
             );
         };
 
+        $scope.archiveThread = function(thread) {
+            ezConfirm.create('Archive Thread', 'Please confirm you would like to archive this thread?',
+                function yes() {
+                    var matterSlug = $scope.data.matterSlug;
+                    discussionService.archive(matterSlug, thread.id).then(
+                        function success() {
+                            $scope.initializeDiscussion();
+                        },
+                        function error(/*err*/) {
+                            toaster.pop('error', 'Error!', 'Unable to archive thread.', 5000);
+                        }
+                    );
+                }
+            );
+        };
+
         $scope.deleteThread = function(thread) {
             ezConfirm.create('Delete Thread', 'Please confirm you would like to delete this thread?',
                 function yes() {
