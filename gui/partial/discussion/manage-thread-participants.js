@@ -1,5 +1,6 @@
-angular.module('toolkit-gui').controller('AddThreadParticipantCtrl', [
+angular.module('toolkit-gui').controller('ManageThreadParticipantsCtrl', [
     '$modalInstance',
+    '$rootScope',
     '$scope',
     'currentUser',
     'discussionService',
@@ -9,7 +10,7 @@ angular.module('toolkit-gui').controller('AddThreadParticipantCtrl', [
     'toaster',
     '$log',
     '$q',
-    function($modalInstance, $scope, currentUser, discussionService, matter, matterService, thread, toaster, $log, $q) {
+    function($modalInstance, $rootScope, $scope, currentUser, discussionService, matter, matterService, thread, toaster, $log, $q) {
         'use strict';
 
         $scope.currentUser = currentUser;
@@ -55,6 +56,7 @@ angular.module('toolkit-gui').controller('AddThreadParticipantCtrl', [
             discussionService.addParticipant(matterSlug, threadId, details).then(
                 function success(response) {
                     $modalInstance.close();
+                    $rootScope.$emit('discussionChangeParticipantSuccess');
 
                     deferred.resolve(response);
                 },
@@ -77,6 +79,7 @@ angular.module('toolkit-gui').controller('AddThreadParticipantCtrl', [
             discussionService.removeParticipant(matterSlug, threadId, username).then(
                 function success(response) {
                     $modalInstance.close();
+                    $rootScope.$emit('discussionChangeParticipantSuccess');
 
                     deferred.resolve(response);
                 },

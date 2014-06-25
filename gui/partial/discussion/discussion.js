@@ -57,6 +57,10 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
             $scope.handleUrlState();
         });
 
+        $rootScope.$on('discussionChangeParticipantSuccess', function() {
+            $scope.initializeDiscussion();
+        });
+
         $scope.handleUrlState = function() {
             var threadId = $state.params.threadId;
 
@@ -170,10 +174,10 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
             );
         };
 
-        $scope.addThreadParticipant = function(thread) {
+        $scope.manageThreadParticipants = function(thread) {
             var modalInstance = $modal.open({
-                'templateUrl': '/static/ng/partial/discussion/includes/add-thread-participant.html',
-                'controller': 'AddThreadParticipantCtrl',
+                'templateUrl': '/static/ng/partial/discussion/includes/manage-thread-participants.html',
+                'controller': 'ManageThreadParticipantsCtrl',
                 'resolve': {
                     'currentUser': function() {
                         return $scope.data.matter.current_user;
