@@ -67,13 +67,13 @@ class BaseScenarios(object):
         eightythreeb_data['markers'] = {}  # set the markers to nothing
 
         self.eightythreeb = mommy.make('eightythreeb.EightyThreeB',
-                            slug='e0c545082d1241849be039e338e47a0f',
-                            workspace=self.workspace,
-                            user=self.user,
-                            data=eightythreeb_data,
-                            filing_date=datetime.date.today() + datetime.timedelta(days=30),
-                            transfer_date=datetime.date.today(),
-                            status=EightyThreeB.STATUS.lawyer_complete_form)
+                                       slug='e0c545082d1241849be039e338e47a0f',
+                                       workspace=self.workspace,
+                                       user=self.user,
+                                       data=eightythreeb_data,
+                                       filing_date=datetime.date.today() + datetime.timedelta(days=30),
+                                       transfer_date=datetime.date.today(),
+                                       status=EightyThreeB.STATUS.lawyer_complete_form)
 
         # endpoint for api cretion via the api
         self.item_create_endpoint = reverse('matter_items', kwargs={'matter_slug': self.matter.slug})
