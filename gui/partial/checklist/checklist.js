@@ -1574,6 +1574,19 @@ angular.module('toolkit-gui')
                 );
             }
         };
+
+        /**
+         * Called when the User signs a document in HelloSign and sets a processing flag the revision
+         *
+         */
+        $( "body" ).on("sign.signed", function( event, param1, param2 ) {
+          $log.debug(event);
+
+          var latest_revision = $scope.data.selectedItem.latest_revision;
+          latest_revision.sign_in_progress=true;
+          $scope.saveLatestRevision();
+        });
+
 		/* End revision handling */
 
 
