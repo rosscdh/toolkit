@@ -184,6 +184,10 @@
 				height: 100px;
 				padding-left:0px;
 				border: 1px solid #e4e6e8;
+				margin-right: -3px;
+				margin-bottom: 3px;
+				cursor: pointer;
+				cursor: hand;
 				&:hover{
 					// background-color: #444444;
 					// color: white;
@@ -455,7 +459,7 @@ padding-left: 50px;
 }
 
 .message-body {
-	min-height: 16em;
+	min-height: 5em;
 }
 
 .sticky-fixed {
@@ -517,6 +521,7 @@ padding-left: 50px;
 }
 .inbox-controls{
 	margin-top: 0px;
+	margin-bottom: 20px;
 }
 
 	&.author {
@@ -557,34 +562,41 @@ a.markdown-link{
 	font-weight: normal;
 }
 
-.inbox-tabs {
-    ul li {
-        a {
-            color: #444444;
-            font-size: 14px;
-            font-weight: bold;
-            opacity: 0.8;
-            padding-bottom: 4px;
-            padding-left: 10px;
-            padding-right: 10px;
-
-            .badge {
-                background-color: @brand-info;
-            }
-        }
-
-        &.active {
-            border-bottom: 2px solid #444444;
-        }
-    }
-
-    .no-threads {
-        margin: 20px 0;
-    }
-
-    .tab-content {
-        border: none;
-        margin-bottom: 0;
-        padding: 0;
-    }
+.inbox-label {
+	color: #444444;
+	font-weight: bold;
+	opacity: 0.8;
+	font-size: 14px;
+	padding-bottom: 4px;
+	padding-left: 10px;
+	padding-right: 10px;
 }
+
+
+
+.tab-content{
+	height: 500px;
+	overflow-y: scroll;
+	border: 0px;
+	padding: 0px;
+	border-radius: 0px;
+	padding-top: 0px;
+	border-bottom: 2px solid #ddd;
+}
+
+
+.inbox-tabs {
+
+	.nav {
+		margin-top: 10px;
+		padding: 0 12px;
+			.active{
+		border-bottom: 3px solid #747474;
+	}
+	}
+
+	.nav > li > a {
+		padding: 0px 0px 5px 0px;
+}
+}
+

@@ -12,7 +12,7 @@
 
                     <tabset class="inbox-tabs" justified="true" type="pills">
                         <tab>
-                            <tab-heading>
+                            <tab-heading class="inbox-label">
                                 Inbox <span class="badge" ng-show="data.threads.length > 0">{{ data.threads.length }}</span>
                             </tab-heading>
                             <div ng-show="data.threads.length > 0">
@@ -29,7 +29,7 @@
                             </div>
                         </tab>
 
-                        <tab disabled="data.archivedThreads.length == 0" heading="Archived">
+                        <tab disabled="data.archivedThreads.length == 0" heading="Archived" class="inbox-label">
                             <ul class="msg-list list-unstyled">
                                 <li ng-repeat="thread in data.archivedThreads"
                                     ng-class="{ 'selected': thread.id===data.selectedThread.id }"
