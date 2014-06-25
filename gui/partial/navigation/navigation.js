@@ -67,7 +67,7 @@ angular.module('toolkit-gui')
 		 * @param  {String}  path Path passed in by the navigation item
 		 * @return {Boolean}      True if the current location contains the path of the navigation item
 		 * @name				isActive
-		 * 
+		 *
 		 * @private
 		 * @method				isActive
 		 * @memberof			NavigationCtrl
@@ -79,7 +79,7 @@ angular.module('toolkit-gui')
 		/**
 		 * Show invite matter participant modal
 		 * @name				invite
-		 * 
+		 *
 		 * @private
 		 * @method				invite
 		 * @memberof			NavigationCtrl
@@ -104,7 +104,7 @@ angular.module('toolkit-gui')
 
 			modalInstance.result.then(
 				function ok(/*selectedItem*/) {
-					
+
 				},
 				function cancel() {
 					//
@@ -113,12 +113,12 @@ angular.module('toolkit-gui')
 		};
 
 		/*
-		 _____ _ _ _                
-		|  ___(_) | |_ ___ _ __ ___ 
+		 _____ _ _ _
+		|  ___(_) | |_ ___ _ __ ___
 		| |_  | | | __/ _ \ '__/ __|
 		|  _| | | | ||  __/ |  \__ \
 		|_|   |_|_|\__\___|_|  |___/
-									
+
 		 */
 		/**
 		 * applyStatusFilter  filters for checklist based on status 0-4
@@ -172,13 +172,13 @@ angular.module('toolkit-gui')
 		/**
 		 * Update in scope variable that tracks the current matter ID
 		 * @name				updateNavigationID
-		 * 
+		 *
 		 * @private
 		 * @method				updateNavigationID
 		 * @memberof			NavigationCtrl
 		 */
 		$scope.$on('$routeChangeSuccess', function updateNavigationID() {
-			var routeParams = smartRoutes.params(); 
+			var routeParams = smartRoutes.params();
 			$scope.data.id = routeParams.id;
 		});
 
@@ -203,7 +203,7 @@ angular.module('toolkit-gui')
 			$scope.notificationPermissionLevel = notify.permissionLevel();
 
 			if( notify ) {
-				notify.createNotification("Notification", { 'body':msgText, 'icon': '/static/images/favicon.ico' });
+				notify.createNotification("Notification", { 'body':msgText, 'icon': '/static/images/lp-notification.png' });
 			}
 		});
 
