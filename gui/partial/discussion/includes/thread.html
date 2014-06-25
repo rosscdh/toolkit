@@ -36,7 +36,8 @@
         <div class="col-sm-2 text-right thread-controls">
             <form name="requestForm" ng-submit="request()">
                 <a href="javascript:;" ng-click="manageThreadParticipants(data.selectedThread)" class="btn btn-sm pull-right btn-default">Manage participant</a>
-                <a class="btn btn-sm btn-default" ng-click="archiveThread(data.selectedThread)">Archive Thread</a>
+                <a class="btn btn-sm btn-default" ng-show="!data.selectedThread.is_archived" ng-click="archiveThread(data.selectedThread)">Archive Thread</a>
+                <a class="btn btn-sm btn-default" ng-show="data.selectedThread.is_archived" ng-click="unarchiveThread(data.selectedThread)">Unarchive Thread</a>
 
                 <button class="btn btn-default send-btn" type="submit" ng-disabled="sendingMessage">Send <i class="fa fa-spinner fa-spin" ng-if="sendingMessage"></i></button>
             </form>

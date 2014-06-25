@@ -127,6 +127,22 @@ angular.module('toolkit-gui').factory('discussionService', [
                 return deferred.promise;
             },
 
+            'unarchive': function(matterSlug, threadId) {
+                var api = discussionResource();
+                var deferred = $q.defer();
+
+                api.update({ 'matterSlug': matterSlug, 'threadId': threadId}, { 'is_archived': false },
+                    function success(thread) {
+                        deferred.resolve(thread);
+                    },
+                    function error(err) {
+                        deferred.reject(err);
+                    }
+                );
+
+                return deferred.promise;
+            },
+
             'listArchived': function(matterSlug) {
                 var api = discussionResource();
                 var deferred = $q.defer();

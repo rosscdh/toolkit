@@ -119,11 +119,30 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
                 function yes() {
                     var matterSlug = $scope.data.matterSlug;
                     discussionService.archive(matterSlug, thread.id).then(
-                        function success() {
+                        function success(thread) {
                             $scope.initializeDiscussion();
+                            $scope.data.selectedThread = thread;
                         },
                         function error(/*err*/) {
                             toaster.pop('error', 'Error!', 'Unable to archive thread.', 5000);
+                        }
+                    );
+                }
+            );
+        };
+
+        $scope.unarchiveThread = function(thread) {
+            ezConfirm.create('Unarchive Thread', 'Please confirm you would like to unarchive this thread?',
+                function yes() {
+                    var matterSlug = $scope.data.matterSlug;
+                    discussionService.unarchive(matterSlug, thread.id).then(
+                        function success(thread) {
+                            $scope.initializeDiscussion();
+                            $scope.data.selectedThread = thread;
+                            // $scope.selectThread(thread);
+                        },
+                        function error(/*err*/) {
+                            toaster.pop('error', 'Error!', 'Unable to unarchive thread.', 5000);
                         }
                     );
                 }
