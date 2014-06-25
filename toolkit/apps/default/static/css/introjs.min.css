@@ -21,6 +21,11 @@
 
 }
 
+.introjs-skipbutton{
+  background-color: #5d5d5d;
+  background: #5d5d5d !important;
+}
+
 .introjs-prevbutton{
   background-color: #444444;
   background: #444444;
@@ -30,6 +35,10 @@
   background: #2ecc71;
   color: white;
   outline: 0;
+}
+
+.introjs-disabled{
+  display: none;
 }
 
 .introjs-skipbutton {

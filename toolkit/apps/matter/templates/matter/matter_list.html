@@ -45,7 +45,12 @@
     |___|_| |_|\__|_|  \___/
 
      */
-    var steps = {
+    var introConfig = {
+        'showBullets': 'false',
+        'showLabel': 'false',
+        'showStepNumbers': 'false',
+        'KeyboardNavigation': 'false',
+
         'steps': [
             {
                 'element': 'article:first-child .card',
@@ -62,7 +67,7 @@
             },
             {
                 'element': 'article:first-child .card .export-button',
-                'intro': 'Need to download all of your documents? Click the download icon and all documents in this Matter will be exported and emailed to you.',
+                'intro': 'Need to download all of your completed documents? Click the download icon and all documents in this Matter will be exported and emailed to you.',
                 'position': 'right'
             },
             {
@@ -78,7 +83,7 @@
         ]
     };
 
-    intro.setOptions( steps );
+    intro.setOptions(introConfig);
 
     $( document ).ready( function() {
         intro.onchange(function(){
