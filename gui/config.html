@@ -125,7 +125,8 @@
               <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" ng-bind="matter.selected.name | characters:15:true"></a>
               <ul class="dropdown-menu">
                 <li ng-repeat="m in data.matterlist" ng-show="m.name!=matter.selected.name">
-                    {% verbatim %}<a href="/matters/{{ m.slug  }}">{{ m.name }}</a>{% endverbatim %}
+                    {% verbatim %}<a href="/matters/{{ m.slug  }}" ng-if="m.client">{{ m.name }} - {{m.client.name}}</a>{% endverbatim %}
+                    {% verbatim %}<a href="/matters/{{ m.slug  }}" ng-if="!m.client">{{ m.name }}</a>{% endverbatim %}
                 </li>
               </ul>
             </li>
