@@ -18,6 +18,7 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
         var routeParams = smartRoutes.params();
 
         $scope.data = {
+            'archivedThreads': [],
             'matter': null,
             'matterSlug': routeParams.matterSlug,
             'page': 'discussion',
@@ -77,7 +78,16 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
                     $scope.data.threads = result;
                 },
                 function error(/*err*/) {
-                    toaster.pop('error', 'Error!', 'Unable to read discussion list.', 5000);
+                    toaster.pop('error', 'Error!', 'Unable to read discussion threads.', 5000);
+                }
+            );
+
+            discussionService.listArchived(matterSlug).then(
+                function success(result) {
+                    $scope.data.archivedThreads = result;
+                },
+                function error(/*err*/) {
+                    toaster.pop('error', 'Error!', 'Unable to read archived discussion threads.', 5000);
                 }
             );
         };

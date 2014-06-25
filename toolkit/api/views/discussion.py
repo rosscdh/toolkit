@@ -5,7 +5,6 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404
 
 from rest_framework import generics, status as http_status, viewsets
-from rest_framework.decorators import action
 from rest_framework.response import Response
 from rulez import registry as rulez_registry
 
@@ -23,7 +22,13 @@ class DiscussionEndpoint(MatterMixin, viewsets.ModelViewSet):
     model = DiscussionComment
 
     def get_queryset(self):
-        return self.model.objects.for_model(self.matter).filter(parent=None)
+        queryset = self.model.objects.for_model(self.matter).filter(parent=None)
+
+        if self.action == 'list':
+            is_archived = self.request.QUERY_PARAMS.get('archived', False)
+            queryset = queryset.filter(is_archived=is_archived)
+
+        return queryset
 
     def get_serializer_class(self):
         if self.action == 'list':

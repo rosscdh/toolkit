@@ -10,24 +10,35 @@
                            <button class="btn btn-default new-thread-btn" ng-click="createThread()">New Thread</button>
                     </div>
 
-                <!--     <div class="row">
-                        <div class="col-sm-6 text-center">
-                            <a href="#" class='inbox-label selected'>Inbox</a>
-                        </div>
-                        <div class="col-sm-6 text-center">
-                            <a href="#" class='inbox-label'>Archive</a>
-                        </div>
+                    <tabset class="inbox-tabs" justified="true" type="pills">
+                        <tab>
+                            <tab-heading>
+                                Inbox <span class="badge" ng-show="data.threads.length > 0">{{ data.threads.length }}</span>
+                            </tab-heading>
+                            <div ng-show="data.threads.length > 0">
+                                <ul class="msg-list list-unstyled">
+                                    <li ng-repeat="thread in data.threads"
+                                        ng-class="{ 'selected': thread.id===data.selectedThread.id }"
+                                        ui-sref="discussion.thread({ 'threadId': thread.id })">
+                                        <div ng-include="'/static/ng/partial/discussion/includes/thread-line-item.html'"></div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div ng-show="data.threads.length == 0">
+                                <p class="small text-center no-threads">Please start a new discussion.</p>
+                            </div>
+                        </tab>
 
-                    </div> -->
-
-                    <ul class="msg-list list-unstyled">
-                        <li ng-repeat="thread in data.threads"
-                            ng-class="{ 'selected': thread.id===data.selectedThread.id }"
-                            ui-sref="discussion.thread({ 'threadId': thread.id })">
-                            <div ng-include="'/static/ng/partial/discussion/includes/thread-line-item.html'"></div>
-                        </li>
-                    </ul>
-
+                        <tab disabled="data.archivedThreads.length == 0" heading="Archived">
+                            <ul class="msg-list list-unstyled">
+                                <li ng-repeat="thread in data.archivedThreads"
+                                    ng-class="{ 'selected': thread.id===data.selectedThread.id }"
+                                    ui-sref="discussion.thread({ 'threadId': thread.id })">
+                                    <div ng-include="'/static/ng/partial/discussion/includes/thread-line-item.html'"></div>
+                                </li>
+                            </ul>
+                        </tab>
+                    </tabset>
                 </div>
             </div>
 

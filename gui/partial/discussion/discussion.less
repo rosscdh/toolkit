@@ -517,7 +517,6 @@ padding-left: 50px;
 }
 .inbox-controls{
 	margin-top: 0px;
-	margin-bottom: 20px;
 }
 
 	&.author {
@@ -558,16 +557,34 @@ a.markdown-link{
 	font-weight: normal;
 }
 
-.inbox-label {
-	color: #444444;
-	font-weight: bold;
-	opacity: 0.8;
-	font-size: 14px;
-	padding-bottom: 4px;
-	padding-left: 10px;
-	padding-right: 10px;
-}
+.inbox-tabs {
+    ul li {
+        a {
+            color: #444444;
+            font-size: 14px;
+            font-weight: bold;
+            opacity: 0.8;
+            padding-bottom: 4px;
+            padding-left: 10px;
+            padding-right: 10px;
 
-.selected {
-	border-bottom: 2px solid #444444;
+            .badge {
+                background-color: @brand-info;
+            }
+        }
+
+        &.active {
+            border-bottom: 2px solid #444444;
+        }
+    }
+
+    .no-threads {
+        margin: 20px 0;
+    }
+
+    .tab-content {
+        border: none;
+        margin-bottom: 0;
+        padding: 0;
+    }
 }
