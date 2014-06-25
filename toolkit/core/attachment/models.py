@@ -88,9 +88,9 @@ class Revision(IsDeletedMixin,
     def __unicode__(self):
         return 'Revision %s' % (self.slug)
 
-    # override for FileExistsLocallyMixin:
-    def get_document(self):
-        return self.executed_file
+    @property
+    def SIGN_IN_PROGRESS_KEY(self):
+        return 'sign_in_progress-%s' % self.pk
 
     @property
     def revisions(self):
@@ -111,6 +111,10 @@ class Revision(IsDeletedMixin,
             #
             sign_document.signers = self.signers.all()
         return sign_document
+
+    # override for FileExistsLocallyMixin:
+    def get_document(self):
+        return self.executed_file
 
     def get_absolute_url(self):
         """
