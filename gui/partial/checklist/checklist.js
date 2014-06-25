@@ -1585,6 +1585,7 @@ angular.module('toolkit-gui')
           var latest_revision = $scope.data.selectedItem.latest_revision;
           latest_revision.sign_in_progress=true;
           $scope.saveLatestRevision();
+          toaster.pop('success', 'Success!', 'The document is being processed.', 5000);
         });
 
 		/* End revision handling */
