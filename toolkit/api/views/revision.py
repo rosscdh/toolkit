@@ -122,21 +122,24 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
                                                                 revision=self.revision,
                                                                 previous_status=previous_instance.status)
 
-    def handle_sign_in_progress(self, sign_in_progress=None):
-        """
-        To get around HS crap implementation, we have to store a in_progress flag
-        which is used to show appropriate messaging to the users
-        """
-        # cache_key used to store the unique calue for this revision
-        cache_key = self.revision.SIGN_IN_PROGRESS_KEY
+    #
+    # Removed as this appears to be a mis-code
+    #
+    # def handle_sign_in_progress(self, sign_in_progress=None):
+    #     """
+    #     To get around HS crap implementation, we have to store a in_progress flag
+    #     which is used to show appropriate messaging to the users
+    #     """
+    #     # cache_key used to store the unique calue for this revision
+    #     cache_key = self.revision.SIGN_IN_PROGRESS_KEY
 
-        if not cache.get( cache_key ):
-            minutes = 5
-            cache_seconds = (minutes * 60) # turn minutes into seconds
+    #     if not cache.get( cache_key ):
+    #         minutes = 5
+    #         cache_seconds = (minutes * 60) # turn minutes into seconds
 
-            expiry_date_time = datetime.datetime.utcnow().replace(tzinfo=utc) + datetime.timedelta(minutes=5)
+    #         expiry_date_time = datetime.datetime.utcnow().replace(tzinfo=utc) + datetime.timedelta(minutes=5)
 
-            cache.set( cache_key, expiry_date_time, cache_seconds )  # set the cache for this object
+    #         cache.set( cache_key, expiry_date_time, cache_seconds )  # set the cache for this object
 
     def update(self, request, *args, **kwargs):
         #
