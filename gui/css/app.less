@@ -54,13 +54,14 @@
 
 /* Personal preference for BS modal.  The LESS below makes the backdrop white and
    causes the modal to fade in rather than slide in. */
-//@modal-backdrop-bg: white;
-//.modal {
-//	&.fade {
-//		.transition(opacity .3s);
-//	}
-//	&.fade .modal-dialog {
-//		.translate(0,0);
-//	}
-//}
+.modal.fade, .modal.fade.in, .modal.fade .modal-dialog {
+    -webkit-transform: translate(0, 0);
+    -ms-transform: translate(0, 0);
+    transform: translate(0, 0);
+    transition: none;
+}
+
+.modal-backdrop.fade, .modal-backdrop.fade.in {
+	opacity: 0.8;
+}
 @import "./modules/toaster.less";

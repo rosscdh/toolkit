@@ -12,12 +12,14 @@ angular.module('toolkit-gui')
 	'$modalInstance',
 	'toaster',
 	'matterItemService',
+	'userService',
 	'matter',
 	'checklistItem',
 	'revision',
 	'review',
+	'currentUser',
 	'$log',
-	function($scope, $modalInstance, toaster, matterItemService, matter, checklistItem, revision, review, $log){
+	function($scope, $modalInstance, toaster, matterItemService, userService, matter, checklistItem, revision, review, currentUser, $log){
 		'use strict';
 		/**
 		 * WIP
@@ -61,6 +63,13 @@ angular.module('toolkit-gui')
 		 */
 		$scope.item = checklistItem;
 
+		/**
+		 * In scope variable containing details about the current user. This is passed through from the originating controller.
+		 * @memberof ViewReviewCtrl
+		 * @type {Object}
+		 * @private
+		 */
+		$scope.currentUser = currentUser;
 
         /**
 		 * In scope variable containing details about the specific revision
@@ -110,7 +119,7 @@ angular.module('toolkit-gui')
                 $scope.usersWithAccess = jQuery.merge(usersWithAccess, reviewers);
             } else {
                 jQuery.each( participants, function( index, p ){
-                    if(p.user_class === 'lawyer'){
+                    if(userService.hasPermission(p, 'manage_reviews')){
                         usersWithAccess.push(p);
                     }
                 });

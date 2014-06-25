@@ -29,7 +29,8 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
     /matters/:matter_slug/items/:item_slug/revision/reviewers/ (GET,POST)
         [lawyer,customer] to list, create reviewers
     """
-    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review', u'url', u'initials', u'user_class', u'name',]
+    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review', u'url', u'initials', u'user_class', u'name',
+                                           u'role']
 
     @property
     def endpoint(self):
@@ -40,10 +41,12 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
 
         # setup the items for testing
         self.item = mommy.make('item.Item', matter=self.matter, name='Test Item with Revision', category=None)
-        self.revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
+        self.revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item,
+                                   uploaded_by=self.lawyer)
 
     def test_endpoint_name(self):
-        self.assertEqual(self.endpoint, '/api/v1/matters/%s/items/%s/revision/reviewers' % (self.matter.slug, self.item.slug))
+        self.assertEqual(self.endpoint, '/api/v1/matters/%s/items/%s/revision/reviewers' %
+                         (self.matter.slug, self.item.slug))
 
     def test_lawyer_get_no_participants(self):
         """
@@ -347,7 +350,8 @@ class RevisionReviewerTest(BaseEndpointTest):
     /matters/:matter_slug/items/:item_slug/revision/reviewer/:username (GET,DELETE)
         [lawyer,customer] to view, delete reviewers
     """
-    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review', u'url', u'initials', u'user_class', u'name',]
+    EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'username', u'user_review', u'url', u'initials', u'user_class', u'name',
+                                           u'role']
 
     @property
     def endpoint(self):
@@ -528,11 +532,10 @@ class RevisionRequestedDocumentTest(BaseEndpointTest):
     item.responsible_party must be a User
     """
     EXPECTED_USER_SERIALIZER_FIELD_KEYS = [u'status', u'category', u'is_complete', u'closing_group', u'description',
-                                           u'parent', u'date_modified', u'url', u'regular_url', u'is_requested', u'children', u'matter',
-                                           u'date_due', u'responsible_party', u'is_final', u'date_created',
-                                           u'latest_revision', u'request_document_meta', u'slug', u'name',
-                                           u'review_percentage_complete',
-                                           u'signing_percentage_complete']
+                                           u'parent', u'date_modified', u'url', u'regular_url', u'is_requested',
+                                           u'children', u'matter', u'date_due', u'responsible_party', u'is_final',
+                                           u'date_created', u'latest_revision', u'request_document_meta', u'slug',
+                                           u'name', u'review_percentage_complete', u'signing_percentage_complete']
 
     @property
     def endpoint(self):

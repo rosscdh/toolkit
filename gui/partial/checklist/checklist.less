@@ -27,6 +27,10 @@ tr .dropable-area {
 		font-size: 40px;
 		color: #d9dcde;
 	}
+
+	h4 {
+		margin-bottom: 6px;
+	}
 }
 
 .checklist-wrapper table.ui-drag-disabled tr.ui-drag-disabled {
@@ -50,6 +54,10 @@ div.dragover {
 		padding: 3em;
 		margin: 1em 0;
 		color: #acb4b9;
+
+		.btn {
+			display: none;
+		}
 	}
 	.border-on-dragover {
 		border: 1px dashed #c5cbce;
@@ -65,6 +73,10 @@ div.dragover {
 	text-align: center;
 	margin: 1em 0;
 	color: #acb4b9;
+
+	.btn {
+		display: none;
+	}
 }
 
 tr.item-heading.file-drag-over {
@@ -154,7 +166,7 @@ tr.item-heading.file-drag-over td:nth-child(2):before {
 	}
 }
 
-.dropdown-menu, .doc-wrap {
+.dropdown-menu{
 	z-index: 9997 !important;
 }
 
@@ -163,15 +175,22 @@ tr.item-heading.file-drag-over td:nth-child(2):before {
 	position: relative;
 }
 .calendar-group .dropdown-menu {
+	z-index: 9997 !important;
+	position: absolute;
+	width: 304px;
+	top: 30px !important;
+	left: -74px  !important;
+	overflow: visible;
 	opacity: 1;
 	visibility: visible;
-	width: 288px;
+	width: 304px;
 	background-color: #f2f2f2;
 	border-radius: 0;
 	border-color: #c5cbce;
 	border-width: 0 1px 1px 1px;
 	border-style: solid;
 	margin-top:0;
+	border: 2px solid white;
 	th, em { font-size: 12px; font-weight: bold; }
 	th, th { width: 30px; button { width:100%; } }
 	button.btn-default {
@@ -226,6 +245,23 @@ tr.item-heading.file-drag-over td:nth-child(2):before {
 
 .checklist-wrapper .checklist-col {
 	padding-bottom: 3em;
+}
+
+.add-new {
+	.space-5 {
+		margin-right: 5px;
+	}
+}
+
+.add-new .dropdown-menu .btn {
+	color: #fff;
+	text-align: left;
+	font-weight: normal;
+	&:hover {
+		background-color: #3a3a3a;
+		color: rgb(204, 204, 204);
+		text-decoration: none;
+	}
 }
 
 /*
@@ -660,4 +696,24 @@ ul.status-list a {
 .custom-btn-round button {
 	border-bottom-left-radius: 6px !important;
 	border-top-left-radius: 6px !important;
+}
+
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 999px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
 }

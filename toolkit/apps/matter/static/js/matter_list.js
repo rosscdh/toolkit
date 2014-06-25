@@ -114,7 +114,7 @@ var MatterItem = React.createClass({displayName: 'MatterItem',
                     React.DOM.a( {href: this.props.detail_url,  title: this.props.name,  className:"content"}, 
                         React.DOM.div( {className:"title"}, 
                             React.DOM.h6(null,  this.props.lawyer_or_client_name ),
-                            React.DOM.h5(null,  this.props.name )
+                            React.DOM.h5(null,  this.props.name, React.DOM.small(null,  this.props.currentUserRole ))
                         ),
                         React.DOM.div( {className:"meta clearfix"}, 
                              this.props.lastupdated_or_complete, 
@@ -161,6 +161,22 @@ var Participants = React.createClass({displayName: 'Participants',
                 )
             );
         }
+    }
+});
+
+var CurrentUserRole = React.createClass({displayName: 'CurrentUserRole',
+    render: function() {
+    
+        var role = null;
+        for (var i = 0; i < this.props.data.length; i++) {
+            if (this.props.data[i].username == UserData.username) {
+                role = this.props.data[i].role;
+            }
+        }
+
+        return (
+            React.DOM.div(null,  role )
+        )
     }
 });
 
@@ -266,6 +282,7 @@ var MatterList = React.createClass({displayName: 'MatterList',
                 var percentStyle = {'width': matter.percent_complete};
                 var lawyer_or_client_name = (UserData.is_lawyer) ? (matter.client !== null) ? matter.client.name : null : matter.lawyer.name ;
 
+                var currentUserRole = CurrentUserRole( {data:matter.participants} )
                 var participantList = Participants( {data:matter.participants} )
                 var lastupdatedOrComplete = LastUpdatedOrComplete( {percent_complete:matter.percent_complete,
                                                                   date_modified:matter.date_modified} )
@@ -279,7 +296,7 @@ var MatterList = React.createClass({displayName: 'MatterList',
                         is_lawyer:UserData.is_lawyer,
                         is_matter_lawyer_participant:is_matter_lawyer_participant,
                         lawyer_or_client_name:lawyer_or_client_name,
-
+                        currentUserRole:currentUserRole,
                         participantList:participantList,
                         lastupdated_or_complete:lastupdatedOrComplete,
                         editMatterInterface:editMatterInterface,
@@ -298,7 +315,7 @@ var MatterList = React.createClass({displayName: 'MatterList',
                     React.DOM.h4(null, "All Matters"),
                     React.DOM.div( {className:"pull-right"}, 
                         createButton,
-    		            React.DOM.div( {className:"form-group pull-right"}, 
+                        React.DOM.div( {className:"form-group pull-right"}, 
                             React.DOM.div( {className:"input-group search-field"}, 
                                 React.DOM.input( {type:"text", className:"form-control", placeholder:"Search matters by name or client name...", name:"q", autocomplete:"off", onChange:this.handleSearch}),
                                 React.DOM.span( {className:"input-group-btn"}, 

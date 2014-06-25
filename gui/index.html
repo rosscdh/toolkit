@@ -10,6 +10,7 @@
 
   <link href="/static/ng/css/app.less" type="text/css" rel="stylesheet/less">
   <link href="/static/fonts/pe-icon-7-stroke/css/pe-icon-7-stroke.css" rel="stylesheet" data-remove="exclude">
+  <link href="/static/ng/bower_components/html5-desktop-notifications/notifications.css" type="text/css" rel="stylesheet"/>
 
   <script src="/static/ng/bower_components/jquery/jquery.min.js" data-remove="exclude"></script>
   <script src="/static/ng/bower_components/jquery-ui/ui/minified/jquery-ui.min.js" data-remove="exclude"></script>
@@ -28,7 +29,6 @@
 </head>
 <body>
   <!-- Livereload script for development only (stripped during dist build) -->
-  <script src="http://localhost:35729/livereload.js" data-build="exclude"></script>
 
   <!-- JS from Bower components -->
   <script src="/static/ng/bower_components/underscore/underscore.js"></script>
@@ -53,7 +53,7 @@
   <script src="/static/ng/bower_components/jquery-ui-touch-punch/jquery.ui.touch-punch.js"></script>
   <script src="/static/ng/bower_components/raven-js/dist/raven.min.js"></script>
   <script src="/static/ng/bower_components/crypto-js/rollups/hmac-sha256.js"></script>
-
+  <script src="/static/ng/bower_components/html5-desktop-notifications/desktop-notify.js"></script>
   <script src="/static/ng/lib/angular-intercom.js" data-remove="exclude"></script>
   <script type="text/javascript" src="//api.filepicker.io/v1/filepicker.js" data-remove="exclude"></script>
 
@@ -88,6 +88,7 @@
   <script src="/static/ng/directive/mentions/mentionsbox.js"></script>
   <script src="/static/ng/directive/mentions/mentionscontainer.js"></script>
   <script src="/static/ng/directive/filepicker.js"></script>
+  <script src="/static/ng/directive/auth.js"></script>
   <script src="/static/ng/directive/modal.js"></script>
   <!-- Add New Directive JS Above -->
 
@@ -126,16 +127,17 @@
         </div>
         <ul class="nav navbar-nav navbar-matters hidden-xs" ng-show="matter.selected&&data.matterlist.length>1">
             <li class="dropdown">
-              <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" ng-bind="matter.selected.name"></a>
+              <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" ng-bind="matter.selected.name | characters:15:true"></a>
               <ul class="dropdown-menu">
                 <li ng-repeat="m in data.matterlist" ng-show="m.name!=matter.selected.name">
-                    {% verbatim %}<a href="/matters/{{ m.slug  }}">{{ m.name }}</a>{% endverbatim %}
+                    {% verbatim %}<a href="/matters/{{ m.slug  }}" ng-if="m.client">{{ m.name }} - {{m.client.name}}</a>{% endverbatim %}
+                    {% verbatim %}<a href="/matters/{{ m.slug  }}" ng-if="!m.client">{{ m.name }}</a>{% endverbatim %}
                 </li>
               </ul>
             </li>
         </ul>
         <ul class="nav navbar-nav" ng-show="matter.selected&&data.matterlist.length<=1">
-            <li><a href="javascript:;" ng-bind="matter.selected.name"></a></li>
+            <li><a href="javascript:;" ng-bind="matter.selected.name | characters:15:true"></a></li>
         </ul>
     </div>
 
@@ -224,7 +226,14 @@
       </form>
       {% verbatim %}
       <ul class="nav navbar-nav navbar-right hidden-xs">
-        <li class="notifications"><a href="/notifications/" ng-class="matter.selected.current_user.has_notifications ? 'unread' : ''"><!-- <span ng-class="matter.selected.current_user.has_notifications ? 'fui-radio-checked animated pulse' : 'fui-radio-unchecked'"></span> --><span ng-class="matter.selected.current_user.has_notifications ? 'swing' : ''" class="pe-7s-bell animated-slow"></span></a></li>
+
+        <!-- start: desktop notifications / notifications //-->
+        <li class="notifications">
+          <a href="/notifications/" ng-class="matter.selected.current_user.has_notifications ? 'unread' : ''">
+            <span ng-class="matter.selected.current_user.has_notifications ? 'swing' : ''" class="pe-7s-bell animated-slow"></span>
+          </a>
+        </li>
+        <!-- end: desktop notifications / notifications //-->
 
         <li><a href="/requests/">Requests</a></li>
         <li class="hidden-xs hidden-sm"><a href="#" class="intercom">Support</a></li>

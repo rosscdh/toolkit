@@ -131,6 +131,9 @@ HELPER_APPS = (
     'django_bootstrap_breadcrumbs',
     'email_obfuscator',
 
+    # django-permission
+    'permission',
+
     # getsentry.com
     'raven.contrib.django.raven_compat',
 
@@ -248,6 +251,7 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'toolkit.auth_backends.SecretKeyBackend',
     'toolkit.apps.review.auth_backends.ReviewDocumentBackend',  # allow users to log in via review urls
+    'permission.backends.PermissionBackend',  # use django-permission
 )
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -312,6 +316,7 @@ PIPELINE_CSS = {
             'css/application.css',
             'css/animate.css',
             'less/introjs-custom.less'
+            'css/font-awesome.min.css'
         ),
         'output_filename': 'css/core.css',
         'extra_context': {
