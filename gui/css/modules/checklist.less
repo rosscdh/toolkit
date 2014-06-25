@@ -495,9 +495,7 @@ html,body, div.full
 		// 	}
 		// }
 		div.new-message {
-
 			background-color: #F2F2F2;
-
 			z-index: 3;
 			clear:both;
 			padding-left: 15px;
@@ -506,6 +504,8 @@ html,body, div.full
 			border-left: 2px solid #4A90E2;
 			padding-top:10px;
 			padding-bottom:10px;
+			margin-bottom: 20px;
+			border-bottom: 2px solid #E4E6E8;
 			textarea {
 				font-size:12px;
 				background-color: #F6F6F6;
@@ -523,10 +523,15 @@ html,body, div.full
 
 		.item-comments{
 			margin-top: 20px;
-			height: 60%;
+			height: 45%;
 			overflow-y: scroll;
 			background-color: #F6F6F6;
 			border-left: 2px solid #4A90E2;
+
+			.comment-thread{
+				margin-top: 70px;
+			}
+
 			.message-tabs {
 				z-index: 5;
 				margin-top: 15px;
@@ -539,7 +544,7 @@ html,body, div.full
 				background-color: #F0F0F0;
 				a {
 					height: 50px;
-					font-size: 14px;
+					font-size: 13px;
 					border-bottom: none;
 					padding-top: 15px;
 
@@ -561,9 +566,6 @@ html,body, div.full
 			}
 
 
-		}
-
-		.comment-thread{
 		}
 
 
@@ -617,7 +619,7 @@ html,body, div.full
 	}
 
 		ul.activity-log {
-			margin-top: 70px;
+
 			li {
 				font-size:12px;
 				line-height: 17px;
