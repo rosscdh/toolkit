@@ -15,7 +15,9 @@ from . import _get_unique_username
 from toolkit.core.services.analytics import AtticusFinch
 
 from toolkit.apps.matter.services.matter_clone import DemoMatterCloneService
-from toolkit.apps.workspace.models import Workspace
+from toolkit.apps.workspace.models import (Workspace,
+                                           ROLES,
+                                           MATTER_OWNER_PERMISSIONS)
 
 assert hasattr(settings, 'DEMO_MATTER_PK_TO_CLONE_ON_USER_CREATE'), 'You must define a settings.DEMO_MATTER_PK_TO_CLONE_ON_USER_CREATE this is the workspace to use as the demo fixture'
 assert hasattr(settings, 'DEMO_MATTER_LAWPAL_USER_PK'), 'You must define a settings.DEMO_MATTER_LAWPAL_USER_PK who is the user that wil be the demo matters client'
@@ -162,7 +164,8 @@ class SignUpForm(forms.Form):
                                                  description='A demonstration matter for you to explore.',
                                                  lawyer=user)
 
-        target_matter.participants.add(user, demo_associated_lawpal_user)  # associate our users
+        # associate our users
+        target_matter.add_participant(user=user, role=ROLES.owner, **MATTER_OWNER_PERMISSIONS)
 
         demo_matter_clone_service = DemoMatterCloneService(source_matter=source_matter,
                                                            target_matter=target_matter)
