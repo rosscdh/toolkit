@@ -2,7 +2,9 @@
 import logging
 from django.contrib.auth.models import User
 from django.dispatch import Signal, receiver
-from django.db.models.signals import m2m_changed, post_save
+from django.db.models.signals import (m2m_changed,
+                                      post_save,
+                                      post_delete)
 
 import dj_crocodoc.signals as crocodoc_signals
 
@@ -84,7 +86,12 @@ def _update_matter_participants(matter):
 
 
 @receiver(post_save, sender=WorkspaceParticipants, dispatch_uid='review.post_save.update_matter_participants_cache')
-def update_matter_participants_cache(sender, instance, **kwargs):
+def post_save_update_matter_participants_cache(sender, instance, **kwargs):
+    _update_matter_participants(matter=instance.workspace)
+
+
+@receiver(post_delete, sender=WorkspaceParticipants, dispatch_uid='review.post_delete.update_matter_participants_cache')
+def post_delete_update_matter_participants_cache(sender, instance, **kwargs):
     _update_matter_participants(matter=instance.workspace)
 
 
