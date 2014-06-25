@@ -1,40 +1,57 @@
-<div ng-show="data.selectedThread" class='read-message' id="message-scroll">
-    <div class="single-thread" id="thread">
-        <ul class="list-unstyled">
-            <li class="one-message">
-                <div class="author" sticky scrollelement="'message-scroll'" offset="55" last="false">
-                    <span class="user coleg" ng-bind="data.selectedThread.author.initials"></span>
-                    <span ng-bind="data.selectedThread.author.name"></span>
-                    <span class="text-muted time">{{ data.selectedThread.date_created | timeago }}</span>
-                </div>
-                <div class="message-body">
-                    <p ng-bind="data.selectedThread.content"></p>
-                </div>
-            </li>
-            <li class="one-message" ng-repeat="message in data.selectedThread.comments">
-                <div class="author" sticky scrollelement="'message-scroll'" offset="55" id="comment-{{message.id}}" last="$last">
-                    <span class="user coleg" ng-bind="message.author.initials"></span>
-                    <span ng-bind="message.author.name"></span>
-                    <span class="text-muted time">{{ message.date_created | timeago }}</span>
-                </div>
-                <div class="message-body">
-                    <p ng-bind="message.content"></p>
-                </div>
-            </li>
-        </ul>
+<div ng-show="data.selectedThread">
+    <div class='read-message' id="message-scroll">
+        <div class="single-thread" id="thread">
+            <ul class="list-unstyled">
+                <li class="one-message">
+                    <div class="author" sticky scrollelement="'message-scroll'" offset="55" last="false">
+                        <span class="user coleg" ng-bind="data.selectedThread.author.initials"></span>
+                        <span ng-bind="data.selectedThread.author.name"></span>
+                        <span class="text-muted time">{{ data.selectedThread.date_created | timeago }}</span>
+                    </div>
+                    <div class="message-body">
+                        <p ng-bind="data.selectedThread.content"></p>
+                    </div>
+                </li>
+                <li class="one-message" ng-repeat="message in data.selectedThread.comments">
+                    <div class="author" sticky scrollelement="'message-scroll'" offset="55" id="comment-{{message.id}}" last="$last">
+                        <span class="user coleg" ng-bind="message.author.initials"></span>
+                        <span ng-bind="message.author.name"></span>
+                        <span class="text-muted time">{{ message.date_created | timeago }}</span>
+                    </div>
+                    <div class="message-body">
+                        <p ng-bind="message.content"></p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="compose row">
+        <div class="col-sm-10">
+            <div class="compose-wrapper">
+                <textarea class="compose-message" rows="2" placeholder="Type your message here and press enter" ng-model="data.request.message"></textarea>
+            </div>
+            <a href="javascript:;" class="btn btn-link btn-xs pull-right markdown-link" title="Markdown help" ng-click="showMarkDownInfo()">Markdown Supported</a>
+        </div>
+        <div class="col-sm-2 text-right thread-controls">
+            <form name="requestForm" ng-submit="request()">
+                <a href="javascript:;" ng-click="manageThreadParticipants(data.selectedThread)" class="btn btn-sm pull-right btn-default">Manage participant</a>
+                <!--  <a class ="btn btn-sm btn-default" ng-click="archvieThread()">Archive Thread</a> -->
+
+                <button class="btn btn-default send-btn" type="submit" ng-disabled="sendingMessage">Send <i class="fa fa-spinner fa-spin" ng-if="sendingMessage"></i></button>
+            </form>
+        </div>
     </div>
 </div>
 
 <div ng-show="!data.selectedThread">
     <div class="row no-thread">
-    <div class='no-thread-selected col-sm-12'>
-        <i class="fa fa-arrow-left"></i>
-        <h6>select a discussion from the list</h6>
-        <small>or</small>
-        <h6>start a new discussion</h6>
-        <i class="fa fa-arrow-down"></i>
-
-    </div>
-
+        <div class='no-thread-selected col-sm-12'>
+            <i class="fa fa-arrow-left"></i>
+            <h6>select a discussion from the list</h6>
+            <small>or</small>
+            <h6>start a new discussion</h6>
+            <i class="fa fa-arrow-down"></i>
+        </div>
     </div>
 </div>
