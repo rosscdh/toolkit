@@ -8,6 +8,7 @@
   <!-- App LESS -->
   <link href="/static/ng/css/app.less" type="text/css" rel="stylesheet/less">
   <link href="/static/fonts/pe-icon-7-stroke/css/pe-icon-7-stroke.css" rel="stylesheet" data-remove="exclude">
+  <link href="/static/ng/bower_components/html5-desktop-notifications/notifications.css" type="text/css" rel="stylesheet"/>
   <script src="/static/ng/bower_components/jquery/jquery.min.js" data-remove="exclude"></script>
   <script src="/static/ng/bower_components/jquery-ui/ui/minified/jquery-ui.min.js" data-remove="exclude"></script>
   <script src="/static/ng/bower_components/bootstrap/dist/js/bootstrap.min.js" data-remove="exclude"></script>
@@ -49,7 +50,7 @@
   <script src="/static/ng/bower_components/jquery-ui-touch-punch/jquery.ui.touch-punch.js"></script>
   <script src="/static/ng/bower_components/raven-js/dist/raven.min.js"></script>
   <script src="/static/ng/bower_components/crypto-js/rollups/hmac-sha256.js"></script>
-
+  <script src="/static/ng/bower_components/html5-desktop-notifications/desktop-notify.js"></script>
   <script src="/static/ng/lib/angular-intercom.js" data-remove="exclude"></script>
   <script type="text/javascript" src="//api.filepicker.io/v1/filepicker.js" data-remove="exclude"></script>
 
@@ -125,7 +126,8 @@
               <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" ng-bind="matter.selected.name | characters:15:true"></a>
               <ul class="dropdown-menu">
                 <li ng-repeat="m in data.matterlist" ng-show="m.name!=matter.selected.name">
-                    {% verbatim %}<a href="/matters/{{ m.slug  }}">{{ m.name }}</a>{% endverbatim %}
+                    {% verbatim %}<a href="/matters/{{ m.slug  }}" ng-if="m.client">{{ m.name }} - {{m.client.name}}</a>{% endverbatim %}
+                    {% verbatim %}<a href="/matters/{{ m.slug  }}" ng-if="!m.client">{{ m.name }}</a>{% endverbatim %}
                 </li>
               </ul>
             </li>
@@ -220,7 +222,14 @@
       </form>
       {% verbatim %}
       <ul class="nav navbar-nav navbar-right hidden-xs">
-        <li class="notifications"><a href="/notifications/" ng-class="matter.selected.current_user.has_notifications ? 'unread' : ''"><!-- <span ng-class="matter.selected.current_user.has_notifications ? 'fui-radio-checked animated pulse' : 'fui-radio-unchecked'"></span> --><span ng-class="matter.selected.current_user.has_notifications ? 'swing' : ''" class="pe-7s-bell animated-slow"></span></a></li>
+
+        <!-- start: desktop notifications / notifications //-->
+        <li class="notifications">
+          <a href="/notifications/" ng-class="matter.selected.current_user.has_notifications ? 'unread' : ''">
+            <span ng-class="matter.selected.current_user.has_notifications ? 'swing' : ''" class="pe-7s-bell animated-slow"></span>
+          </a>
+        </li>
+        <!-- end: desktop notifications / notifications //-->
 
         <li><a href="/requests/">Requests</a></li>
         <li class="hidden-xs hidden-sm"><a href="#" class="intercom">Support</a></li>
