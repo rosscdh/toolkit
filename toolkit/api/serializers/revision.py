@@ -345,7 +345,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
             data = SignatureSerializer(sign_document, context=context).data
 
         if data:
-            data.update({'sign_in_progress': self._sign_in_progress(obj=obj)})
+            data.update({'in_progress': self._sign_in_progress(obj=obj)})
 
         return data
 
