@@ -126,8 +126,13 @@ class SignDocument(IsDeletedMixin,
         try:
             signed_at = [s for s in self.signatures if s.get('signer_email_address') == signer_email and s.get('signed_at') is not None][0].get('signed_at')
             signed_at = datetime.datetime.fromtimestamp(int(signed_at))
+
         except IndexError:
-            pass
+            #
+            # the signed_at may not be present yet; as we are waitign for HS webhook
+            #
+            logger.info(u'Could not acquire the signed_at property for %s on %s' % (signer, self.document.name))
+
         return signed_at
 
     # override for FileExistsLocallyMixin:

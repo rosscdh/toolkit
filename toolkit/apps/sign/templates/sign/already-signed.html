@@ -4,8 +4,8 @@
 
 {% block body %}
     <div id="user-message" class="page-header text-center">
-      <h3>This document has already been signed<br/><p class="lead">Please download the document from within LawPal.com.</small></p>
+      <h3>This document has already been signed<br/><p class="lead">The signed document will be available for download once all signatures are present</small></p>
       <br />
-      <p class="text-muted">Document signed on: {{ signed_on }} by {{ signer }}</p>
+      <p class="text-muted">Document signed {% if signed_on %}on: {{ signed_on }}{% endif %} by {{ signer }}</p>
     </div>
 {% endblock %}
