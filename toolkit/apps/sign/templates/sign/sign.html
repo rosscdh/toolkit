@@ -22,6 +22,12 @@
                 HelloSign.DEFAULT_WIDTH = $(window).width();// - ($(window).width()/98);
                 HelloSign.DEFAULT_HEIGHT = $(window).height();
 
+                var PARENT_EVENT_DATA = {
+                    'type': null,
+                    'item_slug': '{{ object.document.item.slug }}',
+                    'details': null
+                }
+
                 HelloSign.open({
                     url: '{{ sign_url }}',
                     allowCancel: false,
@@ -30,17 +36,35 @@
                     skipDomainVerification: true,
                     {% endif %}
                     messageListener: function(eventData) {          // (optional) Called whenever the iFrame is messaging your page
+                        // console.log(eventData);
+                        // console.log(parent);
+
                         if (eventData.event == HelloSign.EVENT_ERROR) {
                             var message_html = '<h3>Sorry, an error ocurred...<br/><small>We have recorded the event and or dev team will investigate.</small></h3>';
                             $('#user-message').html(message_html);
-                        }
+                        };
+
+                        if (eventData.event == HelloSign.EVENT_CANCELED) {
+                            // wont get called because the cancel button is on the GUI side of things
+                            var data = PARENT_EVENT_DATA;
+                            data.type = 'sign.cancelled';
+                            data.details = 'You closed the signing page';
+                            parent.$( 'body' ).trigger(data);
+                        };
 
                         if (eventData.event == HelloSign.EVENT_SIGNED) {
                             // close this window and move right on
                             var message_html = '<h3>Thanks for signing<br/><small>We wil notify all those involved.</small></h3>';
 
                             if (parent && parent.$('button#view-signing-close').length > 0 ) {
+
+                                var data = PARENT_EVENT_DATA;
+                                data.type = 'sign.signed';
+                                data.details = 'Congratulations, You have signed {{ object.document.name }}.';
+                                parent.$( 'body' ).trigger(data);
+
                                 parent.$('button#view-signing-close').trigger('click');
+
                             } else {
                                 // redirect to requests
                                 window.location = "{% url 'request:list' %}?signed-{{ object.pk }}=true";
