@@ -413,7 +413,7 @@ angular.module('toolkit-gui')
             $scope.loadItemDetails(item).then(function success(item){
                 deferred.resolve(item);
                 $scope.data.itemIsLoading = false;
-		    });
+		    });		    
 
 		    resetScopeState();
 
@@ -492,6 +492,7 @@ angular.module('toolkit-gui')
 
 		$scope.loadItemDetails = function(item){
 			var deferred = $q.defer();
+			var matterSlug = $scope.data.slug;
 
 			//if(typeof(item.latest_revision.reviewers) === "string") {
 			if(item.latest_revision && !item.latest_revision.reviewers) {
@@ -507,6 +508,14 @@ angular.module('toolkit-gui')
 			} else {
 				deferred.resolve(item);
 			}
+
+			// Update selected item with full details
+			// Because the object is passed referentially, the object can be updated asynchroniously
+			matterItemService.get( matterSlug, item.slug ).then(
+				function success( fullItem ) {
+					angular.extend( item, fullItem );
+				}
+			);
 
 			return deferred.promise;
 		};
