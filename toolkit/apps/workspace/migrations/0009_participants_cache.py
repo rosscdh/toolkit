@@ -11,10 +11,10 @@ from toolkit.apps.workspace.models import Workspace
 class Migration(DataMigration):
 
     def forwards(self, orm):
-        "Write your forwards methods here."
-        # Note: Don't use "from appname.models import ModelName". 
-        # Use orm.ModelName to refer to models in this application,
-        # and orm['appname.ModelName'] for models in other applications.
+        """
+        Find workspace objects and for each one loop over their
+        participants and serialize them
+        """
         for m in orm.Workspace.objects.filter(is_deleted=False):
 
             matter = Workspace.objects.get(pk=m.pk)
@@ -30,6 +30,9 @@ class Migration(DataMigration):
 
 
     def backwards(self, orm):
+        """
+        Unset the participants list key
+        """
         for m in orm.Workspace.objects.all():
             data = m.data
             try:
