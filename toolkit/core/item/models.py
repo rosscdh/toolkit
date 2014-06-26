@@ -8,7 +8,7 @@ from .signals import (on_item_save_category,
                       on_item_save_closing_group,
                       on_item_save_manual_latest_item_delete,
                       on_item_post_save)
-from toolkit.apps.workspace.models import ROLES
+from toolkit.core.attachment.models import Revision
 
 from toolkit.core.mixins import IsDeletedMixin, ApiSerializerMixin
 
@@ -119,10 +119,7 @@ class Item(IsDeletedMixin,
         return revision.get_user_sign_url(user=user)
 
     def latest_revision_by_user(self, user, matter):
-        if user.matter_permissions(matter=matter).role != ROLES.client:
-            return self.latest_revision
-        # TODO: check query reviewdocuments or use .visible() manager
-        return self.revision_set.filter(reviewers__in=[user]).last()
+        return Revision.objects.visible(user, matter).filter(item=self).last()
 
     @property
     def client(self):

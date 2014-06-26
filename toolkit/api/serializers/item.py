@@ -84,10 +84,6 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
         request = self.context.get('request')
         matter = self.context.get('matter')
 
-
-        # TODO: check
-
-
         latest_revision = obj.latest_revision_by_user(request.user, matter) if request and matter else None
         return SimpleRevisionSerializer(latest_revision, read_only=True).data if latest_revision else None
 
