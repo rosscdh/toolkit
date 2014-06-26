@@ -19,10 +19,8 @@ class MatterParticipantPermissionMixin(object):
     # of a custom through model for participants instead of the generic relation
     # necessary for permissions
     #
-    def add_participant(self, user, **kwargs):
+    def add_participant(self, user, role=None, **kwargs):
         update_fields = []
-
-        role = kwargs.pop('role', None)  # default to thirdparty
 
         if role is not None:
             # if an invalid role is passed in then except
