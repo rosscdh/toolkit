@@ -35,6 +35,7 @@
 <link href="{{ STATIC_URL }}css/introjs.min.css" type="text/css" rel="stylesheet" />
 <link href="{{ STATIC_URL }}less/introjs-custom.less" type="text/css" rel="stylesheet" />
 <!-- start intro //-->
+{% if firstseen %}
 <script language="javaScript">
     var intro = introJs();
     /*
@@ -96,6 +97,7 @@
         intro.start();
     });
 </script>
+{% endif %}
 
 <script>
 'use strict';
