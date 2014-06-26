@@ -646,8 +646,11 @@ def prompt_build_gui():
 def gui_clean():
     local('rm -Rf gui/bower_components')
     local('rm -Rf gui/node_modules')
+    local('rm -Rf gui/temp')
+    local('rm -Rf gui/dist')
     local('cd gui;npm install')
     local('cd gui;bower install')
+    build_gui_dist()
 
 
 @task
