@@ -204,7 +204,7 @@ angular.module('toolkit-gui')
 						}
 					);
 				} else {
-					toaster.pop('warning', 'Item does not exist anymore.',5000);
+					toaster.pop('warning', 'Item not found' , 'Item does not exist anymore.',5000);
 				}
 			}
 
@@ -225,47 +225,84 @@ angular.module('toolkit-gui')
             PusherService.subscribeMatterEvents($scope.data.slug, function (data) {
                 $log.debug(data);
 
-                if (data.is_global === true || data.from_id !== $scope.data.usdata.current.username) {
-                    if (data.model === 'item') {
+                //wait until we can be sure, that the changed data is stored in the DB
+                $timeout(function () {
+                    if (data.is_global === true || data.from_id !== $scope.data.usdata.current.username) {
+                        if (data.model === 'item') {
 
-                        if(data.event === 'update'){
-                            $log.debug("loading item");
-                            matterItemService.load($scope.data.slug, data.id).then(
-                                function success(item){
-                                    var category = findCategory( item.category );
-                                    var i = -1;
-                                    jQuery.each(category.items, function(index, olditem){
-                                       if (olditem.slug === item.slug){
-                                           i = index;
-                                       }
-                                    });
-                                    if(i>-1){
-                                        category.items[i] = item;
+                            //Event: Item updated
+                            if (data.event === 'update') {
+                                $log.debug("loading updated item");
+                                matterItemService.load($scope.data.slug, data.id).then(
+                                    function success(item) {
+                                        replaceItem(item);
+
+                                        if (item.slug !== $scope.data.selectedItem.slug) {
+                                            toaster.pop('warning', 'Item ' + item.name + ' has been updated.', 'Click here to select the item.', 7000, null, function () {
+                                                $scope.selectItem(item, category);
+                                            });
+                                        }
                                     }
+                                );
+                            //Event: item deleted
+                            } else if (data.event === 'delete') {
+                                var index = -1;
+                                var category;
+                                var foundItem;
 
-                                    if (item.slug !== $scope.data.selectedItem.slug) {
-                                        toaster.pop('warning', 'Item '+ item.name + ' has been updated.', 'Click here to load the item.', 5000, null, function () {
-                                            $scope.selectItem(item, category);
-                                        });
+                                //find and delete the item
+                                jQuery.each($scope.data.matter.categories, function (index, cat) {
+                                    jQuery.each(cat.items, function (i, item) {
+                                        if (item.slug === data.id) {
+                                            index = i;
+                                            category = cat;
+                                            foundItem = item;
+                                        }
+                                    });
+                                });
+
+                                if (item && category) {
+                                    //remove item from category
+                                    category.items.splice(index,1);
+
+                                    //remove item from items list
+                                    index = jQuery.inArray( foundItem, $scope.data.matter.items );
+                                    if( index>=0 ) {
+                                        $scope.data.matter.items.splice(index,1);
                                     }
                                 }
-                            );
-                        } else if(data.event === 'delete'){
-                            toaster.pop('warning', 'An item has been deleted.', 'Click here to refresh the matter.', 5000, null, function () {
-                                window.location.reload();
-                            });
-                        } else if(data.event === 'create') {
-                             toaster.pop('warning', 'A new item has been created.', 'Click here to refresh the matter.', 5000, null, function () {
+
+                                if (data.id !== $scope.data.selectedItem.slug) {
+                                    toaster.pop('warning', 'Item deleted', 'Item ' + foundItem.name + ' has been deleted.', 5000, null);
+                                } else {
+                                    $scope.data.selectedItem = null;
+								    $scope.initializeActivityStream();
+                                }
+
+                            //Event: Item created
+                            } else if (data.event === 'create') {
+                                $log.debug("loading created item");
+                                matterItemService.load($scope.data.slug, data.id).then(
+                                    function success(newItem) {
+                                        var category = findCategory(newItem.category);
+
+                                        //insert item at the end
+                                        category.items.push(newItem)
+
+                                         toaster.pop('warning', 'Item ' + newItem.name + ' has been created.', 'Click here to select the item.', 7000, null, function () {
+                                            $scope.selectItem(newItem, category);
+                                        });
+                                    }
+                                );
+                            }
+
+                        } else if (data.model === 'matter') {
+                            toaster.pop('warning', 'Matter has been updated.', 'Click here to refresh the matter.', 5000, null, function () {
                                 window.location.reload();
                             });
                         }
-
-                    } else if (data.model === 'matter') {
-                        toaster.pop('warning', 'Matter has been updated.', 'Click here to refresh the matter.', 5000, null, function () {
-                            window.location.reload();
-                        });
                     }
-                }
+                }, 2000);
             });
         };
 
@@ -545,6 +582,21 @@ angular.module('toolkit-gui')
 				return null;
 			}
 		}
+
+        function replaceItem(newItem){
+            var category = findCategory(newItem.category);
+            var i = -1;
+            //find and replace the olditem
+            jQuery.each(category.items, function (index, olditem) {
+                if (olditem.slug === newItem.slug) {
+                    i = index;
+                }
+            });
+
+            if (i > -1) {
+                category.items[i] = newItem;
+            }
+        }
 
 		$scope.loadItemDetails = function(item){
 			var deferred = $q.defer();
