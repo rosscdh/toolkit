@@ -128,7 +128,8 @@ class StartView(LogOutMixin, SaveNextUrlInSessionMixin, AuthenticateUserMixin, F
             self.login(user=self.authenticated_user)
 
             analytics = AtticusFinch()
-            analytics.event('user.login', user=self.authenticated_user, ip_address=self.request.META.get('HTTP_X_FORWARDED_FOR', self.request.META.get('REMOTE_ADDR')))
+            analytics.event('user.login', user=self.authenticated_user,
+                            ip_address=self.request.META.get('HTTP_X_FORWARDED_FOR', self.request.META.get('REMOTE_ADDR')))
 
         return super(StartView, self).form_valid(form)
 
@@ -169,7 +170,8 @@ class VerifyTwoFactorView(AuthenticateUserMixin, FormView):
             return self.form_invalid(form=form)
 
         analytics = AtticusFinch()
-        analytics.event('user.login', user=self.authenticated_user, ip_address=self.request.META.get('HTTP_X_FORWARDED_FOR', self.request.META.get('REMOTE_ADDR')))
+        analytics.event('user.login', user=self.authenticated_user,
+                        ip_address=self.request.META.get('HTTP_X_FORWARDED_FOR', self.request.META.get('REMOTE_ADDR')))
 
         return super(VerifyTwoFactorView, self).form_valid(form)
 

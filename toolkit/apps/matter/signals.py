@@ -2,7 +2,6 @@
 import logging
 from django.contrib.auth.models import User
 from django.dispatch import Signal, receiver
-from django.test.client import RequestFactory
 from django.db.models.signals import (m2m_changed,
                                       post_save,
                                       post_delete)

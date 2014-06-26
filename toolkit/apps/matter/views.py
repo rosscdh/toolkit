@@ -21,8 +21,6 @@ from rest_framework.renderers import UnicodeJSONRenderer
 from . import MATTER_EXPORT_DAYS_VALID
 from .forms import MatterForm
 
-from StringIO import StringIO
-
 import datetime
 import dateutil
 import logging

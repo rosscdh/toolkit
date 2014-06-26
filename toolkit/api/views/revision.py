@@ -1,15 +1,14 @@
 # -*- coding: UTF-8 -*-
 from django.http import Http404
-from django.core.cache import cache
-from django.utils.timezone import utc
 from django.shortcuts import get_object_or_404
 
 from rulez import registry as rulez_registry
 
 from rest_framework import viewsets
 from rest_framework import generics
-from rest_framework import status
+from rest_framework import status as http_status
 from rest_framework.response import Response
+from toolkit.apps.me.views import User
 
 from toolkit.core.attachment.models import Revision
 
@@ -21,8 +20,6 @@ from ..serializers import UserSerializer
 
 
 import logging
-import datetime
-
 logger = logging.getLogger('django.request')
 
 
@@ -33,6 +30,7 @@ class RevisionEndpoint(viewsets.ModelViewSet):
     serializer_class = RevisionSerializer
 
     def get_queryset(self):
+        return super(RevisionEndpoint, self).visible(self.request.user, self.matter)
         """
         @TODO limit to current users items
         # items = Item.objects.filter(participants=self.request.user)
@@ -70,7 +68,8 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
         but return the Revision object as self.object
         """
         if self.request.method in ['POST']:
-            self.revision = Revision(uploaded_by=self.request.user, item=self.item) if self.request.user.is_authenticated() else None
+            self.revision = Revision(uploaded_by=self.request.user, item=self.item) \
+                if self.request.user.is_authenticated() else None
 
         else:
             # get,patch
@@ -198,8 +197,6 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
                                                  item=self.item,
                                                  revision=self.revision)
 
-
-
             # see if there is a previous request for this revision
             # TODO: check if this works! absolutely not sure!
             if self.item.requested_by is not None:
@@ -207,10 +204,10 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
                                                            item=self.item,
                                                            revision=self.revision)
 
-            return Response(serializer.data, status=status.HTTP_201_CREATED,
+            return Response(serializer.data, status=http_status.HTTP_201_CREATED,
                             headers=headers)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=http_status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, **kwargs):
         resp = super(ItemCurrentRevisionView, self).destroy(request=request, **kwargs)
@@ -239,16 +236,13 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
 
     def can_read(self, user):
         """
-        the lawyer the customer as well as the latest_revision reviewers can read
         """
-        return user in self.matter.participants.all() or user in self.item.latest_revision.reviewers.all()
-        # return (user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all() \
-        #     or user in self.item.latest_revision.reviewers.all())
+        return self.get_object() in Revision.objects.visible(user, self.matter).all()
 
     def can_edit(self, user):
-        return (user in self.matter.participants.all() \
-               or (self.item.latest_revision is not None and user in self.item.latest_revision.reviewers.all())
-               or user == self.item.responsible_party)
+        return (user in self.matter.participants.all()
+                or (self.item.latest_revision is not None and user in self.item.latest_revision.reviewers.all())
+                or user == self.item.responsible_party)
         # return (user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all() \
         #     or (self.item.latest_revision is not None and user in self.item.latest_revision.reviewers.all())
         #     or user == self.item.responsible_party)
@@ -270,7 +264,7 @@ class ItemSpecificReversionView(ItemCurrentRevisionView):
         revision = None
 
         try:
-            revision = self.item.revision_set.filter(slug='v%d'%version).first()
+            revision = self.item.revision_set.filter(slug='v%d' % version).first()
         except:
             logger.info('Could not find attachment.Revision v%d for matter: %s' % (version, self.matter))
 

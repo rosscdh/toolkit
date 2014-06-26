@@ -1,7 +1,5 @@
 # -*- coding: UTF-8 -*-
-# from django.core.cache import cache
 from django.core.exceptions import ValidationError
-
 from rest_framework.reverse import reverse
 
 from rest_framework import serializers
@@ -212,6 +210,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
     user_download_url = serializers.SerializerMethodField('get_user_download_url')
 
     revisions = serializers.SerializerMethodField('get_revisions')
+    is_current = serializers.SerializerMethodField('is_current')
 
     uploaded_by = serializers.SerializerMethodField('get_uploaded_by')
 
@@ -228,6 +227,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
                   'item',
                   'uploaded_by',
                   'reviewers', 'signers',
+                  'is_current',
                   'signing',
                   'revisions',
                   'user_review', 'user_download_url',
@@ -247,7 +247,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
             request = kwargs['context'].get('request')
             if request:
                 #
-                # set the executed_file field to be a seriallizer.FileField and behave like one of those
+                # set the executed_file field to be a serializer.FileField and behave like one of those
                 #
                 if request.method in ['PATCH', 'POST']:
 
@@ -260,7 +260,8 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
 
         super(RevisionSerializer, self).__init__(*args, **kwargs)
 
-    def validate_executed_file(self, attrs, source):
+    @staticmethod
+    def validate_executed_file(attrs, source):
         """
         Ensure is valid length filename 100 is the max length
         """
@@ -271,7 +272,8 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
 
         return attrs
 
-    def get_custom_api_url(self, obj):
+    @staticmethod
+    def get_custom_api_url(obj):
         return ABSOLUTE_BASE_URL(reverse('matter_item_specific_revision',
                                          kwargs={'matter_slug': obj.item.matter.slug,
                                                  'item_slug': obj.item.slug,
@@ -290,7 +292,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_user_review(self, obj):
         """
-        Try to provide an initial reivew url from the base review_document obj
+        Try to provide an initial review url from the base review_document obj
         for the currently logged in user
         """
         context = getattr(self, 'context', None)
@@ -299,13 +301,10 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
         review_document = _get_user_review(self=self, obj=obj, context=context)
 
         if review_document is not None:
-
-            return_object = {
+            return {
                 'url': review_document.get_absolute_url(user=request.user),
-                'slug': review_document.slug,
+                'slug': review_document.slug
             }
-
-            return return_object
 
     def get_user_download_url(self, obj):
         """
@@ -327,26 +326,37 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
         context = getattr(self, 'context', None)
 
         sign_document = _get_user_sign(self=self, obj=obj, context=context)
-
         if sign_document is not None and sign_document.signing_request is not None:
             data = SignatureSerializer(sign_document, context=context).data
-
         return data
 
+    def is_current(self, obj):
 
-    def get_revisions(self, obj):
+
+        # TODO: check
+
+
+        if self.item.latest_revision == self:
+            return True
+        return False
+
+    @staticmethod
+    def get_revisions(obj):
+        # TODO: add context and filter by client
+
         return [ABSOLUTE_BASE_URL(reverse('matter_item_specific_revision', kwargs={
-                    'matter_slug': obj.item.matter.slug,
-                    'item_slug': obj.item.slug,
-                    'version': c + 1
-                })) for c, revision in enumerate(obj.revisions) if revision.pk != obj.pk]
+            'matter_slug': obj.item.matter.slug,
+            'item_slug': obj.item.slug,
+            'version': c + 1
+        })) for c, revision in enumerate(obj.revisions) if revision.pk != obj.pk]
 
 
 class SimpleRevisionSerializer(RevisionSerializer):
     class Meta(RevisionSerializer.Meta):
         fields = ('slug',
-                  'url', 'regular_url',
+                  'url',
+                  'regular_url',
                   'name',
                   'status',
-                  'date_created',)
-
+                  'date_created',
+                  'is_current')
