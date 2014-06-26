@@ -1,5 +1,7 @@
 # -*- coding: UTF-8 -*-
+# from django.core.cache import cache
 from django.core.exceptions import ValidationError
+
 from rest_framework.reverse import reverse
 
 from rest_framework import serializers
@@ -297,10 +299,13 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
         review_document = _get_user_review(self=self, obj=obj, context=context)
 
         if review_document is not None:
-            return {
+
+            return_object = {
                 'url': review_document.get_absolute_url(user=request.user),
-                'slug': review_document.slug
+                'slug': review_document.slug,
             }
+
+            return return_object
 
     def get_user_download_url(self, obj):
         """
@@ -322,8 +327,10 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
         context = getattr(self, 'context', None)
 
         sign_document = _get_user_sign(self=self, obj=obj, context=context)
+
         if sign_document is not None and sign_document.signing_request is not None:
             data = SignatureSerializer(sign_document, context=context).data
+
         return data
 
 

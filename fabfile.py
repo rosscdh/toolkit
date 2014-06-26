@@ -555,8 +555,6 @@ def fixtures():
 
 @task
 def assets():
-    # upload the gui
-    upload_gui()
     # collect static components
     virtualenv('python %s%s/manage.py collectstatic --noinput' % (env.remote_project_path, env.project,))
 
@@ -646,8 +644,11 @@ def prompt_build_gui():
 def gui_clean():
     local('rm -Rf gui/bower_components')
     local('rm -Rf gui/node_modules')
+    local('rm -Rf gui/temp')
+    local('rm -Rf gui/dist')
     local('cd gui;npm install')
     local('cd gui;bower install')
+    build_gui_dist()
 
 
 @task
@@ -750,7 +751,7 @@ def deploy(is_predeploy='False',full='False',db='False',search='False'):
     db = db.lower() in env.truthy
     search = search.lower() in env.truthy
 
-    prompt_build_gui()
+    prompt_build_gui() # rebuilds the gui
     run_tests()
     diff()
     git_set_tag()
@@ -759,6 +760,9 @@ def deploy(is_predeploy='False',full='False',db='False',search='False'):
     prepare_deploy()
     do_deploy()
     update_env_conf()
+
+    # upload the gui
+    upload_gui()
 
     if full:
         requirements()

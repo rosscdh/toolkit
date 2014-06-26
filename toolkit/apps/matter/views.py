@@ -110,9 +110,9 @@ class MatterListView(ListView):
         object_list = self.get_serializer(self.object_list, many=True).data
 
         context.update({
-            'can_create': self.request.user.profile.is_lawyer,
-            'can_delete': self.request.user.profile.is_lawyer,
-            'can_edit': self.request.user.profile.is_lawyer,
+            'can_create': True,
+            'can_delete': True,
+            'can_edit': True,
             #'object_list': self.object_list,
             'object_list_json': UnicodeJSONRenderer().render(object_list),
         })

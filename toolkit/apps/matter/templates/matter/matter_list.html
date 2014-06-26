@@ -15,9 +15,7 @@
                 <header class="page-header">
                     <h4>All Matters</h4>
                     <div class="pull-right">
-                        {% if can_create %}
-                            <a href="{% url 'matter:create' %}" data-toggle="modal" data-target="#matter-create" class="btn btn-success btn-embossed"><i class="fui-plus"></i> New Matter</a>
-                        {% endif %}
+                        <a href="{% url 'matter:create' %}" data-toggle="modal" data-target="#matter-create" class="btn btn-success btn-embossed"><i class="fui-plus"></i> New Matter</a>
                     </div>
                 </header>
 
@@ -28,16 +26,10 @@
 {% endblock %}
 
 {% block modals %}
-    {% if can_create %}
         <div class="modal" id="matter-create"></div>
-    {% endif %}
     {% for m in object_list %}
-        {% if can_edit %}
-            <div class="modal" id="matter-edit-{{ m.slug }}"></div>
-        {% endif %}
-        {% if can_delete %}
-            <div class="modal" id="matter-delete-{{ m.slug }}"></div>
-        {% endif %}
+        <div class="modal" id="matter-edit-{{ m.slug }}"></div>
+        <div class="modal" id="matter-delete-{{ m.slug }}"></div>
     {% endfor %}
 {% endblock %}
 
