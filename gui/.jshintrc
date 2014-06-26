@@ -28,9 +28,9 @@
         "filepicker": true,
         "TimeSpan": true,
         "Raven": true,
-        "jasmine": true,
         "Pusher": true,
-        "spyOn": true
+        "notify": true,
+        "jasmine": true
     },
     "-W083": false,
     "-W099": false

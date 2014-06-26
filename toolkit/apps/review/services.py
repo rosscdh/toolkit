@@ -26,8 +26,9 @@ class CrocodocLoaderService(object):
         upload_immediately = False
         if self.crocodoc_uuid_recorded is False:  # if we have no uuid then try to get it
             upload_immediately = True
-            # need to ensure that we have the file locally
-            self.reviewdocument.ensure_file() ## ensure we have a local copy of the file
+
+        # need to ensure that we have the file locally
+        self.reviewdocument.ensure_file() ## ensure we have a local copy of the file
 
         self.service = CrocoDocConnectService(document_object=self.reviewdocument.document,
                                               app_label='attachment',

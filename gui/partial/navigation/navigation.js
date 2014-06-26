@@ -67,7 +67,7 @@ angular.module('toolkit-gui')
 		 * @param  {String}  path Path passed in by the navigation item
 		 * @return {Boolean}      True if the current location contains the path of the navigation item
 		 * @name				isActive
-		 * 
+		 *
 		 * @private
 		 * @method				isActive
 		 * @memberof			NavigationCtrl
@@ -79,7 +79,7 @@ angular.module('toolkit-gui')
 		/**
 		 * Show invite matter participant modal
 		 * @name				invite
-		 * 
+		 *
 		 * @private
 		 * @method				invite
 		 * @memberof			NavigationCtrl
@@ -104,7 +104,7 @@ angular.module('toolkit-gui')
 
 			modalInstance.result.then(
 				function ok(/*selectedItem*/) {
-					
+
 				},
 				function cancel() {
 					//
@@ -113,12 +113,12 @@ angular.module('toolkit-gui')
 		};
 
 		/*
-		 _____ _ _ _                
-		|  ___(_) | |_ ___ _ __ ___ 
+		 _____ _ _ _
+		|  ___(_) | |_ ___ _ __ ___
 		| |_  | | | __/ _ \ '__/ __|
 		|  _| | | | ||  __/ |  \__ \
 		|_|   |_|_|\__\___|_|  |___/
-									
+
 		 */
 		/**
 		 * applyStatusFilter  filters for checklist based on status 0-4
@@ -172,13 +172,13 @@ angular.module('toolkit-gui')
 		/**
 		 * Update in scope variable that tracks the current matter ID
 		 * @name				updateNavigationID
-		 * 
+		 *
 		 * @private
 		 * @method				updateNavigationID
 		 * @memberof			NavigationCtrl
 		 */
 		$scope.$on('$routeChangeSuccess', function updateNavigationID() {
-			var routeParams = smartRoutes.params(); 
+			var routeParams = smartRoutes.params();
 			$scope.data.id = routeParams.id;
 		});
 
@@ -192,12 +192,23 @@ angular.module('toolkit-gui')
 		 * @memberof			NavigationCtrl
 		 */
 		$scope.$on('notification', function recievePusherNotification( evt, message ){
+			var msgText = (message&&message.detail)?message.detail:'Lawpal has a notification for you';
 			// Remove notification styles
 			$scope.matter.selected.current_user.has_notifications = false;
 			// Re-apply style in a few moments so that the css animation runs again
 			$timeout(function(){
 				$scope.matter.selected.current_user.has_notifications = true;
 			},100);
+
+			$scope.notificationPermissionLevel = notify.permissionLevel();
+
+			if( notify ) {
+				notify.createNotification("Notification", { 'body':msgText, 'icon': '/static/images/lp-notification.png' });
+			}
 		});
+
+		if( notify ) {
+			$scope.notificationPermissionLevel = notify.permissionLevel();
+		}
 	}
 ]);
