@@ -331,14 +331,7 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
         return data
 
     def is_current(self, obj):
-
-
-        # TODO: check
-
-
-        if self.item.latest_revision == self:
-            return True
-        return False
+        return self.item.latest_revision == obj
 
     @staticmethod
     def get_revisions(obj):
