@@ -301,6 +301,16 @@ angular.module('toolkit-gui')
                 !($scope.data.invitee.email&&$scope.data.invitee.first_name&&$scope.data.invitee.last_name);
 		};
 
+		/**
+		 * Show add participant form, the participant form can either be a participant or collegue
+		 * @param  {String} formName Name of the type of participant being added i.e. 'lawyer', 'client'
+		 *
+		 * @name				showInviteForm
+		 *
+		 * @private
+		 * @method				showInviteForm
+		 * @memberof			ParticipantInviteCtrl
+		 */
 		$scope.showInviteForm = function( formName ) {
 			switch(formName) {
 				case 'lawyer':
@@ -317,7 +327,18 @@ angular.module('toolkit-gui')
 			}
 		};
 
-		$scope.$watch('data.selectedUser.permissions', function( newVal, oldVal ) {
+		/**
+		 * Watches for changes to permissions, if the change is not a user switch and is actually a change to permissions then set changed flag to true
+		 * @param  {Object} newVal Current permissions object
+		 * @param  {Object} oldVal Previous version
+		 *
+		 * @name				watchForPermissionName
+		 *
+		 * @private
+		 * @method				watchForPermissionName
+		 * @memberof			ParticipantInviteCtrl
+		 */
+		$scope.$watch('data.selectedUser.permissions', function watchForPermissionName( newVal, oldVal ) {
 			if( !$scope.permissionTracking.ignoreNextChange && !angular.equals(newVal,oldVal) ) {
 				$scope.permissionTracking.changed=true;
 			}
