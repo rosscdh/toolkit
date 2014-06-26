@@ -13,6 +13,7 @@ class RevisionManager(IsDeletedManager):
         return self.filter(is_current=True)
 
     def visible(self, user, matter):
+        # perhaps the self.item.responsible_party needs to be used?
         qs = self.get_query_set()
         if user.matter_permissions(matter).role == ROLES.client \
                 or user.matter_permissions(matter).has_permission(manage_items=False):

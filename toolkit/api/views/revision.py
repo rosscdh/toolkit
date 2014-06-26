@@ -31,12 +31,12 @@ class RevisionEndpoint(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return super(RevisionEndpoint, self).visible(self.request.user, self.matter)
-        """
-        @TODO limit to current users items
-        # items = Item.objects.filter(participants=self.request.user)
-        # return Revision.objects.filter(item__in=items)
-        """
-        return super(RevisionEndpoint, self).get_queryset()
+        # """
+        # @TODO limit to current users items
+        # # items = Item.objects.filter(participants=self.request.user)
+        # # return Revision.objects.filter(item__in=items)
+        # """
+        # return super(RevisionEndpoint, self).get_queryset()
 
 
 class ItemCurrentRevisionView(generics.CreateAPIView,
@@ -236,11 +236,18 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
 
     def can_read(self, user):
         """
+        logic about WHO may read this revision is in RevisionManager
         """
         return self.get_object() in Revision.objects.visible(user, self.matter).all()
 
     def can_edit(self, user):
+
+        #
+        # Why is a latest revisions' reviewer allowed to edit?
+        #
+
         return (user in self.matter.participants.all()
+                or user.matter_permissions(matter=self.matter).has_permission(manage_items=True) is True
                 or (self.item.latest_revision is not None and user in self.item.latest_revision.reviewers.all())
                 or user == self.item.responsible_party)
         # return (user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all() \
@@ -250,7 +257,6 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
     def can_delete(self, user):
         return user in self.matter.participants.all() and \
                user.matter_permissions(matter=self.matter).has_permission(manage_items=True) is True
-        # return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
 
 
 rulez_registry.register("can_read", ItemCurrentRevisionView)
