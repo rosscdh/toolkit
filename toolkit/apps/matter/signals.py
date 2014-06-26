@@ -25,6 +25,21 @@ USER_STOPPED_PARTICIPATING = Signal(providing_args=['matter', 'participant'])
 USER_DOWNLOADED_EXPORTED_MATTER = Signal(providing_args=['matter', 'user'])
 
 
+def _update_matter_participants(matter):
+    """
+    Participants optimisations; so we dont have millions of queries on matter_list
+    and else where
+    """
+    participants_data = {'participants': []} # @BUSINESSRULE reset the participants list
+
+    for u in matter.participants.all():
+        participants_data.get('participants').append(LiteUserSerializer(u, context={'matter': matter}).data)
+
+    matter.data.update(participants_data)
+
+    matter.save(update_fields=['data'])
+
+
 @receiver(PARTICIPANT_ADDED)
 def participant_added(sender, matter, participant, user, note, **kwargs):
     next_url = matter.get_absolute_url()
@@ -71,20 +86,6 @@ def user_downloaded_exported_matter(sender, matter, user, **kwargs):
     matter.actions.user_downloaded_exported_matter(user=user)
 
 
-def _update_matter_participants(matter):
-    """
-    Participants optimisations; so we dont have millions of queries on matter_list
-    and else where
-    """
-    participants_data = {'participants': []}
-    for u in matter.participants.all():
-        participants_data.get('participants').append(LiteUserSerializer(u, context={'matter': matter}).data)
-
-    matter.data.update(participants_data)
-    matter.save(update_fields=['data'])
-
-
-
 @receiver(post_save, sender=WorkspaceParticipants, dispatch_uid='review.post_save.update_matter_participants_cache')
 def post_save_update_matter_participants_cache(sender, instance, **kwargs):
     _update_matter_participants(matter=instance.workspace)
@@ -119,8 +120,6 @@ def on_participant_added(sender, instance, action, model, pk_set, **kwargs):
                     # @TODO this is REALLY HEAVY
                     #
                     reviewdocument.save()
-
-
 
 
 @receiver(crocodoc_signals.crocodoc_comment_create)
