@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.utils import timezone
 from django.template.defaultfilters import slugify
 
 from toolkit.tasks import run_task
@@ -139,7 +140,15 @@ class MatterActivityEventService(object):
         @NB we use the .update() on a queryset here as this does not then fire
         the pre_save and post_save signals thus is more efficient
         """
-        self.matter.__class__.objects.filter(pk=self.matter.pk).update(date_modified=datetime.datetime.utcnow())
+        ## make utcnow timezone aware so we can compare dates
+        date_time = datetime.datetime.utcnow().replace(tzinfo=timezone.utc)
+        time_ago_rage = date_time - datetime.timedelta(minutes=-5)
+
+        date_last_modified = self.matter.date_modified.replace(tzinfo=timezone.utc)
+
+        # if the matter date_modified is older than 5 minutes ago perform this update
+        if date_last_modified < time_ago_rage:
+            self.matter.__class__.objects.filter(pk=self.matter.pk).update(date_modified=date_time)
 
 
     def realtime_event(self, event, obj, ident, from_user=None, **kwargs):
@@ -188,7 +197,7 @@ class MatterActivityEventService(object):
     def added_matter_participant(self, adding_user, added_user, **kwargs):
         # is called from toolkit/apps/matter/signals.py#PARTICIPANT_ADDED
         if adding_user.pk != added_user.pk:
-            override_message = u'%s added a new member to %s' % (adding_user, self.matter)
+            override_message = u'%s added %s as a new member to %s' % (adding_user, added_user, self.matter)
             self._create_activity(actor=adding_user, verb=u'added participant', action_object=self.matter,
                                   override_message=override_message, user=added_user)
             self.analytics.event('matter.participant.added', user=adding_user, **{

@@ -1,5 +1,7 @@
 # -*- coding: UTF-8 -*-
 from django.http import Http404
+from django.core.cache import cache
+from django.utils.timezone import utc
 from django.shortcuts import get_object_or_404
 
 from rulez import registry as rulez_registry
@@ -11,9 +13,6 @@ from rest_framework.response import Response
 
 from toolkit.core.attachment.models import Revision
 
-from toolkit.tasks import run_task
-from toolkit.apps.review.tasks import crocodoc_upload_task
-
 from .mixins import (MatterItemsQuerySetMixin,)
 
 from ..serializers import RevisionSerializer
@@ -22,6 +21,8 @@ from ..serializers import UserSerializer
 
 
 import logging
+import datetime
+
 logger = logging.getLogger('django.request')
 
 
@@ -69,11 +70,9 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
         but return the Revision object as self.object
         """
         if self.request.method in ['POST']:
-
             self.revision = Revision(uploaded_by=self.request.user, item=self.item) if self.request.user.is_authenticated() else None
 
         else:
-
             # get,patch
             self.revision = self.get_latest_revision()
 
@@ -106,24 +105,52 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
                                                                    many=many,
                                                                    partial=partial)
 
-
-    def update(self, request, *args, **kwargs):
+    def handle_revision_status(self, status=None):
         #
         # Status change
         #
-        new_status = request.DATA.get('status', None)
-        if new_status is not None:
+        if status is not None:
             #
             # if we have a current revision then test to see if the status is
             # being changes from its previous revision
             # TODO move into model?
             #
-            if self.revision and int(new_status) != self.revision.status:
+            if self.revision and int(status) != self.revision.status:
                 previous_instance = self.revision.previous()
                 if previous_instance is not None:
                     self.matter.actions.revision_changed_status(user=self.request.user,
                                                                 revision=self.revision,
                                                                 previous_status=previous_instance.status)
+
+    #
+    # Removed as this appears to be a mis-code
+    #
+    # def handle_sign_in_progress(self, sign_in_progress=None):
+    #     """
+    #     To get around HS crap implementation, we have to store a in_progress flag
+    #     which is used to show appropriate messaging to the users
+    #     """
+    #     # cache_key used to store the unique calue for this revision
+    #     cache_key = self.revision.SIGN_IN_PROGRESS_KEY
+
+    #     if not cache.get( cache_key ):
+    #         minutes = 5
+    #         cache_seconds = (minutes * 60) # turn minutes into seconds
+
+    #         expiry_date_time = datetime.datetime.utcnow().replace(tzinfo=utc) + datetime.timedelta(minutes=5)
+
+    #         cache.set( cache_key, expiry_date_time, cache_seconds )  # set the cache for this object
+
+    def update(self, request, *args, **kwargs):
+        #
+        # Status change
+        #
+        self.handle_revision_status(status=request.DATA.get('status', None))
+        # #
+        # # sign_in_progress events
+        # # @NOTE that we POP the sign_in_progress value as its not a valid field
+        # #
+        # self.handle_sign_in_progress(sign_in_progress=request.DATA.pop('sign_in_progress', None))
 
         return super(ItemCurrentRevisionView, self).update(request=request, *args, **kwargs)
 
@@ -214,16 +241,22 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
         """
         the lawyer the customer as well as the latest_revision reviewers can read
         """
-        return (user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all() \
-            or user in self.item.latest_revision.reviewers.all())
+        return user in self.matter.participants.all() or user in self.item.latest_revision.reviewers.all()
+        # return (user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all() \
+        #     or user in self.item.latest_revision.reviewers.all())
 
     def can_edit(self, user):
-        return (user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all() \
-            or (self.item.latest_revision is not None and user in self.item.latest_revision.reviewers.all())
-            or user == self.item.responsible_party)
+        return (user in self.matter.participants.all() \
+               or (self.item.latest_revision is not None and user in self.item.latest_revision.reviewers.all())
+               or user == self.item.responsible_party)
+        # return (user.profile.user_class in ['lawyer', 'customer'] and user in self.matter.participants.all() \
+        #     or (self.item.latest_revision is not None and user in self.item.latest_revision.reviewers.all())
+        #     or user == self.item.responsible_party)
 
     def can_delete(self, user):
-        return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
+        return user in self.matter.participants.all() and \
+               user.matter_permissions(matter=self.matter).has_permission(manage_items=True) is True
+        # return user.profile.is_lawyer and user in self.matter.participants.all()  # allow any lawyer who is a participant
 
 
 rulez_registry.register("can_read", ItemCurrentRevisionView)

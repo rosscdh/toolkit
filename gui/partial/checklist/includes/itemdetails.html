@@ -1,5 +1,5 @@
  <div ng-show="data.selectedItem" ng-file-drop="onFileDropped($files, data.selectedItem);">
-    <h3 ng-show="data.usdata.current.user_class=='lawyer'">
+    <h3 ng-show="data.usdata.current.permissions.manage_items">
         <a href="javascript:;" ng-click="data.editItemTitle=data.selectedItem.name;data.showEditItemTitleForm=!data.showEditItemTitleForm;focus('eventEditItemTitle')"
                 ng-hide="data.showEditItemTitleForm">
             <span ng-bind="data.selectedItem.name"></span>
@@ -31,11 +31,11 @@
                       mentions-box container-position="left" text="data.selectedItem.edit_item_description" focus-on="event_edit_item_description"></textarea>
             <a href="javascript:;" class="btn btn-primary btn-xs" ng-click="data.selectedItem.description=data.selectedItem.edit_item_description;saveSelectedItem();data.show_edit_item_description=false;">Save description</a>
             <a href="javascript:;" class="btn btn-inverse btn-xs item-description-cancel" ng-click="data.selectedItem.edit_item_description='';data.show_edit_item_description=false;">Cancel</a>
-            <a href="javascript:;" class="btn btn-link btn-xs pull-right" title="Markdown help" ng-click="showMarkDownInfo()">Formatting Help</a>
+            <a href="javascript:;" class="formatting pull-right" title="Markdown help" ng-click="showMarkDownInfo()">Formatting Help</a>
         </div>
     </h3>
 
-    <h3 ng-show="data.usdata.current.user_class!=='lawyer'">
+    <h3 ng-show="!data.usdata.current.permissions.manage_items">
         <span ng-bind="data.selectedItem.name"></span>
 
         <div class="item-description-toggle" ng-hide="data.showEditItemDescriptionForm">
@@ -47,21 +47,27 @@
 
     <!-- Begin option toolbar -->
     <div class="add-new clearfix">
-        <div class="btn-group" ng-show="data.usdata.current.user_class=='lawyer'">
-            <button class="btn btn-sm btn-info btn-embossed btn-add" filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)" extensions=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx"><span class="fui-upload"></span>
-                Add File
-            </button>
+        <div class="btn-group space-5" ng-show="data.usdata.current.permissions.manage_items">
+            <span class="btn btn-sm btn-info btn-file btn-embossed btn-add">
+                <span class="fui-upload"></span> Upload File
+                <input type="file" ng-file-select="onFileDropped($files, data.selectedItem);" clear-on-click multiple="multiple" />
+            </span>
             <button class="btn btn-info btn-sm btn-embossed dropdown-toggle" data-toggle="dropdown">
-            <span class="caret"></span>
+                <span class="caret"></span>
             </button>
             <span class="dropdown-arrow dropdown-arrow-inverse dropdown-small"></span>
             <ul class="dropdown-menu dropdown-inverse">
-                <li><a href="javascript:;" filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)" extensions=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx">Upload File</a></li>
-                <li><a href="javascript:;" data-toggle="modal" data-target="#requestFileModal" ng-click="requestRevision(data.selectedItem)">Request File</a></li>
+                <li>
+                    <span class="btn btn-sm btn-link btn-file btn-block">
+                        From desktop
+                        <input type="file" ng-file-select="onFileDropped($files, data.selectedItem);" clear-on-click multiple="multiple" />
+                    </span>
+                </li>
+                <li><a href="javascript:;" filepicker="filepicker" apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)" extensions=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx">From cloud service</a></li>
             </ul>
-        </div>
-
-        <div class="btn-group" ng-show="data.usdata.current.user_class=='lawyer'">
+        </div><button class="btn btn-sm btn-info btn-file btn-embossed btn-add space-5" data-toggle="modal" data-target="#requestFileModal" ng-click="requestRevision(data.selectedItem)">
+            Request File
+        </button><div class="btn-group" ng-show="data.usdata.current.permissions.manage_items">
             <a href="javascript:;" class="btn btn-sm btn-silver btn-embossed dropdown-toggle" data-toggle="dropdown">Options</a>
             <ul class="dropdown-menu dropdown-small dropdown-inverse" >
                 <li><a href="javascript:;" ng-click="toggleDueDateCalendar( data.selectedItem );saveSelectedItem();data.showItemDetailsOptions=!data.showItemDetailsOptions;">
@@ -80,24 +86,24 @@
             <span class="fui-calendar"></span>{{ data.selectedItem.date_due | date:'dd MMMM' }}
         </a>
         //-->
-        <span class="calendar-group" ng-show="(data.showDateDueInput||data.selectedItem.date_due)&&data.usdata.current.user_class==='lawyer'" ng-click="data.showDateDuePicker=true">
+        <span class="calendar-group" ng-show="(data.showDateDueInput||data.selectedItem.date_due)&&data.usdata.current.permissions.manage_items" ng-click="data.showDateDuePicker=true">
             <input type="text" id="dateduepicker-input" datepicker-popup="dd-MMMM" ng-model="data.dueDatePickerDate"
                    datepicker-options="dateOptions" is-open="data.showDateDuePicker" class="btn-embossed btn-sm btn-silver" />
             <label class="fui-calendar" for="dateduepicker-input"></label>
         </span>
 
-        <span ng-show="data.selectedItem.date_due&&data.usdata.current.user_class!=='lawyer'">
+        <span ng-show="data.selectedItem.date_due&&!data.usdata.current.permissions.manage_items">
             <span class="fui-calendar"></span> {{ data.selectedItem.date_due | date:'dd MMMM' }}
         </span>
 
         <a href="javascript:;" ng-click="data.selectedItem.is_complete=!data.selectedItem.is_complete;saveSelectedItem();"
            class="btn btn-sm pull-right" ng-class="{ 'btn-success': !data.selectedItem.is_complete, 'btn-default': data.selectedItem.is_complete}"
-           ng-show="data.usdata.current.user_class=='lawyer'"
+           ng-show="data.usdata.current.permissions.manage_items"
         >
             <span class="fui-checkbox-checked"></span> <span ng-hide="data.selectedItem.is_complete">Close item</span><span ng-show="data.selectedItem.is_complete">Reopen item</span>
         </a>
 
-        <a ng-show="data.usdata.current.user_class!=='lawyer'"
+        <a ng-show="!data.usdata.current.permissions.manage_items"
            class="label status-label pull-right" ng-class="{ 'label-primary': !data.selectedItem.is_complete, 'label-default': data.selectedItem.is_complete}" disabled>
             <span class="fui-checkbox"></span> <span ng-hide="data.selectedItem.is_complete">Open</span><span ng-show="data.selectedItem.is_complete">Closed</span>
         </a>
@@ -111,13 +117,14 @@
     </div>
     <!-- End option toolbar -->
 
-    <div class="no-revisions text-center" ng-show="data.usdata.current.user_class!=='lawyer'&&!data.selectedItem.latest_revision">
+    <div class="no-revisions text-center" ng-show="!data.usdata.current.permissions.manage_items&&!data.selectedItem.latest_revision">
         <span class="fui-document"></span> No files added yet.
     </div>
 
     <div class="waiting-revision text-center" ng-show="data.selectedItem.is_requested&&data.selectedItem.responsible_party.username!=data.usdata.current.username">
         <span class="fui-time"></span> Waiting for a document from <span ng-bind="data.selectedItem.responsible_party | fullname"></span>.
-        <a href="javascript:;" ng-click="remindRevisionRequest(data.selectedItem)">Remind</a> <a class="close" href="javascript:;" ng-click="deleteRevisionRequest(data.selectedItem)">x</a>
+        <a href="javascript:;" ng-click="remindRevisionRequest(data.selectedItem)" ng-show="data.usdata.current.permissions.manage_items">Remind</a>&nbsp;
+        <a class="close" href="javascript:;" ng-click="deleteRevisionRequest(data.selectedItem)" ng-show="data.usdata.current.permissions.manage_items">x</a>
     </div>
 
     <div class="waiting-revision text-center" ng-show="data.selectedItem.is_requested&&data.selectedItem.responsible_party.username==data.usdata.current.username">
@@ -132,8 +139,8 @@
         <i class="fa fa-spinner fa-3x fa-spin"></i>
     </div>
 
-    <div ng-if="data.usdata.current.user_class=='lawyer'&&data.selectedItem.latest_revision&&!data.itemIsLoading" class="ng-cloak">
-        <div class="drop-area show-on-drag" ng-file-drop="onFileDropped($files, data.selectedItem);">
+    <div ng-if="data.usdata.current.permissions.manage_items&&data.selectedItem.latest_revision&&!data.itemIsLoading&&!data.selectedItem.uploading" class="ng-cloak">
+        <div class="drop-area show-on-drag" ng-file-drop="onFileDropped($files, data.selectedItem);" ng-class="{ 'show': data.showAddFileOptions }">
             <span class="fui-upload"></span>
             <h4>Upload a document</h4>
             <p>To upload a new document drop file here</p>
@@ -141,10 +148,36 @@
     </div>
 
     <ul class="revisions list-unstyled" ng-show="data.selectedItem.latest_revision.slug">
+
         <!-- Begin current revision -->
+
+
         <li class="header">Current</li>
         <li class="current">
             <div class="doc-wrap">
+                <!--
+                 <div class="btn-group pull-right participant-tab">
+                        <button type="button" class="btn btn-default btn-xs" data-toggle="dropdown">
+                            Visible to <span style="font-weight: bold">{{data.customers.length}}</span>
+                        </button>
+                        <button class="btn btn-default btn-xs"
+                                data-toggle="dropdown" ng-show="data.usdata.current.permissions.manage_items">
+                          <span class="caret" ></span>
+                        </button>
+                        <ul class="dropdown-menu" ng-show="data.usdata.current.permissions.manage_items">
+                          <li class="" ng-repeat="customer in data.customers">
+                              <a href="javascript:;">
+                                  {{ customer.first_name }} {{ customer.last_name }}
+                              </a>
+                          </li>
+                          <li>
+                              <a href="javascript:;" ng-click="editRevisionStatusTitles()">
+                                  <span class="icon"></span> Share with...
+                              </a>
+                          </li>
+                        </ul>
+                </div>-->
+                
                 <!-- <span class="version">{{ data.selectedItem.latest_revision.slug }}</span> -->
                 <div class="row">
                     <div class="col-sm-12">
@@ -153,10 +186,10 @@
                               {{ data.matter._meta.item.custom_status[data.selectedItem.latest_revision.status] }}
                             </button>
                             <button class="btn btn-default btn-xs status-{{ data.selectedItem.latest_revision.status }}"
-                                    data-toggle="dropdown" ng-show="data.usdata.current.user_class=='lawyer'">
+                                    data-toggle="dropdown" ng-show="data.usdata.current.permissions.manage_items">
                               <span class="caret" ></span>
                             </button>
-                            <ul class="dropdown-menu" ng-show="data.usdata.current.user_class=='lawyer'" >
+                            <ul class="dropdown-menu" ng-show="data.usdata.current.permissions.manage_items">
                               <li class="" ng-repeat="(key, status) in data.matter._meta.item.custom_status">
                                   <a href="javascript:;" ng-click="data.showRevisionStatusDropdown=false;data.selectedItem.latest_revision.status=key;saveLatestRevision();"
                                      ng-hide="data.showEditRevisionTitles">
@@ -176,41 +209,55 @@
                     </div>
 
                 </div>
-                <div class="desc" ng-hide="data.show_edit_revision_description||data.usdata.current.user_class!=='lawyer'">
+                <div class="desc" ng-hide="data.show_edit_revision_description||!data.usdata.current.permissions.manage_items">
                      <a href="javascript:;" class="link"
                         ng-click="editTextattribute(data.selectedItem.latest_revision, 'revision', 'description')">
                         <div btf-markdown="data.selectedItem.latest_revision.description | newlines"></div>
                         <span ng-hide="data.selectedItem.latest_revision.description">Enter description</span>
                     </a>
                 </div>
+                <div class="desc" ng-hide="data.usdata.current.permissions.manage_items">
+                        <div btf-markdown="data.selectedItem.latest_revision.description | newlines"></div>
+                </div>
+
                 <div class="item-description" ng-show="data.show_edit_revision_description">
                     <textarea class="form-control" mentions-box container-position="left" msd-elastic placeholder="Enter a description for this revision"
                               text="data.selectedItem.latest_revision.edit_revision_description" focus-on="event_edit_revision_description"></textarea>
                     <a href="javascript:;" class="btn btn-primary btn-xs" ng-click="data.selectedItem.latest_revision.description=data.selectedItem.latest_revision.edit_revision_description;saveLatestRevision();data.show_edit_revision_description=false;">Save description</a>
                     <a href="javascript:;" class="btn btn-inverse btn-xs item-description-cancel" ng-click="data.selectedItem.latest_revision.edit_revision_description='';data.show_edit_revision_description=false;">Cancel</a>
-                    <a href="javascript:;" class="btn btn-link btn-xs pull-right" title="Markdown help" onclick="alert('Markdown help popup like trello');">Formatting Help</a>
+                    <a href="javascript:;" class="btn btn-link btn-xs pull-right" title="Markdown help" ng-click="showMarkDownInfo()">Formatting Help</a>
+
+
                 </div>
                 <div class="tools status-{{ data.selectedItem.latest_revision.status }}">
-                    <a href="javascript:;" class="btn btn-link btn-xs" ng-click="showRevisionDocument(data.selectedItem.latest_revision)">View</a>  <a href="{{ data.selectedItem.latest_revision.user_download_url }}" class="btn btn-link btn-xs" target="_blank">Save</a>
-                    <a href="javascript:;" class="btn btn-link btn-xs" ng-click="requestReview(data.selectedItem.latest_revision)">Request Review</a>
+                    <a href="javascript:;" class="btn btn-link btn-xs" ng-click="showRevisionDocument(data.selectedItem.latest_revision)">View</a>
+                    <a href="{{ data.selectedItem.latest_revision.user_download_url }}" class="btn btn-link btn-xs" target="_blank">Save</a>
+                    <a href="javascript:;" class="btn btn-link btn-xs" ng-click="requestReview(data.selectedItem.latest_revision)"
+                       ng-show="data.usdata.current.permissions.manage_document_reviews">Request Review</a>
                     <a href="javascript:;" class="btn btn-link btn-xs"
                        ng-click="requestSigning(data.selectedItem.latest_revision)"
-                       ng-show="data.selectedItem.latest_revision.signing===null&&data.itemIsLoading!==true">Send for Signing</a>
-                    <a href="javascript:;" class="btn btn-link btn-xs" ng-click="deleteLatestRevision()">Delete</a>
+                       ng-show="data.selectedItem.latest_revision.signing===null&&data.itemIsLoading!==true&&data.usdata.current.permissions.manage_signature_requests">Send for Signing</a>
+                    <a href="javascript:;" class="btn btn-link btn-xs" ng-click="deleteLatestRevision()" ng-show="data.usdata.current.permissions.manage_items">Delete</a>
                 </div>
             </div>
 
             <div class="review in-progress" ng-show="data.selectedItem.latest_revision.reviewers.length>0">
+
+                <div class="pull-right">
+                    <a class="btn btn-link btn-xs" href="javascript:;" ng-click="remindRevisionReview(data.selectedItem)" ng-if="data.selectedItem.review_percentage_complete!==100&&data.usdata.current.permissions.manage_document_reviews">
+                    Remind
+                    </a>
+
+                    <a class="btn btn-link btn-xs" href="javascript:;" ng-click="deleteRevisionReviewRequest(data.selectedItem, rev)"
+                               ng-hide="rev.is_complete||!data.usdata.current.permissions.manage_document_reviews">Cancel Review</a>
+
+                </div>
                 <span ng-show="data.selectedItem.review_percentage_complete<100">Review in progress</span>
                 <span ng-show="data.selectedItem.review_percentage_complete==100">Review complete</span>
-                <a class="btn btn-link btn-xs pull-right" href="javascript:;" ng-click="remindRevisionReview(data.selectedItem)" ng-if="data.selectedItem.review_percentage_complete!==100">
-                    Remind
-                </a>
+
                 <div class="review-members">
                     <ul class="list-unstyled">
                         <li ng-repeat="rev in data.selectedItem.latest_revision.reviewers" ng-class="{'complete': rev.is_complete==true }">
-                            <a class="close" href="javascript:;" ng-click="deleteRevisionReviewRequest(data.selectedItem, rev)"
-                               ng-hide="rev.is_complete">x</a>
                             <a href="javascript:;" ng-click="showReview(data.selectedItem.latest_revision, rev)" class="pull-right">
                                 <button class="btn btn-warning btn-xs" ng-hide="rev.is_complete"><span class="fui-time"></span> In progress</button>
                                 <button class="btn btn-success btn-xs" ng-show="rev.is_complete">
@@ -228,14 +275,24 @@
             </div>
 
             <div class="signing in-progress" ng-show="data.selectedItem.latest_revision.signing.url">
-                <a class="btn btn-link btn-xs pull-right" href="javascript:;" ng-click="deleteSigningRequest(data.selectedItem.latest_revision)"
-                   ng-hide="data.selectedItem.latest_revision.is_executed||data.selectedItem.latest_revision.signing.percentage_complete===100">
+                <div class="pull-right">
+                   <a class="btn btn-link btn-xs" href="javascript:;" ng-show="data.selectedItem.latest_revision.signing.is_claimed && data.selectedItem.latest_revision.is_executed!==true && data.selectedItem.latest_revision.signing.percentage_complete<100 && data.usdata.current.permissions.manage_signature_requests"
+                      ng-click="remindRevisionSigners(data.selectedItem)">
+                    Remind
+                </a>
+                <a class="btn btn-link btn-xs" href="javascript:;" ng-click="deleteSigningRequest(data.selectedItem.latest_revision)"
+                   ng-hide="data.selectedItem.latest_revision.is_executed||data.selectedItem.latest_revision.signing.percentage_complete===100||!data.usdata.current.permissions.manage_signature_requests">
                     Cancel Signing
                 </a>
+                </div>
+
 
                 <div ng-hide="data.selectedItem.latest_revision.signing.is_claimed" class="">
-                 <a class="signing-setup-link" href="javascript:;" ng-click="showSigning(data.selectedItem.latest_revision, null)"><div class="notice-me animated-slow shake"><i class="fa fa-exclamation-circle"></i></div>
-                    <div>Please set up the document for signing (Do not select the "sign now" option)</div></a>
+                 <a class="signing-setup-link" href="javascript:;" ng-click="showSigning(data.selectedItem.latest_revision, null)"
+                    ng-show="data.usdata.current.permissions.manage_signature_requests">
+                    <div class="notice-me animated-slow shake"><i class="fa fa-exclamation-circle"></i></div>
+                    <div>Please set up the document for signing</div>
+                 </a>
                 </div>
 
                 <span ng-show="data.selectedItem.latest_revision.signing.is_claimed && data.selectedItem.latest_revision.is_executed!==true && data.selectedItem.latest_revision.signing.percentage_complete<100">
@@ -246,9 +303,6 @@
                     <span>Signing completed</span>
                 </span>
 
-                <a class="btn btn-link btn-xs pull-right" href="javascript:;" ng-show="data.selectedItem.latest_revision.signing.is_claimed && data.selectedItem.latest_revision.is_executed!==true && data.selectedItem.latest_revision.signing.percentage_complete<100" ng-click="remindRevisionSigners(data.selectedItem)">
-                    Remind
-                </a>
 
                 <div class="review-members" ng-show="data.selectedItem.latest_revision.signing.is_claimed==true">
                     <ul class="list-unstyled">
@@ -281,7 +335,7 @@
         </li>
         <!-- End current revision -->
 
-        <li class="toggle-previous text-center" ng-show="data.selectedItem.latest_revision.revisions.length>0&&!data.showPreviousRevisions&&data.usdata.current.user_class=='lawyer'">
+        <li class="toggle-previous text-center" ng-show="data.selectedItem.latest_revision.revisions.length>0&&!data.showPreviousRevisions&&data.usdata.current.permissions.manage_items">
             <a class="btn btn-sm btn-silver" href="javascript:;" ng-click="loadPreviousRevisions()">
                 <span ng-show="data.selectedItem.latest_revision.revisions.length==1">Show Previous Revision</span>
                 <span ng-show="data.selectedItem.latest_revision.revisions.length>1">Show {{ data.selectedItem.latest_revision.revisions.length }} Previous Revisions</span>
@@ -324,7 +378,7 @@
         </li>
     </ul>
 
-    <div ng-if="data.usdata.current.user_class=='lawyer'&&!data.itemIsLoading">
+    <div ng-if="data.usdata.current.permissions.manage_items&&!data.itemIsLoading">
         <div class="item-help border-on-dragover" ng-hide="data.selectedItem.latest_revision||data.selectedItem.uploading||data.selectedItem.is_requested">
             <span class="fui-upload"></span>
             <h4>Upload a document</h4>

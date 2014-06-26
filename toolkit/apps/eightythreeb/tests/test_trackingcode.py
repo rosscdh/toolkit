@@ -2,27 +2,23 @@
 from django.core import mail
 from django.test import TestCase
 from django.core.files import File
-from django.core.files.storage import FileSystemStorage
 from django.core.urlresolvers import reverse
 from django.utils import simplejson as json
 
-import os
-import mock
-import datetime
-import httpretty
-
 from model_mommy import mommy
 
-from toolkit.apps.workspace.models import Tool
+from toolkit.apps.workspace.models import Tool, ROLES
 from toolkit.apps.eightythreeb.models import EightyThreeB
 from toolkit.apps.eightythreeb.management.commands.eightythreeb_usps_track_response import Command as USPSEightyThreeBTracking
-
-from toolkit.casper.prettify import httprettify_methods, mock_http_requests
 
 from .data import EIGHTYTHREEB_TRACKINGCODE_DATA
 
 from .usps_trackfield_response import TRACK_UNDELIVERED_RESPONSE_XML_BODY
 from .test_usps import TRACKING_CODE
+
+import os
+import datetime
+import httpretty
 
 FILE_BASE_PATH = os.path.dirname(__file__)
 
@@ -50,8 +46,6 @@ class BaseUSPSTrackingCode(TestCase):
 
         self.workspace = mommy.make('workspace.Workspace', name='Lawpal (test)', lawyer=self.lawyer)
         self.workspace.tools.add(Tool.objects.get(slug='83b-election-letters'))
-        self.workspace.participants.add(self.user)
-        self.workspace.participants.add(self.lawyer)
 
         self.eightythreeb = mommy.make('eightythreeb.EightyThreeB',
                                        slug='e0c545082d1241849be039e338e47a0f',
@@ -135,19 +129,11 @@ class TestTrackingCodeEmail(BaseUSPSTrackingCode):
 
         num_attachments = self.eightythreeb.attachment_set.all().count()
 
-        email = mail.outbox[0]
+        for email in mail.outbox:
+            self.assertEqual(email.subject, u'83b Tracking Code entered for Customër Tëst')
+            self.assertEqual(len(email.attachments), num_attachments)  # test we have the attachments
 
-        self.assertEqual(email.subject, u'83b Tracking Code entered for Customër Tëst')
-        self.assertEqual(len(email.attachments), num_attachments)  # test we have the attachments
-        self.assertEqual(len(email.to), 1)
-        self.assertEqual(email.to, ['test+customer@lawpal.com'])
-        self.assertEqual(email.from_email, 'support@lawpal.com')
-        self.assertEqual(email.extra_headers, {'Reply-To': 'support@lawpal.com'})
-
-        email = mail.outbox[1]
-        self.assertEqual(email.subject, u'83b Tracking Code entered for Customër Tëst')
-        self.assertEqual(len(email.attachments), num_attachments)  # test we have the attachments
-        self.assertEqual(len(email.to), 1)
-        self.assertEqual(email.to, ['test+lawyer@lawpal.com'])
-        self.assertEqual(email.from_email, 'support@lawpal.com')
-        self.assertEqual(email.extra_headers, {'Reply-To': 'support@lawpal.com'})
+            self.assertEqual(len(email.to), 1)
+            self.assertTrue(any(e in ['test+customer@lawpal.com', 'test+lawyer@lawpal.com'] for e in email.to))
+            self.assertEqual(email.from_email, 'support@lawpal.com')
+            self.assertEqual(email.extra_headers, {'Reply-To': 'support@lawpal.com'})

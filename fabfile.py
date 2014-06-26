@@ -88,9 +88,8 @@ def production():
     env.user = 'ubuntu'
     env.application_user = 'app'
     # connect to the port-forwarded ssh
-    env.hosts = ['ec2-184-169-191-190.us-west-1.compute.amazonaws.com',
-                 'ec2-184-72-21-48.us-west-1.compute.amazonaws.com',
-                 'ec2-50-18-33-186.us-west-1.compute.amazonaws.com',
+    env.hosts = ['ec2-50-18-33-186.us-west-1.compute.amazonaws.com',
+                 'ec2-54-176-88-70.us-west-1.compute.amazonaws.com',
                  'ec2-54-241-222-221.us-west-1.compute.amazonaws.com',] if not env.hosts else env.hosts
     env.celery_name = 'celery-production' # taken from chef cookbook
 
@@ -104,12 +103,8 @@ def production():
 # Update the roles
 #
 env.roledefs.update({
-    #'db': ['ec2-50-18-97-221.us-west-1.compute.amazonaws.com'], # the actual db host
-    #'db-actor': ['ec2-184-169-191-190.us-west-1.compute.amazonaws.com'], # database action host
-    # 'search': ['ec2-54-241-224-100.us-west-1.compute.amazonaws.com'], # elastic search action host
-    'web': ['ec2-184-169-191-190.us-west-1.compute.amazonaws.com',
-            'ec2-184-72-21-48.us-west-1.compute.amazonaws.com',
-            'ec2-50-18-33-186.us-west-1.compute.amazonaws.com'],
+    'web': ['ec2-50-18-33-186.us-west-1.compute.amazonaws.com',
+            'ec2-54-176-88-70.us-west-1.compute.amazonaws.com',],
     'worker': ['ec2-54-241-222-221.us-west-1.compute.amazonaws.com'],
 })
 
@@ -123,7 +118,7 @@ def chores():
     # GEO
     sudo('aptitude --assume-yes install libgeos-dev')
 
-    sudo('easy_install pip')
+    #sudo('easy_install pip')
     sudo('pip install virtualenv pillow')
 
     #put('conf/.bash_profile', '~/.bash_profile')
@@ -140,7 +135,7 @@ def virtualenv(cmd, **kwargs):
 
 @task
 def pip_install():
-    virtualenv('pip install django-jsonify')
+    virtualenv('pip install django-permission')
 
 @task
 def cron():
@@ -313,6 +308,8 @@ def celery_stop(name='worker.1'):
             virtualenv(cmd='cd %s%s;%s' % (env.remote_project_path, env.project, cmd))
         else:
             local(cmd)
+
+        clean_pyc()
 
 @task
 @roles('worker')
@@ -558,8 +555,6 @@ def fixtures():
 
 @task
 def assets():
-    # upload the gui
-    upload_gui()
     # collect static components
     virtualenv('python %s%s/manage.py collectstatic --noinput' % (env.remote_project_path, env.project,))
 
@@ -649,8 +644,11 @@ def prompt_build_gui():
 def gui_clean():
     local('rm -Rf gui/bower_components')
     local('rm -Rf gui/node_modules')
+    local('rm -Rf gui/temp')
+    local('rm -Rf gui/dist')
     local('cd gui;npm install')
     local('cd gui;bower install')
+    build_gui_dist()
 
 
 @task
@@ -716,7 +714,7 @@ def conclude():
     newrelic_deploynote()
 
 @task
-def rebuild_local():
+def rebuild_local(gui_clean=False):
     if not os.path.exists('../Stamp'):
         #
         # Clone the Stamp PDF application
@@ -734,12 +732,13 @@ def rebuild_local():
         local('rm ./dev.db')
 
     local('python manage.py syncdb  --noinput')
+    local('python manage.py update_permissions')
     local('python manage.py migrate')
     local('python manage.py loaddata %s' % fixtures())
     local('python manage.py createsuperuser')  #manually as we rely on the dev-fixtures
-    gui_clean()
-
-
+    local('python manage.py update_permissions')
+    if gui_clean in env.truthy:
+        gui_clean()
 
 @task
 def deploy(is_predeploy='False',full='False',db='False',search='False'):
@@ -752,7 +751,7 @@ def deploy(is_predeploy='False',full='False',db='False',search='False'):
     db = db.lower() in env.truthy
     search = search.lower() in env.truthy
 
-    prompt_build_gui()
+    prompt_build_gui() # rebuilds the gui
     run_tests()
     diff()
     git_set_tag()
@@ -761,6 +760,9 @@ def deploy(is_predeploy='False',full='False',db='False',search='False'):
     prepare_deploy()
     do_deploy()
     update_env_conf()
+
+    # upload the gui
+    upload_gui()
 
     if full:
         requirements()

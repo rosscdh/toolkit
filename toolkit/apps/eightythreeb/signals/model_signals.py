@@ -30,7 +30,7 @@ def ensure_83b_user_in_workspace_participants(sender, instance, **kwargs):
 
     # when we have a new one
     if user not in workspace.participants.all():
-        workspace.participants.add(user)
+        workspace.add_participant(user)
 
 
 @receiver(post_save, sender=Attachment, dispatch_uid='83b.attachment.ensure_attachment_markers')

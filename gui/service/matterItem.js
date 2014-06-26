@@ -79,7 +79,7 @@ angular.module('toolkit-gui')
 		}
 
 
-         /**
+		 /**
 		 * Returns a key/value object containing $resource methods to access review API end-points
 		 *
 		 * @name				reviewerItemResource
@@ -93,12 +93,12 @@ angular.module('toolkit-gui')
 		function reviewerItemResource() {
 			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/revision/:type/:username:action', {}, {
 				'request': { 'method': 'POST', 'params' : { 'type': 'reviewers' }, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
-                'remind': { 'method': 'POST', 'params': { 'type': 'reviewers', 'action':'remind'}, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
+				'remind': { 'method': 'POST', 'params': { 'type': 'reviewers', 'action':'remind'}, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'delete': { 'method': 'DELETE', 'params' : { 'type': 'reviewer' }, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
 			});
 		}
 
-        /**
+		/**
 		 * Returns a key/value object containing $resource methods to access signatory API end-points
 		 *
 		 * @name				signerItemResource
@@ -400,7 +400,8 @@ angular.module('toolkit-gui')
 
 				var updateFields = {
 					'status': revisionItem.status,
-					'description': revisionItem.description
+					'description': revisionItem.description,
+                    'sign_in_progress': revisionItem.sign_in_progress
 				};
 
 				api.update({'matterSlug': matterSlug, 'itemSlug': itemSlug }, updateFields,
@@ -449,7 +450,7 @@ angular.module('toolkit-gui')
 				return deferred.promise;
 			},
 
-            /**
+			/**
 			 * Requests the API to send a revision request to given participant.
 			 *
 			 * @name				requestRevision
@@ -458,15 +459,15 @@ angular.module('toolkit-gui')
 			 * @param {Object}      participant   Dictionary consisting of email, message, username
 			 *
 			 * @example
-		 	 * matterItemService.requestRevision( 'myMatterName', 'myItemName', {} );
+			 * matterItemService.requestRevision( 'myMatterName', 'myItemName', {} );
 			 *
 			 * @public
 			 * @method				requestRevision
 			 * @memberof			matterItemService
 			 *
 			 * @return {Promise}
-		 	 */
-	        'requestRevision': function ( matterSlug, itemSlug, participant  ) {
+			 */
+			'requestRevision': function ( matterSlug, itemSlug, participant  ) {
 				var deferred = $q.defer();
 
 				var api = matterItemResource();
@@ -483,7 +484,7 @@ angular.module('toolkit-gui')
 				return deferred.promise;
 			},
 
-             /**
+			 /**
 			 * Requests the API to send a reminder to the responsible participant to upload the requested document.
 			 *
 			 * @name				remindRevisionRequest
@@ -499,7 +500,7 @@ angular.module('toolkit-gui')
 			 *
 			 * @return {Promise}
 			 */
-            'remindRevisionRequest': function ( matterSlug, itemSlug ) {
+			'remindRevisionRequest': function ( matterSlug, itemSlug ) {
 				var deferred = $q.defer();
 
 				var api = matterItemResource();
@@ -516,7 +517,7 @@ angular.module('toolkit-gui')
 				return deferred.promise;
 			},
 
-             /**
+			 /**
 			 * Requests the API to delete the revision request.
 			 *
 			 * @name				deleteRevisionRequest
@@ -532,10 +533,10 @@ angular.module('toolkit-gui')
 			 *
 			 * @return {Promise}
 			 */
-            'deleteRevisionRequest': function ( matterSlug, itemSlug ) {
-                var deferred = $q.defer();
+			'deleteRevisionRequest': function ( matterSlug, itemSlug ) {
+				var deferred = $q.defer();
 
-                var api = matterItemResource();
+				var api = matterItemResource();
 
 				api.update({'matterSlug': matterSlug, 'itemSlug': itemSlug }, {'is_requested':false, 'responsible_party':null},
 					function success(response){
@@ -546,10 +547,10 @@ angular.module('toolkit-gui')
 					}
 				);
 
-                return deferred.promise;
-            },
+				return deferred.promise;
+			},
 
-            /**
+			/**
 			/**
 			 * Load a revision from URL
 			 *
@@ -619,7 +620,7 @@ angular.module('toolkit-gui')
 			},
 
 
-            /**
+			/**
 			 * Requests the API to send a reminder to all reviewer who have not reviewed the current revision yet.
 			 *
 			 * @name				remindRevisionReview
@@ -635,7 +636,7 @@ angular.module('toolkit-gui')
 			 *
 			 * @return {Promise}
 			 */
-            'remindRevisionReview': function ( matterSlug, itemSlug ) {
+			'remindRevisionReview': function ( matterSlug, itemSlug ) {
 				var deferred = $q.defer();
 
 				var api = reviewerItemResource();
@@ -652,7 +653,7 @@ angular.module('toolkit-gui')
 				return deferred.promise;
 			},
 
-            /**
+			/**
 			 * Delete the review request for a specific user.
 			 *
 			 * @name				deleteRevisionReview
@@ -686,7 +687,7 @@ angular.module('toolkit-gui')
 				return deferred.promise;
 			},
 
-             'requestSigner': function ( matterSlug, itemSlug, signer ) {
+			 'requestSigner': function ( matterSlug, itemSlug, signer ) {
 				var deferred = $q.defer();
 
 				var api = signerItemResource();
@@ -702,7 +703,7 @@ angular.module('toolkit-gui')
 
 				return deferred.promise;
 			},
-            /**
+			/**
 			 * Requests the API to send a reminder to all signers who have not signed the current revision yet.
 			 *
 			 * @name				remindRevisionSigners
@@ -718,7 +719,7 @@ angular.module('toolkit-gui')
 			 *
 			 * @return {Promise}
 			 */
-            'remindRevisionSigners': function ( matterSlug, itemSlug ) {
+			'remindRevisionSigners': function ( matterSlug, itemSlug ) {
 				var deferred = $q.defer();
 
 				var api = signerItemResource();
@@ -734,12 +735,12 @@ angular.module('toolkit-gui')
 
 				return deferred.promise;
 			},
-            'deleteSigningRequest': function ( signing ) {
+			'deleteSigningRequest': function ( signing ) {
 				var deferred = $q.defer();
 
 				var api = $resource( signing.url, {}, {
-                        'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'} }
-                });
+						'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'} }
+				});
 
 				api.delete({},
 					function success(){
@@ -753,7 +754,7 @@ angular.module('toolkit-gui')
 				return deferred.promise;
 			},
 
-            /**
+			/**
 			 * Requests a review update
 			 *
 			 * @name				updateRevisionReview
@@ -769,25 +770,31 @@ angular.module('toolkit-gui')
 			 * @return {Promise}    Updated item object as provided by API
 			 */
 			'updateRevisionReview': function ( review ) {
-				var deferred = $q.defer();
+				var deferred = $q.defer(), api, updateFields;
 
-				var api = $resource(review.url, {}, {
-				    'update': { 'method': 'PATCH', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
-			    });
+				if( review.url ) {
+					api = $resource(review.url, {}, {
+						'update': { 'method': 'PATCH', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
+					});
 
+					updateFields = {
+						'is_complete': review.is_complete
+					};
 
-				var updateFields = {
-					'is_complete': review.is_complete
-				};
-
-				api.update({}, updateFields,
-					function success(item){
-						deferred.resolve(item);
-					},
-					function error(err) {
-						deferred.reject( err );
-					}
-				);
+					api.update({}, updateFields,
+						function success(item){
+							deferred.resolve(item);
+						},
+						function error(err) {
+							deferred.reject( err );
+						}
+					);
+				} else {
+					// Invalid url provided
+					$timeout( function(){
+						deferred.reject( new Error('Unable to update revision') );
+					}, 1);
+				}
 
 				return deferred.promise;
 			}
