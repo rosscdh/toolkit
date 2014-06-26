@@ -375,7 +375,8 @@ angular.module('toolkit-gui')
 
 				var updateFields = {
 					'status': revisionItem.status,
-					'description': revisionItem.description
+					'description': revisionItem.description,
+                    'sign_in_progress': revisionItem.sign_in_progress
 				};
 
 				api.update({'matterSlug': matterSlug, 'itemSlug': itemSlug }, updateFields,

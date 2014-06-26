@@ -1469,6 +1469,24 @@ angular.module('toolkit-gui')
 			}
 		};
 
+        $scope.calculateSigningPercentageComplete = function( item) {
+			if(item && item.latest_revision && item.latest_revision.signing && item.latest_revision.signing.signers.length>0) {
+				var signers = item.latest_revision.signing.signers;
+				var completed = 0;
+
+				jQuery.each( signers, function( index, r ){
+					if (r.has_signed===true){
+						completed += 1;
+					}
+				});
+				item.signing_percentage_complete = parseInt(completed / signers.length * 100);
+				$log.debug(item.signing_percentage_complete);
+
+			} else {
+				item.signing_percentage_complete = null;
+			}
+		};
+
          $scope.editRevisionStatusTitles = function() {
             var matter = $scope.data.matter;
 
@@ -1535,14 +1553,45 @@ angular.module('toolkit-gui')
 			modalInstance.result.then(
 				function ok(obj) {
                     $log.debug(obj);
-                    revision.signing = obj;
-                    item.signing_percentage_complete = obj.percentage_complete;
+
+                    if(!revision.signing || revision.signing.is_claimed ===false) {
+                        revision.signing = obj;
+                        item.signing_percentage_complete = obj.percentage_complete;
+                    }
+                    //if not, then handled through the callback event from HS
 				},
 				function cancel() {
 					// do nothing
 				}
 			);
 		};
+
+         /**
+         * Called when the User signs a document in HelloSign and sets a processing flag the revision
+         *
+         */
+        $("body").on("sign.signed", function (event, param1, param2) {
+            $log.debug(event);
+            var username = event.username;
+            var item = $scope.data.selectedItem;
+            var latest_revision = item.latest_revision;
+            var signers = latest_revision.signing.signers;
+
+            var results = jQuery.grep(signers, function (obj) {
+                return obj.username === username;
+            });
+
+            if (results.length > 0) {
+                latest_revision.sign_in_progress = true;
+                $scope.saveLatestRevision();
+
+                results[0].has_signed = true;
+                $scope.calculateSigningPercentageComplete(item);
+                $scope.$apply();
+
+                toaster.pop('success', 'Success!', 'The document is being processed.', 5000);
+            }
+        });
 
         /**
         * Remind all review users who haven´t reviewed yet.
@@ -1587,6 +1636,7 @@ angular.module('toolkit-gui')
                 );
             }
         };
+
 		/* End revision handling */
 
 

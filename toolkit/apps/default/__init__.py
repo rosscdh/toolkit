@@ -21,6 +21,6 @@ def _get_unique_username(username):
     while _user_exists(username=username):
         LOGGER.info('Username %s exists, trying to create another' % username)
         username = '%s-%s' % (username, uuid.uuid4().get_hex()[:4])
-        username = username[0:30]
+        username = username[0:29]  # be aware of fencepost error here field limit is 30
 
     return username
