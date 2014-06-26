@@ -11,6 +11,7 @@ angular.module('toolkit-gui')
  */
 .controller('NavigationCtrl',[
 	'$scope',
+	'$rootScope',
 	'$routeParams',
 	'smartRoutes',
 	'$location',
@@ -20,7 +21,7 @@ angular.module('toolkit-gui')
 	'toaster',
 	'userService',
 	'matterService',
-	function( $scope, $routeParams, smartRoutes, $location, $modal, $log, $timeout, toaster, userService, matterService ){
+	function( $scope, $rootScope, $routeParams, smartRoutes, $location, $modal, $log, $timeout, toaster, userService, matterService ){
 		'use strict';
 		var routeParams = smartRoutes.params();
 		$scope.selectedStatusFilter = null;
@@ -110,6 +111,17 @@ angular.module('toolkit-gui')
 					//
 				}
 			);
+		};
+
+		/**
+		 * Send request to show th intro tutorial
+		 * @name				showIntro
+		 *
+		 * @private
+		 * @method				showIntro
+		 * @memberof			NavigationCtrl		 */
+		$scope.showIntro = function() {
+			$rootScope.$broadcast('showIntro');
 		};
 
 		/*

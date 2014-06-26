@@ -2126,6 +2126,13 @@ angular.module('toolkit-gui')
 				$scope.reloadingLess = false;
 			},100);
 		};
+
+		/**
+		 * Recieves broadcast message to show intro
+		 */
+		$scope.$on('showIntro', function(){
+			IntroService.show(steps, 1);
+		});
 }])
 
 /**

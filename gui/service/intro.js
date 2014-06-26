@@ -11,7 +11,8 @@ angular.module('toolkit-gui')
 		 * @method				eventCaptured
 		 * @memberof			PusherService
 		 */
-		show: function (steps) {
+		show: function (steps, delayTime) {
+			var delay = delayTime?delayTime:2000;
 			setTimeout(function(){
 				$.when(
 					// Retrieve intro script
@@ -25,7 +26,7 @@ angular.module('toolkit-gui')
 					intro.setOptions( steps );
           			intro.start();
 				});
-			},2000);
+			}, delay);
 		}
 	};
 }]);
