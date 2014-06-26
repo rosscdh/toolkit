@@ -305,12 +305,6 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
                 'slug': review_document.slug,
             }
 
-            # #
-            # # test for sign_in_progress and change the url if present
-            # #
-            # if self._sign_in_progress(obj=obj) is not False:
-            #     return_object.update({'url': reverse('sign:sign_in_progress')})
-
             return return_object
 
     def get_user_download_url(self, obj):
@@ -328,13 +322,6 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
 
         return None
 
-    # def _sign_in_progress(self, obj):
-    #     """
-    #     retrieve the cached sign_in_progress-%s key
-    #     @NB ties in with sign.views:handle_sign_in_progress
-    #     """
-    #     return cache.get(obj.SIGN_IN_PROGRESS_KEY, False)
-
     def get_signing(self, obj):
         data = None
         context = getattr(self, 'context', None)
@@ -343,9 +330,6 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
 
         if sign_document is not None and sign_document.signing_request is not None:
             data = SignatureSerializer(sign_document, context=context).data
-
-        # if data:
-        #     data.update({'in_progress': self._sign_in_progress(obj=obj)})
 
         return data
 

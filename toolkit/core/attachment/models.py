@@ -89,10 +89,6 @@ class Revision(IsDeletedMixin,
         return 'Revision %s' % (self.slug)
 
     @property
-    def SIGN_IN_PROGRESS_KEY(self):
-        return 'sign_in_progress-%s' % self.pk
-
-    @property
     def revisions(self):
         return self.item.revision_set.all()
 
