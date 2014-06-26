@@ -9,7 +9,7 @@
             <div class="row existing-participants" ng-if="!data.showAddButton">
             <div class="col-sm-6 ">
                 <ul class="list-unstyled participants">
-                    <li ng-repeat="person in participants" ng-click="data.selectedUser=person" ng-class="{'selected': data.selectedUser==person }">
+                    <li ng-repeat="person in participants" ng-click="selectUser(person);" ng-class="{'selected': data.selectedUser==person }">
                         <span class="user {{person.role}}" ng-bind="person | initials"></span>
                         <label ng-bind="person | fullname"></label>
                         <small class="{{person.role}} padding">
@@ -40,12 +40,12 @@
                         <div class='permissions-checklist'>
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" ng-model="data.selectedUser.permissions.manage_clients"> Manage Clients in this matter (including adding and removing Clients)
+                                    <input type="checkbox" ng-model="data.selectedUser.permissions.manage_clients" ng-change="flagUpdated()"> Manage Clients in this matter (including adding and removing Clients)
                                 </label>
                             </div>
                         </div>
                         <div class="text-right">
-                           <a class="btn btn-xs btn-success" ng-click="update(data.selectedUser)"><span class="fui-check"></span> Save Permissions</a>
+                           <a class="btn btn-xs btn-success" ng-click="update(data.selectedUser)" ng-class="{ 'active': permissionsChanged }"><span class="fui-check"></span> Save Permissions</a>
                         </div>
                     </div>
                 </div>

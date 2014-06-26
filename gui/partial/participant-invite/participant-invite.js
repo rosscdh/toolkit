@@ -32,7 +32,8 @@ angular.module('toolkit-gui')
 		 * @private
 		 */
 		$scope.participants = participants;
-        $log.debug($scope.participants);
+        $scope.permissionsChanged = false;
+        $scope.originalPermissions = null;
 
 
 		/**
@@ -67,15 +68,28 @@ angular.module('toolkit-gui')
             }},
             'isNew': false,
             'selectedUser': null,
+            'selectedUserPermissionsBackup': null,
             'requestLoading': false,
             'showAddButton': false
 
 		};
 
-     if (angular.isArray(participants) && (participants.length > 0)) {
-          $scope.data.selectedUser = participants[0];
-        }
+        $scope.selectUser = function( person ) {
+        	// Re-apply original permissions if required, the concept here is that if I don't click the 
+        	if( $scope.data.selectedUser && $scope.data.selectedUserPermissionsBackup ) {
+        		$scope.data.selectedUser.permissions = $scope.data.selectedUserPermissionsBackup; // Reset previosuly selected user permissions
+        	}
+        	// Update selected User with new selected user
+        	$scope.data.selectedUser=person;
+        	$scope.data.selectedUserPermissionsBackup = angular.copy(person.permissions);
 
+        	// Permissions changed flag for GUI updates
+        	$scope.permissionsChanged=false;
+        };
+
+        if (angular.isArray(participants) && (participants.length > 0)) {
+        	$scope.selectUser(participants[0]);
+        }
 
         /**
 		 * Checks if a user exists with the entered mailaddress and activates the input
@@ -210,7 +224,13 @@ angular.module('toolkit-gui')
 
 
         $scope.update = function( person ){
+        	// Set updating flag, for GUI display
             $scope.data.requestLoading = true;
+
+            // Set backup permissions, forr rollback
+            $scope.data.selectedUserPermissionsBackup = angular.copy(person.permissions);
+
+            // Request permissions update
             participantService.update( $scope.matter.slug, person ).then(
 				function success() {
                     $scope.data.requestLoading = false;
@@ -267,7 +287,12 @@ angular.module('toolkit-gui')
                 !($scope.data.invitee.email&&$scope.data.invitee.first_name&&$scope.data.invitee.last_name);
 		};
 
-
+		$scope.$watch('data.selectedUser.permissions', function( newVal, oldVal ) {
+			if(newVal && oldVal ) {
+				debugger;
+				$scope.permissionsChanged;
+			}
+		});
 	}
 ]);
 
