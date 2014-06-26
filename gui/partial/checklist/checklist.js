@@ -413,7 +413,7 @@ angular.module('toolkit-gui')
             $scope.loadItemDetails(item).then(function success(item){
                 deferred.resolve(item);
                 $scope.data.itemIsLoading = false;
-		    });		    
+		    });
 
 		    resetScopeState();
 
