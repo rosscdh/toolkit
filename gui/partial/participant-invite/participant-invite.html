@@ -44,8 +44,8 @@
                                 </label>
                             </div>
                         </div>
-                        <div class="text-right">
-                           <a class="btn btn-xs btn-success" ng-click="update(data.selectedUser)" ng-class="{ 'active': permissionsChanged }"><span class="fui-check"></span> Save Permissions</a>
+                        <div class="text-center">
+                           <a class="btn btn-sm save-perm-btn" ng-click="update(data.selectedUser)" ng-class="{'permission-btn-active':permissionTracking.changed}" ><span class="fui-check"></span> Save Permissions</a>
                         </div>
                     </div>
                 </div>
@@ -80,8 +80,8 @@
                             </label>
                         </div>
                     </div>
-                    <div class='text-center' ng-show="currentUser.permissions.manage_participants&&data.selectedUser.username!=matter.lawyer.username" ng-if="permissionTracking.changed">
-                       <a class="btn btn-sm save-perm-btn" ng-click="update(data.selectedUser)"><span class="fui-check"></span> Save Permissions</a>
+                    <div class='text-center' ng-show="currentUser.permissions.manage_participants&&data.selectedUser.username!=matter.lawyer.username">
+                       <a class="btn btn-sm save-perm-btn" ng-class="{'permission-btn-active':permissionTracking.changed}" ng-click="update(data.selectedUser)"><span class="fui-check"></span> Save Permissions</a>
                     </div>
                 </div>
 
