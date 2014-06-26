@@ -12,8 +12,8 @@
                     <li ng-repeat="person in participants" ng-click="selectUser(person);" ng-class="{'selected': data.selectedUser==person }">
                         <span class="user {{person.role}}" ng-bind="person | initials"></span>
                         <label ng-bind="person | fullname"></label>
-                        <small class="{{person.role}} padding">
-                            ({{ person.role }} <span ng-show="person.username==currentUser.username">, you</span>)</small>
+                       <small class="{{person.role}} padding">
+                            ({{ person.role }}<span ng-show="person.username==currentUser.username">, you</span>)</small>
                     </li>
                 </ul>
 
