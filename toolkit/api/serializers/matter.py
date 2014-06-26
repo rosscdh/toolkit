@@ -6,6 +6,8 @@ or a document item
 from rest_framework import serializers
 from toolkit.apps.workspace.models import Workspace
 
+from toolkit.apps.workspace.models import (ROLES,
+                                           MATTER_OWNER_PERMISSIONS)
 from .client import LiteClientSerializer
 from .item import SimpleItemSerializer
 from .user import LiteUserSerializer
@@ -90,14 +92,18 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
         return SimpleItemSerializer(obj.item_set.filter(parent=None), context=self.context, many=True).data
 
     def get_lawyer(self, obj):
-        context = self.context
-        context.update({'matter': obj})
-        return LiteUserSerializer(obj.lawyer, context=context, many=False).data
+        owner_data = LiteUserSerializer(obj.lawyer).data
+        owner_data.update({
+            'role': ROLES.get_name_by_value(ROLES.owner),
+            'permissions': MATTER_OWNER_PERMISSIONS,
+        })
+        return owner_data
 
     def get_participants(self, obj):
         context = self.context
         context.update({'matter': obj})
-        return LiteUserSerializer(obj.participants.all(), context=context, many=True).data
+        #return LiteUserSerializer(obj.participants.all(), context=context, many=True).data
+        return obj.data.get('participants', [])
 
     def get_current_user(self, obj):
         request = self.context.get('request')
@@ -136,9 +142,14 @@ class LiteMatterSerializer(MatterSerializer):
     @BUSINESSRULE used for the matters/ GET (shows lighter version of the serializer)
     """
     class Meta(MatterSerializer.Meta):
-        fields = ('url', 'base_url', 'name', 'slug', 'matter_code', 'client',
-                  'lawyer', 'participants', 'date_created', 'date_modified',
-                  'percent_complete', 'export_info', 'regular_url')
+        fields = ('url', 'base_url', 'regular_url',
+                  'name', 'slug', 'matter_code',
+                  'client',
+                  'lawyer',
+                  'participants',
+                  'date_created', 'date_modified',
+                  'percent_complete',
+                  'export_info')
 
 
 class SimpleMatterSerializer(MatterSerializer):

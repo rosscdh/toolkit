@@ -75,6 +75,7 @@ class SignRevisionView(DetailView):
             'signer': self.signer,
             'signed_on': self.object.signed_at(signer=self.signer),
             'can_sign': self.is_authorised,
+            'username': self.kwargs.get('username', None),
         })
         return kwargs
 

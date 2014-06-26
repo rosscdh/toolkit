@@ -230,7 +230,8 @@
 
                 </div>
                 <div class="tools status-{{ data.selectedItem.latest_revision.status }}">
-                    <a href="javascript:;" class="btn btn-link btn-xs" ng-click="showRevisionDocument(data.selectedItem.latest_revision)">View</a>  <a href="{{ data.selectedItem.latest_revision.user_download_url }}" class="btn btn-link btn-xs" target="_blank">Save</a>
+                    <a href="javascript:;" class="btn btn-link btn-xs" ng-click="showRevisionDocument(data.selectedItem.latest_revision)">View</a>
+                    <a href="{{ data.selectedItem.latest_revision.user_download_url }}" class="btn btn-link btn-xs" target="_blank">Save</a>
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="requestReview(data.selectedItem.latest_revision)"
                        ng-show="data.usdata.current.permissions.manage_document_reviews">Request Review</a>
                     <a href="javascript:;" class="btn btn-link btn-xs"

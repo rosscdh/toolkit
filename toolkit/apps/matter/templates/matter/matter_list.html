@@ -6,22 +6,14 @@
 
     <!-- needed for react -->
     {% csrf_token %}
-
     <div id="matter-list" class="content col-lg-12"></div>
-
 {% endblock %}
 
 {% block modals %}
-    {% if can_create %}
         <div class="modal" id="matter-create"></div>
-    {% endif %}
     {% for m in object_list %}
-        {% if can_edit %}
-            <div class="modal" id="matter-edit-{{ m.slug }}"></div>
-        {% endif %}
-        {% if can_delete %}
-            <div class="modal" id="matter-delete-{{ m.slug }}"></div>
-        {% endif %}
+        <div class="modal" id="matter-edit-{{ m.slug }}"></div>
+        <div class="modal" id="matter-delete-{{ m.slug }}"></div>
     {% endfor %}
 {% endblock %}
 
@@ -35,6 +27,7 @@
 <link href="{{ STATIC_URL }}css/introjs.min.css" type="text/css" rel="stylesheet" />
 <link href="{{ STATIC_URL }}less/introjs-custom.less" type="text/css" rel="stylesheet" />
 <!-- start intro //-->
+{% if firstseen %}
 <script language="javaScript">
     var intro = introJs();
     /*
@@ -96,6 +89,7 @@
         intro.start();
     });
 </script>
+{% endif %}
 
 <script>
 'use strict';

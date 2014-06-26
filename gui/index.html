@@ -155,10 +155,10 @@
         <li class="checklist-members  hidden-xs  hidden-sm">
           <a href="javascript:;" ng-click="invite()">
             <span class="fui-user"></span>
-            <span ng-show="matter.selected&&matter.selected.participants.length<=3">
+            <span ng-if="matter.selected&&matter.selected.participants.length>0&&matter.selected.participants.length<=3">
                 <span class="user" ng-repeat="user in matter.selected.participants" ng-bind="user | initials"></span>
             </span>
-            <span ng-show="matter.selected&&matter.selected.participants.length>3">
+            <span ng-if="matter.selected&&matter.selected.participants.length>3">
                 <span class="user" ng-bind="matter.selected.participants.length"></span>
             </span>
           </a>

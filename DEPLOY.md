@@ -1,6 +1,11 @@
 Deployment actions by branch
 ----------------------------
 
+[fix/matter-db-load-improvement]
+
+1. ./manage.py migrate workspace
+
+
 --------------------------------------------------------------------------------
 ** DEPLOYED 24 June 2014 - allow owners to assign granular permissions to matters
 *NOTES* had to ensure that existing flows are not iterrupted but setting clients by default

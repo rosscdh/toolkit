@@ -200,6 +200,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.messages.context_processors.messages',
     'django.core.context_processors.request',
     'toolkit.context_processors.EXPOSED_GLOBALS',
+    'toolkit.context_processors.FIRSTSEEN',
     'toolkit.context_processors.LAYOUT',
     'toolkit.context_processors.WORKSPACES',
 )

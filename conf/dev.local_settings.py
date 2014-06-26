@@ -87,7 +87,10 @@ EDIT_COMMENTS_DURATION = DELETE_COMMENTS_DURATION
 # Abridge Integration
 #
 
-ABRIDGE_ENABLED = False if sys.argv[1] in ['syncdb', 'migrate', 'test', 'loaddata'] else True  # disable when we are syncing or migrating or loadingdata
+try:
+    ABRIDGE_ENABLED = False if sys.argv[1] in ['syncdb', 'migrate', 'test', 'loaddata'] else True  # disable when we are syncing or migrating or loadingdata
+except IndexError:
+    ABRIDGE_ENABLED = False
 
 ABRIDGE_PROJECT = 'lawpal-digest'
 
