@@ -71,7 +71,10 @@ class MatterPermissionTest(BaseScenarios, TestCase):
 
     def test_has_permission(self):
         perm = self.user.matter_permissions(matter=self.matter)
-        self.assertTrue(perm.has_permission(manage_items=True))
+
+        # non-colleagues do not by default have manage_items permissions
+        self.assertTrue(perm.has_permission(manage_items=False))
+
         # clients do not by default have manage_participants permissions
         self.assertFalse(perm.has_permission(manage_participants=True))
         self.assertTrue(perm.has_permission(manage_participants=False))
