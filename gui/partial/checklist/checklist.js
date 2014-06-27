@@ -97,7 +97,7 @@ angular.module('toolkit-gui')
 		$scope.data = {
 			'slug': routeParams.matterSlug,
 			'matter': null,
-      'customers' : [],
+            'customers' : [],
 			'showAddForm': null,
 			'showItemDetailsOptions': false,
 			'selectedItem': null,
@@ -112,7 +112,8 @@ angular.module('toolkit-gui')
 			'statusFilter': null,
 			'itemFilter': null,
 			'knownSigners': [],
-            'showPreviousRevisions': false
+            'showPreviousRevisions': false,
+            'loadedItemdetails': {}
 		};
 
 		//debugger;
@@ -167,7 +168,9 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
 		$rootScope.$on('$stateChangeSuccess', function () {
-			$scope.handleUrlState();
+            $timeout(function(){
+			    $scope.handleUrlState();
+            }, 20);
 		});
 
 
@@ -490,35 +493,41 @@ angular.module('toolkit-gui')
 			}
 		}
 
-		$scope.loadItemDetails = function(item){
-			var deferred = $q.defer();
-			var matterSlug = $scope.data.slug;
+        $scope.loadItemDetails = function (item) {
+            var deferred = $q.defer();
+            var matterSlug = $scope.data.slug;
 
-			//if(typeof(item.latest_revision.reviewers) === "string") {
-			if(item.latest_revision && !item.latest_revision.reviewers) {
-				baseService.loadObjectByUrl(item.latest_revision.url).then(
-					function success(obj){
-						item.latest_revision = obj;
-						deferred.resolve(item);
-					},
-					function error(/*err*/){
-						toaster.pop('error', 'Error!', 'Unable to load latest revision',5000);
-					}
-				);
-			} else {
-				deferred.resolve(item);
-			}
+            // Update selected item with full details, but only on the first select
+            // Because the object is passed referentially, the object can be updated asynchroniously
+            if(!$scope.data.loadedItemdetails[item.slug]) {
+                matterItemService.get(matterSlug, item.slug).then(
+                    function success(fullItem) {
+                        if (fullItem.latest_revision && !fullItem.latest_revision.reviewers) {
+                            baseService.loadObjectByUrl(item.latest_revision.url).then(
+                                function success(obj) {
+                                    fullItem.latest_revision = obj;
+                                    angular.extend(item, fullItem);
+                                    $scope.data.loadedItemdetails[item.slug] = true;
+                                    deferred.resolve(item);
+                                },
+                                function error(/*err*/) {
+                                    toaster.pop('error', 'Error!', 'Unable to load latest revision', 5000);
+                                }
+                            );
+                        } else {
+                            angular.extend(item, fullItem);
+                            $scope.data.loadedItemdetails[item.slug] = true;
+                            deferred.resolve(item);
+                        }
 
-			// Update selected item with full details
-			// Because the object is passed referentially, the object can be updated asynchroniously
-			matterItemService.get( matterSlug, item.slug ).then(
-				function success( fullItem ) {
-					angular.extend( item, fullItem );
-				}
-			);
+                    }
+                );
+            } else {
+                deferred.resolve(item);
+            }
 
-			return deferred.promise;
-		};
+            return deferred.promise;
+        };
 
 
 		/**
