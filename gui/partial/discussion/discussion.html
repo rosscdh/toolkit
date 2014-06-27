@@ -21,8 +21,8 @@
                             <div ng-show="data.threads.length > 0">
                                 <ul class="msg-list list-unstyled">
                                     <li ng-repeat="thread in data.threads"
-                                        ng-class="{ 'selected': thread.id===data.selectedThread.id }"
-                                        ui-sref="discussion.thread({ 'threadId': thread.id })" ng-click="data.view = 'discussion'">
+                              ng-class="{ 'selected': thread.slug===data.selectedThread.slug }"
+                                        ui-sref="discussion.thread({ 'threadSlug': thread.slug })">
                                         <div ng-include="'/static/ng/partial/discussion/includes/thread-line-item.html'"></div>
                                     </li>
                                 </ul>
@@ -35,8 +35,8 @@
                         <tab disabled="data.archivedThreads.length == 0" heading="Archived" class="inbox-label">
                             <ul class="msg-list list-unstyled">
                                 <li ng-repeat="thread in data.archivedThreads"
-                                    ng-class="{ 'selected': thread.id===data.selectedThread.id }"
-                                    ui-sref="discussion.thread({ 'threadId': thread.id })">
+                                    ng-class="{ 'selected': thread.slug===data.selectedThread.slug }"
+                                    ui-sref="discussion.thread({ 'threadSlug': thread.slug })">
                                     <div ng-include="'/static/ng/partial/discussion/includes/thread-line-item.html'"></div>
                                 </li>
                             </ul>

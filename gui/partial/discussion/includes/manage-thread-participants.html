@@ -12,8 +12,7 @@
                 <label ng-bind="person | fullname"></label>
 
                 <a class="btn btn-primary pull-right" ng-show="!isParticipant(person)" ng-click="addParticipant(person)">Add as Participant</a>
-                <a class="btn btn-primary pull-right" ng-show="isParticipant(person) && !isColleague(person)" ng-click="removeParticipant(person)">Remove as Participant</a>
-                <span class="pull-right" ng-show="isParticipant(person) && isColleague(person)">Colleague</span>
+                <span class="pull-right" ng-show="isParticipant(person)">Participating</span>
             </li>
         </ul>
     </div>

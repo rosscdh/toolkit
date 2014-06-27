@@ -27,8 +27,9 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
             },
             'selectedThread': null,
             'threads': [],
-            'threadId': routeParams.threadId,
-            'view': 'inbox'
+            'view': 'inbox',
+            'threadSlug': routeParams.threadSlug
+
         };
 
         if ($scope.data.matterSlug && $scope.data.matterSlug !== '' && $scope.data.matterCalled == null) {
@@ -64,10 +65,10 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
         });
 
         $scope.handleUrlState = function() {
-            var threadId = $state.params.threadId;
+            var threadSlug = $state.params.threadSlug;
 
-            if (threadId && (!$scope.data.selectedThread || threadId !== $scope.data.selectedThread.id)) {
-                $scope.selectThread(threadId);
+            if (threadSlug && (!$scope.data.selectedThread || threadSlug !== $scope.data.selectedThread.slug)) {
+                $scope.selectThread(threadSlug);
             }
         };
 
@@ -119,7 +120,7 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
             ezConfirm.create('Archive Thread', 'Please confirm you would like to archive this thread?',
                 function yes() {
                     var matterSlug = $scope.data.matterSlug;
-                    discussionService.archive(matterSlug, thread.id).then(
+                    discussionService.archive(matterSlug, thread.slug).then(
                         function success(thread) {
                             $scope.initializeDiscussion();
                             $scope.data.selectedThread = thread;
@@ -136,7 +137,7 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
             ezConfirm.create('Unarchive Thread', 'Please confirm you would like to unarchive this thread?',
                 function yes() {
                     var matterSlug = $scope.data.matterSlug;
-                    discussionService.unarchive(matterSlug, thread.id).then(
+                    discussionService.unarchive(matterSlug, thread.slug).then(
                         function success(thread) {
                             $scope.initializeDiscussion();
                             $scope.data.selectedThread = thread;
@@ -154,7 +155,7 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
             ezConfirm.create('Delete Thread', 'Please confirm you would like to delete this thread?',
                 function yes() {
                     var matterSlug = $scope.data.matterSlug;
-                    discussionService.delete(matterSlug, thread.id).then(
+                    discussionService.delete(matterSlug, thread.slug).then(
                         function success() {
                             $scope.initializeDiscussion();
                         },
@@ -166,8 +167,8 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
             );
         };
 
-        $scope.selectThread = function(threadId) {
-            $scope.loadThreadDetails(threadId).then(
+        $scope.selectThread = function(threadSlug) {
+            $scope.loadThreadDetails(threadSlug).then(
                 function success(thread) {
                     $scope.data.selectedThread = thread;
                 }
@@ -176,11 +177,11 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
             $scope.displayThread();
         };
 
-        $scope.loadThreadDetails = function(threadId) {
+        $scope.loadThreadDetails = function(threadSlug) {
             var deferred = $q.defer();
 
             var matterSlug = $scope.data.matterSlug;
-            discussionService.get(matterSlug, threadId).then(
+            discussionService.get(matterSlug, threadSlug).then(
                 function success(thread) {
                     deferred.resolve(thread);
                 },
@@ -200,14 +201,19 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
             var deferred = $q.defer();
 
             var matterSlug = $scope.data.matterSlug;
-            var threadId = $scope.data.selectedThread.id;
+            var threadSlug = $scope.data.selectedThread.slug;
+
+            if (!$scope.data.request.message) {
+                return;
+            }
 
             $scope.sendingMessage = true;
 
-            discussionService.addComment(matterSlug, threadId, $scope.data.request.message).then(
+            discussionService.addComment(matterSlug, threadSlug, $scope.data.request.message).then(
                 function success(response) {
                     deferred.resolve(response);
-                    $scope.selectThread(threadId);
+                    $scope.initializeDiscussion();
+                    $scope.selectThread(threadSlug);
 
                     // Clear message in GUI
                     $scope.data.request.message = '';
@@ -239,7 +245,7 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
 
             modalInstance.result.then(
                 function ok() {
-                    $scope.selectThread(thread.id);
+                    $scope.selectThread(thread.slug);
                 },
                 function cancel() {}
             );

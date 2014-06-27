@@ -49,11 +49,11 @@ angular.module('toolkit-gui').controller('ManageThreadParticipantsCtrl', [
             var deferred = $q.defer();
 
             var matterSlug = $scope.matter.slug;
-            var threadId = $scope.thread.id;
+            var threadSlug = $scope.thread.slug;
 
             var details = { 'username': person.username };
 
-            discussionService.addParticipant(matterSlug, threadId, details).then(
+            discussionService.addParticipant(matterSlug, threadSlug, details).then(
                 function success(response) {
                     $modalInstance.close();
                     $rootScope.$emit('discussionChangeParticipantSuccess');
@@ -68,15 +68,13 @@ angular.module('toolkit-gui').controller('ManageThreadParticipantsCtrl', [
             return deferred.promise;
         };
 
-        $scope.removeParticipant = function(person) {
+        $scope.removeAsParticipant = function() {
             var deferred = $q.defer();
 
             var matterSlug = $scope.matter.slug;
-            var threadId = $scope.thread.id;
+            var threadSlug = $scope.thread.slug;
 
-            var username = person.username;
-
-            discussionService.removeParticipant(matterSlug, threadId, username).then(
+            discussionService.removeParticipant(matterSlug, threadSlug, $scope.currentUser.username).then(
                 function success(response) {
                     $modalInstance.close();
                     $rootScope.$emit('discussionChangeParticipantSuccess');

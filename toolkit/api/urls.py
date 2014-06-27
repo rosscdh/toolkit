@@ -62,17 +62,17 @@ router.register(r'reviews', ReviewEndpoint)
 router.register(r'signatures', SignatureEndpoint)
 
 router.register(
-    r'^matters/(?P<matter_slug>[\w-]+)/discussions',
+    r'matters/(?P<matter_slug>[\w-]+)/discussions',
     DiscussionEndpoint,
     'discussion'
 )
 router.register(
-    r'^matters/(?P<matter_slug>[\w-]+)/discussions/(?P<thread_id>[\d\w-]+)/comments',
+    r'matters/(?P<matter_slug>[\w-]+)/discussions/(?P<thread_slug>[\w-]+)/comments',
     DiscussionCommentEndpoint,
     'discussion_comment'
 )
 router.register(
-    r'^matters/(?P<matter_slug>[\w-]+)/discussions/(?P<thread_id>[\d\w-]+)/participants',
+    r'matters/(?P<matter_slug>[\w-]+)/discussions/(?P<thread_slug>[\w-]+)/participants',
     DiscussionParticipantEndpoint,
     'discussion_participant'
 )

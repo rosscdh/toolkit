@@ -49,7 +49,7 @@ angular.module('toolkit-gui').config(function($stateProvider, $urlRouterProvider
       'templateUrl': '/static/ng/partial/discussion/discussion.html'
     })
     .state('discussion.thread', {
-      'url': "/:threadId",
+      'url': "/:threadSlug",
       'controller': function($scope) {},
       'templateUrl': '/static/ng/partial/discussion/includes/thread.html'
     });
