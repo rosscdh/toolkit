@@ -27,7 +27,8 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
             },
             'selectedThread': null,
             'threads': [],
-            'threadId': routeParams.threadId
+            'threadId': routeParams.threadId,
+            'view': 'inbox'
         };
 
         if ($scope.data.matterSlug && $scope.data.matterSlug !== '' && $scope.data.matterCalled == null) {

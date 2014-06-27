@@ -588,6 +588,15 @@ a.markdown-link{
 }
 
 
+.big-chat{
+	font-size: 687px;
+	font-color: #cccccc;
+	opacity: 0.04;
+	position: absolute;
+	top: -60px;
+	left: 80px;
+}
+
 .inbox-tabs {
 
 	.nav {
@@ -603,12 +612,16 @@ a.markdown-link{
 }
 }
 
-//MEDIA QUERIES.
-@media only screen and (min-device-width : 768px) and (max-device-width : 1024px)  {
 
-body {
+@media only screen and (max-width : 1200px) {
 
+.zero {
+			width: 0;
+			padding: 0;
+			margin: 0;
+			height: 0 !important;
+			overflow: hidden;
+			opacity: 0;
 }
 
 }
-

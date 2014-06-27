@@ -1,9 +1,12 @@
 <div id="messaging" class="discussion-wrapper">
     <div class="container-fluid full">
+        <div class="row mobile" ng-show="data.page!=='checklist'">
+            <button type="button" class="btn btn-link btn-transparent" ng-click="data.view = 'inbox' ">Inbox</button>
+        </div>
         <div class="row full">
 
 
-            <div class="col-sm-3 full" id="inbox">
+            <div class="col-lg-3 col-md-12 full" id="inbox" ng-class="{'zero': data.view == 'discussion'}">
 
                 <div class="inbox-msgs checklist-col">
                     <div class="col-sm-12 inbox-controls">
@@ -19,7 +22,7 @@
                                 <ul class="msg-list list-unstyled">
                                     <li ng-repeat="thread in data.threads"
                                         ng-class="{ 'selected': thread.id===data.selectedThread.id }"
-                                        ui-sref="discussion.thread({ 'threadId': thread.id })">
+                                        ui-sref="discussion.thread({ 'threadId': thread.id })" ng-click="data.view = 'discussion'">
                                         <div ng-include="'/static/ng/partial/discussion/includes/thread-line-item.html'"></div>
                                     </li>
                                 </ul>
@@ -42,7 +45,7 @@
                 </div>
             </div>
 
-            <div class="col-sm-9" id="message-stage">
+            <div class="col-lg-9 col-md-12" id="message-stage" ng-class="{'zero': data.view !== 'discussion'}">
                 <div ng-include="'/static/ng/partial/discussion/includes/thread.html'"></div>
             </div>
         </div>
