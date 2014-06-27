@@ -695,30 +695,49 @@ a.markdown-link{
 	}
 
 
-.sticky-fixed {
-	position: static;
+	.sticky-fixed {
+		position: static;
+	}
+
+
+	.zero {
+				width: 0;
+				padding: 0;
+				margin: 0;
+				height: 0 !important;
+				display: none;
+				overflow: hidden;
+				opacity: 0;
+	}
+
+	#inbox {
+		height: 600px !important;
+	}
+
+	.read-message{
+		height: 550px;
+	}
+
+	.author{
+		width: 100%
+	}
+}
+
+@media only screen
+and (min-device-width : 768px)
+and (max-device-width : 1024px)
+and (orientation : portrait) {
+.discussion-wrapper {
+	.mobile{
+
+	}
+	.sticky-fixed {
+		position: static;
+
+
+	}
 }
 
 
-.zero {
-			width: 0;
-			padding: 0;
-			margin: 0;
-			height: 0 !important;
-			display: none;
-			overflow: hidden;
-			opacity: 0;
 }
 
-#inbox {
-	height: 600px !important;
-}
-
-.read-message{
-	height: 550px;
-}
-
-.author{
-	width: 100%
-}
-}
