@@ -687,17 +687,29 @@ def build_gui_dist():
 @task
 @roles('web')
 def upload_nginx_ban_ips():
+    """
+    Ban lists for nginx
+    http://www.cyberciti.biz/faq/linux-unix-nginx-access-control-howto/
+    """
+    # copy our custom nginx config from chef
     nginx_files = [os.path.join(env.uwsgi_app_path, 'default', 'nginx', 'nginx.conf'),
                    os.path.join(env.uwsgi_app_path, 'default', 'nginx', 'ban_ips.conf')]
+    # upload em
     if all(os.path.exists(f) for f in nginx_files) is True:
         for f in nginx_files:
             name = os.path.basename(f)
-            print name
+            print colored('Uploading: %s' % name, 'magenta')
             put(f, '/tmp/%s' % name)
             #sudo('diff %s /etc/nginx/%s' % ('/tmp/%s'%name, name,))
             #sudo('cat /etc/nginx/%s' % name)
             sudo('mv /tmp/%s /etc/nginx/%s' % (name, name,))
+
+        print colored('Testing nginx config', 'green')
         sudo('nginx -t')
+
+        reload_nginx = prompt(colored('Reload nginx config: Proceed? (y,n)', 'yellow'))
+        if reload_nginx in env.truthy:
+            sudo('nginx -s reload')
 
 
 @task
