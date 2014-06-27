@@ -293,11 +293,11 @@ angular.module('toolkit-gui')
 		$scope.invalid = function() {
             return $scope.data.validationError ||
                    !($scope.data.invitee.email&&$scope.data.invitee.first_name &&$scope.data.invitee.last_name) ||
-                    ($scope.data.invitee.role === 'colleague'
-                     && $scope.data.invitee.permissions.manage_participants === false
-                     && $scope.data.invitee.permissions.manage_items === false
-                     && $scope.data.invitee.permissions.manage_document_reviews === false
-                     && $scope.data.invitee.permissions.manage_signature_requests === false);
+                    ($scope.data.invitee.role === 'colleague' &&
+                     $scope.data.invitee.permissions.manage_participants === false &&
+                     $scope.data.invitee.permissions.manage_items === false &&
+                     $scope.data.invitee.permissions.manage_document_reviews === false &&
+                     $scope.data.invitee.permissions.manage_signature_requests === false);
 		};
 
 		/**
