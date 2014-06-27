@@ -55,7 +55,7 @@ class MatterParticipantPermissionMixin(object):
         else:
             # no specific permissions were passed in
             # so get the roles default permissions
-            permissions = self.permissions_model.default_permissions()
+            permissions = perm.default_permissions()
 
         perm.permissions = permissions
         update_fields.append('data')
