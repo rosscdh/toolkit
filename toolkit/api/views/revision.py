@@ -237,13 +237,16 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
     def can_read(self, user):
         """
         logic about WHO may read this revision is in RevisionManager
+
+
+        WEIRD THING: The latest revisions reviewer was allowed to see all revisions before!
         """
         return self.get_object() in Revision.objects.visible(user, self.matter).all()
 
     def can_edit(self, user):
 
         #
-        # Why is a latest revisions' reviewer allowed to edit?
+        # WEIRD THING: Why is a latest revisions' reviewer allowed to edit?
         #
 
         return (user in self.matter.participants.all()
