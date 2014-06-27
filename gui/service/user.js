@@ -66,7 +66,7 @@ angular.module('toolkit-gui').factory('userService',[
 					Raven.setUser(userData);
 				}
 
-				if(Pusher) {
+				if( typeof(Pusher) !== 'undefined' ) {
 					// Send notification through rootscope
 					PusherService.subscribe( userData.username, 'notifications.new', function(msg) {
 						var base64string, snd;
