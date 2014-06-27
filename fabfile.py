@@ -18,6 +18,7 @@ debug = True
 
 env.local_project_path = os.path.dirname(os.path.realpath(__file__))
 env.gui_dist_path = '%s/gui/dist' % env.local_project_path
+env.uwsgi_app_path = os.path.dirname(os.path.realpath(__file__)) + '/../lawpal-chef/uwsgi-app/files'
 env.environment_settings_path = os.path.dirname(os.path.realpath(__file__)) + '/../lawpal-chef/uwsgi-app/files/default/conf'
 # default to local override in env
 env.remote_project_path = env.local_project_path
@@ -684,6 +685,22 @@ def build_gui_dist():
             local('cp conf/dev.local_settings.py toolkit/local_settings.py')
 
 @task
+@roles('web')
+def upload_nginx_ban_ips():
+    nginx_files = [os.path.join(env.uwsgi_app_path, 'default', 'nginx', 'nginx.conf'),
+                   os.path.join(env.uwsgi_app_path, 'default', 'nginx', 'ban_ips.conf')]
+    if all(os.path.exists(f) for f in nginx_files) is True:
+        for f in nginx_files:
+            name = os.path.basename(f)
+            print name
+            put(f, '/tmp/%s' % name)
+            #sudo('diff %s /etc/nginx/%s' % ('/tmp/%s'%name, name,))
+            #sudo('cat /etc/nginx/%s' % name)
+            sudo('mv /tmp/%s /etc/nginx/%s' % (name, name,))
+        sudo('nginx -t')
+
+
+@task
 def upload_gui():
     if not env.SHA1_FILENAME:
         env.SHA1_FILENAME = get_sha1()
@@ -761,13 +778,12 @@ def deploy(is_predeploy='False',full='False',db='False',search='False'):
     do_deploy()
     update_env_conf()
 
-    # upload the gui
-    upload_gui()
-
     if full:
         requirements()
 
     relink()
+    # upload the gui
+    upload_gui()
     assets()
     clean_start()
     celery_restart()
