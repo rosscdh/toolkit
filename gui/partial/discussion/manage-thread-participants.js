@@ -68,7 +68,7 @@ angular.module('toolkit-gui').controller('ManageThreadParticipantsCtrl', [
             return deferred.promise;
         };
 
-        $scope.removeParticipant = function(person) {
+        $scope.removeAsParticipant = function() {
             var deferred = $q.defer();
 
             var matterSlug = $scope.matter.slug;

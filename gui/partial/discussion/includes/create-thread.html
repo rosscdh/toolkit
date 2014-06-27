@@ -12,6 +12,15 @@
             </div>
         </div>
 
+        <div id="div_id_participants" class="form-group">
+            <label for="id_participants" class="control-label">Participants</label>
+            <div class="controls">
+                <label ng-repeat="person in matter.participants">
+                    <input type="checkbox" ng-model="data.request.participants[person.username]"> {{person.name}}
+                </label><br>
+            </div>
+        </div>
+
         <div id="div_id_comment" class="form-group">
             <label for="id_comment" class="control-label">Comment</label>
             <div class="controls">
