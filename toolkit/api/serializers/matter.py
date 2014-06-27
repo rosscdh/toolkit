@@ -6,6 +6,8 @@ or a document item
 from rest_framework import serializers
 from toolkit.apps.workspace.models import Workspace
 
+from toolkit.apps.workspace.models import (ROLES,
+                                           MATTER_OWNER_PERMISSIONS)
 from .client import LiteClientSerializer
 from .item import SimpleItemSerializer
 from .user import LiteUserSerializer
@@ -42,18 +44,16 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
     date_modified = serializers.DateTimeField(read_only=True)
 
     client = LiteClientSerializer(required=False)
-    lawyer = LiteUserSerializer(required=False)
-    participants = LiteUserSerializer(many=True, required=False)
+    lawyer = serializers.SerializerMethodField('get_lawyer')
+    participants = serializers.SerializerMethodField('get_participants')
 
     categories = serializers.SerializerMethodField('get_categories')
     closing_groups = serializers.SerializerMethodField('get_closing_groups')
 
     items = serializers.SerializerMethodField('get_items')
-    comments = serializers.SerializerMethodField('get_comments')
-    activity = serializers.SerializerMethodField('get_activity')
 
-    current_user_todo = serializers.SerializerMethodField('get_current_user_todo')
     current_user = serializers.SerializerMethodField('get_current_user')
+    roles = serializers.SerializerMethodField('get_roles')
 
     percent_complete = serializers.SerializerMethodField('get_percent_complete')
 
@@ -67,8 +67,7 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
                   'client', 'lawyer', 'participants',
                   'closing_groups', 'categories',
                   'items',
-                  'comments', 'activity',
-                  'current_user', 'current_user_todo',
+                  'current_user', 'roles',
                   'date_created', 'date_modified',
                   'percent_complete')
 
@@ -90,38 +89,32 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
         """
         tmp method will eventually be replaced by matter.items_set.all()
         """
-        return [SimpleItemSerializer(i, context=self.context).data for i in obj.item_set.filter(parent=None)]
+        return SimpleItemSerializer(obj.item_set.filter(parent=None), context=self.context, many=True).data
 
-    def get_comments(self, obj):
-        """
-        tmp method will eventually be replaced by getting all the latest
-        comments form all items in a workspace @TODO cache this
-        """
-        comments = {
-            'message': 'He said that she said that she was a S and a Y because of Z',
-            'url': '/api/v1/activity/:pk',
-            'date_of': datetime.datetime.utcnow()
-        }
-        #return [comments.copy() for i in xrange(0,5)]
-        return []
+    def get_lawyer(self, obj):
+        owner_data = LiteUserSerializer(obj.lawyer).data
+        owner_data.update({
+            'role': ROLES.get_name_by_value(ROLES.owner),
+            'permissions': MATTER_OWNER_PERMISSIONS,
+        })
+        return owner_data
 
-    def get_activity(self, obj):
-        """
-        tmp method will eventually be replaced by matter.activity.all()
-        """
-        activity = {
-            'message': 'X did a Y to a J because of G',
-            'url': '/api/v1/activity/:pk',
-            'date_of': datetime.datetime.utcnow()
-        }
-        #return [activity.copy() for i in xrange(0,5)]
-        return []
+    def get_participants(self, obj):
+        context = self.context
+        context.update({'matter': obj})
+        #return LiteUserSerializer(obj.participants.all(), context=context, many=True).data
+        return obj.data.get('participants', [])
 
     def get_current_user(self, obj):
         request = self.context.get('request')
+
+        context = self.context
+        context.update({'matter': obj})
+
         current_user = None
+
         if request:
-            current_user = LiteUserSerializer(request.user, context={'request': request}).data
+            current_user = LiteUserSerializer(request.user, context=context).data
             profile = request.user.profile
 
             current_user.update({
@@ -129,18 +122,12 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
                 'has_notifications': profile.has_notifications,
                 'matters_created': profile.matters_created,
             })
+
         return current_user
 
-    def get_current_user_todo(self, obj):
-        """
-        tmp method will eventually be replaced by matter.todo.filter(user=request.user)
-        """
-        todo = {
-            'url': '/api/v1/todo/:pk',
-            'message': 'You need to X, Y, and Z this mattter'
-        }
-        #return [todo.copy() for i in xrange(0,5)]
-        return []
+    def get_roles(self, obj):
+        request = self.context.get('request')
+        return {name: desc for value, name, desc in request.user.matter_permissions(matter=obj).ROLES.get_all()} if request else {}
 
     def get_percent_complete(self, obj):
         return obj.get_percent_complete
@@ -155,9 +142,14 @@ class LiteMatterSerializer(MatterSerializer):
     @BUSINESSRULE used for the matters/ GET (shows lighter version of the serializer)
     """
     class Meta(MatterSerializer.Meta):
-        fields = ('url', 'base_url', 'name', 'slug', 'matter_code', 'client',
-                  'lawyer', 'participants', 'date_created', 'date_modified',
-                  'percent_complete', 'export_info', 'regular_url')
+        fields = ('url', 'base_url', 'regular_url',
+                  'name', 'slug', 'matter_code',
+                  'client',
+                  'lawyer',
+                  'participants',
+                  'date_created', 'date_modified',
+                  'percent_complete',
+                  'export_info')
 
 
 class SimpleMatterSerializer(MatterSerializer):

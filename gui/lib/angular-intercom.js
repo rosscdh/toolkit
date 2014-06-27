@@ -46,7 +46,8 @@
       var _intercom = angular.isFunction($window.Intercom) ? $window.Intercom : angular.noop;
 
       if (_asyncLoading) {
-        var _try = 10; // wait 1sec max before aborting
+        // wait up to 1 sec before aborting
+        var _try = 10;
         // Load client in the browser
         var onScriptLoad = function tryF(callback) {
           $timeout(function() {
@@ -81,9 +82,11 @@
           boot: function(options) {
             if (IntercomService.then) {
               IntercomService.then(function(intercom) {
+
                 if(intercom && typeof(intercom)==='function') {
                   intercom('boot', options || _options);
                 }
+
               });
             } else {
               IntercomService('boot', options || _options);

@@ -3,6 +3,20 @@
 {% block body %}
     <div id="notifications" class="content">
         <div class="content-header notifications-header clearfix">
+              <div class="row">
+                <div class="col-sm-12 hidden" id="requestNotifyPermission">
+                    <div class="alert text-center">
+                        <p>
+                            <a href="#" class="notification-link">
+                                We encourage you to enable Desktop Notifications.
+                            </a>
+                        </p>
+                    </div>
+                </div>
+                <div class="col-sm-12 hidden" id="requestNotifyInstructions">
+                    <p class="alert text-center">Your browser should now be presenting you with the option to enable notifications. Click <strong>Enable</strong> or <strong>Allow</strong> or <strong>Yes</strong> or <strong>OK</strong>.</p>
+                </div>
+            </div>
             <div class="container">
                 <div class="col-sm-8 col-sm-offset-2">
                     {% if object_list %}
@@ -93,9 +107,9 @@ $(document).ready(function () {
                     callback(obj, url)
                 } else {
                     // only remove when we dont have a callback
-                    $this.closest('article').remove()    
+                    $this.closest('article').remove()
                 }
-                
+
             }
         });
     }
@@ -121,6 +135,35 @@ $(document).ready(function () {
             }
         });
     });
+
+    // Load desktop notify
+    $.when(
+        // Retrieve intro script
+        $.getScript( "/static/ng/bower_components/html5-desktop-notifications/desktop-notify.js" ),
+        $.Deferred(function( deferred ){
+            $( deferred.resolve );
+        })
+    ).done(function(){
+        processNotificationPermissionLevel();
+    });
+
+    function processNotificationPermissionLevel() {
+        var permissionLevel = notify.permissionLevel();
+        if(permissionLevel==='default') {
+            $('#requestNotifyPermission').removeClass('hidden');
+            $('.notification-link').click(function(){
+                $('#requestNotifyPermission').addClass('hidden');
+                $('#requestNotifyInstructions').removeClass('hidden');
+                requestNotifyPermission();
+            });
+        }
+    }
+
+    function requestNotifyPermission() {
+      notify.requestPermission(function(){
+        $('#requestNotifyInstructions').addClass('hidden');
+      });
+    };
 
 });
 </script>

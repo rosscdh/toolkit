@@ -4,9 +4,7 @@ angular.module('toolkit-gui').directive("filepicker", function($location){
 			'callback': '&',
 			'btnclasses': '='
 		},
-		/*'transclude': true,*/
 		'restrict': "A",
-		/*'template': "<a href='' class='{{btnclasses}}' ng-click='pickFiles()' ng-transclude></a>",*/
 		'link': function(scope, element, attrs) {
 
 			element.bind("click", function(e){
@@ -16,7 +14,7 @@ angular.module('toolkit-gui').directive("filepicker", function($location){
 			scope.pickFiles = function () {
 				var picker_options = {
 					'container': 'modal',
-					'services': ['BOX','COMPUTER','DROPBOX','EVERNOTE','FTP','GITHUB','GOOGLE_DRIVE','SKYDRIVE','WEBDAV']
+					'services': ['BOX',/*'COMPUTER',*/'DROPBOX',/*'EVERNOTE',*/'FTP','GITHUB'/*,'GOOGLE_DRIVE'*/,'SKYDRIVE','WEBDAV']
 				};
 
 				if(attrs.multiple === 'true'){

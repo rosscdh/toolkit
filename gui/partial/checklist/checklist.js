@@ -97,6 +97,7 @@ angular.module('toolkit-gui')
 		$scope.data = {
 			'slug': routeParams.matterSlug,
 			'matter': null,
+      'customers' : [],
 			'showAddForm': null,
 			'showItemDetailsOptions': false,
 			'selectedItem': null,
@@ -230,9 +231,7 @@ angular.module('toolkit-gui')
 			categories.push(category);
 
 			// First item if available, this will be used to open the first available checklist item by default
-			if(items && items.length>0) {
-				firstItem = { 'item': items[0], 'category': category };
-			}
+			firstItem = matterService.selectFirstitem( firstItem, items, category );
 
 			if( matter && matter.categories ) {
 				// Allocate items to specific categories to make multiple arrays
@@ -241,15 +240,18 @@ angular.module('toolkit-gui')
 					var items = jQuery.grep( matter.items, function( item ){ return item.category===categoryName; } );
 
 					category = { 'name': categoryName, 'items': items };
-
 					categories.push( category );
 
 					// First item if available, this will be used to open the first available checklist item by default
-
-					if(!firstItem && items[0] !== undefined) {
-						firstItem = { 'item': items[0], 'category': category };
-					}
+					firstItem = matterService.selectFirstitem( firstItem, items, category );
 				});
+
+        jQuery.each( matter.participants, function( index, participant ) {
+          if (participant.user_class === 'customer'){
+            $scope.data.customers.push(participant);
+          }
+
+        });
 
 				$scope.data.matter = matter;
 				$scope.data.categories = categories;
@@ -403,7 +405,6 @@ angular.module('toolkit-gui')
 		$scope.selectItem = function(item, category) {
 			var deferred = $q.defer();
 
-			$scope.data.itemIsLoading = true;
 			$scope.data.selectedItem = item;
 			$scope.data.selectedCategory = category;
 
@@ -412,8 +413,18 @@ angular.module('toolkit-gui')
             $scope.loadItemDetails(item).then(function success(item){
                 deferred.resolve(item);
                 $scope.data.itemIsLoading = false;
-                //$log.debug(item);
 		    });
+
+		    resetScopeState();
+
+			$scope.displayDetails();	// @mobile
+
+			return deferred.promise;
+		};
+
+		function resetScopeState() {
+			$scope.data.itemIsLoading = true;
+			$scope.data.showAddFileOptions = false;
 
 			//Reset controls
 			$scope.data.dueDatePickerDate = $scope.data.selectedItem.date_due;
@@ -422,12 +433,7 @@ angular.module('toolkit-gui')
 
 			$scope.data.show_edit_item_description = false;
 			$scope.data.show_edit_revision_description = false;
-
-			//$log.debug(item);
-			$scope.displayDetails();	// @mobile
-
-			return deferred.promise;
-		};
+		}
 
 		/**
 		 * Allows the GUI some time to update before incepting the request to load item details
@@ -850,7 +856,7 @@ angular.module('toolkit-gui')
 			var user = userService.data().current;
 			var promise;
 
-			if( user.user_class === 'lawyer' ) {
+			if( user.permissions.manage_items) {
 				item.uploading = true;
 				$scope.data.uploading = true;
 
@@ -1363,6 +1369,9 @@ angular.module('toolkit-gui')
 					},
 					'review': function () {
 						return review;
+					},
+                    'currentUser': function () {
+						return $scope.data.usdata.current;
 					}
 				}
 			});
@@ -1447,6 +1456,24 @@ angular.module('toolkit-gui')
 			}
 		};
 
+        $scope.calculateSigningPercentageComplete = function( item) {
+			if(item && item.latest_revision && item.latest_revision.signing && item.latest_revision.signing.signers.length>0) {
+				var signers = item.latest_revision.signing.signers;
+				var completed = 0;
+
+				jQuery.each( signers, function( index, r ){
+					if (r.has_signed===true){
+						completed += 1;
+					}
+				});
+				item.signing_percentage_complete = parseInt(completed / signers.length * 100);
+				$log.debug(item.signing_percentage_complete);
+
+			} else {
+				item.signing_percentage_complete = null;
+			}
+		};
+
          $scope.editRevisionStatusTitles = function() {
             var matter = $scope.data.matter;
 
@@ -1513,14 +1540,45 @@ angular.module('toolkit-gui')
 			modalInstance.result.then(
 				function ok(obj) {
                     $log.debug(obj);
-                    revision.signing = obj;
-                    item.signing_percentage_complete = obj.percentage_complete;
+
+                    if(!revision.signing || revision.signing.is_claimed ===false) {
+                        revision.signing = obj;
+                        item.signing_percentage_complete = obj.percentage_complete;
+                    }
+                    //if not, then handled through the callback event from HS
 				},
 				function cancel() {
 					// do nothing
 				}
 			);
 		};
+
+         /**
+         * Called when the User signs a document in HelloSign and sets a processing flag the revision
+         *
+         */
+        $("body").on("sign.signed", function (event, param1, param2) {
+            $log.debug(event);
+            var username = event.username;
+            var item = $scope.data.selectedItem;
+            var latest_revision = item.latest_revision;
+            var signers = latest_revision.signing.signers;
+
+            var results = jQuery.grep(signers, function (obj) {
+                return obj.username === username;
+            });
+
+            if (results.length > 0) {
+                latest_revision.sign_in_progress = true;
+                $scope.saveLatestRevision();
+
+                results[0].has_signed = true;
+                $scope.calculateSigningPercentageComplete(item);
+                $scope.$apply();
+
+                toaster.pop('success', 'Success!', 'The document is being processed.', 5000);
+            }
+        });
 
         /**
         * Remind all review users who haven´t reviewed yet.
@@ -1565,6 +1623,7 @@ angular.module('toolkit-gui')
                 );
             }
         };
+
 		/* End revision handling */
 
 

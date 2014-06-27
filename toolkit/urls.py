@@ -8,6 +8,9 @@ from toolkit.static import static
 from django.contrib import admin
 admin.autodiscover()
 
+import permission
+permission.autodiscover()
+
 handler500 = 'toolkit.apps.default.views.handler500'
 
 urlpatterns = patterns('',
@@ -24,7 +27,7 @@ urlpatterns = patterns('',
     url(r'^matters/', include('toolkit.apps.matter.urls', namespace='matter')),
     url(r'^requests/', include('toolkit.apps.request.urls', namespace='request')),
 
-    url(r'^me/pasword/', include('password_reset.urls')),
+    url(r'^me/password/', include('password_reset.urls')),
     url(r'^me/', include('toolkit.apps.me.urls', namespace='me')),
 
     # primary workspace

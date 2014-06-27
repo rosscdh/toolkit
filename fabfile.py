@@ -135,7 +135,7 @@ def virtualenv(cmd, **kwargs):
 
 @task
 def pip_install():
-    virtualenv('pip install -e git+https://github.com/rosscdh/django-authy.git#egg=django-authy -U')
+    virtualenv('pip install django-permission')
 
 @task
 def cron():
@@ -555,8 +555,6 @@ def fixtures():
 
 @task
 def assets():
-    # upload the gui
-    upload_gui()
     # collect static components
     virtualenv('python %s%s/manage.py collectstatic --noinput' % (env.remote_project_path, env.project,))
 
@@ -646,8 +644,11 @@ def prompt_build_gui():
 def gui_clean():
     local('rm -Rf gui/bower_components')
     local('rm -Rf gui/node_modules')
+    local('rm -Rf gui/temp')
+    local('rm -Rf gui/dist')
     local('cd gui;npm install')
     local('cd gui;bower install')
+    build_gui_dist()
 
 
 @task
@@ -713,7 +714,7 @@ def conclude():
     newrelic_deploynote()
 
 @task
-def rebuild_local():
+def rebuild_local(gui_clean=False):
     if not os.path.exists('../Stamp'):
         #
         # Clone the Stamp PDF application
@@ -731,12 +732,13 @@ def rebuild_local():
         local('rm ./dev.db')
 
     local('python manage.py syncdb  --noinput')
+    local('python manage.py update_permissions')
     local('python manage.py migrate')
     local('python manage.py loaddata %s' % fixtures())
     local('python manage.py createsuperuser')  #manually as we rely on the dev-fixtures
-    gui_clean()
-
-
+    local('python manage.py update_permissions')
+    if gui_clean in env.truthy:
+        gui_clean()
 
 @task
 def deploy(is_predeploy='False',full='False',db='False',search='False'):
@@ -749,7 +751,7 @@ def deploy(is_predeploy='False',full='False',db='False',search='False'):
     db = db.lower() in env.truthy
     search = search.lower() in env.truthy
 
-    prompt_build_gui()
+    prompt_build_gui() # rebuilds the gui
     run_tests()
     diff()
     git_set_tag()
@@ -758,6 +760,9 @@ def deploy(is_predeploy='False',full='False',db='False',search='False'):
     prepare_deploy()
     do_deploy()
     update_env_conf()
+
+    # upload the gui
+    upload_gui()
 
     if full:
         requirements()

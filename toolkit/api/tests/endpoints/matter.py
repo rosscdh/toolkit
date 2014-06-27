@@ -317,11 +317,11 @@ class MatterDetailProvidedDataTest(BaseEndpointTest):
         """
         self.assertEqual(type(participants), list)
         # must have full url
-        self.assertTrue(all(u.get('url') == 'http://testserver/api/v1/users/%s' % u.get('username') for u in participants))
+        self.assertTrue(all(u.get('url') == '/api/v1/users/%s' % u.get('username') for u in participants))
 
         participant_urls = [u.get('url') for u in participants]
-        self.assertTrue('http://testserver/api/v1/users/%s' % self.user.username in participant_urls)
-        self.assertTrue('http://testserver/api/v1/users/%s' % self.lawyer.username in participant_urls)
+        self.assertTrue('/api/v1/users/%s' % self.user.username in participant_urls)
+        self.assertTrue('/api/v1/users/%s' % self.lawyer.username in participant_urls)
 
     def confirm_item_latest_revision(self, items):
         """

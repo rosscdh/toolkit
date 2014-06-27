@@ -89,7 +89,7 @@ class AddUserToWorkspace(ModalView, AjaxFormView, FormView):
     def form_valid(self, form):
         # save the form
         user, is_new = form.save()
-        self.workspace.participants.add(user)
+        self.workspace.add_participant(user)
 
         if is_new is True:
             messages.success(self.request, 'You have sucessfully added a new user "%s" to the workspace' % user)

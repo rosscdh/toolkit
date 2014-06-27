@@ -4,6 +4,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework import filters
+from rest_framework.response import Response
+from rest_framework import status as http_status
 
 from django.contrib.auth.models import User
 from ..serializers import UserSerializer
@@ -23,13 +25,17 @@ class UserEndpoint(viewsets.ModelViewSet,
     filter_backends = (filters.SearchFilter,)
     search_fields = ('username', 'email',)
 
-
     def get_object(self):
         queryset = self.get_queryset()
         username = self.kwargs.get('username', None)
         if username is not None:
             return get_object_or_404(User, username=username)
         return queryset.none()
+
+    def list(self, request, **kwargs):
+        if request.GET.get('search', None) is not None:
+            return super(UserEndpoint, self).list(request=request, **kwargs)
+        return Response(None, status=http_status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def get_serializer_context(self):
         return {'request': self.request}

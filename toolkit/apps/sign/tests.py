@@ -6,16 +6,16 @@ this object is created in the signal above "ensure_revision_signdocument_object"
 authorized to view the object via the toolkit.apps.sign.signals
 """
 from django.core import mail
-from django.conf import settings
 from django.test import TestCase
 from django.core.urlresolvers import reverse
+
+from toolkit.test_runner import DEMO_DOC
 
 from toolkit.casper.prettify import mock_http_requests
 from toolkit.casper.workflow_case import BaseScenarios
 
 from model_mommy import mommy
 
-import os
 import mock
 import json
 import urllib
@@ -59,7 +59,7 @@ class BaseDataProvider(BaseScenarios):
 
         self.revision = mommy.make('attachment.Revision',
                                    item=self.item,
-                                   executed_file=os.path.join(settings.SITE_ROOT, 'toolkit', 'casper', 'test.pdf'),
+                                   executed_file=DEMO_DOC,
                                    uploaded_by=self.lawyer)
 
         self.revision.signers.add(self.signer)
