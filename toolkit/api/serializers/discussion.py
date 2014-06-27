@@ -9,13 +9,13 @@ from .user import SimpleUserSerializer
 class DiscussionSerializer(serializers.HyperlinkedModelSerializer):
     author = SimpleUserSerializer(read_only=True, source='user')
     comments = serializers.SerializerMethodField('get_comments')
-    content = serializers.WritableField(source='comment')
+    content = serializers.WritableField(required=False, source='comment')
     date_created = serializers.DateTimeField(source='submit_date', read_only=True)
     date_updated = serializers.SerializerMethodField('get_last_updated')
     participants = SimpleUserSerializer(many=True, read_only=True)
 
     class Meta:
-        fields = ('id',
+        fields = ('slug',
                   'title',
                   'content',
                   'is_archived',
@@ -24,7 +24,6 @@ class DiscussionSerializer(serializers.HyperlinkedModelSerializer):
                   'participants',
                   'date_created',
                   'date_updated',)
-        lookup_field = 'id'
         model = DiscussionComment
 
     def get_comments(self, obj):
@@ -39,7 +38,7 @@ class DiscussionSerializer(serializers.HyperlinkedModelSerializer):
 
 class LiteDiscussionSerializer(DiscussionSerializer):
     class Meta(DiscussionSerializer.Meta):
-        fields = ('id',
+        fields = ('slug',
                   'title',
                   'content',
                   'is_archived',
@@ -51,7 +50,7 @@ class LiteDiscussionSerializer(DiscussionSerializer):
 
 class DiscussionCommentSerializer(DiscussionSerializer):
     class Meta(DiscussionSerializer.Meta):
-        fields = ('id',
+        fields = ('slug',
                   'content',
                   'author',
                   'date_created',)
