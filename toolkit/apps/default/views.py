@@ -12,6 +12,7 @@ from django.views.generic import TemplateView, RedirectView, FormView
 
 from .forms import SignUpForm, SignInForm, VerifyTwoFactorForm
 
+from toolkit.core.services.blacklist import BlackListService
 from toolkit.apps.workspace.forms import InviteKeyForm
 from toolkit.apps.workspace.models import InviteKey
 from toolkit.apps.me.mailers import ValidateEmailMailer
@@ -125,10 +126,13 @@ class StartView(LogOutMixin, SaveNextUrlInSessionMixin, AuthenticateUserMixin, F
         if self.authenticated_user.profile.data.get('two_factor_enabled', False):
             self.request.session['user'] = self.authenticated_user.username
         else:
+            blacklist = BlackListService(request=self.request)
+            blacklist.is_blacklisted()
+
             self.login(user=self.authenticated_user)
 
             analytics = AtticusFinch()
-            analytics.event('user.login', user=self.authenticated_user, ip_address=self.request.META.get('HTTP_X_FORWARDED_FOR', self.request.META.get('REMOTE_ADDR')))
+            analytics.event('user.login', user=self.authenticated_user, ip_address=blacklist.ip_address)
 
         return super(StartView, self).form_valid(form)
 
@@ -162,6 +166,10 @@ class VerifyTwoFactorView(AuthenticateUserMixin, FormView):
             raise Http404('No user found in the session')
 
     def form_valid(self, form):
+        # ensure we are not blacklisted
+        blacklist = BlackListService(request=self.request)
+        blacklist.is_blacklisted()
+
         try:
             self.login(user=self.authenticated_user)
 
@@ -169,7 +177,7 @@ class VerifyTwoFactorView(AuthenticateUserMixin, FormView):
             return self.form_invalid(form=form)
 
         analytics = AtticusFinch()
-        analytics.event('user.login', user=self.authenticated_user, ip_address=self.request.META.get('HTTP_X_FORWARDED_FOR', self.request.META.get('REMOTE_ADDR')))
+        analytics.event('user.login', user=self.authenticated_user, ip_address=blacklist.ip_address)
 
         return super(VerifyTwoFactorView, self).form_valid(form)
 
