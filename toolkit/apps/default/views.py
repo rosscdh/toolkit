@@ -173,9 +173,12 @@ class VerifyTwoFactorView(AuthenticateUserMixin, FormView):
             return self.form_invalid(form=form)
 
         analytics = AtticusFinch()
-        analytics.event('user.login', user=self.authenticated_user,
-                        ip_address=self.request.META.get('HTTP_X_FORWARDED_FOR', self.request.META.get('REMOTE_ADDR')))
 
+        ip_address = self.request.META.get('HTTP_X_FORWARDED_FOR', self.request.META.get('REMOTE_ADDR'))
+        analytics.event('user.login', user=self.authenticated_user, ip_address=ip_address)
+
+        logger.info('Logged-in IP_ADDRESS: %s' % ip_address)
+        
         return super(VerifyTwoFactorView, self).form_valid(form)
 
     def get_success_url(self):
