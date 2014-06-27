@@ -24,6 +24,14 @@ class DiscussionsTest(BaseEndpointTest):
             user=self.lawyer
         )
 
+        self.comment = mommy.make(
+            'discussion.DiscussionComment',
+            matter=self.workspace,
+            parent=self.thread,
+            comment='Hello world!',
+            user=self.lawyer
+        )
+
         self.forbidden_user = mommy.make('auth.User', username='forbidden-user', email='forbidden+user@lawpal.com')
         self.forbidden_user.set_password(self.password)
         self.forbidden_user.save()
@@ -157,6 +165,14 @@ class DiscussionDetailTest(BaseEndpointTest):
             title='Thread',
             comment='Hello world!',
             participants=(self.lawyer,),
+            user=self.lawyer
+        )
+
+        self.comment = mommy.make(
+            'discussion.DiscussionComment',
+            matter=self.workspace,
+            parent=self.thread,
+            comment='Hello world!',
             user=self.lawyer
         )
 

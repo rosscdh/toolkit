@@ -27,7 +27,9 @@ class DiscussionSerializer(serializers.HyperlinkedModelSerializer):
         model = DiscussionComment
 
     def get_comments(self, obj):
-        return DiscussionCommentSerializer(obj.children.all(), context=self.context, many=True).data
+        queryset = DiscussionComment.objects.filter(parent=obj.id).order_by('submit_date')
+
+        return DiscussionCommentSerializer(queryset, context=self.context, many=True).data
 
     def get_last_updated(self, obj):
         if obj.children.count() > 0:
