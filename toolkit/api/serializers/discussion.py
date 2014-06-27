@@ -9,7 +9,7 @@ from .user import SimpleUserSerializer
 class DiscussionSerializer(serializers.HyperlinkedModelSerializer):
     author = SimpleUserSerializer(read_only=True, source='user')
     comments = serializers.SerializerMethodField('get_comments')
-    content = serializers.WritableField(required=False, source='comment')
+    content = serializers.WritableField(source='comment')
     date_created = serializers.DateTimeField(source='submit_date', read_only=True)
     participants = SimpleUserSerializer(many=True, read_only=True)
 

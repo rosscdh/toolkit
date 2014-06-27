@@ -201,6 +201,10 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
             var matterSlug = $scope.data.matterSlug;
             var threadSlug = $scope.data.selectedThread.slug;
 
+            if (!$scope.data.request.message) {
+                return;
+            }
+
             $scope.sendingMessage = true;
 
             discussionService.addComment(matterSlug, threadSlug, $scope.data.request.message).then(

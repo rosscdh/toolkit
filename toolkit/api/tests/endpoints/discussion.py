@@ -246,12 +246,13 @@ class DiscussionDetailTest(BaseEndpointTest):
 
         resp = self.client.put(self.endpoint, json.dumps({
             'title': 'Updated Thread',
+            'content': 'Goodbye world!',
         }), content_type='application/json')
         self.assertEqual(resp.status_code, 200)
 
         json_data = json.loads(resp.content)
         self.assertEqual(json_data['title'], 'Updated Thread')
-        self.assertEqual(json_data['content'], 'Hello world!')
+        self.assertEqual(json_data['content'], 'Goodbye world!')
 
     # def test_put_with_participants(self):
         # @TODO: enable this
