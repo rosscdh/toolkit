@@ -21,7 +21,7 @@
                             <div ng-show="data.threads.length > 0">
                                 <ul class="msg-list list-unstyled">
                                     <li ng-repeat="thread in data.threads"
-                              ng-class="{ 'selected': thread.slug===data.selectedThread.slug }"
+                              ng-class="{ 'selected': thread.slug===data.selectedThread.slug }" ng-click="data.view = 'discussion'"
                                         ui-sref="discussion.thread({ 'threadSlug': thread.slug })">
                                         <div ng-include="'/static/ng/partial/discussion/includes/thread-line-item.html'"></div>
                                     </li>
@@ -36,7 +36,7 @@
                             <ul class="msg-list list-unstyled">
                                 <li ng-repeat="thread in data.archivedThreads"
                                     ng-class="{ 'selected': thread.slug===data.selectedThread.slug }"
-                                    ui-sref="discussion.thread({ 'threadSlug': thread.slug })">
+                                    ui-sref="discussion.thread({ 'threadSlug': thread.slug })" ng-click="data.view = 'discussion'">
                                     <div ng-include="'/static/ng/partial/discussion/includes/thread-line-item.html'"></div>
                                 </li>
                             </ul>
