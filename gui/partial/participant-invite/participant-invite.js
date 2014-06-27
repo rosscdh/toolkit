@@ -32,8 +32,21 @@ angular.module('toolkit-gui')
 		 * @private
 		 */
 		$scope.participants = participants;
-        $log.debug($scope.participants);
 
+		/**
+		 * Permissions change tracking, this object is used in the following ways:
+		 * 		* determine if permissions have changed
+		 * 		* store a copy of the users permissions before any change
+		 * 		* set/read flag for ignoring the next change to permissions (used when switching users)
+		 * @memberof ParticipantInviteCtrl
+		 * @type {Boolean}
+		 * @private
+		 */
+		$scope.permissionTracking = {
+			'changed': false,
+			'original': null,
+			'ignoreNextChange': true
+		};
 
 		/**
 		 * In scope variable containing details about the current user. This is passed through from the originating controller.
@@ -72,10 +85,25 @@ angular.module('toolkit-gui')
 
 		};
 
-     if (angular.isArray(participants) && (participants.length > 0)) {
-          $scope.data.selectedUser = participants[0];
-        }
+        $scope.selectUser = function( person ) {
+        	// Re-apply original permissions if required, the concept here is that if I don't click the 
+        	if( $scope.data.selectedUser && $scope.permissionTracking.original ) {
+        		$scope.data.selectedUser.permissions = $scope.permissionTracking.original; // Reset previosuly selected user permissions
+        	}
+        	// Update selected User with new selected user
+        	$scope.data.selectedUser=person;
+        	$scope.permissionTracking.original = angular.copy(person.permissions);
 
+        	// Permissions changed flag for GUI updates
+        	$scope.permissionTracking.changed=false;
+
+        	// Ensure that permission change is not executed in $watch
+        	$scope.permissionTracking.ignoreNextChange = true;
+        };
+
+        if (angular.isArray(participants) && (participants.length > 0)) {
+        	$scope.selectUser(participants[0]);
+        }
 
         /**
 		 * Checks if a user exists with the entered mailaddress and activates the input
@@ -210,7 +238,13 @@ angular.module('toolkit-gui')
 
 
         $scope.update = function( person ){
+        	// Set updating flag, for GUI display
             $scope.data.requestLoading = true;
+
+            // Set backup permissions, forr rollback
+            $scope.permissionTracking.original = angular.copy(person.permissions);
+
+            // Request permissions update
             participantService.update( $scope.matter.slug, person ).then(
 				function success() {
                     $scope.data.requestLoading = false;
@@ -267,7 +301,50 @@ angular.module('toolkit-gui')
                 !($scope.data.invitee.email&&$scope.data.invitee.first_name&&$scope.data.invitee.last_name);
 		};
 
+		/**
+		 * Show add participant form, the participant form can either be a participant or collegue
+		 * @param  {String} formName Name of the type of participant being added i.e. 'lawyer', 'client'
+		 *
+		 * @name				showInviteForm
+		 *
+		 * @private
+		 * @method				showInviteForm
+		 * @memberof			ParticipantInviteCtrl
+		 */
+		$scope.showInviteForm = function( formName ) {
+			switch(formName) {
+				case 'lawyer':
+					$scope.data.showAddParticipant=false;
+					$scope.data.showAddLawyer=true;
+					$scope.data.invitee.permissions.manage_signature_requests = true;
+					$scope.data.invitee.permissions.manage_document_reviews = true;
+					break;
+				default:
+					$scope.data.showAddParticipant=true;
+					$scope.data.showAddLawyer=false;
+					$scope.data.invitee.permissions.manage_signature_requests = false;
+					$scope.data.invitee.permissions.manage_document_reviews = false;
+			}
+		};
 
+		/**
+		 * Watches for changes to permissions, if the change is not a user switch and is actually a change to permissions then set changed flag to true
+		 * @param  {Object} newVal Current permissions object
+		 * @param  {Object} oldVal Previous version
+		 *
+		 * @name				watchForPermissionName
+		 *
+		 * @private
+		 * @method				watchForPermissionName
+		 * @memberof			ParticipantInviteCtrl
+		 */
+		$scope.$watch('data.selectedUser.permissions', function watchForPermissionName( newVal, oldVal ) {
+			if( !$scope.permissionTracking.ignoreNextChange && !angular.equals(newVal,oldVal) ) {
+				$scope.permissionTracking.changed=true;
+			}
+
+			$scope.permissionTracking.ignoreNextChange = false;
+		}, true);
 	}
 ]);
 
