@@ -51,8 +51,14 @@ class MatterParticipantPermissionMixin(object):
         # Allow override of permissions
         if kwargs:
             permissions = self.permissions_model.clean_permissions(**kwargs)
-            perm.permissions = permissions
-            update_fields.append('data')
+
+        else:
+            # no specific permissions were passed in
+            # so get the roles default permissions
+            permissions = perm.default_permissions()
+
+        perm.permissions = permissions
+        update_fields.append('data')
 
         if update_fields:
             perm.save(update_fields=update_fields)

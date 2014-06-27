@@ -59,7 +59,7 @@ class CustomerInviteLoginTest(BaseCustomer):
 
     def test_invited_login(self):
         """
-        Customer invited and has no pasword set
+        Customer invited and has no password set
         is redirected to confirm account page
         """
         self.assertTrue('sent_welcome_email' not in self.user.profile.data)
