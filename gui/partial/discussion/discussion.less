@@ -184,10 +184,11 @@
 				height: 100px;
 				padding-left:0px;
 				border: 1px solid #e4e6e8;
-				margin-right: -3px;
-				margin-bottom: 3px;
+				margin-bottom: 15px;
 				cursor: pointer;
 				cursor: hand;
+				border-right: 3px solid #F6F6F6;
+				border-left: 3px solid  #F6F6F6;
 				&:hover{
 					// background-color: #444444;
 					// color: white;
@@ -503,9 +504,21 @@ padding-left: 50px;
 
 }
 
+.client {
+	color: @lp-secondary;
+}
+
+.colleague{
+	color: @lp-primary;
+}
+
+.owner{
+	color: @lp-primary;
+
+}
 
 .new-thread-btn {
-	background-color: @lp-blue;
+	background-color: @lp-primary;
 	font-weight: normal;
 	margin-top: 5px;
 	text-transform: uppercase;
@@ -575,6 +588,17 @@ a.markdown-link{
 	padding-right: 10px;
 }
 
+.customer{
+	color: @lp-secondary;
+	border-color: @lp-secondary
+}
+
+
+.lawyer{
+	color: @lp-primary;
+	border-color: @lp-primary;
+}
+
 
 
 .tab-content{
@@ -611,6 +635,15 @@ a.markdown-link{
 	.nav > li > a {
 		padding: 0px 0px 5px 0px;
 }
+}
+#div_id_participants{
+	.controls{
+		label{
+			font-weight: normal;
+			margin-right: 7px;
+			margin-left: 5px;
+		}
+	}
 }
 
 

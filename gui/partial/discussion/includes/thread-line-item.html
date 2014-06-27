@@ -6,6 +6,6 @@
 <div class="meta">
     <span class="last-active">Last active: {{ thread.date_updated | timeago }}</span>
     <div class="user-meta">
-        <span class="user coleg" ng-bind="user.initials" ng-repeat="user in thread.participants"></span>
+        <span class="user {{user.user_class}}" ng-bind="user.initials" ng-repeat="user in thread.participants"></span>
     </div>
 </div>
