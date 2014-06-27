@@ -178,7 +178,7 @@ class VerifyTwoFactorView(AuthenticateUserMixin, FormView):
         analytics.event('user.login', user=self.authenticated_user, ip_address=ip_address)
 
         logger.info('Logged-in IP_ADDRESS: %s' % ip_address)
-        
+
         return super(VerifyTwoFactorView, self).form_valid(form)
 
     def get_success_url(self):
@@ -269,6 +269,10 @@ class SignUpView(LogOutMixin, AuthenticateUserMixin, FormView):
         mailer.process(user=self.request.user)
 
         messages.info(self.request, 'Your account has been created. Please verify your email address. Check your email and click on the link that we\'ve sent you.')
+
+        analytics = AtticusFinch()
+        analytics.event('user.signup', user=self.request.user,
+                        ip_address=self.request.META.get('HTTP_X_FORWARDED_FOR', self.request.META.get('REMOTE_ADDR')))
 
         return super(SignUpView, self).form_valid(form)
 
