@@ -15,9 +15,15 @@ class DiscussionComment(ThreadedComment, models.Model):
     slug = UUIDField(auto=True, db_index=True)
     participants = models.ManyToManyField('auth.User')
     is_archived = models.BooleanField(default=False)
+    date_updated = models.DateTimeField(auto_now=True, auto_now_add=True, db_index=True)
     data = JSONField(default={})
 
     objects = CommentManager()
+
+    def save(self, *args, **kwargs):
+        super(DiscussionComment, self).save(*args, **kwargs)
+        if self.parent_id:
+            DiscussionComment.objects.filter(pk=self.parent_id).update(date_updated=self.date_updated)
 
     def archive(self, is_archived=True):
         self.is_archived = is_archived

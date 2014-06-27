@@ -206,6 +206,7 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
             discussionService.addComment(matterSlug, threadSlug, $scope.data.request.message).then(
                 function success(response) {
                     deferred.resolve(response);
+                    $scope.initializeDiscussion();
                     $scope.selectThread(threadSlug);
 
                     // Clear message in GUI

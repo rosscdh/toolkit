@@ -24,7 +24,7 @@ class DiscussionEndpoint(MatterMixin, viewsets.ModelViewSet):
     model = DiscussionComment
 
     def get_queryset(self):
-        queryset = self.model.objects.for_model(self.matter).filter(parent=None)
+        queryset = self.model.objects.for_model(self.matter).filter(parent=None).order_by('-date_updated')
 
         if self.action == 'list':
             # handle archived/unarchived

@@ -11,7 +11,6 @@ class DiscussionSerializer(serializers.HyperlinkedModelSerializer):
     comments = serializers.SerializerMethodField('get_comments')
     content = serializers.WritableField(required=False, source='comment')
     date_created = serializers.DateTimeField(source='submit_date', read_only=True)
-    date_updated = serializers.SerializerMethodField('get_last_updated')
     participants = SimpleUserSerializer(many=True, read_only=True)
 
     class Meta:
@@ -30,12 +29,6 @@ class DiscussionSerializer(serializers.HyperlinkedModelSerializer):
         queryset = DiscussionComment.objects.filter(parent=obj.id).order_by('submit_date')
 
         return DiscussionCommentSerializer(queryset, context=self.context, many=True).data
-
-    def get_last_updated(self, obj):
-        if obj.children.count() > 0:
-            return obj.last_child.submit_date
-        else:
-            return obj.submit_date
 
 
 class LiteDiscussionSerializer(DiscussionSerializer):
