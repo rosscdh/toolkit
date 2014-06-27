@@ -140,9 +140,13 @@
         <ul class="nav navbar-nav" ng-show="matter.selected&&data.matterlist.length<=1">
             <li><a href="javascript:;" ng-bind="matter.selected.name | characters:15:true"></a></li>
         </ul>
+          <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".navbar-collapse">
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+          </button>
     </div>
-
-    <div class="hidden-xs">
+    <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav" ng-show="matter.selected">
         <li id="checklist-nav" ng-class="{'active': isActive('/checklist')}">
           <a href="#/checklist" title="Checklist"><span class="fui-list"></span></a>
@@ -154,20 +158,20 @@
         <li id="closing-nav" ng-class="{'active': isActive('/closing')}">
             <a ng-href="#/closing">Closing</a>
         </li> -->
-        <li class="checklist-members hidden-xs hidden-sm">
+        <li class="checklist-members hidden-xs">
           <a href="javascript:;" ng-click="invite()">
             <span class="fui-user"></span>
+
             <span ng-show="matter.selected&&matter.selected.participants.length<=3">
-                <span class="user" ng-repeat="user in matter.selected.participants" ng-bind="user | initials"></span>
+                <span class="user hidden-md hidden-xs hidden-sm" ng-repeat="user in matter.selected.participants" ng-bind="user | initials"></span>
             </span>
             <span ng-show="matter.selected&&matter.selected.participants.length>3">
                 <span class="user" ng-bind="matter.selected.participants.length"></span>
             </span>
+
           </a>
         </li>
-      </ul>
-      <!-- /nav -->
-      <form class="navbar-form navbar-left hidden-xs" ng-show="matter.selected" ng-controller="SearchCtrl" ng-submit="startSearch()">
+        <form class="navbar-form navbar-left" ng-show="matter.selected" ng-controller="SearchCtrl" ng-submit="startSearch()">
         <div class="form-group">
           <div class="input-group input-group-sm">
             <input class="form-control" id="navbarInput-02" type="search" placeholder="Search" ng-model="data.term" ng-keyup="startSearch()" ng-blur="hide()" xng-focus="show()" autocomplete="off" onmouseup="this.select()">
@@ -205,6 +209,7 @@
 
           </div>
         </div>
+        <li>
         <div class="search-container">
           <div ng-class="{'show-results-container': data.display}">
             <ul class="search-results list-unstyled">
@@ -219,8 +224,11 @@
           </div>
         </div>
       </form>
+      </ul>
+      <!-- /nav -->
+
       {% verbatim %}
-      <ul class="nav navbar-nav navbar-right hidden-xs">
+      <ul class="nav navbar-nav navbar-right">
 
         <!-- start: desktop notifications / notifications //-->
         <li class="notifications">
@@ -235,7 +243,8 @@
         <li class="divider hidden-xs hidden-sm"></li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-          <span class="hidden-xs">{{ matter.selected.current_user | fullname }}</span> <b class="caret"></b>
+          <span class="hidden-lg hidden-xs">{{ matter.selected.current_user | initials }} <b class="caret"></b></span>
+          <span class="hidden-md hidden-sm hidden-xs">{{ matter.selected.current_user | fullname }}<b class="caret"></b></span>
           </a>
           <ul class="dropdown-menu">
             <li><a href="/me/settings/">Account</a></li>
@@ -247,7 +256,8 @@
       </ul>
       {% endverbatim %}
       <!-- /nav -->
-    </div>
+
+  </div>
     <!--/.navbar-collapse -->
   </div>
 

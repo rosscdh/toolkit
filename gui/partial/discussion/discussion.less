@@ -10,6 +10,14 @@
 	margin-top: -55px;
 	padding-top: 55px;
 	height: 100%;
+	.mobile{
+		position: absolute;
+		top: 70px;
+		background-color: white;
+		width: 100%;
+		z-index: 50;
+		border-bottom: 1px solid #ccc;
+	}
 }
 
 #messaging {
@@ -516,10 +524,6 @@ padding-left: 50px;
 				z-index: 1;
 				padding-top: 15px;
 				background-color: white;
-				.text-muted {
-
-				};
-
 				span.user{
 					font-size: 16px !important;
 					margin-right: 20px;
@@ -685,6 +689,16 @@ a.markdown-link{
 
 
 @media only screen and (max-width : 1200px) {
+
+	.discussion-wrapper{
+		margin-top: -20px;
+	}
+
+
+.sticky-fixed {
+	position: static;
+}
+
 
 .zero {
 			width: 0;
