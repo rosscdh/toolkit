@@ -74,9 +74,7 @@ angular.module('toolkit-gui').controller('ManageThreadParticipantsCtrl', [
             var matterSlug = $scope.matter.slug;
             var threadSlug = $scope.thread.slug;
 
-            var username = person.username;
-
-            discussionService.removeParticipant(matterSlug, threadSlug, username).then(
+            discussionService.removeParticipant(matterSlug, threadSlug, $scope.currentUser.username).then(
                 function success(response) {
                     $modalInstance.close();
                     $rootScope.$emit('discussionChangeParticipantSuccess');
