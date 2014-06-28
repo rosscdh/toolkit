@@ -96,19 +96,28 @@
             <h5>Add a Participant <a href="javascript:;" ng-click="data.showAddButton=false" class="close">x</a> </h5>
             <div class="row">
                 <div class="col-sm-6 text-center" ng-show="currentUser.permissions.manage_participants">
+                    <div class="modal-icon">
+
+                        <i class="fa fa-user coleg"></i> <i class="fa fa-plus"></i>  <i class="fa fa-user coleg"></i>
+
+                    </div>
                     <a href="javascript:;" class="btn btn-primary lawyer" ng-click="showInviteForm('lawyer')">Add a Colleague</a>
-                    <p class="note text-left">
-                        Adding a Colleague will let them manage documents, the checklist and the overall matter. They will be able to discuss Checklist items with Colleagues and Clients.
+                    <p class="note text-center">
+                        Colleagues are collaborators on the matter and its documents.
                     </p>
                 </div>
                 <div class="col-sm-6 text-center" ng-show="currentUser.permissions.manage_clients||currentUser.permissions.manage_participants">
-                    <a href="javascript:;" class="btn btn-info customer" ng-click="showInviteForm('client')">Add a Client</a>
-                    <p class="note text-left">
-                    Adding a Client will give them access to view and annotate documents and discuss checklist items. They can not modify the checklist structure or view documents in the checklist, other than the current one.
+                     <div class="modal-icon">
+                        <i class="fa fa-users coleg"></i> <i class="fa fa-plus"></i> <i class="fa fa-user client"></i>
+                    </div>
+                    <a href="javascript:;" class="btn btn-info customer" ng-click="showInviteForm('client')">Add a Client/Third Party</a>
+                    <p class="note text-center">
+                   Clients/third parties have limited access to the matter and it's documents.
                     </p>
                 </div>
             </div>
         </div>
+        <p class='text-center text-muted more-info'><small>Read about LawPal's permission structure <a href="#">here</a>.</small></span>
         </div>
 
 

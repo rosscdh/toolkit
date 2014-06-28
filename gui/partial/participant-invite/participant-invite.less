@@ -12,11 +12,11 @@
   }
 
   .lawyer {
-    background-color: #5cc7da;
+    background-color: @lp-primary;
   }
 
   .customer {
-    background-color: #6ebc70;
+    background-color: @lp-secondary;
   }
 }
 
@@ -77,7 +77,8 @@
     }
     .col-sm-6 {
       .btn-primary, .btn-info {
-        font-weight: bold;
+        font-weight: normal;
+        text-transform: uppercase;
       }
     }
 
@@ -283,3 +284,26 @@
   text-align: center;
   width: 40px;
 }
+
+.more-info{
+  margin-top: 10px;
+  border-top: 1px solid #dee1e3;
+  padding-top: 10px;
+}
+
+.modal-icon{
+  margin-bottom: 20px;
+  font-size: 40px;
+   .fa-plus{
+      font-size: 22px;
+      color: #bdc3c7;
+    }
+
+  .coleg{
+    color: @lp-primary;
+  }
+  .client{
+    color: @lp-secondary;
+  }
+}
+
