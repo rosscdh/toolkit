@@ -8,10 +8,10 @@
         <h5 ng-show="matter.participants.length > 0">Matter Participants</h5>
         <ul class="list-unstyled participants">
             <li class="clearfix" ng-repeat="person in matter.participants">
-                <span class="user" ng-bind="person | initials"></span>
+                <span class="user {{person.role}}" ng-bind="person | initials"></span>
                 <label ng-bind="person | fullname"></label>
 
-                <a class="btn btn-primary pull-right" ng-show="!isParticipant(person)" ng-click="addParticipant(person)">Add as Participant</a>
+                <a class="btn btn-link pull-right" ng-show="!isParticipant(person)" ng-click="addParticipant(person)">Add as Participant</a>
                 <span class="pull-right" ng-show="isParticipant(person)">Participating</span>
             </li>
         </ul>
@@ -19,8 +19,7 @@
 
     <div class="modal-footer">
         <div class="controls">
-            <input type="button" name="cancel" value="Cancel" class="btn btn btn-default" id="button-id-cancel" ng-click="cancel()">
-            <input type="button" name="submit" value="Submit" class="btn btn-primary btn-lg btn-wide" id="submit-id-submit" ng-click="ok()">
+            <input type="button" name="cancel" value="Close" class="btn btn btn-default" id="button-id-cancel" ng-click="cancel()">
         </div>
     </div>
 

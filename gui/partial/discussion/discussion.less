@@ -18,8 +18,13 @@
 		z-index: 50;
 		border-bottom: 1px solid #ccc;
 	}
+
+
 }
 
+.btn {
+	font-weight: normal;
+}
 #messaging {
 	&.checklist-wrapper {
 		background-color:white;
@@ -44,57 +49,6 @@
 		text-align:center;
 		font-size:18px;
 		line-height:25px;
-		&:before {
-			content:"\e639";
-		}
-		&.issue {
-			background-color:@carrot;
-			&:before {
-				content:"\e67b";
-			}
-		}
-		&.question {
-			background-color:@peter-river;
-			&:before {
-				content: "\e64a";
-			}
-		}
-		&.discussion {
-			background-color:@emerland;
-			&:before {
-				content: "\e66d";
-			}
-
-		}
-		&.urgent {
-			background-color:red;
-			&:before {
-				content: "\e650"
-			}
-		}
-		&.idea {
-			background-color:@sun-flower;
-			&:before {
-				content: "\e643";
-			}
-		}
-
-		&.lock {
-			background-color: #42d0e5;
-			&:before {
-				content: "\e63f";
-				font-weight: bold;
-			}
-		}
-
-		&.unlock {
-			background-color: @lp-secondary;
-			&:before {
-				content: "\e64f";
-				font-weight: bold;
-			}
-		}
-
 	}
 
 
@@ -619,6 +573,10 @@ a.markdown-link{
 	font-weight: normal;
 }
 
+.btn-success {
+	background-color: #39ca74
+}
+
 .inbox-label {
 	color: #444444;
 	font-weight: bold;
@@ -662,6 +620,33 @@ a.markdown-link{
 	top: -60px;
 	left: 80px;
 }
+
+.modal-body{
+	.owner{
+		display: none;
+	}
+
+
+	ul.participants{
+		li{
+
+
+		}
+			li:hover{
+				background-color: inherit;
+
+			}
+
+	}
+}
+
+.modal-footer{
+	.btn{
+			padding: 8px 15px
+	}
+}
+
+
 
 .inbox-tabs {
 
@@ -722,6 +707,8 @@ a.markdown-link{
 		width: 100%
 	}
 }
+
+
 
 @media only screen
 and (min-device-width : 768px)
