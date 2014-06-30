@@ -136,7 +136,7 @@ def virtualenv(cmd, **kwargs):
 
 @task
 def pip_install():
-    virtualenv('pip install django-permission')
+    virtualenv('pip install django-threadedcomments==0.9.0')
 
 @task
 def cron():
