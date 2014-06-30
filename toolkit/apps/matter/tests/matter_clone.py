@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-from django.conf import settings
 from django.test import TestCase
 
-from toolkit.test_runner import TEST_PDF_DEST_PATH
+from toolkit.test_runner import DEMO_DOC as TEST_PDF_DEST_PATH
 
 from model_mommy import mommy
 
@@ -107,7 +106,7 @@ class DemoMatterCloneServiceTest(BaseMatterClone):
             for r in i.revision_set.all():
                 new_file_name = os.path.basename(r.executed_file.name)
                 # test the file has been renamed
-                self.assertTrue(new_file_name != self.test_pdf_base_name)
+                self.assertNotEqual(new_file_name, self.test_pdf_base_name)
                 # test the new_fiename is built with the matter pk in it to make it unique
                 self.assertEqual(new_file_name, '%s-%s' % (self.target_matter.pk, self.test_pdf_base_name,))
 
