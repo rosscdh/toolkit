@@ -1,7 +1,6 @@
 # -*- coding: UTF-8 -*-
 import datetime
 from django.conf import settings
-from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 

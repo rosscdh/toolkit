@@ -41,7 +41,7 @@ angular.module('toolkit-gui')
 			 * @name				create
 			 *
 			 * @example
-		 	 * commentService.create( mySelectedMatter, myItem, myComment );
+			 * commentService.create.create( mySelectedMatter, myItem, myComment );
 			 *
 			 * @public
 			 * @method				create
@@ -71,7 +71,7 @@ angular.module('toolkit-gui')
 			 * @name				delete
 			 *
 			 * @example
-		 	 * commentService.delete( mySelectedMatter, myItem, commentId );
+			 * commentService.delete( mySelectedMatter, myItem, commentId );
 			 *
 			 * @public
 			 * @method				delete
@@ -101,7 +101,7 @@ angular.module('toolkit-gui')
 			 * @name				delete
 			 *
 			 * @example
-		 	 * commentService.update( mySelectedMatter, myItem, commentId, comment );
+			 * commentService.update( mySelectedMatter, myItem, commentId, comment );
 			 *
 			 * @public
 			 * @method				update

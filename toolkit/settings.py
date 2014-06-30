@@ -102,6 +102,7 @@ PROJECT_APPS = (
     'toolkit.apps.api',
     'toolkit.apps.default',
     'toolkit.apps.dash',
+    'toolkit.apps.discussion',
     'toolkit.apps.matter',
     'toolkit.apps.me',
     'toolkit.apps.request',
@@ -172,6 +173,10 @@ HELPER_APPS = (
     'south',
     # jenkins
     'django_jenkins',
+
+    # threadedcomments app needs to be above the django.contrib.comments app
+    'threadedcomments',
+    'django.contrib.comments'
 )
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + HELPER_APPS
@@ -256,6 +261,8 @@ AUTHENTICATION_BACKENDS = (
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 TEMPLATED_EMAIL_BACKEND = 'templated_email.backends.vanilla_django'
+
+COMMENTS_APP = 'toolkit.apps.discussion'
 
 AWS_STORAGE_BUCKET_NAME = AWS_FILESTORE_BUCKET = 'dev-toolkit-lawpal-com'
 
