@@ -40,6 +40,8 @@ from .views import (ReviewerHasViewedRevision,
 from .views import ItemEndpoint
 from .views import RevisionEndpoint
 from .views import ItemCommentEndpoint
+# from .views import MatterCommentEndpoint
+from .views import DiscussionEndpoint, DiscussionCommentEndpoint, DiscussionParticipantEndpoint
 from .views import ReviewEndpoint
 from .views import SignatureEndpoint
 #from .views import WorkflowEndpoint
@@ -59,11 +61,26 @@ router.register(r'revisions', RevisionEndpoint)
 router.register(r'reviews', ReviewEndpoint)
 router.register(r'signatures', SignatureEndpoint)
 
+router.register(
+    r'matters/(?P<matter_slug>[\w-]+)/discussions',
+    DiscussionEndpoint,
+    'discussion'
+)
+router.register(
+    r'matters/(?P<matter_slug>[\w-]+)/discussions/(?P<thread_slug>[\w-]+)/comments',
+    DiscussionCommentEndpoint,
+    'discussion_comment'
+)
+router.register(
+    r'matters/(?P<matter_slug>[\w-]+)/discussions/(?P<thread_slug>[\w-]+)/participants',
+    DiscussionParticipantEndpoint,
+    'discussion_participant'
+)
+
+
 """
 Generics
 """
-
-
 urlpatterns = router.urls + patterns('',
     #
     # Account

@@ -18,6 +18,7 @@ debug = True
 
 env.local_project_path = os.path.dirname(os.path.realpath(__file__))
 env.gui_dist_path = '%s/gui/dist' % env.local_project_path
+env.uwsgi_app_path = os.path.dirname(os.path.realpath(__file__)) + '/../lawpal-chef/uwsgi-app/files'
 env.environment_settings_path = os.path.dirname(os.path.realpath(__file__)) + '/../lawpal-chef/uwsgi-app/files/default/conf'
 # default to local override in env
 env.remote_project_path = env.local_project_path
@@ -135,7 +136,7 @@ def virtualenv(cmd, **kwargs):
 
 @task
 def pip_install():
-    virtualenv('pip install django-permission')
+    virtualenv('pip install django-threadedcomments==0.9.0')
 
 @task
 def cron():
@@ -761,13 +762,12 @@ def deploy(is_predeploy='False',full='False',db='False',search='False'):
     do_deploy()
     update_env_conf()
 
-    # upload the gui
-    upload_gui()
-
     if full:
         requirements()
 
     relink()
+    # upload the gui
+    upload_gui()
     assets()
     clean_start()
     celery_restart()

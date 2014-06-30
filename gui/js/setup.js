@@ -17,20 +17,11 @@ angular.module('toolkit-gui', [
 ]);
 
 angular.module('toolkit-gui').config(function($stateProvider, $urlRouterProvider) {
-    /*
-    $routeProvider.
-    when('/',{templateUrl: '/static/ng/partial/home/home.html'}).
-	when('/checklist',{'templateUrl': '/static/ng/partial/checklist/checklist.html', 'controller': 'ChecklistCtrl'}).
-    when('/checklist/:itemSlug',{'templateUrl': '/static/ng/partial/checklist/checklist.html', 'controller': 'ChecklistCtrl'}).
-	when('/closing',{templateUrl: '/static/ng/partial/closing/closing.html'}).
-	when('/closing',{templateUrl: '/static/ng/partial/closing/closing.html'}).
-	when('/invite',{templateUrl: '/static/ng/partial/participant-invite/participant-invite.html'}).
-	when('/attachment/:id',{templateUrl: '/static/ng/partial/view-document/view-document.html'}).
 
-    otherwise({redirectTo:'/'});
-    */
-   
    $stateProvider
+    /**
+     * Matter: Checklist
+     */
     .state('checklist', {
       'url': "/checklist",
       'controller': 'ChecklistCtrl',
@@ -48,14 +39,27 @@ angular.module('toolkit-gui').config(function($stateProvider, $urlRouterProvider
     .state('checklist.item.revision.review', {
       'url': "/review/:reviewSlug",
       'controller': function($scope) {}
+    })
+    /**
+     * Matter: Discussion
+     */
+    .state('discussion', {
+      'url': "/discussion",
+      'controller': 'DiscussionCtrl',
+      'templateUrl': '/static/ng/partial/discussion/discussion.html'
+    })
+    .state('discussion.thread', {
+      'url': "/:threadSlug",
+      'controller': function($scope) {},
+      'templateUrl': '/static/ng/partial/discussion/includes/thread.html'
     });
 
     /*
     $routeSegmentProvider.within('checklist').segment('itemInfo', {
     'templateUrl': '/static/ng/partial/checklist/includes/itemdetails.html'});
     */
-   
-    $urlRouterProvider.otherwise('/checklist'); 
+
+    $urlRouterProvider.otherwise('/checklist');
 });
 
 /**

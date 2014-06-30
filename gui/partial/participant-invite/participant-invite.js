@@ -82,7 +82,6 @@ angular.module('toolkit-gui')
             'selectedUser': null,
             'requestLoading': false,
             'showAddButton': false
-
 		};
 
         $scope.selectUser = function( person ) {
@@ -163,44 +162,39 @@ angular.module('toolkit-gui')
 		 * @method				invite
 		 * @memberof			ParticipantInviteCtrl
 		 */
-		$scope.invite = function () {
-            if($scope.data.showAddLawyer===true){
-                $scope.data.invitee.user_class='lawyer';
-                $scope.data.invitee.role='colleague';
-            } else {
-                $scope.data.invitee.user_class='customer';
-                $scope.data.invitee.role='client';
-            }
+        $scope.invite = function () {
             $scope.data.requestLoading = true;
-
-			participantService.invite( $scope.matter.slug, $scope.data.invitee ).then(
-				function success(participant) {
+            participantService.invite($scope.matter.slug, $scope.data.invitee).then(
+                function success(participant) {
                     $scope.data.requestLoading = false;
-                    var results = jQuery.grep( $scope.participants, function( p ){ return p.username===participant.username; } );
-                    if( results.length===0 ) {
+                    var results = jQuery.grep($scope.participants, function (p) {
+                        return p.username === participant.username;
+                    });
+                    if (results.length === 0) {
                         $scope.participants.push(participant);
                     }
 
                     //reset form
-                    $scope.data.invitee= {'email':'','first_name':'', 'last_name':'', 'message':''};
+                    $scope.data.invitee = {'email': '', 'first_name': '', 'last_name': '', 'message': ''};
                     $scope.data.isNew = false;
                     $scope.data.isParticipant = false;
                     $scope.data.isLawyer = false;
                     $scope.data.participant = null;
                     $scope.data.validationError = false;
-                    $scope.data.showAddLawyer=false;
-                    $scope.data.showAddParticipant=false;
-                    $scope.data.selectedUser=null;
+                    $scope.data.showAddLawyer = false;
+                    $scope.data.showAddParticipant = false;
+                    $scope.data.selectedUser = null;
                     $scope.data.showAddButton = false;
 
-                    toaster.pop('success', 'Success!', 'User was added successfully',5000);
-				},
-				function error() {
+                    toaster.pop('success', 'Success!', 'User was added successfully', 5000);
+                },
+                function error() {
                     $scope.data.requestLoading = false;
-					toaster.pop('error', 'Error!', 'Unable to invite this person to particpate, please try again in a few moments',5000);
-				}
-			);
-		};
+                    toaster.pop('error', 'Error!', 'Unable to invite this person to particpate, please try again in a few moments', 5000);
+                }
+            );
+
+        };
 
 		/**
 		 * Initiates request to API to revoke access for an already registered user
@@ -298,7 +292,12 @@ angular.module('toolkit-gui')
 		 */
 		$scope.invalid = function() {
             return $scope.data.validationError ||
-                !($scope.data.invitee.email&&$scope.data.invitee.first_name&&$scope.data.invitee.last_name);
+                   !($scope.data.invitee.email&&$scope.data.invitee.first_name &&$scope.data.invitee.last_name) ||
+                    ($scope.data.invitee.role === 'colleague' &&
+                     $scope.data.invitee.permissions.manage_participants === false &&
+                     $scope.data.invitee.permissions.manage_items === false &&
+                     $scope.data.invitee.permissions.manage_document_reviews === false &&
+                     $scope.data.invitee.permissions.manage_signature_requests === false);
 		};
 
 		/**
@@ -318,12 +317,16 @@ angular.module('toolkit-gui')
 					$scope.data.showAddLawyer=true;
 					$scope.data.invitee.permissions.manage_signature_requests = true;
 					$scope.data.invitee.permissions.manage_document_reviews = true;
+                    $scope.data.invitee.user_class = 'lawyer';
+                    $scope.data.invitee.role = 'colleague';
 					break;
 				default:
 					$scope.data.showAddParticipant=true;
 					$scope.data.showAddLawyer=false;
 					$scope.data.invitee.permissions.manage_signature_requests = false;
 					$scope.data.invitee.permissions.manage_document_reviews = false;
+                    $scope.data.invitee.user_class = 'customer';
+                    $scope.data.invitee.role = 'client';
 			}
 		};
 

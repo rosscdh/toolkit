@@ -82,9 +82,11 @@
           boot: function(options) {
             if (IntercomService.then) {
               IntercomService.then(function(intercom) {
-                  if(intercom) {
-                    intercom('boot', options || _options);
-                  }
+
+                if(intercom && typeof(intercom)==='function') {
+                  intercom('boot', options || _options);
+                }
+
               });
             } else {
               IntercomService('boot', options || _options);
@@ -93,10 +95,12 @@
           update: function(data) {
             if (IntercomService.then) {
               IntercomService.then(function(intercom) {
-                if (data) {
-                  intercom('update', data) ;
-                } else {
-                  intercom('update');
+                if(intercom && typeof(intercom)==='function') {
+                  if (data) {
+                    intercom('update', data) ;
+                  } else {
+                    intercom('update');
+                  }
                 }
               });
             } else {
@@ -111,7 +115,9 @@
           shutdown: function() {
             if (IntercomService.then) {
               IntercomService.then(function(intercom) {
-                intercom('shutdown');
+                if(intercom && typeof(intercom)==='function') {
+                  intercom('shutdown');
+                }
               });
             } else {
               IntercomService('shutdown');
@@ -121,7 +127,9 @@
           hide: function() {
             if (IntercomService.then) {
               IntercomService.then(function(intercom) {
-                intercom('hide');
+                if(intercom && typeof(intercom)==='function') {
+                  intercom('hide');
+                }
               });
             } else {
               IntercomService('hide');
@@ -131,7 +139,9 @@
           show: function() {
             if (IntercomService.then) {
               IntercomService.then(function(intercom) {
-                intercom('show');
+                if(intercom && typeof(intercom)==='function') {
+                  intercom('show');
+                }
               });
             } else {
               IntercomService('Show');

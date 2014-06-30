@@ -77,6 +77,7 @@
   <script src="<!-- @echo staticPath -->service/search.js"></script>
   <script src="<!-- @echo staticPath -->service/activity.js"></script>
   <script src="<!-- @echo staticPath -->service/comment.js"></script>
+  <script src="<!-- @echo staticPath -->service/discussion.js"></script>
   <script src="<!-- @echo staticPath -->service/pusher.js"></script>
   <script src="<!-- @echo staticPath -->service/genericFunctions.js"></script>
   <script src="<!-- @echo staticPath -->service/intro.js"></script>
@@ -90,6 +91,7 @@
   <script src="<!-- @echo staticPath -->directive/filepicker.js"></script>
   <script src="<!-- @echo staticPath -->directive/auth.js"></script>
   <script src="<!-- @echo staticPath -->directive/modal.js"></script>
+  <script src="<!-- @echo staticPath -->directive/sticky-elements/sticky-elements.js"></script>
   <!-- Add New Directive JS Above -->
 
   <!-- Filter JS -->
@@ -104,6 +106,9 @@
     <script src="<!-- @echo staticPath -->partial/markdown/markdown-info.js"></script>
 
   <script src="<!-- @echo staticPath -->partial/checklist/checklist.js"></script>
+  <script src="<!-- @echo staticPath -->partial/discussion/discussion.js"></script>
+  <script src="<!-- @echo staticPath -->partial/discussion/manage-thread-participants.js"></script>
+  <script src="<!-- @echo staticPath -->partial/discussion/create-thread.js"></script>
   <script src="<!-- @echo staticPath -->partial/closing/closing.js"></script>
   <script src="<!-- @echo staticPath -->partial/navigation/navigation.js"></script>
   <script src="<!-- @echo staticPath -->partial/participant-invite/participant-invite.js"></script>
@@ -139,40 +144,38 @@
         <ul class="nav navbar-nav" ng-show="matter.selected&&data.matterlist.length<=1">
             <li><a href="javascript:;" ng-bind="matter.selected.name | characters:15:true"></a></li>
         </ul>
+          <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".navbar-collapse">
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+          </button>
     </div>
-
-    <div class="hidden-xs">
+    <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav" ng-show="matter.selected">
-        <!-- Hide for now, just taking up space -->
-        <!-- <li id="checklist-nav" ng-class="{'active': isActive('/checklist')}">
-          <a href="#/checklist">Checklist</a>
+        <li id="checklist-nav" ng-class="{'active': isActive('/checklist')}">
+          <a href="#/checklist" title="Checklist"><span class="fui-list"></span></a>
+        </li>
+<!--    Hidden until last few points are sorted out     
+        <li id="discussion-nav" ng-class="{'active': isActive('/discussion')}">
+          <a href="#/discussion" title="Discussion"><span class="fui-chat"></span></a>
         </li> -->
         <!-- Hide for now - discussed 2014-03-14
         <li id="closing-nav" ng-class="{'active': isActive('/closing')}">
-          <a ng-href="#/closing">Closing</a>
-        </li>-->
-
-        <li class="checklist-members  hidden-xs  hidden-sm">
+            <a ng-href="#/closing">Closing</a>
+        </li> -->
+        <li class="checklist-members hidden-xs">
           <a href="javascript:;" ng-click="invite()">
             <span class="fui-user"></span>
             <span ng-if="matter.selected&&matter.selected.participants.length>0&&matter.selected.participants.length<=3">
-                <span class="user" ng-repeat="user in matter.selected.participants" ng-bind="user | initials"></span>
+                <span class="user hidden-md hidden-xs hidden-sm" ng-repeat="user in matter.selected.participants" ng-bind="user | initials"></span>
             </span>
             <span ng-if="matter.selected&&matter.selected.participants.length>3">
                 <span class="user" ng-bind="matter.selected.participants.length"></span>
             </span>
+
           </a>
         </li>
-        <!-- Hide for now - discussed 2014-03-14
-        <li class="">
-          <a href="#fakelink">
-            <span class="fui-chat"></span>
-            <span class="navbar-new animated">1</span>
-          </a>
-        </li>-->
-      </ul>
-      <!-- /nav -->
-      <form class="navbar-form navbar-left hidden-xs" ng-show="matter.selected" ng-controller="SearchCtrl" ng-submit="startSearch()">
+        <form class="navbar-form navbar-left hidden-sm hidden-xs " ng-show="matter.selected" ng-controller="SearchCtrl" ng-submit="startSearch()">
         <div class="form-group">
           <div class="input-group input-group-sm">
             <input class="form-control" id="navbarInput-02" type="search" placeholder="Search" ng-model="data.term" ng-keyup="startSearch()" ng-blur="hide()" xng-focus="show()" autocomplete="off" onmouseup="this.select()">
@@ -210,6 +213,7 @@
 
           </div>
         </div>
+        <li>
         <div class="search-container">
           <div ng-class="{'show-results-container': data.display}">
             <ul class="search-results list-unstyled">
@@ -224,8 +228,11 @@
           </div>
         </div>
       </form>
+      </ul>
+      <!-- /nav -->
+
       {% verbatim %}
-      <ul class="nav navbar-nav navbar-right hidden-xs">
+      <ul class="nav navbar-nav navbar-right">
 
         <!-- start: desktop notifications / notifications //-->
         <li class="notifications">
@@ -248,7 +255,8 @@
         <li class="divider hidden-xs hidden-sm"></li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-          <span class="hidden-xs">{{ matter.selected.current_user | fullname }}</span> <b class="caret"></b>
+          <span class="hidden-lg hidden-xs">{{ matter.selected.current_user | initials }} <b class="caret"></b></span>
+          <span class="hidden-md hidden-sm hidden-xs">{{ matter.selected.current_user | fullname }}<b class="caret"></b></span>
           </a>
           <ul class="dropdown-menu">
             <li><a href="/me/settings/">Account</a></li>
@@ -260,7 +268,8 @@
       </ul>
       {% endverbatim %}
       <!-- /nav -->
-    </div>
+
+  </div>
     <!--/.navbar-collapse -->
   </div>
 
