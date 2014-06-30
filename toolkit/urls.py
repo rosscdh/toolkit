@@ -47,6 +47,9 @@ urlpatterns = patterns('',
     # Authy authentication
     url(r'^authy/', include('dj_authy.urls', namespace='dj_authy')),
 
+    # Sendgrid
+    url(r'^sendgrid/', include('dj_sendgrid.urls', namespace='dj_sendgrid')),
+
     # Payments
     url(r'^payments/', include('payments.urls')),
 

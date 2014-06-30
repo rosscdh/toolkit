@@ -13,6 +13,7 @@ setup.cfg
 .sonar
 hellosign
 hello_sign
+dj_*
 actstream
 dj_crocodoc
 *_valid.html
