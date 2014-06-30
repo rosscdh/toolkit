@@ -25,6 +25,7 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
             'request': {
                 'message': null,
             },
+            'searchEnabled': false,
             'selectedThread': null,
             'threads': [],
             'view': 'inbox',
