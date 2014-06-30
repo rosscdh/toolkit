@@ -1,0 +1,76 @@
+<div ng-show="data.selectedThread">
+    <div class='read-message' id="message-scroll">
+        <div class="single-thread" id="thread">
+            <ul class="list-unstyled">
+                <li class="one-message">
+                    <div class="author" sticky scrollelement="'message-scroll'" offset="55" last="false">
+                        <span class="user coleg" ng-bind="data.selectedThread.author.initials"></span>
+                        <span ng-bind="data.selectedThread.author.name"></span>
+                        <span class="text-muted time">{{ data.selectedThread.date_created | timeago }}</span>
+                    </div>
+                    <div class="message-body">
+                        <p ng-bind="data.selectedThread.content"></p>
+                    </div>
+                </li>
+                <li class="one-message" ng-repeat="message in data.selectedThread.comments">
+                    <div class="author" sticky scrollelement="'message-scroll'" offset="55" id="comment-{{message.slug}}" last="$last">
+                        <span class="user coleg" ng-bind="message.author.initials"></span>
+                        <span ng-bind="message.author.name"></span>
+                        <span class="text-muted time">{{ message.date_created | timeago }}</span>
+                    </div>
+                    <div class="message-body">
+                        <p btf-markdown="message.content | newlines"></p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="compose row">
+        <div class="col-sm-10">
+            <div class="compose-wrapper">
+                <textarea class="compose-message" rows="2" placeholder="Type your message here and click 'send'. " ng-model="data.request.message"></textarea>
+            </div>
+            <a href="javascript:;" class="btn btn-link btn-xs pull-right markdown-link" title="Markdown help" ng-click="showMarkDownInfo()">Markdown Supported</a>
+        </div>
+        <div class="col-sm-2 thread-controls">
+             <span class="user {{user.user_class}}" ng-bind="user.initials" ng-repeat="user in thread.participants"></span>
+
+
+
+
+            <form name="requestForm" ng-submit="request()" class="thread-controls-form">
+
+                <a href="javascript:;" ng-click="manageThreadParticipants(data.selectedThread)" class="btn-link">Manage Participants</a>
+                <a class="btn-link" ng-show="!data.selectedThread.is_archived" ng-click="archiveThread(data.selectedThread)"> Archive Thread</a>
+                <a class="btn-link" ng-show="data.selectedThread.is_archived" ng-click="unarchiveThread(data.selectedThread)"> Unarchive Thread</a>
+
+
+                <button class="btn btn-default send-btn" type="submit" ng-disabled="sendingMessage">Send <i class="fa fa-spinner fa-spin" ng-if="sendingMessage"></i></button>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<div ng-show="!data.selectedThread">
+    <div class="row no-thread">
+        <div class="big-chat">
+            <i class="fa fa-comments-o"></i>
+        </div>
+        <div class='no-thread-selected row'>
+
+            <div class="col-sm-10 text-right">
+                <div class="col-sm-4">
+                <i class="fa fa-arrow-left"></i>
+                </div>
+                   <div class='col-sm-8 text-left'>
+                <h6>select a discussion from the list</h6>
+                <h6>or<h6>
+                <h6>start a new discussion</h6>
+            </div>
+            </div>
+
+        </div>
+    </div>
+</div>

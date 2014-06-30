@@ -8,6 +8,7 @@ from .managers import CustomUserManager
 
 from jsonfield import JSONField
 from sorl.thumbnail.images import ImageFile
+from threadedcomments.models import ThreadedComment
 
 import logging
 logger = logging.getLogger('django.request')
