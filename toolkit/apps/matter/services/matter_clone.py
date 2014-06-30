@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from django.core.files.base import ContentFile
+
 from toolkit.apps.workspace.models import Workspace
 
 import os
@@ -85,15 +87,19 @@ class DemoMatterCloneService(MatterCloneService):
             rev.item = item # the new created item
 
             # give the new file a name prefixed with the matter.pk
-            NEW_EXECUTED_PATH = '%s/%s-%s' % (os.path.dirname(rev.executed_file.name), item.matter.pk, os.path.basename(rev.executed_file.name))
+            # NEW_EXECUTED_PATH = '%s/%s-%s' % (os.path.dirname(rev.executed_file.name), item.matter.pk, os.path.basename(rev.executed_file.name))
 
             try:
+                #
+                # @TODO must be a simpler way
+                #
+                # with open(NEW_EXECUTED_PATH, 'w') as executed_file:
+                #     # read the contents of the file into the new local_file
+                #     executed_file.write(rev.executed_file.read())
 
-                with open(NEW_EXECUTED_PATH, 'wb') as executed_file:
-                    # read the contents of the file into the new local_file
-                    executed_file.write(rev.executed_file.read())
-
-                rev.executed_file = executed_file.name
+                new_executed_file = ContentFile(rev.executed_file.read())
+                new_executed_file.name = rev.executed_file.name
+                rev.executed_file = new_executed_file
 
             except IOError:
                 logger.critical('DemoMatterCloneService: executed_file: %s does not exist' % rev.executed_file.name)

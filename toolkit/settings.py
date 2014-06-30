@@ -67,7 +67,7 @@ STATICFILES_FINDERS = (
     'pipeline.finders.FileSystemFinder',
     'pipeline.finders.AppDirectoriesFinder',
     'pipeline.finders.PipelineFinder',
-    'pipeline.finders.CachedFileFinder',
+    #'pipeline.finders.CachedFileFinder',  # Causes issue with .less files https://github.com/cyberdelia/django-pipeline/issues/293
 )
 
 
@@ -363,7 +363,8 @@ PIPELINE_JS = {
     }
 }
 PIPELINE_COMPILERS = [
-  'react.utils.pipeline.JSXCompiler',
+    'pipeline.compilers.less.LessCompiler',
+    'react.utils.pipeline.JSXCompiler',
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
