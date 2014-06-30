@@ -113,7 +113,9 @@ class MatterExportTest(BaseScenarios, TestCase):
 
     def test_send_email(self):
         self.assertEqual(len(mail.outbox), 0)
+
         self.service.send_email(token=self.service.token)
+
         self.assertTrue(len(mail.outbox), 1)
         email = mail.outbox[0]
         self.assertEqual(email.subject, u'Your Matter export has completed')

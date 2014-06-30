@@ -25,6 +25,11 @@ def EXPOSED_GLOBALS(request):
         }
     }
 
+def FIRSTSEEN(request):
+    return {
+        'firstseen': request.GET.get('firstseen', '0') == '1'
+    }
+
 
 def LAYOUT(request):
     user = getattr(request, 'user', None)

@@ -6,9 +6,12 @@
 	<meta charset="utf-8">
 
   <!-- App LESS -->
+  <link href="<!-- @echo staticBase -->ng/bower_components/intro.js/minified/introjs.min.css" type="text/css" rel="stylesheet" data-remove="exclude">
+
   <link href="<!-- @echo staticBase -->ng/css/app.less" type="text/css" rel="stylesheet/less">
   <link href="<!-- @echo staticBase -->fonts/pe-icon-7-stroke/css/pe-icon-7-stroke.css" rel="stylesheet" data-remove="exclude">
   <link href="<!-- @echo staticBase -->ng/bower_components/html5-desktop-notifications/notifications.css" type="text/css" rel="stylesheet"/>
+
   <script src="<!-- @echo staticBase -->ng/bower_components/jquery/jquery.min.js" data-remove="exclude"></script>
   <script src="<!-- @echo staticBase -->ng/bower_components/jquery-ui/ui/minified/jquery-ui.min.js" data-remove="exclude"></script>
   <script src="<!-- @echo staticBase -->ng/bower_components/bootstrap/dist/js/bootstrap.min.js" data-remove="exclude"></script>
@@ -77,6 +80,7 @@
   <script src="<!-- @echo staticPath -->service/discussion.js"></script>
   <script src="<!-- @echo staticPath -->service/pusher.js"></script>
   <script src="<!-- @echo staticPath -->service/genericFunctions.js"></script>
+  <script src="<!-- @echo staticPath -->service/intro.js"></script>
   <!-- Add New Service JS Above -->
 
   <!-- Directive JS -->
@@ -162,11 +166,10 @@
         <li class="checklist-members hidden-xs">
           <a href="javascript:;" ng-click="invite()">
             <span class="fui-user"></span>
-
-            <span ng-show="matter.selected&&matter.selected.participants.length<=3">
+            <span ng-if="matter.selected&&matter.selected.participants.length>0&&matter.selected.participants.length<=3">
                 <span class="user hidden-md hidden-xs hidden-sm" ng-repeat="user in matter.selected.participants" ng-bind="user | initials"></span>
             </span>
-            <span ng-show="matter.selected&&matter.selected.participants.length>3">
+            <span ng-if="matter.selected&&matter.selected.participants.length>3">
                 <span class="user" ng-bind="matter.selected.participants.length"></span>
             </span>
 
@@ -240,7 +243,15 @@
         <!-- end: desktop notifications / notifications //-->
 
         <li><a href="/requests/">Requests</a></li>
-        <li class="hidden-xs hidden-sm"><a href="#" class="intercom">Support</a></li>
+        <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <span class="hidden-xs">Support</span><b class="caret"></b>
+            </a>
+            <ul class='dropdown-menu'>
+              <li><a href="#" class="intercom">Contact</a></li>
+              <li><a href="#" ng-click="showIntro()">Tutorial</a></li>
+            </ul>
+        </li>
         <li class="divider hidden-xs hidden-sm"></li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">

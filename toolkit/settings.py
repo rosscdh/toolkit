@@ -205,6 +205,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.messages.context_processors.messages',
     'django.core.context_processors.request',
     'toolkit.context_processors.EXPOSED_GLOBALS',
+    'toolkit.context_processors.FIRSTSEEN',
     'toolkit.context_processors.LAYOUT',
     'toolkit.context_processors.WORKSPACES',
 )
@@ -322,6 +323,7 @@ PIPELINE_CSS = {
             'fonts/pe-icon-7-stroke/css/pe-icon-7-stroke.css',
             'css/application.css',
             'css/animate.css',
+            'less/introjs-custom.less'
             'css/font-awesome.min.css'
         ),
         'output_filename': 'css/core.css',

@@ -46,8 +46,10 @@ angular.module('toolkit-gui')
 	'$log',
 	'$window',
 	'$q',
+	'IntroService',
 	'Intercom',
 	'INTERCOM_APP_ID',
+	'DEBUG_MODE',
 	function($scope,
 			 $rootScope,
 			 $routeParams,
@@ -75,9 +77,13 @@ angular.module('toolkit-gui')
 			 $log,
 			 $window,
 			 $q,
+			 IntroService,
 			 Intercom,
-			 INTERCOM_APP_ID){
+			 INTERCOM_APP_ID,
+			 DEBUG_MODE){
 		'use strict';
+
+		$scope.DEBUG_MODE = DEBUG_MODE;
 		/**
 		 * Scope based data for the checklist controller
 		 * @memberof			ChecklistCtrl
@@ -85,6 +91,8 @@ angular.module('toolkit-gui')
 		 * @type {Object}
 		 */
 		var routeParams = smartRoutes.params();
+
+		var steps;
 
 		/**
 		 * In scope variable containing containing the currently selected matter
@@ -265,6 +273,11 @@ angular.module('toolkit-gui')
 			} else {
 				// Display error
 				toaster.pop('warning', 'Unable to load matter details',5000);
+			}
+
+			// Guided tour (show only if demo project)
+			if( matter && matter._meta && matter._meta.matter && matter._meta.matter['is_demo']) {
+				IntroService.show(steps);
 			}
 		};
 
@@ -2057,6 +2070,69 @@ angular.module('toolkit-gui')
 		};
 
 		/* END COMMENT HANDLING */
+
+		/*
+		 ___       _
+		|_ _|_ __ | |_ _ __ ___
+		 | || '_ \| __| '__/ _ \
+		 | || | | | |_| | | (_) |
+		|___|_| |_|\__|_|  \___/
+
+		 */
+		steps={
+			'steps': [
+				{
+					'element': '#step1',
+					'intro': "Checklist items are organised into categories."
+				},
+				{
+					'element': '#step1 .dropdown-toggle',
+					'intro': "Add new categories."
+				},
+				{
+					'element': '#step1 .btn-new-item',
+					'intro': "Create new checklist items."
+				},
+				{
+					'element': '.checklist-members',
+					'intro': "Invite people to participate in your workspace."
+				},
+				{
+					'element': '.navbar input[type=search]',
+					'intro': "Find checklist items quickly with search."
+				},
+				{
+					'element': '.navbar .doc-outline-status-',
+					'intro': "Filter checklist items by status."
+				},
+				{
+					'element': '.navbar .notifications span',
+					'intro': "See when things change."
+				},
+				{
+					'element': '#checklist-activity h4',
+					'intro': "Chat with participants about items, documents and revisions."
+				}
+			]
+		};
+
+		$scope.reloadingLess = false;
+
+		$scope.showIntro = function() {
+			$scope.reloadingLess = true;
+			IntroService.show(steps);
+			$timeout(function(){
+				less.refresh();
+				$scope.reloadingLess = false;
+			},100);
+		};
+
+		/**
+		 * Recieves broadcast message to show intro
+		 */
+		$scope.$on('showIntro', function(){
+			IntroService.show(steps, 1);
+		});
 }])
 
 /**
