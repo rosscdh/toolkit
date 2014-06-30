@@ -1,4 +1,4 @@
-{% extends 'gui.html' %}{% load url from future %}{% load compressed %}
+{% extends 'gui.html' %}{% load url from future %}{% load compressed matter_tags %}
 
 {% block page_title %}Your Matters{% endblock %}
 
@@ -22,74 +22,7 @@
 <script src="{{ STATIC_URL }}js/moment-timezone.0.0.6.js"></script>
 <script src="{{ STATIC_URL }}js/fuse.min.js"></script>
 
-<!-- should only be loaded if a new user //-->
-<script src="{{ STATIC_URL }}js/intro.min.js"></script>
-<link href="{{ STATIC_URL }}css/introjs.min.css" type="text/css" rel="stylesheet" />
-<link href="{{ STATIC_URL }}less/introjs-custom.less" type="text/css" rel="stylesheet" />
-<!-- start intro //-->
-{% if firstseen %}
-<script language="javaScript">
-    var intro = introJs();
-    /*
-     ___       _
-    |_ _|_ __ | |_ _ __ ___
-     | || '_ \| __| '__/ _ \
-     | || | | | |_| | | (_) |
-    |___|_| |_|\__|_|  \___/
-
-     */
-    var introConfig = {
-        'showBullets': 'false',
-        'showLabel': 'false',
-        'showStepNumbers': 'false',
-        'KeyboardNavigation': 'false',
-
-        'steps': [
-            {
-                'element': 'article:first-child .card',
-                'intro': 'This is a matter card; it provides a brief visual summary of everything that is going on in the matter.'
-            },
-            {
-                'element': 'article:first-child .progress',
-                'intro': 'As Items and Documents are finalised you will see the progress bar of this matter fill up.'
-            },
-            {
-                'element': 'article:first-child .card .edit',
-                'intro': 'Need to change the matter name? Edit details by clicking on this gear icon.',
-                'position': 'right'
-            },
-            {
-                'element': 'article:first-child .card .export-button',
-                'intro': 'Need to download all of your completed documents? Click the download icon and all documents in this Matter will be exported and emailed to you.',
-                'position': 'right'
-            },
-            {
-                'element': 'article:first-child .card .people',
-                'intro': 'This are shows you who and how many participants are in this Matter.',
-                'position': 'right'
-            },
-            {
-                'element': 'header a.btn-success',
-                'intro': 'Create a new matter by clicking the "New Matter" button.',
-                'position': 'left'
-            }
-        ]
-    };
-
-    intro.setOptions(introConfig);
-
-    $( document ).ready( function() {
-        intro.onchange(function(){
-            if(intro._currentStep===1) {
-                $('article:first-child .progress .progress-bar').css('width', '30%');
-            } else {
-                $('article:first-child .progress .progress-bar').css('width', '0%');
-            }
-        });
-        intro.start();
-    });
-</script>
-{% endif %}
+{% user_intro %}
 
 <script>
 'use strict';
