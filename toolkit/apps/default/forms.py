@@ -21,6 +21,7 @@ from toolkit.apps.workspace.models import (Workspace,
 
 assert hasattr(settings, 'DEMO_MATTER_PK_TO_CLONE_ON_USER_CREATE'), 'You must define a settings.DEMO_MATTER_PK_TO_CLONE_ON_USER_CREATE this is the workspace to use as the demo fixture'
 assert hasattr(settings, 'DEMO_MATTER_LAWPAL_USER_PK'), 'You must define a settings.DEMO_MATTER_LAWPAL_USER_PK who is the user that wil be the demo matters client'
+SHOW_USER_INTRO = getattr(settings, 'DEMO_MATTER_SHOW_USER_INTRO', False)
 
 import logging
 LOGGER = logging.getLogger('django.request')
@@ -158,18 +159,19 @@ class SignUpForm(forms.Form):
         """
         # Create the demo matter
         """
-        demo_associated_lawpal_user = User.objects.get(pk=settings.DEMO_MATTER_LAWPAL_USER_PK)
-        source_matter = Workspace.objects.get(pk=settings.DEMO_MATTER_PK_TO_CLONE_ON_USER_CREATE)
-        target_matter = Workspace.objects.create(name='Demonstration Matter',
-                                                 description='A demonstration matter for you to explore.',
-                                                 lawyer=user)
-
-        # associate our users
-        target_matter.add_participant(user=user, role=ROLES.owner, **MATTER_OWNER_PERMISSIONS)
-
-        demo_matter_clone_service = DemoMatterCloneService(source_matter=source_matter,
-                                                           target_matter=target_matter)
-        demo_matter_clone_service.process()
+        if SHOW_USER_INTRO is True:
+            demo_associated_lawpal_user = User.objects.get(pk=settings.DEMO_MATTER_LAWPAL_USER_PK)
+            source_matter = Workspace.objects.get(pk=settings.DEMO_MATTER_PK_TO_CLONE_ON_USER_CREATE)
+            target_matter = Workspace.objects.create(name='Demonstration Matter',
+                                                     description='A demonstration matter for you to explore.',
+                                                     lawyer=user)
+            # associate our users
+            target_matter.add_participant(user=user, role=ROLES.owner, **MATTER_OWNER_PERMISSIONS)
+            # setup clone
+            demo_matter_clone_service = DemoMatterCloneService(source_matter=source_matter,
+                                                               target_matter=target_matter)
+            # process the clone service
+            demo_matter_clone_service.process()
 
     def save(self):
         user = User.objects.create_user(self.cleaned_data.get('username'),
