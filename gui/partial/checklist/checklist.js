@@ -227,7 +227,7 @@ angular.module('toolkit-gui')
 			// Items with blank category name
 			items = jQuery.grep( matter.items, function( item ){ return item.category===categoryName; } );
 			category = { 'name': categoryName, 'items': items };
-					
+
 			categories.push(category);
 
 			// First item if available, this will be used to open the first available checklist item by default
@@ -828,7 +828,7 @@ angular.module('toolkit-gui')
 					// Update uploading status
 					item.uploading = false;
 					$scope.data.uploading = $scope.uploadingStatus( $scope.data.matter.items );
-					
+
 					toaster.pop('error', 'Error!', 'Unable to upload revision', 5000);
 				}
 			);
@@ -2021,12 +2021,12 @@ angular.module('toolkit-gui')
 		/* END COMMENT HANDLING */
 
 		/*
-		 _____ _ _ _                
-		|  ___(_) | |_ ___ _ __ ___ 
+		 _____ _ _ _
+		|  ___(_) | |_ ___ _ __ ___
 		| |_  | | | __/ _ \ '__/ __|
 		|  _| | | | ||  __/ |  \__ \
 		|_|   |_|_|\__\___|_|  |___/
-									
+
 		 */
 		/**
 		 * applyStatusFilter  filters for checklist based on status 0-4
@@ -2083,7 +2083,7 @@ angular.module('toolkit-gui')
 			}
 		});
 
-		
+
 		return tempClients;
 	};
 })
@@ -2112,7 +2112,7 @@ angular.module('toolkit-gui')
 			}
 		});
 
-		
+
 		return tempClients;
 	};
 });

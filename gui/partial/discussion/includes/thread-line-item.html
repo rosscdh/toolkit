@@ -1,0 +1,11 @@
+<div class="type-icon lock"></div>
+<div class="message">
+    <h3 ng-bind="thread.title"></h3>
+    <p ng-bind="thread.content | characters:25:false"></p>
+</div>
+<div class="meta">
+    <span class="last-active">Last active: {{ thread.date_updated | timeago }}</span>
+    <div class="user-meta">
+        <span class="user {{user.user_class}}" ng-bind="user.initials" ng-repeat="user in thread.participants"></span>
+    </div>
+</div>
