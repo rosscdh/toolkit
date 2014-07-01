@@ -15,9 +15,10 @@
         <div id="div_id_participants" class="form-group">
             <label for="id_participants" class="control-label">Participants</label>
             <div class="controls">
-                <label ng-repeat="person in matter.participants" class="{{person.role}}">
+                <label ng-repeat="person in matter.participants" ng-show="person.username!==currentUser.username" class="{{person.role}}">
                     <input type="checkbox" ng-model="data.request.participants[person.username]"> {{person.name}}
-                </label><br>
+                </label>
+                <br>
             </div>
         </div>
 
