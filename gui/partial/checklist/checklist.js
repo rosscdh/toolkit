@@ -475,9 +475,10 @@ angular.module('toolkit-gui')
 
 				matterItemService.create(matterSlug, itemName, category.name).then(
 				function success(item){
-					updateObject(placeholderItem /*originalItem*/, item /*item recieved from API*/);
-					/* category.items.push(item); */
-					/* $scope.data.newItemName = ''; */
+                    updateObject(placeholderItem /*originalItem*/, item /*item recieved from API*/);
+
+                    //mark item as loaded !important
+                    $scope.data.loadedItemdetails[item.slug] = true;
 
 					// Display item that has just been added
 					$scope.selectItem( item, category );
@@ -616,8 +617,6 @@ angular.module('toolkit-gui')
             }
         }
 
-		$scope.loadItemDetails = function(item){
-			var deferred = $q.defer();
         $scope.loadItemDetails = function (item) {
             var deferred = $q.defer();
             var matterSlug = $scope.data.slug;
@@ -1461,11 +1460,11 @@ angular.module('toolkit-gui')
 		* @method		    deleteRevisionReview
 		* @memberof			ChecklistCtrl
 		*/
-		$scope.deleteRevisionReviewRequest = function( item, review ) {
+		$scope.deleteRevisionReviewRequest = function( item ) {
 			var matterSlug = $scope.data.slug;
 			//var participant = $scope.getParticipantByUrl(participant_url);
 
-			matterItemService.deleteRevisionReviewRequest(matterSlug, item.slug, review).then(
+			matterItemService.deleteRevisionReviewRequest(matterSlug, item.slug).then(
 				function success(){
 					var index = jQuery.inArray( review, item.latest_revision.reviewers );
 					if( index>=0 ) {

@@ -95,7 +95,7 @@ angular.module('toolkit-gui')
 			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/revision/:type/:username:action', {}, {
 				'request': { 'method': 'POST', 'params' : { 'type': 'reviewers' }, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'remind': { 'method': 'POST', 'params': { 'type': 'reviewers', 'action':'remind'}, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
-				'delete': { 'method': 'DELETE', 'params' : { 'type': 'reviewer' }, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
+				'delete': { 'method': 'DELETE', 'params' : { 'type': 'reviewers' }, 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }}
 			});
 		}
 
@@ -694,12 +694,12 @@ angular.module('toolkit-gui')
 			 *
 			 * @return {Promise}
 			 */
-			'deleteRevisionReviewRequest': function ( matterSlug, itemSlug, review ) {
+			'deleteRevisionReviewRequest': function ( matterSlug, itemSlug ) {
 				var deferred = $q.defer();
 
 				var api = reviewerItemResource();
 
-				api.delete({'matterSlug': matterSlug, 'itemSlug': itemSlug, 'username': review.reviewer.username },
+				api.delete({'matterSlug': matterSlug, 'itemSlug': itemSlug },
 					function success(){
 						deferred.resolve();
 					},
