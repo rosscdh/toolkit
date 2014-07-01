@@ -49,7 +49,7 @@ class MatterExportService(object):
     @property
     def token(self):
         if self._token is None:
-            self._token = signing.dumps(self.token_data, salt=settings.SECRET_KEY)
+            self._token = signing.dumps(self.token_data, salt=settings.URL_ENCODE_SECRET_KEY)
         return self._token
 
     def ensure_needed_files_list(self):
