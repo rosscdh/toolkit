@@ -475,13 +475,14 @@ angular.module('toolkit-gui')
 
 				matterItemService.create(matterSlug, itemName, category.name).then(
 				function success(item){
-                    updateObject(placeholderItem /*originalItem*/, item /*item recieved from API*/);
+                    delete placeholderItem.loading;
+                    angular.extend(placeholderItem, item);
 
                     //mark item as loaded !important
                     $scope.data.loadedItemdetails[item.slug] = true;
 
-					// Display item that has just been added
-					$scope.selectItem( item, category );
+					// Select the placeholder item that has just been added with the data from the loaded item
+					$scope.selectItem( placeholderItem, category );
 				},
 				function error(/*err*/){
 					toaster.pop('error', 'Error!', 'Unable to create new item',5000);
@@ -489,20 +490,6 @@ angular.module('toolkit-gui')
 			);
 			}
 		};
-
-		/**
-		 * updateObject: given a checklist item placeholder, update properties given updated details from the API
-		 * @param  {Object} originalItem placeholder checklist item
-		 * @param  {Object} updatedItem  update object from API
-		 */
-		function updateObject( originalItem, updatedItem ) {
-			delete originalItem.loading;
-
-			// Updating the object this way does not interupt the referenced object in the array
-			for(var key in updatedItem) {
-				originalItem[key] = updatedItem[key];
-			}
-		}
 
 		/**
 		 * Sets the currently selected item to the one passed through to this method
