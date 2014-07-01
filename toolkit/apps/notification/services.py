@@ -68,7 +68,7 @@ class RealTimeMatterEvent(object):
     ```
     """
     service = PusherPublisherService
-    event_names = ('create', 'update', 'delete',)
+    event_names = ('create', 'update', 'delete', 'update_sort',)
 
     def __init__(self, matter):
         self.channel = matter.slug
