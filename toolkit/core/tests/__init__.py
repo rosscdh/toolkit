@@ -7,3 +7,4 @@ from .signals import (ActivitySignalTest,)
 #from .permission import (PermissionTest, ) # depreciating
 
 from .matter_permissions import (MatterPermissionTest, )
+from ..attachment.tests.managers import (RevisionManagerTest, )

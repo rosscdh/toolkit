@@ -18,6 +18,14 @@ class RevisionManager(IsDeletedManager):
         if user.matter_permissions(matter).role == ROLES.client \
                 or user.matter_permissions(matter).has_permission(manage_items=False):
             # if I am client or I do not have manage_items-permissions, my revisions are filtered:
-            # just show those I uploaded or I am reviewing
-            qs = qs.filter(Q(reviewers=user) | Q(uploaded_by=user))
+            # import pdb;pdb.set_trace()
+            qs = qs.filter(
+                # (Q(item__is_requested=True) & Q(item__responsible_party=user)) |  # file should be uploaded by user
+                # if item was is_requested=True and a revision is saved, it is not is_requested any more! -> check uploaded_by
+
+                Q(signers=user) |  # file should be signed by user
+                Q(reviewers=user) |  # file should be reviewed by user
+                Q(uploaded_by=user)  # file was uploaded by user
+            )
+            qs = qs.filter()
         return qs
