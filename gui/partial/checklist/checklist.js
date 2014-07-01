@@ -269,7 +269,7 @@ angular.module('toolkit-gui')
                                     });
                                 });
 
-                                if (item && category) {
+                                if (foundItem && category) {
                                     //remove item from category
                                     category.items.splice(index,1);
 
