@@ -6,9 +6,8 @@ from rulez import registry as rulez_registry
 
 from rest_framework import viewsets
 from rest_framework import generics
-from rest_framework import status as http_status
 from rest_framework.response import Response
-from toolkit.apps.me.views import User
+from rest_framework import status as http_status
 
 from toolkit.core.attachment.models import Revision
 
@@ -121,25 +120,6 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
                                                                 revision=self.revision,
                                                                 previous_status=previous_instance.status)
 
-    #
-    # Removed as this appears to be a mis-code
-    #
-    # def handle_sign_in_progress(self, sign_in_progress=None):
-    #     """
-    #     To get around HS crap implementation, we have to store a in_progress flag
-    #     which is used to show appropriate messaging to the users
-    #     """
-    #     # cache_key used to store the unique calue for this revision
-    #     cache_key = self.revision.SIGN_IN_PROGRESS_KEY
-
-    #     if not cache.get( cache_key ):
-    #         minutes = 5
-    #         cache_seconds = (minutes * 60) # turn minutes into seconds
-
-    #         expiry_date_time = datetime.datetime.utcnow().replace(tzinfo=utc) + datetime.timedelta(minutes=5)
-
-    #         cache.set( cache_key, expiry_date_time, cache_seconds )  # set the cache for this object
-
     def update(self, request, *args, **kwargs):
         #
         # Status change
@@ -182,13 +162,6 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
             self.post_save(self.object, created=True)
 
             headers = self.get_success_headers(serializer.data)
-
-            #
-            # Asynchronous celery task to upload the file
-            #
-            # @TODO add this back when the bug with viewing a matter signal is fixed
-            # run_task(crocodoc_upload_task,
-            #          user=self.request.user, revision=self.object)
 
             #
             # Custom signal event
@@ -237,18 +210,13 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
     def can_read(self, user):
         """
         logic about WHO may read this revision is in RevisionManager
-
-
-        WEIRD THING: The latest revisions reviewer was allowed to see all revisions before!
         """
-        return self.get_object() in Revision.objects.visible(user, self.matter).all()
+        return self.get_object() in self.model.objects.visible(user, self.matter).all()
 
     def can_edit(self, user):
-
         #
         # WEIRD THING: Why is a latest revisions' reviewer allowed to edit?
         #
-
         return (user in self.matter.participants.all()
                 or user.matter_permissions(matter=self.matter).has_permission(manage_items=True) is True
                 or (self.item.latest_revision is not None and user in self.item.latest_revision.reviewers.all())

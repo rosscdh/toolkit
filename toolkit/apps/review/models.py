@@ -66,7 +66,15 @@ class ReviewDocument(IsDeletedMixin,
         # is the invited reviewer and is a participant
         if user == self.reviewer and user in self.matter.participants.all():
             primary_review_document = self.document.item.primary_participant_review_document()
-            return ABSOLUTE_BASE_URL(reverse('review:review_document', kwargs={'slug': primary_review_document.slug, 'auth_slug': primary_review_document.get_user_auth(user=user)}))
+
+            # try get teh auth slug on the primary which may not be present as clients are no longer on the primary document
+            auth_slug = primary_review_document.get_user_auth(user=user)
+
+            # if the uath_slug is none then get the local auth slug
+            if auth_slug is None:
+                auth_slug = self.get_user_auth(user=user)
+
+            return ABSOLUTE_BASE_URL(reverse('review:review_document', kwargs={'slug': primary_review_document.slug, 'auth_slug': auth_slug}))
         return None
 
     def get_absolute_url(self, user):
@@ -77,13 +85,17 @@ class ReviewDocument(IsDeletedMixin,
         """
         auth_key = self.get_user_auth(user=user)
         if auth_key is not None:
+
             # see if the user is a participant and review their primary review_documnet
             primary_document_review_url = self.reviewing_user_is_participant_review_url(user=user)
+
             if primary_document_review_url is not None:
                 return primary_document_review_url
+
             else:
                 # is a normal 3rd party invited user
                 return ABSOLUTE_BASE_URL(reverse('review:review_document', kwargs={'slug': self.slug, 'auth_slug': self.get_user_auth(user=user)}))
+
         return None
 
     def get_download_url(self, user):

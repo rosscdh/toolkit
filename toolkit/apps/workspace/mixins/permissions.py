@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.db.models.signals import m2m_changed
 
 
 class MatterParticipantPermissionMixin(object):
@@ -62,6 +63,11 @@ class MatterParticipantPermissionMixin(object):
 
         if update_fields:
             perm.save(update_fields=update_fields)
+            m2m_changed.send(sender=self.__class__.participants.through,
+                             instance=self,
+                             action='post_add',
+                             model=perm.__class__,
+                             pk_set=[perm.pk])
 
         return perm
 
