@@ -305,7 +305,7 @@ angular.module('toolkit-gui')
                                 );
                             }
 
-                        } else if (data.model === 'matter') {
+                        } else if (data.model === 'workspace') {
                             toaster.pop('warning', 'Matter has been updated.', 'Click here to refresh the matter.', 5000, null, function () {
                                 window.location.reload();
                             });
