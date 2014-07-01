@@ -207,6 +207,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'toolkit.context_processors.EXPOSED_GLOBALS',
     'toolkit.context_processors.FIRSTSEEN',
     'toolkit.context_processors.LAYOUT',
+    'toolkit.context_processors.REQUESTS_COUNT',
     'toolkit.context_processors.WORKSPACES',
 )
 
