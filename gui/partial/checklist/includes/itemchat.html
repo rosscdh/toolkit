@@ -74,6 +74,10 @@
             <textarea mentions-box class="form-control" rows="2" placeholder="Comment on this item..." text="data.selectedItem.newcomment" container-position="left" required></textarea>
         </form>
 
+<div class="visible-to">
+    Visible to: <span class="user ng-binding ng-scope" ng-repeat="user in matter.selected.participants" ng-bind="user | initials"></span> <span class="initials">AH, YN, TL</span>
+</div>
+
 </div>
 <div id="activity">
 
