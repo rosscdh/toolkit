@@ -110,6 +110,13 @@ class MatterItemView(generics.UpdateAPIView,
     def get_serializer_context(self):
         return {'request': self.request}
 
+    def delete(self, request, **kwargs):
+        item = self.get_object()
+        resp = super(MatterItemView, self).delete(request=request, **kwargs)
+        # Issue RT event
+        self.matter.actions.item_deleted(user=request.user, item=item)
+        return resp
+
     def pre_save(self, obj):
         # create activity if status was changed:
         try:

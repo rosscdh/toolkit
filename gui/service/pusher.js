@@ -1,8 +1,9 @@
 angular.module('toolkit-gui')
-.factory('PusherService', ['$rootScope', 'pusher_api_key', function($rootScope, pusher_api_key) {
+.factory('PusherService', ['$rootScope', 'pusher_api_key', '$log', function($rootScope, pusher_api_key, $log) {
 	'use strict';
 	var pusher;
-	var channel;
+	var notificationchannel;
+	var eventchannel;
 	return {
 		/**
 		 * subscribe - angular wrapper for pusher
@@ -13,13 +14,13 @@ angular.module('toolkit-gui')
 		 * @method				eventCaptured
 		 * @memberof			PusherService
 		 */
-		subscribe: function (channelName, eventName, callback) {
+		subscribeUser: function (channelName, eventName, callback) {
 			pusher = pusher||new Pusher(pusher_api_key); // Initialise pusher if not already
-			channel = pusher.subscribe(channelName);
+			notificationchannel = pusher.subscribe(channelName);
 			/**
 			 * connectionError - called if unable to bind to channel
 			 */
-			channel.bind('pusher:subscription_error', function connectionError() {
+			notificationchannel.bind('pusher:subscription_error', function connectionError() {
 				console.error('connection FAILED!!! pusher:subscription_error');
 			});
 			/**
@@ -28,14 +29,54 @@ angular.module('toolkit-gui')
 			 * @method				eventCaptured
 			 * @memberof			PusherService
 			 */
-			channel.bind('pusher:subscription_succeeded', function eventCaptured() {	
-				console.log('success to subscribe...');	
-				channel.bind(eventName, function(msg) {
+			notificationchannel.bind('pusher:subscription_succeeded', function eventCaptured() {
+				console.log('success to subscribe to userchannel...');
+				notificationchannel.bind(eventName, function(msg) {
 					$rootScope.$apply(function (){
 						callback(msg);	
 					});			 
 				});
 			});
-		}
+
+		},
+
+        subscribeMatterEvents: function(matterSlug, callback){
+            pusher = pusher||new Pusher(pusher_api_key); // Initialise pusher if not already
+            eventchannel = pusher.subscribe(matterSlug);
+
+            /**
+			 * connectionError - called if unable to bind to channel
+			 */
+			eventchannel.bind('pusher:subscription_error', function connectionError() {
+				console.error('connection FAILED!!! pusher:subscription_error');
+			});
+			/**
+			 * eventCaptured - called when pusher send an event to this channel
+			 * @private
+			 * @method				eventCaptured
+			 * @memberof			PusherService
+			 */
+			eventchannel.bind('pusher:subscription_succeeded', function eventCaptured() {
+				console.log('success to subscribe to eventchannel for matter: ' + matterSlug);
+                eventchannel.bind('create', function(msg) {
+					$rootScope.$apply(function (){
+                        $log.debug("received pusher signal for create");
+						callback(msg);
+					});
+				});
+                eventchannel.bind('update', function(msg) {
+					$rootScope.$apply(function (){
+                        $log.debug("received pusher signal for update");
+						callback(msg);
+					});
+				});
+                eventchannel.bind('delete', function(msg) {
+                    $log.debug("received pusher signal for delete");
+					$rootScope.$apply(function (){
+						callback(msg);
+					});
+				});
+			});
+        }
 	};
 }]);

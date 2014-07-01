@@ -68,7 +68,6 @@ class MatterParticipantPermissionMixin(object):
                              action='post_add',
                              model=perm.__class__,
                              pk_set=[perm.pk])
-
         return perm
 
     def remove_participant(self, user):
