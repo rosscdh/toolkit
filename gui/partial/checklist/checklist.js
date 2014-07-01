@@ -245,7 +245,7 @@ angular.module('toolkit-gui')
                                     function success(item) {
                                         replaceItem(item);
 
-                                        if (item.slug !== $scope.data.selectedItem.slug) {
+                                        if (!$scope.data.selectedItem || item.slug !== $scope.data.selectedItem.slug) {
                                             toaster.pop('warning', 'Item ' + item.name + ' has been updated.', 'Click here to select the item.', 7000, null, function () {
                                                 $scope.selectItem(item, category);
                                             });
@@ -259,7 +259,8 @@ angular.module('toolkit-gui')
                                 var foundItem;
 
                                 //find and delete the item
-                                jQuery.each($scope.data.matter.categories, function (index, cat) {
+                                jQuery.each($scope.data.categories, function (cat_index, cat) {
+                                    $log.debug(cat);
                                     jQuery.each(cat.items, function (i, item) {
                                         if (item.slug === data.id) {
                                             index = i;
@@ -280,7 +281,7 @@ angular.module('toolkit-gui')
                                     }
                                 }
 
-                                if (data.id !== $scope.data.selectedItem.slug) {
+                                if (!$scope.data.selectedItem || data.id !== $scope.data.selectedItem.slug) {
                                     toaster.pop('warning', 'Item deleted', 'Item ' + foundItem.name + ' has been deleted.', 5000, null);
                                 } else {
                                     $scope.data.selectedItem = null;
