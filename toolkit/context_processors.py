@@ -42,7 +42,9 @@ def LAYOUT(request):
 
 
 def REQUESTS_COUNT(request):
-    count = request.user.profile.open_requests if request.user.is_authenticated else 0
+    count = 0
+    if request.user.is_authenticated():
+       count = request.user.profile.open_requests if request.user.is_authenticated else 0
 
     return {
         'REQUESTS_COUNT': count,
