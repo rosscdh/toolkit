@@ -1,0 +1,26 @@
+<div class="modal-header">
+    <button type="button" class="close" aria-hidden="true" ng-click="cancel()">×</button>
+    <h4 class="modal-title">Participants in <span ng-bind="thread.title"></span></h4>
+</div>
+
+<form name="createForm" ng-submit="create()">
+    <div class="modal-body">
+        <h5 ng-show="matter.participants.length > 0">Matter Participants</h5>
+        <ul class="list-unstyled participants">
+            <li class="clearfix" ng-repeat="person in matter.participants">
+                <span class="user {{person.role}}" ng-bind="person | initials"></span>
+                <label ng-bind="person | fullname"></label>
+
+                <a class="btn btn-link pull-right" ng-show="!isParticipant(person)" ng-click="addParticipant(person)">Add as Participant</a>
+                <span class="pull-right" ng-show="isParticipant(person)">Participating</span>
+            </li>
+        </ul>
+    </div>
+
+    <div class="modal-footer">
+        <div class="controls">
+            <input type="button" name="cancel" value="Close" class="btn btn btn-default" id="button-id-cancel" ng-click="cancel()">
+        </div>
+    </div>
+
+</form>

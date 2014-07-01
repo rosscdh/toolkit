@@ -1,4 +1,4 @@
- <div ng-show="data.selectedItem" ng-file-drop="onFileDropped($files, data.selectedItem);">
+ <div ng-show="data.selectedItem" ng-file-drop="onFileDropped($files, data.selectedItem);" class="ng-cloak">
     <h3 ng-show="data.usdata.current.permissions.manage_items">
         <a href="javascript:;" ng-click="data.editItemTitle=data.selectedItem.name;data.showEditItemTitleForm=!data.showEditItemTitleForm;focus('eventEditItemTitle')"
                 ng-hide="data.showEditItemTitleForm">
@@ -319,7 +319,6 @@
                                     <span class="fui-check"></span> Complete
                                 </button>
                             </span>
-
 
                             <span ng-show="signer.signed_at">
                                 {{ signer.initials }} signed <span ng-bind="signer.signed_at | timeago"></span>

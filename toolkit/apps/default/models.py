@@ -6,8 +6,11 @@ from django.core.exceptions import ObjectDoesNotExist
 from .mixins import EmailIsValidatedMixin
 from .managers import CustomUserManager
 
+from toolkit.core.item.models import Item
+
 from jsonfield import JSONField
 from sorl.thumbnail.images import ImageFile
+from threadedcomments.models import ThreadedComment
 
 import logging
 logger = logging.getLogger('django.request')
@@ -111,6 +114,18 @@ class UserProfile(EmailIsValidatedMixin, models.Model):
     def matters_created(self, value):
         if type(value) in [int]:
             self.data['matters_created'] = value
+
+    @property
+    def open_requests(self):
+        return self.data.get('open_requests', 0)
+
+    @open_requests.setter
+    def open_requests(self, value):
+        if type(value) in [int]:
+            self.data['open_requests'] = value
+
+    def get_open_requests_count(self):
+        return Item.objects.my_requests(self.user.pk).count()
 
     @property
     def verified(self):

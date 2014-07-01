@@ -13,7 +13,7 @@ from ..forms import (ChangePasswordForm, AccountSettingsForm)
 
 
 def _get_action_url(url_name, user):
-    token = signing.dumps(user.pk, salt=settings.SECRET_KEY)
+    token = signing.dumps(user.pk, salt=settings.URL_ENCODE_SECRET_KEY)
     # remove teh token; because signing creates a token with datetime invlved
     # and tometimes out tests woudl fail because of the time diff involved in
     # the testing process; so simply generate teh url but remove the token so

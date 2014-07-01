@@ -5,7 +5,7 @@ from django.utils.decorators import method_decorator
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.auth.decorators import user_passes_test
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden, HttpResponseNotFound
-from django.views.generic import CreateView, DeleteView, ListView, TemplateView, UpdateView, DetailView
+from django.views.generic import CreateView, DeleteView, ListView, UpdateView, DetailView
 from toolkit.apps.matter.signals import USER_DOWNLOADED_EXPORTED_MATTER
 
 from toolkit.core import _managed_S3BotoStorage
@@ -20,8 +20,6 @@ from rest_framework.renderers import UnicodeJSONRenderer
 
 from . import MATTER_EXPORT_DAYS_VALID
 from .forms import MatterForm
-
-from StringIO import StringIO
 
 import datetime
 import dateutil
@@ -40,7 +38,7 @@ class MatterDownloadExportView(DetailView):
         self.storage = _managed_S3BotoStorage()
         self.export_service = None
 
-        token_data = signing.loads(kwargs.get('token'), salt=settings.SECRET_KEY)
+        token_data = signing.loads(kwargs.get('token'), salt=settings.URL_ENCODE_SECRET_KEY)
 
         kwargs.update(token_data)
         kwargs.update({'slug': token_data.get('matter_slug')})

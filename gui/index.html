@@ -6,14 +6,17 @@
 	<meta charset="utf-8">
 
   <!-- App LESS -->
+  <link href="/static/ng/bower_components/intro.js/minified/introjs.min.css" type="text/css" rel="stylesheet" data-remove="exclude">
+
   <link href="/static/ng/css/app.less" type="text/css" rel="stylesheet/less">
   <link href="/static/fonts/pe-icon-7-stroke/css/pe-icon-7-stroke.css" rel="stylesheet" data-remove="exclude">
   <link href="/static/ng/bower_components/html5-desktop-notifications/notifications.css" type="text/css" rel="stylesheet"/>
+
   <script src="/static/ng/bower_components/jquery/jquery.min.js" data-remove="exclude"></script>
   <script src="/static/ng/bower_components/jquery-ui/ui/minified/jquery-ui.min.js" data-remove="exclude"></script>
   <script src="/static/ng/bower_components/bootstrap/dist/js/bootstrap.min.js" data-remove="exclude"></script>
   <script src="/static/ng/bower_components/angular/angular.min.js" data-remove="exclude"></script>
-  <script src="//d3dy5gmtp8yhk7.cloudfront.net/2.2/pusher.min.js" data-remove="exclude"></script>
+  <script src="//d3dy5gmtp8yhk7.cloudfront.net/2.1/pusher.min.js" data-remove="exclude"></script>
   <script language="javascript" data-remove="exclude">
     /* File upload fallback for IE browsers */
     FileAPI = {
@@ -64,6 +67,7 @@
   <script src="/static/ng/controllers/mock.js"></script>
 
   <!-- Service JS -->
+<<<<<<< HEAD
   <script src="/static/ng/service/base.js"></script>
   <script src="/static/ng/service/user.js"></script>
   <script src="/static/ng/service/matter.js"></script>
@@ -86,6 +90,33 @@
   <script src="/static/ng/directive/filepicker.js"></script>
   <script src="/static/ng/directive/auth.js"></script>
   <script src="/static/ng/directive/modal.js"></script>
+=======
+  <script src="service/base.js"></script>
+  <script src="service/user.js"></script>
+  <script src="service/matter.js"></script>
+  <script src="service/matterItem.js"></script>
+  <script src="service/mattercategory.js"></script>
+  <script src="service/participants.js"></script>
+  <script src="service/smartRoutes.js"></script>
+  <script src="service/search.js"></script>
+  <script src="service/activity.js"></script>
+  <script src="service/comment.js"></script>
+  <script src="service/discussion.js"></script>
+  <script src="service/pusher.js"></script>
+  <script src="service/genericFunctions.js"></script>
+  <script src="service/intro.js"></script>
+  <!-- Add New Service JS Above -->
+
+  <!-- Directive JS -->
+  <script src="directive/form.js"></script>
+  <script src="directive/activity/activity.js"></script>
+  <script src="directive/mentions/mentionsbox.js"></script>
+  <script src="directive/mentions/mentionscontainer.js"></script>
+  <script src="directive/filepicker.js"></script>
+  <script src="directive/auth.js"></script>
+  <script src="directive/modal.js"></script>
+  <script src="directive/sticky-elements/sticky-elements.js"></script>
+>>>>>>> master
   <!-- Add New Directive JS Above -->
 
   <!-- Filter JS -->
@@ -98,20 +129,23 @@
   <!-- Partial JS -->
   <script src="/static/ng/partial/home/home.js"></script>
     <script src="/static/ng/partial/markdown/markdown-info.js"></script>
+  <script src="partial/checklist/checklist.js"></script>
+  <script src="partial/discussion/discussion.js"></script>
+  <script src="partial/discussion/manage-thread-participants.js"></script>
+  <script src="partial/discussion/create-thread.js"></script>
+  <script src="partial/closing/closing.js"></script>
+  <script src="partial/navigation/navigation.js"></script>
+  <script src="partial/participant-invite/participant-invite.js"></script>
+  <script src="partial/request-revision/request-revision.js"></script>
+  <script src="partial/request-review/request-review.js"></script>
+  <script src="partial/request-signing/request-signing.js"></script>
+  <script src="partial/view-document/view-document.js"></script>
+  <script src="partial/view-review/view-review.js"></script>
+  <script src="partial/view-signing/view-signing.js"></script>
+  <script src="partial/searchCtrl/searchCtrl.js"></script>
+  <script src="partial/authentication-required/authentication-required.js"></script>
+  <script src="partial/edit-revision-status/edit-revision-status.js"></script>
 
-  <script src="/static/ng/partial/checklist/checklist.js"></script>
-  <script src="/static/ng/partial/closing/closing.js"></script>
-  <script src="/static/ng/partial/navigation/navigation.js"></script>
-  <script src="/static/ng/partial/participant-invite/participant-invite.js"></script>
-  <script src="/static/ng/partial/request-revision/request-revision.js"></script>
-  <script src="/static/ng/partial/request-review/request-review.js"></script>
-  <script src="/static/ng/partial/request-signing/request-signing.js"></script>
-  <script src="/static/ng/partial/view-document/view-document.js"></script>
-  <script src="/static/ng/partial/view-review/view-review.js"></script>
-  <script src="/static/ng/partial/view-signing/view-signing.js"></script>
-  <script src="/static/ng/partial/searchCtrl/searchCtrl.js"></script>
-  <script src="/static/ng/partial/authentication-required/authentication-required.js"></script>
-  <script src="/static/ng/partial/edit-revision-status/edit-revision-status.js"></script>
   <!-- Add New Partial JS Above -->
 
   <div class="navbar navbar-inverse checklist-nav" ng-controller="NavigationCtrl">
@@ -135,40 +169,38 @@
         <ul class="nav navbar-nav" ng-show="matter.selected&&data.matterlist.length<=1">
             <li><a href="javascript:;" ng-bind="matter.selected.name | characters:15:true"></a></li>
         </ul>
+          <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".navbar-collapse">
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+          </button>
     </div>
-
-    <div class="hidden-xs">
+    <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav" ng-show="matter.selected">
-        <!-- Hide for now, just taking up space -->
-        <!-- <li id="checklist-nav" ng-class="{'active': isActive('/checklist')}">
-          <a href="#/checklist">Checklist</a>
+        <li id="checklist-nav" ng-class="{'active': isActive('/checklist')}">
+          <a href="#/checklist" title="Checklist"><span class="fui-list"></span></a>
+        </li>
+<!--    Hidden until last few points are sorted out
+        <li id="discussion-nav" ng-class="{'active': isActive('/discussion')}">
+          <a href="#/discussion" title="Discussion"><span class="fui-chat"></span></a>
         </li> -->
         <!-- Hide for now - discussed 2014-03-14
         <li id="closing-nav" ng-class="{'active': isActive('/closing')}">
-          <a ng-href="#/closing">Closing</a>
-        </li>-->
-
-        <li class="checklist-members  hidden-xs  hidden-sm">
+            <a ng-href="#/closing">Closing</a>
+        </li> -->
+        <li class="checklist-members hidden-xs">
           <a href="javascript:;" ng-click="invite()">
             <span class="fui-user"></span>
-            <span ng-show="matter.selected&&matter.selected.participants.length<=3">
-                <span class="user" ng-repeat="user in matter.selected.participants" ng-bind="user | initials"></span>
+            <span ng-if="matter.selected&&matter.selected.participants.length>0&&matter.selected.participants.length<=3">
+                <span class="user hidden-md hidden-xs hidden-sm" ng-repeat="user in matter.selected.participants" ng-bind="user | initials"></span>
             </span>
-            <span ng-show="matter.selected&&matter.selected.participants.length>3">
+            <span ng-if="matter.selected&&matter.selected.participants.length>3">
                 <span class="user" ng-bind="matter.selected.participants.length"></span>
             </span>
+
           </a>
         </li>
-        <!-- Hide for now - discussed 2014-03-14
-        <li class="">
-          <a href="#fakelink">
-            <span class="fui-chat"></span>
-            <span class="navbar-new animated">1</span>
-          </a>
-        </li>-->
-      </ul>
-      <!-- /nav -->
-      <form class="navbar-form navbar-left hidden-xs" ng-show="matter.selected" ng-controller="SearchCtrl" ng-submit="startSearch()">
+        <form class="navbar-form navbar-left hidden-sm hidden-xs " ng-show="searchEnabled" ng-controller="SearchCtrl" ng-submit="startSearch()">
         <div class="form-group">
           <div class="input-group input-group-sm">
             <input class="form-control" id="navbarInput-02" type="search" placeholder="Search" ng-model="data.term" ng-keyup="startSearch()" ng-blur="hide()" xng-focus="show()" autocomplete="off" onmouseup="this.select()">
@@ -206,6 +238,7 @@
 
           </div>
         </div>
+        <li>
         <div class="search-container">
           <div ng-class="{'show-results-container': data.display}">
             <ul class="search-results list-unstyled">
@@ -220,8 +253,11 @@
           </div>
         </div>
       </form>
+      </ul>
+      <!-- /nav -->
+
       {% verbatim %}
-      <ul class="nav navbar-nav navbar-right hidden-xs">
+      <ul class="nav navbar-nav navbar-right">
 
         <!-- start: desktop notifications / notifications //-->
         <li class="notifications">
@@ -231,12 +267,27 @@
         </li>
         <!-- end: desktop notifications / notifications //-->
 
-        <li><a href="/requests/">Requests</a></li>
-        <li class="hidden-xs hidden-sm"><a href="#" class="intercom">Support</a></li>
+        <li>
+          <a href="/requests/">
+            <span>Requests</span>
+            <span class="label label-important" ng-show="matter.selected.current_user.counts.requests > 0">{{ matter.selected.current_user.counts.requests }}</span>
+          </a>
+        </li>
+
+        <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <span class="hidden-xs">Support</span><b class="caret"></b>
+            </a>
+            <ul class='dropdown-menu'>
+              <li><a href="#" class="intercom">Contact</a></li>
+              <li><a href="#" ng-click="showIntro()">Tutorial</a></li>
+            </ul>
+        </li>
         <li class="divider hidden-xs hidden-sm"></li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-          <span class="hidden-xs">{{ matter.selected.current_user | fullname }}</span> <b class="caret"></b>
+          <span class="hidden-lg hidden-xs">{{ matter.selected.current_user | initials }} <b class="caret"></b></span>
+          <span class="hidden-md hidden-sm hidden-xs">{{ matter.selected.current_user | fullname }}<b class="caret"></b></span>
           </a>
           <ul class="dropdown-menu">
             <li><a href="/me/settings/">Account</a></li>
@@ -248,7 +299,8 @@
       </ul>
       {% endverbatim %}
       <!-- /nav -->
-    </div>
+
+  </div>
     <!--/.navbar-collapse -->
   </div>
 

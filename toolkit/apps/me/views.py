@@ -132,7 +132,7 @@ class BaseConfirmValidationRequest(RedirectView):
 
     def get_user(self, token):
         try:
-            pk = signing.loads(token, salt=settings.SECRET_KEY)
+            pk = signing.loads(token, salt=settings.URL_ENCODE_SECRET_KEY)
         except signing.BadSignature:
             raise Http404
         return get_object_or_404(get_user_model(), pk=pk)

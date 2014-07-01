@@ -46,8 +46,11 @@ angular.module('toolkit-gui')
 	'$log',
 	'$window',
 	'$q',
+	'IntroService',
 	'Intercom',
 	'INTERCOM_APP_ID',
+	'PusherService',
+	'DEBUG_MODE',
 	function($scope,
 			 $rootScope,
 			 $routeParams,
@@ -75,9 +78,14 @@ angular.module('toolkit-gui')
 			 $log,
 			 $window,
 			 $q,
+			 IntroService,
 			 Intercom,
-			 INTERCOM_APP_ID){
+			 INTERCOM_APP_ID,
+             PusherService,
+			 DEBUG_MODE){
 		'use strict';
+
+		$scope.DEBUG_MODE = DEBUG_MODE;
 		/**
 		 * Scope based data for the checklist controller
 		 * @memberof			ChecklistCtrl
@@ -85,6 +93,8 @@ angular.module('toolkit-gui')
 		 * @type {Object}
 		 */
 		var routeParams = smartRoutes.params();
+
+		var steps;
 
 		/**
 		 * In scope variable containing containing the currently selected matter
@@ -97,13 +107,14 @@ angular.module('toolkit-gui')
 		$scope.data = {
 			'slug': routeParams.matterSlug,
 			'matter': null,
-      'customers' : [],
+			'customers' : [],
 			'showAddForm': null,
 			'showItemDetailsOptions': false,
 			'selectedItem': null,
 			'selectedCategory': null,
 			'categories': [],
 			'users': [],
+			'searchEnabled': true,
 			'searchData': searchService.data(),
 			'usdata': userService.data(),
 			'streamType': 'matter',
@@ -147,6 +158,7 @@ angular.module('toolkit-gui')
 
 					userService.setCurrent( singleMatter.current_user, singleMatter.lawyer );
 					$scope.initialiseIntercom(singleMatter.current_user);
+                    $scope.handleMatterEvents();
 				},
 				function error(/*err*/){
 					toaster.pop('error', 'Error!', 'Unable to load matter',5000);
@@ -201,7 +213,7 @@ angular.module('toolkit-gui')
 						}
 					);
 				} else {
-					toaster.pop('warning', 'Item does not exist anymore.',5000);
+					toaster.pop('warning', 'Item not found' , 'Item does not exist anymore.',5000);
 				}
 			}
 
@@ -211,6 +223,98 @@ angular.module('toolkit-gui')
 			}
 		};
 
+        /**
+         * Handles all pusher notifications
+         *
+		 * @private
+		 * @memberof			ChecklistCtrl
+		 * @method              handleMatterEvents
+         */
+        $scope.handleMatterEvents = function () {
+            PusherService.subscribeMatterEvents($scope.data.slug, function (data) {
+                $log.debug(data);
+
+                //wait until we can be sure, that the changed data is stored in the DB
+                $timeout(function () {
+                    if (data.is_global === true || data.from_id !== $scope.data.usdata.current.username) {
+                        if (data.model === 'item') {
+
+                            //Event: Item updated
+                            if (data.event === 'update') {
+                                $log.debug("loading updated item");
+                                matterItemService.load($scope.data.slug, data.id).then(
+                                    function success(item) {
+                                        replaceItem(item);
+
+                                        if (!$scope.data.selectedItem || item.slug !== $scope.data.selectedItem.slug) {
+                                            toaster.pop('warning', 'Item ' + item.name + ' has been updated.', 'Click here to select the item.', 7000, null, function () {
+                                                $scope.selectItem(item, category);
+                                            });
+                                        }
+                                    }
+                                );
+                            //Event: item deleted
+                            } else if (data.event === 'delete') {
+                                var index = -1;
+                                var category;
+                                var foundItem;
+
+                                //find and delete the item
+                                jQuery.each($scope.data.categories, function (cat_index, cat) {
+                                    $log.debug(cat);
+                                    jQuery.each(cat.items, function (i, item) {
+                                        if (item.slug === data.id) {
+                                            index = i;
+                                            category = cat;
+                                            foundItem = item;
+                                        }
+                                    });
+                                });
+
+                                if (foundItem && category) {
+                                    //remove item from category
+                                    category.items.splice(index,1);
+
+                                    //remove item from items list
+                                    index = jQuery.inArray( foundItem, $scope.data.matter.items );
+                                    if( index>=0 ) {
+                                        $scope.data.matter.items.splice(index,1);
+                                    }
+                                }
+
+                                if (!$scope.data.selectedItem || data.id !== $scope.data.selectedItem.slug) {
+                                    toaster.pop('warning', 'Item deleted', 'Item ' + foundItem.name + ' has been deleted.', 5000, null);
+                                } else {
+                                    $scope.data.selectedItem = null;
+								    $scope.initializeActivityStream();
+                                }
+
+                            //Event: Item created
+                            } else if (data.event === 'create') {
+                                $log.debug("loading created item");
+                                matterItemService.load($scope.data.slug, data.id).then(
+                                    function success(newItem) {
+                                        var category = findCategory(newItem.category);
+
+                                        //insert item at the end
+                                        category.items.push(newItem);
+
+                                         toaster.pop('warning', 'Item ' + newItem.name + ' has been created.', 'Click here to select the item.', 7000, null, function () {
+                                            $scope.selectItem(newItem, category);
+                                        });
+                                    }
+                                );
+                            }
+
+                        } else if (data.model === 'workspace') {
+                            toaster.pop('warning', 'Matter has been updated.', 'Click here to refresh the matter.', 5000, null, function () {
+                                window.location.reload();
+                            });
+                        }
+                    }
+                }, 2000);
+            });
+        };
 
 		/**
 		 * Splits the matter items into seperate arrays for the purpose of displaying seperate sortable lists, where items can be dragged
@@ -227,7 +331,7 @@ angular.module('toolkit-gui')
 			// Items with blank category name
 			items = jQuery.grep( matter.items, function( item ){ return item.category===categoryName; } );
 			category = { 'name': categoryName, 'items': items };
-					
+
 			categories.push(category);
 
 			// First item if available, this will be used to open the first available checklist item by default
@@ -266,8 +370,12 @@ angular.module('toolkit-gui')
 				// Display error
 				toaster.pop('warning', 'Unable to load matter details',5000);
 			}
-		};
 
+			// Guided tour (show only if demo project)
+			if( matter && matter._meta && matter._meta.matter && matter._meta.matter['is_demo']) {
+				IntroService.show(steps);
+			}
+		};
 
 		/**
 		 * Inits the intercom interface
@@ -489,6 +597,21 @@ angular.module('toolkit-gui')
 				return null;
 			}
 		}
+
+        function replaceItem(newItem){
+            var category = findCategory(newItem.category);
+            var i = -1;
+            //find and replace the olditem
+            jQuery.each(category.items, function (index, olditem) {
+                if (olditem.slug === newItem.slug) {
+                    i = index;
+                }
+            });
+
+            if (i > -1) {
+                category.items[i] = newItem;
+            }
+        }
 
 		$scope.loadItemDetails = function(item){
 			var deferred = $q.defer();
@@ -828,7 +951,7 @@ angular.module('toolkit-gui')
 					// Update uploading status
 					item.uploading = false;
 					$scope.data.uploading = $scope.uploadingStatus( $scope.data.matter.items );
-					
+
 					toaster.pop('error', 'Error!', 'Unable to upload revision', 5000);
 				}
 			);
@@ -2021,12 +2144,12 @@ angular.module('toolkit-gui')
 		/* END COMMENT HANDLING */
 
 		/*
-		 _____ _ _ _                
-		|  ___(_) | |_ ___ _ __ ___ 
+		 _____ _ _ _
+		|  ___(_) | |_ ___ _ __ ___
 		| |_  | | | __/ _ \ '__/ __|
 		|  _| | | | ||  __/ |  \__ \
 		|_|   |_|_|\__\___|_|  |___/
-									
+
 		 */
 		/**
 		 * applyStatusFilter  filters for checklist based on status 0-4
@@ -2057,6 +2180,69 @@ angular.module('toolkit-gui')
 		};
 
 		/* END COMMENT HANDLING */
+
+		/*
+		 ___       _
+		|_ _|_ __ | |_ _ __ ___
+		 | || '_ \| __| '__/ _ \
+		 | || | | | |_| | | (_) |
+		|___|_| |_|\__|_|  \___/
+
+		 */
+		steps={
+			'steps': [
+				{
+					'element': '#step1',
+					'intro': "Checklist items are organised into categories."
+				},
+				{
+					'element': '#step1 .dropdown-toggle',
+					'intro': "Add new categories."
+				},
+				{
+					'element': '#step1 .btn-new-item',
+					'intro': "Create new checklist items."
+				},
+				{
+					'element': '.checklist-members',
+					'intro': "Invite people to participate in your workspace."
+				},
+				{
+					'element': '.navbar input[type=search]',
+					'intro': "Find checklist items quickly with search."
+				},
+				{
+					'element': '.navbar .doc-outline-status-',
+					'intro': "Filter checklist items by status."
+				},
+				{
+					'element': '.navbar .notifications span',
+					'intro': "See when things change."
+				},
+				{
+					'element': '#checklist-activity h4',
+					'intro': "Chat with participants about items, documents and revisions."
+				}
+			]
+		};
+
+		$scope.reloadingLess = false;
+
+		$scope.showIntro = function() {
+			$scope.reloadingLess = true;
+			IntroService.show(steps);
+			$timeout(function(){
+				less.refresh();
+				$scope.reloadingLess = false;
+			},100);
+		};
+
+		/**
+		 * Recieves broadcast message to show intro
+		 */
+		$scope.$on('showIntro', function(){
+			IntroService.show(steps, 1);
+		});
 }])
 
 /**
@@ -2083,7 +2269,7 @@ angular.module('toolkit-gui')
 			}
 		});
 
-		
+
 		return tempClients;
 	};
 })
@@ -2112,7 +2298,7 @@ angular.module('toolkit-gui')
 			}
 		});
 
-		
+
 		return tempClients;
 	};
 });
