@@ -38,8 +38,8 @@ class AppTestRunner(NyanCatDiscoverRunner, DjangoTestSuiteRunner):
         # shutil.copyfile(PROD_SETTINGS_SRC, PROD_SETTINGS_DEST)
 
         # copy the source test doc file
-        shutil.copyfile(SOURCE_DOC, DEMO_DOC)
-        
+        if os.path.exists(DEMO_DOC) is False:
+            shutil.copyfile(SOURCE_DOC, DEMO_DOC)
 
         # assert os.path.isfile(PROD_SETTINGS_DEST), 'Could not copy the conf/production.local_settings.py file'
 
@@ -51,8 +51,5 @@ class AppTestRunner(NyanCatDiscoverRunner, DjangoTestSuiteRunner):
         # # Remove the prod settings which are only present so we can test them
         # if os.path.exists(PROD_SETTINGS_DEST):
         #     os.remove(PROD_SETTINGS_DEST)
-
-        if os.path.exists(DEMO_DOC):
-            os.remove(DEMO_DOC)
 
         super(AppTestRunner, self).teardown_test_environment(**kwargs)

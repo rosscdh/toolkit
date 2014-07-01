@@ -1815,3 +1815,9 @@ body.entry-pages input:-webkit-autofill {
     -webkit-transform: scale(1);
   }
 }
+#requestNotifyPermission .notification-link {
+  text-decoration: underline;
+}
+#requestNotifyPermission .notification-link i {
+  padding: 5px;
+}
