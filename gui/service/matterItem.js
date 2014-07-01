@@ -51,6 +51,7 @@ angular.module('toolkit-gui')
 			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/:document/:action', {}, {
 			'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'create': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
+				'load': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'update': { 'method': 'PATCH', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
 				'requestdocument': { 'method': 'PATCH', 'params':{'document':'request_document'},'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ }},
@@ -199,6 +200,30 @@ angular.module('toolkit-gui')
 					function success(item){
 						deferred.resolve(item);
 						matterService.insertItem( item ); /* keep search results up to date */
+					},
+					function error(err) {
+						deferred.reject( err );
+					}
+				);
+
+				return deferred.promise;
+			},
+
+            /**
+             * Load the item object with the given itemSlug
+             *
+             * @param matterSlug
+             * @param itemSlug
+             * @returns {*}
+             */
+            'load': function ( matterSlug, itemSlug) {
+				var deferred = $q.defer();
+
+				var api = matterItemResource();
+
+				api.load({'matterSlug': matterSlug, 'itemSlug': itemSlug },
+					function success(item){
+						deferred.resolve(item);
 					},
 					function error(err) {
 						deferred.reject( err );
