@@ -122,8 +122,7 @@
 
 
 		<form class="form" ng-submit="invite()" ng-show="data.showAddLawyer">
-            <h5>Add a Colleague <a href="javascript:;" class="close" ng-click="data.showAddLawyer=false;">x</a></h5>
-            <p>Adding a colleague to this matter will give them access to edit the checklist, download documents and assign tasks. </p>
+            <h5 class="add-colleague">Add a Colleague <a href="javascript:;" class="close" ng-click="data.showAddLawyer=false;">x</a></h5>
 			<div ng-class="{'has-success': data.participant, 'has-warning': data.isNew, 'has-error': data.validationError }">
 				<p class="bg-info" for="inviteeEmail" ng-show="data.participant">Lawyer {{ data.participant | fullname }} found. </p>
         		<input type="email" id="inviteeEmail" class="form-control form-control-full-width" ng-model="data.invitee.email" placeholder="rob.s@gmail.com" required ng-blur="checkIfUserExists(true)" autocomplete="off"/>
@@ -135,6 +134,18 @@
 			<div >
 				<textarea class="form-control form-control-full-width" ng-model="data.invitee.message" placeholder="Add an optional message"></textarea>
 			</div>
+            <div class="checkbox first">
+                            <label>
+                                <input type="checkbox" ng-model="data.invitee.permissions.manage_participants"><span class="list-heading">All Access</span> <div class="text-muted">Colleagues will have all access to this matter.</div>
+                            </label>
+                        </div>
+                 <div class="checkbox">
+                            <label>
+                                <input type="checkbox" ng-model="data.invitee.permissions.manage_participants"><span class="list-heading">Customized Access</span> <div class="text-muted">Specify access settings for their colleague.</div>
+                            </label>
+                        </div>
+                        <div class="customized-coleg-list">
+
                         <div class="checkbox">
                             <label>
                                 <input type="checkbox" ng-model="data.invitee.permissions.manage_participants">Manage Participants in this matter <span class='text-muted'>(including adding and removing Colleagues and Clients)</span>
@@ -157,13 +168,14 @@
                                 <input type="checkbox" ng-model="data.invitee.permissions.manage_signature_requests"> Manage Signing and Signature Requests
                             </label>
                         </div>
-			<div class="text-right">
-				<button class="btn btn-success btn-wide btn-sm" ng-disabled="invalid()">Add a Colleague</button>
+                    </div>
+			<div class="text-center main-a">
+				<button class="btn btn-success btn-wide btn-sm colleague-btn" ng-disabled="invalid()">Add a Colleague</button>
 			</div>
 		</form>
 
         <form class="form" ng-submit="invite()" ng-show="data.showAddParticipant">
-            <h5>Add a Client <a href="javascript:;" class="close" ng-click="data.showAddParticipant=false;">x</a></h5>
+            <h5 class="add-client">Add a Client <a href="javascript:;" class="close" ng-click="data.showAddParticipant=false;">x</a></h5>
             <p>Adding a client to this matter will give them access to view the checklist and the latest version of each document.</p>
 			<div ng-class="{'has-success': data.participant, 'has-warning': data.isNew, 'has-error': data.validationError }">
     		    <p class="bg-info" for="inviteeEmail" ng-show="data.participant">{{ data.participant | fullname }} found.</p>
@@ -186,13 +198,14 @@
                                 <span class="text-muted">(including adding and removing Clients)</span>
                             </label>
                         </div>
-			<div class='text-right'>
-				<button class="btn btn-info btn-wide btn-sm" ng-disabled="invalid()">Add a Client</button>
-			</div>
+            <div class="text-center main-a">
+                <button class="btn btn-success btn-wide btn-sm client-btn" ng-disabled="invalid()">Add a Client</button>
+            </div>
+
 		</form>
 	</div>
 	<div class="modal-footer">
 		<!--<button class="btn btn-primary" ng-click="ok()">OK</button>//-->
-		<button class="btn btn-default" ng-click="cancel()">Close</button>
+		<button class="btn btn-default pull-right" ng-click="cancel()">Close</button>
 	</div>
 </div>

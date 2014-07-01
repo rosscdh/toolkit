@@ -2,6 +2,9 @@
 
 .modal-content {
 
+  h5 {
+    margin-bottom: 20px;
+  }
   .existing-participants {
 
   }
@@ -20,6 +23,15 @@
   }
 }
 
+.first {
+  border-bottom: 2px solid  #ececec;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+
+}
+.list-heading{
+  font-weight: bold;
+}
 .details {
   border-left: 1px solid #ececec;
 
@@ -59,6 +71,15 @@
   input[type=checkbox] {
     display: initial
   }
+  .colleague{
+  background-color: @lp-primary;
+  color: white;
+}
+.btn-success.disabled{
+  opacity: 0.6;
+
+}
+
 
   .col-sm-6 {
     .add-participant {
@@ -238,13 +259,35 @@
     }
   }
   p.note {
+    padding: 0 15px;
     font-size: 13px;
     line-height: 17px;
-    color: #888;
+    color: #bdc3c7;
     margin: 20px 0px;
   }
 }
 
+.customized-coleg-list {
+  padding: 15px;
+  padding-left: 30px;
+  background-color: #ececec;
+}
+
+.add-colleague{
+  background-color: @lp-primary;
+  margin: -15px -24px;
+  padding: 10px 30px;
+  color: white;
+  text-transform: uppercase;
+}
+.add-client{
+   background-color: @lp-secondary;
+  margin: -15px -24px;
+  padding: 10px 30px;
+  color: white;
+  text-transform: uppercase;
+
+}
 .permissions-checklist{
   margin-bottom: 10px;
   border-bottom: 1px solid #ececec;
@@ -294,6 +337,8 @@
 .modal-icon{
   margin-bottom: 20px;
   font-size: 40px;
+  margin-top: 20px;
+  padding: 5px;
    .fa-plus{
       font-size: 22px;
       color: #bdc3c7;
@@ -306,4 +351,16 @@
     color: @lp-secondary;
   }
 }
-
+.main-a {
+  margin-top: 20px;
+}
+ .colleague-btn{
+        background-color: @lp-primary;
+        color: white;
+        text-transform: uppercase;
+      }
+.client-btn{
+   background-color: @lp-secondary;
+        color: white;
+        text-transform: uppercase;
+}
