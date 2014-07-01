@@ -261,7 +261,7 @@ angular.module('toolkit-gui')
                                     });
                                 });
 
-                                if (item && category) {
+                                if (foundItem && category) {
                                     //remove item from category
                                     category.items.splice(index,1);
 
@@ -287,7 +287,7 @@ angular.module('toolkit-gui')
                                         var category = findCategory(newItem.category);
 
                                         //insert item at the end
-                                        category.items.push(newItem)
+                                        category.items.push(newItem);
 
                                          toaster.pop('warning', 'Item ' + newItem.name + ' has been created.', 'Click here to select the item.', 7000, null, function () {
                                             $scope.selectItem(newItem, category);
