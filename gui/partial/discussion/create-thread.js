@@ -43,15 +43,17 @@ angular.module('toolkit-gui').controller('CreateThreadCtrl', [
                 function success(response) {
                     deferred.resolve(response);
 
-                    angular.forEach(participants, function(key, participant) {
-                        discussionService.addParticipant(matterSlug, response.slug, { 'username': participant }).then(
-                            function success(response) {
-                                $rootScope.$emit('discussionChangeParticipantSuccess');
-                            },
-                            function error(/*err*/) {
-                                toaster.pop('error', 'Error!', 'Unable to add the participant.', 5000);
-                            }
-                        );
+                    angular.forEach(participants, function(checked, participant) {
+                        if (checked) {
+                            discussionService.addParticipant(matterSlug, response.slug, { 'username': participant }).then(
+                                function success(response) {
+                                    $rootScope.$emit('discussionChangeParticipantSuccess');
+                                },
+                                function error(/*err*/) {
+                                    toaster.pop('error', 'Error!', 'Unable to add the participant.', 5000);
+                                }
+                            );
+                        }
                     });
 
                     $modalInstance.close();
