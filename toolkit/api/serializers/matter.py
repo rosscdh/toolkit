@@ -118,6 +118,9 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
             profile = request.user.profile
 
             current_user.update({
+                'counts': {
+                    'requests': profile.open_requests,
+                },
                 'firm_name': profile.firm_name,
                 'has_notifications': profile.has_notifications,
                 'matters_created': profile.matters_created,

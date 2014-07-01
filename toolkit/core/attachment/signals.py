@@ -213,6 +213,11 @@ def on_reviewer_add(sender, instance, action, model, pk_set, **kwargs):
         reviewdocument.recompile_auth_keys()  # update the auth keys to match the new slug
         reviewdocument.save(update_fields=['data'])
 
+        # Re-calculate the cached open requests count
+        profile = user.profile
+        profile.open_requests = profile.get_open_requests_count()
+        profile.save(update_fields=['data'])
+
 
 @receiver(m2m_changed, sender=Revision.reviewers.through, dispatch_uid='revision.on_reviewer_remove')
 def on_reviewer_remove(sender, instance, action, model, pk_set, **kwargs):
@@ -233,6 +238,15 @@ def on_reviewer_remove(sender, instance, action, model, pk_set, **kwargs):
             # delete the reviewdoc
             reviewdocument.delete()
 
+    if action in ['post_remove'] and pk_set:
+        user_pk = next(iter(pk_set))  # get the first item in the set should only ever be 1 anyway
+        user = model.objects.get(pk=user_pk)
+
+        # Re-calculate the cached open requests count
+        profile = user.profile
+        profile.open_requests = profile.get_open_requests_count()
+        profile.save(update_fields=['data'])
+
 
 @receiver(post_save, sender=Revision, dispatch_uid='revision.set_item_is_requested_false')
 def on_upload_set_item_is_requested_false(sender, instance, **kwargs):
@@ -246,3 +260,39 @@ def on_upload_set_item_is_requested_false(sender, instance, **kwargs):
             item.is_requested = False
             item.save(update_fields=['is_requested'])
             # @TODO issue activity here?
+
+
+"""
+Signers
+Unlike reviewers, signdocuments have only 1 object per set of signature invitees
+"""
+@receiver(m2m_changed, sender=Revision.signers.through, dispatch_uid='revision.on_signatory_add')
+def on_signatory_add(sender, instance, action, model, pk_set, **kwargs):
+    """
+    when a signatory is added from the m2m then authorise them
+    for access
+    """
+    if action in ['post_add'] and pk_set:
+        user_pk = next(iter(pk_set))  # get the first item in the set should only ever be 1 anyway
+        user = model.objects.get(pk=user_pk)
+
+        # Re-calculate the cached open requests count
+        profile = user.profile
+        profile.open_requests = profile.get_open_requests_count()
+        profile.save(update_fields=['data'])
+
+
+@receiver(m2m_changed, sender=Revision.signers.through, dispatch_uid='revision.on_signatory_remove')
+def on_signatory_remove(sender, instance, action, model, pk_set, **kwargs):
+    """
+    when a signatory is added from the m2m then authorise them
+    for access
+    """
+    if action in ['post_remove'] and pk_set:
+        user_pk = next(iter(pk_set))  # get the first item in the set should only ever be 1 anyway
+        user = model.objects.get(pk=user_pk)
+
+        # Re-calculate the cached open requests count
+        profile = user.profile
+        profile.open_requests = profile.get_open_requests_count()
+        profile.save(update_fields=['data'])

@@ -186,4 +186,6 @@ from .signals import (ensure_revision_slug,
                       ensure_revision_item_latest_revision_is_current,
                       on_reviewer_add,
                       on_reviewer_remove,
+                      on_signatory_add,
+                      on_signatory_remove,
                       on_upload_set_item_is_requested_false)
