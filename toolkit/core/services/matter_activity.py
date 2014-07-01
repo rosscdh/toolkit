@@ -192,7 +192,7 @@ class MatterActivityEventService(object):
             'firm_name': lawyer.profile.firm_name,
             'matter_pk': self.matter.pk
         })
-        self.realtime_event(event='matter.delete', obj=self.matter, ident=self.matter.slug, from_user=lawyer, detail='deleted matter')
+        self.realtime_event(event='delete', obj=self.matter, ident=self.matter.slug, from_user=lawyer, detail='deleted matter')
 
     def added_matter_participant(self, adding_user, added_user, **kwargs):
         # is called from toolkit/apps/matter/signals.py#PARTICIPANT_ADDED
@@ -283,7 +283,7 @@ class MatterActivityEventService(object):
         # toolkit.api.views.item.MatterItemView#pre_save
         override_message = u'%s deleted %s' % (user, item)
         self._create_activity(actor=user, verb=u'deleted', action_object=item, override_message=override_message)
-        self.realtime_event(event='item.delete', obj=item, ident=item.slug, from_user=user, detail='deleted item')
+        self.realtime_event(event='delete', obj=item, ident=item.slug, from_user=user, detail='deleted item')
 
     def add_item_comment(self, user, item, comment):
         # toolkit.api.views.comment.ItemCommentEndpoint#create
