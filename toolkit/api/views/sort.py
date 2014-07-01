@@ -69,6 +69,8 @@ class MatterSortView(generics.UpdateAPIView,
                 for sort_order, slug in enumerate(data.get('items')):
                     self.matter.item_set.filter(slug=slug).update(sort_order=sort_order)  # item must exist by this point as we have its id from the rest call
 
+            self.matter.actions.realtime_event(event='sort', obj=self.matter, ident=self.matter.slug, from_user=request.user, detail='matter items sort changed')
+
         except IntegrityError as e:
             logger.critical('transaction.atomic() integrity error: %s' % e)
 

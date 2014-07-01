@@ -18,6 +18,7 @@ def _user_exists(username):
 
 def _get_unique_username(username):
     username = slugify(username)  # apply the transforms first so that the lookup acts on the actual username
+    username = username[0:29]
     while _user_exists(username=username):
         LOGGER.info('Username %s exists, trying to create another' % username)
         username = '%s-%s' % (username, uuid.uuid4().get_hex()[:4])

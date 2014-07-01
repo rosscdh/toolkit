@@ -133,7 +133,7 @@ module.exports = function (grunt) {
             livereload: true,
             spawn: false
         },
-        files: ['js/**/*','css/**/*','img/**/*','partial/**/*','service/**/*','filter/**/*','directive/**/*','index.html'],
+        files: ['js/**/*','x-css/**/*','img/**/*','partial/**/*','service/**/*','filter/**/*','directive/**/*','index.html'],
         tasks: [] //all the tasks are run dynamically during the watch event handler
       }
     },
@@ -207,6 +207,7 @@ module.exports = function (grunt) {
           {src: ['bower_components/bootstrap/dist/js/bootstrap.min.js'], dest: '<%= PRODUCTION_PATH %>'},
           {src: ['bower_components/angular/angular.min.js'], dest: '<%= PRODUCTION_PATH %>'},
           {src: ['bower_components/angular/angular.min.js.map'], dest: '<%= PRODUCTION_PATH %>'},
+          {src: ['bower_components/intro.js/minified/introjs.min.css'], dest: '<%= PRODUCTION_PATH %>'},
           {src: ['bower_components/font-awesome/fonts/**'], dest: '<%= PRODUCTION_PATH %>'},
           {src: ['bower_components/html5-desktop-notifications/desktop-notify.js'], dest: '<%= PRODUCTION_PATH %>'},
           {src: ['lib/**'], dest: '<%= PRODUCTION_PATH %>'}
@@ -336,7 +337,7 @@ module.exports = function (grunt) {
     },
      jsdoc : {
         dist : {
-            src: ['partial/**/*.js', '!partial/**/*-spec.js', 'filter/**/*.js', '!filter/**/*-spec.js', 'service/**/*.js', '!service/**/*-spec.js', 'README.md'], 
+            src: ['partial/**/*.js', '!partial/**/*-spec.js', 'filter/**/*.js', '!filter/**/*-spec.js', 'service/**/*.js', '!service/**/*-spec.js', 'README.md'],
             options: {
                 destination: 'doc',
                 template: "node_modules/ink-docstrap/template",

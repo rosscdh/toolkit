@@ -174,6 +174,22 @@ Ensure that you put guistimates in all of your tickets.. (0, 0.5, 1, 2, 3, 5, 8,
 (:guesstimate) [:branch_name] Short Description
 ```
 
+ie. (3) [my_amazing_branch] Make the pigs fly
+
+Ensure that you enter an appropriate story: in the format defined here: http://kipling.io/#/
+
+```
+As a ________
+I want  ________
+So that  ________
+```
+
+
+**Just what are stories anyway:**
+
+[Tell me about user stories](http://youtu.be/LGeDZmrWwsw)
+
+
 Install this chrome extension as it makes the guestimates look better: 
 
 [Scrum for Trello plugin](https://chrome.google.com/webstore/detail/scrum-for-trello/jdbcdblgjdpmfninkoogcfpnkjmndgje?hl=en)

@@ -49,19 +49,20 @@ class MatterEndpoint(viewsets.ModelViewSet):
 
     def get_meta(self):
         default_status_labels = Revision.REVISION_STATUS.get_choices_dict()
+
         return {
-            'matter': {
-                'status': None,
-            },
-            'item': {
-                'default_status': default_status_labels,
-                'custom_status': self.object.status_labels if hasattr(self,
-                                                                      'object') is True and self.object.status_labels else default_status_labels
-            },
-            'templates': {
-                'item.comment': ITEM_COMMENTS_TEMPLATE
+                'matter': {
+                    'status': None,
+                    'is_demo': self.object.data.get('is_demo', False) if hasattr(self, 'object') is True else False
+                },
+                'item': {
+                    'default_status': default_status_labels,
+                    'custom_status': self.object.status_labels if hasattr(self, 'object') is True and self.object.status_labels else default_status_labels
+                },
+                'templates': {
+                    'item.comment': ITEM_COMMENTS_TEMPLATE
+                }
             }
-        }
 
     def get_serializer_class(self):
         if self.action == 'list':

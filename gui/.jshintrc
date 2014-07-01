@@ -29,6 +29,8 @@
         "TimeSpan": true,
         "Raven": true,
         "Pusher": true,
+        "introJs": true,
+        "less": true,
         "notify": true,
         "jasmine": true
     },

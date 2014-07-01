@@ -46,9 +46,11 @@ angular.module('toolkit-gui')
 	'$log',
 	'$window',
 	'$q',
+	'IntroService',
 	'Intercom',
 	'INTERCOM_APP_ID',
 	'PusherService',
+	'DEBUG_MODE',
 	function($scope,
 			 $rootScope,
 			 $routeParams,
@@ -76,10 +78,14 @@ angular.module('toolkit-gui')
 			 $log,
 			 $window,
 			 $q,
+			 IntroService,
 			 Intercom,
 			 INTERCOM_APP_ID,
-             PusherService){
+             PusherService,
+			 DEBUG_MODE){
 		'use strict';
+
+		$scope.DEBUG_MODE = DEBUG_MODE;
 		/**
 		 * Scope based data for the checklist controller
 		 * @memberof			ChecklistCtrl
@@ -87,6 +93,8 @@ angular.module('toolkit-gui')
 		 * @type {Object}
 		 */
 		var routeParams = smartRoutes.params();
+
+		var steps;
 
 		/**
 		 * In scope variable containing containing the currently selected matter
@@ -99,7 +107,7 @@ angular.module('toolkit-gui')
 		$scope.data = {
 			'slug': routeParams.matterSlug,
 			'matter': null,
-      'customers' : [],
+      		'customers' : [],
 			'showAddForm': null,
 			'showItemDetailsOptions': false,
 			'selectedItem': null,
@@ -287,7 +295,7 @@ angular.module('toolkit-gui')
                                         var category = findCategory(newItem.category);
 
                                         //insert item at the end
-                                        category.items.push(newItem)
+                                        category.items.push(newItem);
 
                                          toaster.pop('warning', 'Item ' + newItem.name + ' has been created.', 'Click here to select the item.', 7000, null, function () {
                                             $scope.selectItem(newItem, category);
@@ -321,7 +329,7 @@ angular.module('toolkit-gui')
 			// Items with blank category name
 			items = jQuery.grep( matter.items, function( item ){ return item.category===categoryName; } );
 			category = { 'name': categoryName, 'items': items };
-					
+
 			categories.push(category);
 
 			// First item if available, this will be used to open the first available checklist item by default
@@ -359,6 +367,11 @@ angular.module('toolkit-gui')
 			} else {
 				// Display error
 				toaster.pop('warning', 'Unable to load matter details',5000);
+			}
+
+			// Guided tour (show only if demo project)
+			if( matter && matter._meta && matter._meta.matter && matter._meta.matter['is_demo']) {
+				IntroService.show(steps);
 			}
 		};
 
@@ -936,7 +949,7 @@ angular.module('toolkit-gui')
 					// Update uploading status
 					item.uploading = false;
 					$scope.data.uploading = $scope.uploadingStatus( $scope.data.matter.items );
-					
+
 					toaster.pop('error', 'Error!', 'Unable to upload revision', 5000);
 				}
 			);
@@ -2129,12 +2142,12 @@ angular.module('toolkit-gui')
 		/* END COMMENT HANDLING */
 
 		/*
-		 _____ _ _ _                
-		|  ___(_) | |_ ___ _ __ ___ 
+		 _____ _ _ _
+		|  ___(_) | |_ ___ _ __ ___
 		| |_  | | | __/ _ \ '__/ __|
 		|  _| | | | ||  __/ |  \__ \
 		|_|   |_|_|\__\___|_|  |___/
-									
+
 		 */
 		/**
 		 * applyStatusFilter  filters for checklist based on status 0-4
@@ -2165,6 +2178,69 @@ angular.module('toolkit-gui')
 		};
 
 		/* END COMMENT HANDLING */
+
+		/*
+		 ___       _
+		|_ _|_ __ | |_ _ __ ___
+		 | || '_ \| __| '__/ _ \
+		 | || | | | |_| | | (_) |
+		|___|_| |_|\__|_|  \___/
+
+		 */
+		steps={
+			'steps': [
+				{
+					'element': '#step1',
+					'intro': "Checklist items are organised into categories."
+				},
+				{
+					'element': '#step1 .dropdown-toggle',
+					'intro': "Add new categories."
+				},
+				{
+					'element': '#step1 .btn-new-item',
+					'intro': "Create new checklist items."
+				},
+				{
+					'element': '.checklist-members',
+					'intro': "Invite people to participate in your workspace."
+				},
+				{
+					'element': '.navbar input[type=search]',
+					'intro': "Find checklist items quickly with search."
+				},
+				{
+					'element': '.navbar .doc-outline-status-',
+					'intro': "Filter checklist items by status."
+				},
+				{
+					'element': '.navbar .notifications span',
+					'intro': "See when things change."
+				},
+				{
+					'element': '#checklist-activity h4',
+					'intro': "Chat with participants about items, documents and revisions."
+				}
+			]
+		};
+
+		$scope.reloadingLess = false;
+
+		$scope.showIntro = function() {
+			$scope.reloadingLess = true;
+			IntroService.show(steps);
+			$timeout(function(){
+				less.refresh();
+				$scope.reloadingLess = false;
+			},100);
+		};
+
+		/**
+		 * Recieves broadcast message to show intro
+		 */
+		$scope.$on('showIntro', function(){
+			IntroService.show(steps, 1);
+		});
 }])
 
 /**
@@ -2191,7 +2267,7 @@ angular.module('toolkit-gui')
 			}
 		});
 
-		
+
 		return tempClients;
 	};
 })
@@ -2220,7 +2296,7 @@ angular.module('toolkit-gui')
 			}
 		});
 
-		
+
 		return tempClients;
 	};
 });
