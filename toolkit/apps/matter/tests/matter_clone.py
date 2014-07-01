@@ -110,7 +110,6 @@ class DemoMatterCloneServiceTest(BaseMatterClone):
             for r in i.revision_set.all():
 
                 new_file_name = os.path.basename(r.executed_file.name)
-                #import pdb;pdb.set_trace()
                 # test the file has been renamed
                 #self.assertNotEqual(new_file_name, self.test_pdf_base_name)
                 self.assertTrue(r.executed_file.name not in existing_file_names)

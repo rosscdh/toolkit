@@ -159,7 +159,7 @@ class MatterActivityEventService(object):
         """
         from_ident = None
         # only set it if we have a from_user
-        if from_user:
+        if hasattr(from_user, 'username'):
             from_ident = from_user.username
         #
         # Run async realtime_matter_event pusher
