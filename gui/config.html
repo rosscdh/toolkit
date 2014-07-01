@@ -155,7 +155,7 @@
         <li id="checklist-nav" ng-class="{'active': isActive('/checklist')}">
           <a href="#/checklist" title="Checklist"><span class="fui-list"></span></a>
         </li>
-<!--    Hidden until last few points are sorted out     
+<!--    Hidden until last few points are sorted out
         <li id="discussion-nav" ng-class="{'active': isActive('/discussion')}">
           <a href="#/discussion" title="Discussion"><span class="fui-chat"></span></a>
         </li> -->
@@ -242,7 +242,13 @@
         </li>
         <!-- end: desktop notifications / notifications //-->
 
-        <li><a href="/requests/">Requests</a></li>
+        <li>
+          <a href="/requests/">
+            <span>Requests</span>
+            <span class="label label-important" ng-show="matter.selected.current_user.counts.requests > 0">{{ matter.selected.current_user.counts.requests }}</span>
+          </a>
+        </li>
+
         <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <span class="hidden-xs">Support</span><b class="caret"></b>
