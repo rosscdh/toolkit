@@ -175,9 +175,19 @@ var CurrentUserRole = React.createClass({
             }
         }
 
-        return (
-            <p className="user-role">{ role }</p>
-        )
+
+        if (role === 'owner') {
+            return (
+
+                <span className="fui-star-2" data-toggle="tooltip" data-placement="right" title="You are the Matter Owner"></span>
+                );
+        }
+        else {
+            return (
+                <p className="user-role">{ role }</p>
+                );
+        }
+
     }
 });
 
@@ -213,7 +223,7 @@ var EditMatterInterface = React.createClass({
 
             return (
                 <a href={edit_url} data-toggle="modal" data-target={modal_target} className="edit btn-sm">
-                    <span className="fui-gear" data-toggle="tooltip" data-placement="left" title="Edit this Matter"></span>
+                    <span className="fui-gear" data-toggle="tooltip" data-placement="left" title="Edit Matter Details"></span>
                 </a>
             );
 

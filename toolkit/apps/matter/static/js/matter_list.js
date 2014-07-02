@@ -175,9 +175,19 @@ var CurrentUserRole = React.createClass({displayName: 'CurrentUserRole',
             }
         }
 
-        return (
-            React.DOM.p( {className:"user-role"},  role )
-        )
+
+        if (role === 'owner') {
+            return (
+
+                React.DOM.span( {className:"fui-star-2", 'data-toggle':"tooltip", 'data-placement':"right", title:"You are the Matter Owner"})
+                );
+        }
+        else {
+            return (
+                React.DOM.p( {className:"user-role"},  role )
+                );
+        }
+
     }
 });
 
@@ -213,7 +223,7 @@ var EditMatterInterface = React.createClass({displayName: 'EditMatterInterface',
 
             return (
                 React.DOM.a( {href:edit_url, 'data-toggle':"modal", 'data-target':modal_target, className:"edit btn-sm"}, 
-                    React.DOM.span( {className:"fui-gear", 'data-toggle':"tooltip", 'data-placement':"left", title:"Edit this Matter"})
+                    React.DOM.span( {className:"fui-gear", 'data-toggle':"tooltip", 'data-placement':"left", title:"Edit Matter Details"})
                 )
             );
 

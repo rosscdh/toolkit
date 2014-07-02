@@ -876,6 +876,15 @@ body.gui .main-content {
   display: block;
   padding: 25px 14px 30px !important;
 }
+.matter .card .content .fui-star-2 {
+  position: absolute;
+  color: #2c3e50;
+  top: 176px;
+  left: 14px;
+  transform: rotate(53deg);
+  -ms-transform: rotate(53deg);
+  -webkit-transform: rotate(53deg);
+}
 .matter .card .content .title {
   display: table-cell;
   height: 80px;
