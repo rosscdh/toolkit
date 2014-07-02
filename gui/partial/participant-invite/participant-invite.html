@@ -135,6 +135,7 @@
 				<textarea class="form-control form-control-full-width" ng-model="data.invitee.message" placeholder="Add an optional message"></textarea>
 			</div>
             <div class="checkbox first">
+                 <!-- not done!!! -->
                             <label>
                                 <input type="checkbox" ng-model="data.invitee.permissions.manage_all"><span class="list-heading">All Access</span> <div class="text-muted">Colleagues will have all access to this matter.</div>
                             </label>
@@ -145,30 +146,74 @@
                             </label>
                         </div>
                         <div class="customized-coleg-list">
+                            <div>By adding someone as a colleague, they will be able to:</div>
+                            <div class="half">
+                                <div class="item">
+                                   <span class="fui-check-inverted"></span> view the checklist
+                                </div>
+                                <div class="item">
+                                    <span class="fui-check-inverted"></span> comment on all documents
+                                </div>
+                            </div>
+                             <div class="half">
+                                 <div class="item">
+                                   <span class="fui-check-inverted"></span> see all documents and discussions
+                                </div>
+                                <div class="item">
+                                   <span class="fui-check-inverted"></span> download documents
+                                </div>
+                            </div>
 
+
+                    <div class="actual-list">
+                        You may also grant them permission to:
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" ng-model="data.invitee.permissions.manage_participants">Manage Participants in this matter <span class='text-muted'>(including adding and removing Colleagues and Clients)</span>
+                                <input type="checkbox" ng-model="data.invitee.permissions.manage_participants">add/remove participants
                             </label>
                         </div>
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" ng-model="data.invitee.permissions.manage_items"> Manage Checklist Items and Categories
+                                <input type="checkbox" ng-model="data.invitee.permissions.manage_items"> edit the checklist items
                             </label>
                         </div>
 
-                        <div class="checkbox">
+                        <!-- not done!!! -->
+                          <div class="checkbox">
                             <label>
-                                <input type="checkbox" ng-model="data.invitee.permissions.manage_document_reviews"> Able to Add, Complete and Destroy Requests for Review
+                                <input type="checkbox" ng-model="data.invitee.permissions.manage_items"> edit the checklist items
                             </label>
                         </div>
 
+
+                        <!-- not done!!! -->
+                           <div class="checkbox">
+                            <label>
+                                <input type="checkbox" ng-model="data.invitee.permissions.manage_items"> request documents
+                            </label>
+                            </div>
+
+
+                         <!-- not done!!! -->
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" ng-model="data.invitee.permissions.manage_signature_requests"> Manage Signing and Signature Requests
+                                <input type="checkbox" ng-model="data.invitee.permissions.manage_document_reviews"> upload documents
+                            </label>
+                        </div>
+
+
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" ng-model="data.invitee.permissions.manage_document_reviews"> request review of documents
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" ng-model="data.invitee.permissions.manage_signature_requests"> request signatures
                             </label>
                         </div>
                     </div>
+                </div>
 			<div class="text-center main-a">
 				<button class="btn btn-wide btn-sm colleague-btn" ng-disabled="invalid()">Add a Colleague</button>
 			</div>
