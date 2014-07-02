@@ -1,0 +1,7 @@
+{% extends 'email/base.email' %}
+
+{% block subject_line %}user.added{% endblock %}
+
+{% block html_content %}
+  <p>You have been added to a thread.</p>
+{% endblock %}

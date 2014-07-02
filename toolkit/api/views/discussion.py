@@ -13,6 +13,7 @@ from toolkit.api.serializers import (DiscussionCommentSerializer,
                                      LiteDiscussionSerializer,
                                      SimpleUserSerializer)
 
+from toolkit.apps.discussion.mailers import AddedToThreadEmail, NewCommentEmail
 from toolkit.apps.discussion.models import DiscussionComment
 from toolkit.apps.workspace.services import EnsureCustomerService
 
@@ -91,6 +92,15 @@ class DiscussionCommentEndpoint(ThreadMixin, viewsets.ModelViewSet):
 
         return super(DiscussionCommentEndpoint, self).pre_save(obj=obj)
 
+    def post_save(self, obj, created=False):
+        if created:
+            recipients = obj.parent.participants.all().exclude(pk=obj.user.pk)
+
+            mailer = NewCommentEmail(recipients=[(u.get_full_name(), u.email) for u in recipients])
+            mailer.process(instance=instance)
+
+        return super(DiscussionCommentEndpoint, self).post_save(obj=obj)
+
     def can_read(self, user):
         return user in self.thread.participants.all()
 
@@ -136,6 +146,10 @@ class DiscussionParticipantEndpoint(ThreadMixin, mixins.CreateModelMixin, viewse
         if user not in self.thread.participants.all():
             # add to the join if not there already
             self.thread.participants.add(user)
+
+            # send the added participant email
+            mailer = AddedToThreadEmail(recipients=[(user.get_full_name(), user.email)])
+            mailer.process(instance=self.thread)
 
         # we have the user at this point
         serializer = self.get_serializer(user)
