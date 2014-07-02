@@ -2,17 +2,17 @@
 from toolkit.mailers import BaseMailerService
 
 
-class AddedToThreadEmail(BaseMailerService):
+class AddedUserEmail(BaseMailerService):
     """
-    m = AddedToThreadEmail(recipients=(('Alex', 'alex@lawpal.com')))
+    m = AddedUserEmail(recipients=(('Alex', 'alex@lawpal.com')))
     m.process()
     """
-    email_template = 'user_added'
+    email_template = 'added_user'
 
 
-class NewCommentEmail(BaseMailerService):
+class CommentedEmail(BaseMailerService):
     """
-    m = NewCommentEmail(recipients=(('Alex', 'alex@lawpal.com')))
+    m = CommentedEmail(recipients=(('Alex', 'alex@lawpal.com')))
     m.process()
     """
-    email_template = 'new_comment'
+    email_template = 'commented'

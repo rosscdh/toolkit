@@ -8,6 +8,7 @@ from rulez import registry as rulez_registry
 from threadedcomments.models import ThreadedComment
 from uuidfield import UUIDField
 
+from toolkit.apps.discussion.mailers import AddedUserEmail, CommentedEmail
 from toolkit.apps.workspace.models import Workspace
 
 
@@ -19,6 +20,9 @@ class DiscussionComment(ThreadedComment, models.Model):
     data = JSONField(default={})
 
     objects = CommentManager()
+
+    def __unicode__(self):
+        return self.title
 
     def save(self, *args, **kwargs):
         super(DiscussionComment, self).save(*args, **kwargs)
@@ -38,6 +42,35 @@ class DiscussionComment(ThreadedComment, models.Model):
     def matter(self, value):
         self.content_type_id = ContentType.objects.get_for_model(Workspace).pk
         self.object_pk = value.pk
+
+    @property
+    def thread(self):
+        if self.parent_id:
+            return self.parent
+        else:
+            return self
+
+    def send_added_user_email(self, actor, user, **kwargs):
+        kwargs.update(self.get_email_kwargs())
+        kwargs.update({'actor': actor})
+
+        mailer = AddedUserEmail(recipients=[(user.get_full_name(), user.email)])
+        mailer.process(**kwargs)
+
+    def send_commented_email(self, **kwargs):
+        kwargs.update(self.get_email_kwargs())
+        recipients = self.parent.participants.all().exclude(pk=self.user.pk)
+
+        mailer = CommentedEmail(recipients=[(u.get_full_name(), u.email) for u in recipients])
+        mailer.process(**kwargs)
+
+    def get_email_kwargs(self):
+        return {
+            'actor': self.user,
+            'comment': self,
+            'matter': self.matter,
+            'thread': self.thread,
+        }
 
     def can_read(self, user):
         if self.parent_id:

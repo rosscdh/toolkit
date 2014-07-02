@@ -1,6 +1,6 @@
 {% extends 'email/base.email' %}
 
-{% block subject_line %}new.comment{% endblock %}
+{% block subject_line %}{{ actor }} commented on the thread {{ thread }} on {{ matter }}{% endblock %}
 
 {% block html_content %}
   <p>A new comment has been posted in a thread.</p>
