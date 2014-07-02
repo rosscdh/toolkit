@@ -455,7 +455,7 @@ ul.checklist-items {
 				opacity:1;
 			}
 		}
-		
+
 		// The selection state
 		&.selected {
 			background-color: lighten(@belize-hole, 10%);
@@ -523,7 +523,7 @@ ul.checklist-items {
 	.loading {
 		opacity: 0.75;
 	}
-		
+
 	.fapad {
 		padding: 0.5em;
 	}
@@ -722,3 +722,97 @@ ul.status-list a {
 	border-bottom: 0;
 	height: 55px;
 }
+
+.tasks-wrapper {
+  .item-subheading{
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: bold;
+    margin-right: 5px;
+    margin-left: 0px;
+    margin-bottom: 10px;
+     .btn-link {
+    float: right;
+    color: #39ca74;
+    text-transform: uppercase;
+    font-weight: bold;
+  }
+  }
+
+  .all-tasks{
+  	margin: 0;
+  	padding: 0;
+  	list-style-type: none;
+
+  	li.one-task {
+  		padding: 3px;
+
+  		overflow: hidden;
+  		border-bottom: 2px solid #ddd;
+  		.one-task {
+  			width: 100%;
+  			margin: 0;
+  			padding: 0;
+  			list-style-type: none;
+
+  			li{
+  				float: left;
+  			}
+  			.icon {
+  				width: 6%;
+  				text-align: left;
+  			}
+  			.delete-task{
+  				width: 10%;
+  				text-align: right;
+  				a {
+  					color: #bdc3c7;
+  					font-size: 13px;
+  				}
+  			}
+  			.task-name{
+  				width: 50%;
+  				font-size: 12px;
+  				text-align: left;
+  				color: #777;
+  				font-weight: bold;
+  				font-family: Helvetica;
+  			}
+
+  			.task-status{
+  				font-size: 12px;
+  				width: 30%;
+  				min-width: 30%;
+  				color: #777;
+  				text-align: center;
+  				border: 1px solid #e4e6e8;
+  				opacity: 1;
+
+
+  				a {
+  					color: #bdc3c7;
+  					text-transform: uppercase;
+  					// padding-bottom: 5px;
+  					// padding-left: 3px;
+  					// padding-right: 3px;
+  					// border-bottom: 1px solid #777;
+  				}
+
+
+  			}
+  		}
+  	}
+  }
+
+  .incomplete {
+  	color: #bdc3c7;
+  	opacity: 0.85;
+  }
+
+  .complete{
+  	opacity: 1;
+  	color: #39ca74;
+  }
+
+}
+
