@@ -10,14 +10,12 @@ class Migration(DataMigration):
     def forwards(self, orm):
         from toolkit.core.item.models import Item
 
-        for user in orm['auth.User'].objects.all():
-            profile = user.profile
-            profile.data['open_requests'] = Item.objects.my_requests(user.pk).count()
+        for profile in orm['default.UserProfile'].objects.all():
+            profile.data['open_requests'] = Item.objects.my_requests(profile.user.pk).count()
             profile.save(update_fields=['data'])
 
     def backwards(self, orm):
-        for user in orm['auth.User'].objects.all():
-            profile = user.profile
+        for profile in orm['default.UserProfile'].objects.all():
             del profile.data['open_requests']
             profile.save(update_fields=['data'])
 
