@@ -114,7 +114,8 @@ var MatterItem = React.createClass({displayName: 'MatterItem',
                     React.DOM.a( {href: this.props.detail_url,  title: this.props.name,  className:"content"}, 
                         React.DOM.div( {className:"title"}, 
                             React.DOM.h6(null,  this.props.lawyer_or_client_name ),
-                            React.DOM.h5(null,  this.props.name, React.DOM.small(null,  this.props.currentUserRole ))
+                            React.DOM.h5(null,  this.props.name ),
+                             this.props.currentUserRole 
                         ),
                         React.DOM.div( {className:"meta clearfix"}, 
                              this.props.lastupdated_or_complete, 
@@ -166,7 +167,7 @@ var Participants = React.createClass({displayName: 'Participants',
 
 var CurrentUserRole = React.createClass({displayName: 'CurrentUserRole',
     render: function() {
-    
+
         var role = null;
         for (var i = 0; i < this.props.data.length; i++) {
             if (this.props.data[i].username == UserData.username) {
@@ -175,7 +176,7 @@ var CurrentUserRole = React.createClass({displayName: 'CurrentUserRole',
         }
 
         return (
-            React.DOM.div(null,  role )
+            React.DOM.p( {className:"user-role"},  role )
         )
     }
 });

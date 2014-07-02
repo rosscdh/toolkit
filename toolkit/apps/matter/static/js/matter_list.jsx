@@ -114,7 +114,8 @@ var MatterItem = React.createClass({
                     <a href={ this.props.detail_url } title={ this.props.name } className="content">
                         <div className="title">
                             <h6>{ this.props.lawyer_or_client_name }</h6>
-                            <h5>{ this.props.name }<small>{ this.props.currentUserRole }</small></h5>
+                            <h5>{ this.props.name }</h5>
+                            { this.props.currentUserRole }
                         </div>
                         <div className="meta clearfix">
                             { this.props.lastupdated_or_complete }
@@ -166,7 +167,7 @@ var Participants = React.createClass({
 
 var CurrentUserRole = React.createClass({
     render: function() {
-    
+
         var role = null;
         for (var i = 0; i < this.props.data.length; i++) {
             if (this.props.data[i].username == UserData.username) {
@@ -175,7 +176,7 @@ var CurrentUserRole = React.createClass({
         }
 
         return (
-            <div>{ role }</div>
+            <p className="user-role">{ role }</p>
         )
     }
 });

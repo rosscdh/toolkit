@@ -822,6 +822,13 @@ body.gui .main-content {
   position: relative;
   height: 221px;
 }
+.matter .card .user-role {
+  margin-top: 5px;
+  padding-left: 2px;
+  color: #95a5a6;
+  margin-bottom: 5px;
+  font-size: 14px;
+}
 .matter .card .export-button {
   transform: rotate(90deg);
   -ms-transform: rotate(90deg);
@@ -884,6 +891,7 @@ body.gui .main-content {
 .matter .card .content .title h6 {
   font-size: 14px;
   color: #95a5a6;
+  padding-left: 2px;
 }
 .matter .card .content .title p {
   font-size: 16px;
@@ -893,9 +901,8 @@ body.gui .main-content {
   margin-bottom: 0px;
 }
 .matter .card .content .meta p {
-  color: grey;
+  color: #95a5a6;
   font-size: 12px;
-  font-style: italic;
   line-height: 40px;
   margin-bottom: 5px;
 }
