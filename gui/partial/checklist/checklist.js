@@ -1450,7 +1450,7 @@ angular.module('toolkit-gui')
         $scope.deleteRevisionReviewRequest = function (item) {
             var matterSlug = $scope.data.slug;
 
-            ezConfirm.create('Delete Review Request', 'Please confirm you would like to delete this review request?',
+            ezConfirm.create('Cancel Review Request', 'Please confirm you would like to cancel this review request?',
                 function yes() {
                     // Confirmed- cancel review
                     matterItemService.deleteRevisionReviewRequest(matterSlug, item.slug).then(
@@ -1467,8 +1467,8 @@ angular.module('toolkit-gui')
                              }*/
                         },
                         function error(/*err*/) {
-                            if (!toaster.toast || !toaster.toast.body || toaster.toast.body !== 'Unable to delete the revision review request.') {
-                                toaster.pop('error', 'Error!', 'Unable to delete the revision review request.', 5000);
+                            if (!toaster.toast || !toaster.toast.body || toaster.toast.body !== 'Unable to cancel the revision review request.') {
+                                toaster.pop('error', 'Error!', 'Unable to cancel the revision review request.', 5000);
                             }
                         }
                     );
