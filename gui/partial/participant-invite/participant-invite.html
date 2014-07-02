@@ -137,12 +137,12 @@
             <div class="checkbox first">
                  <!-- not done!!! -->
                             <label>
-                                <input type="checkbox" ng-model="data.invitee.permissions.manage_all"><span class="list-heading">All Access</span> <div class="text-muted">Colleagues will have all access to this matter.</div>
+                                <input type="radio"  name="co-access" ng-model="data.invitee.permissions.manage_all"><span class="list-heading">All Access</span> <div class="text-muted">Colleagues will have all access to this matter.</div>
                             </label>
                         </div>
                  <div class="checkbox">
                             <label>
-                                <input type="checkbox" ng-click="data.showDetails=true"><span class="list-heading">Customized Access</span> <div class="text-muted">Specify access settings for this colleague.</div>
+                                <input type="radio" name="co-access" ng-click="data.showDetails=true"><span class="list-heading">Customized Access</span> <div class="text-muted">Specify access settings for this colleague.</div>
                             </label>
                         </div>
                         <div class="customized-list" ng-if='data.showDetails'">
