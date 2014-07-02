@@ -827,7 +827,7 @@ body.gui .main-content {
   padding-left: 2px;
   color: #95a5a6;
   margin-bottom: 5px;
-  font-size: 14px;
+  font-size: 14px !important;
 }
 .matter .card .export-button {
   transform: rotate(90deg);
@@ -892,7 +892,7 @@ body.gui .main-content {
 }
 .matter .card .content .title h5,
 .matter .card .content .title h6 {
-  margin: 0 0 5px;
+  margin: 0 0 10px;
 }
 .matter .card .content .title h5 {
   color: #2c3e50;
