@@ -37,7 +37,7 @@ class ReviewEndpoint(viewsets.ModelViewSet):
     """
     model = ReviewDocument
     serializer_class = ReviewSerializer
-    lookup_field = 'slug'
+    lookup_field = 'pk'
 
     def can_read(self, user):
         obj = self.get_object()
