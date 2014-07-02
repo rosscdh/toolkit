@@ -40,13 +40,16 @@ class ReviewEndpoint(viewsets.ModelViewSet):
     lookup_field = 'pk'
 
     def can_read(self, user):
-        return user.profile.user_class in ['lawyer', ]
+        obj = self.get_object()
+        return user in obj.document.item.matter.participants.all()
 
     def can_edit(self, user):
-        return user.profile.is_lawyer
+        obj = self.get_object()
+        return user.matter_permissions(matter=obj.document.item.matter).has_permission(manage_document_reviews=True) is True
 
     def can_delete(self, user):
-        return user.profile.is_lawyer
+        obj = self.get_object()
+        return user.matter_permissions(matter=obj.document.item.matter).has_permission(manage_document_reviews=True) is True
 
 
 rulez_registry.register("can_read", ReviewEndpoint)
@@ -91,6 +94,7 @@ class BaseReviewerOrSignerMixin(generics.GenericAPIView):
 
 class ItemRevisionReviewersView(generics.ListAPIView,
                                 generics.CreateAPIView,
+                                generics.DestroyAPIView,
                                 BaseReviewerOrSignerMixin):
     """
     /matters/:matter_slug/items/:item_slug/revision/reviewers/ (GET,POST)
@@ -98,6 +102,24 @@ class ItemRevisionReviewersView(generics.ListAPIView,
     """
     def get_queryset_provider(self):
         return self.revision.reviewdocument_set
+
+    def destroy(self, request, **kwargs):
+        """
+        Delete all of the review documents that are NOT the primary review document
+        which is present to allow access to the doc for all major participants
+        """
+        # Remove the specific users
+        for reviewdoc in self.item.latest_revision.reviewdocument_set.exclude(pk=self.item.primary_participant_review_document().pk):
+            for reviewer in reviewdoc.reviewers.all():
+                self.revision.reviewers.remove(reviewer)
+                reviewdoc.delete()
+
+        # Issue the action
+        self.matter.actions.user_revision_cancel(item=self.item,
+                                                 user=request.user,
+                                                 revision=self.item.latest_revision)
+
+        return Response({}, status=http_status.HTTP_202_ACCEPTED)
 
     def create(self, request, **kwargs):
         """

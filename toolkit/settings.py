@@ -30,6 +30,8 @@ DEFAULT_FROM = (
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'lgi%*e=%s@y3-jos^uydhc5gz80m9ts&9io5xh6myf+$fuy7+n'
 
+URL_ENCODE_SECRET_KEY = 'k5aa6b5x6qo#9p+lx^k^_zp^ay30ksokl7z%xup4*y3=f4rdgk'
+
 # List of callables that know how to import templates from various sources.
 TEMPLATE_DIRS = (
     os.path.join(SITE_ROOT, 'templates'),
@@ -207,6 +209,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'toolkit.context_processors.EXPOSED_GLOBALS',
     'toolkit.context_processors.FIRSTSEEN',
     'toolkit.context_processors.LAYOUT',
+    'toolkit.context_processors.REQUESTS_COUNT',
     'toolkit.context_processors.WORKSPACES',
 )
 

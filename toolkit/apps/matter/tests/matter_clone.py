@@ -103,8 +103,8 @@ class DemoMatterCloneServiceTest(BaseMatterClone):
         #
         # Test that the documents ahve been cloned and renamed
         #
-        existing_file_names = [self.item.revision_set.all().first().executed_file.name, self.item2.revision_set.all().first().executed_file.name]
-        print existing_file_names
+        existing_file_names = [os.path.basename(name) for name in [self.item.revision_set.all().first().executed_file.name, self.item2.revision_set.all().first().executed_file.name]]
+        # print existing_file_names
         for i in self.target_matter.item_set.all():
 
             for r in i.revision_set.all():
@@ -113,8 +113,7 @@ class DemoMatterCloneServiceTest(BaseMatterClone):
                 # test the file has been renamed
                 #self.assertNotEqual(new_file_name, self.test_pdf_base_name)
                 self.assertTrue(r.executed_file.name not in existing_file_names)
-                # test the new_fiename is built with the matter pk in it to make it unique
-                #self.assertEqual(new_file_name, '%s-%s' % (self.target_matter.pk, self.test_pdf_base_name,))
+
 
         # test that the slugs are all unique
         self.assertTrue(all(str(i.slug) not in self.source.item_set.all().values('slug') for i in self.target_matter.item_set.all()))

@@ -38,7 +38,7 @@ class MatterDownloadExportView(DetailView):
         self.storage = _managed_S3BotoStorage()
         self.export_service = None
 
-        token_data = signing.loads(kwargs.get('token'), salt=settings.SECRET_KEY)
+        token_data = signing.loads(kwargs.get('token'), salt=settings.URL_ENCODE_SECRET_KEY)
 
         kwargs.update(token_data)
         kwargs.update({'slug': token_data.get('matter_slug')})

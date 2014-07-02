@@ -123,7 +123,8 @@ angular.module('toolkit-gui')
 			'statusFilter': null,
 			'itemFilter': null,
 			'knownSigners': [],
-            'showPreviousRevisions': false
+            'showPreviousRevisions': false,
+            'loadedItemdetails': {}
 		};
 
 		//debugger;
@@ -179,7 +180,9 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
 		$rootScope.$on('$stateChangeSuccess', function () {
-			$scope.handleUrlState();
+            $timeout(function(){
+			    $scope.handleUrlState();
+            }, 20);
 		});
 
 
@@ -472,12 +475,14 @@ angular.module('toolkit-gui')
 
 				matterItemService.create(matterSlug, itemName, category.name).then(
 				function success(item){
-					updateObject(placeholderItem /*originalItem*/, item /*item recieved from API*/);
-					/* category.items.push(item); */
-					/* $scope.data.newItemName = ''; */
+                    delete placeholderItem.loading;
+                    angular.extend(placeholderItem, item);
 
-					// Display item that has just been added
-					$scope.selectItem( item, category );
+                    //mark item as loaded !important
+                    $scope.data.loadedItemdetails[item.slug] = true;
+
+					// Select the placeholder item that has just been added with the data from the loaded item
+					$scope.selectItem( placeholderItem, category );
 				},
 				function error(/*err*/){
 					toaster.pop('error', 'Error!', 'Unable to create new item',5000);
@@ -485,20 +490,6 @@ angular.module('toolkit-gui')
 			);
 			}
 		};
-
-		/**
-		 * updateObject: given a checklist item placeholder, update properties given updated details from the API
-		 * @param  {Object} originalItem placeholder checklist item
-		 * @param  {Object} updatedItem  update object from API
-		 */
-		function updateObject( originalItem, updatedItem ) {
-			delete originalItem.loading;
-
-			// Updating the object this way does not interupt the referenced object in the array
-			for(var key in updatedItem) {
-				originalItem[key] = updatedItem[key];
-			}
-		}
 
 		/**
 		 * Sets the currently selected item to the one passed through to this method
@@ -613,26 +604,41 @@ angular.module('toolkit-gui')
             }
         }
 
-		$scope.loadItemDetails = function(item){
-			var deferred = $q.defer();
+        $scope.loadItemDetails = function (item) {
+            var deferred = $q.defer();
+            var matterSlug = $scope.data.slug;
 
-			//if(typeof(item.latest_revision.reviewers) === "string") {
-			if(item.latest_revision && !item.latest_revision.reviewers) {
-				baseService.loadObjectByUrl(item.latest_revision.url).then(
-					function success(obj){
-						item.latest_revision = obj;
-						deferred.resolve(item);
-					},
-					function error(/*err*/){
-						toaster.pop('error', 'Error!', 'Unable to load latest revision',5000);
-					}
-				);
-			} else {
-				deferred.resolve(item);
-			}
+            // Update selected item with full details, but only on the first select
+            // Because the object is passed referentially, the object can be updated asynchroniously
+            if(!$scope.data.loadedItemdetails[item.slug]) {
+                matterItemService.get(matterSlug, item.slug).then(
+                    function success(fullItem) {
+                        if (fullItem.latest_revision && !fullItem.latest_revision.reviewers) {
+                            baseService.loadObjectByUrl(item.latest_revision.url).then(
+                                function success(obj) {
+                                    fullItem.latest_revision = obj;
+                                    angular.extend(item, fullItem);
+                                    $scope.data.loadedItemdetails[item.slug] = true;
+                                    deferred.resolve(item);
+                                },
+                                function error(/*err*/) {
+                                    toaster.pop('error', 'Error!', 'Unable to load latest revision', 5000);
+                                }
+                            );
+                        } else {
+                            angular.extend(item, fullItem);
+                            $scope.data.loadedItemdetails[item.slug] = true;
+                            deferred.resolve(item);
+                        }
 
-			return deferred.promise;
-		};
+                    }
+                );
+            } else {
+                deferred.resolve(item);
+            }
+
+            return deferred.promise;
+        };
 
 
 		/**
@@ -1441,26 +1447,34 @@ angular.module('toolkit-gui')
 		* @method		    deleteRevisionReview
 		* @memberof			ChecklistCtrl
 		*/
-		$scope.deleteRevisionReviewRequest = function( item, review ) {
-			var matterSlug = $scope.data.slug;
-			//var participant = $scope.getParticipantByUrl(participant_url);
+        $scope.deleteRevisionReviewRequest = function (item) {
+            var matterSlug = $scope.data.slug;
 
-			matterItemService.deleteRevisionReviewRequest(matterSlug, item.slug, review).then(
-				function success(){
-					var index = jQuery.inArray( review, item.latest_revision.reviewers );
-					if( index>=0 ) {
-						// Remove reviewer from list in RAM array
-						item.latest_revision.reviewers.splice(index,1);
-						$scope.calculateReviewPercentageComplete(item);
-					}
-				},
-				function error(/*err*/){
-					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to delete the revision review request.') {
-						toaster.pop('error', 'Error!', 'Unable to delete the revision review request.',5000);
-					}
-				}
-			);
-		};
+            ezConfirm.create('Cancel Review Request', 'Please confirm you would like to cancel this review request?',
+                function yes() {
+                    // Confirmed- cancel review
+                    matterItemService.deleteRevisionReviewRequest(matterSlug, item.slug).then(
+                        function success() {
+                            item.latest_revision.reviewers = [];
+                            $scope.calculateReviewPercentageComplete(item);
+
+                            /*
+                             var index = jQuery.inArray( review, item.latest_revision.reviewers );
+                             if( index>=0 ) {
+                             // Remove reviewer from list in RAM array
+                             item.latest_revision.reviewers.splice(index,1);
+                             $scope.calculateReviewPercentageComplete(item);
+                             }*/
+                        },
+                        function error(/*err*/) {
+                            if (!toaster.toast || !toaster.toast.body || toaster.toast.body !== 'Unable to cancel the revision review request.') {
+                                toaster.pop('error', 'Error!', 'Unable to cancel the revision review request.', 5000);
+                            }
+                        }
+                    );
+                }
+            );
+        };
 
 		/**
 		 * Initiates the view of a review as modal window.
