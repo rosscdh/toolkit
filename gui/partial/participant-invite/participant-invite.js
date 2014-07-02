@@ -81,11 +81,12 @@ angular.module('toolkit-gui')
             'isNew': false,
             'selectedUser': null,
             'requestLoading': false,
-            'showAddButton': false
+            'showAddButton': false,
+            'showDetails': false,
 		};
 
         $scope.selectUser = function( person ) {
-        	// Re-apply original permissions if required, the concept here is that if I don't click the 
+        	// Re-apply original permissions if required, the concept here is that if I don't click the
         	if( $scope.data.selectedUser && $scope.permissionTracking.original ) {
         		$scope.data.selectedUser.permissions = $scope.permissionTracking.original; // Reset previosuly selected user permissions
         	}

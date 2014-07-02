@@ -60,23 +60,23 @@
                     <div class='permissions-checklist' ng-show="currentUser.permissions.manage_participants">
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" ng-model="data.selectedUser.permissions.manage_participants"> Manage Participants in this matter <span class='text-muted'>(including adding and removing Colleagues and Clients)</span>
+                                <input type="checkbox" ng-model="data.selectedUser.permissions.manage_participants">add/remove participants
                             </label>
                         </div>
 
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" ng-model="data.selectedUser.permissions.manage_items"> Manage Checklist Items and Categories
+                                <input type="checkbox" ng-model="data.selectedUser.permissions.manage_items"> edit the checklist items
                             </label>
                         </div>
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" ng-model="data.selectedUser.permissions.manage_document_reviews"> Able to Add, Complete and Destroy Requests for Review
+                                <input type="checkbox" ng-model="data.selectedUser.permissions.manage_document_reviews"> request/complete reviews of documents
                             </label>
                         </div>
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" ng-model="data.selectedUser.permissions.manage_signature_requests"> Manage Signing and Signature Requests
+                                <input type="checkbox" ng-model="data.selectedUser.permissions.manage_signature_requests"> request/complete signature requests
                             </label>
                         </div>
                     </div>
@@ -142,10 +142,10 @@
                         </div>
                  <div class="checkbox">
                             <label>
-                                <input type="checkbox" ng-model="data.invitee.permissions.manage_participants"><span class="list-heading">Customized Access</span> <div class="text-muted">Specify access settings for this colleague.</div>
+                                <input type="checkbox" ng-click="data.showDetails=true"><span class="list-heading">Customized Access</span> <div class="text-muted">Specify access settings for this colleague.</div>
                             </label>
                         </div>
-                        <div class="customized-coleg-list">
+                        <div class="customized-list" ng-if='data.showDetails'">
                             <div>By adding someone as a colleague, they will be able to:</div>
                             <div class="half">
                                 <div class="item">
@@ -178,33 +178,9 @@
                             </label>
                         </div>
 
-                        <!-- not done!!! -->
-                          <div class="checkbox">
-                            <label>
-                                <input type="checkbox" ng-model="data.invitee.permissions.manage_items"> edit the checklist items
-                            </label>
-                        </div>
-
-
-                        <!-- not done!!! -->
-                           <div class="checkbox">
-                            <label>
-                                <input type="checkbox" ng-model="data.invitee.permissions.manage_items"> request documents
-                            </label>
-                            </div>
-
-
-                         <!-- not done!!! -->
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" ng-model="data.invitee.permissions.manage_document_reviews"> upload documents
-                            </label>
-                        </div>
-
-
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" ng-model="data.invitee.permissions.manage_document_reviews"> request review of documents
+                                <input type="checkbox" ng-model="data.invitee.permissions.manage_document_reviews"> request/compelete reviews of documents
                             </label>
                         </div>
                         <div class="checkbox">
@@ -220,8 +196,7 @@
 		</form>
 
         <form class="form" ng-submit="invite()" ng-show="data.showAddParticipant">
-            <h5 class="add-client">Add a Client <a href="javascript:;" class="close" ng-click="data.showAddParticipant=false;">x</a></h5>
-            <p>Adding a client to this matter will give them access to view the checklist and the latest version of each document.</p>
+            <h5 class="add-client">Add a Client/Third Party to this Matter <a href="javascript:;" class="close" ng-click="data.showAddParticipant=false;">x</a></h5>
 			<div ng-class="{'has-success': data.participant, 'has-warning': data.isNew, 'has-error': data.validationError }">
     		    <p class="bg-info" for="inviteeEmail" ng-show="data.participant">{{ data.participant | fullname }} found.</p>
                 <p class="bg-info" for="inviteeEmail" ng-show="data.isNew">User does not exist yet. They will be invited to LawPal.</p>
@@ -237,15 +212,43 @@
 			<div class="">
 				<textarea class="form-control form-control-full-width" ng-model="data.invitee.message" placeholder="Add an optional message"></textarea>
 			</div>
+            <div class="customized-list">
+                By adding someone as a client/third party they will be able to:
+
+                <div class="third">
+                    <div class="item">
+                        <span class="fui-check-inverted"></span> view the checklist's progress
+                    </div>
+                     <div class="item">
+                        <span class="fui-check-inverted"></span> annotate and view latest drafts of documents
+                    </div>
+                      <div class="item">
+                        <span class="fui-check-inverted"></span> view and respond to global comments
+                     </div>
+                     <div class="item">
+                        <span class="fui-cross-inverted"></span> unable to view previous versions of documents
+                     </div>
+                       <div class="item">
+                        <span class="fui-cross-inverted"></span> unable to view internal discussions
+                     </div>
+
+                </div>
+
+
+            <div class="actual-list">
+                You may also choose to grant them permission to:
                <div class="checkbox">
+
                             <label>
-                                <input type="checkbox" ng-model="data.invitee.permissions.manage_clients">Manage clients in this matter
-                                <span class="text-muted">(including adding and removing Clients)</span>
+                                <input type="checkbox" ng-model="data.invitee.permissions.manage_clients">add/remove participants
                             </label>
                         </div>
+         </div>
+         </div>
             <div class="text-center main-a">
                 <button class="btn  btn-wide btn-sm client-btn" ng-disabled="invalid()">Add a Client</button>
             </div>
+
 
 		</form>
 	</div>
