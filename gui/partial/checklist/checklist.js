@@ -1449,16 +1449,19 @@ angular.module('toolkit-gui')
 		*/
 		$scope.deleteRevisionReviewRequest = function( item ) {
 			var matterSlug = $scope.data.slug;
-			//var participant = $scope.getParticipantByUrl(participant_url);
 
 			matterItemService.deleteRevisionReviewRequest(matterSlug, item.slug).then(
 				function success(){
+                    item.latest_revision.reviewers = [];
+                    $scope.calculateReviewPercentageComplete(item);
+
+                    /*
 					var index = jQuery.inArray( review, item.latest_revision.reviewers );
 					if( index>=0 ) {
 						// Remove reviewer from list in RAM array
 						item.latest_revision.reviewers.splice(index,1);
 						$scope.calculateReviewPercentageComplete(item);
-					}
+					}*/
 				},
 				function error(/*err*/){
 					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to delete the revision review request.') {
