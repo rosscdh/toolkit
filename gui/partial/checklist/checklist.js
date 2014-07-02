@@ -1447,29 +1447,34 @@ angular.module('toolkit-gui')
 		* @method		    deleteRevisionReview
 		* @memberof			ChecklistCtrl
 		*/
-		$scope.deleteRevisionReviewRequest = function( item ) {
-			var matterSlug = $scope.data.slug;
+        $scope.deleteRevisionReviewRequest = function (item) {
+            var matterSlug = $scope.data.slug;
 
-			matterItemService.deleteRevisionReviewRequest(matterSlug, item.slug).then(
-				function success(){
-                    item.latest_revision.reviewers = [];
-                    $scope.calculateReviewPercentageComplete(item);
+            ezConfirm.create('Cancel Review Request', 'Please confirm you would like to cancel this review request?',
+                function yes() {
+                    // Confirmed- cancel review
+                    matterItemService.deleteRevisionReviewRequest(matterSlug, item.slug).then(
+                        function success() {
+                            item.latest_revision.reviewers = [];
+                            $scope.calculateReviewPercentageComplete(item);
 
-                    /*
-					var index = jQuery.inArray( review, item.latest_revision.reviewers );
-					if( index>=0 ) {
-						// Remove reviewer from list in RAM array
-						item.latest_revision.reviewers.splice(index,1);
-						$scope.calculateReviewPercentageComplete(item);
-					}*/
-				},
-				function error(/*err*/){
-					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to delete the revision review request.') {
-						toaster.pop('error', 'Error!', 'Unable to delete the revision review request.',5000);
-					}
-				}
-			);
-		};
+                            /*
+                             var index = jQuery.inArray( review, item.latest_revision.reviewers );
+                             if( index>=0 ) {
+                             // Remove reviewer from list in RAM array
+                             item.latest_revision.reviewers.splice(index,1);
+                             $scope.calculateReviewPercentageComplete(item);
+                             }*/
+                        },
+                        function error(/*err*/) {
+                            if (!toaster.toast || !toaster.toast.body || toaster.toast.body !== 'Unable to cancel the revision review request.') {
+                                toaster.pop('error', 'Error!', 'Unable to cancel the revision review request.', 5000);
+                            }
+                        }
+                    );
+                }
+            );
+        };
 
 		/**
 		 * Initiates the view of a review as modal window.

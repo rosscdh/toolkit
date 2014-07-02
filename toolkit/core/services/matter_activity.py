@@ -440,6 +440,18 @@ class MatterActivityEventService(object):
             'revision_pk': revision.pk
         })
 
+    def user_revision_cancel(self, item, user, revision):
+        override_message = u'%s canceled the revision of %s' % (user, revision)
+        self._create_activity(actor=user, verb=u'cancelled review', action_object=item,
+                              override_message=override_message, revision=revision, filename=revision.name,
+                              version=revision.slug, date_created=datetime.datetime.utcnow())
+        self.analytics.event('review.request.cancelled', user=user, **{
+            'item_pk': item.pk,
+            'matter_pk': self.matter.pk,
+            'revision_pk': revision.pk
+        })
+        self.realtime_event(event='update', obj=item, ident=item.slug, from_user=user, detail='user completed review of revision')
+
     def user_revision_review_complete(self, item, user, revision):
         # toolkit.apps.review.views.ApproveRevisionView#approve
         override_message = u'%s completed their review of %s' % (user, revision)
