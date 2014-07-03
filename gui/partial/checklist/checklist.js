@@ -2164,10 +2164,18 @@ angular.module('toolkit-gui')
     //new task Modal
      $scope.newTaskModal = function(){
         $modal.open({
-          'templateUrl': '/static/ng/partial/tasks/newTask.html',
+          'templateUrl': '/static/ng/partial/tasks/new-task.html',
           'controller': 'newTaskCtrl'
         });
       };
+
+      $scope.assignTaskModal = function(){
+        $modal.open({
+          'templateUrl': '/static/ng/partial/tasks/assign-task.html',
+          'controller': 'newTaskCtrl'
+        });
+      };
+
 
 
     //delete task confirmation modal
