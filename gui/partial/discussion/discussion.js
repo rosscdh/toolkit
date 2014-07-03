@@ -25,13 +25,14 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
             'request': {
                 'message': null,
             },
-            'searchEnabled': false,
             'selectedThread': null,
             'threads': [],
             'view': 'inbox',
             'threadSlug': routeParams.threadSlug
 
         };
+
+        $rootScope.searchEnabled = false;
 
         if ($scope.data.matterSlug && $scope.data.matterSlug !== '' && $scope.data.matterCalled == null) {
             $scope.data.matterCalled = true;
