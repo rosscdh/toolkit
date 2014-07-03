@@ -336,7 +336,8 @@ class MatterActivityEventService(object):
             'requestor': added_user.get_full_name(),
             'requestor_type': added_user.profile.type
         })
-        self.realtime_event(event='update', obj=item, ident=item.slug, from_user=adding_user, detail='requested revision')
+        self.realtime_event(event='update', obj=item, ident=item.slug, from_user=adding_user,
+                            detail='requested revision')
 
     def cancel_user_upload_revision_request(self, item, removing_user, removed_user):
         # toolkit.api.views.item.MatterItemView#pre_save
@@ -346,7 +347,8 @@ class MatterActivityEventService(object):
                                                                                               removed_user, item)
         self._create_activity(actor=removing_user, verb=u'canceled their request for a document', action_object=item,
                               override_message=override_message, user=removed_user)
-        self.realtime_event(event='update', obj=item, ident=item.slug, from_user=removing_user, detail='cancel revision request')
+        self.realtime_event(event='update', obj=item, ident=item.slug, from_user=removing_user,
+                            detail='cancel revision request')
 
     def user_uploaded_revision(self, user, item, revision):
         # toolkit.api.views.revision.ItemCurrentRevisionView#create
@@ -357,7 +359,8 @@ class MatterActivityEventService(object):
         self.analytics.event('revision.upload.provided', user=user, **{
             'matter_pk': self.matter.pk
         })
-        self.realtime_event(event='update', obj=item, ident=item.slug, from_user=user, detail='uploaded requested revision')
+        self.realtime_event(event='update', obj=item, ident=item.slug, from_user=user,
+                            detail='uploaded requested revision')
 
     def add_revision_comment(self, user, revision, comment, reviewdocument):
         # toolkit/apps/matter/signals.py:103
@@ -369,7 +372,8 @@ class MatterActivityEventService(object):
             'item_pk': revision.item.pk,
             'matter_pk': self.matter.pk
         })
-        self.realtime_event(event='update', obj=item, ident=item.slug, from_user=user, detail='commented on revision')
+        self.realtime_event(event='update', obj=revision.item, ident=revision.item.slug, from_user=user,
+                            detail='commented on revision')
 
     def add_review_copy_comment(self, user, revision, comment, reviewdocument):
         # toolkit/apps/matter/signals.py:103
@@ -387,7 +391,8 @@ class MatterActivityEventService(object):
         override_message = u'%s deleted a comment on %s' % (user, revision)
         self._create_activity(actor=user, verb=u'deleted revision comment', action_object=revision,
                               override_message=override_message, item=revision.item)
-        self.realtime_event(event='update', obj=item, ident=item.slug, from_user=user, detail='deleted revision comment')
+        self.realtime_event(event='update', obj=revision.item, ident=revision.item.slug, from_user=user,
+                            detail='deleted revision comment')
 
     def revision_changed_status(self, user, revision, previous_status):
         # never used
@@ -396,7 +401,30 @@ class MatterActivityEventService(object):
         self._create_activity(actor=user, verb=u'changed the status', action_object=revision, item=revision.item,
                               override_message=override_message, current_status=current_status,
                               previous_status=previous_status)
-        self.realtime_event(event='update', obj=item, ident=item.slug, from_user=user, detail='revision status changed')
+        self.realtime_event(event='update', obj=revision.item, ident=revision.item.slug, from_user=user,
+                            detail='revision status changed')
+
+    #
+    # Attachments
+    #
+
+    def created_attachment(self, user, item, attachment):
+        override_message = u'%s added an attachment to %s' % (user, item)
+        self._create_activity(actor=user, verb=u'created', action_object=attachment, item=item,
+                              override_message=override_message, filename=attachment.name,
+                              date_created=attachment.date_created)
+
+        self.analytics.event('attachment.create', user=user, **{
+            'matter_pk': self.matter.pk
+        })
+        self.realtime_event(event='update', obj=item, ident=item.slug, from_user=user, detail='created attachment')
+
+    def deleted_attachment(self, user, item, attachment):
+        override_message = u'%s destroyed an attachment for %s' % (user, item)
+        self._create_activity(actor=user, verb=u'deleted', action_object=attachment, item=item,
+                              override_message=override_message, filename=attachment.name,
+                              date_created=attachment.date_created)
+        self.realtime_event(event='update', obj=item, ident=item.slug, from_user=user, detail='deleted attachment')
 
     #
     # Review requests
@@ -405,7 +433,8 @@ class MatterActivityEventService(object):
     def invite_user_as_reviewer(self, item, inviting_user, invited_user):
         # toolkit.api.views.review.ItemRevisionReviewersView#create
         if inviting_user.pk != invited_user:
-            override_message = u'%s invited %s to review %s of %s' % (inviting_user, invited_user, item.latest_revision, item)
+            override_message = u'%s invited %s to review %s of %s' % (inviting_user, invited_user, item.latest_revision,
+                                                                      item)
             self._create_activity(actor=inviting_user, verb=u'invited reviewer', action_object=item,
                                   override_message=override_message, user=invited_user)
             self.analytics.event('review.request.sent', user=inviting_user, **{
@@ -414,7 +443,8 @@ class MatterActivityEventService(object):
                 'item_pk': item.pk,
                 'matter_pk': self.matter.pk
             })
-            self.realtime_event(event='update', obj=item, ident=item.slug, from_user=inviting_user, detail='invited reviewer')
+            self.realtime_event(event='update', obj=item, ident=item.slug, from_user=inviting_user,
+                                detail='invited reviewer')
 
     def user_viewed_revision(self, item, user, revision):
         # toolkit.api.views.review.ReviewerHasViewedRevision#update
@@ -450,7 +480,8 @@ class MatterActivityEventService(object):
             'matter_pk': self.matter.pk,
             'revision_pk': revision.pk
         })
-        self.realtime_event(event='update', obj=item, ident=item.slug, from_user=user, detail='user completed review of revision')
+        self.realtime_event(event='update', obj=item, ident=item.slug, from_user=user,
+                            detail='user completed review of revision')
 
     def user_revision_review_complete(self, item, user, revision):
         # toolkit.apps.review.views.ApproveRevisionView#approve
@@ -463,7 +494,8 @@ class MatterActivityEventService(object):
             'matter_pk': self.matter.pk,
             'revision_pk': revision.pk
         })
-        self.realtime_event(event='update', obj=item, ident=item.slug, from_user=user, detail='user completed review of revision')
+        self.realtime_event(event='update', obj=item, ident=item.slug, from_user=user,
+                            detail='user completed review of revision')
 
     def all_revision_reviews_complete(self, item, revision):
         # toolkit.core.item.mixins.ReviewInProgressMixin#recalculate_review_percentage_complete
@@ -476,7 +508,8 @@ class MatterActivityEventService(object):
             'matter_pk': self.matter.pk,
             'revision_pk': revision.pk
         })
-        self.realtime_event(event='update', obj=item, ident=item.slug, from_user=None, detail='revision review completed')
+        self.realtime_event(event='update', obj=item, ident=item.slug, from_user=None,
+                            detail='revision review completed')
 
     #
     # Signing
@@ -497,7 +530,8 @@ class MatterActivityEventService(object):
             'item_pk': item.pk,
             'matter_pk': self.matter.pk
         })
-        self.realtime_event(event='update', obj=item, ident=item.slug, from_user=user, detail='revision sent for signing')
+        self.realtime_event(event='update', obj=item, ident=item.slug, from_user=user,
+                            detail='revision sent for signing')
 
     def completed_setup_for_signing(self, user, sign_object):
         """

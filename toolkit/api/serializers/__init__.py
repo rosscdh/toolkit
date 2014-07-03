@@ -6,6 +6,7 @@ from .discussion import (DiscussionCommentSerializer, DiscussionSerializer, Lite
 from .matter import (MatterSerializer, LiteMatterSerializer, SimpleMatterSerializer)
 from .item import (ItemSerializer, LiteItemSerializer,)
 from .revision import (RevisionSerializer,)
+from .attachment import (AttachmentSerializer,)
 from .review import (ReviewSerializer,)
 
 from .sign import (SignatureSerializer,)

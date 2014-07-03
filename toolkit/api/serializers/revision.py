@@ -111,6 +111,10 @@ class HyperlinkedAutoDownloadFileField(LimitedExtensionMixin, serializers.URLFie
     but also return just the url and not the FileObject on to_native unless it
     does not exist
     """
+    def __init__(self, file_field_name='executed_file', *args, **kwargs):
+        self.file_field_name = file_field_name
+        return super(HyperlinkedAutoDownloadFileField, self).__init__(*args, **kwargs)
+
     def to_native(self, value):
         return getattr(value, 'url', value)
 
@@ -130,7 +134,7 @@ class HyperlinkedAutoDownloadFileField(LimitedExtensionMixin, serializers.URLFie
                 # important as we then access the "name" attribute in teh serializer
                 # that allows us to name the file (as filepicker sends the name and url seperately)
                 request = self.context.get('request', {})
-                url = request.DATA.get('executed_file')
+                url = request.DATA.get(self.file_field_name)
 
                 original_filename = _valid_filename_length(request.DATA.get('name'))
 
@@ -139,17 +143,18 @@ class HyperlinkedAutoDownloadFileField(LimitedExtensionMixin, serializers.URLFie
                     # the name was not set; therefore extract it from executed_file which shoudl be a url at this point
                     #
                     try:
-                        url_path = urlparse(request.DATA.get('executed_file'))
+                        url_path = urlparse(request.DATA.get(self.file_field_name))
                     except:
                         # sometimes, yknow its not a url
-                        url_path = request.DATA.get('executed_file')
+                        url_path = request.DATA.get(self.file_field_name)
                     original_filename = os.path.basename(url_path.path)
 
                 #
                 # NB! we pass this into download which then brings the filedown and names it in the precribed
                 # upload_to manner
                 #
-                file_name, file_object = _download_file(url=url, filename=original_filename, obj=obj, obj_fieldname=field_name)
+                file_name, file_object = _download_file(url=url, filename=original_filename, obj=obj,
+                                                        obj_fieldname=field_name)
                 field = getattr(obj, field_name)
 
                 # NB! we reuse the original_filename!
@@ -333,13 +338,12 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
 
         return data
 
-
     def get_revisions(self, obj):
         return [ABSOLUTE_BASE_URL(reverse('matter_item_specific_revision', kwargs={
-                    'matter_slug': obj.item.matter.slug,
-                    'item_slug': obj.item.slug,
-                    'version': c + 1
-                })) for c, revision in enumerate(obj.revisions) if revision.pk != obj.pk]
+            'matter_slug': obj.item.matter.slug,
+            'item_slug': obj.item.slug,
+            'version': c + 1
+        })) for c, revision in enumerate(obj.revisions) if revision.pk != obj.pk]
 
 
 class SimpleRevisionSerializer(RevisionSerializer):
