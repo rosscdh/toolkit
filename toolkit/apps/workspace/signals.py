@@ -105,7 +105,7 @@ def ensure_workspace_slug(sender, **kwargs):
 
     if workspace.slug in [None, '']:
 
-        final_slug = slugify(workspace.name)
+        final_slug = slugify(workspace.name)[:32]
 
         while _model_slug_exists(model=workspace.__class__.objects.model, slug=final_slug):
             logger.info('Workspace %s exists, trying to create another' % final_slug)
@@ -122,19 +122,18 @@ def ensure_workspace_matter_code(sender, instance, **kwargs):
     signal to handle creating the workspace matter_code
     instance = workspace
     """
-
     if instance.matter_code in [None, '']:
 
         # the current number of matters this lawyer has
         count = instance.lawyer.workspace_set.all().count() if instance.lawyer is not None else 1
-        workspace_name = slugify(instance.name)
+        workspace_slug = instance.slug
 
-        final_matter_code = "{0:05d}-{1}".format(count, workspace_name)
+        final_matter_code = "{0:05d}-{1}".format(count, workspace_slug)[:100]
 
         while _model_slug_exists(model=instance.__class__.objects.model, matter_code=final_matter_code):
             logger.info('Workspace %s exists, trying to create another' % final_matter_code)
             count = count + 1
-            final_matter_code = "{0:05d}-{1}".format(count, workspace_name)
+            final_matter_code = "{0:05d}-{1}".format(count, workspace_slug)
 
         instance.matter_code = final_matter_code
 
