@@ -17,7 +17,7 @@ def run_task(task, **kwargs):
 
     if ENABLE_CELERY_TASKS is True and skip_async is False:
         try:
-            logger.info('settings.ENABLE_CELERY_TASKS is True, attempting celery')
+            logger.debug('settings.ENABLE_CELERY_TASKS is True, attempting celery')
             task.delay(**kwargs)
             return True
 
