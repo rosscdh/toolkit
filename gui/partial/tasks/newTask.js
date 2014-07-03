@@ -1,6 +1,7 @@
 angular.module('toolkit-gui')
 
-  .controller('deleteTaskCtrl',[
+
+  .controller('newTaskCtrl',[
     '$scope',
     '$modalInstance',
     function($scope, $modalInstance){
