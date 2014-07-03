@@ -3,6 +3,7 @@ angular.module('toolkit-gui')
   .controller('assignTaskCtrl',[
     '$scope',
     '$modalInstance',
+    'participants',
     function($scope, $modalInstance){
       'use strict';
       /**

@@ -4,7 +4,40 @@
       Assign task to participant</h4>
   </div>
   <div class="modal-body">
+  <div class="row">
+    <div class="col-sm-4 text-right text">
+    Assign this task to
+    </div>
+    <div class="col-sm-4 text-left select">
+   <!--    <div class="mbl">
+              <div class="btn-group">
+                <button class="btn ">Test Lawyer</button>
+                <button class="btn  dropdown-toggle" data-toggle="dropdown">
+                  <span class="caret"></span>
+                </button>
+                <span class="dropdown-arrow dropdown-arrow-inverse"></span>
+                <ul class="dropdown-menu dropdown-inverse">
+                  <li>Test Customer</li>
+                  <li>Test Lawyer in Project</li>
+                  <li>Yekaterina Novikova</li>
+
+                </ul>
+              </div>
+            </div> -->
+
+            <select class="form-control bs" style="-webkit-appearance: initial;">
+            <button class="btn  dropdown-toggle" data-toggle="dropdown">
+            <option value="Test Lawyer"> Test Lawyer </option>
+            <option value="Test Customer"> Test Customer </option>
+            <option value="Yekaterina Novikova"> Yekaterina Novikova </option>
+            </select>
+    </div>
+    <div class="col-sm-4 text-left">
+      <button class="btn btn-primary btn-success">Assign Task</button>
+    </div>
   </div>
+  </div>
+
   <div class="modal-footer">
     <button class="btn btn-default" ng-click="cancel()">Cancel</button>
   </div>

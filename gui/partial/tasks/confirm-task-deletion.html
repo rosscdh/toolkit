@@ -1,12 +1,14 @@
-<div class="modal-content">
+<div class="modal-content confirm-deletion">
   <div class="modal-header">
     <h4 class="modal-title" id="delete-task">
-      Delete task for <span ng-bind="data.selectedItem.name"></span></h4>
+
+      <i class="fa fa-trash-o"></i> Delete task for <span ng-bind="data.selectedItem.name"></span></h4>
   </div>
   <div class="modal-body">
-    Delete this task?
+    <p class="lead text-center">Delete this task?</p>
   </div>
   <div class="modal-footer">
     <button class="btn btn-default" ng-click="cancel()">Cancel</button>
+    <button ng-click="ok()" class="btn btn-inverse">Confirm</button>
   </div>
 </div>
