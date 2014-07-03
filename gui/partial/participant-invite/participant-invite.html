@@ -121,8 +121,8 @@
         </div>
 
 
-		<form class="form" ng-submit="invite()" ng-show="data.showAddLawyer">
-            <h5 class="add-colleague">Add a Colleague <a href="javascript:;" class="close" ng-click="data.showAddLawyer=false;">x</a></h5>
+		<form class="form add-colleague" ng-submit="invite()" ng-show="data.showAddLawyer">
+            <h5>Add a Colleague <a href="javascript:;" class="close" ng-click="data.showAddLawyer=false;">x</a></h5>
 			<div ng-class="{'has-success': data.participant, 'has-warning': data.isNew, 'has-error': data.validationError }">
 				<p class="bg-info" for="inviteeEmail" ng-show="data.participant">Lawyer {{ data.participant | fullname }} found. </p>
         		<input type="email" id="inviteeEmail" class="form-control form-control-full-width" ng-model="data.invitee.email" placeholder="rob.s@gmail.com" required ng-blur="checkIfUserExists(true)" autocomplete="off"/>
@@ -134,62 +134,75 @@
 			<div >
 				<textarea class="form-control form-control-full-width" ng-model="data.invitee.message" placeholder="Add an optional message"></textarea>
 			</div>
+
             <div class="checkbox first">
-                 <!-- this is not done!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-                            <label>
-                                <input type="radio"  name="co-access" ng-model="data.invitee.permissions.manage_all"><span class="list-heading">All Access</span> <div class="text-muted">Colleagues will have all access to this matter.</div>
-                            </label>
-                        </div>
-                 <div class="checkbox">
-                            <label>
-                                <input type="radio" name="co-access" ng-click="data.showDetails=true"><span class="list-heading">Customized Access</span> <div class="text-muted">Specify access settings for this colleague.</div>
-                            </label>
-                        </div>
-                        <div class="customized-list" ng-if='data.showDetails'>
-                            <div>By adding someone as a colleague, they will be able to:</div>
-                            <div class="half">
-                                <div class="item">
-                                   <span class="fui-check-inverted"></span> view the checklist
-                                </div>
-                                <div class="item">
-                                    <span class="fui-check-inverted"></span> comment on all documents
-                                </div>
-                            </div>
-                             <div class="half">
-                                 <div class="item">
-                                   <span class="fui-check-inverted"></span> see all documents and discussions
-                                </div>
-                                <div class="item">
-                                   <span class="fui-check-inverted"></span> download documents
-                                </div>
-                            </div>
+                <label class="radio" ng-class="{'checked':!data.showColleaguePermissionDetails}" ng-click="grantColleaguePermissions('all')">
+                    <span class="icons">
+                        <span class="first-icon fui-radio-unchecked"></span>
+                        <span class="second-icon fui-radio-checked"></span>
+                    </span>
+                    <label><span class="list-heading">All Access</span></label>
+                </label>
+                <div class="text-muted">Colleagues will have all access to this matter.</div>
+            </div>
 
+            <div class="checkbox">
+                <label class="radio" ng-class="{'checked':data.showColleaguePermissionDetails}" ng-click="grantColleaguePermissions()">
+                    <span class="icons">
+                        <span class="first-icon fui-radio-unchecked"></span>
+                        <span class="second-icon fui-radio-checked"></span>
+                    </span>
+                    <label><span class="list-heading">Customized Access</span></label>
+                </label>
+                <div class="text-muted">Specify access settings for this colleague.</div>
+            </div>
 
-                    <div class="actual-list">
-                        You may also grant them permission to:
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" ng-model="data.invitee.permissions.manage_participants">add/remove participants
-                            </label>
-                        </div>
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" ng-model="data.invitee.permissions.manage_items"> edit the checklist items
-                            </label>
-                        </div>
-
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" ng-model="data.invitee.permissions.manage_document_reviews"> request/compelete reviews of documents
-                            </label>
-                        </div>
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" ng-model="data.invitee.permissions.manage_signature_requests"> request signatures
-                            </label>
-                        </div>
+            <div class="customized-list" ng-if='data.showColleaguePermissionDetails'>
+                <div>By adding someone as a colleague, they will be able to:</div>
+                <div class="half">
+                    <div class="item">
+                       <span class="fui-check-inverted"></span> view the checklist
+                    </div>
+                    <div class="item">
+                        <span class="fui-check-inverted"></span> comment on all documents
                     </div>
                 </div>
+                 <div class="half">
+                     <div class="item">
+                       <span class="fui-check-inverted"></span> see all documents and discussions
+                    </div>
+                    <div class="item">
+                       <span class="fui-check-inverted"></span> download documents
+                    </div>
+                </div>
+
+                <div class="actual-list">
+                    You may also grant them permission to:
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" ng-model="data.invitee.permissions.manage_participants">add/remove participants
+                        </label>
+                    </div>
+
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" ng-model="data.invitee.permissions.manage_items"> edit the checklist items
+                        </label>
+                    </div>
+
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" ng-model="data.invitee.permissions.manage_document_reviews"> request/compelete reviews of documents
+                        </label>
+                    </div>
+
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" ng-model="data.invitee.permissions.manage_signature_requests"> request signatures
+                        </label>
+                    </div>
+                </div>
+            </div>
 			<div class="text-center main-a">
 				<button class="btn btn-wide btn-sm colleague-btn" ng-disabled="invalid()">Add a Colleague</button>
 			</div>

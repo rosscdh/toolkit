@@ -82,7 +82,7 @@ angular.module('toolkit-gui')
             'selectedUser': null,
             'requestLoading': false,
             'showAddButton': false,
-            'showDetails': false,
+            'showColleaguePermissionDetails': false
 		};
 
         $scope.selectUser = function( person ) {
@@ -236,7 +236,7 @@ angular.module('toolkit-gui')
         	// Set updating flag, for GUI display
             $scope.data.requestLoading = true;
 
-            // Set backup permissions, forr rollback
+            // Set backup permissions, for rollback
             $scope.permissionTracking.original = angular.copy(person.permissions);
 
             // Request permissions update
@@ -251,6 +251,26 @@ angular.module('toolkit-gui')
 				}
 			);
         };
+
+        $scope.grantColleaguePermissions = function(setAll){
+            if(setAll){
+                $scope.data.invitee.role = 'co-owner';
+                $scope.data.invitee.permissions.manage_participants = true;
+                $scope.data.invitee.permissions.manage_items = true;
+				$scope.data.invitee.permissions.manage_document_reviews = true;
+                $scope.data.invitee.permissions.manage_signature_requests = true;
+
+                $scope.data.showColleaguePermissionDetails = false;
+            } else {
+                $scope.data.invitee.role = 'colleague';
+                $scope.data.invitee.permissions.manage_participants = true;
+                $scope.data.invitee.permissions.manage_items = true;
+				$scope.data.invitee.permissions.manage_document_reviews = false;
+                $scope.data.invitee.permissions.manage_signature_requests = false;
+
+                $scope.data.showColleaguePermissionDetails = true;
+            }
+        }
 
 		/**
 		 * Close dialog on afirmative user initiated event (.e.g. click's OK button).
@@ -316,16 +336,19 @@ angular.module('toolkit-gui')
 				case 'lawyer':
 					$scope.data.showAddParticipant=false;
 					$scope.data.showAddLawyer=true;
-					$scope.data.invitee.permissions.manage_signature_requests = true;
-					$scope.data.invitee.permissions.manage_document_reviews = true;
+                    $scope.grantColleaguePermissions(true);
+                    $scope.data.invitee.permissions.manage_clients = true;
                     $scope.data.invitee.user_class = 'lawyer';
-                    $scope.data.invitee.role = 'colleague';
 					break;
 				default:
 					$scope.data.showAddParticipant=true;
 					$scope.data.showAddLawyer=false;
-					$scope.data.invitee.permissions.manage_signature_requests = false;
+                    $scope.data.invitee.permissions.manage_clients = true;
+					$scope.data.invitee.permissions.manage_participants = false;
+					$scope.data.invitee.permissions.manage_items = false;
 					$scope.data.invitee.permissions.manage_document_reviews = false;
+					$scope.data.invitee.permissions.manage_signature_requests = false;
+
                     $scope.data.invitee.user_class = 'customer';
                     $scope.data.invitee.role = 'client';
 			}
