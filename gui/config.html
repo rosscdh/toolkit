@@ -177,7 +177,7 @@
         </li>
         </ul>
 
-        <form class="navbar-form navbar-left hidden-sm hidden-xs " ng-controller="SearchCtrl" ng-submit="startSearch()">
+        <form class="navbar-form navbar-left hidden-sm hidden-xs " ng-show="$root.searchEnabled" ng-controller="SearchCtrl" ng-submit="startSearch()">
 
         <div class="form-group">
           <div class="input-group input-group-sm">

@@ -114,7 +114,6 @@ angular.module('toolkit-gui')
 			'selectedCategory': null,
 			'categories': [],
 			'users': [],
-			'searchEnabled': true,
 			'searchData': searchService.data(),
 			'usdata': userService.data(),
 			'streamType': 'matter',
@@ -126,6 +125,8 @@ angular.module('toolkit-gui')
             'showPreviousRevisions': false,
             'loadedItemdetails': {}
 		};
+
+		$rootScope.searchEnabled = true;
 
 		//debugger;
 		// Basic checklist item format, used for placeholder checklist items
