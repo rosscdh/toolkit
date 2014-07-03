@@ -31,7 +31,8 @@ class AppTestRunner(NyanCatDiscoverRunner, DjangoTestSuiteRunner):
         return super(AppTestRunner, self).build_suite(test_labels, *args, **kwargs)
 
     def setup_test_environment(self, **kwargs):
-        # # call_command('collectstatic', interactive=False)  # collect static so our casper tests break less
+        #if os.path.exists(settings.STATIC_ROOT) is False:
+        call_command('collectstatic', interactive=False)  # collect static so our casper tests break less
 
         # # copy the conf/production.local_settings.py to toolkit/production_settings.py
         # # so that we can test the various production settings *in mattters for eg
