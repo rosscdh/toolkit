@@ -2148,14 +2148,39 @@ angular.module('toolkit-gui')
 			return template;
 		}
 
-	    $scope.showMarkDownInfo = function() {
-	      $modal.open({
-	        'templateUrl': '/static/ng/partial/markdown/markdown-info.html',
-	        'controller': 'MarkdownInfoCtrl'
-	      });
-
-	    };
 		/* END COMMENT HANDLING */
+
+
+    //markdown modal
+      $scope.showMarkDownInfo = function() {
+        $modal.open({
+          'templateUrl': '/static/ng/partial/markdown/markdown-info.html',
+          'controller': 'MarkdownInfoCtrl'
+        });
+
+      };
+
+
+    //new task Modal
+     $scope.newTaskModal = function(){
+        $modal.open({
+          'templateUrl': '/static/ng/partial/tasks/newTask.html',
+          'controller': 'newTaskCtrl'
+        });
+      };
+
+
+    //delete task confirmation modal
+
+      $scope.deleteTaskModal = function(){
+        $modal.open({
+          'templateUrl': '/static/ng/partial/tasks/confirm-task-deletion.html',
+          'controller': 'deleteTaskCtrl'
+        });
+      };
+
+
+
 
 		/*
 		 _____ _ _ _
