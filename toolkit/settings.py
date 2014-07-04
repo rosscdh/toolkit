@@ -109,7 +109,7 @@ PROJECT_APPS = (
     'toolkit.apps.me',
     'toolkit.apps.request',
     'toolkit.apps.notification',
-    'toolkit.apps.tasks',
+    'toolkit.apps.task',
     # Main Workspace (matters)
     'toolkit.apps.workspace',
     # Core related apps

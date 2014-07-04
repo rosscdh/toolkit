@@ -47,3 +47,4 @@ from .revision import RevisionEndpoint
 
 from .comment import ItemCommentEndpoint
 from .discussion import DiscussionEndpoint, DiscussionCommentEndpoint, DiscussionParticipantEndpoint
+from .task import TaskEndpoint, ItemTasksView, ItemTaskView

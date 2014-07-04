@@ -11,6 +11,7 @@ from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 
 from .revision import SimpleRevisionSerializer
 from .user import LiteUserSerializer, SimpleUserWithReviewUrlSerializer
+from .task import TaskSerializer
 
 
 class ItemSerializer(serializers.HyperlinkedModelSerializer):
@@ -24,6 +25,7 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
     signing_percentage_complete = serializers.Field(source='signing_percentage_complete')
 
     responsible_party = LiteUserSerializer(required=False)
+    tasks = TaskSerializer(source='task_set.all', required=False)
 
     latest_revision = SimpleRevisionSerializer(read_only=True)
 
@@ -41,6 +43,7 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
                   'url', 'regular_url',
                   'status',
                   'responsible_party',
+                  'tasks',
                   'review_percentage_complete',
                   'signing_percentage_complete',
                   'name', 'description', 'matter',
