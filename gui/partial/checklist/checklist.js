@@ -2170,14 +2170,6 @@ angular.module('toolkit-gui')
         });
       };
 
-      $scope.assignTaskModal = function(){
-        $modal.open({
-          'templateUrl': '/static/ng/partial/tasks/assign-task.html',
-          'controller': 'newTaskCtrl'
-        });
-      };
-
-
 
     //delete task confirmation modal
 
