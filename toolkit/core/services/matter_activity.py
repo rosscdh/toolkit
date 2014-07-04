@@ -369,7 +369,7 @@ class MatterActivityEventService(object):
             'item_pk': revision.item.pk,
             'matter_pk': self.matter.pk
         })
-        self.realtime_event(event='update', obj=item, ident=item.slug, from_user=user, detail='commented on revision')
+        self.realtime_event(event='update', obj=revision.item, ident=revision.item.slug, from_user=user, detail='commented on revision')
 
     def add_review_copy_comment(self, user, revision, comment, reviewdocument):
         # toolkit/apps/matter/signals.py:103
