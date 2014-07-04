@@ -51,13 +51,13 @@ class ItemTasksView(GetTaskMixin,
         return {'request': self.request}
 
     def can_read(self, user):
-        return True
+        return user in self.matter.participants.all()
 
     def can_edit(self, user):
-        return True
+        return user.matter_permissions(matter=self.matter).has_permission(manage_items=True) is True
 
     def can_delete(self, user):
-        return True
+        return user.matter_permissions(matter=self.matter).has_permission(manage_items=True) is True
 
 
 rulez_registry.register("can_read", ItemTasksView)

@@ -35,4 +35,6 @@ from .endpoints.remind import *
 
 from .endpoints.comment import *
 
+from .endpoints.task import *
+
 from .endpoints.discussion import *
