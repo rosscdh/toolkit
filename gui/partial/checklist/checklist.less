@@ -744,11 +744,14 @@ ul.status-list a {
   	padding: 0;
   	list-style-type: none;
 
+    .dropdown-menu {
+      overflow: visible;
+    }
 
   	li.one-task {
-  		padding: 3px;
-
-  		overflow: hidden;
+    	padding: 3px;
+      height: 40px;
+      padding-top: 10px;
   		border-bottom: 2px solid #ddd;
 
 
@@ -758,7 +761,7 @@ ul.status-list a {
   			padding: 0;
   			list-style-type: none;
 
-  			li{
+  			 > li{
   				float: left;
   			}
   			.icon {
@@ -791,15 +794,22 @@ ul.status-list a {
   				border: 1px solid #e4e6e8;
   				opacity: 1;
 
+          .dropdown-menu {
+            margin-top: 0px;
+            height: 100px;
+            overflow-y: scroll;
+          }
+
+            .assign {
+              background-color: #e4e6e8;
+              color: #A0A0A0;
+              text-decoration: underline;
+
+            }
+
 
   				a {
   					color: #A0A0A0;
-  					text-decoration: underline;
-  					//text-transform: uppercase;
-  					// padding-bottom: 5px;
-  					// padding-left: 3px;
-  					// padding-right: 3px;
-  					// border-bottom: 1px solid #777;
   				}
 
 
@@ -817,6 +827,7 @@ ul.status-list a {
   	opacity: 1;
   	color: #39ca74;
   }
+
 
 }
 
