@@ -270,7 +270,7 @@ angular.module('toolkit-gui')
 
                 $scope.data.showColleaguePermissionDetails = true;
             }
-        }
+        };
 
 		/**
 		 * Close dialog on afirmative user initiated event (.e.g. click's OK button).
