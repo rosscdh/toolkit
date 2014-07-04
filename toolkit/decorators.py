@@ -11,7 +11,7 @@ def json_response(function=None, *args, **kwargs):
     except Exception, e:
         error = {
             'error': {
-                'message': e.message
+                'message': unicode(e)
             }
         }
         response = HttpResponseServerError()

@@ -175,7 +175,10 @@
 
           </a>
         </li>
-        <form class="navbar-form navbar-left hidden-sm hidden-xs " ng-show="searchEnabled" ng-controller="SearchCtrl" ng-submit="startSearch()">
+        </ul>
+
+        <form class="navbar-form navbar-left hidden-sm hidden-xs " ng-show="$root.searchEnabled" ng-controller="SearchCtrl" ng-submit="startSearch()">
+
         <div class="form-group">
           <div class="input-group input-group-sm">
             <input class="form-control" id="navbarInput-02" type="search" placeholder="Search" ng-model="data.term" ng-keyup="startSearch()" ng-blur="hide()" xng-focus="show()" autocomplete="off" onmouseup="this.select()">
@@ -209,11 +212,9 @@
               </ul>
             </span>
             {% endverbatim %}
-
-
           </div>
         </div>
-        <li>
+
         <div class="search-container">
           <div ng-class="{'show-results-container': data.display}">
             <ul class="search-results list-unstyled">
@@ -227,8 +228,8 @@
             </ul>
           </div>
         </div>
-      </form>
-      </ul>
+
+        </form>
       <!-- /nav -->
 
       {% verbatim %}
