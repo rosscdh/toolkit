@@ -15,16 +15,36 @@ class ItemManager(IsDeletedManager):
     def requested(self, **kwargs):
         return self.get_queryset().requested(**kwargs)
 
-    def my_requests(self, user):
+    def my_requests(self, user, completed=False):
         queries = []
 
-        # upload requests
-        queries += [models.Q(is_complete=False) & models.Q(responsible_party=user) & models.Q(is_requested=True)]
+        compl_operator = operator.or_ if completed else operator.and_
+
+        # document request
+        queries += [
+            models.Q(is_complete=completed) &
+            models.Q(responsible_party=user) &
+            models.Q(is_requested=True)
+        ]
 
         # review requests
-        queries += [models.Q(is_complete=False) & models.Q(revision__is_current=True) & models.Q(revision__reviewers__in=[user])]
+        queries += [
+            models.Q(revision__is_current=True) &
+            models.Q(revision__reviewdocument__reviewers__in=[user]) &
+            reduce(compl_operator, [
+                models.Q(is_complete=completed),
+                models.Q(revision__reviewdocument__is_complete=completed)
+            ])
+        ]
 
         # signing requests
-        queries += [models.Q(is_complete=False) & models.Q(revision__is_current=True) & models.Q(revision__signers__in=[user])]
+        queries += [
+            models.Q(revision__is_current=True) &
+            models.Q(revision__signdocument__signers__in=[user]) &
+            reduce(compl_operator, [
+                models.Q(is_complete=completed),
+                models.Q(revision__signdocument__is_complete=completed)
+            ])
+        ]
 
         return self.get_queryset().filter(reduce(operator.or_, queries))
