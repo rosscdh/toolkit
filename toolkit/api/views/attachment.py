@@ -1,7 +1,5 @@
 # -*- coding: UTF-8 -*-
 from django.http import Http404
-from django.core.cache import cache
-from django.utils.timezone import utc
 from django.shortcuts import get_object_or_404
 
 from rulez import registry as rulez_registry
@@ -21,7 +19,6 @@ from ..serializers import UserSerializer
 
 
 import logging
-import datetime
 
 logger = logging.getLogger('django.request')
 
@@ -85,36 +82,6 @@ class AttachmentView(MatterItemsQuerySetMixin,
                                                           files=files,
                                                           many=many,
                                                           partial=partial)
-
-    # def handle_revision_status(self, status=None):
-    #     #
-    #     # Status change
-    #     #
-    #     if status is not None:
-    #         #
-    #         # if we have a current revision then test to see if the status is
-    #         # being changes from its previous revision
-    #         # TODO move into model?
-    #         #
-    #         if self.revision and int(status) != self.revision.status:
-    #             previous_instance = self.revision.previous()
-    #             if previous_instance is not None:
-    #                 self.matter.actions.revision_changed_status(user=self.request.user,
-    #                                                             revision=self.revision,
-    #                                                             previous_status=previous_instance.status)
-
-    # def update(self, request, *args, **kwargs):
-    #     #
-    #     # Status change
-    #     #
-    #     self.handle_revision_status(status=request.DATA.get('status', None))
-    #     # #
-    #     # # sign_in_progress events
-    #     # # @NOTE that we POP the sign_in_progress value as its not a valid field
-    #     # #
-    #     # self.handle_sign_in_progress(sign_in_progress=request.DATA.pop('sign_in_progress', None))
-    #
-    #     return super(ItemCurrentRevisionView, self).update(request=request, *args, **kwargs)
 
     def create(self, request, *args, **kwargs):
         """

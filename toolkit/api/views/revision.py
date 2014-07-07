@@ -1,7 +1,5 @@
 # -*- coding: UTF-8 -*-
 from django.http import Http404
-from django.core.cache import cache
-from django.utils.timezone import utc
 from django.shortcuts import get_object_or_404
 
 from rulez import registry as rulez_registry
@@ -21,7 +19,6 @@ from ..serializers import UserSerializer
 
 
 import logging
-import datetime
 
 logger = logging.getLogger('django.request')
 
