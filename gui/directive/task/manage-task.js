@@ -61,7 +61,7 @@ angular.module('toolkit-gui')
 
             $scope.data = {
                 'selectedUsers': {}
-            }
+            };
 
             /**
              * Close dialog on afirmative user initiated event (.e.g. click's OK button).
