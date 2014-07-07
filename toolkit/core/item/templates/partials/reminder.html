@@ -1,2 +1,2 @@
 {%load humanize%}<p>Action required</p>
-<p style="color: red">{{ item }} has not been closed, and its due date is approaching: {{ item.date_due|date:"Y-m-d" }} ({{ item.date_due|naturaltime }})</p>
+<p style="">The {{ item }} in the {{ matter }} Matter has not been closed, and its due date is approaching: {{ item.date_due|date:"m-d-Y" }} ({{ item.date_due|naturaltime }})</p>
