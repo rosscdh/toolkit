@@ -1,25 +1,23 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
-from django.db.models import SET_NULL
 from django.test import LiveServerTestCase
 from rest_framework.reverse import reverse
 from django.test.client import MULTIPART_CONTENT
 
 from . import BaseEndpointTest
 from ...serializers import ItemSerializer, UserSerializer, SimpleUserSerializer
-from ...serializers.revision import MAX_LENGTH_FILENAME
 
 from model_mommy import mommy
 
 import os
 import json
-import urllib
 
 # Images are NOT valid filetypes to upload
 TEST_INVALID_UPLOAD_IMAGE_PATH = os.path.join(os.path.dirname(__file__), 'data', 'test-image.png')
 # Pdfs ARE valid filetypes
 TEST_PDF_PATH = os.path.join(settings.SITE_ROOT, 'toolkit', 'casper', 'test.pdf')
-TEST_LONG_FILENAME_PATH = os.path.join(settings.SITE_ROOT, 'toolkit', 'casper', 'test-long-filename-@-(LawPal)-#1236202-v1-test-long-filename-@-(LawPal)-#1236202-v1-test-long-filename-@-(LawPal)-#1236202-v1-test-long-filename-@-(LawPal)-#1236202-v1-test-long-filename-@-(LawPal)-#1236202-v1-.doc')
+TEST_LONG_FILENAME_PATH = os.path.join(settings.SITE_ROOT, 'toolkit', 'casper',
+                                       'test-long-filename-@-(LawPal)-#1236202-v1-test-long-filename-@-(LawPal)-#1236202-v1-test-long-filename-@-(LawPal)-#1236202-v1-test-long-filename-@-(LawPal)-#1236202-v1-test-long-filename-@-(LawPal)-#1236202-v1-.doc')
 
 
 class ItemAttachmentTest(BaseEndpointTest):
@@ -222,117 +220,51 @@ class AttachmentExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
         self.assertEqual(resp.status_code, 201)  # created
         self.assertEqual(resp_json.get('name'), 'test.pdf')
         self.assertEqual(resp_json.get('file'), '/m/attachments/%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
-        self.assertEqual(self.item.revision_set.all().count(), 1)
+        self.assertEqual(self.item.attachments.count(), 1)
 
-        revision = self.item.attachments.all().first()
+        attachment = self.item.attachments.all().first()
 
-        self.assertEqual(revision.file.name, 'attachments/%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
-        self.assertEqual(revision.file.url, '/m/attachments/%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
+        self.assertEqual(attachment.file.name, 'attachments/%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
+        self.assertEqual(attachment.file.url, '/m/attachments/%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
 
-#     def test_post_with_LONG_filename(self):
-#         """
-#         ensure we can upload an actual file to the endpoint
-#         """
-#         self.assertEqual(MAX_LENGTH_FILENAME, 50)  # should be as short as possible to allow for, upload_to path as well as extension and other attribs
-#
-#         self.client.login(username=self.lawyer.username, password=self.password)
-#
-#         with open(self.TEST_LONG_FILENAME_PATH) as file_being_posted:
-#             data = {
-#                 'executed_file': file_being_posted,
-#             }
-#             #
-#             # NB. uploading files must be a patch
-#             #
-#             self.assertEqual(self.item.revision_set.all().count(), 0)
-#             #
-#             # @BUSINESSRULE if you are sending a binary file that needs to be download
-#             # ie. plain post then the CONTENT_TYPE must be MULTIPART_CONTENT and
-#             # the field "executed_file": a binary file object
-#             #
-#             resp = self.client.post(self.endpoint, data, content_type=MULTIPART_CONTENT)
-#         resp_json = json.loads(resp.content)
-#
-#         self.assertEqual(resp.status_code, 201)  # created
-#         self.assertEqual(resp_json.get('slug'), 'v1')
-#         self.assertEqual(resp_json.get('name'), u'test-long-filename-@-(LawPal)-#1236202-v1-test-lon.doc')
-#         # self.assertEqual(resp_json.get('executed_file'), u'https://dev-toolkit-lawpal-com.s3.amazonaws.com/executed_files/v1-%s-%s-test-long-filename-lawpal-1236202-v1-test-lon.doc' % (self.item.pk, self.lawyer.username))
-#         self.assertEqual(resp_json.get('executed_file'), u'/m/executed_files/v1-%s-%s-test-long-filename-lawpal-1236202-v1-test-lon.doc' % (self.item.pk, self.lawyer.username))
-#         self.assertEqual(self.item.revision_set.all().count(), 1)
-#
-#
-# class InvalidFileTypeAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerTestCase):
-#     """
-#     Test invalid file uploads
-#     """
-#     FILE_TO_TEST_UPLOAD_WITH = TEST_INVALID_UPLOAD_IMAGE_PATH
-#
-#     @property
-#     def endpoint(self):
-#         return reverse('matter_item_revision', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug})
-#
-#     def setUp(self):
-#         super(InvalidFileTypeAsUrlOrMultipartDataTest, self).setUp()
-#         # setup the items for testing
-#         self.item = mommy.make('item.Item', matter=self.matter, name='Test Item with Revision', category=None)
-#
-#     def test_endpoint_name(self):
-#         self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/items/%s/revision' % self.item.slug)
-#
-#     def test_patch_with_URL_executed_file(self):
-#         # normally there is no logo-white.png from filepicker io it sends name seperately
-#         # but for our tests we need to fake this out
-#         expected_image_url = 'http://localhost:8081/static/images/logo-white.png'
-#         expected_file_name = 'logo-white.png'
-#
-#         self.client.login(username=self.lawyer.username, password=self.password)
-#
-#         #
-#         # Filepicker IO sends us a url with no filename and or suffix that we use
-#         # but they do send us the name of the file that was uploaded so lets use that
-#         #
-#         data = {
-#             'executed_file': expected_image_url,
-#             'name': expected_file_name
-#         }
-#         #
-#         # @BUSINESSRULE if you are sending a url of a file that needs to be download
-#         # ie. filepicker.io then the CONTENT_TYPE must be application/json and
-#         # the field "executed_file": "http://example.com/myfile.pdf"
-#         #
-#         resp = self.client.patch(self.endpoint, json.dumps(data), content_type='application/json')
-#         resp_json = json.loads(resp.content)
-#
-#         # self.lawyer.matter_permissions(matter=self.matter).permissions
-#
-#         self.assertEqual(resp.status_code, 400)  # error
-#         self.assertEqual(resp_json.get('executed_file'), [u"Invalid filetype, is: .png should be in: ['.pdf', '.docx', '.doc', '.ppt', '.pptx', '.xls', '.xlsx']"])  # error
-#
-#     def test_post_with_URL_executed_file(self):
-#         mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
-#
-#         expected_image_url = 'http://localhost:8081/static/images/logo-white.png'
-#
-#         self.client.login(username=self.lawyer.username, password=self.password)
-#
-#         data = {
-#             'executed_file': expected_image_url,
-#         }
-#         resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
-#         resp_json = json.loads(resp.content)
-#
-#         self.assertEqual(resp.status_code, 400)  # invalid
-#
-#     def test_post_with_FILE_executed_file(self):
-#         self.client.login(username=self.lawyer.username, password=self.password)
-#
-#         with open(self.FILE_TO_TEST_UPLOAD_WITH) as file_being_posted:
-#             data = {
-#                 'executed_file': file_being_posted,
-#             }
-#             self.assertEqual(self.item.revision_set.all().count(), 0)
-#             resp = self.client.post(self.endpoint, data, content_type=MULTIPART_CONTENT)
-#
-#         resp_json = json.loads(resp.content)
-#
-#         self.assertEqual(resp.status_code, 400)  # invalid
+    def test_patch_permissions(self):
+        self.client.login(username=self.user.username, password=self.password)
+
+        user_perm = self.user.matter_permissions(self.matter)
+        user_perm.update_permissions(manage_attachments=False)
+        user_perm.save(update_fields=['data'])
+
+        attachment = mommy.make('attachment.Attachment',
+                                file=None,
+                                name='filename.txt',
+                                item=self.item,
+                                uploaded_by=self.lawyer)
+
+        resp = self.client.patch(self.endpoint, data=json.dumps({'name': 'tralala'}), content_type='application/json')
+        self.assertEqual(resp.status_code, 403)  # forbidden
+
+        user_perm = self.user.matter_permissions(self.matter)
+        user_perm.update_permissions(manage_attachments=True)
+        user_perm.save(update_fields=['data'])
+        resp = self.client.patch(self.endpoint, data=json.dumps({'name': 'tralala'}), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)  # ok
+        resp_json = json.loads(resp.content)
+        self.assertEqual(resp_json.get('name'), 'tralala')
+
+    def test_patch_own(self):
+        self.client.login(username=self.user.username, password=self.password)
+
+        user_perm = self.user.matter_permissions(self.matter)
+        user_perm.update_permissions(manage_attachments=False)
+        user_perm.save(update_fields=['data'])
+
+        attachment = mommy.make('attachment.Attachment',
+                                file=None,
+                                name='filename.txt',
+                                item=self.item,
+                                uploaded_by=self.user)
+
+        resp = self.client.patch(self.endpoint, data=json.dumps({'name': 'tralala'}), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)  # ok
+        resp_json = json.loads(resp.content)
+        self.assertEqual(resp_json.get('name'), 'tralala')

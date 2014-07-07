@@ -34,6 +34,7 @@ class AttachmentEndpoint(viewsets.ModelViewSet):
 class AttachmentView(MatterItemsQuerySetMixin,
                      generics.CreateAPIView,
                      generics.RetrieveAPIView,
+                     generics.UpdateAPIView,
                      generics.DestroyAPIView):
     """
     /matters/:matter_slug/items/:item_slug/attachment (GET,POST,DELETE)
@@ -178,11 +179,13 @@ class AttachmentView(MatterItemsQuerySetMixin,
         return user in self.matter.participants.all()
 
     def can_edit(self, user):
-        # TODO: check if we want to change names from API:
-        # Then we need to differentiate between:
-        # - anyone who may create new attachments
-        # - not anyone who may change the name/description/whatever
-        return user in self.matter.participants.all()
+        if self.request.method == 'POST':
+            # anyone may create new attachments
+            return user in self.matter.participants.all()
+        else:
+            # must be PATCH to change the name/description/...
+            return user == self.get_object().uploaded_by \
+                   or user.matter_permissions(self.matter).has_permission(manage_attachments=True)
 
     def can_delete(self, user):
         return user == self.get_object().uploaded_by \
