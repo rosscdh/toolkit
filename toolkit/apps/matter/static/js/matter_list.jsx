@@ -182,11 +182,11 @@ var CurrentUserRole = React.createClass({
                 <span className="fui-star-2" data-toggle="tooltip" data-placement="right" title="You are the Matter Owner"></span>
                 );
         }
-        // else {
-        //     return (
-        //         <p className="user-role">You are a { role } in this matter.</p>
-        //         );
-        // }
+        else {
+            return (
+                <div/>
+                );
+        }
 
     }
 });
