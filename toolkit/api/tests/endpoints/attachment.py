@@ -336,33 +336,3 @@ class AttachmentExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
 #         resp_json = json.loads(resp.content)
 #
 #         self.assertEqual(resp.status_code, 400)  # invalid
-
-
-class AttachmentDeleteTest(BaseEndpointTest):
-    def setUp(self):
-        super(AttachmentDeleteTest, self).setUp()
-        self.item = mommy.make('item.Item', matter=self.matter, name='Test Item with Revision', category=None)
-        self.attachment = mommy.make('attachment.Attachment', file=None, item=self.item, uploaded_by=self.lawyer)
-
-    def test_delete_of_revision_not_blocked_by_reviwers(self):
-        self.assertEqual(self.item.latest_revision, self.revision)
-        # print self.item.latest_revision.pk
-        self.assertEqual(self.item.revision_set.all().count(), 1)
-        self.revision.delete()
-        self.assertEqual(self.item.revision_set.all().count(), 0)
-
-        self.item = self.item.__class__.objects.get(pk=self.item.pk)  # refresh
-
-        self.assertEqual(self.item.review_percentage_complete, None)  # test review_percentage_complete is reset
-        # print self.item.latest_revision.pk
-        self.assertEqual(self.item.latest_revision, None)
-
-        #
-        # If it throws an Item.DoesNotExist exception here
-        # then we have a problem becuause the field Item.latest_revision.on_delete should be on_delete=models.SET_NULL
-        #
-        self.item.__class__.objects.get(pk=self.item.pk)
-        # test that the field has on_delete set to models.SET_NULL
-        on_delete = getattr(self.item.__class__._meta.get_field_by_name('latest_revision')[0].rel, 'on_delete', None)
-        self.assertTrue(on_delete == SET_NULL)
-
