@@ -10,7 +10,7 @@ from toolkit.api.serializers import LiteUserSerializer
 from toolkit.apps.workspace.models import Workspace, WorkspaceParticipants
 
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
-from .mailers import ParticipantAddedEmail
+from toolkit.apps.matter.mailers import ParticipantAddedEmail
 
 
 logger = logging.getLogger('django.request')
