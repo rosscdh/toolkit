@@ -129,7 +129,8 @@ angular.module('toolkit-gui')
 			'page': 'checklist',
 			'knownSigners': [],
             'showPreviousRevisions': false,
-            'loadedItemdetails': {}
+            'loadedItemdetails': {},
+            'matterCalled': null
 		};
 
 		$rootScope.searchEnabled = true;
