@@ -81,7 +81,7 @@ class DiscussionCommentEndpoint(ThreadMixin, viewsets.ModelViewSet):
     serializer_class = DiscussionCommentSerializer
 
     def get_queryset(self):
-        return self.model.objects.for_model(self.matter).filter(parent=self.thread.pk)
+        return self.model.objects.for_model(self.matter).filter(parent=self.thread.pk).order_by('submit_date')
 
     def pre_save(self, obj):
         obj.matter = self.matter
@@ -171,7 +171,7 @@ class DiscussionParticipantEndpoint(ThreadMixin, mixins.CreateModelMixin, viewse
         return obj
 
     def get_queryset(self):
-        return self.thread.participants.all()
+        return self.thread.participants.all().order_by('username')
 
     def can_read(self, user):
         return user in self.thread.participants.all()
