@@ -41,7 +41,6 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
                   'url', 'regular_url',
                   'status',
                   'responsible_party',
-                  'tasks',
                   'review_percentage_complete',
                   'signing_percentage_complete',
                   'name', 'description', 'matter',
