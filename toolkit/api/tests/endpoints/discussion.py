@@ -32,9 +32,7 @@ class DiscussionsTest(BaseEndpointTest):
             user=self.lawyer
         )
 
-        self.forbidden_user = mommy.make('auth.User', username='forbidden-user', email='forbidden+user@lawpal.com')
-        self.forbidden_user.set_password(self.password)
-        self.forbidden_user.save()
+        self.forbidden_user = self.create_user(username='forbidden-user', email='forbidden+user@lawpal.com')
 
     @property
     def endpoint(self):
@@ -176,9 +174,7 @@ class DiscussionDetailTest(BaseEndpointTest):
             user=self.lawyer
         )
 
-        self.forbidden_user = mommy.make('auth.User', username='forbidden-user', email='forbidden+user@lawpal.com')
-        self.forbidden_user.set_password(self.password)
-        self.forbidden_user.save()
+        self.forbidden_user = self.create_user(username='forbidden-user', email='forbidden+user@lawpal.com')
 
     @property
     def endpoint(self):
@@ -341,9 +337,7 @@ class DiscussionCommentsTest(BaseEndpointTest):
             user=self.lawyer
         )
 
-        self.forbidden_user = mommy.make('auth.User', username='forbidden-user', email='forbidden+user@lawpal.com')
-        self.forbidden_user.set_password(self.password)
-        self.forbidden_user.save()
+        self.forbidden_user = self.create_user(username='forbidden-user', email='forbidden+user@lawpal.com')
 
     @property
     def endpoint(self):
@@ -459,13 +453,10 @@ class DiscussionCommentDetailTest(BaseEndpointTest):
         )
 
         # Not a matter participant
-        self.forbidden_user = mommy.make('auth.User', username='forbidden-user', email='forbidden+user@lawpal.com')
-        self.forbidden_user.set_password(self.password)
-        self.forbidden_user.save()
+        self.forbidden_user = self.create_user(username='forbidden-user', email='forbidden+user@lawpal.com')
 
         # Not a thread participant
-        self.invalid_user = mommy.make('auth.User', username='invalid-user', email='invalid+user@lawpal.com')
-        self.invalid_user.set_password(self.password)
+        self.invalid_user = self.create_user(username='invalid-user', email='invalid+user@lawpal.com')
         WorkspaceParticipants.objects.create(workspace=self.workspace, user=self.invalid_user, role=ROLES.client)
 
     @property
@@ -642,13 +633,10 @@ class DiscussionParticipantsTest(BaseEndpointTest):
         )
 
         # Not a matter participant
-        self.forbidden_user = mommy.make('auth.User', username='forbidden-user', email='forbidden+user@lawpal.com')
-        self.forbidden_user.set_password(self.password)
-        self.forbidden_user.save()
+        self.forbidden_user = self.create_user(username='forbidden-user', email='forbidden+user@lawpal.com')
 
         # Not a thread participant
-        self.invalid_user = mommy.make('auth.User', username='invalid-user', email='invalid+user@lawpal.com')
-        self.invalid_user.set_password(self.password)
+        self.invalid_user = self.create_user(username='invalid-user', email='invalid+user@lawpal.com')
         WorkspaceParticipants.objects.create(workspace=self.workspace, user=self.invalid_user, role=ROLES.client)
 
     @property
@@ -780,13 +768,10 @@ class DiscussionParticipantDetailTest(BaseEndpointTest):
         )
 
         # Not a matter participant
-        self.forbidden_user = mommy.make('auth.User', username='forbidden-user', email='forbidden+user@lawpal.com')
-        self.forbidden_user.set_password(self.password)
-        self.forbidden_user.save()
+        self.forbidden_user = self.create_user(username='forbidden-user', email='forbidden+user@lawpal.com')
 
         # Not a thread participant
-        self.invalid_user = mommy.make('auth.User', username='invalid-user', email='invalid+user@lawpal.com')
-        self.invalid_user.set_password(self.password)
+        self.invalid_user = self.create_user(username='invalid-user', email='invalid+user@lawpal.com')
         WorkspaceParticipants.objects.create(workspace=self.workspace, user=self.invalid_user, role=ROLES.client)
 
     @property
