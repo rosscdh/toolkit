@@ -7,10 +7,11 @@
 
         <li class="one-task" ng-repeat="task in data.tasks">
             <ul class="one-task">
-                <li class="icon" ng-click="toggleCompleteTask(task)"><span class="fui-check-inverted" ng-class="{'incomplete': !task.is_complete, 'complete': task.is_complete }"></span></li>
+                <li class="icon" ng-click="toggleCompleteTask(task)"><span class="" ng-class="{'incomplete fui-radio-unchecked': !task.is_complete, 'fui-check-inverted complete': task.is_complete }"></span></li>
 
                 <li class="task-name" ng-class="{'incomplete': !task.is_complete, 'complete': task.is_complete }">{{ task.name }}</li>
-                <li class="task-status"><a href="#" ng-click="manageTask(task)" ng-class="{'incomplete': !task.is_complete, 'complete': task.is_complete }">Edit</a></li>
+                <li class="task-status"><a href="#" ng-click="assignTask(task)">Assign</a></li>
+                <li class="delete-task"><a href="#" ng-click="manageTask(task)" ng-class="{'incomplete': !task.is_complete, 'complete': task.is_complete }"><i class="fa fa-pencil-square-o"></i></a></li>
                 <li class="delete-task"><a href="#" ng-click="deleteTask(task)">X</a></li>
             </ul>
         </li>
