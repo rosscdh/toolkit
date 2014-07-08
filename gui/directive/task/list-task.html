@@ -1,0 +1,67 @@
+<div class="tasks-wrapper">
+    <div class="item-subheading">Tasks<span class="number-of"> ({{ data.tasks.length }})</span>
+        <a class="btn-link" href="javascript:;" ng-click="manageTask()">New Task</a>
+    </div>
+
+    <ul class="all-tasks">
+
+        <li class="one-task" ng-repeat="task in data.tasks">
+            <ul class="one-task">
+                <li class="icon"><span class="fui-check-inverted incomplete"></span></li>
+                <li class="task-name">File Document</li>
+                <li class="task-status"><a href="#" ng-click="manageTask(task)">Edit</a></li>
+                <li class="delete-task"><a href="#" ng-click="deleteTask(task)">X</a></li>
+            </ul>
+        </li>
+
+        <!--
+        <li class="one-task">
+            <ul class="one-task">
+                <li class="icon"><span class="fui-check-inverted incomplete"></span></li>
+                <li class="task-name">Upload Photo</li>
+                <li class="task-status">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default btn-xs assign" data-toggle="dropdown">
+                            Assign to ...
+                        </button>
+                        <ul class="dropdown-menu" ng-show="data.usdata.current.permissions.manage_items">
+                            <li class="">
+                                <a href="javascript:;">
+                                    Yekaterina Novikova
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="javascript:;">
+                                    Test Customer
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="javascript:;">
+                                    Test Lawyer
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="javascript:;">
+                                    Test Lawyer
+                                </a>
+                            </li>
+
+
+                        </ul>
+                    </div>
+
+                </li>
+
+                <li class="delete-task"><a href="#" ng-click="deleteTaskModal()">X</a></li>
+            </ul>
+        </li>
+        <li class="one-task complete">
+            <ul class="one-task">
+                <li class="icon"><span class="fui-check-inverted complete"></span></li>
+                <li class="task-name">Eat Cupcakes</li>
+                <li class="task-status"><a href="#" ng-click="assignTaskModal()">YN</a></li>
+                <li class="delete-task"><a href="#" ng-click="deleteTaskModal()">X</a></li>
+            </ul>
+        </li>-->
+    </ul>
+</div>
