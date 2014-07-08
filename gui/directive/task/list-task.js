@@ -55,7 +55,14 @@ angular.module('toolkit-gui').directive('tasksList', ['$compile', '$log', '$sce'
                     modalInstance.result.then(
                         function ok(result) {
                             $log.debug(result);
-                            $scope.data.tasks.push(result);
+                            var olditems = jQuery.grep($scope.data.tasks, function(obj){
+                                return obj.slug === result.slug;
+                            });
+                            if (olditems.length === 0) {
+                                $scope.data.tasks.push(result);
+                            } else {
+                                olditems[0] = angular.extend(olditems[0], result);
+                            }
                         },
                         function cancel() {
                             //
@@ -100,7 +107,7 @@ angular.module('toolkit-gui').directive('tasksList', ['$compile', '$log', '$sce'
                 };
 
                 $scope.toggleCompleteTask = function (task) {
-                    task.is_complete =! task.is_complete;
+                    task.is_complete = !task.is_complete;
 
                     taskService.update($scope.matter.slug, $scope.selectedItem.slug, task.slug, task).then(
                         function success(tasks) {
@@ -111,7 +118,7 @@ angular.module('toolkit-gui').directive('tasksList', ['$compile', '$log', '$sce'
                                 toaster.pop('error', 'Error!', 'Unable to update task.', 5000);
                             }
                             //revert change
-                            task.is_complete =! task.is_complete;
+                            task.is_complete = !task.is_complete;
                         }
                     );
                 };
