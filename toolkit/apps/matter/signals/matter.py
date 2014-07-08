@@ -27,7 +27,7 @@ def _update_matter_participants(matter):
     Participants optimisations; so we dont have millions of queries on matter_list
     and else where
     """
-    participants_data = {'participants': []} # @BUSINESSRULE reset the participants list
+    participants_data = {'participants': []}  # @BUSINESSRULE reset the participants list
 
     for u in matter.participants.all():
         participants_data.get('participants').append(LiteUserSerializer(u, context={'matter': matter}).data)
@@ -117,5 +117,3 @@ def on_participant_added(sender, instance, action, model, pk_set, **kwargs):
                     # @TODO this is REALLY HEAVY
                     #
                     reviewdocument.save()
-
-
