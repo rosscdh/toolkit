@@ -30,7 +30,7 @@ angular.module('toolkit-gui').directive('tasksList', ['$compile', '$log', '$sce'
 
 
                 $scope.manageTask = function (task) {
-                    $modal.open({
+                    var modalInstance = $modal.open({
                         'templateUrl': '/static/ng/directive/task/manage-task.html',
                         'controller': 'manageTaskCtrl',
                         'resolve': {
@@ -51,6 +51,16 @@ angular.module('toolkit-gui').directive('tasksList', ['$compile', '$log', '$sce'
                             }
                         }
                     });
+
+                    modalInstance.result.then(
+                        function ok(result) {
+                            $log.debug(result);
+                            $scope.data.tasks.push(result);
+                        },
+                        function cancel() {
+                            //
+                        }
+                    );
                 };
 
                 //delete task confirmation modal
@@ -58,7 +68,7 @@ angular.module('toolkit-gui').directive('tasksList', ['$compile', '$log', '$sce'
                     ezConfirm.create('Delete Task', 'Please confirm you would like to delete this task?',
                         function yes() {
                             // Confirmed- delete category
-                            taskService.delete(matterSlug, $scope.selectedItem.slug, task.slug).then(
+                            taskService.delete($scope.matter.slug, $scope.selectedItem.slug, task.slug).then(
                                 function success() {
                                     var index = jQuery.inArray(task, $scope.data.tasks);
                                     if (index >= 0) {
@@ -78,12 +88,30 @@ angular.module('toolkit-gui').directive('tasksList', ['$compile', '$log', '$sce'
                 $scope.loadTasks = function () {
                     taskService.query($scope.matter.slug, $scope.selectedItem.slug).then(
                         function success(tasks) {
+                            $log.debug(tasks);
                             $scope.data.tasks = tasks;
                         },
                         function error(/*err*/) {
                             if (!toaster.toast || !toaster.toast.body || toaster.toast.body !== 'Unable to load item tasks.') {
                                 toaster.pop('error', 'Error!', 'Unable to load item tasks.', 5000);
                             }
+                        }
+                    );
+                };
+
+                $scope.toggleCompleteTask = function (task) {
+                    task.is_complete =! task.is_complete;
+
+                    taskService.update($scope.matter.slug, $scope.selectedItem.slug, task.slug, task).then(
+                        function success(tasks) {
+                            //do nothing
+                        },
+                        function error(/*err*/) {
+                            if (!toaster.toast || !toaster.toast.body || toaster.toast.body !== 'Unable to update task.') {
+                                toaster.pop('error', 'Error!', 'Unable to update task.', 5000);
+                            }
+                            //revert change
+                            task.is_complete =! task.is_complete;
                         }
                     );
                 };

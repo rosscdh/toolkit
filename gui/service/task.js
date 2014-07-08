@@ -141,11 +141,11 @@ angular.module('toolkit-gui')
 			 *
 			 * @return {Promise}
 		 	 */
-			'update': function(matterSlug, itemSlug, taskId, task) {
+			'update': function(matterSlug, itemSlug, taskSlug, task) {
 				var api = taskResource();
 				var deferred = $q.defer();
 
-				api.update({'matterSlug': matterSlug, 'itemSlug': itemSlug, 'id': taskId}, { 'task' : task},
+				api.update({'matterSlug': matterSlug, 'itemSlug': itemSlug, 'taskSlug': taskSlug}, task ,
 					function success() {
 						deferred.resolve();
 					},

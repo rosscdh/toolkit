@@ -74,6 +74,12 @@ angular.module('toolkit-gui')
              * @memberof            RequestreviewCtrl
              */
             $scope.submitTask = function () {
+                $scope.task.assigned_to = [];
+
+                jQuery.each($scope.data.selectedUsers, function(i, obj){
+                    $scope.task.assigned_to.push(obj.username);
+                });
+
                 taskService.create($scope.matter.slug, $scope.checklistItem.slug, $scope.task).then(
                     function success(task) {
                         $modalInstance.close($scope.task);
