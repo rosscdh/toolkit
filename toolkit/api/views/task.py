@@ -7,7 +7,7 @@ from rulez import registry as rulez_registry
 from toolkit.apps.task.models import Task
 
 from .mixins import MatterItemsQuerySetMixin
-from ..serializers import TaskSerializer
+from ..serializers import ItemSerializer, TaskSerializer
 
 
 class TaskEndpoint(viewsets.ModelViewSet):
@@ -33,9 +33,12 @@ rulez_registry.register("can_delete", TaskEndpoint)
 
 
 class GetTaskMixin(MatterItemsQuerySetMixin):
+    def get_item(self):
+        return super(GetTaskMixin, self).get_queryset().first()
+
     def get_queryset(self):
-        item = super(GetTaskMixin, self).get_queryset().first()
-        return self.model.objects.filter(item=item)
+        self.item = self.get_item()
+        return self.model.objects.filter(item=self.item)
 
 
 class ItemTasksView(GetTaskMixin,
@@ -49,6 +52,14 @@ class ItemTasksView(GetTaskMixin,
 
     def get_serializer_context(self):
         return {'request': self.request}
+
+    def create(self, request, **kwargs):
+        
+        request.DATA.update({
+            'item': ItemSerializer(self.get_item()).data.get('url'),
+            'created_by': request.user.username,
+        })
+        return super(ItemTasksView, self).create(request=request, **kwargs)
 
     def can_read(self, user):
         return user in self.matter.participants.all()
@@ -66,7 +77,7 @@ rulez_registry.register("can_delete", ItemTasksView)
 
 
 class ItemTaskView(GetTaskMixin,
-                   generics.ListCreateAPIView,
+                   generics.RetrieveUpdateAPIView,
                    generics.DestroyAPIView):
     """
     /matters/:matter_slug/items/:item_slug/tasks/:slug (GET,DELETE)
