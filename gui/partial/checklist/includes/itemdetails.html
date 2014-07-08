@@ -406,18 +406,26 @@
 </div>
 
 
-<div class="tasks-wrapper">
+<div class="attachments-wrapper">
     <div class="item-subheading">Attachments<span class="number-of"> ({{ data.attachments.length }}3)</span>
         <a class="btn-link" href="javascript:;" ng-click="manageTask()">New Attachment</a>
     </div>
 
-    <ul class="all-tasks">
-        <li class="one-task" ng-repeat="task in data.tasks">
-            <ul class="one-task">
-                <li class="icon"><span class="fui-check-inverted incomplete"></span></li>
-                <li class="task-name">File Document</li>
-                <li class="task-status"><a href="#" ng-click="manageTask(task)">Edit</a></li>
-                <li class="delete-task"><a href="#" ng-click="deleteTask(task)">X</a></li>
+    <ul class="all-attachments">
+        <li class="one-attachment">
+            <ul class="one-attachment">
+                <li class="icon"><i class="fa fa-paperclip"></i></span></li>
+                <li class="attachment-name">headshot.jpeg</li>
+                <li class="attachment-status"><a href="#">Uploaded by TC</a></li>
+                <li class="delete-attachment"><a href="#" ng-click="deleteTask(task)">X</a></li>
+            </ul>
+        </li>
+          <li class="one-attachment">
+            <ul class="one-attachment">
+                <li class="icon"><i class="fa fa-paperclip"></i></span></li>
+                <li class="attachment-name">coverletter.pdf</li>
+                <li class="attachment-status"><a href="#">Uploaded by TC</a></li>
+                <li class="delete-attachment"><a href="#" ng-click="deleteTask(task)">X</a></li>
             </ul>
         </li>
 
