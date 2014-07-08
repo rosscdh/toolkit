@@ -751,8 +751,7 @@ ul.status-list a {
 
   	li.one-task {
     	padding: 3px;
-      height: 40px;
-      padding-top: 10px;
+      height: 30px;
   		border-bottom: 2px solid #ddd;
 
 
@@ -781,9 +780,18 @@ ul.status-list a {
   				width: 58%;
   				font-size: 12px;
   				text-align: left;
-  				color: #777;
   				font-weight: bold;
   				font-family: Helvetica;
+
+  			}
+
+  			.task-name.incomplete {
+  				color: #777;
+  			}
+
+  			.task-name.complete {
+  				color:  #39ca74;
+  				text-decoration: line-through;
   			}
 
   			.task-status{
