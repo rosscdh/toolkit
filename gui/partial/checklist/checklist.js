@@ -2196,6 +2196,26 @@ angular.module('toolkit-gui')
 	    };
 		/* END COMMENT HANDLING */
 
+		/**
+		 * Calculates the number of closed items
+		 *
+		 * @memberof			ChecklistCtrl
+		 * @method				closedItemsCount
+		 * @private
+		 * @type {Function}
+		 */
+		$scope.closedItemsCount = function() {
+			if($scope.data.matter && $scope.data.matter.items) {
+				var items = $scope.data.matter.items;
+
+				return jQuery.grep(items, function( item ) {
+					return item.is_complete;
+				}).length;
+			} else {
+				return 0;
+			}
+		};
+
 		/*
 		 _____ _ _ _
 		|  ___(_) | |_ ___ _ __ ___
