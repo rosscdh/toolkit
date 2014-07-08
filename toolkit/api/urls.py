@@ -44,7 +44,10 @@ from .views import ItemCommentEndpoint
 from .views import DiscussionEndpoint, DiscussionCommentEndpoint, DiscussionParticipantEndpoint
 from .views import ReviewEndpoint
 from .views import SignatureEndpoint
-from .views import TaskEndpoint, ItemTasksView, ItemTaskView
+from .views import (TaskEndpoint,
+                    ItemTasksView,
+                    ItemTaskView,
+                    ItemTaskReminderView,)
 
 router = routers.SimpleRouter(trailing_slash=False)
 
@@ -123,6 +126,7 @@ urlpatterns = router.urls + patterns('',
     # Task
     #
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/tasks/?$', ItemTasksView.as_view(), name='item_tasks'),
+    url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/tasks/(?P<slug>[\d\w-]+)/remind/?$', ItemTaskReminderView.as_view(), name='item_task_reminder'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/tasks/(?P<slug>[\d\w-]+)/?$', ItemTaskView.as_view(), name='item_task'),
 
     #

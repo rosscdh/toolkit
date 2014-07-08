@@ -2,6 +2,8 @@
 """
 Reminder emails
 """
+from django.shortcuts import get_object_or_404
+
 from rest_framework import exceptions
 from rest_framework.response import Response
 from rest_framework import status as http_status
@@ -16,7 +18,8 @@ import logging
 logger = logging.getLogger('django.request')
 
 
-class BaseReminderMixin(SpecificAttributeMixin, ItemCurrentRevisionView):
+class BaseReminderMixin(SpecificAttributeMixin,
+                        ItemCurrentRevisionView):
     """
     Mixin to ensure that inherited mthods are not implemented at this level
     necessary as we require the ItemCurrentRevisionView.get_object to provide us
@@ -128,3 +131,29 @@ class RemindRequestedRevisionInvitee(BaseReminderMixin):
 rulez_registry.register("can_read", RemindRequestedRevisionInvitee)
 rulez_registry.register("can_edit", RemindRequestedRevisionInvitee)
 rulez_registry.register("can_delete", RemindRequestedRevisionInvitee)
+
+
+class ItemTaskReminderView(BaseReminderMixin):
+    def get_object(self):
+        """
+        Get the current task
+        """
+        self.task = get_object_or_404(self.item.task_set.all(), slug=self.kwargs.get('slug'))
+        return self.task
+
+    def send_reminders(self):
+        return [self.task.send_reminder(from_user=self.request.user)]
+
+    def can_read(self, user):
+        return user in self.matter.participants.all()
+
+    def can_edit(self, user):
+        return user.matter_permissions(matter=self.matter).has_permission(manage_tasks=True) is True
+
+    def can_delete(self, user):
+        return user.matter_permissions(matter=self.matter).has_permission(manage_tasks=True) is True
+
+
+rulez_registry.register("can_read", ItemTaskReminderView)
+rulez_registry.register("can_edit", ItemTaskReminderView)
+rulez_registry.register("can_delete", ItemTaskReminderView)
