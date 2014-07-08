@@ -114,7 +114,8 @@ var MatterItem = React.createClass({
                     <a href={ this.props.detail_url } title={ this.props.name } className="content">
                         <div className="title">
                             <h6>{ this.props.lawyer_or_client_name }</h6>
-                            <h5>{ this.props.name }<small>{ this.props.currentUserRole }</small></h5>
+                            <h5>{ this.props.name }</h5>
+                            { this.props.currentUserRole }
                         </div>
                         <div className="meta clearfix">
                             { this.props.lastupdated_or_complete }
@@ -166,7 +167,7 @@ var Participants = React.createClass({
 
 var CurrentUserRole = React.createClass({
     render: function() {
-    
+
         var role = null;
         for (var i = 0; i < this.props.data.length; i++) {
             if (this.props.data[i].username == UserData.username) {
@@ -174,9 +175,19 @@ var CurrentUserRole = React.createClass({
             }
         }
 
-        return (
-            <div>{ role }</div>
-        )
+
+        if (role === 'owner') {
+            return (
+
+                <span className="fui-star-2" data-toggle="tooltip" data-placement="right" title="You are the Matter Owner"></span>
+                );
+        }
+        else {
+            return (
+                <div/>
+                );
+        }
+
     }
 });
 
@@ -212,7 +223,7 @@ var EditMatterInterface = React.createClass({
 
             return (
                 <a href={edit_url} data-toggle="modal" data-target={modal_target} className="edit btn-sm">
-                    <span className="fui-gear" data-toggle="tooltip" data-placement="left" title="Edit this Matter"></span>
+                    <span className="fui-gear" data-toggle="tooltip" data-placement="left" title="Edit Matter Details"></span>
                 </a>
             );
 
