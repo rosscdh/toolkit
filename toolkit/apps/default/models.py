@@ -6,8 +6,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from .mixins import EmailIsValidatedMixin
 from .managers import CustomUserManager
 
-from toolkit.core.item.models import Item
-
 from jsonfield import JSONField
 from sorl.thumbnail.images import ImageFile
 from threadedcomments.models import ThreadedComment
@@ -126,6 +124,7 @@ class UserProfile(EmailIsValidatedMixin, models.Model):
 
     def get_open_requests_count(self):
         # my_requests returns a list, so we have to use len()
+        from toolkit.core.item.models import Item
         return len(Item.objects.my_requests(self.user))
 
     @property

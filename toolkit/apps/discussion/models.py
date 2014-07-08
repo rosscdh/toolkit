@@ -11,6 +11,7 @@ from uuidfield import UUIDField
 
 from toolkit.apps.discussion.mailers import DiscussionAddedUserEmail, DiscussionCommentedEmail
 from toolkit.apps.workspace.models import Workspace
+from toolkit.core.item.models import Item
 
 
 class DiscussionComment(ThreadedComment, models.Model):
@@ -42,6 +43,15 @@ class DiscussionComment(ThreadedComment, models.Model):
     archive.alters_data = True
 
     @property
+    def item(self):
+        return self.content_object
+
+    @item.setter
+    def item(self, value):
+        self.content_type_id = ContentType.objects.get_for_model(Item).pk
+        self.object_pk = value.pk
+
+    @property
     def matter(self):
         return self.content_object
 
@@ -65,11 +75,13 @@ class DiscussionComment(ThreadedComment, models.Model):
         mailer.process(**kwargs)
 
     def send_commented_email(self, **kwargs):
-        kwargs.update(self.get_email_kwargs())
-        recipients = self.parent.participants.all().exclude(pk=self.user.pk)
+        pass
+        # kwargs.update(self.get_email_kwargs())
+        # recipients = self.parent.participants.all().exclude(pk=self.user.pk)
+        # recipients = []
 
-        mailer = DiscussionCommentedEmail(recipients=[(u.get_full_name(), u.email) for u in recipients])
-        mailer.process(**kwargs)
+        # mailer = DiscussionCommentedEmail(recipients=[(u.get_full_name(), u.email) for u in recipients])
+        # mailer.process(**kwargs)
 
     def get_email_kwargs(self):
         return {
