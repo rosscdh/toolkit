@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 
-from rulez import registry as rulez_registry
-
 from .mixins import SendReminderEmailMixin
+
+from rulez import registry as rulez_registry
 
 from jsonfield import JSONField
 from uuidfield import UUIDField
@@ -35,3 +35,20 @@ class Task(SendReminderEmailMixin,
 
     def get_absolute_url(self):
         return self.item.get_absolute_url()
+
+    def can_read(self, user):
+        return user in self.item.matter.participants.all()
+
+    def can_edit(self, user):
+        return self.pk is None  \
+               or user == self.created_by  \
+               or user.matter_permissions(matter=self.item.matter).has_permission(manage_items=True) is True
+
+    def can_delete(self, user):
+        return user == self.created_by  \
+               or user.matter_permissions(matter=self.item.matter).has_permission(manage_items=True) is True
+
+
+rulez_registry.register("can_read", Task)
+rulez_registry.register("can_edit", Task)
+rulez_registry.register("can_delete", Task)

@@ -54,7 +54,6 @@ class ItemTasksView(GetTaskMixin,
         return {'request': self.request}
 
     def create(self, request, **kwargs):
-        
         request.DATA.update({
             'item': ItemSerializer(self.get_item()).data.get('url'),
             'created_by': request.user.username,
@@ -65,10 +64,11 @@ class ItemTasksView(GetTaskMixin,
         return user in self.matter.participants.all()
 
     def can_edit(self, user):
-        return user.matter_permissions(matter=self.matter).has_permission(manage_items=True) is True
+        return user in self.matter.participants.all()  \
+               or user.matter_permissions(matter=self.item.matter).has_permission(manage_items=True) is True
 
     def can_delete(self, user):
-        return user.matter_permissions(matter=self.matter).has_permission(manage_items=True) is True
+        return False  # do not support delete
 
 
 rulez_registry.register("can_read", ItemTasksView)
@@ -94,10 +94,13 @@ class ItemTaskView(GetTaskMixin,
         return user in self.matter.participants.all()
 
     def can_edit(self, user):
-        return user.matter_permissions(matter=self.matter).has_permission(manage_items=True) is True
+        return hasattr(self, 'item') is False  \
+               or user == self.created_by  \
+               or user.matter_permissions(matter=self.item.matter).has_permission(manage_items=True) is True
 
     def can_delete(self, user):
-        return user.matter_permissions(matter=self.matter).has_permission(manage_items=True) is True
+        return user == self.created_by  \
+               or user.matter_permissions(matter=self.item.matter).has_permission(manage_items=True) is True
 
 
 rulez_registry.register("can_read", ItemTaskView)

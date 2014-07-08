@@ -4,7 +4,6 @@ from django.core import mail
 from rest_framework.reverse import reverse
 
 from . import BaseEndpointTest
-#from ...serializers import TaskSerializer
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 
 from model_mommy import mommy
@@ -24,7 +23,7 @@ class BaseTaskSetup(BaseEndpointTest):
         self.task = mommy.make('task.Task', item=self.item, created_by=self.lawyer, assigned_to=[self.user], name='Test Task No. 1')
 
 
-class TaskTest(BaseTaskSetup):
+class TaskListTest(BaseTaskSetup):
     """
     /matters/:matter_slug/items/:item_slug/tasks (GET,POST)
         Allow the [lawyer,customer] user to list and create items
@@ -34,7 +33,7 @@ class TaskTest(BaseTaskSetup):
         return reverse('item_tasks', kwargs={'matter_slug': self.workspace.slug, 'item_slug': self.item.slug})
 
     def test_endpoint_name(self):
-        self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/items/%s/tasks' % self.item.slug)
+        self.assertEqual(self.endpoint, '/api/v1/matters/%s/items/%s/tasks' % (self.matter.slug, self.item.slug))
 
     def test_participant_can_read(self):
         self.client.login(username=self.user.username, password=self.password)
@@ -46,12 +45,115 @@ class TaskTest(BaseTaskSetup):
 
         self.assertEqual(len(json_data['results']), 1)
 
+
+    def test_participant_create(self):
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        resp = self.client.post(self.endpoint, {
+            'name': 'My first task',
+            'description': 'do something to get the elephant to stand on a cup with a mouse on it',
+        })
+        self.assertEqual(resp.status_code, 201)  # created
+
+        json_data = json.loads(resp.content)
+
+        self.assertEqual(json_data.keys(), [u'date_due', u'name', u'date_modified', u'url', u'created_by', u'is_complete', u'item', u'assigned_to', u'date_created', u'data', u'slug', u'description'])
+        self.assertEqual(json_data.get('item'), u'http://testserver/api/v1/items/%s' % self.item.slug)
+        self.assertEqual(json_data.get('created_by'), 'test-lawyer')
+
+    # def test_participants_can_create_own_but_not_edit_others(self):
+    #     self.client.login(username=self.lawyer.username, password=self.password)
+
+    #     resp = self.client.post(self.endpoint, {
+    #         'name': 'My second task',
+    #         'description': 'clean up after the elephant',
+    #     })
+    #     self.assertEqual(resp.status_code, 201)  # created
+
+    #     self.client.login(username=self.user.username, password=self.password)
+
+    #     resp = self.client.patch(self.endpoint, {
+    #         'name': 'My second task',
+    #         'description': 'clean up after the elephant',
+    #     })
+    #     self.assertEqual(resp.status_code, 201)  # created
+
+
     def test_non_participant_cant_read(self):
         self.client.login(username=self.forbidden_user.username, password=self.password)
 
         resp = self.client.get(self.endpoint)
         self.assertEqual(resp.status_code, 403)  # forbidden
 
+
+class TaskDetailTest(BaseTaskSetup):
+    """
+    /matters/:matter_slug/items/:item_slug/tasks/:task_slug (GET,DELETE,PATCH)
+        Allow the [lawyer,customer] user to list and create items
+    """
+    @property
+    def endpoint(self):
+        return reverse('item_task', kwargs={'matter_slug': self.workspace.slug, 'item_slug': self.item.slug, 'slug': self.task.slug})
+
+    def test_endpoint_name(self):
+        self.assertEqual(self.endpoint, '/api/v1/matters/%s/items/%s/tasks/%s' % (self.matter.slug, self.item.slug, self.task.slug))
+
+    def test_participant_can_read(self):
+        self.client.login(username=self.user.username, password=self.password)
+
+        resp = self.client.get(self.endpoint)
+        self.assertEqual(resp.status_code, 200)  # ok list
+
+        json_data = json.loads(resp.content)
+
+        self.assertEqual(type(json_data), dict)
+        self.assertEqual(json_data.keys(), [u'date_due', u'name', u'date_modified', u'url', u'created_by', u'is_complete', u'item', u'assigned_to', u'date_created', u'data', u'slug', u'description'])
+        self.assertEqual(json_data.get('item'), u'http://testserver/api/v1/items/%s' % self.item.slug)
+        self.assertEqual(json_data.get('created_by'), 'test-lawyer')
+
+
+    def test_participant_update_own(self):
+        self.client.login(username=self.user.username, password=self.password)
+
+        # CREATE my own task for the standard user
+        create_endpoint = reverse('item_tasks', kwargs={'matter_slug': self.workspace.slug, 'item_slug': self.item.slug})
+
+        resp = self.client.post(create_endpoint, {
+            'name': 'User creates own task',
+            'description': 'A standard client user can create tasks',
+        })
+        self.assertEqual(resp.status_code, 201)  # created
+        created_json_data = json.loads(resp.content)
+
+        # see if they can patch their own items
+        endpoint = reverse('item_task', kwargs={'matter_slug': self.workspace.slug, 'item_slug': self.item.slug, 'slug': created_json_data.get('slug')})
+
+        resp = self.client.patch(endpoint, json.dumps({
+            'name': 'Update to My first task',
+        }), content_type='application/json; charset=utf-8')
+
+        self.assertEqual(resp.status_code, 200)  # ok
+
+        json_data = json.loads(resp.content)
+
+        self.assertEqual(json_data.keys(), [u'date_due', u'name', u'date_modified', u'url', u'created_by', u'is_complete', u'item', u'assigned_to', u'date_created', u'data', u'slug', u'description'])
+        self.assertEqual(json_data.get('created_by'), 'test-customer')
+
+    def test_participant_cant_edit_other_participants_tasks(self):
+        self.client.login(username=self.user.username, password=self.password)
+
+        resp = self.client.patch(self.endpoint, json.dumps({
+            'name': 'Update to My first task',
+        }), content_type='application/json; charset=utf-8')
+
+        # Cannot update, as this task is owned by the lawyer
+        self.assertEqual(resp.status_code, 403)  # forbidden
+
+    def test_non_participant_cant_read(self):
+        self.client.login(username=self.forbidden_user.username, password=self.password)
+
+        resp = self.client.get(self.endpoint)
+        self.assertEqual(resp.status_code, 403)  # forbidden
 
 
 class TaskReminderTest(BaseTaskSetup):
