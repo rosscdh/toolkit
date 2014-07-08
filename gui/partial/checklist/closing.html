@@ -7,14 +7,14 @@
 		</div>
 		<div class="row document-view-tools">
 			<div class="col-sm-12 text-right closing-header">
-				<button type="button" class="btn btn-default" ng-click="exportMatter()" ng-disabled="downloadingDocuments" ng-show="closedItemsCount()>0">Download All <i class="fa fa-spinner fa-spin" ng-if="downloadingDocuments"></i></button>
+				<button type="button" class="btn btn-default" ng-click="exportMatter()" ng-disabled="downloadingDocuments" ng-if="closedItemsCount()>0">Download All <i class="fa fa-spinner fa-spin" ng-if="downloadingDocuments"></i></button>
 			</div>
 		</div>
 		<div class="row full">
 
 			<div class="col-sm-4 checklist-col full" id="checklist-items" ng-class="{ 'zero': data.page!=='checklist' }">
 				<!-- start: checklist //-->
-				<span class="categories-list">
+				<span class="categories-list" ng-if="closedItemsCount()>0">
 					<div ng-repeat="cat in data.categories">
 						<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-header-lite.html'"></span>
 						<!-- Checklist //-->
@@ -22,17 +22,14 @@
 					</div>
 				</span>
 				<!-- end: checklist //-->
+				<span class="categories-list" ng-if="closedItemsCount()==0">
+					<p class="ppad">Currently there are no closed items.</p>
+					<p><a href="#/checklist">Return to the checklist</a></p>
+				</span>
 			</div>
 			<div class="col-sm-8 item spa full" id="checklist-detail-container" ng-class="{ 'zero': data.page==='checklist' }">
 				<div class="row full document-container" ng-if="data.selectedItem.latest_revision">
 					<iframe ng-src="{{data.selectedItem.latest_revision.user_review.url}}" class="fit-container" iframe-events></iframe>
-					<!--<iframe ng-src="{{data.selectedItem.latest_revision.user_download_url}}" class="fit-container"></iframe>//-->
-					<!--<iframe src="http://docs.google.com/gview?url={{data.selectedItem.latest_revision.user_review.url|escape}}&embedded=true" class="fit-container"></iframe>//-->
-					<!--
-					<object data="{{data.selectedItem.latest_revision.user_download_url}}" type="application/pdf">
-						<embed ng-src="{{data.selectedItem.latest_revision.user_download_url}}" type="application/pdf" />
-					</object>
-					//-->
 				</div>
 			</div>
 		</div>
