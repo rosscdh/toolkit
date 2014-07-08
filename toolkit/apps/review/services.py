@@ -83,6 +83,9 @@ class CrocodocLoaderService(object):
             # so we have a file, now lets upload it
             self.service.generate()
 
+    def download_pdf_file(self):
+        return self.service.download_pdf_file()
+
     def process(self):
         # @TODO this should ideally be set in the service on init
         # and session automatically updated

@@ -1,6 +1,11 @@
 Deployment actions by branch
 ----------------------------
 
+[feature/closed-items-view]
+
+1. pip install -e git+https://github.com/rosscdh/django-crocodoc.git#egg=django-crocodoc -U  # upgrade the crocodoc lib
+
+
 --------------------------------------------------------------------------------
 ** DEPLOYED 2 July 2014
 --------------------------------------------------------------------------------

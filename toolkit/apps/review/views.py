@@ -85,22 +85,32 @@ class ReviewRevisionView(DetailView):
 
         split_file_name = os.path.split(file_name)[-1]
         filename_no_ext, ext = os.path.splitext(split_file_name)
-        ext = 'pdf'
 
-        try:
-            #
-            # Try read it from the local file first
-            #
-            resp = HttpResponse(self.object.read_local_file(), content_type='application/{ext}'.format(ext=ext))
+        if ext not in ['pdf']:
+            # download the PDF from crocodoc
+            download_service = CrocodocLoaderService(user=self.request.user, reviewdocument=self.object)
+            file_data = download_service.download_pdf_file()
 
-        except:
+        else:
             #
-            # If we dont have it locally then read it from s3
+            # Is a standard pdf object
             #
-            resp = HttpResponse(self.object.document.executed_file.read(), content_type='application/{ext}'.format(ext=ext))
+            try:
+                #
+                # Try read it from the local file first
+                #
+                file_data = self.object.read_local_file()
+
+            except:
+                #
+                # If we dont have it locally then read it from s3
+                #
+                file_data = self.object.document.executed_file.read()
+
+        resp = HttpResponse(file_data, content_type='application/pdf')
 
         if as_attachment is True:
-            resp['Content-Disposition'] = 'attachment; filename="{file_name}.{ext}"'.format(file_name=filename_no_ext, ext=ext)
+            resp['Content-Disposition'] = 'attachment; filename="{file_name}.pdf"'.format(file_name=filename_no_ext)
 
         return resp
 
@@ -119,7 +129,12 @@ class ReviewRevisionView(DetailView):
         return kwargs
 
     def render_to_response(self, context, **response_kwargs):
-        if self.object.document.is_executed is True:
+        """
+        If the item is complete or the document is executed
+        then show our local (s3) version
+        """
+        if self.object.document.item.is_complete is True  \
+           or self.object.document.is_executed is True:
             # as the file has been execued we no longer use crocodoc
             return self.get_file_object_contents_response(as_attachment=False)
         else:
