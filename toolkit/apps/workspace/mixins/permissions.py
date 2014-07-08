@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.db.models.signals import m2m_changed
 
 
 class MatterParticipantPermissionMixin(object):
@@ -19,10 +20,8 @@ class MatterParticipantPermissionMixin(object):
     # of a custom through model for participants instead of the generic relation
     # necessary for permissions
     #
-    def add_participant(self, user, **kwargs):
+    def add_participant(self, user, role=None, **kwargs):
         update_fields = []
-
-        role = kwargs.pop('role', None)  # default to thirdparty
 
         if role is not None:
             # if an invalid role is passed in then except
@@ -53,12 +52,22 @@ class MatterParticipantPermissionMixin(object):
         # Allow override of permissions
         if kwargs:
             permissions = self.permissions_model.clean_permissions(**kwargs)
-            perm.permissions = permissions
-            update_fields.append('data')
+
+        else:
+            # no specific permissions were passed in
+            # so get the roles default permissions
+            permissions = perm.default_permissions()
+
+        perm.permissions = permissions
+        update_fields.append('data')
 
         if update_fields:
             perm.save(update_fields=update_fields)
-
+            m2m_changed.send(sender=self.__class__.participants.through,
+                             instance=self,
+                             action='post_add',
+                             model=perm.__class__,
+                             pk_set=[perm.pk])
         return perm
 
     def remove_participant(self, user):

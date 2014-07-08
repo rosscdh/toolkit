@@ -54,5 +54,44 @@ class PusherPublisherService(object):
                 self.data.update({
                     'channel': channel,
                 })
-
                 self.pusher[channel].trigger(self.event, self.data)
+
+
+class RealTimeMatterEvent(object):
+    """
+    When an item is updated (via api) we issue an event to pusher
+
+    ```
+    {"event": "update|create|delete", "model": "matter|item|revision", "id": ":slug|:uuid|:uuid", "from_id": ":username"}
+
+    NB id from_id is null then it should update for all
+    ```
+    """
+    service = PusherPublisherService
+    event_names = ('create', 'update', 'delete',)
+
+    def __init__(self, matter):
+        self.channel = matter.slug
+
+    def process(self, event, obj, ident, from_ident=None, **kwargs):
+        assert event in self.event_names, 'event must be in %s' % self.event_names
+
+        model = obj.__class__.__name__.lower()
+
+        kwargs.update({
+            'is_global': False  # affects all currently viewing users of a matter
+        })
+
+        # if we have no from_ident it means its a global level event like all user signed
+        if from_ident is None:
+            kwargs.update({
+                'is_global': True
+            })
+
+        service = self.service(channel=self.channel,
+                               event=event,
+                               model=model,
+                               id=str(ident),
+                               from_id=from_ident,
+                               **kwargs)
+        service.process()

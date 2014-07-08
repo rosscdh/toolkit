@@ -1,4 +1,4 @@
- <div ng-show="data.selectedItem" ng-file-drop="onFileDropped($files, data.selectedItem);">
+ <div ng-show="data.selectedItem" ng-file-drop="onFileDropped($files, data.selectedItem);" class="ng-cloak">
     <h3 ng-show="data.usdata.current.permissions.manage_items">
         <a href="javascript:;" ng-click="data.editItemTitle=data.selectedItem.name;data.showEditItemTitleForm=!data.showEditItemTitleForm;focus('eventEditItemTitle')"
                 ng-hide="data.showEditItemTitleForm">
@@ -47,25 +47,27 @@
 
     <!-- Begin option toolbar -->
     <div class="add-new clearfix">
-        <div class="btn-group" ng-show="data.usdata.current.permissions.manage_items">
+        <div class="btn-group space-5" ng-show="data.usdata.current.permissions.manage_items">
             <span class="btn btn-sm btn-info btn-file btn-embossed btn-add">
                 <span class="fui-upload"></span> Upload File
-                <input type="file" ng-file-select="onFileDropped($files, data.selectedItem);" multiple />
+                <input type="file" ng-file-select="onFileDropped($files, data.selectedItem);" clear-on-click multiple="multiple" />
             </span>
             <button class="btn btn-info btn-sm btn-embossed dropdown-toggle" data-toggle="dropdown">
-            <span class="caret"></span>
+                <span class="caret"></span>
             </button>
             <span class="dropdown-arrow dropdown-arrow-inverse dropdown-small"></span>
             <ul class="dropdown-menu dropdown-inverse">
-                <li><a href="javascript:;" filepicker apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)" extensions=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx">From cloud service</a></li>
-                <li><a href="javascript:;" data-toggle="modal" data-target="#requestFileModal" ng-click="requestRevision(data.selectedItem)">Request File</a></li>
+                <li>
+                    <span class="btn btn-sm btn-link btn-file btn-block">
+                        From desktop
+                        <input type="file" ng-file-select="onFileDropped($files, data.selectedItem);" clear-on-click multiple="multiple" />
+                    </span>
+                </li>
+                <li><a href="javascript:;" filepicker="filepicker" apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)" extensions=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx">From cloud service</a></li>
             </ul>
-        </div>
-        <button class="btn btn-sm btn-info btn-file btn-embossed btn-add" data-toggle="modal" data-target="#requestFileModal" ng-click="requestRevision(data.selectedItem)">
+        </div><button class="btn btn-sm btn-info btn-file btn-embossed btn-add space-5" data-toggle="modal" data-target="#requestFileModal" ng-click="requestRevision(data.selectedItem)">
             Request File
-        </button>
-
-        <div class="btn-group" ng-show="data.usdata.current.permissions.manage_items">
+        </button><div class="btn-group" ng-show="data.usdata.current.permissions.manage_items">
             <a href="javascript:;" class="btn btn-sm btn-silver btn-embossed dropdown-toggle" data-toggle="dropdown">Options</a>
             <ul class="dropdown-menu dropdown-small dropdown-inverse" >
                 <li><a href="javascript:;" ng-click="toggleDueDateCalendar( data.selectedItem );saveSelectedItem();data.showItemDetailsOptions=!data.showItemDetailsOptions;">
@@ -228,7 +230,8 @@
 
                 </div>
                 <div class="tools status-{{ data.selectedItem.latest_revision.status }}">
-                    <a href="javascript:;" class="btn btn-link btn-xs" ng-click="showRevisionDocument(data.selectedItem.latest_revision)">View</a>  <a href="{{ data.selectedItem.latest_revision.user_download_url }}" class="btn btn-link btn-xs" target="_blank">Save</a>
+                    <a href="javascript:;" class="btn btn-link btn-xs" ng-click="showRevisionDocument(data.selectedItem.latest_revision)">View</a>
+                    <a href="{{ data.selectedItem.latest_revision.user_download_url }}" class="btn btn-link btn-xs" target="_blank">Save</a>
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="requestReview(data.selectedItem.latest_revision)"
                        ng-show="data.usdata.current.permissions.manage_document_reviews">Request Review</a>
                     <a href="javascript:;" class="btn btn-link btn-xs"
@@ -245,7 +248,7 @@
                     Remind
                     </a>
 
-                    <a class="btn btn-link btn-xs" href="javascript:;" ng-click="deleteRevisionReviewRequest(data.selectedItem, rev)"
+                    <a class="btn btn-link btn-xs" href="javascript:;" ng-click="deleteRevisionReviewRequest(data.selectedItem)"
                                ng-hide="rev.is_complete||!data.usdata.current.permissions.manage_document_reviews">Cancel Review</a>
 
                 </div>
@@ -316,7 +319,6 @@
                                     <span class="fui-check"></span> Complete
                                 </button>
                             </span>
-
 
                             <span ng-show="signer.signed_at">
                                 {{ signer.initials }} signed <span ng-bind="signer.signed_at | timeago"></span>

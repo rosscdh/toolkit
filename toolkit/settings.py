@@ -30,6 +30,8 @@ DEFAULT_FROM = (
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'lgi%*e=%s@y3-jos^uydhc5gz80m9ts&9io5xh6myf+$fuy7+n'
 
+URL_ENCODE_SECRET_KEY = 'k5aa6b5x6qo#9p+lx^k^_zp^ay30ksokl7z%xup4*y3=f4rdgk'
+
 # List of callables that know how to import templates from various sources.
 TEMPLATE_DIRS = (
     os.path.join(SITE_ROOT, 'templates'),
@@ -67,7 +69,7 @@ STATICFILES_FINDERS = (
     'pipeline.finders.FileSystemFinder',
     'pipeline.finders.AppDirectoriesFinder',
     'pipeline.finders.PipelineFinder',
-    'pipeline.finders.CachedFileFinder',
+    #'pipeline.finders.CachedFileFinder',  # Causes issue with .less files https://github.com/cyberdelia/django-pipeline/issues/293
 )
 
 
@@ -102,6 +104,7 @@ PROJECT_APPS = (
     'toolkit.apps.api',
     'toolkit.apps.default',
     'toolkit.apps.dash',
+    'toolkit.apps.discussion',
     'toolkit.apps.matter',
     'toolkit.apps.me',
     'toolkit.apps.request',
@@ -172,6 +175,10 @@ HELPER_APPS = (
     'south',
     # jenkins
     'django_jenkins',
+
+    # threadedcomments app needs to be above the django.contrib.comments app
+    'threadedcomments',
+    'django.contrib.comments'
 )
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + HELPER_APPS
@@ -200,7 +207,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.messages.context_processors.messages',
     'django.core.context_processors.request',
     'toolkit.context_processors.EXPOSED_GLOBALS',
+    'toolkit.context_processors.FIRSTSEEN',
     'toolkit.context_processors.LAYOUT',
+    'toolkit.context_processors.REQUESTS_COUNT',
     'toolkit.context_processors.WORKSPACES',
 )
 
@@ -256,6 +265,8 @@ AUTHENTICATION_BACKENDS = (
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 TEMPLATED_EMAIL_BACKEND = 'templated_email.backends.vanilla_django'
+
+COMMENTS_APP = 'toolkit.apps.discussion'
 
 AWS_STORAGE_BUCKET_NAME = AWS_FILESTORE_BUCKET = 'dev-toolkit-lawpal-com'
 
@@ -315,6 +326,8 @@ PIPELINE_CSS = {
             'fonts/pe-icon-7-stroke/css/pe-icon-7-stroke.css',
             'css/application.css',
             'css/animate.css',
+            'less/introjs-custom.less'
+            'css/font-awesome.min.css'
         ),
         'output_filename': 'css/core.css',
         'extra_context': {
@@ -353,7 +366,8 @@ PIPELINE_JS = {
     }
 }
 PIPELINE_COMPILERS = [
-  'react.utils.pipeline.JSXCompiler',
+    'pipeline.compilers.less.LessCompiler',
+    'react.utils.pipeline.JSXCompiler',
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'

@@ -2,6 +2,34 @@ Deployment actions by branch
 ----------------------------
 
 --------------------------------------------------------------------------------
+** DEPLOYED 2 July 2014
+--------------------------------------------------------------------------------
+
+[request-count-migration]
+
+1. ./manage.py migrate default 0006
+
+
+--------------------------------------------------------------------------------
+** DEPLOYED 30 June 2014
+--------------------------------------------------------------------------------
+
+[feature/matter-discussions]
+
+1. pip install django-threadedcomments==0.9.0
+2. ./manage.py syncdb --migrate
+
+
+--------------------------------------------------------------------------------
+** DEPLOYED 26 June 2014
+--------------------------------------------------------------------------------
+
+[fix/matter-db-load-improvement]
+
+1. ./manage.py migrate workspace
+
+
+--------------------------------------------------------------------------------
 ** DEPLOYED 24 June 2014 - allow owners to assign granular permissions to matters
 *NOTES* had to ensure that existing flows are not iterrupted but setting clients by default
 to have manage_items permission; all new matters do not have this permission and if the user
@@ -25,10 +53,10 @@ is updated in the matter they will lose the permission.
 
 1. pip install -e git+https://github.com/rosscdh/django-authy.git#egg=django-authy -U
 
-
 [feature/signing-progress-indicator]
 
 1. pip install -e git+https://github.com/rosscdh/django-hello_sign.git#egg=django-hello_sign -U # upgrade the HelloSign object
+
 
 --------------------------------------------------------------------------------
 ** DEPLOYED 10 June 2014

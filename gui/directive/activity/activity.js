@@ -26,42 +26,42 @@ angular.module('toolkit-gui').directive('activity', ['$compile', '$log', '$sce',
 					'comment': ''
 				};
 
-				/**
-				 * Delete the given comment object
-				 *
-				 * @memberof            activity
-				 * @private
-				 * @type {Object}
-				 */
-				$scope.deleteComment = function () {
-					//TODO itemSlug shouldnt be necessary
-					commentService.delete($scope.matterSlug, $scope.itemSlug, $scope.ngModel.id).then(
-						function success() {
-							$scope.isDeleted = true;
-						},
-						function error(/*err*/) {
-							toaster.pop('error', 'Error!', 'Unable to delete comment.', 5000);
-						}
-					);
-				};
+                /**
+                 * Delete the given comment object
+                 *
+                 * @memberof            activity
+                 * @private
+                 * @type {Object}
+                 */
+                $scope.deleteComment = function () {
+                    //TODO itemSlug shouldnt be necessary
+                    commentService.delete($scope.matterSlug, $scope.itemSlug, $scope.ngModel.id).then(
+                        function success() {
+                            $scope.isDeleted = true;
+                        },
+                        function error(/*err*/) {
+                            toaster.pop('error', 'Error!', 'Unable to delete comment.', 5000);
+                        }
+                    );
+                };
 
-				/**
-				 * Update the given comment object
-				 *
-				 * @memberof            activity
-				 * @private
-				 * @type {Object}
-				 */
-				$scope.saveComment = function () {
-					$scope.data.comment = genericFunctions.cleanHTML($scope.data.edit_comment);
-					commentService.update($scope.matterSlug, $scope.itemSlug, $scope.ngModel.id, $scope.data.comment).then(
-						function success() {
-						},
-						function error(/*err*/) {
-							toaster.pop('error', 'Error!', 'Unable to update comment.', 5000);
-						}
-					);
-				};
+                /**
+                 * Update the given comment object
+                 *
+                 * @memberof            activity
+                 * @private
+                 * @type {Object}
+                 */
+                $scope.saveComment = function () {
+                    $scope.data.comment = genericFunctions.cleanHTML($scope.data.edit_comment);
+                    commentService.update($scope.matterSlug, $scope.itemSlug, $scope.ngModel.id, $scope.data.comment).then(
+                        function success() {
+                        },
+                        function error(/*err*/) {
+                            toaster.pop('error', 'Error!', 'Unable to update comment.', 5000);
+                        }
+                    );
+                };
 
 				/**
 				 * Delete the given comment object

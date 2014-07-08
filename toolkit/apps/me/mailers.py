@@ -25,7 +25,7 @@ class ValidateEmailMailer(BaseMailerService):
     email_template = 'validate_email'
 
     def process(self, user, **kwargs):
-        token = signing.dumps(user.pk, salt=settings.SECRET_KEY)
+        token = signing.dumps(user.pk, salt=settings.URL_ENCODE_SECRET_KEY)
 
         action_url = ABSOLUTE_BASE_URL(reverse('me:confirm-email-address', kwargs={'token': token}))
 
@@ -45,7 +45,7 @@ class ValidateEmailChangeMailer(BaseMailerService):
     email_template = 'validate_email_change'
 
     def process(self, user, **kwargs):
-        token = signing.dumps(user.pk, salt=settings.SECRET_KEY)
+        token = signing.dumps(user.pk, salt=settings.URL_ENCODE_SECRET_KEY)
 
         action_url = ABSOLUTE_BASE_URL(reverse('me:confirm-email-change', kwargs={'token': token}))
 
@@ -65,7 +65,7 @@ class ValidatePasswordChangeMailer(BaseMailerService):
     email_template = 'validate_password_change'
 
     def process(self, user, **kwargs):
-        token = signing.dumps(user.pk, salt=settings.SECRET_KEY)
+        token = signing.dumps(user.pk, salt=settings.URL_ENCODE_SECRET_KEY)
 
         action_url = ABSOLUTE_BASE_URL(reverse('me:confirm-password-change', kwargs={'token': token}))
 

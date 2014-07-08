@@ -88,10 +88,6 @@ class Revision(IsDeletedMixin,
     def __unicode__(self):
         return 'Revision %s' % (self.slug)
 
-    # override for FileExistsLocallyMixin:
-    def get_document(self):
-        return self.executed_file
-
     @property
     def revisions(self):
         return self.item.revision_set.all()
@@ -111,6 +107,10 @@ class Revision(IsDeletedMixin,
             #
             sign_document.signers = self.signers.all()
         return sign_document
+
+    # override for FileExistsLocallyMixin:
+    def get_document(self):
+        return self.executed_file
 
     def get_absolute_url(self):
         """
@@ -186,4 +186,6 @@ from .signals import (ensure_revision_slug,
                       ensure_revision_item_latest_revision_is_current,
                       on_reviewer_add,
                       on_reviewer_remove,
+                      on_signatory_add,
+                      on_signatory_remove,
                       on_upload_set_item_is_requested_false)

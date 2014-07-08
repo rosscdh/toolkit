@@ -10,7 +10,7 @@
 				<!-- start: LAWYER checklist //-->
 				<span ng-show="data.usdata.current.permissions.manage_items">
 					<div>
-						<div ng-repeat="cat in data.categories | filter: {name:'!'}">
+						<div ng-repeat="cat in data.categories | filter: {name:'!'}" id="step1">
 							<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-header.html'"></span>
 							<!-- Checklist //-->
 							<span ng-include="'/static/ng/partial/checklist/includes/checklist-line-item-lawyer.html'"></span>
@@ -67,4 +67,7 @@
 <div intercom user-id="{{ data.usdata.current.id }}" user-email="{{ data.usdata.current.email }}"></div>
 <toaster-container toaster-options="{'position-class': 'toast-bottom-right'}"></toaster-container>
 <div mentions-container participants="data.matter.participants" curr-user="data.usdata.current"></div>
+<button type="button" class="btn btn-primary refresh-less-button bounceInLeft" ng-click="showIntro()" ng-disabled="reloadingLess" ng-if="DEBUG_MODE">
+	Less&nbsp;&nbsp;<i class="fa fa-refresh"></i> 
+</button>
 <!--<input type="filepicker" data-fp-apikey="A4Ly2eCpkR72XZVBKwJ06z" data-fp-mimetypes="*/*" data-fp-container="modal" onchange="alert(event.fpfile.url)">//-->

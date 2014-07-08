@@ -18,6 +18,7 @@ debug = True
 
 env.local_project_path = os.path.dirname(os.path.realpath(__file__))
 env.gui_dist_path = '%s/gui/dist' % env.local_project_path
+env.uwsgi_app_path = os.path.dirname(os.path.realpath(__file__)) + '/../lawpal-chef/uwsgi-app/files'
 env.environment_settings_path = os.path.dirname(os.path.realpath(__file__)) + '/../lawpal-chef/uwsgi-app/files/default/conf'
 # default to local override in env
 env.remote_project_path = env.local_project_path
@@ -135,7 +136,7 @@ def virtualenv(cmd, **kwargs):
 
 @task
 def pip_install():
-    virtualenv('pip install django-permission')
+    virtualenv('pip install django-threadedcomments==0.9.0')
 
 @task
 def cron():
@@ -555,8 +556,6 @@ def fixtures():
 
 @task
 def assets():
-    # upload the gui
-    upload_gui()
     # collect static components
     virtualenv('python %s%s/manage.py collectstatic --noinput' % (env.remote_project_path, env.project,))
 
@@ -646,8 +645,11 @@ def prompt_build_gui():
 def gui_clean():
     local('rm -Rf gui/bower_components')
     local('rm -Rf gui/node_modules')
+    local('rm -Rf gui/temp')
+    local('rm -Rf gui/dist')
     local('cd gui;npm install')
     local('cd gui;bower install')
+    build_gui_dist()
 
 
 @task
@@ -750,7 +752,7 @@ def deploy(is_predeploy='False',full='False',db='False',search='False'):
     db = db.lower() in env.truthy
     search = search.lower() in env.truthy
 
-    prompt_build_gui()
+    prompt_build_gui() # rebuilds the gui
     run_tests()
     diff()
     git_set_tag()
@@ -764,6 +766,8 @@ def deploy(is_predeploy='False',full='False',db='False',search='False'):
         requirements()
 
     relink()
+    # upload the gui
+    upload_gui()
     assets()
     clean_start()
     celery_restart()

@@ -67,9 +67,9 @@ class MatterExportTest(BaseScenarios, TestCase):
                                                    'created_at': self.service.created_at.isoformat()})
 
     def test_token(self):
-        encrypted_token = signing.dumps(self.service.token_data, salt=settings.SECRET_KEY)
+        encrypted_token = signing.dumps(self.service.token_data, salt=settings.URL_ENCODE_SECRET_KEY)
         self.assertEqual(self.service.token, encrypted_token)
-        decrypted_token = signing.loads(self.service.token, salt=settings.SECRET_KEY)
+        decrypted_token = signing.loads(self.service.token, salt=settings.URL_ENCODE_SECRET_KEY)
         self.assertEqual(self.service.token_data, decrypted_token)
 
     def test_token_unique(self):
@@ -113,7 +113,9 @@ class MatterExportTest(BaseScenarios, TestCase):
 
     def test_send_email(self):
         self.assertEqual(len(mail.outbox), 0)
+
         self.service.send_email(token=self.service.token)
+
         self.assertTrue(len(mail.outbox), 1)
         email = mail.outbox[0]
         self.assertEqual(email.subject, u'Your Matter export has completed')

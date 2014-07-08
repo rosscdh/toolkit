@@ -12,12 +12,27 @@
   }
 
   .lawyer {
-    background-color: #5cc7da;
+    background-color: @lp-primary;
+    color: white;
+    text-transform: uppercase;
   }
 
   .customer {
-    background-color: #6ebc70;
+    background-color: @lp-secondary;
+    color: white;
+    text-transform: uppercase;
   }
+}
+
+
+.first {
+  border-bottom: 2px solid  #ececec;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+
+}
+.list-heading{
+  font-weight: bold;
 }
 
 .details {
@@ -144,6 +159,7 @@
         padding: 8px;
         font-size: 12px;
         border-radius: 40px;
+        margin-right: 4px;
       }
 
       .client {
@@ -152,10 +168,33 @@
 
       }
 
+      small.client {
+        background-color: inherit;
+        color: @lp-secondary;
+      }
+
+      .colleague{
+        background-color: @lp-primary;
+        color: white;
+      }
+
+      small.colleague{
+        color:  @lp-primary;
+        background-color: inherit;
+      }
+
+
+
       .owner {
         background-color: @lp-blue;
         color: white;
 
+
+      }
+
+      small.owner{
+        color: @lp-blue;
+        background-color: inherit;
       }
 
       .colleague {
@@ -187,6 +226,7 @@
 
       label {
         font-weight: normal;
+        margin-left: 3px;
 
       }
 
@@ -240,6 +280,11 @@
   background-color: #98afc6;
   display: inline-block;
   position: relative;
+}
+
+.permission-btn-active{
+  background-color: #6ebc70;
+  color: white;
 }
 
 .avatar .initials {

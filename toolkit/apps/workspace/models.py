@@ -61,7 +61,7 @@ PRIVILEGED_USER_PERMISSIONS = {
 UNPRIVILEGED_USER_PERMISSIONS = {
     "manage_participants": False,
     "manage_document_reviews": False,
-    "manage_items": True,
+    "manage_items": False,
     "manage_signature_requests": False,
     "manage_clients": False,
 }
@@ -231,6 +231,10 @@ class Workspace(IsDeletedMixin,
     @property
     def actions(self):
         return self._actions
+
+    @property
+    def colleagues(self):
+        return self.participants.filter(workspaceparticipants__role__in=[ROLES.colleague, ROLES.owner])
 
     @property
     def get_lawyer(self):

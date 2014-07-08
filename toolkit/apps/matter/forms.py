@@ -15,6 +15,18 @@ from .services import MatterCloneService
 
 @parsleyfy
 class MatterForm(ModalForm, forms.ModelForm):
+
+    name = forms.CharField(
+        error_messages={
+            'required': "Matter name can not be blank."
+        },
+        help_text='',
+        label='Matter name',
+        required=True,
+        max_length=200,
+        widget=forms.TextInput(attrs={'placeholder': 'Matter name', 'size': '40'})
+    )
+
     client_name = forms.CharField(
         error_messages={
             'required': "Client name can not be blank."
@@ -22,6 +34,7 @@ class MatterForm(ModalForm, forms.ModelForm):
         help_text='',
         label='Client name',
         required=True,
+        max_length=200,
         widget=forms.TextInput(attrs={
             'autocomplete': 'off',
             'placeholder': 'Acme Inc',
@@ -37,17 +50,8 @@ class MatterForm(ModalForm, forms.ModelForm):
         help_text='Matter code is optional.',
         label='Matter code',
         required=False,
+        max_length=128,
         widget=forms.TextInput(attrs={'placeholder': '00001-matter-name', 'size': '40'})
-    )
-
-    name = forms.CharField(
-        error_messages={
-            'required': "Matter name can not be blank."
-        },
-        help_text='',
-        label='Matter name',
-        required=True,
-        widget=forms.TextInput(attrs={'placeholder': 'Matter name', 'size': '40'})
     )
 
     template = forms.ModelChoiceField(

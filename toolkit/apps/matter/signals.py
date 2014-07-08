@@ -2,14 +2,17 @@
 import logging
 from django.contrib.auth.models import User
 from django.dispatch import Signal, receiver
-from django.db.models.signals import m2m_changed
+from django.test.client import RequestFactory
+from django.db.models.signals import (m2m_changed,
+                                      post_save,
+                                      post_delete)
 
 import dj_crocodoc.signals as crocodoc_signals
-from toolkit.apps.review.models import ReviewDocument
-
-from toolkit.apps.workspace.models import Workspace
 
 from toolkit.apps.workspace.models import InviteKey
+from toolkit.api.serializers import LiteUserSerializer
+from toolkit.apps.workspace.models import Workspace, WorkspaceParticipants
+
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 from .mailers import ParticipantAddedEmail
 
@@ -21,6 +24,21 @@ PARTICIPANT_ADDED = Signal(providing_args=['matter', 'participant', 'user', 'not
 PARTICIPANT_DELETED = Signal(providing_args=['matter', 'participant', 'user', 'note'])
 USER_STOPPED_PARTICIPATING = Signal(providing_args=['matter', 'participant'])
 USER_DOWNLOADED_EXPORTED_MATTER = Signal(providing_args=['matter', 'user'])
+
+
+def _update_matter_participants(matter):
+    """
+    Participants optimisations; so we dont have millions of queries on matter_list
+    and else where
+    """
+    participants_data = {'participants': []} # @BUSINESSRULE reset the participants list
+
+    for u in matter.participants.all():
+        participants_data.get('participants').append(LiteUserSerializer(u, context={'matter': matter}).data)
+
+    matter.data.update(participants_data)
+
+    matter.save(update_fields=['data'])
 
 
 @receiver(PARTICIPANT_ADDED)
@@ -65,8 +83,18 @@ def user_stopped_participating(sender, matter, participant, **kwargs):
 
 
 @receiver(USER_DOWNLOADED_EXPORTED_MATTER)
-def user_stopped_participating(sender, matter, user, **kwargs):
+def user_downloaded_exported_matter(sender, matter, user, **kwargs):
     matter.actions.user_downloaded_exported_matter(user=user)
+
+
+@receiver(post_save, sender=WorkspaceParticipants, dispatch_uid='review.post_save.update_matter_participants_cache')
+def post_save_update_matter_participants_cache(sender, instance, **kwargs):
+    _update_matter_participants(matter=instance.workspace)
+
+
+@receiver(post_delete, sender=WorkspaceParticipants, dispatch_uid='review.post_delete.update_matter_participants_cache')
+def post_delete_update_matter_participants_cache(sender, instance, **kwargs):
+    _update_matter_participants(matter=instance.workspace)
 
 
 @receiver(m2m_changed, sender=Workspace.participants.through, dispatch_uid='matter.on_participant_added')
@@ -77,10 +105,13 @@ def on_participant_added(sender, instance, action, model, pk_set, **kwargs):
     @DB
     @VERYIMPORTANT
     """
+    matter = instance
+
+    _update_matter_participants(matter=instance)
+
     if action in ['post_add']:
         # loop over matter items
         # add user to the participants for that instance
-        matter = instance
         for item in matter.item_set.all():
             for revision in item.revision_set.all():
                 for reviewdocument in revision.reviewdocument_set.all():

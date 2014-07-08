@@ -18,9 +18,10 @@ def ensure_client_slug(sender, instance, **kwargs):
     """
     signal to handle creating the workspace slug
     """
+
     if instance.slug in [None, '']:
 
-        final_slug = slugify(instance.name)
+        final_slug = slugify(instance.name)[:32]
 
         while _model_slug_exists(model=Client, slug=final_slug):
             logger.info('Client %s exists, trying to create another' % final_slug)

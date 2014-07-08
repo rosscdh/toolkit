@@ -1,0 +1,53 @@
+<div id="messaging" class="discussion-wrapper">
+    <div class="container-fluid full">
+        <div class="row mobile" ng-show="data.page!=='checklist'">
+            <button type="button" class="btn btn-link btn-transparent" ng-click="data.view = 'inbox' ">&lt; Inbox</button>
+        </div>
+        <div class="row full">
+
+
+            <div class="col-lg-3 col-md-12 full" id="inbox" ng-class="{'zero': data.view == 'discussion'}">
+
+                <div class="inbox-msgs checklist-col">
+                    <div class="col-sm-12 inbox-controls">
+                           <button class="btn btn-default new-thread-btn" ng-click="createThread()">New Thread</button>
+                    </div>
+
+                    <tabset class="inbox-tabs" justified="true" type="pills">
+                        <tab>
+                            <tab-heading class="inbox-label">
+                                Inbox <span class="badge" ng-show="data.threads.length > 0">{{ data.threads.length }}</span>
+                            </tab-heading>
+                            <div ng-show="data.threads.length > 0">
+                                <ul class="msg-list list-unstyled">
+                                    <li ng-repeat="thread in data.threads"
+                              ng-class="{ 'selected': thread.slug===data.selectedThread.slug }" ng-click="data.view = 'discussion'"
+                                        ui-sref="discussion.thread({ 'threadSlug': thread.slug })">
+                                        <div ng-include="'/static/ng/partial/discussion/includes/thread-line-item.html'"></div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div ng-show="data.threads.length == 0">
+                                <p class="small text-center no-threads">There are no active discussions for this Matter.</p>
+                            </div>
+                        </tab>
+
+                        <tab disabled="data.archivedThreads.length == 0" heading="Archived" class="inbox-label">
+                            <ul class="msg-list list-unstyled">
+                                <li ng-repeat="thread in data.archivedThreads"
+                                    ng-class="{ 'selected': thread.slug===data.selectedThread.slug }"
+                                    ui-sref="discussion.thread({ 'threadSlug': thread.slug })" ng-click="data.view = 'discussion'">
+                                    <div ng-include="'/static/ng/partial/discussion/includes/thread-line-item.html'"></div>
+                                </li>
+                            </ul>
+                        </tab>
+                    </tabset>
+                </div>
+            </div>
+
+            <div class="col-lg-9 col-md-12" id="message-stage" ng-class="{'zero': data.view !== 'discussion'}">
+                <div ng-include="'/static/ng/partial/discussion/includes/thread.html'"></div>
+            </div>
+        </div>
+    </div>
+</div>

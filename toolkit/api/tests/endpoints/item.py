@@ -43,7 +43,8 @@ class ItemsTest(BaseEndpointTest):
 
         new_item = mommy.prepare('item.Item', matter=self.workspace, name='New Test Item No. 2')
 
-        resp = self.client.post(self.endpoint, json.dumps(ItemSerializer(new_item).data), content_type='application/json')
+        resp = self.client.post(self.endpoint, json.dumps(ItemSerializer(new_item).data),
+                                content_type='application/json')
         self.assertEqual(resp.status_code, 201)  # created
 
         json_data = json.loads(resp.content)
@@ -73,20 +74,25 @@ class ItemsTest(BaseEndpointTest):
     def test_customer_post(self):
         self.client.login(username=self.user.username, password=self.password)
 
+        # for non-colleagues the permission is required to be allowed to create it.
+        self.set_user_matter_perms(self.user, self.matter, manage_items=True)
         new_item = mommy.prepare('item.Item', matter=self.workspace, name='New Test Item No. 2')
 
-        resp = self.client.post(self.endpoint, json.dumps(ItemSerializer(new_item).data), content_type='application/json')
+        resp = self.client.post(self.endpoint, json.dumps(ItemSerializer(new_item).data),
+                                content_type='application/json')
         self.assertEqual(resp.status_code, 201)
 
     def test_customer_patch(self):
         self.client.login(username=self.user.username, password=self.password)
         resp = self.client.patch(self.endpoint, {}, content_type='application/json')
-        self.assertEqual(resp.status_code, 405)  # method forbidden
+        self.assertEqual(resp.status_code, 403)  # forbidden
+        # (MatterItemsView.can_delete stops access BEFORE django-rest-framework stops it because of missing PATCH.
 
     def test_customer_delete(self):
         self.client.login(username=self.user.username, password=self.password)
         resp = self.client.delete(self.endpoint, {})
-        self.assertEqual(resp.status_code, 405)  # method forbidden
+        self.assertEqual(resp.status_code, 403)  # forbidden
+        # (MatterItemsView.can_delete stops access BEFORE django-rest-framework stops it because of missing DELETE.
 
     def test_anon_get(self):
         resp = self.client.get(self.endpoint)

@@ -46,8 +46,11 @@ angular.module('toolkit-gui')
 	'$log',
 	'$window',
 	'$q',
+	'IntroService',
 	'Intercom',
 	'INTERCOM_APP_ID',
+	'PusherService',
+	'DEBUG_MODE',
 	function($scope,
 			 $rootScope,
 			 $routeParams,
@@ -75,10 +78,14 @@ angular.module('toolkit-gui')
 			 $log,
 			 $window,
 			 $q,
+			 IntroService,
 			 Intercom,
-			 INTERCOM_APP_ID){
+			 INTERCOM_APP_ID,
+             PusherService,
+			 DEBUG_MODE){
 		'use strict';
 
+		$scope.DEBUG_MODE = DEBUG_MODE;
 		/**
 		 * Scope based data for the checklist controller
 		 * @memberof			ChecklistCtrl
@@ -86,6 +93,8 @@ angular.module('toolkit-gui')
 		 * @type {Object}
 		 */
 		var routeParams = smartRoutes.params();
+
+		var steps;
 
 		/**
 		 * In scope variable containing containing the currently selected matter
@@ -106,7 +115,7 @@ angular.module('toolkit-gui')
 		$scope.data = {
 			'slug': routeParams.matterSlug,
 			'matter': null,
-      'customers' : [],
+			'customers' : [],
 			'showAddForm': null,
 			'showItemDetailsOptions': false,
 			'selectedItem': null,
@@ -119,8 +128,11 @@ angular.module('toolkit-gui')
 			'history': {},
 			'page': 'checklist',
 			'knownSigners': [],
-            'showPreviousRevisions': false
+            'showPreviousRevisions': false,
+            'loadedItemdetails': {}
 		};
+
+		$rootScope.searchEnabled = true;
 
 		// Basic checklist item format, used for placeholder checklist items
 		var CHECKLISTITEMSKELETON = {
@@ -153,6 +165,7 @@ angular.module('toolkit-gui')
 
 					userService.setCurrent( singleMatter.current_user, singleMatter.lawyer );
 					$scope.initialiseIntercom(singleMatter.current_user);
+                    $scope.handleMatterEvents();
 				},
 				function error(/*err*/){
 					toaster.pop('error', 'Error!', 'Unable to load matter',5000);
@@ -173,7 +186,9 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 */
 		$rootScope.$on('$stateChangeSuccess', function () {
-			$scope.handleUrlState();
+            $timeout(function(){
+			    $scope.handleUrlState();
+            }, 20);
 		});
 
 
@@ -208,7 +223,7 @@ angular.module('toolkit-gui')
 						}
 					);
 				} else {
-					toaster.pop('warning', 'Item does not exist anymore.',5000);
+					toaster.pop('warning', 'Item not found' , 'Item does not exist anymore.',5000);
 				}
 			}
 
@@ -218,6 +233,98 @@ angular.module('toolkit-gui')
 			}
 		};
 
+        /**
+         * Handles all pusher notifications
+         *
+		 * @private
+		 * @memberof			ChecklistCtrl
+		 * @method              handleMatterEvents
+         */
+        $scope.handleMatterEvents = function () {
+            PusherService.subscribeMatterEvents($scope.data.slug, function (data) {
+                $log.debug(data);
+
+                //wait until we can be sure, that the changed data is stored in the DB
+                $timeout(function () {
+                    if (data.is_global === true || data.from_id !== $scope.data.usdata.current.username) {
+                        if (data.model === 'item') {
+
+                            //Event: Item updated
+                            if (data.event === 'update') {
+                                $log.debug("loading updated item");
+                                matterItemService.load($scope.data.slug, data.id).then(
+                                    function success(item) {
+                                        replaceItem(item);
+
+                                        if (!$scope.data.selectedItem || item.slug !== $scope.data.selectedItem.slug) {
+                                            toaster.pop('warning', 'Item ' + item.name + ' has been updated.', 'Click here to select the item.', 7000, null, function () {
+                                                $scope.selectItem(item, category);
+                                            });
+                                        }
+                                    }
+                                );
+                            //Event: item deleted
+                            } else if (data.event === 'delete') {
+                                var index = -1;
+                                var category;
+                                var foundItem;
+
+                                //find and delete the item
+                                jQuery.each($scope.data.categories, function (cat_index, cat) {
+                                    $log.debug(cat);
+                                    jQuery.each(cat.items, function (i, item) {
+                                        if (item.slug === data.id) {
+                                            index = i;
+                                            category = cat;
+                                            foundItem = item;
+                                        }
+                                    });
+                                });
+
+                                if (foundItem && category) {
+                                    //remove item from category
+                                    category.items.splice(index,1);
+
+                                    //remove item from items list
+                                    index = jQuery.inArray( foundItem, $scope.data.matter.items );
+                                    if( index>=0 ) {
+                                        $scope.data.matter.items.splice(index,1);
+                                    }
+                                }
+
+                                if (!$scope.data.selectedItem || data.id !== $scope.data.selectedItem.slug) {
+                                    toaster.pop('warning', 'Item deleted', 'Item ' + foundItem.name + ' has been deleted.', 5000, null);
+                                } else {
+                                    $scope.data.selectedItem = null;
+								    $scope.initializeActivityStream();
+                                }
+
+                            //Event: Item created
+                            } else if (data.event === 'create') {
+                                $log.debug("loading created item");
+                                matterItemService.load($scope.data.slug, data.id).then(
+                                    function success(newItem) {
+                                        var category = findCategory(newItem.category);
+
+                                        //insert item at the end
+                                        category.items.push(newItem);
+
+                                         toaster.pop('warning', 'Item ' + newItem.name + ' has been created.', 'Click here to select the item.', 7000, null, function () {
+                                            $scope.selectItem(newItem, category);
+                                        });
+                                    }
+                                );
+                            }
+
+                        } else if (data.model === 'workspace') {
+                            toaster.pop('warning', 'Matter has been updated.', 'Click here to refresh the matter.', 5000, null, function () {
+                                window.location.reload();
+                            });
+                        }
+                    }
+                }, 2000);
+            });
+        };
 
 		/**
 		 * Splits the matter items into seperate arrays for the purpose of displaying seperate sortable lists, where items can be dragged
@@ -234,13 +341,11 @@ angular.module('toolkit-gui')
 			// Items with blank category name
 			items = jQuery.grep( matter.items, function( item ){ return item.category===categoryName; } );
 			category = { 'name': categoryName, 'items': items };
-					
+
 			categories.push(category);
 
 			// First item if available, this will be used to open the first available checklist item by default
-			if(items && items.length>0) {
-				firstItem = { 'item': items[0], 'category': category };
-			}
+			firstItem = matterService.selectFirstitem( firstItem, items, category );
 
 			if( matter && matter.categories ) {
 				// Allocate items to specific categories to make multiple arrays
@@ -249,22 +354,18 @@ angular.module('toolkit-gui')
 					var items = jQuery.grep( matter.items, function( item ){ return item.category===categoryName; } );
 
 					category = { 'name': categoryName, 'items': items };
-
 					categories.push( category );
 
 					// First item if available, this will be used to open the first available checklist item by default
-
-					if(!firstItem && items[0] !== undefined) {
-						firstItem = { 'item': items[0], 'category': category };
-					}
+					firstItem = matterService.selectFirstitem( firstItem, items, category );
 				});
 
-        jQuery.each( matter.participants, function( index, participant ) {
-          if (participant.user_class === 'customer'){
-            $scope.data.customers.push(participant);
-          }
-
-        });
+				// Is this correct since the last 
+				jQuery.each( matter.participants, function( index, participant ) {
+					if (participant.user_class === 'customer'){
+						$scope.data.customers.push(participant);
+					}
+				});
 
 				$scope.data.matter = matter;
 				$scope.data.categories = categories;
@@ -278,6 +379,11 @@ angular.module('toolkit-gui')
 			} else {
 				// Display error
 				toaster.pop('warning', 'Unable to load matter details',5000);
+			}
+
+			// Guided tour (show only if demo project)
+			if( matter && matter._meta && matter._meta.matter && matter._meta.matter['is_demo']) {
+				IntroService.show(steps);
 			}
 		};
 
@@ -301,7 +407,6 @@ angular.module('toolkit-gui')
 				}
 			);
 		};
-
 
 		/**
 		 * Inits the intercom interface
@@ -398,12 +503,14 @@ angular.module('toolkit-gui')
 
 				matterItemService.create(matterSlug, itemName, category.name).then(
 				function success(item){
-					updateObject(placeholderItem /*originalItem*/, item /*item recieved from API*/);
-					/* category.items.push(item); */
-					/* $scope.data.newItemName = ''; */
+                    delete placeholderItem.loading;
+                    angular.extend(placeholderItem, item);
 
-					// Display item that has just been added
-					$scope.selectItem( item, category );
+                    //mark item as loaded !important
+                    $scope.data.loadedItemdetails[item.slug] = true;
+
+					// Select the placeholder item that has just been added with the data from the loaded item
+					$scope.selectItem( placeholderItem, category );
 				},
 				function error(/*err*/){
 					toaster.pop('error', 'Error!', 'Unable to create new item',5000);
@@ -411,20 +518,6 @@ angular.module('toolkit-gui')
 			);
 			}
 		};
-
-		/**
-		 * updateObject: given a checklist item placeholder, update properties given updated details from the API
-		 * @param  {Object} originalItem placeholder checklist item
-		 * @param  {Object} updatedItem  update object from API
-		 */
-		function updateObject( originalItem, updatedItem ) {
-			delete originalItem.loading;
-
-			// Updating the object this way does not interupt the referenced object in the array
-			for(var key in updatedItem) {
-				originalItem[key] = updatedItem[key];
-			}
-		}
 
 		/**
 		 * Sets the currently selected item to the one passed through to this method
@@ -534,26 +627,56 @@ angular.module('toolkit-gui')
 			}
 		}
 
-		$scope.loadItemDetails = function(item){
-			var deferred = $q.defer();
+        function replaceItem(newItem){
+            var category = findCategory(newItem.category);
+            var i = -1;
+            //find and replace the olditem
+            jQuery.each(category.items, function (index, olditem) {
+                if (olditem.slug === newItem.slug) {
+                    i = index;
+                }
+            });
 
-			//if(typeof(item.latest_revision.reviewers) === "string") {
-			if(item.latest_revision && !item.latest_revision.reviewers) {
-				baseService.loadObjectByUrl(item.latest_revision.url).then(
-					function success(obj){
-						item.latest_revision = obj;
-						deferred.resolve(item);
-					},
-					function error(/*err*/){
-						toaster.pop('error', 'Error!', 'Unable to load latest revision',5000);
-					}
-				);
-			} else {
-				deferred.resolve(item);
-			}
+            if (i > -1) {
+                category.items[i] = newItem;
+            }
+        }
 
-			return deferred.promise;
-		};
+        $scope.loadItemDetails = function (item) {
+            var deferred = $q.defer();
+            var matterSlug = $scope.data.slug;
+
+            // Update selected item with full details, but only on the first select
+            // Because the object is passed referentially, the object can be updated asynchroniously
+            if(!$scope.data.loadedItemdetails[item.slug]) {
+                matterItemService.get(matterSlug, item.slug).then(
+                    function success(fullItem) {
+                        if (fullItem.latest_revision && !fullItem.latest_revision.reviewers) {
+                            baseService.loadObjectByUrl(item.latest_revision.url).then(
+                                function success(obj) {
+                                    fullItem.latest_revision = obj;
+                                    angular.extend(item, fullItem);
+                                    $scope.data.loadedItemdetails[item.slug] = true;
+                                    deferred.resolve(item);
+                                },
+                                function error(/*err*/) {
+                                    toaster.pop('error', 'Error!', 'Unable to load latest revision', 5000);
+                                }
+                            );
+                        } else {
+                            angular.extend(item, fullItem);
+                            $scope.data.loadedItemdetails[item.slug] = true;
+                            deferred.resolve(item);
+                        }
+
+                    }
+                );
+            } else {
+                deferred.resolve(item);
+            }
+
+            return deferred.promise;
+        };
 
 
 		/**
@@ -872,7 +995,7 @@ angular.module('toolkit-gui')
 					// Update uploading status
 					item.uploading = false;
 					$scope.data.uploading = $scope.uploadingStatus( $scope.data.matter.items );
-					
+
 					toaster.pop('error', 'Error!', 'Unable to upload revision', 5000);
 				}
 			);
@@ -1362,26 +1485,34 @@ angular.module('toolkit-gui')
 		* @method		    deleteRevisionReview
 		* @memberof			ChecklistCtrl
 		*/
-		$scope.deleteRevisionReviewRequest = function( item, review ) {
-			var matterSlug = $scope.data.slug;
-			//var participant = $scope.getParticipantByUrl(participant_url);
+        $scope.deleteRevisionReviewRequest = function (item) {
+            var matterSlug = $scope.data.slug;
 
-			matterItemService.deleteRevisionReviewRequest(matterSlug, item.slug, review).then(
-				function success(){
-					var index = jQuery.inArray( review, item.latest_revision.reviewers );
-					if( index>=0 ) {
-						// Remove reviewer from list in RAM array
-						item.latest_revision.reviewers.splice(index,1);
-						$scope.calculateReviewPercentageComplete(item);
-					}
-				},
-				function error(/*err*/){
-					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to delete the revision review request.') {
-						toaster.pop('error', 'Error!', 'Unable to delete the revision review request.',5000);
-					}
-				}
-			);
-		};
+            ezConfirm.create('Cancel Review Request', 'Please confirm you would like to cancel this review request?',
+                function yes() {
+                    // Confirmed- cancel review
+                    matterItemService.deleteRevisionReviewRequest(matterSlug, item.slug).then(
+                        function success() {
+                            item.latest_revision.reviewers = [];
+                            $scope.calculateReviewPercentageComplete(item);
+
+                            /*
+                             var index = jQuery.inArray( review, item.latest_revision.reviewers );
+                             if( index>=0 ) {
+                             // Remove reviewer from list in RAM array
+                             item.latest_revision.reviewers.splice(index,1);
+                             $scope.calculateReviewPercentageComplete(item);
+                             }*/
+                        },
+                        function error(/*err*/) {
+                            if (!toaster.toast || !toaster.toast.body || toaster.toast.body !== 'Unable to cancel the revision review request.') {
+                                toaster.pop('error', 'Error!', 'Unable to cancel the revision review request.', 5000);
+                            }
+                        }
+                    );
+                }
+            );
+        };
 
 		/**
 		 * Initiates the view of a review as modal window.
@@ -1500,6 +1631,24 @@ angular.module('toolkit-gui')
 			}
 		};
 
+        $scope.calculateSigningPercentageComplete = function( item) {
+			if(item && item.latest_revision && item.latest_revision.signing && item.latest_revision.signing.signers.length>0) {
+				var signers = item.latest_revision.signing.signers;
+				var completed = 0;
+
+				jQuery.each( signers, function( index, r ){
+					if (r.has_signed===true){
+						completed += 1;
+					}
+				});
+				item.signing_percentage_complete = parseInt(completed / signers.length * 100);
+				$log.debug(item.signing_percentage_complete);
+
+			} else {
+				item.signing_percentage_complete = null;
+			}
+		};
+
          $scope.editRevisionStatusTitles = function() {
             var matter = $scope.data.matter;
 
@@ -1566,14 +1715,45 @@ angular.module('toolkit-gui')
 			modalInstance.result.then(
 				function ok(obj) {
                     $log.debug(obj);
-                    revision.signing = obj;
-                    item.signing_percentage_complete = obj.percentage_complete;
+
+                    if(!revision.signing || revision.signing.is_claimed ===false) {
+                        revision.signing = obj;
+                        item.signing_percentage_complete = obj.percentage_complete;
+                    }
+                    //if not, then handled through the callback event from HS
 				},
 				function cancel() {
 					// do nothing
 				}
 			);
 		};
+
+         /**
+         * Called when the User signs a document in HelloSign and sets a processing flag the revision
+         *
+         */
+        $("body").on("sign.signed", function (event, param1, param2) {
+            $log.debug(event);
+            var username = event.username;
+            var item = $scope.data.selectedItem;
+            var latest_revision = item.latest_revision;
+            var signers = latest_revision.signing.signers;
+
+            var results = jQuery.grep(signers, function (obj) {
+                return obj.username === username;
+            });
+
+            if (results.length > 0) {
+                latest_revision.sign_in_progress = true;
+                $scope.saveLatestRevision();
+
+                results[0].has_signed = true;
+                $scope.calculateSigningPercentageComplete(item);
+                $scope.$apply();
+
+                toaster.pop('success', 'Success!', 'The document is being processed.', 5000);
+            }
+        });
 
         /**
         * Remind all review users who haven´t reviewed yet.
@@ -1618,6 +1798,7 @@ angular.module('toolkit-gui')
                 );
             }
         };
+
 		/* End revision handling */
 
 
@@ -2014,6 +2195,14 @@ angular.module('toolkit-gui')
 	    };
 		/* END COMMENT HANDLING */
 
+		/*
+		 _____ _ _ _
+		|  ___(_) | |_ ___ _ __ ___
+		| |_  | | | __/ _ \ '__/ __|
+		|  _| | | | ||  __/ |  \__ \
+		|_|   |_|_|\__\___|_|  |___/
+
+		 */
 		/**
 		 * Applies checklist filter based on route states provided
 		 *
@@ -2033,6 +2222,71 @@ angular.module('toolkit-gui')
 		};
 
 		$scope.applyDefaultFilters();
+
+		/* END COMMENT HANDLING */
+
+		/*
+		 ___       _
+		|_ _|_ __ | |_ _ __ ___
+		 | || '_ \| __| '__/ _ \
+		 | || | | | |_| | | (_) |
+		|___|_| |_|\__|_|  \___/
+
+		 */
+		steps={
+			'steps': [
+				{
+					'element': '#step1',
+					'intro': "Checklist items are organised into categories."
+				},
+				{
+					'element': '#step1 .dropdown-toggle',
+					'intro': "Add new categories."
+				},
+				{
+					'element': '#step1 .btn-new-item',
+					'intro': "Create new checklist items."
+				},
+				{
+					'element': '.checklist-members',
+					'intro': "Invite people to participate in your workspace."
+				},
+				{
+					'element': '.navbar input[type=search]',
+					'intro': "Find checklist items quickly with search."
+				},
+				{
+					'element': '.navbar .doc-outline-status-',
+					'intro': "Filter checklist items by status."
+				},
+				{
+					'element': '.navbar .notifications span',
+					'intro': "See when things change."
+				},
+				{
+					'element': '#checklist-activity h4',
+					'intro': "Chat with participants about items, documents and revisions."
+				}
+			]
+		};
+
+		$scope.reloadingLess = false;
+
+		$scope.showIntro = function() {
+			$scope.reloadingLess = true;
+			IntroService.show(steps);
+			$timeout(function(){
+				less.refresh();
+				$scope.reloadingLess = false;
+			},100);
+		};
+
+		/**
+		 * Recieves broadcast message to show intro
+		 */
+		$scope.$on('showIntro', function(){
+			IntroService.show(steps, 1);
+		});
 }])
 
 /**
@@ -2059,7 +2313,7 @@ angular.module('toolkit-gui')
 			}
 		});
 
-		
+
 		return tempClients;
 	};
 })
@@ -2088,7 +2342,7 @@ angular.module('toolkit-gui')
 			}
 		});
 
-		
+
 		return tempClients;
 	};
 });

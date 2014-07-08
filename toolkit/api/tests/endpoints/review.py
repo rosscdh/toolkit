@@ -8,6 +8,8 @@ from rest_framework.reverse import reverse
 from django.test.client import RequestFactory
 from django.core.validators import URLValidator
 
+from toolkit.test_runner import DEMO_DOC
+
 from toolkit.apps.workspace.models import InviteKey
 from toolkit.casper.workflow_case import PyQueryMixin
 from toolkit.casper.prettify import mock_http_requests
@@ -41,7 +43,10 @@ class RevisionReviewsTest(PyQueryMixin, BaseEndpointTest):
 
         # setup the items for testing
         self.item = mommy.make('item.Item', matter=self.matter, name='Test Item with Revision', category=None)
-        self.revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item,
+        self.revision = mommy.make('attachment.Revision',
+                                   executed_file=DEMO_DOC,
+                                   slug=None,
+                                   item=self.item,
                                    uploaded_by=self.lawyer)
 
     def test_endpoint_name(self):
@@ -270,7 +275,11 @@ class ReviewObjectIncrementWithNewReviewerTest(BaseEndpointTest):
 
         # setup the items for testing
         self.item = mommy.make('item.Item', matter=self.matter, name='Test Revision reviewer reviewobject_set count', category=None)
-        self.revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
+        self.revision = mommy.make('attachment.Revision',
+                                   executed_file=DEMO_DOC,
+                                   slug=None,
+                                   item=self.item,
+                                   uploaded_by=self.lawyer)
 
     def test_endpoint_name(self):
         self.assertEqual(self.endpoint, '/api/v1/matters/%s/items/%s/revision/reviewers' % (self.matter.slug, self.item.slug))

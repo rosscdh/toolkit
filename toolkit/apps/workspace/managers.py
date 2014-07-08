@@ -6,8 +6,7 @@ class WorkspaceManager(models.Manager):
     def get_query_set(self):
         return super(WorkspaceManager, self).get_query_set()  \
                                             .select_related('lawyer',
-                                                            'client',
-                                                            'participants')  \
+                                                            'client')  \
                                             .filter(is_deleted=False)
 
     def mine(self, user):
@@ -15,7 +14,6 @@ class WorkspaceManager(models.Manager):
             return []
 
         return self.get_query_set().filter(participants=user)  \
-                                   .prefetch_related('participants')  \
                                    .order_by('-date_modified')
 
     def deleted(self, **kwargs):

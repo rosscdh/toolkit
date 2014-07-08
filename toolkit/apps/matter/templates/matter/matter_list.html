@@ -1,4 +1,4 @@
-{% extends 'gui.html' %}{% load url from future %}{% load compressed %}
+{% extends 'gui.html' %}{% load url from future %}{% load compressed matter_tags %}
 
 {% block page_title %}Your Matters{% endblock %}
 
@@ -6,38 +6,14 @@
 
     <!-- needed for react -->
     {% csrf_token %}
-
-    {% if object_list %}
-        <div id="matter-list" class="content col-lg-12"></div>
-    {% else %}
-        <div id="matter-list-none" class="content col-lg-12">
-            <section class="matters cards">
-                <header class="page-header">
-                    <h4>All Matters</h4>
-                    <div class="pull-right">
-                        {% if can_create %}
-                            <a href="{% url 'matter:create' %}" data-toggle="modal" data-target="#matter-create" class="btn btn-success btn-embossed"><i class="fui-plus"></i> New Matter</a>
-                        {% endif %}
-                    </div>
-                </header>
-
-                <div id="overview" class="row">{% include 'matter/partials/intro.html' %}</div>
-            </section>
-        </div>
-    {% endif %}
+    <div id="matter-list" class="content col-lg-12"></div>
 {% endblock %}
 
 {% block modals %}
-    {% if can_create %}
         <div class="modal" id="matter-create"></div>
-    {% endif %}
     {% for m in object_list %}
-        {% if can_edit %}
-            <div class="modal" id="matter-edit-{{ m.slug }}"></div>
-        {% endif %}
-        {% if can_delete %}
-            <div class="modal" id="matter-delete-{{ m.slug }}"></div>
-        {% endif %}
+        <div class="modal" id="matter-edit-{{ m.slug }}"></div>
+        <div class="modal" id="matter-delete-{{ m.slug }}"></div>
     {% endfor %}
 {% endblock %}
 
@@ -45,6 +21,8 @@
 <script src="{{ STATIC_URL }}js/moment.2.6.0.min.js"></script>
 <script src="{{ STATIC_URL }}js/moment-timezone.0.0.6.js"></script>
 <script src="{{ STATIC_URL }}js/fuse.min.js"></script>
+
+{% user_intro %}
 
 <script>
 'use strict';

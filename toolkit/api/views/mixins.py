@@ -9,6 +9,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.status import is_success
 
 from toolkit.core.item.models import Item
+from toolkit.apps.discussion.models import DiscussionComment
 from toolkit.apps.workspace.models import Workspace
 
 import logging
@@ -78,3 +79,15 @@ class SpecificAttributeMixin(object):
     def get_object(self):
         self.object = super(SpecificAttributeMixin, self).get_object()
         return getattr(self.object, self.specific_attribute, None)
+
+
+class ThreadMixin(MatterMixin, generics.GenericAPIView):
+    """
+    Get the thread from the url slug :thread_slug
+    """
+    def initialize_request(self, request, *args, **kwargs):
+        request = super(ThreadMixin, self).initialize_request(request, *args, **kwargs)
+
+        # provide the thread object
+        self.thread = get_object_or_404(DiscussionComment.objects.for_model(self.matter), slug=kwargs.get('thread_slug'))
+        return request

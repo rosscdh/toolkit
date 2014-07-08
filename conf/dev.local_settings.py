@@ -87,7 +87,10 @@ EDIT_COMMENTS_DURATION = DELETE_COMMENTS_DURATION
 # Abridge Integration
 #
 
-ABRIDGE_ENABLED = False if sys.argv[1] in ['syncdb', 'migrate', 'test', 'loaddata'] else True  # disable when we are syncing or migrating or loadingdata
+try:
+    ABRIDGE_ENABLED = False if sys.argv[1] in ['syncdb', 'migrate', 'test', 'loaddata'] else True  # disable when we are syncing or migrating or loadingdata
+except IndexError:
+    ABRIDGE_ENABLED = False
 
 ABRIDGE_PROJECT = 'lawpal-digest'
 
@@ -133,8 +136,19 @@ PUSHER_KEY = '514360ee427ceb00cd8d'
 PUSHER_SECRET = '8fa687dde7e745e8f9d7'
 
 
+#
+# Hellosign Integation
+#
 HELLOSIGN_AUTHENTICATION = ("ross@lawpal.com", "test2007")
 HELLOSIGN_API_KEY = '75dd93222c11eb4483a98ddc7898022bb86d4b9e6d11113b2b9214b90daa3160'
 HELLOSIGN_CLIENT_ID = '2dc64896447085fa63b1bbcade5ee393'
 HELLOSIGN_CLIENT_SECRET = '6d79f33435069f9cd0d1de7d4eb4424b'
 HELLOSIGN_TEST_MODE = 1
+
+
+#
+# Demo Matter on User Signup
+# dev-fixtures.json
+#
+DEMO_MATTER_PK_TO_CLONE_ON_USER_CREATE = 1  # matter from fixtures
+DEMO_MATTER_LAWPAL_USER_PK = 2    # lawyer from fixtures

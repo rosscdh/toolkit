@@ -6,6 +6,7 @@
 @import "./flat-ui.less";
 @import "./application.less";
 @import "./animate.less";
+@import "./introjs-custom.less";
 /*@import "../../fonts/pe-icon-7-stroke/css/pe-icon-7-stroke.css";*/
 
 
@@ -18,6 +19,7 @@
 @import "../partial/markdown/markdown.less";
 @import "../partial/checklist/checklist.less";
 /*@import "../partial/closing/closing.less";*/
+@import "../partial/discussion/discussion.less";
 @import "../partial/navigation/navigation.less";
 @import "../partial/participant-invite/participant-invite.less";
 @import "../partial/view-document/view-document.less";
@@ -30,15 +32,37 @@
 /* Required for Angular UI Bootstrap */
 .nav, .pagination, .carousel a { cursor: pointer; }
 
+// Refresh less button
+.refresh-less-button {
+	position:absolute;
+	bottom:60px;
+	left:-3.42em;
+	z-index:99999;
+
+	-webkit-transition: left 0.3s ease-in-out;
+	-moz-transition: left 0.3s ease-in-out;
+	-o-transition: left 0.3s ease-in-out;
+	transition: left 0.3s ease-in-out;
+
+	&:hover {
+		left: 0;
+		-webkit-transition: left 0.3s ease-in-out;
+		-moz-transition: left 0.3s ease-in-out;
+		-o-transition: left 0.3s ease-in-out;
+		transition: left 0.3s ease-in-out;
+	}
+}
+
 /* Personal preference for BS modal.  The LESS below makes the backdrop white and
    causes the modal to fade in rather than slide in. */
-//@modal-backdrop-bg: white;
-//.modal {
-//	&.fade {
-//		.transition(opacity .3s);
-//	}
-//	&.fade .modal-dialog {
-//		.translate(0,0);
-//	}
-//}
+.modal.fade, .modal.fade.in, .modal.fade .modal-dialog {
+    -webkit-transform: translate(0, 0);
+    -ms-transform: translate(0, 0);
+    transform: translate(0, 0);
+    transition: none;
+}
+
+.modal-backdrop.fade, .modal-backdrop.fade.in {
+	opacity: 0.8;
+}
 @import "./modules/toaster.less";
