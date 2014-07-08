@@ -123,7 +123,7 @@
   <script src="<!-- @echo staticPath -->partial/edit-revision-status/edit-revision-status.js"></script>
   <!-- Add New Partial JS Above -->
 
-  <div class="navbar navbar-inverse checklist-nav" ng-controller="NavigationCtrl">
+   <div class="navbar navbar-inverse checklist-nav" ng-controller="NavigationCtrl">
     <div class="navbar-header">
         <div class="logo-mark">
             <a href="/">
@@ -133,10 +133,10 @@
         <ul class="nav navbar-nav navbar-matters hidden-xs" ng-show="matter.selected&&data.matterlist.length>1">
             <li class="dropdown">
               <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" ng-bind="matter.selected.name | characters:15:true"></a>
-              <ul class="dropdown-menu">
+              <ul class="dropdown-menu ng-cloak">
                 <li ng-repeat="m in data.matterlist" ng-show="m.name!=matter.selected.name">
-                    {% verbatim %}<a href="/matters/{{ m.slug  }}" ng-if="m.client" ng-show="{{ m.name }} - {{m.client.name}}"></a>{% endverbatim %}
-                    {% verbatim %}<a href="/matters/{{ m.slug  }}" ng-if="!m.client" ng-show="{{ m.name }}"></a>{% endverbatim %}
+                    {% verbatim %}<a href="/matters/{{ m.slug  }}" ng-if="m.client">{{ m.name }} - {{m.client.name}}</a>{% endverbatim %}
+                    {% verbatim %}<a href="/matters/{{ m.slug  }}" ng-if="!m.client">{{ m.name }}</a>{% endverbatim %}
                 </li>
               </ul>
             </li>
@@ -260,10 +260,10 @@
             </ul>
         </li>
         <li class="divider hidden-xs hidden-sm"></li>
-        <li class="dropdown">
+        <li class="dropdown ng-cloak">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-          <span class="hidden-lg hidden-xs" ng-show="{{ matter.selected.current_user | initials }}"> <b class="caret"></b></span>
-          <span class="hidden-md hidden-sm hidden-xs" ng-show="{{ matter.selected.current_user | fullname }}"><b class="caret"></b></span>
+          <span class="hidden-lg hidden-xs">{{ matter.selected.current_user | initials }} <b class="caret"></b></span>
+          <span class="hidden-md hidden-sm hidden-xs">{{ matter.selected.current_user | fullname }} <b class="caret"></b></span>
           </a>
           <ul class="dropdown-menu">
             <li><a href="/me/settings/">Account</a></li>
@@ -279,7 +279,6 @@
   </div>
     <!--/.navbar-collapse -->
   </div>
-
   <div ui-view class="full"></div>
   <span id="landmine"></span>
   <script language="javascript" data-remove="exclude">
