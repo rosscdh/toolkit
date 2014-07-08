@@ -235,7 +235,7 @@
       <!-- /nav -->
 
       {% verbatim %}
-      <ul class="nav navbar-nav navbar-right">
+       <ul class="nav navbar-nav navbar-right">
 
         <!-- start: desktop notifications / notifications //-->
         <li class="notifications">
@@ -248,7 +248,7 @@
         <li>
           <a href="/requests/">
             <span>Requests</span>
-            <span class="label label-important" ng-show="matter.selected.current_user.counts.requests > 0"></span>
+            <span class="label label-important" ng-show="matter.selected.current_user.counts.requests > 0">{{ matter.selected.current_user.counts.requests }}</span>
           </a>
         </li>
 
@@ -264,8 +264,8 @@
         <li class="divider hidden-xs hidden-sm"></li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-          <span class="hidden-lg hidden-xs" ng-show="{{ matter.selected.current_user | initials }}"> <b class="caret"></b></span>
-          <span class="hidden-md hidden-sm hidden-xs" ng-show="{{ matter.selected.current_user | fullname }}"><b class="caret"></b></span>
+          <span class="hidden-lg">{{ matter.selected.current_user | initials }} <b class="caret"></b></span>
+          <span class="hidden-md hidden-sm hidden-xs">{{ matter.selected.current_user | fullname }}<b class="caret"></b></span>
           </a>
           <ul class="dropdown-menu">
             <li><a href="/me/settings/">Account</a></li>
