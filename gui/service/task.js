@@ -26,6 +26,7 @@ angular.module('toolkit-gui')
 		 */
 		function taskResource() {
 			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/tasks/:taskSlug', {}, {
+				// @dennis "query" should be "retrieve" to conform to the rest_framework conventions?
 				'query': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'}},
 				'create': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'}},
 				'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'}},

@@ -1,4 +1,6 @@
 # -*- coding: UTF-8 -*-
+from django.shortcuts import get_object_or_404
+
 from rest_framework import generics
 from rest_framework import viewsets
 
@@ -34,7 +36,10 @@ rulez_registry.register("can_delete", TaskEndpoint)
 
 class GetTaskMixin(MatterItemsQuerySetMixin):
     def get_item(self):
-        return super(GetTaskMixin, self).get_queryset().first()
+        """
+        get the item based on the MatterItemsQuerySetMixin selector which looks for matter items
+        """
+        return get_object_or_404(super(GetTaskMixin, self).get_queryset(), slug=self.kwargs.get('item_slug'))
 
     def get_queryset(self):
         self.item = self.get_item()
