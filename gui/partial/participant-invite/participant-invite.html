@@ -121,7 +121,7 @@
             <h5>Add a Colleague <a href="javascript:;" class="close" ng-click="data.showAddLawyer=false;">x</a></h5>
 			<div ng-class="{'has-success': data.participant, 'has-warning': data.isNew, 'has-error': data.validationError }">
 				<p class="bg-info" for="inviteeEmail" ng-show="data.participant">Lawyer {{ data.participant | fullname }} found. </p>
-        		<input type="email" id="inviteeEmail" class="form-control form-control-full-width" ng-model="data.invitee.email" placeholder="rob.s@gmail.com" required ng-blur="checkIfUserExists(true)" autocomplete="off"/>
+        		<input type="email" id="inviteeEmail" class="form-control form-control-full-width" ng-model="data.invitee.email" placeholder="their_email@gmail.com" required ng-blur="checkIfUserExists(true)" autocomplete="off"/>
 			</div>
             <div class="">
                 <input type="text" class="form-control input-sm" ng-model="data.invitee.first_name" placeholder="First name" ng-show="data.isNew" />
@@ -207,7 +207,7 @@
                 <p class="bg-danger" for="inviteeEmail" ng-show="data.isLawyer">The entered mail address belongs to a lawyer. Lawyers can not currently be added to matters as clients.</p>
 
 				<input type="email" id="inviteeEmail" class="form-control form-control-full-width" ng-model="data.invitee.email"
-                       placeholder="your_email@gmail.com" required ng-blur="checkIfUserExists()" autocomplete="off"/>
+                       placeholder="their_email@gmail.com" required ng-blur="checkIfUserExists()" autocomplete="off"/>
         		</div>
             <div class="">
                 <input type="text" class="form-control input-sm" ng-model="data.invitee.first_name" placeholder="First name" ng-show="data.isNew" />
