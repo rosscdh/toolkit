@@ -9,6 +9,8 @@ import logging
 
 logging.disable(logging.CRITICAL)
 
+DEBUG = False # msut be set to false to emulate production
+TEST_PREPROD = True  # so we can access local static assets
 
 # Custom test runner for this project
 TEST_RUNNER = 'toolkit.test_runner.AppTestRunner'
@@ -32,6 +34,8 @@ SKIP_SOUTH_TESTS = True
 PASSWORD_HASHERS = (
     'django.contrib.auth.hashers.MD5PasswordHasher',
 )
+
+#DEFAULT_FILE_STORAGE = 'inmemorystorage.InMemoryStorage'  # cant because of s3 tests
 
 EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
 
