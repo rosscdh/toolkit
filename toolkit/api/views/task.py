@@ -43,7 +43,8 @@ class GetTaskMixin(MatterItemsQuerySetMixin):
 
     def get_queryset(self):
         self.item = self.get_item()
-        return self.model.objects.filter(item=self.item)
+        return self.model.objects.for_item_by_user(item=self.item,
+                                                   user=self.request.user)
 
 
 class ItemTasksView(GetTaskMixin,

@@ -2,6 +2,7 @@
 from django.db import models
 
 from .mixins import SendReminderEmailMixin
+from .managers import TaskManager
 
 from rulez import registry as rulez_registry
 
@@ -32,6 +33,8 @@ class Task(SendReminderEmailMixin,
     date_modified = models.DateTimeField(auto_now=True, auto_now_add=True, db_index=True)
 
     data = JSONField(default={}, blank=True)
+
+    objects = TaskManager()
 
     def get_absolute_url(self):
         return self.item.get_absolute_url()
