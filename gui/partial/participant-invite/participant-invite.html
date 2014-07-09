@@ -80,12 +80,6 @@
             <p class="text-center user-meta">{{ data.selectedUser.email }}</p>
 
             <div class='permissions-checklist' ng-show="currentUser.permissions.manage_participants">
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox" ng-model="data.selectedUser.permissions.manage_participants">add/remove
-                        participants
-                    </label>
-                </div>
 
                 <div class="checkbox">
                     <label>
@@ -161,7 +155,7 @@
         <div ng-class="{'has-success': data.participant, 'has-warning': data.isNew, 'has-error': data.validationError }">
             <p class="bg-info" for="inviteeEmail" ng-show="data.participant">Lawyer {{ data.participant | fullname }} found. </p>
             <input type="email" id="inviteeEmail" class="form-control form-control-full-width" ng-model="data.invitee.email"
-                   placeholder="rob.s@gmail.com" required ng-blur="checkIfUserExists(true)" autocomplete="off"/>
+                   placeholder="their_email@gmail.com" required ng-blur="checkIfUserExists(true)" autocomplete="off"/>
         </div>
         <div>
             <input type="text" class="form-control input-sm" ng-model="data.invitee.first_name" placeholder="First name" ng-show="data.isNew"/>
@@ -216,12 +210,6 @@
 
             <div class="actual-list">
                 You may also grant them permission to:
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox" ng-model="data.invitee.permissions.manage_participants">add/remove
-                        participants
-                    </label>
-                </div>
 
                 <div class="checkbox">
                     <label>
@@ -266,7 +254,7 @@
                 Lawyers can not currently be added to matters as clients.</p>
 
             <input type="email" id="inviteeEmail" class="form-control form-control-full-width" ng-model="data.invitee.email"
-                   placeholder="your_email@gmail.com" required ng-blur="checkIfUserExists()" autocomplete="off"/>
+                   placeholder="their_email@gmail.com" required ng-blur="checkIfUserExists()" autocomplete="off"/>
         </div>
 
         <div>
@@ -299,15 +287,6 @@
 
             </div>
 
-            <div class="actual-list">
-                You may also choose to grant them permission to:
-                <div class="checkbox">
-
-                    <label>
-                        <input type="checkbox" ng-model="data.invitee.permissions.manage_clients">add/remove participants
-                    </label>
-                </div>
-            </div>
         </div>
         <div class="text-center main-a">
             <button class="btn  btn-wide btn-sm client-btn" ng-disabled="invalid()">Add a Client</button>
