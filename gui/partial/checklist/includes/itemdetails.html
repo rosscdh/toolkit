@@ -177,7 +177,7 @@
                           </li>
                         </ul>
                 </div>-->
-                
+
                 <!-- <span class="version">{{ data.selectedItem.latest_revision.slug }}</span> -->
                 <div class="row">
                     <div class="col-sm-12">
@@ -403,4 +403,33 @@
         <h4>Add your first checklist item</h4>
         <p>Create your checklist and then invite you client to this project by clicking on the <span class="fui-user"></span> icon at the top of the page.</p>
     </div>
+</div>
+
+
+<div class="attachments-wrapper">
+    <div class="item-subheading">Attachments<span class="number-of"> ({{ data.attachments.length }}3)</span>
+        <a class="btn-link" href="javascript:;" ng-click="manageTask()">New Attachment</a>
+    </div>
+
+    <ul class="all-attachments">
+        <li class="one-attachment">
+            <ul class="one-attachment">
+                <li class="icon"><i class="fa fa-paperclip"></i></span></li>
+                <li class="attachment-name">headshot.jpeg</li>
+                <li class="attachment-status"><a href="#">Uploaded by TC</a></li>
+                 <li class="download-attachment"><a href="#"><i class="fa fa-download"></a></i></li>
+                <li class="delete-attachment"><a href="#" ng-click="deleteAttachment(task)">X</a></li>
+            </ul>
+        </li>
+          <li class="one-attachment">
+            <ul class="one-attachment">
+                <li class="icon"><i class="fa fa-paperclip"></i></span></li>
+                <li class="attachment-name">coverletter.pdf</li>
+                <li class="attachment-status"><a href="#">Uploaded by TC</a></li>
+                <li class="download-attachment"><a href="#"><i class="fa fa-download"></a></i></li>
+                <li class="delete-attachment"><a href="#" ng-click="deleteTask(task)">X</a></li>
+            </ul>
+        </li>
+
+    </ul>
 </div>
