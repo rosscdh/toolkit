@@ -59,11 +59,6 @@
                     <p class="text-center user-meta">{{ data.selectedUser.name }}</p>
                     <p class="text-center user-meta">{{ data.selectedUser.email }}</p>
                     <div class='permissions-checklist' ng-show="currentUser.permissions.manage_participants">
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" ng-model="data.selectedUser.permissions.manage_participants">add/remove participants
-                            </label>
-                        </div>
 
                         <div class="checkbox">
                             <label>
@@ -179,11 +174,6 @@
 
                 <div class="actual-list">
                     You may also grant them permission to:
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" ng-model="data.invitee.permissions.manage_participants">add/remove participants
-                        </label>
-                    </div>
 
                     <div class="checkbox">
                         <label>
@@ -248,16 +238,6 @@
 
                 </div>
 
-
-            <div class="actual-list">
-                You may also choose to grant them permission to:
-               <div class="checkbox">
-
-                            <label>
-                                <input type="checkbox" ng-model="data.invitee.permissions.manage_clients">add/remove participants
-                            </label>
-                        </div>
-         </div>
          </div>
             <div class="text-center main-a">
                 <button class="btn  btn-wide btn-sm client-btn" ng-disabled="invalid()">Add a Client</button>
