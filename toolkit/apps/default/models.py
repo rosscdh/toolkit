@@ -125,7 +125,7 @@ class UserProfile(EmailIsValidatedMixin, models.Model):
             self.data['open_requests'] = value
 
     def get_open_requests_count(self):
-        return Item.objects.my_requests(self.user.pk).count()
+        return len(Item.objects.my_requests(self.user))
 
     @property
     def verified(self):

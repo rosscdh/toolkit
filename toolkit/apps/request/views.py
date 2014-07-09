@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 from django.views.generic import ListView
 
 from toolkit.core.item.models import Item
