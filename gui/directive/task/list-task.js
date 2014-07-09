@@ -8,7 +8,7 @@ angular.module('toolkit-gui').directive('tasksList', ['$compile', '$log', '$sce'
         scope: {
             matter: '=',
             selectedItem: '=',
-            currUser: '='
+            currentUser: '='
         },
         replace: true,
         controller: ['$rootScope',
@@ -26,7 +26,7 @@ angular.module('toolkit-gui').directive('tasksList', ['$compile', '$log', '$sce'
 
                 $log.debug($scope.matter);
                 $log.debug($scope.selectedItem);
-                $log.debug($scope.currUser);
+                $log.debug($scope.currentUser);
 
 
                 $scope.manageTask = function (task) {
@@ -59,14 +59,14 @@ angular.module('toolkit-gui').directive('tasksList', ['$compile', '$log', '$sce'
                             $scope.loadTasks();
 
                             /*
-                            var olditems = jQuery.grep($scope.data.tasks, function(obj){
-                                return obj.slug === result.slug;
-                            });
-                            if (olditems.length === 0) {
-                                $scope.data.tasks.push(result);
-                            } else {
-                                olditems[0] = angular.extend(olditems[0], result);
-                            }*/
+                             var olditems = jQuery.grep($scope.data.tasks, function(obj){
+                             return obj.slug === result.slug;
+                             });
+                             if (olditems.length === 0) {
+                             $scope.data.tasks.push(result);
+                             } else {
+                             olditems[0] = angular.extend(olditems[0], result);
+                             }*/
                         },
                         function cancel() {
                             //
@@ -111,20 +111,59 @@ angular.module('toolkit-gui').directive('tasksList', ['$compile', '$log', '$sce'
                 };
 
                 $scope.toggleCompleteTask = function (task) {
-                    task.is_complete = !task.is_complete;
+                    if ($scope.isCompleteTaskEnabled) {
+                        task.is_complete = !task.is_complete;
 
-                    taskService.update($scope.matter.slug, $scope.selectedItem.slug, task.slug, task).then(
-                        function success(tasks) {
-                            //do nothing
-                        },
-                        function error(/*err*/) {
-                            if (!toaster.toast || !toaster.toast.body || toaster.toast.body !== 'Unable to update task.') {
-                                toaster.pop('error', 'Error!', 'Unable to update task.', 5000);
+                        taskService.update($scope.matter.slug, $scope.selectedItem.slug, task.slug, task).then(
+                            function success(tasks) {
+                                //do nothing
+                            },
+                            function error(/*err*/) {
+                                if (!toaster.toast || !toaster.toast.body || toaster.toast.body !== 'Unable to update task.') {
+                                    toaster.pop('error', 'Error!', 'Unable to update task.', 5000);
+                                }
+                                //revert change
+                                task.is_complete = !task.is_complete;
                             }
-                            //revert change
-                            task.is_complete = !task.is_complete;
-                        }
-                    );
+                        );
+                    }
+                };
+
+                $scope.isDeleteTaskEnabled = function (task) {
+                    if ($scope.currentUser.role === 'owner') {
+                        return true;
+                    }
+
+                    if ($scope.currentUser.permissions.manage_task) {
+                        return true;
+                    }
+
+                    if ($scope.currentUser.username === task.created_by.username) {
+                        return true;
+                    }
+
+                    return false;
+                };
+
+                $scope.isCompleteTaskEnabled = function (task) {
+                    if ($scope.currentUser.role === 'owner') {
+                        return true;
+                    }
+
+                    if ($scope.currentUser.permissions.manage_task) {
+                        return true;
+                    }
+
+                    if ($scope.currentUser.username === task.created_by.username) {
+                        return true;
+                    }
+
+                    var index = jQuery.inArray($scope.currentUser, task.assigned_to);
+                    if (index >= 0) {
+                        return true;
+                    }
+
+                    return false;
                 };
 
                 $scope.$watch('selectedItem', function (newValue, oldValue) {

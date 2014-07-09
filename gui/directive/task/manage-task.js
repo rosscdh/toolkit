@@ -77,36 +77,59 @@ angular.module('toolkit-gui')
              * @method                ok
              * @memberof            RequestreviewCtrl
              */
-            $scope.submitTask = function () {
+            $scope.submitTask = function (taskForm) {
+                $scope.data.formSubmitted = true;
                 $scope.task.assigned_to = [];
 
-                jQuery.each($scope.data.selectedUsers, function (i, obj) {
-                    $scope.task.assigned_to.push(obj.username);
-                });
+                if (taskForm.$valid) {
+                    if (!$scope.task.slug) {
+                        jQuery.each($scope.data.selectedUsers, function (i, obj) {
+                            $scope.task.assigned_to.push(obj.username);
+                        });
 
-                if (!$scope.task.slug) {
-                    taskService.create($scope.matter.slug, $scope.checklistItem.slug, $scope.task).then(
-                        function success(task) {
-                            $modalInstance.close($scope.task);
-                        },
-                        function error(/*err*/) {
-                            if (!toaster.toast || !toaster.toast.body || toaster.toast.body !== 'Unable to create task.') {
-                                toaster.pop('error', 'Error!', 'Unable to create task.', 5000);
+                        taskService.create($scope.matter.slug, $scope.checklistItem.slug, $scope.task).then(
+                            function success(task) {
+                                $modalInstance.close($scope.task);
+                            },
+                            function error(/*err*/) {
+                                if (!toaster.toast || !toaster.toast.body || toaster.toast.body !== 'Unable to create task.') {
+                                    toaster.pop('error', 'Error!', 'Unable to create task.', 5000);
+                                }
                             }
-                        }
-                    );
-                } else {
-                    taskService.update($scope.matter.slug, $scope.checklistItem.slug, $scope.task.slug, $scope.task).then(
-                        function success(task) {
-                            $modalInstance.close($scope.task);
-                        },
-                        function error(/*err*/) {
-                            if (!toaster.toast || !toaster.toast.body || toaster.toast.body !== 'Unable to update task.') {
-                                toaster.pop('error', 'Error!', 'Unable to update task.', 5000);
+                        );
+                    } else {
+                        jQuery.each($scope.data.selectedUsers, function (i, obj) {
+                            $scope.task.assigned_to.push(obj);
+                        });
+
+                        taskService.update($scope.matter.slug, $scope.checklistItem.slug, $scope.task.slug, $scope.task).then(
+                            function success(task) {
+                                $modalInstance.close($scope.task);
+                            },
+                            function error(/*err*/) {
+                                if (!toaster.toast || !toaster.toast.body || toaster.toast.body !== 'Unable to update task.') {
+                                    toaster.pop('error', 'Error!', 'Unable to update task.', 5000);
+                                }
                             }
-                        }
-                    );
+                        );
+                    }
                 }
+            };
+
+            $scope.isEditTaskEnabled = function () {
+                if ($scope.currentUser.role === 'owner') {
+                    return true;
+                }
+
+                if ($scope.currentUser.permissions.manage_task) {
+                    return true;
+                }
+
+                if ($scope.currentUser.username === $scope.task.created_by.username) {
+                    return true;
+                }
+
+                return false;
             };
 
             $scope.toggleUser = function (user) {
@@ -117,16 +140,16 @@ angular.module('toolkit-gui')
                 }
             };
 
-            $scope.taskIsEditable = function(){
-                return $scope.currentUser.role==='owner' || $scope.currentUser.username === $scope.task.created_by.username;
-            }
+            $scope.taskIsEditable = function () {
+                return $scope.currentUser.role === 'owner' || $scope.currentUser.username === $scope.task.created_by.username;
+            };
 
             $scope.init = function () {
-                 if ($scope.task.assigned_to && $scope.task.assigned_to.length > 0) {
-                     jQuery.each($scope.task.assigned_to, function (index, obj) {
-                         $scope.toggleUser({'username': obj.username});
+                if ($scope.task.assigned_to && $scope.task.assigned_to.length > 0) {
+                    jQuery.each($scope.task.assigned_to, function (index, obj) {
+                        $scope.toggleUser(obj);
                     });
-                 }
+                }
             };
 
             $scope.init();
