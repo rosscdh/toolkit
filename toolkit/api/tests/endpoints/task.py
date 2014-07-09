@@ -45,7 +45,6 @@ class TaskListTest(BaseTaskSetup):
 
         self.assertEqual(len(json_data['results']), 1)
 
-
     def test_participant_create(self):
         self.client.login(username=self.lawyer.username, password=self.password)
 
@@ -57,27 +56,9 @@ class TaskListTest(BaseTaskSetup):
 
         json_data = json.loads(resp.content)
 
-        self.assertEqual(json_data.keys(), [u'date_due', u'name', u'date_modified', u'url', u'created_by', u'is_complete', u'item', u'assigned_to', u'date_created', u'data', u'slug', u'description'])
+        self.assertEqual(json_data.keys(), [u'date_due', u'name', u'date_modified', u'url', u'created_by', u'is_complete', u'item', u'assigned_to', u'date_created', u'slug', u'description'])
         self.assertEqual(json_data.get('item'), u'http://testserver/api/v1/items/%s' % self.item.slug)
         self.assertEqual(json_data.get('created_by'), 'test-lawyer')
-
-    # def test_participants_can_create_own_but_not_edit_others(self):
-    #     self.client.login(username=self.lawyer.username, password=self.password)
-
-    #     resp = self.client.post(self.endpoint, {
-    #         'name': 'My second task',
-    #         'description': 'clean up after the elephant',
-    #     })
-    #     self.assertEqual(resp.status_code, 201)  # created
-
-    #     self.client.login(username=self.user.username, password=self.password)
-
-    #     resp = self.client.patch(self.endpoint, {
-    #         'name': 'My second task',
-    #         'description': 'clean up after the elephant',
-    #     })
-    #     self.assertEqual(resp.status_code, 201)  # created
-
 
     def test_non_participant_cant_read(self):
         self.client.login(username=self.forbidden_user.username, password=self.password)
@@ -107,9 +88,9 @@ class TaskDetailTest(BaseTaskSetup):
         json_data = json.loads(resp.content)
 
         self.assertEqual(type(json_data), dict)
-        self.assertEqual(json_data.keys(), [u'date_due', u'name', u'date_modified', u'url', u'created_by', u'is_complete', u'item', u'assigned_to', u'date_created', u'data', u'slug', u'description'])
+        self.assertEqual(json_data.keys(), [u'date_due', u'name', u'date_modified', u'url', u'created_by', u'is_complete', u'item', u'assigned_to', u'date_created', u'slug', u'description'])
         self.assertEqual(json_data.get('item'), u'http://testserver/api/v1/items/%s' % self.item.slug)
-        self.assertEqual(json_data.get('created_by'), 'test-lawyer')
+        self.assertEqual(json_data.get('created_by'), {u'username': u'test-lawyer', u'name': u'Lawy\xebr T\xebst', u'url': u'http://testserver/api/v1/users/test-lawyer', u'role': None, u'user_class': u'lawyer', u'initials': u'LT'})
 
 
     def test_participant_update_own(self):
@@ -131,13 +112,12 @@ class TaskDetailTest(BaseTaskSetup):
         resp = self.client.patch(endpoint, json.dumps({
             'name': 'Update to My first task',
         }), content_type='application/json; charset=utf-8')
-
         self.assertEqual(resp.status_code, 200)  # ok
 
         json_data = json.loads(resp.content)
 
-        self.assertEqual(json_data.keys(), [u'date_due', u'name', u'date_modified', u'url', u'created_by', u'is_complete', u'item', u'assigned_to', u'date_created', u'data', u'slug', u'description'])
-        self.assertEqual(json_data.get('created_by'), 'test-customer')
+        self.assertEqual(json_data.keys(), [u'date_due', u'name', u'date_modified', u'url', u'created_by', u'is_complete', u'item', u'assigned_to', u'date_created', u'slug', u'description'])
+        self.assertEqual(json_data.get('created_by'), {u'username': u'test-customer', u'name': u'Custom\xebr T\xebst', u'url': u'http://testserver/api/v1/users/test-customer', u'role': None, u'user_class': u'customer', u'initials': u'CT'})
 
     def test_participant_cant_edit_other_participants_tasks(self):
         self.client.login(username=self.user.username, password=self.password)

@@ -9,8 +9,10 @@ from rulez import registry as rulez_registry
 from toolkit.apps.task.models import Task
 
 from .mixins import MatterItemsQuerySetMixin
-from ..serializers import ItemSerializer, TaskSerializer
-
+from ..serializers import (ItemSerializer,
+                           TaskSerializer,
+                           CreateTaskSerializer,
+                           SimpleUserSerializer)
 
 class TaskEndpoint(viewsets.ModelViewSet):
     """
@@ -54,7 +56,12 @@ class ItemTasksView(GetTaskMixin,
         Allow the [lawyer,customer] user to list and create item tasks in a matter
     """
     model = Task
-    serializer_class = TaskSerializer
+
+    def get_serializer_class(self, **kwargs):
+        if self.request.method in ['POST', 'PATCH']:
+            return CreateTaskSerializer
+        else:
+            return TaskSerializer
 
     def get_serializer_context(self):
         return {'request': self.request}
@@ -71,7 +78,7 @@ class ItemTasksView(GetTaskMixin,
 
     def can_edit(self, user):
         return user in self.matter.participants.all()  \
-               or user.matter_permissions(matter=self.item.matter).has_permission(manage_items=True) is True
+               or user.matter_permissions(matter=self.item.matter).has_permission(manage_items=True)
 
     def can_delete(self, user):
         return False  # do not support delete
