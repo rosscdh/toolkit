@@ -81,7 +81,7 @@ angular.module('toolkit-gui')
             'isNew': false,
             'selectedUser': null,
             'requestLoading': false,
-            'showAddButton': false,
+            'showStep': 1,
             'showColleaguePermissionDetails': false
 		};
 
@@ -182,10 +182,8 @@ angular.module('toolkit-gui')
                     $scope.data.isLawyer = false;
                     $scope.data.participant = null;
                     $scope.data.validationError = false;
-                    $scope.data.showAddLawyer = false;
-                    $scope.data.showAddParticipant = false;
                     $scope.data.selectedUser = null;
-                    $scope.data.showAddButton = false;
+                    $scope.data.showStep = 1;
 
                     toaster.pop('success', 'Success!', 'User was added successfully', 5000);
                 },
@@ -332,17 +330,18 @@ angular.module('toolkit-gui')
 		 * @memberof			ParticipantInviteCtrl
 		 */
 		$scope.showInviteForm = function( formName ) {
+            $scope.data.showStep=3;
+
 			switch(formName) {
-				case 'lawyer':
-					$scope.data.showAddParticipant=false;
-					$scope.data.showAddLawyer=true;
+				case 'colleague':
+					$scope.data.formtype='colleague';
+
                     $scope.grantColleaguePermissions(true);
                     $scope.data.invitee.permissions.manage_clients = true;
                     $scope.data.invitee.user_class = 'lawyer';
 					break;
 				default:
-					$scope.data.showAddParticipant=true;
-					$scope.data.showAddLawyer=false;
+					$scope.data.formtype='client';
                     $scope.data.invitee.permissions.manage_clients = true;
 					$scope.data.invitee.permissions.manage_participants = false;
 					$scope.data.invitee.permissions.manage_items = false;
