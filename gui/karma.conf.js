@@ -14,6 +14,7 @@ module.exports = function(config) {
       //components
       'bower_components/jquery/jquery.js', 
       'bower_components/angular/angular.js',
+      'bower_components/angular-cookies/angular-cookies.js',
       'bower_components/angular-!(scenario)/angular-!(.min).js',
       'bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
       'bower_components/angular-ui-utils/ui-utils.js',
@@ -23,7 +24,8 @@ module.exports = function(config) {
       'bower_components/angular-ui-router/release/angular-ui-router.js',
       'bower_components/ng-file-upload/angular-file-upload.js',
       'bower_components/angular-markdown-directive/markdown.js',
-      'bower_components/angular-elastic/elastic.js',	  
+      'bower_components/angular-elastic/elastic.js',
+      'bower_components/html5-desktop-notifications/desktop-notify.js',
 
       //templates
       'bower_components/ez-confirm/src/ez-confirm-tpl.html',
