@@ -1,7 +1,10 @@
 <div class="modal-content new-task">
     <div class="modal-header">
-        <h4 class="modal-title" id="delete-task">
-            <i class="fa fa-list-ul"></i> Add new Task to Item <span ng-bind="selectedItem.name"></span></h4>
+        <h4 class="modal-title">
+            <i class="fa fa-list-ul"></i>
+            <span ng-hide="task.slug">Add new Task to Item {{ checklistItem.name }}</span>
+            <span ng-show="task.slug">Task in Item {{ checklistItem.name }}</span>
+        </h4>
     </div>
     <form class="form" role="form" ng-submit="submitTask()">
         <div class="modal-body">
@@ -11,7 +14,8 @@
             </div>
             <div class="form-group">
                 <label for="task-name">Task Description</label>
-                <textarea class="form-control" mentions-box container-position="left" msd-elastic placeholder="Enter a description for this task"
+                <textarea class="form-control" mentions-box container-position="left" msd-elastic
+                          placeholder="Enter a description for this task"
                           text="task.description"></textarea>
             </div>
             <div class="form-group">

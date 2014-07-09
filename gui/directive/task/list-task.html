@@ -1,10 +1,9 @@
 <div class="tasks-wrapper">
     <div class="item-subheading">Tasks<span class="number-of"> ({{ data.tasks.length }})</span>
-        <a class="btn-link" href="javascript:;" ng-click="manageTask()" ng-if="currUser.role==='owner'">New Task</a>
+        <a class="btn-link" href="javascript:;" ng-click="manageTask()">New Task</a>
     </div>
 
     <ul class="all-tasks">
-
         <li class="one-task" ng-repeat="task in data.tasks">
             <ul class="one-task">
                 <li class="icon" ng-click="toggleCompleteTask(task)"><span class="" ng-class="{'incomplete fui-radio-unchecked': !task.is_complete, 'fui-check-inverted complete': task.is_complete }"></span></li>
@@ -20,4 +19,5 @@
             </ul>
         </li>
     </ul>
+
 </div>

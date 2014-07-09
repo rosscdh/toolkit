@@ -9,7 +9,8 @@ angular.module('toolkit-gui')
         'checklistItem',
         'task',
         'taskService',
-        function ($scope, $modalInstance, toaster, participants, currentUser, matter, checklistItem, task, taskService) {
+        '$log',
+        function ($scope, $modalInstance, toaster, participants, currentUser, matter, checklistItem, task, taskService, $log) {
             'use strict';
             /**
              * In scope variable containing a list of participants within this matter. This is passed through from the originating controller.
@@ -52,10 +53,13 @@ angular.module('toolkit-gui')
              */
             if (task) {
                 $scope.task = angular.copy(task);
+                $log.debug(task);
             } else {
                 $scope.task = {
                     'name': '',
-                    'description': ''
+                    'description': '',
+                    'created_by': {},
+                    'assigned_to': []
                 };
             }
 
@@ -103,8 +107,6 @@ angular.module('toolkit-gui')
                         }
                     );
                 }
-
-
             };
 
             $scope.toggleUser = function (user) {
@@ -114,6 +116,10 @@ angular.module('toolkit-gui')
                     delete $scope.data.selectedUsers[user.username];
                 }
             };
+
+            $scope.taskIsEditable = function(){
+                return $scope.currentUser.role==='owner' || $scope.currentUser.username === $scope.task.created_by.username;
+            }
 
             $scope.init = function () {
                  if ($scope.task.assigned_to && $scope.task.assigned_to.length > 0) {
