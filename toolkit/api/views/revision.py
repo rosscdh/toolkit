@@ -1,7 +1,5 @@
 # -*- coding: UTF-8 -*-
 from django.http import Http404
-from django.core.cache import cache
-from django.utils.timezone import utc
 from django.shortcuts import get_object_or_404
 
 from rulez import registry as rulez_registry
@@ -21,7 +19,6 @@ from ..serializers import UserSerializer
 
 
 import logging
-import datetime
 
 logger = logging.getLogger('django.request')
 
@@ -172,7 +169,7 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
 
         request_data.update({
             # get default if none present
-            'status': request_data.get('status', self.matter.default_status_index),  # get the default status if its not presetn
+            'status': request_data.get('status', self.matter.default_status_index),  # get the default status if its not present
         })
 
         serializer = self.get_serializer(self.revision, data=request_data, files=request.FILES)

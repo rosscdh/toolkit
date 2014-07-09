@@ -24,9 +24,7 @@ BASE_REVISION_STATUS = get_namedtuple_choices('REVISION_STATUS', (
                             ))
 
 
-def _upload_file(instance, filename):
-    full_file_name = None
-
+def _upload_revision(instance, filename):
     split_file_name = os.path.split(filename)[-1]
     filename_no_ext, ext = os.path.splitext(split_file_name)
 
@@ -42,6 +40,22 @@ def _upload_file(instance, filename):
     return 'executed_files/%s' % full_file_name
 
 
+def _upload_attachment(instance, filename):
+    split_file_name = os.path.split(filename)[-1]
+    filename_no_ext, ext = os.path.splitext(split_file_name)
+
+    identifier = '%d-%s' % (instance.item.pk, instance.uploaded_by.username)
+    full_file_name = '%s-%s%s' % (identifier, slugify(filename_no_ext), ext)
+
+    if identifier in slugify(filename):
+        #
+        # If we already have this filename as part of the recombined filename
+        #
+        full_file_name = filename
+
+    return 'attachments/%s' % full_file_name
+
+
 class Revision(IsDeletedMixin,
                ApiSerializerMixin,
                StatusLabelsMixin,
@@ -54,7 +68,8 @@ class Revision(IsDeletedMixin,
 
     slug = models.SlugField(blank=True, null=True)  # stores the revision number v3..v2..v1
 
-    executed_file = models.FileField(upload_to=_upload_file, max_length=255, storage=_managed_S3BotoStorage(), null=True, blank=True)
+    executed_file = models.FileField(upload_to=_upload_revision, max_length=255, storage=_managed_S3BotoStorage(),
+                                     null=True, blank=True)
 
     item = models.ForeignKey('item.Item')
     uploaded_by = models.ForeignKey('auth.User')
@@ -64,7 +79,8 @@ class Revision(IsDeletedMixin,
 
     # allow reviewers to upload alternatives to the current
     # these alternatives may be set as the "current" if the lawyer approves
-    alternatives = models.ManyToManyField('attachment.Revision', null=True, blank=True, symmetrical=False, related_name="parent")
+    alternatives = models.ManyToManyField('attachment.Revision', null=True, blank=True, symmetrical=False,
+                                          related_name="parent")
 
     # True by default, so that on create of a new one, it's set as the current revision
     is_current = models.BooleanField(default=True)
@@ -176,6 +192,29 @@ class Revision(IsDeletedMixin,
 
     def previous(self):
         return self.revisions.filter(pk__lt=self.pk).first()
+
+
+class Attachment(IsDeletedMixin,
+                 ApiSerializerMixin,
+                 FileExistsLocallyMixin,
+                 models.Model):
+    name = models.CharField(max_length=255, null=True, blank=True)
+    # description = models.CharField(max_length=255, null=True, blank=True)  # do we need this?
+
+    file = models.FileField(upload_to=_upload_attachment, max_length=255, storage=_managed_S3BotoStorage(), null=True,
+                            blank=True)
+
+    item = models.ForeignKey('item.Item', related_name='attachments')
+    uploaded_by = models.ForeignKey('auth.User')
+
+    # data = JSONField(default={}, blank=True)  # do we need this?
+
+    date_created = models.DateTimeField(auto_now=False, auto_now_add=True, db_index=True)
+    # date_modified = models.DateTimeField(auto_now=True, auto_now_add=True, db_index=True)
+    # do we need this? seems like you cannot modify an attachment, just delete
+
+    _serializer = 'toolkit.api.serializers.AttachmentSerializer'
+
 
 
 from .signals import (ensure_revision_slug,
