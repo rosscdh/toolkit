@@ -107,12 +107,14 @@ class ItemTaskView(GetTaskMixin,
         return user in self.matter.participants.all()
 
     def can_edit(self, user):
+        self.task = self.get_object()
         return hasattr(self, 'item') is False  \
-               or user == self.created_by  \
+               or user == self.task.created_by  \
                or user.matter_permissions(matter=self.item.matter).has_permission(manage_items=True) is True
 
     def can_delete(self, user):
-        return user == self.created_by  \
+        self.task = self.get_object()
+        return user == self.task.created_by  \
                or user.matter_permissions(matter=self.item.matter).has_permission(manage_items=True) is True
 
 
