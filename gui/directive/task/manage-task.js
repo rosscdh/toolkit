@@ -117,9 +117,8 @@ angular.module('toolkit-gui')
 
             $scope.init = function () {
                  if ($scope.task.assigned_to && $scope.task.assigned_to.length > 0) {
-                     jQuery.each($scope.task.assigned_to, function (index, username) {
-                         //TODO change structure when API passes full user object
-                         $scope.toggleUser({'username': username});
+                     jQuery.each($scope.task.assigned_to, function (index, obj) {
+                         $scope.toggleUser({'username': obj.username});
                     });
                  }
             };
