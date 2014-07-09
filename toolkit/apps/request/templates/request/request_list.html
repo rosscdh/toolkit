@@ -5,6 +5,13 @@
         <div class="content-header requests-header clearfix">
             <div class="container">
                 <div class="col-sm-8 col-sm-offset-2">
+                    <div class="content-header-btn">
+                      {% if show_completed %}
+                        <a href="{% url 'request:list' %}" class="btn btn-info btn-wide">Show open requests</a>
+                      {% else %}
+                        <a href="{% url 'request:list_completed' %}" class="btn btn-info btn-wide">Show completed requests</a>
+                      {% endif %}
+                    </div>
                     {% if show_completed %}
                       <h3>{% if object_list|length > 0 %}<span class="circle">{{ object_list|length }}</span> {% endif %}Completed Requests</h3>
                     {% else %}
