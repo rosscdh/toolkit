@@ -1,6 +1,11 @@
 Deployment actions by branch
 ----------------------------
 
+[feature/completed-requests]
+
+1. ./manage.py migrate default 0005
+2. ./manage.py migrate default 0006
+
 --------------------------------------------------------------------------------
 ** DEPLOYED 2 July 2014
 --------------------------------------------------------------------------------

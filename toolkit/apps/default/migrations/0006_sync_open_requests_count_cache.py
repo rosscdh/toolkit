@@ -16,8 +16,9 @@ class Migration(DataMigration):
 
     def backwards(self, orm):
         for profile in orm['default.UserProfile'].objects.all():
-            del profile.data['open_requests']
-            profile.save(update_fields=['data'])
+            if profile.data['open_requests']:
+                del profile.data['open_requests']
+                profile.save(update_fields=['data'])
 
     models = {
         u'auth.group': {
