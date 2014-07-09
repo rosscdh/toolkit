@@ -114,8 +114,10 @@ class ItemTaskView(GetTaskMixin,
 
     def can_delete(self, user):
         self.task = self.get_object()
+        perms = user.matter_permissions(matter=self.item.matter)
         return user == self.task.created_by  \
-               or user.matter_permissions(matter=self.item.matter).has_permission(manage_items=True) is True
+               or perms.role is perms.ROLES.colleague \
+               or perms.has_permission(manage_items=True) is True
 
 
 rulez_registry.register("can_read", ItemTaskView)
