@@ -40,6 +40,19 @@ angular.module('toolkit-gui').config(function($stateProvider, $urlRouterProvider
       'url': "/review/:reviewSlug",
       'controller': function($scope) {}
     })
+    .state('closing', {
+      'url': "/closing",
+      'controller': 'ChecklistCtrl',
+      'data': {
+        'defaultFilter': { 'filter': {'is_complete': true}, 'statusCode': 'closed' }
+      },
+      'templateUrl': '/static/ng/partial/checklist/closing.html'
+    })
+    .state('closing.item', {
+      'url': "/:itemSlug",
+      'templateUrl': '/static/ng/partial/checklist/includes/itemdetails.html',
+      'controller': function($scope) {}
+    })
     /**
      * Matter: Discussion
      */
@@ -78,6 +91,10 @@ angular.module('toolkit-gui').config(['$httpProvider', function($httpProvider) {
     $httpProvider.defaults.xsrfCookieName = 'csrftoken';
     $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';    }
 ]);
+
+angular.module('toolkit-gui').filter('escape', function() {
+  return window.escape;
+});
 
 
 

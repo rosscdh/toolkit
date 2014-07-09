@@ -1,20 +1,16 @@
 # -*- coding: utf-8 -*-
 import logging
-from django.contrib.auth.models import User
 from django.dispatch import Signal, receiver
-from django.test.client import RequestFactory
 from django.db.models.signals import (m2m_changed,
                                       post_save,
                                       post_delete)
-
-import dj_crocodoc.signals as crocodoc_signals
 
 from toolkit.apps.workspace.models import InviteKey
 from toolkit.api.serializers import LiteUserSerializer
 from toolkit.apps.workspace.models import Workspace, WorkspaceParticipants
 
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
-from .mailers import ParticipantAddedEmail
+from toolkit.apps.matter.mailers import ParticipantAddedEmail
 
 
 logger = logging.getLogger('django.request')
@@ -31,7 +27,7 @@ def _update_matter_participants(matter):
     Participants optimisations; so we dont have millions of queries on matter_list
     and else where
     """
-    participants_data = {'participants': []} # @BUSINESSRULE reset the participants list
+    participants_data = {'participants': []}  # @BUSINESSRULE reset the participants list
 
     for u in matter.participants.all():
         participants_data.get('participants').append(LiteUserSerializer(u, context={'matter': matter}).data)
@@ -121,64 +117,3 @@ def on_participant_added(sender, instance, action, model, pk_set, **kwargs):
                     # @TODO this is REALLY HEAVY
                     #
                     reviewdocument.save()
-
-
-@receiver(crocodoc_signals.crocodoc_comment_create)
-@receiver(crocodoc_signals.crocodoc_comment_update)  # reply to
-@receiver(crocodoc_signals.crocodoc_comment_delete)
-#@receiver(crocodoc_signals.crocodoc_annotation_highlight)
-#@receiver(crocodoc_signals.crocodoc_annotation_strikeout)
-@receiver(crocodoc_signals.crocodoc_annotation_textbox)
-#@receiver(crocodoc_signals.crocodoc_annotation_drawing)
-## @receiver(crocodoc_signals.crocodoc_annotation_point)  # dont record this event because its pretty useless and comes by default when they comment
-def crocodoc_webhook_event_recieved(sender, verb, document, target, attachment_name, user_info, crocodoc_event,
-                                    content=None, **kwargs):
-    """
-    signal to handle any of the crocdoc signals
-    """
-    matter = None
-
-    user_pk, user_full_name = user_info
-
-    try:
-        user = User.objects.get(pk=user_pk)
-
-    except User.DoesNotExist:
-        pass
-
-    else:
-        # continue on we have a user
-        #
-        # are we looking at something that is a matter
-        #
-        if target.__class__.__name__ == 'Workspace':
-            matter = target
-        #
-        # are we looking at something that has an item
-        #
-        if hasattr(target, 'item'):
-            matter = target.item.matter
-
-        if matter is not None:
-            if crocodoc_event in ['annotation.create', 'comment.create', 'comment.update']:
-                # user MUST be in document.source_object.primary_reviewdocument.reviewers
-                # otherwise he could not get to this point
-                try:
-                    reviewdocument = document.source_object.reviewdocument_set.get(crocodoc_uuid=document.uuid)
-                except document.source_object.reviewdocument_set.model.DoesNotExist:
-                    reviewdocument = None                    
-
-                if reviewdocument:
-
-                    if reviewdocument == document.source_object.primary_reviewdocument:
-                        # this reviewdocument is the PRIMARY one, meaning: one that is being reviewed by a matter.participant
-                        matter.actions.add_revision_comment(user=user, revision=document.source_object, comment=content,
-                                                            reviewdocument=reviewdocument)
-                    else:
-                        # this reviewdoc is a 3rd party review
-                        # otherwise it is externally reviewed -> add "(review copy)" to the displayed event
-                        matter.actions.add_review_copy_comment(user=user, revision=document.source_object,
-                                                               comment=content, reviewdocument=reviewdocument)
-
-            if crocodoc_event in ['annotation.delete', 'comment.delete']:
-                matter.actions.delete_revision_comment(user=user, revision=document.source_object)

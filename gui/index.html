@@ -91,6 +91,7 @@
   <script src="/static/ng/directive/filepicker.js"></script>
   <script src="/static/ng/directive/auth.js"></script>
   <script src="/static/ng/directive/modal.js"></script>
+  <script src="/static/ng/directive/iframe/iframe-events.js"></script>
   <script src="/static/ng/directive/sticky-elements/sticky-elements.js"></script>
   <!-- Add New Directive JS Above -->
 
@@ -109,7 +110,6 @@
   <script src="/static/ng/partial/discussion/discussion.js"></script>
   <script src="/static/ng/partial/discussion/manage-thread-participants.js"></script>
   <script src="/static/ng/partial/discussion/create-thread.js"></script>
-  <script src="/static/ng/partial/closing/closing.js"></script>
   <script src="/static/ng/partial/navigation/navigation.js"></script>
   <script src="/static/ng/partial/participant-invite/participant-invite.js"></script>
   <script src="/static/ng/partial/request-revision/request-revision.js"></script>
@@ -152,18 +152,15 @@
     </div>
     <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav" ng-show="matter.selected">
+        <!-- Hide for now, just taking up space -->
         <li id="checklist-nav" ng-class="{'active': isActive('/checklist')}">
           <a href="#/checklist" title="Checklist"><span class="fui-list"></span></a>
         </li>
-<!--    Hidden until last few points are sorted out
-        <li id="discussion-nav" ng-class="{'active': isActive('/discussion')}">
-          <a href="#/discussion" title="Discussion"><span class="fui-chat"></span></a>
-        </li> -->
-        <!-- Hide for now - discussed 2014-03-14
         <li id="closing-nav" ng-class="{'active': isActive('/closing')}">
-            <a ng-href="#/closing">Closing</a>
-        </li> -->
-        <li class="checklist-members hidden-xs">
+          <a ng-href="#/closing"><span class="fui-book"></span></a>
+        </li>
+
+        <li class="checklist-members  hidden-xs  hidden-sm">
           <a href="javascript:;" ng-click="invite()">
             <span class="fui-user"></span>
             <span ng-if="matter.selected&&matter.selected.participants.length>0&&matter.selected.participants.length<=3">
@@ -188,7 +185,7 @@
 
             <!-- filter //-->
             {% verbatim %}
-            <span class="input-group-btn custom-btn-round">
+            <span class="input-group-btn custom-btn-round" ng-if="baseRoute=='checklist'">
               <button
                 class="btn btn-default dropdown-toggle btn-xs doc-outline-status-{{matter.selectedStatusFilter}}"
                 type="button"

@@ -104,6 +104,14 @@ angular.module('toolkit-gui')
 		 */
 		$scope.matter = matterService.data(); // Used to communicate between controllers
 
+		/**
+		 * Used to determine if the user is looking a a checklist or closing list
+		 * @memberof ChecklistCtrl
+		 * @type {string}
+		 * @private
+		 */
+		var baseRoute = $state.current.name.indexOf('closing')>=0?'closing':'checklist';
+
 		$scope.data = {
 			'slug': routeParams.matterSlug,
 			'matter': null,
@@ -119,16 +127,14 @@ angular.module('toolkit-gui')
 			'streamType': 'matter',
 			'history': {},
 			'page': 'checklist',
-			'statusFilter': null,
-			'itemFilter': null,
 			'knownSigners': [],
             'showPreviousRevisions': false,
-            'loadedItemdetails': {}
+            'loadedItemdetails': {},
+            'matterCalled': null
 		};
 
 		$rootScope.searchEnabled = true;
 
-		//debugger;
 		// Basic checklist item format, used for placeholder checklist items
 		var CHECKLISTITEMSKELETON = {
 			"status": -1,
@@ -197,6 +203,7 @@ angular.module('toolkit-gui')
 		 * @method              handleUrlState
 		 */
 		$scope.handleUrlState = function () {
+			window.state = $state;
 			var itemSlug = $state.params.itemSlug;
 			var revisionSlug = $state.params.revisionSlug;
 			var reviewSlug = $state.params.reviewSlug;
@@ -354,19 +361,19 @@ angular.module('toolkit-gui')
 					firstItem = matterService.selectFirstitem( firstItem, items, category );
 				});
 
-        jQuery.each( matter.participants, function( index, participant ) {
-          if (participant.user_class === 'customer'){
-            $scope.data.customers.push(participant);
-          }
-
-        });
+				// Is this correct since the last 
+				jQuery.each( matter.participants, function( index, participant ) {
+					if (participant.user_class === 'customer'){
+						$scope.data.customers.push(participant);
+					}
+				});
 
 				$scope.data.matter = matter;
 				$scope.data.categories = categories;
 
 				// If there is no state then select the first available item
-				if(!$state.params.itemSlug && firstItem) {
-					$location.path('/checklist/' + firstItem.item.slug);
+				if(!$state.params.itemSlug && firstItem && baseRoute==='checklist') {
+					$location.path('/'+baseRoute+'/' + firstItem.item.slug);
 				}
 				$scope.handleUrlState();
 
@@ -379,6 +386,27 @@ angular.module('toolkit-gui')
 			if( matter && matter._meta && matter._meta.matter && matter._meta.matter['is_demo']) {
 				IntroService.show(steps);
 			}
+		};
+
+		/**
+		 * Starts to process of downloading all documents within the matter
+		 * @name	exportMatter
+		 * @private
+		 * @memberof			ChecklistCtrl
+		 * @method			exportMatter
+		 */
+		$scope.exportMatter = function() {
+			$scope.downloadingDocuments = true;
+			matterService.exportMatter( $scope.data.matter ).then(
+				function success() {
+					toaster.pop('success', 'Documents will be emailed to you soon.',5000);
+					$scope.downloadingDocuments = false;
+				},
+				function error() {
+					toaster.pop('error', 'Unable to download all documents',5000);
+					$scope.downloadingDocuments = false;
+				}
+			);
 		};
 
 		/**
@@ -549,6 +577,16 @@ angular.module('toolkit-gui')
 			$timeout(function(){
 				$scope.selectItem(item, category);
 			},10);
+		};
+
+		$scope.navigateToItem = function( options ) {
+			switch(baseRoute) {
+				case 'closing':
+					$state.transitionTo('closing.item', options );
+					break;
+				default:
+					$state.transitionTo('checklist.item', options );
+			}
 		};
 
 		$scope.displayChecklist = function() {
@@ -1518,11 +1556,11 @@ angular.module('toolkit-gui')
 				function ok(/*result*/) {
 					$scope.calculateReviewPercentageComplete(item);
 					// revert back to previous URL
-					$location.path('/checklist/' + $state.params.itemSlug );
+					$location.path('/'+baseRoute+'/' + $state.params.itemSlug );
 				},
 				function cancel() {
 					// revert back to previous URL
-					$location.path('/checklist/' + $state.params.itemSlug );
+					$location.path('/'+baseRoute+'/' + $state.params.itemSlug );
 				}
 			);
 		};
@@ -2127,7 +2165,7 @@ angular.module('toolkit-gui')
 
 			// Format item
 			content = content
-						.replace('<a href="">', '<a href="#/checklist/' +  checklistItem.slug + '">');
+						.replace('<a href="">', '<a href="#/'+baseRoute+'/' +  checklistItem.slug + '">');
 
 			// Insert into conversation
 			$scope.data.activitystream.unshift( { 'event': content, 'id': null, 'timestamp': 'just now', 'status': 'awaiting' });
@@ -2158,6 +2196,26 @@ angular.module('toolkit-gui')
 	    };
 		/* END COMMENT HANDLING */
 
+		/**
+		 * Calculates the number of closed items
+		 *
+		 * @memberof			ChecklistCtrl
+		 * @method				closedItemsCount
+		 * @private
+		 * @type {Function}
+		 */
+		$scope.closedItemsCount = function() {
+			if($scope.data.matter && $scope.data.matter.items) {
+				var items = $scope.data.matter.items;
+
+				return jQuery.grep(items, function( item ) {
+					return item.is_complete;
+				}).length;
+			} else {
+				return 0;
+			}
+		};
+
 		/*
 		 _____ _ _ _
 		|  ___(_) | |_ ___ _ __ ___
@@ -2167,32 +2225,24 @@ angular.module('toolkit-gui')
 
 		 */
 		/**
-		 * applyStatusFilter  filters for checklist based on status 0-4
-		 * @param  {Object} filter Filter to apply to latest_revision
+		 * Applies checklist filter based on route states provided
+		 *
+		 * @memberof			ChecklistCtrl
+		 * @private
+		 * @type {Function}
 		 */
-		$scope.applyStatusFilter = function( filter ) {
-			// Initialise status filter
-			$scope.data.statusFilter = $scope.data.statusFilter||{};
-
-			// Clear other filters
-			$scope.data.itemFilter = null;
-
-			if( filter ) {
-				for(var key in filter) {
-					// Convert { "0": "Draft" } to { "status": 0 }
-					$scope.data.statusFilter[key] = parseInt(filter[key]);
-				}
+		$scope.applyDefaultFilters = function() {
+			// Set filter
+			if($state && $state.current && $state.current.data && $state.current.data.defaultFilter ) {
+				$scope.matter.itemFilter = $state.current.data.defaultFilter.filter||null;
+				$scope.matter.selectedStatusFilter = $state.current.data.defaultFilter.statusCode;
 			} else {
-				// Clear all filters
-				$scope.data.itemFilter = null;
-				$scope.data.statusFilter = null;
+				$scope.matter.itemFilter = null;
+				$scope.matter.selectedStatusFilter = null;
 			}
 		};
-		$scope.clearFilters = function() {
-			$scope.matter.itemFilter = null;
-			$scope.matter.statusFilter = null;
-			$scope.matter.selectedStatusFilter = null;
-		};
+
+		$scope.applyDefaultFilters();
 
 		/* END COMMENT HANDLING */
 
