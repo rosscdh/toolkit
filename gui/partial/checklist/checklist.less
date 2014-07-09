@@ -455,7 +455,7 @@ ul.checklist-items {
 				opacity:1;
 			}
 		}
-		
+
 		// The selection state
 		&.selected {
 			background-color: lighten(@belize-hole, 10%);
@@ -523,7 +523,7 @@ ul.checklist-items {
 	.loading {
 		opacity: 0.75;
 	}
-		
+
 	.fapad {
 		padding: 0.5em;
 	}
@@ -731,22 +731,24 @@ div.iframe-loader::after {
 }
 
 .document-view-tools {
-	position: absolute;
-	right: 0;
-	top: 2.2em;
-	width:300px;
-	z-index: 2;
+	padding-top: 20px;
 }
 
 @media screen and (max-width: 1600px){
 	.document-view-tools {
-		top: 4.6em;
+		top: 4.2em;
 	}
 }
 
 .document-container {
-	padding-top:3em;
+	bottom: 0;
+	position: absolute;
+	right: 0;
+	top: 55px;
+	height: 92%;
 	overflow-y: hidden;
+	width: 100%
+
 }
 
 .btn-file {
@@ -773,3 +775,5 @@ div.iframe-loader::after {
 	border-bottom: 0;
 	height: 55px;
 }
+
+
