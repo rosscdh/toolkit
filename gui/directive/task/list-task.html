@@ -1,6 +1,6 @@
 <div class="tasks-wrapper">
     <div class="item-subheading">Tasks<span class="number-of"> ({{ data.tasks.length }})</span>
-        <a class="btn-link" href="javascript:;" ng-click="manageTask()">New Task</a>
+        <a class="btn-link" href="javascript:;" ng-click="manageTask()" ng-if="currUser.role==='owner'">New Task</a>
     </div>
 
     <ul class="all-tasks">
@@ -10,7 +10,11 @@
                 <li class="icon" ng-click="toggleCompleteTask(task)"><span class="" ng-class="{'incomplete fui-radio-unchecked': !task.is_complete, 'fui-check-inverted complete': task.is_complete }"></span></li>
 
                 <li class="task-name" ng-class="{'incomplete': !task.is_complete, 'complete': task.is_complete }">{{ task.name }}</li>
-                <li class="task-status"><a href="#" ng-click="assignTask(task)">Assign</a></li>
+                <li class="task-status">
+                    <div ng-show="task.assigned_to.length>0">
+                        Assigned to <span ng-repeat="user in task.assigned_to">{{ user.initials }}&nbsp;</span>
+                    </div>
+                </li>
                 <li class="delete-task"><a href="#" ng-click="manageTask(task)" ng-class="{'incomplete': !task.is_complete, 'complete': task.is_complete }"><i class="fa fa-pencil-square-o"></i></a></li>
                 <li class="delete-task"><a href="#" ng-click="deleteTask(task)">X</a></li>
             </ul>

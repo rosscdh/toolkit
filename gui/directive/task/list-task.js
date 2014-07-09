@@ -55,6 +55,10 @@ angular.module('toolkit-gui').directive('tasksList', ['$compile', '$log', '$sce'
                     modalInstance.result.then(
                         function ok(result) {
                             $log.debug(result);
+
+                            $scope.loadTasks();
+
+                            /*
                             var olditems = jQuery.grep($scope.data.tasks, function(obj){
                                 return obj.slug === result.slug;
                             });
@@ -62,7 +66,7 @@ angular.module('toolkit-gui').directive('tasksList', ['$compile', '$log', '$sce'
                                 $scope.data.tasks.push(result);
                             } else {
                                 olditems[0] = angular.extend(olditems[0], result);
-                            }
+                            }*/
                         },
                         function cancel() {
                             //
