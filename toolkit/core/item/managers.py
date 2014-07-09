@@ -31,6 +31,7 @@ class ItemManager(IsDeletedManager):
         # review requests
         review_requests = self.get_queryset().filter(
             models.Q(revision__is_current=True) &
+            models.Q(revision__reviewers__in=[user]) &
             models.Q(revision__reviewdocument__reviewers__in=[user]) &
             reduce(compl_operator, [
                 models.Q(is_complete=completed),
