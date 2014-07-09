@@ -17,7 +17,7 @@ class Task(SendReminderEmailMixin,
     """
     slug = UUIDField(auto=True, db_index=True)
     name = models.CharField(max_length=200)
-    description = models.CharField(max_length=255)
+    description = models.CharField(max_length=255, blank=True)
 
     item = models.ForeignKey('item.Item')
 
