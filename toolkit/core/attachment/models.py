@@ -7,6 +7,7 @@ from toolkit.core import _managed_S3BotoStorage
 from toolkit.core.mixins import (ApiSerializerMixin, IsDeletedMixin, FileExistsLocallyMixin)
 from toolkit.utils import get_namedtuple_choices
 
+from uuidfield import UUIDField
 from jsonfield import JSONField
 
 from .managers import RevisionManager
@@ -198,8 +199,8 @@ class Attachment(IsDeletedMixin,
                  ApiSerializerMixin,
                  FileExistsLocallyMixin,
                  models.Model):
+    slug = UUIDField(auto=True, db_index=True)
     name = models.CharField(max_length=255, null=True, blank=True)
-    # description = models.CharField(max_length=255, null=True, blank=True)  # do we need this?
 
     file = models.FileField(upload_to=_upload_attachment, max_length=255, storage=_managed_S3BotoStorage(), null=True,
                             blank=True)
