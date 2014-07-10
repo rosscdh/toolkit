@@ -406,30 +406,6 @@
 </div>
 
 
-<div class="attachments-wrapper">
-    <div class="item-subheading">Attachments<span class="number-of"> ({{ data.attachments.length }}3)</span>
-        <a class="btn-link" href="javascript:;" ng-click="manageTask()">New Attachment</a>
-    </div>
+<div attachments-list selected-item="data.selectedItem" current-user="data.usdata.current" matter="data.matter"></div>
 
-    <ul class="all-attachments">
-        <li class="one-attachment">
-            <ul class="one-attachment">
-                <li class="icon"><i class="fa fa-paperclip"></i></span></li>
-                <li class="attachment-name">headshot.jpeg</li>
-                <li class="attachment-status"><a href="#">Uploaded by TC</a></li>
-                 <li class="download-attachment"><a href="#"><i class="fa fa-download"></a></i></li>
-                <li class="delete-attachment"><a href="#" ng-click="deleteAttachment(task)">X</a></li>
-            </ul>
-        </li>
-          <li class="one-attachment">
-            <ul class="one-attachment">
-                <li class="icon"><i class="fa fa-paperclip"></i></span></li>
-                <li class="attachment-name">coverletter.pdf</li>
-                <li class="attachment-status"><a href="#">Uploaded by TC</a></li>
-                <li class="download-attachment"><a href="#"><i class="fa fa-download"></a></i></li>
-                <li class="delete-attachment"><a href="#" ng-click="deleteTask(task)">X</a></li>
-            </ul>
-        </li>
 
-    </ul>
-</div>
