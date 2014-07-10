@@ -12,7 +12,8 @@ angular.module('toolkit-gui')
 	'API_BASE_URL',
 	'$upload',
     '$log',
-	function( $q, $resource, API_BASE_URL, $upload, $log ) {
+    '$timeout',
+	function( $q, $resource, API_BASE_URL, $upload, $log, $timeout ) {
 
 		/**
 		 * Returns a key/value object containing $resource methods to access attachment API end-points
