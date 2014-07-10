@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.contrib.comments.managers import CommentManager
 from django.contrib.contenttypes.models import ContentType
+from django.core.urlresolvers import reverse
 from django.db import models
 
 from jsonfield import JSONField
@@ -23,6 +24,12 @@ class DiscussionComment(ThreadedComment, models.Model):
 
     def __unicode__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return '{url}#/discussion/{thread_slug}'.format(
+            url = reverse('matter:detail', kwargs={ 'matter_slug': self.matter.slug }),
+            thread_slug=self.thread.slug
+        )
 
     def save(self, *args, **kwargs):
         super(DiscussionComment, self).save(*args, **kwargs)
@@ -66,6 +73,7 @@ class DiscussionComment(ThreadedComment, models.Model):
 
     def get_email_kwargs(self):
         return {
+            'access_url': self.get_absolute_url(),
             'actor': self.user,
             'comment': self,
             'matter': self.matter,

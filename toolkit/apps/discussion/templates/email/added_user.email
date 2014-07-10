@@ -1,7 +1,10 @@
 {% extends 'email/base.email' %}
 
-{% block subject_line %}{{ actor }} added you to the thread {{ thread }} on {{ matter }}{% endblock %}
+{% load toolkit_tags %}
+
+{% block subject_line %}{{ actor }} added you to the thread {{ thread }} in {{ matter }}{% endblock %}
 
 {% block html_content %}
-  <p>You have been added to a thread.</p>
+  {{ actor }} added you to the thread "{{ thread }}" in {{ matter }}.
+  {% if access_url %}<p>You can view this thread at: <a href="{% ABSOLUTE_BASE_URL access_url %}">{% ABSOLUTE_BASE_URL access_url %}</a></p>{% endif %}
 {% endblock %}
