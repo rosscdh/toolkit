@@ -117,7 +117,7 @@ angular.module('toolkit-gui')
 					uploadHandle = $upload.upload({
 						'url': url, //upload.php script, node.js route, or servlet url
 						'file': file,
-						'fileFormDataName': 'executed_file'
+						'fileFormDataName': 'file'
 					}).progress(function(evt) {
 						console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
 

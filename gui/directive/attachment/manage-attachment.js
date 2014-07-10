@@ -91,7 +91,7 @@ angular.module('toolkit-gui')
              * @param  {Array} $files HTML5 files object
              */
             $scope.onFileDropped = function ($files) {
-                var matterSlug = $scope.data.slug;
+                var matterSlug = $scope.matter.slug;
                 var itemSlug = $scope.checklistItem.slug;
 
                 var promise;
@@ -102,10 +102,11 @@ angular.module('toolkit-gui')
                 promise = attachmentService.uploadFile(matterSlug, itemSlug, $files);
 
                 promise.then(
-                    function success(revision) {
+                    function success() {
                         $scope.data.uploading = false;
                         $scope.data.uploadingPercent = 0;
                         toaster.pop('success', 'Success!', 'File added successfully', 3000);
+
                         $modalInstance.close();
                     },
                     function error(err) {
