@@ -25,6 +25,7 @@ logger = logging.getLogger('django.request')
 
 class AttachmentEndpoint(viewsets.ModelViewSet):
     model = Attachment
+    lookup_field = 'slug'
     serializer_class = AttachmentSerializer
 
 

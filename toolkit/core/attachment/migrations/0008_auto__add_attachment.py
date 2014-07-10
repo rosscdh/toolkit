@@ -12,6 +12,7 @@ class Migration(SchemaMigration):
         db.create_table(u'attachment_attachment', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('is_deleted', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('slug', self.gf('uuidfield.fields.UUIDField')(db_index=True, unique=True, max_length=32, blank=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
             ('file', self.gf('django.db.models.fields.files.FileField')(max_length=255, null=True, blank=True)),
             ('item', self.gf('django.db.models.fields.related.ForeignKey')(related_name='attachments', to=orm['item.Item'])),
@@ -35,6 +36,7 @@ class Migration(SchemaMigration):
             'is_deleted': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'item': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'attachments'", 'to': u"orm['item.Item']"}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'slug': ('uuidfield.fields.UUIDField', [], {'db_index': 'True', 'unique': 'True', 'max_length': '32', 'blank': 'True'}),
             'uploaded_by': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"})
         },
         u'attachment.revision': {
