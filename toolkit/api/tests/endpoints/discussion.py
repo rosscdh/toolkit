@@ -2,6 +2,7 @@
 import json
 
 from django.contrib.auth.models import User
+from django.core import mail
 
 from model_mommy import mommy
 from rest_framework.reverse import reverse
@@ -20,7 +21,7 @@ class DiscussionsTest(BaseEndpointTest):
             matter=self.workspace,
             title='Thread',
             comment='Hello world!',
-            participants=(self.lawyer,),
+            participants=(self.lawyer, self.user),
             user=self.lawyer
         )
 
@@ -162,7 +163,7 @@ class DiscussionDetailTest(BaseEndpointTest):
             matter=self.workspace,
             title='Thread',
             comment='Hello world!',
-            participants=(self.lawyer,),
+            participants=(self.lawyer, self.user),
             user=self.lawyer
         )
 
@@ -325,7 +326,7 @@ class DiscussionCommentsTest(BaseEndpointTest):
             matter=self.workspace,
             title='Thread',
             comment='Hello world!',
-            participants=(self.lawyer,),
+            participants=(self.lawyer, self.user),
             user=self.lawyer
         )
 
@@ -388,6 +389,15 @@ class DiscussionCommentsTest(BaseEndpointTest):
 
         json_data = json.loads(resp.content)
         self.assertEqual(json_data['content'], 'Goodbye world!')
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].from_email, 'support@lawpal.com')
+        self.assertEqual(mail.outbox[0].to, [self.user.email])
+        self.assertEqual(mail.outbox[0].subject, u'{actor} commented on the thread {thread} on {matter}'.format(
+            actor=self.lawyer,
+            matter=self.workspace,
+            thread=self.thread,
+        ))
 
     def test_anon_post(self):
         resp = self.client.post(self.endpoint, {}, content_type='application/json')
@@ -688,6 +698,15 @@ class DiscussionParticipantsTest(BaseEndpointTest):
 
         json_data = json.loads(resp.content)
         self.assertEqual(json_data['username'], self.forbidden_user.username)
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].from_email, 'support@lawpal.com')
+        self.assertEqual(mail.outbox[0].to, [self.forbidden_user.email])
+        self.assertEqual(mail.outbox[0].subject, u'{actor} added you to the thread {thread} on {matter}'.format(
+            actor=self.lawyer,
+            matter=self.workspace,
+            thread=self.thread,
+        ))
 
     def test_post_with_new_user(self):
         self.client.login(username=self.lawyer.username, password=self.password)
