@@ -38,7 +38,9 @@
     "FileAPI": "~2.0.3",
     "crypto-js": "http://crypto-js.googlecode.com/files/CryptoJS%20v3.1.2.zip",
     "angular-intro.js": "~1.1.0",
-    "html5-desktop-notifications": "*"
+    "html5-desktop-notifications": "*",
+    "json-editor": "~0.6.19",
+    "ocLazyLoad": "~0.3.0"
   },
   "resolutions": {
     "angular": "1.2.19"

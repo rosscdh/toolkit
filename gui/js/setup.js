@@ -13,7 +13,8 @@ angular.module('toolkit-gui', [
     'monospaced.elastic',
     'angularFileUpload',
     'ngCookies',
-    'ngIntercom'
+    'ngIntercom',
+    'oc.lazyLoad'
 ]);
 
 angular.module('toolkit-gui').config(function($stateProvider, $urlRouterProvider) {
@@ -23,35 +24,59 @@ angular.module('toolkit-gui').config(function($stateProvider, $urlRouterProvider
      * Matter: Checklist
      */
     .state('checklist', {
-      'url': "/checklist",
+      'url': '/checklist',
       'controller': 'ChecklistCtrl',
       'templateUrl': '/static/ng/partial/checklist/checklist.html'
     })
     .state('checklist.item', {
-      'url': "/:itemSlug",
+      'url': '/:itemSlug',
       'templateUrl': '/static/ng/partial/checklist/includes/itemdetails.html',
       'controller': function($scope) {}
     })
     .state('checklist.item.revision', {
-      'url': "/revision/:revisionSlug",
+      'url': '/revision/:revisionSlug',
       'controller': function($scope) {}
     })
     .state('checklist.item.revision.review', {
-      'url': "/review/:reviewSlug",
+      'url': '/review/:reviewSlug',
       'controller': function($scope) {}
     })
     /**
      * Matter: Discussion
      */
     .state('discussion', {
-      'url': "/discussion",
+      'url': '/discussion',
       'controller': 'DiscussionCtrl',
       'templateUrl': '/static/ng/partial/discussion/discussion.html'
     })
     .state('discussion.thread', {
-      'url': "/:threadSlug",
+      'url': '/:threadSlug',
       'controller': function($scope) {},
       'templateUrl': '/static/ng/partial/discussion/includes/thread.html'
+    })
+    /**
+     * Intake Forms
+     */
+    .state('intake', {
+      'url': '/intake',
+      'templateUrl': '/static/ng/partial/intake/intake.html',
+      /* // Additional views to load
+      'views': {
+        'lazyLoadView': {
+          'controller': 'IntakeCtrl', // This view will use AppCtrl loaded below in the resolve
+          'templateUrl': '/static/ng/partial/intake/intake.html'
+        }
+      },
+      */
+      'resolve': {
+        'LoadCtrl': ['$ocLazyLoad', function($ocLazyLoad) {
+            // you can lazy load files for an existing module
+            return $ocLazyLoad.load({
+              'name': 'toolkit-gui',
+              'files': ['/static/ng/partial/intake/intakeCtrl.js']
+            });
+          }]
+      } 
     });
 
     /*
