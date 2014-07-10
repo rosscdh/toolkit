@@ -102,15 +102,19 @@ class TaskDetailTest(BaseTaskSetup):
         resp = self.client.post(create_endpoint, {
             'name': 'User creates own task',
             'description': 'A standard client user can create tasks',
+            'assigned_to': ['test-lawyer'],
         })
         self.assertEqual(resp.status_code, 201)  # created
         created_json_data = json.loads(resp.content)
+
+        self.assertEqual(created_json_data.get('assigned_to'), ['test-lawyer'])  # only returns the username on post (as we assume gui has all the required data already)
 
         # see if they can patch their own items
         endpoint = reverse('item_task', kwargs={'matter_slug': self.workspace.slug, 'item_slug': self.item.slug, 'slug': created_json_data.get('slug')})
 
         resp = self.client.patch(endpoint, json.dumps({
             'name': 'Update to My first task',
+            'assigned_to': ['test-customer'],  # replace the current set of assigned_to users with this one
         }), content_type='application/json; charset=utf-8')
         self.assertEqual(resp.status_code, 200)  # ok
 
@@ -118,6 +122,7 @@ class TaskDetailTest(BaseTaskSetup):
 
         self.assertEqual(json_data.keys(), [u'date_due', u'name', u'date_modified', u'url', u'created_by', u'is_complete', u'item', u'assigned_to', u'date_created', u'slug', u'description'])
         self.assertEqual(json_data.get('created_by'), {u'username': u'test-customer', u'name': u'Custom\xebr T\xebst', u'url': u'http://testserver/api/v1/users/test-customer', u'role': None, u'user_class': u'customer', u'initials': u'CT'})
+        self.assertEqual(json_data.get('assigned_to'), [{u'username': u'test-lawyer', u'name': u'Lawy\xebr T\xebst', u'url': u'http://testserver/api/v1/users/test-lawyer', u'role': None, u'user_class': u'lawyer', u'initials': u'LT'}])
 
     def test_participant_cant_edit_other_participants_tasks(self):
         self.client.login(username=self.user.username, password=self.password)

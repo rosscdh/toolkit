@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 
 from rest_framework import generics
@@ -50,7 +51,7 @@ class GetTaskMixin(MatterItemsQuerySetMixin):
 
 
 class ItemTasksView(GetTaskMixin,
-                    generics.ListCreateAPIView):
+                    generics.ListCreateAPIView,):
     """
     /matters/:matter_slug/items/:item_slug/tasks (GET,POST)
         Allow the [lawyer,customer] user to list and create item tasks in a matter
@@ -102,6 +103,27 @@ class ItemTaskView(GetTaskMixin,
 
     def get_serializer_context(self):
         return {'request': self.request}
+
+    def update_assigned_to(self, assigned_to_usernames):
+        if assigned_to_usernames is not None:
+            # Clear the set of current assigned_to users
+            self.object.assigned_to.clear()
+            # add the current state of users
+            for username in assigned_to_usernames:
+                self.object.assigned_to.add(User.objects.get(username=username))
+
+    def update(self, request, **kwargs):
+        # remove the assigned to from teh data set as we handle it manually
+        assigned_to = request.DATA.pop('assigned_to', None)  # remove the assigned_to
+        # process normally
+        resp = super(ItemTaskView, self).update(request=request, **kwargs)
+
+        # if the resp is OK then
+        if resp.status_code in [200]:
+            # reset and update the assigned_to option
+            self.update_assigned_to(assigned_to_usernames=assigned_to)
+
+        return resp
 
     def can_read(self, user):
         return user in self.matter.participants.all()
