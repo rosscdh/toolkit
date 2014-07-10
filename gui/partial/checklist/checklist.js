@@ -682,6 +682,20 @@ angular.module('toolkit-gui')
 			}
 		};
 
+        $scope.closeReopenItem = function(){
+            var item = $scope.data.selectedItem;
+
+            if (item.tasks_complete && !item.is_complete){
+                item.is_complete=true;
+                $scope.saveSelectedItem();
+            } else if(item.is_complete) {
+                item.is_complete = false;
+                $scope.saveSelectedItem();
+            } else if (!item.tasks_complete){
+                toaster.pop('warning', 'Warning!', 'Unable to close item due to open tasks', 5000);
+            }
+        };
+
 		/**
 		 * Changes index flag to display a specific add form
 		 *

@@ -9,10 +9,7 @@
     <form class="form" role="form" name="taskForm" novalidate ng-submit="submitTask(taskForm)">
         <div class="modal-body">
             <div class="form-group" ng-show="task.slug">
-                <label for="task-name">Created</label>
-                <div>
-                    <span ng-bind="task.date_created|timeago"></span> by <span ng-bind="task.created_by.name"></span>
-                </div>
+                <label for="task-name">Created <span ng-bind="task.date_created|timeago"></span> by <span ng-bind="task.created_by.name"></span></label>
             </div>
 
             <div class="form-group" ng-class="{'has-error': taskForm.taskname.$error.required&&data.formSubmitted }">

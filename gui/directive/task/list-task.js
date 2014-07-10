@@ -8,7 +8,8 @@ angular.module('toolkit-gui').directive('tasksList', ['$compile', '$log', '$sce'
         scope: {
             matter: '=',
             selectedItem: '=',
-            currentUser: '='
+            currentUser: '=',
+            tasksComplete: '='
         },
         replace: true,
         controller: ['$rootScope',
@@ -124,13 +125,20 @@ angular.module('toolkit-gui').directive('tasksList', ['$compile', '$log', '$sce'
                         });
 
                         $scope.data.taskCompletionStatus = parseInt(parseFloat(completed) / parseFloat($scope.data.tasks.length) * 100.0);
+                        if($scope.data.taskCompletionStatus === 100){
+                            $scope.tasksComplete = true;
+                        } else {
+                            $scope.tasksComplete = false;
+                        }
+
                     } else {
                         $scope.data.taskCompletionStatus = 0;
+                        $scope.tasksComplete = true;
                     }
                 }
 
                 $scope.toggleCompleteTask = function (task) {
-                    if ($scope.isCompleteTaskEnabled) {
+                    if ($scope.isCompleteTaskEnabled(task)) {
                         task.is_complete = !task.is_complete;
 
                         taskService.update($scope.matter.slug, $scope.selectedItem.slug, task.slug, task).then(
@@ -149,6 +157,10 @@ angular.module('toolkit-gui').directive('tasksList', ['$compile', '$log', '$sce'
                 };
 
                 $scope.isDeleteTaskEnabled = function (task) {
+                    if($scope.selectedItem.is_complete) {
+                        return false;
+                    }
+
                     if ($scope.currentUser.role === 'owner') {
                         return true;
                     }
@@ -165,6 +177,10 @@ angular.module('toolkit-gui').directive('tasksList', ['$compile', '$log', '$sce'
                 };
 
                 $scope.isCompleteTaskEnabled = function (task) {
+                    if($scope.selectedItem.is_complete) {
+                        return false;
+                    }
+
                     if ($scope.currentUser.role === 'owner') {
                         return true;
                     }

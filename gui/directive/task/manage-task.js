@@ -120,6 +120,10 @@ angular.module('toolkit-gui')
             };
 
             $scope.isEditTaskEnabled = function () {
+                if($scope.checklistItem.is_complete === true){
+                    return false;
+                }
+
                 if ($scope.currentUser.role === 'owner') {
                     return true;
                 }
@@ -141,10 +145,6 @@ angular.module('toolkit-gui')
                 } else {
                     delete $scope.data.selectedUsers[user.username];
                 }
-            };
-
-            $scope.taskIsEditable = function () {
-                return $scope.currentUser.role === 'owner' || $scope.currentUser.username === $scope.task.created_by.username;
             };
 
             $scope.init = function () {
