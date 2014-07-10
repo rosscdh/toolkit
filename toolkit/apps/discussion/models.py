@@ -8,7 +8,7 @@ from rulez import registry as rulez_registry
 from threadedcomments.models import ThreadedComment
 from uuidfield import UUIDField
 
-from toolkit.apps.discussion.mailers import AddedUserEmail, CommentedEmail
+from toolkit.apps.discussion.mailers import DiscussionAddedUserEmail, DiscussionCommentedEmail
 from toolkit.apps.workspace.models import Workspace
 
 
@@ -54,14 +54,14 @@ class DiscussionComment(ThreadedComment, models.Model):
         kwargs.update(self.get_email_kwargs())
         kwargs.update({'actor': actor})
 
-        mailer = AddedUserEmail(recipients=[(user.get_full_name(), user.email)])
+        mailer = DiscussionAddedUserEmail(recipients=[(user.get_full_name(), user.email)])
         mailer.process(**kwargs)
 
     def send_commented_email(self, **kwargs):
         kwargs.update(self.get_email_kwargs())
         recipients = self.parent.participants.all().exclude(pk=self.user.pk)
 
-        mailer = CommentedEmail(recipients=[(u.get_full_name(), u.email) for u in recipients])
+        mailer = DiscussionCommentedEmail(recipients=[(u.get_full_name(), u.email) for u in recipients])
         mailer.process(**kwargs)
 
     def get_email_kwargs(self):
