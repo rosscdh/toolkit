@@ -60,6 +60,7 @@ angular.module('toolkit-gui').config(function($stateProvider, $urlRouterProvider
     .state('intake', {
       'url': '/intake',
       'templateUrl': '/static/ng/partial/intake/intake.html',
+      'controller': 'IntakeCtrl',
       /* // Additional views to load
       'views': {
         'lazyLoadView': {
