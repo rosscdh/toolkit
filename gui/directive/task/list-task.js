@@ -127,7 +127,7 @@ angular.module('toolkit-gui').directive('tasksList', ['$compile', '$log', '$sce'
                     } else {
                         $scope.data.taskCompletionStatus = 0;
                     }
-                }
+                };
 
                 $scope.toggleCompleteTask = function (task) {
                     if ($scope.isCompleteTaskEnabled) {

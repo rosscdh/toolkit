@@ -21,7 +21,7 @@ class TaskSerializer(CreateTaskSerializer):
     For GET of tasks we use the SimpleUserSerializer objects
     """
     created_by = SimpleUserSerializer(source='created_by', many=False)
-    assigned_to = SimpleUserSerializer(source='assigned_to', many=True, required=False)
+    assigned_to = SimpleUserSerializer(source='assigned_to', many=True, required=False, allow_add_remove=True, read_only=False)
 
     class Meta:
         model = Task
