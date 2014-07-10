@@ -393,7 +393,7 @@ class DiscussionCommentsTest(BaseEndpointTest):
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].from_email, 'support@lawpal.com')
         self.assertEqual(mail.outbox[0].to, [self.user.email])
-        self.assertEqual(mail.outbox[0].subject, u'{actor} commented on the thread {thread} on {matter}'.format(
+        self.assertEqual(mail.outbox[0].subject, u'{actor} commented on the thread {thread} in {matter}'.format(
             actor=self.lawyer,
             matter=self.workspace,
             thread=self.thread,
@@ -702,7 +702,7 @@ class DiscussionParticipantsTest(BaseEndpointTest):
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].from_email, 'support@lawpal.com')
         self.assertEqual(mail.outbox[0].to, [self.forbidden_user.email])
-        self.assertEqual(mail.outbox[0].subject, u'{actor} added you to the thread {thread} on {matter}'.format(
+        self.assertEqual(mail.outbox[0].subject, u'{actor} added you to the thread {thread} in {matter}'.format(
             actor=self.lawyer,
             matter=self.workspace,
             thread=self.thread,
