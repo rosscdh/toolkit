@@ -119,6 +119,7 @@ describe('Controller: Checklist', function() {
 		smartRoutes = {'params': function() { return { 'matterSlug': 'test-matter', 'itemSlug':'123' }; }}; //mocking smartRoutes, custom route parser
 
 		matterItemService  = makeFake('matterItemService',[
+			'get',
 			'create',
 			'delete',
 			'update',
@@ -133,16 +134,32 @@ describe('Controller: Checklist', function() {
 			'uploadRevisionFile'
 		]);
 
+
+
 		// Custom services
-		matterService = makeFake('matterService',['get','selectMatter','data']);	  	 
+		matterService = makeFake('matterService',['get','selectMatter','data', 'selectFirstitem']);	  	 
 		matterService.data.andCallFake(function(/*param*/){        
 		   return {'selected':{'current_user':''}};
 		});
 		matterItemService.deleteRevisionRequest.andCallFake(doPromiseResolve({ 'is_requested': "This is so great!" }));
+		matterItemService.get.andCallFake(doPromiseResolve({ 'latest_revision': {} }));
+
 		baseService = makeFake('baseService',['loadObjectByUrl']);
 		toaster = makeFake('toaster',['pop']);
-		userService = {data:function(){return { 'current':{'user_class':'lawyer'}};},setCurrent:function(/*p*/){return {};}};
-		searchService = {data:function(){return {};}};
+		userService = {
+			'data':function(){
+				return {
+					'current':{
+						'user_class':'lawyer',
+						'permissions': { 'manage_items': true }
+					}
+				};
+			},
+			'setCurrent':function(/*p*/){
+				return {};
+			}
+		};
+		searchService = {'data':function(){return {};}};
 		activityService = makeFake('matterCategoryService',['itemstream']);
 		participantService = makeFake('participantService',['getByURL']);	  
 		matterCategoryService = makeFake('matterCategoryService',['create','delete','update']);
@@ -171,7 +188,7 @@ describe('Controller: Checklist', function() {
 		  '$scope': $scope,
 		  '$rootScope':$rootScope,
 		  '$routeParams':{},
-		  '$state': { 'params': {'itemSlug': '123'} },
+		  '$state': { 'params': {'itemSlug': '123'}, 'current': { 'name': 'checklist'} }, /* $state.current.name */
 		  '$location':{ 'path': function() {} },
 		  '$sce': {},
 		  '$compile': {},
@@ -222,7 +239,7 @@ describe('Controller: Checklist', function() {
 	it('should initialise matter', inject(function() {
 		var item =  { 'category': 'My Category', 'slug': '123' };
 		var cat =  'My Category';
-		$scope.initialiseMatter( { 'items': [ item ], 'categories': [ cat ] } );
+		$scope.initialiseMatter( { 'items': [ item ], 'categories': [ cat ], 'participants': [ { 'user_class': 'customer'} ] } );
 
 		expect($scope.data.categories.length).toEqual(2); // 2 because of the null category
 		expect($scope.data.matter.items.length).toEqual(1);
@@ -320,11 +337,14 @@ describe('Controller: Checklist', function() {
 	
 	//$scope.loadItemDetails KKKK 
 	it('$scope.loadItemDetails "item.latest_revision" must be populated with response data',function(){
-		var item = {latest_revision:{url:'somerevision'}};
+		var item = {latest_revision:{'url':'somerevision'}};
 		$scope.loadItemDetails(item);
-		expect(baseService.loadObjectByUrl).toHaveBeenCalled();
+
+		expect(matterItemService.get).toHaveBeenCalled();
+		//expect(baseService.loadObjectByUrl).toHaveBeenCalled();
+		
 		$scope.$apply();
-		expect(item.latest_revision).toEqual({ message: "This is so great!" });
+		expect(item.latest_revision).toEqual({ 'message' : 'This is so great!' });
 	});
 	
 	//$scope.deleteItem
@@ -726,14 +746,16 @@ describe('Controller: Checklist', function() {
 		$scope.$apply();
 		expect(toaster.pop.mostRecentCall.args[2]).toBe('Unable to upload revision'); // doesn't work because of $timeout i think
 	});
-	*/
 
 	it('$scope.deleteRevisionReviewRequest' ,function(){
-	   var  item = {slug:{},latest_revision:{reviewers:['some','other']}},review = 'some';
+	   var  item = {'slug':'', 'latest_revision':{reviewers:['some','other']}},
+	   		review = 'some';
+
 	   $scope.deleteRevisionReviewRequest( item, review);
 	   $scope.$apply();
 	   expect(angular.equals(item.latest_revision.reviewers,['other'])).toBeTruthy();
 	});
+	*/
 
 	it('$scope.deleteRevisionReviewRequest',function(){
 		matterItemService.deleteRevisionReviewRequest.andCallFake(function(/*param*/){
@@ -743,7 +765,7 @@ describe('Controller: Checklist', function() {
 		});
 		$scope.deleteRevisionReviewRequest({slug:{}});
 		$scope.$apply();
-		expect(toaster.pop.mostRecentCall.args[2]).toBe('Unable to delete the revision review request.');
+		expect(toaster.pop.mostRecentCall.args[2]).toBe('Unable to cancel the revision review request.');
 	});
 	
 	it('$scope.showReview ',function(){
@@ -878,13 +900,14 @@ describe('ChecklistCtrl', function() {
 	  });
 	  //var msg  = { message: "This is not so great!" }; 	  
 	  matterItemService  = makeFake('matterItemService',[
-	  'create',
-	  'delete',
-	  'update',
-	  'uploadRevision',
-	  'updateRevision',
-	  'deleteRevision',
-	  'loadRevision'
+		'get',
+		'create',
+		'delete',
+		'update',
+		'uploadRevision',
+		'updateRevision',
+		'deleteRevision',
+		'loadRevision'
 	  ]);
  
 	  
@@ -941,7 +964,7 @@ describe('ChecklistCtrl', function() {
 	it('$scope.loadItemDetails should call the toaster',function(){
 		var item = {latest_revision:{url:'somerevision'}};
 		$scope.loadItemDetails(item);
-		expect(baseService.loadObjectByUrl).toHaveBeenCalled();
+		expect(matterItemService.get).toHaveBeenCalled();
 		$scope.$apply();
 		expect(toaster.pop.mostRecentCall.args[0]).toBe('error');
 	});
