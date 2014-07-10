@@ -1,12 +1,18 @@
 Deployment actions by branch
 ----------------------------
 
+[feature/item-discussions]
+
+1. ./manage.py migrate discussion 0001
+
+
 [feature/completed-requests]
 
 Rerun the migration to re-sync the open requests count.
 
 1. ./manage.py migrate default 0005
 2. ./manage.py migrate default 0006
+
 
 --------------------------------------------------------------------------------
 ** DEPLOYED 2 July 2014
