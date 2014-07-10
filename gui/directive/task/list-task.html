@@ -4,22 +4,19 @@
     </div>
 
     <ul class="all-tasks">
+
         <li class="one-task" ng-repeat="task in data.tasks">
             <ul class="one-task">
-                <li class="icon" ng-click="toggleCompleteTask(task)" ng-class="{'disabled': isCompleteTaskEnabled(task)}">
-                    <span class="" ng-class="{'incomplete fui-radio-unchecked': !task.is_complete, 'fui-check-inverted complete': task.is_complete }"></span>
-                </li>
+                <li class="icon" ng-click="toggleCompleteTask(task)"><span class="" ng-class="{'incomplete fui-radio-unchecked': !task.is_complete, 'fui-check-inverted complete': task.is_complete }"></span></li>
 
                 <li class="task-name" ng-class="{'incomplete': !task.is_complete, 'complete': task.is_complete }">{{ task.name }}</li>
-                <li class="task-status">
-                    <div ng-show="task.assigned_to.length>0">
-                        Assigned to <span ng-repeat="user in task.assigned_to">{{ user.initials }}&nbsp;</span>
-                    </div>
+                <li class="task-status"><a href="#" ng-click="assignTask(task)">Assign</a></li>
+                <li class="due-date">Due in 2 days </li>
+                <li class="delete-task">
+                    <a href="#" ng-click="manageTask(task)" ng-class="{'incomplete': !task.is_complete, 'complete': task.is_complete }"><i class="fa fa-pencil-square-o"></i></a>
                 </li>
-                <li class="delete-task"><a href="#" ng-click="manageTask(task)" ng-class="{'incomplete': !task.is_complete, 'complete': task.is_complete }"><i class="fa fa-pencil-square-o"></i></a></li>
-                <li class="delete-task"><a href="#" ng-click="deleteTask(task)" ng-show="isDeleteTaskEnabled(task)">X</a></li>
+                <li class="delete-task"><a href="#" ng-click="deleteTask(task)">X</a></li>
             </ul>
         </li>
     </ul>
-
 </div>
