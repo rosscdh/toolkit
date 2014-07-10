@@ -2,6 +2,9 @@
     <div class="item-subheading">Tasks<span class="number-of"> ({{ data.tasks.length }})</span>
         <a class="btn-link" href="javascript:;" ng-click="manageTask()">New Task</a>
     </div>
+    <div class="task-progress">
+        <div class="bar" style="width: {{ data.taskCompletionStatus }}%"></div>
+    </div>
 
     <ul class="all-tasks">
 
@@ -15,7 +18,10 @@
                         Assigned to <span ng-repeat="user in task.assigned_to">{{ user.initials }}&nbsp;</span>
                     </div>
                 </li>
-                <li class="due-date">Due in 2 days </li>
+                <li class="due-date">
+                    <span ng-show="task.date_due&&!isTaskOverdue(task)">Due in {{ task.date_due|fromnow }}</span>
+                    <span ng-show="isTaskOverdue(task)" class="overdue">Overdue</span>
+                </li>
                 <li class="delete-task">
                     <a href="#" ng-click="manageTask(task)" ng-class="{'incomplete': !task.is_complete, 'complete': task.is_complete }"><i class="fa fa-pencil-square-o"></i></a>
                 </li>

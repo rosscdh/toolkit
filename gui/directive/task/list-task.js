@@ -21,7 +21,8 @@ angular.module('toolkit-gui').directive('tasksList', ['$compile', '$log', '$sce'
             'taskService',
             function ($rootScope, $scope, $http, $log, ezConfirm, toaster, $modal, taskService) {
                 $scope.data = {
-                    tasks: []
+                    tasks: [],
+                    taskCompletionStatus: 0
                 };
 
                 $log.debug($scope.matter);
@@ -85,6 +86,7 @@ angular.module('toolkit-gui').directive('tasksList', ['$compile', '$log', '$sce'
                                     if (index >= 0) {
                                         // Remove item from in RAM array
                                         $scope.data.tasks.splice(index, 1);
+                                        $scope.calculateTaskCompletionStatus();
                                     }
                                 },
                                 function error(/*err*/) {
@@ -101,6 +103,7 @@ angular.module('toolkit-gui').directive('tasksList', ['$compile', '$log', '$sce'
                         function success(tasks) {
                             $log.debug(tasks);
                             $scope.data.tasks = tasks;
+                            $scope.calculateTaskCompletionStatus();
                         },
                         function error(/*err*/) {
                             if (!toaster.toast || !toaster.toast.body || toaster.toast.body !== 'Unable to load item tasks.') {
@@ -110,13 +113,29 @@ angular.module('toolkit-gui').directive('tasksList', ['$compile', '$log', '$sce'
                     );
                 };
 
+                $scope.calculateTaskCompletionStatus = function () {
+                    if ($scope.data.tasks.length > 0) {
+                        var completed = 0;
+
+                        jQuery.each($scope.data.tasks, function (index, task) {
+                            if (task.is_complete) {
+                                completed += 1;
+                            }
+                        });
+
+                        $scope.data.taskCompletionStatus = parseInt(parseFloat(completed) / parseFloat($scope.data.tasks.length) * 100.0);
+                    } else {
+                        $scope.data.taskCompletionStatus = 0;
+                    }
+                }
+
                 $scope.toggleCompleteTask = function (task) {
                     if ($scope.isCompleteTaskEnabled) {
                         task.is_complete = !task.is_complete;
 
                         taskService.update($scope.matter.slug, $scope.selectedItem.slug, task.slug, task).then(
                             function success(tasks) {
-                                //do nothing
+                                $scope.calculateTaskCompletionStatus();
                             },
                             function error(/*err*/) {
                                 if (!toaster.toast || !toaster.toast.body || toaster.toast.body !== 'Unable to update task.') {
@@ -164,6 +183,17 @@ angular.module('toolkit-gui').directive('tasksList', ['$compile', '$log', '$sce'
                     }
 
                     return false;
+                };
+
+                $scope.isTaskOverdue = function (task) {
+                    if (task.date_due) {
+                        var curr = moment();
+                        var date_due = moment(task.date_due);
+
+                        return date_due <= curr;
+                    } else {
+                        return false;
+                    }
                 };
 
                 $scope.$watch('selectedItem', function (newValue, oldValue) {

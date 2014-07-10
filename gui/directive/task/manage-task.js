@@ -67,6 +67,13 @@ angular.module('toolkit-gui')
                 'selectedUsers': {}
             };
 
+            $scope.dateOptions = {
+                formatYear: 'yy',
+                startingDay: 1,
+                'datepickerIsOpened': false,
+                'minDueDate': new Date()
+            };
+
             /**
              * Close dialog on afirmative user initiated event (.e.g. click's OK button).
              * Returns updated participants array.
@@ -82,11 +89,11 @@ angular.module('toolkit-gui')
                 $scope.task.assigned_to = [];
 
                 if (taskForm.$valid) {
-                    if (!$scope.task.slug) {
-                        jQuery.each($scope.data.selectedUsers, function (i, obj) {
+                    jQuery.each($scope.data.selectedUsers, function (i, obj) {
                             $scope.task.assigned_to.push(obj.username);
-                        });
+                    });
 
+                    if (!$scope.task.slug) {
                         taskService.create($scope.matter.slug, $scope.checklistItem.slug, $scope.task).then(
                             function success(task) {
                                 $modalInstance.close($scope.task);
@@ -98,10 +105,6 @@ angular.module('toolkit-gui')
                             }
                         );
                     } else {
-                        jQuery.each($scope.data.selectedUsers, function (i, obj) {
-                            $scope.task.assigned_to.push(obj);
-                        });
-
                         taskService.update($scope.matter.slug, $scope.checklistItem.slug, $scope.task.slug, $scope.task).then(
                             function success(task) {
                                 $modalInstance.close($scope.task);
@@ -150,6 +153,13 @@ angular.module('toolkit-gui')
                         $scope.toggleUser(obj);
                     });
                 }
+            };
+
+            $scope.toggleDatepicker = function($event) {
+                $event.preventDefault();
+                $event.stopPropagation();
+                $scope.dateOptions.datepickerIsOpened = !$scope.dateOptions.datepickerIsOpened;
+                $log.debug('asdeded');
             };
 
             $scope.init();
