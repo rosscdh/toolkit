@@ -46,10 +46,10 @@
     </h3>
 
     <!-- Begin option toolbar -->
-    <div class="add-new clearfix">
+    <div class="add-new clearfix text-center">
         <div class="btn-group space-5" ng-show="data.usdata.current.permissions.manage_items">
             <span class="btn btn-sm btn-info btn-file btn-embossed btn-add">
-                Upload File
+                Upload
                 <input type="file" ng-file-select="onFileDropped($files, data.selectedItem);" clear-on-click multiple="multiple" />
             </span>
             <button class="btn btn-info btn-sm btn-embossed dropdown-toggle" data-toggle="dropdown">
@@ -66,7 +66,7 @@
                 <li><a href="javascript:;" filepicker="filepicker" apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)" extensions=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx">From cloud service</a></li>
             </ul>
         </div><button class="btn btn-sm btn-info btn-file btn-embossed btn-add space-5" data-toggle="modal" data-target="#requestFileModal" ng-click="requestRevision(data.selectedItem)">
-            Request File
+            Request
         </button><div class="btn-group" ng-show="data.usdata.current.permissions.manage_items">
             <a href="javascript:;" class="btn btn-sm btn-silver btn-embossed dropdown-toggle" data-toggle="dropdown">Options</a>
             <ul class="dropdown-menu dropdown-small dropdown-inverse" >
@@ -97,14 +97,14 @@
         </span>
 
         <a href="javascript:;" ng-click="data.selectedItem.is_complete=!data.selectedItem.is_complete;saveSelectedItem();"
-           class="btn btn-sm pull-right" ng-class="{ 'btn-success': !data.selectedItem.is_complete, 'btn-default': data.selectedItem.is_complete}"
+           class="btn btn-sm" ng-class="{ 'btn-success': !data.selectedItem.is_complete, 'btn-default': data.selectedItem.is_complete}"
            ng-show="data.usdata.current.permissions.manage_items"
         >
-            <span class="fui-checkbox-checked"></span> <span ng-hide="data.selectedItem.is_complete">Close item</span><span ng-show="data.selectedItem.is_complete">Open item</span>
+             <span ng-hide="data.selectedItem.is_complete">Close item</span><span ng-show="data.selectedItem.is_complete">Open item</span>
         </a>
 
         <a ng-show="!data.usdata.current.permissions.manage_items"
-           class="label status-label pull-right" ng-class="{ 'label-primary': !data.selectedItem.is_complete, 'label-default': data.selectedItem.is_complete}" disabled>
+           class="label status-label" ng-class="{ 'label-primary': !data.selectedItem.is_complete, 'label-default': data.selectedItem.is_complete}" disabled>
             <span class="fui-checkbox"></span> <span ng-hide="data.selectedItem.is_complete">Open</span><span ng-show="data.selectedItem.is_complete">Closed</span>
         </a>
         <!--
