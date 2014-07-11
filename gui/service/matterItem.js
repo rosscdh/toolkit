@@ -29,7 +29,7 @@ angular.module('toolkit-gui')
 		 *
 		 * @example
 		 * matterService.data();
-		 * 
+		 *
 		 * @memberof matterService
 		 * @type {Object}
 		 * @private
@@ -40,7 +40,7 @@ angular.module('toolkit-gui')
 		 * Returns a key/value object containing $resource methods to access matter API end-points
 		 *
 		 * @name				matterItemResource
-		 * 
+		 *
 		 * @private
 		 * @method				matterItemResource
 		 * @memberof			matterItemService
@@ -63,7 +63,7 @@ angular.module('toolkit-gui')
 		 * Returns a key/value object containing $resource methods to access matter API end-points
 		 *
 		 * @name				revisionItemResource
-		 * 
+		 *
 		 * @private
 		 * @method				revisionItemResource
 		 * @memberof			matterItemService
@@ -118,6 +118,25 @@ angular.module('toolkit-gui')
 			});
 		}
 
+		/**
+		* Returns a key/value object containing $resource methods to access matter item discussion API endpoints
+		*
+		* @name				discussionItemResource
+		*
+		* @private
+		* @method			discussionItemResource
+		* @memberof			matterItemService
+		*
+		* @return {Function}   $resource
+		*/
+		function discussionItemResource() {
+			return $resource(API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/discussions/:type/comments/:commentId', {}, {
+				'create': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json' }},
+				'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json' }},
+				'list':   { 'method': 'GET', 'headers': { 'Content-Type': 'application/json' }}
+			});
+		}
+
 		return {
 			/**
 			 * Returns object containing selected matter's data.
@@ -126,7 +145,7 @@ angular.module('toolkit-gui')
 			 *
 			 * @example
 			 * matterItemService.data();
-			 * 
+			 *
 			 * @public
 			 * @method				data
 			 * @memberof			matterItemService
@@ -194,7 +213,7 @@ angular.module('toolkit-gui')
 			 *
 			 * @example
 			 * matterItemService.create( 'myItemName', 'ItemCategoryName' );
-			 * 
+			 *
 			 * @public
 			 * @method				create
 			 * @memberof			matterItemService
@@ -267,7 +286,7 @@ angular.module('toolkit-gui')
 			 *
 			 * @example
 			 * matterItemService.update( {...} );
-			 * 
+			 *
 			 * @public
 			 * @method				update
 			 * @memberof			matterItemService
@@ -310,7 +329,7 @@ angular.module('toolkit-gui')
 			 *
 			 * @example
 			 * matterItemService.delete( {...} );
-			 * 
+			 *
 			 * @public
 			 * @method				delete
 			 * @memberof			matterItemService
@@ -344,7 +363,7 @@ angular.module('toolkit-gui')
 			 *
 			 * @example
 			 * matterItemService.uploadRevision( 'myItemName', 'ItemCategoryName', {} );
-			 * 
+			 *
 			 * @public
 			 * @method				uploadRevision
 			 * @memberof			matterItemService
@@ -409,7 +428,7 @@ angular.module('toolkit-gui')
 						} else {
 							deferred.reject(err);
 						}
-						
+
 					});
 				} else {
 					$timeout(
@@ -434,7 +453,7 @@ angular.module('toolkit-gui')
 			 *
 			 * @example
 			 * matterItemService.updateRevision( 'myItemName', 'ItemCategoryName', {} );
-			 * 
+			 *
 			 * @public
 			 * @method				updateRevision
 			 * @memberof			matterItemService
@@ -474,7 +493,7 @@ angular.module('toolkit-gui')
 			 *
 			 * @example
 			 * matterItemService.deleteRevision( 'myItemName', 'ItemCategoryName', {} );
-			 * 
+			 *
 			 * @public
 			 * @method				deleteRevision
 			 * @memberof			matterItemService
@@ -735,7 +754,7 @@ angular.module('toolkit-gui')
 				return deferred.promise;
 			},
 
-			 'requestSigner': function ( matterSlug, itemSlug, signer ) {
+			'requestSigner': function ( matterSlug, itemSlug, signer ) {
 				var deferred = $q.defer();
 
 				var api = signerItemResource();
@@ -751,6 +770,7 @@ angular.module('toolkit-gui')
 
 				return deferred.promise;
 			},
+
 			/**
 			 * Requests the API to send a reminder to all signers who have not signed the current revision yet.
 			 *
@@ -843,6 +863,54 @@ angular.module('toolkit-gui')
 						deferred.reject( new Error('Unable to update revision') );
 					}, 1);
 				}
+
+				return deferred.promise;
+			},
+
+			'addComment': function(matterSlug, itemSlug, type, content) {
+				var api = discussionItemResource();
+				var deferred = $q.defer();
+
+				api.create({ 'matterSlug': matterSlug, 'itemSlug': itemSlug, 'type': type }, { 'content': content },
+					function success() {
+						deferred.resolve();
+					},
+					function error(err) {
+						deferred.reject(err);
+					}
+				);
+
+				return deferred.promise;
+			},
+
+			'getComments': function(matterSlug, itemSlug, type) {
+				var api = discussionItemResource();
+				var deferred = $q.defer();
+
+				api.list({ 'matterSlug': matterSlug, 'itemSlug': itemSlug, 'type': type },
+					function success(result) {
+						deferred.resolve(result.results);
+					},
+					function error(err) {
+						deferred.reject(err);
+					}
+				);
+
+				return deferred.promise;
+			},
+
+			'removeComment': function(matterSlug, itemSlug, type, commentId) {
+				var api = discussionItemResource();
+				var deferred = $q.defer();
+
+				api.delete({ 'matterSlug': matterSlug, 'itemSlug': itemSlug, 'type': type, 'commentId': commentId },
+					function success() {
+						deferred.resolve();
+					},
+					function error(err) {
+						deferred.reject(err);
+					}
+				);
 
 				return deferred.promise;
 			}

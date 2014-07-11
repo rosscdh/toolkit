@@ -124,8 +124,10 @@ angular.module('toolkit-gui')
 			'statusFilter': null,
 			'itemFilter': null,
 			'knownSigners': [],
-            'showPreviousRevisions': false,
-            'loadedItemdetails': {}
+			'showPreviousRevisions': false,
+			'loadedItemdetails': {},
+			'privateComments': [],
+			'publicComments': [],
 		};
 
 		$rootScope.searchEnabled = true;
@@ -2003,6 +2005,8 @@ angular.module('toolkit-gui')
 			} else {
 				var itemSlug = $scope.data.selectedItem.slug;
 
+				$scope.initializeItemDiscussions(matterSlug, itemSlug);
+
 				activityService.itemstream(matterSlug, itemSlug).then(
 					 function success(result){
 						if($scope.data.selectedItem!==null) {
@@ -2022,6 +2026,68 @@ angular.module('toolkit-gui')
 			$timeout(function (){
 				$scope.initializeActivityStream();
 			}, 1000 * 60);*/
+		};
+
+		/**
+		 * Reads the matter item discussions from API.
+		 * @memberof			ChecklistCtrl
+		 * @private
+		 * @type {Object}
+		 */
+		$scope.initializeItemDiscussions = function(matterSlug, itemSlug) {
+			matterItemService.getComments(matterSlug, itemSlug, 'private').then(
+				function success(result) {
+					$scope.data.privateComments = result;
+				},
+				function error(/*err*/) {
+					toaster.pop('error', 'Error!', 'Unable to read item discussion comments.', 5000);
+				}
+			);
+
+			matterItemService.getComments(matterSlug, itemSlug, 'public').then(
+				function success(result) {
+					$scope.data.publicComments = result;
+				},
+				function error(/*err*/) {
+					toaster.pop('error', 'Error!', 'Unable to read item discussion comments.', 5000);
+				}
+			);
+		};
+
+		$scope.submitPrivateComment = function() {
+			var matterSlug = $scope.data.slug;
+			var item = $scope.data.selectedItem;
+
+			var newComment = genericFunctions.cleanHTML(item.newPrivateComment);
+
+			// Post comment
+			matterItemService.addComment(matterSlug, item.slug, 'private', newComment).then(
+				function success() {
+					$scope.initializeItemDiscussions(matterSlug, item.slug);
+					item.newPrivateComment = '';
+				},
+				function error(/*err*/){
+					toaster.pop('error', 'Error!', 'Unable to post comment.', 5000);
+				}
+			);
+		};
+
+		$scope.submitPublicComment = function() {
+			var matterSlug = $scope.data.slug;
+			var item = $scope.data.selectedItem;
+
+			var newComment = genericFunctions.cleanHTML(item.newPublicComment);
+
+			// Post comment
+			matterItemService.addComment(matterSlug, item.slug, 'public', newComment).then(
+				function success() {
+					$scope.initializeItemDiscussions(matterSlug, item.slug);
+					item.newPublicComment = '';
+				},
+				function error(/*err*/){
+					toaster.pop('error', 'Error!', 'Unable to post comment.', 5000);
+				}
+			);
 		};
 
 
