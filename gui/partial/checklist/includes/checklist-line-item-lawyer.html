@@ -16,19 +16,19 @@
 				<span ng-hide="item.is_complete" class="pull-right status">
 					<button
 						disabled=""
-						class="btn btn-xs doc-status-{{ item.latest_revision.status }}"
+						class="btn btn-xs doc-status-{{ item.latest_revision.status }} checklist-item-status"
 						ng-show="item.latest_revision&&!item.is_requested">
                             {{ data.matter._meta.item.custom_status[item.latest_revision.status] }}
 					</button>
 					<button
-						class="btn btn-xs {{ item.date_due | duestatus }}"
+						class="btn btn-xs {{ item.date_due | duestatus }} checklist-item-due-date"
 						ng-show="item.date_due"
 						disabled>
 							{{ item.date_due | date:'dd MMM' }}
 					</button>
 					<button
 						disabled=""
-						class="btn btn-warning btn-xs"
+						class="btn btn-warning btn-xs checklist-item-awaiting"
 						ng-show="item.is_requested">
 							<span class="fui-time"></span>
 							Awaiting Files
@@ -42,18 +42,20 @@
                         <span class="fui-time"></span> Review in progress
                     </button>
                     //-->
-                    <button disabled="" class="btn btn-warning btn-xs"
+                    <button disabled="" 
+                    		class="btn btn-warning btn-xs checklist-item-review-percent"
                             ng-show="!item.is_requested&&item.review_percentage_complete!==null&&item.review_percentage_complete>=0&&item.review_percentage_complete<=100">
                         <span class="fui-user"></span> Review {{ item.review_percentage_complete }}%
                     </button>
 
                     <!-- SIGNING STATUS //-->
-                    <button disabled="" class="btn btn-warning btn-xs"
+                    <button disabled="" 
+                    		class="btn btn-warning btn-xs checklist-item-signing-percent"
                             ng-show="item.signing_percentage_complete!==null&&item.signing_percentage_complete>=0&&item.signing_percentage_complete<=100">
                         <span class="fui-user"></span> Signing {{ item.signing_percentage_complete }}%
                     </button>
 				</span>
-				<span class="pe-7s-check pull-right" ng-show="item.is_complete"></span>
+				<span class="pe-7s-check pull-right checklist-item-complete" ng-show="item.is_complete"></span>
 				<span ng-if="item.loading">
 					<i class="fa fa-spinner fa-spin pull-right fapad"></i>
 				</span>

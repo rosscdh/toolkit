@@ -1,11 +1,11 @@
 <div class="row ng-cloak">
 	<div class="col-xs-12">
-		<a href="javascript:;" ng-click="showAddItemForm($index);"  ng-hide="data.showAddForm==$index" class="btn btn-new-item btn-xs"><span class="fui-plus"></span> Add new item</a>
+		<a href="javascript:;" ng-click="showAddItemForm($index);"  ng-hide="data.showAddForm==$index" class="btn btn-new-item btn-xs checklist-item-add-new"><span class="fui-plus"></span> Add new item</a>
 	</div>	
 	<div class="col-xs-12" class="add-new-controls warning" ng-show="data.showAddForm==$index">
 		<!-- New item form //-->
 		<input
-			class="form-control input-sm"
+			class="form-control input-sm checklist-item-add-new-input"
 			id="appendedInputButton-03"
 			type="search"
 			placeholder="Enter item name and press enter"
