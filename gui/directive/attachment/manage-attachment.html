@@ -1,36 +1,37 @@
 <div class="modal-content new-attachment">
     <div class="modal-header">
         <h4 class="modal-title">
-            <i class="fa fa-list-ul"></i>
-            <span>Add new Attachment to Item {{ checklistItem.name }}</span>
+            <i class="fa fa-paperclip"></i>
+            <span>Add a new Attachment to Item {{ checklistItem.name | characters:15:true }}</span>
         </h4>
     </div>
     <form class="form" role="form" name="attachmentForm" novalidate>
         <div class="modal-body">
-            <div class="btn-group space-5">
-            <span class="btn btn-sm btn-info btn-file btn-embossed btn-add">
-                <span class="fui-upload"></span> Upload File
-                <input type="file" ng-file-select="onFileDropped($files);" clear-on-click multiple="multiple"/>
-            </span>
-                <button class="btn btn-info btn-sm btn-embossed dropdown-toggle" data-toggle="dropdown">
-                    <span class="caret"></span>
-                </button>
-                <span class="dropdown-arrow dropdown-arrow-inverse dropdown-small"></span>
-                <ul class="dropdown-menu dropdown-inverse">
-                    <li>
-                    <span class="btn btn-sm btn-link btn-file btn-block">
+
+        <div class="row">
+            <div class="col-sm-4 col-sm-offset-2 text-center">
+
+                    <button class="btn btn-sm btn-file btn-block">
+                        <i class="fa fa-desktop"></i>
                         From desktop
                         <input type="file" ng-file-select="onFileDropped($files);" clear-on-click multiple="multiple"/>
-                    </span>
-                    </li>
-                    <li><a href="javascript:;" filepicker="filepicker" apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files)"
-                           extensions=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx">From cloud service</a></li>
-                </ul>
+                    </button>
             </div>
+            <div class="col-sm-4 text-center">
+
+                    <button class="btn btn-sm btn-file btn-block" href="javascript:;" filepicker="filepicker" apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files)"
+                           extensions=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx">
+                            <i class="fa fa-cloud-download"></i>
+                           From cloud service
+
+            </button>
+            </div>
+        </div>
+
 
         </div>
         <div class="modal-footer">
-            <button class="btn btn-default pull-left" ng-click="cancel()">Cancel</button>
+            <button class="btn btn-default pull-right" ng-click="cancel()">Cancel</button>
         </div>
     </form>
 </div>
