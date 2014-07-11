@@ -75,10 +75,6 @@ rulez_registry.register("can_edit", MatterDiscussionEndpoint)
 rulez_registry.register("can_delete", MatterDiscussionEndpoint)
 
 
-
-
-
-
 class BaseDiscussionCommentEndpoint(viewsets.ModelViewSet):
     lookup_field = 'slug'
     model = DiscussionComment
@@ -144,9 +140,6 @@ class ItemDiscussionCommentEndpoint(ItemMixin, BaseDiscussionCommentEndpoint):
         obj.is_public = self.is_public
 
         return super(ItemDiscussionCommentEndpoint, self).pre_save(obj=obj)
-
-
-
 
 
 class MatterDiscussionParticipantEndpoint(ThreadMixin, mixins.CreateModelMixin, viewsets.ReadOnlyModelViewSet):

@@ -23,9 +23,9 @@
                 <textarea mentions-box class="form-control" rows="2" placeholder="Comment on this item..." text="data.selectedItem.newPublicComment" container-position="left" required></textarea>
                 <button class="btn btn-inverse btn-textarea btn-xs" type="submit" ng-show="show">Submit</button>
             </form>
-            <!-- <div class="visible-to"> -->
-                <!-- Visible to: <span class="user ng-binding ng-scope" ng-repeat="user in matter.selected.participants" ng-bind="user | initials"></span> <span class="initials">AH, YN, TL</span> -->
-            <!-- </div> -->
+            <div class="visible-to">
+                Visible to: <span class="initials" ng-repeat="user in data.matter.participants">{{ user | initials }} &nbsp;</span>
+            </div>
         </div>
     </tab>
     <tab heading="Colleagues">
@@ -52,9 +52,9 @@
                 <textarea mentions-box class="form-control" rows="2" placeholder="Comment on this item..." text="data.selectedItem.newPrivateComment" container-position="left" required></textarea>
                 <button class="btn btn-inverse btn-textarea btn-xs" type="submit" ng-show="show">Submit</button>
             </form>
-            <!-- <div class="visible-to"> -->
-                <!-- Visible to: <span class="user ng-binding ng-scope" ng-repeat="user in matter.selected.participants" ng-bind="user | initials"></span> <span class="initials">AH, YN, TL</span> -->
-            <!-- </div> -->
+            <div class="visible-to">
+                Visible to: <span class="initials" ng-repeat="user in data.matter.participants" ng-show="user.role=='owner'||user.role=='colleague'" style="margin-right: 5px;">{{ user | initials }}</span>
+            </div>
         </div>
     </tab>
 </tabset>
