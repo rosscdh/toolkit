@@ -393,7 +393,7 @@ angular.module('toolkit-gui')
 
         $scope.editTextattribute = function(obj, context, attr) {
         	var propertyName = 'edit_'+ context + '_' + attr;
-        	
+
             $scope.data['show_edit_'+ context + '_' + attr] = true;
 
 			if (obj[propertyName] && obj[propertyName].length > 0){
@@ -2099,37 +2099,6 @@ angular.module('toolkit-gui')
 		 *    \____\___/|_| |_| |_|_| |_| |_|\___|_| |_|\__|___/ |_| |_|\__,_|_| |_|\__,_|_|_|_| |_|\__, |
 		 *                                                                                          |___/
 		 */
-
-		/**
-		 * Creates a new comment
-		 *
-		 * @memberof			ChecklistCtrl
-		 * @private
-		 * @type {Object}
-		 */
-		$scope.submitComment = function() {
-			var matterSlug = $scope.data.slug;
-			var item = $scope.data.selectedItem;
-
-			item.newcomment = genericFunctions.cleanHTML(item.newcomment);
-
-			// Show activity straight away
-			appendActivity('item.comment', item.newcomment, item);
-
-			// Post activity
-			commentService.create(matterSlug, item.slug, item.newcomment).then(
-				 function success( /*activityItem*/ ){
-					// please note: do not refresh activity stream as the new item may not exist yet
-					// clear form
-					item.newcomment='';
-				 },
-				 function error(/*err*/){
-					if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to create item comment.') {
-						toaster.pop('error', 'Error!', 'Unable to create item comment.',5000);
-					}
-				 }
-			);
-		};
 
 		/**
 		 * appendActivity - formats and inserts activity into activity stream

@@ -65,14 +65,6 @@
     <a href="javascript:;" ng-click="activateActivityStream('matter')"
        ng-class="{'active':data.streamType=='matter', 'inactive':data.streamType=='item'}">All Activity</a>
 </h4>
-<div class="new-message row" ng-show="data.selectedItem" ng-mouseenter="show = true">
-    <div class="col-xs-12">
-        <form ng-submit="submitComment()" >
-            <textarea mentions-box class="form-control" rows="2" placeholder="Comment on this item..." text="data.selectedItem.newcomment" container-position="left" required></textarea>
-            <button class="btn btn-inverse btn-textarea btn-xs" type="submit" ng-show="show">Submit</button>
-        </form>
-    </div>
-</div>
 <ul class="list-unstyled activity-log">
     <li ng-repeat="activity in data.activitystream" ng-class="{ 'comment-faded': activity.status=='awaiting'}">
         <div activity ng-model="activity" matter-slug="data.slug" item-slug="data.selectedItem.slug"
