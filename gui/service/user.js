@@ -3,8 +3,9 @@ angular.module('toolkit-gui').factory('userService',[
 	'$resource',
 	'$rootScope',
 	'API_BASE_URL',
+	'USER_ID',
 	'PusherService',
-	function( $q, $resource, $rootScope, API_BASE_URL, PusherService ) {
+	function( $q, $resource, $rootScope, API_BASE_URL, USER_ID, PusherService ) {
 		'use strict';
 		var user = {
 			'data': {
@@ -20,6 +21,12 @@ angular.module('toolkit-gui').factory('userService',[
 					'list': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } }
 				});
 		}
+
+		function accountResource() {
+            return $resource( API_BASE_URL + 'users/:username', {}, {
+				'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } }
+			});
+        }
 
 		/**
 		 * calculatePermissions - given the current user profile and the lawyer profile allocate permissions
@@ -89,6 +96,23 @@ angular.module('toolkit-gui').factory('userService',[
 				api.get( {},
 					function success( /*result*/ ) {
 						deferred.resolve();
+					},
+					function error( /*err*/ ) {
+						deferred.reject();
+					}
+				);
+
+				return deferred.promise;
+			},
+
+			'current': function() {
+				var api = accountResource();
+				// append/update users in user.data.items
+				var deferred = $q.defer();
+
+				api.get( { 'username': USER_ID },
+					function success( profile ) {
+						deferred.resolve(profile);
 					},
 					function error( /*err*/ ) {
 						deferred.reject();

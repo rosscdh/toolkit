@@ -105,6 +105,7 @@ PROJECT_APPS = (
     'toolkit.apps.default',
     'toolkit.apps.dash',
     'toolkit.apps.discussion',
+    'toolkit.apps.intake',
     'toolkit.apps.matter',
     'toolkit.apps.me',
     'toolkit.apps.request',

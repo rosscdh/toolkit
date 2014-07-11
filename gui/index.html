@@ -62,7 +62,7 @@
   <script src="/static/ng/js/ez-confirm-custom-tpl.js"></script>
 
   <!-- Main App JS -->
-  <script src="/static/ng/js/setup.js"></script>
+  <script src="/static/ng/js/checklist_app.js"></script>
 
     <!-- To remove later //-->
   <script src="/static/ng/controllers/mock.js"></script>
@@ -290,6 +290,7 @@
     angular.module('toolkit-gui').constant('SENTRY_PUBLIC_DSN', 'https://5584db708b75400fb439d4592c29fc9a@sentry.ambient-innovation.com/24' );
     angular.module('toolkit-gui').constant('INTERCOM_APP_ID', 'wkxzfou' );
     angular.module('toolkit-gui').constant('pusher_api_key', '60281f610bbf5370aeaa' );
+    angular.module('toolkit-gui').constant('USER_ID', '{{ user.username }}' );
   </script>
 </body>
 </html>

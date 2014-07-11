@@ -24,6 +24,7 @@ urlpatterns = patterns('',
 
     url(r'^notifications/', include('toolkit.apps.notification.urls', namespace='notification')),
 
+    url(r'^intake/', include('toolkit.apps.intake.urls', namespace='intake')),
     url(r'^matters/', include('toolkit.apps.matter.urls', namespace='matter')),
     url(r'^requests/', include('toolkit.apps.request.urls', namespace='request')),
 

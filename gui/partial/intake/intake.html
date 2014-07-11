@@ -1,7 +1,32 @@
 <div id="intake" class="intake-wrapper" controller="IntakeCtrl">
-	<div class="container-fluid full">
-		<h1>Intake</h1>
+	<div class="row">
+		<div class="col-sm-4">
+			<h1>Intake forms</h1>
+			<ul class="list-unstyled">
+				<li ng-repeat="intake in data.intakeList">
+					<a ui-sref="intake.form( {'slug': intake.slug} )" ng-click="selectForm(intake)" ng-bind="intake.name"></a>
+				</li>
+				<li>
+					<a>Create new</a>
+				</li>
+			</ul>
+
+			<form>
+				<input type="text" ng-model="data.newIntake.name" />
+			</form>
+
+			<h2>Intake documents</h2>
+			<ul>
+				<li ng-repeat="template in data.template">
+					<a ng-bind="template.name"></a>
+				</li>
+			</ul>
+		</div>
+		<div class="col-sm-8">
+			<!-- intake form / documents //-->
+			<div ui-view></div>
+		</div>
 	</div>
 </div>
 <div intercom user-id="{{ data.usdata.current.id }}" user-email="{{ data.usdata.current.email }}"></div>
-<!--<toaster-container toaster-options="{'position-class': 'toast-bottom-right'}"></toaster-container>//-->
+<toaster-container toaster-options="{'position-class': 'toast-bottom-right'}"></toaster-container>

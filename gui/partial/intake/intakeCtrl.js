@@ -5,33 +5,37 @@ angular.module('toolkit-gui').controller('IntakeCtrl',[
 	'$routeParams',
 	'$state',
 	'smartRoutes',
-	'matterService',
+	'userService',
+	'intakeService',
 	'toaster',
-	function($scope, $rootScope, $routeParams, $state, smartRoutes, matterService, toaster){
+	function($scope, $rootScope, $routeParams, $state, smartRoutes, userService, intakeService, toaster){
 		'use strict';
 
 		var routeParams = smartRoutes.params();
 
-		$scope.matter = matterService.data();
+		$scope.usdata = userService.data();
 
 		$scope.data = {
-			'slug': routeParams.matterSlug,
-			'matter': null
+			'intakes': [],
+			'selectedIntake': null
 		};
 
-		// LOAD MATTER if not already loaded
-		function loadMatter() {
-			matterService.get( $scope.data.slug ).then(
-				function success( singleMatter ){
-					matterService.selectMatter(singleMatter); //set matter in the services
-				}
-			);
-		}
+		userService.current().then(
+			function success( profile ) {
+				console.log(profile);
+			}
+		);
 
-		if( !$scope.matter.selected && $scope.data.slug && $scope.data.slug!=='') {
-			loadMatter();
-		}
+		intakeService.list().then(
+			function success( intakeList ) {
+				$scope.data.intakeList = intakeList;
+			}
+		);
 
 		// STUFF
+		// 
+		$scope.selectForm = function( form ) {
+			intakeService.setCurrent( form );
+		};
 	}
 ]);
