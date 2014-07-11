@@ -2,7 +2,7 @@
     <div class="modal-header">
         <h4 class="modal-title">
             <i class="fa fa-list-ul"></i>
-            <span ng-hide="task.slug">Add new Task to Item {{ checklistItem.name }}</span>
+            <span ng-hide="task.slug">Add new Task to Item {{ checklistItem.name | characters:15:true }}</span>
             <span ng-show="task.slug">Task in Item {{ checklistItem.name }}</span>
         <span class="tasks-meta" ng-show="task.slug">
             <label for="task-name">Created <span ng-bind="task.date_created|timeago"></span> by <span ng-bind="task.created_by.name"></span></label>
