@@ -45,6 +45,7 @@ class SignUpForm(forms.Form):
             'required': "First name can't be blank."
         },
         label='',
+        max_length=30,
         widget=forms.TextInput(attrs={'placeholder': 'First name'})
     )
     last_name = forms.CharField(
@@ -52,6 +53,7 @@ class SignUpForm(forms.Form):
             'required': "Last name can't be blank."
         },
         label='',
+        max_length=30,
         widget=forms.TextInput(attrs={'placeholder': 'Last name'})
     )
     email = forms.EmailField(
@@ -60,6 +62,7 @@ class SignUpForm(forms.Form):
             'required': "Email can't be blank."
         },
         label='',
+        max_length=75,
         widget=forms.EmailInput(attrs={'placeholder': 'Email address', 'autocomplete':'off'})
     )
     password = forms.CharField(
