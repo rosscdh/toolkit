@@ -155,7 +155,7 @@ html,body, div.full
 			opacity:0.5;
 		}
 		a.link {
-			color: #818080;
+			color:darken(@silver, 10%);
 			font-size:12px;
 			&:hover {
 				text-decoration:underline;
@@ -167,12 +167,12 @@ html,body, div.full
 		.item-help {
 			margin:50px 35px;
 			text-align:center;
-			color: #9B9898;
+			color: darken(@silver, 6%);
 			font-size:13px;
 			line-height: 18px;
 			.fui-upload, .fui-time, .fui-arrow-left {
 				font-size:40px;
-				color: #9B9898;
+				color: lighten(@silver, 10%);
 			}
 			h4 {
 				font-size:20px;
@@ -183,6 +183,7 @@ html,body, div.full
 			padding-bottom:16px;
 			background-color: lighten(@silver, 13%);
 			margin-bottom:0px;
+
 			margin:4px -15px 4px -15px;
 			padding: 18px 15px 16px 15px;
 			.title-save {
@@ -224,12 +225,6 @@ html,body, div.full
 					margin-top:10px;
 					margin-bottom:3px;
 					font-size:12px;
-				}
-
-				.formatting{
-					margin-top: 5px;
-					font-size: 11px;
-					margin-right: 5px;
 				}
 			}
 		}
@@ -294,26 +289,6 @@ html,body, div.full
 					background-color:darken(white, 2%);
 					padding:9px 10px 0px 10px;
 					min-height:40px;
-					.btn-group {
-						margin-top:-33px;
-						margin-right:-10px;
-						button {
-							border-radius: 0px 0px 0px 0px;
-							font-size:11px;
-						}
-						ul.dropdown-menu {
-							opacity:1;
-							border:2px solid white;
-							li {
-								a {
-									padding:6px 8px 6px;
-								}
-								padding:0px 0px 0px 0px;
-								font-size:11px;
-								overflow:hidden;
-							}
-						}
-					}
 					h4 {
 						line-height:16px;
 						font-weight: bold;
@@ -372,6 +347,17 @@ html,body, div.full
 								padding-left:0;
 							}
 						}
+						ul.dropdown-menu {
+							opacity:1;
+							border:2px solid white;
+							li {
+								a {
+									padding:6px 8px 6px;
+								}
+								padding:0px 0px 0px 0px;
+								font-size:12px;
+							}
+						}
 					}
 
 					.status-0 {background-color:@doc-status-0;}
@@ -413,20 +399,15 @@ html,body, div.full
 						margin-bottom:3px
 					}
 				}
-				.review, .signing {
+				.review {
 					padding:9px 3px 9px 8px;
 					color:darken(@silver, 25%);
 					font-size:15px;
 					font-weight:normal;
 					background-color:white;
-					a.btn {
-						color:white;
+					a {
+						color:darken(@silver, 35%);
 					}
-					a, a.btn.btn-link {
-						color: #78848c;
-						font-weight: bold;
-					}
-
 					&.in-progress {
 						background-color:lighten(@silver, 18%);
 					}
@@ -439,7 +420,6 @@ html,body, div.full
 							background-color:white;
 							a {
 								color: @orange;
-								font-size:13px;
 							}
 							a.btn {
 								opacity:0.8;
@@ -491,420 +471,114 @@ html,body, div.full
 			}
 		}
 	}
-	div.chat {
-		background-color:lighten(@silver, 25%);
-		h4 {
-			margin:0px -15px 0px -15px;
-			padding: 22px 15px 12px 15px;
-			font-size:15px;
-			color:darken(@silver, 15%);
-			span {
-				font-size:12px;
-			}
-			a {
-				padding-bottom:10px;
-			}
-		}
-		div.new-message {
-			background-color:lighten(@silver, 17%);
-			z-index: 3;
-			clear:both;
-			padding-top:10px;
-			padding-bottom:10px;
-			textarea {
-				font-size:12px;
-				border:0px;
-				margin-top:3px;
-				&:focus {
-					border:inherit;
-				}
-			}
-			.btn-textarea {
-				float:right;
-				margin-top:-10px;
-			}
-		}
-		ul.activity-log {
-			margin-top: 10px;
-			li {
-				font-size:12px;
-				line-height: 17px;
-				margin-bottom:4px;
-				color:#777;
-				position:relative;
-				a {
-					border-bottom:1px dotted #ccc;
-					color:#999;
-				}
-				.comment, .annotation {
-					margin-top:10px;
-					margin-bottom:12px;
-				}
-				.btn {
-					color: white;
-				}
-				.edit {
-					float: right;
-				    font-weight: normal;
-				    line-height: 1;
-				    text-shadow: 0 1px 0 #FFFFFF;
-				    font-size: 8px;
-				    margin-right: 5px;
-				    margin-top: 1px;
-				}
-
-				blockquote {
-					margin-top:2px;
-					margin-bottom:0px;
-					border-left:none;
-					position:relative;
-					font-size:13px;
-					color:@belize-hole;
-					padding:4px 6px 4px 26px;
-					background-color:mix(white, @belize-hole, 95%);
-					border-radius: 4px;
-					div {
-						line-height: 17px;
-						padding:4px;
-					}
-					a {
-						font-style: normal;
-						color:inherit;
-						font-size:11px;
-						opacity:0.6;
-					}
-					span {
-						border-radius: 4px 0px 0px 4px;
-						display:block;
-						position:absolute;
-						font-weight: bold;
-						left:0;
-						color:mix(white, @belize-hole, 97%);
-						padding:8px 3px 0px 4px;
-						font-size:11px;
-						text-align: center;
-						width:23px;
-						top:0;
-						height:100%;
-						background-color:lighten(@belize-hole, 35%);
-						&.fui-document {
-							margin-top:-1px;
-							padding-left:7px;
-						}
-					}
-				}
-				.annotation {
-					blockquote {
-						color:@orange;
-						background-color:mix(white, @orange, 95%);
-						span {
-							color:mix(white, @orange, 97%);
-							background-color:lighten(@orange, 35%);
-						}
-					}
-
-				}
-				div.basic {
-					color:#aaa;
-				}
-				span.since {
-					color:#ccc;
-				}
-				span.pe-7s-clock {
-					color:#aaa;
-					opacity:0;
-					position:absolute;
-					right:0;
-					top:0;
-				}
-				&:hover {
-					span.pe-7s-clock {
-						opacity:1;
-					}
-				}
-			}
-		}
-
-		/*ul {
-			padding-top:15px;
-			li {
-				.media {
-					padding-bottom:0px;
-				}
-				&.message {
-					margin-bottom:0px;
-					padding: 3px 0px 1px 0px;
-						.user-icon {
-							 float:left;
-							 padding-right:5px;
-							 background-color: @asbestos;
-							 padding:4px 6px;
-							 color:white;
-							 font-size:12px;
-							 border-radius:25px;
-							 margin-right:4px;
-							 margin-top:2px;
-						}
-					.media-body {
-						.msg-body {
-							font-size:12px;
-							line-height:1.45em;
-							margin-bottom:0px;
-							background-color:#f1f1f1;
-							padding:8px 10px;
-							color:darken(@asbestos, 0%);
-							text-rendering: optimizeLegibility;
-							border-radius:4px;
-						}
-						.msg-meta {
-							font-size: 11px;
-							color: @silver;
-							line-height: 15px;
-							margin-top: 2px;
-							margin-bottom: 6px;
-							a {
-								color:@silver;
-							}
-						}
-					}
-					&.me {
-						.user-icon {
-							 float:right;
-							 color: lighten(@peter-river, 50%);
-							 background-color:lighten(@peter-river, 10%);
-							 margin-left:4px;
-							 margin-right:0px;
-						}
-						.msg-body{
-							color:darken(@peter-river, 10%);
-							background-color:mix(@peter-river, white, 10%);
-							text-rendering: optimizeLegibility;
-							border-radius:4px;
-						}
-						.msg-meta {
-							text-align:right;
-							color: lighten(@peter-river, 25%);
-							a {
-								color:lighten(@peter-river, 25%);
-							}
-						}
-					}
-				}
-				&.action {
-					padding:3px 0px;
-					color: lighten(@asbestos, 20%);
-					font-size:12px;
-					margin-bottom:0px;
-					a {
-						color:lighten(@asbestos, 15%);
-
-					}
-				}
-			}
-		}*/
-	}
 }
 
 
-.modal-content {
-	iframe {
-		border:1px solid #ccc;
-	}
-	ul.participants {
-		li {
-			margin:10px 0px;
-			.user {
-				font-weight:normal;
-				color:#aaa;
-				border:none;
-				background-color:#FFF;
-				padding:8px;
-				font-size:12px;
-				border-radius: 40px;
-			}
-			label {
-				font-weight:normal;
+.item-comments{
+      margin-top: 20px;
+      height: 45%;
+      overflow-y: scroll;
+      background-color: #F6F6F6;
+      border-left: 2px solid #4A90E2;
 
-			}
-		}
-	}
-	p.note {
-		font-size:13px;
-		line-height:17px;
-		color:#888;
-		margin:10px 0px;
-	}
-}
+      .comment-thread{
+        margin-top: 70px;
+      }
 
+      .message-tabs {
+        z-index: 5;
+        margin-top: 15px;
+        position: absolute;
+        padding: 15px;
+        top: 0px;
+        right: 0;
+        width: 100%;
+        height: 50px;
+        background-color: #F0F0F0;
+        .one-tab {
+          height: 50px;
+          font-size: 13px;
+          border-bottom: none;
+          padding-top: 15px;
 
+        }
+      .active{
+        border-bottom: 0px;
+        color: white;
+        padding-left: 15px;
+        padding-right: 15px;
+        padding-bottom: 15px;
+        margin-right: -1px;
+        border-right: 2px solid #4A90E2;
+        background-color: #4A90E2;
 
-/* #closing {
-	background-color:lighten(@silver, 18%);
-	table {
-		width:80%;
-		margin:0 auto;
-		th{
-			background-color: transparent;
-		}
-		tr {
-			border-top-color: lighten(@silver, 18%);
-			td {
-				&.item-title {
-					padding-left:10px;
-					padding-top:10px;
-				}
-				.closing-title {
-					padding-top:40px;
-				}
-				&.closing-group-title {
-					line-height:38px;
-					font-size:18px;
-					color:@gray;
-					vertical-align:bottom;
-					.progress {
-						margin:4px 30px 4px 30px;
-						border-radius:0px;
-						height: 7px;
-					}
-				}
-				div[class*="group-"] {
-					font-size:17px;
-					margin-top:-25px;
-					text-align:center;
-					color: @amethyst;
-					padding-right:45px;
-					.disc{
-						font-size:25px;
-						margin:0 auto;
-						width:55px;
-						border:1px solid darken(@amethyst, 5%);
-						text-align:center;
-						padding:5px 10px 5px 11px;
-						background-color: @amethyst;
-						color:white;
-						border-radius:100px;
-						display:inline;
-						text-align:center;
-					}
-					&.complete {
-						padding-right:33px;
-					}
-				}
-				div.group-b {
-					color:@alizarin;
-					.disc {
-						border-color:darken(@alizarin, 5%);
-						background-color:@alizarin;
-					}
-				}
-				&.check {
-					text-align:center;
-				}
-			}
-		}
-	}
-}
-*/
+      }
 
-@signature :	darken(@belize-hole, 15%);
+      a.inactive{
 
-#requests {
-	.requests-header {
-		background-color:lighten(@silver, 27%);
-		margin-bottom:20px;
-		h3 {
-			color:darken(@silver, 40%);
-			font-size:24px;
-			margin: 50px 0px 30px 0px;
-			vertical-align:center;
-			position:relative;
-			span.lg {
-				background-color:@brand-danger;
-				color:white;
-				padding:8px 15px;
-				border-radius:40px;
-				margin-right:3px;
-
-			}
-		}
-	}
-	.requests-inner {
-		background-color:white;
-	}
-	h5 {
-		font-size:19px;
-		margin-bottom:8px;
-	}
-	p.lead {
-		font-size:15px;
-		margin-bottom:10px;
-	}
-	.req-wrap {
-		background-color:white;
-		padding:20px 20px;
-		color:darken(@belize-hole, 10%);
-		font-size:18px;
-		line-height: 20px;
-		.fui-document {
-			color:@belize-hole;
-			font-size:38px;
-			line-height:40px;
-			margin-right:7px;
-			line-height:100%;
-		}
-		.sub {
-			font-size:13px;
-			line-height:12px;
-			color:darken(@silver, 13%);
-		}
-		.btn {
-			margin-top:4px;
-		}
-		border:1px solid lighten(@gray, 30%);
-	}
-	ul.signature {
-		.req-wrap {
-			color:@signature;
-			.fui-document {
-				color:@signature;
-			}
-			.btn {
-				background-color:@signature;
-			}
-		}
-	}
-}
-
-.avatar {
-	  background-color: #98afc6;
-	  display: inline-block;
-	  position: relative;
-	}
-.avatar .initials {
-	  color: white;
-	  display: block;
-	  font-size: 14px;
-	  font-weight: bold;
-	  height: 40px;
-	  overflow: hidden;
-	  line-height: 40px;
-	  text-align: center;
-	  width: 40px;
-}
+      }
 
 
-@media (max-width: 1199px) {
-	.item.full {
-		height: 65%;
-	}
-	.chat.full {
-		position:absolute;
-		bottom:0;
-		height:35%;
-		div.new-message {
-			textarea:focus {
-				height:60px!important;
-			}
-		}
-	}
-}
+    }
+
+
+    .user-initials {
+      color: #4A90E2;
+      font-weight: bold;
+    }
+    .meta-message{
+      color: #929394;
+      font-size: 11px;
+      width: 100%;
+      overflow: hidden;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #DEDEDE;
+
+    }
+    li{
+      padding: 5px 20px;
+      font-size: 12px;
+      .message-content{
+        margin-bottom: 5px;
+      }
+
+      .meta-date, .meta-seen{
+        float: right;
+        padding-right: 10px;
+      }
+
+
+    }
+
+
+
+    }
+
+
+
+        div.new-message {
+      background-color: #F2F2F2;
+      z-index: 3;
+      clear:both;
+      padding-left: 15px;
+      margin-left: 0px;
+      padding-right: 15px;
+      border-left: 2px solid #4A90E2;
+      padding-top:10px;
+      padding-bottom:10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #E4E6E8;
+      textarea {
+        font-size:12px;
+        background-color: #F6F6F6;
+        border:2px solid #E4E6E8;
+        margin-top:3px;
+        &:focus {
+
+        }
+      }
+      .btn-textarea {
+        float:right;
+        margin-top:-10px;
+      }
+    }
