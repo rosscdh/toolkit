@@ -54,12 +54,12 @@ class ItemManager(IsDeletedManager):
         signing_requests = []
         for item in self.get_queryset().filter(reduce(operator.and_, signing_queries)):
             if completed:
-                if item.latest_revision.primary_signdocument and item.latest_revision.primary_signdocument.has_signed(user):
+                if item.latest_revision is not None and item.latest_revision.primary_signdocument and item.latest_revision.primary_signdocument.has_signed(user):
                     signing_requests.append(item)
                 elif item.is_complete:
                     signing_requests.append(item)
             else:
-                if item.latest_revision.primary_signdocument and not item.latest_revision.primary_signdocument.has_signed(user):
+                if item.latest_revision is not None and item.latest_revision.primary_signdocument and not item.latest_revision.primary_signdocument.has_signed(user):
                     signing_requests.append(item)
 
         return list(chain(document_requests, review_requests, signing_requests))

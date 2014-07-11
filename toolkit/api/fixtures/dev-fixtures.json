@@ -346,5 +346,129 @@
             "slug": "99b889e5697e44c990e7ab60e12f74a5",
             "name": "6th Item 2nd in Closing Group"
         }
-    }
+    },
+
+
+
+
+      {
+        "pk": 2,
+        "model": "workspace.workspace",
+        "fields": {
+          "is_deleted": false,
+          "name": "Lawpal Intro Matter",
+          "date_modified": "2014-07-01T21:37:55.081Z",
+          "tools": [],
+          "client": 1,
+          "lawyer": 2,
+          "date_created": "2014-06-23T23:59:11.294Z",
+          "matter_code": "00021-lawpal-test",
+          "data": {
+            "participants": [],
+            "percent_complete": "0%",
+            "categories": [
+              "General",
+              "Incorporation"
+            ],
+            "cloned": {
+              "date_cloned": "2014-06-23T23:59:15",
+              "num_items": 66
+            }
+          },
+          "slug": "lawpal-intro-matter",
+          "description": null
+        }
+      },
+      {
+        "pk": 20,
+        "model": "item.item",
+        "fields": {
+          "status": 0,
+          "category": "General",
+          "date_due": null,
+          "is_deleted": false,
+          "description": null,
+          "parent": null,
+          "date_modified": "2014-07-01T21:37:55.22Z",
+          "is_requested": false,
+          "is_complete": false,
+          "matter": 2,
+          "sort_order": 0,
+          "responsible_party": null,
+          "is_final": false,
+          "date_created": "2014-06-23T23:59:12.606Z",
+          "closing_group": null,
+          "latest_revision": null,
+          "data": {
+            "request_document": {
+              "requested_by": {
+                "username": "testlawyer",
+                "name": "Tëst Lawyër",
+                "url": "http://localhost/api/v1/users/testlawyer",
+                "role": "owner",
+                "user_class": "lawyer",
+                "initials": "TL"
+              },
+              "message": null,
+              "date_requested": "2014-06-27T04:25:27"
+            }
+          },
+          "slug": "222bca6ffc8b4f62b0059668765af578",
+          "name": "Cap Table"
+        }
+      },
+      {
+        "pk": 21,
+        "model": "item.item",
+        "fields": {
+          "status": 0,
+          "category": "General",
+          "date_due": null,
+          "is_deleted": false,
+          "description": "",
+          "parent": null,
+          "date_modified": "2014-06-26T22:27:12.047Z",
+          "is_requested": false,
+          "is_complete": false,
+          "matter": 2,
+          "sort_order": 3,
+          "responsible_party": null,
+          "is_final": false,
+          "date_created": "2014-06-24T00:05:51.600Z",
+          "closing_group": null,
+          "latest_revision": null,
+          "data": {
+            "signing_percentage_complete": null
+          },
+          "slug": "e53d27c7ac5a4e6e9df36e37ed9b0f82",
+          "name": "Invoice"
+        }
+      },
+      {
+        "pk": 22,
+        "model": "item.item",
+        "fields": {
+          "status": 0,
+          "category": "Incorporation",
+          "date_due": null,
+          "is_deleted": false,
+          "description": "",
+          "parent": null,
+          "date_modified": "2014-06-30T07:47:27.21Z",
+          "is_requested": false,
+          "is_complete": false,
+          "matter": 2,
+          "sort_order": 7,
+          "responsible_party": null,
+          "is_final": false,
+          "date_created": "2014-06-23T23:59:13.294Z",
+          "closing_group": null,
+          "latest_revision": null,
+          "data": {
+            "signing_percentage_complete": null
+          },
+          "slug": "befdd5a2df0845a1b4f9e25975fa5cf2",
+          "name": "Articles of Incorporation"
+        }
+      }
 ]
