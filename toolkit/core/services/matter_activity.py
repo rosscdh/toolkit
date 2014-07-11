@@ -387,7 +387,7 @@ class MatterActivityEventService(object):
         override_message = u'%s deleted a comment on %s' % (user, revision)
         self._create_activity(actor=user, verb=u'deleted revision comment', action_object=revision,
                               override_message=override_message, item=revision.item)
-        self.realtime_event(event='update', obj=item, ident=item.slug, from_user=user, detail='deleted revision comment')
+        self.realtime_event(event='update', obj=revision.item, ident=revision.item.slug, from_user=user, detail='deleted revision comment')
 
     def revision_changed_status(self, user, revision, previous_status):
         # never used

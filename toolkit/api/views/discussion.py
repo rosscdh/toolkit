@@ -91,6 +91,12 @@ class DiscussionCommentEndpoint(ThreadMixin, viewsets.ModelViewSet):
 
         return super(DiscussionCommentEndpoint, self).pre_save(obj=obj)
 
+    def post_save(self, obj, created=False):
+        if created:
+            obj.send_commented_email()
+
+        return super(DiscussionCommentEndpoint, self).post_save(obj=obj)
+
     def can_read(self, user):
         return user in self.thread.participants.all()
 
@@ -136,6 +142,9 @@ class DiscussionParticipantEndpoint(ThreadMixin, mixins.CreateModelMixin, viewse
         if user not in self.thread.participants.all():
             # add to the join if not there already
             self.thread.participants.add(user)
+
+            # send the added participant email
+            self.thread.send_added_user_email(actor=self.request.user, user=user)
 
         # we have the user at this point
         serializer = self.get_serializer(user)

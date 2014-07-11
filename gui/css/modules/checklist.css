@@ -126,7 +126,7 @@ div.full {
   opacity: 0.5;
 }
 .checklist-wrapper div.item a.link {
-  color: #a1aab0;
+  color: #818080;
   font-size: 12px;
 }
 .checklist-wrapper div.item a.link:hover {
@@ -475,7 +475,7 @@ div.full {
   padding-bottom: 4px;
   margin-top: 15px;
   text-transform: uppercase;
-  color: #a1aab0;
+  color: #818080;
 }
 .checklist-wrapper div.item ul.revisions li.previous-toggle {
   display: none;

@@ -2,6 +2,7 @@
 import json
 
 from django.contrib.auth.models import User
+from django.core import mail
 
 from model_mommy import mommy
 from rest_framework.reverse import reverse
@@ -12,28 +13,36 @@ from toolkit.apps.workspace.models import ROLES, WorkspaceParticipants
 from . import BaseEndpointTest
 
 
-class DiscussionsTest(BaseEndpointTest):
+class BaseDiscussionEndpointTest(BaseEndpointTest):
     def setUp(self):
-        super(DiscussionsTest, self).setUp()
+        super(BaseDiscussionEndpointTest, self).setUp()
+
+        # not a matter participant
+        self.forbidden_user = self.create_user(username='forbidden-user', email='forbidden+user@lawpal.com')
+
+        # Not a thread participant
+        self.invalid_user = self.create_user(username='invalid-user', email='invalid+user@lawpal.com')
+        WorkspaceParticipants.objects.create(workspace=self.matter, user=self.invalid_user, role=ROLES.client)
+
         self.thread = mommy.make(
             'discussion.DiscussionComment',
-            matter=self.workspace,
+            matter=self.matter,
             title='Thread',
             comment='Hello world!',
-            participants=(self.lawyer,),
+            participants=(self.lawyer, self.user),
             user=self.lawyer
         )
 
         self.comment = mommy.make(
             'discussion.DiscussionComment',
-            matter=self.workspace,
+            matter=self.matter,
             parent=self.thread,
             comment='Hello world!',
             user=self.lawyer
         )
 
-        self.forbidden_user = self.create_user(username='forbidden-user', email='forbidden+user@lawpal.com')
 
+class DiscussionsTest(BaseDiscussionEndpointTest):
     @property
     def endpoint(self):
         return reverse('discussion-list', kwargs={ 'matter_slug': self.matter.slug })
@@ -68,7 +77,7 @@ class DiscussionsTest(BaseEndpointTest):
 
     def test_invalid_participant_get(self):
         """ Non thread-participants can't see the thread """
-        self.client.login(username=self.user.username, password=self.password)
+        self.client.login(username=self.invalid_user.username, password=self.password)
 
         resp = self.client.get(self.endpoint, content_type='application/json')
         self.assertEqual(resp.status_code, 200)
@@ -154,28 +163,7 @@ class DiscussionsTest(BaseEndpointTest):
         self.assertEqual(resp.status_code, 403)  # forbidden
 
 
-class DiscussionDetailTest(BaseEndpointTest):
-    def setUp(self):
-        super(DiscussionDetailTest, self).setUp()
-        self.thread = mommy.make(
-            'discussion.DiscussionComment',
-            matter=self.workspace,
-            title='Thread',
-            comment='Hello world!',
-            participants=(self.lawyer,),
-            user=self.lawyer
-        )
-
-        self.comment = mommy.make(
-            'discussion.DiscussionComment',
-            matter=self.workspace,
-            parent=self.thread,
-            comment='Hello world!',
-            user=self.lawyer
-        )
-
-        self.forbidden_user = self.create_user(username='forbidden-user', email='forbidden+user@lawpal.com')
-
+class DiscussionDetailTest(BaseDiscussionEndpointTest):
     @property
     def endpoint(self):
         return reverse('discussion-detail', kwargs={ 'matter_slug': self.matter.slug, 'slug': self.thread.slug })
@@ -210,7 +198,7 @@ class DiscussionDetailTest(BaseEndpointTest):
 
     def test_invalid_participant_get(self):
         """ Non thread-participants can't see the thread """
-        self.client.login(username=self.user.username, password=self.password)
+        self.client.login(username=self.invalid_user.username, password=self.password)
 
         resp = self.client.get(self.endpoint, content_type='application/json')
         self.assertEqual(resp.status_code, 403)  # forbidden
@@ -232,7 +220,7 @@ class DiscussionDetailTest(BaseEndpointTest):
         self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_invalid_participant_post(self):
-        self.client.login(username=self.user.username, password=self.password)
+        self.client.login(username=self.invalid_user.username, password=self.password)
 
         resp = self.client.post(self.endpoint, {}, content_type='application/json')
         self.assertEqual(resp.status_code, 405)  # not allowed
@@ -280,7 +268,7 @@ class DiscussionDetailTest(BaseEndpointTest):
         self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_invalid_participant_put(self):
-        self.client.login(username=self.user.username, password=self.password)
+        self.client.login(username=self.invalid_user.username, password=self.password)
 
         resp = self.client.put(self.endpoint, {}, content_type='application/json')
         self.assertEqual(resp.status_code, 403)  # forbidden
@@ -311,34 +299,13 @@ class DiscussionDetailTest(BaseEndpointTest):
         self.assertEqual(resp.status_code, 403)  # forbidden
 
     def test_invalid_participant_delete(self):
-        self.client.login(username=self.user.username, password=self.password)
+        self.client.login(username=self.invalid_user.username, password=self.password)
 
         resp = self.client.delete(self.endpoint, content_type='application/json')
         self.assertEqual(resp.status_code, 403)  # forbidden
 
 
-class DiscussionCommentsTest(BaseEndpointTest):
-    def setUp(self):
-        super(DiscussionCommentsTest, self).setUp()
-        self.thread = mommy.make(
-            'discussion.DiscussionComment',
-            matter=self.workspace,
-            title='Thread',
-            comment='Hello world!',
-            participants=(self.lawyer,),
-            user=self.lawyer
-        )
-
-        self.comment = mommy.make(
-            'discussion.DiscussionComment',
-            matter=self.workspace,
-            parent=self.thread,
-            comment='Hello world!',
-            user=self.lawyer
-        )
-
-        self.forbidden_user = self.create_user(username='forbidden-user', email='forbidden+user@lawpal.com')
-
+class DiscussionCommentsTest(BaseDiscussionEndpointTest):
     @property
     def endpoint(self):
         return reverse('discussion_comment-list', kwargs={ 'matter_slug': self.matter.slug, 'thread_slug': self.thread.slug })
@@ -373,7 +340,7 @@ class DiscussionCommentsTest(BaseEndpointTest):
 
     def test_invalid_participant_get(self):
         """ Non thread-participants can't see the comments """
-        self.client.login(username=self.user.username, password=self.password)
+        self.client.login(username=self.invalid_user.username, password=self.password)
 
         resp = self.client.get(self.endpoint, content_type='application/json')
         self.assertEqual(resp.status_code, 403)  # forbidden
@@ -388,6 +355,15 @@ class DiscussionCommentsTest(BaseEndpointTest):
 
         json_data = json.loads(resp.content)
         self.assertEqual(json_data['content'], 'Goodbye world!')
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].from_email, 'support@lawpal.com')
+        self.assertEqual(mail.outbox[0].to, [self.user.email])
+        self.assertEqual(mail.outbox[0].subject, u'{actor} commented on the thread {thread} in {matter}'.format(
+            actor=self.lawyer,
+            matter=self.workspace,
+            thread=self.thread,
+        ))
 
     def test_anon_post(self):
         resp = self.client.post(self.endpoint, {}, content_type='application/json')
@@ -432,33 +408,7 @@ class DiscussionCommentsTest(BaseEndpointTest):
         self.assertEqual(resp.status_code, 403)  # forbidden
 
 
-class DiscussionCommentDetailTest(BaseEndpointTest):
-    def setUp(self):
-        super(DiscussionCommentDetailTest, self).setUp()
-        self.thread = mommy.make(
-            'discussion.DiscussionComment',
-            matter=self.workspace,
-            title='Thread',
-            comment='Hello world!',
-            participants=(self.lawyer, self.user),
-            user=self.lawyer
-        )
-
-        self.comment = mommy.make(
-            'discussion.DiscussionComment',
-            matter=self.workspace,
-            parent=self.thread,
-            comment='Hello world!',
-            user=self.lawyer
-        )
-
-        # Not a matter participant
-        self.forbidden_user = self.create_user(username='forbidden-user', email='forbidden+user@lawpal.com')
-
-        # Not a thread participant
-        self.invalid_user = self.create_user(username='invalid-user', email='invalid+user@lawpal.com')
-        WorkspaceParticipants.objects.create(workspace=self.workspace, user=self.invalid_user, role=ROLES.client)
-
+class DiscussionCommentDetailTest(BaseDiscussionEndpointTest):
     @property
     def endpoint(self):
         return reverse('discussion_comment-detail', kwargs={
@@ -612,33 +562,7 @@ class DiscussionCommentDetailTest(BaseEndpointTest):
         self.assertEqual(resp.status_code, 403)  # forbidden
 
 
-class DiscussionParticipantsTest(BaseEndpointTest):
-    def setUp(self):
-        super(DiscussionParticipantsTest, self).setUp()
-        self.thread = mommy.make(
-            'discussion.DiscussionComment',
-            matter=self.workspace,
-            title='Thread',
-            comment='Hello world!',
-            participants=(self.lawyer, self.user),
-            user=self.lawyer
-        )
-
-        self.comment = mommy.make(
-            'discussion.DiscussionComment',
-            matter=self.workspace,
-            parent=self.thread,
-            comment='Hello world!',
-            user=self.lawyer
-        )
-
-        # Not a matter participant
-        self.forbidden_user = self.create_user(username='forbidden-user', email='forbidden+user@lawpal.com')
-
-        # Not a thread participant
-        self.invalid_user = self.create_user(username='invalid-user', email='invalid+user@lawpal.com')
-        WorkspaceParticipants.objects.create(workspace=self.workspace, user=self.invalid_user, role=ROLES.client)
-
+class DiscussionParticipantsTest(BaseDiscussionEndpointTest):
     @property
     def endpoint(self):
         return reverse('discussion_participant-list', kwargs={ 'matter_slug': self.matter.slug, 'thread_slug': self.thread.slug })
@@ -688,6 +612,15 @@ class DiscussionParticipantsTest(BaseEndpointTest):
 
         json_data = json.loads(resp.content)
         self.assertEqual(json_data['username'], self.forbidden_user.username)
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].from_email, 'support@lawpal.com')
+        self.assertEqual(mail.outbox[0].to, [self.forbidden_user.email])
+        self.assertEqual(mail.outbox[0].subject, u'{actor} added you to the thread {thread} in {matter}'.format(
+            actor=self.lawyer,
+            matter=self.workspace,
+            thread=self.thread,
+        ))
 
     def test_post_with_new_user(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -747,33 +680,7 @@ class DiscussionParticipantsTest(BaseEndpointTest):
         self.assertEqual(resp.status_code, 403)  # forbidden
 
 
-class DiscussionParticipantDetailTest(BaseEndpointTest):
-    def setUp(self):
-        super(DiscussionParticipantDetailTest, self).setUp()
-        self.thread = mommy.make(
-            'discussion.DiscussionComment',
-            matter=self.workspace,
-            title='Thread',
-            comment='Hello world!',
-            participants=(self.lawyer,self.user),
-            user=self.lawyer
-        )
-
-        self.comment = mommy.make(
-            'discussion.DiscussionComment',
-            matter=self.workspace,
-            parent=self.thread,
-            comment='Hello world!',
-            user=self.lawyer
-        )
-
-        # Not a matter participant
-        self.forbidden_user = self.create_user(username='forbidden-user', email='forbidden+user@lawpal.com')
-
-        # Not a thread participant
-        self.invalid_user = self.create_user(username='invalid-user', email='invalid+user@lawpal.com')
-        WorkspaceParticipants.objects.create(workspace=self.workspace, user=self.invalid_user, role=ROLES.client)
-
+class DiscussionParticipantDetailTest(BaseDiscussionEndpointTest):
     @property
     def endpoint(self):
         return reverse('discussion_participant-detail', kwargs={
