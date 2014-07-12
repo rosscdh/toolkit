@@ -30,3 +30,18 @@ angular.module('toolkit-gui')
 		}
 	};
 }]);
+
+
+
+    introJs().setOptions({
+        'showBullets': 'false',
+        'showLabel': 'false',
+        'showStepNumbers': 'false',
+        'KeyboardNavigation': 'false',
+        steps: [
+          {
+            element: 'col-xs-8',
+            intro: "This is your project navigation bar. It allows you to quickly access features, like editing your project page, messaging your backers, or creating a new project."
+          }
+        ]
+      }); // close project_intro
