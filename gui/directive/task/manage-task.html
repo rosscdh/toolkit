@@ -30,9 +30,9 @@
 
             <div class="form-group">
                 <label for="task-name">Date due</label>
-                <p class="input-group">
+                <p class="input-group calendar-group">
                     <input type="text" class="form-control" datepicker-popup="yyyy/MM/dd" ng-model="task.date_due" is-open="dateOptions.datepickerIsOpened"
-                           min-date="dateOptions.minDueDate" close-text="Close" />
+                           min-date="dateOptions.minDueDate" close-text="Close" datepicker-append-to-body="false" />
                     <span class="input-group-btn">
                         <button type="button" class="btn btn-default" ng-click="toggleDatepicker($event)"><i class="glyphicon glyphicon-calendar"></i></button>
                     </span>
