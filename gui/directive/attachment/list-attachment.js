@@ -66,7 +66,7 @@ angular.module('toolkit-gui').directive('attachmentsList', ['$compile', '$log', 
                     ezConfirm.create('Delete attachment', 'Please confirm you would like to delete this attachment?',
                         function yes() {
                             // Confirmed- delete category
-                            attachmentService.delete($scope.matter.slug, $scope.selectedItem.slug, attachment.slug).then(
+                            attachmentService.delete(attachment.slug).then(
                                 function success() {
                                     var index = jQuery.inArray(attachment, $scope.data.attachments);
                                     if (index >= 0) {
