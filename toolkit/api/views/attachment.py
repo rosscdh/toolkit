@@ -38,7 +38,7 @@ class AttachmentEndpoint(viewsets.ModelViewSet):
             return user in self.object.item.matter.participants.all()
         else:
             # must be PATCH to change the name/description/...
-            return user == self.get_object().uploaded_by \
+            return user == self.object.uploaded_by \
                    or user.matter_permissions(self.object.item.matter).has_permission(manage_attachments=True)
 
     def can_delete(self, user):
@@ -140,13 +140,13 @@ class AttachmentView(MatterItemsQuerySetMixin,
         @BUSINESSRULE Enforce the revision.uploaded_by and revision.item
         """
         if obj.name is None:
-            file = self.request.FILES.get('file')
+            file_obj = self.request.FILES.get('attachment')
 
-            if file is not None:
+            if file_obj is not None:
                 #
                 # Set the object name to the filename
                 #
-                obj.name = file.name
+                obj.name = file_obj.name
 
         super(AttachmentView, self).pre_save(obj=obj)
 

@@ -148,9 +148,13 @@ class AttachmentExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
     def setUp(self):
         super(AttachmentExecutedFileAsUrlOrMultipartDataTest, self).setUp()
 
+        user_perm = self.lawyer.matter_permissions(self.matter)
+        user_perm.update_permissions(manage_attachments=True)
+        user_perm.save(update_fields=['data'])
+
         # setup the items for testing
         self.item = mommy.make('item.Item', matter=self.matter, name='Test Item', category=None)
-        self.attachment = mommy.make('attachment.Attachment', item=self.item, name='Test Item Attachment')
+        self.attachment = mommy.make('attachment.Attachment', item=self.item, uploaded_by=self.user, name='Test Item Attachment')
 
     def test_endpoint_name(self):
         self.assertEqual(self.endpoint, '/api/v1/attachments/%s' % self.attachment.slug)
@@ -182,17 +186,19 @@ class AttachmentExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
         # ie. filepicker.io then the CONTENT_TYPE must be application/json and
         # the field "executed_file": "http://example.com/myfile.pdf"
         #
-        resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
-        resp_json = json.loads(resp.content)
+        endpoint = reverse('matter_item_attachment', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug})
+        resp = self.client.post(endpoint, json.dumps(data), content_type='application/json')
 
         self.assertEqual(resp.status_code, 201)  # ok created
+        resp_json = json.loads(resp.content)
         self.assertEqual(resp_json.get('attachment'),
                          u'/m/attachments/%s-%s-test-pirates-ahoy.pdf' % (self.item.pk, self.lawyer.username))
-        self.assertEqual(self.item.attachments.count(), 1)
+        self.assertEqual(self.item.attachments.count(), 2)
 
         # refresh
         self.item = self.item.__class__.objects.get(pk=self.item.pk)  # reset
-        attachment = self.item.attachments.all().first()
+        attachment = self.item.attachments.get(slug=resp_json.get('slug'))
+
         self.assertEqual(attachment.attachment.name,
                          u'attachments/%s-%s-test-pirates-ahoy.pdf' % (self.item.pk, self.lawyer.username))
         self.assertEqual(attachment.attachment.url,
@@ -211,21 +217,24 @@ class AttachmentExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
             #
             # NB. uploading files must be a patch
             #
-            self.assertEqual(self.item.attachments.all().count(), 0)
+            self.assertEqual(self.item.attachments.all().count(), 1)  # already has an attachment
             #
             # @BUSINESSRULE if you are sending a binary file that needs to be download
             # ie. plain post then the CONTENT_TYPE must be MULTIPART_CONTENT and
             # the field "executed_file": a binary file object
             #
-            resp = self.client.post(self.endpoint, data, content_type=MULTIPART_CONTENT)
+            endpoint = reverse('matter_item_attachment', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug})
+            resp = self.client.post(endpoint, data, content_type=MULTIPART_CONTENT)
+
         resp_json = json.loads(resp.content)
 
         self.assertEqual(resp.status_code, 201)  # created
+
         self.assertEqual(resp_json.get('name'), 'test.pdf')
         self.assertEqual(resp_json.get('attachment'), '/m/attachments/%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
-        self.assertEqual(self.item.attachments.count(), 1)
+        self.assertEqual(self.item.attachments.count(), 2)
 
-        attachment = self.item.attachments.all().first()
+        attachment = self.item.attachments.get(slug=resp_json.get('slug'))
 
         self.assertEqual(attachment.attachment.name, 'attachments/%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
         self.assertEqual(attachment.attachment.url, '/m/attachments/%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
@@ -235,21 +244,26 @@ class AttachmentExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
 
         user_perm = self.user.matter_permissions(self.matter)
         user_perm.update_permissions(manage_attachments=False)
-        user_perm.save(update_fields=['data'])
+        user_perm.role = user_perm.ROLES.client
+        user_perm.save(update_fields=['data', 'role'])
 
         attachment = mommy.make('attachment.Attachment',
                                 attachment=None,
                                 name='filename.txt',
                                 item=self.item,
                                 uploaded_by=self.lawyer)
+        
+        endpoint = reverse('attachment-detail', kwargs={'slug': attachment.slug})
 
-        resp = self.client.patch(self.endpoint, data=json.dumps({'name': 'tralala'}), content_type='application/json')
+        resp = self.client.patch(endpoint, data=json.dumps({'name': 'tralala'}), content_type='application/json')
         self.assertEqual(resp.status_code, 403)  # forbidden
 
         user_perm = self.user.matter_permissions(self.matter)
         user_perm.update_permissions(manage_attachments=True)
         user_perm.save(update_fields=['data'])
-        resp = self.client.patch(self.endpoint, data=json.dumps({'name': 'tralala'}), content_type='application/json')
+
+        resp = self.client.patch(endpoint, data=json.dumps({'name': 'tralala'}), content_type='application/json')
+
         self.assertEqual(resp.status_code, 200)  # ok
         resp_json = json.loads(resp.content)
         self.assertEqual(resp_json.get('name'), 'tralala')

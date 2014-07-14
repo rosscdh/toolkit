@@ -10,6 +10,8 @@ from toolkit.utils import get_namedtuple_choices
 from uuidfield import UUIDField
 from jsonfield import JSONField
 
+from rulez import registry as rulez_registry
+
 from .managers import RevisionManager
 from .mixins import StatusLabelsMixin
 
@@ -213,6 +215,23 @@ class Attachment(IsDeletedMixin,
 
     _serializer = 'toolkit.api.serializers.AttachmentSerializer'
 
+    def can_read(self, user):
+        return user in self.item.matter.participants.all()
+
+    def can_edit(self, user):
+        if self.pk is None: # create
+            return user in self.item.matter.participants.all()
+        else:
+            return user == self.uploaded_by \
+                   or user.matter_permissions(self.item.matter).has_permission(manage_attachments=True)
+
+    def can_delete(self, user):
+        return user == self.uploaded_by \
+               or user.matter_permissions(self.item.matter).has_permission(manage_attachments=True)
+
+rulez_registry.register("can_read", Attachment)
+rulez_registry.register("can_edit", Attachment)
+rulez_registry.register("can_delete", Attachment)
 
 
 from .signals import (ensure_revision_slug,
