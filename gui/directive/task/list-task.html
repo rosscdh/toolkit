@@ -3,8 +3,9 @@
         <a class="btn-link" href="javascript:;" ng-click="manageTask()" ng-hide="selectedItem.is_complete">New Task</a>
     </div>
 <div class="task-zero-state" ng-if=" data.tasks.length == 0">
-    <i class="fa fa-list-ul"></i>
-This Matter has no tasks.
+   <h4>No Tasks Yet</h4>
+
+This Item has no tasks yet. Create Tasks for this Item by clicking 'New Task'.
 </div>
  <div class="task-progress" ng-if=" data.tasks.length > 0">
         <div class="bar" style="width: {{ data.taskCompletionStatus }}%"></div>
@@ -18,7 +19,7 @@ This Matter has no tasks.
             <ul class="one-task">
                 <li class="icon" ng-click="toggleCompleteTask(task)"><span class="" ng-class="{'incomplete fui-radio-unchecked': !task.is_complete, 'fui-check-inverted complete': task.is_complete }"></span></li>
 
-                <li class="task-name" ng-class="{'incomplete': !task.is_complete, 'complete': task.is_complete }">{{ task.name }}</li>
+                <li class="task-name" ng-class="{'incomplete': !task.is_complete, 'complete': task.is_complete }">{{ task.name  | characters:25:true}}</li>
                     <li class="task-status">
                     <div ng-show="task.assigned_to.length>0">
                         Assigned to <span ng-repeat="user in task.assigned_to">{{ user.initials }}&nbsp;</span>
@@ -29,9 +30,9 @@ This Matter has no tasks.
                     <span ng-show="isTaskOverdue(task)" class="overdue">Overdue</span>
                 </li>
                 <li class="delete-task">
-                    <a href="#" ng-click="manageTask(task)" ng-class="{'incomplete': !task.is_complete, 'complete': task.is_complete }"><i class="fa fa-pencil-square-o"></i></a>
+                    <a href="#" ng-click="manageTask(task)" ng-class="{'incomplete': !task.is_complete, 'complete': task.is_complete }" tooltip-placement="top" tooltip="Edit this Task"><i class="fa fa-pencil-square-o"></i></a>
                 </li>
-                <li class="delete-task"><a href="#" ng-click="deleteTask(task)" ng-show="isDeleteTaskEnabled(task)">X</a></li>
+                <li class="delete-task"><a href="#" ng-click="deleteTask(task)" ng-show="isDeleteTaskEnabled(task)" tooltip-placement="top" tooltip="Delete this Task">X</a></li>
             </ul>
         </li>
     </ul>
