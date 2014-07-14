@@ -54,7 +54,7 @@ class ItemAttachmentTest(BaseEndpointTest):
         self.client.login(username=self.lawyer.username, password=self.password)
 
         attachment = mommy.make('attachment.Attachment',
-                                file=None,
+                                attachment=None,
                                 name='filename.txt',
                                 item=self.item,
                                 uploaded_by=self.lawyer)
@@ -84,7 +84,7 @@ class ItemAttachmentTest(BaseEndpointTest):
 
         resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
         resp_json = json.loads(resp.content)
-        self.assertEqual(resp_json.get('file'), None)
+        self.assertEqual(resp_json.get('attachment'), None)
 
         self.assertEqual(resp.status_code, 201)  # created
         self.assertEqual(self.item.attachments.all().count(), self.expected_num)
@@ -93,7 +93,7 @@ class ItemAttachmentTest(BaseEndpointTest):
         self.client.login(username=self.user.username, password=self.password)
 
         attachment = mommy.make('attachment.Attachment',
-                                file=None,
+                                attachment=None,
                                 name='filename.txt',
                                 item=self.item,
                                 uploaded_by=self.lawyer)
@@ -118,7 +118,7 @@ class ItemAttachmentTest(BaseEndpointTest):
         self.client.login(username=self.user.username, password=self.password)
 
         attachment = mommy.make('attachment.Attachment',
-                                file=None,
+                                attachment=None,
                                 name='filename.txt',
                                 item=self.item,
                                 uploaded_by=self.user)
@@ -171,7 +171,7 @@ class AttachmentExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
         # but they do send us the name of the file that was uploaded so lets use that
         #
         data = {
-            'file': expected_image_url,
+            'attachment': expected_image_url,
             'name': expected_file_name
         }
         #
@@ -183,7 +183,7 @@ class AttachmentExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
         resp_json = json.loads(resp.content)
 
         self.assertEqual(resp.status_code, 201)  # ok created
-        self.assertEqual(resp_json.get('file'),
+        self.assertEqual(resp_json.get('attachment'),
                          u'/m/attachments/%s-%s-test-pirates-ahoy.pdf' % (self.item.pk, self.lawyer.username))
         self.assertEqual(self.item.attachments.count(), 1)
 
@@ -203,7 +203,7 @@ class AttachmentExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
 
         with open(self.FILE_TO_TEST_UPLOAD_WITH) as file_being_posted:
             data = {
-                'file': file_being_posted,
+                'attachment': file_being_posted,
             }
             #
             # NB. uploading files must be a patch
@@ -219,7 +219,7 @@ class AttachmentExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
 
         self.assertEqual(resp.status_code, 201)  # created
         self.assertEqual(resp_json.get('name'), 'test.pdf')
-        self.assertEqual(resp_json.get('file'), '/m/attachments/%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
+        self.assertEqual(resp_json.get('attachment'), '/m/attachments/%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
         self.assertEqual(self.item.attachments.count(), 1)
 
         attachment = self.item.attachments.all().first()
@@ -235,7 +235,7 @@ class AttachmentExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
         user_perm.save(update_fields=['data'])
 
         attachment = mommy.make('attachment.Attachment',
-                                file=None,
+                                attachment=None,
                                 name='filename.txt',
                                 item=self.item,
                                 uploaded_by=self.lawyer)
@@ -259,7 +259,7 @@ class AttachmentExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
         user_perm.save(update_fields=['data'])
 
         attachment = mommy.make('attachment.Attachment',
-                                file=None,
+                                attachment=None,
                                 name='filename.txt',
                                 item=self.item,
                                 uploaded_by=self.user)

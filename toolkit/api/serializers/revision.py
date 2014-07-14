@@ -120,7 +120,7 @@ class HyperlinkedAutoDownloadFileField(LimitedExtensionMixin, serializers.URLFie
 
     def field_to_native(self, obj, field_name):
         if obj is not None:
-            field = getattr(obj, field_name)
+            field = getattr(obj, field_name, None)
 
             try:
 

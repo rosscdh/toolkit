@@ -67,8 +67,8 @@ class MatterItemsView(MatterItemsQuerySetMixin,
         return {'request': self.request}
 
     def pre_save(self, obj):
-        obj.matter = self.matter  # set in MatterItemsQuerySetMixin
-
+        obj.matter = self.matter
+        obj.uploaded_by = self.request.user
         return super(MatterItemsView, self).pre_save(obj=obj)
 
     def post_save(self, obj, created=False):

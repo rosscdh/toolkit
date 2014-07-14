@@ -14,9 +14,10 @@ class Migration(SchemaMigration):
             ('is_deleted', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('slug', self.gf('uuidfield.fields.UUIDField')(db_index=True, unique=True, max_length=32, blank=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
-            ('file', self.gf('django.db.models.fields.files.FileField')(max_length=255, null=True, blank=True)),
+            ('attachment', self.gf('django.db.models.fields.files.FileField')(max_length=255, null=True, blank=True)),
             ('item', self.gf('django.db.models.fields.related.ForeignKey')(related_name='attachments', to=orm['item.Item'])),
             ('uploaded_by', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
+            ('data', self.gf('jsonfield.fields.JSONField')(default={}, blank=True)),
             ('date_created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, db_index=True, blank=True)),
         ))
         db.send_create_signal(u'attachment', ['Attachment'])
@@ -30,8 +31,9 @@ class Migration(SchemaMigration):
     models = {
         u'attachment.attachment': {
             'Meta': {'object_name': 'Attachment'},
+            'attachment': ('django.db.models.fields.files.FileField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'data': ('jsonfield.fields.JSONField', [], {'default': '{}', 'blank': 'True'}),
             'date_created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'db_index': 'True', 'blank': 'True'}),
-            'file': ('django.db.models.fields.files.FileField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_deleted': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'item': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'attachments'", 'to': u"orm['item.Item']"}),

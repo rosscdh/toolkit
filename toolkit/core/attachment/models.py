@@ -202,17 +202,14 @@ class Attachment(IsDeletedMixin,
     slug = UUIDField(auto=True, db_index=True)
     name = models.CharField(max_length=255, null=True, blank=True)
 
-    file = models.FileField(upload_to=_upload_attachment, max_length=255, storage=_managed_S3BotoStorage(), null=True,
-                            blank=True)
+    attachment = models.FileField(upload_to=_upload_attachment, max_length=255, storage=_managed_S3BotoStorage(), null=True, blank=True)
 
     item = models.ForeignKey('item.Item', related_name='attachments')
     uploaded_by = models.ForeignKey('auth.User')
 
-    # data = JSONField(default={}, blank=True)  # do we need this?
+    data = JSONField(default={}, blank=True)
 
     date_created = models.DateTimeField(auto_now=False, auto_now_add=True, db_index=True)
-    # date_modified = models.DateTimeField(auto_now=True, auto_now_add=True, db_index=True)
-    # do we need this? seems like you cannot modify an attachment, just delete
 
     _serializer = 'toolkit.api.serializers.AttachmentSerializer'
 

@@ -12,26 +12,22 @@ logger = logging.getLogger('django.request')
 
 
 class AttachmentSerializer(serializers.HyperlinkedModelSerializer):
-    file = HyperlinkedAutoDownloadFileField(file_field_name='file', required=False)
+    attachment = HyperlinkedAutoDownloadFileField(required=True)
 
     item = serializers.HyperlinkedRelatedField(many=False, view_name='item-detail')
-    uploaded_by = serializers.SerializerMethodField('get_uploaded_by')
+    uploaded_by = SimpleUserSerializer(many=False)
 
     date_created = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = Attachment
-        fields = ('name',
-                  'file',
-                  'item',
-                  'uploaded_by',
-                  'date_created')
+        exclude = ('data',)
 
     def __init__(self, *args, **kwargs):
         #
         # @TODO turn these into nice clean methods
         #
-        self.base_fields['file'] = HyperlinkedAutoDownloadFileField(file_field_name='file', required=False)
+        self.base_fields['attachment'] = HyperlinkedAutoDownloadFileField(required=True)
         self.base_fields['uploaded_by'] = SimpleUserSerializer()
         #
         # If we are passing in a multipart form
@@ -44,9 +40,9 @@ class AttachmentSerializer(serializers.HyperlinkedModelSerializer):
                 #
                 if request.method in ['PATCH', 'POST']:
                     # ensure the uploaded_by is just a simple hyplinkrelatedfield on update,create
-                    self.base_fields['uploaded_by'] = serializers.HyperlinkedRelatedField(many=False,
-                                                                                          view_name='user-detail',
-                                                                                          lookup_field='username')
+                    self.base_fields['uploaded_by'] = serializers.SlugRelatedField(many=False,
+                                                                                   view_name='user-detail',
+                                                                                   lookup_field='username')
 
                     if 'multipart/form-data;' in kwargs['context']['request'].content_type:
                         if kwargs['context']['request'].FILES:

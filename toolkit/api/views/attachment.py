@@ -1,5 +1,4 @@
 # -*- coding: UTF-8 -*-
-from django.http import Http404
 from django.shortcuts import get_object_or_404
 
 from rulez import registry as rulez_registry
@@ -13,9 +12,9 @@ from toolkit.core.attachment.models import Attachment
 
 from .mixins import (MatterItemsQuerySetMixin,)
 
-from ..serializers import AttachmentSerializer
-from ..serializers import ItemSerializer
-from ..serializers import UserSerializer
+from ..serializers import (AttachmentSerializer,
+                           ItemSerializer,
+                           SimpleUserSerializer)
 
 
 import logging
@@ -30,10 +29,7 @@ class AttachmentEndpoint(viewsets.ModelViewSet):
 
 
 class AttachmentView(MatterItemsQuerySetMixin,
-                     generics.CreateAPIView,
-                     generics.RetrieveAPIView,
-                     generics.UpdateAPIView,
-                     generics.DestroyAPIView):
+                     generics.ListCreateAPIView):
     """
     /matters/:matter_slug/items/:item_slug/attachment (GET,POST,DELETE)
     """
@@ -44,54 +40,44 @@ class AttachmentView(MatterItemsQuerySetMixin,
 
     def initial(self, request, *args, **kwargs):
         self.item = get_object_or_404(self.matter.item_set.all(), slug=kwargs.get('item_slug'))
-        self.attachment = self.get_object()
+        self.attachment = None
         super(AttachmentView, self).initial(request, *args, **kwargs)
 
-    def get_object(self):
-        """
-        Ensure we get self.item
-        but return the Attachment object as self.object
-        """
-        if self.request.method in ['POST']:
-            self.attachment = Attachment(uploaded_by=self.request.user, item=self.item) if self.request.user.is_authenticated() else None
-
-        else:
-            # get,patch
-            self.attachment = self.item.attachments.all().last()
-
-            if self.request.method in ['GET'] and self.attachment is None:
-                raise Http404
-
-        return self.attachment
+    def get_queryset(self, **kwargs):
+        return self.model.objects.filter(item=self.item)
 
     def get_serializer_context(self):
         return {'request': self.request}
 
-    def get_serializer(self, instance=None, data=None, files=None, many=False, partial=False):
-        # pop it
-        if data is not None:
-            item_serializer_data = ItemSerializer(self.item, context={'request': self.request}).data
-            user_serializer_data = UserSerializer(self.request.user, context={'request': self.request}).data
+    # def get_serializer(self, instance=None, data=None, files=None, many=False, partial=False):
+    #     # pop it
+    #     if data is not None:
+    #         item_serializer_data = ItemSerializer(self.item, context={'request': self.request}).data
+    #         user_serializer_data = SimpleUserSerializer(self.request.user, context={'request': self.request}).data
 
-            data.update({
-                'item': item_serializer_data.get('url'),
-                'uploaded_by': user_serializer_data.get('url'),
-            })
+    #         data.update({
+    #             'item': item_serializer_data.get('url'),
+    #             'uploaded_by': user_serializer_data.get('url'),
+    #         })
 
-        return super(AttachmentView, self).get_serializer(instance=instance,
-                                                          data=data,
-                                                          files=files,
-                                                          many=many,
-                                                          partial=partial)
+    #     return super(AttachmentView, self).get_serializer(instance=instance,
+    #                                                       data=data,
+    #                                                       files=files,
+    #                                                       many=many,
+    #                                                       partial=partial)
 
     def create(self, request, *args, **kwargs):
         """
         Have had to copy directly the method from the base class
         because of the need to modify the data
         """
-        request_data = request.DATA.copy()
+        # set the defaults
+        request.DATA.update({
+            'item': ItemSerializer(self.item).data.get('url'),
+            'uploaded_by': request.user.username,
+        })
 
-        serializer = self.get_serializer(self.attachment, data=request_data, files=request.FILES)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
 
         if serializer.is_valid():
             self.pre_save(serializer.object)
@@ -112,26 +98,23 @@ class AttachmentView(MatterItemsQuerySetMixin,
             #
             self.matter.actions.created_attachment(user=self.request.user,
                                                    item=self.item,
-                                                   attachment=self.attachment)
+                                                   attachment=self.object)
             return Response(serializer.data, status=status.HTTP_201_CREATED,
                             headers=headers)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def destroy(self, request, **kwargs):
-        resp = super(AttachmentView, self).destroy(request=request, **kwargs)
-        self.matter.actions.deleted_attachment(user=self.request.user,
-                                               item=self.item,
-                                               attachment=self.attachment)
-        return resp
+    # def destroy(self, request, **kwargs):
+    #     resp = super(AttachmentView, self).destroy(request=request, **kwargs)
+    #     self.matter.actions.deleted_attachment(user=self.request.user,
+    #                                            item=self.item,
+    #                                            attachment=self.attachment)
+    #     return resp
 
     def pre_save(self, obj):
         """
         @BUSINESSRULE Enforce the revision.uploaded_by and revision.item
         """
-        obj.item = self.item
-        obj.uploaded_by = self.request.user
-
         if obj.name is None:
             file = self.request.FILES.get('file')
 

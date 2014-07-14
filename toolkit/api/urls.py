@@ -59,7 +59,7 @@ router.register(r'activity', ActivityEndpoint)
 router.register(r'clients', ClientEndpoint)
 router.register(r'items', ItemEndpoint)
 router.register(r'revisions', RevisionEndpoint)
-# router.register(r'attachments', AttachmentEndpoint)
+router.register(r'attachments', AttachmentEndpoint)
 router.register(r'reviews', ReviewEndpoint)
 router.register(r'signatures', SignatureEndpoint)
 
