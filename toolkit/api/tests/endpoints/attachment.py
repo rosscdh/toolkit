@@ -20,7 +20,8 @@ TEST_LONG_FILENAME_PATH = os.path.join(settings.SITE_ROOT, 'toolkit', 'casper',
                                        'test-long-filename-@-(LawPal)-#1236202-v1-test-long-filename-@-(LawPal)-#1236202-v1-test-long-filename-@-(LawPal)-#1236202-v1-test-long-filename-@-(LawPal)-#1236202-v1-test-long-filename-@-(LawPal)-#1236202-v1-.doc')
 
 
-class ItemAttachmentTest(BaseEndpointTest):
+class ItemAttachmentTest(BaseEndpointTest,
+                         LiveServerTestCase):
     """
     """
     # version_no = 1
@@ -79,7 +80,8 @@ class ItemAttachmentTest(BaseEndpointTest):
 
         data = {
             'item': ItemSerializer(self.item).data.get('url'),
-            'uploaded_by': UserSerializer(self.lawyer).data.get('url')
+            'uploaded_by': UserSerializer(self.lawyer).data.get('url'),
+            'attachment': 'http://localhost:8081/static/test.pdf'
         }
 
         resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
@@ -190,9 +192,9 @@ class AttachmentExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
         # refresh
         self.item = self.item.__class__.objects.get(pk=self.item.pk)  # reset
         attachment = self.item.attachments.all().first()
-        self.assertEqual(attachment.file.name,
+        self.assertEqual(attachment.attachment.name,
                          u'attachments/%s-%s-test-pirates-ahoy.pdf' % (self.item.pk, self.lawyer.username))
-        self.assertEqual(attachment.file.url,
+        self.assertEqual(attachment.attachment.url,
                          u'/m/attachments/%s-%s-test-pirates-ahoy.pdf' % (self.item.pk, self.lawyer.username))
 
     def test_post_with_FILE_executed_file(self):
@@ -224,8 +226,8 @@ class AttachmentExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
 
         attachment = self.item.attachments.all().first()
 
-        self.assertEqual(attachment.file.name, 'attachments/%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
-        self.assertEqual(attachment.file.url, '/m/attachments/%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
+        self.assertEqual(attachment.attachment.name, 'attachments/%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
+        self.assertEqual(attachment.attachment.url, '/m/attachments/%s-%s-test.pdf' % (self.item.pk, self.lawyer.username))
 
     def test_patch_permissions(self):
         self.client.login(username=self.user.username, password=self.password)

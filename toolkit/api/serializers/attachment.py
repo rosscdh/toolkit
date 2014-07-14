@@ -12,7 +12,7 @@ logger = logging.getLogger('django.request')
 
 
 class AttachmentSerializer(serializers.HyperlinkedModelSerializer):
-    attachment = HyperlinkedAutoDownloadFileField(required=True)
+    attachment = HyperlinkedAutoDownloadFileField(file_field_name='attachment', required=True)
 
     item = serializers.HyperlinkedRelatedField(many=False, view_name='item-detail')
     uploaded_by = SimpleUserSerializer(many=False)
@@ -27,13 +27,14 @@ class AttachmentSerializer(serializers.HyperlinkedModelSerializer):
         #
         # @TODO turn these into nice clean methods
         #
-        self.base_fields['attachment'] = HyperlinkedAutoDownloadFileField(required=True)
-        self.base_fields['uploaded_by'] = SimpleUserSerializer()
+        self.base_fields['attachment'] = HyperlinkedAutoDownloadFileField(file_field_name='attachment', required=True)  # reset the field
+        self.base_fields['uploaded_by'] = SimpleUserSerializer(many=False)  # reset the field
         #
         # If we are passing in a multipart form
         #
         if 'context' in kwargs and 'request' in kwargs['context']:
             request = kwargs['context'].get('request')
+
             if request:
                 #
                 # set the executed_file field to be a seriallizer.FileField and behave like one of those
@@ -41,12 +42,11 @@ class AttachmentSerializer(serializers.HyperlinkedModelSerializer):
                 if request.method in ['PATCH', 'POST']:
                     # ensure the uploaded_by is just a simple hyplinkrelatedfield on update,create
                     self.base_fields['uploaded_by'] = serializers.SlugRelatedField(many=False,
-                                                                                   view_name='user-detail',
-                                                                                   lookup_field='username')
+                                                                                   slug_field='username')
 
                     if 'multipart/form-data;' in kwargs['context']['request'].content_type:
                         if kwargs['context']['request'].FILES:
-                            self.base_fields['file'] = FileFieldAsUrlField(allow_empty_file=True, required=False)
+                            self.base_fields['attachment'] = FileFieldAsUrlField(allow_empty_file=True, required=False)
 
         super(AttachmentSerializer, self).__init__(*args, **kwargs)
 

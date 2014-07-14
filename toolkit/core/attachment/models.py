@@ -202,7 +202,7 @@ class Attachment(IsDeletedMixin,
     slug = UUIDField(auto=True, db_index=True)
     name = models.CharField(max_length=255, null=True, blank=True)
 
-    attachment = models.FileField(upload_to=_upload_attachment, max_length=255, storage=_managed_S3BotoStorage(), null=True, blank=True)
+    attachment = models.FileField(upload_to=_upload_attachment, max_length=255, storage=_managed_S3BotoStorage())
 
     item = models.ForeignKey('item.Item', related_name='attachments')
     uploaded_by = models.ForeignKey('auth.User')
