@@ -3,7 +3,8 @@ Deployment actions by branch
 
 [feature/item-discussions]
 
-1. ./manage.py migrate discussion 0001
+1. ./manage.py migrate discussion 0001  # update older matter discussion comments
+2. ./manage.py migrate discussion 0002  # bring across item comments from actstream
 
 
 [feature/completed-requests]

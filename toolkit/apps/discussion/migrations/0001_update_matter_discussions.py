@@ -1,24 +1,23 @@
 # -*- coding: utf-8 -*-
+from django.contrib.contenttypes.models import ContentType
+
 from south.utils import datetime_utils as datetime
 from south.db import db
 from south.v2 import DataMigration
 from django.db import models
 
+from toolkit.apps.workspace.models import Workspace
+
+MATTER_TYPE = ContentType.objects.get_for_model(Workspace).pk
+
+
 class Migration(DataMigration):
 
     def forwards(self, orm):
-        pass
-        # for comment in orm['discussion.discussioncomment'].objects.all():
-            # if comment is based off a matter
-                # comment.is_public = False
-                # comment.save(update_fields=['is_public'])
+        orm['discussion.discussioncomment'].objects.filter(content_type_id=MATTER_TYPE).update(is_public=False)
 
     def backwards(self, orm):
-        pass
-        # for comment in orm['discussion.discussioncomment'].objects.all():
-            # if comment is based off a matter
-                # comment.is_public = True
-                # comment.save(update_fields=['is_public'])
+        orm['discussion.discussioncomment'].objects.filter(content_type_id=MATTER_TYPE).update(is_public=True)
 
     models = {
         u'auth.group': {
