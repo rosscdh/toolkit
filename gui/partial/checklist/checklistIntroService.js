@@ -6,31 +6,31 @@ angular.module('toolkit-gui')
 		'steps': [
 			{
 				'element': '#step1',
-				'intro': "Checklist items are organised into categories."
+				'intro': "Checklist items are organized into categories."
 			},
 			{
 				'element': '#step1 .dropdown-toggle',
-				'intro': "Add new categories."
+				'intro': "Click here to add a new category."
 			},
 			{
 				'element': '#step1 .btn-new-item',
-				'intro': "Create new checklist items."
+				'intro': "Click here to create a new checklist Item."
 			},
 			{
 				'element': '.checklist-members',
-				'intro': "Invite people to participate in your workspace."
+				'intro': "Click here to invite people to participate in this Matter."
 			},
 			{
 				'element': '.navbar input[type=search]',
-				'intro': "Find checklist items quickly with search."
+				'intro': "Looking for a specific checklist Item? Find it quickly by using the search tool."
 			},
 			{
 				'element': '.navbar .doc-outline-status-',
-				'intro': "Filter checklist items by status."
+				'intro': "You can even filter checklist items by their status."
 			},
 			{
 				'element': '.navbar .notifications span',
-				'intro': "See when things change."
+				'intro': "Click here to see your Matter notifications."
 			},
 			{
 				'element': '#checklist-activity h4',

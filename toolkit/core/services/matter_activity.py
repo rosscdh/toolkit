@@ -396,7 +396,7 @@ class MatterActivityEventService(object):
         self._create_activity(actor=user, verb=u'changed the status', action_object=revision, item=revision.item,
                               override_message=override_message, current_status=current_status,
                               previous_status=previous_status)
-        self.realtime_event(event='update', obj=item, ident=item.slug, from_user=user, detail='revision status changed')
+        self.realtime_event(event='update', obj=revision.item, ident=revision.item.slug, from_user=user, detail='revision status changed')
 
     #
     # Review requests

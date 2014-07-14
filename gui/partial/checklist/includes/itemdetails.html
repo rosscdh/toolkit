@@ -49,7 +49,7 @@
     <div class="add-new clearfix">
         <div class="btn-group space-5" ng-show="data.usdata.current.permissions.manage_items">
             <span class="btn btn-sm btn-info btn-file btn-embossed btn-add">
-                <span class="fui-upload"></span> Upload File
+                Upload File
                 <input type="file" ng-file-select="onFileDropped($files, data.selectedItem);" clear-on-click multiple="multiple" />
             </span>
             <button class="btn btn-info btn-sm btn-embossed dropdown-toggle" data-toggle="dropdown">
@@ -100,11 +100,11 @@
            class="btn btn-sm pull-right" ng-class="{ 'btn-success': !data.selectedItem.is_complete, 'btn-default': data.selectedItem.is_complete}"
            ng-show="data.usdata.current.permissions.manage_items"
         >
-            <span class="fui-checkbox-checked"></span> <span ng-hide="data.selectedItem.is_complete">Close item</span><span ng-show="data.selectedItem.is_complete">Reopen item</span>
+             <span ng-hide="data.selectedItem.is_complete">Close item</span><span ng-show="data.selectedItem.is_complete">Open item</span>
         </a>
 
         <a ng-show="!data.usdata.current.permissions.manage_items"
-           class="label status-label pull-right" ng-class="{ 'label-primary': !data.selectedItem.is_complete, 'label-default': data.selectedItem.is_complete}" disabled>
+           class="label status-label" ng-class="{ 'label-primary': !data.selectedItem.is_complete, 'label-default': data.selectedItem.is_complete}" disabled>
             <span class="fui-checkbox"></span> <span ng-hide="data.selectedItem.is_complete">Open</span><span ng-show="data.selectedItem.is_complete">Closed</span>
         </a>
         <!--
@@ -177,7 +177,7 @@
                           </li>
                         </ul>
                 </div>-->
-                
+
                 <!-- <span class="version">{{ data.selectedItem.latest_revision.slug }}</span> -->
                 <div class="row">
                     <div class="col-sm-12">
