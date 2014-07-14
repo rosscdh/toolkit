@@ -18,6 +18,24 @@ angular.module('toolkit-gui')
 		/**
 		 * Returns a key/value object containing $resource methods to access attachment API end-points
 		 *
+		 * @name				attachmentListResource
+		 *
+		 * @private
+		 * @method				attachmentListResource
+		 * @memberof			attachmentListResource
+		 *
+		 * @return {Function}   $resource
+		 */
+		function attachmentListResource() {
+			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/attachment/:id', {}, {
+				'query': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'}},
+				'create': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'}},
+			});
+		}
+
+		/**
+		 * Returns a key/value object containing $resource methods to access attachment API end-points
+		 *
 		 * @name				attachmentResource
 		 *
 		 * @private
@@ -27,9 +45,7 @@ angular.module('toolkit-gui')
 		 * @return {Function}   $resource
 		 */
 		function attachmentResource() {
-			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/attachment/:id', {}, {
-				'query': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'}},
-				'create': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'}},
+			return $resource( API_BASE_URL + 'attachments/:id', {}, {
 				'delete': { 'method': 'DELETE', 'headers': { 'Content-Type': 'application/json'}},
 				'update': { 'method': 'PATCH', 'headers': { 'Content-Type': 'application/json'}}
 			});
@@ -52,7 +68,7 @@ angular.module('toolkit-gui')
 			 * @return {Promise}
 		 	 */
 			'query': function(matterSlug, itemSlug) {
-				var api = attachmentResource();
+				var api = attachmentListResource();
 				var deferred = $q.defer();
 
 				api.query({'matterSlug': matterSlug, 'itemSlug': itemSlug}, {},
@@ -169,7 +185,7 @@ angular.module('toolkit-gui')
 				var api = attachmentResource();
 				var deferred = $q.defer();
 
-				api.delete({'matterSlug': matterSlug, 'itemSlug': itemSlug, 'id':attachmentId},
+				api.delete({'id':attachmentId},
 					function success() {
 						deferred.resolve();
 					},
@@ -199,7 +215,7 @@ angular.module('toolkit-gui')
 				var api = attachmentResource();
 				var deferred = $q.defer();
 
-				api.update({'matterSlug': matterSlug, 'itemSlug': itemSlug, 'id':attachmentId}, {'attachment': attachment},
+				api.update({'id': attachmentId}, {'attachment': attachment},
 					function success() {
 						deferred.resolve();
 					},
