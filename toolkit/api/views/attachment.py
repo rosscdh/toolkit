@@ -27,6 +27,30 @@ class AttachmentEndpoint(viewsets.ModelViewSet):
     lookup_field = 'slug'
     serializer_class = AttachmentSerializer
 
+    def can_read(self, user):
+        self.object = self.get_object()
+        return user in self.object.item.matter.participants.all()
+
+    def can_edit(self, user):
+        self.object = self.get_object()
+        if self.request.method == 'POST':
+            # any participant may create new attachments
+            return user in self.object.item.matter.participants.all()
+        else:
+            # must be PATCH to change the name/description/...
+            return user == self.get_object().uploaded_by \
+                   or user.matter_permissions(self.object.item.matter).has_permission(manage_attachments=True)
+
+    def can_delete(self, user):
+        self.object = self.get_object()
+        return user == self.get_object().uploaded_by \
+               or user.matter_permissions(self.object.item.matter).has_permission(manage_attachments=True)
+
+
+rulez_registry.register("can_read", AttachmentEndpoint)
+rulez_registry.register("can_edit", AttachmentEndpoint)
+rulez_registry.register("can_delete", AttachmentEndpoint)
+
 
 class AttachmentView(MatterItemsQuerySetMixin,
                      generics.ListCreateAPIView):

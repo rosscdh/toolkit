@@ -143,16 +143,17 @@ class AttachmentExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
 
     @property
     def endpoint(self):
-        return reverse('matter_item_attachment', kwargs={'matter_slug': self.matter.slug, 'item_slug': self.item.slug})
+        return reverse('attachment-detail', kwargs={'slug': self.attachment.slug})
 
     def setUp(self):
         super(AttachmentExecutedFileAsUrlOrMultipartDataTest, self).setUp()
 
         # setup the items for testing
         self.item = mommy.make('item.Item', matter=self.matter, name='Test Item', category=None)
+        self.attachment = mommy.make('attachment.Attachment', item=self.item, name='Test Item Attachment')
 
     def test_endpoint_name(self):
-        self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/items/%s/attachment' % self.item.slug)
+        self.assertEqual(self.endpoint, '/api/v1/attachments/%s' % self.attachment.slug)
 
     def test_patch_with_URL_executed_file(self):
         """
