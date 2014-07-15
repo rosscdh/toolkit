@@ -27,10 +27,16 @@ class DiscussionComment(ThreadedComment, models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return '{url}#/discussion/{thread_slug}'.format(
-            url = reverse('matter:detail', kwargs={ 'matter_slug': self.matter.slug }),
-            thread_slug=self.thread.slug
-        )
+        if self.is_item_discussion:
+            return '{url}#/checklist/{item_slug}'.format(
+                url = reverse('matter:detail', kwargs={ 'matter_slug': self.matter.slug }),
+                item_slug=self.item.slug
+            )
+        elif self.is_matter_discussion:
+            return '{url}#/discussion/{thread_slug}'.format(
+                url = reverse('matter:detail', kwargs={ 'matter_slug': self.matter.slug }),
+                thread_slug=self.thread.slug
+            )
 
     def save(self, *args, **kwargs):
         super(DiscussionComment, self).save(*args, **kwargs)
@@ -75,27 +81,62 @@ class DiscussionComment(ThreadedComment, models.Model):
         mailer.process(**kwargs)
 
     def send_commented_email(self, **kwargs):
-        pass
-        # kwargs.update(self.get_email_kwargs())
-        # recipients = self.parent.participants.all().exclude(pk=self.user.pk)
-        # recipients = []
+        kwargs.update(self.get_email_kwargs())
+        recipients = self.get_participants().exclude(pk=self.user.pk)
 
-        # mailer = DiscussionCommentedEmail(recipients=[(u.get_full_name(), u.email) for u in recipients])
-        # mailer.process(**kwargs)
+        mailer = DiscussionCommentedEmail(recipients=[(u.get_full_name(), u.email) for u in recipients])
+        mailer.process(**kwargs)
 
     def get_email_kwargs(self):
         return {
             'access_url': self.get_absolute_url(),
             'actor': self.user,
             'comment': self,
-            'matter': self.matter,
-            'thread': self.thread,
+            'matter': self.get_matter(),
+            'object': self.get_primary_object(),
+            'object_type': self.get_object_type(),
         }
 
+    def get_participants(self):
+        if self.is_item_discussion:
+            if self.is_public:
+                return self.item.matter.participants.all()
+            else:
+                return self.item.matter.colleagues.all()
+        elif self.is_matter_discussion:
+            return self.thread.participants.all()
+
+    @property
+    def is_item_discussion(self):
+        return self.content_type_id == ContentType.objects.get_for_model(Item).pk
+
+    @property
+    def is_matter_discussion(self):
+        return self.content_type_id == ContentType.objects.get_for_model(Workspace).pk
+
+    def get_matter(self):
+        if self.is_item_discussion:
+            return self.item.matter
+        elif self.is_matter_discussion:
+            return self.matter
+
+    def get_primary_object(self):
+        if self.is_item_discussion:
+            return self.item
+        elif self.is_matter_discussion:
+            return self.thread
+
+    def get_object_type(self):
+        if self.is_item_discussion:
+            return 'item'
+        elif self.is_matter_discussion:
+            return 'thread'
+
     def can_read(self, user):
-        if self.parent_id:
-            return user in DiscussionComment.objects.get(pk=self.parent_id).participants.all()
-        return user in self.participants.all()
+        if self.is_public:
+            return True
+        else:
+            return user in self.get_participants()
 
     def can_edit(self, user):
         return user == self.user

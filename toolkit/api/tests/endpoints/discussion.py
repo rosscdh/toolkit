@@ -367,14 +367,14 @@ class MatterDiscussionCommentsTest(BaseMatterDiscussionEndpointTest):
         json_data = json.loads(resp.content)
         self.assertEqual(json_data['content'], 'Goodbye world!')
 
-        # self.assertEqual(len(mail.outbox), 1)
-        # self.assertEqual(mail.outbox[0].from_email, 'support@lawpal.com')
-        # self.assertEqual(mail.outbox[0].to, [self.user.email])
-        # self.assertEqual(mail.outbox[0].subject, u'{actor} commented on the thread {thread} in {matter}'.format(
-            # actor=self.lawyer,
-            # matter=self.workspace,
-            # thread=self.thread,
-        # ))
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].from_email, 'support@lawpal.com')
+        self.assertEqual(mail.outbox[0].to, [self.user.email])
+        self.assertEqual(mail.outbox[0].subject, u'{actor} commented on the thread {thread} in {matter}'.format(
+            actor=self.lawyer,
+            matter=self.workspace,
+            thread=self.thread,
+        ))
 
     def test_anon_post(self):
         resp = self.client.post(self.endpoint, {}, content_type='application/json')
@@ -839,8 +839,13 @@ class BaseItemDiscussionEndpointTest(BaseDiscussionEndpointTest):
     def setUp(self):
         super(BaseItemDiscussionEndpointTest, self).setUp()
 
+        # Need to add another colleague
+        self.colleague = self.create_user(username='colleague', email='colleague@lawpal.com')
+        WorkspaceParticipants.objects.create(workspace=self.matter, user=self.colleague, role=ROLES.colleague)
+
         self.item = mommy.make(
             'item.Item',
+            name='Test Item',
             matter=self.matter
         )
 
@@ -917,14 +922,14 @@ class ItemPrivateDiscussionCommentsTest(BaseItemDiscussionEndpointTest):
         json_data = json.loads(resp.content)
         self.assertEqual(json_data['content'], 'Goodbye world!')
 
-        # self.assertEqual(len(mail.outbox), 1)
-        # self.assertEqual(mail.outbox[0].from_email, 'support@lawpal.com')
-        # self.assertEqual(mail.outbox[0].to, [self.user.email])
-        # self.assertEqual(mail.outbox[0].subject, u'{actor} commented on the thread {thread} in {matter}'.format(
-            # actor=self.lawyer,
-            # matter=self.workspace,
-            # thread=self.thread,
-        # ))
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].from_email, 'support@lawpal.com')
+        self.assertEqual(mail.outbox[0].to, [self.colleague.email])
+        self.assertEqual(mail.outbox[0].subject, u'{actor} commented on the item {item} in {matter}'.format(
+            actor=self.lawyer,
+            item=self.item,
+            matter=self.matter,
+        ))
 
     def test_anon_post(self):
         resp = self.client.post(self.endpoint, {}, content_type='application/json')
@@ -1036,14 +1041,22 @@ class ItemPublicDiscussionCommentsTest(BaseItemDiscussionEndpointTest):
         json_data = json.loads(resp.content)
         self.assertEqual(json_data['content'], 'Goodbye world!')
 
-        # self.assertEqual(len(mail.outbox), 1)
-        # self.assertEqual(mail.outbox[0].from_email, 'support@lawpal.com')
-        # self.assertEqual(mail.outbox[0].to, [self.user.email])
-        # self.assertEqual(mail.outbox[0].subject, u'{actor} commented on the item {item} in {matter}'.format(
-            # actor=self.lawyer,
-            # item=self.item,
-            # matter=self.workspace,
-        # ))
+        args = {
+            'actor': self.lawyer,
+            'item': self.item,
+            'matter': self.workspace,
+        }
+
+        self.assertEqual(len(mail.outbox), 3)
+        self.assertEqual(mail.outbox[0].from_email, 'support@lawpal.com')
+        self.assertEqual(mail.outbox[0].to, [self.user.email])
+        self.assertEqual(mail.outbox[0].subject, u'{actor} commented on the item {item} in {matter}'.format(**args))
+        self.assertEqual(mail.outbox[1].from_email, 'support@lawpal.com')
+        self.assertEqual(mail.outbox[1].to, [self.invalid_user.email])
+        self.assertEqual(mail.outbox[1].subject, u'{actor} commented on the item {item} in {matter}'.format(**args))
+        self.assertEqual(mail.outbox[2].from_email, 'support@lawpal.com')
+        self.assertEqual(mail.outbox[2].to, [self.colleague.email])
+        self.assertEqual(mail.outbox[2].subject, u'{actor} commented on the item {item} in {matter}'.format(**args))
 
     def test_anon_post(self):
         resp = self.client.post(self.endpoint, {}, content_type='application/json')
