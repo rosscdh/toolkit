@@ -294,6 +294,9 @@ module.exports = function (grunt) {
       }
     },
     uglify: {
+      options: {
+        beautify: true
+      },
       main: {
         src: 'temp/app.full.ngmin.js',
         dest:'<%= PRODUCTION_PATH %>' + 'app.full.min.js'
