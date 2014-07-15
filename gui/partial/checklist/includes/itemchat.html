@@ -1,64 +1,16 @@
 <div class="item-comments">
-<tabset justified="true" type="pills">
-    <tab heading="Everyone" class="one-tab">
-        <div ng-show="data.publicComments.length > 0">
-            <ul class="list-unstyled comment-thread message-tabs">
-                <li ng-repeat="comment in data.publicComments">
-                    <div class="message-content">
-                        <p>
-                            <span class="user-initials">{{ comment.author.initials }}:</span> {{ comment.content }}
-                        </p>
-                    </div>
-                    <div class="meta-message">
-                        <span class="meta-date">{{ comment.date_created | timeago }}</span>
-                    </div>
-                </li>
-            </ul>
-        </div>
-        <div ng-show="data.publicComments.length == 0">
-            <p class="small text-center no-comments">There are no public comments for this item.</p>
-        </div>
+    <!-- Public and private -->
+    <tabset ng-show="matter.selected.current_user.role === 'owner' || matter.selected.current_user.role === 'colleague'" justified="true" type="pills">
+        <tab heading="Everyone" class="one-tab">
+            <div ng-include="'/static/ng/partial/checklist/includes/item-discussion-public.html'"></div>
+        </tab>
+        <tab heading="Colleagues" class="one-tab">
+            <div ng-include="'/static/ng/partial/checklist/includes/item-discussion-private.html'"></div>
+        </tab>
+    </tabset>
 
-        <div ng-mouseenter="show=true">
-            <form ng-submit="submitPublicComment()">
-                <textarea mentions-box class="form-control" rows="2" placeholder="Comment on this item..." text="data.selectedItem.newPublicComment" container-position="left" required></textarea>
-                <button class="btn btn-inverse btn-textarea btn-xs" type="submit" ng-show="show">Submit</button>
-            </form>
-            <div class="visible-to">
-                Visible to: <span class="initials" ng-repeat="user in data.matter.participants">{{ user | initials }} &nbsp;</span>
-            </div>
-        </div>
-    </tab>
-    <tab heading="Colleagues" class="one-tab">
-        <div ng-show="data.privateComments.length > 0">
-            <ul class="list-unstyled comment-thread">
-                <li ng-repeat="comment in data.privateComments">
-                    <div class="message-content">
-                        <p>
-                            <span class="user-initials">{{ comment.author.initials }}:</span> {{ comment.content }}
-                        </p>
-                    </div>
-                    <div class="meta-message">
-                        <span class="meta-date">{{ comment.date_created | timeago }}</span>
-                    </div>
-                </li>
-            </ul>
-        </div>
-        <div ng-show="data.privateComments.length == 0">
-            <p class="small text-center no-comments">There are no private comments for this item.</p>
-        </div>
-
-        <div ng-mouseenter="show=true" class="new-message">
-            <form ng-submit="submitPrivateComment()">
-                <textarea mentions-box class="form-control" rows="2" placeholder="Comment on this item..." text="data.selectedItem.newPrivateComment" container-position="left" required></textarea>
-                <button class="btn btn-inverse btn-textarea btn-xs" type="submit" ng-show="show">Submit</button>
-            </form>
-            <div class="visible-to">
-                Visible to: <span class="initials" ng-repeat="user in data.matter.participants" ng-show="user.role=='owner'||user.role=='colleague'" style="margin-right: 5px;">{{ user | initials }}</span>
-            </div>
-        </div>
-    </tab>
-</tabset>
+    <!-- Public only -->
+    <div ng-show="matter.selected.current_user.role != 'owner' && matter.selected.current_user.role != 'colleague'" ng-include="'/static/ng/partial/checklist/includes/item-discussion-public.html'"></div>
 </div>
 
 <h4 class="ng-scope">
