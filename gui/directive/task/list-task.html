@@ -41,7 +41,7 @@ This Item has no tasks yet. Create Tasks for this Item by clicking 'New Task'.
                     <div ng-show="task.assigned_to.length>0">
                         <span ng-repeat="user in task.assigned_to">{{ user.initials }}&nbsp;</span>
                     </div>
-                    <div ng-uf="task.assigned_to.length<0">
+                    <div ng-if="task.assigned_to.length===0">
                         <a href="#" ng-click="manageTask(task)">Assign Task</a>
                     </div>
                 </li>
