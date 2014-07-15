@@ -77,6 +77,7 @@ def _download_signing_complete_document(hellosign_request, **kwargs):
 
         # get the file
         try:
+            logger.info('Downloading from HelloSign: %s' % hellosign_request.signature_request_id)
             final_copy_contents = service.download(signature_id=hellosign_request.signature_request_id,
                                                    auth=settings.HELLOSIGN_AUTHENTICATION)
         except service.DownloadFinalCopyException as e:
@@ -99,7 +100,9 @@ def _download_signing_complete_document(hellosign_request, **kwargs):
             ext = ext[1:]  # remove the . in the .pdf which comes in as ext
 
             # save the file locally
-            default_storage.save('%s.pdf' % filename_no_ext, content_object)  # always pdfs from HS
+            file_name = '%s.pdf' % filename_no_ext
+            default_storage.save(file_name, content_object)  # always pdfs from HS
+            logger.info('Saving final signed executed document to: %s' % file_name)
 
             data = document_revision.data
             date_executed = datetime.datetime.utcnow()
@@ -113,10 +116,12 @@ def _download_signing_complete_document(hellosign_request, **kwargs):
             # set is_executed to true
             document_revision.is_executed = True
             document_revision.save(update_fields=['executed_file', 'is_executed', 'data'])
+            logger.info('Updating document_revision with updated data: %s' % document_revision)
 
             # set the item to complete
             item = document_revision.item
             item.is_complete = True
             item.save(update_fields=['is_complete'])
+            logger.info('Updating document_revision is_complete: True')
 
             logger.info('Executed: %s on %s' % (document_revision, date_executed))
