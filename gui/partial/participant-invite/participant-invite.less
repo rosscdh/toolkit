@@ -2,6 +2,9 @@
 
 .modal-content {
 
+  h5 {
+    margin-bottom: 20px;
+  }
   .existing-participants {
 
   }
@@ -24,14 +27,14 @@
   }
 }
 
-
 .first {
   border-bottom: 2px solid  #ececec;
   margin-bottom: 20px;
   padding-bottom: 10px;
 
 }
-.list-heading{
+
+.list-heading {
   font-weight: bold;
 }
 
@@ -71,8 +74,18 @@
 
 .modal-body {
   padding-top: 10px;
-  input[type=checkbox] {
+  input[type=checkbox], input[type=radio] {
     display: initial
+  }
+  input[type=radio] {
+    margin-right: 10px;
+  }
+  .colleague {
+    background-color: @lp-primary;
+    color: white;
+  }
+  .btn[disabled] {
+    opacity: 0.6;
   }
 
   .col-sm-6 {
@@ -87,12 +100,13 @@
 
   .new-participant {
     /*transition: all 1s;*/
-    h5{
+    h5 {
       margin-bottom: 20px;
     }
     .col-sm-6 {
       .btn-primary, .btn-info {
-        font-weight: bold;
+        font-weight: normal;
+        text-transform: uppercase;
       }
     }
 
@@ -105,7 +119,7 @@
     //background-color: #6ebc70;
     border-radius: 50%;
     font-size: 46px;
-    padding-top: 16px;
+    padding-top: 40px;
     text-align: center;
     vertical-align: middle;
     color: white;
@@ -114,12 +128,12 @@
 
   }
 
-  .user-meta + .user-meta{
+  .user-meta + .user-meta {
     padding-bottom: 20px;
     font-size: 12px;
   }
 
-  .user-meta{
+  .user-meta {
     color: #888;
     margin-bottom: 0px;
   }
@@ -141,19 +155,16 @@
     padding-bottom: 10px;
     border-bottom: 1px solid #ececec;
 
-
     li {
       padding: 10px 5px 10px 5px;
       font-size: 15px;
       border-radius: 6px;
       border: 2px solid #f5f5f5;
 
-
-
-
       .user {
 
         color: white;
+        display: inline;
         border: none;
         background-color: #FFF;
         padding: 8px;
@@ -173,26 +184,23 @@
         color: @lp-secondary;
       }
 
-      .colleague{
+      .colleague {
         background-color: @lp-primary;
         color: white;
       }
 
-      small.colleague{
-        color:  @lp-primary;
+      small.colleague {
+        color: @lp-primary;
         background-color: inherit;
       }
-
-
 
       .owner {
         background-color: @lp-blue;
         color: white;
 
-
       }
 
-      small.owner{
+      small.owner {
         color: @lp-blue;
         background-color: inherit;
       }
@@ -207,7 +215,7 @@
         color: white;
       }
 
-      .padding{
+      .padding {
         padding: 3px;
         border-radius: 2px;
       }
@@ -252,29 +260,99 @@
     }
   }
   p.note {
+    padding: 0 15px;
     font-size: 13px;
     line-height: 17px;
-    color: #888;
+    color: #bdc3c7;
     margin: 20px 0px;
   }
 }
 
-.permissions-checklist{
+.customized-list {
+  padding: 15px;
+
+  padding-left: 30px;
+  background-color: #ececec;
+  .fui-check-inverted, .fui-cross-inverted {
+    margin-right: 4px;
+  }
+  .half {
+    width: 50%;
+    font-size: 14px;
+    float: left;
+    margin-top: 20px;
+    margin-bottom: 20px;
+
+    .third {
+      font-size: 14px;
+      float: left;
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+
+    .item {
+      font-size: 14px;
+
+    }
+
+  }
+
+  .actual-list {
+    margin-top: 20px;
+    clear: both;
+    .checkbox {
+      margin-left: 10px;
+      font-size: 16px;
+    }
+  }
+}
+
+.add-colleague {
+
+  h5 {
+    background-color: @lp-primary;
+    margin: -15px -24px 25px -24px;
+    padding: 10px 30px;
+    color: white;
+    text-transform: uppercase;
+  }
+
+  .checkbox {
+    .list-heading {
+      position: relative;
+      top: 5px;
+    }
+  }
+
+  .text-muted {
+    margin-top: 10px;
+  }
+}
+
+.add-client {
+  background-color: @lp-secondary;
+  margin: -15px -24px;
+  padding: 10px 30px;
+  color: white;
+  text-transform: uppercase;
+
+}
+
+.permissions-checklist {
   margin-bottom: 10px;
   border-bottom: 1px solid #ececec;
 }
 
-.existing-collapse{
+.existing-collapse {
   height: 0px;
   overflow: hidden;
 
 }
 
-.add-p-btn{
+.add-p-btn {
   background-color: #6B6A6A;
   color: white;
 }
-
 
 .avatar {
   background-color: #98afc6;
@@ -282,7 +360,7 @@
   position: relative;
 }
 
-.permission-btn-active{
+.permission-btn-active {
   background-color: #6ebc70;
   color: white;
 }
@@ -299,3 +377,42 @@
   width: 40px;
 }
 
+.more-info {
+  margin-top: 10px;
+  border-top: 1px solid #dee1e3;
+  padding-top: 10px;
+}
+
+.modal-icon {
+  margin-bottom: 20px;
+  font-size: 40px;
+  margin-top: 20px;
+  padding: 5px;
+  .fa-plus {
+    font-size: 22px;
+    color: #bdc3c7;
+  }
+
+  .coleg {
+    color: @lp-primary;
+  }
+  .client {
+    color: @lp-secondary;
+  }
+}
+
+.main-a {
+  margin-top: 20px;
+}
+
+.colleague-btn {
+  background-color: @lp-primary;
+  color: white;
+  text-transform: uppercase;
+}
+
+.client-btn {
+  background-color: @lp-secondary;
+  color: white;
+  text-transform: uppercase;
+}

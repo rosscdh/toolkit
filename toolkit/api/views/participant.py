@@ -54,6 +54,12 @@ class MatterParticipant(generics.CreateAPIView,
         # will raise error if incorrect
         email_validator.clean(data.get('email'))
 
+    def transform_role(self, role):
+        """
+        Transform the role taking into account the fake co-owner->owner relationship
+        """
+        return ROLES.get_value_by_name('owner') if role == 'co-owner' else ROLES.get_value_by_name(role)
+
     def create(self, request, **kwargs):
         data = request.DATA.copy()
 
@@ -84,7 +90,7 @@ class MatterParticipant(generics.CreateAPIView,
 
         else:
             status = http_status.HTTP_202_ACCEPTED
-            self.matter.add_participant(user=new_participant, role=ROLES.get_value_by_name(role), **permissions)
+            self.matter.add_participant(user=new_participant, role=self.transform_role(role=role), **permissions)
 
             PARTICIPANT_ADDED.send(sender=self,
                                    matter=self.matter,
