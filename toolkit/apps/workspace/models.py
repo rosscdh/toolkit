@@ -233,8 +233,16 @@ class Workspace(IsDeletedMixin,
         return self._actions
 
     @property
+    def clients(self):
+        return self.participants.filter(workspaceparticipants__role=ROLES.client)
+
+    @property
     def colleagues(self):
-        return self.participants.filter(workspaceparticipants__role__in=[ROLES.colleague, ROLES.owner])
+        return self.participants.filter(workspaceparticipants__role=ROLES.colleague)
+
+    @property
+    def owners(self):
+        return self.participants.filter(workspaceparticipants__role=ROLES.owner)
 
     @property
     def get_lawyer(self):
