@@ -9,6 +9,8 @@ import logging
 
 logging.disable(logging.CRITICAL)
 
+DEBUG = False # msut be set to false to emulate production
+TEST_PREPROD = True  # so we can access local static assets
 
 # Custom test runner for this project
 TEST_RUNNER = 'toolkit.test_runner.AppTestRunner'
@@ -16,6 +18,12 @@ TEST_RUNNER = 'toolkit.test_runner.AppTestRunner'
 PROJECT_ENVIRONMENT = 'test'
 
 ATOMIC_REQUESTS = True
+
+STATICFILES_DIRS = (
+    # These are the production files
+    # not that static is in gui/dist/static *not to be confused with the django {{ STATIC_URL }}ng/ which will now point correctly
+    ("ng", os.path.join(SITE_ROOT, 'gui', 'dist')),
+)
 
 INSTALLED_APPS = INSTALLED_APPS + (
     'casper',
@@ -32,6 +40,8 @@ SKIP_SOUTH_TESTS = True
 PASSWORD_HASHERS = (
     'django.contrib.auth.hashers.MD5PasswordHasher',
 )
+
+#DEFAULT_FILE_STORAGE = 'inmemorystorage.InMemoryStorage'  # cant because of s3 tests
 
 EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
 
@@ -99,3 +109,11 @@ LAWPAL_ACTIVITY['activity']['whitelist'] = [
 
 CELERY_DEFAULT_QUEUE = 'lawpal-test'
 ENABLE_CELERY_TASKS = False
+
+#
+# Demo Matter on User Signup
+# dev-fixtures.json
+#
+DEMO_MATTER_PK_TO_CLONE_ON_USER_CREATE = 2  # matter from fixtures
+DEMO_MATTER_LAWPAL_USER_PK = 2    # lawyer from fixtures
+DEMO_MATTER_SHOW_USER_INTRO = True

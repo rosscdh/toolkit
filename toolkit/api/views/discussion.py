@@ -81,7 +81,7 @@ class DiscussionCommentEndpoint(ThreadMixin, viewsets.ModelViewSet):
     serializer_class = DiscussionCommentSerializer
 
     def get_queryset(self):
-        return self.model.objects.for_model(self.matter).filter(parent=self.thread.pk)
+        return self.model.objects.for_model(self.matter).filter(parent=self.thread.pk).order_by('submit_date')
 
     def pre_save(self, obj):
         obj.matter = self.matter
@@ -90,6 +90,12 @@ class DiscussionCommentEndpoint(ThreadMixin, viewsets.ModelViewSet):
         obj.user = self.request.user
 
         return super(DiscussionCommentEndpoint, self).pre_save(obj=obj)
+
+    def post_save(self, obj, created=False):
+        if created:
+            obj.send_commented_email()
+
+        return super(DiscussionCommentEndpoint, self).post_save(obj=obj)
 
     def can_read(self, user):
         return user in self.thread.participants.all()
@@ -137,6 +143,9 @@ class DiscussionParticipantEndpoint(ThreadMixin, mixins.CreateModelMixin, viewse
             # add to the join if not there already
             self.thread.participants.add(user)
 
+            # send the added participant email
+            self.thread.send_added_user_email(actor=self.request.user, user=user)
+
         # we have the user at this point
         serializer = self.get_serializer(user)
 
@@ -171,7 +180,7 @@ class DiscussionParticipantEndpoint(ThreadMixin, mixins.CreateModelMixin, viewse
         return obj
 
     def get_queryset(self):
-        return self.thread.participants.all()
+        return self.thread.participants.all().order_by('username')
 
     def can_read(self, user):
         return user in self.thread.participants.all()

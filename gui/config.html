@@ -108,6 +108,8 @@
   <script src="<!-- @echo staticPath -->partial/home/home.js"></script>
   <script src="<!-- @echo staticPath -->partial/markdown/markdown-info.js"></script>
   <script src="<!-- @echo staticPath -->partial/checklist/checklist.js"></script>
+  <script src="<!-- @echo staticPath -->partial/checklist/checklistIntroService.js"></script>
+  <script src="<!-- @echo staticPath -->partial/checklist/checklistFilters.js"></script>
   <script src="<!-- @echo staticPath -->partial/discussion/discussion.js"></script>
   <script src="<!-- @echo staticPath -->partial/discussion/manage-thread-participants.js"></script>
   <script src="<!-- @echo staticPath -->partial/discussion/create-thread.js"></script>
@@ -166,7 +168,7 @@
             <a ng-href="#/closing">Closing</a>
         </li> -->
         <li class="checklist-members hidden-xs">
-          <a href="javascript:;" ng-click="invite()">
+          <a href="javascript:;" ng-click="invite()" class="matter-p">
             <span class="fui-user"></span>
             <span ng-if="matter.selected&&matter.selected.participants.length>0&&matter.selected.participants.length<=3">
                 <span class="user hidden-md hidden-xs hidden-sm" ng-repeat="user in matter.selected.participants" ng-bind="user | initials"></span>

@@ -31,4 +31,4 @@ class MatterProductionSettingsTest(unittest.TestCase):
         # DEBUG = True and 
         # TEST_PREPROD = False
         #
-        self.assertEqual(settings.STATICFILES_DIRS, ((self.expected_static_namespace, self.expected_dev_relative_absolute_path),))
+        self.assertEqual(settings.STATICFILES_DIRS, ((self.expected_static_namespace, self.expected_prod_relative_absolute_path),))

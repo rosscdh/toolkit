@@ -47,6 +47,7 @@ angular.module('toolkit-gui')
 	'$window',
 	'$q',
 	'IntroService',
+	'ChecklistIntroService',
 	'Intercom',
 	'INTERCOM_APP_ID',
 	'PusherService',
@@ -79,6 +80,7 @@ angular.module('toolkit-gui')
 			 $window,
 			 $q,
 			 IntroService,
+			 ChecklistIntroService,
 			 Intercom,
 			 INTERCOM_APP_ID,
              PusherService,
@@ -128,25 +130,8 @@ angular.module('toolkit-gui')
 
 		$rootScope.searchEnabled = true;
 
-		//debugger;
 		// Basic checklist item format, used for placeholder checklist items
-		var CHECKLISTITEMSKELETON = {
-			"status": -1,
-			"responsible_party": null,
-			"review_percentage_complete": null,
-			"name": "",
-			"description": null,
-			"parent": null,
-			"children": [],
-			"closing_group": null,
-			"category": null,
-			"latest_revision": null,
-			"is_final": false,
-			"is_complete": false,
-			"is_requested": false,
-			"date_due": null,
-			"loading": true
-		};
+		var CHECKLISTITEMSKELETON = matterItemService.skeleton();
 
 		function loadMatter() {
 			matterService.get( $scope.data.slug ).then(
@@ -328,61 +313,73 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 * @method			initialiseMatter
 		 */
-		$scope.initialiseMatter = function( matter ) {
-			var /*i, */categoryName = null, categories = [], items = [];
+		$scope.initialiseMatter = function(matter) {
+			var /*i, */
+				categoryName = null,
+				categories = [],
+				items = [];
 			var firstItem, category;
 
 			// Items with blank category name
-			items = jQuery.grep( matter.items, function( item ){ return item.category===categoryName; } );
-			category = { 'name': categoryName, 'items': items };
+			items = jQuery.grep(matter.items, function(item) {
+				return item.category === categoryName;
+			});
+			category = {
+				'name': categoryName,
+				'items': items
+			};
 
 			categories.push(category);
 
 			// First item if available, this will be used to open the first available checklist item by default
-			firstItem = matterService.selectFirstitem( firstItem, items, category );
+			firstItem = matterService.selectFirstitem(firstItem, items, category);
 
-			if( matter && matter.categories ) {
+			if (matter && matter.categories) {
 				// Allocate items to specific categories to make multiple arrays
-				jQuery.each( matter.categories, function( index, cat ) {
+				jQuery.each(matter.categories, function(index, cat) {
 					var categoryName = cat, category;
-					var items = jQuery.grep( matter.items, function( item ){ return item.category===categoryName; } );
+					var items = jQuery.grep(matter.items, function(item) {
+						return item.category === categoryName;
+					});
 
-					category = { 'name': categoryName, 'items': items };
-					categories.push( category );
+					category = {
+						'name': categoryName,
+						'items': items
+					};
+					categories.push(category);
 
 					// First item if available, this will be used to open the first available checklist item by default
-					firstItem = matterService.selectFirstitem( firstItem, items, category );
+					firstItem = matterService.selectFirstitem(firstItem, items, category);
 				});
 
-        jQuery.each( matter.participants, function( index, participant ) {
-          if (participant.user_class === 'customer'){
-            $scope.data.customers.push(participant);
-          }
-
-        });
+				jQuery.each(matter.participants, function(index, participant) {
+					if (participant.user_class === 'customer') {
+						$scope.data.customers.push(participant);
+					}
+				});
 
 				$scope.data.matter = matter;
 				$scope.data.categories = categories;
 
 				// If there is no state then select the first available item
-				if(!$state.params.itemSlug && firstItem) {
+				if (!$state.params.itemSlug && firstItem) {
 					$location.path('/checklist/' + firstItem.item.slug);
 				}
 				$scope.handleUrlState();
 
 			} else {
 				// Display error
-				toaster.pop('warning', 'Unable to load matter details',5000);
+				toaster.pop('warning', 'Unable to load matter details', 5000);
 			}
 
 			// Guided tour (show only if demo project)
-			if( matter && matter._meta && matter._meta.matter && matter._meta.matter['is_demo']) {
+			if (matter && matter._meta && matter._meta.matter && matter._meta.matter['is_demo']) {
 				IntroService.show(steps);
 			}
 		};
 
 		/**
-		 * Inits the intercom interface
+		 * Inits the intercom interface, interfacce for genericFunctions.initialiseIntercom
 		 *
 		 * @name	initialiseIntercom
 		 * @param  {Object} Current user object
@@ -390,37 +387,17 @@ angular.module('toolkit-gui')
 		 * @memberof			ChecklistCtrl
 		 * @method			initialiseIntercom
 		 */
-        $scope.initialiseIntercom = function(currUser){
-            $log.debug(currUser);
-
-            Intercom.boot({
-                'user_id': currUser.username,
-                'email': currUser.email,
-                'first_name': currUser.first_name,
-                'last_name': currUser.last_name,
-                'firm_name': currUser.firm_name,
-                'verified': currUser.verified,
-                'type': currUser.user_class,
-                'app_id': INTERCOM_APP_ID,
-                'created_at': (new Date(currUser.date_joined).getTime()/1000),
-                'matters_created': currUser.matters_created,
-                'user_hash': currUser.intercom_user_hash,
-                'widget': {
-                    'activator': '.intercom',
-                    'use_counter': true
-                }
-            });
-			//Intercom.show();
-		};
-
+        $scope.initialiseIntercom = genericFunctions.initialiseIntercom;
 
         $scope.editTextattribute = function(obj, context, attr) {
+        	var propertyName = 'edit_'+ context + '_' + attr;
+        	
             $scope.data['show_edit_'+ context + '_' + attr] = true;
 
-			if (obj['edit_'+ context + '_' + attr] && obj['edit_'+ context + '_'+ attr].length > 0){
+			if (obj[propertyName] && obj[propertyName].length > 0){
 				//do nothing
 			} else {
-				obj['edit_'+ context + '_' + attr] = obj[attr];
+				obj[propertyName] = obj[attr];
 			}
 
 			$scope.focus('event_edit_'+ context + '_' + attr);
@@ -434,29 +411,16 @@ angular.module('toolkit-gui')
 		|___|\__\___|_| |_| |_|___/
 		 */
 		/**
-		 * Requests the checklist API to add a checklist item
+		 * Requests the checklist API to add a checklist item (interface)
 		 *
-		 * @name				submitNewItem
+		 * @name				getItemBySlug
 		 *
 		 * @param  {Object} category	Category object contains category name (String)
 		 * @private
-		 * @method				submitNewItem
+		 * @method				getItemBySlug
 		 * @memberof			ChecklistCtrl
 		 */
-		$scope.getItemBySlug = function (itemSlug) {
-			var matter = $scope.data.matter;
-
-			if (matter) {
-				var items = jQuery.grep( matter.items, function(item) {
-					return item.slug === itemSlug;
-				});
-
-				if (items.length > 0){
-					return items[0];
-				}
-			}
-			return null;
-		};
+		$scope.getItemBySlug = matterService.getItemBySlug;
 
 		$scope.submitNewItem = function(category) {
 			var matterSlug = $scope.data.slug;
@@ -2140,29 +2104,21 @@ angular.module('toolkit-gui')
 			}
 
 			// Format item
-			content = content
-						.replace('<a href="">', '<a href="#/checklist/' +  checklistItem.slug + '">');
+			content = content.replace('<a href="">', '<a href="#/checklist/' +  checklistItem.slug + '">');
 
 			// Insert into conversation
 			$scope.data.activitystream.unshift( { 'event': content, 'id': null, 'timestamp': 'just now', 'status': 'awaiting' });
 		}
 
-		/**
-		 * matterTemplate - returns the specific item template as provided by API
-		 * @param  {String} templateName name of template
-		 * @return {String}              template string as provided by API
-		 */
-		function matterTemplate( templateName ) {
-			var templates = $scope.data.matter._meta.templates;
-			var template = '';
+		// Retrieve template interface
+		var matterTemplate = matterService.matterTemplate;
 
-			if(templates) {
-				template = templates[templateName]||'';
-			}
-
-			return template;
-		}
-
+	    $scope.showMarkDownInfo = function() {
+	      $modal.open({
+	        'templateUrl': '/static/ng/partial/markdown/markdown-info.html',
+	        'controller': 'MarkdownInfoCtrl'
+	      });
+	    };
 		/* END COMMENT HANDLING */
 
 
@@ -2213,124 +2169,11 @@ angular.module('toolkit-gui')
 
 		/* END COMMENT HANDLING */
 
-		/*
-		 ___       _
-		|_ _|_ __ | |_ _ __ ___
-		 | || '_ \| __| '__/ _ \
-		 | || | | | |_| | | (_) |
-		|___|_| |_|\__|_|  \___/
+		// INTRO
+		$scope.showIntro = ChecklistIntroService.showIntro;
 
-		 */
-		steps={
-			'steps': [
-				{
-					'element': '#step1',
-					'intro': "Checklist items are organised into categories."
-				},
-				{
-					'element': '#step1 .dropdown-toggle',
-					'intro': "Add new categories."
-				},
-				{
-					'element': '#step1 .btn-new-item',
-					'intro': "Create new checklist items."
-				},
-				{
-					'element': '.checklist-members',
-					'intro': "Invite people to participate in your workspace."
-				},
-				{
-					'element': '.navbar input[type=search]',
-					'intro': "Find checklist items quickly with search."
-				},
-				{
-					'element': '.navbar .doc-outline-status-',
-					'intro': "Filter checklist items by status."
-				},
-				{
-					'element': '.navbar .notifications span',
-					'intro': "See when things change."
-				},
-				{
-					'element': '#checklist-activity h4',
-					'intro': "Chat with participants about items, documents and revisions."
-				}
-			]
-		};
-
-		$scope.reloadingLess = false;
-
-		$scope.showIntro = function() {
-			$scope.reloadingLess = true;
-			IntroService.show(steps);
-			$timeout(function(){
-				less.refresh();
-				$scope.reloadingLess = false;
-			},100);
-		};
-
-		/**
-		 * Recieves broadcast message to show intro
-		 */
+		// Recieves broadcast message to show intro
 		$scope.$on('showIntro', function(){
-			IntroService.show(steps, 1);
+			ChecklistIntroService.showIntro();
 		});
-}])
-
-/**
- * itemStatusFilter
- * 		apply an item status filter to the array of checklist items within a matter
- * @param  {Array}  items    Array of checklist items
- * @param  {Object} filter   JSON object containing filters
- * @return {Array}  Filtered list of checklist items
- */
-.filter('itemStatusFilter', function() {
-	'use strict';
-	return function(items, filter) {
-		var tempClients = [];
-
-		if(!filter) {
-			return items;
-		}
-
-		angular.forEach(items, function (item) {
-			for(var key in filter) {
-				if( item.latest_revision && angular.equals( filter[key], item.latest_revision[key] ) ) {
-					tempClients.push(item);
-				}
-			}
-		});
-
-
-		return tempClients;
-	};
-})
-
-/**
- * itemFilter
- * 		apply an item filter to the array of checklist items within a matter (does not apply filter to nested properties)
- * @param  {Array}  items    Array of checklist items
- * @param  {Object} filter   JSON object containing filters
- * @return {Array}  Filtered list of checklist items
- */
-.filter('itemFilter', function() {
-	'use strict';
-	return function(items, filter) {
-		var tempClients = [];
-
-		if(!filter) {
-			return items;
-		}
-
-		angular.forEach(items, function (item) {
-			for(var key in filter) {
-				if( angular.equals( filter[key], item[key] ) ) {
-					tempClients.push(item);
-				}
-			}
-		});
-
-
-		return tempClients;
-	};
-});
+}]);

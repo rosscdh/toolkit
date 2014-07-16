@@ -205,6 +205,11 @@ def on_hellosign_webhook_event_recieved(sender, hellosign_log,
             if user:
                 hellosign_request.source_object.document.item.matter.actions.user_signed(user=user, sign_object=hellosign_request.source_object)
 
+                # update the open requests count for the user
+                profile = user.profile
+                profile.open_requests = profile.get_open_requests_count()
+                profile.save(update_fields=['data'])
+
         if event_type == 'signature_request_viewed':
             #
             # NOT HANDLED HERE rather in toolkit.api.views.sign
