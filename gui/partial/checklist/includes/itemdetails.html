@@ -235,11 +235,10 @@
                     <a href="{{ data.selectedItem.latest_revision.user_download_url }}" class="btn btn-link btn-xs" target="_blank">Save</a>
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="requestReview(data.selectedItem.latest_revision)"
                        ng-show="data.usdata.current.permissions.manage_document_reviews">Request Review</a>
-                    <!--
+                    
                     <a href="javascript:;" class="btn btn-link btn-xs"
                        ng-click="requestSigning(data.selectedItem.latest_revision)"
                        ng-show="data.selectedItem.latest_revision.signing===null&&data.itemIsLoading!==true&&data.usdata.current.permissions.manage_signature_requests">Send for Signing</a>
-                    //-->
                     <a href="javascript:;" class="btn btn-link btn-xs" ng-click="deleteLatestRevision()" ng-show="data.usdata.current.permissions.manage_items">Delete</a>
                 </div>
             </div>
