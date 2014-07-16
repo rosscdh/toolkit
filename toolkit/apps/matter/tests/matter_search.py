@@ -15,8 +15,10 @@ class MatterSearchClientSideTest(BaseScenarios, BaseCasperJs, LiveServerTestCase
         super(MatterSearchClientSideTest, self).setUp()
         self.basic_workspace()
 
-    @unittest.skip("@TODO Jamie and Ross figure out why not rendering react compoenents in test")
     def test_lawyer_matter_list(self):
+
+        self.skipTest('get casper tests working')
+
         self.client.login(username=self.lawyer.username, password=self.password)
 
         for i in range(0,5):
@@ -24,4 +26,21 @@ class MatterSearchClientSideTest(BaseScenarios, BaseCasperJs, LiveServerTestCase
             matter.add_participant(self.lawyer)
 
         url = reverse('matter:list')
+        #import pdb;pdb.set_trace()
         self.assertTrue(self.load_casper_file(js_file='matter_list_basic.js', test_label='Basic Tests of the matter list for a lawyer', url=url))
+
+
+class MatterViewClientSideTest(BaseScenarios, BaseCasperJs, LiveServerTestCase):
+    def setUp(self):
+        super(MatterViewClientSideTest, self).setUp()
+        self.basic_workspace()
+
+    def test_lawyer_matter_list(self):
+
+        self.skipTest('get casper tests working')
+
+        self.client.login(username=self.lawyer.username, password=self.password)
+
+        url = self.matter.get_absolute_url()
+        #import pdb;pdb.set_trace()
+        self.assertTrue(self.load_casper_file(js_file='matter_detail.js', test_label='Basic matter detail view', url=url))

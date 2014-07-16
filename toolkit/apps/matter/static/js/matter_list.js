@@ -114,7 +114,8 @@ var MatterItem = React.createClass({displayName: 'MatterItem',
                     React.DOM.a( {href: this.props.detail_url,  title: this.props.name,  className:"content"}, 
                         React.DOM.div( {className:"title"}, 
                             React.DOM.h6(null,  this.props.lawyer_or_client_name ),
-                            React.DOM.h5(null,  this.props.name, React.DOM.small(null,  this.props.currentUserRole ))
+                            React.DOM.h5(null,  this.props.name ),
+                             this.props.currentUserRole 
                         ),
                         React.DOM.div( {className:"meta clearfix"}, 
                              this.props.lastupdated_or_complete, 
@@ -166,7 +167,7 @@ var Participants = React.createClass({displayName: 'Participants',
 
 var CurrentUserRole = React.createClass({displayName: 'CurrentUserRole',
     render: function() {
-    
+
         var role = null;
         for (var i = 0; i < this.props.data.length; i++) {
             if (this.props.data[i].username == UserData.username) {
@@ -174,9 +175,19 @@ var CurrentUserRole = React.createClass({displayName: 'CurrentUserRole',
             }
         }
 
-        return (
-            React.DOM.div(null,  role )
-        )
+
+        if (role === 'owner') {
+            return (
+
+                React.DOM.span( {className:"fui-star-2", 'data-toggle':"tooltip", 'data-placement':"right", title:"You are the Matter Owner"})
+                );
+        }
+        else {
+            return (
+                React.DOM.div(null)
+                );
+        }
+
     }
 });
 
@@ -212,7 +223,7 @@ var EditMatterInterface = React.createClass({displayName: 'EditMatterInterface',
 
             return (
                 React.DOM.a( {href:edit_url, 'data-toggle':"modal", 'data-target':modal_target, className:"edit btn-sm"}, 
-                    React.DOM.span( {className:"fui-gear", 'data-toggle':"tooltip", 'data-placement':"left", title:"Edit this Matter"})
+                    React.DOM.span( {className:"fui-gear", 'data-toggle':"tooltip", 'data-placement':"left", title:"Edit Matter Details"})
                 )
             );
 

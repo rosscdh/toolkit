@@ -106,6 +106,8 @@
     <script src="<!-- @echo staticPath -->partial/markdown/markdown-info.js"></script>
 
   <script src="<!-- @echo staticPath -->partial/checklist/checklist.js"></script>
+  <script src="<!-- @echo staticPath -->partial/checklist/checklistIntroService.js"></script>
+  <script src="<!-- @echo staticPath -->partial/checklist/checklistFilters.js"></script>
   <script src="<!-- @echo staticPath -->partial/discussion/discussion.js"></script>
   <script src="<!-- @echo staticPath -->partial/discussion/manage-thread-participants.js"></script>
   <script src="<!-- @echo staticPath -->partial/discussion/create-thread.js"></script>
@@ -133,7 +135,7 @@
         <ul class="nav navbar-nav navbar-matters hidden-xs" ng-show="matter.selected&&data.matterlist.length>1">
             <li class="dropdown">
               <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" ng-bind="matter.selected.name | characters:15:true"></a>
-              <ul class="dropdown-menu">
+              <ul class="dropdown-menu ng-cloak">
                 <li ng-repeat="m in data.matterlist" ng-show="m.name!=matter.selected.name">
                     {% verbatim %}<a href="/matters/{{ m.slug  }}" ng-if="m.client">{{ m.name }} - {{m.client.name}}</a>{% endverbatim %}
                     {% verbatim %}<a href="/matters/{{ m.slug  }}" ng-if="!m.client">{{ m.name }}</a>{% endverbatim %}
@@ -164,7 +166,7 @@
             <a ng-href="#/closing">Closing</a>
         </li> -->
         <li class="checklist-members hidden-xs">
-          <a href="javascript:;" ng-click="invite()">
+          <a href="javascript:;" ng-click="invite()" class="matter-p">
             <span class="fui-user"></span>
             <span ng-if="matter.selected&&matter.selected.participants.length>0&&matter.selected.participants.length<=3">
                 <span class="user hidden-md hidden-xs hidden-sm" ng-repeat="user in matter.selected.participants" ng-bind="user | initials"></span>
@@ -246,7 +248,7 @@
         <li>
           <a href="/requests/">
             <span>Requests</span>
-            <span class="label label-important" ng-show="matter.selected.current_user.counts.requests > 0">{{ matter.selected.current_user.counts.requests }}</span>
+            <span class="label label-important" ng-show="matter.selected.current_user.counts.requests > 0"></span>
           </a>
         </li>
 
@@ -260,10 +262,10 @@
             </ul>
         </li>
         <li class="divider hidden-xs hidden-sm"></li>
-        <li class="dropdown">
+        <li class="dropdown ng-cloak">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
           <span class="hidden-lg hidden-xs">{{ matter.selected.current_user | initials }} <b class="caret"></b></span>
-          <span class="hidden-md hidden-sm hidden-xs">{{ matter.selected.current_user | fullname }}<b class="caret"></b></span>
+          <span class="hidden-md hidden-sm hidden-xs">{{ matter.selected.current_user | fullname }} <b class="caret"></b></span>
           </a>
           <ul class="dropdown-menu">
             <li><a href="/me/settings/">Account</a></li>

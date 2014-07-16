@@ -21,6 +21,8 @@ class CustomerSignUpTest(BaseProjectCaseMixin):
     """
     Specifically test the crazy uppercase lowercase domain
     """
+    fixtures = ['dev-fixtures']  # load the demo matter from fixtures
+
     def test_signup(self):
         url = reverse('public:signup')
         resp = self.client.get(url)
@@ -66,7 +68,7 @@ class CustomerSignUpTest(BaseProjectCaseMixin):
         self.assertEqual(email.recipients(), [u'MySillyUserName@badlyformatedemailnonrfcdomain.com'])
         self.assertEqual(email.from_email, 'support@lawpal.com')
         self.assertEqual(email.subject, 'Please confirm your email address')
-        self.assertTrue(re.search(r'http://localhost:8000/me/email_confirmed/(?P<token>.*)/', email.body))
+        self.assertTrue(re.search(r'/me/email_confirmed/(?P<token>.*)/', email.body))
 
     @mock.patch('toolkit.core.services.analytics.AtticusFinch.mixpanel_alias')
     def test_signup_with_blank_mpid(self, mock_mixpanel_alias):
