@@ -16,7 +16,7 @@
     <p class="small text-center no-comments">There are no public comments for this item.</p>
 </div>
 
-<div ng-mouseenter="show=true">
+<div ng-mouseenter="show=true" class="new-message">
     <form ng-submit="submitPublicComment()">
         <textarea mentions-box class="form-control" rows="2" placeholder="Comment on this item..." text="data.selectedItem.newPublicComment" container-position="left" required></textarea>
         <button class="btn btn-inverse btn-textarea btn-xs" type="submit" ng-show="show">Submit</button>
