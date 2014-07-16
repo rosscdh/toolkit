@@ -32,6 +32,8 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
     parent = serializers.HyperlinkedRelatedField(required=False, many=False, view_name='item-detail', lookup_field='slug')
     children = serializers.SerializerMethodField('get_children')
 
+    task_status = serializers.SerializerMethodField('get_task_status')
+
     request_document_meta = serializers.SerializerMethodField('get_request_document_meta')
 
     class Meta:
@@ -48,6 +50,7 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
                   'latest_revision',
                   'is_final', 'is_complete', 'is_requested',
                   'date_due', 'date_created', 'date_modified',
+                  'task_status',
                   'request_document_meta',)
 
         exclude = ('data',)
@@ -85,6 +88,9 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
     def get_children(self, obj):
         return [ItemSerializer(i, context=self.context).data for i in obj.item_set.all()]
 
+    def get_task_status(self, obj):
+        return obj.task_status
+
     def get_request_document_meta(self, obj):
         """
         Return the requested by info if present otherwise null
@@ -107,6 +113,7 @@ class SimpleItemSerializer(ItemSerializer):
                   'category',
                   'latest_revision',
                   'is_final', 'is_complete', 'is_requested',
+                  'task_status',
                   'date_due',)
 
 

@@ -23,7 +23,6 @@ from .mixins import (RequestDocumentUploadMixin,
 
 from jsonfield import JSONField
 from uuidfield import UUIDField
-from rulez import registry as rulez_registry
 
 BASE_ITEM_STATUS = get_namedtuple_choices('ITEM_STATUS', (
                                 (0, 'new', 'New'),
@@ -88,6 +87,18 @@ class Item(IsDeletedMixin,
         ordering = ('sort_order',)
         # permissions = (("read_item", "Can read items"), )
 
+    @property
+    def task_status(self):
+        return self.data.get('tasks', {'complete': 0, 'total': 0})
+
+    @property
+    def client(self):
+        return self.matter.client
+
+    @property
+    def display_status(self):
+        return self.ITEM_STATUS.get_desc_by_value(self.status)
+
     def __unicode__(self):
         return u'%s' % self.name
 
@@ -116,14 +127,6 @@ class Item(IsDeletedMixin,
         else:
             revision = self.latest_revision
         return revision.get_user_sign_url(user=user)
-
-    @property
-    def client(self):
-        return self.matter.client
-
-    @property
-    def display_status(self):
-        return self.ITEM_STATUS.get_desc_by_value(self.status)
 
     def participants(self):
         return self.data.get('participants', [])

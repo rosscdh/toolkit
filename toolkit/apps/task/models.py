@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from django.db.models.signals import (post_save,
+                                      post_delete)
 
 from .mixins import SendReminderEmailMixin
 from .managers import TaskManager
+from .signals import (post_save_update_task_complete_count_in_item,
+                      post_delete_update_task_complete_count_in_item,)
 
 from rulez import registry as rulez_registry
 
@@ -55,3 +59,7 @@ class Task(SendReminderEmailMixin,
 rulez_registry.register("can_read", Task)
 rulez_registry.register("can_edit", Task)
 rulez_registry.register("can_delete", Task)
+
+# Signals
+post_save.connect(post_save_update_task_complete_count_in_item, sender=Task, dispatch_uid='task.post_save.post_save_update_task_complete_count_in_item')
+post_delete.connect(post_delete_update_task_complete_count_in_item, sender=Task, dispatch_uid='task.post_delete.post_delete_update_task_complete_count_in_item')

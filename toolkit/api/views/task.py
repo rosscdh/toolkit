@@ -110,6 +110,7 @@ class ItemTaskView(GetTaskMixin,
             self.object.assigned_to.clear()
             # add the current state of users
             for username in assigned_to_usernames:
+                username = username.get('username') if type(username) in [dict] else username
                 self.object.assigned_to.add(User.objects.get(username=username))
 
     def update(self, request, **kwargs):
