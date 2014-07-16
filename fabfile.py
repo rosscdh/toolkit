@@ -622,7 +622,9 @@ def diff():
 def run_tests():
     run_tests = prompt(colored("Run Tests? [y,n]", 'yellow'), default="y")
     if run_tests.lower() in env.truthy:
+
         result = local('python manage.py test')
+
         if result not in ['', 1, True]:
             error(colored('You may not proceed as the tests are not passing', 'orange'))
 
@@ -654,7 +656,7 @@ def gui_clean():
 
 @task
 @runs_once
-def build_gui_dist():
+def copy_production_settings():
     # # move local_settings.py if present
     if os.path.exists('toolkit/local_settings.py'):
         local('mv toolkit/local_settings.py /tmp/local_settings.py')
@@ -669,12 +671,9 @@ def build_gui_dist():
 
     local('cp %s toolkit/local_settings.py' % production_local_settings)
 
-    # 
-    # Perform the action
-    # perform grunt build --djangoProd
-    #
-    local('cd gui;grunt build -djangoProd')
 
+@task
+def restore_backdup_localsettings():
     # move tmp/local_settings.py back
     if os.path.exists('/tmp/local_settings.py'):
         local('rm toolkit/local_settings.py')  # remove the production version local_settings so noone loses their mind
@@ -683,6 +682,24 @@ def build_gui_dist():
         if env.environment_class == 'local':
             # copy the default dev localsettings
             local('cp conf/dev.local_settings.py toolkit/local_settings.py')
+
+
+@task
+@runs_once
+def build_gui_dist():
+
+    # copy production settings
+    copy_production_settings()
+
+    # 
+    # Perform the action
+    # perform grunt build --djangoProd
+    #
+    local('cd gui;grunt build -djangoProd')
+
+    # restore local_settings.py
+    restore_backdup_localsettings()
+
 
 @task
 def upload_gui():

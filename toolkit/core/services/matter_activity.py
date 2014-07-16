@@ -429,7 +429,6 @@ class MatterActivityEventService(object):
     #
     # Review requests
     #
-
     def invite_user_as_reviewer(self, item, inviting_user, invited_user):
         # toolkit.api.views.review.ItemRevisionReviewersView#create
         if inviting_user.pk != invited_user:

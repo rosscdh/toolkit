@@ -155,8 +155,10 @@ def _notifications_send(verb_slug, actor, target, action_object, message, commen
 
             if hasattr(action_object, 'api_serializer') is True:
                 action_object = action_object.api_serializer(action_object, context={'request': None}).data
+
             if hasattr(item, 'api_serializer') is True:
                 item = item.api_serializer(item, context={'request': None}).data
+
             if hasattr(reviewdocument, 'api_serializer') is True:
                 reviewdocument = reviewdocument.api_serializer(item, context={'request': None}).data
 

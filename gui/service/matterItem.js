@@ -138,6 +138,30 @@ angular.module('toolkit-gui')
 			},
 
 			/**
+			 * Generates a new matter item skeleton
+			 * @return {Object} Matter item skeleton
+			 */
+			'skeleton': function() {
+				return {
+					"status": -1,
+					"responsible_party": null,
+					"review_percentage_complete": null,
+					"name": "",
+					"description": null,
+					"parent": null,
+					"children": [],
+					"closing_group": null,
+					"category": null,
+					"latest_revision": null,
+					"is_final": false,
+					"is_complete": false,
+					"is_requested": false,
+					"date_due": null,
+					"loading": true
+				};
+			},
+
+			/**
 			 * Request full item detail from API
 			 * @param  {String} matterSlug matter slug as provided by API
 			 * @param  {String} itemSlug   item slug as provided by API

@@ -37,7 +37,8 @@ angular.module('toolkit-gui')
 			'selected': null,
 			'statusFilter': null,
 			'itemFilter': null,
-			'selectedStatusFilter': null
+			'selectedStatusFilter': null,
+			'categories': []
 		};
 
 		/**
@@ -225,8 +226,6 @@ angular.module('toolkit-gui')
 				return deferred.promise;
 	        },
 
-
-
 	        /**
 	         * This function is used to maintain the array of checklist items (used for search)
 	         * @param  {Object} item Typically new item as recieved from API
@@ -251,9 +250,47 @@ angular.module('toolkit-gui')
 				} else {
 					return null;
 				}
+			},
+
+			/**
+			 * Requests the checklist API to add a checklist item
+			 *
+			 * @name				getItemBySlug
+			 *
+			 * @param  {Object} category	Category object contains category name (String)
+			 * @private
+			 * @method				getItemBySlug
+			 * @memberof			matterService
+			 */
+			'getItemBySlug': function (itemSlug) {
+				var selectedMatter = matter.selected;
+
+				if (selectedMatter) {
+					var items = jQuery.grep( selectedMatter.items, function(item) {
+						return item.slug === itemSlug;
+					});
+
+					if (items.length > 0){
+						return items[0];
+					}
+				}
+				return null;
+			},
+			/**
+			 * matterTemplate - returns the specific item template as provided by API
+			 * @param  {String} templateName name of template
+			 * @return {String}              template string as provided by API
+			 */
+			'matterTemplate': function( templateName ) {
+				var templates = matter.selected._meta.templates;
+				var template = '';
+
+				if(templates) {
+					template = templates[templateName]||'';
+				}
+
+				return template;
 			}
 		};
 	}]
 );
-
-matters = {"count": 1, "next": null, "previous": null, "results": [{"name": "Ut wisi enim ad", "slug": "ut-wisi-enim-ad", "matter_code": "00000-ut-wisi-enim-ad", "client": null, "lawyer": "http://127.0.0.1:8000/api/v1/users/lee/", "participants": ["http://127.0.0.1:8000/api/v1/users/lee/"], "closing_groups": [], "categories": [], "items": [{"slug": "25dbcbbd145048a2b98dc569de06e502", "url": "/api/v1/items/25dbcbbd145048a2b98dc569de06e502/", "status": "New", "name": "Stet clita kasd gubergren", "description": "Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. Sanctus sea sed takimata ut vero voluptua. Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua.", "matter": "/api/v1/matters/ut-wisi-enim-ad/", "parent": null, "children": [], "closing_group": "", "latest_revision": null, "is_final": false, "is_complete": false, "date_due": null, "date_created": "2014-02-25T11:52:12.590Z", "date_modified": "2014-02-25T11:52:12.590Z"}], "comments": [], "activity": [], "current_user": {"url": "/api/v1/users/lee/", "username": "lee", "first_name": "", "last_name": "", "email": "lee@lawpal.com", "is_active": true}, "current_user_todo": [], "date_created": "2014-02-25T11:50:25.351Z", "date_modified": "2014-02-25T11:50:25.351Z"}]};
