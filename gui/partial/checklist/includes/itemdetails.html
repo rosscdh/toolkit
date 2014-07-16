@@ -223,7 +223,7 @@
                         <span ng-hide="data.selectedItem.latest_revision.description">Enter description</span>
                     </a>
                 </div>
-                <div class="desc revision-description" ng-hide="data.usdata.current.permissions.manage_items||data.selectedItem.is_complete">
+                <div class="desc revision-description" ng-show="!data.usdata.current.permissions.manage_items||data.selectedItem.is_complete">
                         <div btf-markdown="data.selectedItem.latest_revision.description | newlines"></div>
                 </div>
 
