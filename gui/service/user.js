@@ -10,7 +10,6 @@ angular.module('toolkit-gui').factory('userService',[
 			'data': {
 				'items': []
 			},
-            'available_permissions': initAvailablePermissions(),
 			'current': {}
 		};
 
@@ -50,7 +49,7 @@ angular.module('toolkit-gui').factory('userService',[
 			return user.permissions;
 		}
 
-        function initAvailablePermissions( ) {
+        function initAvailablePermissions() {
             var perm_dict = {};
 
 
@@ -83,8 +82,9 @@ angular.module('toolkit-gui').factory('userService',[
             perm_dict['colleague'] = colleaguePerms;
             perm_dict['client'] = clientPerms;
 
-            return perm_dict;
+            user.available_permissions = perm_dict;
         }
+        initAvailablePermissions();
 
 		return {
 			'data': function() {

@@ -314,7 +314,7 @@ angular.module('toolkit-gui')
             }
 
             if($scope.data.invitee.role === 'colleague'){
-                var perms_set = false
+                var perms_set = false;
                  jQuery.each($scope.data.perms.colleague, function(index, obj){
                     if ($scope.data.invitee.permissions[obj.name] === true){
                         perms_set = true;
