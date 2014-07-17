@@ -16,6 +16,7 @@ from model_mommy import mommy
 import os
 import json
 import datetime
+import types
 
 
 class MattersTest(BaseEndpointTest):
@@ -43,7 +44,8 @@ class MattersTest(BaseEndpointTest):
 
         new_client = mommy.prepare('client.Client', lawyer=self.lawyer, name='A new Client for Test Lawyer')
 
-        resp = self.client.post(self.endpoint, json.dumps(LiteClientSerializer(new_client).data), content_type='application/json')
+        resp = self.client.post(self.endpoint, json.dumps(LiteClientSerializer(new_client).data),
+                                content_type='application/json')
 
         self.assertEqual(resp.status_code, 201)  # created
 
@@ -283,7 +285,8 @@ class MatterDetailProvidedDataTest(BaseEndpointTest):
     def setUp(self):
         super(MatterDetailProvidedDataTest, self).setUp()
         self.item = mommy.make('item.Item', matter=self.matter, name='Test Item No. 1', category="A")
-        self.revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)
+        self.revision = mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item,
+                                   uploaded_by=self.lawyer)
 
     def test_endpoint_name(self):
         self.assertEqual(self.endpoint, '/api/v1/matters/%s' % self.matter.slug)
@@ -332,7 +335,8 @@ class MatterDetailProvidedDataTest(BaseEndpointTest):
         latest_revision = items[0].get('latest_revision')
         self.assertEqual(type(latest_revision), dict)
 
-        self.assertItemsEqual(latest_revision.keys(), ['url', 'regular_url', 'status', 'date_created', 'slug', 'name'])
+        self.assertItemsEqual(latest_revision.keys(),
+                              ['url', 'regular_url', 'status', 'date_created', 'slug', 'name', 'is_current'])
 
     def test_endpoint_data_lawyer(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -355,6 +359,24 @@ class MatterDetailProvidedDataTest(BaseEndpointTest):
 
         # participants
         self.confirm_participants(participants=resp_data.get('participants'))
+
+        # revisions should be empty for clients without review or manage_items-permission
+        latest_revision = resp_data.get('items', [{}])[0].get('latest_revision')
+        self.assertEqual(type(latest_revision), types.NoneType)
+
+    def test_endpoint_data_customer_with_revision(self):
+        self.client.login(username=self.user.username, password=self.password)
+
+        # add user as reviewer to be able to self.confirm_item_latest_revision
+        self.revision.reviewers.add(self.user)
+
+        resp = self.client.get(self.endpoint)
+        resp_data = json.loads(resp.content)
+        self.assertTrue(resp_data.get('url') is not None)
+
+        # participants
+        self.confirm_participants(participants=resp_data.get('participants'))
+
         # revisions
         self.confirm_item_latest_revision(items=resp_data.get('items'))
 

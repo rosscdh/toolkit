@@ -195,6 +195,7 @@ def get_initials(self):
 
 User.add_to_class('get_initials', get_initials)
 
+
 """
 Permissions: Get or create a permissions object for this user
 """

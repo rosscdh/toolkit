@@ -271,7 +271,8 @@ class SignUpView(LogOutMixin, AuthenticateUserMixin, FormView):
         messages.info(self.request, 'Your account has been created. Please verify your email address. Check your email and click on the link that we\'ve sent you.')
 
         analytics = AtticusFinch()
-        analytics.event('user.signup', user=self.request.user, ip_address=self.request.META.get('HTTP_X_FORWARDED_FOR', self.request.META.get('REMOTE_ADDR')))
+        analytics.event('user.signup', user=self.request.user,
+                        ip_address=self.request.META.get('HTTP_X_FORWARDED_FOR', self.request.META.get('REMOTE_ADDR')))
 
         return super(SignUpView, self).form_valid(form)
 

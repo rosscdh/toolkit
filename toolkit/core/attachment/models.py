@@ -15,13 +15,14 @@ from .mixins import StatusLabelsMixin
 import re
 import os
 
+
 BASE_REVISION_STATUS = get_namedtuple_choices('REVISION_STATUS', (
-                                (0, 'draft', 'Draft'),
-                                (1, 'for_discussion', 'For Discussion'),
-                                (2, 'final', 'Final'),
-                                (3, 'executed', 'Executed'),
-                                (4, 'filed', 'Filed'),
-                            ))
+    (0, 'draft', 'Draft'),
+    (1, 'for_discussion', 'For Discussion'),
+    (2, 'final', 'Final'),
+    (3, 'executed', 'Executed'),
+    (4, 'filed', 'Filed'),
+))
 
 
 def _upload_file(instance, filename):
@@ -54,7 +55,8 @@ class Revision(IsDeletedMixin,
 
     slug = models.SlugField(blank=True, null=True)  # stores the revision number v3..v2..v1
 
-    executed_file = models.FileField(upload_to=_upload_file, max_length=255, storage=_managed_S3BotoStorage(), null=True, blank=True)
+    executed_file = models.FileField(upload_to=_upload_file, max_length=255, storage=_managed_S3BotoStorage(),
+                                     null=True, blank=True)
 
     item = models.ForeignKey('item.Item')
     uploaded_by = models.ForeignKey('auth.User')
@@ -64,7 +66,8 @@ class Revision(IsDeletedMixin,
 
     # allow reviewers to upload alternatives to the current
     # these alternatives may be set as the "current" if the lawyer approves
-    alternatives = models.ManyToManyField('attachment.Revision', null=True, blank=True, symmetrical=False, related_name="parent")
+    alternatives = models.ManyToManyField('attachment.Revision', null=True, blank=True, symmetrical=False,
+                                          related_name="parent")
 
     # True by default, so that on create of a new one, it's set as the current revision
     is_current = models.BooleanField(default=True)
@@ -95,7 +98,7 @@ class Revision(IsDeletedMixin,
     @property
     def primary_reviewdocument(self):
         # is this *really* only the case for a NEW reviewdocument/revision?
-        return self.reviewdocument_set.filter(reviewers=None).last() 
+        return self.reviewdocument_set.filter(reviewers=None).last()
 
     @property
     def primary_signdocument(self):
@@ -169,7 +172,7 @@ class Revision(IsDeletedMixin,
         and revision_label
         NB! must exclude the self.pk otherwise the increment will be wrong +1
         """
-        return self.revisions.exclude(pk=self.pk).count() + 1 # default is 1
+        return self.revisions.exclude(pk=self.pk).count() + 1  # default is 1
 
     def next(self):
         return self.revisions.filter(pk__gt=self.pk).first()

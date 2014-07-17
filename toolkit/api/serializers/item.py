@@ -25,11 +25,13 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
 
     responsible_party = LiteUserSerializer(required=False)
 
-    latest_revision = SimpleRevisionSerializer(read_only=True)
+    latest_revision = serializers.SerializerMethodField('get_latest_revision')
 
-    matter = serializers.HyperlinkedRelatedField(many=False, required=True, view_name='workspace-detail', lookup_field='slug')
+    matter = serializers.HyperlinkedRelatedField(many=False, required=True, view_name='workspace-detail',
+                                                 lookup_field='slug')
 
-    parent = serializers.HyperlinkedRelatedField(required=False, many=False, view_name='item-detail', lookup_field='slug')
+    parent = serializers.HyperlinkedRelatedField(required=False, many=False, view_name='item-detail',
+                                                 lookup_field='slug')
     children = serializers.SerializerMethodField('get_children')
 
     request_document_meta = serializers.SerializerMethodField('get_request_document_meta')
@@ -60,18 +62,13 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
         """
         return []
 
-    def get_latest_revision(self, obj):
-        if obj.latest_revision is not None:
-            return ABSOLUTE_BASE_URL(reverse('matter_item_revision', kwargs={'matter_slug': obj.matter.slug, 'item_slug': obj.slug}))
-        return None
-
     def get_reviewers(self, obj):
         """
         placeholder
         """
         if getattr(obj.latest_revision, 'pk', None) is not None:
-            return [SimpleUserWithReviewUrlSerializer(u, context=self.context).data for u in obj.latest_revision.reviewers.all()]
-
+            return [SimpleUserWithReviewUrlSerializer(u, context=self.context).data
+                    for u in obj.latest_revision.reviewers.all()]
         return []
 
     def get_signers(self, obj):
@@ -79,8 +76,16 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
         placeholder
         """
         if getattr(obj.latest_revision, 'pk', None) is not None:
-            return [SimpleUserWithReviewUrlSerializer(u, context=self.context).data for u in obj.latest_revision.signers.all()]
+            return [SimpleUserWithReviewUrlSerializer(u, context=self.context).data
+                    for u in obj.latest_revision.signers.all()]
         return []
+
+    def get_latest_revision(self, obj):
+        request = self.context.get('request')
+        matter = self.context.get('matter')
+
+        latest_revision = obj.latest_revision_by_user(request.user, matter) if request and matter else None
+        return SimpleRevisionSerializer(latest_revision, read_only=True).data if latest_revision else None
 
     def get_children(self, obj):
         return [ItemSerializer(i, context=self.context).data for i in obj.item_set.all()]
@@ -91,10 +96,10 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
         see revision_request.py
         """
         return obj.data.get('request_document', {
-                'message': None,
-                'requested_by': None,
-                'date_requested': None
-            })
+            'message': None,
+            'requested_by': None,
+            'date_requested': None
+        })
 
 
 class SimpleItemSerializer(ItemSerializer):
