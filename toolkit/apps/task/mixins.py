@@ -5,6 +5,10 @@ from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 
 
 class SendReminderEmailMixin(object):
+    def send_assigned_to_email(self, from_user, **kwargs):
+        subject = '[ACTION REQUIRED] A task has been assigned to you'
+        self.send_reminder(from_user=from_user, subject=subject, **kwargs)
+
     def send_reminder(self, from_user, subject=None, **kwargs):
         # nto already completed
         if self.is_complete is False:
