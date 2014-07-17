@@ -24,10 +24,6 @@ angular.module('toolkit-gui').directive('attachmentsList', ['$compile', '$log', 
                     attachments: []
                 };
 
-                $log.debug($scope.matter);
-                $log.debug($scope.selectedItem);
-                $log.debug($scope.currentUser);
-
 
                 $scope.manageAttachment = function () {
                     var modalInstance = $modal.open({

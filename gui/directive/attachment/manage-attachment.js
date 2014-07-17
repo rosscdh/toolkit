@@ -62,29 +62,32 @@ angular.module('toolkit-gui')
              * @method                processUpload
              * @memberof            ChecklistCtrl
              */
-
-            /*
-            $scope.processUpload = function (files) {
+            $scope.processCloudUpload = function (files) {
                 var matterSlug = $scope.matter.slug;
                 var itemSlug = $scope.checklistItem.slug;
+
                 $scope.data.uploading = true;
-                item.uploading = true;
+                $scope.data.uploadingPercent = 0;
 
-                attachmentService.create(matterSlug, itemSlug, files).then(
+                attachmentService.uploadFromCloud(matterSlug, itemSlug, files).then(
                     function success(response) {
-                        item.uploading = false;
+                        $scope.data.uploading = false;
+                        $scope.data.uploadingPercent = 0;
+                        toaster.pop('success', 'Success!', 'File added successfully', 3000);
 
-                        toaster.pop('success', 'Success!', 'Document added successfully', 3000);
+                        $modalInstance.close();
                     },
-                    function error() {
-                        // Update uploading status
-                        item.uploading = false;
-                        toaster.pop('error', 'Error!', 'Unable to upload document', 5000);
+                    function error(err) {
+                        $scope.data.uploading = false;
+                        $scope.data.uploadingPercent = 0;
+
+                        var msg = err && err.message ? err.message : 'Unable to upload file';
+                        var title = err && err.title ? err.title : 'Error';
+
+                        toaster.pop('error', title, msg, 5000);
                     }
                 );
             };
-            */
-
 
             /**
              * Initiate the file upload process

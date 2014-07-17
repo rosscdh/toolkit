@@ -8,9 +8,9 @@
             <ul class="one-attachment">
                 <li class="icon"><i class="fa fa-paperclip"></i></li>
                 <li class="attachment-name">{{ attachment.name }}</li>
-                <li class="attachment-status">Uploaded by {{ attachment.created_by.name }}</li>
+                <li class="attachment-status">Uploaded by {{ attachment.uploaded_by.initials }}</li>
                  <li class="download-attachment"><a href="{{ attachment.user_download_url }}" ><i class="fa fa-download"></i></a></li>
-                <li class="delete-attachment"><a href="javascript:;" ng-click="deleteAttachment(task)">X</a></li>
+                <li class="delete-attachment"><a href="javascript:;" ng-click="deleteAttachment(attachment)">X</a></li>
             </ul>
         </li>
     </ul>

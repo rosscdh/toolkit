@@ -8,25 +8,25 @@
     <form class="form" role="form" name="attachmentForm" novalidate>
         <div class="modal-body">
 
-        <div class="row">
-            <div class="col-sm-4 col-sm-offset-2 text-center">
+            <div class="row">
+                <div class="col-sm-4 col-sm-offset-2 text-center">
 
-                    <button class="btn btn-sm btn-file btn-block">
+                    <div class="btn btn-sm btn-file btn-block">
                         <i class="fa fa-desktop"></i>
                         From desktop
                         <input type="file" ng-file-select="onFileDropped($files);" clear-on-click multiple="multiple"/>
+                    </div>
+                </div>
+                <div class="col-sm-4 text-center">
+
+                    <button class="btn btn-sm btn-file btn-block" href="javascript:;" filepicker="filepicker"
+                            apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processCloudUpload(files)"
+                            extensions=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx">
+                        <i class="fa fa-cloud-download"></i>
+                        From cloud service
                     </button>
+                </div>
             </div>
-            <div class="col-sm-4 text-center">
-
-                    <button class="btn btn-sm btn-file btn-block" href="javascript:;" filepicker="filepicker" apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files)"
-                           extensions=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx">
-                            <i class="fa fa-cloud-download"></i>
-                           From cloud service
-
-            </button>
-            </div>
-        </div>
 
 
         </div>

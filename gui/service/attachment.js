@@ -29,7 +29,7 @@ angular.module('toolkit-gui')
 		function attachmentListResource() {
 			return $resource( API_BASE_URL + 'matters/:matterSlug/items/:itemSlug/attachment/:id', {}, {
 				'query': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'}},
-				'create': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'}},
+				'create': { 'method': 'POST', 'headers': { 'Content-Type': 'application/json'}}
 			});
 		}
 
@@ -85,28 +85,35 @@ angular.module('toolkit-gui')
 
 
             /**
-			 * Creates a new attachment
+			 * Uploads a file from the filepicker directive
 			 *
-			 * @name				create
+			 * @name				uploadFromCloud
+			 * @param {String}      matterSlug    Database slug, used as a unique identifier for a matter.
+			 * @param {String}      itemSlug      Database slug, used as a unique identifier for a checklist item.
+			 * @param {Object}      files         Details as provided by filepicker.io
 			 *
 			 * @example
-			 * attachmentService.create.create( mySelectedMatter, myItem, myAttachment );
+			 * matterItemService.uploadFromCloud( 'myItemName', 'ItemCategoryName', {} );
 			 *
 			 * @public
-			 * @method				create
+			 * @method				uploadFromCloud
 			 * @memberof			attachmentService
 			 *
-			 * @return {Promise}
-		 	 */
-			'createOld': function(matterSlug, itemSlug, attachment) {
-				var api = attachmentResource();
+			 * @return {Promise}    Updated item object as provided by API
+			 */
+            'uploadFromCloud': function( matterSlug, itemSlug, files ) {
 				var deferred = $q.defer();
 
-				api.create({'matterSlug': matterSlug, 'itemSlug': itemSlug}, {'attachment': attachment},
-					function success() {
-						deferred.resolve();
+				var api = attachmentListResource();
+
+				var fileurl = files[0].url;
+				var filename = files[0].filename;
+
+				api.create({'matterSlug': matterSlug, 'itemSlug': itemSlug }, { 'executed_file': fileurl, 'name': filename },
+					function success(revision){
+						deferred.resolve(revision);
 					},
-					function error( err ) {
+					function error(err) {
 						deferred.reject( err );
 					}
 				);
@@ -124,8 +131,6 @@ angular.module('toolkit-gui')
 			'uploadFile': function( matterSlug, itemSlug, $files ) {
 				var deferred = $q.defer(), /*files,*/ url;
 				var uploadHandle;
-
-				//var api = revisionItemResource();
 
 				if( $files.length>0 ) {
 					url = API_BASE_URL + 'matters/'+matterSlug+'/items/'+itemSlug+'/attachment';
@@ -181,7 +186,7 @@ angular.module('toolkit-gui')
 			 *
 			 * @return {Promise}
 		 	 */
-			'delete': function(matterSlug, itemSlug, attachmentId) {
+			'delete': function(attachmentId) {
 				var api = attachmentResource();
 				var deferred = $q.defer();
 

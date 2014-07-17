@@ -335,7 +335,7 @@ angular.module('toolkit-gui')
 			},
 
 			/**
-			 * Reqests that the API delete an existing matter checklist item
+			 * Uploads a file from the filepicker directive
 			 *
 			 * @name				uploadRevision
 			 * @param {String}      matterSlug    Database slug, used as a unique identifier for a matter.
