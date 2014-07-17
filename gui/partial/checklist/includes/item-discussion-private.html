@@ -12,7 +12,7 @@
         </li>
     </ul>
 </div>
-<div ng-show="data.privateComments.length == 0">
+<div ng-show="data.privateComments.length == 0"  class="comments-zero-state">
     <p class="small text-center no-comments">There are no private comments for this item.</p>
 </div>
 
@@ -22,6 +22,6 @@
         <button class="btn btn-inverse btn-textarea btn-xs" type="submit" ng-show="show">Submit</button>
     </form>
     <div class="visible-to">
-        Visible to: <span class="initials" ng-repeat="user in data.matter.participants" ng-show="user.role=='owner'||user.role=='colleague'" style="margin-right: 5px;">{{ user | initials }}</span>
+        Visible to: <span class="initials" ng-repeat="user in data.matter.participants" ng-show="user.role=='owner'||user.role=='colleague'" style="margin-right: 5px;" ng-class="user.role">{{ user | initials }}</span>
     </div>
 </div>
