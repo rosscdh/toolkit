@@ -300,6 +300,21 @@ class MatterActivityEventService(object):
         self.realtime_event(event='update', obj=item, ident=item.slug, from_user=user, detail='updated item')
 
     #
+    # Tasks
+    #
+    def added_task(self, user, item):
+        self.realtime_event(event='create', obj=item, ident=item.slug, from_user=user, detail='created item task')
+
+    def deleted_task(self, user, item):
+        self.realtime_event(event='delete', obj=item, ident=item.slug, from_user=user, detail='deleted item task')
+
+    def task_completed(self, user, item):
+        self.realtime_event(event='update', obj=item, ident=item.slug, from_user=user, detail='completed item task')
+
+    def task_reopened(self, user, item):
+        self.realtime_event(event='update', obj=item, ident=item.slug, from_user=user, detail='reopened item task')
+
+    #
     # Revisions
     #
 
