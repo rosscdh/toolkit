@@ -40,6 +40,9 @@ class Task(SendReminderEmailMixin,
 
     objects = TaskManager()
 
+    def __unicode__(self):
+        return u'%s' % self.name
+
     def get_absolute_url(self):
         return self.item.get_absolute_url()
 

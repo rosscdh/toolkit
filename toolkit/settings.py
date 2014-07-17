@@ -506,6 +506,9 @@ LAWPAL_ACTIVITY = {
                       'item-added-signer',
                       'item-completed-review',
                       'item-completed-all-reviews',
+                      # Tasks
+                      'item-task-added', 'item-task-deleted',
+                      'item-task-completed','item-task-reopened',
 
                       'revision-created', 'revision-comment-created', 'item-added-revision-comment',
                       'revision-added-revision-comment',
@@ -534,6 +537,9 @@ LAWPAL_ACTIVITY = {
                       'item-added-signer',
                       'item-completed-review',
                       'item-completed-all-reviews',
+                      # Tasks
+                      'item-task-added', 'item-task-deleted',
+                      'item-task-completed','item-task-reopened',
 
                       'revision-created', 'revision-comment-created', 'item-added-revision-comment',
                       'revision-added-revision-comment',
@@ -562,6 +568,9 @@ LAWPAL_ACTIVITY = {
                       'item-completed-all-reviews',
                       'item-added-signer',
                       'itemrequestrevisionview-provide-a-document',
+                      # Tasks
+                      'item-task-added', 'item-task-deleted',
+                      'item-task-completed','item-task-reopened',
 
                       'revision-created', 'revision-deleted',
                       'revision-added-review-session-comment',

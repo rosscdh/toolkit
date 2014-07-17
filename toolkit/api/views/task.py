@@ -134,11 +134,11 @@ class ItemTaskView(GetTaskMixin,
         #
         if current_task_is_complete is False and self.task.is_complete is True:
             # was completed
-            self.item.matter.actions.task_completed(user=request.user, item=self.item)
+            self.item.matter.actions.task_completed(user=request.user, item=self.item, task=self.task)
 
         if current_task_is_complete is True and self.task.is_complete is False:
             # was reopened
-            self.item.matter.actions.task_reopened(user=request.user, item=self.item)
+            self.item.matter.actions.task_reopened(user=request.user, item=self.item, task=self.task)
 
 
         # if the resp is OK then
@@ -149,10 +149,12 @@ class ItemTaskView(GetTaskMixin,
         return resp
 
     def delete(self, request, **kwargs):
+        self.task = self.get_object()
+
         resp = super(ItemTaskView, self).delete(request=request, **kwargs)
 
         # event
-        self.item.matter.actions.deleted_task(user=request.user, item=self.item)
+        self.item.matter.actions.deleted_task(user=request.user, item=self.item, task=self.task)
 
         return resp
 
