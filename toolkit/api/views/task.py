@@ -12,8 +12,8 @@ from toolkit.apps.task.models import Task
 from .mixins import MatterItemsQuerySetMixin
 from ..serializers import (ItemSerializer,
                            TaskSerializer,
-                           CreateTaskSerializer,
-                           SimpleUserSerializer)
+                           CreateTaskSerializer,)
+
 
 class TaskEndpoint(viewsets.ModelViewSet):
     """
@@ -68,8 +68,10 @@ class ItemTasksView(GetTaskMixin,
         return {'request': self.request}
 
     def create(self, request, **kwargs):
+        self.item = self.get_item()
+
         request.DATA.update({
-            'item': ItemSerializer(self.get_item()).data.get('url'),
+            'item': ItemSerializer(self.item).data.get('url'),
             'created_by': request.user.username,
         })
         return super(ItemTasksView, self).create(request=request, **kwargs)
@@ -116,13 +118,41 @@ class ItemTaskView(GetTaskMixin,
     def update(self, request, **kwargs):
         # remove the assigned to from teh data set as we handle it manually
         assigned_to = request.DATA.pop('assigned_to', None)  # remove the assigned_to
+
+        # what is the value of is complete before this update takes place
+        self.task = self.get_object()
+        current_task_is_complete = self.task.is_complete
+
         # process normally
         resp = super(ItemTaskView, self).update(request=request, **kwargs)
+
+        # refresh object
+        self.task = self.task.__class__.objects.get(pk=self.task.pk)
+
+        #
+        # Handle status change events
+        #
+        if current_task_is_complete is False and self.task.is_complete is True:
+            # was completed
+            self.item.matter.actions.task_completed(user=request.user, item=self.item)
+
+        if current_task_is_complete is True and self.task.is_complete is False:
+            # was reopened
+            self.item.matter.actions.task_reopened(user=request.user, item=self.item)
+
 
         # if the resp is OK then
         if resp.status_code in [200]:
             # reset and update the assigned_to option
             self.update_assigned_to(assigned_to_usernames=assigned_to)
+
+        return resp
+
+    def delete(self, request, **kwargs):
+        resp = super(ItemTaskView, self).delete(request=request, **kwargs)
+
+        # event
+        self.item.matter.actions.deleted_task(user=request.user, item=self.item)
 
         return resp
 
