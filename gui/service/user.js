@@ -10,6 +10,7 @@ angular.module('toolkit-gui').factory('userService',[
 			'data': {
 				'items': []
 			},
+            'available_permissions': initAvailablePermissions(),
 			'current': {}
 		};
 
@@ -48,6 +49,42 @@ angular.module('toolkit-gui').factory('userService',[
 
 			return user.permissions;
 		}
+
+        function initAvailablePermissions( ) {
+            var perm_dict = {};
+
+
+            //Permissions for the colleague
+            var colleaguePerms = [];
+            colleaguePerms.push({
+                'name': 'manage_items',
+                'description': 'edit the checklist items'
+            });
+            colleaguePerms.push({
+                'name': 'manage_document_reviews',
+                'description': 'request/complete reviews of documents'
+            });
+            colleaguePerms.push({
+                'name': 'manage_signature_requests',
+                'description': 'request/complete signature requests '
+            });
+            colleaguePerms.push({
+                'name': 'manage_tasks',
+                'description': 'manage tasks'
+            });
+
+            var clientPerms = [];
+            clientPerms.push({
+                'name': 'manage_clients',
+                'description': 'Manage Clients in this matter (including adding and removing Clients)'
+            });
+
+
+            perm_dict['colleague'] = colleaguePerms;
+            perm_dict['client'] = clientPerms;
+
+            return perm_dict;
+        }
 
 		return {
 			'data': function() {
