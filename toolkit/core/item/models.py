@@ -160,6 +160,15 @@ class Item(IsDeletedMixin,
         if do_recalculate:
             self.matter.update_percent_complete()
 
+    def needs_review(self, user):
+        return user in self.latest_revision.reviewers.all()
+
+    def needs_signature(self, user):
+        return user in self.latest_revision.signers.all()
+
+    def needs_upload(self, user):
+        return self.is_requested and self.responsible_party == user
+
     def can_read(self, user):
         return user in self.matter.participants.all()
 
