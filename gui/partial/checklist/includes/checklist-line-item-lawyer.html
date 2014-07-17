@@ -55,10 +55,11 @@
                             ng-show="item.signing_percentage_complete!==null&&item.signing_percentage_complete>=0&&item.signing_percentage_complete<=100">
                         <span class="fui-user"></span> Signing {{ item.signing_percentage_complete }}%
                     </button>
+
+                    <span class="tasks-status-checklist" ng-if="item.task_status.total">
+                        <i class="fa fa-list-ul "></i> ({{item.task_status.complete}}/{{item.task_status.total}})
+                    </span>
 				</span>
-                <span class="tasks-status-checklist pull-right" ng-if="item.task_status.total">
-                  <i class="fa fa-list-ul "></i> ({{item.task_status.complete}}/{{item.task_status.total}})
-                </span>
 				<span class="pe-7s-check pull-right checklist-item-complete" ng-show="item.is_complete"></span>
 				<span ng-if="item.loading">
 					<i class="fa fa-spinner fa-spin pull-right fapad"></i>
