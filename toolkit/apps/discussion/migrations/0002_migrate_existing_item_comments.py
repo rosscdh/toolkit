@@ -9,13 +9,15 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 from toolkit.apps.discussion.models import DiscussionComment
+from toolkit.core.item.models import Item
+
+
+ITEM_TYPE = ContentType.objects.get_for_model(Item).pk
 
 
 class Migration(DataMigration):
 
     def forwards(self, orm):
-        ITEM_TYPE = ContentType.objects.get_for_model(Item).pk
-
         for comment in orm['actstream.action'].objects.filter(verb='commented'):
             # create the new comment
             DiscussionComment.objects.create(
