@@ -109,3 +109,11 @@ LAWPAL_ACTIVITY['activity']['whitelist'] = [
 
 CELERY_DEFAULT_QUEUE = 'lawpal-test'
 ENABLE_CELERY_TASKS = False
+
+#
+# Demo Matter on User Signup
+# dev-fixtures.json
+#
+DEMO_MATTER_PK_TO_CLONE_ON_USER_CREATE = 2  # matter from fixtures
+DEMO_MATTER_LAWPAL_USER_PK = 2    # lawyer from fixtures
+DEMO_MATTER_SHOW_USER_INTRO = True

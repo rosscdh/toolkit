@@ -804,6 +804,7 @@ class MatterDiscussionParticipantDetailTest(BaseMatterDiscussionEndpointTest):
         self.assertEqual(resp.status_code, 405)  # not allowed
 
     def test_delete(self):
+        """ Participants can remove themselves """
         self.client.login(username=self.lawyer.username, password=self.password)
 
         resp = self.client.delete(self.endpoint, content_type='application/json')
@@ -830,6 +831,15 @@ class MatterDiscussionParticipantDetailTest(BaseMatterDiscussionEndpointTest):
 
         resp = self.client.delete(self.endpoint, content_type='application/json')
         self.assertEqual(resp.status_code, 403)  # forbidden
+
+    def test_matter_owner_delete(self):
+        """ Owners can remove participants """
+        WorkspaceParticipants.objects.filter(workspace=self.matter, user=self.user).update(role=ROLES.owner)
+
+        self.client.login(username=self.user.username, password=self.password)
+
+        resp = self.client.delete(self.endpoint, content_type='application/json')
+        self.assertEqual(resp.status_code, 204)  # deleted
 
 
 """

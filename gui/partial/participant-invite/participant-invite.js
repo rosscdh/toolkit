@@ -81,11 +81,12 @@ angular.module('toolkit-gui')
             'isNew': false,
             'selectedUser': null,
             'requestLoading': false,
-            'showAddButton': false
+            'showStep': 1,
+            'showColleaguePermissionDetails': false
 		};
 
         $scope.selectUser = function( person ) {
-        	// Re-apply original permissions if required, the concept here is that if I don't click the 
+        	// Re-apply original permissions if required, the concept here is that if I don't click the
         	if( $scope.data.selectedUser && $scope.permissionTracking.original ) {
         		$scope.data.selectedUser.permissions = $scope.permissionTracking.original; // Reset previosuly selected user permissions
         	}
@@ -181,10 +182,8 @@ angular.module('toolkit-gui')
                     $scope.data.isLawyer = false;
                     $scope.data.participant = null;
                     $scope.data.validationError = false;
-                    $scope.data.showAddLawyer = false;
-                    $scope.data.showAddParticipant = false;
                     $scope.data.selectedUser = null;
-                    $scope.data.showAddButton = false;
+                    $scope.data.showStep = 1;
 
                     toaster.pop('success', 'Success!', 'User was added successfully', 5000);
                 },
@@ -235,7 +234,7 @@ angular.module('toolkit-gui')
         	// Set updating flag, for GUI display
             $scope.data.requestLoading = true;
 
-            // Set backup permissions, forr rollback
+            // Set backup permissions, for rollback
             $scope.permissionTracking.original = angular.copy(person.permissions);
 
             // Request permissions update
@@ -249,6 +248,26 @@ angular.module('toolkit-gui')
 					toaster.pop('error', 'Error!', 'Unable to update the user',5000);
 				}
 			);
+        };
+
+        $scope.grantColleaguePermissions = function(setAll){
+            if(setAll){
+                $scope.data.invitee.role = 'co-owner';
+                $scope.data.invitee.permissions.manage_participants = true;
+                $scope.data.invitee.permissions.manage_items = true;
+				$scope.data.invitee.permissions.manage_document_reviews = true;
+                $scope.data.invitee.permissions.manage_signature_requests = true;
+
+                $scope.data.showColleaguePermissionDetails = false;
+            } else {
+                $scope.data.invitee.role = 'colleague';
+                $scope.data.invitee.permissions.manage_participants = true;
+                $scope.data.invitee.permissions.manage_items = true;
+				$scope.data.invitee.permissions.manage_document_reviews = false;
+                $scope.data.invitee.permissions.manage_signature_requests = false;
+
+                $scope.data.showColleaguePermissionDetails = true;
+            }
         };
 
 		/**
@@ -311,20 +330,24 @@ angular.module('toolkit-gui')
 		 * @memberof			ParticipantInviteCtrl
 		 */
 		$scope.showInviteForm = function( formName ) {
+            $scope.data.showStep=3;
+
 			switch(formName) {
-				case 'lawyer':
-					$scope.data.showAddParticipant=false;
-					$scope.data.showAddLawyer=true;
-					$scope.data.invitee.permissions.manage_signature_requests = true;
-					$scope.data.invitee.permissions.manage_document_reviews = true;
+				case 'colleague':
+					$scope.data.formtype='colleague';
+
+                    $scope.grantColleaguePermissions(true);
+                    $scope.data.invitee.permissions.manage_clients = true;
                     $scope.data.invitee.user_class = 'lawyer';
-                    $scope.data.invitee.role = 'colleague';
 					break;
 				default:
-					$scope.data.showAddParticipant=true;
-					$scope.data.showAddLawyer=false;
-					$scope.data.invitee.permissions.manage_signature_requests = false;
+					$scope.data.formtype='client';
+                    $scope.data.invitee.permissions.manage_clients = true;
+					$scope.data.invitee.permissions.manage_participants = false;
+					$scope.data.invitee.permissions.manage_items = false;
 					$scope.data.invitee.permissions.manage_document_reviews = false;
+					$scope.data.invitee.permissions.manage_signature_requests = false;
+
                     $scope.data.invitee.user_class = 'customer';
                     $scope.data.invitee.role = 'client';
 			}
