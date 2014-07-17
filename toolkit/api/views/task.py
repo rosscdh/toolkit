@@ -50,6 +50,7 @@ class GetTaskMixin(MatterItemsQuerySetMixin):
                                                    user=self.request.user)
 
     def update_assigned_to(self, task, assigned_to_usernames):
+        # is not completed and we have assigned_to usernames
         if assigned_to_usernames is not None:
             current_assigned_to_usernames = [u.username for u in task.assigned_to.all()]
             #
@@ -64,9 +65,10 @@ class GetTaskMixin(MatterItemsQuerySetMixin):
                     username = username.get('username') if type(username) in [dict] else username
                     task.assigned_to.add(User.objects.get(username=username))
                 #
-                # Send the email
+                # Send the email only if not completed
                 #
-                task.send_assigned_to_email(from_user=self.request.user)
+                if task.is_complete is False:
+                    task.send_assigned_to_email(from_user=self.request.user)
 
 
 class ItemTasksView(GetTaskMixin,
