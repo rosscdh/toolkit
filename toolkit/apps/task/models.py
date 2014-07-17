@@ -40,6 +40,9 @@ class Task(SendReminderEmailMixin,
 
     objects = TaskManager()
 
+    class Meta:
+        ordering = ('id',)  # oldest first
+
     def __unicode__(self):
         return u'%s' % self.name
 
