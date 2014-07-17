@@ -128,9 +128,7 @@ class ItemDiscussionCommentEndpoint(ItemMixin, BaseDiscussionCommentEndpoint):
         return self.kwargs.get('thread_slug') == 'public'
 
     def get_participants(self):
-        if self.is_public:
-            return self.matter.participants.all()
-        return self.matter.colleagues.all()
+        return self.matter.participants.all() if self.is_public else self.matter.something.all()
 
     def get_queryset(self):
         return self.model.objects.for_model(self.item).filter(is_public=self.is_public).order_by('submit_date')

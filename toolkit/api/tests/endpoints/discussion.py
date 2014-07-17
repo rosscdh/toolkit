@@ -37,6 +37,7 @@ class BaseMatterDiscussionEndpointTest(BaseDiscussionEndpointTest):
             matter=self.matter,
             title='Thread',
             comment='Hello world!',
+            is_public=False,
             participants=(self.lawyer, self.user),
             user=self.lawyer
         )
@@ -46,6 +47,7 @@ class BaseMatterDiscussionEndpointTest(BaseDiscussionEndpointTest):
             matter=self.matter,
             parent=self.thread,
             comment='Hello world!',
+            is_public=False,
             user=self.lawyer
         )
 

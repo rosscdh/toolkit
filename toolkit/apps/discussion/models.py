@@ -10,7 +10,7 @@ from threadedcomments.models import ThreadedComment
 from uuidfield import UUIDField
 
 from toolkit.apps.discussion.mailers import DiscussionAddedUserEmail, DiscussionCommentedEmail
-from toolkit.apps.workspace.models import Workspace
+from toolkit.apps.workspace.models import ROLES, Workspace
 from toolkit.core.item.models import Item
 
 
@@ -27,16 +27,12 @@ class DiscussionComment(ThreadedComment, models.Model):
         return self.title
 
     def get_absolute_url(self):
+        url = reverse('matter:detail', kwargs={ 'matter_slug': self.get_matter().slug })
+
         if self.is_item_discussion:
-            return '{url}#/checklist/{item_slug}'.format(
-                url = reverse('matter:detail', kwargs={ 'matter_slug': self.matter.slug }),
-                item_slug=self.item.slug
-            )
+            return '{url}#/checklist/{item_slug}'.format(url=url, item_slug=self.item.slug)
         elif self.is_matter_discussion:
-            return '{url}#/discussion/{thread_slug}'.format(
-                url = reverse('matter:detail', kwargs={ 'matter_slug': self.matter.slug }),
-                thread_slug=self.thread.slug
-            )
+            return '{url}#/discussion/{thread_slug}'.format(url=url, thread_slug=self.thread.slug)
 
     def save(self, *args, **kwargs):
         super(DiscussionComment, self).save(*args, **kwargs)
@@ -69,7 +65,7 @@ class DiscussionComment(ThreadedComment, models.Model):
     @property
     def thread(self):
         if self.parent_id:
-            return self.parent
+            return DiscussionComment.objects.get(pk=self.parent_id)
         else:
             return self
 
@@ -99,10 +95,7 @@ class DiscussionComment(ThreadedComment, models.Model):
 
     def get_participants(self):
         if self.is_item_discussion:
-            if self.is_public:
-                return self.item.matter.participants.all()
-            else:
-                return self.item.matter.colleagues.all()
+            return self.get_matter().participants.all() if self.is_public else self.get_matter().something.all()
         elif self.is_matter_discussion:
             return self.thread.participants.all()
 
@@ -159,7 +152,7 @@ def participant_can_edit(self, user, **kwargs):
 
 def participant_can_delete(self, user, **kwargs):
     # matter owners can delete too
-    return user == self.user or user in self.discussioncomment.matter.owners.all()
+    return user == self.user or user in self.discussioncomment.get_matter().owners.all()
 
 DiscussionComment.participants.through.add_to_class('can_edit', participant_can_edit)
 DiscussionComment.participants.through.add_to_class('can_delete', participant_can_delete)
