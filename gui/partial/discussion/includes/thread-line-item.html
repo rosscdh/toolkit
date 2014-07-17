@@ -1,5 +1,6 @@
 <div class="type-icon lock"></div>
 <div class="message">
+    <span ng-if="thread.is_archived" class="pull-right text-primary fui-check-inverted"></span>
     <h3 ng-bind="thread.title"></h3>
     <p ng-bind="thread.content | characters:25:false"></p>
 </div>
