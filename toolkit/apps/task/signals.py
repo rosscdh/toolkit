@@ -2,6 +2,8 @@
 import logging
 logger = logging.getLogger('django.request')
 
+from .mailers import TaskReminderEmail
+
 
 def _update_task_count(item):
     complete, total = 0, 0
