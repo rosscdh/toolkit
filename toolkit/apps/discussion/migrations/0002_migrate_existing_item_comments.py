@@ -30,10 +30,10 @@ class Migration(DataMigration):
             )
 
             # delete the old comment
-            # comment.delete()
+            comment.delete()
 
     def backwards(self, orm):
-        pass
+        raise RuntimeError("Cannot reverse this migration. The comments have been deleted, so they can not be brought back.")
 
     models = {
         u'actstream.action': {
