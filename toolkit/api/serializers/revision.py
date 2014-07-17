@@ -179,6 +179,10 @@ class FileFieldAsUrlField(LimitedExtensionMixin, serializers.FileField):
     """
     Acts like a normal FileField but to_native will download the file
     """
+    def __init__(self, file_field_name='executed_file', *args, **kwargs):
+        self.file_field_name = file_field_name
+        return super(FileFieldAsUrlField, self).__init__(*args, **kwargs)
+
     def from_native(self, value):
         self.validate_filename(value=value.name)
         return super(FileFieldAsUrlField, self).from_native(value=value)
@@ -193,7 +197,8 @@ class FileFieldAsUrlField(LimitedExtensionMixin, serializers.FileField):
             # Just download the object, the rest gets handled naturally
             #
             if urlparse(value.url).scheme:  # check where delaing with an actual url here
-                _download_file(url=value.url, filename=value.name, obj=value.instance)
+                _download_file(url=value.url, filename=value.name, obj=value.instance,
+                              obj_fieldname=self.file_field_name)
 
         return getattr(value, 'url', super(FileFieldAsUrlField, self).to_native(value=value))
 

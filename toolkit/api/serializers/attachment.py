@@ -46,7 +46,7 @@ class AttachmentSerializer(serializers.HyperlinkedModelSerializer):
 
                     if 'multipart/form-data;' in kwargs['context']['request'].content_type:
                         if kwargs['context']['request'].FILES:
-                            self.base_fields['attachment'] = FileFieldAsUrlField(allow_empty_file=True, required=False)
+                            self.base_fields['attachment'] = FileFieldAsUrlField(allow_empty_file=True, required=False, file_field_name='attachment')
 
         super(AttachmentSerializer, self).__init__(*args, **kwargs)
 
