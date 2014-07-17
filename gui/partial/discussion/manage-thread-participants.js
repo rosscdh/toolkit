@@ -68,13 +68,13 @@ angular.module('toolkit-gui').controller('ManageThreadParticipantsCtrl', [
             return deferred.promise;
         };
 
-        $scope.removeAsParticipant = function() {
+        $scope.removeAsParticipant = function(person) {
             var deferred = $q.defer();
 
             var matterSlug = $scope.matter.slug;
             var threadSlug = $scope.thread.slug;
 
-            discussionService.removeParticipant(matterSlug, threadSlug, $scope.currentUser.username).then(
+            discussionService.removeParticipant(matterSlug, threadSlug, person.username).then(
                 function success(response) {
                     $modalInstance.close();
                     $rootScope.$emit('discussionChangeParticipantSuccess');
