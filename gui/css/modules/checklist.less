@@ -501,7 +501,7 @@ html,body, div.full
         z-index: 5;
         margin-top: 0px;
         position: absolute;
-        padding: 15px;
+        padding: 15px 20px;
         top: 0px;
         right: 0;
         width: 100%;
@@ -555,7 +555,23 @@ html,body, div.full
         p {
           margin: 0px;
           padding: 0;
+          color: #3d4448;
+          font-size: 12.4px;
+          line-height: 13px;
+          padding-top: 15px;
+          .user-initials {
+            padding-right: 3px;
+            padding-bottom: 4px;
+            // display: block;
+            // float: left;
+          }
+          .comment-content {
+            // width: 90%;
+            // display: block;
+            // float: right;
+          }
         }
+
       }
 
       .meta-date, .meta-seen{
@@ -568,6 +584,12 @@ html,body, div.full
 
     .visible-to {
       font-size: 11px;
+      .colleague, .owner {
+        color: #0091e0
+      }
+      .client {
+        color: #00ca93;
+      }
     }
 }
 
@@ -672,15 +694,17 @@ div.new-message {
 }
 
 .comments-zero-state {
+  overflow: hidden;
   position: fixed;
-  top: 229px;
-  width: 400px;
+  top: 260px;
+  right: 35px;
+
 
   p {
     line-height: 18px;
     color: #929394;
-    width: 80%;
     opacity: 0.6;
+    width: 100%;
     margin: 0 auto;
 
   }
