@@ -25,6 +25,7 @@
             <div class="row">
                 <div class="col-sm-8 col-sm-offset-2" role="main">
                     {% if object_list %}
+                        {% request_tasks_section object_list request.user %}
                         {% request_uploads_section object_list request.user %}
                         {% request_reviews_section object_list request.user %}
                         {% request_signings_section object_list request.user %}
@@ -56,8 +57,7 @@
             var self = $(this);
             var data = self.data();
             var url = user_has_viewed_url.replace('reviewDocSlug', data.reviewdocument_slug).replace('itemSlug', data.item_slug).replace('matterSlug', data.matter_slug)
-            console.log(data)
-            console.log(url)
+
             $.ajax({
                 url: url,
                 type: "PATCH",
@@ -69,6 +69,33 @@
                 }
             });
         })
+
+
+        $('a.mark_complete-btn, a.mark_incomplete-btn').on('click', function (e) {
+            var self = $(this);
+            var data = self.data();
+
+            var is_mark_complete_btn = self.attr('class').indexOf('mark_complete-btn')
+            var opposite_selector = (is_mark_complete_btn) ? 'a.mark_incomplete-btn' : 'a.mark_complete-btn' ;
+            var opposite_button = self.siblings(opposite_selector);
+
+            $.ajax({
+                url: self.attr('data-remote'),
+                type: "PATCH",
+                data: {'is_complete': true},
+                dataType: 'json',
+                beforeSend: function (jqXHR, settings) {
+                    // Pull the token out of the DOM.
+                    jqXHR.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+                },
+                success: function ( data ) {
+                    self.css("visibility", "hidden");
+                    opposite_button.css("visibility", "visible");
+                },
+                complete: function ( data ) {
+                }
+            });
+        });
 
     });
     </script>
