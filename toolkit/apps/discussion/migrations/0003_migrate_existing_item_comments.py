@@ -1,25 +1,68 @@
 # -*- coding: utf-8 -*-
-from django.contrib.contenttypes.models import ContentType
-
 from south.utils import datetime_utils as datetime
 from south.db import db
 from south.v2 import DataMigration
+
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
-from toolkit.apps.workspace.models import Workspace
+from toolkit.apps.discussion.models import DiscussionComment
+from toolkit.core.item.models import Item
 
-MATTER_TYPE = ContentType.objects.get_for_model(Workspace).pk
+
+ITEM_TYPE = ContentType.objects.get_for_model(Item).pk
 
 
 class Migration(DataMigration):
 
     def forwards(self, orm):
-        orm['discussion.discussioncomment'].objects.filter(content_type_id=MATTER_TYPE).update(is_public=False)
+        for comment in orm['actstream.action'].objects.filter(verb='commented'):
+            # create the new comment
+            DiscussionComment.objects.create(
+                comment=comment.data['comment'],
+                content_type_id=ITEM_TYPE,
+                object_pk=comment.action_object_object_id,
+                is_public=True,
+                parent=None,
+                site_id=settings.SITE_ID,
+                submit_date=comment.timestamp,
+                user=User.objects.get(pk=comment.actor_object_id)
+            )
+
+            # delete the old comment
+            comment.delete()
 
     def backwards(self, orm):
-        orm['discussion.discussioncomment'].objects.filter(content_type_id=MATTER_TYPE).update(is_public=True)
+        raise RuntimeError("Cannot reverse this migration. The comments have been deleted, so they can not be brought back.")
 
     models = {
+        u'actstream.action': {
+            'Meta': {'ordering': "('-timestamp',)", 'object_name': 'Action'},
+            'action_object_content_type': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'action_object'", 'null': 'True', 'to': u"orm['contenttypes.ContentType']"}),
+            'action_object_object_id': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'actor_content_type': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'actor'", 'to': u"orm['contenttypes.ContentType']"}),
+            'actor_object_id': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'data': ('jsonfield.fields.JSONField', [], {'null': 'True', 'blank': 'True'}),
+            'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'is_deleted': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'public': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'target_content_type': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'target'", 'null': 'True', 'to': u"orm['contenttypes.ContentType']"}),
+            'target_object_id': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'timestamp': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
+            'verb': ('django.db.models.fields.CharField', [], {'max_length': '255'})
+        },
+        u'actstream.follow': {
+            'Meta': {'unique_together': "(('user', 'content_type', 'object_id'),)", 'object_name': 'Follow'},
+            'actor_only': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contenttypes.ContentType']"}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'object_id': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'started': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"})
+        },
         u'auth.group': {
             'Meta': {'object_name': 'Group'},
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -97,5 +140,5 @@ class Migration(DataMigration):
         }
     }
 
-    complete_apps = ['discussion']
+    complete_apps = ['actstream', 'discussion', 'threadedcomments']
     symmetrical = True

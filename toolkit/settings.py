@@ -104,7 +104,7 @@ PROJECT_APPS = (
     'toolkit.apps.api',
     'toolkit.apps.default',
     'toolkit.apps.dash',
-    'toolkit.apps.discussion',
+
     'toolkit.apps.matter',
     'toolkit.apps.me',
     'toolkit.apps.request',
@@ -160,6 +160,11 @@ HELPER_APPS = (
     # notifications
     'stored_messages',
 
+    # threadedcomments app needs to be above the django.contrib.comments app
+    'threadedcomments',
+    'django.contrib.comments',
+    'toolkit.apps.discussion',  # NB needs to be in the defined order here AFTER actstream
+
     'jsonify',
 
     # integration for abridge; django-abridge
@@ -175,10 +180,6 @@ HELPER_APPS = (
     'south',
     # jenkins
     'django_jenkins',
-
-    # threadedcomments app needs to be above the django.contrib.comments app
-    'threadedcomments',
-    'django.contrib.comments'
 )
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + HELPER_APPS
