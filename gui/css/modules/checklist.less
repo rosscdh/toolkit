@@ -475,12 +475,12 @@ html,body, div.full
 
 
 .item-comments{
-      // margin-top: 20px;
-      // height: 45%;
+      margin-top: 20px;
+
       position: relative;
-      // overflow-y: scroll;
+      overflow: hidden;
+      height: 500px;
       background-color: #F6F6F6;
-      border-left: 2px solid #4A90E2;
 
 
       .nav-justified {
@@ -494,7 +494,7 @@ html,body, div.full
 
 
       .comment-thread{
-        margin-top: 70px;
+        margin-top: 80px;
       }
 
       .message-tabs {
@@ -549,7 +549,7 @@ html,body, div.full
 
     }
     li{
-      padding: 5px 0px;
+      padding: 0px 0px;
       font-size: 12px;
       .message-content{
         p {
@@ -581,7 +581,6 @@ div.new-message {
     margin-top: 300px;
     margin-left: 0px;
     padding-right: 15px;
-    border-left: 2px solid #4A90E2;
     padding-top:10px;
     padding-bottom:10px;
     margin-bottom: 20px;
@@ -673,14 +672,11 @@ div.new-message {
 }
 
 .comments-zero-state {
-  background-color: #F0F0F0;
-  padding: 140px 0px 0px 0px;
-  height: 310px;
-  width: 20.5%;
   position: fixed;
-  top: 100px;
-  p {
+  top: 229px;
+  width: 400px;
 
+  p {
     line-height: 18px;
     color: #929394;
     width: 80%;
@@ -690,6 +686,10 @@ div.new-message {
   }
 }
 
+.tab-content {
+   background-color: #F0F0F0;
+   height: 413px;
+}
 #checklist-activity {
   padding-bottom: 0px;
 }

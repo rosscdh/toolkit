@@ -1,6 +1,6 @@
 <div class="item-comments">
     <!-- Public and private -->
-    <tabset ng-show="matter.selected.current_user.role === 'owner' || matter.selected.current_user.role === 'colleague'" justified="true" type="pills" class="col-sm-12">
+    <tabset ng-show="matter.selected.current_user.role === 'owner' || matter.selected.current_user.role === 'colleague'" justified="true" type="pills">
         <tab heading="Everyone" class="one-tab everyone">
             <div ng-include="'/static/ng/partial/checklist/includes/item-discussion-public.html'"></div>
         </tab>
