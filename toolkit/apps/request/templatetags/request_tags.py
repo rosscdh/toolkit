@@ -93,10 +93,11 @@ def user_has_signed(item, user):
         }
     if item.latest_revision:
         sign_document = item.latest_revision.primary_signdocument
+
         base.update({
             'user_has_signed': sign_document.has_signed(signer=user),
             'sign_url': sign_document.get_absolute_url(signer=user),
-            'is_claimed': sign_document.signing_request.is_claimed,
+            'is_claimed': sign_document.signing_request.is_claimed if sign_document.signing_request is not None else None,
             'requested_by': sign_document.requested_by,
         })
     return base
