@@ -105,7 +105,8 @@ def participant_can_edit(self, user, **kwargs):
     return user == self.user
 
 def participant_can_delete(self, user, **kwargs):
-    return user == self.user
+    # matter owners can delete too
+    return user == self.user or user in self.discussioncomment.matter.owners.all()
 
 DiscussionComment.participants.through.add_to_class('can_edit', participant_can_edit)
 DiscussionComment.participants.through.add_to_class('can_delete', participant_can_delete)
