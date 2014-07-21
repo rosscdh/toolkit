@@ -2,6 +2,8 @@
 import logging
 logger = logging.getLogger('django.request')
 
+from .mailers import TaskReminderEmail
+
 
 def _update_task_count(item):
     complete, total = 0, 0
@@ -29,7 +31,9 @@ def _update_task_count(item):
 def post_save_update_task_complete_count_in_item(sender, instance, **kwargs):
     _update_task_count(item=instance.item)
 
+    if kwargs.get('created', False) is True:
+        instance.item.matter.actions.added_task(user=instance.created_by, item=instance.item, task=instance)
+
 
 def post_delete_update_task_complete_count_in_item(sender, instance, **kwargs):
     _update_task_count(item=instance.item)
-

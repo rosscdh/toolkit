@@ -300,6 +300,29 @@ class MatterActivityEventService(object):
         self.realtime_event(event='update', obj=item, ident=item.slug, from_user=user, detail='updated item')
 
     #
+    # Tasks
+    #
+    def added_task(self, user, item, task):
+        override_message = u'%s added a task "%s" on %s' % (user, task, item)
+        self._create_activity(actor=user, verb=u'task-added', action_object=item, override_message=override_message)
+        self.realtime_event(event='create', obj=item, ident=item.slug, from_user=user, detail='created item task', task_slug=str(task.slug))
+
+    def deleted_task(self, user, item, task):
+        override_message = u'%s deleted the task "%s" on %s' % (user, task, item)
+        self._create_activity(actor=user, verb=u'task-deleted', action_object=item, override_message=override_message)
+        self.realtime_event(event='delete', obj=item, ident=item.slug, from_user=user, detail='deleted item task', task_slug=str(task.slug))
+
+    def task_completed(self, user, item, task):
+        override_message = u'%s completed the task "%s" on %s' % (user, task, item)
+        self._create_activity(actor=user, verb=u'task-completed', action_object=item, override_message=override_message)
+        self.realtime_event(event='update', obj=item, ident=item.slug, from_user=user, detail='completed item task', task_slug=str(task.slug))
+
+    def task_reopened(self, user, item, task):
+        override_message = u'%s re-opened the previously closed task "%s" on %s' % (user, task, item)
+        self._create_activity(actor=user, verb=u'task-reopened', action_object=item, override_message=override_message)
+        self.realtime_event(event='update', obj=item, ident=item.slug, from_user=user, detail='reopened item task', task_slug=str(task.slug))
+
+    #
     # Revisions
     #
 

@@ -7,13 +7,14 @@ from rest_framework import viewsets
 
 from rulez import registry as rulez_registry
 
+from toolkit.decorators import mutable_request
 from toolkit.apps.task.models import Task
 
 from .mixins import MatterItemsQuerySetMixin
 from ..serializers import (ItemSerializer,
                            TaskSerializer,
-                           CreateTaskSerializer,
-                           SimpleUserSerializer)
+                           CreateTaskSerializer,)
+
 
 class TaskEndpoint(viewsets.ModelViewSet):
     """
@@ -49,6 +50,27 @@ class GetTaskMixin(MatterItemsQuerySetMixin):
         return self.model.objects.for_item_by_user(item=self.item,
                                                    user=self.request.user)
 
+    def update_assigned_to(self, task, assigned_to_usernames):
+        # is not completed and we have assigned_to usernames
+        if assigned_to_usernames is not None:
+            current_assigned_to_usernames = [u.username for u in task.assigned_to.all()]
+            #
+            # should we also only send email to new assigned_to? and skip those that are already asigneees
+            # as they will have recieved the original message? (ie. avoid resending emails and being annoying)
+            #
+            if assigned_to_usernames is not current_assigned_to_usernames:
+                # Clear the set of current assigned_to users
+                task.assigned_to.clear()
+                # add the current state of users
+                for username in assigned_to_usernames:
+                    username = username.get('username') if type(username) in [dict] else username
+                    task.assigned_to.add(User.objects.get(username=username))
+                #
+                # Send the email only if not completed
+                #
+                if task.is_complete is False:
+                    task.send_assigned_to_email(from_user=self.request.user)
+
 
 class ItemTasksView(GetTaskMixin,
                     generics.ListCreateAPIView,):
@@ -67,12 +89,25 @@ class ItemTasksView(GetTaskMixin,
     def get_serializer_context(self):
         return {'request': self.request}
 
+    @mutable_request
     def create(self, request, **kwargs):
+        self.item = self.get_item()
+
+        # remove the assigned to from teh data set as we handle it manually
+        assigned_to = request.DATA.pop('assigned_to', None)  # remove the assigned_to
         request.DATA.update({
-            'item': ItemSerializer(self.get_item()).data.get('url'),
+            'item': ItemSerializer(self.item).data.get('url'),
             'created_by': request.user.username,
         })
-        return super(ItemTasksView, self).create(request=request, **kwargs)
+
+        resp = super(ItemTasksView, self).create(request=request, **kwargs)
+
+        # if the resp is OK then
+        if resp.status_code in [201, 200]:
+            # reset and update the assigned_to option
+            self.update_assigned_to(task=self.object, assigned_to_usernames=assigned_to)
+
+        return resp
 
     def can_read(self, user):
         return user in self.matter.participants.all()
@@ -104,25 +139,46 @@ class ItemTaskView(GetTaskMixin,
     def get_serializer_context(self):
         return {'request': self.request}
 
-    def update_assigned_to(self, assigned_to_usernames):
-        if assigned_to_usernames is not None:
-            # Clear the set of current assigned_to users
-            self.object.assigned_to.clear()
-            # add the current state of users
-            for username in assigned_to_usernames:
-                username = username.get('username') if type(username) in [dict] else username
-                self.object.assigned_to.add(User.objects.get(username=username))
-
+    @mutable_request
     def update(self, request, **kwargs):
         # remove the assigned to from teh data set as we handle it manually
         assigned_to = request.DATA.pop('assigned_to', None)  # remove the assigned_to
+
+        # what is the value of is complete before this update takes place
+        self.task = self.get_object()
+        current_task_is_complete = self.task.is_complete
+
         # process normally
         resp = super(ItemTaskView, self).update(request=request, **kwargs)
+
+        # refresh object
+        self.task = self.task.__class__.objects.get(pk=self.task.pk)
+
+        #
+        # Handle status change events
+        #
+        if current_task_is_complete is False and self.task.is_complete is True:
+            # was completed
+            self.item.matter.actions.task_completed(user=request.user, item=self.item, task=self.task)
+
+        if current_task_is_complete is True and self.task.is_complete is False:
+            # was reopened
+            self.item.matter.actions.task_reopened(user=request.user, item=self.item, task=self.task)
 
         # if the resp is OK then
         if resp.status_code in [200]:
             # reset and update the assigned_to option
-            self.update_assigned_to(assigned_to_usernames=assigned_to)
+            self.update_assigned_to(task=self.object, assigned_to_usernames=assigned_to)
+
+        return resp
+
+    def delete(self, request, **kwargs):
+        self.task = self.get_object()
+
+        resp = super(ItemTaskView, self).delete(request=request, **kwargs)
+
+        # event
+        self.item.matter.actions.deleted_task(user=request.user, item=self.item, task=self.task)
 
         return resp
 

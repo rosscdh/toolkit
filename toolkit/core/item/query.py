@@ -2,6 +2,8 @@
 from django.db import models
 from django.db.models.query import QuerySet
 
+from toolkit.apps.task.models import Task
+
 
 class ItemQuerySet(QuerySet):
     def mine(self, user, **kwargs):
@@ -15,6 +17,9 @@ class ItemQuerySet(QuerySet):
 
     def needs_upload(self, user):
         return self.filter(responsible_party=user, is_requested=True)
+
+    def needs_tasks(self, user):
+        return Task.objects.filter(item=self, is_complete=False, assigned_to__in=[user])
 
     def requested(self, **kwargs):
         return self.filter(is_requested=True, **kwargs)

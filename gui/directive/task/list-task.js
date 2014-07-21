@@ -131,6 +131,10 @@ angular.module('toolkit-gui').directive('tasksList', ['$compile', '$log', '$sce'
                             $scope.tasksComplete = false;
                         }
 
+                        //update item object
+                        $scope.selectedItem.task_status.complete= completed;
+                        $scope.selectedItem.task_status.total= $scope.data.tasks.length;
+
                     } else {
                         $scope.data.taskCompletionStatus = 0;
                         $scope.tasksComplete = true;
@@ -193,10 +197,10 @@ angular.module('toolkit-gui').directive('tasksList', ['$compile', '$log', '$sce'
                         return true;
                     }
 
-                    var index = jQuery.inArray($scope.currentUser, task.assigned_to);
-                    if (index >= 0) {
+                    var results = jQuery.grep( task.assigned_to, function( obj ){ return obj.username===$scope.currentUser.username; } );
+					if( results.length>0 ) {
                         return true;
-                    }
+					}
 
                     return false;
                 };

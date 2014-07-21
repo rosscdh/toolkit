@@ -5,6 +5,7 @@ import operator
 from django.db import models
 
 from toolkit.core.mixins import IsDeletedManager
+from toolkit.apps.task.models import Task
 
 from .query import ItemQuerySet
 
@@ -62,4 +63,15 @@ class ItemManager(IsDeletedManager):
                 if item.latest_revision is not None and item.latest_revision.primary_signdocument and not item.latest_revision.primary_signdocument.has_signed(user):
                     signing_requests.append(item)
 
-        return list(chain(document_requests, review_requests, signing_requests))
+        data = {
+            'items': list(set(chain(document_requests, review_requests, signing_requests))),
+            'tasks': Task.objects.filter(assigned_to__in=[user], is_complete=False)
+        }
+        #
+        # Update with the total count of
+        #
+        data.update({
+            'count': len(data.get('items', [])) + len(data.get('tasks', []))  # count the num tasks and num items
+        })
+
+        return data

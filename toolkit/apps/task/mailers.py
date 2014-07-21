@@ -10,5 +10,5 @@ class TaskReminderEmail(BaseMailerService):
     m = TaskReminderEmail(recipients=(('Alex', 'alex@lawpal.com')))
     m.process()
     """
-    subject = '[ACTION REQUIRED] Please complete this task that is assigned to you'
+    subject = '[ACTION REQUIRED] Please complete the task'
     email_template = 'task_reminder'

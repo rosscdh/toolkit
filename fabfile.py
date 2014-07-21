@@ -633,7 +633,7 @@ def run_tests():
 def prompt_build_gui():
     if prompt(colored("Build GUI app? [y,n]", 'green'), default="y").lower() in env.truthy:
 
-        build_gui_dist()
+        build_gui_dist(copy_prod=True)
 
         # collect static
         if env.environment_class == 'local':
@@ -651,7 +651,7 @@ def gui_clean():
     local('rm -Rf gui/dist')
     local('cd gui;npm install')
     local('cd gui;bower install')
-    build_gui_dist()
+    build_gui_dist(copy_prod=False)
 
 
 @task
@@ -686,10 +686,11 @@ def restore_backdup_localsettings():
 
 @task
 @runs_once
-def build_gui_dist():
+def build_gui_dist(copy_prod=False):
 
     # copy production settings
-    copy_production_settings()
+    if copy_prod is True:
+        copy_production_settings()
 
     # 
     # Perform the action
@@ -698,7 +699,8 @@ def build_gui_dist():
     local('cd gui;grunt build -djangoProd')
 
     # restore local_settings.py
-    restore_backdup_localsettings()
+    if copy_prod is True:
+        restore_backdup_localsettings()
 
 
 @task
@@ -710,7 +712,7 @@ def upload_gui():
         sys.exit(colored("No gui/dist folder found at %s, perform a 'cd gui;grunt build --djangoProd'" % env.gui_dist_path, 'yellow'))
 
     #if prompt(colored("Have you compiled the GUI distribution? as we are about to upload it; i.e. cd gui;grunt build --djangoProd' [y,n]", 'cyan'), default="y").lower() in env.truthy:
-    build_gui_dist()
+    build_gui_dist(copy_prod=True)
     zip_filename = 'gui_dist.%s' % env.SHA1_FILENAME
     zip_filename_with_ext = '%s.zip' % zip_filename
     zip_gui_dist_path = '/tmp/%s' % zip_filename
