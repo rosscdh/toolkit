@@ -7,6 +7,7 @@ from rest_framework import viewsets
 
 from rulez import registry as rulez_registry
 
+from toolkit.decorators import mutable_request
 from toolkit.apps.task.models import Task
 
 from .mixins import MatterItemsQuerySetMixin
@@ -88,12 +89,12 @@ class ItemTasksView(GetTaskMixin,
     def get_serializer_context(self):
         return {'request': self.request}
 
+    @mutable_request
     def create(self, request, **kwargs):
         self.item = self.get_item()
 
         # remove the assigned to from teh data set as we handle it manually
         assigned_to = request.DATA.pop('assigned_to', None)  # remove the assigned_to
-
         request.DATA.update({
             'item': ItemSerializer(self.item).data.get('url'),
             'created_by': request.user.username,
@@ -138,6 +139,7 @@ class ItemTaskView(GetTaskMixin,
     def get_serializer_context(self):
         return {'request': self.request}
 
+    @mutable_request
     def update(self, request, **kwargs):
         # remove the assigned to from teh data set as we handle it manually
         assigned_to = request.DATA.pop('assigned_to', None)  # remove the assigned_to

@@ -19,7 +19,7 @@ class ItemQuerySet(QuerySet):
         return self.filter(responsible_party=user, is_requested=True)
 
     def needs_tasks(self, user):
-        return Task.objects.filter(item=self, is_completed=False, assigned_to=user)
+        return Task.objects.filter(item=self, is_complete=False, assigned_to__in=[user])
 
     def requested(self, **kwargs):
         return self.filter(is_requested=True, **kwargs)

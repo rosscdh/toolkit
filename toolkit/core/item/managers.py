@@ -65,7 +65,7 @@ class ItemManager(IsDeletedManager):
 
         data = {
             'items': list(set(chain(document_requests, review_requests, signing_requests))),
-            'tasks': Task.objects.filter(assigned_to=user, is_complete=False)
+            'tasks': Task.objects.filter(assigned_to__in=[user], is_complete=False)
         }
         #
         # Update with the total count of
