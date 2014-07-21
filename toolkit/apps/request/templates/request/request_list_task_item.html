@@ -4,16 +4,16 @@
             <span class="fui-time request-icon"></span>
             <h6 class="request-title"><small>{{ item.client.name }} &middot; {{ item.matter.name }}</small></h6>
             <h6 class="request-title">{{ task.name }}</h6>
-            <p>{{ item.requested_by.name }} requested you complete this task.</p>
+            <p>{{ task.created_by }} requested you complete this task.</p>
         </div>
         <div class="col-xs-4">
             <a href="#" class="btn btn-wide btn-info btn-embossed mark_complete-btn" data-remote="{{ mark_as_complete_url }}">Complete</a>
         </div>
     </div>
-    {% if item.description %}
+    {% if task.description %}
         <div class="row">
             <div class="col-xs-12">
-                <blockquote>{{ item.description }}</blockquote>
+                <blockquote>{{ task.description }}</blockquote>
             </div>
         </div>
     {% endif %}
