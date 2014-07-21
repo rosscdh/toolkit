@@ -50,8 +50,7 @@ This Item has no tasks yet. Create Tasks for this Item by clicking 'New Task'.
                     <span ng-show="isTaskOverdue(task)" class="overdue">Overdue</span>
                 </li>
                 <li class="delete-task">
-                    <a href="#" ng-click="manageTask(task)" ng-class="{'incomplete': !task.is_complete, 'complete': task.is_complete }"
-                       tooltip-placement="top" tooltip="Edit this Task"><i class="fa fa-pencil-square-o"></i></a>
+                    <a href="#" ng-click="manageTask(task)" ng-class="{'incomplete': !task.is_complete, 'complete': task.is_complete }" tooltip-placement="top" tooltip="Edit this Task"><i class="fa fa-pencil-square-o"></i></a>
                 </li>
                 <li class="delete-task"><a href="#" ng-click="deleteTask(task)" ng-show="isDeleteTaskEnabled(task)" tooltip-placement="top" tooltip="Delete this Task">X</a></li>
             </ul>
