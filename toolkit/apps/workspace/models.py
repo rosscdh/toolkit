@@ -40,6 +40,7 @@ GRANULAR_PERMISSIONS = (
     ("manage_items", u"Can manage checklist items and categories"),
     ("manage_signature_requests", u"Can manage signatures & send documents for signature"),
     ("manage_clients", u"Can manage clients"),
+    ("manage_tasks", u"Can manage item tasks"),
     ("manage_attachments", u"Can manage attachments on items"),
 )
 #
@@ -55,6 +56,7 @@ PRIVILEGED_USER_PERMISSIONS = {
     "manage_items": True,
     "manage_signature_requests": True,
     "manage_clients": False,
+    "manage_tasks": True,
     "manage_attachments": True,
 }
 #
@@ -66,6 +68,7 @@ UNPRIVILEGED_USER_PERMISSIONS = {
     "manage_items": False,
     "manage_signature_requests": False,
     "manage_clients": False,
+    "manage_tasks": False,
     "manage_attachments": False,
 }
 #

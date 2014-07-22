@@ -19,6 +19,18 @@ angular.module('toolkit-gui').filter('timeago', function () {
     };
 });
 
+angular.module('toolkit-gui').filter('fromnow', function () {
+    return function (datestr) {
+        if(!datestr) {
+            return '';
+        }
+
+        var fromnow = moment(datestr, "YYYY-MM-DDTHH:mm:ss.SSSZ").fromNow(true);
+
+        return fromnow;
+    };
+});
+
 angular.module('toolkit-gui').filter('duestatus', function () {
     return function (datestr) {
         if(!datestr) {

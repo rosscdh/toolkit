@@ -109,6 +109,7 @@ PROJECT_APPS = (
     'toolkit.apps.me',
     'toolkit.apps.request',
     'toolkit.apps.notification',
+    'toolkit.apps.task',
     # Main Workspace (matters)
     'toolkit.apps.workspace',
     # Core related apps
@@ -294,6 +295,7 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.JSONPRenderer',
+        #'rest_framework.renderers.UnicodeJSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
     ),
     'DEFAULT_MODEL_SERIALIZER_CLASS': (
@@ -504,6 +506,9 @@ LAWPAL_ACTIVITY = {
                       'item-added-signer',
                       'item-completed-review',
                       'item-completed-all-reviews',
+                      # Tasks
+                      'item-task-added', 'item-task-deleted',
+                      'item-task-completed','item-task-reopened',
 
                       'revision-created', 'revision-comment-created', 'item-added-revision-comment',
                       'revision-added-revision-comment',
@@ -532,6 +537,9 @@ LAWPAL_ACTIVITY = {
                       'item-added-signer',
                       'item-completed-review',
                       'item-completed-all-reviews',
+                      # Tasks
+                      'item-task-added', 'item-task-deleted',
+                      'item-task-completed','item-task-reopened',
 
                       'revision-created', 'revision-comment-created', 'item-added-revision-comment',
                       'revision-added-revision-comment',
@@ -560,6 +568,9 @@ LAWPAL_ACTIVITY = {
                       'item-completed-all-reviews',
                       'item-added-signer',
                       'itemrequestrevisionview-provide-a-document',
+                      # Tasks
+                      'item-task-added', 'item-task-deleted',
+                      'item-task-completed','item-task-reopened',
 
                       'revision-created', 'revision-deleted',
                       'revision-added-review-session-comment',

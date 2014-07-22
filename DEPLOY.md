@@ -1,17 +1,20 @@
 Deployment actions by branch
 ----------------------------
 
+[feature/tasks]
+
+1. ./manage.py syncdb
+
 
 [feature/item-attachments]
 
 1. ./manage.py migrate attachment
 
+
 [feature/completed-requests]
 
-Rerun the migration to re-sync the open requests count.
+1. ./manage.py syncdb
 
-1. ./manage.py migrate default 0005
-2. ./manage.py migrate default 0006
 
 
 --------------------------------------------------------------------------------

@@ -18,11 +18,12 @@ angular.module('toolkit-gui')
 	'currentUser',
 	'matter',
 	'participantService',
+	'userService',
 	'toaster',
 	'$location',
 	'$log',
 	'$window',
-	function($scope, $modalInstance, participants, currentUser, matter, participantService, toaster, $location, $log, $window){
+	function($scope, $modalInstance, participants, currentUser, matter, participantService, userService, toaster, $location, $log, $window){
 		'use strict';
 
 		/**
@@ -71,18 +72,13 @@ angular.module('toolkit-gui')
 		 * @type {Object}
 		 */
 		$scope.data = {
-			'invitee': { 'email': '', 'message': '', permissions: {
-                'manage_participants': false,
-                'manage_document_reviews': false,
-                'manage_items': false,
-                'manage_signature_requests': false,
-                'manage_clients': false
-            }},
+			'invitee': { 'email': '', 'message': '', permissions: {}},
             'isNew': false,
             'selectedUser': null,
             'requestLoading': false,
             'showStep': 1,
-            'showColleaguePermissionDetails': false
+            'showColleaguePermissionDetails': false,
+            'perms': userService.data().available_permissions
 		};
 
         $scope.selectUser = function( person ) {
@@ -176,7 +172,7 @@ angular.module('toolkit-gui')
                     }
 
                     //reset form
-                    $scope.data.invitee = {'email': '', 'first_name': '', 'last_name': '', 'message': ''};
+                    $scope.data.invitee = {'email': '', 'first_name': '', 'last_name': '', 'message': '', 'permissions': {}};
                     $scope.data.isNew = false;
                     $scope.data.isParticipant = false;
                     $scope.data.isLawyer = false;
@@ -253,18 +249,18 @@ angular.module('toolkit-gui')
         $scope.grantColleaguePermissions = function(setAll){
             if(setAll){
                 $scope.data.invitee.role = 'co-owner';
-                $scope.data.invitee.permissions.manage_participants = true;
-                $scope.data.invitee.permissions.manage_items = true;
-				$scope.data.invitee.permissions.manage_document_reviews = true;
-                $scope.data.invitee.permissions.manage_signature_requests = true;
+                jQuery.each($scope.data.perms.colleague, function(index, obj){
+                    $scope.data.invitee.permissions[obj.name] = true;
+                });
 
                 $scope.data.showColleaguePermissionDetails = false;
             } else {
                 $scope.data.invitee.role = 'colleague';
-                $scope.data.invitee.permissions.manage_participants = true;
+                jQuery.each($scope.data.perms.colleague, function(index, obj){
+                    $scope.data.invitee.permissions[obj.name] = false;
+                });
+                //default permissions
                 $scope.data.invitee.permissions.manage_items = true;
-				$scope.data.invitee.permissions.manage_document_reviews = false;
-                $scope.data.invitee.permissions.manage_signature_requests = false;
 
                 $scope.data.showColleaguePermissionDetails = true;
             }
@@ -299,7 +295,6 @@ angular.module('toolkit-gui')
 		};
 
 
-
         /**
 		 * Determines if inputis valid or not.
 		 *
@@ -310,13 +305,28 @@ angular.module('toolkit-gui')
 		 * @memberof			ParticipantInviteCtrl
 		 */
 		$scope.invalid = function() {
-            return $scope.data.validationError ||
-                   !($scope.data.invitee.email&&$scope.data.invitee.first_name &&$scope.data.invitee.last_name) ||
-                    ($scope.data.invitee.role === 'colleague' &&
-                     $scope.data.invitee.permissions.manage_participants === false &&
-                     $scope.data.invitee.permissions.manage_items === false &&
-                     $scope.data.invitee.permissions.manage_document_reviews === false &&
-                     $scope.data.invitee.permissions.manage_signature_requests === false);
+            if ($scope.data.validationError){
+                return true;
+            }
+
+            if (!($scope.data.invitee.email&&$scope.data.invitee.first_name &&$scope.data.invitee.last_name)){
+                return true;
+            }
+
+            if($scope.data.invitee.role === 'colleague'){
+                var perms_set = false;
+                 jQuery.each($scope.data.perms.colleague, function(index, obj){
+                    if ($scope.data.invitee.permissions[obj.name] === true){
+                        perms_set = true;
+                    }
+                });
+
+                if(!perms_set) {
+                    return true;
+                }
+            }
+
+            return false;
 		};
 
 		/**
@@ -343,10 +353,11 @@ angular.module('toolkit-gui')
 				default:
 					$scope.data.formtype='client';
                     $scope.data.invitee.permissions.manage_clients = true;
-					$scope.data.invitee.permissions.manage_participants = false;
-					$scope.data.invitee.permissions.manage_items = false;
-					$scope.data.invitee.permissions.manage_document_reviews = false;
-					$scope.data.invitee.permissions.manage_signature_requests = false;
+
+                    //disable all collegaue perms
+                    jQuery.each($scope.data.perms.colleague, function(index, obj){
+                        $scope.data.invitee.permissions[obj.name] = false;
+                    });
 
                     $scope.data.invitee.user_class = 'customer';
                     $scope.data.invitee.role = 'client';

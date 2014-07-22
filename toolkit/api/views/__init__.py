@@ -42,10 +42,14 @@ from .item import (ItemEndpoint,
 
 from .reminder import (RemindReviewers,
                        RemindSignatories,
-                       RemindRequestedRevisionInvitee)
+                       RemindRequestedRevisionInvitee,
+                       ItemTaskReminderView)
 
 from .revision import RevisionEndpoint
 # from .workflow import WorkflowEndpoint
 
 from .comment import ItemCommentEndpoint
+
 from .discussion import DiscussionEndpoint, DiscussionCommentEndpoint, DiscussionParticipantEndpoint
+
+from .task import TaskEndpoint, ItemTasksView, ItemTaskView

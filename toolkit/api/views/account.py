@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from rest_framework import generics, status
 from rest_framework.response import Response
 
+from toolkit.decorators import mutable_request
+
 from ..serializers import AccountSerializer, PasswordSerializer
 
 
@@ -24,11 +26,13 @@ class AccountEndpoint(generics.RetrieveUpdateAPIView):
         serializer = self.serializer_class(user)
         return Response(serializer.data)
 
+    @mutable_request
     def update(self, request, **kwargs):
         user = self.get_object()
 
         if 'password' in request.DATA:
-            return self.set_password(password=request.DATA.pop('password'))
+            data = self.set_password(password=request.DATA.pop('password'))
+            return data
 
         serializer = self.serializer_class(user, data=request.DATA, partial=True)
 

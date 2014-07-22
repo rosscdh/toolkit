@@ -16,4 +16,5 @@ from .user import (UserSerializer,
                    SimpleUserSerializer,
                    SimpleUserWithReviewUrlSerializer,
                    SimpleUserWithSignUrlSerializer)
-# from .workflow import WorkflowSerializer
+
+from .task import (TaskSerializer, CreateTaskSerializer)

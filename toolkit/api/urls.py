@@ -45,7 +45,10 @@ from .views import ItemCommentEndpoint
 from .views import DiscussionEndpoint, DiscussionCommentEndpoint, DiscussionParticipantEndpoint
 from .views import ReviewEndpoint
 from .views import SignatureEndpoint
-#from .views import WorkflowEndpoint
+from .views import (TaskEndpoint,
+                    ItemTasksView,
+                    ItemTaskView,
+                    ItemTaskReminderView,)
 
 router = routers.SimpleRouter(trailing_slash=False)
 
@@ -62,6 +65,7 @@ router.register(r'revisions', RevisionEndpoint)
 router.register(r'attachments', AttachmentEndpoint)
 router.register(r'reviews', ReviewEndpoint)
 router.register(r'signatures', SignatureEndpoint)
+router.register(r'tasks', TaskEndpoint)
 
 router.register(
     r'matters/(?P<matter_slug>[\w-]+)/discussions',
@@ -125,12 +129,22 @@ urlpatterns = router.urls + patterns('',
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/attachment/?$', AttachmentView.as_view(), name='matter_item_attachment'),
 
     #
-    # Revision reviewers and signers
+    # Task
+    #
+    url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/tasks/?$', ItemTasksView.as_view(), name='item_tasks'),
+    url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/tasks/(?P<slug>[\d\w-]+)/remind/?$', ItemTaskReminderView.as_view(), name='item_task_reminder'),
+    url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/tasks/(?P<slug>[\d\w-]+)/?$', ItemTaskView.as_view(), name='item_task'),
+
+    #
+    # Revision reviewers
     #
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/reviewers/?$', ItemRevisionReviewersView.as_view(), name='item_revision_reviewers'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/reviewer/(?P<username>[\w\W\-\_]+)/?$', ItemRevisionReviewerView.as_view(), name='item_revision_reviewer'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/reviewers/remind/?$', RemindReviewers.as_view(), name='item_revision_remind_reviewers'),
 
+    #
+    # Sign signers
+    #
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/signers/?$', ItemRevisionSignersView.as_view(), name='item_revision_signers'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/signer/(?P<username>[\w\W\-\_]+)/?$', ItemRevisionSignerView.as_view(), name='item_revision_signer'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/signers/remind/?$', RemindSignatories.as_view(), name='item_revision_remind_signers'),

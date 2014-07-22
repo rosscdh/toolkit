@@ -81,6 +81,7 @@
   <script src="<!-- @echo staticPath -->service/pusher.js"></script>
   <script src="<!-- @echo staticPath -->service/genericFunctions.js"></script>
   <script src="<!-- @echo staticPath -->service/intro.js"></script>
+  <script src="<!-- @echo staticPath -->service/task.js"></script>
   <script src="<!-- @echo staticPath -->service/attachment.js"></script>
   <!-- Add New Service JS Above -->
 
@@ -95,6 +96,8 @@
   <script src="<!-- @echo staticPath -->directive/attachment/list-attachment.js"></script>
   <script src="<!-- @echo staticPath -->directive/attachment/manage-attachment.js"></script>
   <script src="<!-- @echo staticPath -->directive/sticky-elements/sticky-elements.js"></script>
+  <script src="<!-- @echo staticPath -->directive/task/list-task.js"></script>
+  <script src="<!-- @echo staticPath -->directive/task/manage-task.js"></script>
   <!-- Add New Directive JS Above -->
 
   <!-- Filter JS -->
@@ -106,8 +109,7 @@
 
   <!-- Partial JS -->
   <script src="<!-- @echo staticPath -->partial/home/home.js"></script>
-    <script src="<!-- @echo staticPath -->partial/markdown/markdown-info.js"></script>
-
+  <script src="<!-- @echo staticPath -->partial/markdown/markdown-info.js"></script>
   <script src="<!-- @echo staticPath -->partial/checklist/checklist.js"></script>
   <script src="<!-- @echo staticPath -->partial/checklist/checklistIntroService.js"></script>
   <script src="<!-- @echo staticPath -->partial/checklist/checklistFilters.js"></script>
@@ -128,7 +130,7 @@
   <script src="<!-- @echo staticPath -->partial/edit-revision-status/edit-revision-status.js"></script>
   <!-- Add New Partial JS Above -->
 
-   <div class="navbar navbar-inverse checklist-nav" ng-controller="NavigationCtrl">
+ <div class="navbar navbar-inverse checklist-nav" ng-controller="NavigationCtrl">
     <div class="navbar-header">
         <div class="logo-mark">
             <a href="/">
@@ -284,6 +286,7 @@
   </div>
     <!--/.navbar-collapse -->
   </div>
+
   <div ui-view class="full"></div>
   <span id="landmine"></span>
   <script language="javascript" data-remove="exclude">

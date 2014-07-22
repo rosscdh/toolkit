@@ -49,10 +49,9 @@
 
             <div ng-show="currentUser.permissions.manage_clients||currentUser.permissions.manage_participants">
                 <div class='permissions-checklist'>
-                    <div class="checkbox">
+                    <div class="checkbox" ng-repeat="perm in data.perms.client">
                         <label>
-                            <input type="checkbox" ng-model="data.selectedUser.permissions.manage_clients"> Manage
-                            Clients in this matter (including adding and removing Clients)
+                            <input type="checkbox" ng-model="data.selectedUser.permissions[perm.name]"> {{ perm.description }}
                         </label>
                     </div>
                 </div>
@@ -80,23 +79,9 @@
             <p class="text-center user-meta">{{ data.selectedUser.email }}</p>
 
             <div class='permissions-checklist' ng-show="currentUser.permissions.manage_participants">
-
-                <div class="checkbox">
+                <div class="checkbox" ng-repeat="perm in data.perms.colleague">
                     <label>
-                        <input type="checkbox" ng-model="data.selectedUser.permissions.manage_items"> edit the
-                        checklist items
-                    </label>
-                </div>
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox" ng-model="data.selectedUser.permissions.manage_document_reviews">
-                        request/complete reviews of documents
-                    </label>
-                </div>
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox" ng-model="data.selectedUser.permissions.manage_signature_requests">
-                        request/complete signature requests
+                        <input type="checkbox" ng-model="data.selectedUser.permissions[perm.name]"> {{ perm.description }}
                     </label>
                 </div>
             </div>
@@ -211,23 +196,9 @@
             <div class="actual-list">
                 You may also grant them permission to:
 
-                <div class="checkbox">
+                <div class="checkbox" ng-repeat="perm in data.perms.colleague">
                     <label>
-                        <input type="checkbox" ng-model="data.invitee.permissions.manage_items"> edit the checklist items
-                    </label>
-                </div>
-
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox" ng-model="data.invitee.permissions.manage_document_reviews">
-                        request/compelete reviews of documents
-                    </label>
-                </div>
-
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox" ng-model="data.invitee.permissions.manage_signature_requests"> request
-                        signatures
+                        <input type="checkbox" ng-model="data.invitee.permissions[perm.name]"> {{ perm.description }}
                     </label>
                 </div>
             </div>

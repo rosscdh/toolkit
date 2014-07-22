@@ -125,11 +125,6 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
         # Status change
         #
         self.handle_revision_status(status=request.DATA.get('status', None))
-        # #
-        # # sign_in_progress events
-        # # @NOTE that we POP the sign_in_progress value as its not a valid field
-        # #
-        # self.handle_sign_in_progress(sign_in_progress=request.DATA.pop('sign_in_progress', None))
 
         return super(ItemCurrentRevisionView, self).update(request=request, *args, **kwargs)
 

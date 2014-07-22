@@ -11,7 +11,7 @@ class Migration(DataMigration):
         from toolkit.core.item.models import Item
 
         for profile in orm['default.UserProfile'].objects.all():
-            profile.data['open_requests'] = len(Item.objects.my_requests(profile.user))
+            profile.data['open_requests'] = Item.objects.my_requests(profile.user).get('count', 0)
             profile.save(update_fields=['data'])
 
     def backwards(self, orm):
