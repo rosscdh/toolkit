@@ -231,7 +231,7 @@ class AttachmentExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
         attachment = self.item.attachments.get(slug=resp_json.get('slug'))
 
         self.assertEqual(attachment.attachment.name,
-                         u'attachments/4-test-lawyer-test-pirates-ahoy.pdf')
+                         u'attachments/%s-test-lawyer-test-pirates-ahoy.pdf' % self.item.pk)
 
     def test_post_with_FILE_executed_file(self):
         """
