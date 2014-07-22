@@ -545,7 +545,7 @@ class RevisionRequestedDocumentTest(BaseEndpointTest):
                                            u'children', u'matter', u'date_due', u'responsible_party', u'is_final',
                                            u'date_created', u'latest_revision', u'request_document_meta', u'slug',
                                            u'name', u'review_percentage_complete', u'signing_percentage_complete',
-                                           u'attachments']
+                                           u'attachments', u'task_status']
 
     @property
     def endpoint(self):

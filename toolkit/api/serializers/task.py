@@ -14,6 +14,7 @@ class CreateTaskSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Task
+        exclude = ('data',)
 
 
 class TaskSerializer(CreateTaskSerializer):

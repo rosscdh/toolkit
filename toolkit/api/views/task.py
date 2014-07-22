@@ -4,6 +4,8 @@ from django.shortcuts import get_object_or_404
 
 from rest_framework import generics
 from rest_framework import viewsets
+from rest_framework.response import Response
+from rest_framework import status as http_status
 
 from rulez import registry as rulez_registry
 
@@ -87,7 +89,9 @@ class ItemTasksView(GetTaskMixin,
             return TaskSerializer
 
     def get_serializer_context(self):
-        return {'request': self.request}
+        context = super(ItemTasksView, self).get_serializer_context()
+        context.update({'request': self.request})
+        return context
 
     @mutable_request
     def create(self, request, **kwargs):
@@ -105,9 +109,10 @@ class ItemTasksView(GetTaskMixin,
         # if the resp is OK then
         if resp.status_code in [201, 200]:
             # reset and update the assigned_to option
-            self.update_assigned_to(task=self.object, assigned_to_usernames=assigned_to)
+            self.update_assigned_to(task=self.object,
+                                    assigned_to_usernames=assigned_to)
 
-        return resp
+        return Response(self.get_serializer(self.object).data, status=http_status.HTTP_201_CREATED)
 
     def can_read(self, user):
         return user in self.matter.participants.all()

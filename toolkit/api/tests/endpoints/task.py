@@ -161,7 +161,7 @@ class TaskReminderTest(BaseTaskSetup):
         # sent email
         self.assertTrue(len(mail.outbox) == 1)
         email = mail.outbox[0]
-        self.assertEqual(email.subject, '[ACTION REQUIRED] Please complete this task that is assigned to you')
+        self.assertEqual(email.subject, '[ACTION REQUIRED] Please complete the task')
         expected_action_url = ABSOLUTE_BASE_URL(self.task.get_absolute_url())
         self.assertTrue(expected_action_url in email.body)
 
