@@ -48,8 +48,9 @@ class ItemAttachmentTest(BaseEndpointTest,
 
         self.client.login(username=self.lawyer.username, password=self.password)
         resp = self.client.get(self.endpoint)
-
-        self.assertEqual(resp.status_code, 404)  # not found
+        resp_json = json.loads(resp.content)
+        self.assertEqual(resp.status_code, 200)  # empty list
+        self.assertEqual(resp_json['count'], 0)
 
     def test_attachment_get(self):
         self.client.login(username=self.lawyer.username, password=self.password)
@@ -63,15 +64,23 @@ class ItemAttachmentTest(BaseEndpointTest,
         resp = self.client.get(self.endpoint)
         resp_json = json.loads(resp.content)
 
-        self.assertEqual(resp_json.get('name'), 'filename.txt')
+        self.assertItemsEqual(resp_json.keys(), [u'count', u'previous', u'results', u'next'])
+        
+        self.assertEqual(resp_json['count'], 1)
+
+        found_attachment = resp_json['results'][0]
+
+        self.assertEqual(found_attachment.get('name'), 'filename.txt')
 
         # test date is present
-        self.assertTrue(resp_json.get('date_created') is not None)
+        self.assertTrue(found_attachment.get('date_created') is not None)
         # test user is provided as a SimpleUserserializer
         # and has the correct keys
-        provided_keys = resp_json.get('uploaded_by').keys()
+        provided_keys = found_attachment.get('uploaded_by').keys()
+
         provided_keys.sort()
         expected_keys = SimpleUserSerializer(self.lawyer).data.keys()
+
         expected_keys.sort()
         self.assertEqual(provided_keys, expected_keys)
 
@@ -90,6 +99,24 @@ class ItemAttachmentTest(BaseEndpointTest,
 
         self.assertEqual(resp.status_code, 201)  # created
         self.assertEqual(self.item.attachments.all().count(), self.expected_num)
+
+
+class ItemAttachmentcRUDTest(BaseEndpointTest,
+                             LiveServerTestCase):
+    """
+    """
+    @property
+    def endpoint(self):
+        return reverse('attachment-detail', kwargs={'slug': self.attachment.slug})
+
+    def setUp(self):
+        super(ItemAttachmentcRUDTest, self).setUp()
+
+        # setup the items for testing
+        self.item = mommy.make('item.Item', matter=self.matter, name='Test Item', category=None)
+
+    def test_endpoint_name(self):
+        self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/items/%s/attachment' % self.item.slug)
 
     def test_attachment_delete(self):
         self.client.login(username=self.user.username, password=self.password)
@@ -178,7 +205,7 @@ class AttachmentExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
         # but they do send us the name of the file that was uploaded so lets use that
         #
         data = {
-            'attachment': expected_image_url,
+            'executed_file': expected_image_url,  # NB posted as executed_file as thats what FilePicker sends
             'name': expected_file_name
         }
         #
@@ -190,9 +217,12 @@ class AttachmentExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
         resp = self.client.post(endpoint, json.dumps(data), content_type='application/json')
 
         self.assertEqual(resp.status_code, 201)  # ok created
+
         resp_json = json.loads(resp.content)
-        self.assertEqual(resp_json.get('attachment'),
-                         u'/m/attachments/%s-%s-test-pirates-ahoy.pdf' % (self.item.pk, self.lawyer.username))
+
+        self.assertEqual(resp_json.get('attachment'), None)
+        self.assertEqual(resp_json.get('user_download_url'), reverse('download_attachment', kwargs={'slug': resp_json.get('slug')}))
+        
         self.assertEqual(self.item.attachments.count(), 2)
 
         # refresh
@@ -200,9 +230,7 @@ class AttachmentExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
         attachment = self.item.attachments.get(slug=resp_json.get('slug'))
 
         self.assertEqual(attachment.attachment.name,
-                         u'attachments/%s-%s-test-pirates-ahoy.pdf' % (self.item.pk, self.lawyer.username))
-        self.assertEqual(attachment.attachment.url,
-                         u'/m/attachments/%s-%s-test-pirates-ahoy.pdf' % (self.item.pk, self.lawyer.username))
+                         u'http://localhost:8081/static/test.pdf')
 
     def test_post_with_FILE_executed_file(self):
         """
