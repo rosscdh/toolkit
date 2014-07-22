@@ -16,7 +16,7 @@ class Migration(DataMigration):
 
     def backwards(self, orm):
         for profile in orm['default.UserProfile'].objects.all():
-            if profile.data['open_requests']:
+            if 'open_requests' in profile.data:
                 del profile.data['open_requests']
                 profile.save(update_fields=['data'])
 
