@@ -8,6 +8,7 @@ from rest_framework import generics
 from rest_framework import status
 from rest_framework.response import Response
 
+from toolkit.decorators import mutable_request
 from toolkit.core.attachment.models import Attachment
 
 from .mixins import (MatterItemsQuerySetMixin,)
@@ -73,11 +74,19 @@ class AttachmentView(MatterItemsQuerySetMixin,
     def get_serializer_context(self):
         return {'request': self.request}
 
+    @mutable_request
     def create(self, request, *args, **kwargs):
         """
         Have had to copy directly the method from the base class
         because of the need to modify the data
         """
+        executed_file_from_filepicker = request.DATA.pop('executed_file', None)
+        if executed_file_from_filepicker is not None:
+            request.DATA.update({
+                'attachment': executed_file_from_filepicker,  # rename from executed_file to attachment for serializer
+                'name': request.DATA.pop('name', None),
+            })
+
         # set the defaults
         request.DATA.update({
             'item': ItemSerializer(self.item).data.get('url'),
