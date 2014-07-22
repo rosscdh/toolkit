@@ -297,14 +297,22 @@ class ItemManagerTest(BaseScenarios, TestCase):
         self.item50revs[1].primary_signdocument.complete()
 
     def test_requests(self):
-        requests = Item.objects.my_requests(self.user)
+        object_set = Item.objects.my_requests(self.user)
+        # check we have the breakdown
+        self.assertItemsEqual(object_set.keys(), ['count', 'items', 'tasks'])
+        # set the requests object
+        requests = object_set.get('items')
 
         self.assertEqual(len(requests), 3)
         self.assertTrue(self.item7 in requests)
         self.assertTrue(self.item19 in requests)
         self.assertTrue(self.item39 in requests)
 
-        completed_requests = Item.objects.my_requests(self.user, completed=True)
+        object_set = Item.objects.my_requests(self.user, completed=True)
+        self.assertItemsEqual(object_set.keys(), ['count', 'items', 'tasks'])
+        # set the requests object
+        completed_requests = object_set.get('items')
+
         self.assertEqual(len(completed_requests), 9)
         self.assertTrue(self.item8 in completed_requests)
         self.assertTrue(self.item20 in completed_requests)
