@@ -112,45 +112,19 @@ class ItemAttachmentcRUDTest(BaseEndpointTest,
     def setUp(self):
         super(ItemAttachmentcRUDTest, self).setUp()
 
-        # setup the items for testing
-        self.item = mommy.make('item.Item', matter=self.matter, name='Test Item', category=None)
-
-    def test_endpoint_name(self):
-        self.assertEqual(self.endpoint, '/api/v1/matters/lawpal-test/items/%s/attachment' % self.item.slug)
-
-    def test_attachment_delete(self):
-        self.client.login(username=self.user.username, password=self.password)
-
-        attachment = mommy.make('attachment.Attachment',
-                                attachment=None,
-                                name='filename.txt',
-                                item=self.item,
-                                uploaded_by=self.lawyer)
-
-        self.assertEqual(self.item.attachments.count(), 1)
-
-        user_perm = self.user.matter_permissions(self.matter)
-        user_perm.update_permissions(manage_attachments=False)
-        user_perm.save(update_fields=['data'])
-        resp = self.client.delete(self.endpoint, {})
-        self.assertEqual(resp.status_code, 403)  # forbidden if you do not own document or have required permission
-
-        user_perm = self.user.matter_permissions(self.matter)
+        user_perm = self.lawyer.matter_permissions(self.matter)
         user_perm.update_permissions(manage_attachments=True)
         user_perm.save(update_fields=['data'])
-        resp = self.client.delete(self.endpoint, {})
-        self.assertEqual(resp.status_code, 204)  # deleted
 
-        self.assertEqual(self.item.attachments.count(), 0)
+        # setup the items for testing
+        self.item = mommy.make('item.Item', matter=self.matter, name='Test Item', category=None)
+        self.attachment = mommy.make('attachment.Attachment', item=self.item, uploaded_by=self.user, name='Test Item Attachment')
+
+    def test_endpoint_name(self):
+        self.assertEqual(self.endpoint, '/api/v1/attachments/%s' % self.attachment.slug)
 
     def test_attachment_delete_own(self):
         self.client.login(username=self.user.username, password=self.password)
-
-        attachment = mommy.make('attachment.Attachment',
-                                attachment=None,
-                                name='filename.txt',
-                                item=self.item,
-                                uploaded_by=self.user)
 
         self.assertEqual(self.item.attachments.count(), 1)
 
@@ -161,6 +135,33 @@ class ItemAttachmentcRUDTest(BaseEndpointTest,
         self.assertEqual(resp.status_code, 204)  # deleted (because you own the document)
 
         self.assertEqual(self.item.attachments.count(), 0)
+
+    def test_attachment_delete(self):
+        self.client.login(username=self.user.username, password=self.password)
+
+        attachment = mommy.make('attachment.Attachment',
+                                attachment=None,
+                                name='filename.txt',
+                                item=self.item,
+                                uploaded_by=self.lawyer)
+
+        endpoint = reverse('attachment-detail', kwargs={'slug': attachment.slug})
+
+        self.assertEqual(self.item.attachments.count(), 2)  # own and by lawyer
+
+        user_perm = self.user.matter_permissions(self.matter)
+        user_perm.update_permissions(manage_attachments=False)
+        user_perm.save(update_fields=['data'])
+        resp = self.client.delete(endpoint, {})
+        self.assertEqual(resp.status_code, 403)  # forbidden if you do not own document or have required permission
+
+        user_perm = self.user.matter_permissions(self.matter)
+        user_perm.update_permissions(manage_attachments=True)
+        user_perm.save(update_fields=['data'])
+        resp = self.client.delete(endpoint, {})
+        self.assertEqual(resp.status_code, 204)  # deleted
+
+        self.assertEqual(self.item.attachments.count(), 1)  # was 2 is now 1
 
 
 class AttachmentExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
