@@ -18,10 +18,12 @@ angular.module('toolkit-gui').directive('attachmentsList', ['$compile', '$log', 
             'ezConfirm',
             'toaster',
             '$modal',
+            'userService',
             'attachmentService',
-            function ($rootScope, $scope, $http, $log, ezConfirm, toaster, $modal, attachmentService) {
+            function ($rootScope, $scope, $http, $log, ezConfirm, toaster, $modal, userService, attachmentService) {
                 $scope.data = {
-                    attachments: []
+                    'usdata': userService.data(),
+                    'attachments': [],
                 };
 
 

@@ -28,7 +28,7 @@ EXT_WHITELIST = ('.pdf', '.docx', '.doc', '.ppt', '.pptx', '.xls', '.xlsx')
 # need to get a list of mimetypes for teh above
 
 
-def _valid_filename_length(filename):
+def _valid_filename_length(filename, whitelist=EXT_WHITELIST):
     """
     1. ensure length is max 85 (to account for 100 char limit in django filename fields)
     """
@@ -37,8 +37,8 @@ def _valid_filename_length(filename):
     base_filename, ext = os.path.splitext(original_filename)
     ext = ext.lower()
 
-    if ext not in EXT_WHITELIST:
-        raise ValidationError("Invalid filetype, is: %s should be in: %s" % (ext, EXT_WHITELIST))
+    if ext not in whitelist:
+        raise ValidationError("Invalid filetype, is: %s should be in: %s" % (ext, whitelist))
 
     if len(base_filename) > MAX_LENGTH_FILENAME:  # allow for 20 aspects to the name in addition ie. v1-etc
         base_filename = base_filename[0:MAX_LENGTH_FILENAME]
@@ -72,7 +72,7 @@ class LimitedExtensionMixin(object):
     ext_whitelist = EXT_WHITELIST
 
     def __init__(self, *args, **kwargs):
-        ext_whitelist = kwargs.pop("ext_whitelist", self.ext_whitelist)
+        ext_whitelist = kwargs.pop("whitelist", self.ext_whitelist)
 
         self.ext_whitelist = [i.lower() for i in ext_whitelist]
 
@@ -136,7 +136,7 @@ class HyperlinkedAutoDownloadFileField(LimitedExtensionMixin, serializers.URLFie
                 request = self.context.get('request', {})
                 url = request.DATA.get(self.file_field_name)
 
-                original_filename = _valid_filename_length(request.DATA.get('name'))
+                original_filename = _valid_filename_length(request.DATA.get('name'), whitelist=self.filetype_whitelist)
 
                 if original_filename is None:
                     #

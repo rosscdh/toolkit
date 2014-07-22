@@ -215,6 +215,10 @@ class Attachment(IsDeletedMixin,
 
     _serializer = 'toolkit.api.serializers.AttachmentSerializer'
 
+    # override for FileExistsLocallyMixin:
+    def get_document(self):
+        return self.attachment
+
     def can_read(self, user):
         return user in self.item.matter.participants.all()
 

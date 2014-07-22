@@ -152,7 +152,14 @@ class WorkspaceParticipants(models.Model):
 
     @property
     def permissions(self):
-        return self.data.get('permissions', self.default_permissions())
+        """
+        combine the default permissions and override with the specific users
+        permissions; this allows for the addition of new permissions easily
+        """
+        default_permissions = self.default_permissions().copy()
+        user_permissions = self.data.get('permissions', default_permissions)
+        default_permissions.update(user_permissions)
+        return default_permissions
 
     @permissions.setter
     def permissions(self, value):

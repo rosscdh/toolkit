@@ -3,9 +3,9 @@ from django.shortcuts import get_object_or_404
 
 from rulez import registry as rulez_registry
 
+from rest_framework import status
 from rest_framework import viewsets
 from rest_framework import generics
-from rest_framework import status
 from rest_framework.response import Response
 
 from toolkit.decorators import mutable_request
@@ -14,12 +14,11 @@ from toolkit.core.attachment.models import Attachment
 from .mixins import (MatterItemsQuerySetMixin,)
 
 from ..serializers import (AttachmentSerializer,
-                           ItemSerializer,
-                           SimpleUserSerializer)
+                           ItemSerializer,)
 
 
+import os
 import logging
-
 logger = logging.getLogger('django.request')
 
 
@@ -85,6 +84,11 @@ class AttachmentView(MatterItemsQuerySetMixin,
             request.DATA.update({
                 'attachment': executed_file_from_filepicker,  # rename from executed_file to attachment for serializer
                 'name': request.DATA.pop('name', None),
+            })
+        else:
+            # normal POST and the FILES object is present
+            request.DATA.update({
+                'name': request.FILES.get('attachment').name,
             })
 
         # set the defaults

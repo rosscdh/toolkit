@@ -29,7 +29,7 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
 
     matter = serializers.HyperlinkedRelatedField(many=False, required=True, view_name='workspace-detail',
                                                  lookup_field='slug')
-    attachments = serializers.PrimaryKeyRelatedField(many=True)
+    attachments = serializers.HyperlinkedRelatedField(many=True, view_name='attachment-detail')
 
     parent = serializers.HyperlinkedRelatedField(required=False, many=False, view_name='item-detail',
                                                  lookup_field='slug')
