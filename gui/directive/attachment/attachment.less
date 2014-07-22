@@ -1,0 +1,212 @@
+//CSS FROM TASKS.
+
+.new-attachment, .new-task {
+  .modal-header{
+    i {
+      color: #bdc3c7;
+      padding-right: 15px;
+    }
+  }
+.modal-body{
+  .text{
+   padding-top: 10px;
+  }
+
+  i {
+    font-size: 30px;
+    color: #777;
+    margin-bottom: 5px;
+    display: block;
+
+  }
+
+
+.btn-file {
+  background-color: #f5f5f5;
+  font-weight: bold;
+  color: #777;
+  &:hover {
+    color:  #777;
+
+  }
+}
+
+
+.form-control {
+  width: 100%;
+  label{
+    margin-bottom: 10px;
+  }
+}
+.mbl {
+  .btn-group {
+    border: 2px solid rgba(68, 68, 68, 0.15);
+    border-radius: 5px;
+    .btn{
+      background-color: #f5f5f5;
+      color: #444444;
+      font-weight: bold;
+    }
+  }
+  .dropdown-menu{
+    width: 200px;
+    li {
+      background-color: #f5f5f5;
+      color: #444444;
+      font-size: 14px;
+      font-weight: bold;
+      padding: 6px;
+      float: none;
+      border: 2px solid rgba(68, 68, 68, 0.15);
+    }
+
+  }
+  .dropdown-inverse {
+      background-color: #f5f5f5;
+    }
+}
+.btn-success{
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+}
+
+.modal-footer {
+  .btn + .btn {
+    margin-left: 0px;
+  }
+}
+
+
+}
+
+
+.attachments-wrapper {
+  .item-subheading{
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: bold;
+    margin-right: 5px;
+    margin-left: 0px;
+    margin-bottom: 10px;
+    color: #777;
+     .btn-link {
+    float: right;
+    color: #39ca74;
+    text-transform: uppercase;
+    font-weight: bold;
+  }
+  }
+
+  .all-attachments{
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+
+    .dropdown-menu {
+      overflow: visible;
+    }
+
+    li.one-attachment {
+      padding: 3px;
+      height: 35px;
+      border-bottom: 2px solid #ddd;
+
+
+      .one-attachment {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        list-style-type: none;
+
+         > li{
+          float: left;
+        }
+        .icon {
+          width: 6%;
+          color: #777;
+          text-align: left;
+        }
+        .delete-attachment, .download-attachment{
+          width: 3%;
+          margin: 3px;
+          text-align: right;
+
+        }
+
+           .delete-attachment a {
+            color: #A0A0A0;
+            font-size: 13px;
+          }
+
+          .download-attachment a {
+            color: #A0A0A0;
+          }
+
+
+        .attachment-name{
+          width: 58%;
+          border: 1px solid #e4e6e8;
+          font-size: 12px;
+          color: #777;
+          text-align: left;
+          font-weight: bold;
+          font-family: Helvetica;
+
+        }
+
+        .task-name.incomplete {
+          color: #777;
+        }
+
+        .task-name.complete {
+          color:  #39ca74;
+          text-decoration: line-through;
+        }
+
+        .attachment-status{
+          font-size: 12px;
+          width: 27%;
+          min-width: 27%;
+          color: #777;
+          text-align: center;
+          border: 1px solid #e4e6e8;
+          opacity: 1;
+
+          .dropdown-menu {
+            margin-top: 0px;
+            height: 100px;
+            overflow-y: scroll;
+          }
+
+            .assign {
+              background-color: #e4e6e8;
+              color: #A0A0A0;
+              text-decoration: underline;
+
+            }
+
+
+          a {
+            color: #A0A0A0;
+          }
+
+
+        }
+      }
+    }
+  }
+
+  .incomplete {
+    color: #bdc3c7;
+    opacity: 0.85;
+  }
+
+  .complete{
+    opacity: 1;
+    color: #39ca74;
+  }
+
+
+}

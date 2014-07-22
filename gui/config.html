@@ -81,6 +81,7 @@
   <script src="<!-- @echo staticPath -->service/pusher.js"></script>
   <script src="<!-- @echo staticPath -->service/genericFunctions.js"></script>
   <script src="<!-- @echo staticPath -->service/intro.js"></script>
+  <script src="<!-- @echo staticPath -->service/attachment.js"></script>
   <!-- Add New Service JS Above -->
 
   <!-- Directive JS -->
@@ -91,6 +92,8 @@
   <script src="<!-- @echo staticPath -->directive/filepicker.js"></script>
   <script src="<!-- @echo staticPath -->directive/auth.js"></script>
   <script src="<!-- @echo staticPath -->directive/modal.js"></script>
+  <script src="<!-- @echo staticPath -->directive/attachment/list-attachment.js"></script>
+  <script src="<!-- @echo staticPath -->directive/attachment/manage-attachment.js"></script>
   <script src="<!-- @echo staticPath -->directive/sticky-elements/sticky-elements.js"></script>
   <!-- Add New Directive JS Above -->
 
@@ -125,7 +128,7 @@
   <script src="<!-- @echo staticPath -->partial/edit-revision-status/edit-revision-status.js"></script>
   <!-- Add New Partial JS Above -->
 
-  <div class="navbar navbar-inverse checklist-nav" ng-controller="NavigationCtrl">
+   <div class="navbar navbar-inverse checklist-nav" ng-controller="NavigationCtrl">
     <div class="navbar-header">
         <div class="logo-mark">
             <a href="/">
@@ -281,7 +284,6 @@
   </div>
     <!--/.navbar-collapse -->
   </div>
-
   <div ui-view class="full"></div>
   <span id="landmine"></span>
   <script language="javascript" data-remove="exclude">

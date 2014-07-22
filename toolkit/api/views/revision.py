@@ -1,7 +1,5 @@
 # -*- coding: UTF-8 -*-
 from django.http import Http404
-from django.core.cache import cache
-from django.utils.timezone import utc
 from django.shortcuts import get_object_or_404
 
 from rulez import registry as rulez_registry
@@ -11,6 +9,7 @@ from rest_framework import generics
 from rest_framework import status
 from rest_framework.response import Response
 
+from toolkit.decorators import mutable_request
 from toolkit.core.attachment.models import Revision
 
 from .mixins import (MatterItemsQuerySetMixin,)
@@ -21,7 +20,6 @@ from ..serializers import UserSerializer
 
 
 import logging
-import datetime
 
 logger = logging.getLogger('django.request')
 
@@ -122,25 +120,6 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
                                                                 revision=self.revision,
                                                                 previous_status=previous_instance.status)
 
-    #
-    # Removed as this appears to be a mis-code
-    #
-    # def handle_sign_in_progress(self, sign_in_progress=None):
-    #     """
-    #     To get around HS crap implementation, we have to store a in_progress flag
-    #     which is used to show appropriate messaging to the users
-    #     """
-    #     # cache_key used to store the unique calue for this revision
-    #     cache_key = self.revision.SIGN_IN_PROGRESS_KEY
-
-    #     if not cache.get( cache_key ):
-    #         minutes = 5
-    #         cache_seconds = (minutes * 60) # turn minutes into seconds
-
-    #         expiry_date_time = datetime.datetime.utcnow().replace(tzinfo=utc) + datetime.timedelta(minutes=5)
-
-    #         cache.set( cache_key, expiry_date_time, cache_seconds )  # set the cache for this object
-
     def update(self, request, *args, **kwargs):
         #
         # Status change
@@ -154,6 +133,7 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
 
         return super(ItemCurrentRevisionView, self).update(request=request, *args, **kwargs)
 
+    @mutable_request
     def create(self, request, *args, **kwargs):
         """
         Have had to copy directly the method from the base class
@@ -172,7 +152,7 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
 
         request_data.update({
             # get default if none present
-            'status': request_data.get('status', self.matter.default_status_index),  # get the default status if its not presetn
+            'status': request_data.get('status', self.matter.default_status_index),  # get the default status if its not present
         })
 
         serializer = self.get_serializer(self.revision, data=request_data, files=request.FILES)
