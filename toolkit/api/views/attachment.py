@@ -88,7 +88,7 @@ class AttachmentView(MatterItemsQuerySetMixin,
         else:
             # normal POST and the FILES object is present
             request.DATA.update({
-                'name': request.FILES.get('attachment').name,
+                'name': request.FILES.get('attachment').name if request.FILES.get('attachment', None) is not None else None,
             })
 
         # set the defaults
