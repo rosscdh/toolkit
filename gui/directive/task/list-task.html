@@ -36,7 +36,7 @@ This Item has no tasks yet. Create Tasks for this Item by clicking 'New Task'.
             <ul class="one-task">
                 <li class="icon" ng-click="toggleCompleteTask(task)"><span class="" ng-class="{'incomplete fui-radio-unchecked': !task.is_complete, 'fui-check-inverted complete': task.is_complete }"></span></li>
 
-                <li class="task-name" ng-class="{'incomplete': !task.is_complete, 'complete': task.is_complete }">{{ task.name  | characters:20:true}}</li>
+                <li class="task-name" ng-class="{'incomplete': !task.is_complete, 'complete': task.is_complete }">{{ task.name  | characters:30:true}}</li>
                 <li class="task-status">
                     <div ng-show="task.assigned_to.length>0">
                         <span ng-repeat="user in task.assigned_to">{{ user.initials }}&nbsp;</span>
