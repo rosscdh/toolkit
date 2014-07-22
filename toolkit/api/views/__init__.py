@@ -32,6 +32,8 @@ from .participant import (MatterParticipant,)
 from .revision import (ItemCurrentRevisionView as MatterItemCurrentRevisionView,
                        ItemSpecificReversionView as MatterItemSpecificReversionView,)
 
+from .attachment import (AttachmentView, AttachmentEndpoint)
+
 from .revision_request import (ItemRequestRevisionView as MatterItemRequestRevisionView,)
 
 from .item import (ItemEndpoint,

@@ -6,6 +6,17 @@ Deployment actions by branch
 1. ./manage.py syncdb
 
 
+[feature/item-attachments]
+
+1. ./manage.py migrate attachment
+
+
+[feature/completed-requests]
+
+1. ./manage.py syncdb
+
+
+
 --------------------------------------------------------------------------------
 ** DEPLOYED 2 July 2014
 --------------------------------------------------------------------------------

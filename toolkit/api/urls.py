@@ -39,6 +39,7 @@ from .views import (ReviewerHasViewedRevision,
 
 from .views import ItemEndpoint
 from .views import RevisionEndpoint
+from .views import AttachmentView, AttachmentEndpoint
 from .views import ItemCommentEndpoint
 # from .views import MatterCommentEndpoint
 from .views import DiscussionEndpoint, DiscussionCommentEndpoint, DiscussionParticipantEndpoint
@@ -61,6 +62,7 @@ router.register(r'activity', ActivityEndpoint)
 router.register(r'clients', ClientEndpoint)
 router.register(r'items', ItemEndpoint)
 router.register(r'revisions', RevisionEndpoint)
+router.register(r'attachments', AttachmentEndpoint)
 router.register(r'reviews', ReviewEndpoint)
 router.register(r'signatures', SignatureEndpoint)
 router.register(r'tasks', TaskEndpoint)
@@ -121,6 +123,10 @@ urlpatterns = router.urls + patterns('',
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/revision/v(?P<version>[\d]+)/?$', MatterItemSpecificReversionView.as_view(), name='matter_item_specific_revision'),
     # reviewer reviewed document
     url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/reviewdocument/(?P<reviewdocument_slug>[\d\w-]+)/viewed/?$', ReviewerHasViewedRevision.as_view(), name='matter_item_specific_revision_user_viewed'),
+    #
+    # Attachments
+    #
+    url(r'^matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/attachment/?$', AttachmentView.as_view(), name='matter_item_attachment'),
 
     #
     # Task

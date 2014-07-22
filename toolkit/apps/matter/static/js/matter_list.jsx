@@ -182,7 +182,7 @@ var CurrentUserRole = React.createClass({
                 );
         } else {
             return (
-                <div/>
+                <div />
                 );
         }
 

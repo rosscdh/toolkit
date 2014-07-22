@@ -28,7 +28,7 @@ EXT_WHITELIST = ('.pdf', '.docx', '.doc', '.ppt', '.pptx', '.xls', '.xlsx')
 # need to get a list of mimetypes for teh above
 
 
-def _valid_filename_length(filename):
+def _valid_filename_length(filename, whitelist=EXT_WHITELIST):
     """
     1. ensure length is max 85 (to account for 100 char limit in django filename fields)
     """
@@ -37,8 +37,8 @@ def _valid_filename_length(filename):
     base_filename, ext = os.path.splitext(original_filename)
     ext = ext.lower()
 
-    if ext not in EXT_WHITELIST:
-        raise ValidationError("Invalid filetype, is: %s should be in: %s" % (ext, EXT_WHITELIST))
+    if ext not in whitelist:
+        raise ValidationError("Invalid filetype, is: %s should be in: %s" % (ext, whitelist))
 
     if len(base_filename) > MAX_LENGTH_FILENAME:  # allow for 20 aspects to the name in addition ie. v1-etc
         base_filename = base_filename[0:MAX_LENGTH_FILENAME]
@@ -72,7 +72,7 @@ class LimitedExtensionMixin(object):
     ext_whitelist = EXT_WHITELIST
 
     def __init__(self, *args, **kwargs):
-        ext_whitelist = kwargs.pop("ext_whitelist", self.ext_whitelist)
+        ext_whitelist = kwargs.pop("whitelist", self.ext_whitelist)
 
         self.ext_whitelist = [i.lower() for i in ext_whitelist]
 
@@ -111,12 +111,16 @@ class HyperlinkedAutoDownloadFileField(LimitedExtensionMixin, serializers.URLFie
     but also return just the url and not the FileObject on to_native unless it
     does not exist
     """
+    def __init__(self, file_field_name='executed_file', *args, **kwargs):
+        self.file_field_name = file_field_name
+        return super(HyperlinkedAutoDownloadFileField, self).__init__(*args, **kwargs)
+
     def to_native(self, value):
         return getattr(value, 'url', value)
 
     def field_to_native(self, obj, field_name):
         if obj is not None:
-            field = getattr(obj, field_name)
+            field = getattr(obj, field_name, None)
 
             try:
 
@@ -130,26 +134,27 @@ class HyperlinkedAutoDownloadFileField(LimitedExtensionMixin, serializers.URLFie
                 # important as we then access the "name" attribute in teh serializer
                 # that allows us to name the file (as filepicker sends the name and url seperately)
                 request = self.context.get('request', {})
-                url = request.DATA.get('executed_file')
+                url = request.DATA.get(self.file_field_name)
 
-                original_filename = _valid_filename_length(request.DATA.get('name'))
+                original_filename = _valid_filename_length(request.DATA.get('name'), whitelist=self.filetype_whitelist)
 
                 if original_filename is None:
                     #
                     # the name was not set; therefore extract it from executed_file which shoudl be a url at this point
                     #
                     try:
-                        url_path = urlparse(request.DATA.get('executed_file'))
+                        url_path = urlparse(request.DATA.get(self.file_field_name))
                     except:
                         # sometimes, yknow its not a url
-                        url_path = request.DATA.get('executed_file')
+                        url_path = request.DATA.get(self.file_field_name)
                     original_filename = os.path.basename(url_path.path)
 
                 #
                 # NB! we pass this into download which then brings the filedown and names it in the precribed
                 # upload_to manner
                 #
-                file_name, file_object = _download_file(url=url, filename=original_filename, obj=obj, obj_fieldname=field_name)
+                file_name, file_object = _download_file(url=url, filename=original_filename, obj=obj,
+                                                        obj_fieldname=field_name)
                 field = getattr(obj, field_name)
 
                 # NB! we reuse the original_filename!
@@ -174,6 +179,10 @@ class FileFieldAsUrlField(LimitedExtensionMixin, serializers.FileField):
     """
     Acts like a normal FileField but to_native will download the file
     """
+    def __init__(self, file_field_name='executed_file', *args, **kwargs):
+        self.file_field_name = file_field_name
+        return super(FileFieldAsUrlField, self).__init__(*args, **kwargs)
+
     def from_native(self, value):
         self.validate_filename(value=value.name)
         return super(FileFieldAsUrlField, self).from_native(value=value)
@@ -188,7 +197,8 @@ class FileFieldAsUrlField(LimitedExtensionMixin, serializers.FileField):
             # Just download the object, the rest gets handled naturally
             #
             if urlparse(value.url).scheme:  # check where delaing with an actual url here
-                _download_file(url=value.url, filename=value.name, obj=value.instance)
+                _download_file(url=value.url, filename=value.name, obj=value.instance,
+                              obj_fieldname=self.file_field_name)
 
         return getattr(value, 'url', super(FileFieldAsUrlField, self).to_native(value=value))
 
@@ -333,13 +343,12 @@ class RevisionSerializer(serializers.HyperlinkedModelSerializer):
 
         return data
 
-
     def get_revisions(self, obj):
         return [ABSOLUTE_BASE_URL(reverse('matter_item_specific_revision', kwargs={
-                    'matter_slug': obj.item.matter.slug,
-                    'item_slug': obj.item.slug,
-                    'version': c + 1
-                })) for c, revision in enumerate(obj.revisions) if revision.pk != obj.pk]
+            'matter_slug': obj.item.matter.slug,
+            'item_slug': obj.item.slug,
+            'version': c + 1
+        })) for c, revision in enumerate(obj.revisions) if revision.pk != obj.pk]
 
 
 class SimpleRevisionSerializer(RevisionSerializer):

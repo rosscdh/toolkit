@@ -41,6 +41,9 @@ urlpatterns = patterns('',
     url(r'^review/', include('toolkit.apps.review.urls', namespace='review')),
     url(r'^crocodoc/', include('dj_crocodoc.urls')),
 
+    # attachments
+    url(r'^attachments/', include('toolkit.core.attachment.urls')),
+
     # signing events
     url(r'^sign/', include('toolkit.apps.sign.urls', namespace='sign')),
 
