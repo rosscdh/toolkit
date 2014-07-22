@@ -105,6 +105,7 @@ class LimitedExtensionMixin(object):
         return value
 
 
+
 class HyperlinkedAutoDownloadFileField(LimitedExtensionMixin, serializers.URLField):
     """
     Autodownload a file specified by a url
@@ -136,7 +137,7 @@ class HyperlinkedAutoDownloadFileField(LimitedExtensionMixin, serializers.URLFie
                 request = self.context.get('request', {})
                 url = request.DATA.get(self.file_field_name)
 
-                original_filename = _valid_filename_length(request.DATA.get('name'), whitelist=self.filetype_whitelist)
+                original_filename = _valid_filename_length(request.DATA.get('name'), whitelist=self.ext_whitelist)
 
                 if original_filename is None:
                     #
