@@ -95,7 +95,7 @@ class ItemAttachmentTest(BaseEndpointTest,
 
         resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
         resp_json = json.loads(resp.content)
-        self.assertEqual(resp_json.get('attachment'), u'/m/attachments/%s-test-lawyer-test-pirates-ahoy.pdf' % resp_json.get())
+        self.assertEqual(resp_json.get('attachment'), u'/m/attachments/%s-test-lawyer-test-pirates-ahoy.pdf' % self.item.pk)
 
         self.assertEqual(resp.status_code, 201)  # created
         self.assertEqual(self.item.attachments.all().count(), self.expected_num)
