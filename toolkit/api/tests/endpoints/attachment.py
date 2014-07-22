@@ -95,7 +95,7 @@ class ItemAttachmentTest(BaseEndpointTest,
 
         resp = self.client.post(self.endpoint, json.dumps(data), content_type='application/json')
         resp_json = json.loads(resp.content)
-        self.assertEqual(resp_json.get('attachment'), None)
+        self.assertEqual(resp_json.get('attachment'), u'/m/attachments/%s-test-lawyer-test-pirates-ahoy.pdf' % resp_json.get())
 
         self.assertEqual(resp.status_code, 201)  # created
         self.assertEqual(self.item.attachments.all().count(), self.expected_num)
@@ -221,7 +221,7 @@ class AttachmentExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
 
         resp_json = json.loads(resp.content)
 
-        self.assertEqual(resp_json.get('attachment'), None)
+        self.assertEqual(resp_json.get('attachment'), '/m/attachments/%s-test-lawyer-test-pirates-ahoy.pdf' % self.item.pk)
         self.assertEqual(resp_json.get('user_download_url'), reverse('download_attachment', kwargs={'slug': resp_json.get('slug')}))
         
         self.assertEqual(self.item.attachments.count(), 2)
@@ -231,7 +231,7 @@ class AttachmentExecutedFileAsUrlOrMultipartDataTest(BaseEndpointTest,
         attachment = self.item.attachments.get(slug=resp_json.get('slug'))
 
         self.assertEqual(attachment.attachment.name,
-                         u'http://localhost:8081/static/test.pdf')
+                         u'attachments/4-test-lawyer-test-pirates-ahoy.pdf')
 
     def test_post_with_FILE_executed_file(self):
         """
