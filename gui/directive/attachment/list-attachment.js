@@ -107,7 +107,7 @@ angular.module('toolkit-gui').directive('attachmentsList', ['$compile', '$log', 
                         return true;
                     }
 
-                    if ($scope.currentUser.username === attachment.created_by.username) {
+                    if ($scope.currentUser.username === attachment.uploaded_by.username) {
                         return true;
                     }
 
