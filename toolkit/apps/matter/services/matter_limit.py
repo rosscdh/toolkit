@@ -21,7 +21,7 @@ class BillingMatterLimitService(object):
     def has_plan(self):
         try:
             return CurrentSubscription.objects.get(customer=Customer.objects.get(user=self.user))
-        except Customer.DoesNotExist, CurrentSubscription.DoesNotExist:
+        except (Customer.DoesNotExist, CurrentSubscription.DoesNotExist) as e:
             logger.info('User has no plan: %s' % self.user)
             return False
 
