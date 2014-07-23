@@ -1,6 +1,6 @@
 <div class="modal-header">
     <button type="button" class="close" aria-hidden="true" ng-click="cancel()">×</button>
-    <h4 class="modal-title">Create a new Thread</h4>
+    <h4 class="modal-title">Create a new Threads</h4>
 </div>
 
 <form name="createForm" ng-submit="create()">
@@ -21,6 +21,19 @@
                     {{person.name}}
                 </label>
                 <br>
+                <ul class="list-unstyled">
+                    <li ng-repeat="person in participants">
+                        <label class="checkbox" ng-class="{'checked':data.selectedUsers[person.username]!=null}"
+                               ng-click="toggleUser(person)">
+                        <span class="icons">
+                            <span class="first-icon fui-checkbox-unchecked"></span>
+                            <span class="second-icon fui-checkbox-checked"></span>
+                        </span>
+                            <label ng-bind="person | fullname"></label>
+                            <label ng-show="person.username==currentUser.username"> (you)</label>
+                        </label>
+                    </li>
+                </ul>
             </div>
         </div>
 
