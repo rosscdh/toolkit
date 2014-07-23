@@ -1,0 +1,153 @@
+.tasks-wrapper {
+
+  .task-progress {
+    position: relative;
+    height: 3px;
+    background-color: #eeeeee;
+    margin-bottom: 5px;
+    width: 100%;
+    margin: 0 auto;
+
+    .bar {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      background-color: #777;
+      opacity: 0.4;
+      -webkit-transition: all 1s; /* For Safari 3.1 to 6.0 */
+      transition: all 1s
+    }
+  }
+
+  .icon {
+    cursor: pointer;
+  }
+}
+
+.new-task {
+  .modal-header {
+    i {
+      color: #bdc3c7;
+      padding-right: 5px;
+    }
+  }
+  .modal-body {
+    .text {
+      padding-top: 10px;
+    }
+
+
+    .task {
+      display: block;
+    }
+
+    .unassigned {
+      font-weight: normal;
+      font-size: 14px;
+      margin-left: 10px;
+      margin-right: 20px;
+    }
+
+    select {
+      margin-right: 30px;
+    }
+
+    .lead {
+      font-size: 16px;
+      padding-top: 20px;
+    }
+    .bs {
+      -webkit-appearance: initial;
+      -moz-appearance: initial;
+    }
+
+    .form-control {
+      width: 100%;
+      label {
+        margin-bottom: 10px;
+      }
+    }
+
+    textarea.form-control {
+      height: 55px;
+    }
+    .mbl {
+      .btn-group {
+        border: 2px solid rgba(68, 68, 68, 0.15);
+        border-radius: 5px;
+        .btn {
+          background-color: #f5f5f5;
+          color: #444444;
+          font-weight: bold;
+        }
+      }
+      .dropdown-menu {
+        width: 200px;
+        li {
+          background-color: #f5f5f5;
+          color: #444444;
+          font-size: 14px;
+          font-weight: bold;
+          padding: 6px;
+          float: none;
+          border: 2px solid rgba(68, 68, 68, 0.15);
+        }
+
+      }
+      .dropdown-inverse {
+        background-color: #f5f5f5;
+      }
+    }
+    .btn-success {
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+  }
+
+  .modal-footer {
+    .btn + .btn {
+      margin-left: 0px;
+    }
+  }
+
+  .modal-header {
+    min-height: 40px;
+  }
+
+  .tasks-meta {
+    float: right;
+    margin-left: 30px;
+
+    label {
+      font-weight: normal;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+  }
+
+
+  .input-group .input-group-btn:first-child + .form-control {
+     padding-left: 10px !important;
+
+  }
+
+.input-group .input-group-btn:first-child .btn-default {
+  padding: 18px;
+}
+
+}
+
+.calendar-group {
+  .modal {
+    position: absolute;
+    left: -3px !important;
+    top: 0.45em !important;
+    padding: 5px !important;
+  }
+
+
+
+}

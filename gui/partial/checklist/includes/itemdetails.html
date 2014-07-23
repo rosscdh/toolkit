@@ -100,7 +100,7 @@
             <span class="fui-calendar"></span> {{ data.selectedItem.date_due | date:'dd MMMM' }}
         </span>
 
-        <a href="javascript:;" ng-click="data.selectedItem.is_complete=!data.selectedItem.is_complete;saveSelectedItem();"
+        <a href="javascript:;" ng-click="closeReopenItem()"
            class="btn btn-sm pull-right" ng-class="{ 'btn-success': !data.selectedItem.is_complete, 'btn-default': data.selectedItem.is_complete}"
            ng-show="data.usdata.current.permissions.manage_items"
            id="close-item"
@@ -425,3 +425,6 @@
         <p>Create your checklist and then invite you client to this project by clicking on the <span class="fui-user"></span> icon at the top of the page.</p>
     </div>
 </div>
+<div tasks-list selected-item="data.selectedItem" current-user="data.usdata.current" matter="data.matter" tasks-complete="data.selectedItem.tasks_complete"></div>
+<p>&nbsp;</p>
+<div attachments-list selected-item="data.selectedItem" current-user="data.usdata.current" matter="data.matter"></div>

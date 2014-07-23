@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
 from model_mommy import mommy
@@ -101,9 +102,12 @@ class BaseScenarios(object):
         return user_perms.role
 
     def create_user(self, username, email, user_class='customer', **extra_fields):
-        user = mommy.make('auth.User', username=username, email=email, **extra_fields)
-        user.set_password(self.password)
-        user.save()
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            user = mommy.make('auth.User', username=username, email=email, **extra_fields)
+            user.set_password(self.password)
+            user.save()
 
         profile = user.profile
         profile.user_class = user_class

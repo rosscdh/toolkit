@@ -32,6 +32,8 @@ from .participant import (MatterParticipant,)
 from .revision import (ItemCurrentRevisionView as MatterItemCurrentRevisionView,
                        ItemSpecificReversionView as MatterItemSpecificReversionView,)
 
+from .attachment import (AttachmentView, AttachmentEndpoint)
+
 from .revision_request import (ItemRequestRevisionView as MatterItemRequestRevisionView,)
 
 from .item import (ItemEndpoint,
@@ -40,7 +42,8 @@ from .item import (ItemEndpoint,
 
 from .reminder import (RemindReviewers,
                        RemindSignatories,
-                       RemindRequestedRevisionInvitee)
+                       RemindRequestedRevisionInvitee,
+                       ItemTaskReminderView)
 
 from .revision import RevisionEndpoint
 # from .workflow import WorkflowEndpoint
@@ -48,3 +51,5 @@ from .revision import RevisionEndpoint
 from .comment import ItemCommentEndpoint
 from .discussion import ItemDiscussionCommentEndpoint
 from .discussion import MatterDiscussionEndpoint, MatterDiscussionCommentEndpoint, MatterDiscussionParticipantEndpoint
+
+from .task import TaskEndpoint, ItemTasksView, ItemTaskView

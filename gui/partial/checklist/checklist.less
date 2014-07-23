@@ -394,7 +394,7 @@ tr.item-heading.file-drag-over td:nth-child(2):before {
 /* UL/LI based checklist */
 ul.checklist-items {
 	min-height: 1em;
-	margin: 0.25em 0 0.25em 0;
+	margin: 0.25em 0.45em 0.25em 0.25em;
 	li {
 		cursor: pointer;
 		position: relative;
@@ -455,7 +455,7 @@ ul.checklist-items {
 				opacity:1;
 			}
 		}
-		
+
 		// The selection state
 		&.selected {
 			background-color: lighten(@belize-hole, 10%);
@@ -471,6 +471,10 @@ ul.checklist-items {
 					border-color:white;
 				}
 			}
+      .tasks-status-checklist{
+        color: white;
+        border: 1px solid white;
+      }
 		}
 		.fui-check-inverted {
 			padding-top:4px;
@@ -523,7 +527,7 @@ ul.checklist-items {
 	.loading {
 		opacity: 0.75;
 	}
-		
+
 	.fapad {
 		padding: 0.5em;
 	}
@@ -721,4 +725,252 @@ ul.status-list a {
 .navbar.navbar-inverse .navbar-form {
 	border-bottom: 0;
 	height: 55px;
+}
+
+.tasks-wrapper {
+  .item-subheading{
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: bold;
+    margin-right: 5px;
+    margin-left: 0px;
+    margin-bottom: 5px;
+    color: #777;
+     .btn-link {
+    float: right;
+    color: #39ca74;
+    text-transform: uppercase;
+    font-weight: bold;
+  }
+  }
+
+  .all-tasks{
+  	margin: 0;
+  	padding: 0;
+  	list-style-type: none;
+
+    .dropdown-menu {
+      overflow: visible;
+    }
+
+  	li.one-task {
+    	padding: 3px;
+      height: 35px;
+  		border-bottom: 2px solid #ddd;
+      clear: both;
+
+
+
+  		.one-task {
+  			width: 100%;
+  			margin: 0;
+  			padding: 0;
+
+  			list-style-type: none;
+
+  			 > li{
+  				float: left;
+  			}
+  			.icon {
+          clear: left;
+  				text-align: left;
+          width: 8%;
+          text-align: center;
+  			}
+  			.delete-task{
+  				width: 3%;
+  				// margin-right: 2.5%;
+
+  				text-align: right;
+  				a {
+  					color: #777;
+  					font-size: 13px;
+  				}
+  			}
+
+  			.delete-task:last-child{
+  				float: right;
+  			}
+
+  			.due-date {
+          width: 18%;
+          border: 1px solid #e4e6e8;
+  				min-width: 18%;
+  				margin-right: 2.5%;
+  				color: #777;
+  				font-size: 12px;
+  				text-align: center;
+  			}
+  			.task-name{
+  				width: 40%;
+  				margin-left: 2.5%;
+  				font-size: 12px;
+  				// text-align: left;
+          text-align: center;
+  				font-weight: bold;
+  				font-family: Helvetica;
+
+  			}
+
+  			.task-name.incomplete {
+  				color: #777;
+  			}
+
+  			.task-name.complete {
+  				color:  #39ca74;
+  				text-decoration: line-through;
+  			}
+
+  			.task-status{
+  				font-size: 12px;
+  				width: 20%;
+  				min-width: 20%;
+  				color: #777;
+  				text-align: center;
+  				border: 1px solid #e4e6e8;
+  				opacity: 1;
+          a {
+            color: #777;
+            text-decoration: underline;
+          }
+
+          .dropdown-menu {
+            margin-top: 0px;
+            height: 100px;
+            overflow-y: scroll;
+          }
+
+            .assign {
+              background-color: #e4e6e8;
+              color: #A0A0A0;
+              text-decoration: underline;
+
+            }
+
+
+  				a {
+  					color: #777;
+  				}
+
+
+  			}
+  		}
+  	}
+  }
+
+  .incomplete {
+  	color: #bdc3c7;
+  	opacity: 0.85;
+  }
+
+  .complete{
+  	opacity: 1;
+  	color: #39ca74;
+  }
+
+  .overdue{
+    color: rgb(255, 83, 50);
+    font-weight: bold;
+  }
+
+
+// .task-zero-state {
+//   margin: 0 auto;
+//   width: 80%;
+//   line-height: 18px;
+//   color: #9B9898;
+//   text-align: center;
+//   font-size: 13px;
+//   h4{
+//     font-size: 17px;
+//   }
+//   i {
+//     display: block;
+//     font-size: 28px;
+//     margin-top: 20px;
+//     margin-bottom: 20px;
+//   }
+// }
+
+.heading {
+  width: 100%;
+  margin: 0px;
+  font-size: 10px;
+  color: #A0A0A0;
+  padding: 0px;
+  padding-bottom: 3px;
+  overflow: hidden;
+  li {
+    float: left;
+    list-style-type: none;
+
+  }
+
+  ul.heading {
+    padding: 3px;
+  }
+  .stat-label {
+    width: 8%;
+    text-align: center;
+  }
+
+  .task-name {
+    text-align: center;
+    width: 40%;
+    margin-left: 2.5%;
+  }
+  li.task-status {
+    width: 20%;
+    text-align: center;
+    // margin-left: 2.5%;
+    // margin-right: 2.5%;
+  }
+  .due-date {
+    text-align: center;
+    width: 18%;
+    min-width: 18%;
+  }
+}
+}
+
+.tasks-status-checklist {
+  font-size: 10px;
+  margin-right: 5px;
+  margin-top: 5px;
+  color: #777;
+  border: 1px solid #777;
+  border-radius: 3px;
+  padding: 3px;
+  line-height: 14px;
+}
+
+.outstanding-work {
+  position: absolute;
+  right: -15px;
+  top: 5px;
+  color: #777;
+   i{
+    font-size: 8px;
+   }
+
+}
+
+
+.attachments-zero-state, .tasks-zero-state {
+  margin: 0 auto;
+  width: 80%;
+  line-height: 18px;
+  color: #9B9898;
+  text-align: center;
+  font-size: 12px;
+  h4{
+    font-size: 13px;
+    margin-bottom: 7px;
+  }
+  i {
+    display: block;
+    font-size: 28px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
 }

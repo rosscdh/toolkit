@@ -27,6 +27,8 @@ from .endpoints.permissions.category import *
 from .endpoints.revision import *
 from .endpoints.permissions.revision import *
 
+from .endpoints.attachment import *
+
 from .endpoints.user import *
 
 from .endpoints.activity import *
@@ -34,5 +36,7 @@ from .endpoints.activity import *
 from .endpoints.remind import *
 
 from .endpoints.comment import *
+
+from .endpoints.task import *
 
 from .endpoints.discussion import *

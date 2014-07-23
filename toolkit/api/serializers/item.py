@@ -27,10 +27,15 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
 
     latest_revision = SimpleRevisionSerializer(read_only=True)
 
-    matter = serializers.HyperlinkedRelatedField(many=False, required=True, view_name='workspace-detail', lookup_field='slug')
+    matter = serializers.HyperlinkedRelatedField(many=False, required=True, view_name='workspace-detail',
+                                                 lookup_field='slug')
+    attachments = serializers.HyperlinkedRelatedField(many=True, view_name='attachment-detail')
 
-    parent = serializers.HyperlinkedRelatedField(required=False, many=False, view_name='item-detail', lookup_field='slug')
+    parent = serializers.HyperlinkedRelatedField(required=False, many=False, view_name='item-detail',
+                                                 lookup_field='slug')
     children = serializers.SerializerMethodField('get_children')
+
+    task_status = serializers.SerializerMethodField('get_task_status')
 
     request_document_meta = serializers.SerializerMethodField('get_request_document_meta')
 
@@ -48,7 +53,8 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
                   'latest_revision',
                   'is_final', 'is_complete', 'is_requested',
                   'date_due', 'date_created', 'date_modified',
-                  'request_document_meta',)
+                  'task_status',
+                  'request_document_meta', 'attachments')
 
         exclude = ('data',)
 
@@ -62,7 +68,8 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_latest_revision(self, obj):
         if obj.latest_revision is not None:
-            return ABSOLUTE_BASE_URL(reverse('matter_item_revision', kwargs={'matter_slug': obj.matter.slug, 'item_slug': obj.slug}))
+            return ABSOLUTE_BASE_URL(reverse('matter_item_revision', kwargs={'matter_slug': obj.matter.slug,
+                                                                             'item_slug': obj.slug}))
         return None
 
     def get_reviewers(self, obj):
@@ -70,7 +77,8 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
         placeholder
         """
         if getattr(obj.latest_revision, 'pk', None) is not None:
-            return [SimpleUserWithReviewUrlSerializer(u, context=self.context).data for u in obj.latest_revision.reviewers.all()]
+            return [SimpleUserWithReviewUrlSerializer(u, context=self.context).data
+                    for u in obj.latest_revision.reviewers.all()]
 
         return []
 
@@ -79,11 +87,15 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
         placeholder
         """
         if getattr(obj.latest_revision, 'pk', None) is not None:
-            return [SimpleUserWithReviewUrlSerializer(u, context=self.context).data for u in obj.latest_revision.signers.all()]
+            return [SimpleUserWithReviewUrlSerializer(u, context=self.context).data
+                    for u in obj.latest_revision.signers.all()]
         return []
 
     def get_children(self, obj):
         return [ItemSerializer(i, context=self.context).data for i in obj.item_set.all()]
+
+    def get_task_status(self, obj):
+        return obj.task_status
 
     def get_request_document_meta(self, obj):
         """
@@ -107,6 +119,7 @@ class SimpleItemSerializer(ItemSerializer):
                   'category',
                   'latest_revision',
                   'is_final', 'is_complete', 'is_requested',
+                  'task_status',
                   'date_due',)
 
 

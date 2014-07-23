@@ -1,0 +1,18 @@
+{% extends 'email/base.email' %}{% load humanize %}
+
+{% block subject_line %}{{ subject }}{% endblock %}
+
+{% block html_content %}
+
+{{ from_name }} has asked you to complete the "{{ item }}" task for "{{ matter }}" available at: <a href="{{ action_url }}">{{ action_url }}</a>
+
+The task is:
+
+{{ description }}
+
+And is due: {{ date_due|naturaltime}} - {{ date_due }}
+
+
+{% endblock %}
+
+

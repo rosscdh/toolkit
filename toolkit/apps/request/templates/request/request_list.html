@@ -25,6 +25,7 @@
             <div class="row">
                 <div class="col-sm-8 col-sm-offset-2" role="main">
                     {% if object_list %}
+                        {% request_tasks_section object_list request.user %}
                         {% request_uploads_section object_list request.user %}
                         {% request_reviews_section object_list request.user %}
                         {% request_signings_section object_list request.user %}
@@ -56,8 +57,7 @@
             var self = $(this);
             var data = self.data();
             var url = user_has_viewed_url.replace('reviewDocSlug', data.reviewdocument_slug).replace('itemSlug', data.item_slug).replace('matterSlug', data.matter_slug)
-            console.log(data)
-            console.log(url)
+
             $.ajax({
                 url: url,
                 type: "PATCH",
@@ -69,6 +69,64 @@
                 }
             });
         })
+
+        function mark_complete(self, url, is_complete, replace_with) {
+            $.ajax({
+                url: url,
+                type: "PATCH",
+                data: {'is_complete': is_complete},
+                dataType: 'json',
+                beforeSend: function (jqXHR, settings) {
+                    // Pull the token out of the DOM.
+                    jqXHR.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+                },
+                success: function ( data ) {
+                    self.replaceWith(replace_with);
+                },
+                complete: function ( data ) {
+                }
+            });
+        };
+
+        var mark_complete_btn = $('<a/>', {'data-remote': null, 'class': 'btn undo_is_complete-btn', 'text': 'Complete'});
+        var undo_link = $('<a/>', {'data-remote': null, 'class': 'btn undo_is_complete-btn', 'text': 'Undo'})
+
+        mark_complete_btn.on('click', function(e) {
+            var self = $(this);
+            var data = self.data();
+            var url = data.remote;
+
+            // set the url data-remote
+            undo_link.attr('data-remote', url);
+            mark_complete(self, url, true, undo_link);
+        });
+        undo_link.on('click', function (e) {
+            var self = $(this);
+            var data = self.data();
+            var url = data.remote;
+
+            // set the url data-remote
+            mark_complete_btn.attr('data-remote', url);
+            mark_complete(self, url, false, mark_complete_btn);
+
+        });
+
+        $('a.mark_complete-btn, a.mark_incomplete-btn').on('click', function (e) {
+            var self = $(this);
+            var data = self.data();
+            var url = data.remote;
+
+            mark_complete_btn = self.clone( true );
+
+            // update the copy of the mark_complete_btn
+            mark_complete_btn.attr('data-remote', url);
+            // set the url data-remote
+            var local_undo_link = undo_link.clone(true);
+            local_undo_link.attr('data-remote', url);
+
+            mark_complete(self, url, true, local_undo_link);
+
+        });
 
     });
     </script>

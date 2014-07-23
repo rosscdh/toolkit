@@ -41,29 +41,6 @@ def ensure_revision_slug(sender, instance, **kwargs):
                 instance.slug = final_slug
 
 
-# @receiver(pre_save, sender=Revision, dispatch_uid='revision.changed_content')
-# def on_revision_save_changed_content(sender, instance, **kwargs):
-#     matter = instance.item.matter
-
-#     try:
-#         # get the current
-#         previous_instance = sender.objects.get(pk=instance.pk)
-
-#     except sender.DoesNotExist:
-#         #
-#         # Do nothing as the previous object does not exist
-#         #
-#         previous_instance = None
-
-#     if previous_instance:
-#         if previous_instance.status != instance.status:
-#             matter.actions.revision_changed_status(user=matter.lawyer,  # WHO is allowed to change status?
-#                                                    revision=instance,
-#                                                    previous_status=previous_instance.status)
-
-#     logger.debug('Recieved revision.pre_save:changed_content event: %s' % sender)
-
-
 @receiver(post_save, sender=Revision, dispatch_uid='revision.set_item_is_requested_false')
 def set_item_is_requested_false(sender, instance, **kwargs):
     """

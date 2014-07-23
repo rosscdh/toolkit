@@ -1,0 +1,17 @@
+{% load url from future %}
+
+<div class="modal-dialog">
+    <div class="modal-body text-center">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">{% block modal_title %}Thanks for trying us out.{% endblock %}</h4>
+            </div>
+            {% block content %}
+            <p>Thanks for trying LawPal.com we really appreciate any feedback you could give us.</p>
+            <p>If you would like to continue making use of our service and be able to create new Matters, please upgrade to our paid plan.</p>
+            <p><a href="mailto:{{ 'support@lawpal.com' }}" class="btn btn-primary">Contact Us</a>&nbsp;<a href="{% url 'me:plan-list' %}" class="btn btn-info">Upgrade</a></p>
+            {% endblock %}
+        </div>
+    </div>
+</div>

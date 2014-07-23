@@ -7,7 +7,10 @@ from toolkit.core import _managed_S3BotoStorage
 from toolkit.core.mixins import (ApiSerializerMixin, IsDeletedMixin, FileExistsLocallyMixin)
 from toolkit.utils import get_namedtuple_choices
 
+from uuidfield import UUIDField
 from jsonfield import JSONField
+
+from rulez import registry as rulez_registry
 
 from .managers import RevisionManager
 from .mixins import StatusLabelsMixin
@@ -24,9 +27,7 @@ BASE_REVISION_STATUS = get_namedtuple_choices('REVISION_STATUS', (
                             ))
 
 
-def _upload_file(instance, filename):
-    full_file_name = None
-
+def _upload_revision(instance, filename):
     split_file_name = os.path.split(filename)[-1]
     filename_no_ext, ext = os.path.splitext(split_file_name)
 
@@ -42,6 +43,22 @@ def _upload_file(instance, filename):
     return 'executed_files/%s' % full_file_name
 
 
+def _upload_attachment(instance, filename):
+    split_file_name = os.path.split(filename)[-1]
+    filename_no_ext, ext = os.path.splitext(split_file_name)
+
+    identifier = '%d-%s' % (instance.item.pk, instance.uploaded_by.username)
+    full_file_name = '%s-%s%s' % (identifier, slugify(filename_no_ext), ext)
+
+    if identifier in slugify(filename):
+        #
+        # If we already have this filename as part of the recombined filename
+        #
+        full_file_name = filename
+
+    return 'attachments/%s' % full_file_name
+
+
 class Revision(IsDeletedMixin,
                ApiSerializerMixin,
                StatusLabelsMixin,
@@ -54,7 +71,8 @@ class Revision(IsDeletedMixin,
 
     slug = models.SlugField(blank=True, null=True)  # stores the revision number v3..v2..v1
 
-    executed_file = models.FileField(upload_to=_upload_file, max_length=255, storage=_managed_S3BotoStorage(), null=True, blank=True)
+    executed_file = models.FileField(upload_to=_upload_revision, max_length=255, storage=_managed_S3BotoStorage(),
+                                     null=True, blank=True)
 
     item = models.ForeignKey('item.Item')
     uploaded_by = models.ForeignKey('auth.User')
@@ -64,7 +82,8 @@ class Revision(IsDeletedMixin,
 
     # allow reviewers to upload alternatives to the current
     # these alternatives may be set as the "current" if the lawyer approves
-    alternatives = models.ManyToManyField('attachment.Revision', null=True, blank=True, symmetrical=False, related_name="parent")
+    alternatives = models.ManyToManyField('attachment.Revision', null=True, blank=True, symmetrical=False,
+                                          related_name="parent")
 
     # True by default, so that on create of a new one, it's set as the current revision
     is_current = models.BooleanField(default=True)
@@ -176,6 +195,47 @@ class Revision(IsDeletedMixin,
 
     def previous(self):
         return self.revisions.filter(pk__lt=self.pk).first()
+
+
+class Attachment(IsDeletedMixin,
+                 ApiSerializerMixin,
+                 FileExistsLocallyMixin,
+                 models.Model):
+    slug = UUIDField(auto=True, db_index=True)
+    name = models.CharField(max_length=255, null=True, blank=True)
+
+    attachment = models.FileField(upload_to=_upload_attachment, max_length=255, storage=_managed_S3BotoStorage())
+
+    item = models.ForeignKey('item.Item', related_name='attachments')
+    uploaded_by = models.ForeignKey('auth.User')
+
+    data = JSONField(default={}, blank=True)
+
+    date_created = models.DateTimeField(auto_now=False, auto_now_add=True, db_index=True)
+
+    _serializer = 'toolkit.api.serializers.AttachmentSerializer'
+
+    # override for FileExistsLocallyMixin:
+    def get_document(self):
+        return self.attachment
+
+    def can_read(self, user):
+        return user in self.item.matter.participants.all()
+
+    def can_edit(self, user):
+        if self.pk is None: # create
+            return user in self.item.matter.participants.all()
+        else:
+            return user == self.uploaded_by \
+                   or user.matter_permissions(self.item.matter).has_permission(manage_attachments=True)
+
+    def can_delete(self, user):
+        return user == self.uploaded_by \
+               or user.matter_permissions(self.item.matter).has_permission(manage_attachments=True)
+
+rulez_registry.register("can_read", Attachment)
+rulez_registry.register("can_edit", Attachment)
+rulez_registry.register("can_delete", Attachment)
 
 
 from .signals import (ensure_revision_slug,

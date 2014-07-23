@@ -40,6 +40,8 @@ GRANULAR_PERMISSIONS = (
     ("manage_items", u"Can manage checklist items and categories"),
     ("manage_signature_requests", u"Can manage signatures & send documents for signature"),
     ("manage_clients", u"Can manage clients"),
+    ("manage_tasks", u"Can manage item tasks"),
+    ("manage_attachments", u"Can manage attachments on items"),
 )
 #
 # Matter.owner (Workspace.lawyer)
@@ -54,6 +56,8 @@ PRIVILEGED_USER_PERMISSIONS = {
     "manage_items": True,
     "manage_signature_requests": True,
     "manage_clients": False,
+    "manage_tasks": True,
+    "manage_attachments": True,
 }
 #
 # Matter.participants.user_class == 'customer'|'client'
@@ -64,6 +68,8 @@ UNPRIVILEGED_USER_PERMISSIONS = {
     "manage_items": False,
     "manage_signature_requests": False,
     "manage_clients": False,
+    "manage_tasks": False,
+    "manage_attachments": False,
 }
 #
 # Not logged in or random user permissions
@@ -149,7 +155,14 @@ class WorkspaceParticipants(models.Model):
 
     @property
     def permissions(self):
-        return self.data.get('permissions', self.default_permissions())
+        """
+        combine the default permissions and override with the specific users
+        permissions; this allows for the addition of new permissions easily
+        """
+        default_permissions = self.default_permissions().copy()
+        user_permissions = self.data.get('permissions', default_permissions)
+        default_permissions.update(user_permissions)
+        return default_permissions
 
     @permissions.setter
     def permissions(self, value):

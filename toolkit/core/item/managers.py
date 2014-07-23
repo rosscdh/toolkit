@@ -16,6 +16,11 @@ class ItemManager(IsDeletedManager):
     def requested(self, **kwargs):
         return self.get_queryset().requested(**kwargs)
 
+    @property
+    def __task_class__(self):
+        from toolkit.apps.task.models import Task
+        return Task
+
     def my_requests(self, user, completed=False):
         # queries = []
 
@@ -62,4 +67,15 @@ class ItemManager(IsDeletedManager):
                 if item.latest_revision is not None and item.latest_revision.primary_signdocument and not item.latest_revision.primary_signdocument.has_signed(user):
                     signing_requests.append(item)
 
-        return list(chain(document_requests, review_requests, signing_requests))
+        data = {
+            'items': list(set(chain(document_requests, review_requests, signing_requests))),
+            'tasks': self.__task_class__.objects.filter(assigned_to__in=[user], is_complete=False)
+        }
+        #
+        # Update with the total count of
+        #
+        data.update({
+            'count': len(data.get('items', [])) + len(data.get('tasks', []))  # count the num tasks and num items
+        })
+
+        return data

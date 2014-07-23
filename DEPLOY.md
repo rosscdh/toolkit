@@ -3,16 +3,24 @@ Deployment actions by branch
 
 [feature/item-discussions]
 
-1. ./manage.py migrate discussion 0001  # update older matter discussion comments
-2. ./manage.py migrate discussion 0002  # bring across item comments from actstream
+1. ./manage.py migrate discussion 0001
+2. ./manage.py migrate discussion 0002  # update older matter discussion comments
+3. ./manage.py migrate discussion 0003  # bring across item comments from actstream
+
+
+[feature/tasks]
+
+1. ./manage.py syncdb
+
+
+[feature/item-attachments]
+
+1. ./manage.py migrate attachment
 
 
 [feature/completed-requests]
 
-Rerun the migration to re-sync the open requests count.
-
-1. ./manage.py migrate default 0005
-2. ./manage.py migrate default 0006
+1. ./manage.py syncdb
 
 
 --------------------------------------------------------------------------------

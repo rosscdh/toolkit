@@ -1,0 +1,28 @@
+<div class="attachments-wrapper">
+    <div class="item-subheading">Attachments<span class="number-of"> ({{ data.attachments.length }})</span>
+        <a class="btn-link" href="javascript:;" ng-click="manageAttachment()" ng-hide="selectedItem.is_complete">New Attachment</a>
+    </div>
+
+    <div class="attachments-zero-state" ng-if="data.attachments.length == 0">
+        <span ng-hide="selectedItem.is_complete">
+            <h4>No Attachments Yet</h4>
+                This Item has no attachments yet. Upload attachments for this Item by clicking 'New Attachment'.
+        </span>
+        <span ng-hide="!selectedItem.is_complete">
+            <h4>This Checklist Item has been completed</h4>
+                Cannot add new Attachments
+        </span>
+    </div>
+
+    <ul class="all-attachments">
+        <li class="one-attachment" ng-repeat="attachment in data.attachments">
+            <ul class="one-attachment">
+                <li class="icon"><i class="fa fa-paperclip"></i></li>
+                <li class="attachment-name">{{ attachment.name }}</li>
+                <li class="attachment-status"><i class="fa fa-clock-o" title="{{ attachment.date_created | timeago }}"/>&nbsp;Uploaded by {{ attachment.uploaded_by.initials }}</li>
+                <li class="download-attachment"><a href="{{ attachment.user_download_url }}" tooltip-placement="top" tooltip="Download this Attachment"><i class="fa fa-download"></i></a></li>
+                <li class="delete-attachment" ng-if="isDeleteAttachmentEnabled(attachment)"><a href="javascript:;" tooltip-placement="top" tooltip="Delete This Attachment" ng-click="deleteAttachment(attachment)">X</a></li>
+            </ul>
+        </li>
+    </ul>
+</div>

@@ -1,17 +1,13 @@
 <article class="request">
     <div class="row">
         <div class="col-xs-8">
-            <span class="fui-upload request-icon"></span>
+            <span class="fui-time request-icon"></span>
             <h6 class="request-title"><small>{{ item.client.name }} &middot; {{ item.matter.name }}</small></h6>
             <h6 class="request-title">{{ task.name }}</h6>
             <p>{{ task.created_by }} requested you complete this task.</p>
         </div>
         <div class="col-xs-4">
-            <a href="#" class="btn btn-wide btn-info btn-embossed request-btn mark_complete-btn" data-remote="{{ mark_as_complete_url }}">Mark as Complete</a>
-            <a href="#" class="hide mark_incomplete-btn" data-remote="{{ mark_as_complete_url }}">Undo</a>
-            {% if user in item.matter.participants.all %}
-            <a href="{{ item.get_absolute_url }}" class="btn btn-wide">View Task</a>
-            {% endif %}
+            <a href="#" class="btn btn-wide btn-info btn-embossed mark_complete-btn" data-remote="{{ mark_as_complete_url }}">Complete</a>
         </div>
     </div>
     {% if task.description %}
