@@ -18,6 +18,9 @@ class BillingMatterLimitService(object):
 
     @property
     def can_create_new_matter(self):
+        # if we have disabled the limits then always allow user to create matters
+        if self.enabled is False:
+            return True
         # allow for excluded users
         if self.user.email in settings.BILLING_MATTER_LIMIT.get('EXCLUDE_EMAILS', ()):
             return True
