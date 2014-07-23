@@ -19,6 +19,7 @@ from toolkit.mixins import AjaxModelFormView, ModalView
 from rest_framework.renderers import UnicodeJSONRenderer
 
 from . import MATTER_EXPORT_DAYS_VALID
+from .services import BillingMatterLimitService
 from .forms import MatterForm
 
 import datetime
@@ -151,8 +152,18 @@ class MatterCreateView(ModalView, AjaxModelFormView, CreateView):
     form_class = MatterForm
 
     @method_decorator(user_passes_test(lambda u: u.profile.validated_email is True, login_url=reverse_lazy('me:email-not-validated')))
-    def dispatch(self, *args, **kwargs):
-        return super(MatterCreateView, self).dispatch(*args, **kwargs)
+    def dispatch(self, request, **kwargs):
+        self.matter_limit = BillingMatterLimitService(user=request.user)
+        return super(MatterCreateView, self).dispatch(request, **kwargs)
+
+    def get_template_names(self):
+        """
+        Show the upgrade your account message if necessary
+        """
+        if self.matter_limit.can_create_new_matter is False:
+            return ['matter/upgrade_account.html',]
+
+        return super(MatterCreateView, self).get_template_names()
 
     def get_form_kwargs(self):
         kwargs = super(MatterCreateView, self).get_form_kwargs()
