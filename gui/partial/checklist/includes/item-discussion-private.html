@@ -3,7 +3,7 @@
         <li ng-repeat="comment in data.privateComments">
             <div class="message-content">
                 <p>
-                    <span class="user-initials">{{ comment.author.initials }}:</span> {{ comment.content }}
+                    <span class="user-initials">{{ comment.author.initials }}:</span> <span class="comment-content">{{ comment.content }}</span>
                 </p>
             </div>
             <div class="meta-message">
@@ -14,9 +14,9 @@
 
 </div>
 
-   <div ng-show="data.privateComments.length == 0"  class="comments-zero-state text-center">
+<div ng-show="data.privateComments.length == 0" class="comments-zero-state text-center">
     <p class="small text-center no-comments">There are no private comments for this item.</p>
-    </div>
+</div>
 
 <div ng-mouseenter="show=true" class="new-message">
     <form ng-submit="submitPrivateComment()">

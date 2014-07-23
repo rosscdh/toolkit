@@ -14,10 +14,9 @@
 
 </div>
 
-<div ng-show="data.privateComments.length == 0"  class="comments-zero-state text-center">
+<div ng-show="data.publicComments.length == 0" class="comments-zero-state text-center">
     <p class="small text-center no-comments">There are no public comments for this item.</p>
 </div>
-
 
 <div ng-mouseenter="show=true" class="new-message">
     <form ng-submit="submitPublicComment()">
