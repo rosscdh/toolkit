@@ -4,7 +4,7 @@
 
 {% block html_content %}
 
-{{ from_name }} has asked you to complete the "{{ item }}" task for "{{ matter }}" available at: {{ action_url }}
+{{ from_name }} has asked you to complete the "{{ item }}" task for "{{ matter }}" available at: <a href="{{ action_url }}">{{ action_url }}</a>
 
 The task is:
 
