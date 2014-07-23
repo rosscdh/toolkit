@@ -5,7 +5,6 @@ import operator
 from django.db import models
 
 from toolkit.core.mixins import IsDeletedManager
-from toolkit.apps.task.models import Task
 
 from .query import ItemQuerySet
 
@@ -16,6 +15,11 @@ class ItemManager(IsDeletedManager):
 
     def requested(self, **kwargs):
         return self.get_queryset().requested(**kwargs)
+
+    @property
+    def __task_class__(self):
+        from toolkit.apps.task.models import Task
+        return Task
 
     def my_requests(self, user, completed=False):
         # queries = []
@@ -65,7 +69,7 @@ class ItemManager(IsDeletedManager):
 
         data = {
             'items': list(set(chain(document_requests, review_requests, signing_requests))),
-            'tasks': Task.objects.filter(assigned_to__in=[user], is_complete=False)
+            'tasks': self.__task_class__.objects.filter(assigned_to__in=[user], is_complete=False)
         }
         #
         # Update with the total count of

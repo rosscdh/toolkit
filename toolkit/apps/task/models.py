@@ -3,10 +3,10 @@ from django.db import models
 from django.db.models.signals import (post_save,
                                       post_delete)
 
-from .mixins import SendReminderEmailMixin
-from .managers import TaskManager
-from .signals import (post_save_update_task_complete_count_in_item,
-                      post_delete_update_task_complete_count_in_item,)
+from toolkit.apps.task.mixins import SendReminderEmailMixin
+from toolkit.apps.task.managers import TaskManager
+from toolkit.apps.task.signals import (post_save_update_task_complete_count_in_item,
+                                       post_delete_update_task_complete_count_in_item,)
 
 from rulez import registry as rulez_registry
 
