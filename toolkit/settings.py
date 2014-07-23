@@ -478,6 +478,17 @@ ACTSTREAM_SETTINGS = {
     'USE_FOLLOWING': False,  # VERY importand; will break our system if this changes to True
 }
 
+
+#
+# BILLING_MATTER_LIMIT
+#
+
+BILLING_MATTER_LIMIT = {
+    'ENABLED': True,
+    'MAX_FREE_MATTERS': 3,
+    'EXCLUDE_EMAILS': ('yael@lawpal.com',),
+}
+
 #
 # Any change to the LAWPAL_ACTIVITY elements below needs to affect the
 # test_notices.py
