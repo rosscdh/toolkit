@@ -71,6 +71,10 @@ angular.module('toolkit-gui').factory('userService',[
                 'name': 'manage_tasks',
                 'description': 'manage tasks'
             });
+            colleaguePerms.push({
+                'name': 'manage_attachments',
+                'description': 'manage attachments'
+            });
 
             var clientPerms = [];
             clientPerms.push({

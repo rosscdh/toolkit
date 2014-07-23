@@ -160,16 +160,29 @@ angular.module('toolkit-gui').directive('tasksList', ['$compile', '$log', '$sce'
                     }
                 };
 
+
+                $scope.isNewTaskEnabled = function () {
+                    if(!$scope.selectedItem){
+                        return false;
+                    }
+
+                    if($scope.selectedItem.is_complete) {
+                        return false;
+                    }
+
+                    if ($scope.currentUser.permissions.manage_tasks) {
+                        return true;
+                    }
+
+                    return false;
+                };
+
                 $scope.isDeleteTaskEnabled = function (task) {
                     if($scope.selectedItem.is_complete) {
                         return false;
                     }
 
-                    if ($scope.currentUser.role === 'owner') {
-                        return true;
-                    }
-
-                    if ($scope.currentUser.permissions.manage_task) {
+                    if ($scope.currentUser.permissions.manage_tasks) {
                         return true;
                     }
 
@@ -185,11 +198,7 @@ angular.module('toolkit-gui').directive('tasksList', ['$compile', '$log', '$sce'
                         return false;
                     }
 
-                    if ($scope.currentUser.role === 'owner') {
-                        return true;
-                    }
-
-                    if ($scope.currentUser.permissions.manage_task) {
+                    if ($scope.currentUser.permissions.manage_tasks) {
                         return true;
                     }
 
