@@ -37,7 +37,7 @@
                                 <li ng-repeat="thread in data.archivedThreads"
                                     ng-class="{ 'selected': thread.slug===data.selectedThread.slug }"
                                     ui-sref="discussion.thread({ 'threadSlug': thread.slug })" ng-click="data.view = 'discussion'">
-                                    <div ng-include="'/static/ng/partial/discussion/includes/thread-line-item.html'"></div>
+                                    <div ng-include="'/static/ng/partial/discussion/includes/thread-line-item.html'" class="archived"></div>
                                 </li>
                             </ul>
                         </tab>
