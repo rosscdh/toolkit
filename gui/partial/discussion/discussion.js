@@ -253,12 +253,22 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
             );
         };
 
-         $scope.showMarkDownInfo = function() {
-          $modal.open({
-            'templateUrl': '/static/ng/partial/markdown/markdown-info.html',
-            'controller': 'MarkdownInfoCtrl'
-          });
+        $scope.showMarkDownInfo = function() {
+            $modal.open({
+                'templateUrl': '/static/ng/partial/markdown/markdown-info.html',
+                'controller': 'MarkdownInfoCtrl'
+            });
+        };
 
+        $scope.hasClientParticipants = function(thread) {
+            var hasClientParticipant = false;
+            angular.forEach(thread.participants, function(participant, key) {
+                if (participant.role === 'client') {
+                    hasClientParticipant = true;
+                }
+            });
+
+            return hasClientParticipant;
         };
     }
 ]);
