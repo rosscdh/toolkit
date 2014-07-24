@@ -1,4 +1,4 @@
-<div class="type-icon lock"></div>
+<div ng-show="!hasClientParticipants(thread)" class="type-icon lock"></div>
 <div class="message">
     <h3 ng-bind="thread.title"></h3>
     <p ng-bind="thread.content | characters:25:false"></p>
