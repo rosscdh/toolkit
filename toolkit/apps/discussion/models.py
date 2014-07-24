@@ -78,10 +78,11 @@ class DiscussionComment(ThreadedComment, models.Model):
 
     def send_commented_email(self, **kwargs):
         kwargs.update(self.get_email_kwargs())
-        recipients = self.get_participants().exclude(pk=self.user.pk)
+        recipients = [(u.get_full_name(), u.email) for u in self.get_participants.exclude(pk=self.user.pk)]
 
-        mailer = DiscussionCommentedEmail(recipients=[(u.get_full_name(), u.email) for u in recipients])
-        mailer.process(**kwargs)
+        if recipients:
+            mailer = DiscussionCommentedEmail(recipients=[(u.get_full_name(), u.email) for u in recipients])
+            mailer.process(**kwargs)
 
     def get_email_kwargs(self):
         return {
