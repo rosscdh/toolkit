@@ -68,8 +68,9 @@ class DiscussionComment(ThreadedComment, models.Model):
         kwargs.update(self.get_email_kwargs())
         recipients = self.parent.participants.all().exclude(pk=self.user.pk)
 
-        mailer = DiscussionCommentedEmail(recipients=[(u.get_full_name(), u.email) for u in recipients])
-        mailer.process(**kwargs)
+        if recipients.count() > 0:
+            mailer = DiscussionCommentedEmail(recipients=[(u.get_full_name(), u.email) for u in recipients])
+            mailer.process(**kwargs)
 
     def get_email_kwargs(self):
         return {
