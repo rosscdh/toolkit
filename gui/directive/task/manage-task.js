@@ -124,11 +124,7 @@ angular.module('toolkit-gui')
                     return false;
                 }
 
-                if ($scope.currentUser.role === 'owner') {
-                    return true;
-                }
-
-                if ($scope.currentUser.permissions.manage_task) {
+                if ($scope.currentUser.permissions.manage_tasks) {
                     return true;
                 }
 

@@ -26,7 +26,7 @@ class ReminderServiceTest(BaseScenarios, TestCase):
                           date_due=timezone.now() + datetime.timedelta(days=settings.REMIND_DUE_DATE_LIMIT - 1))
 
         reminder_service = ReminderService()
-        items_to_remind = reminder_service.collect_items()
+        items_to_remind = reminder_service.collect_object_list()
 
         self.assertItemsEqual(items_to_remind, [item])
 
@@ -37,7 +37,7 @@ class ReminderServiceTest(BaseScenarios, TestCase):
                    date_due=timezone.now() + datetime.timedelta(days=settings.REMIND_DUE_DATE_LIMIT + 1))
 
         reminder_service = ReminderService()
-        items_to_remind = reminder_service.collect_items()
+        items_to_remind = reminder_service.collect_object_list()
 
         self.assertItemsEqual(items_to_remind, [])
 
