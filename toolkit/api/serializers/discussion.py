@@ -32,7 +32,7 @@ class DiscussionSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_participants(self, obj):
         context = self.context
-        context.update({ 'matter': obj.matter })
+        context.update({ 'matter': obj.get_matter() })
         return SimpleUserSerializer(obj.participants.all(), context=context, many=True).data
 
 
