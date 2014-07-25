@@ -107,6 +107,7 @@ env.roledefs.update({
     'web': ['ec2-50-18-33-186.us-west-1.compute.amazonaws.com',
             'ec2-54-176-88-70.us-west-1.compute.amazonaws.com',],
     'worker': ['ec2-54-241-222-221.us-west-1.compute.amazonaws.com'],
+    'db-actor': ['ec2-54-241-222-221.us-west-1.compute.amazonaws.com'],
 })
 
 
@@ -135,8 +136,8 @@ def virtualenv(cmd, **kwargs):
         sudo("source %sbin/activate; %s" % (env.virtualenv_path, cmd,), user=env.application_user, **kwargs)
 
 @task
-def pip_install():
-    virtualenv('pip install django-threadedcomments==0.9.0')
+def cron():
+    virtualenv(cmd='python %s%s/manage.py eightythreeb_usps_track_response' % (env.remote_project_path, env.project))
 
 @task
 def cron():

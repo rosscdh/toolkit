@@ -8,6 +8,10 @@ Deployment actions by branch
 3. ./manage.py migrate discussion 0003  # bring across item comments from actstream
 
 
+--------------------------------------------------------------------------------
+** DEPLOYED 25 July 2014
+--------------------------------------------------------------------------------
+
 [feature/tasks]
 
 1. ./manage.py syncdb
