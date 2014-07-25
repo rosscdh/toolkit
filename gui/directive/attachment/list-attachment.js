@@ -94,16 +94,29 @@ angular.module('toolkit-gui').directive('attachmentsList', ['$compile', '$log', 
                     );
                 };
 
+                $scope.isNewAttachmentEnabled = function () {
+                    if(!$scope.selectedItem){
+                        return false;
+                    }
+
+                    if ($scope.selectedItem.is_complete) {
+                        return false;
+                    }
+
+                    if ($scope.currentUser.permissions.manage_attachments) {
+                        return true;
+                    }
+
+                    return false;
+                };
+
                 $scope.isDeleteAttachmentEnabled = function (attachment) {
                     if ($scope.selectedItem.is_complete) {
                         return false;
                     }
 
-                    if ($scope.currentUser.role === 'owner') {
-                        return true;
-                    }
 
-                    if ($scope.currentUser.permissions.manage_attachment) {
+                    if ($scope.currentUser.permissions.manage_attachments) {
                         return true;
                     }
 

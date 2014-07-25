@@ -68,9 +68,9 @@ class GetTaskMixin(MatterItemsQuerySetMixin):
                     username = username.get('username') if type(username) in [dict] else username
                     task.assigned_to.add(User.objects.get(username=username))
                 #
-                # Send the email only if not completed
+                # Send the email only if not completed and we havent sent it already
                 #
-                if task.is_complete is False:
+                if task.is_complete is False and task.data.get('send_assigned_to_email', False) is False:
                     task.send_assigned_to_email(from_user=self.request.user)
 
 

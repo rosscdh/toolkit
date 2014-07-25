@@ -8,6 +8,11 @@ class SendReminderEmailMixin(object):
     def send_assigned_to_email(self, from_user, **kwargs):
         subject = '[ACTION REQUIRED] A task has been assigned to you'
         self.send_reminder(from_user=from_user, subject=subject, **kwargs)
+        #
+        # Set the marker that we have sent this email
+        #
+        self.data['send_assigned_to_email'] = True
+        self.save(update_fields=['data'])
 
     def send_reminder(self, from_user, subject=None, **kwargs):
         # nto already completed
