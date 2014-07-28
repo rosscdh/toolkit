@@ -136,8 +136,10 @@ def virtualenv(cmd, **kwargs):
         sudo("source %sbin/activate; %s" % (env.virtualenv_path, cmd,), user=env.application_user, **kwargs)
 
 @task
-def cron():
-    virtualenv(cmd='python %s%s/manage.py eightythreeb_usps_track_response' % (env.remote_project_path, env.project))
+@roles('db-actor')
+def request_counts():
+    virtualenv(cmd='python %s%s/manage.py migrate default 0005' % (env.remote_project_path, env.project))
+    virtualenv(cmd='python %s%s/manage.py migrate default' % (env.remote_project_path, env.project))
 
 @task
 def cron():
