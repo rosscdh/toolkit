@@ -57,12 +57,15 @@ class ItemManager(IsDeletedManager):
 
         signing_requests = []
         for item in self.get_queryset().filter(reduce(operator.and_, signing_queries)):
-            if completed:
+            if completed is True:
+
                 if item.latest_revision is not None and item.latest_revision.primary_signdocument and item.latest_revision.primary_signdocument.has_signed(user):
                     signing_requests.append(item)
+
                 elif item.is_complete:
                     signing_requests.append(item)
             else:
+
                 if item.latest_revision is not None and item.latest_revision.primary_signdocument and not item.latest_revision.primary_signdocument.has_signed(user):
                     signing_requests.append(item)
 
@@ -70,10 +73,10 @@ class ItemManager(IsDeletedManager):
         task_requests = self.__task_class__.objects.filter(assigned_to__in=[user], is_complete=completed)
 
         data = {
-            'reviews': review_requests,
-            'signings': signing_requests,
-            'tasks': task_requests,
-            'uploads': document_requests,
+            'reviews': set(review_requests),
+            'signings': set(signing_requests),
+            'tasks': set(task_requests),
+            'uploads': set(document_requests),
         }
 
         data.update({
