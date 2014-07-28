@@ -57,34 +57,33 @@ class ItemManager(IsDeletedManager):
 
         signing_requests = []
         for item in self.get_queryset().filter(reduce(operator.and_, signing_queries)):
-            if completed:
+            if completed is True:
+
                 if item.latest_revision is not None and item.latest_revision.primary_signdocument and item.latest_revision.primary_signdocument.has_signed(user):
                     signing_requests.append(item)
+
                 elif item.is_complete:
                     signing_requests.append(item)
             else:
+
                 if item.latest_revision is not None and item.latest_revision.primary_signdocument and not item.latest_revision.primary_signdocument.has_signed(user):
                     signing_requests.append(item)
 
+        # task requests
+        task_requests = self.__task_class__.objects.filter(assigned_to__in=[user], is_complete=completed)
+
         data = {
-            'items': list(set(chain(document_requests, review_requests, signing_requests))),
-            'tasks': list(set(self.__task_class__.objects.filter(assigned_to__in=[user], is_complete=completed)))
+            'reviews': set(review_requests),
+            'signings': set(signing_requests),
+            'tasks': set(task_requests),
+            'uploads': set(document_requests),
         }
 
-        count = 0
-        # we need to loop as some items could have multiple states
-        if not completed:
-            for item in data.get('items', []):
-                if item.needs_review(user):
-                    count += 1
-                if item.needs_signature(user):
-                    count += 1
-                if item.needs_upload(user):
-                    count += 1
-        else:
-            count += len(data.get('items', []))
-        count += len(data.get('tasks', []))
-
-        data.update({ 'count': count })
+        data.update({
+            'count': len(data.get('reviews', [])) +
+                     len(data.get('signings', [])) +
+                     len(data.get('tasks', [])) +
+                     len(data.get('uploads', []))
+        })
 
         return data

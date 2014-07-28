@@ -348,19 +348,16 @@ class ItemManagerTest(BaseScenarios, TestCase):
         self.assertEqual(requests.get('count'), 10)
 
         # check the item requests
-        item_requests = requests.get('items')
-        self.assertEqual(len(item_requests), 6)
-        self.assertTrue(self.item7 in item_requests)
-        self.assertTrue(self.item19 in item_requests)
-        self.assertTrue(self.item39 in item_requests)
-        self.assertTrue(self.item51 in item_requests)
-        self.assertTrue(self.item52 in item_requests)
-        self.assertTrue(self.item53 in item_requests)
-
-        # check the task requests
-        task_requests = requests.get('tasks')
-        self.assertEqual(len(task_requests), 1)
-        self.assertTrue(self.task54 in task_requests)
+        self.assertTrue(self.item7 in requests.get('uploads'))
+        self.assertTrue(self.item51 in requests.get('uploads'))
+        self.assertTrue(self.item52 in requests.get('uploads'))
+        self.assertTrue(self.item19 in requests.get('reviews'))
+        self.assertTrue(self.item51 in requests.get('reviews'))
+        self.assertTrue(self.item53 in requests.get('reviews'))
+        self.assertTrue(self.item39 in requests.get('signings'))
+        self.assertTrue(self.item52 in requests.get('signings'))
+        self.assertTrue(self.item53 in requests.get('signings'))
+        self.assertTrue(self.task54 in requests.get('tasks'))
 
         completed_requests = Item.objects.my_requests(self.user, completed=True)
 
@@ -368,22 +365,16 @@ class ItemManagerTest(BaseScenarios, TestCase):
         self.assertEqual(completed_requests.get('count'), 10)
 
         # check the item requests
-        completed_item_requests = completed_requests.get('items')
-        self.assertEqual(len(completed_item_requests), 9)
-        self.assertTrue(self.item8 in completed_item_requests)
-        self.assertTrue(self.item20 in completed_item_requests)
-        self.assertTrue(self.item23 in completed_item_requests)
-        self.assertTrue(self.item24 in completed_item_requests)
-        self.assertTrue(self.item40 in completed_item_requests)
-        self.assertTrue(self.item43 in completed_item_requests)
-        self.assertTrue(self.item44 in completed_item_requests)
-        self.assertTrue(self.item47 in completed_item_requests)
-        self.assertTrue(self.item48 in completed_item_requests)
-
-        # check the task requests
-        completed_task_requests = completed_requests.get('tasks')
-        self.assertEqual(len(completed_task_requests), 1)
-        self.assertTrue(self.task55 in completed_task_requests)
+        self.assertTrue(self.item8 in completed_requests.get('uploads'))
+        self.assertTrue(self.item20 in completed_requests.get('reviews'))
+        self.assertTrue(self.item23 in completed_requests.get('reviews'))
+        self.assertTrue(self.item24 in completed_requests.get('reviews'))
+        self.assertTrue(self.item40 in completed_requests.get('signings'))
+        self.assertTrue(self.item43 in completed_requests.get('signings'))
+        self.assertTrue(self.item44 in completed_requests.get('signings'))
+        self.assertTrue(self.item47 in completed_requests.get('signings'))
+        self.assertTrue(self.item48 in completed_requests.get('signings'))
+        self.assertTrue(self.task55 in completed_requests.get('tasks'))
 
     def get_signed_request(self, revision, user):
         return mommy.make('hello_sign.HelloSignRequest',
