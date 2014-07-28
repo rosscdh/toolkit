@@ -22,8 +22,6 @@ class ItemManager(IsDeletedManager):
         return Task
 
     def my_requests(self, user, completed=False):
-        # queries = []
-
         compl_operator = operator.or_ if completed else operator.and_
 
         # document request
@@ -48,6 +46,7 @@ class ItemManager(IsDeletedManager):
         signing_queries = []
         signing_queries += [models.Q(revision__is_current=True)]
         signing_queries += [models.Q(revision__signers__in=[user])]
+        # completed requests handled further down: due to JSON storage of results
         if not completed:
             signing_queries += [
                 reduce(compl_operator, [
@@ -69,13 +68,23 @@ class ItemManager(IsDeletedManager):
 
         data = {
             'items': list(set(chain(document_requests, review_requests, signing_requests))),
-            'tasks': list(set(self.__task_class__.objects.filter(assigned_to__in=[user], is_complete=False)))
+            'tasks': list(set(self.__task_class__.objects.filter(assigned_to__in=[user], is_complete=completed)))
         }
-        #
-        # Update with the total count of
-        #
-        data.update({
-            'count': len(data.get('items', [])) + len(data.get('tasks', []))  # count the num tasks and num items
-        })
+
+        count = 0
+        # we need to loop as some items could have multiple states
+        if not completed:
+            for item in data.get('items', []):
+                if item.needs_review(user):
+                    count += 1
+                if item.needs_signature(user):
+                    count += 1
+                if item.needs_upload(user):
+                    count += 1
+        else:
+            count += len(data.get('items', []))
+        count += len(data.get('tasks', []))
+
+        data.update({ 'count': count })
 
         return data
