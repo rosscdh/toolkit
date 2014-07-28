@@ -9,7 +9,7 @@ register = template.Library()
 @register.inclusion_tag('request/request_list_review.html', takes_context=False)
 def request_reviews_section(object_list, user):
     return {
-        'object_list': object_list.get('items', []),
+        'object_list': [item for item in object_list.get('items', []) if item.needs_review(user)],
         'user': user
     }
 
