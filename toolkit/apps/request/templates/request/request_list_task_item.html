@@ -7,7 +7,11 @@
             <p>{{ task.created_by }} requested you complete this task.</p>
         </div>
         <div class="col-xs-4">
-            <a href="#" class="btn btn-wide btn-info btn-embossed mark_complete-btn" data-remote="{{ mark_as_complete_url }}">Complete</a>
+            {% if item.is_complete or task.is_complete %}
+                <p class="request-status"><span class="fui-check-inverted"></span> Completed</p>
+            {% else %}
+                <a href="#" class="btn btn-wide btn-info btn-embossed mark_complete-btn" data-remote="{{ mark_as_complete_url }}">Complete</a>
+            {% endif %}
         </div>
     </div>
     {% if task.description %}
