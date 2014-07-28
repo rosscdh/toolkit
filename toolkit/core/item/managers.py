@@ -66,40 +66,21 @@ class ItemManager(IsDeletedManager):
                 if item.latest_revision is not None and item.latest_revision.primary_signdocument and not item.latest_revision.primary_signdocument.has_signed(user):
                     signing_requests.append(item)
 
+        # task requests
+        task_requests = self.__task_class__.objects.filter(assigned_to__in=[user], is_complete=completed)
+
         data = {
-            'items': list(set(chain(document_requests, review_requests, signing_requests))),
-            'tasks': list(set(self.__task_class__.objects.filter(assigned_to__in=[user], is_complete=completed)))
+            'reviews': review_requests,
+            'signings': signing_requests,
+            'tasks': task_requests,
+            'uploads': document_requests,
         }
 
-        count = 0
-        uploads = []
-        reviews = []
-        signings = []
-        # we need to loop as some items could have multiple states
-        if not completed:
-            for item in data.get('items', []):
-
-                if item.needs_review(user):
-                    count += 1
-                    reviews.append(item)
-
-                if item.needs_signature(user):
-                    count += 1
-                    signings.append(item)
-
-                if item.needs_upload(user):
-                    count += 1
-                    uploads.append(item)
-        else:
-            count += len(data.get('items', []))
-
-        count += len(data.get('tasks', []))
-
         data.update({
-            'uploads': uploads,
-            'reviews': reviews,
-            'signings': signings,
-            'count': count
+            'count': len(data.get('reviews', [])) +
+                     len(data.get('signings', [])) +
+                     len(data.get('tasks', [])) +
+                     len(data.get('uploads', []))
         })
 
         return data
