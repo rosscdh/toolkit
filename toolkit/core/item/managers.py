@@ -23,7 +23,7 @@ class ItemManager(IsDeletedManager):
 
     def my_requests(self, user, completed=False):
         # queries = []
-
+        total_items = 0
         compl_operator = operator.or_ if completed else operator.and_
 
         # document request
@@ -67,15 +67,20 @@ class ItemManager(IsDeletedManager):
                 if item.latest_revision is not None and item.latest_revision.primary_signdocument and not item.latest_revision.primary_signdocument.has_signed(user):
                     signing_requests.append(item)
 
+        task_requests = self.__task_class__.objects.filter(assigned_to__in=[user], is_complete=False)
+
+        # calc counts
+        total_items = document_requests.count() + review_requests.count() + len(signing_requests) + task_requests.count()
+
         data = {
             'items': list(set(chain(document_requests, review_requests, signing_requests))),
-            'tasks': list(set(self.__task_class__.objects.filter(assigned_to__in=[user], is_complete=False)))
+            'tasks': list(set(task_requests))
         }
         #
         # Update with the total count of
         #
         data.update({
-            'count': len(data.get('items', [])) + len(data.get('tasks', []))  # count the num tasks and num items
+            'count': total_items  # count the num tasks and num items
         })
 
         return data
