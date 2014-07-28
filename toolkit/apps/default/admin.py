@@ -9,7 +9,6 @@ class UserProfileAdmin(admin.ModelAdmin):
     def resync_counts(self, request, queryset):
         from toolkit.core.item.models import Item
 
-        # queryset.update(status='p')
         for profile in queryset.all():
             profile.data['open_requests'] = Item.objects.my_requests(profile.user).get('count', 0)
             profile.save(update_fields=['data'])
