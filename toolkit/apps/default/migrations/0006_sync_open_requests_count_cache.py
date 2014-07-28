@@ -11,6 +11,8 @@ class Migration(DataMigration):
         from toolkit.core.item.models import Item
 
         for profile in orm['default.UserProfile'].objects.all():
+            if profile.user.email == 'alex@lawpal.com':
+                import pdb;pdb.set_trace()
             profile.data['open_requests'] = Item.objects.my_requests(profile.user).get('count', 0)
             profile.save(update_fields=['data'])
 

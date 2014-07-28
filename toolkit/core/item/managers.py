@@ -72,19 +72,34 @@ class ItemManager(IsDeletedManager):
         }
 
         count = 0
+        uploads = []
+        reviews = []
+        signings = []
         # we need to loop as some items could have multiple states
         if not completed:
             for item in data.get('items', []):
+
                 if item.needs_review(user):
                     count += 1
+                    reviews.append(item)
+
                 if item.needs_signature(user):
                     count += 1
+                    signings.append(item)
+
                 if item.needs_upload(user):
                     count += 1
+                    uploads.append(item)
         else:
             count += len(data.get('items', []))
+
         count += len(data.get('tasks', []))
 
-        data.update({ 'count': count })
+        data.update({
+            'uploads': uploads,
+            'reviews': reviews,
+            'signings': signings,
+            'count': count
+        })
 
         return data
