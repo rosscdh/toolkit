@@ -49,6 +49,6 @@ var edit_url = "{% url 'matter:edit' matter_slug='lp-react-name' %}";
 var MatterListData = {{ object_list_json|safe }};
 </script>
 
-{% compressed_js 'reactjs' %}
-{% if DEBUG %}<script src="{{ STATIC_URL }}js/JSXTransformer-0.10.0.js"></script>{% endif %}
+{% compressed_js 'matter_list' %}
+{% if DEBUG %}<script src="{{ STATIC_URL }}js/JSXTransformer-0.11.1.js"></script>{% endif %}
 {% endblock %}

@@ -359,12 +359,19 @@ PIPELINE_JS = {
         'output_filename': 'js/core.js',
     },
 
-    'reactjs': {
+    'matter_list': {
         'source_filenames': (
-            'js/react-0.10.0.js',
+            'js/react-0.11.1.js',
             'js/matter_list.jsx',
         ),
-        'output_filename': 'js/jsx-all-compiled.js',
+        'output_filename': 'js/jsx-matter_list-compiled.js',
+    },
+    'request_list': {
+        'source_filenames': (
+            'js/react-0.11.1.js',
+            'js/request_list.jsx',
+        ),
+        'output_filename': 'js/jsx-request_list-compiled.js',
     }
 }
 PIPELINE_COMPILERS = [
