@@ -1,4 +1,4 @@
-<div class="tasks-wrapper" ng-show="!data.selectedItem&&data.matter.items.length==0">
+<div class="tasks-wrapper">
     <div class="item-subheading">Tasks
         <span class="number-of"> ({{ data.tasks.length }}) </span>
         <a class="btn-link" href="javascript:;" ng-click="manageTask()" ng-show="isNewTaskEnabled()">New Task</a>
@@ -51,8 +51,10 @@
                 </div>
             </li>
             <li class="due-date">
-                <span ng-show="task.date_due&&!isTaskOverdue(task)">{{ task.date_due|fromnow }}</span>
-                <span ng-show="isTaskOverdue(task)" class="overdue">Overdue</span>
+                <div ng-if="!task.is_complete">
+                    <span ng-show="task.date_due&&!isTaskOverdue(task)&&!task.is_complete">{{ task.date_due|fromnow }}</span>
+                    <span ng-show="isTaskOverdue(task)" class="overdue">Overdue</span>
+                </div>
             </li>
             <li class="delete-task">
                 <a href="#" ng-click="manageTask(task)" ng-class="{'incomplete': !task.is_complete, 'complete': task.is_complete }" tooltip-placement="top" tooltip="Edit this Task"><i class="fa fa-pencil-square-o"></i></a>
