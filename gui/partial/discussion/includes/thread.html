@@ -1,5 +1,5 @@
 <div ng-show="data.selectedThread">
-    <div class='read-message' id="message-scroll">
+    <div class='read-message' id="message-scroll" ng-class="{'archived-thread': data.selectedThread.is_archived }">
         <div class="single-thread" id="thread">
             <ul class="list-unstyled">
                 <li class="one-message">
@@ -26,7 +26,7 @@
         </div>
     </div>
 
-    <div class="compose row">
+    <div class="compose row" ng-show="!data.selectedThread.is_archived" >
         <div class="col-sm-10">
             <div class="compose-wrapper">
                 <textarea class="compose-message" rows="2" placeholder="Type your message here and click 'send'. " ng-model="data.request.message"></textarea>
@@ -34,23 +34,23 @@
             <a href="javascript:;" class="btn btn-link btn-xs pull-right markdown-link" title="Markdown help" ng-click="showMarkDownInfo()">Markdown Supported</a>
         </div>
         <div class="col-sm-2 thread-controls">
-             <span class="user {{user.user_class}}" ng-bind="user.initials" ng-repeat="user in thread.participants"></span>
+         <span class="user {{user.user_class}}" ng-bind="user.initials" ng-repeat="user in thread.participants"></span>
 
 
 
 
-            <form name="requestForm" ng-submit="request()" class="thread-controls-form">
+         <form name="requestForm" ng-submit="request()" class="thread-controls-form">
 
-                <a href="javascript:;" ng-click="manageThreadParticipants(data.selectedThread)" class="btn-link">Manage Participants</a>
-                <a class="btn-link" ng-show="!data.selectedThread.is_archived" ng-click="archiveThread(data.selectedThread)"> Archive Thread</a>
-                <a class="btn-link" ng-show="data.selectedThread.is_archived" ng-click="unarchiveThread(data.selectedThread)"> Unarchive Thread</a>
+            <a href="javascript:;" ng-click="manageThreadParticipants(data.selectedThread)" class="btn-link">Manage Participants</a>
+            <a class="btn-link" ng-show="!data.selectedThread.is_archived" ng-click="archiveThread(data.selectedThread)"> Archive Thread</a>
+            <a class="btn-link" ng-show="data.selectedThread.is_archived" ng-click="unarchiveThread(data.selectedThread)"> Unarchive Thread</a>
 
 
-                <button class="btn btn-default send-btn" type="submit" ng-disabled="sendingMessage">Send <i class="fa fa-spinner fa-spin" ng-if="sendingMessage"></i></button>
-            </form>
+            <button class="btn btn-default send-btn" type="submit" ng-disabled="sendingMessage">Send <i class="fa fa-spinner fa-spin" ng-if="sendingMessage"></i></button>
+        </form>
 
-        </div>
     </div>
+</div>
 </div>
 
 <div ng-show="!data.selectedThread">
@@ -62,15 +62,15 @@
 
             <div class="col-sm-10 text-right">
                 <div class="col-sm-4">
-                <i class="fa fa-arrow-left"></i>
+                    <i class="fa fa-arrow-left"></i>
                 </div>
-                   <div class='col-sm-8 text-left'>
-                <h6>select a discussion from the list</h6>
-                <h6>or<h6>
-                <h6>start a new discussion</h6>
-            </div>
-            </div>
+                <div class='col-sm-8 text-left'>
+                    <h6>select a discussion from the list</h6>
+                    <h6>or<h6>
+                        <h6>start a new discussion</h6>
+                    </div>
+                </div>
 
+            </div>
         </div>
     </div>
-</div>
