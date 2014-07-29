@@ -8,7 +8,11 @@
             <p>{{ item.requested_by.name }} requested your signature on this document.</p>
         </div>
         <div class="col-xs-4">
-            {% user_has_signed item=item user=user %}
+            {% if item.is_complete %}
+                <p class="request-status"><span class="fui-check-inverted"></span> Completed</p>
+            {% else %}
+                {% user_has_signed item=item user=user %}
+            {% endif %}
         </div>
     </div>
     {% if item.message %}

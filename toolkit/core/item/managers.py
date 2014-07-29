@@ -22,8 +22,6 @@ class ItemManager(IsDeletedManager):
         return Task
 
     def my_requests(self, user, completed=False):
-        # queries = []
-
         compl_operator = operator.or_ if completed else operator.and_
 
         # document request
@@ -48,6 +46,7 @@ class ItemManager(IsDeletedManager):
         signing_queries = []
         signing_queries += [models.Q(revision__is_current=True)]
         signing_queries += [models.Q(revision__signers__in=[user])]
+        # completed requests handled further down: due to JSON storage of results
         if not completed:
             signing_queries += [
                 reduce(compl_operator, [
@@ -58,24 +57,33 @@ class ItemManager(IsDeletedManager):
 
         signing_requests = []
         for item in self.get_queryset().filter(reduce(operator.and_, signing_queries)):
-            if completed:
+            if completed is True:
+
                 if item.latest_revision is not None and item.latest_revision.primary_signdocument and item.latest_revision.primary_signdocument.has_signed(user):
                     signing_requests.append(item)
+
                 elif item.is_complete:
                     signing_requests.append(item)
             else:
+
                 if item.latest_revision is not None and item.latest_revision.primary_signdocument and not item.latest_revision.primary_signdocument.has_signed(user):
                     signing_requests.append(item)
 
+        # task requests
+        task_requests = self.__task_class__.objects.filter(assigned_to__in=[user], is_complete=completed)
+
         data = {
-            'items': list(set(chain(document_requests, review_requests, signing_requests))),
-            'tasks': list(set(self.__task_class__.objects.filter(assigned_to__in=[user], is_complete=False)))
+            'reviews': set(review_requests),
+            'signings': set(signing_requests),
+            'tasks': set(task_requests),
+            'uploads': set(document_requests),
         }
-        #
-        # Update with the total count of
-        #
+
         data.update({
-            'count': len(data.get('items', [])) + len(data.get('tasks', []))  # count the num tasks and num items
+            'count': len(data.get('reviews', [])) +
+                     len(data.get('signings', [])) +
+                     len(data.get('tasks', [])) +
+                     len(data.get('uploads', []))
         })
 
         return data

@@ -12,7 +12,7 @@
                         <a href="{% url 'request:list_completed' %}" class="btn btn-info btn-wide">Show completed requests</a>
                       {% endif %}
                     </div>
-                      <h3><span id="total-items" class="hide circle"></span> {% if show_completed %}Completed Requests{% else %}Requests{% endif %}</h3>
+                      <h3><span id="total-items" class="circle">{{ object_list.count }}</span> {% if show_completed %}Completed Requests{% else %}Requests{% endif %}</h3>
                 </div>
             </div>
         </div>
@@ -50,7 +50,6 @@
         var total_items_ui = $('#total-items');
         if (total_items_ui.length > 0) {
             total_items_ui.html($('article.request').length);
-            total_items_ui.removeClass('hide');
         }
 
         var user_has_viewed_url = '{% url "matter_item_specific_revision_user_viewed" matter_slug="matterSlug" item_slug="itemSlug" reviewdocument_slug="reviewDocSlug" %}';

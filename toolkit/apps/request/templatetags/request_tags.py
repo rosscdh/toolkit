@@ -9,7 +9,7 @@ register = template.Library()
 @register.inclusion_tag('request/request_list_review.html', takes_context=False)
 def request_reviews_section(object_list, user):
     return {
-        'object_list': object_list.get('items', []),
+        'object_list': object_list.get('reviews', []),
         'user': user
     }
 
@@ -35,7 +35,7 @@ def request_review_item(item, user):
 @register.inclusion_tag('request/request_list_signing.html', takes_context=False)
 def request_signings_section(object_list, user):
     return {
-        'object_list': [item for item in object_list.get('items', []) if item.needs_signature(user)],
+        'object_list': object_list.get('signings', []),
         'user': user
     }
 
@@ -52,7 +52,7 @@ def request_signing_item(item, user):
 @register.inclusion_tag('request/request_list_upload.html', takes_context=False)
 def request_uploads_section(object_list, user):
     return {
-        'object_list': [item for item in object_list.get('items', []) if item.needs_upload(user)],
+        'object_list': object_list.get('uploads', []),
         'user': user
     }
 

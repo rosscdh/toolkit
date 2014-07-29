@@ -9,7 +9,7 @@
             <p>{{ item.requested_by.name }} requested your feedback on this document.</p>
         </div>
         <div class="col-xs-4">
-            {% if review.is_complete %}
+            {% if item.is_complete or review.is_complete %}
                 <p class="request-status"><span class="fui-check-inverted"></span> Approved</p>
             {% else %}
                 <a href="#" class="btn btn-wide btn-info btn-embossed request-btn" data-toggle="modal" data-target="#request-review-{{ review.pk }}">Review</a>

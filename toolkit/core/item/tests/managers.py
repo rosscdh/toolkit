@@ -21,9 +21,10 @@ class ItemManagerTest(BaseScenarios, TestCase):
 
         item = Recipe('item.Item', matter=self.matter)
         revision = Recipe('attachment.Revision')
+        task = Recipe('task.Task')
 
         """
-        Generic
+        Item: Generic
         """
         # item, revisions: 0
         self.item1 = item.make()
@@ -44,7 +45,7 @@ class ItemManagerTest(BaseScenarios, TestCase):
         self.item6 = item.make(is_complete=True, responsible_party=self.lawyer)
 
         """
-        Requested
+        Item: Requested
         """
         # item (requested), revisions: 0, responsible: user
         self.item7 = item.make(is_requested=True, responsible_party=self.user)
@@ -59,7 +60,7 @@ class ItemManagerTest(BaseScenarios, TestCase):
         self.item10 = item.make(is_complete=True, is_requested=True, responsible_party=self.lawyer)
 
         """
-        Needs Review
+        Item: Needs Review
         """
         # item (in review), revision: stale, reviewer: user
         self.item11 = item.make()
@@ -150,7 +151,7 @@ class ItemManagerTest(BaseScenarios, TestCase):
         self.item26revs[1].reviewdocument_set.filter(reviewers__in=[self.lawyer]).update(is_complete=True)
 
         """
-        Needs Signing
+        Item: Needs Signing
         """
         # item (needs signing), revision: stale, signatory: user
         self.item27 = item.make()
@@ -296,33 +297,84 @@ class ItemManagerTest(BaseScenarios, TestCase):
         self.item50signs = self.get_signed_request(self.item50revs[1], self.lawyer)
         self.item50revs[1].primary_signdocument.complete()
 
+        """
+        Item: Mixed
+        """
+        # item (requested, in review), revision: current, responsible: user, reviewer: user
+        self.item51 = item.make()
+        self.item51revs = revision.make(item=self.item51, _quantity=2)
+        self.item51revs[1].reviewers.add(self.user)
+        self.item51.is_requested = True
+        self.item51.responsible_party = self.user
+        self.item51.save(update_fields=['is_requested', 'responsible_party'])
+
+        # item (requested, needs signing), revision: current, responsible: user, signatory: user
+        self.item52 = item.make()
+        self.item52revs = revision.make(item=self.item52, _quantity=2)
+        self.item52revs[1].signers.add(self.user)
+        self.item52.is_requested = True
+        self.item52.responsible_party = self.user
+        self.item52.save(update_fields=['is_requested', 'responsible_party'])
+
+        # item (in review, needs signing), revision: current, reviewer: user, signatory: user
+        self.item53 = item.make()
+        self.item53revs = revision.make(item=self.item53, _quantity=2)
+        self.item53revs[1].reviewers.add(self.user)
+        self.item53revs[1].signers.add(self.user)
+
+        """
+        Tasks
+        """
+        # task, responsible: user
+        self.item54 = item.make()
+        self.task54 = task.make(item=self.item54, assigned_to=[self.user])
+
+        # task (completed), responsible: user
+        self.item55 = item.make()
+        self.task55 = task.make(item=self.item55, assigned_to=[self.user], is_complete=True)
+
+        # task, responsible: other
+        self.item56 = item.make()
+        self.task56 = task.make(item=self.item56, assigned_to=[self.lawyer])
+
+        # task (completed), responsible: other
+        self.item57 = item.make()
+        self.task57 = task.make(item=self.item57, assigned_to=[self.lawyer], is_complete=True)
+
     def test_requests(self):
-        object_set = Item.objects.my_requests(self.user)
-        # check we have the breakdown
-        self.assertItemsEqual(object_set.keys(), ['count', 'items', 'tasks'])
-        # set the requests object
-        requests = object_set.get('items')
+        requests = Item.objects.my_requests(self.user)
 
-        self.assertEqual(len(requests), 3)
-        self.assertTrue(self.item7 in requests)
-        self.assertTrue(self.item19 in requests)
-        self.assertTrue(self.item39 in requests)
+        # check the count
+        self.assertEqual(requests.get('count'), 10)
 
-        object_set = Item.objects.my_requests(self.user, completed=True)
-        self.assertItemsEqual(object_set.keys(), ['count', 'items', 'tasks'])
-        # set the requests object
-        completed_requests = object_set.get('items')
+        # check the item requests
+        self.assertTrue(self.item7 in requests.get('uploads'))
+        self.assertTrue(self.item51 in requests.get('uploads'))
+        self.assertTrue(self.item52 in requests.get('uploads'))
+        self.assertTrue(self.item19 in requests.get('reviews'))
+        self.assertTrue(self.item51 in requests.get('reviews'))
+        self.assertTrue(self.item53 in requests.get('reviews'))
+        self.assertTrue(self.item39 in requests.get('signings'))
+        self.assertTrue(self.item52 in requests.get('signings'))
+        self.assertTrue(self.item53 in requests.get('signings'))
+        self.assertTrue(self.task54 in requests.get('tasks'))
 
-        self.assertEqual(len(completed_requests), 9)
-        self.assertTrue(self.item8 in completed_requests)
-        self.assertTrue(self.item20 in completed_requests)
-        self.assertTrue(self.item23 in completed_requests)
-        self.assertTrue(self.item24 in completed_requests)
-        self.assertTrue(self.item40 in completed_requests)
-        self.assertTrue(self.item43 in completed_requests)
-        self.assertTrue(self.item44 in completed_requests)
-        self.assertTrue(self.item47 in completed_requests)
-        self.assertTrue(self.item48 in completed_requests)
+        completed_requests = Item.objects.my_requests(self.user, completed=True)
+
+        # check the count
+        self.assertEqual(completed_requests.get('count'), 10)
+
+        # check the item requests
+        self.assertTrue(self.item8 in completed_requests.get('uploads'))
+        self.assertTrue(self.item20 in completed_requests.get('reviews'))
+        self.assertTrue(self.item23 in completed_requests.get('reviews'))
+        self.assertTrue(self.item24 in completed_requests.get('reviews'))
+        self.assertTrue(self.item40 in completed_requests.get('signings'))
+        self.assertTrue(self.item43 in completed_requests.get('signings'))
+        self.assertTrue(self.item44 in completed_requests.get('signings'))
+        self.assertTrue(self.item47 in completed_requests.get('signings'))
+        self.assertTrue(self.item48 in completed_requests.get('signings'))
+        self.assertTrue(self.task55 in completed_requests.get('tasks'))
 
     def get_signed_request(self, revision, user):
         return mommy.make('hello_sign.HelloSignRequest',
