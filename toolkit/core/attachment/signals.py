@@ -4,9 +4,6 @@ from django.dispatch import receiver
 from django.db import IntegrityError
 from django.db.models.signals import pre_save, post_save, pre_delete, post_delete, m2m_changed
 
-from toolkit.apps.workspace import _model_slug_exists
-
-
 from .models import Revision
 from toolkit.apps.review.models import ReviewDocument
 from toolkit.apps.sign.models import SignDocument
@@ -160,6 +157,11 @@ def set_previous_revision_is_current_on_delete(sender, instance, **kwargs):
     if previous_revision:
         previous_revision.is_current = True
         previous_revision.save(update_fields=['is_current'])
+    #
+    # remove related reviews and siging requests
+    #
+    instance.reviewdocument_set.all().delete()
+    instance.signdocument_set.all().delete()
 
 
 @receiver(m2m_changed, sender=Revision.reviewers.through, dispatch_uid='revision.on_reviewer_add')
