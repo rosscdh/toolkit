@@ -1,9 +1,9 @@
 
-<h4 class="ng-scope">
+<h4 class="ng-scope nav-activity-panel">
     <a href="javascript:;" ng-click="activateActivityStream('item')" ng-show="data.selectedItem"
-       ng-class="{'active':data.streamType=='item', 'inactive':data.streamType=='matter'}" style="margin-right:12px;">Item Activity</a>
+       ng-class="activity-item {'active':data.streamType=='item', 'inactive':data.streamType=='matter'}" style="margin-right:12px;">Item Activity</a>
     <a href="javascript:;" ng-click="activateActivityStream('matter')"
-       ng-class="{'active':data.streamType=='matter', 'inactive':data.streamType=='item'}">All Activity</a>
+       ng-class="activity-matter {'active':data.streamType=='matter', 'inactive':data.streamType=='item'}">All Activity</a>
 </h4>
 <div class="new-message row" ng-show="data.selectedItem" ng-mouseenter="show = true">
     <div class="col-xs-12">

@@ -48,7 +48,7 @@
       <!-- Begin option toolbar -->
       <div class="add-new clearfix">
         <div class="btn-group space-5" ng-show="data.usdata.current.permissions.manage_items&&!data.selectedItem.is_complete">
-          <span class="btn btn-sm btn-info btn-file btn-embossed btn-add">
+          <span id="intro-upload-file-menu" class="btn btn-sm btn-info btn-file btn-embossed btn-add">
             Upload File
             <input type="file" ng-file-select="onFileDropped($files, data.selectedItem);" clear-on-click multiple="multiple" id="upload-file-menu-default" />
           </span>
