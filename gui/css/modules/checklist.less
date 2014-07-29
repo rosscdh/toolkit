@@ -480,7 +480,7 @@ li.previous-toggle {
 
   position: relative;
   overflow: hidden;
-  height: 500px;
+  height: 400px;
   background-color: #F6F6F6;
 
 
@@ -490,7 +490,7 @@ li.previous-toggle {
         // right: 0;
         // border: 1px solid red;
         // width: 300px;
-        background-color: #e4e6e8;
+
       }
 
 
@@ -508,7 +508,7 @@ li.previous-toggle {
         width: 100%;
         overflow-y: scroll;
         right: 0;
-        height: 300px;
+        height: 230px;
         background-color: #F0F0F0;
 
         .active{
@@ -595,7 +595,7 @@ li.previous-toggle {
     z-index: 3;
     clear:both;
     padding-left: 15px;
-    margin-top: 300px;
+    margin-top: 220px;
     margin-left: 0px;
     padding-right: 15px;
     padding-top:10px;
@@ -724,21 +724,40 @@ li.previous-toggle {
 
 
 .item-comments{
-  .nav-pills > li > a {
-    background-color: #F0F0F0 !important;
+  .nav-pills > li > a{
     border-radius: 0px;
     color: inherit;
-    font-size: 14px;
+    font-size: 12px;
     border-left: 0px;
+    color: white;
   }
 
-  .everyone {
-    color: #00ca93;
+  .everyone a {
+    background-color: #00ca93;
+    opacity: 0.4;
+    border-radius: 0px;
+
   }
 
-  .colleagues {
-    color:
+  .colleagues a {
+    background-color: #0091e0;
+    opacity: 0.4;
+    color: white;
+    border-radius: 0px;
   }
 
+  .active  {
+    opacity: 1;
+  }
 
 }
+
+.checklist-wrapper div.chat ul.activity-log li {
+  font-size: 12px;
+  line-height: 17px;
+  margin-bottom: 4px;
+  color: #777;
+  position: relative;
+}
+
+
