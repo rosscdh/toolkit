@@ -8,9 +8,13 @@ angular.module('toolkit-gui')
  */
 .factory('activityService',[
 	'$q',
+	'$http',
 	'$resource',
 	'API_BASE_URL',
-	function( $q, $resource, API_BASE_URL ) {
+	function( $q, $http, $resource, API_BASE_URL ) {
+
+
+		var nextMatterActivityUrl, nextItemActivityUrl;
 
 		/**
 		 * Returns a key/value object containing $resource methods to access matter API end-points
@@ -62,18 +66,31 @@ angular.module('toolkit-gui')
 			 *
 			 * @return {Promise}    Array of matters
 		 	 */
-			'matterstream': function(matterSlug) {
+			'matterstream': function(matterSlug, getMore) {
 				var api = activityMatterResource();
 				var deferred = $q.defer();
 
-				api.list({'matterSlug': matterSlug},
-					function success( result ) {
+				if(getMore && nextMatterActivityUrl) {
+					$http({'method': 'GET', 'url': nextMatterActivityUrl }).
+					success(function(result, status, headers, config) {
+						nextMatterActivityUrl = result.next;
 						deferred.resolve( result.results );
-					},
-					function error( err ) {
+					}).
+					error(function(err, status, headers, config) {
 						deferred.reject( err );
-					}
-				);
+					});
+				} else {
+					api.list({'matterSlug': matterSlug},
+						function success( result ) {
+							nextMatterActivityUrl = result.next;
+							deferred.resolve( result.results );
+						},
+						function error( err ) {
+							deferred.reject( err );
+						}
+					);
+				}
+
 
 				return deferred.promise;
 			},
@@ -92,18 +109,30 @@ angular.module('toolkit-gui')
 			 *
 			 * @return {Promise}    Array of matters
 		 	 */
-			'itemstream': function(matterSlug, itemSlug) {
+			'itemstream': function(matterSlug, itemSlug, getMore) {
 				var api = activityItemResource();
 				var deferred = $q.defer();
 
-				api.list({'matterSlug': matterSlug, 'itemSlug': itemSlug},
-					function success( result ) {
+				if(getMore && nextItemActivityUrl) {
+					$http({'method': 'GET', 'url': nextItemActivityUrl }).
+					success(function(result, status, headers, config) {
+						nextItemActivityUrl = result.next;
 						deferred.resolve( result.results );
-					},
-					function error( err ) {
+					}).
+					error(function(err, status, headers, config) {
 						deferred.reject( err );
-					}
-				);
+					});
+				} else {
+					api.list({'matterSlug': matterSlug, 'itemSlug': itemSlug},
+						function success( result ) {
+							nextItemActivityUrl = result.next;
+							deferred.resolve( result.results );
+						},
+						function error( err ) {
+							deferred.reject( err );
+						}
+					);
+				}
 
 				return deferred.promise;
 			}
