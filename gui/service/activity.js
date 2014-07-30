@@ -14,7 +14,11 @@ angular.module('toolkit-gui')
 	function( $q, $http, $resource, API_BASE_URL ) {
 
 
-		var nextMatterActivityUrl, nextItemActivityUrl;
+		var nextUrl = {
+			'matter': null,
+			'item': null,
+			'mostRecentRequestType': null
+		};
 
 		/**
 		 * Returns a key/value object containing $resource methods to access matter API end-points
@@ -52,6 +56,11 @@ angular.module('toolkit-gui')
 
 		return {
 
+			'hasMoreItems': function( activityListType ) {
+				//
+				return nextUrl[activityListType];
+			},
+
 			/**
 			 * Requests a list of activity items for the matter from the API
 			 *
@@ -70,10 +79,10 @@ angular.module('toolkit-gui')
 				var api = activityMatterResource();
 				var deferred = $q.defer();
 
-				if(getMore && nextMatterActivityUrl) {
-					$http({'method': 'GET', 'url': nextMatterActivityUrl }).
+				if(getMore && nextUrl.matter) {
+					$http({'method': 'GET', 'url': nextUrl.matter }).
 					success(function(result, status, headers, config) {
-						nextMatterActivityUrl = result.next;
+						nextUrl.matter = result.next;
 						deferred.resolve( result.results );
 					}).
 					error(function(err, status, headers, config) {
@@ -82,7 +91,7 @@ angular.module('toolkit-gui')
 				} else {
 					api.list({'matterSlug': matterSlug},
 						function success( result ) {
-							nextMatterActivityUrl = result.next;
+							nextUrl.matter = result.next;
 							deferred.resolve( result.results );
 						},
 						function error( err ) {
@@ -113,10 +122,10 @@ angular.module('toolkit-gui')
 				var api = activityItemResource();
 				var deferred = $q.defer();
 
-				if(getMore && nextItemActivityUrl) {
-					$http({'method': 'GET', 'url': nextItemActivityUrl }).
+				if(getMore && nextUrl.item) {
+					$http({'method': 'GET', 'url': nextUrl.item }).
 					success(function(result, status, headers, config) {
-						nextItemActivityUrl = result.next;
+						nextUrl.item = result.next;
 						deferred.resolve( result.results );
 					}).
 					error(function(err, status, headers, config) {
@@ -125,7 +134,7 @@ angular.module('toolkit-gui')
 				} else {
 					api.list({'matterSlug': matterSlug, 'itemSlug': itemSlug},
 						function success( result ) {
-							nextItemActivityUrl = result.next;
+							nextUrl.item = result.next;
 							deferred.resolve( result.results );
 						},
 						function error( err ) {

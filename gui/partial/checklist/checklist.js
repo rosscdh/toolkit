@@ -125,7 +125,8 @@ angular.module('toolkit-gui')
 			'itemFilter': null,
 			'knownSigners': [],
             'showPreviousRevisions': false,
-            'loadedItemdetails': {}
+            'loadedItemdetails': {},
+            'activityServiceData': activityService.data
 		};
 
 		$rootScope.searchEnabled = true;
@@ -2011,7 +2012,7 @@ angular.module('toolkit-gui')
 			if ($scope.data.streamType==='matter' || $scope.data.selectedItem===null){
 				activityService.matterstream(matterSlug, getMore).then(
 					 function success(result){
-						$scope.data.activitystream = $scope.data.activitystream.concat(result); // add items to array
+						$scope.data.activitystream = $scope.data.activitystream.concat((result||[])); // add items to array
 					 },
 					 function error(/*err*/){
 						if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to read activity matter stream.') {
@@ -2025,7 +2026,7 @@ angular.module('toolkit-gui')
 				activityService.itemstream(matterSlug, itemSlug, getMore).then(
 					 function success(result){
 						if($scope.data.selectedItem!==null) {
-							$scope.data.activitystream = $scope.data.activitystream.concat(result); // add items to array
+							$scope.data.activitystream = $scope.data.activitystream.concat((result||[])); // add items to array
 						}
 					 },
 					 function error(/*err*/){
