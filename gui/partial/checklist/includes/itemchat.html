@@ -19,8 +19,8 @@
         <div activity ng-model="activity" matter-slug="data.slug" item-slug="data.selectedItem.slug"
                       user="data.usdata.current"></div>
     </li>
-    <li>
-        <button class="btn btn-inverse btn-textarea btn-xs" type="button" ng-click="moreActivity()">More</button>
+    <li ng-if="data.activityHasMoreItems(data.streamType)">
+        <button class="btn btn-inverse btn-block btn-xs" type="button" ng-click="moreActivity()">Load more</button>
     </li>
     <li ng-show="!data.activitystream.length"><small class="lead text-muted">Discussion and activity will appear here.</small></li>
 </ul>

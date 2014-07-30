@@ -126,7 +126,7 @@ angular.module('toolkit-gui')
 			'knownSigners': [],
             'showPreviousRevisions': false,
             'loadedItemdetails': {},
-            'activityServiceData': activityService.data
+            'activityHasMoreItems': activityService.hasMoreItems
 		};
 
 		$rootScope.searchEnabled = true;
@@ -2001,17 +2001,17 @@ angular.module('toolkit-gui')
 		 * @private
 		 * @type {Object}
 		 */
-		$scope.initializeActivityStream = function( getMore ) {
+		$scope.initializeActivityStream = function( matter, getMore ) {
 			var matterSlug = $scope.data.slug;
 
 			// clear activity stream
-			if(!getMore) {
-				$scope.data.activitystream = [];
-			}
 
 			if ($scope.data.streamType==='matter' || $scope.data.selectedItem===null){
 				activityService.matterstream(matterSlug, getMore).then(
 					 function success(result){
+					 	if(!getMore) {
+							$scope.data.activitystream = [];
+						}
 						$scope.data.activitystream = $scope.data.activitystream.concat((result||[])); // add items to array
 					 },
 					 function error(/*err*/){
@@ -2026,6 +2026,9 @@ angular.module('toolkit-gui')
 				activityService.itemstream(matterSlug, itemSlug, getMore).then(
 					 function success(result){
 						if($scope.data.selectedItem!==null) {
+							if(!getMore) {
+								$scope.data.activitystream = [];
+							}
 							$scope.data.activitystream = $scope.data.activitystream.concat((result||[])); // add items to array
 						}
 					 },
@@ -2044,8 +2047,14 @@ angular.module('toolkit-gui')
 			}, 1000 * 60);*/
 		};
 
+		/**
+		 * Request more activity items from the activity service
+		 * @memberof			ChecklistCtrl
+		 * @private
+		 * @type {Function}
+		 */
 		$scope.moreActivity =function() {
-			$scope.initializeActivityStream(true);
+			$scope.initializeActivityStream( null, true);
 		};
 
 

@@ -13,11 +13,13 @@ angular.module('toolkit-gui')
 	'API_BASE_URL',
 	function( $q, $http, $resource, API_BASE_URL ) {
 
-
+		/**
+		 * Contains data for the next URL to request to get more activity items
+		 * @type {Object}
+		 */
 		var nextUrl = {
 			'matter': null,
-			'item': null,
-			'mostRecentRequestType': null
+			'item': null
 		};
 
 		/**
@@ -55,9 +57,21 @@ angular.module('toolkit-gui')
 		}
 
 		return {
-
+			/**
+			 * Return the URL of next API request to get more activity items
+			 *
+			 * @name				hasMoreItems
+			 *
+			 * @example
+		 	 * activityService.hasMoreItems( 'item' );
+			 *
+			 * @public
+			 * @method				hasMoreItems
+			 * @memberof			matterService
+			 *
+			 * @return {String}    URL of next API request to get more activity items
+		 	 */
 			'hasMoreItems': function( activityListType ) {
-				//
 				return nextUrl[activityListType];
 			},
 
@@ -121,6 +135,8 @@ angular.module('toolkit-gui')
 			'itemstream': function(matterSlug, itemSlug, getMore) {
 				var api = activityItemResource();
 				var deferred = $q.defer();
+
+				debugger;
 
 				if(getMore && nextUrl.item) {
 					$http({'method': 'GET', 'url': nextUrl.item }).
