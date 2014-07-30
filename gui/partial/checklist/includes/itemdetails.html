@@ -426,11 +426,17 @@
 </div>
 </div>
 
-<div tasks-list selected-item="data.selectedItem" current-user="data.usdata.current" matter="data.matter" tasks-complete="data.selectedItem.tasks_complete" ></div>
+<div ng-show="data.selectedItem">
+
+  <div tasks-list selected-item="data.selectedItem" current-user="data.usdata.current" matter="data.matter" tasks-complete="data.selectedItem.tasks_complete" ></div>
 </div>
+
+</div>
+
 <p>&nbsp;</p>
 
 
-
-<div attachments-list selected-item="data.selectedItem" current-user="data.usdata.current" matter="data.matter"></div>
+<div ng-show="data.selectedItem">
+  <div attachments-list selected-item="data.selectedItem" current-user="data.usdata.current" matter="data.matter"></div>
+</div>
 
