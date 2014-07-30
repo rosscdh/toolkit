@@ -14,9 +14,9 @@
 
 <div class="activity">
     <h4 class="ng-scope">
-        <a href="javascript:;" ng-click="activateActivityStream('item')" ng-show="data.selectedItem"
+        <a href="javascript:;" ng-click="activateActivityStream('item')" ng-show="data.selectedItem" class="activity-item"
         ng-class="{'active':data.streamType=='item', 'inactive':data.streamType=='matter'}" style="margin-right:12px;">Item Activity</a>
-        <a href="javascript:;" ng-click="activateActivityStream('matter')"
+        <a href="javascript:;" ng-click="activateActivityStream('matter')" class="activity-matter"
         ng-class="{'active':data.streamType=='matter', 'inactive':data.streamType=='item'}">All Activity</a>
     </h4>
     <ul class="list-unstyled activity-log">
