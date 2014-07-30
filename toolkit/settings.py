@@ -493,7 +493,7 @@ ACTSTREAM_SETTINGS = {
 BILLING_MATTER_LIMIT = {
     'ENABLED': True,
     'MAX_FREE_MATTERS': 3,
-    'EXCLUDE_EMAILS': ('yael@lawpal.com',),
+    'EXCLUDE_EMAILS': ('yael@lawpal.com', 'csandersreach@chicagobar.org',),
 }
 
 #
