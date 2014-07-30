@@ -375,8 +375,8 @@ angular.module('toolkit-gui')
 			}
 
 			// Guided tour (show only if demo project)
-			if (matter && matter._meta && matter._meta.matter && matter._meta.matter['is_demo']) {
-				IntroService.show(steps);
+			if (matter && matter._meta && matter._meta.matter && matter._meta.matter.is_demo === true) {
+                ChecklistIntroService.showIntro();
 			}
 		};
 

@@ -8,7 +8,6 @@
             <div ng-include="'/static/ng/partial/checklist/includes/item-discussion-private.html'"></div>
         </tab>
     </tabset>
-
     <!-- Public only -->
     <div ng-show="matter.selected.current_user.role != 'owner' && matter.selected.current_user.role != 'colleague'" ng-include="'/static/ng/partial/checklist/includes/item-discussion-public.html'"></div>
 </div>
