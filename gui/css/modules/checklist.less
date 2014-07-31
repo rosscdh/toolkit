@@ -910,3 +910,62 @@ ul.activity-log li .annotation {
   margin-top: 10px;
   margin-bottom: 12px;
 }
+
+
+.review, .signing {
+  padding:9px 3px 9px 8px;
+  color:darken(@silver, 25%);
+  font-size:15px;
+  font-weight:normal;
+  background-color:white;
+  a.btn {
+    color:white;
+  }
+  a, a.btn.btn-link {
+    color: #78848c;
+    font-weight: bold;
+  }
+
+  &.in-progress {
+    background-color:lighten(@silver, 18%);
+  }
+  ul {
+
+    li {
+      margin-bottom:5px;
+      margin-top:5px;
+      padding:5px 5px 5px 5px;
+      background-color:white;
+      a {
+        color: @orange;
+        font-size:13px;
+      }
+      a.btn {
+        opacity:0.8;
+      }
+      span {
+        font-size:12px;
+        opacity:1;
+      }
+      &.complete {
+        a {
+          color:@brand-success;
+        }
+      }
+      [class*="fui-"] {
+        float:right;
+        margin-top:-6px;
+      }
+      button [class*="fui-"] {
+        font-size:inherit;
+        margin-top:0px;
+        float:none;
+      }
+      .close {
+        font-size:14px;
+        padding-left:4px;
+      }
+    }
+
+  }
+}
