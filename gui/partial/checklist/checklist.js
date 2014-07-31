@@ -2069,7 +2069,7 @@ angular.module('toolkit-gui')
 		 */
 		$scope.initializeItemDiscussions = function(matterSlug, itemSlug) {
             // only Owners and Colleagues can view the private discussions
-            if ( ['owner', 'colleague'].indexOf($scope.data.matter.current_user.role) != -1 ) {
+            if ( ['owner', 'colleague'].indexOf($scope.data.matter.current_user.role) !== -1 ) {
 
     			matterItemService.getComments(matterSlug, itemSlug, 'private').then(
     				function success(result) {
