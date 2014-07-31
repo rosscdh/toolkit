@@ -710,10 +710,33 @@ li.previous-toggle {
  background-color: #F0F0F0;
  height: 413px;
 }
-#checklist-activity {
-  padding-bottom: 0px;
-}
 
+#checklist-activity {
+    background-color: #DDDCDC;
+    float: left;
+    height: 100%;
+
+    .item-comments {
+        height: 60%;
+        position: relative;
+    }
+    .activity {
+        height: 40%;
+        position: relative;
+
+        .activity-section {
+            position: relative;
+
+            .load-more {
+                bottom: 0;
+                left: 0;
+                position: absolute;
+                right: 0;
+                z-index: 999;
+            }
+        }
+    }
+}
 
 .item-comments{
   .nav-pills > li > a{
@@ -787,10 +810,3 @@ li.previous-toggle {
   background-color: none;
   opacity: 1;
 }
-
-
-#checklist-activity {
-  background-color: #DDDCDC;
-}
-
-
