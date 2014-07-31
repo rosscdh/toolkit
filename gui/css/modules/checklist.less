@@ -476,12 +476,12 @@ li.previous-toggle {
 
 
 .item-comments{
-  margin-top: 20px;
+  padding-top: 20px;
 
   position: relative;
   overflow: hidden;
   height: 400px;
-  background-color: #F6F6F6;
+  background-color: #F0F0F0;
 
 
   .nav-justified {
@@ -712,30 +712,31 @@ li.previous-toggle {
 }
 
 #checklist-activity {
-    background-color: #DDDCDC;
-    float: left;
-    height: 100%;
+  background-color: #DDDCDC;
+  float: left;
+  padding-bottom: 0px;
+  height: 100%;
 
-    .item-comments {
-        height: 60%;
-        position: relative;
+  .item-comments {
+    height: 60%;
+    position: relative;
+  }
+  .activity {
+    height: 40%;
+    position: relative;
+
+    .activity-section {
+      position: relative;
+
+      .load-more {
+        bottom: 0;
+        left: 0;
+        position: absolute;
+        right: 0;
+        z-index: 999;
+      }
     }
-    .activity {
-        height: 40%;
-        position: relative;
-
-        .activity-section {
-            position: relative;
-
-            .load-more {
-                bottom: 0;
-                left: 0;
-                position: absolute;
-                right: 0;
-                z-index: 999;
-            }
-        }
-    }
+  }
 }
 
 .item-comments{
