@@ -136,8 +136,6 @@ angular.module('toolkit-gui')
 				var api = activityItemResource();
 				var deferred = $q.defer();
 
-				debugger;
-
 				if(getMore && nextUrl.item) {
 					$http({'method': 'GET', 'url': nextUrl.item }).
 					success(function(result, status, headers, config) {
