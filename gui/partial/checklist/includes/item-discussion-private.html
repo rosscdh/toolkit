@@ -1,0 +1,29 @@
+<div ng-show="data.privateComments.length > 0">
+    <ul class="list-unstyled comment-thread message-tabs">
+        <li ng-repeat="comment in data.privateComments">
+            <div class="message-content">
+                <p>
+                    <span class="user-initials">{{ comment.author.initials }}:</span> <span class="comment-content">{{ comment.content }}</span>
+                </p>
+            </div>
+            <div class="meta-message">
+                <span class="meta-date">{{ comment.date_created | timeago }}</span>
+            </div>
+        </li>
+    </ul>
+
+</div>
+
+<div ng-show="data.privateComments.length == 0" class="comments-zero-state text-center">
+    <p class="small text-center no-comments">There are no comments for this item that can only be seen by colleagues.</p>
+</div>
+
+<div ng-mouseenter="show=true" class="new-message">
+    <form ng-submit="submitPrivateComment()">
+        <textarea mentions-box class="form-control" rows="2" placeholder="Comment on this item..." text="data.selectedItem.newPrivateComment" container-position="left" required></textarea>
+        <button class="btn btn-inverse btn-textarea btn-xs" type="submit" ng-show="show">Submit</button>
+    </form>
+    <div class="visible-to">
+        Visible to: <span class="initials" ng-repeat="user in data.matter.participants" ng-show="user.role=='owner'||user.role=='colleague'" style="margin-right: 5px;" ng-class="user.role">{{ user | initials }}</span>
+    </div>
+</div>

@@ -49,7 +49,7 @@ from .revision import RevisionEndpoint
 # from .workflow import WorkflowEndpoint
 
 from .comment import ItemCommentEndpoint
-
-from .discussion import DiscussionEndpoint, DiscussionCommentEndpoint, DiscussionParticipantEndpoint
+from .discussion import ItemDiscussionCommentEndpoint
+from .discussion import MatterDiscussionEndpoint, MatterDiscussionCommentEndpoint, MatterDiscussionParticipantEndpoint
 
 from .task import TaskEndpoint, ItemTasksView, ItemTaskView

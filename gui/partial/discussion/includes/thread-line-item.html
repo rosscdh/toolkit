@@ -2,6 +2,7 @@
 <div ng-show="!hasClientParticipants(thread)" class="type-icon lock"><i class="fa fa-lock"></i></div>
 <div ng-show="hasClientParticipants(thread)" class="type-icon lock"><i class="fa fa-unlock"></i></div>
 <div class="message">
+    <span ng-if="thread.is_archived" class="pull-right text-primary fui-check-inverted"></span>
     <h3 ng-bind="thread.title"></h3>
     <p ng-bind="thread.content | characters:25:false"></p>
 </div>

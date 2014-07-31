@@ -122,7 +122,6 @@ class UserProfile(EmailIsValidatedMixin, models.Model):
             self.data['open_requests'] = value
 
     def get_open_requests_count(self):
-        # my_requests returns a list, so we have to use len()
         from toolkit.core.item.models import Item
         return Item.objects.my_requests(self.user).get('count', 0)
 

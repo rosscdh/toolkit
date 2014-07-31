@@ -2,10 +2,10 @@
 
 {% load toolkit_tags %}
 
-{% block subject_line %}{{ actor }} commented on the thread {{ thread }} in {{ matter }}{% endblock %}
+{% block subject_line %}{{ actor }} commented on the {{ object_type }} {{ object }} in {{ matter }}{% endblock %}
 
 {% block html_content %}
-  {{ actor }} commented on the thread "{{ thread }}" in {{ matter }}.
+  {{ actor }} commented on the {{ object_type }} "{{ object }}" in {{ matter }}.
   <blockquote>{{ comment.comment }}</blockquote>
   {% if access_url %}<p>You can view this comment at: <a href="{% ABSOLUTE_BASE_URL access_url %}">{% ABSOLUTE_BASE_URL access_url %}</a></p>{% endif %}
 {% endblock %}

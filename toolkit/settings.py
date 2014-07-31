@@ -163,7 +163,7 @@ HELPER_APPS = (
     # threadedcomments app needs to be above the django.contrib.comments app
     'threadedcomments',
     'django.contrib.comments',
-    'toolkit.apps.discussion',
+    'toolkit.apps.discussion',  # NB needs to be in the defined order here AFTER actstream
 
     'jsonify',
 

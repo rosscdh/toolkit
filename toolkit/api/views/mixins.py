@@ -81,6 +81,18 @@ class SpecificAttributeMixin(object):
         return getattr(self.object, self.specific_attribute, None)
 
 
+class ItemMixin(MatterMixin, generics.GenericAPIView):
+    """
+    Get the item from the url slug :item_slug
+    """
+    def initialize_request(self, request, *args, **kwargs):
+        request = super(ItemMixin, self).initialize_request(request, *args, **kwargs)
+
+        # provide the item object
+        self.item = get_object_or_404(Item, matter=self.matter, slug=kwargs.get('item_slug'))
+        return request
+
+
 class ThreadMixin(MatterMixin, generics.GenericAPIView):
     """
     Get the thread from the url slug :thread_slug

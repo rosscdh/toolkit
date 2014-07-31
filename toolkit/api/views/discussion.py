@@ -16,10 +16,10 @@ from toolkit.api.serializers import (DiscussionCommentSerializer,
 from toolkit.apps.discussion.models import DiscussionComment
 from toolkit.apps.workspace.services import EnsureCustomerService
 
-from .mixins import MatterMixin, ThreadMixin
+from .mixins import ItemMixin, MatterMixin, ThreadMixin
 
 
-class DiscussionEndpoint(MatterMixin, viewsets.ModelViewSet):
+class MatterDiscussionEndpoint(MatterMixin, viewsets.ModelViewSet):
     lookup_field = 'slug'
     model = DiscussionComment
 
@@ -45,7 +45,7 @@ class DiscussionEndpoint(MatterMixin, viewsets.ModelViewSet):
         if request.user not in obj.participants.all():
             self.permission_denied(request)
 
-        super(DiscussionEndpoint, self).check_object_permissions(request=request, obj=obj)
+        super(MatterDiscussionEndpoint, self).check_object_permissions(request=request, obj=obj)
 
     def pre_save(self, obj):
         obj.matter = self.matter
@@ -53,13 +53,13 @@ class DiscussionEndpoint(MatterMixin, viewsets.ModelViewSet):
         obj.site_id = settings.SITE_ID
         obj.user = self.request.user
 
-        return super(DiscussionEndpoint, self).pre_save(obj=obj)
+        return super(MatterDiscussionEndpoint, self).pre_save(obj=obj)
 
     def post_save(self, obj, created=False):
         if created:
             obj.participants.add(self.request.user)
 
-        return super(DiscussionEndpoint, self).post_save(obj=obj)
+        return super(MatterDiscussionEndpoint, self).post_save(obj=obj)
 
     def can_read(self, user):
         return user in self.matter.participants.all()
@@ -70,15 +70,46 @@ class DiscussionEndpoint(MatterMixin, viewsets.ModelViewSet):
     def can_delete(self, user):
         return user in self.matter.participants.all()
 
-rulez_registry.register("can_read", DiscussionEndpoint)
-rulez_registry.register("can_edit", DiscussionEndpoint)
-rulez_registry.register("can_delete", DiscussionEndpoint)
+rulez_registry.register("can_read", MatterDiscussionEndpoint)
+rulez_registry.register("can_edit", MatterDiscussionEndpoint)
+rulez_registry.register("can_delete", MatterDiscussionEndpoint)
 
 
-class DiscussionCommentEndpoint(ThreadMixin, viewsets.ModelViewSet):
+class BaseDiscussionCommentEndpoint(viewsets.ModelViewSet):
     lookup_field = 'slug'
     model = DiscussionComment
     serializer_class = DiscussionCommentSerializer
+
+    def pre_save(self, obj):
+        obj.site_id = settings.SITE_ID
+        obj.user = self.request.user
+
+        return super(BaseDiscussionCommentEndpoint, self).pre_save(obj=obj)
+
+    def post_save(self, obj, created=False):
+        if created:
+            obj.send_commented_email()
+
+        return super(BaseDiscussionCommentEndpoint, self).post_save(obj=obj)
+
+    def can_read(self, user):
+        return user in self.get_participants()
+
+    def can_edit(self, user):
+        return user in self.get_participants()
+
+    def can_delete(self, user):
+        return False
+        # return user in self.get_participants()
+
+rulez_registry.register("can_read", BaseDiscussionCommentEndpoint)
+rulez_registry.register("can_edit", BaseDiscussionCommentEndpoint)
+rulez_registry.register("can_delete", BaseDiscussionCommentEndpoint)
+
+
+class MatterDiscussionCommentEndpoint(ThreadMixin, BaseDiscussionCommentEndpoint):
+    def get_participants(self):
+        return self.thread.participants.all()
 
     def get_queryset(self):
         return self.model.objects.for_model(self.matter).filter(parent=self.thread.pk).order_by('submit_date')
@@ -86,33 +117,30 @@ class DiscussionCommentEndpoint(ThreadMixin, viewsets.ModelViewSet):
     def pre_save(self, obj):
         obj.matter = self.matter
         obj.parent = self.model.objects.get(pk=self.thread.pk)
-        obj.site_id = settings.SITE_ID
-        obj.user = self.request.user
+        obj.is_public = False
 
-        return super(DiscussionCommentEndpoint, self).pre_save(obj=obj)
-
-    def post_save(self, obj, created=False):
-        if created:
-            obj.send_commented_email()
-
-        return super(DiscussionCommentEndpoint, self).post_save(obj=obj)
-
-    def can_read(self, user):
-        return user in self.thread.participants.all()
-
-    def can_edit(self, user):
-        return user in self.thread.participants.all()
-
-    def can_delete(self, user):
-        return False
-        # return user in self.thread.participants.all()
-
-rulez_registry.register("can_read", DiscussionCommentEndpoint)
-rulez_registry.register("can_edit", DiscussionCommentEndpoint)
-rulez_registry.register("can_delete", DiscussionCommentEndpoint)
+        return super(MatterDiscussionCommentEndpoint, self).pre_save(obj=obj)
 
 
-class DiscussionParticipantEndpoint(ThreadMixin, mixins.CreateModelMixin, viewsets.ReadOnlyModelViewSet):
+class ItemDiscussionCommentEndpoint(ItemMixin, BaseDiscussionCommentEndpoint):
+    @property
+    def is_public(self):
+        return self.kwargs.get('thread_slug') == 'public'
+
+    def get_participants(self):
+        return self.matter.participants.all() if self.is_public else self.matter.something.all()
+
+    def get_queryset(self):
+        return self.model.objects.for_model(self.item).filter(is_public=self.is_public).order_by('submit_date')
+
+    def pre_save(self, obj):
+        obj.item = self.item
+        obj.is_public = self.is_public
+
+        return super(ItemDiscussionCommentEndpoint, self).pre_save(obj=obj)
+
+
+class MatterDiscussionParticipantEndpoint(ThreadMixin, mixins.CreateModelMixin, viewsets.ReadOnlyModelViewSet):
     lookup_field = 'username'
     model = DiscussionComment.participants.through
     serializer_class = SimpleUserSerializer
@@ -191,6 +219,6 @@ class DiscussionParticipantEndpoint(ThreadMixin, mixins.CreateModelMixin, viewse
     def can_delete(self, user):
         return user in self.thread.participants.all()
 
-rulez_registry.register("can_read", DiscussionParticipantEndpoint)
-rulez_registry.register("can_edit", DiscussionParticipantEndpoint)
-rulez_registry.register("can_delete", DiscussionParticipantEndpoint)
+rulez_registry.register("can_read", MatterDiscussionParticipantEndpoint)
+rulez_registry.register("can_edit", MatterDiscussionParticipantEndpoint)
+rulez_registry.register("can_delete", MatterDiscussionParticipantEndpoint)

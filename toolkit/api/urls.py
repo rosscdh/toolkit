@@ -41,8 +41,10 @@ from .views import ItemEndpoint
 from .views import RevisionEndpoint
 from .views import AttachmentView, AttachmentEndpoint
 from .views import ItemCommentEndpoint
-# from .views import MatterCommentEndpoint
-from .views import DiscussionEndpoint, DiscussionCommentEndpoint, DiscussionParticipantEndpoint
+
+from .views import MatterDiscussionEndpoint, MatterDiscussionCommentEndpoint, MatterDiscussionParticipantEndpoint
+from .views import ItemDiscussionCommentEndpoint
+
 from .views import ReviewEndpoint
 from .views import SignatureEndpoint
 from .views import (TaskEndpoint,
@@ -67,20 +69,34 @@ router.register(r'reviews', ReviewEndpoint)
 router.register(r'signatures', SignatureEndpoint)
 router.register(r'tasks', TaskEndpoint)
 
+
+"""
+Matter Discussion Endpoints
+"""
 router.register(
     r'matters/(?P<matter_slug>[\w-]+)/discussions',
-    DiscussionEndpoint,
-    'discussion'
+    MatterDiscussionEndpoint,
+    'matter_discussion'
 )
 router.register(
     r'matters/(?P<matter_slug>[\w-]+)/discussions/(?P<thread_slug>[\w-]+)/comments',
-    DiscussionCommentEndpoint,
-    'discussion_comment'
+    MatterDiscussionCommentEndpoint,
+    'matter_discussion_comment'
 )
 router.register(
     r'matters/(?P<matter_slug>[\w-]+)/discussions/(?P<thread_slug>[\w-]+)/participants',
-    DiscussionParticipantEndpoint,
-    'discussion_participant'
+    MatterDiscussionParticipantEndpoint,
+    'matter_discussion_participant'
+)
+
+
+"""
+Item Discussion Endpoints
+"""
+router.register(
+    r'matters/(?P<matter_slug>[\w-]+)/items/(?P<item_slug>[\d\w-]+)/discussions/(?P<thread_slug>[\w-]+)/comments',
+    ItemDiscussionCommentEndpoint,
+    'item_discussion_comment'
 )
 
 

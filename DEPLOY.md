@@ -1,6 +1,13 @@
 Deployment actions by branch
 ----------------------------
 
+[feature/item-discussions]
+
+1. ./manage.py migrate discussion 0001
+2. ./manage.py migrate discussion 0002  # update older matter discussion comments
+3. ./manage.py migrate discussion 0003  # bring across item comments from actstream
+
+
 --------------------------------------------------------------------------------
 ** DEPLOYED 25 July 2014
 --------------------------------------------------------------------------------
@@ -18,7 +25,6 @@ Deployment actions by branch
 [feature/completed-requests]
 
 1. ./manage.py syncdb
-
 
 
 --------------------------------------------------------------------------------
