@@ -2068,15 +2068,19 @@ angular.module('toolkit-gui')
 		 * @type {Object}
 		 */
 		$scope.initializeItemDiscussions = function(matterSlug, itemSlug) {
-			matterItemService.getComments(matterSlug, itemSlug, 'private').then(
-				function success(result) {
-					$scope.data.privateComments = result;
-				},
-				function error(/*err*/) {
-					toaster.pop('error', 'Error!', 'Unable to read item discussion comments.', 5000);
-				}
-			);
+            // only Owners and Colleagues can view the private discussions
+            if ( ['owner', 'colleague'].indexOf($scope.data.matter.current_user.role) != -1 ) {
 
+    			matterItemService.getComments(matterSlug, itemSlug, 'private').then(
+    				function success(result) {
+    					$scope.data.privateComments = result;
+    				},
+    				function error(/*err*/) {
+    					toaster.pop('error', 'Error!', 'Unable to read item discussion comments.', 5000);
+    				}
+    			);
+            }
+            // public comments
 			matterItemService.getComments(matterSlug, itemSlug, 'public').then(
 				function success(result) {
 					$scope.data.publicComments = result;
