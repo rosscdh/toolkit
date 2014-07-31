@@ -8,9 +8,19 @@ angular.module('toolkit-gui')
  */
 .factory('activityService',[
 	'$q',
+	'$http',
 	'$resource',
 	'API_BASE_URL',
-	function( $q, $resource, API_BASE_URL ) {
+	function( $q, $http, $resource, API_BASE_URL ) {
+
+		/**
+		 * Contains data for the next URL to request to get more activity items
+		 * @type {Object}
+		 */
+		var nextUrl = {
+			'matter': null,
+			'item': null
+		};
 
 		/**
 		 * Returns a key/value object containing $resource methods to access matter API end-points
@@ -47,6 +57,23 @@ angular.module('toolkit-gui')
 		}
 
 		return {
+			/**
+			 * Return the URL of next API request to get more activity items
+			 *
+			 * @name				hasMoreItems
+			 *
+			 * @example
+		 	 * activityService.hasMoreItems( 'item' );
+			 *
+			 * @public
+			 * @method				hasMoreItems
+			 * @memberof			matterService
+			 *
+			 * @return {String}    URL of next API request to get more activity items
+		 	 */
+			'hasMoreItems': function( activityListType ) {
+				return nextUrl[activityListType];
+			},
 
 			/**
 			 * Requests a list of activity items for the matter from the API
@@ -62,18 +89,31 @@ angular.module('toolkit-gui')
 			 *
 			 * @return {Promise}    Array of matters
 		 	 */
-			'matterstream': function(matterSlug) {
+			'matterstream': function(matterSlug, getMore) {
 				var api = activityMatterResource();
 				var deferred = $q.defer();
 
-				api.list({'matterSlug': matterSlug},
-					function success( result ) {
+				if(getMore && nextUrl.matter) {
+					$http({'method': 'GET', 'url': nextUrl.matter }).
+					success(function(result, status, headers, config) {
+						nextUrl.matter = result.next;
 						deferred.resolve( result.results );
-					},
-					function error( err ) {
+					}).
+					error(function(err, status, headers, config) {
 						deferred.reject( err );
-					}
-				);
+					});
+				} else {
+					api.list({'matterSlug': matterSlug},
+						function success( result ) {
+							nextUrl.matter = result.next;
+							deferred.resolve( result.results );
+						},
+						function error( err ) {
+							deferred.reject( err );
+						}
+					);
+				}
+
 
 				return deferred.promise;
 			},
@@ -92,18 +132,32 @@ angular.module('toolkit-gui')
 			 *
 			 * @return {Promise}    Array of matters
 		 	 */
-			'itemstream': function(matterSlug, itemSlug) {
+			'itemstream': function(matterSlug, itemSlug, getMore) {
 				var api = activityItemResource();
 				var deferred = $q.defer();
 
-				api.list({'matterSlug': matterSlug, 'itemSlug': itemSlug},
-					function success( result ) {
+				debugger;
+
+				if(getMore && nextUrl.item) {
+					$http({'method': 'GET', 'url': nextUrl.item }).
+					success(function(result, status, headers, config) {
+						nextUrl.item = result.next;
 						deferred.resolve( result.results );
-					},
-					function error( err ) {
+					}).
+					error(function(err, status, headers, config) {
 						deferred.reject( err );
-					}
-				);
+					});
+				} else {
+					api.list({'matterSlug': matterSlug, 'itemSlug': itemSlug},
+						function success( result ) {
+							nextUrl.item = result.next;
+							deferred.resolve( result.results );
+						},
+						function error( err ) {
+							deferred.reject( err );
+						}
+					);
+				}
 
 				return deferred.promise;
 			}

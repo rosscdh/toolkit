@@ -128,6 +128,7 @@ angular.module('toolkit-gui')
 			'loadedItemdetails': {},
 			'privateComments': [],
 			'publicComments': [],
+            'activityHasMoreItems': activityService.hasMoreItems
 		};
 
 		$rootScope.searchEnabled = true;
@@ -2002,13 +2003,18 @@ angular.module('toolkit-gui')
 		 * @private
 		 * @type {Object}
 		 */
-		$scope.initializeActivityStream = function() {
+		$scope.initializeActivityStream = function( matter, getMore ) {
 			var matterSlug = $scope.data.slug;
 
+			// clear activity stream
+
 			if ($scope.data.streamType==='matter' || $scope.data.selectedItem===null){
-				activityService.matterstream(matterSlug).then(
+				activityService.matterstream(matterSlug, getMore).then(
 					 function success(result){
-						$scope.data.activitystream = result;
+					 	if(!getMore) {
+							$scope.data.activitystream = [];
+						}
+						$scope.data.activitystream = $scope.data.activitystream.concat((result||[])); // add items to array
 					 },
 					 function error(/*err*/){
 						if( !toaster.toast || !toaster.toast.body || toaster.toast.body!== 'Unable to read activity matter stream.') {
@@ -2021,10 +2027,13 @@ angular.module('toolkit-gui')
 
 				$scope.initializeItemDiscussions(matterSlug, itemSlug);
 
-				activityService.itemstream(matterSlug, itemSlug).then(
+				activityService.itemstream(matterSlug, itemSlug, getMore).then(
 					 function success(result){
 						if($scope.data.selectedItem!==null) {
-							$scope.data.activitystream = result;
+							if(!getMore) {
+								$scope.data.activitystream = [];
+							}
+							$scope.data.activitystream = $scope.data.activitystream.concat((result||[])); // add items to array
 						}
 					 },
 					 function error(/*err*/){
@@ -2040,6 +2049,16 @@ angular.module('toolkit-gui')
 			$timeout(function (){
 				$scope.initializeActivityStream();
 			}, 1000 * 60);*/
+		};
+
+		/**
+		 * Request more activity items from the activity service
+		 * @memberof			ChecklistCtrl
+		 * @private
+		 * @type {Function}
+		 */
+		$scope.moreActivity =function() {
+			$scope.initializeActivityStream( null, true);
 		};
 
 		/**
