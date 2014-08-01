@@ -24,6 +24,7 @@ angular.module('toolkit-gui').controller('SearchCtrl',[
 				// Search
 				searchService.filter( $scope.data.matterSlug, $scope.data.term ).then(
 					function success( results ) {
+                        $log.debug("Found results: " + results.length);
 						$scope.data.searchResults = results;
 						$scope.data.display = true;
 					},
@@ -33,9 +34,9 @@ angular.module('toolkit-gui').controller('SearchCtrl',[
 					}
 				);
 
-			} else if( $scope.data.searchResults.results.length > 0 ) {
+			} else if( $scope.data.searchResults.length > 0 ) {
 				// Select item
-				$scope.selectItem( $scope.data.searchResults.results[0] );
+				$scope.selectItem( $scope.data.searchResults[0] );
 			}
 		};
 
@@ -49,7 +50,7 @@ angular.module('toolkit-gui').controller('SearchCtrl',[
 		$scope.hide = function() {
 			$timeout( function(){
 				$scope.data.display = false;
-				$scope.data.searchResults.results = [];
+				$scope.data.searchResults = [];
 				$scope.data.term = '';
 			},300);
 		};

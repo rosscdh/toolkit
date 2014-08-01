@@ -1,56 +1,64 @@
 angular.module('toolkit-gui').factory('searchService', [
-	'$q',
-	'$log', 
-	'$resource',
-	'API_BASE_URL',
-	function($q, $log, $resource, API_BASE_URL) {
+    '$q',
+    '$log',
+    '$resource',
+    'API_BASE_URL',
+    function ($q, $log, $resource, API_BASE_URL) {
 
         function searchAPI() {
-            return $resource( API_BASE_URL + 'matters/:matterSlug/search', {}, {
-				'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json' }, 'isArray': true }
-			});
+            return $resource(API_BASE_URL + 'matters/:matterSlug/search', {}, {
+                'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json' }, 'isArray': true }
+            });
         }
 
-		var data = {
-			'term': null,
-			'results': []
-		};
+        var data = {
+            'results': null
+        };
 
-		var search = {
-			'filter': function( matterSlug, term ) {
-				var deferred = $q.defer();
-				var results = []; var reg;
-				data.term = term;
+        function filterByTerm(term) {
+            var reg = new RegExp( term, "i");
+            var filteredResults = jQuery.grep( data.results, function( item ) {
+             	return (item.name && item.name.match(reg) && item.name.match(reg).length) || (item.description && item.description.match(reg) && item.description.match(reg).length);
+            });
 
-				if( term && term.length > 0 ) {
-					// perform search
-					var api = searchAPI();
+            return filteredResults;
+        }
 
-					api.get({'matterSlug': matterSlug},
-						function success( response ) {
-							$log.debug(response);
+        var search = {
+            'filter': function (matterSlug, term) {
+                var deferred = $q.defer();
+                var results = [];
+                var reg;
 
-							// reg = new RegExp( term, "i");
-							// results = jQuery.grep( results, function( item ) {
-							// 	return item.name.match(reg) && item.name.match(reg).length || item.description.match(reg) && item.description.match(reg).length;
-							// });
+                if (term && term.length > 0) {
+                    if (data.results) {
+                        var filteredItems = filterByTerm(term);
+                        deferred.resolve(filteredItems);
+                    } else {
+                        // perform search
+                        var api = searchAPI();
 
-							data.results = response;
-							deferred.resolve( response );
-						},
-						function error( err ) {
-							data.results = [];
-							deferred.reject( err );
-						}
-					);
-				}
-				return deferred.promise;
-			},
-			'data': function() {
-				return data;
-			}
-		};
+                        api.get({'matterSlug': matterSlug},
+                            function success(response) {
+                                data.results = response;
+                                var filteredItems = filterByTerm(term);
+                                deferred.resolve(filteredItems);
+                            },
+                            function error(err) {
+                                data.results = [];
+                                deferred.reject(err);
+                            }
+                        );
+                    }
+                }
 
-		return search;
-	}
+                return deferred.promise;
+            },
+            'data': function () {
+                return data;
+            }
+        };
+
+        return search;
+    }
 ]);
