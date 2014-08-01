@@ -558,156 +558,156 @@ div.full {
 					}
 				}
 			}
-		}*/
+      }*/
 
-}
-.checklist-wrapper div.chat h4 {
-  margin: 0px -15px 0px -15px;
-  padding: 22px 15px 12px 15px;
-  font-size: 15px;
-  color: #949da4;
-}
-.checklist-wrapper div.chat h4 span {
-  font-size: 12px;
-}
-.checklist-wrapper div.chat h4 a {
-  padding-bottom: 10px;
-}
-.checklist-wrapper div.chat div.new-message {
-  background-color: #eceeef;
-  z-index: 3;
-  clear: both;
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-.checklist-wrapper div.chat div.new-message textarea {
-  font-size: 12px;
-  border: 0px;
-  margin-top: 3px;
-}
-.checklist-wrapper div.chat div.new-message textarea:focus {
-  border: inherit;
-}
-.checklist-wrapper div.chat div.new-message .btn-textarea {
-  float: right;
-  margin-top: -10px;
-}
-.checklist-wrapper div.chat ul.activity-log {
-  margin-top: 10px;
-}
-.checklist-wrapper div.chat ul.activity-log li {
-  font-size: 12px;
-  line-height: 17px;
-  margin-bottom: 4px;
-  color: #777;
-  position: relative;
-}
-.checklist-wrapper div.chat ul.activity-log li a {
-  border-bottom: 1px dotted #ccc;
-  color: #999;
-}
-.checklist-wrapper div.chat ul.activity-log li .comment,
-.checklist-wrapper div.chat ul.activity-log li .annotation {
-  margin-top: 10px;
-  margin-bottom: 12px;
-}
-.checklist-wrapper div.chat ul.activity-log li .btn {
-  color: white;
-}
-.checklist-wrapper div.chat ul.activity-log li .edit {
-  float: right;
-  font-weight: normal;
-  line-height: 1;
-  text-shadow: 0 1px 0 #FFFFFF;
-  font-size: 8px;
-  margin-right: 5px;
-  margin-top: 1px;
-}
-.checklist-wrapper div.chat ul.activity-log li blockquote {
-  margin-top: 2px;
-  margin-bottom: 0px;
-  border-left: none;
-  position: relative;
-  font-size: 13px;
-  color: #2980b9;
-  padding: 4px 6px 4px 26px;
-  background-color: #f4f9fc;
-  border-radius: 4px;
-}
-.checklist-wrapper div.chat ul.activity-log li blockquote div {
-  line-height: 17px;
-  padding: 4px;
-}
-.checklist-wrapper div.chat ul.activity-log li blockquote a {
-  font-style: normal;
-  color: inherit;
-  font-size: 11px;
-  opacity: 0.6;
-}
-.checklist-wrapper div.chat ul.activity-log li blockquote span {
-  border-radius: 4px 0px 0px 4px;
-  display: block;
-  position: absolute;
-  font-weight: bold;
-  left: 0;
-  color: #f9fbfd;
-  padding: 8px 3px 0px 4px;
-  font-size: 11px;
-  text-align: center;
-  width: 23px;
-  top: 0;
-  height: 100%;
-  background-color: #a9d1ec;
-}
-.checklist-wrapper div.chat ul.activity-log li blockquote span.fui-document {
-  margin-top: -1px;
-  padding-left: 7px;
-}
-.checklist-wrapper div.chat ul.activity-log li .annotation blockquote {
-  color: #f39c12;
-  background-color: #fefaf3;
-}
-.checklist-wrapper div.chat ul.activity-log li .annotation blockquote span {
-  color: #fffcf8;
-  background-color: #fce3bc;
-}
-.checklist-wrapper div.chat ul.activity-log li div.basic {
-  color: #aaa;
-}
-.checklist-wrapper div.chat ul.activity-log li span.since {
-  color: #ccc;
-}
-.checklist-wrapper div.chat ul.activity-log li span.pe-7s-clock {
-  color: #aaa;
-  opacity: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-.checklist-wrapper div.chat ul.activity-log li:hover span.pe-7s-clock {
-  opacity: 1;
-}
-.modal-content ul.participants li {
-  margin: 10px 0px;
-}
-.modal-content ul.participants li .user {
-  font-weight: normal;
-  color: #aaa;
-  border: none;
-  background-color: #FFF;
-  padding: 8px;
-  font-size: 12px;
-  border-radius: 40px;
-}
-.modal-content ul.participants li label {
-  font-weight: normal;
-}
-.modal-content p.note {
-  font-size: 13px;
-  line-height: 17px;
-  color: #888;
-  margin: 10px 0px;
-}
+    }
+    .checklist-wrapper div.chat h4 {
+      margin: 0px -15px 0px -15px;
+      padding: 22px 15px 12px 15px;
+      font-size: 15px;
+      color: #949da4;
+    }
+    .checklist-wrapper div.chat h4 span {
+      font-size: 12px;
+    }
+    .checklist-wrapper div.chat h4 a {
+      padding-bottom: 10px;
+    }
+    .checklist-wrapper div.chat div.new-message {
+      background-color: #eceeef;
+      z-index: 3;
+      clear: both;
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+    .checklist-wrapper div.chat div.new-message textarea {
+      font-size: 12px;
+      border: 0px;
+      margin-top: 3px;
+    }
+    .checklist-wrapper div.chat div.new-message textarea:focus {
+      border: inherit;
+    }
+    .checklist-wrapper div.chat div.new-message .btn-textarea {
+      float: right;
+      margin-top: -10px;
+    }
+    .checklist-wrapper div.chat ul.activity-log {
+      margin-top: 10px;
+    }
+    .checklist-wrapper div.chat ul.activity-log li {
+      font-size: 12px;
+      line-height: 17px;
+      margin-bottom: 4px;
+      color: #777;
+      position: relative;
+    }
+    .checklist-wrapper div.chat ul.activity-log li a {
+      border-bottom: 1px dotted #ccc;
+      color: #999;
+    }
+    .checklist-wrapper div.chat ul.activity-log li .comment,
+    .checklist-wrapper div.chat ul.activity-log li .annotation {
+      margin-top: 10px;
+      margin-bottom: 12px;
+    }
+    .activity-section ul.activity-log li .btn {
+      color: white;
+    }
+    .activity-section ul.activity-log li .edit {
+      float: right;
+      font-weight: normal;
+      line-height: 1;
+      text-shadow: 0 1px 0 #FFFFFF;
+      font-size: 8px;
+      margin-right: 5px;
+      margin-top: 1px;
+    }
+    .activity ul.activity-log li blockquote {
+      margin-top: 2px;
+      margin-bottom: 0px;
+      border-left: none;
+      position: relative;
+      font-size: 13px;
+      color: #2980b9;
+      padding: 4px 6px 4px 26px;
+      background-color: #f4f9fc;
+      border-radius: 4px;
+    }
+    .activity ul.activity-log li blockquote div {
+      line-height: 17px;
+      padding: 4px;
+    }
+    .activity ul.activity-log li blockquote a {
+      font-style: normal;
+      color: inherit;
+      font-size: 11px;
+      opacity: 0.6;
+    }
+    .activity ul.activity-log li blockquote span {
+      border-radius: 4px 0px 0px 4px;
+      display: block;
+      position: absolute;
+      font-weight: bold;
+      left: 0;
+      color: #f9fbfd;
+      padding: 8px 3px 0px 4px;
+      font-size: 11px;
+      text-align: center;
+      width: 23px;
+      top: 0;
+      height: 100%;
+      background-color: #a9d1ec;
+    }
+    ul.activity-log li blockquote span.fui-document {
+      margin-top: -1px;
+      padding-left: 7px;
+    }
+    ul.activity-log li .annotation blockquote {
+      color: #f39c12;
+      background-color: #fefaf3;
+    }
+    ul.activity-log li .annotation blockquote span {
+      color: #fffcf8;
+      background-color: #fce3bc;
+    }
+    ul.activity-log li div.basic {
+      color: #aaa;
+    }
+    ul.activity-log li span.since {
+      color: #ccc;
+    }
+    ul.activity-log li span.pe-7s-clock {
+      color: #aaa;
+      opacity: 0;
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
+    .checklist-wrapper div.chat ul.activity-log li:hover span.pe-7s-clock {
+      opacity: 1;
+    }
+    .modal-content ul.participants li {
+      margin: 10px 0px;
+    }
+    .modal-content ul.participants li .user {
+      font-weight: normal;
+      color: #aaa;
+      border: none;
+      background-color: #FFF;
+      padding: 8px;
+      font-size: 12px;
+      border-radius: 40px;
+    }
+    .modal-content ul.participants li label {
+      font-weight: normal;
+    }
+    .modal-content p.note {
+      font-size: 13px;
+      line-height: 17px;
+      color: #888;
+      margin: 10px 0px;
+    }
 /* #closing {
 	background-color:lighten(@silver, 18%);
 	table {
