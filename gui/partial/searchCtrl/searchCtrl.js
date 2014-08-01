@@ -1,25 +1,42 @@
 angular.module('toolkit-gui').controller('SearchCtrl',[
 	'$scope',
 	'searchService',
+	'smartRoutes',
 	'$rootScope',
 	'$timeout',
 	'$state',
     '$log',
-	function($scope, searchService, $rootScope, $timeout, $state, $log){
+	function($scope, searchService, smartRoutes, $rootScope, $timeout, $state, $log){
 		'use strict';
+	
+		var routeParams = smartRoutes.params();
+
 		$scope.data = {
-			'searchResults': searchService.data(),
+			'searchResults': [],
+			'matterSlug': routeParams.matterSlug,
 			'term': '',
 			'display': false
 		};
 
 		$scope.startSearch = function( keyCode ) {
-			if( keyCode!==13 ) {
-				searchService.filter( $scope.data.term );
-			} else if( $scope.data.searchResults.results.length>0 ) {
+
+			if( keyCode !== 13 ) {
+				// Search
+				searchService.filter( $scope.data.matterSlug, $scope.data.term ).then(
+					function success( results ) {
+						$scope.data.searchResults = results;
+						$scope.data.display = true;
+					},
+					function error( data ) {
+						$scope.data.searchResults = [];
+						$scope.data.display = false;
+					}
+				);
+
+			} else if( $scope.data.searchResults.results.length > 0 ) {
+				// Select item
 				$scope.selectItem( $scope.data.searchResults.results[0] );
 			}
-			$scope.data.display = true;
 		};
 
 		$scope.selectItem = function( item ) {
