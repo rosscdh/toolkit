@@ -1,9 +1,13 @@
 Deployment actions by branch
 ----------------------------
 
+--------------------------------------------------------------------------------
+** DEPLOYED 01 August 2014
+--------------------------------------------------------------------------------
+
 [feature/item-discussions]
 
-1. ./manage.py migrate discussion 0001
+1. ./manage.py migrate discussion 0001 --fake
 2. ./manage.py migrate discussion 0002  # update older matter discussion comments
 3. ./manage.py migrate discussion 0003  # bring across item comments from actstream
 
