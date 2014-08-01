@@ -7,7 +7,7 @@ angular.module('toolkit-gui').factory('searchService', [
 
         function searchAPI() {
             return $resource( API_BASE_URL + 'matters/:matterSlug/search', {}, {
-				'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json'/*, 'token': token.value*/ } },
+				'get': { 'method': 'GET', 'headers': { 'Content-Type': 'application/json' }, 'isArray': true }
 			});
         }
 
@@ -28,18 +28,15 @@ angular.module('toolkit-gui').factory('searchService', [
 
 					api.get({'matterSlug': matterSlug},
 						function success( response ) {
-							alert(response)
 							$log.debug(response);
-
-							var results = response;
 
 							// reg = new RegExp( term, "i");
 							// results = jQuery.grep( results, function( item ) {
 							// 	return item.name.match(reg) && item.name.match(reg).length || item.description.match(reg) && item.description.match(reg).length;
 							// });
 
-							data.results = results;
-							deferred.resolve( results );
+							data.results = response;
+							deferred.resolve( response );
 						},
 						function error( err ) {
 							data.results = [];
@@ -47,7 +44,7 @@ angular.module('toolkit-gui').factory('searchService', [
 						}
 					);
 				}
-				return deferred.promise
+				return deferred.promise;
 			},
 			'data': function() {
 				return data;
