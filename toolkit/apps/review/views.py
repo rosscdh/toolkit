@@ -85,7 +85,7 @@ class ReviewRevisionView(DetailView):
 
         split_file_name = os.path.split(file_name)[-1]
         filename_no_ext, ext = os.path.splitext(split_file_name)
-        ext = 'pdf'
+        #ext = 'pdf'
 
         try:
             #
