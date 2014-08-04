@@ -228,8 +228,7 @@
             <ul class="search-results list-unstyled">
               <li class="result-item reveal-animation" ng-repeat="result in data.searchResults">
                 <a href="{{ result.url }}">
-                  <p>{{ result.name }} ({{ result.file_type  }})</p>
-                  <p ng-show="result.description"><small ng-bind="result.description"></small></p>
+                  <p>{{ result.name }} ({{ result.file_type  }})<small ng-show="result.description" ng-bind="result.description"></small></p>
                   <p ng-show="result.latest_revision"><small ng-bind="result.latest_revision.name"></small> <small ng-bind="result.latest_revision.slug"></small></p>
                 </a>
               </li>

@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+from django.template.defaultfilters import truncatewords
 from rest_framework import serializers
 
 
@@ -23,7 +24,7 @@ class MatterSearchSerializer(serializers.Serializer):
 
     def get_description(self, obj):
         if obj.__class__.__name__ in ['Item', 'Revision', 'Task']:
-            return obj.description
+            return truncatewords(obj.description, 7)
         return None
 
     def get_url(self, obj):
