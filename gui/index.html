@@ -54,6 +54,7 @@
       <script src="bower_components/raven-js/dist/raven.min.js"></script>
       <script src="bower_components/crypto-js/rollups/hmac-sha256.js"></script>
       <script src="bower_components/html5-desktop-notifications/desktop-notify.js"></script>
+      <script src="/static/js/fuse.min.js"></script>
       <script src="/static/ng/lib/angular-intercom.js" data-remove="exclude"></script>
       <script type="text/javascript" src="//api.filepicker.io/v1/filepicker.js" data-remove="exclude"></script>
 
@@ -227,8 +228,7 @@
             <ul class="search-results list-unstyled">
               <li class="result-item reveal-animation" ng-repeat="result in data.searchResults">
                 <a href="{{ result.url }}">
-                  <p>{{ result.name }} ({{ result.file_type  }})</p>
-                  <p ng-show="result.description"><small ng-bind="result.description"></small></p>
+                  <p>{{ result.name }} ({{ result.file_type  }})<small ng-show="result.description" ng-bind="result.description"></small></p>
                   <p ng-show="result.latest_revision"><small ng-bind="result.latest_revision.name"></small> <small ng-bind="result.latest_revision.slug"></small></p>
                 </a>
               </li>
