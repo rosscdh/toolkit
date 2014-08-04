@@ -15,13 +15,22 @@ angular.module('toolkit-gui').factory('searchService', [
             'results': null
         };
 
-        function filterByTerm(term) {
-            var reg = new RegExp( term, "i");
-            var filteredResults = jQuery.grep( data.results, function( item ) {
-             	return (item.name && item.name.match(reg) && item.name.match(reg).length) || (item.description && item.description.match(reg) && item.description.match(reg).length);
-            });
+        // function filterByTerm(term) {
+        //     var reg = new RegExp( term, "i");
+        //     var filteredResults = jQuery.grep( data.results, function( item ) {
+        //      	return (item.name && item.name.match(reg) && item.name.match(reg).length) || (item.description && item.description.match(reg) && item.description.match(reg).length);
+        //     });
 
-            return filteredResults;
+        //     return filteredResults;
+        // }
+
+        function filterByFuseTerm(term) {
+            if ( data.results.length > 0 ) {
+                var fuseSearchService = new Fuse(data.results, { keys: ["name", "description", "file_type"], threshold: 0.35 });
+                return fuseSearchService.service(term);
+            } else {
+                return data.results;
+            }
         }
 
         var search = {
