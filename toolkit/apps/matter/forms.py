@@ -10,6 +10,7 @@ from toolkit.apps.workspace.models import Workspace, ROLES
 from toolkit.core.client.models import Client
 from toolkit.mixins import ModalForm
 
+from .fields import MatterModelChoiceField
 from .services import MatterCloneService
 
 
@@ -54,7 +55,7 @@ class MatterForm(ModalForm, forms.ModelForm):
         widget=forms.TextInput(attrs={'placeholder': '00001-matter-name', 'size': '40'})
     )
 
-    template = forms.ModelChoiceField(
+    template = MatterModelChoiceField(
         help_text='',
         label='Copy checklist items from',
         queryset=Workspace.objects.none(),
