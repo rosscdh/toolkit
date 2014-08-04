@@ -18,3 +18,5 @@ from .user import (UserSerializer,
                    SimpleUserWithSignUrlSerializer)
 
 from .task import (TaskSerializer, CreateTaskSerializer)
+
+from .search import MatterSearchSerializer

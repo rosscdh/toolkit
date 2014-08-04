@@ -196,6 +196,9 @@ class Revision(IsDeletedMixin,
     def previous(self):
         return self.revisions.filter(pk__lt=self.pk).first()
 
+    def can_read(self, user):
+        return user in self.item.matter.participants.all() or user in self.reviewers.all() or user in self.signers.all()
+
 
 class Attachment(IsDeletedMixin,
                  ApiSerializerMixin,
@@ -214,6 +217,12 @@ class Attachment(IsDeletedMixin,
     date_created = models.DateTimeField(auto_now=False, auto_now_add=True, db_index=True)
 
     _serializer = 'toolkit.api.serializers.AttachmentSerializer'
+
+    def get_absolute_url(self):
+        """
+        return url to the primary item
+        """
+        return self.item.get_absolute_url()
 
     # override for FileExistsLocallyMixin:
     def get_document(self):

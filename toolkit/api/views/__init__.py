@@ -53,3 +53,5 @@ from .discussion import ItemDiscussionCommentEndpoint
 from .discussion import MatterDiscussionEndpoint, MatterDiscussionCommentEndpoint, MatterDiscussionParticipantEndpoint
 
 from .task import TaskEndpoint, ItemTasksView, ItemTaskView
+
+from .search import MatterSearchEndpoint

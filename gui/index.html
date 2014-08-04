@@ -221,12 +221,13 @@
           </div>
         </div>
 
+        {% verbatim %}
         <div class="search-container">
           <div ng-class="{'show-results-container': data.display}">
             <ul class="search-results list-unstyled">
-              <li class="result-item reveal-animation" ng-repeat="result in data.searchResults.results">
-                <a href="javascript:;" ng-click="selectItem(result)">
-                  <p ng-bind="result.name"></p>
+              <li class="result-item reveal-animation" ng-repeat="result in data.searchResults">
+                <a href="{{ result.url }}">
+                  <p>{{ result.name }} ({{ result.file_type  }})</p>
                   <p ng-show="result.description"><small ng-bind="result.description"></small></p>
                   <p ng-show="result.latest_revision"><small ng-bind="result.latest_revision.name"></small> <small ng-bind="result.latest_revision.slug"></small></p>
                 </a>
@@ -234,6 +235,7 @@
             </ul>
           </div>
         </div>
+        {% endverbatim %}
 
       </form>
       <!-- /nav -->

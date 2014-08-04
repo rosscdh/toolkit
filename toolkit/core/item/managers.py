@@ -1,5 +1,4 @@
 # -*- coding: UTF-8 -*-
-from itertools import chain
 import operator
 
 from django.db import models

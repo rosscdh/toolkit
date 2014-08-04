@@ -51,6 +51,7 @@ from .views import (TaskEndpoint,
                     ItemTasksView,
                     ItemTaskView,
                     ItemTaskReminderView,)
+from .views import (MatterSearchEndpoint,)
 
 router = routers.SimpleRouter(trailing_slash=False)
 
@@ -114,12 +115,13 @@ urlpatterns = router.urls + patterns('',
     url(r'^matters/(?P<matter_slug>[\w-]+)/category/(?P<category>[\w\W\s]*)/?$', MatterCategoryView.as_view(), name='matter_category'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/closing_group/(?P<closing_group>[\w-]+)/?$', MatterClosingGroupView.as_view(), name='matter_closing_group'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/revision_label/?$', MatterRevisionLabelView.as_view(), name='matter_revision_label'),
-
     url(r'^matters/(?P<matter_slug>[\w-]+)/sort/?$', MatterSortView.as_view(), name='matter_sort'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/participant(/(?P<email>.+))?/?$', MatterParticipant.as_view(), name='matter_participant'),
-
+    # Activity list for a Matter
     url(r'^matters/(?P<matter_slug>[\w-]+)/activity/?$', MatterActivityEndpoint.as_view(), name='matter_activity'),
-
+    # Search Matter Items/Tasks/Attachments
+    url(r'^matters/(?P<matter_slug>[\w-]+)/search/?$', MatterSearchEndpoint.as_view(), name='matter_search'),
+    # Export Matters
     url(r'^matters/(?P<matter_slug>[\w-]+)/export/?$', MatterExportView.as_view(), name='matter_export'),
 
     #
