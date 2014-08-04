@@ -24,7 +24,7 @@ class MatterSearchSerializer(serializers.Serializer):
 
     def get_description(self, obj):
         if obj.__class__.__name__ in ['Item', 'Revision', 'Task']:
-            return truncatewords(obj.description, 7)
+            return truncatewords(obj.description, 7) if obj.description else ''
         return None
 
     def get_url(self, obj):
