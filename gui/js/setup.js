@@ -80,6 +80,13 @@ angular.module('toolkit-gui').config(['$httpProvider', function($httpProvider) {
 ]);
 
 
+/**
+* integrate with the Fuse fuzzy search javascipt library
+*
+*/
+angular.module('toolkit-gui').service('Fuse', ['$window', '$log', function ($window, $log) {
+  return $window.Fuse;
+}]);
 
 /**
  * Overrides the default exceptionHandler and uses sentry for the exception messages

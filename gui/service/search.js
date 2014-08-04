@@ -3,7 +3,8 @@ angular.module('toolkit-gui').factory('searchService', [
     '$log',
     '$resource',
     'API_BASE_URL',
-    function ($q, $log, $resource, API_BASE_URL) {
+    'Fuse',
+    function ($q, $log, $resource, API_BASE_URL, Fuse) {
 
         function searchAPI() {
             return $resource(API_BASE_URL + 'matters/:matterSlug/search', {}, {
@@ -23,11 +24,11 @@ angular.module('toolkit-gui').factory('searchService', [
 
         //     return filteredResults;
         // }
-
         function filterByFuseTerm(term) {
             if ( data.results.length > 0 ) {
                 var fuseSearchService = new Fuse(data.results, { keys: ["name", "description", "file_type"], threshold: 0.35 });
-                return fuseSearchService.service(term);
+                var results = fuseSearchService.search(term);
+                return results;
             } else {
                 return data.results;
             }
@@ -41,7 +42,7 @@ angular.module('toolkit-gui').factory('searchService', [
 
                 if (term && term.length > 0) {
                     if (data.results) {
-                        var filteredItems = filterByTerm(term);
+                        var filteredItems = filterByFuseTerm(term);
                         deferred.resolve(filteredItems);
                     } else {
                         // perform search
@@ -50,7 +51,7 @@ angular.module('toolkit-gui').factory('searchService', [
                         api.get({'matterSlug': matterSlug},
                             function success(response) {
                                 data.results = response;
-                                var filteredItems = filterByTerm(term);
+                                var filteredItems = filterByFuseTerm(term);
                                 deferred.resolve(filteredItems);
                             },
                             function error(err) {
