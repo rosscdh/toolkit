@@ -50,11 +50,15 @@ class Task(SendReminderEmailMixin,
         return self.item.get_absolute_url()
 
     def can_read(self, user):
-        return user in self.item.matter.participants.all()
+        return self.pk is None  \
+               or user == self.created_by  \
+               or user in self.assigned_to.all()  \
+               or user.matter_permissions(matter=self.item.matter).has_permission(manage_items=True)
 
     def can_edit(self, user):
         return self.pk is None  \
                or user == self.created_by  \
+               or user in self.assigned_to.all()  \
                or user.matter_permissions(matter=self.item.matter).has_permission(manage_items=True)
 
     def can_delete(self, user):
