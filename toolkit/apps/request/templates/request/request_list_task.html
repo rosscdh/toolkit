@@ -3,7 +3,11 @@
 <section id="requests-upload">
     {% if object_list %}
         <h5>Tasks to be completed</h5>
-        <p class="lead">Please complete the following tasks assigned to you:</p>
+        {% if show_completed %}
+            <p class="lead">You have completed the following tasks:</p>
+        {% else %}
+            <p class="lead">Please complete the following tasks assigned to you:</p>
+        {% endif %}
 
         <div class="requested">
             {% for task in object_list %}

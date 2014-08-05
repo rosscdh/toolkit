@@ -3,7 +3,11 @@
 <section id="requests-upload">
     {% if object_list %}
         <h5>Documents to be uploaded</h5>
-        <p class="lead">Please upload the following documents:</p>
+        {% if show_completed %}
+            <p class="lead">You uploaded the following documents:</p>
+        {% else %}
+            <p class="lead">Please upload the following documents:</p>
+        {% endif %}
 
         <div class="requested">
             {% for item in object_list %}
