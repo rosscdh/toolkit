@@ -3,7 +3,7 @@
         <div class="col-xs-8">
             <span class="fui-time request-icon"></span>
             <h6 class="request-title"><small>{{ item.client.name }} &middot; {{ item.matter.name }}</small></h6>
-            <h6 class="request-title">{{ task.name }}</h6>
+            <h6 class="request-title">{{ task.name }}<br/><small><a href="{{ item.get_absolute_url }}">view</a></small></h6>
             <p>{{ task.created_by }} requested you complete this task.</p>
         </div>
         <div class="col-xs-4 text-center">
