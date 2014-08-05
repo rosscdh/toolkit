@@ -6,12 +6,12 @@ angular.module('toolkit-gui')
 		'steps': [
 
 		{
-			'element': '#nav-home',
+			'element': '.logo-mark',
 			'intro': "Click here to return to the main list of your matters.",
 			'position': 'bottom'
 		},
 		{
-			'element': 'body > div.navbar.navbar-inverse.checklist-nav.ng-scope > div.navbar-header > ul:nth-child(3) > li > a',
+			'element': '#matter-name',
 			'intro': "Click here to switch to another of your matters.",
 			'position': 'bottom'
 		},
@@ -84,7 +84,7 @@ angular.module('toolkit-gui')
 			'intro': "Click here to change the name of this item."
 		},
 		{
-			'element': '#checklist-detail > div:nth-child(1) > h3.checklist-detail-title > div.item-description-toggle > small > a > span',
+			'element': '.checklist-detail-description',
 			'intro': "Click here to update the description of this item."
 		},
 		{
@@ -101,7 +101,7 @@ angular.module('toolkit-gui')
 			'intro': "Click here to see a menu that allows you to set a Due date for this item or to Delete this item."
 		},
 		{
-			'element': '#close-item > span:nth-child(1)',
+			'element': '#close-item',
 			'intro': "Click here to mark this item as Closed."
 		},
 		{
@@ -117,7 +117,7 @@ angular.module('toolkit-gui')
 			'intro': "Click here to upload a supporting Attachment for this item. Attachments can be any file type."
 		},
 
-		
+
 		{
 			'element': '#checklist-activity > h4.nav-activity-panel > a:nth-child(1)',
 			'intro': "Click here to view activity for this Item."

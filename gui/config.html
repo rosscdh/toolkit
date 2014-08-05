@@ -133,13 +133,13 @@
 
       <div class="navbar navbar-inverse checklist-nav" ng-controller="NavigationCtrl">
         <div class="navbar-header">
-          <div class="logo-mark">
-            <a id="nav-home" href="/">
+          <div class="logo-mark bg">
+            <a id="nav-home" href="/" class="bg">
               <img src="<!-- @echo staticBase -->images/logo-white-icon.png">
             </a>
           </div>
           <ul id="nav-other_matters" class="nav navbar-nav navbar-matters hidden-xs" ng-show="matter.selected&&data.matterlist.length>1">
-            <li class="dropdown">
+            <li class="dropdown bg" id="matter-name">
               <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" ng-bind="matter.selected.name | characters:15:true"></a>
               <ul class="dropdown-menu ng-cloak">
                 <li ng-repeat="m in data.matterlist" ng-show="m.name!=matter.selected.name">
@@ -160,10 +160,10 @@
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav" ng-show="matter.selected">
-            <li id="checklist-nav" ng-class="{'active': isActive('/checklist')}">
+            <li id="checklist-nav" ng-class="{'active': isActive('/checklist')}" class="bg">
               <a href="#/checklist" title="Checklist"><span class="fui-list"></span></a>
             </li>
-            <li id="discussion-nav" ng-class="{'active': isActive('/discussion')}">
+            <li id="discussion-nav" ng-class="{'active': isActive('/discussion')}" class="bg">
               <a href="#/discussion" title="Discussion"><span class="fui-chat"></span></a>
             </li>
         <!-- Hide for now - discussed 2014-03-14
@@ -251,14 +251,14 @@
         </li>
         <!-- end: desktop notifications / notifications //-->
 
-        <li id="nav-requests">
+        <li id="nav-requests" class="bg">
           <a href="/requests/">
             <span>Requests</span>
             <span class="label label-important" ng-show="matter.selected.current_user.counts.requests > 0">{{ matter.selected.current_user.counts.requests }}</span>
           </a>
         </li>
 
-        <li id="nav-support" class="dropdown">
+        <li id="nav-support" class="dropdown bg">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             <span class="hidden-xs">Support</span><b class="caret"></b>
           </a>
@@ -268,7 +268,7 @@
           </ul>
         </li>
         <li class="divider hidden-xs hidden-sm"></li>
-        <li id="nav-account" class="dropdown ng-cloak">
+        <li id="nav-account" class="dropdown ng-cloak bg">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             <span class="hidden-lg hidden-xs">{{ matter.selected.current_user | initials }} <b class="caret"></b></span>
             <span class="hidden-md hidden-sm hidden-xs">{{ matter.selected.current_user | fullname }} <b class="caret"></b></span>
