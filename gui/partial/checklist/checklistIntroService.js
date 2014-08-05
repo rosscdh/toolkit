@@ -117,7 +117,7 @@ angular.module('toolkit-gui')
 			'intro': "Click here to upload a supporting Attachment for this item. Attachments can be any file type."
 		},
 
-		
+
 		{
 			'element': '#checklist-activity > h4.nav-activity-panel > a:nth-child(1)',
 			'intro': "Click here to view activity for this Item."

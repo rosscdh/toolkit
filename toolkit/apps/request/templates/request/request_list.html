@@ -1,83 +1,83 @@
 {% extends 'gui.html' %}{% load request_tags %}
 
 {% block body %}
-    <div id="requests" class="content">
-        <div class="content-header requests-header clearfix">
-            <div class="container">
-                <div class="col-sm-8 col-sm-offset-2">
-                    <div class="content-header-btn">
-                      {% if show_completed %}
-                        <a href="{% url 'request:list' %}" class="btn btn-info btn-wide">Show open requests</a>
-                      {% else %}
-                        <a href="{% url 'request:list_completed' %}" class="btn btn-info btn-wide">Show completed requests</a>
-                      {% endif %}
-                    </div>
-                      <h3><span id="total-items" class="circle">{{ object_list.count }}</span> {% if show_completed %}Completed Requests{% else %}Requests{% endif %}</h3>
-                </div>
-            </div>
-        </div>
-
+<div id="requests" class="content">
+    <div class="content-header requests-header clearfix">
         <div class="container">
-            <div class="row">
-                <div class="col-sm-8 col-sm-offset-2" role="main">
-                    {% if object_list %}
-                        {% request_tasks_section object_list request.user %}
-                        {% request_uploads_section object_list request.user %}
-                        {% request_reviews_section object_list request.user %}
-                        {% request_signings_section object_list request.user %}
-                    {% else %}
-                        <div class="col-md-12 text-center">
-                            {% if show_completed %}
-                              <h6 class="text-muted">You haven't completed any requests.</h6>
-                            {% else %}
-                              <h6 class="text-muted">You have no open requests.</h6>
-                            {% endif %}
-                        </div>
-                    {% endif %}
-                </div>
+            <div class="col-sm-8 col-sm-offset-2">
+                <div class="content-header-btn">
+                  {% if show_completed %}
+                  <a href="{% url 'request:list' %}" class="btn btn-info btn-wide">Show open requests</a>
+                  {% else %}
+                  <a href="{% url 'request:list_completed' %}" class="btn btn-info btn-wide">Show completed requests</a>
+                  {% endif %}
+              </div>
+              <h3><span id="total-items" class="circle">{{ object_list.count }}</span> {% if show_completed %}Completed Requests{% else %}Requests{% endif %}</h3>
+          </div>
+      </div>
+  </div>
+
+  <div class="container">
+    <div class="row">
+        <div class="col-sm-8 col-sm-offset-2" role="main">
+            {% if object_list %}
+            {% request_tasks_section object_list request.user %}
+            {% request_uploads_section object_list request.user %}
+            {% request_reviews_section object_list request.user %}
+            {% request_signings_section object_list request.user %}
+            {% else %}
+            <div class="col-md-12 text-center">
+                {% if show_completed %}
+                <h6 class="text-muted">You haven't completed any requests.</h6>
+                {% else %}
+                <h6 class="text-muted">You have no open requests.</h6>
+                {% endif %}
             </div>
+            {% endif %}
         </div>
     </div>
+</div>
+</div>
 {% endblock %}
 
 {% block js %}
-    <script type="text/javascript" src="//api.filepicker.io/v1/filepicker.js"></script>
-    <script src="{{ STATIC_URL }}js/filepicker.js"></script>
-    <script>
-    'use strict';
-    jQuery( document ).ready(function () {
+<script type="text/javascript" src="//api.filepicker.io/v1/filepicker.js"></script>
+<script src="{{ STATIC_URL }}js/filepicker.js"></script>
+<script>
+'use strict';
+jQuery( document ).ready(function () {
 
-        var total_items_ui = $('#total-items');
-        if (total_items_ui.length > 0) {
-            total_items_ui.html($('article.request').length);
-        }
+    var total_items_ui = $('#total-items');
+    if (total_items_ui.length > 0) {
+        total_items_ui.html($('article.request').length);
+    }
 
-        var user_has_viewed_url = '{% url "matter_item_specific_revision_user_viewed" matter_slug="matterSlug" item_slug="itemSlug" reviewdocument_slug="reviewDocSlug" %}';
-        $('.modal').on('hide.bs.modal', function (event) {
+    var user_has_viewed_url = '{% url "matter_item_specific_revision_user_viewed" matter_slug="matterSlug" item_slug="itemSlug" reviewdocument_slug="reviewDocSlug" %}';
+    $('.modal').on('hide.bs.modal', function (event) {
           // do something…
-            var self = $(this);
-            var data = self.data();
-            var url = user_has_viewed_url.replace('reviewDocSlug', data.reviewdocument_slug).replace('itemSlug', data.item_slug).replace('matterSlug', data.matter_slug)
+          var self = $(this);
+          var data = self.data();
+          var url = user_has_viewed_url.replace('reviewDocSlug', data.reviewdocument_slug).replace('itemSlug', data.item_slug).replace('matterSlug', data.matter_slug)
 
-            $.ajax({
-                url: url,
-                type: "PATCH",
-                data: {'user': '{{ user.username }}'},
-                dataType: 'json',
-                beforeSend: function (jqXHR, settings) {
+          $.ajax({
+            url: url,
+            type: "PATCH",
+            data: {'user': '{{ user.username }}'},
+            dataType: 'json',
+            beforeSend: function (jqXHR, settings) {
                     // Pull the token out of the DOM.
                     jqXHR.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
                 }
             });
-        })
+      })
 
-        function mark_complete(self, url, is_complete, replace_with) {
-            $.ajax({
-                url: url,
-                type: "PATCH",
-                data: {'is_complete': is_complete},
-                dataType: 'json',
-                beforeSend: function (jqXHR, settings) {
+    function mark_complete(self, url, is_complete, replace_with) {
+        $.ajax({
+            url: url,
+            type: "PATCH",
+            data: {'is_complete': is_complete},
+            dataType: 'json',
+            beforeSend: function (jqXHR, settings) {
                     // Pull the token out of the DOM.
                     jqXHR.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
                 },
@@ -87,24 +87,24 @@
                 complete: function ( data ) {
                 }
             });
-        };
+    };
 
-        var mark_complete_btn = $('<a/>', {'data-remote': null, 'class': 'btn undo_is_complete-btn', 'text': 'Complete'});
-        var undo_link = $('<a/>', {'data-remote': null, 'class': 'btn undo_is_complete-btn', 'text': 'Undo'})
+    var mark_complete_btn = $('<a/>', {'data-remote': null, 'class': 'btn undo_is_complete-btn', 'text': 'Complete'});
+    var undo_link = $('<a/>', {'data-remote': null, 'class': 'btn undo_is_complete-btn', 'text': 'Undo'})
 
-        mark_complete_btn.on('click', function(e) {
-            var self = $(this);
-            var data = self.data();
-            var url = data.remote;
+    mark_complete_btn.on('click', function(e) {
+        var self = $(this);
+        var data = self.data();
+        var url = data.remote;
 
             // set the url data-remote
             undo_link.attr('data-remote', url);
             mark_complete(self, url, true, undo_link);
         });
-        undo_link.on('click', function (e) {
-            var self = $(this);
-            var data = self.data();
-            var url = data.remote;
+    undo_link.on('click', function (e) {
+        var self = $(this);
+        var data = self.data();
+        var url = data.remote;
 
             // set the url data-remote
             mark_complete_btn.attr('data-remote', url);
@@ -112,12 +112,12 @@
 
         });
 
-        $('a.mark_complete-btn, a.mark_incomplete-btn').on('click', function (e) {
-            var self = $(this);
-            var data = self.data();
-            var url = data.remote;
+    $('a.mark_complete-btn, a.mark_incomplete-btn').on('click', function (e) {
+        var self = $(this);
+        var data = self.data();
+        var url = data.remote;
 
-            mark_complete_btn = self.clone( true );
+        mark_complete_btn = self.clone( true );
 
             // update the copy of the mark_complete_btn
             mark_complete_btn.attr('data-remote', url);
@@ -129,6 +129,6 @@
 
         });
 
-    });
-    </script>
+});
+</script>
 {% endblock %}
