@@ -156,8 +156,8 @@ class ItemTaskView(GetTaskMixin,
         # process normally
         resp = super(ItemTaskView, self).update(request=request, **kwargs)
 
-        # refresh object
-        self.task = self.task.__class__.objects.get(pk=self.task.pk)
+        # refresh object        
+        self.task = self.get_object()
 
         #
         # Handle status change events
@@ -188,6 +188,7 @@ class ItemTaskView(GetTaskMixin,
         return resp
 
     def can_read(self, user):
+        self.task = self.get_object()
         return user in self.matter.participants.all()  \
                or user in self.task.assigned_to.all()
 

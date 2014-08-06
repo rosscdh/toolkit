@@ -124,8 +124,18 @@ class TaskDetailTest(BaseTaskSetup):
         self.assertEqual(json_data.get('created_by'), {u'username': u'test-customer', u'name': u'Custom\xebr T\xebst', u'url': u'http://testserver/api/v1/users/test-customer', u'role': None, u'user_class': u'customer', u'initials': u'CT'})
         self.assertEqual(json_data.get('assigned_to'), [{u'username': u'test-lawyer', u'name': u'Lawy\xebr T\xebst', u'url': u'http://testserver/api/v1/users/test-lawyer', u'role': None, u'user_class': u'lawyer', u'initials': u'LT'}])
 
-    def test_participant_cant_edit_other_participants_tasks(self):
+    def test_assigned_to_can_update(self):
         self.client.login(username=self.user.username, password=self.password)
+
+        resp = self.client.patch(self.endpoint, json.dumps({
+            'name': 'Update to My first task',
+        }), content_type='application/json; charset=utf-8')
+
+        # Cannot update, as this task is owned by the lawyer
+        self.assertEqual(resp.status_code, 200)  # updated
+
+    def test_participant_cant_edit_other_participants_tasks(self):
+        self.client.login(username=self.forbidden_user.username, password=self.password)
 
         resp = self.client.patch(self.endpoint, json.dumps({
             'name': 'Update to My first task',
