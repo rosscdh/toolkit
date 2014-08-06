@@ -51,6 +51,7 @@ class Task(SendReminderEmailMixin,
 
     def can_read(self, user):
         return self.pk is None  \
+               or user in self.item.matter.participants.all()  \
                or user == self.created_by  \
                or user in self.assigned_to.all()  \
                or user.matter_permissions(matter=self.item.matter).has_permission(manage_items=True)

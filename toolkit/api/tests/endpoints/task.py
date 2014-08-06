@@ -21,6 +21,7 @@ class BaseTaskSetup(BaseEndpointTest):
 
         self.item = mommy.make('item.Item', matter=self.workspace, name='Test Item No. 1')
         self.task = mommy.make('task.Task', item=self.item, created_by=self.lawyer, assigned_to=[self.user], name='Test Task No. 1')
+        self.no_asignees_task = mommy.make('task.Task', item=self.item, created_by=self.lawyer, assigned_to=[], name='Test No Assignees Task No. 2')
 
 
 class TaskListTest(BaseTaskSetup):
@@ -135,20 +136,22 @@ class TaskDetailTest(BaseTaskSetup):
         self.assertEqual(resp.status_code, 200)  # updated
 
     def test_participant_cant_edit_other_participants_tasks(self):
-        self.client.login(username=self.forbidden_user.username, password=self.password)
+        self.client.login(username=self.user.username, password=self.password)
 
-        resp = self.client.patch(self.endpoint, json.dumps({
+        endpoint = reverse('item_task', kwargs={'matter_slug': self.workspace.slug, 'item_slug': self.item.slug, 'slug': self.no_asignees_task.slug})
+
+        resp = self.client.patch(endpoint, json.dumps({
             'name': 'Update to My first task',
         }), content_type='application/json; charset=utf-8')
 
         # Cannot update, as this task is owned by the lawyer
-        self.assertEqual(resp.status_code, 403)  # forbidden
+        self.assertEqual(resp.status_code, 404)  # not found
 
     def test_non_participant_cant_read(self):
         self.client.login(username=self.forbidden_user.username, password=self.password)
 
         resp = self.client.get(self.endpoint)
-        self.assertEqual(resp.status_code, 403)  # forbidden
+        self.assertEqual(resp.status_code, 404)  # not found
 
 
 class TaskReminderTest(BaseTaskSetup):

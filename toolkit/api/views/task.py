@@ -190,7 +190,9 @@ class ItemTaskView(GetTaskMixin,
     def can_read(self, user):
         self.task = self.get_object()
         return user in self.matter.participants.all()  \
-               or user in self.task.assigned_to.all()
+               or user == self.task.created_by  \
+               or user in self.task.assigned_to.all() \
+               or user.matter_permissions(matter=self.item.matter).has_permission(manage_items=True) is True
 
     def can_edit(self, user):
         self.task = self.get_object()
