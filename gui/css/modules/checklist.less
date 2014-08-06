@@ -592,11 +592,9 @@ li.previous-toggle {
 
   div.new-message {
     background-color: #F2F2F2;
-    z-index: 3;
+    z-index: 60;
     clear:both;
     padding-left: 15px;
-    margin-top: 220px;
-    margin-left: 0px;
     padding-right: 15px;
     padding-top:10px;
     padding-bottom:10px;
@@ -708,7 +706,7 @@ li.previous-toggle {
 
 .tab-content {
  background-color: #F0F0F0;
- height: 413px;
+ height: 310px;
 }
 
 #checklist-activity {
@@ -720,6 +718,18 @@ li.previous-toggle {
   .item-comments {
     height: 60%;
     position: relative;
+
+    .tab-content {
+      height: 310px;
+      z-index: 50;
+    }
+
+    .new-message {
+      bottom: 0;
+      left: 0;
+      position: absolute;
+      right: 0;
+    }
   }
   .activity {
     height: 40%;
