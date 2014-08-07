@@ -7,10 +7,9 @@ from toolkit.tasks import run_task
 from toolkit.core.services.lawpal_abridge import LawPalAbridgeService
 from toolkit.core.services.mentions import MentionsService
 
-from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 from toolkit.apps.notification.tasks import youve_got_notifications
 
-
+import json
 import logging
 logger = logging.getLogger('django.request')
 
@@ -68,6 +67,29 @@ def _activity_send(actor, target, action_object, message, **kwargs):
     if verb_slug in ACTIVITY_WHITELIST:
         kwargs = _serialize_kwargs(kwargs)
         action.send(actor, target=target, action_object=action_object, message=message, **kwargs)
+
+
+@app.task
+def _activity_delete(uuid, target, action_object, **kwargs):
+    """
+    Delete activity from django-activity-stream based on the crocodoc uuid
+    """
+    for action in action_object.action_object_actions.all().values('id', 'data'):
+        pk = action.get('id')
+        data = action.get('data', {})
+        data = json.loads(data)
+        action_uuid = data.get('uuid', None)
+        #
+        # if we match the uuids
+        #
+        if uuid == action_uuid:
+            # then delete the action
+            try:
+                action = action_object.action_object_actions.get(pk=pk)
+                action.delete()
+
+            except Exception as e:
+                logger.info('Could not delete action_object: %s (%s) based on comment uuid: %s - %s' % (action_object, action_object.pk, uuid, e))
 
 
 @app.task

@@ -6,7 +6,8 @@ from toolkit.tasks import run_task
 from toolkit.apps.notification.tasks import realtime_matter_event
 
 from .analytics import AtticusFinch
-from ..signals.activity_listener import send_activity_log
+from ..signals.activity_listener import (send_activity_log,
+                                         delete_activity_log)
 
 import datetime
 
@@ -133,6 +134,9 @@ class MatterActivityEventService(object):
         send_activity_log.send(self, **kwargs)
 
         self.update_matter_date_modified()
+
+    def _delete_comment_by_uuid(self, uuid, action_object, item, **kwargs):
+        delete_activity_log.send(self, uuid=uuid, action_object=action_object, item=item, **kwargs)
 
     def update_matter_date_modified(self):
         """
@@ -385,18 +389,22 @@ class MatterActivityEventService(object):
         self.realtime_event(event='update', obj=item, ident=item.slug, from_user=user,
                             detail='uploaded requested revision')
 
-    def add_revision_comment(self, user, revision, comment, reviewdocument):
+    def add_revision_comment(self, user, revision, comment, reviewdocument, uuid=None):
+        """
+        Add accepts uuid so that we can add the comment uuid the Action object in order to be able to interact
+        with it later (delete)
+        """
         # toolkit/apps/matter/signals.py:103
         override_message = u'%s annotated %s in %s' % (user, revision.slug, revision.item)
         self._create_activity(actor=user, verb=u'added revision comment', action_object=revision,
                               override_message=override_message, comment=comment, item=revision.item,
-                              reviewdocument=reviewdocument)
+                              reviewdocument=reviewdocument, uuid=uuid)
         self.analytics.event('revision.comment.added', user=user, **{
             'item_pk': revision.item.pk,
             'matter_pk': self.matter.pk
         })
         self.realtime_event(event='update', obj=revision.item, ident=revision.item.slug, from_user=user,
-                            detail='commented on revision')
+                            detail='commented on revision',)
 
     def add_review_copy_comment(self, user, revision, comment, reviewdocument):
         # toolkit/apps/matter/signals.py:103
@@ -409,11 +417,17 @@ class MatterActivityEventService(object):
             'matter_pk': revision.item.matter.pk
         })
 
-    def delete_revision_comment(self, user, revision):
+    def delete_revision_comment(self, user, revision, uuid=None):
+        """
+        Delete accepts uuid so that we can find and delete the Action object related
+        """
         # toolkit/apps/matter/signals.py:103
         override_message = u'%s deleted a comment on %s' % (user, revision)
         self._create_activity(actor=user, verb=u'deleted revision comment', action_object=revision,
                               override_message=override_message, item=revision.item)
+
+        self._delete_comment_by_uuid(uuid=uuid, action_object=revision, item=revision.item)
+
         self.realtime_event(event='update', obj=revision.item, ident=revision.item.slug, from_user=user,
                             detail='deleted revision comment')
 

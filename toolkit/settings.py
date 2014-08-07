@@ -592,7 +592,7 @@ LAWPAL_ACTIVITY = {
 
                       'revision-created', 'revision-deleted',
                       'revision-added-review-session-comment',
-                      'revision-added-revision-comment',
+                      'revision-added-revision-comment', 'revision-deleted-revision-comment',
                       'revision-changed-the-status',
 
                       'workspace-created', 'workspace-deleted',

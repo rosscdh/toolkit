@@ -304,6 +304,18 @@ angular.module('toolkit-gui')
                             });
                         }
                     }
+
+                    /**
+                    * Handle the item activity update 
+                    */
+                    if ( $scope.data.selectedItem.slug !== '' ) {
+                        if ( data.event === 'update' && data.model === 'item' ) {
+                            if ( data.detail === 'commented on revision' || data.detail === 'deleted revision comment' ) {
+                                // reinit the current items ativity stream
+                                $scope.activateActivityStream('item');
+                            }
+                        }
+                    }
                 }, 2000);
             });
         };
