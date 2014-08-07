@@ -98,5 +98,5 @@ def on_delete_activity_log(sender, uuid, item, action_object, **kwargs):
     """
     Delete Activity based on passed in crocodoc uuid
     """
-    run_task(_activity_delete, uuid=uuid, target=item, action_object=action_object, **kwargs)
+    _activity_delete(uuid=uuid, target=item, action_object=action_object, **kwargs)
 
