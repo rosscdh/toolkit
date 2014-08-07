@@ -9,7 +9,6 @@ from django.db.models.signals import (m2m_changed,
 import dj_crocodoc.signals as crocodoc_signals
 
 from toolkit.apps.workspace.models import InviteKey
-from toolkit.api.serializers import LiteUserSerializer
 from toolkit.apps.workspace.models import Workspace, WorkspaceParticipants
 
 from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
@@ -30,6 +29,7 @@ def _update_matter_participants(matter):
     Participants optimisations; so we dont have millions of queries on matter_list
     and else where
     """
+    from toolkit.api.serializers import LiteUserSerializer
     participants_data = {'participants': []} # @BUSINESSRULE reset the participants list
 
     for u in matter.participants.all():

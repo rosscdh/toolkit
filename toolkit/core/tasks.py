@@ -74,6 +74,7 @@ def _activity_delete(uuid, target, action_object, **kwargs):
     """
     Delete activity from django-activity-stream based on the crocodoc uuid
     """
+    logger.info('Trying to delete comment log crocodoc uuid: %s' % uuid)
     for action in action_object.action_object_actions.all().values('id', 'data'):
         pk = action.get('id')
         data = action.get('data', {})
@@ -87,6 +88,7 @@ def _activity_delete(uuid, target, action_object, **kwargs):
             try:
                 action = action_object.action_object_actions.get(pk=pk)
                 action.delete()
+                logger.info('Deleting comment log crocodoc uuid: %s' % uuid)
 
             except Exception as e:
                 logger.info('Could not delete action_object: %s (%s) based on comment uuid: %s - %s' % (action_object, action_object.pk, uuid, e))
