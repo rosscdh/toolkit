@@ -67,13 +67,17 @@ class MatterActivitySerializer(serializers.HyperlinkedModelSerializer):
             ctx.update({'item_name': obj.data.get('item', {}).get('name')})
 
             # get reviewdocument to create the action_object_url
-            reviewdocument_object = ReviewDocument.objects.get(slug=reviewdocument.get('slug')) if reviewdocument else None
+            try:
+                reviewdocument_object = ReviewDocument.objects.get(slug=reviewdocument.get('slug')) if reviewdocument else None
+
+            except ReviewDocument.DoesNotExist:
+                reviewdocument_object = None
 
             # getting the reviewer_object is ONLY possible if we have a review_copy. otherwise the reviewers are empty
-            reviewer_object = reviewdocument_object.reviewers.first() if reviewdocument_object else None
+            reviewer_object = reviewdocument_object.reviewers.first() if reviewdocument_object is not None else None
 
-            ctx.update({'reviewer_name': reviewer_object.get_full_name() if reviewer_object else None})
-            ctx.update({'action_object_url': reviewdocument_object.get_regular_url() if reviewdocument else None})
+            ctx.update({'reviewer_name': reviewer_object.get_full_name() if reviewer_object is not None else None})
+            ctx.update({'action_object_url': reviewdocument_object.get_regular_url() if reviewdocument_object is not None else None})
             ctx.update({'revision_slug': "%s" % obj.action_object.slug})
         else:
             #

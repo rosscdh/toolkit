@@ -344,7 +344,7 @@ class MatterActivityEventService(object):
 
     def deleted_revision(self, user, item, revision):
         # toolkit.api.views.revision.ItemCurrentRevisionView#destroy
-        override_message = u'%s destroyed a revision for %s' % (user, item)
+        override_message = u'%s destroyed revision %s (%s) for %s' % (user, revision.name, revision.slug, item)
         self._create_activity(actor=user, verb=u'deleted', action_object=revision, item=item,
                               override_message=override_message, filename=revision.name,
                               date_created=revision.date_created)
