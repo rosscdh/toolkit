@@ -159,7 +159,7 @@ def clean_all():
     with cd(env.remote_project_path):
         virtualenv(cmd='python %s%s/manage.py clean_pyc' % (env.remote_project_path, env.project))
         virtualenv(cmd='python %s%s/manage.py cleanup' % (env.remote_project_path, env.project))
-        virtualenv(cmd='python %s%s/manage.py clean_nonces' % (env.remote_project_path, env.project))
+        #virtualenv(cmd='python %s%s/manage.py clean_nonces' % (env.remote_project_path, env.project))
         virtualenv(cmd='python %s%s/manage.py clean_associations' % (env.remote_project_path, env.project))
         #virtualenv(cmd='python %s%s/manage.py clear_cache' % (env.remote_project_path, env.project))
         virtualenv(cmd='python %s%s/manage.py compile_pyc' % (env.remote_project_path, env.project))
