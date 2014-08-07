@@ -309,8 +309,10 @@ angular.module('toolkit-gui')
                     * Handle the item activity update 
                     */
                     if ( $scope.data.selectedItem.slug !== '' ) {
+                        //$log.debug("Yay ");
                         if ( data.event === 'update' && data.model === 'item' ) {
                             if ( data.detail === 'commented on revision' || data.detail === 'deleted revision comment' ) {
+                                //$log.debug("added or removed");
                                 // reinit the current items ativity stream
                                 $scope.activateActivityStream('item');
                             }

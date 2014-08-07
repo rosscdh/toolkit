@@ -409,6 +409,7 @@ def supervisord_restart():
 def restart_lite():
     with settings(warn_only=True):
         sudo(env.light_restart)
+        celery_restart()
 
 @task
 @roles('web')

@@ -86,8 +86,7 @@ def _activity_delete(uuid, target, action_object, **kwargs):
         if uuid == action_uuid:
             # then delete the action
             try:
-                action = action_object.action_object_actions.get(pk=pk)
-                action.delete()
+                action_object.action_object_actions.get(pk=pk).delete()
                 logger.info('Deleting comment log crocodoc uuid: %s' % uuid)
 
             except Exception as e:
