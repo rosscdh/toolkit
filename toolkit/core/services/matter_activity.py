@@ -94,7 +94,7 @@ class MatterActivityEventService(object):
         # Cleverly store serializers at the class level
         # to avoid the crappy cyclic import errors
         #
-        if not self.serializers: # if we have not set them already
+        if not self.serializers:  # if we have not set them already
             from toolkit.api.serializers import ItemSerializer  # must be imported due to cyclic with this class being imported in Workspace.models
             from toolkit.api.serializers.user import LiteUserSerializer  # must be imported due to cyclic with this class being imported in Workspace.models
             from toolkit.api.serializers import ReviewSerializer
@@ -424,7 +424,7 @@ class MatterActivityEventService(object):
         # toolkit/apps/matter/signals.py:103
         override_message = u'%s deleted a comment on %s' % (user, revision)
         self._create_activity(actor=user, verb=u'deleted revision comment', action_object=revision,
-                              override_message=override_message, item=revision.item)
+                              override_message=override_message, item=revision.item, uuid=uuid)
 
         self._delete_comment_by_uuid(uuid=uuid, action_object=revision, item=revision.item)
 
