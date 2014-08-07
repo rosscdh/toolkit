@@ -1,6 +1,11 @@
 Deployment actions by branch
 ----------------------------
 
+[fix/rt-item-update-on-crocodoc-webhook]
+
+1. pip install -e git+https://github.com/rosscdh/django-crocodoc.git#egg=django-crocodoc -U  # upgrade to latest 0.1.4
+
+
 --------------------------------------------------------------------------------
 ** DEPLOYED 01 August 2014
 --------------------------------------------------------------------------------

@@ -9,6 +9,7 @@ from django.dispatch.dispatcher import Signal
 
 from toolkit.tasks import run_task
 from toolkit.core.tasks import (_activity_send,
+                                _activity_delete,
                                 _abridge_send,
                                 _notifications_send,
                                 _mentions_send,)
@@ -25,6 +26,7 @@ Base Signal and listener used to funnel events
 send_activity_log = Signal(providing_args=['actor', 'verb', 'action_object', 'target', 'message', 'user', 'item',
                                            'comment', 'previous_name', 'current_status', 'previous_status', 'filename',
                                            'date_created', 'version'])
+delete_activity_log = Signal(providing_args=['actor', 'uuid', 'action_object', 'item'])
 
 
 @receiver(send_activity_log, dispatch_uid="core.on_activity_received")
@@ -89,4 +91,12 @@ def on_activity_received(sender, **kwargs):
 
     else:
         logger.error('One or more or actor: {actor} action_object: {action_object} target: {target} verb_slug: {verb_slug} where not provided'.format(actor=actor, action_object=action_object, target=target, verb_slug=verb_slug))
+
+
+@receiver(delete_activity_log, dispatch_uid="core.delete_activity_log")
+def on_delete_activity_log(sender, uuid, item, action_object, **kwargs):
+    """
+    Delete Activity based on passed in crocodoc uuid
+    """
+    run_task(_activity_delete, uuid=uuid, target=item, action_object=action_object, **kwargs)
 

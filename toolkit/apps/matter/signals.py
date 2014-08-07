@@ -2,7 +2,6 @@
 import logging
 from django.contrib.auth.models import User
 from django.dispatch import Signal, receiver
-from django.test.client import RequestFactory
 from django.db.models.signals import (m2m_changed,
                                       post_save,
                                       post_delete)
@@ -132,7 +131,7 @@ def on_participant_added(sender, instance, action, model, pk_set, **kwargs):
 #@receiver(crocodoc_signals.crocodoc_annotation_drawing)
 ## @receiver(crocodoc_signals.crocodoc_annotation_point)  # dont record this event because its pretty useless and comes by default when they comment
 def crocodoc_webhook_event_recieved(sender, verb, document, target, attachment_name, user_info, crocodoc_event,
-                                    content=None, **kwargs):
+                                    uuid=None, content=None, **kwargs):
     """
     signal to handle any of the crocdoc signals
     """
@@ -166,14 +165,14 @@ def crocodoc_webhook_event_recieved(sender, verb, document, target, attachment_n
                 try:
                     reviewdocument = document.source_object.reviewdocument_set.get(crocodoc_uuid=document.uuid)
                 except document.source_object.reviewdocument_set.model.DoesNotExist:
-                    reviewdocument = None                    
+                    reviewdocument = None
 
                 if reviewdocument:
 
                     if reviewdocument == document.source_object.primary_reviewdocument:
                         # this reviewdocument is the PRIMARY one, meaning: one that is being reviewed by a matter.participant
-                        matter.actions.add_revision_comment(user=user, revision=document.source_object, comment=content,
-                                                            reviewdocument=reviewdocument)
+                        matter.actions.add_revision_comment(user=user, revision=document.source_object,
+                                                            comment=content, reviewdocument=reviewdocument, uuid=uuid)
                     else:
                         # this reviewdoc is a 3rd party review
                         # otherwise it is externally reviewed -> add "(review copy)" to the displayed event
@@ -181,4 +180,4 @@ def crocodoc_webhook_event_recieved(sender, verb, document, target, attachment_n
                                                                comment=content, reviewdocument=reviewdocument)
 
             if crocodoc_event in ['annotation.delete', 'comment.delete']:
-                matter.actions.delete_revision_comment(user=user, revision=document.source_object)
+                matter.actions.delete_revision_comment(user=user, revision=document.source_object, uuid=uuid)
