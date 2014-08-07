@@ -136,6 +136,10 @@ def virtualenv(cmd, **kwargs):
         sudo("source %sbin/activate; %s" % (env.virtualenv_path, cmd,), user=env.application_user, **kwargs)
 
 @task
+def pip_install():
+    virtualenv(cmd='pip install -e git+https://github.com/rosscdh/django-crocodoc.git#egg=django-crocodoc -U')
+
+@task
 @roles('db-actor')
 def request_counts():
     virtualenv(cmd='python %s%s/manage.py migrate default 0005' % (env.remote_project_path, env.project))
