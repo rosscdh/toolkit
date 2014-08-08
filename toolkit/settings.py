@@ -167,6 +167,9 @@ HELPER_APPS = (
 
     'jsonify',
 
+    # social-auth
+    'social.apps.django_app.default',
+
     # integration for abridge; django-abridge
     'abridge',
 
@@ -207,6 +210,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.tz',
     'django.contrib.messages.context_processors.messages',
     'django.core.context_processors.request',
+    'social.apps.django_app.context_processors.backends',
+    'social.apps.django_app.context_processors.login_redirect',
     'toolkit.context_processors.EXPOSED_GLOBALS',
     'toolkit.context_processors.FIRSTSEEN',
     'toolkit.context_processors.LAYOUT',
@@ -252,12 +257,14 @@ USE_L10N = False  # should always be False to enable dates accepted https://docs
 USE_TZ = True
 
 LOGIN_URL          = '/start/'
-LOGIN_REDIRECT_URL = '/dash/'
+LOGIN_REDIRECT_URL = '/'
 LOGIN_ERROR_URL    = '/login-error/'
 LOGOUT_URL = '/end/'
 
 AUTHENTICATION_BACKENDS = (
     'toolkit.auth_backends.EmailBackend',
+    'social.backends.goclio.GoClioOAuth2',
+    'social.backends.box.BoxOAuth2',
     'django.contrib.auth.backends.ModelBackend',
     'toolkit.auth_backends.SecretKeyBackend',
     'toolkit.apps.review.auth_backends.ReviewDocumentBackend',  # allow users to log in via review urls
@@ -380,6 +387,18 @@ PIPELINE_COMPILERS = [
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+
+#
+# Social Auth
+#
+SOCIAL_AUTH_LOGIN_URL = LOGIN_URL
+
+SOCIAL_AUTH_GOCLIO_OAUTH2_KEY = ''
+SOCIAL_AUTH_GOCLIO_OAUTH2_SECRET = ''
+
+SOCIAL_AUTH_BOX_KEY = 'bfox0r0yj2yv5mutcmhg5dziuw7mi0tj'
+SOCIAL_AUTH_BOX_SECRET = 'kHCT5f3rMGd86GNyRgVWPlZskjlIyvVc'
 
 CACHES = {
     'default': {

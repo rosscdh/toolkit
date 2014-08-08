@@ -28,6 +28,15 @@
                 <a href="{% url 'me:cancel' %}" data-toggle="modal" data-target="#cancel-account">Cancel my account</a>
             </div>
         </div>
+
+        <div class="container">
+            <div class="col-sm-6 col-sm-offset-3" role="main">
+                <h3>Integrations</h3>
+                <hr>
+                <a href="{% url 'social:begin' backend='goclio' %}">Clio</a>
+                <a href="{% url 'social:begin' backend='box' %}">Box</a>
+            </div>
+        </div>
     </div>
 {% endblock %}
 

@@ -20,7 +20,7 @@ urlpatterns = patterns('',
     url(r'^api/v1/', include('toolkit.api.urls')),
     url(r'^api/', include('toolkit.apps.api.urls', namespace='api')),
 
-    url(r'^dash/', include('toolkit.apps.dash.urls', namespace='dash')),
+    #url(r'^dash/', include('toolkit.apps.dash.urls', namespace='dash')),
 
     url(r'^notifications/', include('toolkit.apps.notification.urls', namespace='notification')),
 
@@ -34,8 +34,8 @@ urlpatterns = patterns('',
     url(r'^workspace/', include('toolkit.apps.workspace.urls', namespace='workspace')),
 
     # apps
-    url(r'^83b/', include('toolkit.apps.eightythreeb.urls', namespace='eightythreeb')),
-    url(r'^engagement-letters/', include('toolkit.apps.engageletter.urls', namespace='engageletter')),
+    #url(r'^83b/', include('toolkit.apps.eightythreeb.urls', namespace='eightythreeb')),
+    #url(r'^engagement-letters/', include('toolkit.apps.engageletter.urls', namespace='engageletter')),
 
     # reviews
     url(r'^review/', include('toolkit.apps.review.urls', namespace='review')),
@@ -55,6 +55,8 @@ urlpatterns = patterns('',
 
     url(r'^favicon\.ico$', RedirectView.as_view(url='%simages/favicon.ico' % settings.STATIC_URL)),
 
+    # Social Auth
+    url(r'^', include('social.apps.django_app.urls', namespace='social')),
     # home default terminator
     url(r'^', include('toolkit.apps.default.urls', namespace='public')),
 )
