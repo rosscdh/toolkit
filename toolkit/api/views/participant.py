@@ -148,7 +148,7 @@ class MatterParticipant(generics.CreateAPIView,
             service = MatterParticipantRemovalService(matter=self.matter, removing_user=request.user)
             service.process(participant_to_remove)
 
-        except PermissionDenied, e:
+        except (PermissionDenied, e):
             status = http_status.HTTP_403_FORBIDDEN
 
         return Response(status=status)

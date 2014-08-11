@@ -756,7 +756,7 @@ def rebuild_local(gui_clean=False):
         new_db_name = '/tmp/dev.%s.db.bak' % env.timestamp
         local('cp ./dev.db %s' % new_db_name)
 
-        print colored('Local Database Backedup %s...' % new_db_name, 'green')
+        print(colored('Local Database Backedup %s...' % new_db_name, 'green'))
         local('rm ./dev.db')
 
     local('python manage.py syncdb  --noinput')
