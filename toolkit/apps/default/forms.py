@@ -294,4 +294,4 @@ class VerifyTwoFactorForm(forms.Form):
         token = self.cleaned_data.get('token')
 
         if self.authy_service.verify_token(token) is False:
-            raise forms.ValidationError('Sorry, that Authy Token is not valid: %s' % authy_service.errors.get('message', 'Unknown Error'))
+            raise forms.ValidationError('Sorry, that Authy Token is not valid: %s' % self.authy_service.errors.get('message', 'Unknown Error'))
