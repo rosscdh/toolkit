@@ -102,7 +102,7 @@
 
         &:hover,
         &:focus {
-        color: mix(@lp-blue, white, 0%);
+          color: mix(@lp-blue, white, 0%);
           background-color: transparent;
         }
         &[class*="fui-"] {
@@ -295,7 +295,7 @@
       }
 
         // Link styling
-      > a {
+        > a {
         font-size: floor(@component-font-size-base * 1.067); // ~16px
         border-bottom: 0px solid mix(@brand-primary, black, 85%);
         border-left: 0px solid mix(@brand-primary, black, 85%) !important;
@@ -322,13 +322,13 @@
     }
   }
 
-	.nav.navbar-right {
-		.dropdown-menu {
-		}
-		.open > .dropdown-menu:before {
-			display: block !important;
-		}
-	}
+  .nav.navbar-right {
+    .dropdown-menu {
+    }
+    .open > .dropdown-menu:before {
+     display: block !important;
+   }
+ }
   // Round corders of the pull-right dropdown
   .nav.navbar-right > li {
     > a {
@@ -477,28 +477,28 @@
       padding: 8px 5px 8px @navbar-link-space + 3;
 
       .input-group-btn {
-	      .btn {
-		      background-color: mix(@brand-primary, black, 85%);
-	        color: lighten(@brand-primary, 13%) !important;
-	      }
-      }
-      .form-control {
+       .btn {
         background-color: mix(@brand-primary, black, 85%);
-        color: white;
-        .placeholder(lighten(@brand-primary, 33%));
-      }
-      .form-control:focus {
-        border-color: @brand-secondary;
-      }
-      &.focus {
-	      .input-group-btn {
-		      .btn {
-			      background-color: mix(@brand-primary, black, 85%) !important;
-		      }
-				}
+        color: lighten(@brand-primary, 13%) !important;
       }
     }
-  }
+    .form-control {
+      background-color: mix(@brand-primary, black, 85%);
+      color: white;
+      .placeholder(lighten(@brand-primary, 33%));
+    }
+    .form-control:focus {
+      border-color: @brand-secondary;
+    }
+    &.focus {
+     .input-group-btn {
+      .btn {
+       background-color: mix(@brand-primary, black, 85%) !important;
+     }
+   }
+ }
+}
+}
 
   // Default navbar search box styling
   .navbar-form {
@@ -506,22 +506,22 @@
     padding: 8px (@navbar-link-space - 15) 0px @navbar-link-space;
     max-width: 229px;
 
-		.form-group {
-			margin-bottom: 0;
-		}
-    .form-control {
-      background-color: @inverse;
-      border: 2px solid transparent;
-      color: mix(@brand-primary, white, 85%);
-      .placeholder(mix(@brand-primary, white, 66%));
+    .form-group {
+     margin-bottom: 0;
+   }
+   .form-control {
+    background-color: @inverse;
+    border: 2px solid transparent;
+    color: mix(@brand-primary, white, 85%);
+    .placeholder(mix(@brand-primary, white, 66%));
       font-size: @component-font-size-base; // ~15px
     }
     .form-control:focus {
       border-color: @brand-secondary;
     }
     .input-group-btn .btn {
-	    border-color: transparent;
-	    color: mix(@brand-primary, white, 50%);
+     border-color: transparent;
+     color: mix(@brand-primary, white, 50%);
 	    font-size: floor(@component-font-size-base * 1.067); // ~16px
     }
   }
@@ -567,7 +567,7 @@
     }
   }
 }
-
+.navbar-left
 // //
 // // Responsive: Tablet
 // // --------------------------------------------------
