@@ -100,7 +100,7 @@
         font-weight: 700;
         font-size: @component-font-size-base; // ~15px
         line-height: 20px;
-        padding: 16px @navbar-link-space;
+        padding: 10px @navbar-link-space;
         text-shadow: none;
         .transition(~"background-color .25s, color .25s, border-bottom-color .25s");
 
@@ -304,7 +304,7 @@
         border-bottom: 0px solid mix(@brand-primary, black, 85%);
         border-left: 0px solid mix(@brand-primary, black, 85%) !important;
         color: @inverse;
-        padding: 16px @navbar-link-space 13px;
+        padding: 10px @navbar-link-space 13px;
         line-height: 20px;
         font-weight:500;
         &.unread span{
@@ -759,4 +759,10 @@
 //     margin: 0 0 0 10px;
 //   }
 // }
+
+.notifications  {
+ .pe-7s-bell {
+  font-size: 24px !important;
+}
+}
 
