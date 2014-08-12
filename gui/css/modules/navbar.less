@@ -9,6 +9,10 @@
   border-radius: 0;
   border: none;
 
+  .active {
+    border-bottom: 3px solid #42D0E5;
+  }
+
   .navbar-brand {
     border-radius: 0;
     color: white;
@@ -55,7 +59,7 @@
         > a:hover,
         > a:focus {
           background: none;
-          color: white;
+          color: @nav-text-color;
           .box-shadow(none);
         }
       }
@@ -224,7 +228,7 @@
 
 .navbar-default {
   background: white;
-  border: none;
+  border-bottom: 2px solid @nav-text-color;
   padding-left: 0;
   padding-right: 0;
   border-radius: 0;
@@ -234,7 +238,7 @@
   .nav li {
     background-color:white;
     a {
-      color:@nav-text-color;
+      color: lighten(@nav-text-color, 20%);
       &:hover {
         color:darken(@nav-text-color, 10%);
       }
@@ -755,3 +759,4 @@
 //     margin: 0 0 0 10px;
 //   }
 // }
+
