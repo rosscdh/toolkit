@@ -13,9 +13,9 @@
     border-radius: 0;
     color: white;
     font-size: floor(@component-font-size-base * 1.60); // ~24px
-    line-height: 29.55px;
+    line-height: 20px;
     font-weight: 700;
-    padding: 15px 28px 18px 12px;
+    padding: 10px 28px 13px 12px;
     text-shadow: none;
     display: inline-block;
     font-size:18px;
@@ -95,7 +95,7 @@
         display: inline-block;
         font-weight: 700;
         font-size: @component-font-size-base; // ~15px
-        line-height: 28px;
+        line-height: 20px;
         padding: 16px @navbar-link-space;
         text-shadow: none;
         .transition(~"background-color .25s, color .25s, border-bottom-color .25s");
@@ -223,11 +223,23 @@
 }
 
 .navbar-default {
-  background: @lp-blue;
+  background: white;
   border: none;
   padding-left: 0;
   padding-right: 0;
   border-radius: 0;
+  a {
+    color:@nav-text-color;
+  }
+  .nav li {
+    background-color:white;
+    a {
+      color:@nav-text-color;
+      &:hover {
+        color:darken(@nav-text-color, 10%);
+      }
+    }
+  }
 }
 
 // Alternate Color
@@ -472,7 +484,7 @@
       }
       .form-control {
         background-color: mix(@brand-primary, black, 85%);
-        color: @inverse;
+        color: white;
         .placeholder(lighten(@brand-primary, 33%));
       }
       .form-control:focus {
@@ -491,7 +503,7 @@
   // Default navbar search box styling
   .navbar-form {
     margin: 0;
-    padding: 13px (@navbar-link-space - 15) 0px @navbar-link-space;
+    padding: 8px (@navbar-link-space - 15) 0px @navbar-link-space;
     max-width: 229px;
 
 		.form-group {
