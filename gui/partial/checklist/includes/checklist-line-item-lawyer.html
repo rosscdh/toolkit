@@ -8,12 +8,11 @@
 		ui-sref="checklist.item({ 'itemSlug': item.slug })"
 	>
 		<div class="row">
-			<div class="col-xs-6 item-title">
+			<div class="col-xs-12 item-title">
 				<span class="fui-list-columned"></span>
 				<span ng-bind="item.name" ng-class="{'loading': item.loading}"></span>
-			</div>
-			<div class="col-xs-6">
-				<span ng-hide="item.is_complete" class="pull-right status">
+
+				<span ng-hide="item.is_complete" class="status">
 					<button
 						disabled=""
 						class="btn btn-xs doc-status-{{ item.latest_revision.status }}"
