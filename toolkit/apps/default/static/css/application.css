@@ -1859,6 +1859,6 @@ a.navbar-brand {
 .navbar.checklist-nav li a:hover {
   color: #717171;
 }
-.notifications .pe-7s-bell {
-  font-weight: bold;
+.notifications i {
+  font-size: 19px;
 }
