@@ -75,7 +75,7 @@ angular.module('toolkit-gui')
 			'intro': "Click here to create a new checklist Item."
 		},
 		{
-			'element': '#checklist-items > span:nth-child(1) > div.categories-list.ng-pristine.ng-valid.ui-sortable > div:nth-child(2) > span:nth-child(2) > ul > li.ng-scope.item-open.ui-sortable-handle.selected > div > div.col-xs-6.item-title',
+			'element': '#checklist-items > span:nth-child(1) > div.categories-list.ng-pristine.ng-valid.ui-sortable > div:nth-child(2) > span:nth-child(2) > ul > li.ng-scope.item-open.selected',
 			'intro': "The currently selected Item is blue in color. Click on another item in any of the other categories to view that item's details."
 		},
 
@@ -105,30 +105,41 @@ angular.module('toolkit-gui')
 			'intro': "Click here to mark this item as Closed."
 		},
 		{
-			'element': '#checklist-detail > div:nth-child(1) > div.ng-scope > div > h4',
+			'element': '#checklist-detail > div:nth-child(1) > ul',
 			'intro': 'You can drag and drop a document from your local computer here.'
 		},
 		{
-			'element': '#checklist-detail > div.tasks-wrapper.ng-isolate-scope > div.item-subheading > a',
+			'element': '#checklist-detail > div:nth-child(4) > div > div.item-subheading > a',
 			'intro': "Click here to create a Task and assign it to a matter participant. You can also set due dates."
 		},
 		{
-			'element': '#checklist-detail > div.attachments-wrapper.ng-isolate-scope > div.item-subheading > a',
+			'element': '#checklist-detail > div:nth-child(6) > div > div.item-subheading > a',
 			'intro': "Click here to upload a supporting Attachment for this item. Attachments can be any file type."
 		},
 
 
 		{
-			'element': '#checklist-activity > h4.nav-activity-panel > a:nth-child(1)',
+			'element': '#checklist-activity > div.item-comments.ng-scope > div.ng-isolate-scope > ul > li.colleagues',
+			'intro': "Comments that only colleagues can see."
+		},
+		{
+			'element': '#checklist-activity > div.item-comments.ng-scope > div.ng-isolate-scope > ul > li.everyone',
+			'intro': "Comments that everyone associated with this matter can see."
+		},
+		{
+			'element': '#checklist-activity > div.item-comments.ng-scope > div.ng-isolate-scope > div > div.tab-pane.ng-scope.active > div > div.new-message.ng-scope > div.visible-to',
+			'intro': "Indicates who can see the currently selected comments."
+		},
+		
+
+
+		{
+			'element': '#checklist-activity > div.activity.ng-scope > h4 > a.activity-item',
 			'intro': "Click here to view activity for this Item."
 		},
 		{
-			'element': '#checklist-activity > h4.nav-activity-panel > a:nth-child(2)',
+			'element': '#checklist-activity > div.activity.ng-scope > h4 > a.activity-matter',
 			'intro': "Click here to view all activity that has taken place within the matter."
-		},
-		{
-			'element': '#checklist-activity .new-message',
-			'intro': "Chat with participants about items, documents and revisions."
 		}
 		]
 	};
