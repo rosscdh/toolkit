@@ -721,6 +721,11 @@ body.gui {
 body.gui .main-content {
   padding: 0;
 }
+body.gui .btn-success {
+  background-color: #42D0E5;
+  text-transform: uppercase;
+  font-family: open sans;
+}
 .container-fluid {
   padding: 0 20px;
 }
@@ -896,6 +901,7 @@ body.gui .main-content {
 .matter .card .content .title h5,
 .matter .card .content .title h6 {
   margin: 0 0 10px;
+  font-family: open sans;
 }
 .matter .card .content .title h5 {
   color: #757575;
@@ -917,6 +923,7 @@ body.gui .main-content {
 .matter .card .content .meta p {
   color: #95a5a6;
   font-size: 12px;
+  font-family: open sans;
   line-height: 40px;
   margin-bottom: 5px;
 }
@@ -1537,6 +1544,7 @@ body.gui .main-content {
 }
 .avatar .initials {
   color: #9B9898;
+  font-family: open sans;
   display: block;
   font-size: 14px;
   font-weight: bold;
@@ -1869,4 +1877,7 @@ a.undo_is_complete-btn {
 }
 .people {
   margin-top: 20px;
+}
+.input-group .input-group-btn .btn {
+  padding: 13px;
 }
