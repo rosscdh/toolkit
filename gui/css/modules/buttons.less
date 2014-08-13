@@ -10,6 +10,7 @@
   font-weight: @btn-font-weight;
   line-height: @btn-line-height-base;
   border-radius: @border-radius-base;
+  text-transform: uppercase;
   padding: 10px 15px;
   -webkit-font-smoothing: subpixel-antialiased;
   font-family : @font-family-btn;
@@ -58,10 +59,10 @@
   .button-variant(@btn-default-color, @gray-light, @btn-hover-bg, @btn-active-bg);
 }
 .btn-primary {
-  .button-variant(@btn-default-color, @brand-secondary, @btn-primary-hover-bg, @btn-primary-active-bg);
+  .button-variant(@lp-blue, white, @btn-primary-hover-bg, @btn-primary-active-bg);
 }
 .btn-info    {
-  .button-variant(@btn-default-color, @brand-info, @btn-info-hover-bg, @btn-info-active-bg);
+  .button-variant(@lp-blue, white, @btn-info-hover-bg, @btn-info-active-bg);
 }
 .btn-danger  {
   .button-variant(@btn-default-color, @brand-danger, @btn-danger-hover-bg, @btn-danger-active-bg);
