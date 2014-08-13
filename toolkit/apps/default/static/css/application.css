@@ -878,7 +878,7 @@ body.gui .main-content {
 }
 .matter .card .content .fui-star-2 {
   position: absolute;
-  color: #2c3e50;
+  color: #42D0E5;
   top: 176px;
   left: 14px;
   transform: rotate(53deg);
@@ -936,9 +936,11 @@ body.gui .main-content {
 .matter .card .progress {
   margin-bottom: 0px;
   border-radius: 0px;
+  height: 15px !important;
 }
 .matter .card .progress .progress-bar {
   border-radius: 0px;
+  height: 15px !important;
 }
 .welcome-block ul#tourTab {
   border-bottom: 0px;

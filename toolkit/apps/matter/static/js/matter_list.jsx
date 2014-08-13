@@ -198,7 +198,7 @@ var LastUpdatedOrComplete = React.createClass({
         if (percent_complete === '100%') {
 
             return (
-                <p className="small pull-left done"><span className="fui-check-inverted"></span> Complete</p>
+                <p className="small pull-left done"><span className="fui-check-inverted"></span> COMPLETE</p>
             );
 
         } else {
