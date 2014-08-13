@@ -168,7 +168,7 @@ HELPER_APPS = (
     'jsonify',
 
     # social-auth
-    'social.apps.django_app.default',
+    'social.apps.django_app.sa_default',
 
     # integration for abridge; django-abridge
     'abridge',
@@ -394,11 +394,11 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 #
 SOCIAL_AUTH_LOGIN_URL = LOGIN_URL
 
-SOCIAL_AUTH_GOCLIO_OAUTH2_KEY = ''
-SOCIAL_AUTH_GOCLIO_OAUTH2_SECRET = ''
+SOCIAL_AUTH_GOCLIO_KEY = 'KuTvkSVAOpRt1RKCDPdFYvAJ9zJHnSRq7lQyPxfi'
+SOCIAL_AUTH_GOCLIO_SECRET = '5rGXUbeeV3dPDEQKGLN1RFfj06vUgOPubWE5pJmc'
 
-SOCIAL_AUTH_BOX_KEY = 'bfox0r0yj2yv5mutcmhg5dziuw7mi0tj'
-SOCIAL_AUTH_BOX_SECRET = 'kHCT5f3rMGd86GNyRgVWPlZskjlIyvVc'
+SOCIAL_AUTH_BOX_KEY = 'gqh05u2anhmqkgu4ree6okq934oz4aq5'
+SOCIAL_AUTH_BOX_SECRET = 'jFfAr6EW8RjeuwAe0o0YwiR5fx97SUGg'
 
 CACHES = {
     'default': {

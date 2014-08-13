@@ -33,6 +33,9 @@
             <div class="col-sm-6 col-sm-offset-3" role="main">
                 <h3>Integrations</h3>
                 <hr>
+                {% for backend in backends.associated %}
+                {{ backend }}
+                {% endfor %}
                 <a href="{% url 'social:begin' backend='goclio' %}">Clio</a>
                 <a href="{% url 'social:begin' backend='box' %}">Box</a>
             </div>

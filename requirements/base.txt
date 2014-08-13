@@ -109,3 +109,8 @@ django-stripe-payments==2.0b34
 
 # permissions
 django-permission
+
+# Box
+-e git+https://github.com/littleq0903/box-python-sdk.git#egg=box-python
+# GoClio
+-e git+https://github.com/rosscdh/python-goclio.git#egg=python-goclio

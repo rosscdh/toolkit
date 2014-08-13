@@ -56,7 +56,7 @@ urlpatterns = patterns('',
     url(r'^favicon\.ico$', RedirectView.as_view(url='%simages/favicon.ico' % settings.STATIC_URL)),
 
     # Social Auth
-    url(r'^', include('social.apps.django_app.urls', namespace='social')),
+    url(r'^social/', include('social.apps.django_app.urls', namespace='social')),
     # home default terminator
     url(r'^', include('toolkit.apps.default.urls', namespace='public')),
 )
