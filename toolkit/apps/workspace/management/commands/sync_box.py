@@ -6,8 +6,8 @@ from django.core.management.base import BaseCommand, CommandError
 
 from toolkit.apps.workspace.models import Workspace
 
+from optparse import make_option
 from social.apps.django_app.sa_default.models import UserSocialAuth
-
 from box.box import Me, Folders, Files, UploadFiles
 
 import hashlib
@@ -43,6 +43,15 @@ class Command(BaseCommand):
 
     slugs = []
 
+    option_list = BaseCommand.option_list + (
+        make_option('-u', '--usernames',
+            action='store',
+            dest='usernames',
+            default=None,
+            type='string',
+            help='usernames seperated by a ,'),
+        )
+
     @property
     def matters(self):
         return Workspace.objects.filter(slug__in=self.slugs)
@@ -77,8 +86,15 @@ class Command(BaseCommand):
 
         return [f for f in folders.get('item_collection', {}).get('entries', []) if f.get('type') == 'folder']
 
+    def participants(self, matter):
+        if self.options.get('username', None) is not None:
+            return matter.participants.filter(username__in=self.options.get('usernames').split())
+        # all participants
+        return matter.participants.all()
+
     def handle(self, *args, **options):
         self.slugs = args
+        self.options = options
 
         try:
             args[0]
@@ -89,7 +105,7 @@ class Command(BaseCommand):
 
             matter_name = _safe_matter_name(m)
 
-            for p in m.participants.all():
+            for p in self.participants(matter=m):
 
                 box_provider = p.social_auth.filter(provider=self.provider).first()
                 if box_provider:
@@ -106,11 +122,6 @@ class Command(BaseCommand):
                         current_folders = self.current_folders(box_provider=box_provider)
 
                     matter_folder_id = self.matter_folder_id(name=matter_name, current_folders=current_folders)
-
-                    # # create category folders
-                    # for cat in m.categories:
-                    #     # create item folders
-                    #     resp = f.post(name=slugify(cat), parent={'id': matter_folder_id})
 
                     # create revision files, according to user class
                     for item in m.item_set.all():
