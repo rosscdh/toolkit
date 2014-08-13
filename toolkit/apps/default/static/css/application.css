@@ -716,7 +716,7 @@ div.full {
   margin-bottom: 10px;
 }
 body.gui {
-  background-color: #f2f2f2;
+  background-color: #f7f7f7;
 }
 body.gui .main-content {
   padding: 0;
@@ -895,7 +895,9 @@ body.gui .main-content {
   margin: 0 0 10px;
 }
 .matter .card .content .title h5 {
-  color: #2c3e50;
+  color: #757575;
+  font-family: open sans;
+  font-weight: 400;
 }
 .matter .card .content .title h6 {
   font-size: 14px;
@@ -1000,6 +1002,7 @@ body.gui .main-content {
 }
 .navbar {
   margin-bottom: 0;
+  background-color: white;
 }
 .nav-list-vivid .nav-header {
   padding-left: 8px;
@@ -1521,21 +1524,21 @@ body.gui .main-content {
   margin-top: 20px;
 }
 .avatar {
-  background-color: #444444;
-  border: 1px solid #ececec;
+  background-color: white;
+  border: 1px solid #9B9898;
   display: inline-block;
   position: relative;
 }
 .avatar .initials {
-  color: white;
+  color: #9B9898;
   display: block;
   font-size: 14px;
   font-weight: bold;
-  height: 40px;
+  height: 30px;
   overflow: hidden;
-  line-height: 40px;
+  line-height: 30px;
   text-align: center;
-  width: 40px;
+  width: 30px;
 }
 .people-multi .avatar {
   border: 2px solid white;
@@ -1836,4 +1839,16 @@ body.entry-pages input:-webkit-autofill {
 }
 #requestNotifyPermission .notification-link i {
   padding: 5px;
+}
+.undo_is_complete-btn,
+.mark_incomplete-btn {
+  background-color: #95a5a6;
+  color: white;
+  border: 1px solid red;
+}
+a.undo_is_complete-btn {
+  border: 1px solid red;
+}
+a.navbar-brand {
+  color: #8a8a8a;
 }
