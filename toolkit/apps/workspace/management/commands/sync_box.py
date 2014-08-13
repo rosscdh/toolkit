@@ -65,6 +65,20 @@ class Command(BaseCommand):
         except IndexError:
             raise Exception('could not find folder: %s in current folders: %s' % (name, current_folders))
 
+    def valid_token(self, box_provider):
+        token = box_provider.tokens
+
+        me = Me(token=token)
+        me.options()
+
+        if me.response.ok is False:
+            print('%s: %s' % (me.response.status_code, me.response.reason))
+            self.refresh_token(social_auth_provider=box_provider)
+            token = box_provider.tokens
+
+        return token
+
+
     def refresh_token(self, social_auth_provider):
         refresh_token = social_auth_provider.extra_data.get('refresh_token') 
         updated_data = social_auth_provider.get_backend_instance().refresh_token(token=refresh_token)
@@ -74,20 +88,15 @@ class Command(BaseCommand):
         return social_auth_provider
 
     def folders(self, box_provider, parent={'id': 0}):
-        folders = {'ok': False}
-        while folders.get('ok') is False:
-            token = box_provider.tokens
+        token = box_provider.tokens
 
-            f = Folders(token=token)
-            folders = f.get(id=0, parent=parent)
-
-            if folders.get('ok', True) is False:
-                self.refresh_token(social_auth_provider=box_provider)
+        f = Folders(token=token)
+        folders = f.get(id=0, parent=parent)
 
         return [f for f in folders.get('item_collection', {}).get('entries', []) if f.get('type') == 'folder']
 
     def participants(self, matter):
-        if self.options.get('username', None) is not None:
+        if self.options.get('usernames', None) is not None:
             return matter.participants.filter(username__in=self.options.get('usernames').split())
         # all participants
         return matter.participants.all()
@@ -107,11 +116,14 @@ class Command(BaseCommand):
 
             for p in self.participants(matter=m):
 
+                print('Participant: %s' % p)
+
                 box_provider = p.social_auth.filter(provider=self.provider).first()
+
                 if box_provider:
 
                     current_folders = self.current_folders(box_provider=box_provider)
-                    token = box_provider.tokens
+                    token = self.valid_token(box_provider=box_provider)
                     print('TOKEN: %s' % token)
 
                     f = Folders(token=token)
@@ -148,11 +160,3 @@ class Command(BaseCommand):
                                 print('uploading with parent: %s' % (parent_id,))
                                 resp = fl.post(files={'file': default_storage.open(target_file)}, parent_id=parent_id)
                                 print fl.response.content
-
-                        # create comments set
-                    # create item with no category folders
-
-                    # for folder_id, folder in [(f.get('id'), f.get('name'))for f in self.folders(box_provider=box_provider)]:
-                    #     print folder_id, folder
-
-
