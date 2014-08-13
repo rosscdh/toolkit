@@ -1525,6 +1525,7 @@ body.gui .main-content {
 }
 .avatar {
   background-color: white;
+  margin-right: 3px;
   border: 1px solid #9B9898;
   display: inline-block;
   position: relative;
@@ -1851,4 +1852,13 @@ a.undo_is_complete-btn {
 }
 a.navbar-brand {
   color: #8a8a8a;
+}
+.navbar.checklist-nav li a {
+  color: #bdbdbd;
+}
+.navbar.checklist-nav li a:hover {
+  color: #717171;
+}
+.notifications .pe-7s-bell {
+  font-weight: bold;
 }
