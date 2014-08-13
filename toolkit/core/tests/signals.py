@@ -241,7 +241,7 @@ class ActivitySignalTest(BaseScenarios, TestCase):
         self.assertEqual(len(stream), 2)
         self.assertEqual(stream[0].action_object, revision1)
         self.assertEqual(stream[0].actor, self.lawyer)
-        self.assertEqual(stream[0].data['override_message'], u'Lawyër Tëst destroyed a revision for Test Item #1')
+        self.assertEqual(stream[0].data['override_message'], u'Lawyër Tëst destroyed revision Test Revision #1 (v1) for Test Item #1')
 
     def test_add_comment(self):
         comment_text = u'Sleep with one eye open'
