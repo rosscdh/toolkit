@@ -1,4 +1,4 @@
-<div class="modal-header">
+<div class="modal-header" id="new-thread">
     <button type="button" class="close" aria-hidden="true" ng-click="cancel()">×</button>
     <h4 class="modal-title">Create a new Thread</h4>
 </div>
@@ -38,7 +38,7 @@
         </div>
 
         <div id="div_id_comment" class="form-group">
-            <label for="id_comment" class="control-label">Comment</label>
+            <label for="id_comment" class="control-label">Message</label>
             <div class="controls">
                 <textarea class="compose-message" rows="4" cols="50" placeholder="Type your message" ng-model="data.request.comment"></textarea>
             </div>
