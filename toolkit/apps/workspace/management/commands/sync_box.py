@@ -137,19 +137,21 @@ class Command(BaseCommand):
 
                     # create revision files, according to user class
                     for item in m.item_set.all():
-                        parent_id = matter_folder_id
+                        category_folder_id = matter_folder_id
 
                         # Ensure Category
                         if item.category is not None:
-
                             resp = f.post(name=slugify(item.category), parent={'id': matter_folder_id})
-
                             try:
-                                parent_id = resp.get('id') if resp.get('id', None) is not None else f.response.json().get('context_info', {}).get('conflicts',[])[0].get('id', None)
+                                category_folder_id = resp.get('id') if resp.get('id', None) is not None else f.response.json().get('context_info', {}).get('conflicts',[])[0].get('id', None)
                             except IndexError:
-                               parent_id = matter_folder_id
+                               category_folder_id = matter_folder_id
 
-                        print('matter: %s parent: %s' % (matter_folder_id, parent_id))
+                        # Create item folder
+                        resp = f.post(name=slugify(item.name), parent={'id': category_folder_id})
+                        item_folder_id = resp.get('id') if resp.get('id', None) is not None else f.response.json().get('context_info', {}).get('conflicts',[])[0].get('id', None)
+                        
+                        print('matter: %s parent: %s' % (matter_folder_id, category_folder_id))
 
                         #for rev in item.revision_set.all():
                         if item.latest_revision:
@@ -157,6 +159,15 @@ class Command(BaseCommand):
                                 rev.ensure_file()
                                 target_file = rev.executed_file
                                 fl = UploadFiles(token=token, sha1=_file_sha1(target_file=target_file))
-                                print('uploading with parent: %s' % (parent_id,))
-                                resp = fl.post(files={'file': default_storage.open(target_file)}, parent_id=parent_id)
+                                print('uploading with parent: %s' % (item_folder_id,))
+                                resp = fl.post(files={'file': default_storage.open(target_file)}, parent_id=item_folder_id)
                                 print fl.response.content
+
+                        # attachments
+                        resp = f.post(name='attachments', parent={'id': item_folder_id})                        
+                        attachments_folder_id = resp.get('id') if resp.get('id', None) is not None else f.response.json().get('context_info', {}).get('conflicts',[])[0].get('id', None)
+                        # update the files
+                        for attachment in item.attachments.all():
+                            target_file = attachment.attachment
+                            fl = UploadFiles(token=token, sha1=_file_sha1(target_file=target_file))
+                            resp = fl.post(files={'file': default_storage.open(target_file)}, parent_id=attachments_folder_id)
