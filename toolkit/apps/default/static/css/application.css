@@ -1882,3 +1882,39 @@ a.undo_is_complete-btn {
 .input-group .input-group-btn .btn {
   padding: 13px;
 }
+#matter-create label,
+#matter-create #hint_id_matter_code {
+  font-family: open sans;
+  font-weight: 400;
+  color: #9B9898;
+}
+#matter-create .modal-content {
+  height: auto;
+}
+#matter-create .modal-title {
+  color: #777575;
+  font-family: open sans;
+  font-weight: 400;
+}
+#matter-create .modal-title label {
+  font-weight: 400;
+}
+.navbar .nav ul li {
+  background-color: white;
+  font-family: open sans;
+}
+.navbar.checklist-nav li a:hover {
+  color: white;
+}
+.navbar .nav > li > ul:before {
+  border-color: transparent transparent #9B9898 transparent;
+}
+.navbar-inverse .nav.navbar-right > li > a {
+  font-family: open sans;
+}
+li.dropdown li a:hover {
+  color: white !important;
+}
+.navbar.checklist-nav li a:hover {
+  color: #757575;
+}
