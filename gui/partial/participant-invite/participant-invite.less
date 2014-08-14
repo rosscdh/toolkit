@@ -1,121 +1,127 @@
 @import "../../css/variables";
+.participants-invite {
+  font-family: open sans;
 
-.modal-content {
-
-  h5 {
-    margin-bottom: 20px;
-  }
-  .existing-participants {
-
+  .modal-title {
+    color: #9B9898;
   }
 
-  .save-perm-btn:hover {
-    background-color: #6ebc70;
+  .modal-content {
 
-  }
-
-  .lawyer {
-    background-color: @lp-primary;
-    color: white;
-    text-transform: uppercase;
-  }
-
-  .customer {
-    background-color: @lp-secondary;
-    color: white;
-    text-transform: uppercase;
-  }
-}
-
-.first {
-  border-bottom: 2px solid  #ececec;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
-
-}
-
-.list-heading {
-  font-weight: bold;
-}
-
-.details {
-  border-left: 1px solid #ececec;
-
-  .checkbox {
-    clear: both;
-    label {
-      font-size: 12px;
-      opacity: 0.75
-    }
-  }
-
-  .revoke > small {
-    color: red;
-    text-align: right;
-    float: right;
-    font-size: 11px;
-    line-height: 1
-  }
-}
-
-.modal-header {
-  .participant-button-container {
-    text-align: right;
-    float: right;
-    margin-top: -38px;
-    .participant-btn {
-      background-color: #333c3c;
-      color: white;
-      opacity: 1;
-      font-weight: normal;
-    }
-  }
-}
-
-.modal-body {
-  padding-top: 10px;
-  input[type=checkbox], input[type=radio] {
-    display: initial
-  }
-  input[type=radio] {
-    margin-right: 10px;
-  }
-  .colleague {
-    background-color: @lp-primary;
-    color: white;
-  }
-  .btn[disabled] {
-    opacity: 0.6;
-  }
-
-  .col-sm-6 {
-    .add-participant {
-      background-color: white;
-      color: #333c3c;
-      span {
-        padding-right: 5px;
-      }
-    }
-  }
-
-  .new-participant {
-    /*transition: all 1s;*/
     h5 {
       margin-bottom: 20px;
     }
-    .col-sm-6 {
-      .btn-primary, .btn-info {
-        font-weight: normal;
-        text-transform: uppercase;
-      }
+    .existing-participants {
+
     }
+
+    .save-perm-btn:hover {
+      background-color: #6ebc70;
+
+    }
+
+    .lawyer {
+      background-color: @lp-primary;
+      color: white;
+      text-transform: uppercase;
+    }
+
+    .customer {
+      background-color: @lp-secondary;
+      color: white;
+      text-transform: uppercase;
+    }
+  }
+
+  .first {
+    border-bottom: 2px solid  #ececec;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
 
   }
 
-  .user-large {
-    height: 100px;
-    width: 100px;
-    margin: 0 auto;
+  .list-heading {
+    font-weight: bold;
+  }
+
+  .details {
+    border-left: 1px solid #ececec;
+
+    .checkbox {
+      clear: both;
+      label {
+        font-size: 12px;
+        opacity: 0.75
+      }
+    }
+
+    .revoke > small {
+      color: red;
+      text-align: right;
+      float: right;
+      font-size: 11px;
+      line-height: 1
+    }
+  }
+
+  .modal-header {
+    .participant-button-container {
+      text-align: right;
+      float: right;
+      margin-top: -38px;
+      .participant-btn {
+        background-color: #333c3c;
+        color: white;
+        opacity: 1;
+        font-weight: normal;
+      }
+    }
+  }
+
+  .modal-body {
+    padding-top: 10px;
+    input[type=checkbox], input[type=radio] {
+      display: initial
+    }
+    input[type=radio] {
+      margin-right: 10px;
+    }
+    .colleague {
+      background-color: @lp-primary;
+      color: white;
+    }
+    .btn[disabled] {
+      opacity: 0.6;
+    }
+
+    .col-sm-6 {
+      .add-participant {
+        background-color: white;
+        color: #333c3c;
+        span {
+          padding-right: 5px;
+        }
+      }
+    }
+
+    .new-participant {
+      /*transition: all 1s;*/
+      h5 {
+        margin-bottom: 20px;
+      }
+      .col-sm-6 {
+        .btn-primary, .btn-info {
+          font-weight: normal;
+          text-transform: uppercase;
+        }
+      }
+
+    }
+
+    .user-large {
+      height: 100px;
+      width: 100px;
+      margin: 0 auto;
     //background-color: #6ebc70;
     border-radius: 50%;
     font-size: 46px;
@@ -158,7 +164,7 @@
     li {
       padding: 10px 5px 10px 5px;
       font-size: 15px;
-      border-radius: 6px;
+      border-radius: none;
       border: 2px solid #f5f5f5;
 
       .user {
@@ -254,8 +260,7 @@
       }
 
       &.selected {
-        background-color: #6B6A6A;
-        color: white;
+        border-bottom: 2px solid #6B6A6A;
       }
     }
   }
@@ -416,3 +421,10 @@
   color: white;
   text-transform: uppercase;
 }
+
+
+
+
+
+}
+
