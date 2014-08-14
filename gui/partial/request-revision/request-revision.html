@@ -1,50 +1,50 @@
-<div class="modal-content">
+<div class="modal-content" id="request-revision">
 	<div class="modal-header">
 		<h4 class="modal-title" id="myModalLabel">Request document for <span ng-bind="checklistItem.name"></span></h4>
 	</div>
 	<form name="requestForm" ng-submit="request()">
-	<div class="modal-body">
-		<strong ng-show="participants.length>0">Existing members</strong>
-		
-			<ul class="list-unstyled">
-				<li ng-repeat="person in participants" ng-hide="person.username==currentUser.username"
-                    ng-click="data.selectedPerson=person;data.selectedIndex=$index">
-					<label class="radio" ng-class="{'checked':$index==data.selectedIndex}">
-						<span class="icons">
-							<span class="first-icon fui-radio-unchecked"></span>
-							<span class="second-icon fui-radio-checked"></span>
-						</span>
-						<label ng-bind="person | fullname"></label>
-					</label>
-				</li>
-				<li ng-click="data.selectedPerson=null;data.selectedIndex=-1">
-					<label class="radio" ng-class="{'checked':data.selectedIndex==-1}">
-						<span class="icons"><span class="first-icon fui-radio-unchecked"></span><span class="second-icon fui-radio-checked"></span></span>
-						External party <span class="fui-lock" data-toggle="tooltip" title="" data-original-title="Requesting a file from a third party does not give them access to this matter."></span>
-					</label>
-				</li>
-			</ul>
+   <div class="modal-body">
+    <label ng-show="participants.length>0">Existing members</label>
 
-            <div class="" ng-show="data.selectedIndex==-1"
-                 ng-class="{'has-success': data.selectedPerson, 'has-warning': data.isNew, 'has-error': data.validationError }">
-				<input type="email" id="requestEmail" class="form-control form-control-full-width input-sm" ng-model="data.request.email"
-                       placeholder="sarah.smith@gmail.com" ng-blur="checkIfUserExists()"/>
-                 <p class="bg-info"  for="requestEmail" ng-show="data.selectedPerson">User {{ data.selectedPerson | fullname }} found!</p>
-                 <p class="bg-info" for="requestEmail" ng-show="data.isNew">This user does not exist yet. This will create them.</p>
-			</div>
-            <div class=" form-inline">
-                <input type="text" class="form-control input-sm" ng-model="data.request.first_name" placeholder="First name" ng-show="data.isNew" />
-                <input type="text" class="form-control input-sm" ng-model="data.request.last_name" placeholder="Last name" ng-show="data.isNew" />
-            </div>
+    <ul class="list-unstyled">
+      <li ng-repeat="person in participants" ng-hide="person.username==currentUser.username"
+      ng-click="data.selectedPerson=person;data.selectedIndex=$index">
+      <label class="radio" ng-class="{'checked':$index==data.selectedIndex}">
+        <span class="icons">
+         <span class="first-icon fui-radio-unchecked"></span>
+         <span class="second-icon fui-radio-checked"></span>
+       </span>
+       <label ng-bind="person | fullname"></label>
+     </label>
+   </li>
+   <li ng-click="data.selectedPerson=null;data.selectedIndex=-1">
+     <label class="radio" ng-class="{'checked':data.selectedIndex==-1}">
+      <span class="icons"><span class="first-icon fui-radio-unchecked"></span><span class="second-icon fui-radio-checked"></span></span>
+      External party <span class="fui-lock" data-toggle="tooltip" title="" data-original-title="Requesting a file from a third party does not give them access to this matter."></span>
+    </label>
+  </li>
+</ul>
 
-			<div class="">
-				<textarea class="form-control form-control-full-width" ng-model="data.request.message" placeholder="Add an optional message to this request"></textarea>
-			</div>
-		
-	</div>
-	<div class="modal-footer">
-		<button class="btn btn-default" ng-click="cancel()">Cancel</button>
-		<button class="btn btn-primary" type="submit" ng-disabled="invalid()">Request document</button>
-	</div>
-	</form>
+<div class="" ng-show="data.selectedIndex==-1"
+ng-class="{'has-success': data.selectedPerson, 'has-warning': data.isNew, 'has-error': data.validationError }">
+<input type="email" id="requestEmail" class="form-control form-control-full-width input-sm" ng-model="data.request.email"
+placeholder="sarah.smith@gmail.com" ng-blur="checkIfUserExists()"/>
+<p class="bg-info"  for="requestEmail" ng-show="data.selectedPerson">User {{ data.selectedPerson | fullname }} found!</p>
+<p class="bg-info" for="requestEmail" ng-show="data.isNew">This user does not exist yet. This will create them.</p>
+</div>
+<div class=" form-inline">
+  <input type="text" class="form-control input-sm" ng-model="data.request.first_name" placeholder="First name" ng-show="data.isNew" />
+  <input type="text" class="form-control input-sm" ng-model="data.request.last_name" placeholder="Last name" ng-show="data.isNew" />
+</div>
+
+<div class="">
+  <textarea class="form-control form-control-full-width" ng-model="data.request.message" placeholder="Add an optional message to this request"></textarea>
+</div>
+
+</div>
+<div class="modal-footer">
+  <button class="btn btn-default" ng-click="cancel()">Cancel</button>
+  <button class="btn btn-primary" type="submit" ng-disabled="invalid()">Request document</button>
+</div>
+</form>
 </div>
