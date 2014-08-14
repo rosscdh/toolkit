@@ -824,9 +824,10 @@ body.gui .btn-success {
 }
 .matter .card {
   background-color: #ffffff;
-  border-right: 2px solid #dadada;
-  border-bottom: 2px solid #dadada;
+  border-right: 3px solid #dadada;
+  border-bottom: 3px solid #dadada;
   margin-bottom: 20px;
+  border-radius: 5px;
   position: relative;
   height: 221px;
 }
