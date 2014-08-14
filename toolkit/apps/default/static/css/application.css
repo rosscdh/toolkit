@@ -1899,3 +1899,13 @@ a.undo_is_complete-btn {
 #matter-create .modal-title label {
   font-weight: 400;
 }
+.navbar .nav ul li {
+  background-color: white;
+  font-family: open sans;
+}
+.navbar.checklist-nav li a:hover {
+  color: white;
+}
+.navbar .nav > li > ul:before {
+  border-color: transparent transparent #9B9898 transparent;
+}
