@@ -121,7 +121,7 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
                 'counts': {
                     'requests': profile.open_requests,
                 },
-                'integrations': [i.get('provider') for i in request.user.social_auth.all().values('provider')],
+                'integrations': [i.get('provider') for i in request.user.social_auth.filter(provider__in=['box']).values('provider')],
                 'firm_name': profile.firm_name,
                 'has_notifications': profile.has_notifications,
                 'matters_created': profile.matters_created,
