@@ -1882,3 +1882,20 @@ a.undo_is_complete-btn {
 .input-group .input-group-btn .btn {
   padding: 13px;
 }
+#matter-create label,
+#matter-create #hint_id_matter_code {
+  font-family: open sans;
+  font-weight: 400;
+  color: #9B9898;
+}
+#matter-create .modal-content {
+  height: auto;
+}
+#matter-create .modal-title {
+  color: #777575;
+  font-family: open sans;
+  font-weight: 400;
+}
+#matter-create .modal-title label {
+  font-weight: 400;
+}
