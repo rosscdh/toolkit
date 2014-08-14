@@ -3,13 +3,30 @@
 {% block subject_line %}{{ subject }}{% endblock %}
 
 {% block html_content %}
-<p>Hi {{ to_name }},</p>
+<h1 style="font-size:20px;margin:16px 0;color:#333;text-align:center">Please sign {{ item.name }}</h1>
+<h2 style="font-size:13px;margin:10px 0 16px 0;color:#666;text-align:center">{{ from_name }} has asked you to sign the following document</h2>
 
-<p>{{ from_name }} has asked you to sign the document: {{ item.name }}.</p>
+<div style="background-color:#f1f1f1;padding:22px 0px;text-align:center;">
+  <a href="{{ action_url }}" style="font-size:20px;text-decoration:none;color:#222;line-height:33px;margin-bottom:20px">{{ item.name }}</a><br />
+  <a href="{{ action_url }}" style="font-size:17px;text-decoration:none;color:#2d81ba;font-weight:normal;line-height:24px;margin-bottom:20px;text-decoration:underline;">{{ item.latest_revision.name }}</a>
+  <table border="0" cellpadding="0" cellspacing="0" style="background-color:#2ecc71; border-radius:5px;margin-top:22px;" align="center">
+      <tr>
+          <td align="center" valign="middle" style="color:#FFFFFF; font-family:Helvetica, Arial, sans-serif; font-size:16px; font-weight:bold; letter-spacing:-.5px; line-height:150%; padding-top:15px; padding-right:40px; padding-bottom:15px; padding-left:40px;">
+              <a href="{{ action_url }}" target="_blank" style="color:#FFFFFF; text-decoration:none;">Sign Document</a>
+          </td>
+      </tr>
+  </table>
+  {% if message %}
+    <br />
+    <br />
+    <div style="text-align:left;color:#888;font-size:15px;line-height:19px;padding:20px 30px 10px 30px;border-top:1px solid #ddd">
+      <strong>Message from {{ from_name }}</strong>: <br />
+        {{ message }}
+      </div>
+    {% endif %}
+</div>
 
-<p>You can find it at <a href="{{ action_url }}">{{ action_url }}</a></p>
-{% if message %}<p>{{ message }}</p>{% endif %}
-<p>Please go to there, login and either sign the document or provide {{ from_name }} with your feedback.</p>
-
-<p>Warning: do not forward this email to others or else they will be able to access your document.</p>
+<div style="padding-top:20px;color:#d95012;">
+Warning: do not forward this email to others or else they will be able to access this document.
+</div>
 {% endblock %}
