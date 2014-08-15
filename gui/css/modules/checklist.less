@@ -511,18 +511,49 @@ li.previous-toggle {
 
 .item-comments {
   height: 350px;
-  border: 1px solid green;
+  position: relative;
 }
 
 .message-tabs {
-  border: 1px solid red;
-  height: 200px;
+  height: 250px;
   overflow-y: scroll;
+}
+
+.message-content, .meta-message {
+  padding-left: 10px;
+  padding-right: 10px;
+  color: #818080;
+  font-family: open sans;
+}
+
+.comment-thread {
+  padding-top: 20px;
+}
+
+.meta-message {
+  font-size: 9px;
+  text-align: right;
+  margin-right: 20px;
+}
+
+.message-content {
+  p {
+    padding: 0;
+    font-size: 12px;
+    line-height: 14px;
+    margin: 0;
+
+    .user-initials {
+      font-weight: bold;
+      margin-right: 3px;
+    }
+  }
 }
 
 div.chat {
   .tab-content {
-    height: 200px !important;
+    height: 250px !important;
+    overflow: visible !important;
   }
 
   .visible-to {
@@ -532,13 +563,12 @@ div.chat {
   }
 
   .comments-zero-state {
-    padding-top: 20px;
+    height: 250px;
     font-family: open sans;
     color: #c3c1c1;
   }
 
   .nav-justified {
-    margin-bottom: 20px;
   }
   .nav-pills > li.active > a, .nav-pills > li.active > a:hover {
     background-color: white;
@@ -584,6 +614,13 @@ div.new-message {
   clear:both;
   padding-top:10px;
   padding-bottom:10px;
+
+  .public {
+    background-color: #39ca74;
+  }
+  .private {
+    background-color: @lp-blue;
+  }
   textarea {
     font-size:12px;
     border: 1px solid #dee1e3;
