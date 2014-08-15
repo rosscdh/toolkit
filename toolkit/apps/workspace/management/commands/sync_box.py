@@ -164,10 +164,13 @@ class Command(BaseCommand):
                                 print fl.response.content
 
                         # attachments
-                        resp = f.post(name='attachments', parent={'id': item_folder_id})                        
-                        attachments_folder_id = resp.get('id') if resp.get('id', None) is not None else f.response.json().get('context_info', {}).get('conflicts',[])[0].get('id', None)
-                        # update the files
-                        for attachment in item.attachments.all():
-                            target_file = attachment.attachment
-                            fl = UploadFiles(token=token, sha1=_file_sha1(target_file=target_file))
-                            resp = fl.post(files={'file': default_storage.open(target_file)}, parent_id=attachments_folder_id)
+                        attachments_list = item.attachments.all()
+                        # only create teh folder if we have attachments
+                        if attachments_list:
+                            resp = f.post(name='attachments', parent={'id': item_folder_id})                        
+                            attachments_folder_id = resp.get('id') if resp.get('id', None) is not None else f.response.json().get('context_info', {}).get('conflicts',[])[0].get('id', None)
+                            # update the files
+                            for attachment in attachments_list:
+                                target_file = attachment.attachment
+                                fl = UploadFiles(token=token, sha1=_file_sha1(target_file=target_file))
+                                resp = fl.post(files={'file': default_storage.open(target_file)}, parent_id=attachments_folder_id)
