@@ -307,8 +307,8 @@ img.user {
      min-height:40px;
      .btn {
       border:0 0 0 0;
-     }
-     .btn-group {
+    }
+    .btn-group {
       margin-top:-33px;
       margin-right:-10px;
       button {
@@ -510,13 +510,19 @@ li.previous-toggle {
 //ITEM CHAT
 
 .item-comments {
-  margin-top: 20px;
+  height: 350px;
+  border: 1px solid green;
 }
 
+.message-tabs {
+  border: 1px solid red;
+  height: 200px;
+  overflow-y: scroll;
+}
 
 div.chat {
   .tab-content {
-    height: 300px !important;
+    height: 200px !important;
   }
 
   .visible-to {
@@ -526,6 +532,7 @@ div.chat {
   }
 
   .comments-zero-state {
+    padding-top: 20px;
     font-family: open sans;
     color: #c3c1c1;
   }
@@ -579,7 +586,7 @@ div.new-message {
   padding-bottom:10px;
   textarea {
     font-size:12px;
-    border:0px;
+    border: 1px solid #dee1e3;
     margin-top:3px;
     &:focus {
      border:inherit;
@@ -1028,6 +1035,10 @@ p.note {
   line-height: 12px;
   top: -22px;
   left: -4px;
+}
+
+#checklist-activity {
+  padding-bottom: 0px;
 }
 
 
