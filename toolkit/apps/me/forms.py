@@ -42,6 +42,13 @@ class BaseAccountSettingsFields(BaseAuthyMediaForm):
     """
     Provides base field for various account settings forms
     """
+    firm_name = forms.CharField(
+        help_text='',
+        label='Firm name',
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'Firm name', 'size': 44})
+    )
+
     first_name = forms.CharField(
         error_messages={
             'required': "First name can't be blank."
@@ -85,6 +92,7 @@ class BaseAccountSettingsFields(BaseAuthyMediaForm):
             HTML('{% include "partials/form-errors.html" with form=form %}'),
             Fieldset(
                 '',
+                Field('firm_name', css_class='input-hg') if self.user.profile.is_lawyer else HTML(''),
                 Div(
                     HTML('<label>Full name<span class="asteriskField">*</span></label>'),
                     Div(
@@ -131,6 +139,8 @@ class AccountSettingsForm(BaseAccountSettingsFields, forms.ModelForm):
         self.user = self.request.user
 
         super(AccountSettingsForm, self).__init__(*args, **kwargs)
+
+        self.fields['firm_name'].initial = self.user.profile.firm_name
 
     def clean_email(self):
         """
@@ -182,6 +192,16 @@ class AccountSettingsForm(BaseAccountSettingsFields, forms.ModelForm):
             messages.success(self.request, 'Success. You have updated your Last Name')
             return last_name
         return self.user.last_name
+
+    def save(self):
+        user = super(AccountSettingsForm, self).save()
+
+        if user.profile.is_lawyer:
+            profile = user.profile
+            profile.data['firm_name'] = self.cleaned_data.get('firm_name')
+            profile.save(update_fields=['data'])
+
+        return user
 
 
 @parsleyfy
