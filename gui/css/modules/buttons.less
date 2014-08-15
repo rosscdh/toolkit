@@ -7,7 +7,7 @@
 .btn {
   border: 1px solid;
   font-size: @btn-font-size-base;
-  font-weight: @btn-font-weight;
+  font-weight: bold;
   line-height: @btn-line-height-base;
   border-radius: @border-radius-base;
   text-transform: uppercase;
@@ -62,7 +62,7 @@
   .button-variant(@lp-blue, white, @btn-primary-hover-bg, @btn-primary-active-bg);
 }
 .btn-info    {
-  .button-variant(@lp-blue, white, @btn-info-hover-bg, @btn-info-active-bg);
+  .button-variant(@lp-blue, white, white, white);
   .caret {
     border-top-color:@lp-blue!important;
   }
@@ -80,7 +80,7 @@
   .button-variant(@btn-default-color, @brand-primary, @btn-inverse-hover-bg, @btn-inverse-active-bg);
 }
 .btn-silver {
-  .button-variant(darken(@silver, 30%), lighten(@silver, 22%), lighten(@silver, 25%), darken(@silver, 10%));
+  .button-variant(darken(@silver, 30%), white, lighten(@silver, 25%), white);
 }
 .btn-embossed {
   .box-shadow(inset 0 -2px 0 fade(black, 15%));
