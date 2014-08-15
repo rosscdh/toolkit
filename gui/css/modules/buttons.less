@@ -5,7 +5,7 @@
 // Base styles
 // --------------------------------------------------
 .btn {
-  border: none;
+  border: 1px solid;
   font-size: @btn-font-size-base;
   font-weight: @btn-font-weight;
   line-height: @btn-line-height-base;
@@ -63,6 +63,9 @@
 }
 .btn-info    {
   .button-variant(@lp-blue, white, @btn-info-hover-bg, @btn-info-active-bg);
+  .caret {
+    border-top-color:@lp-blue!important;
+  }
 }
 .btn-danger  {
   .button-variant(@btn-default-color, @brand-danger, @btn-danger-hover-bg, @btn-danger-active-bg);
