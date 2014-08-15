@@ -26,6 +26,7 @@
 @import "../partial/participant-invite/participant-invite.less";
 @import "../partial/view-document/view-document.less";
 @import "../partial/request-revision/request-revision.less";
+@import "../partial/request-review/request-review.less";
 @import "../partial/searchCtrl/searchCtrl.less";
 @import "../partial/view-signing/view-signing.less";
 @import "../partial/edit-revision-status/edit-revision-status.less";
@@ -56,12 +57,12 @@
 }
 
 /* Personal preference for BS modal.  The LESS below makes the backdrop white and
-   causes the modal to fade in rather than slide in. */
+causes the modal to fade in rather than slide in. */
 .modal.fade, .modal.fade.in, .modal.fade .modal-dialog {
-    -webkit-transform: translate(0, 0);
-    -ms-transform: translate(0, 0);
-    transform: translate(0, 0);
-    transition: none;
+  -webkit-transform: translate(0, 0);
+  -ms-transform: translate(0, 0);
+  transform: translate(0, 0);
+  transition: none;
 }
 
 .modal-backdrop.fade, .modal-backdrop.fade.in {
