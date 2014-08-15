@@ -478,53 +478,53 @@ ul.checklist-items {
 				}
        }*/
 
+     }
+     .fui-check-inverted {
+       padding-top:4px;
+     }
+     .pe-7s-check {
+       font-size:24px;
+       margin-top:4px;
+     }
+     &.ui-sortable-placeholder {
+       border: 1px solid rgba(255,255,255,0.5);
+       background-color: rgba(255,255,255,0.15);
+       background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAHklEQVQIW2NkQAWSjEh8SSD7OUwAzAFJggTgHJAAAEkuAx5OdRJCAAAAAElFTkSuQmCC');
+       visibility: visible !important;
+       &:after {
+        content: 'Drop item here';
+        opacity: 0.6;
+        font-size: 0.85em;
+        padding: 0.25em;
+        text-align: center;
+        height:33px;
+      }
     }
-    .fui-check-inverted {
-     padding-top:4px;
+
+    &.ui-sortable-placeholder {
+     opacity: 0.8;
    }
-   .pe-7s-check {
-     font-size:24px;
-     margin-top:4px;
-   }
-   &.ui-sortable-placeholder {
-     border: 1px solid rgba(255,255,255,0.5);
+
+   &.file-drag-over {
      background-color: rgba(255,255,255,0.15);
      background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAHklEQVQIW2NkQAWSjEh8SSD7OUwAzAFJggTgHJAAAEkuAx5OdRJCAAAAAElFTkSuQmCC');
-     visibility: visible !important;
      &:after {
-      content: 'Drop item here';
+      content: 'Drop file(s) here';
       opacity: 0.6;
       font-size: 0.85em;
-      padding: 0.25em;
+      padding: 0.12em;
+      position: absolute;
+      top: 0.12em;
+      left: 0;
+      width: 100%;
       text-align: center;
-      height:33px;
     }
   }
 
-  &.ui-sortable-placeholder {
-   opacity: 0.8;
+  .fui-list-columned {
+   .text-muted;
+   margin-left: -0.25em;
  }
-
- &.file-drag-over {
-   background-color: rgba(255,255,255,0.15);
-   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAHklEQVQIW2NkQAWSjEh8SSD7OUwAzAFJggTgHJAAAEkuAx5OdRJCAAAAAElFTkSuQmCC');
-   &:after {
-    content: 'Drop file(s) here';
-    opacity: 0.6;
-    font-size: 0.85em;
-    padding: 0.12em;
-    position: absolute;
-    top: 0.12em;
-    left: 0;
-    width: 100%;
-    text-align: center;
-  }
-}
-
-.fui-list-columned {
- .text-muted;
- margin-left: -0.25em;
-}
 }
 
 .loading {
@@ -1001,3 +1001,5 @@ ul.status-list a {
 .revision-status {
   border-radius: 0px;
 }
+
+
