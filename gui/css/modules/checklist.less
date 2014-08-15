@@ -510,12 +510,14 @@ li.previous-toggle {
 //ITEM CHAT
 
 .item-comments {
-  height: 350px;
+  height: 60%;
+  border: 1px solid red;
   position: relative;
 }
 
 .message-tabs {
   height: 250px;
+  horder:1px solid red;
   overflow-y: scroll;
 }
 
@@ -563,7 +565,7 @@ div.chat {
   }
 
   .comments-zero-state {
-    height: 250px;
+    height: 200px;
     font-family: open sans;
     color: #c3c1c1;
   }
@@ -626,13 +628,13 @@ div.new-message {
     border: 1px solid #dee1e3;
     margin-top:3px;
     &:focus {
-     border:inherit;
-   }
- }
- .btn-textarea {
-  float:right;
-  margin-top:-10px;
-}
+      border: 1px solid #dee1e3;
+    }
+  }
+  .btn-textarea {
+    float:right;
+    margin-top:-10px;
+  }
 }
 ul.activity-log {
  margin-top: 10px;
@@ -1076,6 +1078,7 @@ p.note {
 
 #checklist-activity {
   padding-bottom: 0px;
+  position: relative;
 }
 
 
