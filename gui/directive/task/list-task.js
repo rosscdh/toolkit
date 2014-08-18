@@ -16,11 +16,11 @@ angular.module('toolkit-gui').directive('tasksList', ['$compile', '$log', '$sce'
             '$scope',
             '$http',
             '$log',
-            'ezConfirm',
+            'EzConfirm',
             'toaster',
             '$modal',
             'taskService',
-            function ($rootScope, $scope, $http, $log, ezConfirm, toaster, $modal, taskService) {
+            function ($rootScope, $scope, $http, $log, EzConfirm, toaster, $modal, taskService) {
                 $scope.data = {
                     tasks: [],
                     taskCompletionStatus: 0
@@ -78,7 +78,7 @@ angular.module('toolkit-gui').directive('tasksList', ['$compile', '$log', '$sce'
 
                 //delete task confirmation modal
                 $scope.deleteTask = function (task) {
-                    ezConfirm.create('Delete Task', 'Please confirm you would like to delete this task?',
+                    EzConfirm.create('Delete Task', 'Please confirm you would like to delete this task?',
                         function yes() {
                             // Confirmed- delete category
                             taskService.delete($scope.matter.slug, $scope.selectedItem.slug, task.slug).then(
