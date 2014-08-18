@@ -1,10 +1,10 @@
 {% if user_has_signed %}
-    <p class="request-status"><span class="fui-check-inverted"></span> Reviewed and Signed</p>
+<p class="request-status"><span class="fui-check-inverted"></span> Reviewed and Signed</p>
 {% else %}
-    {% if is_claimed %}
-        <a href="{{ sign_url }}" class="btn btn-wide btn-info btn-embossed request-btn">Review and Sign</a>
-    {% else %}
-        {% comment %}We are probably waiting for a matter participant to setup the claim_url at hellosign in this case{% endcomment %}
-        <p class="request-status"><span class="fui-check-inverted">Waiting for signature setup ({{ requested_by }})</span></p>
-    {% endif %}
+{% if is_claimed %}
+<a href="{{ sign_url }}" class="btn btn-wide btn-info request-btn">Review and Sign</a>
+{% else %}
+{% comment %}We are probably waiting for a matter participant to setup the claim_url at hellosign in this case{% endcomment %}
+<p class="request-status"><span class="fui-check-inverted">Waiting for signature setup ({{ requested_by }})</span></p>
+{% endif %}
 {% endif %}

@@ -7,14 +7,14 @@
             <p>{{ item.requested_by.name }} requested you upload this document.</p>
         </div>
         <div class="col-xs-4">
-            <a href="#" class="btn btn-wide btn-info btn-embossed request-btn" data-remote="{{ upload_url }}" data-toggle="filepicker">Upload File</a>
+            <a href="#" class="btn btn-info request-btn" data-remote="{{ upload_url }}" data-toggle="filepicker">Upload File</a>
         </div>
     </div>
     {% if item.message %}
-        <div class="row">
-            <div class="col-xs-12">
-                <blockquote>{{ item.message }}</blockquote>
-            </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <blockquote>{{ item.message }}</blockquote>
         </div>
+    </div>
     {% endif %}
 </article>
