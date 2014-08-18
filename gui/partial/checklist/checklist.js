@@ -6,7 +6,7 @@ angular.module('toolkit-gui')
  * @param  {Object} $scope                Contains the scope of this controller
  * @param  {Object} $rootScope            Rootscope variable
  * @param  {Object} $routeParams          Object that provides access to Angular route parameters
- * @param  {Function} ezConfirm           A wrapper that simulates the native confirm dialog
+ * @param  {Function} EzConfirm           A wrapper that simulates the native confirm dialog
  * @param  {Function} toaster             A directive that provides the ability to show status messages to the end user
  * @param  {Function} $modal              A directive that provides a wrapper for displaying and managing dialogs
  * @param  {Object} matterService         An angular service designed to work with MATTER API end-points
@@ -29,7 +29,7 @@ angular.module('toolkit-gui')
     '$compile',
     '$route',
 	'smartRoutes',
-	'ezConfirm',
+	'EzConfirm',
 	'toaster',
 	'$modal',
 	'baseService',
@@ -62,7 +62,7 @@ angular.module('toolkit-gui')
              $compile,
              $route,
 			 smartRoutes,
-			 ezConfirm,
+			 EzConfirm,
 			 toaster,
 			 $modal,
 			 baseService,
@@ -635,7 +635,7 @@ angular.module('toolkit-gui')
 			var matterSlug = $scope.data.slug;
 
 			if ($scope.data.selectedItem) {
-				ezConfirm.create('Delete Item', 'Please confirm you would like to delete this item?',
+				EzConfirm.create('Delete Item', 'Please confirm you would like to delete this item?',
 					function yes() {
 						// Confirmed- delete item
 						matterItemService.delete(matterSlug, $scope.data.selectedItem).then(
@@ -817,7 +817,7 @@ angular.module('toolkit-gui')
 		$scope.deleteCategory = function (cat) {
 			var matterSlug = $scope.data.slug;
 
-			ezConfirm.create('Delete Category', 'Please confirm you would like to delete this category?',
+			EzConfirm.create('Delete Category', 'Please confirm you would like to delete this category?',
 				function yes() {
 					// Confirmed- delete category
 					matterCategoryService.delete(matterSlug, cat).then(
@@ -1073,7 +1073,7 @@ angular.module('toolkit-gui')
 			var item = $scope.data.selectedItem;
 
 			if (item && item.latest_revision) {
-				ezConfirm.create('Delete Revision', 'Please confirm you would like to delete this revision?',
+				EzConfirm.create('Delete Revision', 'Please confirm you would like to delete this revision?',
 					function yes() {
 						matterItemService.deleteRevision(matterSlug, item.slug, $scope.data.selectedItem.latest_revision).then(
 							function success(){
@@ -1446,7 +1446,7 @@ angular.module('toolkit-gui')
         $scope.deleteRevisionReviewRequest = function (item) {
             var matterSlug = $scope.data.slug;
 
-            ezConfirm.create('Cancel Review Request', 'Please confirm you would like to cancel this review request?',
+            EzConfirm.create('Cancel Review Request', 'Please confirm you would like to cancel this review request?',
                 function yes() {
                     // Confirmed- cancel review
                     matterItemService.deleteRevisionReviewRequest(matterSlug, item.slug).then(
@@ -1739,7 +1739,7 @@ angular.module('toolkit-gui')
 
         $scope.deleteSigningRequest = function (revision) {
             if (revision.signing) {
-                ezConfirm.create('Delete Signing Request', 'Please confirm you would like to delete this signing request?',
+                EzConfirm.create('Delete Signing Request', 'Please confirm you would like to delete this signing request?',
                     function yes() {
                         // Confirmed- delete item
                         matterItemService.deleteSigningRequest(revision.signing).then(

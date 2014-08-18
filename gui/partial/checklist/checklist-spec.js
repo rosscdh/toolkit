@@ -85,7 +85,7 @@ describe('Controller: Checklist', function() {
 		$location,
 		$q,
 		toaster,
-		ezConfirm,
+		EzConfirm,
 		baseService,
 		matterItemService,
 		participantService,
@@ -165,8 +165,8 @@ describe('Controller: Checklist', function() {
 		matterCategoryService = makeFake('matterCategoryService',['create','delete','update']);
 		commentService = makeFake('commentService',[ 'create', 'delete', 'update' ]);
 
-		ezConfirm = jasmine.createSpyObj('ezConfirm',['create']);
-		ezConfirm.create.andCallFake(function(param,param1,callbck){           
+		EzConfirm = jasmine.createSpyObj('EzConfirm',['create']);
+		EzConfirm.create.andCallFake(function(param,param1,callbck){           
 		   callbck();
 		});
 
@@ -194,7 +194,7 @@ describe('Controller: Checklist', function() {
 		  '$compile': {},
 		  '$route': {},
 		  'smartRoutes':smartRoutes,
-		  'ezConfirm':ezConfirm,
+		  'EzConfirm':EzConfirm,
 		  'toaster':toaster,
 		  '$modal':$modal,
 		  'baseService': baseService,
@@ -351,15 +351,15 @@ describe('Controller: Checklist', function() {
 	it('$scope.deleteItem',function(){
 		$scope.data.selectedItem = {};
 		$scope.deleteItem();
-		expect(ezConfirm.create).toHaveBeenCalled();
+		expect(EzConfirm.create).toHaveBeenCalled();
 	});	
 	
 	//$scope.deleteItem
-	it('$scope.deleteItem -"ezConfirm.create" should been called',function(){
+	it('$scope.deleteItem -"EzConfirm.create" should been called',function(){
 		$scope.data.selectedItem = {name:'some'};
 		$scope.data.selectedCategory={items :[$scope.data.selectedItem]};
 		$scope.deleteItem();
-		expect(ezConfirm.create).toHaveBeenCalled();
+		expect(EzConfirm.create).toHaveBeenCalled();
 		expect(matterItemService.delete).toHaveBeenCalled();
 		$scope.$apply();
 		expect($scope.data.selectedItem).toBe(null);
@@ -878,7 +878,7 @@ describe('ChecklistCtrl', function() {
 	toaster,
 	matterService,
 	baseService,
-	ezConfirm,
+	EzConfirm,
 	participantService,
 	matterCategoryService,
 	matterItemService;
@@ -915,8 +915,8 @@ describe('ChecklistCtrl', function() {
   
 	  toaster  = makeFake('toaster',['pop']);
 	  
-	  ezConfirm = jasmine.createSpyObj('ezConfirm',['create']);
-	  ezConfirm.create.andCallFake(function(param,param1,callbck){           
+	  EzConfirm = jasmine.createSpyObj('EzConfirm',['create']);
+	  EzConfirm.create.andCallFake(function(param,param1,callbck){           
 		   callbck();	  
 	  });
 	  
@@ -932,7 +932,7 @@ describe('ChecklistCtrl', function() {
 		  $routeParams:{itemSlug:'111'},
 		  $location:{},
 		  smartRoutes:smartRoutes,
-		  ezConfirm:ezConfirm,
+		  EzConfirm:EzConfirm,
 		  toaster:toaster,
 		  $modal:{},
 		  baseService:baseService,
@@ -972,7 +972,7 @@ describe('ChecklistCtrl', function() {
 	it('$scope.deleteItem',function(){
 		$scope.data.selectedItem = {};
 		$scope.deleteItem();
-		expect(ezConfirm.create).toHaveBeenCalled();
+		expect(EzConfirm.create).toHaveBeenCalled();
 		$scope.$apply();
 		expect(toaster.pop.mostRecentCall.args[0]).toBe('error');		
 	});

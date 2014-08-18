@@ -6,13 +6,13 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
     '$location',
     '$anchorScroll',
     'discussionService',
-    'ezConfirm',
+    'EzConfirm',
     'matterService',
     'smartRoutes',
     'toaster',
     '$log',
     '$q',
-    function($modal, $rootScope, $scope, $state, $location, $anchorScroll, discussionService, ezConfirm, matterService, smartRoutes, toaster, $log, $q) {
+    function($modal, $rootScope, $scope, $state, $location, $anchorScroll, discussionService, EzConfirm, matterService, smartRoutes, toaster, $log, $q) {
         'use strict';
 
         var routeParams = smartRoutes.params();
@@ -119,7 +119,7 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
         };
 
         $scope.archiveThread = function(thread) {
-            ezConfirm.create('Archive Thread', 'Please confirm you would like to archive this thread?',
+            EzConfirm.create('Archive Thread', 'Please confirm you would like to archive this thread?',
                 function yes() {
                     var matterSlug = $scope.data.matterSlug;
                     discussionService.archive(matterSlug, thread.slug).then(
@@ -136,7 +136,7 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
         };
 
         $scope.unarchiveThread = function(thread) {
-            ezConfirm.create('Unarchive Thread', 'Please confirm you would like to unarchive this thread?',
+            EzConfirm.create('Unarchive Thread', 'Please confirm you would like to unarchive this thread?',
                 function yes() {
                     var matterSlug = $scope.data.matterSlug;
                     discussionService.unarchive(matterSlug, thread.slug).then(
@@ -154,7 +154,7 @@ angular.module('toolkit-gui').controller('DiscussionCtrl', [
         };
 
         $scope.deleteThread = function(thread) {
-            ezConfirm.create('Delete Thread', 'Please confirm you would like to delete this thread?',
+            EzConfirm.create('Delete Thread', 'Please confirm you would like to delete this thread?',
                 function yes() {
                     var matterSlug = $scope.data.matterSlug;
                     discussionService.delete(matterSlug, thread.slug).then(
