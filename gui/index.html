@@ -186,9 +186,8 @@
 
         <form class="navbar-form navbar-left hidden-sm hidden-xs  search" ng-show="$root.searchEnabled" ng-controller="SearchCtrl" ng-submit="startSearch()">
 
-          <div class="form-group">
-            <div class="input-group input-group-sm">
-              <input class="form-control" id="navbarInput-02" type="search" placeholder="Search" ng-model="data.term" ng-keyup="startSearch()" ng-blur="hide()" xng-focus="show()" autocomplete="off" onmouseup="this.select()">
+          <div class="form-grup">
+              <input class="form-control input-sm" id="navbarInput-02" type="search" placeholder="Search" ng-model="data.term" ng-keyup="startSearch()" ng-blur="hide()" xng-focus="show()" autocomplete="off" onmouseup="this.select()">
 
               <!-- filter //-->
               {% verbatim %}
@@ -216,7 +215,6 @@
               </ul>
             </span>
             {% endverbatim %}
-          </div>
         </div>
 
         {% verbatim %}
