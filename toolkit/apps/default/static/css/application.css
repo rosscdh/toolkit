@@ -1030,6 +1030,7 @@ body.gui .btn-success {
 }
 .navbar {
   margin-bottom: 0;
+  border-bottom: 1px solid #d6d6d6;
   background-color: white;
 }
 .nav-list-vivid .nav-header {
@@ -1912,7 +1913,7 @@ a.undo_is_complete-btn {
   color: #8a8a8a;
 }
 .navbar.checklist-nav li a {
-  color: #bdbdbd;
+  color: #a3a3a3;
 }
 .navbar.checklist-nav li a:hover {
   color: #717171;
