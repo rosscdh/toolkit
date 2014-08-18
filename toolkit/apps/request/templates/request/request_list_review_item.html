@@ -12,7 +12,7 @@
             {% if item.is_complete or review.is_complete %}
             <p class="request-status"><span class="fui-check-inverted"></span> Approved</p>
             {% else %}
-            <a href="#" class="btn btn-wide btn-info request-btn" data-toggle="modal" data-target="#request-review-{{ review.pk }}">Review</a>
+            <a href="#" class="btn btn-info request-btn" data-toggle="modal" data-target="#request-review-{{ review.pk }}">Review</a>
             {% endif %}
         </div>
     </div>

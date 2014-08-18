@@ -9,7 +9,7 @@
                   {% if show_completed %}
                   <a href="{% url 'request:list' %}" class="btn btn-info btn-wide">Show open requests</a>
                   {% else %}
-                  <a href="{% url 'request:list_completed' %}" class="btn btn-info btn-wide">Show completed requests</a>
+                  <a href="{% url 'request:list_completed' %}" class="btn btn-info">Show completed requests</a>
                   {% endif %}
               </div>
               <h3><span id="total-items" class="circle">{{ object_list.count }}</span> {% if show_completed %}Completed Requests{% else %}Requests{% endif %}</h3>
@@ -101,10 +101,10 @@ jQuery( document ).ready(function () {
     //         undo_link.attr('data-remote', url);
     //         mark_complete(self, url, true, undo_link);
     //     });
-    undo_link.on('click', function (e) {
-        var self = $(this);
-        var data = self.data();
-        var url = data.remote;
+undo_link.on('click', function (e) {
+    var self = $(this);
+    var data = self.data();
+    var url = data.remote;
 
             // set the url data-remote
             mark_complete_btn.attr('data-remote', url);
@@ -112,12 +112,12 @@ jQuery( document ).ready(function () {
 
         });
 
-    $('a.mark_complete-btn, a.mark_incomplete-btn').on('click', function (e) {
-        var self = $(this);
-        var data = self.data();
-        var url = data.remote;
+$('a.mark_complete-btn, a.mark_incomplete-btn').on('click', function (e) {
+    var self = $(this);
+    var data = self.data();
+    var url = data.remote;
 
-        mark_complete_btn = self.clone( true );
+    mark_complete_btn = self.clone( true );
 
             // update the copy of the mark_complete_btn
             mark_complete_btn.attr('data-remote', url);

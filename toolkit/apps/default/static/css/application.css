@@ -775,6 +775,7 @@ body.gui .btn-success {
   text-transform: uppercase;
   background-color: white;
   color: #bdbdbd;
+  font-size: 12px;
   border: 2px solid #bdbdbd;
 }
 .help-block {
@@ -862,8 +863,9 @@ body.gui .btn-success {
   margin-top: 5px;
   position: absolute;
   top: 20px;
-  right: 2px;
+  right: 1px;
   outline: none;
+  border: none;
 }
 .matter .card .dis-export-button {
   transform: rotate(90deg);
@@ -1126,15 +1128,20 @@ body.gui .btn-success {
   text-shadow: 0px 0px 10px #232323;
 }
 #notifications .notification {
+  font-family: open sans;
   background-color: white;
   border: 1px solid #e8ecec;
   padding: 20px;
 }
 #notifications .notification .avatar {
+  border-color: #bdbdbd;
   margin-top: 5px;
 }
+#notifications .notification .avatar span.initials {
+  color: #bdbdbd;
+}
 #notifications .notification a {
-  color: #666;
+  color: #42d0e5;
   border-bottom: 1px dotted #87999a;
 }
 #notifications .notification a.btn {
@@ -1143,15 +1150,19 @@ body.gui .btn-success {
 #notifications .notification .notification-btn {
   font-size: 20px;
   margin-top: 8px;
+  border: 0px;
   text-align: right;
 }
+#notifications .notification .text-info {
+  color: #bdbdbd;
+}
 #notifications .notification p {
-  color: #888;
+  color: #bdbdbd;
   margin-bottom: 0;
 }
 #notifications .notification .lead {
-  font-weight: bold;
   font-size: 17px;
+  color: #888;
 }
 #notifications .notification p.quote {
   font-size: 14px;

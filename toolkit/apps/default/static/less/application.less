@@ -107,6 +107,7 @@ body.gui {
     text-transform: uppercase;
     background-color: white;
     color: #bdbdbd;
+    font-size: 12px;
     border: 2px solid #bdbdbd;
   }
 }
@@ -233,8 +234,9 @@ body.gui {
     margin-top: 5px;
     position: absolute;
     top: 20px;
-    right: 2px;
-    outline: none
+    right: 1px;
+    outline: none;
+    border: none;
   }
 
 
@@ -589,15 +591,20 @@ body.gui {
 
 #notifications {
   .notification {
+    font-family: open sans;
     background-color: white;
     border: 1px solid #e8ecec;
     padding: 20px;
 
     .avatar {
+      border-color: #bdbdbd;
       margin-top: 5px;
+      span.initials {
+        color: #bdbdbd;
+      }
     }
     a {
-      color:#666;
+      color:#42d0e5;
       border-bottom:1px dotted darken(@gray, 5%);
     }
     a.btn {
@@ -607,16 +614,22 @@ body.gui {
     .notification-btn {
       font-size: 20px;
       margin-top: 8px;
+      border: 0px;
       text-align: right;
+
     }
 
+
+    .text-info{
+      color: #bdbdbd;
+    }
     p {
-      color: #888;
+      color: #bdbdbd;
       margin-bottom: 0;
     }
     .lead {
-      font-weight: bold;
       font-size:17px;
+      color: #888;
     }
     p.quote {
       font-size:14px;
