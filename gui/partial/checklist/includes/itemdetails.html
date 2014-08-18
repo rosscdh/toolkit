@@ -55,13 +55,13 @@
           <button class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown">
             <span class="caret"></span>
           </button>
-          <span class="dropdown-arrow dropdown-arrow-inverse dropdown-small"></span>
-          <ul class="dropdown-menu dropdown-inverse">
+          <span class="dropdown-arrow dropdown-small" id="doc-upload-arrow"></span>
+          <ul class="dropdown-menu doc-upload-dropdown">
             <li>
-              <span class="btn btn-sm btn-link btn-file btn-block">
+              <a href="javascript:;" class="btn-sm btn-link btn-file btn-block">
                 From desktop
                 <input type="file" ng-file-select="onFileDropped($files, data.selectedItem);" clear-on-click multiple="multiple" id="upload-file-menu-option" />
-              </span>
+              </a>
             </li>
             <li><a href="javascript:;" filepicker="filepicker" apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)" extensions=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx" id="upload-file-filepicker">From cloud service</a></li>
           </ul>
