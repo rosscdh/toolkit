@@ -85,8 +85,7 @@ var ExportProvidersInterface = React.createClass({
         });
 
         var modalId = 'export-providers-'+ this.props.matter_slug;
-
-        console.log(this.props.matter_slug)
+        var modalTitle = 'Export of: ' + this.props.matter_name;
 
         return (
             <div className="modal" id={modalId}>
@@ -94,7 +93,7 @@ var ExportProvidersInterface = React.createClass({
                 <div className="modal-content">
                   <div className="modal-header">
                     <button type="button" className="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span className="sr-only">Close</span></button>
-                    <h4 className="modal-title">Modal title</h4>
+                    <h4 className="modal-title">{modalTitle}</h4>
                   </div>
                   <div className="modal-body">
                     <ul>{providers}</ul>
@@ -150,6 +149,7 @@ var ExportButtonView = React.createClass({
             )
         } else {
             var ExportProvidersModal = <ExportProvidersInterface
+                                            matter_name={this.props.matter_name}
                                             matter_slug={this.props.matter_slug}
                                             integrations={this.state.integrations} />
             var modalId = '#export-providers-' + this.props.matter_slug;
@@ -194,6 +194,7 @@ var ExportButtonInterface = React.createClass({
                                             export_info={this.props.export_info}/>
 
             var ExportButton = <ExportButtonView
+                                    matter_name={this.props.matter_name}
                                     matter_slug={this.props.matter_slug}
                                     class_name={className} />
             return (
@@ -211,6 +212,7 @@ var MatterItem = React.createClass({
     var ExportButton = <ExportButtonInterface
                                 is_matter_lawyer_participant={this.props.is_matter_lawyer_participant}
                                 matter_slug={this.props.key}
+                                matter_name={this.props.name}
                                 export_info={this.props.export_info} />
 
     return (

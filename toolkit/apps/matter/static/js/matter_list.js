@@ -85,8 +85,7 @@ var ExportProvidersInterface = React.createClass({displayName: 'ExportProvidersI
         });
 
         var modalId = 'export-providers-'+ this.props.matter_slug;
-
-        console.log(this.props.matter_slug)
+        var modalTitle = 'Export of: ' + this.props.matter_name;
 
         return (
             React.DOM.div( {className:"modal", id:modalId}, 
@@ -94,7 +93,7 @@ var ExportProvidersInterface = React.createClass({displayName: 'ExportProvidersI
                 React.DOM.div( {className:"modal-content"}, 
                   React.DOM.div( {className:"modal-header"}, 
                     React.DOM.button( {type:"button", className:"close", 'data-dismiss':"modal"}, React.DOM.span( {'aria-hidden':"true"}, "×"),React.DOM.span( {className:"sr-only"}, "Close")),
-                    React.DOM.h4( {className:"modal-title"}, "Modal title")
+                    React.DOM.h4( {className:"modal-title"}, modalTitle)
                   ),
                   React.DOM.div( {className:"modal-body"}, 
                     React.DOM.ul(null, providers)
@@ -150,7 +149,8 @@ var ExportButtonView = React.createClass({displayName: 'ExportButtonView',
             )
         } else {
             var ExportProvidersModal = ExportProvidersInterface(
-                                            {matter_slug:this.props.matter_slug,
+                                            {matter_name:this.props.matter_name,
+                                            matter_slug:this.props.matter_slug,
                                             integrations:this.state.integrations} )
             var modalId = '#export-providers-' + this.props.matter_slug;
             return (
@@ -194,7 +194,8 @@ var ExportButtonInterface = React.createClass({displayName: 'ExportButtonInterfa
                                             {export_info:this.props.export_info})
 
             var ExportButton = ExportButtonView(
-                                    {matter_slug:this.props.matter_slug,
+                                    {matter_name:this.props.matter_name,
+                                    matter_slug:this.props.matter_slug,
                                     class_name:className} )
             return (
                 React.DOM.div(null, 
@@ -211,6 +212,7 @@ var MatterItem = React.createClass({displayName: 'MatterItem',
     var ExportButton = ExportButtonInterface(
                                 {is_matter_lawyer_participant:this.props.is_matter_lawyer_participant,
                                 matter_slug:this.props.key,
+                                matter_name:this.props.name,
                                 export_info:this.props.export_info} )
 
     return (
