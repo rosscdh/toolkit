@@ -1,107 +1,107 @@
 <div class="modal-content participants-invite">
 
-<div class="modal-header">
-    <h4 class="modal-title" id="myModalLabel"><span class="fui-user text-muted"></span> Matter Participants</h4>
-</div>
-
-<div class="modal-body" modal-loading="data.requestLoading">
-
-<!-- Begin: Participant list -->
-<div class="row existing-participants" ng-if="data.showStep===1">
-    <div class="col-sm-6 ">
-        <ul class="list-unstyled participants">
-            <li ng-repeat="person in participants" ng-click="selectUser(person);" ng-class="{'selected': data.selectedUser==person }">
-                <span class="user {{ person.role }}" ng-bind="person | initials"></span>
-                <label ng-bind="person | fullname"></label>
-                <small class="padding">
-                    ({{ person.role }}<span ng-show="person.username==currentUser.username">, you</span>)
-                </small>
-            </li>
-        </ul>
-
-        <div class="text-center">
-            <a class="btn btn-sm add-p-btn" ng-click="data.showStep=2"
-               ng-show="currentUser.permissions.manage_clients||currentUser.permissions.manage_participants">
-                <span class="fui-user"></span> Add a Participant
-            </a>
-        </div>
+    <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel">Matter Participants</h4>
     </div>
 
-    <div class='col-sm-6 details' ng-show="data.selectedUser">
+    <div class="modal-body" modal-loading="data.requestLoading">
 
-        <!-- Begin: Client permissions -->
-        <div class="client-permissions" ng-show="data.selectedUser.role==='client'">
-            <div class="user-details text-right">
-                <a class="revoke"
-                   ng-show="data.selectedUser.username!==currentUser.username&&(currentUser.permissions.manage_participants||currentUser.permissions.manage_clients)&&person.username!=matter.lawyer.username"
-                   href="javascript:;" ng-click="revoke(data.selectedUser)">
+        <!-- Begin: Participant list -->
+        <div class="row existing-participants" ng-if="data.showStep===1">
+            <div class="col-sm-6 ">
+                <ul class="list-unstyled participants">
+                    <li ng-repeat="person in participants" ng-click="selectUser(person);" ng-class="{'selected': data.selectedUser==person }" class="{{ person.role }}">
+                        <span class="user {{ person.role }}" ng-bind="person | initials"></span>
+                        <label ng-bind="person | fullname"></label>
+                        <small class="padding">
+                            ({{ person.role }}<span ng-show="person.username==currentUser.username">, you</span>)
+                        </small>
+                    </li>
+                </ul>
+
+                <div class="text-center">
+                    <a class="btn btn-sm add-p-btn" ng-click="data.showStep=2"
+                    ng-show="currentUser.permissions.manage_clients||currentUser.permissions.manage_participants">
+                    <span class="fui-user"></span> Add a Participant
+                </a>
+            </div>
+        </div>
+
+        <div class='col-sm-6 details' ng-show="data.selectedUser">
+
+            <!-- Begin: Client permissions -->
+            <div class="client-permissions" ng-show="data.selectedUser.role==='client'">
+                <div class="user-details text-right">
+                    <a class="revoke"
+                    ng-show="data.selectedUser.username!==currentUser.username&&(currentUser.permissions.manage_participants||currentUser.permissions.manage_clients)&&person.username!=matter.lawyer.username"
+                    href="javascript:;" ng-click="revoke(data.selectedUser)">
                     <small>Revoke access</small>
                 </a>
                 <a class="revoke" ng-show="data.selectedUser.username===currentUser.username" href="javascript:;"
-                   ng-click="revoke(data.selectedUser)">
-                    <small>Exit matter</small>
-                </a>
-            </div>
-            <div class="user-large customer" ng-bind="data.selectedUser.initials"></div>
-            <p class="user-meta text-center">{{ data.selectedUser.name }}</p>
-
-            <p class="user-meta text-center">{{ data.selectedUser.email }}</p>
-
-            <div ng-show="currentUser.permissions.manage_clients||currentUser.permissions.manage_participants">
-                <div class='permissions-checklist'>
-                    <div class="checkbox" ng-repeat="perm in data.perms.client">
-                        <label>
-                            <input type="checkbox" ng-model="data.selectedUser.permissions[perm.name]"> {{ perm.description }}
-                        </label>
-                    </div>
-                </div>
-                <div class="text-center">
-                    <a class="btn btn-sm save-perm-btn" ng-click="update(data.selectedUser)"
-                       ng-class="{'permission-btn-active':permissionTracking.changed}"><span
-                            class="fui-check"></span> Save Permissions</a>
-                </div>
-            </div>
+                ng-click="revoke(data.selectedUser)">
+                <small>Exit matter</small>
+            </a>
         </div>
-        <!-- End: Client permissions -->
+        <div class="user-large customer" ng-bind="data.selectedUser.initials"></div>
+        <p class="user-meta text-center">{{ data.selectedUser.name }}</p>
 
-        <!-- Begin: Colleague permissions -->
-        <div class="colleague-permissions" ng-show="data.selectedUser.role==='colleague'">
-            <div class="user-details text-right">
-                <a class="revoke"
-                   ng-show="data.selectedUser.username!==currentUser.username&&currentUser.permissions.manage_participants"
-                   href="javascript:;" ng-click="revoke(data.selectedUser)">
-                    <small>Revoke access</small>
-                </a>
-            </div>
-            <div class="user-large lawyer" ng-bind="data.selectedUser.initials"></div>
-            <p class="text-center user-meta">{{ data.selectedUser.name }}</p>
+        <p class="user-meta text-center">{{ data.selectedUser.email }}</p>
 
-            <p class="text-center user-meta">{{ data.selectedUser.email }}</p>
-
-            <div class='permissions-checklist' ng-show="currentUser.permissions.manage_participants">
-                <div class="checkbox" ng-repeat="perm in data.perms.colleague">
+        <div ng-show="currentUser.permissions.manage_clients||currentUser.permissions.manage_participants">
+            <div class='permissions-checklist'>
+                <div class="checkbox" ng-repeat="perm in data.perms.client">
                     <label>
                         <input type="checkbox" ng-model="data.selectedUser.permissions[perm.name]"> {{ perm.description }}
                     </label>
                 </div>
             </div>
-            <div class='text-center'
-                 ng-show="currentUser.permissions.manage_participants&&data.selectedUser.username!=matter.lawyer.username">
-                <a class="btn btn-sm save-perm-btn" ng-class="{'permission-btn-active':permissionTracking.changed}"
-                   ng-click="update(data.selectedUser)"><span class="fui-check"></span> Save Permissions</a>
+            <div class="text-center">
+                <a class="btn btn-sm save-perm-btn" ng-click="update(data.selectedUser)"
+                ng-class="{'permission-btn-active':permissionTracking.changed}"><span
+                class="fui-check"></span> Save Permissions</a>
             </div>
         </div>
-        <!-- End: Colleague permissions -->
-
-        <!-- Begin: Owner permissions -->
-        <div class="colleague-permissions" ng-show="data.selectedUser.role==='owner'">
-            <div class="user-large lawyer" ng-bind="data.selectedUser.initials"></div>
-            <p class="text-center user-meta">{{ data.selectedUser.name }}</p>
-
-            <p class="text-center user-meta">{{ data.selectedUser.email }}</p>
-        </div>
-        <!-- End: Owner permissions -->
     </div>
+    <!-- End: Client permissions -->
+
+    <!-- Begin: Colleague permissions -->
+    <div class="colleague-permissions" ng-show="data.selectedUser.role==='colleague'">
+        <div class="user-details text-right">
+            <a class="revoke"
+            ng-show="data.selectedUser.username!==currentUser.username&&currentUser.permissions.manage_participants"
+            href="javascript:;" ng-click="revoke(data.selectedUser)">
+            <small>Revoke access</small>
+        </a>
+    </div>
+    <div class="user-large lawyer" ng-bind="data.selectedUser.initials"></div>
+    <p class="text-center user-meta">{{ data.selectedUser.name }}</p>
+
+    <p class="text-center user-meta">{{ data.selectedUser.email }}</p>
+
+    <div class='permissions-checklist' ng-show="currentUser.permissions.manage_participants">
+        <div class="checkbox" ng-repeat="perm in data.perms.colleague">
+            <label>
+                <input type="checkbox" ng-model="data.selectedUser.permissions[perm.name]"> {{ perm.description }}
+            </label>
+        </div>
+    </div>
+    <div class='text-center'
+    ng-show="currentUser.permissions.manage_participants&&data.selectedUser.username!=matter.lawyer.username">
+    <a class="btn btn-sm save-perm-btn" ng-class="{'permission-btn-active':permissionTracking.changed}"
+    ng-click="update(data.selectedUser)"><span class="fui-check"></span> Save Permissions</a>
+</div>
+</div>
+<!-- End: Colleague permissions -->
+
+<!-- Begin: Owner permissions -->
+<div class="colleague-permissions" ng-show="data.selectedUser.role==='owner'">
+    <div class="user-large lawyer" ng-bind="data.selectedUser.initials"></div>
+    <p class="text-center user-meta">{{ data.selectedUser.name }}</p>
+
+    <p class="text-center user-meta">{{ data.selectedUser.email }}</p>
+</div>
+<!-- End: Owner permissions -->
+</div>
 </div>
 <!-- End: Participant list -->
 
@@ -124,152 +124,152 @@
             <a href="javascript:;" class="btn btn-info customer" ng-click="showInviteForm('client')">Add a
                 Client/Third Party</a>
 
-            <p class="note text-center">
-                Clients/third parties have limited access to the matter and it's documents.
-            </p>
+                <p class="note text-center">
+                    Clients/third parties have limited access to the matter and it's documents.
+                </p>
+            </div>
         </div>
     </div>
-</div>
-<!-- End: Select usertype form -->
+    <!-- End: Select usertype form -->
 
-<!-- Begin: Add new colleague form -->
-<div ng-show="data.showStep===3">
-    <form class="form add-colleague" ng-submit="invite()" ng-show="data.formtype === 'colleague'">
-        <h5>Add a Colleague <a href="javascript:;" class="close" ng-click="data.showStep=2">x</a></h5>
+    <!-- Begin: Add new colleague form -->
+    <div ng-show="data.showStep===3">
+        <form class="form add-colleague" ng-submit="invite()" ng-show="data.formtype === 'colleague'">
+            <h5>Add a Colleague <a href="javascript:;" class="close" ng-click="data.showStep=2">x</a></h5>
 
-        <div ng-class="{'has-success': data.participant, 'has-warning': data.isNew, 'has-error': data.validationError }">
-            <p class="bg-info" for="inviteeEmail" ng-show="data.participant">Lawyer {{ data.participant | fullname }} found. </p>
-            <input type="email" id="inviteeEmail" class="form-control form-control-full-width" ng-model="data.invitee.email"
-                   placeholder="their_email@gmail.com" required ng-blur="checkIfUserExists(true)" autocomplete="off"/>
-        </div>
-        <div>
-            <input type="text" class="form-control input-sm" ng-model="data.invitee.first_name" placeholder="First name" ng-show="data.isNew"/>
-            <input type="text" class="form-control input-sm" ng-model="data.invitee.last_name" placeholder="Last name" ng-show="data.isNew"/>
-        </div>
-        <div>
-            <textarea class="form-control form-control-full-width" ng-model="data.invitee.message" placeholder="Add an optional message"></textarea>
-        </div>
-
-        <div class="checkbox first">
-            <label class="radio" ng-class="{'checked':!data.showColleaguePermissionDetails}" ng-click="grantColleaguePermissions('all')">
-                <span class="icons">
-                    <span class="first-icon fui-radio-unchecked"></span>
-                    <span class="second-icon fui-radio-checked"></span>
-                </span>
-                <label><span class="list-heading">All Access</span></label>
-            </label>
-
-            <div class="text-muted">Colleagues will have all access to this matter.</div>
-        </div>
-
-        <div class="checkbox">
-            <label class="radio" ng-class="{'checked':data.showColleaguePermissionDetails}" ng-click="grantColleaguePermissions()">
-                <span class="icons">
-                    <span class="first-icon fui-radio-unchecked"></span>
-                    <span class="second-icon fui-radio-checked"></span>
-                </span>
-                <label><span class="list-heading">Customized Access</span></label>
-            </label>
-
-            <div class="text-muted">Specify access settings for this colleague.</div>
-        </div>
-
-        <div class="customized-list" ng-if='data.showColleaguePermissionDetails'>
-            <div>By adding someone as a colleague, they will be able to:</div>
-            <div class="half">
-                <div class="item">
-                    <span class="fui-check-inverted"></span> view the checklist
-                </div>
-                <div class="item">
-                    <span class="fui-check-inverted"></span> comment on all documents
-                </div>
+            <div ng-class="{'has-success': data.participant, 'has-warning': data.isNew, 'has-error': data.validationError }">
+                <p class="bg-info" for="inviteeEmail" ng-show="data.participant">Lawyer {{ data.participant | fullname }} found. </p>
+                <input type="email" id="inviteeEmail" class="form-control form-control-full-width" ng-model="data.invitee.email"
+                placeholder="their_email@gmail.com" required ng-blur="checkIfUserExists(true)" autocomplete="off"/>
             </div>
-            <div class="half">
-                <div class="item">
-                    <span class="fui-check-inverted"></span> see all documents and discussions
-                </div>
-                <div class="item">
-                    <span class="fui-check-inverted"></span> download documents
-                </div>
+            <div>
+                <input type="text" class="form-control input-sm" ng-model="data.invitee.first_name" placeholder="First name" ng-show="data.isNew"/>
+                <input type="text" class="form-control input-sm" ng-model="data.invitee.last_name" placeholder="Last name" ng-show="data.isNew"/>
+            </div>
+            <div>
+                <textarea class="form-control form-control-full-width" ng-model="data.invitee.message" placeholder="Add an optional message"></textarea>
             </div>
 
-            <div class="actual-list">
-                You may also grant them permission to:
+            <div class="checkbox first">
+                <label class="radio" ng-class="{'checked':!data.showColleaguePermissionDetails}" ng-click="grantColleaguePermissions('all')">
+                    <span class="icons">
+                        <span class="first-icon fui-radio-unchecked"></span>
+                        <span class="second-icon fui-radio-checked"></span>
+                    </span>
+                    <label><span class="list-heading">All Access</span></label>
+                </label>
 
-                <div class="checkbox" ng-repeat="perm in data.perms.colleague">
-                    <label>
-                        <input type="checkbox" ng-model="data.invitee.permissions[perm.name]"> {{ perm.description }}
-                    </label>
-                </div>
-            </div>
-        </div>
-        <div class="text-center main-a">
-            <button class="btn btn-wide btn-sm colleague-btn" ng-disabled="invalid()">Add a Colleague</button>
-        </div>
-    </form>
-    <!-- End: Add new colleague form -->
-
-    <!-- Begin: Add new client form -->
-    <form class="form" ng-submit="invite()" ng-show="data.formtype === 'client'">
-        <h5 class="add-client">Add a Client/Third Party to this Matter
-            <a href="javascript:;" class="close" ng-click="data.showStep=2">x</a>
-        </h5>
-
-        <div ng-class="{'has-success': data.participant, 'has-warning': data.isNew, 'has-error': data.validationError }">
-            <p class="bg-info" for="inviteeEmail" ng-show="data.participant">{{ data.participant | fullname }} found.</p>
-
-            <p class="bg-info" for="inviteeEmail" ng-show="data.isNew">User does not exist yet. They will be invited to
-                LawPal.</p>
-
-            <p class="bg-danger" for="inviteeEmail" ng-show="data.isLawyer">The entered mail address belongs to a lawyer.
-                Lawyers can not currently be added to matters as clients.</p>
-
-            <input type="email" id="inviteeEmail" class="form-control form-control-full-width" ng-model="data.invitee.email"
-                   placeholder="their_email@gmail.com" required ng-blur="checkIfUserExists()" autocomplete="off"/>
-        </div>
-
-        <div>
-            <input type="text" class="form-control input-sm" ng-model="data.invitee.first_name" placeholder="First name" ng-show="data.isNew"/>
-            <input type="text" class="form-control input-sm" ng-model="data.invitee.last_name" placeholder="Last name" ng-show="data.isNew"/>
-        </div>
-        <div>
-            <textarea class="form-control form-control-full-width" ng-model="data.invitee.message" placeholder="Add an optional message"></textarea>
-        </div>
-
-        <div class="customized-list">
-            By adding someone as a client/third party they will be able to:
-
-            <div class="third">
-                <div class="item">
-                    <span class="fui-check-inverted"></span> view the checklist's progress
-                </div>
-                <div class="item">
-                    <span class="fui-check-inverted"></span> annotate and view latest drafts of documents
-                </div>
-                <div class="item">
-                    <span class="fui-check-inverted"></span> view and respond to global comments
-                </div>
-                <div class="item">
-                    <span class="fui-cross-inverted"></span> unable to view previous versions of documents
-                </div>
-                <div class="item">
-                    <span class="fui-cross-inverted"></span> unable to view internal discussions
-                </div>
-
+                <div class="text-muted">Colleagues will have all access to this matter.</div>
             </div>
 
+            <div class="checkbox">
+                <label class="radio" ng-class="{'checked':data.showColleaguePermissionDetails}" ng-click="grantColleaguePermissions()">
+                    <span class="icons">
+                        <span class="first-icon fui-radio-unchecked"></span>
+                        <span class="second-icon fui-radio-checked"></span>
+                    </span>
+                    <label><span class="list-heading">Customized Access</span></label>
+                </label>
+
+                <div class="text-muted">Specify access settings for this colleague.</div>
+            </div>
+
+            <div class="customized-list" ng-if='data.showColleaguePermissionDetails'>
+                <div>By adding someone as a colleague, they will be able to:</div>
+                <div class="half">
+                    <div class="item">
+                        <span class="fui-check-inverted"></span> view the checklist
+                    </div>
+                    <div class="item">
+                        <span class="fui-check-inverted"></span> comment on all documents
+                    </div>
+                </div>
+                <div class="half">
+                    <div class="item">
+                        <span class="fui-check-inverted"></span> see all documents and discussions
+                    </div>
+                    <div class="item">
+                        <span class="fui-check-inverted"></span> download documents
+                    </div>
+                </div>
+
+                <div class="actual-list">
+                    You may also grant them permission to:
+
+                    <div class="checkbox" ng-repeat="perm in data.perms.colleague">
+                        <label>
+                            <input type="checkbox" ng-model="data.invitee.permissions[perm.name]"> {{ perm.description }}
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center main-a">
+                <button class="btn btn-wide btn-sm colleague-btn" ng-disabled="invalid()">Add a Colleague</button>
+            </div>
+        </form>
+        <!-- End: Add new colleague form -->
+
+        <!-- Begin: Add new client form -->
+        <form class="form" ng-submit="invite()" ng-show="data.formtype === 'client'">
+            <h5 class="add-client">Add a Client/Third Party to this Matter
+                <a href="javascript:;" class="close" ng-click="data.showStep=2">x</a>
+            </h5>
+
+            <div ng-class="{'has-success': data.participant, 'has-warning': data.isNew, 'has-error': data.validationError }">
+                <p class="bg-info" for="inviteeEmail" ng-show="data.participant">{{ data.participant | fullname }} found.</p>
+
+                <p class="bg-info" for="inviteeEmail" ng-show="data.isNew">User does not exist yet. They will be invited to
+                    LawPal.</p>
+
+                    <p class="bg-danger" for="inviteeEmail" ng-show="data.isLawyer">The entered mail address belongs to a lawyer.
+                        Lawyers can not currently be added to matters as clients.</p>
+
+                        <input type="email" id="inviteeEmail" class="form-control form-control-full-width" ng-model="data.invitee.email"
+                        placeholder="their_email@gmail.com" required ng-blur="checkIfUserExists()" autocomplete="off"/>
+                    </div>
+
+                    <div>
+                        <input type="text" class="form-control input-sm" ng-model="data.invitee.first_name" placeholder="First name" ng-show="data.isNew"/>
+                        <input type="text" class="form-control input-sm" ng-model="data.invitee.last_name" placeholder="Last name" ng-show="data.isNew"/>
+                    </div>
+                    <div>
+                        <textarea class="form-control form-control-full-width" ng-model="data.invitee.message" placeholder="Add an optional message"></textarea>
+                    </div>
+
+                    <div class="customized-list">
+                        By adding someone as a client/third party they will be able to:
+
+                        <div class="third">
+                            <div class="item">
+                                <span class="fui-check-inverted"></span> view the checklist's progress
+                            </div>
+                            <div class="item">
+                                <span class="fui-check-inverted"></span> annotate and view latest drafts of documents
+                            </div>
+                            <div class="item">
+                                <span class="fui-check-inverted"></span> view and respond to global comments
+                            </div>
+                            <div class="item">
+                                <span class="fui-cross-inverted"></span> unable to view previous versions of documents
+                            </div>
+                            <div class="item">
+                                <span class="fui-cross-inverted"></span> unable to view internal discussions
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <div class="text-center main-a">
+                        <button class="btn  btn-wide btn-sm client-btn" ng-disabled="invalid()">Add a Client</button>
+                    </div>
+                </form>
+                <!-- End: Add new client form -->
+            </div>
+
         </div>
-        <div class="text-center main-a">
-            <button class="btn  btn-wide btn-sm client-btn" ng-disabled="invalid()">Add a Client</button>
+
+        <div class="modal-footer">
+            <button class="btn btn-default pull-right" ng-click="cancel()">Close</button>
         </div>
-    </form>
-    <!-- End: Add new client form -->
-</div>
 
-</div>
-
-<div class="modal-footer">
-    <button class="btn btn-default pull-right" ng-click="cancel()">Close</button>
-</div>
-
-</div>
+    </div>

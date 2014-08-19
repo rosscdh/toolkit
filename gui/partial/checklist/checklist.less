@@ -184,7 +184,7 @@ tr.item-heading.file-drag-over td:nth-child(2):before {
 	opacity: 1;
 	visibility: visible;
 	width: 304px;
-	background-color: #f2f2f2;
+	background-color: #fff;
 	border-radius: 0;
 	border-color: #c5cbce;
 	border-width: 0 1px 1px 1px;
@@ -289,13 +289,13 @@ tr.item-heading.file-drag-over td:nth-child(2):before {
 			}
 			text-transform: uppercase;
 			padding:8px 0px 0px 0px;
-			color: #AAA;
+			color: #AAA;fcfcfc
 			font-size:13px;
 			&.category {
 				color:#666;
 				font-size:14px;
 			}
-			td {
+			td {fcfcfc
 				padding-top:20px;
 			}
 		}
@@ -350,24 +350,28 @@ tr.item-heading.file-drag-over td:nth-child(2):before {
       margin-bottom:0px;
     }
     .btn-new-item {
-      background-color:#faf9f9;
-      color:#999;
-      font-weight:normal;
-      margin-top:1px;
-      padding:5px 9px 4px 9px;
-      border-bottom:2px solid #ddd;
-      border-radius:0px;
+      background-color:white;
+      color:@lp-blue;
+      text-transform:uppercase;
+      margin-top:5px;
+      margin-left:6px;
+      margin-bottom:10px;
+      padding:10px 15px 10px 15px;
+      border:1px solid lighten(@lp-blue, 10%);
+      border-radius:5px;
+      font-weight:bold;
+      font-size:10px;
     }
   }
   .checklist-header {
    h5 {
-    background-color:#f2f2f2;
+    background-color:#fff;
     margin-bottom:0px;
     &.category {
-     padding:13px 0px 0px 0px;
+     padding:13px 0px 0px 4px;
    }
    text-transform: uppercase;
-   padding:8px 0px 0px 0px;
+   padding:8px 0px 0px 7px;
    color: #AAA;
    font-size:13px;
    &.category {
@@ -398,35 +402,34 @@ ul.checklist-items {
 	li {
 		cursor: pointer;
 		position: relative;
-		background-color: #FFF;
-		padding:0px 9px;
-		border-top:5px solid #f2f2f2;
-		border-bottom:none;
+		background-color: #fff;
+		padding:0px 15px;
+		border-bottom:2px solid #f1f1f1;
+		border-top:none;
 		// The selection state
 		&.item-closed {
-			color: lighten(@nephritis, 70%);
-			opacity:0.8;
-			background-color:lighten(@emerland, 15%);
+			color: @complete-gr;
+			opacity:1;
 			.item-title {
-				color: lighten(@nephritis, 70%);
+				color: @complete-gr;
+				text-decoration: line-through;
 			}
 			&.selected {
-				background-color:darken(@emerland, 5%);
 			}
 			.fui-list-columned {
 				color:white;
 			}
 		}
-
 		.item-title {
 			font-size:14px;
-			font-family:Helvetica;
+			line-height: 20px;
 			word-spacing: normal;
 			color:#777;
-			font-weight:bold;
-			padding-left:14px;
+			font-weight:regular;
+			padding-left:4px;
 			padding-top:6px;
 			padding-bottom:6px;
+			padding-right:0px;
 			position:relative;
 			span {
 				outline:none;
@@ -450,78 +453,78 @@ ul.checklist-items {
 				left:10px;
 				width:4px;
 				overflow:hidden;
+				display:none;
 			}
 			&:hover .fui-list-columned {
 				opacity:1;
 			}
 		}
+		.item-status {
+			padding-top:4px;
+			padding-right:5px;
+		}
 
 		// The selection state
 		&.selected {
-			background-color: lighten(@belize-hole, 10%);
+/*			background-color: lighten(@belize-hole, 10%);
 			color:white;
-			.item-title {
-				color:white;
-				opacity:1;
-			}
-			.status {
+      */
+      font-weight:bold;
+/*			.status {
 				button {
 					background-color:transparent;
 					color:white;
 					border-color:white;
 				}
-			}
-      .tasks-status-checklist{
-        color: white;
-        border: 1px solid white;
+       }*/
+
+     }
+     .fui-check-inverted {
+       padding-top:4px;
+     }
+     .pe-7s-check {
+       font-size:24px;
+       margin-top:4px;
+     }
+     &.ui-sortable-placeholder {
+       border: 1px solid rgba(255,255,255,0.5);
+       background-color: rgba(255,255,255,0.15);
+       background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAHklEQVQIW2NkQAWSjEh8SSD7OUwAzAFJggTgHJAAAEkuAx5OdRJCAAAAAElFTkSuQmCC');
+       visibility: visible !important;
+       &:after {
+        content: 'Drop item here';
+        opacity: 0.6;
+        font-size: 0.85em;
+        padding: 0.25em;
+        text-align: center;
+        height:33px;
       }
     }
-    .fui-check-inverted {
-     padding-top:4px;
+
+    &.ui-sortable-placeholder {
+     opacity: 0.8;
    }
-   .pe-7s-check {
-     font-size:24px;
-     margin-top:4px;
-   }
-   &.ui-sortable-placeholder {
-     border: 1px solid rgba(255,255,255,0.5);
+
+   &.file-drag-over {
      background-color: rgba(255,255,255,0.15);
      background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAHklEQVQIW2NkQAWSjEh8SSD7OUwAzAFJggTgHJAAAEkuAx5OdRJCAAAAAElFTkSuQmCC');
-     visibility: visible !important;
      &:after {
-      content: 'Drop item here';
+      content: 'Drop file(s) here';
       opacity: 0.6;
       font-size: 0.85em;
-      padding: 0.25em;
+      padding: 0.12em;
+      position: absolute;
+      top: 0.12em;
+      left: 0;
+      width: 100%;
       text-align: center;
-      height:33px;
     }
   }
 
-  &.ui-sortable-placeholder {
-   opacity: 0.8;
+  .fui-list-columned {
+   .text-muted;
+   margin-left: -0.25em;
  }
-
- &.file-drag-over {
-   background-color: rgba(255,255,255,0.15);
-   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAHklEQVQIW2NkQAWSjEh8SSD7OUwAzAFJggTgHJAAAEkuAx5OdRJCAAAAAElFTkSuQmCC');
-   &:after {
-    content: 'Drop file(s) here';
-    opacity: 0.6;
-    font-size: 0.85em;
-    padding: 0.12em;
-    position: absolute;
-    top: 0.12em;
-    left: 0;
-    width: 100%;
-    text-align: center;
-  }
-}
-
-.fui-list-columned {
- .text-muted;
- margin-left: -0.25em;
-}
 }
 
 .loading {
@@ -535,10 +538,11 @@ ul.checklist-items {
 
 .chat {
   h4 a {
-  	font-size:13px;
+    font-family: open sans;
+    font-size:13px;
     &.active {
       color: gray;
-      border-bottom:2px solid @peter-river;
+      border-bottom:2px solid #eee;
 
     }
 
@@ -659,10 +663,12 @@ ul.checklist-items {
 }
 
 .status {
-	padding-top:3px;
+	padding-top:5px;
 	margin-right:-2px;
 	padding-bottom:0px;
 	text-align:right;
+	position:relative;
+	margin-top:-2px;
 	.fui-check-inverted  {
 		padding-top:2px;
 	}
@@ -670,12 +676,13 @@ ul.checklist-items {
 		text-decoration:underline;
 	}
 	button {
-		padding:5px 5px;
 		font-size:11px;
 		margin-right:02px;
+		text-transform: uppercase;
+		font-weight:bold;
 		&[class*="doc-status"] {
 			background-color:transparent;
-			border:1px solid white;
+			border:none;
 		}
 		&.doc-status-0 { border-color:@doc-status-0;color:@doc-status-0; }
 		&.doc-status-1 { border-color:@doc-status-1;color:@doc-status-1; }
@@ -738,7 +745,7 @@ ul.status-list a {
     color: #777;
     .btn-link {
       float: right;
-      color: #39ca74;
+      color: @lp-blue;
       text-transform: uppercase;
       font-weight: bold;
     }
@@ -775,6 +782,7 @@ ul.status-list a {
         clear: left;
         text-align: left;
         width: 3%;
+        margin-left: 1%;
         text-align: center;
       }
       .delete-task{
@@ -794,7 +802,7 @@ ul.status-list a {
 
   			.due-date {
           width: 18%;
-          border: 1px solid #e4e6e8;
+          border: 1px solid white;
           min-width: 18%;
           margin-right: 2.5%;
           color: #777;
@@ -827,7 +835,7 @@ ul.status-list a {
           min-width: 20%;
           color: #777;
           text-align: center;
-          border: 1px solid #e4e6e8;
+          border: 1px solid white;
           opacity: 1;
           a {
             color: #777;
@@ -938,7 +946,6 @@ ul.status-list a {
   margin-right: 5px;
   margin-top: 5px;
   color: #777;
-  border: 1px solid #777;
   border-radius: 3px;
   padding: 3px;
   line-height: 14px;
@@ -960,11 +967,12 @@ ul.status-list a {
   margin: 0 auto;
   width: 80%;
   line-height: 18px;
-  color: #9B9898;
+  color: #c3c1c1;
   text-align: center;
   font-size: 12px;
   h4{
     font-size: 13px;
+    font-weight: 400;
     margin-bottom: 7px;
   }
   i {
@@ -993,3 +1001,5 @@ ul.status-list a {
 .revision-status {
   border-radius: 0px;
 }
+
+

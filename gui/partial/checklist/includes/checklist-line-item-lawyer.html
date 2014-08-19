@@ -11,9 +11,7 @@
 			<div class="col-xs-6 item-title">
 				<span class="fui-list-columned"></span>
 				<span ng-bind="item.name" ng-class="{'loading': item.loading}"></span>
-			</div>
-			<div class="col-xs-6">
-				<span ng-hide="item.is_complete" class="pull-right status">
+				<span ng-hide="item.is_complete" class="status">
 					<button
 						disabled=""
 						class="btn btn-xs doc-status-{{ item.latest_revision.status }}"
@@ -21,6 +19,11 @@
 						ng-show="item.latest_revision&&!item.is_requested">
                             {{ data.matter._meta.item.custom_status[item.latest_revision.status] }}
 					</button>
+				</span>
+
+			</div>
+			<div class="col-xs-6 item-status text-right">
+				<span ng-hide="item.is_complete" class="status">
 					<button
 						class="btn btn-xs {{ item.date_due | duestatus }} checklist-item-due-date"
 						ng-show="item.date_due"

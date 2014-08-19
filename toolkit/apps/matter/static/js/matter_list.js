@@ -178,7 +178,7 @@ var CurrentUserRole = React.createClass({displayName: 'CurrentUserRole',
 
         if (role === 'owner') {
             return (
-                React.DOM.span( {className:"fui-star-2", 'data-toggle':"tooltip", 'data-placement':"right", title:"You are the Matter Owner"})
+                React.DOM.span( {className:"fui-star-2", 'data-toggle':"tooltip", 'data-placement':"top", title:"You are the Matter Owner"})
                 );
         } else {
             return (
@@ -198,7 +198,7 @@ var LastUpdatedOrComplete = React.createClass({displayName: 'LastUpdatedOrComple
         if (percent_complete === '100%') {
 
             return (
-                React.DOM.p( {className:"small pull-left done"}, React.DOM.span( {className:"fui-check-inverted"}), " Complete")
+                React.DOM.p( {className:"small pull-left done"}, React.DOM.span( {className:"fui-check-inverted"}), " COMPLETE")
             );
 
         } else {

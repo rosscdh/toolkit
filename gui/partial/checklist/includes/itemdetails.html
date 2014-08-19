@@ -48,30 +48,30 @@
       <!-- Begin option toolbar -->
       <div class="add-new clearfix">
         <div class="btn-group space-5" ng-show="data.usdata.current.permissions.manage_items&&!data.selectedItem.is_complete">
-          <span id="intro-upload-file-menu" class="btn btn-sm btn-info btn-file btn-embossed btn-add">
+          <span id="intro-upload-file-menu" class="btn btn-sm btn-info btn-file btn-add">
             Upload File
             <input type="file" ng-file-select="onFileDropped($files, data.selectedItem);" clear-on-click multiple="multiple" id="upload-file-menu-default" />
           </span>
-          <button class="btn btn-info btn-sm btn-embossed dropdown-toggle" data-toggle="dropdown">
+          <button class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown">
             <span class="caret"></span>
           </button>
-          <span class="dropdown-arrow dropdown-arrow-inverse dropdown-small"></span>
-          <ul class="dropdown-menu dropdown-inverse">
+          <span class="dropdown-arrow dropdown-small" id="doc-upload-arrow"></span>
+          <ul class="dropdown-menu doc-upload-dropdown">
             <li>
-              <span class="btn btn-sm btn-link btn-file btn-block">
+              <a href="javascript:;" class="btn-sm btn-link btn-file btn-block">
                 From desktop
                 <input type="file" ng-file-select="onFileDropped($files, data.selectedItem);" clear-on-click multiple="multiple" id="upload-file-menu-option" />
-              </span>
+              </a>
             </li>
             <li><a href="javascript:;" filepicker="filepicker" apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)" extensions=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx" id="upload-file-filepicker">From cloud service</a></li>
           </ul>
         </div>
-        <button class="btn btn-sm btn-info btn-file btn-embossed btn-add space-5" data-toggle="modal" data-target="#requestFileModal"
+        <button class="btn btn-sm btn-info btn-file btn-add space-5" data-toggle="modal" data-target="#requestFileModal"
         ng-click="requestRevision(data.selectedItem)" ng-hide="data.selectedItem.is_complete" id="request-file-button">
         Request File
       </button>
       <div class="btn-group" id="checklist-item-options" ng-show="data.usdata.current.permissions.manage_items&&!data.selectedItem.is_complete">
-        <a href="javascript:;" class="btn btn-sm btn-silver btn-embossed dropdown-toggle" data-toggle="dropdown">Options</a>
+        <a href="javascript:;" class="btn btn-sm btn-silver dropdown-toggle" data-toggle="dropdown">Options</a>
         <ul class="dropdown-menu dropdown-small dropdown-inverse" >
           <li><a href="javascript:;" ng-click="toggleDueDateCalendar( data.selectedItem );saveSelectedItem();data.showItemDetailsOptions=!data.showItemDetailsOptions;">
             <span class="fui-calendar"></span> Set due date</a>
@@ -402,7 +402,6 @@
   <div class="item-help border-on-dragover" ng-hide="data.selectedItem.latest_revision||data.selectedItem.uploading||data.selectedItem.is_requested||data.selectedItem.is_complete">
     <span class="fui-upload"></span>
     <h4>Upload a document</h4>
-    Upload the first document to this item or request one. You can also drag a document directly onto a checklist item.
   </div>
 </div>
 

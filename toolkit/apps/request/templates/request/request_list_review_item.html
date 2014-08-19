@@ -10,18 +10,18 @@
         </div>
         <div class="col-xs-4">
             {% if item.is_complete or review.is_complete %}
-                <p class="request-status"><span class="fui-check-inverted"></span> Approved</p>
+            <p class="request-status"><span class="fui-check-inverted"></span> Approved</p>
             {% else %}
-                <a href="#" class="btn btn-wide btn-info btn-embossed request-btn" data-toggle="modal" data-target="#request-review-{{ review.pk }}">Review</a>
+            <a href="#" class="btn btn-info request-btn" data-toggle="modal" data-target="#request-review-{{ review.pk }}">Review</a>
             {% endif %}
         </div>
     </div>
     {% if item.message %}
-        <div class="row">
-            <div class="col-xs-12">
-                <blockquote>{{ item.message }}</blockquote>
-            </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <blockquote>{{ item.message }}</blockquote>
         </div>
+    </div>
     {% endif %}
 </article>
 
@@ -39,10 +39,10 @@
 
             <form method="POST" action="{{ approve_url }}" class="modal-footer">
                 <div class="row">
-                <div class="col-lg-3 pull-left">
-                    <div class="padlock"><span class="fui-lock" title=""></span> Visible to:</div>
-                    {% for p in review.participants %}{% avatar p %}{% endfor %}
-                </div>
+                    <div class="col-lg-3 pull-left">
+                        <div class="padlock"><span class="fui-lock" title=""></span> Visible to:</div>
+                        {% for p in review.participants %}{% avatar p %}{% endfor %}
+                    </div>
                     <div class="col-lg-6 text-left">
                         <span class="text-muted" style="padding-right:20px;"><small>Press Review Complete once you have finished making comments on the document or Close to keep the review open.</small></span>
                     </div>

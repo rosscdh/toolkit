@@ -1,48 +1,48 @@
 {% extends 'notification/base.html' %}{% load notice_tags %}{% load url from future %}
 
 {% block body %}
-    <div id="notifications" class="content">
-        <div class="content-header notifications-header clearfix">
-              <div class="row">
-                <div class="col-sm-12 hidden" id="requestNotifyPermission">
-                    <div class="alert text-center">
-                        <p>
-                            <a href="#" class="notification-link">
-                                We encourage you to enable Desktop Notifications.
-                            </a>
-                        </p>
-                    </div>
-                </div>
-                <div class="col-sm-12 hidden" id="requestNotifyInstructions">
-                    <p class="alert text-center">Your browser should now be presenting you with the option to enable notifications. Click <strong>Enable</strong> or <strong>Allow</strong> or <strong>Yes</strong> or <strong>OK</strong>.</p>
-                </div>
-            </div>
-            <div class="container">
-                <div class="col-sm-8 col-sm-offset-2">
-                    {% if object_list %}
-                        <div class="content-header-btn">
-                            <a href="javascript:;" id="mark-all-as-read" data-url="{% url 'notification:inbox-mark-all-read' %}" class="btn btn-info btn-wide"><span class="fui-check-inverted"></span>&nbsp;&nbsp;Mark everything as read</a>
-                        </div>
-                    {% endif %}
-                    <h3><span id="notification-count" class="circle">&nbsp;</span> Notifications</h3>
-                </div>
+<div id="notifications" class="content">
+    <div class="content-header notifications-header clearfix">
+      <div class="row">
+        <div class="col-sm-12 hidden" id="requestNotifyPermission">
+            <div class="alert text-center">
+                <p>
+                    <a href="#" class="notification-link">
+                        We encourage you to enable Desktop Notifications.
+                    </a>
+                </p>
             </div>
         </div>
-
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-8 col-sm-offset-2" role="main">
-                    {% for item in object_list %}
-                        {% render_notice item request %}
-                    {% empty %}
-                        <div class="col-md-12 text-center">
-                            <h6 class="text-muted">You currently have no notifications.</h6>
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
+        <div class="col-sm-12 hidden" id="requestNotifyInstructions">
+            <p class="alert text-center">Your browser should now be presenting you with the option to enable notifications. Click <strong>Enable</strong> or <strong>Allow</strong> or <strong>Yes</strong> or <strong>OK</strong>.</p>
         </div>
     </div>
+    <div class="container">
+        <div class="col-sm-8 col-sm-offset-2">
+            {% if object_list %}
+            <div class="content-header-btn">
+                <a href="javascript:;" id="mark-all-as-read" data-url="{% url 'notification:inbox-mark-all-read' %}" class="btn btn-info"><span class="fui-check-inverted"></span>&nbsp;&nbsp;Mark everything as read</a>
+            </div>
+            {% endif %}
+            <h3><span id="notification-count" class="circle">&nbsp;</span> Notifications</h3>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-8 col-sm-offset-2" role="main">
+            {% for item in object_list %}
+            {% render_notice item request %}
+            {% empty %}
+            <div class="col-md-12 text-center">
+                <h6 class="text-muted">You currently have no notifications.</h6>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+</div>
 {% endblock %}
 
 {% block js %}
@@ -143,28 +143,28 @@ $(document).ready(function () {
         $.Deferred(function( deferred ){
             $( deferred.resolve );
         })
-    ).done(function(){
-        processNotificationPermissionLevel();
-    });
+        ).done(function(){
+            processNotificationPermissionLevel();
+        });
 
-    function processNotificationPermissionLevel() {
-        var permissionLevel = notify.permissionLevel();
-        if(permissionLevel==='default') {
-            $('#requestNotifyPermission').removeClass('hidden');
-            $('.notification-link').click(function(){
-                $('#requestNotifyPermission').addClass('hidden');
-                $('#requestNotifyInstructions').removeClass('hidden');
-                requestNotifyPermission();
-            });
+        function processNotificationPermissionLevel() {
+            var permissionLevel = notify.permissionLevel();
+            if(permissionLevel==='default') {
+                $('#requestNotifyPermission').removeClass('hidden');
+                $('.notification-link').click(function(){
+                    $('#requestNotifyPermission').addClass('hidden');
+                    $('#requestNotifyInstructions').removeClass('hidden');
+                    requestNotifyPermission();
+                });
+            }
         }
-    }
 
-    function requestNotifyPermission() {
-      notify.requestPermission(function(){
-        $('#requestNotifyInstructions').addClass('hidden');
-      });
-    };
+        function requestNotifyPermission() {
+          notify.requestPermission(function(){
+            $('#requestNotifyInstructions').addClass('hidden');
+        });
+      };
 
-});
+  });
 </script>
 {% endblock %}
