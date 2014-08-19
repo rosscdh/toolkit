@@ -13,7 +13,7 @@ class MatterExportMixin(object):
     """
     Mixin that provides Matter export info
     """
-    def export_matter(self, requested_by):
+    def export_matter(self, requested_by, provider=None):
         from toolkit.tasks import run_task
         from toolkit.apps.matter.tasks import _export_matter
 
@@ -22,6 +22,7 @@ class MatterExportMixin(object):
         #
         export_info = self.export_info
         export_info.update({
+            'provider': provider,
             'is_pending_export': True,
             'last_export_requested': datetime.datetime.utcnow().isoformat(),
             'last_export_requested_by': requested_by.get_full_name(),
@@ -29,7 +30,7 @@ class MatterExportMixin(object):
         self.save(update_fields=['data'])
 
         # start the process
-        run_task(_export_matter, matter=self, requested_by=requested_by)
+        run_task(_export_matter, matter=self, requested_by=requested_by, provider=provider)
         # record the event
         self.actions.started_matter_export(user=requested_by)
 

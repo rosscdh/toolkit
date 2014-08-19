@@ -41,6 +41,7 @@ var UserData = {
     'is_lawyer': {{ user.profile.is_lawyer|lower }},
     'name': "{{ user.get_full_name }}",
     'username': "{{ user.username }}",
+    'integrations': {{ user_integrations|safe }},
     'can_create': {{ can_create|lower }},
     'can_edit': {{ can_edit|lower }}
 };

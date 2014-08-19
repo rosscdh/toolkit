@@ -22,9 +22,10 @@ from . import MATTER_EXPORT_DAYS_VALID
 from .services import BillingMatterLimitService
 from .forms import MatterForm
 
+import json
+import logging
 import datetime
 import dateutil
-import logging
 logger = logging.getLogger('django.request')
 
 
@@ -114,6 +115,7 @@ class MatterListView(ListView):
             'can_edit': True,
             #'object_list': self.object_list,
             'object_list_json': UnicodeJSONRenderer().render(object_list),
+            'user_integrations': json.dumps(self.request.user.profile.integrations),
         })
 
         return context

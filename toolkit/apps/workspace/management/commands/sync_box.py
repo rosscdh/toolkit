@@ -85,6 +85,7 @@ class Command(BaseCommand):
         # update the providers token
         social_auth_provider.extra_data.update(updated_data)
         social_auth_provider.save(update_fields=['extra_data'])
+        print('Updated Token: %s' % updated_data)
         return social_auth_provider
 
     def folders(self, box_provider, parent={'id': 0}):

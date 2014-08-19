@@ -34,11 +34,63 @@ var LastExportRequestedView = React.createClass({displayName: 'LastExportRequest
     }
 });
 
+var ExportToBoxInterface = React.createClass({displayName: 'ExportToBoxInterface',
+    getInitialState: function() {
+        return {
+                'show_export': true,
+                'export_message': null,
+                'export_message_classname': null
+        }
+    },
+    handleClick: function(event) {
+        var self = this;
+        var url = '/api/v1/matters/'+ this.props.matter_slug +'/export/box';
+        console.log(url);
+        $.ajax({
+            type: 'POST',
+            url: url,
+            dataType: 'json',
+            headers: {'X-CSRFToken': $('input[name=csrfmiddlewaretoken]:first').val()},
+            success: function(data) {
+                self.setState({
+                    'show_export': false,
+                    'export_message': data.detail,
+                    'export_message_classname': 'palette-midnight-blue'
+                });
+            },
+            error: function(result, a, b) {
+                data = result.responseJSON
+                self.setState({
+                    'show_export': false,
+                    'export_message': data.detail,
+                    'export_message_classname': 'palette-pomegranate'
+                });
+            }.bind(this)
+        });
+    },
+    render: function() {
+        if (this.props.is_matter_lawyer_participant === false) {
+            // is not the owner (matter.lawyer)
+            return (React.DOM.div( {className:"btn btn-sm btn-link"} ));
+        }else{
+            // is the matter owner
+            var className = (this.state.show_export === true)? 'btn btn-sm btn-link export-box-button' : 'btn btn-sm btn-default disabled dis-export-box-button';
+            var export_message = this.state.export_message;
+            var LastExportRequested = LastExportRequestedView( {export_info:this.props.export_info})
+            return (
+                React.DOM.div(null, 
+                React.DOM.button( {className:className, 'data-toggle':"tooltip", 'data-placement':"left", title:"Export this Matter to Box", onClick:this.handleClick}, React.DOM.span( {className:"fui-exit"})
+                ),React.DOM.span( {className:"export-message"}, React.DOM.p(null, React.DOM.i(null, export_message))),React.DOM.br(null),LastExportRequested
+                )
+            );
+        };
+    }
+});
+
 var ExportButtonInterface = React.createClass({displayName: 'ExportButtonInterface',
     getInitialState: function() {
         var is_pending_export = this.props.export_info.is_pending_export
         var requested_by = this.props.export_info.last_export_requested_by
-
         if (is_pending_export == true) {
             return {
                 'show_export': false,
@@ -102,7 +154,15 @@ var ExportButtonInterface = React.createClass({displayName: 'ExportButtonInterfa
 var MatterItem = React.createClass({displayName: 'MatterItem',
   render: function() {
 
-    var ExportButton = ExportButtonInterface( {is_matter_lawyer_participant:this.props.is_matter_lawyer_participant, matter_slug:this.props.key, export_info:this.props.export_info} )
+    var ExportButton = ExportButtonInterface(
+                                {is_matter_lawyer_participant:this.props.is_matter_lawyer_participant,
+                                matter_slug:this.props.key,
+                                export_info:this.props.export_info} )
+
+    var ExportToBoxButon = ExportToBoxInterface(
+                                {is_matter_lawyer_participant:this.props.is_matter_lawyer_participant,
+                                matter_slug:this.props.key,
+                                export_info:this.props.export_info} )
 
     return (
             React.DOM.article( {className:"col-md-4 matter"}, 
@@ -124,7 +184,8 @@ var MatterItem = React.createClass({displayName: 'MatterItem',
                     ),
                     React.DOM.div( {className:"progress"}, 
                         React.DOM.div( {className:"progress-bar", style: this.props.percentStyle })
-                    )
+                    ),
+                     ExportToBoxButon 
                 )
             )
     );
@@ -311,6 +372,7 @@ var MatterList = React.createClass({displayName: 'MatterList',
                         editMatterInterface:editMatterInterface,
 
                         export_info:matter.export_info,
+                        integrations:UserData.integrations,
 
                         percent_complete:matter.percent_complete,
                         percentStyle:percentStyle,

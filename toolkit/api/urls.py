@@ -121,8 +121,10 @@ urlpatterns = router.urls + patterns('',
     url(r'^matters/(?P<matter_slug>[\w-]+)/activity/?$', MatterActivityEndpoint.as_view(), name='matter_activity'),
     # Search Matter Items/Tasks/Attachments
     url(r'^matters/(?P<matter_slug>[\w-]+)/search/?$', MatterSearchEndpoint.as_view(), name='matter_search'),
+
     # Export Matters
     url(r'^matters/(?P<matter_slug>[\w-]+)/export/?$', MatterExportView.as_view(), name='matter_export'),
+    url(r'^matters/(?P<matter_slug>[\w-]+)/export/(?P<provider>.+)/?$', MatterExportView.as_view(), name='matter_export_to_box'),
 
     #
     # Matter Items
