@@ -34,7 +34,7 @@ var LastExportRequestedView = React.createClass({displayName: 'LastExportRequest
     }
 });
 
-var ExportToBoxInterface = React.createClass({displayName: 'ExportToBoxInterface',
+var ExportProvidersInterface = React.createClass({displayName: 'ExportProvidersInterface',
     getInitialState: function() {
         return {
                 'show_export': true,
@@ -42,10 +42,15 @@ var ExportToBoxInterface = React.createClass({displayName: 'ExportToBoxInterface
                 'export_message_classname': null
         }
     },
-    handleClick: function(event) {
+    handleClick: function(provider, event) {
         var self = this;
-        var url = '/api/v1/matters/'+ this.props.matter_slug +'/export/box';
-        console.log(url);
+        var url = '/api/v1/matters/'+ this.props.matter_slug +'/export';
+        // append the provider to the url in the form
+        // '/api/v1/matters/:slug/export/:provider';
+        if ( provider !== 'default' ) {
+            url += '/' + provider;
+        }
+
         $.ajax({
             type: 'POST',
             url: url,
@@ -69,40 +74,42 @@ var ExportToBoxInterface = React.createClass({displayName: 'ExportToBoxInterface
         });
     },
     render: function() {
-        if (this.props.is_matter_lawyer_participant === false) {
-            // is not the owner (matter.lawyer)
-            return (React.DOM.div( {className:"btn btn-sm btn-link"} ));
-        }else{
-            // is the matter owner
-            var className = (this.state.show_export === true)? 'btn btn-sm btn-link export-box-button' : 'btn btn-sm btn-default disabled dis-export-box-button';
-            var export_message = this.state.export_message;
-            var LastExportRequested = LastExportRequestedView( {export_info:this.props.export_info})
-            return (
-                React.DOM.div(null, 
-                React.DOM.button( {className:className, 'data-toggle':"tooltip", 'data-placement':"left", title:"Export this Matter to Box", onClick:this.handleClick}, React.DOM.span( {className:"fui-exit"})
-                ),React.DOM.span( {className:"export-message"}, React.DOM.p(null, React.DOM.i(null, export_message))),React.DOM.br(null),LastExportRequested
-                )
-            );
+        var self = this;
+        var providers = {
+            'default': React.DOM.li(null, React.DOM.a( {ref:"export_data", provider:"default", className:"btn", title:"Export this Matter", onClick:this.handleClick.bind(null, 'default')}, React.DOM.span( {className:"fui-exit"}),"Default Export")),
         };
+        this.props.integrations.forEach(function (r) {
+            var name = 'Export to ' + r;
+            var title = 'Export this Matter to ' + r;
+            providers[r] = React.DOM.li(null, React.DOM.a( {ref:"export_data", provider:r, className:"btn", title:title, onClick:self.handleClick.bind(null, r)}, React.DOM.span( {className:"fui-exit"}),name));
+        });
+        console.log(providers)
+        return (
+            React.DOM.div( {className:"modal", id:"export-providers"}, 
+              React.DOM.div( {className:"modal-dialog"}, 
+                React.DOM.div( {className:"modal-content"}, 
+                  React.DOM.div( {className:"modal-header"}, 
+                    React.DOM.button( {type:"button", className:"close", 'data-dismiss':"modal"}, React.DOM.span( {'aria-hidden':"true"}, "×"),React.DOM.span( {className:"sr-only"}, "Close")),
+                    React.DOM.h4( {className:"modal-title"}, "Modal title")
+                  ),
+                  React.DOM.div( {className:"modal-body"}, 
+                    React.DOM.ul(null, providers)
+                  ),
+                  React.DOM.div( {className:"modal-footer"}, 
+                    React.DOM.button( {type:"button", className:"btn btn-default", 'data-dismiss':"modal"}, "Close"),
+                    React.DOM.button( {type:"button", className:"btn btn-primary"}, "Save changes")
+                  )
+                )
+              )
+            )
+        );
     }
 });
 
-var ExportButtonInterface = React.createClass({displayName: 'ExportButtonInterface',
+var ExportButtonView = React.createClass({displayName: 'ExportButtonView',
     getInitialState: function() {
-        var is_pending_export = this.props.export_info.is_pending_export
-        var requested_by = this.props.export_info.last_export_requested_by
-        if (is_pending_export == true) {
-            return {
-                'show_export': false,
-                'export_message': 'Export requested by ' + requested_by,
-                'export_message_classname': null
-            }
-        } else {
-            return {
-                'show_export': true,
-                'export_message': null,
-                'export_message_classname': null
-            }
+        return {
+            'integrations': UserData.integrations
         }
     },
     handleClick: function(event) {
@@ -131,6 +138,46 @@ var ExportButtonInterface = React.createClass({displayName: 'ExportButtonInterfa
             }.bind(this)
         });
     },
+    render: function () {
+        var className = this.props.class_name;
+
+        if ( this.state.integrations.length == 0) {
+            return (
+                React.DOM.button( {className:className, 'data-toggle':"tooltip", 'data-placement':"left", title:"Export this Matter", onClick:this.handleClick}, React.DOM.span( {className:"fui-exit"}))
+            )
+        } else {
+            var ExportProvidersModal = ExportProvidersInterface(
+                                            {matter_slug:this.props.matter_slug,
+                                            integrations:this.state.integrations} )
+            return (
+                React.DOM.div(null, 
+                React.DOM.a( {href:"", className:className, 'data-toggle':"modal", 'data-target':"#export-providers", title:"Export this Matter from one of the available providers"}, React.DOM.span( {className:"fui-exit"})),
+                ExportProvidersModal)
+            )
+        }
+    }
+});
+
+
+var ExportButtonInterface = React.createClass({displayName: 'ExportButtonInterface',
+    getInitialState: function() {
+        var is_pending_export = this.props.export_info.is_pending_export
+        var requested_by = this.props.export_info.last_export_requested_by
+        if (is_pending_export == true) {
+            return {
+                'show_export': false,
+                'export_message': 'Export requested by ' + requested_by,
+                'export_message_classname': null
+            }
+        } else {
+            return {
+                'show_export': true,
+                'export_message': null,
+                'export_message_classname': null
+            }
+        }
+    },
+
     render: function() {
         if (this.props.is_matter_lawyer_participant === false) {
             // is not the owner (matter.lawyer)
@@ -139,12 +186,15 @@ var ExportButtonInterface = React.createClass({displayName: 'ExportButtonInterfa
             // is the matter owner
             var className = (this.state.show_export === true)? 'btn btn-sm btn-link export-button' : 'btn btn-sm btn-default disabled dis-export-button';
             var export_message = this.state.export_message;
-            //var LastExported = <LastExportedView export_info={this.props.export_info}/>
-            var LastExportRequested = LastExportRequestedView( {export_info:this.props.export_info})
+            var LastExportRequested = LastExportRequestedView(
+                                            {export_info:this.props.export_info})
+
+            var ExportButton = ExportButtonView(
+                                    {matter_slug:this.props.matter_slug,
+                                    class_name:className} )
             return (
                 React.DOM.div(null, 
-                React.DOM.button( {className:className, 'data-toggle':"tooltip", 'data-placement':"left", title:"Export this Matter", onClick:this.handleClick}, React.DOM.span( {className:"fui-exit"})
-                ),React.DOM.span( {className:"export-message"}, React.DOM.p(null, React.DOM.i(null, export_message))),React.DOM.br(null),LastExportRequested
+                ExportButton,React.DOM.span( {className:"export-message"}, React.DOM.p(null, React.DOM.i(null, export_message))),React.DOM.br(null),LastExportRequested
                 )
             );
         };
@@ -158,14 +208,6 @@ var MatterItem = React.createClass({displayName: 'MatterItem',
                                 {is_matter_lawyer_participant:this.props.is_matter_lawyer_participant,
                                 matter_slug:this.props.key,
                                 export_info:this.props.export_info} )
-
-    var ExportToBoxButon = null;
-    if (this.props.integrations.indexOf('box') >= 0) {
-        var ExportToBoxButon = ExportToBoxInterface(
-                                    {is_matter_lawyer_participant:this.props.is_matter_lawyer_participant,
-                                    matter_slug:this.props.key,
-                                    export_info:this.props.export_info} )
-    }
 
     return (
             React.DOM.article( {className:"col-md-4 matter"}, 
@@ -187,8 +229,7 @@ var MatterItem = React.createClass({displayName: 'MatterItem',
                     ),
                     React.DOM.div( {className:"progress"}, 
                         React.DOM.div( {className:"progress-bar", style: this.props.percentStyle })
-                    ),
-                     ExportToBoxButon 
+                    )
                 )
             )
     );
@@ -375,7 +416,6 @@ var MatterList = React.createClass({displayName: 'MatterList',
                         editMatterInterface:editMatterInterface,
 
                         export_info:matter.export_info,
-                        integrations:UserData.integrations,
 
                         percent_complete:matter.percent_complete,
                         percentStyle:percentStyle,
