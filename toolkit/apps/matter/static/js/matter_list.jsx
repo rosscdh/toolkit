@@ -50,7 +50,7 @@ var ExportProvidersInterface = React.createClass({
         if ( provider !== 'default' ) {
             url += '/' + provider;
         }
-        console.log(url)
+        //console.log(url)
         $.ajax({
             type: 'POST',
             url: url,
