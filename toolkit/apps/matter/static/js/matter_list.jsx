@@ -159,10 +159,13 @@ var MatterItem = React.createClass({
                                 matter_slug={this.props.key}
                                 export_info={this.props.export_info} />
 
-    var ExportToBoxButon = <ExportToBoxInterface
-                                is_matter_lawyer_participant={this.props.is_matter_lawyer_participant}
-                                matter_slug={this.props.key}
-                                export_info={this.props.export_info} />
+    var ExportToBoxButon = null;
+    if (this.props.integrations.indexOf('box') >= 0) {
+        var ExportToBoxButon = <ExportToBoxInterface
+                                    is_matter_lawyer_participant={this.props.is_matter_lawyer_participant}
+                                    matter_slug={this.props.key}
+                                    export_info={this.props.export_info} />
+    }
 
     return (
             <article className="col-md-4 matter">

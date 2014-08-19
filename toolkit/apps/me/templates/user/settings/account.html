@@ -32,12 +32,12 @@
         <div class="container">
             <div class="col-sm-6 col-sm-offset-3" role="main">
                 <h3>Integrations</h3>
-                <hr>
-<!--                 {% for backend in backends.associated %}
-                {{ backend }}
-                {% endfor %} -->
-                <!-- <a href="{% url 'social:begin' backend='goclio' %}">Clio</a> -->
-                <a href="{% url 'social:begin' backend='box' %}">Box</a>
+                {% if 'box' in user.profile.integrations %}
+                    <a class="social-disconnect" href="{% url 'social:disconnect' backend='box' %}">Disconnect Box</a>
+                {% else %}
+                    <a href="{% url 'social:begin' backend='box' %}">Connect with Box</a>
+                {% endif %}
+                
             </div>
         </div>
     </div>
@@ -61,4 +61,28 @@
 {% block js %}
     {{ block.super }}
     {{ form.media.js }}
+    <script>
+    'use strict';
+    $('a.social-disconnect').on("click", function() {
+        var self = $(this);
+        var data = $(this).data();
+
+        $.ajax({
+          "type": 'POST',
+          "url": self.attr('href'),
+          "data": {},
+          "dataType": 'json',
+          "contentType": 'application/json',
+          "beforeSend": function (jqXHR, settings) {
+              // Pull the token out of the DOM.
+              jqXHR.setRequestHeader('X-CSRFToken', $('input[name=csrfmiddlewaretoken]:first').val());
+          },
+          "complete": function ( data ) {
+              document.location.reload();
+          }
+        });
+
+        return false; //this is critical to stop the click event which will trigger a normal file download!
+    });
+    </script>
 {% endblock %}
