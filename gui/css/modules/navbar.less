@@ -5,7 +5,7 @@
 // --------------------------------------------------
 
 .navbar {
-  font-size: floor(@component-font-size-base * 1.067); // ~16px 
+  font-size: floor(@component-font-size-base * 1.067); // ~16px
   border-radius: 0;
   border: none;
   .active {
@@ -761,10 +761,31 @@
 //   }
 // }
 
-.notifications  {
- .pe-7s-bell {
-  font-size: 24px !important;
-  font-weight: bold;
-}
+
+
+
+.navbar .nav > li > a:hover, .navbar .nav > li > a:focus {
+  color: #717171;
 }
 
+.navbar .nav li.dropdown.open > .dropdown-toggle {
+    color: #717171;
+}
+
+#matter-name {
+  font-family: open sans;
+  .dropdown-menu{
+    li {
+      background-color: white;
+      font-family: open sans;
+      border: 1px solid #e7e7e7;
+      > a {
+        color: #717171;
+        &:hover {
+          color: white;
+        }
+      }
+    }
+
+  }
+}
