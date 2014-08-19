@@ -11,6 +11,8 @@ from social.apps.django_app.sa_default.models import UserSocialAuth
 from box.box import Me, Folders, Files, UploadFiles
 
 import hashlib
+import logging
+logger = logging.getLogger('django.request')
 
 
 def _safe_matter_name(matter):
@@ -72,7 +74,7 @@ class Command(BaseCommand):
         me.options()
 
         if me.response.ok is False:
-            print('%s: %s' % (me.response.status_code, me.response.reason))
+            logger.info('%s: %s' % (me.response.status_code, me.response.reason))
             self.refresh_token(social_auth_provider=box_provider)
             token = box_provider.tokens
 
@@ -85,7 +87,7 @@ class Command(BaseCommand):
         # update the providers token
         social_auth_provider.extra_data.update(updated_data)
         social_auth_provider.save(update_fields=['extra_data'])
-        print('Updated Token: %s' % updated_data)
+        logger.info('Updated Token: %s' % updated_data)
         return social_auth_provider
 
     def folders(self, box_provider, parent={'id': 0}):
@@ -114,10 +116,11 @@ class Command(BaseCommand):
         for m in self.matters:
 
             matter_name = _safe_matter_name(m)
+            logger.info('Sync to Box: %s' % m.name)
 
             for p in self.participants(matter=m):
 
-                print('Participant: %s' % p)
+                logger.info('Participant: %s' % p)
 
                 box_provider = p.social_auth.filter(provider=self.provider).first()
 
@@ -125,7 +128,7 @@ class Command(BaseCommand):
 
                     current_folders = self.current_folders(box_provider=box_provider)
                     token = self.valid_token(box_provider=box_provider)
-                    print('TOKEN: %s' % token)
+                    logger.info('TOKEN: %s' % token)
 
                     f = Folders(token=token)
 
@@ -152,7 +155,7 @@ class Command(BaseCommand):
                         resp = f.post(name=slugify(item.name), parent={'id': category_folder_id})
                         item_folder_id = resp.get('id') if resp.get('id', None) is not None else f.response.json().get('context_info', {}).get('conflicts',[])[0].get('id', None)
                         
-                        print('matter: %s parent: %s' % (matter_folder_id, category_folder_id))
+                        logger.info('matter: %s parent: %s' % (matter_folder_id, category_folder_id))
 
                         #for rev in item.revision_set.all():
                         if item.latest_revision:
@@ -160,9 +163,9 @@ class Command(BaseCommand):
                                 rev.ensure_file()
                                 target_file = rev.executed_file
                                 fl = UploadFiles(token=token, sha1=_file_sha1(target_file=target_file))
-                                print('uploading with parent: %s' % (item_folder_id,))
+                                logger.info('uploading with parent: %s' % (item_folder_id,))
                                 resp = fl.post(files={'file': default_storage.open(target_file)}, parent_id=item_folder_id)
-                                print fl.response.content
+                                logger.debug(fl.response.content)
 
                         # attachments
                         attachments_list = item.attachments.all()

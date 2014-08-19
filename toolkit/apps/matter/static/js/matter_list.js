@@ -50,7 +50,7 @@ var ExportProvidersInterface = React.createClass({displayName: 'ExportProvidersI
         if ( provider !== 'default' ) {
             url += '/' + provider;
         }
-
+        console.log(url)
         $.ajax({
             type: 'POST',
             url: url,
@@ -76,16 +76,20 @@ var ExportProvidersInterface = React.createClass({displayName: 'ExportProvidersI
     render: function() {
         var self = this;
         var providers = {
-            'default': React.DOM.li(null, React.DOM.a( {ref:"export_data", provider:"default", className:"btn", title:"Export this Matter", onClick:this.handleClick.bind(null, 'default')}, React.DOM.span( {className:"fui-exit"}),"Default Export")),
+            'default': React.DOM.li(null, React.DOM.a( {ref:"export_data", className:"btn", title:"Export this Matter", onClick:this.handleClick.bind(null, 'default')}, React.DOM.span( {className:"fui-exit"}),"Default Export")),
         };
         this.props.integrations.forEach(function (r) {
             var name = 'Export to ' + r;
             var title = 'Export this Matter to ' + r;
-            providers[r] = React.DOM.li(null, React.DOM.a( {ref:"export_data", provider:r, className:"btn", title:title, onClick:self.handleClick.bind(null, r)}, React.DOM.span( {className:"fui-exit"}),name));
+            providers[r] = React.DOM.li(null, React.DOM.a( {ref:"export_data", className:"btn", title:title, onClick:self.handleClick.bind(null, r)}, React.DOM.span( {className:"fui-exit"}),name));
         });
-        console.log(providers)
+
+        var modalId = 'export-providers-'+ this.props.matter_slug;
+
+        console.log(this.props.matter_slug)
+
         return (
-            React.DOM.div( {className:"modal", id:"export-providers"}, 
+            React.DOM.div( {className:"modal", id:modalId}, 
               React.DOM.div( {className:"modal-dialog"}, 
                 React.DOM.div( {className:"modal-content"}, 
                   React.DOM.div( {className:"modal-header"}, 
@@ -96,8 +100,7 @@ var ExportProvidersInterface = React.createClass({displayName: 'ExportProvidersI
                     React.DOM.ul(null, providers)
                   ),
                   React.DOM.div( {className:"modal-footer"}, 
-                    React.DOM.button( {type:"button", className:"btn btn-default", 'data-dismiss':"modal"}, "Close"),
-                    React.DOM.button( {type:"button", className:"btn btn-primary"}, "Save changes")
+                    React.DOM.button( {type:"button", className:"btn btn-default", 'data-dismiss':"modal"}, "Close")
                   )
                 )
               )
@@ -149,9 +152,10 @@ var ExportButtonView = React.createClass({displayName: 'ExportButtonView',
             var ExportProvidersModal = ExportProvidersInterface(
                                             {matter_slug:this.props.matter_slug,
                                             integrations:this.state.integrations} )
+            var modalId = '#export-providers-' + this.props.matter_slug;
             return (
                 React.DOM.div(null, 
-                React.DOM.a( {href:"", className:className, 'data-toggle':"modal", 'data-target':"#export-providers", title:"Export this Matter from one of the available providers"}, React.DOM.span( {className:"fui-exit"})),
+                React.DOM.a( {href:"", className:className, 'data-toggle':"modal", 'data-target':modalId, title:"Export this Matter from one of the available providers"}, React.DOM.span( {className:"fui-exit"})),
                 ExportProvidersModal)
             )
         }

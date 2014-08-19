@@ -50,7 +50,7 @@ var ExportProvidersInterface = React.createClass({
         if ( provider !== 'default' ) {
             url += '/' + provider;
         }
-
+        console.log(url)
         $.ajax({
             type: 'POST',
             url: url,
@@ -76,16 +76,20 @@ var ExportProvidersInterface = React.createClass({
     render: function() {
         var self = this;
         var providers = {
-            'default': <li><a ref="export_data" provider="default" className="btn" title="Export this Matter" onClick={this.handleClick.bind(null, 'default')}><span className="fui-exit"></span>Default Export</a></li>,
+            'default': <li><a ref="export_data" className="btn" title="Export this Matter" onClick={this.handleClick.bind(null, 'default')}><span className="fui-exit"></span>Default Export</a></li>,
         };
         this.props.integrations.forEach(function (r) {
             var name = 'Export to ' + r;
             var title = 'Export this Matter to ' + r;
-            providers[r] = <li><a ref="export_data" provider={r} className="btn" title={title} onClick={self.handleClick.bind(null, r)}><span className="fui-exit"></span>{name}</a></li>;
+            providers[r] = <li><a ref="export_data" className="btn" title={title} onClick={self.handleClick.bind(null, r)}><span className="fui-exit"></span>{name}</a></li>;
         });
-        console.log(providers)
+
+        var modalId = 'export-providers-'+ this.props.matter_slug;
+
+        console.log(this.props.matter_slug)
+
         return (
-            <div className="modal" id="export-providers">
+            <div className="modal" id={modalId}>
               <div className="modal-dialog">
                 <div className="modal-content">
                   <div className="modal-header">
@@ -97,7 +101,6 @@ var ExportProvidersInterface = React.createClass({
                   </div>
                   <div className="modal-footer">
                     <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" className="btn btn-primary">Save changes</button>
                   </div>
                 </div>
               </div>
@@ -149,9 +152,10 @@ var ExportButtonView = React.createClass({
             var ExportProvidersModal = <ExportProvidersInterface
                                             matter_slug={this.props.matter_slug}
                                             integrations={this.state.integrations} />
+            var modalId = '#export-providers-' + this.props.matter_slug;
             return (
                 <div>
-                <a href="" className={className} data-toggle="modal" data-target="#export-providers" title="Export this Matter from one of the available providers"><span className="fui-exit"></span></a>
+                <a href="" className={className} data-toggle="modal" data-target={modalId} title="Export this Matter from one of the available providers"><span className="fui-exit"></span></a>
                 {ExportProvidersModal}</div>
             )
         }
