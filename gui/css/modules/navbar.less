@@ -509,7 +509,7 @@
   .navbar-form {
     margin: 0;
     padding: 8px (@navbar-link-space - 15) 0px @navbar-link-space;
-    max-width: 229px;
+    max-width: 309px;
 
     .form-group {
      margin-bottom: 0;
@@ -521,13 +521,19 @@
     .placeholder(mix(@brand-primary, white, 66%));
       font-size: @component-font-size-base; // ~15px
     }
+    input {
+      margin-bottom:0px;
+    }
     .form-control:focus {
       border-color: @brand-secondary;
     }
     .input-group-btn .btn {
+      background-color:white;
+      margin-top:6px;
      border-color: transparent;
      color: mix(@brand-primary, white, 50%);
 	    font-size: floor(@component-font-size-base * 1.067); // ~16px
+
     }
   }
 }
