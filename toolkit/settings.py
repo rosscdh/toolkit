@@ -122,6 +122,7 @@ PROJECT_APPS = (
     'hello_sign',
     'dj_crocodoc',
     'dj_authy',
+    'dj_box',
 )
 
 HELPER_APPS = (
@@ -167,6 +168,9 @@ HELPER_APPS = (
 
     'jsonify',
 
+    # social-auth
+    'social.apps.django_app.sa_default',
+
     # integration for abridge; django-abridge
     'abridge',
 
@@ -194,6 +198,7 @@ MIDDLEWARE_CLASSES = (
     # 'corsheaders.middleware.CorsMiddleware',  # not required yet
     'dj_authy.middleware.AuthyAuthenticationRequiredMiddleware',
     'toolkit.apps.me.middleware.EnsureUserHasPasswordMiddleware',
+    'social.apps.django_app.middleware.SocialAuthExceptionMiddleware',
     'django.middleware.gzip.GZipMiddleware',
     'pipeline.middleware.MinifyHTMLMiddleware',
 )
@@ -207,6 +212,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.tz',
     'django.contrib.messages.context_processors.messages',
     'django.core.context_processors.request',
+    'social.apps.django_app.context_processors.backends',
+    'social.apps.django_app.context_processors.login_redirect',
     'toolkit.context_processors.EXPOSED_GLOBALS',
     'toolkit.context_processors.FIRSTSEEN',
     'toolkit.context_processors.LAYOUT',
@@ -252,12 +259,14 @@ USE_L10N = False  # should always be False to enable dates accepted https://docs
 USE_TZ = True
 
 LOGIN_URL          = '/start/'
-LOGIN_REDIRECT_URL = '/dash/'
+LOGIN_REDIRECT_URL = '/'
 LOGIN_ERROR_URL    = '/login-error/'
 LOGOUT_URL = '/end/'
 
 AUTHENTICATION_BACKENDS = (
     'toolkit.auth_backends.EmailBackend',
+    'social.backends.goclio.GoClioOAuth2',
+    'social.backends.box.BoxOAuth2',
     'django.contrib.auth.backends.ModelBackend',
     'toolkit.auth_backends.SecretKeyBackend',
     'toolkit.apps.review.auth_backends.ReviewDocumentBackend',  # allow users to log in via review urls
@@ -380,6 +389,15 @@ PIPELINE_COMPILERS = [
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+
+#
+# Social Auth
+#
+REDIRECT_IS_HTTPS = True
+SOCIAL_AUTH_LOGIN_URL = LOGIN_URL
+SOCIAL_AUTH_LOGIN_ERROR_URL = LOGIN_ERROR_URL
+
 
 CACHES = {
     'default': {

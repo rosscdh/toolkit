@@ -17,6 +17,34 @@ var DownloadExportView = React.createClass({
     }
 });
 
+var FlashMessageView = React.createClass({
+    getInitialState: function() {
+        return {
+                'message': null,
+        }
+    },
+    handleFlashMessage: function (event) {
+        console.log(event)
+        this.setState({
+            'message': event.message
+        });
+    },
+    componentDidMount: function() {
+        var self = this;
+        $( "body" ).on( "alert_message", function( event ) {
+            self.handleFlashMessage( event );
+        });
+    },
+    render: function () {
+        blockClassName = (this.state.message !== null) ? 'alert alert-warning fade in' : 'hide' ;
+        return (
+            <div className={blockClassName} role="alert">
+                {this.state.message}
+            </div>
+        );
+    }
+});
+
 var LastExportRequestedView = React.createClass({
     render: function () {
         var last_export_requested = moment(this.props.export_info.last_export_requested).from(moment.utc());
@@ -34,11 +62,157 @@ var LastExportRequestedView = React.createClass({
     }
 });
 
+var ExportProvidersInterface = React.createClass({
+    getInitialState: function() {
+        return {
+                'show_export': true,
+                'export_message': null,
+                'export_message_classname': null
+        }
+    },
+    handleClick: function(provider, event) {
+        var self = this;
+        var url = '/api/v1/matters/'+ this.props.matter_slug +'/export';
+        // append the provider to the url in the form
+        // '/api/v1/matters/:slug/export/:provider';
+        if ( provider !== 'default' ) {
+            url += '/' + provider;
+        }
+
+        self.setState({
+            'show_export': false,
+            'export_message': 'Please wait... Exporting',
+            'export_message_classname': 'palette-pomegranate'
+        });
+        //console.log(url)
+        $.ajax({
+            type: 'POST',
+            url: url,
+            dataType: 'json',
+            headers: {'X-CSRFToken': $('input[name=csrfmiddlewaretoken]:first').val()},
+            success: function(data) {
+                self.setState({
+                    'export_message': data.detail,
+                });
+            },
+            error: function(result, a, b) {
+                data = result.responseJSON
+                self.setState({
+                    'export_message': data.detail,
+                });
+            }.bind(this)
+        });
+    },
+    render: function() {
+        var self = this;
+        var providers = {
+            'default': <li><a ref="export_data" className="btn" title="Export this Matter" onClick={this.handleClick.bind(null, 'default')}><span className="fui-exit"></span>Default Export</a></li>,
+        };
+        this.props.integrations.forEach(function (r) {
+            var name = 'Export to ' + r;
+            var title = 'Export this Matter to ' + r;
+            providers[r] = <li><a ref="export_data" className="btn" title={title} onClick={self.handleClick.bind(null, r)}><span className="fui-exit"></span>{name}</a></li>;
+        });
+
+        var modalId = 'export-providers-'+ this.props.matter_slug;
+        var modalTitle = 'Export of: ' + this.props.matter_name;
+        var providerClass = (this.state.show_export === true) ? 'list-unstyled' : 'hide' ;
+
+        if (this.state.export_message !== null) {
+            var e = $.Event( "alert_message", { message: this.state.export_message, show_export: this.state.show_export } );
+            $( "body" ).trigger( e );
+        }
+
+        return (
+            <div className="modal" id={modalId}>
+              <div className="modal-dialog">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <button type="button" className="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span className="sr-only">Close</span></button>
+                    <h4 className="modal-title">{modalTitle}</h4>
+                  </div>
+                  <div className="modal-body">
+                    <span className={this.state.export_message_classname}>{this.state.export_message}</span>
+                    <ul className={providerClass}>{providers}</ul>
+                  </div>
+                  <div className="modal-footer">
+                    <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+        );
+    }
+});
+
+var ExportButtonView = React.createClass({
+    getInitialState: function() {
+        return {
+            'integrations': UserData.integrations,
+            'export_message': null,
+            'show_export': true,
+        }
+    },
+    handleClick: function(event) {
+        var self = this;
+        var url = '/api/v1/matters/'+ this.props.matter_slug +'/export';
+
+        self.setState({
+            'show_export': false,
+            'export_message': 'Please wait... Exporting',
+            'export_message_classname': 'palette-midnight-blue'
+        });
+
+        $.ajax({
+            type: 'POST',
+            url: url,
+            dataType: 'json',
+            headers: {'X-CSRFToken': $('input[name=csrfmiddlewaretoken]:first').val()},
+            success: function(data) {
+                self.setState({
+                    'export_message': data.detail,
+                });
+            },
+            error: function(result, a, b) {
+                data = result.responseJSON
+                self.setState({
+                    'export_message': data.detail,
+                });
+            }.bind(this)
+        });
+    },
+    render: function () {
+        var className = (this.state.show_export === true) ? this.props.class_name : 'hide' ;
+
+        if (this.state.export_message !== null) {
+            var e = $.Event( "alert_message", { message: this.state.export_message, show_export: this.state.show_export } );
+            $( "body" ).trigger( e );
+        }
+
+        if ( this.state.integrations.length == 0) {
+            return (
+                <button className={className} data-toggle="tooltip" data-placement="left" title="Export this Matter" onClick={this.handleClick}><span className="fui-exit"></span></button>
+            )
+        } else {
+            var ExportProvidersModal = <ExportProvidersInterface
+                                            matter_name={this.props.matter_name}
+                                            matter_slug={this.props.matter_slug}
+                                            integrations={this.state.integrations} />
+            var modalId = '#export-providers-' + this.props.matter_slug;
+            return (
+                <div>
+                <a href="" className={className} data-toggle="modal" data-target={modalId} title="Export this Matter from one of the available providers"><span className="fui-exit"></span></a>
+                {ExportProvidersModal}</div>
+            )
+        }
+    }
+});
+
+
 var ExportButtonInterface = React.createClass({
     getInitialState: function() {
         var is_pending_export = this.props.export_info.is_pending_export
         var requested_by = this.props.export_info.last_export_requested_by
-
         if (is_pending_export == true) {
             return {
                 'show_export': false,
@@ -53,32 +227,7 @@ var ExportButtonInterface = React.createClass({
             }
         }
     },
-    handleClick: function(event) {
-        var self = this;
-        var url = '/api/v1/matters/'+ this.props.matter_slug +'/export';
 
-        $.ajax({
-            type: 'POST',
-            url: url,
-            dataType: 'json',
-            headers: {'X-CSRFToken': $('input[name=csrfmiddlewaretoken]:first').val()},
-            success: function(data) {
-                self.setState({
-                    'show_export': false,
-                    'export_message': data.detail,
-                    'export_message_classname': 'palette-midnight-blue'
-                });
-            },
-            error: function(result, a, b) {
-                data = result.responseJSON
-                self.setState({
-                    'show_export': false,
-                    'export_message': data.detail,
-                    'export_message_classname': 'palette-pomegranate'
-                });
-            }.bind(this)
-        });
-    },
     render: function() {
         if (this.props.is_matter_lawyer_participant === false) {
             // is not the owner (matter.lawyer)
@@ -87,12 +236,16 @@ var ExportButtonInterface = React.createClass({
             // is the matter owner
             var className = (this.state.show_export === true)? 'btn btn-sm btn-link export-button' : 'btn btn-sm btn-default disabled dis-export-button';
             var export_message = this.state.export_message;
-            //var LastExported = <LastExportedView export_info={this.props.export_info}/>
-            var LastExportRequested = <LastExportRequestedView export_info={this.props.export_info}/>
+            var LastExportRequested = <LastExportRequestedView
+                                            export_info={this.props.export_info}/>
+
+            var ExportButton = <ExportButtonView
+                                    matter_name={this.props.matter_name}
+                                    matter_slug={this.props.matter_slug}
+                                    class_name={className} />
             return (
                 <div>
-                <button className={className} data-toggle="tooltip" data-placement="left" title="Export this Matter" onClick={this.handleClick}><span className="fui-exit"></span>
-                </button><span className="export-message"><p><i>{export_message}</i></p></span><br/>{LastExportRequested}
+                {ExportButton}<span className="export-message"><p><i>{export_message}</i></p></span><br/>{LastExportRequested}
                 </div>
             );
         };
@@ -102,7 +255,11 @@ var ExportButtonInterface = React.createClass({
 var MatterItem = React.createClass({
   render: function() {
 
-    var ExportButton = <ExportButtonInterface is_matter_lawyer_participant={this.props.is_matter_lawyer_participant} matter_slug={this.props.key} export_info={this.props.export_info} />
+    var ExportButton = <ExportButtonInterface
+                                is_matter_lawyer_participant={this.props.is_matter_lawyer_participant}
+                                matter_slug={this.props.key}
+                                matter_name={this.props.name}
+                                export_info={this.props.export_info} />
 
     return (
             <article className="col-md-4 matter">
@@ -275,7 +432,7 @@ var MatterList = React.createClass({
     },
     render: function() {
         var matterNodes = null;
-
+        var flashMessage = <FlashMessageView />
         var createButton = null;
         if (this.state.can_create) {
             createButton = <CreateMatterButton create_url={create_url}/>
@@ -335,6 +492,7 @@ var MatterList = React.createClass({
                     </div>
                 </header>
                 <div className="row">
+                    {flashMessage}
                     {matterNodes}
                 </div>
             </section>

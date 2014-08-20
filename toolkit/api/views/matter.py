@@ -107,11 +107,18 @@ Custom Api Endpoints
 
 class MatterExportView(generics.CreateAPIView, MatterMixin):
     def create(self, request, *args, **kwargs):
+        self.provider = kwargs.get('provider', None)
+
+        if self.provider is None:
+            detail = 'Your export is being generated. Once complete, you will recieve an email with the next steps.'
+        else:
+            detail = 'Your matter is being exported to %s. Please check your %s account for the folder named "%s".' % (self.provider, self.provider, self.matter.slug)
+
         try:
-            self.matter.export_matter(requested_by=request.user)
+            self.matter.export_matter(requested_by=request.user, provider=self.provider)
 
             return Response(status=http_status.HTTP_200_OK, data={
-                'detail': 'Your export is being generated. Once complete, you will recieve an email with the next steps.'})
+                'detail': detail})
 
         except Exception as e:
             logger.critical('Export Error: %s for user: %s' % (e, request.user))

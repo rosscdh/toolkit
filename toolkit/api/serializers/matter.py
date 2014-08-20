@@ -121,6 +121,7 @@ class MatterSerializer(serializers.HyperlinkedModelSerializer):
                 'counts': {
                     'requests': profile.open_requests,
                 },
+                'integrations': profile.integrations,
                 'firm_name': profile.firm_name,
                 'has_notifications': profile.has_notifications,
                 'matters_created': profile.matters_created,

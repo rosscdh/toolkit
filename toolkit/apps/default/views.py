@@ -299,3 +299,7 @@ class PrivacyView(TemplateView):
 
 class TermsView(TemplateView):
     template_name = 'legal/terms.html'
+
+
+class LoginErrorView(TemplateView):
+    template_name = 'public/login_error.html'

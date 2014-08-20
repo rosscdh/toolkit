@@ -153,3 +153,10 @@ HELLOSIGN_TEST_MODE = 1
 DEMO_MATTER_PK_TO_CLONE_ON_USER_CREATE = 2  # matter from fixtures
 DEMO_MATTER_LAWPAL_USER_PK = 2    # lawyer from fixtures
 DEMO_MATTER_SHOW_USER_INTRO = True
+
+
+#
+# Box
+#
+SOCIAL_AUTH_BOX_KEY = 'gqh05u2anhmqkgu4ree6okq934oz4aq5'
+SOCIAL_AUTH_BOX_SECRET = 'jFfAr6EW8RjeuwAe0o0YwiR5fx97SUGg'

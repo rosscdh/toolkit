@@ -129,6 +129,10 @@ class UserProfile(EmailIsValidatedMixin, models.Model):
     def verified(self):
         return self.data.get('validated_email', False)
 
+    @property
+    def integrations(self):
+        return [i.get('provider') for i in self.user.social_auth.filter(provider__in=['box']).values('provider')]
+
 
 def _get_or_create_user_profile(user):
     # set the profile
