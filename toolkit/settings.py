@@ -198,6 +198,7 @@ MIDDLEWARE_CLASSES = (
     # 'corsheaders.middleware.CorsMiddleware',  # not required yet
     'dj_authy.middleware.AuthyAuthenticationRequiredMiddleware',
     'toolkit.apps.me.middleware.EnsureUserHasPasswordMiddleware',
+    'social.apps.django_app.middleware.SocialAuthExceptionMiddleware',
     'django.middleware.gzip.GZipMiddleware',
     'pipeline.middleware.MinifyHTMLMiddleware',
 )
@@ -395,12 +396,8 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 #
 REDIRECT_IS_HTTPS = True
 SOCIAL_AUTH_LOGIN_URL = LOGIN_URL
+SOCIAL_AUTH_LOGIN_ERROR_URL = LOGIN_ERROR_URL
 
-SOCIAL_AUTH_GOCLIO_KEY = 'KuTvkSVAOpRt1RKCDPdFYvAJ9zJHnSRq7lQyPxfi'
-SOCIAL_AUTH_GOCLIO_SECRET = '5rGXUbeeV3dPDEQKGLN1RFfj06vUgOPubWE5pJmc'
-
-SOCIAL_AUTH_BOX_KEY = 'gqh05u2anhmqkgu4ree6okq934oz4aq5'
-SOCIAL_AUTH_BOX_SECRET = 'jFfAr6EW8RjeuwAe0o0YwiR5fx97SUGg'
 
 CACHES = {
     'default': {

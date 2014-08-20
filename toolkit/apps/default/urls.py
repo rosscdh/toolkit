@@ -12,7 +12,8 @@ from .views import (DisclaimerView,
                     SignUpView,
                     StartView,
                     VerifyTwoFactorView,
-                    TermsView)
+                    TermsView,
+                    LoginErrorView)
 
 
 urlpatterns = patterns('',
@@ -23,6 +24,8 @@ urlpatterns = patterns('',
 
 
     url(r'^tools/83b-election-letters/$', TemplateView.as_view(template_name='public/tools/83b-election-letters.html'), name='83b'),
+
+    url(r'^login-error/$', LoginErrorView.as_view(), name='login-error'),
 
     url(r'^start/$', StartView.as_view(), name='signin'),
     url(r'^start/two-factor/$', VerifyTwoFactorView.as_view(), name='signin-two-factor'),
