@@ -17,6 +17,34 @@ var DownloadExportView = React.createClass({
     }
 });
 
+var FlashMessageView = React.createClass({
+    getInitialState: function() {
+        return {
+                'message': null,
+        }
+    },
+    handleFlashMessage: function (event) {
+        console.log(event)
+        this.setState({
+            'message': event.message
+        });
+    },
+    componentDidMount: function() {
+        var self = this;
+        $( "body" ).on( "alert_message", function( event ) {
+            self.handleFlashMessage( event );
+        });
+    },
+    render: function () {
+        blockClassName = (this.state.message !== null) ? 'alert alert-warning fade in' : 'hide' ;
+        return (
+            <div className={blockClassName} role="alert">
+                {this.state.message}
+            </div>
+        );
+    }
+});
+
 var LastExportRequestedView = React.createClass({
     render: function () {
         var last_export_requested = moment(this.props.export_info.last_export_requested).from(moment.utc());
@@ -90,6 +118,11 @@ var ExportProvidersInterface = React.createClass({
         var modalTitle = 'Export of: ' + this.props.matter_name;
         var providerClass = (this.state.show_export === true) ? 'list-unstyled' : 'hide' ;
 
+        if (this.state.export_message !== null) {
+            var e = $.Event( "alert_message", { message: this.state.export_message, show_export: this.state.show_export } );
+            $( "body" ).trigger( e );
+        }
+
         return (
             <div className="modal" id={modalId}>
               <div className="modal-dialog">
@@ -115,12 +148,20 @@ var ExportProvidersInterface = React.createClass({
 var ExportButtonView = React.createClass({
     getInitialState: function() {
         return {
-            'integrations': UserData.integrations
+            'integrations': UserData.integrations,
+            'export_message': null,
+            'show_export': true,
         }
     },
     handleClick: function(event) {
         var self = this;
         var url = '/api/v1/matters/'+ this.props.matter_slug +'/export';
+
+        self.setState({
+            'show_export': false,
+            'export_message': 'Please wait... Exporting',
+            'export_message_classname': 'palette-midnight-blue'
+        });
 
         $.ajax({
             type: 'POST',
@@ -129,23 +170,24 @@ var ExportButtonView = React.createClass({
             headers: {'X-CSRFToken': $('input[name=csrfmiddlewaretoken]:first').val()},
             success: function(data) {
                 self.setState({
-                    'show_export': false,
                     'export_message': data.detail,
-                    'export_message_classname': 'palette-midnight-blue'
                 });
             },
             error: function(result, a, b) {
                 data = result.responseJSON
                 self.setState({
-                    'show_export': false,
                     'export_message': data.detail,
-                    'export_message_classname': 'palette-pomegranate'
                 });
             }.bind(this)
         });
     },
     render: function () {
-        var className = this.props.class_name;
+        var className = (this.state.show_export === true) ? this.props.class_name : 'hide' ;
+
+        if (this.state.export_message !== null) {
+            var e = $.Event( "alert_message", { message: this.state.export_message, show_export: this.state.show_export } );
+            $( "body" ).trigger( e );
+        }
 
         if ( this.state.integrations.length == 0) {
             return (
@@ -390,7 +432,7 @@ var MatterList = React.createClass({
     },
     render: function() {
         var matterNodes = null;
-
+        var flashMessage = <FlashMessageView />
         var createButton = null;
         if (this.state.can_create) {
             createButton = <CreateMatterButton create_url={create_url}/>
@@ -450,6 +492,7 @@ var MatterList = React.createClass({
                     </div>
                 </header>
                 <div className="row">
+                    {flashMessage}
                     {matterNodes}
                 </div>
             </section>
