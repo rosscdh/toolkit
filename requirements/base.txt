@@ -113,3 +113,4 @@ django-permission
 # Box
 -e git+https://github.com/rosscdh/python-box.git#egg=python-box
 -e git+https://github.com/rosscdh/python-social-auth.git@backends/goclio#egg=python-social-auth
+-e git+https://github.com/rosscdh/django-box.git#egg=django-box

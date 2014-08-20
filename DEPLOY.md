@@ -1,6 +1,10 @@
 Deployment actions by branch
 ----------------------------
 
+--------------------------------------------------------------------------------
+** DEPLOYED 20 August 2014
+--------------------------------------------------------------------------------
+
 [integration/goclio]
 
 1. pip install -e git+https://github.com/rosscdh/python-box.git#egg=python-box
