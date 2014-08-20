@@ -50,7 +50,13 @@ var ExportProvidersInterface = React.createClass({displayName: 'ExportProvidersI
         if ( provider !== 'default' ) {
             url += '/' + provider;
         }
-        console.log(url)
+
+        self.setState({
+            'show_export': false,
+            'export_message': 'Please wait... Exporting',
+            'export_message_classname': 'palette-pomegranate'
+        });
+        //console.log(url)
         $.ajax({
             type: 'POST',
             url: url,
@@ -58,17 +64,13 @@ var ExportProvidersInterface = React.createClass({displayName: 'ExportProvidersI
             headers: {'X-CSRFToken': $('input[name=csrfmiddlewaretoken]:first').val()},
             success: function(data) {
                 self.setState({
-                    'show_export': false,
                     'export_message': data.detail,
-                    'export_message_classname': 'palette-midnight-blue'
                 });
             },
             error: function(result, a, b) {
                 data = result.responseJSON
                 self.setState({
-                    'show_export': false,
                     'export_message': data.detail,
-                    'export_message_classname': 'palette-pomegranate'
                 });
             }.bind(this)
         });
@@ -86,6 +88,7 @@ var ExportProvidersInterface = React.createClass({displayName: 'ExportProvidersI
 
         var modalId = 'export-providers-'+ this.props.matter_slug;
         var modalTitle = 'Export of: ' + this.props.matter_name;
+        var providerClass = (this.state.show_export === true) ? 'list-unstyled' : 'hide' ;
 
         return (
             React.DOM.div( {className:"modal", id:modalId}, 
@@ -96,7 +99,8 @@ var ExportProvidersInterface = React.createClass({displayName: 'ExportProvidersI
                     React.DOM.h4( {className:"modal-title"}, modalTitle)
                   ),
                   React.DOM.div( {className:"modal-body"}, 
-                    React.DOM.ul(null, providers)
+                    React.DOM.span( {className:this.state.export_message_classname}, this.state.export_message),
+                    React.DOM.ul( {className:providerClass}, providers)
                   ),
                   React.DOM.div( {className:"modal-footer"}, 
                     React.DOM.button( {type:"button", className:"btn btn-default", 'data-dismiss':"modal"}, "Close")

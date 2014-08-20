@@ -50,6 +50,12 @@ var ExportProvidersInterface = React.createClass({
         if ( provider !== 'default' ) {
             url += '/' + provider;
         }
+
+        self.setState({
+            'show_export': false,
+            'export_message': 'Please wait... Exporting',
+            'export_message_classname': 'palette-pomegranate'
+        });
         //console.log(url)
         $.ajax({
             type: 'POST',
@@ -58,17 +64,13 @@ var ExportProvidersInterface = React.createClass({
             headers: {'X-CSRFToken': $('input[name=csrfmiddlewaretoken]:first').val()},
             success: function(data) {
                 self.setState({
-                    'show_export': false,
                     'export_message': data.detail,
-                    'export_message_classname': 'palette-midnight-blue'
                 });
             },
             error: function(result, a, b) {
                 data = result.responseJSON
                 self.setState({
-                    'show_export': false,
                     'export_message': data.detail,
-                    'export_message_classname': 'palette-pomegranate'
                 });
             }.bind(this)
         });
@@ -86,6 +88,7 @@ var ExportProvidersInterface = React.createClass({
 
         var modalId = 'export-providers-'+ this.props.matter_slug;
         var modalTitle = 'Export of: ' + this.props.matter_name;
+        var providerClass = (this.state.show_export === true) ? 'list-unstyled' : 'hide' ;
 
         return (
             <div className="modal" id={modalId}>
@@ -96,7 +99,8 @@ var ExportProvidersInterface = React.createClass({
                     <h4 className="modal-title">{modalTitle}</h4>
                   </div>
                   <div className="modal-body">
-                    <ul>{providers}</ul>
+                    <span className={this.state.export_message_classname}>{this.state.export_message}</span>
+                    <ul className={providerClass}>{providers}</ul>
                   </div>
                   <div className="modal-footer">
                     <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
