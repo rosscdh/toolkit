@@ -76,6 +76,6 @@ class ReminderService(BaseReminderService):
         for item in self.collect_object_list().iterator():
             for participant in item.matter.participants.all():
                 msg = 'Sending reminder to %s for matter item: %s:%s' % (participant, item.matter, item)
-                print msg
+                print(msg)
                 logger.info(msg)
                 self.send_message_to_abridge(participant, item)

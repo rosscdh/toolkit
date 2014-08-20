@@ -34,7 +34,7 @@
     "less.js": "~1.5",
     "font-awesome": "~4.0",
     "angular-ui-sortable": "~0.12.1",
-    "ez-confirm": "*",
+    "ez-confirm": "~0.1.0",
     "raven-js": "~1.1",
     "FileAPI": "~2.0.3",
     "crypto-js": "http://crypto-js.googlecode.com/files/CryptoJS%20v3.1.2.zip",

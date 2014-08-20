@@ -8,7 +8,7 @@ from decorator import decorator
 def json_response(function=None, *args, **kwargs):
     try:
         response = function(*args, **kwargs)
-    except Exception, e:
+    except Exception as e:
         error = {
             'error': {
                 'message': unicode(e)

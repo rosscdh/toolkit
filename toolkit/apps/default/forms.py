@@ -156,7 +156,12 @@ class SignUpForm(forms.Form):
         if user is None:
             return email
         else:
-            raise forms.ValidationError("An account with that email already exists.")
+            #
+            # NOTE! We cant be specific about the email in use as a message here as 
+            # it could be used to determin if that email address exists (which it does
+            # and its prety clear but making the text a bit less specific may put them off)
+            #
+            raise forms.ValidationError("Sorry, but you cant use that email address.")
 
     def create_demonstration_matter(self, user):
         """
@@ -294,4 +299,4 @@ class VerifyTwoFactorForm(forms.Form):
         token = self.cleaned_data.get('token')
 
         if self.authy_service.verify_token(token) is False:
-            raise forms.ValidationError('Sorry, that Authy Token is not valid: %s' % authy_service.errors.get('message', 'Unknown Error'))
+            raise forms.ValidationError('Sorry, that Authy Token is not valid: %s' % self.authy_service.errors.get('message', 'Unknown Error'))

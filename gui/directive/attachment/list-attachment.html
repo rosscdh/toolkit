@@ -21,7 +21,7 @@
                 <li class="attachment-name">{{ attachment.name  | characters:30:true }}</li>
                 <li class="attachment-status"><i class="fa fa-clock-o" title="{{ attachment.date_created | timeago }}"/>&nbsp;Uploaded by {{ attachment.uploaded_by.initials }}</li>
                 <li class="download-attachment"><a href="{{ attachment.user_download_url }}" tooltip-placement="left" tooltip="Download this Attachment"><i class="fa fa-download"></i></a></li>
-                <li class="delete-attachment" ng-if="isDeleteAttachmentEnabled(attachment)"><a href="javascript:;" tooltip-placement="top" tooltip="Delete This Attachment" ng-click="deleteAttachment(attachment)">X</a></li>
+                <li class="delete-attachment" ng-if="isDeleteAttachmentEnabled(attachment)"><a href="javascript:;" tooltip-placement="left" tooltip="Delete This Attachment" ng-click="deleteAttachment(attachment)">X</a></li>
             </ul>
         </li>
     </ul>

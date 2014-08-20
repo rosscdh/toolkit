@@ -55,6 +55,20 @@ class MixpanelOnLawpal(object):
             except Exception as e:
                 logger.error('Mixpanel error: %s' % e)
 
+    def anon_event(self, key, distinct_id, **kwargs):
+        if self.service is not None:
+
+            all_properties = {
+                'user_id': distinct_id,
+                'account_type': 'anonymous',
+                'via': 'web'
+            }
+            all_properties.update(kwargs)
+            try:
+                self.service.track(distinct_id=distinct_id, event_name=key, properties=all_properties)
+            except Exception as e:
+                logger.error('Mixpanel error: %s' % e)
+
 
 class AtticusFinch(MixpanelOnLawpal):
     """

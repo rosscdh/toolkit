@@ -111,6 +111,12 @@ class StartView(LogOutMixin, SaveNextUrlInSessionMixin, AuthenticateUserMixin, F
 
         return url
 
+    def form_invalid(self, form):
+        analytics = AtticusFinch()
+        ip_address = self.request.META.get('HTTP_X_FORWARDED_FOR', self.request.META.get('REMOTE_ADDR'))
+        analytics.anon_event('user.login.invalid', distinct_id=form.data.get('email'), ip_address=ip_address)
+        return super(StartView, self).form_invalid(form=form)
+
     def form_valid(self, form):
         # user a valid form log them in
         try:

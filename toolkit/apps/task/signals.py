@@ -26,12 +26,22 @@ def _update_task_count(item):
     item.save(update_fields=['data'])
 
 
+def _update_participants_requests_count(task):
+    for user in task.item.matter.participants.all():
+        profile = user.profile
+        profile.open_requests = profile.get_open_requests_count()
+        profile.save(update_fields=['data'])
+
+
 def post_save_update_task_complete_count_in_item(sender, instance, **kwargs):
     _update_task_count(item=instance.item)
 
     if kwargs.get('created', False) is True:
         instance.item.matter.actions.added_task(user=instance.created_by, item=instance.item, task=instance)
 
+    _update_participants_requests_count(task=instance)
+
 
 def post_delete_update_task_complete_count_in_item(sender, instance, **kwargs):
     _update_task_count(item=instance.item)
+    _update_participants_requests_count(task=instance)

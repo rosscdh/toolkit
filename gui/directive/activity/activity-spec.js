@@ -9,7 +9,7 @@ describe('activity', function() {
 	$timeout,
 	$q,
 	toaster,
-	ezConfirm,
+	EzConfirm,
 	matterItemService,
 	participantService,
 	matterCategoryService,

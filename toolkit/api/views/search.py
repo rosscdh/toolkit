@@ -36,6 +36,7 @@ class MatterSearchEndpoint(generics.ListAPIView):
         #                      + [i.task_set.all() for i in self.matter.item_set.all()]  \
         #                      + [i.attachments.all() for i in self.matter.item_set.all()]
         combined_querysets = [[i] for i in self.matter.item_set.all()]  \
+                                     + [[i.latest_revision] for i in self.matter.item_set.all() if i.latest_revision is not None]  \
                                      + [i.task_set.all() for i in self.matter.item_set.all()]  \
                                      + [i.attachments.all() for i in self.matter.item_set.all()]
 

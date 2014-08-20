@@ -15,12 +15,12 @@ angular.module('toolkit-gui').directive('attachmentsList', ['$compile', '$log', 
             '$scope',
             '$http',
             '$log',
-            'ezConfirm',
+            'EzConfirm',
             'toaster',
             '$modal',
             'userService',
             'attachmentService',
-            function ($rootScope, $scope, $http, $log, ezConfirm, toaster, $modal, userService, attachmentService) {
+            function ($rootScope, $scope, $http, $log, EzConfirm, toaster, $modal, userService, attachmentService) {
                 $scope.data = {
                     'usdata': userService.data(),
                     'attachments': [],
@@ -61,7 +61,7 @@ angular.module('toolkit-gui').directive('attachmentsList', ['$compile', '$log', 
 
                 //delete attachment confirmation modal
                 $scope.deleteAttachment = function (attachment) {
-                    ezConfirm.create('Delete attachment', 'Please confirm you would like to delete this attachment?',
+                    EzConfirm.create('Delete attachment', 'Please confirm you would like to delete this attachment?',
                         function yes() {
                             // Confirmed- delete category
                             attachmentService.delete(attachment.slug).then(

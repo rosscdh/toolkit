@@ -41,6 +41,6 @@ class TaskReminderService(BaseReminderService):
                 item = task.item
                 matter = item.matter
                 msg = 'Sending reminder to %s for matter: %s item: %s task: %s' % (participant, matter, item, task)
-                print msg
+                print(msg)
                 logger.info(msg)
                 self.send_message_to_abridge(participant, task)
