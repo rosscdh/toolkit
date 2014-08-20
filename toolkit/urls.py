@@ -50,6 +50,9 @@ urlpatterns = patterns('',
     # Authy authentication
     url(r'^authy/', include('dj_authy.urls', namespace='dj_authy')),
 
+    # Box webhooks
+    url(r'^box/', include('dj_box.urls', namespace='dj_box')),
+
     # Payments
     url(r'^payments/', include('payments.urls')),
 

@@ -122,6 +122,7 @@ PROJECT_APPS = (
     'hello_sign',
     'dj_crocodoc',
     'dj_authy',
+    'dj_box',
 )
 
 HELPER_APPS = (

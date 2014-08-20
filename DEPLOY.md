@@ -1,6 +1,17 @@
 Deployment actions by branch
 ----------------------------
 
+[integration/goclio]
+
+1. pip install -e git+https://github.com/rosscdh/python-box.git#egg=python-box
+2. pip install -e git+https://github.com/rosscdh/python-social-auth.git@backends/goclio#egg=python-social-auth
+3. pip install -e git+https://github.com/rosscdh/django-box.git#egg=django-box
+4. ./manage.py syncdb --migrate
+
+--------------------------------------------------------------------------------
+** DEPLOYED 10(?) August 2014
+--------------------------------------------------------------------------------
+
 [fix/rt-item-update-on-crocodoc-webhook]
 
 1. pip install -e git+https://github.com/rosscdh/django-crocodoc.git#egg=django-crocodoc -U  # upgrade to latest 0.1.4 (previously sha: 9cbc679f2d109083a0f6df8bf3e58078a8ed5c7a)
