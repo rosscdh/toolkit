@@ -8,7 +8,7 @@ from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework.response import Response
 
-from toolkit.decorators import mutable_request
+from toolkit.decorators import mutable_request, valid_request_filesize
 from toolkit.core.attachment.models import Attachment
 
 from .mixins import (MatterItemsQuerySetMixin,)
@@ -74,6 +74,7 @@ class AttachmentView(MatterItemsQuerySetMixin,
         return {'request': self.request}
 
     @mutable_request
+    @valid_request_filesize
     def create(self, request, *args, **kwargs):
         """
         Have had to copy directly the method from the base class

@@ -18,7 +18,8 @@ from rest_framework import status as http_status
 
 from ..serializers import MatterSerializer
 from ..serializers.matter import LiteMatterSerializer
-
+from ..serializers.revision import EXT_WHITELIST
+from ..serializers.attachment import ATTACHMENT_EXT_WHITELIST
 
 from toolkit.apps.notification.template_loaders import ACTIVITY_TEMPLATES
 
@@ -61,6 +62,10 @@ class MatterEndpoint(viewsets.ModelViewSet):
                 },
                 'templates': {
                     'item.comment': ITEM_COMMENTS_TEMPLATE
+                },
+                'accepted_filetypes': {
+                    'revision': EXT_WHITELIST,
+                    'attachment': ATTACHMENT_EXT_WHITELIST,
                 }
             }
 

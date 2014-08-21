@@ -9,7 +9,7 @@ from .user import SimpleUserSerializer
 from .revision import HyperlinkedAutoDownloadFileField, FileFieldAsUrlField  # TODO: move to a place for reusable stuff?
 from .revision import EXT_WHITELIST
 
-ATTACHMENT_EXT_WHITELIST = EXT_WHITELIST + ('.gif', '.jpg', '.jpeg', '.png',)
+ATTACHMENT_EXT_WHITELIST = EXT_WHITELIST + ('.gif', '.jpg', '.jpeg', '.png', '.txt', '.zip',)
 
 import logging
 logger = logging.getLogger('django.request')
