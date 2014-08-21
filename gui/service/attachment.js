@@ -114,6 +114,13 @@ angular.module('toolkit-gui')
 						deferred.resolve(revision);
 					},
 					function error(err) {
+						$log.debug(err);
+						try {
+							var msg = err.data.attachment[0]
+						} catch (e) {
+							var msg = '';
+						}
+						var err = new Error('Unable to upload file: ' + msg);
 						deferred.reject( err );
 					}
 				);
@@ -148,8 +155,14 @@ angular.module('toolkit-gui')
 						// file is uploaded successfully
 						deferred.resolve(data);
 						//console.log(data);
-					}).error(function(){
-						var err = new Error('Unable to upload file');
+					}).error(function ( err ) {
+						$log.debug(err);
+						try {
+							var msg = err.attachment[0]
+						} catch (e) {
+							var msg = '';
+						}
+						var err = new Error('Unable to upload file: ' + msg);
 						if( uploadHandle.canceled ) {
 							err = new Error('Upload canceled');
 							err.title = 'Canceled';

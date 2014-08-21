@@ -27,6 +27,7 @@ def on_send_welcome_email(sender, **kwargs):
 
 @receiver(user_logged_in, sender=User, dispatch_uid='me.on_user_login')
 def on_user_login(sender, request, **kwargs):
-    profile = request.user.profile
-    profile.open_requests = profile.get_open_requests_count()
-    profile.save(update_fields=['data'])
+    if getattr(request, 'user', None) is not None:
+        profile = request.user.profile
+        profile.open_requests = profile.get_open_requests_count()
+        profile.save(update_fields=['data'])

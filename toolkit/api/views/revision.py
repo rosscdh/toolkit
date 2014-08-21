@@ -9,7 +9,7 @@ from rest_framework import generics
 from rest_framework import status
 from rest_framework.response import Response
 
-from toolkit.decorators import mutable_request
+from toolkit.decorators import mutable_request, valid_request_filesize
 from toolkit.core.attachment.models import Revision
 
 from .mixins import (MatterItemsQuerySetMixin,)
@@ -129,6 +129,7 @@ class ItemCurrentRevisionView(generics.CreateAPIView,
         return super(ItemCurrentRevisionView, self).update(request=request, *args, **kwargs)
 
     @mutable_request
+    @valid_request_filesize
     def create(self, request, *args, **kwargs):
         """
         Have had to copy directly the method from the base class

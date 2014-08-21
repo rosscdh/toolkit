@@ -38,7 +38,7 @@ def _valid_filename_length(filename, whitelist=EXT_WHITELIST):
     ext = ext.lower()
 
     if ext not in whitelist:
-        raise ValidationError("Invalid filetype, is: %s should be in: %s" % (ext, whitelist))
+        raise ValidationError("Invalid filetype, is a: \"%s\" should be in: \"%s\"" % (ext, ', '.join(whitelist)))
 
     if len(base_filename) > MAX_LENGTH_FILENAME:  # allow for 20 aspects to the name in addition ie. v1-etc
         base_filename = base_filename[0:MAX_LENGTH_FILENAME]
@@ -97,7 +97,7 @@ class LimitedExtensionMixin(object):
             ext = ext.lower()
 
             if ext not in self.ext_whitelist:
-                raise ValidationError("Invalid filetype, is: %s should be in: %s" % (ext, self.ext_whitelist))
+                raise ValidationError("Invalid filetype, is a: \"%s\" should be in: \"%s\"" % (ext, ', '.join(self.ext_whitelist)))
 
     def from_native(self, value):
         value = super(LimitedExtensionMixin, self).from_native(value)

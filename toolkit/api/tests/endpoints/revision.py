@@ -450,7 +450,7 @@ class InvalidFileTypeAsUrlOrMultipartDataTest(BaseEndpointTest, LiveServerTestCa
         # self.lawyer.matter_permissions(matter=self.matter).permissions
 
         self.assertEqual(resp.status_code, 400)  # error
-        self.assertEqual(resp_json.get('executed_file'), [u"Invalid filetype, is: .png should be in: ['.pdf', '.docx', '.doc', '.ppt', '.pptx', '.xls', '.xlsx']"])  # error
+        self.assertEqual(resp_json.get('executed_file'), [u"Invalid filetype, is a: \".png\" should be in: \".pdf, .docx, .doc, .ppt, .pptx, .xls, .xlsx\""])  # error
 
     def test_post_with_URL_executed_file(self):
         mommy.make('attachment.Revision', executed_file=None, slug=None, item=self.item, uploaded_by=self.lawyer)

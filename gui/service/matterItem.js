@@ -419,8 +419,14 @@ angular.module('toolkit-gui')
 						// file is uploaded successfully
 						deferred.resolve(data);
 						//console.log(data);
-					}).error(function(){
-						var err = new Error('Unable to upload file');
+					}).error(function(data){
+						console.log(data)
+						try {
+							var msg = data.executed_file[0]
+						} catch (e) {
+							var msg = '';
+						}
+						var err = new Error('Unable to upload file: ' + msg);
 						if( uploadHandle.canceled ) {
 							err = new Error('Upload canceled');
 							err.title = 'Canceled';

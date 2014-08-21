@@ -78,10 +78,11 @@ angular.module('toolkit-gui')
                         $modalInstance.close();
                     },
                     function error(err) {
+                        $log.debug(err);
                         $scope.data.uploading = false;
                         $scope.data.uploadingPercent = 0;
 
-                        var msg = err && err.message ? err.message : 'Unable to upload file';
+                        var msg = err && err.message ? err.message : err;
                         var title = err && err.title ? err.title : 'Error';
 
                         toaster.pop('error', title, msg, 5000);
@@ -113,10 +114,16 @@ angular.module('toolkit-gui')
                         $modalInstance.close();
                     },
                     function error(err) {
+                        $log.debug(err);
+                        try {
+                            var msg = err.executed_file[0]
+                        } catch (e) {
+                            var msg = '';
+                        }
                         $scope.data.uploading = false;
                         $scope.data.uploadingPercent = 0;
 
-                        var msg = err && err.message ? err.message : 'Unable to upload file';
+                        var msg = err && err.message ? err.message : 'Unable to upload file: ' + msg;
                         var title = err && err.title ? err.title : 'Error';
 
                         toaster.pop('error', title, msg, 5000);

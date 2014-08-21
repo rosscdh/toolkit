@@ -20,8 +20,6 @@ urlpatterns = patterns('',
     url(r'^api/v1/', include('toolkit.api.urls')),
     url(r'^api/', include('toolkit.apps.api.urls', namespace='api')),
 
-    #url(r'^dash/', include('toolkit.apps.dash.urls', namespace='dash')),
-
     url(r'^notifications/', include('toolkit.apps.notification.urls', namespace='notification')),
 
     url(r'^matters/', include('toolkit.apps.matter.urls', namespace='matter')),
@@ -33,9 +31,10 @@ urlpatterns = patterns('',
     # primary workspace
     url(r'^workspace/', include('toolkit.apps.workspace.urls', namespace='workspace')),
 
-    # apps
-    #url(r'^83b/', include('toolkit.apps.eightythreeb.urls', namespace='eightythreeb')),
-    #url(r'^engagement-letters/', include('toolkit.apps.engageletter.urls', namespace='engageletter')),
+    # Depreciating apps - to be removed
+    url(r'^dash/', include('toolkit.apps.dash.urls', namespace='dash')),
+    url(r'^83b/', include('toolkit.apps.eightythreeb.urls', namespace='eightythreeb')),
+    url(r'^engagement-letters/', include('toolkit.apps.engageletter.urls', namespace='engageletter')),
 
     # reviews
     url(r'^review/', include('toolkit.apps.review.urls', namespace='review')),

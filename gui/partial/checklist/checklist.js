@@ -395,6 +395,13 @@ angular.module('toolkit-gui')
 			}
 		};
 
+        $scope.accepted_filetypes = function () {
+            return {
+                'revision': $scope.data.matter._meta.accepted_filetypes.revision.join(', '),
+                'attachment': $scope.data.matter._meta.accepted_filetypes.attachment.join(', '),
+            }
+        };
+
 		/**
 		 * Inits the intercom interface, interfacce for genericFunctions.initialiseIntercom
 		 *
@@ -949,12 +956,17 @@ angular.module('toolkit-gui')
 					$scope.calculateReviewPercentageComplete(item);
 					toaster.pop('success', 'Success!', 'Document added successfully', 3000);
 				},
-				function error(/*err*/) {
+				function error(err) {
+                        try {
+                            var msg = err.executed_file[0]
+                        } catch (e) {
+                            var msg = '';
+                        }
 					// Update uploading status
 					item.uploading = false;
 					$scope.data.uploading = $scope.uploadingStatus( $scope.data.matter.items );
 
-					toaster.pop('error', 'Error!', 'Unable to upload revision', 5000);
+					toaster.pop('error', 'Error!', 'Unable to upload revision: ' + msg, 5000);
 				}
 			);
 		};
@@ -1005,12 +1017,17 @@ angular.module('toolkit-gui')
 						toaster.pop('success', 'Success!', 'File added successfully',3000);
 					},
 					function error(err) {
+                        try {
+                            var msg = err.executed_file[0]
+                        } catch (e) {
+                            var msg = '';
+                        }
 						// Update uploading status
 						item.uploading = false;
 
 						$scope.data.uploading = $scope.uploadingStatus( $scope.data.matter.items );
 
-						var msg = err&&err.message?err.message:'Unable to upload revision';
+						var msg = err&&err.message?err.message:'Unable to upload revision: ' + msg;
 						var title = err&&err.title?err.title:'Error';
 
 						toaster.pop('error', title, msg, 5000);
