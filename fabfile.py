@@ -137,7 +137,7 @@ def virtualenv(cmd, **kwargs):
 
 @task
 def pip_install():
-    virtualenv(cmd='pip install -e git+https://github.com/rosscdh/django-crocodoc.git#egg=django-crocodoc -U')
+    virtualenv(cmd='pip install Django==1.6.6 -U')
 
 @task
 @roles('db-actor')
@@ -284,6 +284,7 @@ def diff_outgoing_with_current():
 def celery_restart(name='worker.1'):
     with settings(warn_only=True): # only warning as we will often have errors importing
         celery_stop()
+        clean_pyc()
         celery_start()
         # cmd = "celery multi restart {name}@%h -A {app_name}  --uid=app --pidfile='/var/run/celery/{name}.%n.pid'  --logfile='/var/log/celery/{name}.%n.log'".format(name=name, app_name=env.celery_app_name)
         # if env.hosts:
