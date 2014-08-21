@@ -131,7 +131,7 @@ class ItemDiscussionCommentEndpoint(ItemMixin, BaseDiscussionCommentEndpoint):
         return self.matter.participants.all() if self.is_public else self.matter.privileged.all()
 
     def get_queryset(self):
-        return self.model.objects.for_model(self.item).filter(is_public=self.is_public).order_by('submit_date')
+        return self.model.objects.for_model(self.item).filter(is_public=self.is_public).order_by('-id')
 
     def pre_save(self, obj):
         obj.item = self.item
