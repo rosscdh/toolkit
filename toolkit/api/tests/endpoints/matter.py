@@ -294,7 +294,7 @@ class MatterDetailProvidedDataTest(BaseEndpointTest):
         _meta = data['_meta']
         self.assertEqual(type(_meta), dict)
 
-        self.assertEqual(_meta.keys(), ['templates', 'matter', 'item'])
+        self.assertEqual(_meta.keys(), ['templates', 'matter', 'accepted_filetypes', 'item'])
 
         self.assertTrue('status' in _meta['matter'])
         self.assertTrue('custom_status' in _meta['item'])
