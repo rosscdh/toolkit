@@ -19,7 +19,8 @@ from .mixins import (RequestDocumentUploadMixin,
                      SigningInProgressMixin,
                      RequestedDocumentReminderEmailsMixin,
                      RevisionReviewReminderEmailsMixin,
-                     RevisionSignReminderEmailsMixin)
+                     RevisionSignReminderEmailsMixin,
+                     ItemLastCommentByMixin)
 
 from jsonfield import JSONField
 from uuidfield import UUIDField
@@ -39,6 +40,7 @@ class Item(IsDeletedMixin,
            RequestedDocumentReminderEmailsMixin,
            RevisionReviewReminderEmailsMixin,
            RevisionSignReminderEmailsMixin,
+           ItemLastCommentByMixin,
            models.Model):
     """
     Matter.item

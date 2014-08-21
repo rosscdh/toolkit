@@ -116,7 +116,7 @@ urlpatterns = router.urls + patterns('',
     url(r'^matters/(?P<matter_slug>[\w-]+)/closing_group/(?P<closing_group>[\w-]+)/?$', MatterClosingGroupView.as_view(), name='matter_closing_group'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/revision_label/?$', MatterRevisionLabelView.as_view(), name='matter_revision_label'),
     url(r'^matters/(?P<matter_slug>[\w-]+)/sort/?$', MatterSortView.as_view(), name='matter_sort'),
-    url(r'^matters/(?P<matter_slug>[\w-]+)/participant(/(?P<email>.+))?/?$', MatterParticipant.as_view(), name='matter_participant'),
+    url(r'^matters/(?P<matter_slug>[\w-]+)/participant(/(?P<username>.+))?/?$', MatterParticipant.as_view(), name='matter_participant'),
     # Activity list for a Matter
     url(r'^matters/(?P<matter_slug>[\w-]+)/activity/?$', MatterActivityEndpoint.as_view(), name='matter_activity'),
     # Search Matter Items/Tasks/Attachments

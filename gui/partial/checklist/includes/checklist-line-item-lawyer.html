@@ -59,6 +59,12 @@
                     <span class="tasks-status-checklist" ng-if="item.task_status.total">
                         <i class="fa fa-list-ul "></i> ({{item.task_status.complete}}/{{item.task_status.total}})
                     </span>
+
+                    <!-- LAST COMMENT BY //-->
+                    <button disabled="" class="btn btn-info btn-xs"
+                        ng-show="item.last_comment_by">
+                        <span class="fui-chat"></span>&nbsp;{{item.last_comment_by}}
+                    </button>
 				</span>
 				<span class="pe-7s-check pull-right checklist-item-complete" ng-show="item.is_complete"></span>
 				<span ng-if="item.loading">

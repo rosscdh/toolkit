@@ -254,7 +254,7 @@ class Workspace(IsDeletedMixin,
         return self.participants.filter(workspaceparticipants__role=ROLES.colleague)
 
     @property
-    def something(self):
+    def privileged(self):
         return self.participants.filter(workspaceparticipants__role__in=[ROLES.colleague, ROLES.owner])
 
     @property
