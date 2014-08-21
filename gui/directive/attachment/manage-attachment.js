@@ -115,18 +115,19 @@ angular.module('toolkit-gui')
                     },
                     function error(err) {
                         $log.debug(err);
+                        var msg = '';
                         try {
-                            var msg = err.executed_file[0]
+                            msg = err.executed_file[0];
                         } catch (e) {
-                            var msg = '';
+                            msg = '';
                         }
                         $scope.data.uploading = false;
                         $scope.data.uploadingPercent = 0;
 
-                        var msg = err && err.message ? err.message : 'Unable to upload file: ' + msg;
+                        var message = err && err.message ? err.message : 'Unable to upload file: ' + msg;
                         var title = err && err.title ? err.title : 'Error';
 
-                        toaster.pop('error', title, msg, 5000);
+                        toaster.pop('error', title, message, 5000);
                     },
                     function progress(num) {
                         /* IE-Fix, timeout and force GUI update */

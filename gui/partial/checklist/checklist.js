@@ -398,8 +398,8 @@ angular.module('toolkit-gui')
         $scope.accepted_filetypes = function () {
             return {
                 'revision': $scope.data.matter._meta.accepted_filetypes.revision.join(', '),
-                'attachment': $scope.data.matter._meta.accepted_filetypes.attachment.join(', '),
-            }
+                'attachment': $scope.data.matter._meta.accepted_filetypes.attachment.join(', ')
+            };
         };
 
 		/**
@@ -957,15 +957,16 @@ angular.module('toolkit-gui')
 					toaster.pop('success', 'Success!', 'Document added successfully', 3000);
 				},
 				function error(err) {
-                        try {
-                            var msg = err.executed_file[0]
-                        } catch (e) {
-                            var msg = '';
-                        }
+                    $log.debug(err);
+                    var msg = '';
+                    try {
+                        msg = err.executed_file[0];
+                    } catch (e) {
+                        msg = '';
+                    }
 					// Update uploading status
 					item.uploading = false;
 					$scope.data.uploading = $scope.uploadingStatus( $scope.data.matter.items );
-
 					toaster.pop('error', 'Error!', 'Unable to upload revision: ' + msg, 5000);
 				}
 			);
@@ -1017,20 +1018,21 @@ angular.module('toolkit-gui')
 						toaster.pop('success', 'Success!', 'File added successfully',3000);
 					},
 					function error(err) {
+                        var msg = '';
                         try {
-                            var msg = err.executed_file[0]
+                            msg = err.executed_file[0];
                         } catch (e) {
-                            var msg = '';
+                            msg = '';
                         }
 						// Update uploading status
 						item.uploading = false;
 
 						$scope.data.uploading = $scope.uploadingStatus( $scope.data.matter.items );
 
-						var msg = err&&err.message?err.message:'Unable to upload revision: ' + msg;
+						var message = err&&err.message?err.message:'Unable to upload revision: ' + msg;
 						var title = err&&err.title?err.title:'Error';
 
-						toaster.pop('error', title, msg, 5000);
+						toaster.pop('error', title, message, 5000);
 					},
 					function progress( num ) {
 						/* IE-Fix, timeout and force GUI update */

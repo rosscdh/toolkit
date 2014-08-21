@@ -12,9 +12,10 @@ angular.module('toolkit-gui')
 	'$rootScope',
 	'$upload',
 	'$timeout',
+	'$log',
 	'matterService',
 	'API_BASE_URL',
-	function( $q, $resource, $rootScope, $upload, $timeout, matterService, API_BASE_URL) {
+	function( $q, $resource, $rootScope, $upload, $timeout, $log, matterService, API_BASE_URL) {
 		'use strict';
 		/**
 		 * TBC: this variable will contain the JWT token required to make authenticated requests
@@ -420,19 +421,20 @@ angular.module('toolkit-gui')
 						deferred.resolve(data);
 						//console.log(data);
 					}).error(function(data){
-						console.log(data)
+						$log.debug(data);
+						var msg = '';
 						try {
-							var msg = data.executed_file[0]
+							msg = data.executed_file[0];
 						} catch (e) {
-							var msg = '';
+							msg = '';
 						}
-						var err = new Error('Unable to upload file: ' + msg);
+						var error_message = new Error('Unable to upload file: ' + msg);
 						if( uploadHandle.canceled ) {
-							err = new Error('Upload canceled');
-							err.title = 'Canceled';
-							deferred.reject(err);
+							error_message = new Error('Upload canceled');
+							error_message.title = 'Canceled';
+							deferred.reject( error_message );
 						} else {
-							deferred.reject(err);
+							deferred.reject( error_message );
 						}
 
 					});

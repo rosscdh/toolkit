@@ -115,13 +115,14 @@ angular.module('toolkit-gui')
 					},
 					function error(err) {
 						$log.debug(err);
+						var msg = '';
 						try {
-							var msg = err.data.attachment[0]
+							msg = err.data.attachment[0];
 						} catch (e) {
-							var msg = '';
+							msg = '';
 						}
-						var err = new Error('Unable to upload file: ' + msg);
-						deferred.reject( err );
+						var error_message = new Error('Unable to upload file: ' + msg);
+						deferred.reject( error_message );
 					}
 				);
 
@@ -157,18 +158,19 @@ angular.module('toolkit-gui')
 						//console.log(data);
 					}).error(function ( err ) {
 						$log.debug(err);
+						var msg = '';
 						try {
-							var msg = err.attachment[0]
+							msg = err.attachment[0];
 						} catch (e) {
-							var msg = '';
+							msg = '';
 						}
-						var err = new Error('Unable to upload file: ' + msg);
+						var error_message = new Error('Unable to upload file: ' + msg);
 						if( uploadHandle.canceled ) {
-							err = new Error('Upload canceled');
-							err.title = 'Canceled';
-							deferred.reject(err);
+							error_message = new Error('Upload canceled');
+							error_message.title = 'Canceled';
+							deferred.reject( error_message );
 						} else {
-							deferred.reject(err);
+							deferred.reject( error_message );
 						}
 
 					});
