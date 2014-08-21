@@ -37,6 +37,11 @@
                                     },
                                     type: $form.attr('method'),
                                     url: $form.attr('action'),
+                                    beforeSend: function () {
+                                        // disable the button
+                                        $form.find('input[name=submit]').prop('disabled', true);
+                                        $form.find('input[type=submit]').prop('disabled', true);
+                                    },
                                     error: function(data) {
                                         var payload = data.responseJSON;
 
@@ -54,6 +59,11 @@
                                         });
 
                                         $errorContainer.removeClass('hide');
+
+                                        // enable the button again
+                                        $form.find('input[name=submit]').prop('disabled', false);
+                                        $form.find('input[type=submit]').prop('disabled', false);
+
                                     },
                                     success: function(data) {
                                         if (data['redirect']) {
