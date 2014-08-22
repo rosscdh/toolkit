@@ -48,7 +48,7 @@
       <!-- Begin option toolbar -->
       <div class="add-new clearfix">
         <div class="btn-group space-5" ng-show="data.usdata.current.permissions.manage_items&&!data.selectedItem.is_complete">
-          <span id="intro-upload-file-menu" title="Accepted Filetypes: accepted_filetypes().revision" class="btn btn-sm btn-info btn-file btn-embossed btn-add">
+          <span id="intro-upload-file-menu" title="Accepted Filetypes: {{data.accepted_filetypes.revision}}" class="btn btn-sm btn-info btn-file btn-embossed btn-add">
             Upload File
             <input type="file" ng-file-select="onFileDropped($files, data.selectedItem);" clear-on-click multiple="multiple" id="upload-file-menu-default" />
           </span>
@@ -63,7 +63,7 @@
                 <input type="file" ng-file-select="onFileDropped($files, data.selectedItem);" clear-on-click multiple="multiple" id="upload-file-menu-option" />
               </span>
             </li>
-            <li><a href="javascript:;" filepicker="filepicker" apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)" extensions="{{accepted_filetypes().revision}}" id="upload-file-filepicker">From cloud service</a></li>
+            <li><a href="javascript:;" filepicker="filepicker" apikey="A4Ly2eCpkR72XZVBKwJ06z" callback="processUpload(files, data.selectedItem)" extensions="{{data.accepted_filetypes.revision}}" id="upload-file-filepicker">From cloud service</a></li>
           </ul>
         </div>
         <button class="btn btn-sm btn-info btn-file btn-embossed btn-add space-5" data-toggle="modal" data-target="#requestFileModal"

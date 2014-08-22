@@ -62,7 +62,7 @@ module.exports = function (grunt) {
                     staticPath : '<%= APP_STATIC_PATH %>',
                     apiBaseUrl : '/api/v1/',
                     DEBUG_MODE : true,
-                    SENTRY_PUBLIC_DSN : 'https://5584db708b75400fb439d4592c29fc9a@sentry.ambient-innovation.com/24',
+                    SENTRY_PUBLIC_DSN : 'https://4caf829e14084f4ebfd8e4820b821364@app.getsentry.com/25296',
                     INTERCOM_APP_ID : 'wkxzfou',
                     PUSHER_API_KEY: '60281f610bbf5370aeaa'
                 }
