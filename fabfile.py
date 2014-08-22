@@ -762,6 +762,7 @@ def rebuild_local(gui_clean=False):
 
     local('python manage.py syncdb  --noinput')
     local('python manage.py update_permissions')
+    local('python manage.py migrate actstream')  # have to manually call this here because of migration issues
     local('python manage.py migrate')
     local('python manage.py loaddata %s' % fixtures())
     local('python manage.py createsuperuser')  #manually as we rely on the dev-fixtures
