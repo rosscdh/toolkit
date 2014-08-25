@@ -8,6 +8,9 @@ from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 from .mailers import RequestedDocumentReminderEmail
 from toolkit.apps.sign.mailers import SignerReminderEmail
 
+import datetime
+import dateutil.parser
+
 import logging
 logger = logging.getLogger('django.request')
 
@@ -365,3 +368,61 @@ class RevisionSignReminderEmailsMixin(object):
                            **kwargs)
 
             yield signer
+
+
+class ItemLastCommentByMixin(object):
+    """
+    Save the last comment (public|privileged) in the data field
+    """
+    BASE_LAST_COMMENT_BY = {
+        'privileged': {'name': None, 'date_of': datetime.datetime.utcnow().isoformat()},
+        'public': {'name': None, 'date_of': datetime.datetime.utcnow().isoformat()},
+    }
+
+    def set_last_comment_by(self, is_public, user):
+        """
+        Save in our data field the appropriate last user info for whoever commented
+        take note that college comments should not be shown to normal users
+        """
+        last_comment_by = self.data.get('last_comment_by', None)
+
+        if last_comment_by is None:
+            last_comment_by = self.BASE_LAST_COMMENT_BY.copy()
+
+        now = datetime.datetime.utcnow().isoformat()
+
+        if is_public is True:
+            last_comment_by['public']['name'] = user.get_initials()
+            last_comment_by['public']['date_of'] = now
+        else:
+            last_comment_by['privileged']['name'] = user.get_initials()
+            last_comment_by['privileged']['date_of'] = now
+        # save to data
+        self.data['last_comment_by'] = last_comment_by
+
+    def last_comment_by(self, is_public):
+        """
+        So get the last comment by info and check that the last comment is returned by the latest date_of
+        in the case of colleage: it should return the last public comment if its present and there is no latest colleage comment
+        """
+        last_comment_by = self.data.get('last_comment_by', None)
+
+        if last_comment_by is None:
+            return None
+
+        now = datetime.datetime.utcnow().isoformat()
+
+        if is_public is True:
+            return last_comment_by.get('public').get('name')
+
+        #
+        # Compose the dates from isoformat into an actual date (thank you dateutil)
+        #
+        public_date_of = dateutil.parser.parse(last_comment_by.get('public').get('date_of', now))
+        private_date_of = dateutil.parser.parse(last_comment_by.get('privileged').get('date_of', now))
+
+        if private_date_of > public_date_of:
+            # in the privileged case if we have no privileged comment then return the public comment
+            return last_comment_by.get('privileged').get('name', last_comment_by.get('public').get('name'))
+        else:
+            return last_comment_by.get('public').get('name')

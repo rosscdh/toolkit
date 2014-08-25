@@ -128,14 +128,17 @@ class ItemDiscussionCommentEndpoint(ItemMixin, BaseDiscussionCommentEndpoint):
         return self.kwargs.get('thread_slug') == 'public'
 
     def get_participants(self):
-        return self.matter.participants.all() if self.is_public else self.matter.something.all()
+        return self.matter.participants.all() if self.is_public else self.matter.privileged.all()
 
     def get_queryset(self):
-        return self.model.objects.for_model(self.item).filter(is_public=self.is_public).order_by('submit_date')
+        return self.model.objects.for_model(self.item).filter(is_public=self.is_public).order_by('-id')
 
     def pre_save(self, obj):
         obj.item = self.item
         obj.is_public = self.is_public
+
+        self.item.set_last_comment_by(is_public=self.is_public, user=self.request.user)
+        self.item.save(update_fields=['data'])
 
         return super(ItemDiscussionCommentEndpoint, self).pre_save(obj=obj)
 

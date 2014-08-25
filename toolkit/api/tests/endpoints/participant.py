@@ -167,7 +167,7 @@ class MatterParticipantTest(BaseEndpointTest):
         self.client.login(username=self.lawyer.username, password=self.password)
 
         data = {
-            'email': self.lawyer_to_add.email,
+            'username': self.lawyer_to_add.username,
             'permissions': {'manage_items': True, 'manage_participants': False},
             'role': ROLES.get_name_by_value(ROLES.colleague)
         }
@@ -175,7 +175,7 @@ class MatterParticipantTest(BaseEndpointTest):
         resp = self.client.patch(self.endpoint, json.dumps(data), content_type='application/json')
         self.assertEqual(resp.status_code, 202)  # accepted
 
-        user = User.objects.get(email=data['email'])
+        user = User.objects.get(username=data['username'])
         self.assertTrue(user.has_perm('workspace.manage_items', self.matter))
         self.assertFalse(user.has_perm('workspace.manage_participants', self.matter))
 
@@ -190,7 +190,7 @@ class MatterParticipantTest(BaseEndpointTest):
         #
         user_to_delete = self.matter.participants.get(username='test-customer')
         # append the email to the url for DELETE
-        endpoint = '%s/%s' % (self.endpoint, user_to_delete.email)
+        endpoint = '%s/%s' % (self.endpoint, user_to_delete.username)
 
         resp = self.client.delete(endpoint, None)
         self.assertEqual(resp.status_code, 202)  # accepted
@@ -221,7 +221,7 @@ class MatterParticipantTest(BaseEndpointTest):
         #
         user_to_delete = self.lawyer
 
-        endpoint = '%s/%s' % (self.endpoint, user_to_delete.email)
+        endpoint = '%s/%s' % (self.endpoint, user_to_delete.username)
 
         resp = self.client.delete(endpoint, None)
 
@@ -244,7 +244,7 @@ class MatterParticipantTest(BaseEndpointTest):
         self.set_user_matter_role(self.user, role=ROLES.client, matter=self.matter)
 
         for event, status_code in [('get', 405), ('post', 403), ('patch', 403), ('delete', 403)]:
-            endpoint = '%s/%s' % (self.endpoint, user_to_delete.email) if event == 'delete' else self.endpoint
+            endpoint = '%s/%s' % (self.endpoint, user_to_delete.username) if event == 'delete' else self.endpoint
             resp = getattr(self.client, event)(endpoint, {}, content_type='application/json')
             self.assertEqual(resp.status_code, status_code)
 

@@ -34,7 +34,7 @@ class MatterParticipant(generics.CreateAPIView,
 
     POST,DELETE /matters/:matter_slug/participant
     {
-        "email": "username@example.com"
+        "username": "username"
     }
 
     @TODO @QUESTION security hazard a lawyer can add another lawyer, but can that new
@@ -50,9 +50,9 @@ class MatterParticipant(generics.CreateAPIView,
         if all(k in data.keys() for k in expected_keys) is False:
             raise exceptions.ParseError('request.DATA must have the following keys: %s' % ', '.join(expected_keys))
 
-        email_validator = EmailField()
-        # will raise error if incorrect
-        email_validator.clean(data.get('email'))
+        # email_validator = EmailField()
+        # # will raise error if incorrect
+        # email_validator.clean(data.get('email'))
 
     def transform_role(self, role):
         """
@@ -108,14 +108,14 @@ class MatterParticipant(generics.CreateAPIView,
         """
         data = request.DATA.copy()
 
-        email = data.get('email')
+        username = data.get('username')
         role = data.get('role', None)
         permissions = data.get('permissions')
 
         try:
-            participant = User.objects.get(email=email)
+            participant = User.objects.get(username=username)
         except User.DoesNotExist:
-            return Response({'details': 'User does not exist (email=%s)' % email})
+            return Response({'details': 'User does not exist (username=%s)' % username})
 
         perms = participant.matter_permissions(matter=self.matter)
         if perms.pk is None:
@@ -136,13 +136,13 @@ class MatterParticipant(generics.CreateAPIView,
         status = http_status.HTTP_202_ACCEPTED
         
         # extract from url arg
-        data = {"email": self.kwargs.get('email')}
+        data = {"username": self.kwargs.get('username')}
 
-        self.validate_data(data=data, expected_keys=['email'])
-        email = data.get('email')
+        self.validate_data(data=data, expected_keys=['username'])
+        username = data.get('username')
 
         # will raise Does not exist if not found
-        participant_to_remove = User.objects.get(email=email)
+        participant_to_remove = User.objects.get(username=username)
 
         try:
             service = MatterParticipantRemovalService(matter=self.matter, removing_user=request.user)
@@ -168,7 +168,7 @@ class MatterParticipant(generics.CreateAPIView,
             return user.matter_permissions(matter=self.matter).has_permission(manage_clients=True) is True
 
     def can_delete(self, user):
-        user_to_work_on = User.objects.get(email=self.kwargs.get('email'))
+        user_to_work_on = User.objects.get(username=self.kwargs.get('username'))
 
         # manage_participants overrides manage_clients
         if user.matter_permissions(matter=self.matter).has_permission(manage_participants=True) is True \

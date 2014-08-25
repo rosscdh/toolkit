@@ -66,7 +66,7 @@ class MatterParticipantPermissionTest(BaseEndpointTest):
 
         # create user to be modified after:
         data = {
-            'email': self.lawyer.email,
+            'username': self.lawyer.username,
             'permissions': {'manage_items': True, 'manage_participants': False},
             'role': ROLES.get_name_by_value(ROLES.colleague)
         }
@@ -114,7 +114,7 @@ class MatterParticipantPermissionTest(BaseEndpointTest):
 
 
         # append the email to the url for DELETE
-        endpoint = '%s/%s' % (self.endpoint, user_to_delete.email)
+        endpoint = '%s/%s' % (self.endpoint, user_to_delete.username)
 
         self.set_user_matter_perms(user=self.user, manage_participants=False)
         resp = self.client.delete(endpoint, None)

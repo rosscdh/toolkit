@@ -36,6 +36,7 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
     children = serializers.SerializerMethodField('get_children')
 
     task_status = serializers.SerializerMethodField('get_task_status')
+    last_comment_by = serializers.SerializerMethodField('get_last_comment_by')
 
     request_document_meta = serializers.SerializerMethodField('get_request_document_meta')
 
@@ -54,6 +55,7 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
                   'is_final', 'is_complete', 'is_requested',
                   'date_due', 'date_created', 'date_modified',
                   'task_status',
+                  'last_comment_by',
                   'request_document_meta', 'attachments')
 
         exclude = ('data',)
@@ -97,6 +99,23 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
     def get_task_status(self, obj):
         return obj.task_status
 
+    def get_last_comment_by(self, obj):
+      request = self.context.get('request', None)
+      user = getattr(request, 'user', None)
+
+      if user is None:
+        return None
+
+      role = user.matter_permissions(matter=obj.matter).role_name
+
+      if role in ['owner', 'colleague']:
+        # show colleague comments otherwise public
+        return obj.last_comment_by(is_public=False)
+      else:
+        # show public comments otherwise none
+        return obj.last_comment_by(is_public=True)
+
+
     def get_request_document_meta(self, obj):
         """
         Return the requested by info if present otherwise null
@@ -120,6 +139,7 @@ class SimpleItemSerializer(ItemSerializer):
                   'latest_revision',
                   'is_final', 'is_complete', 'is_requested',
                   'task_status',
+                  'last_comment_by',
                   'date_due',)
 
 

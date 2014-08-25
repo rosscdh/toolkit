@@ -96,7 +96,7 @@ class DiscussionComment(ThreadedComment, models.Model):
 
     def get_participants(self):
         if self.is_item_discussion:
-            return self.get_matter().participants.all() if self.is_public else self.get_matter().something.all()
+            return self.get_matter().participants.all() if self.is_public else self.get_matter().privileged.all()
         elif self.is_matter_discussion:
             return self.thread.participants.all()
 

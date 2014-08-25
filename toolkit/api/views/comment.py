@@ -31,20 +31,6 @@ class ItemCommentEndpoint(MatterItemsQuerySetMixin,
 
     permission_classes = (permissions.IsAuthenticated, )
 
-    # should not be needed any more since we don't care who edited the comment
-    # def _get_newest_comment_by_user(self, user):
-    #     try:
-    #         return Action.objects.get_queryset().filter(
-    #             actor_content_type=ContentType.objects.get_for_model(user),
-    #             actor_object_id=user.id,
-    #             verb=u'commented',
-    #             action_object_content_type=ContentType.objects.get_for_model(self.item),
-    #             action_object_object_id=self.item.id,
-    #             target_content_type=ContentType.objects.get_for_model(self.matter),
-    #             target_object_id=self.matter.id)[0]
-    #     except IndexError:
-    #         return None
-
     def initialize_request(self, request, *args, **kwargs):
         """
         when creating a new comment we need self.item
