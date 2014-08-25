@@ -25,6 +25,8 @@ from .mixins import (RequestDocumentUploadMixin,
 from jsonfield import JSONField
 from uuidfield import UUIDField
 
+from django.utils import timezone
+
 BASE_ITEM_STATUS = get_namedtuple_choices('ITEM_STATUS', (
                                 (0, 'new', 'New'),
                                 (1, 'final', 'Final'),
@@ -100,6 +102,12 @@ class Item(IsDeletedMixin,
     @property
     def display_status(self):
         return self.ITEM_STATUS.get_desc_by_value(self.status)
+
+    @property
+    def has_expired(self):
+        if self.date_due:
+            return True if self.date_due < timezone.now() else False
+        return False
 
     def __unicode__(self):
         return u'%s' % self.name

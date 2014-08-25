@@ -2,7 +2,9 @@
 from django.conf import settings
 from django.utils import timezone
 from toolkit.core.item.models import Item
+
 from toolkit.core.services.lawpal_abridge import LawPalAbridgeService
+from toolkit.apps.default.templatetags.toolkit_tags import ABSOLUTE_BASE_URL
 
 import logging
 import datetime
@@ -42,15 +44,20 @@ class BaseReminderService(object):
         return abridge_service
 
     def send_message_to_abridge(self, user, item):
-        message_data = {
-            'item': item
-        }
-        message = LawPalAbridgeService.render_reminder_template(**message_data)
+        message = LawPalAbridgeService.render_reminder_template(**self.message_template_data(item=item))
         abridge_service = self.get_abridge_service(user)
         if not abridge_service:
             logger.critical('Could not instantiate Abridge Service')
         else:
             abridge_service.create_event(content_group='Important', content=message)
+
+    def message_template_data(self, item):
+        return {
+            'item': item,
+            'matter': item.matter,
+            'has_expired': item.has_expired,
+            'action_link': ABSOLUTE_BASE_URL(item.get_absolute_url()),
+        }
 
     def process(self):
         raise NotImplemented('You msut override this method to process the objects')
@@ -78,4 +85,4 @@ class ReminderService(BaseReminderService):
                 msg = 'Sending reminder to %s for matter item: %s:%s' % (participant, item.matter, item)
                 print(msg)
                 logger.info(msg)
-                self.send_message_to_abridge(participant, item)
+                self.send_message_to_abridge(user=participant, item=item)

@@ -22,10 +22,12 @@ class SendReminderEmailMixin(object):
                 # send the invite url
                 action_url = ABSOLUTE_BASE_URL(self.get_absolute_url())
 
-                mailer = TaskReminderEmail(recipients=((user.get_full_name(), user.email,),),
+                mailer = TaskReminderEmail(task=self,
+                                           recipients=((user.get_full_name(), user.email,),),
                                            from_tuple=(from_user.get_full_name(), from_user.email,))
                 mailer.process(item=self.item,
                                matter=self.item.matter,
+                               has_expired=self.has_expired,
                                from_name=from_user.get_full_name(),
                                action_url=action_url,  # please understsand the diff between action_url and next_url
                                description=self.description,

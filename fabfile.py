@@ -89,9 +89,8 @@ def production():
     env.user = 'ubuntu'
     env.application_user = 'app'
     # connect to the port-forwarded ssh
-    env.hosts = ['ec2-50-18-33-186.us-west-1.compute.amazonaws.com',
-                 'ec2-54-176-88-70.us-west-1.compute.amazonaws.com',
-                 'ec2-54-241-222-221.us-west-1.compute.amazonaws.com',] if not env.hosts else env.hosts
+    env.hosts = ['ec2-54-176-88-70.us-west-1.compute.amazonaws.com',
+                 'ec2-54-176-208-37.us-west-1.compute.amazonaws.com',] if not env.hosts else env.hosts
     env.celery_name = 'celery-production' # taken from chef cookbook
 
     env.key_filename = '%s/../lawpal-chef/chef-machines.pem' % env.local_project_path
@@ -104,10 +103,9 @@ def production():
 # Update the roles
 #
 env.roledefs.update({
-    'web': ['ec2-50-18-33-186.us-west-1.compute.amazonaws.com',
-            'ec2-54-176-88-70.us-west-1.compute.amazonaws.com',],
-    'worker': ['ec2-54-241-222-221.us-west-1.compute.amazonaws.com'],
-    'db-actor': ['ec2-54-241-222-221.us-west-1.compute.amazonaws.com'],
+    'web': ['ec2-54-176-88-70.us-west-1.compute.amazonaws.com',],
+    'worker': ['ec2-54-176-208-37.us-west-1.compute.amazonaws.com'],
+    'db-actor': ['ec2-54-176-208-37.us-west-1.compute.amazonaws.com'],
 })
 
 
@@ -137,7 +135,7 @@ def virtualenv(cmd, **kwargs):
 
 @task
 def pip_install():
-    virtualenv(cmd='pip install -e git+https://github.com/rosscdh/django-crocodoc.git#egg=django-crocodoc -U')
+    virtualenv(cmd='pip install Django==1.6.6 -U')
 
 @task
 @roles('db-actor')
@@ -284,6 +282,7 @@ def diff_outgoing_with_current():
 def celery_restart(name='worker.1'):
     with settings(warn_only=True): # only warning as we will often have errors importing
         celery_stop()
+        clean_pyc()
         celery_start()
         # cmd = "celery multi restart {name}@%h -A {app_name}  --uid=app --pidfile='/var/run/celery/{name}.%n.pid'  --logfile='/var/log/celery/{name}.%n.log'".format(name=name, app_name=env.celery_app_name)
         # if env.hosts:
@@ -761,6 +760,7 @@ def rebuild_local(gui_clean=False):
 
     local('python manage.py syncdb  --noinput')
     local('python manage.py update_permissions')
+    local('python manage.py migrate actstream')  # have to manually call this here because of migration issues
     local('python manage.py migrate')
     local('python manage.py loaddata %s' % fixtures())
     local('python manage.py createsuperuser')  #manually as we rely on the dev-fixtures

@@ -7,6 +7,10 @@ from django.db import models
 
 class Migration(SchemaMigration):
 
+    depends_on = (
+        ("actstream", "0007_auto__add_field_follow_started"),
+    )
+
     def forwards(self, orm):
         # Adding model 'DiscussionComment'
         db.create_table(u'discussion_discussioncomment', (

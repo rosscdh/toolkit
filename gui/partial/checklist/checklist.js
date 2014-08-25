@@ -128,7 +128,12 @@ angular.module('toolkit-gui')
 			'loadedItemdetails': {},
 			'privateComments': [],
 			'publicComments': [],
-            'activityHasMoreItems': activityService.hasMoreItems
+            'activityHasMoreItems': activityService.hasMoreItems,
+            'accepted_filetypes': {
+                'revision': [],
+                'attachment': [],
+            },
+
 		};
 
 		$rootScope.searchEnabled = true;
@@ -140,6 +145,10 @@ angular.module('toolkit-gui')
 			matterService.get( $scope.data.slug ).then(
 				function success( singleMatter ){
 					$scope.data.matter = singleMatter;
+
+                    // set the accepted_filetypes
+                    $scope.data.accepted_filetypes.revision = $scope.data.matter._meta.accepted_filetypes.revision.join(', ');
+                    $scope.data.accepted_filetypes.attachment = $scope.data.matter._meta.accepted_filetypes.attachment.join(', ');
 
 					//set matter in the services
 					matterService.selectMatter(singleMatter);
@@ -394,13 +403,6 @@ angular.module('toolkit-gui')
                 ChecklistIntroService.showIntro();
 			}
 		};
-
-        $scope.accepted_filetypes = function () {
-            return {
-                'revision': $scope.data.matter._meta.accepted_filetypes.revision.join(', '),
-                'attachment': $scope.data.matter._meta.accepted_filetypes.attachment.join(', ')
-            };
-        };
 
 		/**
 		 * Inits the intercom interface, interfacce for genericFunctions.initialiseIntercom
