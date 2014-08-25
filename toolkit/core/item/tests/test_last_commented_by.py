@@ -12,6 +12,16 @@ class LastCommentedByTest(BaseScenarios, TestCase):
         self.basic_workspace()
         self.item = mommy.make('item.Item', matter=self.matter, name='Test Item', category=None)
 
+    def test_no_last_comment(self):
+        #
+        # No comments shoudl return none
+        #
+        self.assertEqual(self.item.last_comment_by(is_public=True), None)
+        #
+        # No comments shoudl return none
+        #
+        self.assertEqual(self.item.last_comment_by(is_public=False), None)
+
     def test_unprivileged_last_comment(self):
         self.item.set_last_comment_by(is_public=True, user=self.user)
         self.item.set_last_comment_by(is_public=False, user=self.lawyer)

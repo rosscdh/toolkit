@@ -384,7 +384,11 @@ class ItemLastCommentByMixin(object):
         Save in our data field the appropriate last user info for whoever commented
         take note that college comments should not be shown to normal users
         """
-        last_comment_by = self.data.get('last_comment_by', self.BASE_LAST_COMMENT_BY)
+        last_comment_by = self.data.get('last_comment_by', None)
+
+        if last_comment_by is None:
+            last_comment_by = self.BASE_LAST_COMMENT_BY.copy()
+
         now = datetime.datetime.utcnow().isoformat()
 
         if is_public is True:
@@ -401,7 +405,11 @@ class ItemLastCommentByMixin(object):
         So get the last comment by info and check that the last comment is returned by the latest date_of
         in the case of colleage: it should return the last public comment if its present and there is no latest colleage comment
         """
-        last_comment_by = self.data.get('last_comment_by', self.BASE_LAST_COMMENT_BY)
+        last_comment_by = self.data.get('last_comment_by', None)
+
+        if last_comment_by is None:
+            return None
+
         now = datetime.datetime.utcnow().isoformat()
 
         if is_public is True:
