@@ -3,6 +3,7 @@
 {% block subject_line %}{{ subject }}{% endblock %}
 
 {% block html_content %}
+{% if has_expired %}<h3>Warning, Task Overdue</h3>{% endif %}
 <p>{{ from_name }} has asked you to complete the "{{ item }}" task for "{{ matter }}"</p>
 <p>You can view the task at: <a href="{{ action_url }}">{{ action_url }}</a></p>
 {% if description %}

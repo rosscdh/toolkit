@@ -13,6 +13,8 @@ from rulez import registry as rulez_registry
 from jsonfield import JSONField
 from uuidfield import UUIDField
 
+from django.utils import timezone
+
 
 class Task(SendReminderEmailMixin,
            models.Model):
@@ -42,6 +44,12 @@ class Task(SendReminderEmailMixin,
 
     class Meta:
         ordering = ('id',)  # oldest first
+
+    @property
+    def has_expired(self):
+        if self.date_due:
+            return True if self.date_due < timezone.now() else False
+        return False
 
     def __unicode__(self):
         return u'%s' % self.name

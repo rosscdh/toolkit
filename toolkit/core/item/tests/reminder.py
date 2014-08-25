@@ -70,7 +70,7 @@ class ReminderServiceTest(BaseScenarios, TestCase):
         message = LawPalAbridgeService.render_reminder_template(**template_data)
 
         self.assertEqual(message,
-                         u'<p>Action required</p>\n\n<h3>Warning Overdue</h3>\n<p style="">The "Test Item #1" in the "Lawpal (test)" Matter has not been closed, and its due date has past: %s (%s)</p>\n\n<a href="%s" alt="Click here to view it" title="Click here to view it">%s</a>' % (date_due.strftime('%m-%d-%Y'), naturaltime(date_due), template_data.get('action_link'), template_data.get('action_link')))
+                         u'<p>Action required</p>\n\n<h3>Warning, Item Overdue</h3>\n<p style="">The "Test Item #1" in the "Lawpal (test)" Matter has not been closed, and its due date has past: %s (%s)</p>\n\n<a href="%s" alt="Click here to view it" title="Click here to view it">%s</a>' % (date_due.strftime('%m-%d-%Y'), naturaltime(date_due), template_data.get('action_link'), template_data.get('action_link')))
 
 
 

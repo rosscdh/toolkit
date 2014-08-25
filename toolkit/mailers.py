@@ -68,6 +68,8 @@ class BaseMailerService(object):
         return '%s (via LawPal) %s' % (name, site_email) if email != site_email else email
 
     def process(self, attachments=None, **kwargs):
+        self.params = kwargs
+
         for r in self.recipients:
             context = {
                 'from': self.from_tuple.get('name'),
