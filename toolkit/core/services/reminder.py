@@ -54,6 +54,7 @@ class BaseReminderService(object):
     def message_template_data(self, item):
         return {
             'item': item,
+            'matter': item.matter,
             'has_expired': item.has_expired,
             'action_link': ABSOLUTE_BASE_URL(item.get_absolute_url()),
         }
@@ -84,4 +85,4 @@ class ReminderService(BaseReminderService):
                 msg = 'Sending reminder to %s for matter item: %s:%s' % (participant, item.matter, item)
                 print(msg)
                 logger.info(msg)
-                self.send_message_to_abridge(participant, item)
+                self.send_message_to_abridge(user=participant, item=item)
