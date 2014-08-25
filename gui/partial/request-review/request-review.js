@@ -180,16 +180,19 @@ angular.module('toolkit-gui')
                 $scope.data.request.last_name = selectedPerson.last_name;
             }
 
-            matterItemService.requestRevisionReview($scope.matter.slug, $scope.checklistItem.slug, $scope.data.request).then(
-                function success(response) {
-                    $modalInstance.close(response);
-                },
-                function error(/*err*/) {
-                    if (!toaster.toast || !toaster.toast.body || toaster.toast.body !== 'Unable to request a revision review.') {
-                        toaster.pop('error', 'Error!', 'Unable to request a revision review.', 3000);
+            var reviewer = $scope.data.request;
+            if ( reviewer.email !== null ) {
+                matterItemService.requestRevisionReview($scope.matter.slug, $scope.checklistItem.slug, $scope.data.request).then(
+                    function success(response) {
+                        $modalInstance.close(response);
+                    },
+                    function error(/*err*/) {
+                        if (!toaster.toast || !toaster.toast.body || toaster.toast.body !== 'Unable to request a revision review.') {
+                            toaster.pop('error', 'Error!', 'Unable to request a revision review.', 3000);
+                        }
                     }
-                }
-            );
+                );
+            }
         };
 
 		/**
