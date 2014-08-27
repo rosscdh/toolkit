@@ -103,14 +103,33 @@ var ExportProvidersInterface = React.createClass({displayName: 'ExportProvidersI
             }.bind(this)
         });
     },
+    provider_name: function ( provider ) {
+        if ( provider == 'box' ) {
+            return 'Box.com';
+        }
+        if ( provider == 'dropbox-oauth2' ) {
+            return 'Dropbox.com';
+        }
+        return 'Export as Zip'
+    },
+    // provider_logo: function ( provider ) {
+    //     if ( provider == 'box' ) {
+    //         return 'images/box/box-96x96.png';
+    //     }
+    //     if ( provider == 'dropbox-oauth2' ) {
+    //         return 'images/dropbox/dropbox-logos_dropbox-vertical-blue.png';
+    //     }
+    //     return 'Export as Zip'
+    // },
     render: function() {
         var self = this;
         var providers = {
-            'default': React.DOM.li(null, React.DOM.a( {ref:"export_data", className:"btn", title:"Export this Matter", onClick:this.handleClick.bind(null, 'default')}, React.DOM.span( {className:"fui-exit"}),"Default Export")),
+            'default': React.DOM.li(null, React.DOM.a( {ref:"export_data", className:"btn", title:"Export this Matter", onClick:this.handleClick.bind(null, 'default')}, React.DOM.span( {className:"fui-exit"}),"Export as Zip")),
         };
         this.props.integrations.forEach(function (r) {
-            var name = 'Export to ' + r;
-            var title = 'Export this Matter to ' + r;
+            var provider_name = self.provider_name( r );
+            var name = 'Export to ' + provider_name;
+            var title = 'Export this Matter to ' + provider_name;
             providers[r] = React.DOM.li(null, React.DOM.a( {ref:"export_data", className:"btn", title:title, onClick:self.handleClick.bind(null, r)}, React.DOM.span( {className:"fui-exit"}),name));
         });
 

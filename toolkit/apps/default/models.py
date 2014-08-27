@@ -131,7 +131,7 @@ class UserProfile(EmailIsValidatedMixin, models.Model):
 
     @property
     def integrations(self):
-        return [i.get('provider') for i in self.user.social_auth.filter(provider__in=['box']).values('provider')]
+        return [i.get('provider') for i in self.user.social_auth.filter(provider__in=['dropbox-oauth2', 'box']).values('provider')]
 
 
 def _get_or_create_user_profile(user):
