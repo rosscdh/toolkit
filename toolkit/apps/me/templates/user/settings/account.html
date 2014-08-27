@@ -54,16 +54,30 @@
         <div class="container">
             <div class="col-sm-6 col-sm-offset-3" role="main">
               <ul class="list-group">
-                <li class="list-group-item">
-                  {% if 'box' in user.profile.integrations %}
-                      <a class="social-disconnect" href="{% url 'social:disconnect' backend='box' %}"><img src="{{ STATIC_URL }}images/box/box-96x96.png" alt="Box logo" title="Disconnect with Box" border="0" />&nbsp;Disconnect</a>
-                  {% else %}
-                      <a href="{% url 'social:begin' backend='box' %}"><img src="{{ STATIC_URL }}images/box/box-96x96.png" alt="Box logo" title="Connect with Box" border="0" />&nbsp;Connect</a>
-                  {% endif %}
-                  <div class="col-sm-6">
-                    Connecting your Box account with LawPal, enables you to export your Matters directly to Box.
-                  </div>
-                </li>
+                  <li class="row list-group-item">
+                    <div class="col-sm-3 text-center">
+                    {% if 'dropbox-oauth2' in user.profile.integrations %}
+                        <a class="social-disconnect" href="{% url 'social:disconnect' backend='dropbox-oauth2' %}"><img width="96" height="96" src="{{ STATIC_URL }}images/dropbox/dropbox-logos_dropbox-vertical-blue.png" alt="Dropbox logo" title="Disconnect with Dropbox" border="0" />&nbsp;Disconnect</a>
+                    {% else %}
+                        <a href="{% url 'social:begin' backend='dropbox-oauth2' %}"><img width="96" height="96" src="{{ STATIC_URL }}images/dropbox/dropbox-logos_dropbox-vertical-blue.png" alt="Dropbox logo" title="Connect with Dropbox" border="0" />&nbsp;Connect</a>
+                    {% endif %}
+                    </div>
+                    <div class="col-sm-7">
+                      Export your Matters directly to Dropbox.
+                    </div>
+                  </li>
+                  <li class="row list-group-item">
+                    <div class="col-sm-3 text-center">
+                    {% if 'box' in user.profile.integrations %}
+                        <a class="social-disconnect" href="{% url 'social:disconnect' backend='box' %}"><img width="60" height="60" src="{{ STATIC_URL }}images/box/box-96x96.png" alt="Box logo" title="Disconnect with Box" border="0" />&nbsp;Disconnect</a>
+                    {% else %}
+                        <a href="{% url 'social:begin' backend='box' %}"><img width="60" height="60" src="{{ STATIC_URL }}images/box/box-96x96.png" alt="Box logo" title="Connect with Box" border="0" />&nbsp;Connect</a>
+                    {% endif %}
+                    </div>
+                    <div class="col-sm-7">
+                      Export your Matters directly to Box.com
+                    </div>
+                  </li>
               </ul>
 
             </div>

@@ -15,3 +15,6 @@ def _export_matter(matter, requested_by, provider=None):
 
     if provider == 'box':
         management.call_command('sync_box', matter.slug, usernames=requested_by.username)
+
+    if provider == 'dropbox-oauth2':
+        management.call_command('sync_dropbox', matter.slug, usernames=requested_by.username)

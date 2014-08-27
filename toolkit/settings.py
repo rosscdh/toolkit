@@ -265,8 +265,9 @@ LOGOUT_URL = '/end/'
 
 AUTHENTICATION_BACKENDS = (
     'toolkit.auth_backends.EmailBackend',
-    'social.backends.goclio.GoClioOAuth2',
+    #'social.backends.goclio.GoClioOAuth2',
     'social.backends.box.BoxOAuth2',
+    'social.backends.dropbox.DropboxOAuth2',
     'django.contrib.auth.backends.ModelBackend',
     'toolkit.auth_backends.SecretKeyBackend',
     'toolkit.apps.review.auth_backends.ReviewDocumentBackend',  # allow users to log in via review urls

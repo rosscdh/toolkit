@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from django.conf import settings
 from django.template.defaultfilters import slugify
 from django.core.files.storage import default_storage
 from django.core.management.base import BaseCommand, CommandError
@@ -7,8 +6,7 @@ from django.core.management.base import BaseCommand, CommandError
 from toolkit.apps.workspace.models import Workspace
 
 from optparse import make_option
-from social.apps.django_app.sa_default.models import UserSocialAuth
-from box.box import Me, Folders, Files, UploadFiles
+from box.box import Me, Folders, UploadFiles
 
 import hashlib
 import logging
@@ -28,10 +26,10 @@ def _file_sha1(target_file):
     Box requires Content-MD5 to be set has a sha1 of the file contents
     """
     sha = hashlib.sha1()
-    
+
     with default_storage.open(target_file) as f:
         while True:
-            block = f.read(2**10) # Magic number: one-megabyte blocks.
+            block = f.read(2 ** 10)  # Magic number: one-megabyte blocks.
             if not block: break
             sha.update(block)
         return sha.hexdigest()
