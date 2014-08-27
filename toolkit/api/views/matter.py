@@ -111,13 +111,23 @@ Custom Api Endpoints
 
 
 class MatterExportView(generics.CreateAPIView, MatterMixin):
+    @property
+    def provider_name(self):
+        if self.provider == 'box':
+            return 'box.com'
+
+        if self.provider == 'dropbox-oauth2':
+            return 'dropbox.com'
+
+        return 'a Zip file'
+
     def create(self, request, *args, **kwargs):
         self.provider = kwargs.get('provider', None)
 
         if self.provider is None:
             detail = 'Your export is being generated. Once complete, you will recieve an email with the next steps.'
         else:
-            detail = 'Your matter is being exported to %s. Please check your %s account for the folder named "%s".' % (self.provider, self.provider, self.matter.slug)
+            detail = 'Your matter is being exported to %s. Please check your %s account for the folder named "%s".' % (self.provider_name, self.provider_name, self.matter.slug)
 
         try:
             self.matter.export_matter(requested_by=request.user, provider=self.provider)
