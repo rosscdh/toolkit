@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
 from rulez import registry as rulez_registry
 
@@ -127,7 +128,7 @@ class MatterExportView(generics.CreateAPIView, MatterMixin):
         if self.provider is None:
             detail = 'Your export is being generated. Once complete, you will recieve an email with the next steps.'
         else:
-            detail = 'Your matter is being exported to %s. Please check your %s account for the folder named "%s".' % (self.provider_name, self.provider_name, self.matter.slug)
+            detail = 'Your matter is being exported to %s. Please check your %s account for the folder named "%s".' % (self.provider_name, self.provider_name, slugify(self.matter.name))
 
         try:
             self.matter.export_matter(requested_by=request.user, provider=self.provider)
