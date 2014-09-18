@@ -102,10 +102,11 @@ class SignDocument(IsDeletedMixin,
     def get_signer_signing_url(self, signer):
         signature_id = None
         signatures = self.signatures
-        signer_email = signer.email
+        signer_email = signer.email.lower()
 
         try:
-            signature_id = [s for s in signatures if s.get('signer_email_address') == signer_email][0].get('signature_id', None)
+            ## convert to lower jsut incase hellosign one day fixes their error
+            signature_id = [s for s in signatures if s.get('signer_email_address').lower() == signer_email][0].get('signature_id', None)
         except IndexError:
             logger.error('Could not find signer: %s in %s' % (signer_email, signatures))
             
