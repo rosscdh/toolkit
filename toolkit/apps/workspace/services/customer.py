@@ -29,6 +29,8 @@ class EnsureCustomerService(object):
         return self.is_new, self.user, self.profile
 
     def get_user(self, email, **kwargs):
+        ## normalise the email this is really irritatign django
+        email = User.objects.normalize_email(email)
 
         try:
             user = User.objects.get(email=email, **kwargs)
