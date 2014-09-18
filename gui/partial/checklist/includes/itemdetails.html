@@ -237,9 +237,12 @@
 
               </div>
               <div class="tools status-{{ data.selectedItem.latest_revision.status }} revision-actions">
-                <a href="javascript:;" class="btn btn-link btn-xs" ng-click="showRevisionDocument(data.selectedItem.latest_revision)">
+                <a href="javascript:;" class="btn btn-link btn-xs" ng-show="data.selectedItem.latest_revision.is_executed!==true" ng-click="showRevisionDocument(data.selectedItem.latest_revision)">
                   View
                 </a>
+                <span class="btn btn-link btn-xs pull-right" ng-show="data.selectedItem.latest_revision.is_executed==true" title="Document has been executed and can now be downloaded">
+                  <span class="fui-clip"></span> Executed
+                </span>
                 <a href="{{ data.selectedItem.latest_revision.user_download_url }}" class="btn btn-link btn-xs" target="_blank">
                   Save
                 </a>
