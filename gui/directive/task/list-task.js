@@ -194,7 +194,9 @@ angular.module('toolkit-gui').directive('tasksList', ['$compile', '$log', '$sce'
                 };
 
                 $scope.isCompleteTaskEnabled = function (task) {
+
                     if($scope.selectedItem.is_complete) {
+                        toaster.pop('warning', 'Please Note', 'The item has been marked as complete, please re-open it to make changes.', 5000);
                         return false;
                     }
 
