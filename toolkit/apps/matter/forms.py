@@ -110,7 +110,10 @@ class MatterForm(ModalForm, forms.ModelForm):
 
     @property
     def user_can_modify(self):
-        return (self.user == self.instance.lawyer or self.user.profile.is_lawyer is True and self.is_new is True)
+        # only allow lawyers to create matters
+        #return (self.user == self.instance.lawyer or self.user.profile.is_lawyer is True and self.is_new is True)
+        # allow all user classes to create matters
+        return True
 
     @property
     def delete_button(self):
