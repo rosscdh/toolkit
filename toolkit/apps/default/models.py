@@ -27,7 +27,7 @@ class UserProfile(EmailIsValidatedMixin, models.Model):
                                 unique=True,
                                 related_name='profile')
 
-    data = JSONField(default={"user_class": "customer"})
+    data = JSONField(default={"user_class": "lawyer"})
 
     @classmethod
     def create(cls, **kwargs):
