@@ -46,9 +46,9 @@ class MatterFormTest(BaseScenarios, TestCase):
         form = MatterForm(instance=self.matter, user=self.lawyer, is_new=False)
         self.assertTrue(form.user_can_modify)
 
-        # Normal Users can never modify the form
+        # Normal Users can modify the form if it is new i.e. they are creating it
         form = MatterForm(instance=self.matter, user=self.user, is_new=True)
-        self.assertFalse(form.user_can_modify)
+        self.assertTrue(form.user_can_modify)
 
         form = MatterForm(instance=self.matter, user=self.user, is_new=False)
         self.assertFalse(form.user_can_modify)
@@ -61,12 +61,12 @@ class MatterFormTest(BaseScenarios, TestCase):
         self.assertItemsEqual([b.name for b in form.helper.inputs if b.input_type in ('button', 'submit',)], ['delete', 'cancel', 'submit'])
 
         # The participants should only have the ability to stop participating
-        form = MatterForm(instance=self.matter, user=self.user)
+        form = MatterForm(instance=self.matter, user=self.user, is_new=False)
         self.assertItemsEqual([b.name for b in form.helper.inputs if b.input_type in ('button', 'submit',)], ['stop-participating', 'cancel'])
 
     def test_stop_participating_button_shows(self):
         # The participants should only have the ability to stop participating
-        form = MatterForm(instance=self.matter, user=self.user)
+        form = MatterForm(instance=self.matter, user=self.user, is_new=False)
         self.assertItemsEqual([b.name for b in form.helper.inputs if b.input_type in ('button', 'submit',)], ['stop-participating', 'cancel'])
         
     def test_success(self):
