@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import json
 
 from django import forms
@@ -112,8 +113,6 @@ class MatterForm(ModalForm, forms.ModelForm):
     def user_can_modify(self):
         # only allow the owner to modify matter
         return (self.user == self.instance.lawyer or self.is_new is True)
-        # allow all user classes to create matters
-        #return True
 
     @property
     def delete_button(self):
