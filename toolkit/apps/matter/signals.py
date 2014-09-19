@@ -162,8 +162,16 @@ def crocodoc_webhook_event_recieved(sender, verb, document, target, attachment_n
             if crocodoc_event in ['annotation.create', 'comment.create', 'comment.update']:
                 # user MUST be in document.source_object.primary_reviewdocument.reviewers
                 # otherwise he could not get to this point
+
                 try:
-                    reviewdocument = document.source_object.reviewdocument_set.get(crocodoc_uuid=document.uuid)
+                    # handle the weird events that sometimes return multiple objects
+                    reviewdocument_qs = document.source_object.reviewdocument_set.filter(crocodoc_uuid=document.uuid).order_by('-id')
+                    # set as the most recent one
+                    reviewdocument = reviewdocument_qs.first()
+                    # delete the other one
+                    if reviewdocument_qs.count() > 1:
+                        reviewdocument_qs.last().delete()
+
                 except document.source_object.reviewdocument_set.model.DoesNotExist:
                     reviewdocument = None
 
