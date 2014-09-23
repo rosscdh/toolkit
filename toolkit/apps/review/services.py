@@ -62,7 +62,7 @@ class CrocodocLoaderService(object):
         Since the WHOLE entry including the crocodoc_uuid is copied, we need to check if the actual object has the same
         uuid and possibly reset it. Otherwise we couldn't identify the review copies.
         """
-        if self.reviewdocument.document.primary_reviewdocument.crocodoc_uuid == self.service.obj.uuid:
+        if self.reviewdocument.document.primary_reviewdocument and self.reviewdocument.document.primary_reviewdocument.crocodoc_uuid == self.service.obj.uuid:
             crocodoc_object = self.service.obj
             crocodoc_object.crocodoc_uuid = None
 
