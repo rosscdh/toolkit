@@ -90,6 +90,7 @@ class HelloSignWebhookEventsTest(BaseScenarios, TestCase):
 
             # post response
             resp = self.get_hellosign_post_response(name=key)
+            self.assertEqual(resp.status, 200)
             hs_logs = self.request.hellosignlog_set.all()
             #
             # Test that each log is recorded and present
