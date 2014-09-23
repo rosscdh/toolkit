@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
 from django.core.cache import cache
 from django.test import TestCase, Client
 from django.core.urlresolvers import reverse
@@ -13,7 +14,10 @@ from hello_sign.views import HelloSignWebhookEventHandler
 from .data import ENGAGELETTER_DATA as BASE_ENGAGELETTER_DATA
 from ..models import EngagementLetter
 
-from hello_sign.tests.data import HELLOSIGN_200_RESPONSE, HELLOSIGN_WEBHOOK_EVENT_DATA
+from hello_sign.tests.data import (HELLOSIGN_200_RESPONSE,
+                                   HELLOSIGN_WEBHOOK_EVENT_DATA,
+                                   _get_event_hash)
+
 from hello_sign.tests.models import TestMonkeyModel
 
 import json
@@ -60,7 +64,12 @@ class HelloSignWebhookEventsTest(BaseScenarios, TestCase):
         i.e. HelloSign sends a post object with key "json" that is set to an actual
         string of JSON
         """
-        return { 'json': json.dumps(HELLOSIGN_WEBHOOK_EVENT_DATA[name]) }
+        data = HELLOSIGN_WEBHOOK_EVENT_DATA[name]
+
+        # generate a valid event hash
+        data['event']['event_hash'] = _get_event_hash(settings.HELLOSIGN_API_KEY, data['event']['event_time'], data['event']['event_type'])
+
+        return { 'json': json.dumps(data) }
 
     def get_hellosign_post_response(self, name):
         return self.client.post(reverse('hellosign_webhook_event'), self.get_webhook_event_post_data(name=name))
