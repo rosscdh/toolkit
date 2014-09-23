@@ -113,8 +113,12 @@ class Revision(IsDeletedMixin,
 
     @property
     def primary_reviewdocument(self):
+        """
+        get the last onthe list which is the first one and the original one
+        """
         # is this *really* only the case for a NEW reviewdocument/revision?
-        return self.reviewdocument_set.filter(reviewers=None).last() 
+        #return self.reviewdocument_set.filter(reviewers=None).last() 
+        return self.reviewdocument_set.all().last() 
 
     @property
     def primary_signdocument(self):
