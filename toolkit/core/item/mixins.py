@@ -49,7 +49,8 @@ class ReviewInProgressMixin(object):
         return the primary reviewdocument which is only for matter.participants
         """
         if self.latest_revision:
-            return self.latest_revision.reviewdocument_set.filter(reviewers=None).first()
+            #return self.latest_revision.reviewdocument_set.filter(reviewers=None).first()
+            return self.latest_revision.reviewdocument_set.all().first()
         else:
             return None
 
