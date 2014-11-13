@@ -2,11 +2,24 @@
 
 {% block page_title %}Your Matters{% endblock %}
 
-{% block body %}
+{% block prebody %}
+<div id="hero">
+    <div class="container">
+        <div class="col-lg-offset-3 col-lg-6">
+            <div class="row alert alert-info">
+                <p><b>Please Note</b>.</p>
+                <p>LawPal.com will be closing as of December 1, 2014.</p>
+                <p>Please ensure that you have exported all of your matters.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
 
+{% block body %}
     <!-- needed for react -->
     {% csrf_token %}
-    <div id="matter-list" class="content col-lg-12"></div>
+    <div id="matter-list" class="content row col-lg-12"></div>
 {% endblock %}
 
 {% block modals %}

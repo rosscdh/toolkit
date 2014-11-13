@@ -1,6 +1,4 @@
-{% extends 'gui.html' %}
-
-{% load url from future %}{% load crispy_forms_tags %}
+{% extends 'gui.html' %}{% load url from future %}{% load crispy_forms_tags email_obfuscator %}
 
 {% block page_title %}Sign up — {{ block.super }}{% endblock %}
 {% block sidebar %}{% endblock %}
@@ -14,11 +12,14 @@
 
             <div class="signup-wrap">
                 <div class="logo-wrap">
-                    <h4>Get Started</h4>
+                    <h4>Bad News</h4>
                 </div>
-                {% block form %}
-                    {% crispy form %}
-                {% endblock %}
+                <p>Unfortunately, we can no longer accept new signups.</p>
+                <p>LawPal.com will be closing as of December 1, 2014.</p>
+                <p>Thank you for your interest and please contact founders@lawpal.com' should you have any questions.</p>
+                {#% block form %#}
+                    {#% crispy form %#}
+                {#% endblock %#}
             </div>
             <div class="text-center links">
                 <a href="{% url 'public:signin' %}">Already have an account?</a>

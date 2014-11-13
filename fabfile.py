@@ -258,9 +258,10 @@ def git_set_tag():
 
 @task
 def git_export(branch='master'):
-  env.SHA1_FILENAME = get_sha1()
-  if not os.path.exists('/tmp/%s.zip' % env.SHA1_FILENAME):
-      local('git archive --format zip --output /tmp/%s.zip --prefix=%s/ %s' % (env.SHA1_FILENAME, env.SHA1_FILENAME, branch,), capture=False)
+    print branch
+    env.SHA1_FILENAME = get_sha1()
+    if not os.path.exists('/tmp/%s.zip' % env.SHA1_FILENAME):
+        local('git archive %s --format zip --output /tmp/%s.zip --prefix=%s/' % (branch, env.SHA1_FILENAME, env.SHA1_FILENAME,), capture=False)
 
 @task
 @runs_once
@@ -350,8 +351,8 @@ def celery_log():
         sudo('supervisorctl fg %s' % env.celery_name )
 
 @task
-def prepare_deploy():
-    git_export()
+def prepare_deploy(branch):
+    git_export(branch=branch)
 
 @task
 @runs_once
@@ -769,7 +770,7 @@ def rebuild_local(gui_clean=False):
         gui_clean()
 
 @task
-def deploy(is_predeploy='False',full='False',db='False',search='False'):
+def deploy(is_predeploy='False',full='False',db='False',search='False',branch='master'):
     """
     :is_predeploy=True - will deploy the latest MASTER SHA but not link it in: this allows for assets collection
     and requirements update etc...
@@ -785,7 +786,7 @@ def deploy(is_predeploy='False',full='False',db='False',search='False'):
     git_set_tag()
     newrelic_note()
 
-    prepare_deploy()
+    prepare_deploy(branch=branch)
     do_deploy()
     update_env_conf()
 
