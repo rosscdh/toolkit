@@ -81,19 +81,18 @@ def production():
     env.deploy_archive_path = '/var/apps/'
     env.virtualenv_path = '/var/apps/.toolkit-live-venv/'
 
-    env.newrelic_api_token = 'ec2a185854e15d572186b246961e0ed11378cc249d0a0cd'
-    env.newrelic_app_name = 'Toolkit'
-    env.newrelic_application_id = '1858111'
+    # env.newrelic_api_token = 'ec2a185854e15d572186b246961e0ed11378cc249d0a0cd'
+    # env.newrelic_app_name = 'Toolkit'
+    # env.newrelic_application_id = '1858111'
 
     # change from the default user to 'vagrant'
-    env.user = 'ubuntu'
-    env.application_user = 'app'
+    env.user = 'django'
+    env.application_user = 'django'
     # connect to the port-forwarded ssh
-    env.hosts = ['ec2-54-176-88-70.us-west-1.compute.amazonaws.com',
-                 'ec2-54-176-208-37.us-west-1.compute.amazonaws.com',] if not env.hosts else env.hosts
+    env.hosts = ['146.185.173.63',] if not env.hosts else env.hosts
     env.celery_name = 'celery-production' # taken from chef cookbook
 
-    env.key_filename = '%s/../lawpal-chef/chef-machines.pem' % env.local_project_path
+    #env.key_filename = '%s/../lawpal-chef/chef-machines.pem' % env.local_project_path
 
     env.start_service = 'supervisorctl start uwsgi-toolkit-live'
     env.stop_service = 'supervisorctl stop uwsgi-toolkit-live'
@@ -103,9 +102,9 @@ def production():
 # Update the roles
 #
 env.roledefs.update({
-    'web': ['ec2-54-176-88-70.us-west-1.compute.amazonaws.com',],
-    'worker': ['ec2-54-176-208-37.us-west-1.compute.amazonaws.com'],
-    'db-actor': ['ec2-54-176-208-37.us-west-1.compute.amazonaws.com'],
+    'web': ['146.185.173.63',],
+    'worker': ['146.185.173.63'],
+    'db-actor': ['146.185.173.63'],
 })
 
 
@@ -769,7 +768,7 @@ def rebuild_local(gui_clean=False):
         gui_clean()
 
 @task
-def deploy(is_predeploy='False',full='False',db='False',search='False'):
+def deploy(is_predeploy='False',full='True',db='False',search='False'):
     """
     :is_predeploy=True - will deploy the latest MASTER SHA but not link it in: this allows for assets collection
     and requirements update etc...
