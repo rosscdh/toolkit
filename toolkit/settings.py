@@ -139,7 +139,7 @@ HELPER_APPS = (
     'permission',
 
     # getsentry.com
-    'raven.contrib.django.raven_compat',
+    # 'raven.contrib.django.raven_compat',
 
     # Payments
     'payments',
@@ -451,11 +451,11 @@ LOGGING = {
             'class': 'logging.handlers.WatchedFileHandler',
             'filename': '/tmp/toolkit-{env}.log'.format(env='dev')
         },
-        'splunkstorm':{
-            'level': 'INFO',
-            'class': 'toolkit.loggers.SplunkStormLogger',
-            'formatter': 'verbose'
-        },
+        # 'splunkstorm':{
+        #     'level': 'INFO',
+        #     'class': 'toolkit.loggers.SplunkStormLogger',
+        #     'formatter': 'verbose'
+        # },
     },
     'loggers': {
         'django': {
