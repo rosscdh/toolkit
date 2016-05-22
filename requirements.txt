@@ -164,3 +164,4 @@ virtualenv-clone==0.2.5
 virtualenvwrapper==4.3.1
 watchdog==0.7.1
 wsgiref==0.1.2
+rollbar==0.12.1

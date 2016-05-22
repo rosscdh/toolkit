@@ -16,15 +16,15 @@ for test_app in ['testserver','test', 'jenkins']:
 SITE_ID = 1
 
 ADMINS = (
-    ("Ross Crawford-dHeureuse", 'ross@lawpal.com'),
+    ("Ross Crawford-dHeureuse", 'sendrossemail@gmail.com'),
 )
 
-MANAGERS = ADMINS + (
-    ("Alex Halliday", 'alex@lawpal.com'),
-)
+MANAGERS = ADMINS# + (
+#    ("Alex Halliday", 'alex@lawpal.com'),
+#)
 
 DEFAULT_FROM = (
- ("LawPal Support", 'support@lawpal.com'),
+ ("Ross Support", 'sendrossemail@gmail.com'),
 )
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -55,8 +55,8 @@ STATICFILES_DIRS = (
     ("ng", os.path.join(SITE_ROOT, 'gui', 'dist')),
 )
 
-STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
-#STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
+#STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 
 MEDIA_ROOT = os.path.join(SITE_ROOT, 'media')
 MEDIA_URL = '/m/'
@@ -199,6 +199,7 @@ MIDDLEWARE_CLASSES = (
     'dj_authy.middleware.AuthyAuthenticationRequiredMiddleware',
     'toolkit.apps.me.middleware.EnsureUserHasPasswordMiddleware',
     'social.apps.django_app.middleware.SocialAuthExceptionMiddleware',
+    'rollbar.contrib.django.middleware.RollbarNotifierMiddleware',
     'django.middleware.gzip.GZipMiddleware',
     'pipeline.middleware.MinifyHTMLMiddleware',
 )

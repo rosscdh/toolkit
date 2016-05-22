@@ -144,7 +144,7 @@ class MatterDetailView(DetailView):
     slug_url_kwarg = 'matter_slug'
 
     def get_template_names(self):
-        if settings.PROJECT_ENVIRONMENT in ['prod'] or settings.DEBUG is False:
+        if settings.PROJECT_ENVIRONMENT in ['staging', 'prod', 'production'] or settings.DEBUG is False:
             return ['dist/index.html']
         else:
             return ['index.html']
