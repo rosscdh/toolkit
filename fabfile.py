@@ -476,7 +476,8 @@ def requirements():
         env.SHA1_FILENAME = get_sha1()
 
     project_path = '%sversions/%s' % (env.remote_project_path, env.SHA1_FILENAME,)
-    requirements_path = '%s/requirements/dev.txt' % (project_path, )
+    #requirements_path = '%s/requirements/dev.txt' % (project_path, )
+    requirements_path = '%s/requirements.txt' % (project_path, )
 
     virtualenv('pip install -r %s' % requirements_path )
 
