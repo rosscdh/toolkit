@@ -16,15 +16,15 @@ for test_app in ['testserver','test', 'jenkins']:
 SITE_ID = 1
 
 ADMINS = (
-    ("Ross Crawford-dHeureuse", 'sendrossemail@gmail.com'),
+    ("Ross Crawford-dHeureuse", 'ross@lawpal.com'),
 )
 
-MANAGERS = ADMINS# + (
-    #("Alex Halliday", 'alex@lawpal.com'),
-#)
+MANAGERS = ADMINS + (
+    ("Alex Halliday", 'alex@lawpal.com'),
+)
 
 DEFAULT_FROM = (
- ("LawPal Support", 'sendrossemail@gmail.com'),
+ ("LawPal Support", 'support@lawpal.com'),
 )
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -139,8 +139,7 @@ HELPER_APPS = (
     'permission',
 
     # getsentry.com
-    #'raven.contrib.django.raven_compat',
-    'rollbar',
+    # 'raven.contrib.django.raven_compat',
 
     # Payments
     'payments',
@@ -396,7 +395,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 #
 # Social Auth
 #
-REDIRECT_IS_HTTPS = False
+REDIRECT_IS_HTTPS = True
 SOCIAL_AUTH_LOGIN_URL = LOGIN_URL
 SOCIAL_AUTH_LOGIN_ERROR_URL = LOGIN_ERROR_URL
 
@@ -415,6 +414,9 @@ JS_DATE_FORMAT = 'MM d, yy'
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-SHORT_DATE_FORMAT
 SHORT_DATE_FORMAT = 'm/d/Y'
 JS_SHORT_DATE_FORMAT = 'mm/dd/yy'
+
+SPLUNKSTORM_ENDPOINT = 'tcp.pjg2-3xz4.data.splunkstorm.com'
+SPLUNKSTORM_PORT = 20824
 
 LOGGING = {
     'version': 1,
@@ -449,6 +451,11 @@ LOGGING = {
             'class': 'logging.handlers.WatchedFileHandler',
             'filename': '/tmp/toolkit-{env}.log'.format(env='dev')
         },
+        # 'splunkstorm':{
+        #     'level': 'INFO',
+        #     'class': 'toolkit.loggers.SplunkStormLogger',
+        #     'formatter': 'verbose'
+        # },
     },
     'loggers': {
         'django': {
