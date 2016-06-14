@@ -282,8 +282,8 @@ COMMENTS_APP = 'toolkit.apps.discussion'
 
 AWS_STORAGE_BUCKET_NAME = AWS_FILESTORE_BUCKET = 'dev-toolkit-lawpal-com'
 
-AWS_ACCESS_KEY_ID = AWS_UPLOAD_CLIENT_KEY = 'AKIAIRFGFTRB4LRLWC3A'
-AWS_SECRET_ACCESS_KEY = AWS_UPLOAD_CLIENT_SECRET_KEY = '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'
+AWS_ACCESS_KEY_ID = AWS_UPLOAD_CLIENT_KEY = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = AWS_UPLOAD_CLIENT_SECRET_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 AWS_QUERYSTRING_AUTH = False # to stop 304 not happening and boto appending our info to the querystring
 AWS_PRELOAD_METADATA = True
 # see http://developer.yahoo.com/performance/rules.html#expires
@@ -295,7 +295,7 @@ AWS_HEADERS = {
 CELERY_ACCEPT_CONTENT = ['json', 'pickle', ]
 #CELERY_ACKS_LATE = True  # as we want to to be acknowledged after its completed; http://celery.readthedocs.org/en/latest/configuration.html#celery-acks-late
 
-FILEPICKER_API_KEY = 'A4Ly2eCpkR72XZVBKwJ06z'
+FILEPICKER_API_KEY = os.getenv('FILEPICKER_API_KEY')
 
 CORS_ORIGIN_WHITELIST = (
     'localhost:9000'
@@ -477,8 +477,8 @@ LOGGING = {
     }
 }
 
-USPS_USERID = '756LAWPA4755'
-USPS_PASSWORD = '345LV41YU671'
+USPS_USERID = os.getenv('USPS_USERID')
+USPS_PASSWORD = os.getenv('USPS_PASSWORD')
 
 BLEACH_ALLOWED_ATTRIBUTES = {'blockquote': ['style',], 'div': ['style',], 'span': ['style',]}
 BLEACH_ALLOWED_STYLES = ['border', 'font-style', 'font-weight', 'margin', 'padding', 'text-align', 'text-decoration']
@@ -490,8 +490,8 @@ BLEACH_STRIP_TAGS = True
 DELETE_COMMENTS_DURATION = 60
 EDIT_COMMENTS_DURATION = DELETE_COMMENTS_DURATION
 
-INTERCOM_APP_ID = 'wkxzfou'
-INTERCOM_APP_SECRET = 'MZCesCDxkDrYdfX8HocAB2F6V5aZzCm-DuF7lyR5'
+INTERCOM_APP_ID = os.getenv('INTERCOM_APP_ID')
+INTERCOM_APP_SECRET = os.getenv('INTERCOM_APP_SECRET')
 
 #
 # ACTIVITY STREAM
@@ -513,7 +513,7 @@ ACTSTREAM_SETTINGS = {
 BILLING_MATTER_LIMIT = {
     'ENABLED': False,
     'MAX_FREE_MATTERS': 3,
-    'EXCLUDE_EMAILS': ('yael@lawpal.com', 'csandersreach@chicagobar.org',),
+    'EXCLUDE_EMAILS': ('yael@lawpal.com',),
 }
 
 #
