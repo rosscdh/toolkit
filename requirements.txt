@@ -135,7 +135,7 @@ python-dateutil==2.2
 python-memcached==1.53
 python-openid==2.2.5
 ## !! Could not determine repository location
-python-social-auth==0.2.0-dev
+python-social-auth==0.2.0
 -e git+https://github.com/rosscdh/python-usps.git@acb09d7b072e8d6d7e0dc53681296c1a5ff0a7cb#egg=python_usps-dev
 pytz==2014.2
 querystring-parser==1.2.0
