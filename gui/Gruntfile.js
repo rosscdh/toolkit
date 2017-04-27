@@ -294,6 +294,9 @@ module.exports = function (grunt) {
       }
     },
     uglify: {
+      options: {
+        'sourceMap': '<%= PRODUCTION_PATH %>' + 'app.full.min.map'
+      },
       main: {
         src: 'temp/app.full.ngmin.js',
         dest:'<%= PRODUCTION_PATH %>' + 'app.full.min.js'
