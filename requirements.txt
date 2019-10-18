@@ -93,7 +93,7 @@ djangorestframework==2.3.13
 djangorestframework-jwt==0.1.4
 docutils==0.11
 dropbox==2.1.0
-ecdsa==0.10
+ecdsa==0.13.3
 flower==0.6.0
 futures==2.1.6
 gitdb==0.5.4
