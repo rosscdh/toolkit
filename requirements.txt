@@ -16,7 +16,7 @@ South==0.8.4
 Sphinx==1.2.2
 Unipath==1.0
 WTForms==2.0
-Werkzeug==0.9.4
+Werkzeug==0.15.3
 -e git+https://github.com/GoodCloud/django-ajax-uploader.git@90cbd93c3d80d047da596e2348edb9619dee3852#egg=ajaxuploader-dev
 amqp==1.4.4
 anyjson==0.3.3
