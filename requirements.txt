@@ -4,7 +4,7 @@ GitPython==0.3.2.RC1
 Jinja2==2.7.2
 MarkupSafe==0.23
 Padding==0.4
-Pillow==2.3.0
+Pillow==6.2.0
 PyExecJS==1.0.4
 PyJWT==0.2.0
 PyPDF2==1.21
