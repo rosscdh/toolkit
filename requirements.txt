@@ -28,7 +28,7 @@ async==0.6.1
 -e git+https://github.com/rosscdh/django-authy.git@6c95c67512038dbbd7fa2d25759df638fddf89b5#egg=authy-dev
 backports.ssl-match-hostname==3.4.0.2
 billiard==3.3.0.16
-bleach==1.4
+bleach==3.1.1
 boto==2.27.0
 -e git+https://github.com/littleq0903/box-python-sdk.git@16c6a401b80df5eb4fda74e8fa44cb1cf77bff91#egg=boxapi-dev
 bunch==1.0.1
