@@ -101,7 +101,7 @@ gitdb==0.5.4
 hellosign-python-sdk==3.1
 honcho==0.5.0
 html5lib==1.0b3
-httplib2==0.7.7
+httplib2==0.18.0
 httpretty==0.8.3
 keen==0.2.3
 kombu==3.0.14
