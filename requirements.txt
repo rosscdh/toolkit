@@ -1,4 +1,4 @@
-Django==1.6.6
+Django==1.11.29
 Fabric==1.8.2
 GitPython==0.3.2.RC1
 Jinja2==2.7.2
