@@ -1,7 +1,7 @@
 Django==1.6.6
 Fabric==1.8.2
 GitPython==0.3.2.RC1
-Jinja2==2.7.2
+Jinja2==2.11.3
 MarkupSafe==0.23
 Padding==0.4
 Pillow==2.3.0
