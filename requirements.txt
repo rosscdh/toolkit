@@ -57,7 +57,7 @@ django-cors-headers==0.12
 django-countries==2.1.2
 django-crispy-forms==1.4.0
 -e git+https://github.com/rosscdh/django-crocodoc.git@10b8988deca692e443fc78d910462533ecfc7f2b#egg=django_crocodoc-dev
-django-debug-toolbar==0.11.0
+django-debug-toolbar==1.11.1
 ## !! Could not determine repository location
 django-debug-toolbar-template-timings==0.5.3
 -e git+https://github.com/playfire/django-debug-toolbar-user-panel.git@29a163dc985c4b173ead57b09b3cfdd6ca84e76f#egg=django_debug_toolbar_user_panel-dev
