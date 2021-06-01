@@ -158,7 +158,7 @@ termcolor==1.1.0
 tolerance==0.1.1
 tornado==3.2
 tweepy==2.2
-urllib3==1.7.1
+urllib3==1.26.5
 virtualenv==1.11.6
 virtualenv-clone==0.2.5
 virtualenvwrapper==4.3.1
