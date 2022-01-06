@@ -33,7 +33,7 @@ boto==2.27.0
 -e git+https://github.com/littleq0903/box-python-sdk.git@16c6a401b80df5eb4fda74e8fa44cb1cf77bff91#egg=boxapi-dev
 bunch==1.0.1
 caniusepython3==2.1.0
-celery==3.1.10
+celery==5.2.2
 coverage==3.7.1
 crocodoc==0.1.1
 cssmin==0.2.0
