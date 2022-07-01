@@ -153,7 +153,7 @@ sorl-thumbnail==11.12
 sqlparse==0.1.11
 stevedore==1.0.0
 stripe==1.12.2
-supervisor==3.0
+supervisor==3.0.1
 termcolor==1.1.0
 tolerance==0.1.1
 tornado==3.2
